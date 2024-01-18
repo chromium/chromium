@@ -8,6 +8,7 @@ include_rules = [
   "+ios/chrome/browser/ui/authentication/signin/signin_constants.h",
   "+ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h",
   "+ios/chrome/browser/ui/settings/sync/utils/sync_util.h",
+  "+ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h",
 ]
 
 specific_include_rules = {

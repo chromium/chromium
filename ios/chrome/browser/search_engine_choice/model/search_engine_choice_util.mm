@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
 namespace {
@@ -20,7 +20,7 @@ namespace {
 // disabled for tests or for non-branded builds. This method eliminates those
 // cases.
 bool IsChoiceEnabled() {
-  if (experimental_flags::AlwaysDisplaySearchEngineChoice()) {
+  if (IsSearchEngineForceEnabled()) {
     // This branch is only selected in tests that are related to choice screen.
     return true;
   }

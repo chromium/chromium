@@ -138,3 +138,8 @@ UIImage* SearchEngineFaviconFromTemplateURL(const TemplateURL& template_url) {
   ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
   return resource_bundle.GetNativeImageNamed(resource_id).ToUIImage();
 }
+
+bool IsSearchEngineForceEnabled() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kSearchEngineForceEnabled];
+}

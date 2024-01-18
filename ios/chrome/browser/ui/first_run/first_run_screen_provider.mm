@@ -15,16 +15,16 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/ui/screen/screen_provider+protected.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
 namespace ios {
 namespace first_run {
 
 bool IsSearchEngineChoiceScreenEnabledFre() {
-  if (experimental_flags::AlwaysDisplaySearchEngineChoice()) {
+  if (IsSearchEngineForceEnabled()) {
     // This branch is only selected in tests that are related to choice screen.
     return true;
   }

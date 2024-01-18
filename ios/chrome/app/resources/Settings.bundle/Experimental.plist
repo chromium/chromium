@@ -152,16 +152,6 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Force Search Engine Choice</string>
-			<key>Key</key>
-			<string>SearchEngineForceEnabled</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
 			<string>Force Upgrade Promo</string>
 			<key>Key</key>
 			<string>UpgradePromoForceEnabled</string>
