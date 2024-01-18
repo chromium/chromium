@@ -663,7 +663,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
           If you hide "<ph name="Module_Name"><ex>Package Tracking</ex>$1</ph>", Chrome will no longer auto-track your future packages and will delete all your past package tracking data.
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_SUBTITLE" desc="Text for the subtitle string of the parcel tracking opt-in half-sheet screen.">
-        Chrome will detect tracking numbers on sites you visit and show you package updates on the New Tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone. You can change this in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Package Tracking Settings<ph name="END_LINK">END_LINK</ph>.
+        Chrome will detect tracking numbers on sites you visit and show you package updates on the New Tab page. The package tracking number and website name will be sent to Google to provide this feature and to improve Google shopping features for everyone. You can update this anytime in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Package Tracking Settings<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_TITLE" desc="Text for the title string of the parcel tracking opt-in half-sheet screen.">
         Let Chrome help you track your packages
