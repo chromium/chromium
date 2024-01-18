@@ -2427,6 +2427,20 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return mStripTabs.length;
     }
 
+    int getTabDropGroupId() {
+        if (!mReorderingForTabDrop || mInteractingTab == null) return Tab.INVALID_TAB_ID;
+
+        Tab tab = getTabById(mInteractingTab.getId());
+        return mTabGroupModelFilter.hasOtherRelatedTabs(tab) ? tab.getRootId() : Tab.INVALID_TAB_ID;
+    }
+
+    void mergeToGroupForTabDropIfNeeded(int rootId, int draggedTabId, int index) {
+        if (rootId == Tab.INVALID_TAB_ID) return;
+
+        mTabGroupModelFilter.mergeTabsToGroup(draggedTabId, rootId, true);
+        mModel.moveTab(draggedTabId, index);
+    }
+
     StripLayoutTab getTabAtPosition(float x) {
         if (mTabAtPositionForTesting != null) {
             return mTabAtPositionForTesting;

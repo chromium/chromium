@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.dragdrop.DragDropGlobalState.TrackerToken;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -301,7 +300,9 @@ public class TabDragSource implements View.OnDragListener {
     }
 
     private boolean onDrop(float xPx, DragEvent dropEvent) {
-        mStripLayoutHelperSupplier.get().onUpOrCancel(LayoutManagerImpl.time());
+        StripLayoutHelper helper = mStripLayoutHelperSupplier.get();
+        int groupRootId = helper.getTabDropGroupId();
+        helper.onUpOrCancel(LayoutManagerImpl.time());
 
         if (isDragSource()) return true;
 
@@ -329,9 +330,19 @@ public class TabDragSource implements View.OnDragListener {
                 Log.w(TAG, "DnD: Received an invalid tab drop.");
                 return false;
             }
-            int tabPositionIndex = getTabPositionIndex(xPx * mPxToDp, tabBeingDragged);
-            mMultiInstanceManager.moveTabToWindow(getActivity(), tabBeingDragged, tabPositionIndex);
-            showToastIfNeeded(tabDraggedBelongToCurrentModel, mWindowAndroid.getContext().get());
+
+            if (!tabDraggedBelongToCurrentModel) {
+                mMultiInstanceManager.moveTabToWindow(
+                        getActivity(),
+                        tabBeingDragged,
+                        mTabModelSelector.getModel(tabBeingDragged.isIncognito()).getCount());
+                showDroppedDifferentModelToast(mWindowAndroid.getContext().get());
+            } else {
+                int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
+                mMultiInstanceManager.moveTabToWindow(getActivity(), tabBeingDragged, tabIndex);
+                helper.mergeToGroupForTabDropIfNeeded(
+                        groupRootId, tabBeingDragged.getId(), tabIndex);
+            }
         }
         DragDropMetricUtils.recordTabDragDropType(DragDropType.TAB_STRIP_TO_TAB_STRIP);
         return true;
@@ -419,27 +430,13 @@ public class TabDragSource implements View.OnDragListener {
         return ChromeDropDataAndroid.extractTabId(item.getText().toString());
     }
 
-    private int getTabPositionIndex(float dropXDp, Tab tabBeingDragged) {
-        StripLayoutHelper activeStripHelper = mStripLayoutHelperSupplier.get();
-        // If dragged tab and drop target strip don't belong to same model,
-        // drop tab at corresponding model at end of strip.
-        if (!doesBelongToCurrentModel(tabBeingDragged)) {
-            TabModel model = mTabModelSelector.getModel(tabBeingDragged.isIncognito());
-            return model.getCount();
-        }
-        return activeStripHelper.getTabIndexForTabDrop(dropXDp);
-    }
-
     /**
      * Shows a toast indicating that a tab is dropped into strip in a different model.
      *
-     * @param tabDraggedBelongToCurrentModel Whether the tab being dragged belong to current model.
      * @param context The context where the toast will be shown.
      */
-    private void showToastIfNeeded(boolean tabDraggedBelongToCurrentModel, Context context) {
-        if (!tabDraggedBelongToCurrentModel) {
-            Toast.makeText(context, R.string.tab_dropped_different_model, Toast.LENGTH_LONG).show();
-        }
+    private void showDroppedDifferentModelToast(Context context) {
+        Toast.makeText(context, R.string.tab_dropped_different_model, Toast.LENGTH_LONG).show();
     }
 
     private boolean doesBelongToCurrentModel(Tab tabBeingDragged) {
