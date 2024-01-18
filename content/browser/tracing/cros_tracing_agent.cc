@@ -179,7 +179,10 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
 
   void StopTracingOnUI(base::OnceClosure stop_complete_callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    // The client library doesn't use |producer_|.
     DCHECK(producer_);
+#endif
     DCHECK(session_);
     if (!session_started_) {
       on_session_started_callback_ =
