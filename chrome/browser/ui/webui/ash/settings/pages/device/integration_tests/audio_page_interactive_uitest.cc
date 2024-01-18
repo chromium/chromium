@@ -225,6 +225,10 @@ class AudioSettingsInteractiveUiTest : public InteractiveAshTest {
     }));
   }
 
+  auto FocusElement(const InteractiveAshTest::DeepQuery& query) {
+    return Steps(ExecuteJsAt(kOsSettingsElementId, query, "el => el.focus()"));
+  }
+
   CrasAudioHandler* audio_handler() const { return audio_handler_; }
 
  private:
@@ -341,6 +345,52 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ToggleInputMute) {
 
   // Check cras to make sure input is in muted state now.
   EXPECT_TRUE(audio_handler()->IsInputMuted());
+}
+
+// Verify changing output volume in UI is reflected in cras.
+IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ChangeOutputVolume) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFakeInternalSpeakerExists);
+  base::AddFeatureIdTagToTestResult(kAudioSettingsFeatureIdTag);
+  SetupContextWidget();
+
+  int initial_volume = audio_handler()->GetOutputVolumePercent();
+
+  StateChange fake_internal_speaker_exists;
+  fake_internal_speaker_exists.type = StateChange::Type::kExists;
+  fake_internal_speaker_exists.event = kFakeInternalSpeakerExists;
+  fake_internal_speaker_exists.where =
+      CreateAudioPageDeepQueryForSelector(kOutputSliderSelector);
+
+  RunTestSequence(
+      // Set fake internal speaker as active output device.
+      DoSetActiveDevice(fake_internal_speaker),
+      Log("Expected internal speaker output device configured"),
+
+      Log("Open audio settings page and ensure it exists"),
+      LoadAudioSettingsPage(),
+
+      Log("Move output volume slider towards left"),
+      FocusElement(CreateAudioPageDeepQueryForSelector(kOutputSliderSelector)),
+      SendAccelerator(
+          kOsSettingsElementId,
+          ui::Accelerator{ui::KeyboardCode::VKEY_LEFT, ui::EF_NONE}),
+
+      WaitForStateChange(kOsSettingsElementId, fake_internal_speaker_exists));
+
+  // Expect that output volume has decreased.
+  EXPECT_LE(audio_handler()->GetOutputVolumePercent(), initial_volume);
+  initial_volume = audio_handler()->GetOutputVolumePercent();
+
+  RunTestSequence(
+      Log("Move output volume slider towards right"),
+      SendAccelerator(
+          kOsSettingsElementId,
+          ui::Accelerator{ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE}),
+
+      WaitForStateChange(kOsSettingsElementId, fake_internal_speaker_exists));
+
+  // Expect that output volume has increased.
+  EXPECT_GE(audio_handler()->GetOutputVolumePercent(), initial_volume);
 }
 
 }  // namespace
