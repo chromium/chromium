@@ -1922,7 +1922,10 @@ Your Google account may have other forms of browsing history like searches and a
         Always open downloaded PDFs
       </message>
       <message name="IDS_AUTO_OPEN_PDF_ENABLED_TITLE" desc="Title for preference that allows the user to indicate whether they want to automatically open a pdf after download completion if the download is triggered by an external app.">
-        Automatically open pdf after download
+        Automatically open PDFs
+      </message>
+      <message name="IDS_AUTO_OPEN_PDF_ENABLED_DESCRIPTION" desc="Description for preference that allows the user to indicate whether they want to automatically open a pdf after download completion if the download is triggered by an external app.">
+        Downloaded PDFs automatically open with one of the PDF viewers on your device
       </message>
 
       <!-- About Chrome preferences -->
