@@ -9164,6 +9164,10 @@ bool Document::InDarkMode() {
 
 const ui::ColorProvider* Document::GetColorProviderForPainting(
     mojom::blink::ColorScheme color_scheme) const {
+  if (!GetPage()) {
+    return nullptr;
+  }
+
   // TODO(crbug.com/1516529): This should be changed to use
   // `in_forced_colors_mode_` once forced colors becomes a web setting in Blink.
   return GetPage()->GetColorProviderForPainting(

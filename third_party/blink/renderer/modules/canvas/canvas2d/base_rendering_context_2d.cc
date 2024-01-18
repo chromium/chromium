@@ -615,8 +615,6 @@ ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
 
 const ui::ColorProvider* BaseRenderingContext2D::GetColorProvider() const {
   if (HTMLCanvasElement* canvas = HostAsHTMLCanvasElement()) {
-    // TODO(samomekarajr): Call out during review. Might need to check that a
-    // Page exists for the document.
     return canvas->GetDocument().GetColorProviderForPainting(color_scheme_);
   }
 
