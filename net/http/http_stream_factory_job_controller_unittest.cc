@@ -56,8 +56,8 @@
 #include "net/quic/mock_quic_context.h"
 #include "net/quic/mock_quic_data.h"
 #include "net/quic/quic_http_stream.h"
-#include "net/quic/quic_stream_factory.h"
-#include "net/quic/quic_stream_factory_peer.h"
+#include "net/quic/quic_session_pool.h"
+#include "net/quic/quic_session_pool_peer.h"
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/socket/socket_test_util.h"
 #include "net/spdy/spdy_session_key.h"
@@ -86,7 +86,7 @@ namespace {
 
 const char kServerHostname[] = "www.example.com";
 
-// The default delay for main job defined in QuicStreamFactory::
+// The default delay for main job defined in QuicSessionPool::
 // GetTimeDelayForWaitingJob().
 const int kDefaultDelayMilliSecsForWaitingJob = 300;
 
@@ -1937,7 +1937,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, CancelJobsBeforeBinding) {
   // to serve Request yet and JobController will notify the factory to delete
   // itself upon completion.
   request_.reset();
-  // QuicStreamFactory::Job::Request will not complete since the Jobs are
+  // QuicSessionPool::Job::Request will not complete since the Jobs are
   // canceled, so there is no need to check if all read data was consumed.
   should_check_data_consumed_ = false;
   VerifyBrokenAlternateProtocolMapping(request_info, false);
@@ -1997,8 +1997,8 @@ void HttpStreamFactoryJobControllerTestBase::
       quic_context_.params()->supported_versions);
 
   // Enable QUIC but mark the alternative service as recently broken.
-  QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
-  quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_is_quic_known_to_work_on_current_network(true);
   session_->http_server_properties()->MarkAlternativeServiceRecentlyBroken(
       alternative_service, NetworkAnonymizationKey());
 
@@ -2073,8 +2073,8 @@ void HttpStreamFactoryJobControllerTestBase::
       quic_context_.params()->supported_versions);
 
   // Enable QUIC but mark the alternative service as recently broken.
-  QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
-  quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_is_quic_known_to_work_on_current_network(true);
   session_->http_server_properties()->MarkAlternativeServiceRecentlyBroken(
       alternative_service, NetworkAnonymizationKey());
 
@@ -3267,8 +3267,8 @@ TEST_P(HttpStreamFactoryJobControllerTest, HostResolutionHang) {
   quic_data.AddSocketDataToFactory(session_deps_.socket_factory.get());
 
   // Enable delayed TCP and set time delay for waiting job.
-  QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
-  quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_is_quic_known_to_work_on_current_network(true);
   ServerNetworkStats stats1;
   stats1.srtt = base::Microseconds(10);
   session_->http_server_properties()->SetServerNetworkStats(
@@ -3344,8 +3344,8 @@ TEST_P(HttpStreamFactoryJobControllerTest, ResumeMainJobLaterCanceled) {
   Initialize(request_info);
 
   // Enable delayed TCP and set time delay for waiting job.
-  QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
-  quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_is_quic_known_to_work_on_current_network(true);
   ServerNetworkStats stats1;
   stats1.srtt = base::Microseconds(10);
   session_->http_server_properties()->SetServerNetworkStats(
@@ -3421,8 +3421,8 @@ TEST_P(HttpStreamFactoryJobControllerTest, DelayedTCPWithLargeSrtt) {
   quic_data.AddSocketDataToFactory(session_deps_.socket_factory.get());
 
   // Enable delayed TCP and set time delay for waiting job.
-  QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
-  quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_is_quic_known_to_work_on_current_network(true);
   ServerNetworkStats stats1;
   stats1.srtt = base::Seconds(100);
   session_->http_server_properties()->SetServerNetworkStats(
@@ -3484,8 +3484,8 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   quic_data.AddSocketDataToFactory(session_deps_.socket_factory.get());
 
   // Enable delayed TCP and set time delay for waiting job.
-  QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
-  quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_is_quic_known_to_work_on_current_network(true);
   ServerNetworkStats stats1;
   stats1.srtt = base::Microseconds(10);
   session_->http_server_properties()->SetServerNetworkStats(
@@ -3718,8 +3718,8 @@ void HttpStreamFactoryJobControllerTestBase::
   quic_data.AddSocketDataToFactory(session_deps_.socket_factory.get());
 
   // Enable delayed TCP and set time delay for waiting job.
-  QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
-  quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_is_quic_known_to_work_on_current_network(true);
   ServerNetworkStats stats1;
   stats1.srtt = base::Milliseconds(100);
   session_->http_server_properties()->SetServerNetworkStats(
@@ -4952,7 +4952,7 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
       bool alt_destination,
       bool require_dns_https_alpn) {
     NetErrorDetails net_error_details;
-    QuicStreamRequest quic_request(session_->quic_stream_factory());
+    QuicSessionRequest quic_request(session_->quic_session_pool());
     url::SchemeHostPort scheme_host_port(
         url::kHttpsScheme,
         alt_destination ? "alt.example.org" : "www.example.org", 443);
@@ -5184,8 +5184,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   PrepareForMainJob();
   Initialize(HttpRequestInfo());
 
-  QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
-  quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_is_quic_known_to_work_on_current_network(true);
 
   request_ = CreateJobControllerAndStart(CreateTestHttpRequestInfo());
 
@@ -5311,8 +5311,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   RegisterMockHttpsRecord();
 
   Initialize(HttpRequestInfo());
-  QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
-  quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_is_quic_known_to_work_on_current_network(true);
 
   request_ = CreateJobControllerAndStart(CreateTestHttpRequestInfo());
 
@@ -5395,8 +5395,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   // the delaying logic of main job would work when the main job is blocked.
   // Note: In this test, we don't need this because the main job is not blocked.
   // But we set here because we want to check that the main job is not blocked.
-  QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
-  quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_is_quic_known_to_work_on_current_network(true);
 
   // Put a SpdySession in the pool.
   SpdySessionKey key(HostPortPair::FromURL(request_info.url),
@@ -5456,8 +5456,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest, MainJobHasActiveSocket) {
 
   // Set |is_quic_known_to_work_on_current_network| flag so that
   // the delaying logic of main job would work when the main job is blocked.
-  QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
-  quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_is_quic_known_to_work_on_current_network(true);
 
   request_ = CreateJobControllerAndStart(request_info);
   CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
@@ -5503,8 +5503,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
 
   // Set |is_quic_known_to_work_on_current_network| flag so that
   // the delaying logic of main job would work when the main job is blocked.
-  QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
-  quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_is_quic_known_to_work_on_current_network(true);
 
   url::SchemeHostPort server(request_info.url);
   AlternativeService alternative_service(kProtoQUIC, "alt.example.org", 443);

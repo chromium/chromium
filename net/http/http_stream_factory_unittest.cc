@@ -56,7 +56,7 @@
 #include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/mock_quic_context.h"
 #include "net/quic/quic_http_utils.h"
-#include "net/quic/quic_stream_factory_peer.h"
+#include "net/quic/quic_session_pool_peer.h"
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/quic/quic_test_packet_printer.h"
 #include "net/socket/client_socket_handle.h"
@@ -877,8 +877,8 @@ TEST_F(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
 
     auto session =
         std::make_unique<HttpNetworkSession>(session_params, session_context);
-    session->quic_stream_factory()
-        ->set_is_quic_known_to_work_on_current_network(true);
+    session->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+        true);
 
     StaticSocketDataProvider socket_data1;
     socket_data1.set_connect_data(
@@ -1999,8 +1999,8 @@ class HttpStreamFactoryBidirectionalQuicTest
     session_context.ssl_config_service = ssl_config_service_.get();
     session_context.client_socket_factory = &socket_factory_;
     session_ = std::make_unique<HttpNetworkSession>(params_, session_context);
-    session_->quic_stream_factory()
-        ->set_is_quic_known_to_work_on_current_network(true);
+    session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+        true);
   }
 
   void AddQuicAlternativeService(const url::SchemeHostPort& request_url,

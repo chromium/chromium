@@ -158,7 +158,7 @@ HttpStreamFactory::Job::Job(
                   job_type == PRECONNECT_DNS_ALPN_H3),
       quic_version_(quic_version),
       expect_spdy_(alternative_protocol == kProtoHTTP2 && !using_quic_),
-      quic_request_(session_->quic_stream_factory()),
+      quic_request_(session_->quic_session_pool()),
       spdy_session_key_(
           using_quic_
               ? SpdySessionKey()

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/quic/quic_stream_factory_peer.h"
+#include "net/quic/quic_session_pool_peer.h"
 
 #include <string>
 #include <vector>
@@ -14,7 +14,7 @@
 #include "net/quic/platform/impl/quic_chromium_clock.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_http_stream.h"
-#include "net/quic/quic_stream_factory.h"
+#include "net/quic/quic_session_pool.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_client_config.h"
@@ -24,20 +24,20 @@ using std::string;
 
 namespace net::test {
 
-const quic::QuicConfig* QuicStreamFactoryPeer::GetConfig(
-    QuicStreamFactory* factory) {
+const quic::QuicConfig* QuicSessionPoolPeer::GetConfig(
+    QuicSessionPool* factory) {
   return &factory->config_;
 }
 
 std::unique_ptr<QuicCryptoClientConfigHandle>
-QuicStreamFactoryPeer::GetCryptoConfig(
-    QuicStreamFactory* factory,
+QuicSessionPoolPeer::GetCryptoConfig(
+    QuicSessionPool* factory,
     const NetworkAnonymizationKey& network_anonymization_key) {
   return factory->GetCryptoConfigForTesting(network_anonymization_key);
 }
 
-bool QuicStreamFactoryPeer::HasActiveSession(
-    QuicStreamFactory* factory,
+bool QuicSessionPoolPeer::HasActiveSession(
+    QuicSessionPool* factory,
     const quic::QuicServerId& server_id,
     const NetworkAnonymizationKey& network_anonymization_key,
     bool require_dns_https_alpn) {
@@ -46,32 +46,31 @@ bool QuicStreamFactoryPeer::HasActiveSession(
                      SecureDnsPolicy::kAllow, require_dns_https_alpn));
 }
 
-bool QuicStreamFactoryPeer::HasActiveJob(QuicStreamFactory* factory,
-                                         const quic::QuicServerId& server_id,
-                                         bool require_dns_https_alpn) {
+bool QuicSessionPoolPeer::HasActiveJob(QuicSessionPool* factory,
+                                       const quic::QuicServerId& server_id,
+                                       bool require_dns_https_alpn) {
   return factory->HasActiveJob(
       QuicSessionKey(server_id, SocketTag(), NetworkAnonymizationKey(),
                      SecureDnsPolicy::kAllow, require_dns_https_alpn));
 }
 
 // static
-QuicChromiumClientSession* QuicStreamFactoryPeer::GetPendingSession(
-    QuicStreamFactory* factory,
+QuicChromiumClientSession* QuicSessionPoolPeer::GetPendingSession(
+    QuicSessionPool* factory,
     const quic::QuicServerId& server_id,
     url::SchemeHostPort destination) {
   QuicSessionKey session_key(server_id, SocketTag(), NetworkAnonymizationKey(),
                              SecureDnsPolicy::kAllow,
                              /*require_dns_https_alpn=*/false);
-  QuicStreamFactory::QuicSessionAliasKey key(std::move(destination),
-                                             session_key);
+  QuicSessionPool::QuicSessionAliasKey key(std::move(destination), session_key);
   DCHECK(factory->HasActiveJob(session_key));
   DCHECK_EQ(factory->all_sessions_.size(), 1u);
   DCHECK(key == factory->all_sessions_.begin()->second);
   return factory->all_sessions_.begin()->first;
 }
 
-QuicChromiumClientSession* QuicStreamFactoryPeer::GetActiveSession(
-    QuicStreamFactory* factory,
+QuicChromiumClientSession* QuicSessionPoolPeer::GetActiveSession(
+    QuicSessionPool* factory,
     const quic::QuicServerId& server_id,
     const NetworkAnonymizationKey& network_anonymization_key,
     bool require_dns_https_alpn) {
@@ -81,15 +80,15 @@ QuicChromiumClientSession* QuicStreamFactoryPeer::GetActiveSession(
   return factory->active_sessions_[session_key];
 }
 
-bool QuicStreamFactoryPeer::HasLiveSession(QuicStreamFactory* factory,
-                                           url::SchemeHostPort destination,
-                                           const quic::QuicServerId& server_id,
-                                           bool require_dns_https_alpn) {
+bool QuicSessionPoolPeer::HasLiveSession(QuicSessionPool* factory,
+                                         url::SchemeHostPort destination,
+                                         const quic::QuicServerId& server_id,
+                                         bool require_dns_https_alpn) {
   QuicSessionKey session_key =
       QuicSessionKey(server_id, SocketTag(), NetworkAnonymizationKey(),
                      SecureDnsPolicy::kAllow, require_dns_https_alpn);
-  QuicStreamFactory::QuicSessionAliasKey alias_key(std::move(destination),
-                                                   session_key);
+  QuicSessionPool::QuicSessionAliasKey alias_key(std::move(destination),
+                                                 session_key);
   for (const auto& it : factory->all_sessions_) {
     if (it.second == alias_key) {
       return true;
@@ -98,8 +97,8 @@ bool QuicStreamFactoryPeer::HasLiveSession(QuicStreamFactory* factory,
   return false;
 }
 
-bool QuicStreamFactoryPeer::IsLiveSession(QuicStreamFactory* factory,
-                                          QuicChromiumClientSession* session) {
+bool QuicSessionPoolPeer::IsLiveSession(QuicSessionPool* factory,
+                                        QuicChromiumClientSession* session) {
   for (const auto& it : factory->all_sessions_) {
     if (it.first == session) {
       return true;
@@ -108,43 +107,43 @@ bool QuicStreamFactoryPeer::IsLiveSession(QuicStreamFactory* factory,
   return false;
 }
 
-void QuicStreamFactoryPeer::SetTaskRunner(
-    QuicStreamFactory* factory,
+void QuicSessionPoolPeer::SetTaskRunner(
+    QuicSessionPool* factory,
     base::SequencedTaskRunner* task_runner) {
   factory->task_runner_ = task_runner;
 }
 
-void QuicStreamFactoryPeer::SetTickClock(QuicStreamFactory* factory,
-                                         const base::TickClock* tick_clock) {
+void QuicSessionPoolPeer::SetTickClock(QuicSessionPool* factory,
+                                       const base::TickClock* tick_clock) {
   factory->tick_clock_ = tick_clock;
 }
 
-quic::QuicTime::Delta QuicStreamFactoryPeer::GetPingTimeout(
-    QuicStreamFactory* factory) {
+quic::QuicTime::Delta QuicSessionPoolPeer::GetPingTimeout(
+    QuicSessionPool* factory) {
   return factory->ping_timeout_;
 }
 
-void QuicStreamFactoryPeer::SetYieldAfterPackets(QuicStreamFactory* factory,
-                                                 int yield_after_packets) {
+void QuicSessionPoolPeer::SetYieldAfterPackets(QuicSessionPool* factory,
+                                               int yield_after_packets) {
   factory->yield_after_packets_ = yield_after_packets;
 }
 
-void QuicStreamFactoryPeer::SetYieldAfterDuration(
-    QuicStreamFactory* factory,
+void QuicSessionPoolPeer::SetYieldAfterDuration(
+    QuicSessionPool* factory,
     quic::QuicTime::Delta yield_after_duration) {
   factory->yield_after_duration_ = yield_after_duration;
 }
 
-bool QuicStreamFactoryPeer::CryptoConfigCacheIsEmpty(
-    QuicStreamFactory* factory,
+bool QuicSessionPoolPeer::CryptoConfigCacheIsEmpty(
+    QuicSessionPool* factory,
     const quic::QuicServerId& quic_server_id,
     const NetworkAnonymizationKey& network_anonymization_key) {
   return factory->CryptoConfigCacheIsEmptyForTesting(quic_server_id,
                                                      network_anonymization_key);
 }
 
-void QuicStreamFactoryPeer::CacheDummyServerConfig(
-    QuicStreamFactory* factory,
+void QuicSessionPoolPeer::CacheDummyServerConfig(
+    QuicSessionPool* factory,
     const quic::QuicServerId& quic_server_id,
     const NetworkAnonymizationKey& network_anonymization_key) {
   // Minimum SCFG that passes config validation checks.
@@ -182,13 +181,12 @@ void QuicStreamFactoryPeer::CacheDummyServerConfig(
   DCHECK(!cached->certs().empty());
 }
 
-size_t QuicStreamFactoryPeer::GetNumDegradingSessions(
-    QuicStreamFactory* factory) {
+size_t QuicSessionPoolPeer::GetNumDegradingSessions(QuicSessionPool* factory) {
   return factory->connectivity_monitor_.GetNumDegradingSessions();
 }
 
-void QuicStreamFactoryPeer::SetAlarmFactory(
-    QuicStreamFactory* factory,
+void QuicSessionPoolPeer::SetAlarmFactory(
+    QuicSessionPool* factory,
     std::unique_ptr<quic::QuicAlarmFactory> alarm_factory) {
   factory->alarm_factory_ = std::move(alarm_factory);
 }

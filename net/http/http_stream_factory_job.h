@@ -23,7 +23,7 @@
 #include "net/http/http_request_info.h"
 #include "net/http/http_stream_factory.h"
 #include "net/http/http_stream_request.h"
-#include "net/quic/quic_stream_factory.h"
+#include "net/quic/quic_session_pool.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/client_socket_pool_manager.h"
@@ -430,7 +430,7 @@ class HttpStreamFactory::Job
   // True if this job might succeed with a different proxy config.
   bool should_reconsider_proxy_ = false;
 
-  QuicStreamRequest quic_request_;
+  QuicSessionRequest quic_request_;
 
   // Only valid for a QUIC job. Set when a QUIC connection is started. If true,
   // then OnQuicHostResolution() is expected to be called in the future.

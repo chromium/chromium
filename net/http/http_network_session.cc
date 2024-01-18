@@ -26,7 +26,7 @@
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/quic/platform/impl/quic_chromium_clock.h"
 #include "net/quic/quic_crypto_client_stream_factory.h"
-#include "net/quic/quic_stream_factory.h"
+#include "net/quic/quic_session_pool.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_pool_manager_impl.h"
 #include "net/socket/next_proto.h"
@@ -145,17 +145,17 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
                           context.transport_security_state,
                           &ssl_client_session_cache_,
                           context.sct_auditing_delegate),
-      quic_stream_factory_(context.net_log,
-                           context.host_resolver,
-                           context.ssl_config_service,
-                           context.client_socket_factory,
-                           context.http_server_properties,
-                           context.cert_verifier,
-                           context.transport_security_state,
-                           context.sct_auditing_delegate,
-                           context.socket_performance_watcher_factory,
-                           context.quic_crypto_client_stream_factory,
-                           context.quic_context),
+      quic_session_pool_(context.net_log,
+                         context.host_resolver,
+                         context.ssl_config_service,
+                         context.client_socket_factory,
+                         context.http_server_properties,
+                         context.cert_verifier,
+                         context.transport_security_state,
+                         context.sct_auditing_delegate,
+                         context.socket_performance_watcher_factory,
+                         context.quic_crypto_client_stream_factory,
+                         context.quic_context),
       spdy_session_pool_(context.host_resolver,
                          &ssl_client_context_,
                          context.http_server_properties,
@@ -263,7 +263,7 @@ std::unique_ptr<base::Value> HttpNetworkSession::SpdySessionPoolInfoToValue()
 
 base::Value HttpNetworkSession::QuicInfoToValue() const {
   base::Value::Dict dict;
-  dict.Set("sessions", quic_stream_factory_.QuicStreamFactoryInfoToValue());
+  dict.Set("sessions", quic_session_pool_.QuicSessionPoolInfoToValue());
   dict.Set("quic_enabled", IsQuicEnabled());
 
   const QuicParams* quic_params = context_.quic_context->params();
@@ -337,7 +337,7 @@ void HttpNetworkSession::CloseAllConnections(int net_error,
   websocket_socket_pool_manager_->FlushSocketPoolsWithError(
       net_error, net_log_reason_utf8);
   spdy_session_pool_.CloseCurrentSessions(static_cast<net::Error>(net_error));
-  quic_stream_factory_.CloseAllSessions(net_error, quic::QUIC_PEER_GOING_AWAY);
+  quic_session_pool_.CloseAllSessions(net_error, quic::QUIC_PEER_GOING_AWAY);
 }
 
 void HttpNetworkSession::CloseIdleConnections(const char* net_log_reason_utf8) {
@@ -369,10 +369,9 @@ CommonConnectJobParams HttpNetworkSession::CreateCommonConnectJobParams(
   return CommonConnectJobParams(
       context_.client_socket_factory, context_.host_resolver, &http_auth_cache_,
       context_.http_auth_handler_factory, &spdy_session_pool_,
-      &context_.quic_context->params()->supported_versions,
-      &quic_stream_factory_, context_.proxy_delegate,
-      context_.http_user_agent_settings, &ssl_client_context_,
-      context_.socket_performance_watcher_factory,
+      &context_.quic_context->params()->supported_versions, &quic_session_pool_,
+      context_.proxy_delegate, context_.http_user_agent_settings,
+      &ssl_client_context_, context_.socket_performance_watcher_factory,
       context_.network_quality_estimator, context_.net_log,
       for_websockets ? &websocket_endpoint_lock_manager_ : nullptr,
       context_.http_server_properties, &next_protos_, &application_settings_,

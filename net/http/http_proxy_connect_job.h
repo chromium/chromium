@@ -36,7 +36,7 @@ class ProxyClientSocket;
 class SpdyStreamRequest;
 class SSLSocketParams;
 class TransportSocketParams;
-class QuicStreamRequest;
+class QuicSessionRequest;
 
 // HttpProxySocketParams only needs the socket params for one of the proxy
 // types.  The other param must be NULL.  When using an HTTP proxy,
@@ -249,7 +249,7 @@ class NET_EXPORT_PRIVATE HttpProxyConnectJob : public ConnectJob,
 
   std::unique_ptr<SpdyStreamRequest> spdy_stream_request_;
 
-  std::unique_ptr<QuicStreamRequest> quic_stream_request_;
+  std::unique_ptr<QuicSessionRequest> quic_session_request_;
   std::unique_ptr<QuicChromiumClientSession::Handle> quic_session_;
 
   scoped_refptr<HttpAuthController> http_auth_controller_;

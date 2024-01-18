@@ -30,7 +30,7 @@
 #include "net/nqe/network_quality_estimator.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_proxy_client_socket.h"
-#include "net/quic/quic_stream_factory.h"
+#include "net/quic/quic_session_pool.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
@@ -683,13 +683,13 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
 
   next_state_ = STATE_QUIC_PROXY_CREATE_STREAM;
   const HostPortPair& proxy_server = params_->proxy_server().host_port_pair();
-  quic_stream_request_ = std::make_unique<QuicStreamRequest>(
-      common_connect_job_params()->quic_stream_factory);
+  quic_session_request_ = std::make_unique<QuicSessionRequest>(
+      common_connect_job_params()->quic_session_pool);
 
   // Use default QUIC version, which is the version listed supported version.
   quic::ParsedQuicVersion quic_version =
       common_connect_job_params()->quic_supported_versions->front();
-  return quic_stream_request_->Request(
+  return quic_session_request_->Request(
       // TODO(crbug.com/1206799) Pass the destination directly once it's
       // converted to contain scheme.
       url::SchemeHostPort(url::kHttpsScheme, proxy_server.host(),
@@ -708,13 +708,13 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
 
 int HttpProxyConnectJob::DoQuicProxyCreateStream(int result) {
   if (result < 0) {
-    quic_stream_request_.reset();
+    quic_session_request_.reset();
     return result;
   }
 
   next_state_ = STATE_QUIC_PROXY_CREATE_STREAM_COMPLETE;
-  quic_session_ = quic_stream_request_->ReleaseSessionHandle();
-  quic_stream_request_.reset();
+  quic_session_ = quic_session_request_->ReleaseSessionHandle();
+  quic_session_request_.reset();
 
   return quic_session_->RequestStream(
       false,
@@ -802,7 +802,7 @@ int HttpProxyConnectJob::DoRestartWithAuthComplete(int result) {
 
 void HttpProxyConnectJob::ChangePriorityInternal(RequestPriority priority) {
   // Do not set the priority on |spdy_stream_request_| or
-  // |quic_stream_request_|, since those should always use
+  // |quic_session_request_|, since those should always use
   // kH2QuicTunnelPriority.
   if (nested_connect_job_) {
     nested_connect_job_->ChangePriority(priority);

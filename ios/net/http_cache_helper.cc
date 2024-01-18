@@ -18,7 +18,7 @@
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_transaction_factory.h"
-#include "net/quic/quic_stream_factory.h"
+#include "net/quic/quic_session_pool.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "url/gurl.h"
@@ -70,7 +70,7 @@ void ClearHttpCacheOnIOThread(
 
   // Clear QUIC server information from memory and the disk cache.
   http_cache->GetSession()
-      ->quic_stream_factory()
+      ->quic_session_pool()
       ->ClearCachedStatesInCryptoConfig(
           base::RepeatingCallback<bool(const GURL&)>());
 

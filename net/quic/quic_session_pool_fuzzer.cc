@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/quic/quic_stream_factory.h"
+#include "net/quic/quic_session_pool.h"
 
 #include <fuzzer/FuzzedDataProvider.h>
 
@@ -137,15 +137,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     }
   }
 
-  std::unique_ptr<QuicStreamFactory> factory =
-      std::make_unique<QuicStreamFactory>(
-          env->net_log.net_log(), host_resolver.get(),
-          env->ssl_config_service.get(), &socket_factory,
-          &http_server_properties, env->cert_verifier.get(),
-          &env->transport_security_state, nullptr, nullptr,
-          &env->crypto_client_stream_factory, &env->quic_context);
+  std::unique_ptr<QuicSessionPool> factory = std::make_unique<QuicSessionPool>(
+      env->net_log.net_log(), host_resolver.get(),
+      env->ssl_config_service.get(), &socket_factory, &http_server_properties,
+      env->cert_verifier.get(), &env->transport_security_state, nullptr,
+      nullptr, &env->crypto_client_stream_factory, &env->quic_context);
 
-  QuicStreamRequest request(factory.get());
+  QuicSessionRequest request(factory.get());
   TestCompletionCallback callback;
   NetErrorDetails net_error_details;
   quic::ParsedQuicVersionVector versions = AllSupportedQuicVersions();

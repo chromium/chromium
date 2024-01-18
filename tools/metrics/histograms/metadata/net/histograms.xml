@@ -2175,7 +2175,7 @@ chromium-metrics-reviews@google.com.
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
-    The number of QUIC sessions when the QuicStreamFactory is destroyed.
+    The number of QUIC sessions when the QuicSessionPool is destroyed.
   </summary>
 </histogram>
 
@@ -4208,7 +4208,7 @@ chromium-metrics-reviews@google.com.
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
-    The time a QuicStreamFactory Job takes from host rersolution to connection
+    The time a QuicSessionPool Job takes from host rersolution to connection
     confirmation.
   </summary>
 </histogram>
@@ -4415,7 +4415,7 @@ chromium-metrics-reviews@google.com.
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Records, for initial socket created for each new QUIC connection, whether
-    the bound network matched the default network tracked by QuicStreamFactory.
+    the bound network matched the default network tracked by QuicSessionPool.
   </summary>
 </histogram>
 
@@ -4436,7 +4436,7 @@ chromium-metrics-reviews@google.com.
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
-    Log the location in QuicStreamFactory where QUIC_PROTOCOL_ERROR is reported.
+    Log the location in QuicSessionPool where QUIC_PROTOCOL_ERROR is reported.
   </summary>
 </histogram>
 

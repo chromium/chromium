@@ -257,7 +257,7 @@ FUZZERS_WITH_CORPORA = [
     'net_quic_crypto_framer_parse_message_fuzzer',
     'net_quic_framer_fuzzer',
     'net_quic_framer_process_data_packet_fuzzer',
-    'net_quic_stream_factory_fuzzer',
+    'net_quic_session_pool_fuzzer',
     'net_socks5_client_socket_fuzzer',
     'net_socks_client_socket_fuzzer',
     'net_structured_headers_fuzzer',

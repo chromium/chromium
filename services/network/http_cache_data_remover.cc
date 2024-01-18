@@ -79,7 +79,7 @@ std::unique_ptr<HttpCacheDataRemover> HttpCacheDataRemover::CreateAndStart(
   // TODO(crbug.com/817849): add a browser test to validate the QUIC information
   // is cleared.
   http_cache->GetSession()
-      ->quic_stream_factory()
+      ->quic_session_pool()
       ->ClearCachedStatesInCryptoConfig(remover->url_matcher_);
 
   net::CompletionOnceCallback callback =

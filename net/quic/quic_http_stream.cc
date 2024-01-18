@@ -712,7 +712,7 @@ void QuicHttpStream::SetResponseStatus(int response_status) {
 int QuicHttpStream::ComputeResponseStatus() const {
   DCHECK(!has_response_status_);
 
-  // If the handshake has failed this will be handled by the QuicStreamFactory
+  // If the handshake has failed this will be handled by the QuicSessionPool
   // and HttpStreamFactory to mark QUIC as broken if TCP is actually working.
   if (!quic_session()->OneRttKeysAvailable()) {
     return ERR_QUIC_HANDSHAKE_FAILED;

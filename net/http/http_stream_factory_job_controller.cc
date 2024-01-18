@@ -1309,7 +1309,7 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
     }
     RewriteUrlWithHostMappingRules(destination);
 
-    if (session_->quic_stream_factory()->CanUseExistingSession(
+    if (session_->quic_session_pool()->CanUseExistingSession(
             session_key, url::SchemeHostPort(destination))) {
       return alternative_service_info;
     }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_QUIC_QUIC_STREAM_FACTORY_H_
-#define NET_QUIC_QUIC_STREAM_FACTORY_H_
+#ifndef NET_QUIC_QUIC_SESSION_POOL_H_
+#define NET_QUIC_QUIC_SESSION_POOL_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -77,7 +77,7 @@ class NetworkAnonymizationKey;
 class QuicChromiumConnectionHelper;
 class QuicCryptoClientStreamFactory;
 class QuicServerInfo;
-class QuicStreamFactory;
+class QuicSessionPool;
 class QuicContext;
 class SCTAuditingDelegate;
 class SocketPerformanceWatcherFactory;
@@ -85,7 +85,7 @@ class SocketTag;
 class TransportSecurityState;
 
 namespace test {
-class QuicStreamFactoryPeer;
+class QuicSessionPoolPeer;
 }  // namespace test
 
 // Maximum number of not currently in use QuicCryptoClientConfig that can be
@@ -124,15 +124,15 @@ enum CreateSessionFailure {
 
 // Encapsulates a pending request for a QuicChromiumClientSession.
 // If the request is still pending when it is destroyed, it will
-// cancel the request with the factory.
-class NET_EXPORT_PRIVATE QuicStreamRequest {
+// cancel the request with the pool.
+class NET_EXPORT_PRIVATE QuicSessionRequest {
  public:
-  explicit QuicStreamRequest(QuicStreamFactory* factory);
+  explicit QuicSessionRequest(QuicSessionPool* pool);
 
-  QuicStreamRequest(const QuicStreamRequest&) = delete;
-  QuicStreamRequest& operator=(const QuicStreamRequest&) = delete;
+  QuicSessionRequest(const QuicSessionRequest&) = delete;
+  QuicSessionRequest& operator=(const QuicSessionRequest&) = delete;
 
-  ~QuicStreamRequest();
+  ~QuicSessionRequest();
 
   // |cert_verify_flags| is bitwise OR'd of CertVerifier::VerifyFlags and it is
   // passed to CertVerifier::Verify.
@@ -167,11 +167,11 @@ class NET_EXPORT_PRIVATE QuicStreamRequest {
   // ERR_IO_PENDING.
   bool WaitForHostResolution(CompletionOnceCallback callback);
 
-  // Tells QuicStreamRequest it should expect OnHostResolutionComplete()
+  // Tells QuicSessionRequest it should expect OnHostResolutionComplete()
   // to be called in the future.
   void ExpectOnHostResolution();
 
-  // Will be called by the associated QuicStreamFactory::Job when host
+  // Will be called by the associated QuicSessionPool::Job when host
   // resolution completes asynchronously after Request().
   void OnHostResolutionComplete(int rv);
 
@@ -183,11 +183,11 @@ class NET_EXPORT_PRIVATE QuicStreamRequest {
   // `callback` will be run with ERR_IO_PENDING.
   bool WaitForQuicSessionCreation(CompletionOnceCallback callback);
 
-  // Tells QuicStreamRequest it should expect OnQuicSessionCreationComplete()
+  // Tells QuicSessionRequest it should expect OnQuicSessionCreationComplete()
   // to be called in the future.
   void ExpectQuicSessionCreation();
 
-  // Will be called by the associated QuicStreamFactory::Job when session
+  // Will be called by the associated QuicSessionPool::Job when session
   // creation completes asynchronously after Request().
   void OnQuicSessionCreationComplete(int rv);
 
@@ -198,7 +198,7 @@ class NET_EXPORT_PRIVATE QuicStreamRequest {
   // network.
   void OnConnectionFailedOnDefaultNetwork();
 
-  // Helper method that calls |factory_|'s GetTimeDelayForWaitingJob(). It
+  // Helper method that calls |pool_|'s GetTimeDelayForWaitingJob(). It
   // returns the amount of time waiting job should be delayed.
   base::TimeDelta GetTimeDelayForWaitingJob() const;
 
@@ -228,7 +228,7 @@ class NET_EXPORT_PRIVATE QuicStreamRequest {
       const url::SchemeHostPort& destination) const;
 
  private:
-  raw_ptr<QuicStreamFactory> factory_;
+  raw_ptr<QuicSessionPool> pool_;
   QuicSessionKey session_key_;
   NetLogWithSource net_log_;
   CompletionOnceCallback callback_;
@@ -247,8 +247,8 @@ class NET_EXPORT_PRIVATE QuicStreamRequest {
   CompletionOnceCallback create_session_callback_;
 };
 
-// A factory for fetching QuicChromiumClientSessions.
-class NET_EXPORT_PRIVATE QuicStreamFactory
+// Manages a pool of QuicChromiumClientSessions.
+class NET_EXPORT_PRIVATE QuicSessionPool
     : public NetworkChangeNotifier::IPAddressObserver,
       public NetworkChangeNotifier::NetworkObserver,
       public CertDatabase::Observer,
@@ -284,7 +284,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
     QuicSessionKey session_key_;
   };
 
-  QuicStreamFactory(
+  QuicSessionPool(
       NetLog* net_log,
       HostResolver* host_resolver,
       SSLConfigService* ssl_config_service,
@@ -297,10 +297,10 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
       QuicCryptoClientStreamFactory* quic_crypto_client_stream_factory,
       QuicContext* context);
 
-  QuicStreamFactory(const QuicStreamFactory&) = delete;
-  QuicStreamFactory& operator=(const QuicStreamFactory&) = delete;
+  QuicSessionPool(const QuicSessionPool&) = delete;
+  QuicSessionPool& operator=(const QuicSessionPool&) = delete;
 
-  ~QuicStreamFactory() override;
+  ~QuicSessionPool() override;
 
   // Returns true if there is an existing session for |session_key| or if the
   // request can be pooled to an existing session to the IP address of
@@ -308,23 +308,23 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   bool CanUseExistingSession(const QuicSessionKey& session_key,
                              const url::SchemeHostPort& destination) const;
 
-  // Fetches a QuicChromiumClientSession to |host_port_pair| which will be
-  // owned by |request|.
+  // Requests a QuicChromiumClientSession to |host_port_pair|, a handle for
+  // which will be owned by |request|.
   // If a matching session already exists, this method will return OK.  If no
   // matching session exists, this will return ERR_IO_PENDING and will invoke
   // OnRequestComplete asynchronously.
   // When |use_dns_aliases| is true, any DNS aliases found in host resolution
   // are stored in the |dns_aliases_by_session_key_| map. |use_dns_aliases|
   // should be false in the case of a proxy.
-  int Create(const QuicSessionKey& session_key,
-             url::SchemeHostPort destination,
-             quic::ParsedQuicVersion quic_version,
-             RequestPriority priority,
-             bool use_dns_aliases,
-             int cert_verify_flags,
-             const GURL& url,
-             const NetLogWithSource& net_log,
-             QuicStreamRequest* request);
+  int RequestSession(const QuicSessionKey& session_key,
+                     url::SchemeHostPort destination,
+                     quic::ParsedQuicVersion quic_version,
+                     RequestPriority priority,
+                     bool use_dns_aliases,
+                     int cert_verify_flags,
+                     const GURL& url,
+                     const NetLogWithSource& net_log,
+                     QuicSessionRequest* request);
 
   // Called by a session when it is going away and no more streams should be
   // created on it.
@@ -337,16 +337,17 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   void OnBlackholeAfterHandshakeConfirmed(QuicChromiumClientSession* session);
 
   // Cancels a pending request.
-  void CancelRequest(QuicStreamRequest* request);
+  void CancelRequest(QuicSessionRequest* request);
 
   // Sets priority of a request.
-  void SetRequestPriority(QuicStreamRequest* request, RequestPriority priority);
+  void SetRequestPriority(QuicSessionRequest* request,
+                          RequestPriority priority);
 
   // Closes all current sessions with specified network, QUIC error codes.
   // It sends connection close packet when closing connections.
   void CloseAllSessions(int error, quic::QuicErrorCode quic_error);
 
-  base::Value QuicStreamFactoryInfoToValue() const;
+  base::Value QuicSessionPoolInfoToValue() const;
 
   // Delete cached state objects in |crypto_config_|. If |origin_filter| is not
   // null, only objects on matching origins will be deleted.
@@ -383,7 +384,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // handles::kInvalidNetworkHandle. This method calls
   // DatagramClientSocket::Connect and completes synchronously. Returns
   // net_error code.
-  // TODO(liza): Remove this once QuicStreamFactory::Job calls
+  // TODO(liza): Remove this once QuicSessionPool::Job calls
   // ConnectAndConfigureSocket.
   int ConfigureSocket(DatagramClientSocket* socket,
                       IPEndPoint addr,
@@ -454,8 +455,8 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   class Job;
   class QuicCryptoClientConfigOwner;
   class CryptoClientConfigHandle;
-  friend class MockQuicStreamFactory;
-  friend class test::QuicStreamFactoryPeer;
+  friend class MockQuicSessionPool;
+  friend class test::QuicSessionPoolPeer;
 
   using SessionMap = std::map<QuicSessionKey, QuicChromiumClientSession*>;
   using SessionIdMap =
@@ -733,9 +734,9 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   quic::DeterministicConnectionIdGenerator connection_id_generator_{
       quic::kQuicDefaultConnectionIdLength};
 
-  base::WeakPtrFactory<QuicStreamFactory> weak_factory_{this};
+  base::WeakPtrFactory<QuicSessionPool> weak_factory_{this};
 };
 
 }  // namespace net
 
-#endif  // NET_QUIC_QUIC_STREAM_FACTORY_H_
+#endif  // NET_QUIC_QUIC_SESSION_POOL_H_

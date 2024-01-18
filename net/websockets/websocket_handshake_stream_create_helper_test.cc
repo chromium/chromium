@@ -138,7 +138,7 @@ class MockClientSocketHandleFactory {
             /*http_auth_handler_factory=*/nullptr,
             /*spdy_session_pool=*/nullptr,
             /*quic_supported_versions=*/nullptr,
-            /*quic_stream_factory=*/nullptr,
+            /*quic_session_pool=*/nullptr,
             /*proxy_delegate=*/nullptr,
             /*http_user_agent_settings=*/nullptr,
             /*ssl_client_context=*/nullptr,

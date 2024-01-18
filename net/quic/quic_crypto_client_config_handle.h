@@ -22,7 +22,7 @@ namespace net {
 //
 // This ownership model is used instead of refcounting for stronger safety
 // guarantees, and because the underlying QuicCryptoClientConfig depends on
-// other network objects that may be deleted after the QuicStreamFactory.
+// other network objects that may be deleted after the QuicSessionPool.
 class NET_EXPORT_PRIVATE QuicCryptoClientConfigHandle {
  public:
   QuicCryptoClientConfigHandle& operator=(const QuicCryptoClientConfigHandle&) =

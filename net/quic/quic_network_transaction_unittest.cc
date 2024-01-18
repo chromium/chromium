@@ -57,7 +57,7 @@
 #include "net/quic/quic_context.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_http_utils.h"
-#include "net/quic/quic_stream_factory_peer.h"
+#include "net/quic/quic_session_pool_peer.h"
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/quic/test_task_runner.h"
 #include "net/socket/client_socket_factory.h"
@@ -575,8 +575,8 @@ class QuicNetworkTransactionTest
 
     session_ =
         std::make_unique<HttpNetworkSession>(session_params_, session_context_);
-    session_->quic_stream_factory()
-        ->set_is_quic_known_to_work_on_current_network(true);
+    session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+        true);
     SpdySessionPoolPeer spdy_pool_peer(session_->spdy_session_pool());
     spdy_pool_peer.SetEnableSendingInitialData(false);
   }
@@ -2518,8 +2518,8 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmed) {
 
   CreateSession();
   // Use a TestTaskRunner to avoid waiting in real time for timeouts.
-  QuicStreamFactoryPeer::SetAlarmFactory(
-      session_->quic_stream_factory(),
+  QuicSessionPoolPeer::SetAlarmFactory(
+      session_->quic_session_pool(),
       std::make_unique<QuicChromiumAlarmFactory>(quic_task_runner_.get(),
                                                  context_.clock()));
 
@@ -2698,8 +2698,8 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmedThenBroken2) {
 
   CreateSession();
   // Use a TestTaskRunner to avoid waiting in real time for timeouts.
-  QuicStreamFactoryPeer::SetAlarmFactory(
-      session_->quic_stream_factory(),
+  QuicSessionPoolPeer::SetAlarmFactory(
+      session_->quic_session_pool(),
       std::make_unique<QuicChromiumAlarmFactory>(quic_task_runner_.get(),
                                                  context_.clock()));
 
@@ -3395,8 +3395,8 @@ TEST_P(QuicNetworkTransactionTest,
   socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
 
   CreateSession();
-  QuicStreamFactoryPeer::SetAlarmFactory(
-      session_->quic_stream_factory(),
+  QuicSessionPoolPeer::SetAlarmFactory(
+      session_->quic_session_pool(),
       std::make_unique<QuicChromiumAlarmFactory>(quic_task_runner_.get(),
                                                  context_.clock()));
 
@@ -3539,8 +3539,8 @@ TEST_P(QuicNetworkTransactionTest, UseExistingAlternativeServiceForQuic) {
 
   AddHangingNonAlternateProtocolSocketData();
   CreateSession();
-  QuicStreamFactoryPeer::SetAlarmFactory(
-      session_->quic_stream_factory(),
+  QuicSessionPoolPeer::SetAlarmFactory(
+      session_->quic_session_pool(),
       std::make_unique<QuicChromiumAlarmFactory>(quic_task_runner_.get(),
                                                  context_.clock()));
 
@@ -3601,8 +3601,8 @@ TEST_P(QuicNetworkTransactionTest, PoolByOrigin) {
   AddHangingNonAlternateProtocolSocketData();
 
   CreateSession();
-  QuicStreamFactoryPeer::SetAlarmFactory(
-      session_->quic_stream_factory(),
+  QuicSessionPoolPeer::SetAlarmFactory(
+      session_->quic_session_pool(),
       std::make_unique<QuicChromiumAlarmFactory>(quic_task_runner_.get(),
                                                  context_.clock()));
 
@@ -3694,8 +3694,8 @@ TEST_P(QuicNetworkTransactionTest, PoolByDestination) {
   AddHangingNonAlternateProtocolSocketData();
 
   CreateSession();
-  QuicStreamFactoryPeer::SetAlarmFactory(
-      session_->quic_stream_factory(),
+  QuicSessionPoolPeer::SetAlarmFactory(
+      session_->quic_session_pool(),
       std::make_unique<QuicChromiumAlarmFactory>(quic_task_runner_.get(),
                                                  context_.clock()));
 
@@ -3827,8 +3827,8 @@ TEST_P(QuicNetworkTransactionTest,
 
   AddHangingNonAlternateProtocolSocketData();
   CreateSession();
-  QuicStreamFactoryPeer::SetAlarmFactory(
-      session_->quic_stream_factory(),
+  QuicSessionPoolPeer::SetAlarmFactory(
+      session_->quic_session_pool(),
       std::make_unique<QuicChromiumAlarmFactory>(quic_task_runner_.get(),
                                                  context_.clock()));
 
@@ -4333,7 +4333,7 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithConfirmationRequired) {
                                            "");
 
   CreateSession();
-  session_->quic_stream_factory()->set_is_quic_known_to_work_on_current_network(
+  session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
       false);
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
 
@@ -4407,8 +4407,8 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithTooEarlyResponse) {
   AddHangingNonAlternateProtocolSocketData();
   CreateSession();
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
-  QuicStreamFactoryPeer::SetAlarmFactory(
-      session_->quic_stream_factory(),
+  QuicSessionPoolPeer::SetAlarmFactory(
+      session_->quic_session_pool(),
       std::make_unique<QuicChromiumAlarmFactory>(quic_task_runner_.get(),
                                                  context_.clock()));
 
@@ -4492,8 +4492,8 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithMultipleTooEarlyResponse) {
   AddHangingNonAlternateProtocolSocketData();
   CreateSession();
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
-  QuicStreamFactoryPeer::SetAlarmFactory(
-      session_->quic_stream_factory(),
+  QuicSessionPoolPeer::SetAlarmFactory(
+      session_->quic_session_pool(),
       std::make_unique<QuicChromiumAlarmFactory>(quic_task_runner_.get(),
                                                  context_.clock()));
 
@@ -4556,7 +4556,7 @@ TEST_P(QuicNetworkTransactionTest,
                                            "");
 
   CreateSession();
-  session_->quic_stream_factory()->set_is_quic_known_to_work_on_current_network(
+  session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
       false);
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
 
@@ -4620,7 +4620,7 @@ TEST_P(QuicNetworkTransactionTest,
                                            "");
 
   CreateSession();
-  session_->quic_stream_factory()->set_is_quic_known_to_work_on_current_network(
+  session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
       false);
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
 
@@ -4685,7 +4685,7 @@ TEST_P(QuicNetworkTransactionTest, RstStreamErrorHandling) {
                                            "");
 
   CreateSession();
-  session_->quic_stream_factory()->set_is_quic_known_to_work_on_current_network(
+  session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
       false);
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
 
@@ -4755,7 +4755,7 @@ TEST_P(QuicNetworkTransactionTest, RstStreamBeforeHeaders) {
                                            "");
 
   CreateSession();
-  session_->quic_stream_factory()->set_is_quic_known_to_work_on_current_network(
+  session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
       false);
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
 
@@ -4952,8 +4952,8 @@ TEST_P(QuicNetworkTransactionTest, DelayTCPOnStartWithQuicSupportOnSameIP) {
   // No HTTP data is mocked as TCP job never starts in this case.
 
   CreateSession();
-  // QuicStreamFactory by default requires confirmation on construction.
-  session_->quic_stream_factory()->set_is_quic_known_to_work_on_current_network(
+  // QuicSessionPool by default requires confirmation on construction.
+  session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
       false);
 
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
@@ -5023,7 +5023,7 @@ TEST_P(QuicNetworkTransactionTest,
   // No HTTP data is mocked as TCP job will be delayed and never starts.
 
   CreateSession();
-  session_->quic_stream_factory()->set_is_quic_known_to_work_on_current_network(
+  session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
       false);
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
 
@@ -5075,7 +5075,7 @@ TEST_P(QuicNetworkTransactionTest, NetErrorDetailsSetBeforeHandshake) {
   // Require handshake confirmation to ensure that no QUIC streams are
   // created, and to ensure that the TCP job does not wait for the QUIC
   // job to fail before it starts.
-  session_->quic_stream_factory()->set_is_quic_known_to_work_on_current_network(
+  session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
       false);
 
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::COLD_START);
@@ -5523,8 +5523,8 @@ TEST_P(QuicNetworkTransactionTest, MaxRetriesAfterAsyncNoBufferSpace) {
 
   CreateSession();
   // Use a TestTaskRunner to avoid waiting in real time for timeouts.
-  QuicStreamFactoryPeer::SetTaskRunner(session_->quic_stream_factory(),
-                                       quic_task_runner_.get());
+  QuicSessionPoolPeer::SetTaskRunner(session_->quic_session_pool(),
+                                     quic_task_runner_.get());
 
   quic::QuicTime start = context_.clock()->Now();
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
@@ -5561,8 +5561,8 @@ TEST_P(QuicNetworkTransactionTest, MaxRetriesAfterSynchronousNoBufferSpace) {
 
   CreateSession();
   // Use a TestTaskRunner to avoid waiting in real time for timeouts.
-  QuicStreamFactoryPeer::SetTaskRunner(session_->quic_stream_factory(),
-                                       quic_task_runner_.get());
+  QuicSessionPoolPeer::SetTaskRunner(session_->quic_session_pool(),
+                                     quic_task_runner_.get());
 
   quic::QuicTime start = context_.clock()->Now();
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
@@ -5798,8 +5798,8 @@ class QuicNetworkTransactionWithDestinationTest
 
     session_ =
         std::make_unique<HttpNetworkSession>(session_params, session_context);
-    session_->quic_stream_factory()
-        ->set_is_quic_known_to_work_on_current_network(false);
+    session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+        false);
   }
 
   void TearDown() override {
@@ -6097,8 +6097,8 @@ TEST_P(QuicNetworkTransactionWithDestinationTest, PoolIfCertificateValid) {
 
   auto quic_task_runner =
       base::MakeRefCounted<TestTaskRunner>(context_.mock_clock());
-  QuicStreamFactoryPeer::SetAlarmFactory(
-      session_->quic_stream_factory(),
+  QuicSessionPoolPeer::SetAlarmFactory(
+      session_->quic_session_pool(),
       std::make_unique<QuicChromiumAlarmFactory>(quic_task_runner.get(),
                                                  context_.clock()));
 

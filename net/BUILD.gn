@@ -798,8 +798,8 @@ component("net") {
     "quic/quic_server_info.h",
     "quic/quic_session_key.cc",
     "quic/quic_session_key.h",
-    "quic/quic_stream_factory.cc",
-    "quic/quic_stream_factory.h",
+    "quic/quic_session_pool.cc",
+    "quic/quic_session_pool.h",
     "quic/set_quic_flag.cc",
     "quic/set_quic_flag.h",
     "quic/web_transport_client.cc",
@@ -2661,9 +2661,9 @@ test("net_unittests") {
     "quic/quic_http_utils_test.cc",
     "quic/quic_network_transaction_unittest.cc",
     "quic/quic_proxy_client_socket_unittest.cc",
-    "quic/quic_stream_factory_peer.cc",
-    "quic/quic_stream_factory_peer.h",
-    "quic/quic_stream_factory_test.cc",
+    "quic/quic_session_pool_peer.cc",
+    "quic/quic_session_pool_peer.h",
+    "quic/quic_session_pool_test.cc",
     "quic/quic_test_packet_maker.cc",
     "quic/quic_test_packet_maker.h",
     "quic/quic_test_packet_printer.cc",
@@ -3809,8 +3809,8 @@ fuzzer_test("net_reporting_header_parser_fuzzer") {
   ]
 }
 
-fuzzer_test("net_quic_stream_factory_fuzzer") {
-  sources = [ "quic/quic_stream_factory_fuzzer.cc" ]
+fuzzer_test("net_quic_session_pool_fuzzer") {
+  sources = [ "quic/quic_session_pool_fuzzer.cc" ]
 
   deps = [
     ":net_fuzzer_test_support",
