@@ -187,6 +187,11 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
         CreditCard* suggested_credit_card =
             personal_data_manager_->GetCreditCardByGUID(
                 suggestion.GetBackendId<Suggestion::Guid>().value());
+        if (!suggested_credit_card) {
+          // Ignore non credit card suggestions in the popup like separators,
+          // manage payment methods, etc.
+          continue;
+        }
         if (credit_card.issuer_id() != suggested_credit_card->issuer_id() &&
             (suggested_credit_card->HasRichCardArtImageFromMetadata() ||
              !suggested_credit_card->product_description().empty())) {
