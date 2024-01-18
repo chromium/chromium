@@ -58,7 +58,8 @@
 #         renderer-software ]
 # Driver
 # tags: [ mesa_lt_19.1
-#         mesa_ge_21.0 ]
+#         mesa_ge_21.0
+#         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601 ]
 # ASan
 # tags: [ asan no-asan ]
 # Display Server
@@ -251,6 +252,14 @@ crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] TraceTest_Soli
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] TraceTest_Video_* [ RetryOnFailure ]
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] TraceTest_WebGL* [ RetryOnFailure ]
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] WebGLCanvasCaptureTraceTest_VideoStream* [ RetryOnFailure ]
+
+# Fails on newer drivers due to detecting that we should use the zero copy path,
+# but failing to actually use it in practice.
+crbug.com/1519274 [ win nvidia nvidia_ge_31.0.15.4601 ] VideoPathTraceTest_DirectComposition_Video_SW_Decode [ Failure ]
+crbug.com/1519274 [ win nvidia nvidia_ge_31.0.15.4601 ] VideoPathTraceTest_DirectComposition_Video_VP9 [ Failure ]
+crbug.com/1519274 [ win nvidia nvidia_ge_31.0.15.4601 ] VideoPathTraceTest_DirectComposition_Video_VP9_Fullsize [ Failure ]
+crbug.com/1519274 [ win nvidia nvidia_ge_31.0.15.4601 ] VideoPathTraceTest_DirectComposition_Video_VP9_NV12 [ Failure ]
+
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

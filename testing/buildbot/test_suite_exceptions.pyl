@@ -2989,6 +2989,13 @@
       'linux-exp-msan-fyi-rel',
     ],
     'modifications': {
+      'Win10 FYI x64 Exp Release (NVIDIA)': {
+        'args': [
+          # TODO(crbug.com/1505895): Remove this filter when these tests no
+          # longer crash on the newer driver.
+          '--gtest_filter=-DelegatedInkPointRendererGpuTest.DrawPointsAsTheyArrive:DelegatedInkPointRendererGpuTest.MaximumPointerIds:DelegatedInkPointRendererGpuTest.MultiplePointerIds:DelegatedInkPointRendererGpuTest.StoreAndRemovePointsAndTokens',
+        ],
+      },
       'android-12-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.gl_unittests.filter',

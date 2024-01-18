@@ -259,6 +259,11 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       serial_globs |= {
           # Flaky when run in parallel on Windows.
           'OverlayModeTraceTest_DirectComposition_Underlay*',
+          # Has issues running with any amount of parallelization on
+          # Windows/NVIDIA even though comment 12 in crbug.com/1505609 implies
+          # that up to three Chrome processes should be able to run in
+          # parallel without issue on the driver's end.
+          'OverlayModeTraceTest_DirectComposition_Video*',
       }
     return serial_globs
 
@@ -308,7 +313,11 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               success_eval_func='CheckSwapChainPath',
               other_args=p.other_args)
       ])
-    for p in namespace.DirectCompositionPages('OverlayModeTraceTest'):
+    # The increased swap count is necessary for tests to consistently pass on
+    # NVIDIA since overlays can take ~35 frames to take effect. See
+    # crbug.com/1505609.
+    for p in namespace.DirectCompositionPages('OverlayModeTraceTest',
+                                              swap_count=60):
       yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
           _TraceTestArguments(
               browser_args=p.browser_args,
