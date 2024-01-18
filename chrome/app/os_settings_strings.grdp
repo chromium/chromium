@@ -6441,6 +6441,9 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_BLOCKED_TEXT" translateable="false" desc="The sub-label displayed in the rows of the System services section of the privacy hub sensor subpages when sensor access is not allowed.">
     Blocked
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SENSOR_NAME_WITH_BLOCKED_SUFFIX" desc="The text displayed in the rows of the sensor (camera or microphone) list when the sensor access is blocked.">
+    <ph name="SENSOR_NAME">$1<ex>Front Camera</ex></ph> (blocked)
+  </message>
 
   <!-- On Startup (OS settings) -->
   <message name="IDS_OS_SETTINGS_ON_STARTUP_SETTINGS_CARD_TITLE" desc="The title of the settings card that allows the user to configure the restore apps and pages options on startup.">

@@ -107,6 +107,11 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
     assertTrue(getMicrophoneCrToggle().checked);
   });
 
+  function isBlockedSuffixDisplayedAfterMicrophoneName(): boolean {
+    return isVisible(privacyHubMicrophoneSubpage.shadowRoot!.querySelector(
+        '#microphoneNameWithBlockedSuffix'));
+  }
+
   test('Microphone section view when microphone access is enabled', () => {
     const microphoneToggle = getMicrophoneCrToggle();
 
@@ -118,6 +123,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
         privacyHubMicrophoneSubpage.i18n('microphoneToggleSubtext'),
         getOnOffSubtext());
     assertTrue(isMicrophoneListSectionVisible());
+    assertFalse(isBlockedSuffixDisplayedAfterMicrophoneName());
   });
 
   test(
@@ -142,7 +148,14 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
         assertEquals(
             privacyHubMicrophoneSubpage.i18n('blockedForAllText'),
             getOnOffSubtext());
-        assertFalse(isMicrophoneListSectionVisible());
+        assertTrue(isMicrophoneListSectionVisible());
+        assertTrue(isBlockedSuffixDisplayedAfterMicrophoneName());
+        assertEquals(
+            privacyHubMicrophoneSubpage.i18n(
+                'privacyHubSensorNameWithBlockedSuffix', 'Fake Microphone'),
+            privacyHubMicrophoneSubpage.shadowRoot!
+                .querySelector<HTMLDivElement>(
+                    '#microphoneNameWithBlockedSuffix')!.innerText.trim());
       });
 
   test('Repeatedly toggle microphone access', async () => {

@@ -94,6 +94,11 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
         '#cameraList');
   }
 
+  function isBlockedSuffixDisplayedAfterCameraName(): boolean {
+    return isVisible(privacyHubCameraSubpage.shadowRoot!.querySelector(
+        '#cameraNameWithBlockedSuffix'));
+  }
+
   test('Camera section view when access is enabled', () => {
     const cameraToggle = getCameraCrToggle();
 
@@ -102,6 +107,7 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
     assertEquals(
         privacyHubCameraSubpage.i18n('cameraToggleSubtext'), getOnOffSubtext());
     assertTrue(isCameraListSectionVisible());
+    assertFalse(isBlockedSuffixDisplayedAfterCameraName());
   });
 
   test('Camera section view when access is disabled', async () => {
@@ -118,7 +124,14 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
     assertEquals(privacyHubCameraSubpage.i18n('deviceOff'), getOnOffText());
     assertEquals(
         privacyHubCameraSubpage.i18n('blockedForAllText'), getOnOffSubtext());
-    assertFalse(isCameraListSectionVisible());
+    assertTrue(isCameraListSectionVisible());
+    assertTrue(isBlockedSuffixDisplayedAfterCameraName());
+    assertEquals(
+        privacyHubCameraSubpage.i18n(
+            'privacyHubSensorNameWithBlockedSuffix', 'Fake Camera'),
+        privacyHubCameraSubpage.shadowRoot!
+            .querySelector<HTMLDivElement>(
+                '#cameraNameWithBlockedSuffix')!.innerText.trim());
   });
 
   test('Repeatedly toggle camera access', async () => {

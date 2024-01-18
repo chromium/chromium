@@ -536,6 +536,8 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_ALLOWED_TEXT},
       {"privacyHubSystemServicesBlockedText",
        IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_BLOCKED_TEXT},
+      {"privacyHubSensorNameWithBlockedSuffix",
+       IDS_OS_SETTINGS_PRIVACY_HUB_SENSOR_NAME_WITH_BLOCKED_SUFFIX},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
