@@ -7404,11 +7404,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"app-management-app-details",
-     flag_descriptions::kAppManagementAppDetailsName,
-     flag_descriptions::kAppManagementAppDetailsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAppManagementAppDetails)},
-
     {"arc-window-predictor", flag_descriptions::kArcWindowPredictorName,
      flag_descriptions::kArcWindowPredictorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(full_restore::features::kArcWindowPredictor)},

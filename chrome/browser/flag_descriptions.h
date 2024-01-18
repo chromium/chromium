@@ -2691,9 +2691,6 @@ extern const char kOpenXRDescription[];
 
 #else  // !BUILDFLAG(IS_ANDROID)
 
-extern const char kAppManagementAppDetailsName[];
-extern const char kAppManagementAppDetailsDescription[];
-
 extern const char kAllowAllSitesToInitiateMirroringName[];
 extern const char kAllowAllSitesToInitiateMirroringDescription[];
 

@@ -915,19 +915,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled, OsAppsPageRevamp) {
   RunSettingsTest("os_apps_page/os_apps_page_test.js");
 }
 
-class OSSettingsAppsTestAppManagementAppDetailsEnabled
-    : public OSSettingsMochaTest {
- protected:
-  OSSettingsAppsTestAppManagementAppDetailsEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAppManagementAppDetails);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OSSettingsAppsTestAppManagementAppDetailsEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        OsAppsPageAppManagementPageAppDetailsItem) {
   RunSettingsTest("os_apps_page/app_management_page/app_details_item_test.js");
 }

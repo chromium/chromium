@@ -220,11 +220,6 @@
     "expiry_milestone": 123
   },
   {
-    "name": "app-management-app-details",
-    "owners": [ "sharminzaman@google.com", "tsergeant@chromium.org", "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "app-specific-history",
     "owners": [ "katzz@google.com", "jinsukkim@google.com" ],
     "expiry_milestone": 142

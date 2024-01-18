@@ -4654,11 +4654,6 @@ const char kOpenXRDescription[] =
 
 #else  // BUILDFLAG(IS_ANDROID)
 
-const char kAppManagementAppDetailsName[] =
-    "Enable App Details in App Management.";
-const char kAppManagementAppDetailsDescription[] =
-    "Show app details on an app's App Management page.";
-
 const char kAllowAllSitesToInitiateMirroringName[] =
     "Allow all sites to initiate mirroring";
 const char kAllowAllSitesToInitiateMirroringDescription[] =
