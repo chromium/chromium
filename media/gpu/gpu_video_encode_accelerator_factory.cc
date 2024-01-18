@@ -66,7 +66,7 @@ std::unique_ptr<VideoEncodeAccelerator> CreateVaapiVEA() {
 
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<VideoEncodeAccelerator> CreateAndroidVEA() {
-  if (__builtin_available(android NDK_MEDIA_CODEC_MIN_API, *)) {
+  if (NdkVideoEncodeAccelerator::IsSupported()) {
     return base::WrapUnique<VideoEncodeAccelerator>(
         new NdkVideoEncodeAccelerator(
             base::SequencedTaskRunner::GetCurrentDefault()));

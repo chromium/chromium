@@ -1203,7 +1203,6 @@ component("base") {
       "android/pre_freeze_background_memory_trimmer.h",
       "android/radio_utils.cc",
       "android/radio_utils.h",
-      "android/requires_api.h",
       "android/scoped_hardware_buffer_fence_sync.cc",
       "android/scoped_hardware_buffer_fence_sync.h",
       "android/scoped_hardware_buffer_handle.cc",

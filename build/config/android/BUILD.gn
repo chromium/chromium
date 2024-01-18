@@ -24,9 +24,6 @@ config("compiler") {
   defines = [
     "ANDROID",
 
-    # https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md#weak-symbols-for-api-definitions
-    "__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
-
     # The NDK has these things, but doesn't define the constants to say that it
     # does. Define them here instead.
     "HAVE_SYS_UIO_H",

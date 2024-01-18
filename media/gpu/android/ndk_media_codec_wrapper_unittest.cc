@@ -14,8 +14,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \
-    NDK_MEDIA_CODEC_MIN_API)
 namespace media {
 
 namespace {
@@ -29,9 +27,7 @@ class NdkMediaCodecWrapperTest : public ::testing::Test,
   ~NdkMediaCodecWrapperTest() override = default;
 
   void SetUp() override {
-    if (__builtin_available(android NDK_MEDIA_CODEC_MIN_API, *)) {
-      // Negation results in compiler warning.
-    } else {
+    if (!NdkMediaCodecWrapper::IsSupported()) {
       GTEST_SKIP() << "Not supported Android version";
     }
 
@@ -222,4 +218,3 @@ TEST_F(NdkMediaCodecWrapperTest, Errors) {
 }
 
 }  // namespace media
-#pragma clang attribute pop

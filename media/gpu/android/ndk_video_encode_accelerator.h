@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/android/requires_api.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
@@ -28,9 +27,9 @@ namespace media {
 
 class BitstreamBuffer;
 
-class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
-    NdkVideoEncodeAccelerator final : public VideoEncodeAccelerator,
-                                      public NdkMediaCodecWrapper::Client {
+class MEDIA_GPU_EXPORT NdkVideoEncodeAccelerator final
+    : public VideoEncodeAccelerator,
+      public NdkMediaCodecWrapper::Client {
  public:
   // |runner| - a task runner that will be used for all callbacks and external
   // calls to this instance.
@@ -41,6 +40,8 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   NdkVideoEncodeAccelerator& operator=(const NdkVideoEncodeAccelerator&) =
       delete;
   ~NdkVideoEncodeAccelerator() override;
+
+  static bool IsSupported();
 
   // VideoEncodeAccelerator implementation.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;

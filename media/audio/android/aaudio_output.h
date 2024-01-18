@@ -7,7 +7,6 @@
 
 #include <aaudio/AAudio.h>
 
-#include "base/android/requires_api.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -22,9 +21,8 @@ namespace media {
 class AudioManagerAndroid;
 
 // Class which uses the AAudio library to playback output.
-class REQUIRES_ANDROID_API(AAUDIO_MIN_API) AAudioOutputStream
-    : public MuteableAudioOutputStream,
-      public AAudioStreamWrapper::DataCallback {
+class AAudioOutputStream : public MuteableAudioOutputStream,
+                           public AAudioStreamWrapper::DataCallback {
  public:
   AAudioOutputStream(AudioManagerAndroid* manager,
                      const AudioParameters& params,

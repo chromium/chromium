@@ -100,11 +100,14 @@ std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
 std::unique_ptr<AudioEncoder> CreatePlatformAudioEncoder(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (__builtin_available(android NDK_MEDIA_CODEC_MIN_API, *)) {
-    return std::make_unique<NdkAudioEncoder>(std::move(task_runner));
+  if (!NdkAudioEncoder::IsSupported()) {
+    return nullptr;
   }
-#endif
+
+  return std::make_unique<NdkAudioEncoder>(std::move(task_runner));
+#else
   return nullptr;
+#endif
 }
 
 std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
