@@ -4794,11 +4794,6 @@ const char kNtpChromeCartModuleName[] = "NTP Chrome Cart Module";
 const char kNtpChromeCartModuleDescription[] =
     "Shows the chrome cart module on the New Tab Page.";
 
-const char kNtpComprehensiveThemeRealboxName[] =
-    "NTP Comprehensive Theme Realbox";
-const char kNtpComprehensiveThemeRealboxDescription[] =
-    "Applies theme based colors to the NTP Realbox element";
-
 const char kNtpDriveModuleName[] = "NTP Drive Module";
 const char kNtpDriveModuleDescription[] =
     "Shows the Google Drive module on the New Tab Page";

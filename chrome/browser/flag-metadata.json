@@ -5638,11 +5638,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "ntp-comprehensive-theme-realbox",
-    "owners": [ "romanarora@chromium.org", "tiborg@chromium.org", "tluk@chromium.org" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "ntp-drive-module",
     "owners": [ "mahmadi@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 125

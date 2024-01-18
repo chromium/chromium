@@ -132,12 +132,6 @@ BASE_FEATURE(kNtpChromeCartModule,
              "NtpChromeCartModule",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, Comprehensive Theming color changes will be applied to the
-// Realbox on the New Tab Page.
-BASE_FEATURE(kNtpComprehensiveThemeRealbox,
-             "NtpComprehensiveThemeRealbox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if !defined(OFFICIAL_BUILD)
 // If enabled, dummy modules will be shown.
 BASE_FEATURE(kNtpDummyModules,

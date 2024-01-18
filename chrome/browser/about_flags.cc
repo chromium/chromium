@@ -6584,11 +6584,6 @@ const FeatureEntry kFeatureEntries[] = {
      commerce::flag_descriptions::kChromeCartDomBasedHeuristicsDescription,
      kOsDesktop, FEATURE_VALUE_TYPE(commerce::kChromeCartDomBasedHeuristics)},
 
-    {"ntp-comprehensive-theme-realbox",
-     flag_descriptions::kNtpComprehensiveThemeRealboxName,
-     flag_descriptions::kNtpComprehensiveThemeRealboxDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpComprehensiveThemeRealbox)},
-
     {"ntp-drive-module", flag_descriptions::kNtpDriveModuleName,
      flag_descriptions::kNtpDriveModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpDriveModule,

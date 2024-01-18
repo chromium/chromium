@@ -35,23 +35,6 @@ class MaterialNewTabPageColorMixerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(MaterialNewTabPageColorMixerTest, ComprehensiveThemeRealboxEnabled) {
-  feature_list().InitWithFeatures(
-      /* enabled_features */ {ntp_features::kNtpComprehensiveThemeRealbox,
-                              features::kChromeRefresh2023,
-                              features::kChromeWebuiRefresh2023},
-      /* disabled_features */ {});
-
-  AddMaterialColorMixers();
-
-  EXPECT_EQ(color_provider().GetColor(kColorRealboxBackground),
-            color_provider().GetColor(ui::kColorSysBase));
-  EXPECT_EQ(color_provider().GetColor(kColorRealboxBackgroundHovered),
-            color_provider().GetColor(ui::kColorSysStateHoverOnSubtle));
-  EXPECT_EQ(color_provider().GetColor(kColorRealboxForeground),
-            color_provider().GetColor(ui::kColorSysOnSurfaceSubtle));
-}
-
 TEST_F(MaterialNewTabPageColorMixerTest, NtpModulesRedesignedDisabled) {
   feature_list().InitWithFeatures(
       /* enabled_features */ {features::kChromeRefresh2023,

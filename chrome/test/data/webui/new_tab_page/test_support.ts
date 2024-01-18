@@ -75,7 +75,6 @@ export function createTheme(isDark: boolean = false): Theme {
     isDark,
     mostVisited: mostVisited,
     textColor: {value: 0xff0000ff},
-    themeRealboxIcons: false,
     isCustomBackground: true,
   };
 }
