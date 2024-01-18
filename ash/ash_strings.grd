@@ -7434,8 +7434,17 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_DEVICE_SETTINGS_LEARN_MORE_BUTTON" desc="Button shown for device settings notifications which opens an article with helpful information related to the notification.">
         Learn more
       </message>
+      <message name="IDS_SETTINGS_CUSTOMIZATION_BACK_BUTTON_DEFAULT_NAME" desc="The name of the back mouse button on a mouse">
+        Back Button
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZATION_FORWARD_BUTTON_DEFAULT_NAME" desc="The name of the forward mouse button on a mouse">
+        Forward Button
+      </message>
       <message name="IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME" desc="The name of the middle mouse button on a mouse">
         Middle Button
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZATION_SIDE_BUTTON_DEFAULT_NAME" desc="The name of the side mouse button on a mouse">
+        Side Button
       </message>
       <message name="IDS_SETTINGS_CUSTOMIZATION_OTHER_BUTTON_DEFAULT_NAME" desc="The default name to give additional buttons on a mouse or graphics tablet">
         Other Button <ph name="BUTTON_NUMBER">$1<ex>1</ex></ph>

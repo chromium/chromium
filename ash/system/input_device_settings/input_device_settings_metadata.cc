@@ -5,8 +5,10 @@
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"
 
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "base/no_destructor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
 
@@ -259,21 +261,23 @@ std::vector<mojom::ButtonRemappingPtr> GetDefaultButtonRemappingList() {
   return {};
 }
 
-// TODO(dpad, b/286930911): Translate button names
 std::vector<mojom::ButtonRemappingPtr> GetFiveKeyButtonRemappingList() {
   std::vector<mojom::ButtonRemappingPtr> array;
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Middle button",
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME),
       /*button=*/
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
       /*remapping_action=*/nullptr));
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Forward button",
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_FORWARD_BUTTON_DEFAULT_NAME),
       /*button=*/
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kExtra),
       /*remapping_action=*/nullptr));
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Back button",
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_BACK_BUTTON_DEFAULT_NAME),
       /*button=*/
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kSide),
       /*remapping_action=*/nullptr));
@@ -283,22 +287,26 @@ std::vector<mojom::ButtonRemappingPtr> GetFiveKeyButtonRemappingList() {
 std::vector<mojom::ButtonRemappingPtr> GetLogitechSixKeyButtonRemappingList() {
   std::vector<mojom::ButtonRemappingPtr> array;
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Middle button",
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME),
       /*button=*/
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
       /*remapping_action=*/nullptr));
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Forward button",
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_FORWARD_BUTTON_DEFAULT_NAME),
       /*button=*/
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kExtra),
       /*remapping_action=*/nullptr));
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Back button",
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_BACK_BUTTON_DEFAULT_NAME),
       /*button=*/
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kSide),
       /*remapping_action=*/nullptr));
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Side button",
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_SIDE_BUTTON_DEFAULT_NAME),
       /*button=*/
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
       /*remapping_action=*/nullptr));
