@@ -577,7 +577,7 @@ AutomationInternalPerformActionFunction::PerformAction(
 ExtensionFunction::ResponseAction
 AutomationInternalPerformActionFunction::Run() {
   const AutomationInfo* automation_info = AutomationInfo::Get(extension());
-  EXTENSION_FUNCTION_VALIDATE(automation_info && automation_info->interact);
+  EXTENSION_FUNCTION_VALIDATE(automation_info && automation_info->desktop);
 
   using api::automation_internal::PerformAction::Params;
   std::optional<Params> params = Params::Create(args());

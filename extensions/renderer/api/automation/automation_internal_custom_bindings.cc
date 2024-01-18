@@ -95,7 +95,7 @@ void AutomationInternalCustomBindings::IsInteractPermitted(
   CHECK(extension);
   const AutomationInfo* automation_info = AutomationInfo::Get(extension);
   CHECK(automation_info);
-  args.GetReturnValue().Set(automation_info->interact);
+  args.GetReturnValue().Set(automation_info->desktop);
 }
 
 void AutomationInternalCustomBindings::StartCachingAccessibilityTrees() {
