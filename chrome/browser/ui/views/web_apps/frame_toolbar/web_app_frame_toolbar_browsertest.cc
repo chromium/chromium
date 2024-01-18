@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -1775,6 +1776,11 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
         browser(), std::move(web_app_info), start_url);
   }
 
+  bool MatchMediaMatches(content::WebContents* web_contents,
+                         std::string match_media_script) {
+    return EvalJs(web_contents, match_media_script).ExtractBool();
+  }
+
   void SetResizableAndWait(content::WebContents* web_contents,
                            bool resizable,
                            bool expected) {
@@ -1782,19 +1788,12 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
         content::JsReplace("window.setResizable($1)", resizable);
     EXPECT_TRUE(ExecJs(web_contents, set_resizable_script));
     content::WaitForLoadStop(web_contents);
-
-    auto MatchMediaMatches = [&web_contents, &expected]() {
-      auto match_media_script = content::JsReplace(
-          "window.matchMedia('(resizable: $1)').matches", expected);
-      return EvalJs(web_contents, match_media_script).ExtractBool();
-    };
-
-    while (!MatchMediaMatches()) {
-      base::RunLoop run_loop;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-      run_loop.Run();
-    }
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return MatchMediaMatches(
+          web_contents,
+          content::JsReplace("window.matchMedia('(resizable: $1)').matches",
+                             expected));
+    }));
   }
 
   void CheckCanResize(bool browser_view_can_resize_expected,
@@ -2022,6 +2021,66 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(EvalJs(web_contents, "window.screenY").ExtractInt(), initial_pos_y);
 }
 #endif  // defined(USE_AURA)
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    MinimizeWindowWithApi) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+
+  // Ensure minimizing is allowed.
+  helper()->browser_view()->SetCanMinimize(true);
+  EXPECT_TRUE(helper()->browser_view()->CanMinimize());
+  content::WaitForLoadStop(web_contents);
+
+  // Minimize window
+  EXPECT_TRUE(ExecJs(web_contents, "window.minimize()"));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return helper()->browser_view()->IsMinimized(); }));
+
+  // On Windows the minimizing seems to be so fast that it doesn't have
+  // sufficient time to update the CSS before it already minimized.
+#if !BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return MatchMediaMatches(
+        web_contents,
+        "window.matchMedia('(display-state: minimized)').matches");
+  }));
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    MaximizeAndRestoreWindowWithApi) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+
+  // Ensure maximizing is allowed.
+  helper()->browser_view()->SetCanMaximize(true);
+  EXPECT_TRUE(helper()->browser_view()->CanMaximize());
+  content::WaitForLoadStop(web_contents);
+
+  // Maximize window
+  EXPECT_TRUE(ExecJs(web_contents, "window.maximize()"));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return helper()->browser_view()->IsMaximized(); }));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return MatchMediaMatches(
+        web_contents,
+        "window.matchMedia('(display-state: maximized)').matches");
+  }));
+
+  // Restore window
+  EXPECT_TRUE(ExecJs(web_contents, "window.restore()"));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !helper()->browser_view()->IsMaximized(); }));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return MatchMediaMatches(
+        web_contents, "window.matchMedia('(display-state: normal)').matches");
+  }));
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class OriginTextVisibilityWaiter : public views::ViewObserver {
