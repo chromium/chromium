@@ -359,9 +359,7 @@ bool SizedFormatAvailable(const FeatureInfo* feature_info,
   if ((feature_info->feature_flags().chromium_image_ycbcr_420v &&
        internal_format == GL_RGB_YCBCR_420V_CHROMIUM) ||
       (feature_info->feature_flags().chromium_image_ycbcr_p010 &&
-       internal_format == GL_RGB_YCBCR_P010_CHROMIUM) ||
-      (feature_info->feature_flags().chromium_image_ycbcr_422 &&
-       internal_format == GL_RGB_YCBCR_422_CHROMIUM)) {
+       internal_format == GL_RGB_YCBCR_P010_CHROMIUM)) {
     return true;
   }
 
@@ -3542,7 +3540,6 @@ GLenum TextureManager::ExtractFormatFromStorageFormat(GLenum internalformat) {
     case GL_RGB16F:
     case GL_RGB32F:
     case GL_RGB_YCBCR_420V_CHROMIUM:
-    case GL_RGB_YCBCR_422_CHROMIUM:
     case GL_RGB_YCRCB_420_CHROMIUM:
       return GL_RGB;
     case GL_RGB8UI:
