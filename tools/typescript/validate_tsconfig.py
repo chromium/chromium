@@ -78,7 +78,7 @@ def validateTsconfigJson(tsconfig, tsconfig_file, is_base_tsconfig):
             f' Use the dedicated |{tslibrary_flag}| attribute in '+ \
             'ts_library() instead.'
 
-    if 'ui/file_manager/tsconfig_base.json' in tsconfig_file:
+    if 'ui/file_manager' in tsconfig_file:
       # File manager uses ts_library() in an unsupported way. Just return true
       # here for this special case.
       return True, None

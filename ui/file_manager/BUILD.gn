@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import(
     "//tools/code_coverage/js_source_maps/create_js_source_maps/create_js_source_maps.gni")
 import(
@@ -45,7 +44,6 @@ group("closure_compile") {
   testonly = true
 
   deps = [
-    "image_loader:closure_compile",
     "integration_tests:closure_compile",
     "integration_tests/file_manager:closure_compile",
     "integration_tests/file_manager/page_objects:closure_compile",
