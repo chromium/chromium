@@ -148,6 +148,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     }
     this.templateTokens_ =
         getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
+    this.onClickSearchButton_();
   }
 
   private onSeaPenTemplateChanged_(template: SeaPenTemplate) {

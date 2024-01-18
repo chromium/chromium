@@ -5,15 +5,25 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenPaths, SeaPenTemplateQueryElement} from 'chrome://personalization/js/personalization_app.js';
-import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {SeaPenPaths, SeaPenRouterElement, SeaPenTemplateQueryElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenQuery, SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {initElement, teardownElement} from './personalization_app_test_utils.js';
+import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
+import {TestSeaPenProvider} from './test_sea_pen_interface_provider.js';
 
 suite('SeaPenTemplateQueryElementTest', function() {
   let seaPenTemplateQueryElement: SeaPenTemplateQueryElement|null;
+  let seaPenProvider: TestSeaPenProvider;
+
+  setup(() => {
+    loadTimeData.overrideValues(
+        {isSeaPenEnabled: true, isSeaPenTextInputEnabled: false});
+    const mocks = baseSetup();
+    seaPenProvider = mocks.seaPenProvider;
+  });
 
   teardown(async () => {
     await teardownElement(seaPenTemplateQueryElement);
@@ -151,6 +161,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
     seaPenTemplateQueryElement = initElement(
         SeaPenTemplateQueryElement,
         {templateId: SeaPenTemplateId.kFlower.toString()});
+    initElement(SeaPenRouterElement, {basePath: '/base'});
     await waitAfterNextRender(seaPenTemplateQueryElement);
     const inspireButton =
         seaPenTemplateQueryElement.shadowRoot!.getElementById('inspire');
@@ -181,5 +192,25 @@ suite('SeaPenTemplateQueryElementTest', function() {
     assertTrue(
         optionText === chips[1]!.innerText,
         'selected option should match text');
+  });
+
+  test('clicking inspire button triggers search', async () => {
+    seaPenTemplateQueryElement = initElement(
+        SeaPenTemplateQueryElement,
+        {templateId: SeaPenTemplateId.kMineral.toString()});
+    initElement(SeaPenRouterElement, {basePath: '/base'});
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    const inspireButton =
+        seaPenTemplateQueryElement.shadowRoot!.getElementById('inspire');
+    assertTrue(!!inspireButton);
+    inspireButton!.click();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    const query: SeaPenQuery =
+        await seaPenProvider.whenCalled('searchWallpaper');
+    assertEquals(
+        query.templateQuery!.id, SeaPenTemplateId.kMineral,
+        'Query template id should match');
   });
 });
