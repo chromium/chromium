@@ -47,6 +47,7 @@ namespace {
 
 // The default icon size used in the suggestion drop down.
 constexpr int kIconSize = 16;
+constexpr int kChromeRefreshIconSize = 20;
 
 // Max width for the Autofill suggestion text.
 constexpr int kAutofillSuggestionMaxWidth = 192;
@@ -159,17 +160,19 @@ std::unique_ptr<views::ImageView> GetIconImageViewFromIcon(
       return ImageViewFromVectorIcon(kKeyIcon, kIconSize);
     case Suggestion::Icon::kEdit:
       return ImageViewFromVectorIcon(vector_icons::kEditChromeRefreshIcon,
-                                     kIconSize);
+                                     kChromeRefreshIconSize);
     case Suggestion::Icon::kCode:
       return ImageViewFromVectorIcon(vector_icons::kCodeIcon, kIconSize);
     case Suggestion::Icon::kLocation:
-      return ImageViewFromVectorIcon(
-          ShouldApplyNewAutofillPopupStyle()
-              ? vector_icons::kLocationOnChromeRefreshIcon
-              : vector_icons::kLocationOnIcon,
-          kIconSize);
+      return ShouldApplyNewAutofillPopupStyle()
+                 ? ImageViewFromVectorIcon(
+                       vector_icons::kLocationOnChromeRefreshIcon,
+                       kChromeRefreshIconSize)
+                 : ImageViewFromVectorIcon(vector_icons::kLocationOnIcon,
+                                           kIconSize);
     case Suggestion::Icon::kDelete:
-      return ImageViewFromVectorIcon(kTrashCanRefreshIcon, kIconSize);
+      return ImageViewFromVectorIcon(kTrashCanRefreshIcon,
+                                     kChromeRefreshIconSize);
     case Suggestion::Icon::kClear:
       return ImageViewFromVectorIcon(kBackspaceIcon, kIconSize);
     case Suggestion::Icon::kUndo:
