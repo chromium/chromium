@@ -61,6 +61,10 @@ class SessionImpl::ContextProcessor
   void OnComplete(uint32_t tokens_processed) override {
     tokens_processed_ += tokens_processed;
 
+    if (has_cancelled_) {
+      return;
+    }
+
     // This means input has been fully processed.
     if (tokens_processed < expected_tokens_) {
       return;
@@ -77,6 +81,7 @@ class SessionImpl::ContextProcessor
   }
 
   void MaybeCancelProcessing() {
+    has_cancelled_ = true;
     if (can_cancel_) {
       client_.reset();
     }
@@ -105,6 +110,7 @@ class SessionImpl::ContextProcessor
   uint32_t expected_tokens_ = 0;
   uint32_t tokens_processed_ = 0;
   bool can_cancel_ = false;
+  bool has_cancelled_ = false;
   mojo::Receiver<on_device_model::mojom::ContextClient> client_{this};
 };
 

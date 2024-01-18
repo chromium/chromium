@@ -621,6 +621,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionCancelsOptionalContext) {
   Initialize();
+  g_execute_delay = base::Seconds(10);
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
@@ -628,7 +629,12 @@ TEST_F(OnDeviceModelServiceControllerTest,
   AddContext(*session, "this is long context");
   // ExecuteModel() directly after AddContext() should only load first chunk.
   ExecuteModel(*session, "foo");
+
+  // Give time to make sure we don't process the optional context.
   task_environment_.RunUntilIdle();
+  task_environment_.FastForwardBy(g_execute_delay + base::Milliseconds(1));
+  task_environment_.RunUntilIdle();
+
   EXPECT_TRUE(response_received_);
   std::vector<std::string> expected_responses = ConcatResponses({
       "Context: ctx:this i off:0 max:10\n",
