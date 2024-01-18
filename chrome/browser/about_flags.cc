@@ -4897,10 +4897,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsLinux | kOsLacros | kOsMac | kOsCrOS | kOsFuchsia,
      FEATURE_VALUE_TYPE(
          blink::features::kDesktopPWAsAdditionalWindowingControls)},
-    {"enable-desktop-pwas-web-bundles",
-     flag_descriptions::kDesktopPWAsWebBundlesName,
-     flag_descriptions::kDesktopPWAsWebBundlesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kDesktopPWAsWebBundles)},
     {"record-web-app-debug-info", flag_descriptions::kRecordWebAppDebugInfoName,
      flag_descriptions::kRecordWebAppDebugInfoDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kRecordWebAppDebugInfo)},

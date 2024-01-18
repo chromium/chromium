@@ -19528,7 +19528,6 @@ from previous Chrome versions.
   <int value="-2133276662" label="EduCoexistenceConsentLog:disabled"/>
   <int value="-2132591642" label="enable-input-view"/>
   <int value="-2132161378" label="SendTabToSelfHistory:disabled"/>
-  <int value="-2130982324" label="DesktopPWAsWebBundles:disabled"/>
   <int value="-2129940395" label="WebAssemblySimd:disabled"/>
   <int value="-2129781123" label="RequestDesktopSiteZoom:enabled"/>
   <int value="-2129662187" label="CrosAppsBackgroundEventHandling:disabled"/>
@@ -27927,7 +27926,6 @@ from previous Chrome versions.
   <int value="1775652804" label="OmniboxBookmarkPaths:disabled"/>
   <int value="1775730290" label="OmniboxKeywordSearchButton:enabled"/>
   <int value="1776136073" label="ExtensionsMenuAccessControl:enabled"/>
-  <int value="1776163541" label="DesktopPWAsWebBundles:enabled"/>
   <int value="1776221137" label="TangibleSync:enabled"/>
   <int value="1776475705" label="show-composited-layer-borders"/>
   <int value="1777059507" label="trust-autofill-server-name-types"/>

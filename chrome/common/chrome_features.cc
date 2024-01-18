@@ -348,11 +348,6 @@ BASE_FEATURE(kDesktopPWAsTabStripSettings,
              "DesktopPWAsTabStripSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Adds support for web bundles, making web apps able to be launched offline.
-BASE_FEATURE(kDesktopPWAsWebBundles,
-             "DesktopPWAsWebBundles",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
 // Controls whether Chrome Apps are supported. See https://crbug.com/1221251.

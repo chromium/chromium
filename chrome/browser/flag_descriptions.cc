@@ -1064,11 +1064,6 @@ const char kDesktopPWAsBorderlessDescription[] =
     "Enable web app manifests to declare borderless mode as a display "
     "override. Prototype implementation of: go/borderless-mode.";
 
-const char kDesktopPWAsWebBundlesName[] = "Desktop PWAs Web Bundles";
-const char kDesktopPWAsWebBundlesDescription[] =
-    "Adds support for web bundles, making web apps able to be launched "
-    "offline.";
-
 const char kEnableTLS13EarlyDataName[] = "TLS 1.3 Early Data";
 const char kEnableTLS13EarlyDataDescription[] =
     "This option enables TLS 1.3 Early Data, allowing GET requests to be sent "
