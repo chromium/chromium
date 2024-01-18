@@ -4,6 +4,10 @@
 
 import {EnhancedNetworkTtsAdapter} from './mojo_bindings_externs';
 
+type AudioBuffer = chrome.ttsEngine.AudioBuffer;
+type AudioStreamOptions = chrome.ttsEngine.AudioStreamOptions;
+type SpeakOptions = chrome.ttsEngine.SpeakOptions;
+
 interface ServerResponse {
   response: ash.enhancedNetworkTts.mojom.TtsResponse;
   sampleRate: number;
@@ -38,11 +42,10 @@ export class EnhancedNetworkTts {
      * from this extension's manifest is the first to match the options object.
      */
     chrome.ttsEngine.onSpeakWithAudioStream.addListener(
-        (/** string */ utterance,
-         /** !chrome.ttsEngine.SpeakOptions */ options,
-         /** !chrome.ttsEngine.AudioStreamOptions */ audioStreamOptions,
-         /** function(!chrome.ttsEngine.AudioBuffer): void */ sendTtsAudio,
-         /** function(string): void */ sendError) =>
+        (utterance: string, options: SpeakOptions,
+         audioStreamOptions: AudioStreamOptions,
+         sendTtsAudio: (buffer: AudioBuffer) => void,
+         sendError: (error: string) => void) =>
             this.onSpeakWithAudioStreamEvent(
                 utterance, options, audioStreamOptions, sendTtsAudio,
                 sendError));
@@ -195,24 +198,27 @@ export class EnhancedNetworkTts {
     const rate = options.rate || 1.0;
 
     // Unpack voice and lang. For lang, the server takes lang code only.
-    let voice: string|undefined = options.voiceName || '';
-    let lang: string|undefined = options.lang || '';
-    lang = lang.trim().split(/_/)[0];
+    let voice: string|undefined;
+    let lang: string|undefined;
+    const voiceStr = options.voiceName || '';
+    let langStr = options.lang || '';
+    langStr = langStr.trim().split(/_/)[0];
 
     // The ReadAloud server takes voice and lang as a pair. Sets them to
     // undefined if either is empty.
-    if (voice.trim().length === 0 || lang.trim().length === 0) {
+    if (voiceStr.trim().length === 0 || langStr.trim().length === 0) {
       voice = undefined;
       lang = undefined;
-    }
-
-    // The default voice is used for a situation where the user enables the
-    // natural voices in Select-to-Speak but does not specify which voice name
-    // to use. We override the |voice| and |lang| to |undefined| to get the
-    // default voice from the server.
-    if (voice === 'default-wavenet') {
+    } else if (voice === 'default-wavenet') {
+      // The default voice is used for a situation where the user enables the
+      // natural voices in Select-to-Speak but does not specify which voice name
+      // to use. We override the |voice| and |lang| to |undefined| to get the
+      // default voice from the server.
       voice = undefined;
       lang = undefined;
+    } else {
+      voice = voiceStr;
+      lang = langStr;
     }
 
     return {utterance, rate, voice, lang};
