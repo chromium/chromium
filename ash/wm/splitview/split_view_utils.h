@@ -126,6 +126,24 @@ void DoSplitviewClipRectAnimation(
     const gfx::Rect& target_clip_rect,
     std::unique_ptr<ui::ImplicitAnimationObserver> animation_observer);
 
+// Returns whether `window`'s state type is actually in the left or top position
+// based on whether the display is in primary screen orientation.
+// TODO(sophiewen): Consolidate with `IsPhysicalLeftOrTop(SnapPostiion)`.
+bool IsPhysicalLeftOrTop(aura::Window* window);
+
+// Returns the maximum value of the `divider_position_`, which is the width of
+// the current display's work area bounds in landscape orientation, or height
+// of the current display's work area bounds in portrait orientation.
+int GetDividerPositionUpperLimit(aura::Window* root_window);
+
+// Returns the length of the window according to the screen orientation.
+int GetWindowLength(aura::Window* window, bool horizontal);
+
+// Transforms `window` based on whether it is the primary or secondary window
+// and its distance from `divider_position` during split view resizing.
+void SetWindowTransformDuringResizing(aura::Window* window,
+                                      int divider_position);
+
 // Restores split view and overview based on the current split view's state.
 // If |refresh_snapped_windows| is true, it will update the left and right
 // snapped windows based on the MRU windows snapped states.

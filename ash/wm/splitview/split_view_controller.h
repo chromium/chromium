@@ -413,10 +413,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
-  void OnWindowBoundsChanged(aura::Window* window,
-                             const gfx::Rect& old_bounds,
-                             const gfx::Rect& new_bounds,
-                             ui::PropertyChangeReason reason) override;
   void OnWindowDestroyed(aura::Window* window) override;
 
   // WindowStateObserver:
