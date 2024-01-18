@@ -147,6 +147,8 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
                              status.blocking_status, status.expiration);
     observer.OnSitesCountChanged(third_party_allowed_sites,
                                  third_party_blocked_sites);
+    observer.OnUserBypassIconStatusChanged(
+        status.controls_visible, status.protections_on, status.blocking_status);
     observer.OnBreakageConfidenceLevelChanged(GetConfidenceLevel(
         status.status, status.enforcement, third_party_allowed_sites,
         third_party_blocked_sites, bounce_count));

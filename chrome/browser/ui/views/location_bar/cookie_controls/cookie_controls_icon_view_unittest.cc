@@ -151,10 +151,8 @@ TEST_P(CookieControlsIconViewUnitTest, DefaultNotVisible) {
 }
 
 TEST_P(CookieControlsIconViewUnitTest, HighConfidenceEnabled) {
-  view_->OnStatusChanged(CookieControlsStatus::kEnabled,
-                         /*controls_visible=*/true, /*protections_on=*/true,
-                         CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         GetParam(), base::Time::Now() + base::Days(10));
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
+                                       /*protections_on=*/true, GetParam());
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kHigh);
   EXPECT_TRUE(Visible());
@@ -173,11 +171,8 @@ TEST_P(CookieControlsIconViewUnitTest, HighConfidenceEnabled) {
 }
 
 TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceLabelAnimation) {
-  view_->OnStatusChanged(CookieControlsStatus::kEnabled,
-                         /*controls_visible=*/true, /*protections_on=*/true,
-                         CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         GetParam(), base::Time::Now() + base::Days(10));
-  // Medium confidence to avoid triggering "Site not working"
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
+                                       /*protections_on=*/true, GetParam());
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kMedium);
   ExecuteIcon();
@@ -194,10 +189,8 @@ TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceLabelAnimation) {
 
 TEST_P(CookieControlsIconViewUnitTest,
        LowConfidenceDoesNotRetriggerA11yReadOut) {
-  view_->OnStatusChanged(CookieControlsStatus::kEnabled,
-                         /*controls_visible=*/true, /*protections_on=*/true,
-                         CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         GetParam(), base::Time::Now() + base::Days(10));
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
+                                       /*protections_on=*/true, GetParam());
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kHigh);
   EXPECT_TRUE(Visible());
@@ -227,10 +220,8 @@ TEST_P(CookieControlsIconViewUnitTest,
 }
 
 TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
-  view_->OnStatusChanged(CookieControlsStatus::kEnabled,
-                         /*controls_visible=*/true, /*protections_on=*/true,
-                         CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         GetParam(), base::Time::Now() + base::Days(10));
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
+                                       /*protections_on=*/true, GetParam());
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kMedium);
   EXPECT_TRUE(Visible());
@@ -248,10 +239,8 @@ TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
 }
 
 TEST_P(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
-  view_->OnStatusChanged(CookieControlsStatus::kEnabled,
-                         /*controls_visible=*/true, /*protections_on=*/true,
-                         CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         GetParam(), base::Time::Now() + base::Days(10));
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
+                                       /*protections_on=*/true, GetParam());
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kLow);
   EXPECT_FALSE(Visible());
@@ -274,76 +263,70 @@ TEST_P(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
 //// Default third-party cookie blocking disabled.
 
 TEST_P(CookieControlsIconViewUnitTest, HighConfidenceDisabled) {
-  view_->OnStatusChanged(CookieControlsStatus::kDisabled,
-                         /*controls_visible=*/false, /*protections_on=*/true,
-                         CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         GetParam(), base::Time::Now() + base::Days(10));
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/false,
+                                       /*protections_on=*/false, GetParam());
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kHigh);
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
-  EXPECT_EQ(TooltipText(),
-            In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
-  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
+  EXPECT_EQ(TooltipText(), In3pcd() ? TrackingProtectionLabel() : u"");
+  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : u"");
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
 #endif
   EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceShown), 0);
   ExecuteIcon();
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedUnknown), 1);
 }
 
 TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceDisabled) {
-  view_->OnStatusChanged(CookieControlsStatus::kDisabled,
-                         /*controls_visible=*/false, /*protections_on=*/true,
-                         CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         GetParam(), base::Time::Now() + base::Days(10));
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/false,
+                                       /*protections_on=*/false, GetParam());
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kMedium);
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
-  EXPECT_EQ(TooltipText(),
-            In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
-  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
+  EXPECT_EQ(TooltipText(), In3pcd() ? TrackingProtectionLabel() : u"");
+  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : u"");
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
 #endif
   EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceShown), 0);
   ExecuteIcon();
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedUnknown), 1);
 }
 
 TEST_P(CookieControlsIconViewUnitTest, LowConfidenceDisabled) {
-  view_->OnStatusChanged(CookieControlsStatus::kDisabled,
-                         /*controls_visible=*/false, /*protections_on=*/true,
-                         CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         GetParam(), base::Time::Now() + base::Days(10));
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/false,
+                                       /*protections_on=*/false, GetParam());
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kLow);
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
-  EXPECT_EQ(TooltipText(),
-            In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
-  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
+  EXPECT_EQ(TooltipText(), In3pcd() ? TrackingProtectionLabel() : u"");
+  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : u"");
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
 #endif
   EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMAMediumConfidenceShown), 0);
   ExecuteIcon();
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedUnknown), 1);
 }
 
 /// Disabled third-party cookie blocking for site.
 
 TEST_P(CookieControlsIconViewUnitTest, HighConfidenceDisabledForSite) {
-  view_->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
-                         /*controls_visible=*/true, /*protections_on=*/true,
-                         CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         GetParam(), base::Time::Now() + base::Days(10));
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
+                                       /*protections_on=*/false, GetParam());
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kHigh);
   EXPECT_TRUE(Visible());
@@ -360,10 +343,8 @@ TEST_P(CookieControlsIconViewUnitTest, HighConfidenceDisabledForSite) {
 }
 
 TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceDisabledForSite) {
-  view_->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
-                         /*controls_visible=*/true, /*protections_on=*/true,
-                         CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         GetParam(), base::Time::Now() + base::Days(10));
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
+                                       /*protections_on=*/false, GetParam());
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kMedium);
   EXPECT_TRUE(Visible());
@@ -380,10 +361,8 @@ TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceDisabledForSite) {
 }
 
 TEST_P(CookieControlsIconViewUnitTest, LowConfidenceDisabledForSite) {
-  view_->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
-                         /*controls_visible=*/true, /*protections_on=*/true,
-                         CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         GetParam(), base::Time::Now() + base::Days(10));
+  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
+                                       /*protections_on=*/false, GetParam());
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kLow);
   EXPECT_FALSE(Visible());
