@@ -2079,7 +2079,7 @@ crbug.com/1197087 [ Debug ] external/wpt/web-animations/interfaces/Animation/fin
 [ Mac ] external/wpt/webdriver/tests/* [ Skip ]
 [ Win ] external/wpt/webdriver/tests/* [ Skip ]
 
-# Skip tests that require window.internal and window.testRunner on chrome_wpt_tests
+# Skip tests that require window.internals and window.testRunner on chrome_wpt_tests
 crbug.com/1516468 [ Chrome ] wpt_internal/clipboard-apis/async-navigator-clipboard-events.https.html [ Skip ]
 crbug.com/1516468 [ Chrome ] wpt_internal/credential-management/fedcm-3pc-blocked-with-iss-3p-ot.sub.https.html [ Skip ]
 crbug.com/1516468 [ Chrome ] wpt_internal/credential-management/fedcm-3pc-blocked-with-iss-ot.https.html [ Skip ]
@@ -2141,6 +2141,31 @@ crbug.com/1516468 [ Chrome ] wpt_internal/websocket-cookies/third-party-cookie-b
 crbug.com/1516468 [ Chrome ] wpt_internal/websocket-cookies/third-party-cookie-blocked-on-same-origin-websocket.https.html [ Skip ]
 crbug.com/1516468 [ Chrome ] wpt_internal/websocket-cookies/third-party-cookie-blocked.https.html [ Skip ]
 crbug.com/1516468 [ Chrome ] wpt_internal/webtransport/subresource-filter-disallowed.https.html [ Skip ]
+
+# These tests are not expected to work for `chrome` because they use
+# `window.eventSender`, a test-only API.
+crbug.com/1516468 [ Chrome ] wpt_internal/display-lock/css-content-visibility/content-visibility-event-sender-001.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/display-lock/css-content-visibility/content-visibility-event-sender-002.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/event-timing/interactionid-menu-key-press.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/event-timing/interactionid-menu-keydown.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/forms/file/file-input-click.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/forms/file/file-input-key-enter.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/forms/file/file-input-key-other.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/forms/file/file-input-key-space.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/forms/file/file-input-webkitdirectory-click.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/forms/file/file-input-webkitdirectory-key-enter.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/forms/file/file-input-webkitdirectory-key-enter-prevent-keypress.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/forms/file/file-input-webkitdirectory-key-enter-prevent-keyup.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/forms/file/file-input-webkitdirectory-key-other.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/forms/file/file-input-webkitdirectory-key-space.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/html/interaction/focus/the-autofocus-attribute/object-fallback.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/html/rendering/non-replaced-elements/textarea-centering.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/web-share/share-arity.https.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/web-share/share-error.https.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/web-share/share-nonutf8-encoding.https.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/web-share/share-success.https.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/web-share/share-types.https.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/web-share/share-url-relative.https.sub.html [ Skip ]
 
 # Bluetooth tests do not work on Chrome
 [ Chrome ] external/wpt/bluetooth/* [ Skip ]

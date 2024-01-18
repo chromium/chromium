@@ -463,7 +463,6 @@ crbug.com/1499775 wpt_internal/css/css-text-decor/text-decoration-line-grammar-e
 crbug.com/1499775 wpt_internal/css/css-text-decor/text-decoration-line-grammar-error-002.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 wpt_internal/css/css-text-decor/text-decoration-line-spelling-error-001.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 wpt_internal/css/css-text-decor/text-decoration-line-spelling-error-002.html [ Failure ]  # Reftest image failure
-crbug.com/1499775 wpt_internal/display-lock/css-content-visibility/content-visibility-event-sender-001.html [ Timeout ]
 crbug.com/1499775 wpt_internal/hid/requestDevice/sandboxed_iframe.https.window.html [ Timeout ]
 crbug.com/1499775 wpt_internal/infrastructure/printing-reftest-pages.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 wpt_internal/infrastructure/printing-set-size.html [ Failure ]  # Reftest image failure
