@@ -90,7 +90,8 @@ TEST_F(RasterInProcessCommandBufferTest, AllowedBetweenBeginEndRasterCHROMIUM) {
   // Create shared image and allocate storage.
   auto* sii = context_->GetSharedImageInterface();
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
-  uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
+  uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                    gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   gpu::Mailbox mailbox =
       sii->CreateSharedImage(kSharedImageFormat, kBufferSize, color_space,

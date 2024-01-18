@@ -300,7 +300,8 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
     if (!channel_->shared_image_stub()->CreateSharedImage(
             mailbox, std::move(plane_handle), plane_format, plane_size,
             gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-            SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION,
+            SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+                SHARED_IMAGE_USAGE_OOP_RASTERIZATION,
             "ImageDecodeAccelerator")) {
       DLOG(ERROR) << "Could not create SharedImage";
       return;
