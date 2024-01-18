@@ -917,48 +917,6 @@ class PendingAssociatedReceiver(ReferenceKind):
     return id(self)
 
 
-class InterfaceRequest(ReferenceKind):
-  Kind.AddSharedProperty('kind')
-
-  def __init__(self, kind=None):
-    if kind is not None:
-      if not isinstance(kind, Interface):
-        raise Exception(
-            "Interface request requires %r to be an interface." % kind.spec)
-      ReferenceKind.__init__(self, 'r:' + kind.spec)
-    else:
-      ReferenceKind.__init__(self)
-    self.kind = kind
-
-  def __eq__(self, rhs):
-    return isinstance(rhs, InterfaceRequest) and self.kind == rhs.kind
-
-  def __hash__(self):
-    return id(self)
-
-
-class AssociatedInterfaceRequest(ReferenceKind):
-  Kind.AddSharedProperty('kind')
-
-  def __init__(self, kind=None):
-    if kind is not None:
-      if not isinstance(kind, InterfaceRequest):
-        raise Exception(
-            "Associated interface request requires %r to be an interface "
-            "request." % kind.spec)
-      assert not kind.is_nullable
-      ReferenceKind.__init__(self, 'asso:' + kind.spec)
-    else:
-      ReferenceKind.__init__(self)
-    self.kind = kind.kind if kind is not None else None
-
-  def __eq__(self, rhs):
-    return isinstance(rhs, AssociatedInterfaceRequest) and self.kind == rhs.kind
-
-  def __hash__(self):
-    return id(self)
-
-
 class Parameter:
   def __init__(self,
                mojom_name=None,
@@ -1222,27 +1180,6 @@ class Interface(ReferenceKind):
                        'Expected standard RFC 4122 string representation of '
                        'a UUID.'.format(self.mojom_name))
     return (int(u.hex[:16], 16), int(u.hex[16:], 16))
-
-  def __hash__(self):
-    return id(self)
-
-
-class AssociatedInterface(ReferenceKind):
-  Kind.AddSharedProperty('kind')
-
-  def __init__(self, kind=None):
-    if kind is not None:
-      if not isinstance(kind, Interface):
-        raise Exception(
-            "Associated interface requires %r to be an interface." % kind.spec)
-      assert not kind.is_nullable
-      ReferenceKind.__init__(self, 'asso:' + kind.spec)
-    else:
-      ReferenceKind.__init__(self)
-    self.kind = kind
-
-  def __eq__(self, rhs):
-    return isinstance(rhs, AssociatedInterface) and self.kind == rhs.kind
 
   def __hash__(self):
     return id(self)
@@ -1526,16 +1463,20 @@ def IsInterfaceKind(kind):
   return isinstance(kind, Interface)
 
 
+# TODO(rsesek): Remove these and their plumbing in the generator templates.
 def IsAssociatedInterfaceKind(kind):
-  return isinstance(kind, AssociatedInterface)
+  # pylint: disable=unused-argument
+  return False
 
 
 def IsInterfaceRequestKind(kind):
-  return isinstance(kind, InterfaceRequest)
+  # pylint: disable=unused-argument
+  return False
 
 
 def IsAssociatedInterfaceRequestKind(kind):
-  return isinstance(kind, AssociatedInterfaceRequest)
+  # pylint: disable=unused-argument
+  return False
 
 
 def IsPendingRemoteKind(kind):
@@ -1591,9 +1532,8 @@ def IsAnyHandleKind(kind):
 
 
 def IsAnyInterfaceKind(kind):
-  return (IsInterfaceKind(kind) or IsInterfaceRequestKind(kind)
-          or IsAssociatedKind(kind) or IsPendingRemoteKind(kind)
-          or IsPendingReceiverKind(kind))
+  return (IsInterfaceKind(kind) or IsAssociatedKind(kind)
+          or IsPendingRemoteKind(kind) or IsPendingReceiverKind(kind))
 
 
 def IsAnyHandleOrInterfaceKind(kind):
@@ -1601,9 +1541,7 @@ def IsAnyHandleOrInterfaceKind(kind):
 
 
 def IsAssociatedKind(kind):
-  return (IsAssociatedInterfaceKind(kind)
-          or IsAssociatedInterfaceRequestKind(kind)
-          or IsPendingAssociatedRemoteKind(kind)
+  return (IsPendingAssociatedRemoteKind(kind)
           or IsPendingAssociatedReceiverKind(kind))
 
 

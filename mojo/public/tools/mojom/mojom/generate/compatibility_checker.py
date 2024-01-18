@@ -204,15 +204,6 @@ class BackwardCompatibilityChecker:
         old: mojom.PendingAssociatedReceiver):
     return self.IsBackwardCompatible(new.kind, old.kind)
 
-  @_CheckCompat.register(mojom.InterfaceRequest)
-  def _(self, new: mojom.InterfaceRequest, old: mojom.InterfaceRequest):
-    return self.IsBackwardCompatible(new.kind, old.kind)
-
-  @_CheckCompat.register(mojom.AssociatedInterfaceRequest)
-  def _(self, new: mojom.AssociatedInterfaceRequest,
-        old: mojom.AssociatedInterfaceRequest):
-    return self.IsBackwardCompatible(new.kind, old.kind)
-
   @_CheckCompat.register(mojom.Interface)
   def _(self, new: mojom.Interface, old: mojom.Interface):
     """This interface is backward-compatible with old interface if and
@@ -285,10 +276,6 @@ class BackwardCompatibilityChecker:
         return False
 
     return True
-
-  @_CheckCompat.register(mojom.AssociatedInterface)
-  def _(self, new: mojom.AssociatedInterface, old: mojom.AssociatedInterface):
-    return self.IsBackwardCompatible(new.kind, old.kind)
 
   @_CheckCompat.register(mojom.Enum)
   def _(self, new: mojom.Enum, old: mojom.Enum):

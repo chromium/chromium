@@ -302,12 +302,8 @@ class Parser:
                      | associatedremotetype
                      | associatedreceivertype
                      | identifier
-                     | ASSOCIATED identifier
                      | handletype"""
-    if len(p) == 2:
-      p[0] = p[1]
-    else:
-      p[0] = "asso<" + p[2] + ">"
+    p[0] = p[1]
 
   def p_remotetype(self, p):
     """remotetype : PENDING_REMOTE LANGLE identifier RANGLE"""

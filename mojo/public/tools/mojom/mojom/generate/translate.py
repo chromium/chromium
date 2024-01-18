@@ -384,9 +384,6 @@ def _MapKind(kind):
     lbracket = kind.rfind('[')
     typename = kind[0:lbracket]
     return 'a' + kind[lbracket + 1:-1] + ':' + _MapKind(typename)
-  if kind.startswith('asso<'):
-    assert kind.endswith('>')
-    return 'asso:' + _MapKind(kind[5:-1])
   if kind.startswith('rmt<'):
     assert kind.endswith('>')
     return 'rmt:' + _MapKind(kind[4:-1])
@@ -562,18 +559,10 @@ def _Kind(kinds, spec, scope):
     kind = kind.MakeNullableKind()
   elif spec.startswith('a:'):
     kind = mojom.Array(_Kind(kinds, spec[2:], scope))
-  elif spec.startswith('asso:'):
-    inner_kind = _Kind(kinds, spec[5:], scope)
-    if isinstance(inner_kind, mojom.InterfaceRequest):
-      kind = mojom.AssociatedInterfaceRequest(inner_kind)
-    else:
-      kind = mojom.AssociatedInterface(inner_kind)
   elif spec.startswith('a'):
     colon = spec.find(':')
     length = int(spec[1:colon])
     kind = mojom.Array(_Kind(kinds, spec[colon + 1:], scope), length)
-  elif spec.startswith('r:'):
-    kind = mojom.InterfaceRequest(_Kind(kinds, spec[2:], scope))
   elif spec.startswith('rmt:'):
     kind = mojom.PendingRemote(_Kind(kinds, spec[4:], scope))
   elif spec.startswith('rcv:'):
@@ -1021,8 +1010,7 @@ def _CollectReferencedKinds(module, all_defined_kinds):
     if mojom.IsMapKind(kind):
       return (extract_referenced_user_kinds(kind.key_kind) +
               extract_referenced_user_kinds(kind.value_kind))
-    if (mojom.IsInterfaceRequestKind(kind) or mojom.IsAssociatedKind(kind)
-        or mojom.IsPendingRemoteKind(kind)
+    if (mojom.IsAssociatedKind(kind) or mojom.IsPendingRemoteKind(kind)
         or mojom.IsPendingReceiverKind(kind)):
       return [kind.kind]
     if mojom.IsStructKind(kind):

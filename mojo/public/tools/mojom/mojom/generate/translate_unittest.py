@@ -63,8 +63,6 @@ class TranslateTest(unittest.TestCase):
   def testAssociatedKinds(self):
     """Tests type spec translation of associated interfaces and requests."""
     # pylint: disable=W0212
-    self.assertEquals(
-        translate._MapKind("asso<SomeInterface>?"), "?asso:x:SomeInterface")
     self.assertEquals(translate._MapKind("rca<SomeInterface>?"),
                       "?rca:x:SomeInterface")
 
