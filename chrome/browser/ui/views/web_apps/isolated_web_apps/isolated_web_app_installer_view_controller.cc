@@ -47,7 +47,10 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "chrome/browser/ui/ash/shelf/isolated_web_app_installer_shelf_item_controller.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -196,8 +199,6 @@ void IsolatedWebAppInstallerViewController::AddOrUpdateWindowToShelf() {
   if (!window_) {
     return;
   }
-// Currently only supports Lacros.
-// TODO(crbug.com/1515466): Ash Implementation.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
   if (lacros_service->IsAvailable<crosapi::mojom::LacrosShelfItemTracker>()) {
@@ -215,8 +216,37 @@ void IsolatedWebAppInstallerViewController::AddOrUpdateWindowToShelf() {
     lacros_service->GetRemote<crosapi::mojom::LacrosShelfItemTracker>()
         ->AddOrUpdateWindow(std::move(window_data));
   }
-
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::ShelfModel* shelf_model = ash::ShelfModel::Get();
+  ash::ShelfID shelf_id = ash::ShelfID(instance_id_);
+
+  ash::ShelfItem item;
+  item.id = shelf_id;
+  item.status = ash::STATUS_RUNNING;
+  item.type = ash::TYPE_APP;
+  if (icon_.isNull()) {
+    item.image = IsolatedWebAppInstallerShelfItemController::
+        GetDefaultInstallerShelfIcon();
+  } else {
+    item.image = icon_;
+  }
+
+  auto item_index = shelf_model->ItemIndexByID(shelf_id);
+  if (item_index == -1) {
+    // Add as new item to the shelf.
+    auto delegate =
+        std::make_unique<IsolatedWebAppInstallerShelfItemController>(shelf_id);
+    shelf_model->Add(item, std::move(delegate));
+    static_cast<LacrosShelfItemController*>(
+        shelf_model->GetShelfItemDelegate(shelf_id))
+        ->AddWindow(window_);
+  } else {
+    // Update existing item on the shelf.
+    shelf_model->Set(item_index, item);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void IsolatedWebAppInstallerViewController::SetIcon(gfx::ImageSkia icon) {
@@ -308,6 +338,15 @@ bool IsolatedWebAppInstallerViewController::OnAccept() {
 }
 
 void IsolatedWebAppInstallerViewController::OnComplete() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::ShelfModel* shelf_model = ash::ShelfModel::Get();
+  ash::ShelfID shelf_id = ash::ShelfID(instance_id_);
+  int index = shelf_model->ItemIndexByID(shelf_id);
+  if (-1 != index) {
+    shelf_model->RemoveItemAt(index);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   view_ = nullptr;
   dialog_delegate_ = nullptr;
   std::move(completion_callback_).Run();
