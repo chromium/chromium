@@ -24,9 +24,14 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/user_education/show_promo_in_page.h"
 #include "chrome/common/compose/type_conversions.h"
 #include "chrome/common/pref_names.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/core/browser/compose_metrics.h"
@@ -113,7 +118,7 @@ void ChromeComposeClient::BindComposeDialog(
     debug_session_->Bind(std::move(handler), std::move(dialog));
     return;
   }
-  sessions_.at(active_compose_field_id_.value())
+  sessions_.at(active_compose_ids_.value().first)
       ->Bind(std::move(handler), std::move(dialog));
 }
 
@@ -195,11 +200,38 @@ void ChromeComposeClient::CompleteFirstRun() {
   // relevant metrics.
   UpdateAllSessionsWithFirstRunComplete();
   ComposeSession* active_session = GetSessionForActiveComposeField();
+  open_settings_requested_ = false;
+
   if (active_session) {
     active_session->SetFirstRunCloseReason(
         compose::ComposeFirstRunSessionCloseReason::
             kFirstRunDisclaimerAcknowledgedWithoutInsert);
   }
+}
+
+void ChromeComposeClient::OpenComposeSettings() {
+  auto* browser = chrome::FindBrowserWithTab(&GetWebContents());
+  // `browser` should never be null here. This can only be triggered when there
+  // is an active ComposeSession, which  is indirectly owned by the same
+  // WebContents that holds the field that the Compose dialog is triggered from.
+  // The session is created when that dialog is opened and it is destroyed if
+  // its WebContents is destroyed.
+  CHECK(browser);
+
+  ShowPromoInPage::Params params;
+  params.target_url = chrome::GetSettingsUrl(chrome::kSyncSetupSubPage);
+  params.bubble_anchor_id = kAnonymizedUrlCollectionPersonalizationSettingId;
+  params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
+  params.bubble_text =
+      l10n_util::GetStringUTF16(IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT);
+  params.close_button_alt_text_id =
+      IDS_COMPOSE_MSBB_IPH_BUBBLE_CLOSE_BUTTON_LABEL_TEXT;
+
+  base::RecordAction(
+      base::UserMetricsAction("Compose.SessionPaused.MSBBSettingsShown"));
+  ShowPromoInPage::Start(browser, std::move(params));
+
+  open_settings_requested_ = true;
 }
 
 void ChromeComposeClient::UpdateAllSessionsWithFirstRunComplete() {
@@ -215,8 +247,9 @@ void ChromeComposeClient::CreateOrUpdateSession(
     EntryPoint ui_entry_point,
     const autofill::FormFieldData& trigger_field,
     ComposeCallback callback) {
-  active_compose_field_id_ =
-      std::make_optional<autofill::FieldGlobalId>(trigger_field.global_id());
+  active_compose_ids_ = std::make_optional<
+      std::pair<autofill::FieldGlobalId, autofill::FormGlobalId>>(
+      trigger_field.global_id(), trigger_field.renderer_form_id());
   std::string selected_text = base::UTF16ToUTF8(trigger_field.selected_text);
   ComposeSession* current_session;
 
@@ -227,9 +260,9 @@ void ChromeComposeClient::CreateOrUpdateSession(
       ShouldResumeSessionFromEntryPoint(ui_entry_point) ||
       selected_text.empty();
 
-  bool has_session = HasSession(active_compose_field_id_.value());
+  bool has_session = HasSession(active_compose_ids_.value().first);
   if (has_session && resume_current_session) {
-    auto it = sessions_.find(active_compose_field_id_.value());
+    auto it = sessions_.find(active_compose_ids_.value().first);
     current_session = it->second.get();
     current_session->set_compose_callback(std::move(callback));
   } else {
@@ -242,7 +275,7 @@ void ChromeComposeClient::CreateOrUpdateSession(
           compose::ComposeSessionCloseReason::kNewSessionWithSelectedText);
       // Set the equivalent close reason if the existing session was in a
       // consent state.
-      auto it = sessions_.find(active_compose_field_id_.value());
+      auto it = sessions_.find(active_compose_ids_.value().first);
       current_session = it->second.get();
       if (!current_session->get_fre_complete()) {
         SetFirstRunSessionCloseReason(
@@ -255,7 +288,7 @@ void ChromeComposeClient::CreateOrUpdateSession(
         &GetWebContents(), GetModelExecutor(), GetModelQualityLogsUploader(),
         GetSessionId(), std::move(callback));
     current_session = new_session.get();
-    sessions_.insert_or_assign(active_compose_field_id_.value(),
+    sessions_.insert_or_assign(active_compose_ids_.value().first,
                                std::move(new_session));
 
     // Set the FRE state of the new session.
@@ -294,14 +327,14 @@ void ChromeComposeClient::RemoveActiveSession() {
     debug_session_.reset();
     return;
   }
-  if (!active_compose_field_id_.has_value()) {
+  if (!active_compose_ids_.has_value()) {
     return;
   }
-  auto it = sessions_.find(active_compose_field_id_.value());
+  auto it = sessions_.find(active_compose_ids_.value().first);
   CHECK(it != sessions_.end())
       << "Attempted to remove compose session that doesn't exist.";
-  sessions_.erase(active_compose_field_id_.value());
-  active_compose_field_id_.reset();
+  sessions_.erase(active_compose_ids_.value().first);
+  active_compose_ids_.reset();
 }
 
 void ChromeComposeClient::SetMSBBSessionCloseReason(
@@ -311,6 +344,8 @@ void ChromeComposeClient::SetMSBBSessionCloseReason(
   }
 
   ComposeSession* active_session = GetSessionForActiveComposeField();
+  open_settings_requested_ = false;
+
   if (active_session) {
     active_session->SetMSBBCloseReason(close_reason);
   }
@@ -323,6 +358,8 @@ void ChromeComposeClient::SetFirstRunSessionCloseReason(
   }
 
   ComposeSession* active_session = GetSessionForActiveComposeField();
+  open_settings_requested_ = false;
+
   if (active_session) {
     active_session->SetFirstRunCloseReason(close_reason);
   }
@@ -335,6 +372,8 @@ void ChromeComposeClient::SetSessionCloseReason(
   }
 
   ComposeSession* active_session = GetSessionForActiveComposeField();
+  open_settings_requested_ = false;
+
   if (active_session) {
     active_session->SetCloseReason(close_reason);
   }
@@ -345,13 +384,28 @@ void ChromeComposeClient::RemoveAllSessions() {
     debug_session_.reset();
   }
 
-  sessions_.erase(sessions_.begin(), sessions_.end());
-  active_compose_field_id_.reset();
+  // Since this is being called upon switching tabs we need to not close the
+  // active session in the case where it will be reopened upon return.
+  ComposeSession* active_session = GetSessionForActiveComposeField();
+  open_settings_requested_ = false;
+
+  if (active_session && open_settings_requested_) {
+    for (auto it = sessions_.begin(); it != sessions_.end();) {
+      if (it->first != active_compose_ids_.value().first) {
+        it = sessions_.erase(it);
+      } else {
+        ++it;
+      }
+    }
+  } else {
+    sessions_.erase(sessions_.begin(), sessions_.end());
+    active_compose_ids_.reset();
+  }
 }
 
 ComposeSession* ChromeComposeClient::GetSessionForActiveComposeField() {
-  if (active_compose_field_id_.has_value()) {
-    auto it = sessions_.find(active_compose_field_id_.value());
+  if (active_compose_ids_.has_value()) {
+    auto it = sessions_.find(active_compose_ids_.value().first);
     if (it != sessions_.end()) {
       return it->second.get();
     }
@@ -450,6 +504,8 @@ int ChromeComposeClient::GetSessionCountForTest() {
 
 void ChromeComposeClient::OpenFeedbackPageForTest(std::string feedback_id) {
   ComposeSession* active_session = GetSessionForActiveComposeField();
+  open_settings_requested_ = false;
+
   if (active_session) {
     active_session->OpenFeedbackPage(feedback_id);
   }
@@ -460,6 +516,27 @@ void ChromeComposeClient::PrimaryPageChanged(content::Page& page) {
 
   compose::ComposeTextUsageLogger::GetOrCreateForCurrentDocument(
       &page.GetMainDocument());
+}
+
+void ChromeComposeClient::OnWebContentsFocused(
+    content::RenderWidgetHost* render_widget_host) {
+  ComposeSession* active_session = GetSessionForActiveComposeField();
+  if (open_settings_requested_) {
+    open_settings_requested_ = false;
+
+    if (active_session && !active_session->get_current_msbb_state() &&
+        active_compose_ids_.has_value()) {
+      content::RenderFrameHost* top_level_frame =
+          GetWebContents().GetPrimaryMainFrame();
+      if (auto* driver = autofill::ContentAutofillDriver::GetForRenderFrameHost(
+              top_level_frame)) {
+        GetManager().OpenCompose(
+            *driver, active_compose_ids_.value().second,
+            active_compose_ids_.value().first,
+            compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);
+      }
+    }
+  }
 }
 
 void ChromeComposeClient::DidGetUserInteraction(

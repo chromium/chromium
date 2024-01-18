@@ -102,10 +102,6 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // is clicked in the FRE dialog.
   void OpenComposeLearnMorePage() override;
 
-  // Opens the Compose-related Chrome settings page in a new tab when the
-  // "Go to Settings" link is clicked in the MSBB dialog.
-  void OpenComposeSettings() override;
-
   // Opens the Compose feedback survey page in a new tab. This implementation is
   // designed for Dogfood only.
   void OpenFeedbackSurveyLink() override;

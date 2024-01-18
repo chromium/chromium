@@ -60,6 +60,10 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
     this.composeClientPageHandler.closeUI(reason);
   }
 
+  openComposeSettings() {
+    this.composeClientPageHandler.openComposeSettings();
+  }
+
   compose(input: string, edited: boolean): void {
     this.composeSessionPageHandler.compose(input, edited);
   }
@@ -84,9 +88,6 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
     this.composeSessionPageHandler.openFeedbackSurveyLink();
   }
 
-  openComposeSettings() {
-    this.composeSessionPageHandler.openComposeSettings();
-  }
 
   requestInitialState(): Promise<OpenMetadata> {
     return this.composeSessionPageHandler.requestInitialState().then(

@@ -7203,6 +7203,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Compose.SessionPaused.MSBBSettingsShown">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when a Compose session pauses because the user opened the MSBB
+    settings from inside the compose dialog.
+  </description>
+</action>
+
 <action name="ConfirmNotToOrderSpringCharger">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

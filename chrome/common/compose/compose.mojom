@@ -206,10 +206,6 @@ interface ComposeSessionPageHandler {
   // survey.
   OpenFeedbackSurveyLink();
 
-  // Asks the Browser to open a new tab navigated to the Compose-related Chrome
-  // settings page.
-  OpenComposeSettings();
-
   // Asks the native handler to store the user feedback supplied by the user.
   SetUserFeedback(UserFeedback feedback);
 };
@@ -223,6 +219,9 @@ interface ComposeClientPageHandler {
   CloseUI(CloseReason reason);
   // Notifies the browser that the FRE was completed.
   CompleteFirstRun();
+  // Asks the Browser to open a new tab navigated to the Compose-related Chrome
+  // settings page.
+  OpenComposeSettings();
 };
 
 // Interface for calls from the Browser process into Compose dialog JS.
