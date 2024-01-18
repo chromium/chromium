@@ -549,6 +549,16 @@ void BrowserURLLoaderThrottle::OnCompleteAsyncCheck(
     UrlCheckerOnSB::OnCompleteCheckResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  // If the async checker is already transferred, notify tracker. This happens
+  // if it is transferred between complete callback is scheduled on the IO
+  // thread and executed on the UI thread.
+  if (!async_sb_checker_ &&
+      !base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
+    async_check_tracker_->PendingCheckerCompleted(navigation_id_.value(),
+                                                  result);
+    return;
+  }
+
   // |blocked| may already be set by |sync_sb_checker_|.
   if (blocked_) {
     return;

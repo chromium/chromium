@@ -52,6 +52,11 @@ class AsyncCheckTracker
   // Takes ownership of `checker`.
   void TransferUrlChecker(std::unique_ptr<UrlCheckerOnSB> checker);
 
+  // Called by `UrlCheckerOnSB` or `BrowserURLLoaderThrottle`, when the check
+  // completes.
+  void PendingCheckerCompleted(int64_t navigation_id,
+                               UrlCheckerOnSB::OnCompleteCheckResult result);
+
   // Returns whether navigation is pending.
   bool IsNavigationPending(int64_t navigation_id);
 
@@ -70,10 +75,6 @@ class AsyncCheckTracker
 
   AsyncCheckTracker(content::WebContents* web_contents,
                     scoped_refptr<BaseUIManager> ui_manager);
-
-  // Called by `UrlCheckerOnSB`, when the check completes.
-  void PendingCheckerCompleted(int64_t navigation_id,
-                               UrlCheckerOnSB::OnCompleteCheckResult result);
 
   // Deletes the pending checker in `pending_checkers_` that is keyed by
   // `navigation_id`. Does nothing if `navigation_id` is not found.

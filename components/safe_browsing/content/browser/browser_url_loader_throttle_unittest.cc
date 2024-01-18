@@ -1302,4 +1302,32 @@ TEST_F(SBBrowserUrlLoaderThrottleDisableOnUIThreadTest,
   CallWillProcessResponse();
 }
 
+TEST_F(SBBrowserUrlLoaderThrottleDisableOnUIThreadTest,
+       CheckerTransferredBetweenCallbackScheduledAndExecuted) {
+  SetUpTest(/*async_check_enabled=*/true);
+  sync_url_checker_->AddCallbackInfo(
+      /*should_proceed=*/true,
+      /*should_show_interstitial=*/false,
+      /*should_delay_callback=*/false);
+  async_url_checker_->AddCallbackInfo(
+      /*should_proceed=*/false,
+      /*should_show_interstitial=*/true,
+      /*should_delay_callback=*/true);
+
+  CallWillStartRequest();
+  async_url_checker_->RestartDelayedCallback(/*index=*/0);
+  // At this point, the complete callback is scheduled, but not executed.
+  bool defer = false;
+  throttle_->WillProcessResponse(url_, response_head_.get(), &defer);
+  EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 1u);
+  // At this point, the checker is transferred, but the complete callback is
+  // still not executed.
+
+  // Execute the complete callback.
+  task_environment_.RunUntilIdle();
+  // BrowserURLLoaderThrottle should forward the result to AsyncCheckTracker.
+  // Since proceed is false, the pending checker should be deleted.
+  EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 0u);
+}
+
 }  // namespace safe_browsing
