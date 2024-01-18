@@ -24,10 +24,6 @@ BASE_FEATURE(kComposeEligible,
              "ComposeEligible",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kComposeUkmEligible,
-             "ComposeUkmEligible",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableComposeNudge,
              "ComposeNudge",
              base::FEATURE_DISABLED_BY_DEFAULT);

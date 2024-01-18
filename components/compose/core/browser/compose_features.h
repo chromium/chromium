@@ -22,11 +22,8 @@ BASE_DECLARE_FEATURE(kComposeInnerText);
 // Enables Auto-submit of compose with a valid selection.
 BASE_DECLARE_FEATURE(kComposeAutoSubmit);
 
-// Force compose off even if enabled by other switches.
+// Force compose off even if enabled by other switches..
 BASE_DECLARE_FEATURE(kComposeEligible);
-
-// Force compose UKM off if needed.
-BASE_DECLARE_FEATURE(kComposeUkmEligible);
 
 // Controls whether or not the Nudge UI entrypoint is enabled for Compose.
 BASE_DECLARE_FEATURE(kEnableComposeNudge);
