@@ -582,15 +582,6 @@ def _make_reflect_accessor_func_name(cg_context):
         else:
             return "SetElementAttribute"
 
-    if idl_type.element_type:
-        element_type = idl_type.element_type.unwrap()
-        if (element_type.is_interface and
-                element_type.type_definition_object.does_implement("Element")):
-            if cg_context.attribute_get:
-                return "GetElementArrayAttribute"
-            else:
-                return "SetElementArrayAttribute"
-
     if cg_context.attribute_get:
         return "FastGetAttribute"
     else:

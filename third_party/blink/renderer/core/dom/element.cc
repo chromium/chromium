@@ -41,6 +41,7 @@
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_check_visibility_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_inner_html_options.h"
@@ -209,9 +210,11 @@
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
+#include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -889,33 +892,236 @@ Element* Element::GetElementAttribute(const QualifiedName& name) {
   return getElementByIdIncludingDisconnected(*this, id);
 }
 
-void Element::SetElementArrayAttribute(
-    const QualifiedName& name,
-    const HeapVector<Member<Element>>* given_elements) {
+HeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
+    const QualifiedName& name) {
+  // https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#attr-associated-elements
+  // 1. Let elements be an empty list.
+  HeapVector<Member<Element>>* result_elements =
+      MakeGarbageCollected<HeapVector<Member<Element>>>();
+  HeapLinkedHashSet<WeakMember<Element>>* explicitly_set_elements =
+      GetExplicitlySetElementsForAttr(this, name);
+  if (explicitly_set_elements) {
+    // 3. If reflectedTarget's explicitly set attr-elements is not null:
+    for (auto attr_element : *explicitly_set_elements) {
+      // 3.1. If attrElement is not a descendant of any of element's
+      // shadow-including ancestors, then continue.
+      if (ElementIsDescendantOfShadowIncludingAncestor(*this, *attr_element)) {
+        // 3.2. Append attrElement to elements.
+        result_elements->push_back(attr_element);
+      }
+    }
+  } else {
+    // 4. Otherwise:
+    // 4.1. Let contentAttributeValue be the result of running reflectedTarget's
+    // get the content attribute.
+    QualifiedName attr = name;
+
+    // Account for labelled vs labeled spelling
+    if (attr == html_names::kAriaLabelledbyAttr) {
+      attr = hasAttribute(html_names::kAriaLabeledbyAttr) &&
+                     !hasAttribute(html_names::kAriaLabelledbyAttr)
+                 ? html_names::kAriaLabeledbyAttr
+                 : html_names::kAriaLabelledbyAttr;
+    }
+
+    if (!hasAttribute(attr)) {
+      // 4.2.  If contentAttributeValue is null, then return null.
+      return nullptr;
+    }
+
+    String attribute_value = getAttribute(attr).GetString();
+
+    // 4.3. Let tokens be contentAttributeValue, split on ASCII whitespace.
+    Vector<String> tokens;
+    attribute_value = attribute_value.SimplifyWhiteSpace();
+    attribute_value.Split(' ', tokens);
+
+    for (auto id : tokens) {
+      // 4.3.1. Let candidate be the first element, in tree order, that meets
+      // [certain criteria].
+      Element* candidate =
+          getElementByIdIncludingDisconnected(*this, AtomicString(id));
+      if (candidate) {
+        // 4.3.2. Append candidate to elements.
+        result_elements->push_back(candidate);
+      }
+    }
+  }
+  // 5. Return elements.
+  return result_elements;
+}
+
+static const V8PrivateProperty::SymbolKey
+    kPrivatePropertyCachedAttrAssociatedElements;
+
+v8::Local<v8::Object> Element::GetCachedAttrAssociatedElementsObject(
+    ScriptState* script_state) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  V8PrivateProperty::Symbol private_property = V8PrivateProperty::GetSymbol(
+      isolate, kPrivatePropertyCachedAttrAssociatedElements);
+  v8::Local<v8::Object> element = ToV8Traits<Element>::ToV8(script_state, this)
+                                      .ToLocalChecked()
+                                      .As<v8::Object>();
+  v8::Local<v8::Value> cached_elements_value =
+      private_property.GetOrUndefined(element).ToLocalChecked();
+  v8::Local<v8::Object> cached_elements_object;
+  if (cached_elements_value->IsUndefined()) {
+    cached_elements_object = v8::Object::New(isolate);
+    private_property.Set(element, cached_elements_object);
+  } else {
+    DCHECK(cached_elements_value->IsObject());
+    cached_elements_object = cached_elements_value.As<v8::Object>();
+  }
+
+  return cached_elements_object;
+}
+
+v8::Local<v8::Value> Element::GetCachedAttrAssociatedElements(
+    ScriptState* script_state,
+    const QualifiedName& blink_name) {
+  v8::Local<v8::Object> cached_elements_object =
+      GetCachedAttrAssociatedElementsObject(script_state);
+
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Value> name = V8StringOrNull(isolate, blink_name.LocalName());
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  v8::Local<v8::Value> value =
+      cached_elements_object->Get(context, name).ToLocalChecked();
+  if (value->IsUndefined()) {
+    return v8::Null(isolate);
+  }
+  return value;
+}
+
+void Element::SetCachedAttrAssociatedElements(ScriptState* script_state,
+                                              const QualifiedName& blink_name,
+                                              v8::Local<v8::Value> elements) {
+  v8::Local<v8::Object> cached_elements_object =
+      GetCachedAttrAssociatedElementsObject(script_state);
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Value> name = V8StringOrNull(isolate, blink_name.LocalName());
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  bool success =
+      cached_elements_object->Set(context, name, elements).ToChecked();
+  DCHECK(success);
+}
+
+void Element::DeleteCachedAttrAssociatedElements(
+    ScriptState* script_state,
+    const QualifiedName& blink_name) {
+  v8::Local<v8::Object> cached_elements_object =
+      GetCachedAttrAssociatedElementsObject(script_state);
+
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Value> name = V8StringOrNull(isolate, blink_name.LocalName());
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+
+  bool was_deleted = cached_elements_object->Delete(context, name).ToChecked();
+  DCHECK(was_deleted);
+}
+
+ScriptValue Element::GetElementArrayAttribute(ScriptState* script_state,
+                                              const QualifiedName& name,
+                                              const char* const property_name) {
+  // https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:element-3
+
+  // 1. Let elements be this's attr-associated elements.
+  HeapVector<Member<Element>>* elements = GetAttrAssociatedElements(name);
+
+  v8::Isolate* isolate = script_state->GetIsolate();
+  if (!elements) {
+    // 4. Set this's cached attr-associated elements to elementsAsFrozenArray.
+    DeleteCachedAttrAssociatedElements(script_state, name);
+    // 5. Return elementsAsFrozenArray.
+    return ScriptValue::CreateNull(isolate);
+  }
+
+  v8::Local<v8::Value> v8_cached_attr_associated_elements =
+      GetCachedAttrAssociatedElements(script_state, name);
+  if (!v8_cached_attr_associated_elements->IsNull()) {
+    // Get native value for cached_attr_associated_elements.
+    ExceptionState exception_state(isolate, ExceptionContextType::kAttributeSet,
+                                   "Element", property_name);
+    HeapVector<Member<Element>>* cached_attr_associated_elements =
+        NativeValueTraits<IDLNullable<IDLArray<Element>>>::NativeValue(
+            isolate, v8_cached_attr_associated_elements, exception_state);
+    if (UNLIKELY(exception_state.HadException())) {
+      LOG(ERROR) << "Had exception when trying to convert cached "
+                 << "attr-associated elements: " << exception_state.Message();
+      return ScriptValue();
+    }
+    DCHECK(cached_attr_associated_elements);
+
+    // 2. If the contents of elements is equal to the contents of this's
+    // cached attr-associated elements, then return this's cached
+    // attr-associated elements.
+    if (*cached_attr_associated_elements == *elements) {
+      return ScriptValue(isolate, v8_cached_attr_associated_elements);
+    }
+  }
+
+  // 3. Let elementsAsFrozenArray be elements, converted to a FrozenArray<T>?.
+  v8::Local<v8::Value> v8_elements_as_frozen_array =
+      ToV8Traits<IDLArray<Element>>::ToV8(script_state, *elements)
+          .ToLocalChecked();
+
+  // 4. Set this's cached attr-associated elements to elementsAsFrozenArray.
+  SetCachedAttrAssociatedElements(script_state, name,
+                                  v8_elements_as_frozen_array);
+
+  // 5. Return elementsAsFrozenArray.
+  return ScriptValue(isolate, v8_elements_as_frozen_array);
+}
+
+void Element::SetElementArrayAttribute(ScriptState* script_state,
+                                       const QualifiedName& name,
+                                       const ScriptValue given_value,
+                                       const char* const property_name) {
+  // https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:element-3
+
+  v8::Isolate* isolate = script_state->GetIsolate();
+  ExceptionState exception_state(isolate, ExceptionContextType::kAttributeSet,
+                                 "Element", property_name);
+
+  HeapVector<Member<Element>>* given_elements =
+      NativeValueTraits<IDLNullable<IDLArray<Element>>>::NativeValue(
+          isolate, given_value.V8Value(), exception_state);
+  if (exception_state.HadException()) {
+    LOG(ERROR) << "Had exception when trying to convert given value for "
+               << name.LocalName() << ": " << exception_state.Message();
+    return;
+  }
+
   ExplicitlySetAttrElementsMap* element_attribute_map =
       GetDocument().GetExplicitlySetAttrElementsMap(this);
 
   if (!given_elements) {
+    // 1. If the given value is null:
+    //   1. Set this's explicitly set attr-elements to null.
     element_attribute_map->erase(name);
+    //   2. Run this's delete the content attribute.
     removeAttribute(name);
     return;
   }
 
+  // 2. Run this's set the content attribute with the empty string.
   setAttribute(name, g_empty_atom);
 
-  // Get or create element array, and remove any pre-existing elements.
+  // 3. Let elements be an empty list.
+  // 4. For each element in the given value: Append a weak reference to element
+  // to elements.
+  // 5. Set this's explicitly set attr-elements to elements.
   //
-  // Note that this code intentionally performs two look ups on |name| within
-  // the map (one here, and one below with a call to |Set|).
-  // This is needed as modifying the content attribute (|setAttribute|) will
-  // run the synchronization steps which modify the map invalidating any
-  // outstanding iterators.
+  // In practice, we're fetching elements from element_attribute_map, clearing
+  // the previous value if necessary to get an empty list, and then populating
+  // the list.
   auto it = element_attribute_map->find(name);
   HeapLinkedHashSet<WeakMember<Element>>* stored_elements =
       it != element_attribute_map->end() ? it->value : nullptr;
   if (!stored_elements) {
     stored_elements =
         MakeGarbageCollected<HeapLinkedHashSet<WeakMember<Element>>>();
+    element_attribute_map->Set(name, stored_elements);
   } else {
     stored_elements->clear();
   }
@@ -929,65 +1135,78 @@ void Element::SetElementArrayAttribute(
       cache->HandleAttributeChanged(name, this);
     }
   }
-
-  // This |Set| call must occur after our call to |setAttribute| above.
-  //
-  // |setAttribute| will call through to |AttributeChanged| which calls
-  // |SynchronizeContentAttributeAndElementReference| erasing the entry for
-  // |name| from the map.
-  element_attribute_map->Set(name, stored_elements);
 }
 
-HeapVector<Member<Element>>* Element::GetElementArrayAttribute(
-    const QualifiedName& name) {
-  HeapVector<Member<Element>>* result_elements =
-      MakeGarbageCollected<HeapVector<Member<Element>>>();
-  // TODO(chrishall): this will fail to preserve `e1.ariaFoo === e1.ariaFoo`,
-  // need additional cache to preserve this invariant, add tests covering this
-  // case.
-  HeapLinkedHashSet<WeakMember<Element>>* explicitly_set_elements =
-      GetExplicitlySetElementsForAttr(this, name);
+ScriptValue Element::ariaControlsElements(ScriptState* script_state) {
+  return GetElementArrayAttribute(script_state, html_names::kAriaControlsAttr,
+                                  "ariaControlsElements");
+}
+void Element::setAriaControlsElements(ScriptState* script_state,
+                                      ScriptValue given_elements) {
+  SetElementArrayAttribute(script_state, html_names::kAriaControlsAttr,
+                           given_elements, "ariaControlsElements");
+}
 
-  if (explicitly_set_elements) {
-    for (auto attrElement : *explicitly_set_elements) {
-      if (ElementIsDescendantOfShadowIncludingAncestor(*this, *attrElement)) {
-        result_elements->push_back(attrElement);
-      }
-    }
-    return result_elements;
-  }
+ScriptValue Element::ariaDescribedByElements(ScriptState* script_state) {
+  return GetElementArrayAttribute(script_state,
+                                  html_names::kAriaDescribedbyAttr,
+                                  "ariaDescribedByElements");
+}
+void Element::setAriaDescribedByElements(ScriptState* script_state,
+                                         ScriptValue given_elements) {
+  SetElementArrayAttribute(script_state, html_names::kAriaDescribedbyAttr,
+                           given_elements, "ariaDescribedByElements");
+}
 
-  QualifiedName attr = name;
+ScriptValue Element::ariaDetailsElements(ScriptState* script_state) {
+  return GetElementArrayAttribute(script_state, html_names::kAriaDetailsAttr,
+                                  "ariaDetailsElements");
+}
+void Element::setAriaDetailsElements(ScriptState* script_state,
+                                     ScriptValue given_elements) {
+  SetElementArrayAttribute(script_state, html_names::kAriaDetailsAttr,
+                           given_elements, "ariaDetailsElements");
+}
 
-  // Account for labelled vs labeled spelling
-  if (attr == html_names::kAriaLabelledbyAttr) {
-    attr = hasAttribute(html_names::kAriaLabeledbyAttr) &&
-                   !hasAttribute(html_names::kAriaLabelledbyAttr)
-               ? html_names::kAriaLabeledbyAttr
-               : html_names::kAriaLabelledbyAttr;
-  }
+ScriptValue Element::ariaErrorMessageElements(ScriptState* script_state) {
+  return GetElementArrayAttribute(script_state,
+                                  html_names::kAriaErrormessageAttr,
+                                  "ariaErrorMessageElements");
+}
+void Element::setAriaErrorMessageElements(ScriptState* script_state,
+                                          ScriptValue given_elements) {
+  SetElementArrayAttribute(script_state, html_names::kAriaErrormessageAttr,
+                           given_elements, "ariaErrorMessageElements");
+}
 
-  if (!hasAttribute(attr)) {
-    return nullptr;
-  }
+ScriptValue Element::ariaFlowToElements(ScriptState* script_state) {
+  return GetElementArrayAttribute(script_state, html_names::kAriaFlowtoAttr,
+                                  "ariaFlowToElements");
+}
+void Element::setAriaFlowToElements(ScriptState* script_state,
+                                    ScriptValue given_elements) {
+  SetElementArrayAttribute(script_state, html_names::kAriaFlowtoAttr,
+                           given_elements, "ariaFlowToElements");
+}
 
-  String attribute_value = getAttribute(attr).GetString();
-  Vector<String> tokens;
-  attribute_value = attribute_value.SimplifyWhiteSpace();
-  attribute_value.Split(' ', tokens);
+ScriptValue Element::ariaLabelledByElements(ScriptState* script_state) {
+  return GetElementArrayAttribute(script_state, html_names::kAriaLabelledbyAttr,
+                                  "ariaLabelledByElements");
+}
+void Element::setAriaLabelledByElements(ScriptState* script_state,
+                                        ScriptValue given_elements) {
+  SetElementArrayAttribute(script_state, html_names::kAriaLabelledbyAttr,
+                           given_elements, "ariaLabelledByElements");
+}
 
-  // Lookup each id within the same root.
-  // Since this is based on ID we know it cannot cross shadow boundaries, so we
-  // don't need to include additional logic to check that.
-  for (auto id : tokens) {
-    Element* candidate =
-        getElementByIdIncludingDisconnected(*this, AtomicString(id));
-    if (candidate) {
-      result_elements->push_back(candidate);
-    }
-  }
-
-  return result_elements;
+ScriptValue Element::ariaOwnsElements(ScriptState* script_state) {
+  return GetElementArrayAttribute(script_state, html_names::kAriaOwnsAttr,
+                                  "ariaOwnsElements");
+}
+void Element::setAriaOwnsElements(ScriptState* script_state,
+                                  ScriptValue given_elements) {
+  SetElementArrayAttribute(script_state, html_names::kAriaOwnsAttr,
+                           given_elements, "ariaOwnsElements");
 }
 
 NamedNodeMap* Element::attributesForBindings() const {

@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] aria-labelledby.
-  assert_equals: check idl attribute caching after parsing expected [Element node <div id="billingElement">Billing</div>, Element node <div id="nameElement">Name</div>] but got [Element node <div id="billingElement">Billing</div>, Element node <div id="nameElement">Name</div>]
-[FAIL] Caching invariant different attributes.
-  assert_equals: Caching invariant for ariaControlsElements expected [Element node <div id="cachingInvariantElement1"></div>, Element node <div id="cachingInvariantElement2"></div>] but got [Element node <div id="cachingInvariantElement1"></div>, Element node <div id="cachingInvariantElement2"></div>]
-[FAIL] Caching invariant different elements.
-  assert_equals: Caching invariant for ariaDescribedByElements in one elemnt expected [Element node <div id="cachingInvariantElement1"></div>, Element node <div id="cachingInvariantElement2"></div>] but got [Element node <div id="cachingInvariantElement1"></div>, Element node <div id="cachingInvariantElement2"></div>]
-Harness: the test ran to completion.
-

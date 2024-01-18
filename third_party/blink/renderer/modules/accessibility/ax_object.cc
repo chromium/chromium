@@ -4697,7 +4697,7 @@ bool AXObject::ElementsFromAttribute(Element* from,
     return false;
 
   HeapVector<Member<Element>>* attr_associated_elements =
-      from->GetElementArrayAttribute(attribute);
+      from->GetAttrAssociatedElements(attribute);
   if (!attr_associated_elements)
     return false;
 
