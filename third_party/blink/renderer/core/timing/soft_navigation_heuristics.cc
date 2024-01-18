@@ -377,7 +377,9 @@ void SoftNavigationHeuristics::RecordPaint(
                         "softnav_painted_area", softnav_painted_area_,
                         "softnav_painted_area_ratio",
                         softnav_painted_area_ratio, "url",
-                        soft_navigation_interaction_data_->url,
+                        (soft_navigation_interaction_data_
+                             ? soft_navigation_interaction_data_->url
+                             : ""),
                         "is_above_threshold", is_above_threshold);
 
     if (((softnav_painted_area_ * HUNDRED_PERCENT) > paint_threshold)) {
