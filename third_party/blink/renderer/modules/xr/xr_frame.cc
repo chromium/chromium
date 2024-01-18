@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/xr/xr_hit_test_result.h"
 #include "third_party/blink/renderer/modules/xr/xr_hit_test_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_joint_space.h"
@@ -13,6 +15,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_plane_set.h"
 #include "third_party/blink/renderer/modules/xr/xr_reference_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
+#include "third_party/blink/renderer/modules/xr/xr_transient_input_hit_test_result.h"
 #include "third_party/blink/renderer/modules/xr/xr_transient_input_hit_test_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_view.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewer_pose.h"
@@ -267,7 +270,7 @@ bool XRFrame::IsActive() const {
   return is_active_;
 }
 
-HeapVector<Member<XRHitTestResult>> XRFrame::getHitTestResults(
+const FrozenArray<XRHitTestResult>& XRFrame::getHitTestResults(
     XRHitTestSource* hit_test_source,
     ExceptionState& exception_state) {
   if (!hit_test_source ||
@@ -275,13 +278,14 @@ HeapVector<Member<XRHitTestResult>> XRFrame::getHitTestResults(
     // This should only happen when hit test source was already canceled.
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kHitTestSourceUnavailable);
-    return {};
+    return *MakeGarbageCollected<FrozenArray<XRHitTestResult>>();
   }
 
-  return hit_test_source->Results();
+  return *MakeGarbageCollected<FrozenArray<XRHitTestResult>>(
+      hit_test_source->Results());
 }
 
-HeapVector<Member<XRTransientInputHitTestResult>>
+const FrozenArray<XRTransientInputHitTestResult>&
 XRFrame::getHitTestResultsForTransientInput(
     XRTransientInputHitTestSource* hit_test_source,
     ExceptionState& exception_state) {
@@ -290,10 +294,11 @@ XRFrame::getHitTestResultsForTransientInput(
     // This should only happen when hit test source was already canceled.
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kHitTestSourceUnavailable);
-    return {};
+    return *MakeGarbageCollected<FrozenArray<XRTransientInputHitTestResult>>();
   }
 
-  return hit_test_source->Results();
+  return *MakeGarbageCollected<FrozenArray<XRTransientInputHitTestResult>>(
+      hit_test_source->Results());
 }
 
 ScriptPromise XRFrame::createAnchor(ScriptState* script_state,
@@ -426,7 +431,7 @@ bool XRFrame::IsSameSession(XRSession* space_session,
   return true;
 }
 
-HeapVector<Member<XRImageTrackingResult>> XRFrame::getImageTrackingResults(
+const FrozenArray<XRImageTrackingResult>& XRFrame::getImageTrackingResults(
     ExceptionState& exception_state) {
   return session_->ImageTrackingResults(exception_state);
 }

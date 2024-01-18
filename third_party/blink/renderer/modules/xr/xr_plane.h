@@ -18,6 +18,9 @@ namespace blink {
 class XRSession;
 class XRSpace;
 
+template <typename IDLType>
+class FrozenArray;
+
 class XRPlane : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -38,7 +41,7 @@ class XRPlane : public ScriptWrappable {
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin() const;
 
   String orientation() const;
-  HeapVector<Member<DOMPointReadOnly>> polygon() const;
+  const FrozenArray<DOMPointReadOnly>& polygon() const;
   double lastChangedTime() const;
 
   // Updates plane data from passed in |plane_data|. The resulting instance
@@ -60,12 +63,12 @@ class XRPlane : public ScriptWrappable {
   XRPlane(uint64_t id,
           XRSession* session,
           const absl::optional<Orientation>& orientation,
-          const HeapVector<Member<DOMPointReadOnly>>& polygon,
+          HeapVector<Member<DOMPointReadOnly>> polygon,
           const absl::optional<device::Pose>& mojo_from_plane,
           double timestamp);
 
   const uint64_t id_;
-  HeapVector<Member<DOMPointReadOnly>> polygon_;
+  Member<FrozenArray<DOMPointReadOnly>> polygon_;
   absl::optional<Orientation> orientation_;
 
   // Plane center's pose in device (mojo) space.  Nullptr if the pose of the

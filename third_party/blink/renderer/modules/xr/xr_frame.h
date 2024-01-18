@@ -42,6 +42,9 @@ class XRTransientInputHitTestSource;
 class XRView;
 class XRViewerPose;
 
+template <typename IDLType>
+class FrozenArray;
+
 class XRFrame final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -83,11 +86,11 @@ class XRFrame final : public ScriptWrappable {
 
   bool IsAnimationFrame() const { return is_animation_frame_; }
 
-  HeapVector<Member<XRHitTestResult>> getHitTestResults(
+  const FrozenArray<XRHitTestResult>& getHitTestResults(
       XRHitTestSource* hit_test_source,
       ExceptionState& exception_state);
 
-  HeapVector<Member<XRTransientInputHitTestResult>>
+  const FrozenArray<XRTransientInputHitTestResult>&
   getHitTestResultsForTransientInput(
       XRTransientInputHitTestSource* hit_test_source,
       ExceptionState& exception_state);
@@ -97,7 +100,7 @@ class XRFrame final : public ScriptWrappable {
                              XRSpace* space,
                              ExceptionState& exception_state);
 
-  HeapVector<Member<XRImageTrackingResult>> getImageTrackingResults(
+  const FrozenArray<XRImageTrackingResult>& getImageTrackingResults(
       ExceptionState&);
 
   XRJointPose* getJointPose(XRJointSpace* joint,

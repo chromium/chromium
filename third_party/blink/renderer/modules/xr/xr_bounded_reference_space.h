@@ -14,6 +14,9 @@
 
 namespace blink {
 
+template <typename IDLType>
+class FrozenArray;
+
 class XRBoundedReferenceSpace final : public XRReferenceSpace {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -24,7 +27,7 @@ class XRBoundedReferenceSpace final : public XRReferenceSpace {
 
   absl::optional<gfx::Transform> MojoFromNative() const override;
 
-  HeapVector<Member<DOMPointReadOnly>> boundsGeometry();
+  const FrozenArray<DOMPointReadOnly>& boundsGeometry() const;
 
   void Trace(Visitor*) const override;
 
@@ -36,7 +39,7 @@ class XRBoundedReferenceSpace final : public XRReferenceSpace {
 
   void EnsureUpdated() const;
 
-  mutable HeapVector<Member<DOMPointReadOnly>> offset_bounds_geometry_;
+  mutable Member<FrozenArray<DOMPointReadOnly>> offset_bounds_geometry_;
   mutable std::unique_ptr<gfx::Transform> mojo_from_bounded_native_;
   mutable uint32_t stage_parameters_id_ = 0;
 };

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_plane.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/xr/vr_service_type_converters.h"
 #include "third_party/blink/renderer/modules/xr/xr_object_space.h"
@@ -28,11 +29,12 @@ XRPlane::XRPlane(uint64_t id,
 XRPlane::XRPlane(uint64_t id,
                  XRSession* session,
                  const absl::optional<Orientation>& orientation,
-                 const HeapVector<Member<DOMPointReadOnly>>& polygon,
+                 HeapVector<Member<DOMPointReadOnly>> polygon,
                  const absl::optional<device::Pose>& mojo_from_plane,
                  double timestamp)
     : id_(id),
-      polygon_(polygon),
+      polygon_(MakeGarbageCollected<FrozenArray<DOMPointReadOnly>>(
+          std::move(polygon))),
       orientation_(orientation),
       mojo_from_plane_(mojo_from_plane),
       session_(session),
@@ -82,12 +84,8 @@ double XRPlane::lastChangedTime() const {
   return last_changed_time_;
 }
 
-HeapVector<Member<DOMPointReadOnly>> XRPlane::polygon() const {
-  // Returns copy of a vector - by design. This way, JavaScript code could
-  // store the state of the plane's polygon in frame N just by storing the
-  // array (`let polygon = plane.polygon`) - the stored array won't be affected
-  // by the changes to the plane that could happen in frames >N.
-  return polygon_;
+const FrozenArray<DOMPointReadOnly>& XRPlane::polygon() const {
+  return *polygon_.Get();
 }
 
 void XRPlane::Update(const device::mojom::blink::XRPlaneData& plane_data,
@@ -101,8 +99,9 @@ void XRPlane::Update(const device::mojom::blink::XRPlaneData& plane_data,
 
   mojo_from_plane_ = plane_data.mojo_from_plane;
 
-  polygon_ =
-      mojo::ConvertTo<HeapVector<Member<DOMPointReadOnly>>>(plane_data.polygon);
+  polygon_ = MakeGarbageCollected<FrozenArray<DOMPointReadOnly>>(
+      mojo::ConvertTo<HeapVector<Member<DOMPointReadOnly>>>(
+          plane_data.polygon));
 }
 
 void XRPlane::Trace(Visitor* visitor) const {
