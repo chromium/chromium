@@ -27,85 +27,125 @@ import './wrapup_finalize_page.js';
 import './wrapup_repair_complete_page.js';
 import './wrapup_restock_page.js';
 import './wrapup_wait_for_manual_wp_enable_page.js';
+
+import {CriticalErrorPage} from './critical_error_page.js';
+import {HardwareErrorPage} from './hardware_error_page.js';
+import {OnboardingChooseDestinationPageElement} from './onboarding_choose_destination_page.js';
+import {OnboardingChooseWipeDevicePage} from './onboarding_choose_wipe_device_page.js';
+import {OnboardingChooseWpDisableMethodPage} from './onboarding_choose_wp_disable_method_page.js';
+import {OnboardingEnterRsuWpDisableCodePage} from './onboarding_enter_rsu_wp_disable_code_page.js';
+import {OnboardingLandingPage} from './onboarding_landing_page.js';
+import {OnboardingNetworkPage} from './onboarding_network_page.js';
+import {OnboardingSelectComponentsPageElement} from './onboarding_select_components_page.js';
+import {OnboardingUpdatePageElement} from './onboarding_update_page.js';
+import {OnboardingWaitForManualWpDisablePage} from './onboarding_wait_for_manual_wp_disable_page.js';
+import {OnboardingWpDisableCompletePage} from './onboarding_wp_disable_complete_page.js';
+import {RebootPage} from './reboot_page.js';
+import {ReimagingCalibrationFailedPage} from './reimaging_calibration_failed_page.js';
+import {ReimagingCalibrationRunPage} from './reimaging_calibration_run_page.js';
+import {ReimagingCalibrationSetupPage} from './reimaging_calibration_setup_page.js';
+import {ReimagingDeviceInformationPage} from './reimaging_device_information_page.js';
+import {UpdateRoFirmwarePage} from './reimaging_firmware_update_page.js';
+import {ReimagingProvisioningPage} from './reimaging_provisioning_page.js';
+import {SplashScreen} from './splash_screen.js';
+import {WrapupFinalizePage} from './wrapup_finalize_page.js';
+import {WrapupRepairCompletePage} from './wrapup_repair_complete_page.js';
+import {WrapupRestockPage} from './wrapup_restock_page.js';
+import {WrapupWaitForManualWpEnablePage} from './wrapup_wait_for_manual_wp_enable_page.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CLICK_EXIT_BUTTON, CLICK_NEXT_BUTTON, DISABLE_ALL_BUTTONS, DISABLE_NEXT_BUTTON, DisableAllButtonsEvent, DisableNextButtonEvent, ENABLE_ALL_BUTTONS, FATAL_HARDWARE_ERROR, FatalHardwareEvent, OPEN_LOGS_DIALOG, SET_NEXT_BUTTON_LABEL, SetNextButtonLabelEvent, TRANSITION_STATE, TransitionStateEvent} from './events.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {Shimless3pDiagnostics} from './shimless_3p_diagnostics.js';
 import {getTemplate} from './shimless_rma.html.js';
-import {ErrorObserverInterface, ErrorObserverReceiver, ExternalDiskStateObserverInterface, ExternalDiskStateObserverReceiver, RmadErrorCode, ShimlessRmaServiceInterface, State, StateResult} from './shimless_rma.mojom-webui.js';
+import {ErrorObserverReceiver, ExternalDiskStateObserverReceiver, RmadErrorCode, ShimlessRmaServiceInterface, State, StateResult} from './shimless_rma.mojom-webui.js';
 
-/**
- * @typedef {{savePath: FilePath, error: RmadErrorCode}}
- */
-export let SaveLogResponse;
+
+declare global {
+  interface WindowEventMap {
+    [TRANSITION_STATE]: TransitionStateEvent;
+    [DISABLE_NEXT_BUTTON]: DisableNextButtonEvent;
+    [FATAL_HARDWARE_ERROR]: FatalHardwareEvent;
+    [DISABLE_ALL_BUTTONS]: DisableAllButtonsEvent;
+    [DISABLE_NEXT_BUTTON]: DisableNextButtonEvent;
+    [SET_NEXT_BUTTON_LABEL]: SetNextButtonLabelEvent;
+  }
+}
+
+export interface SaveLogResponse {
+  savePath: FilePath;
+  error: RmadErrorCode;
+}
 
 /**
  * Enum for the state of USB used for saving logs. The states are transitioned
  * through as the user plugs in a USB then attempts to save the log.
- * @enum {number}
  */
-const USBLogState = {
-  USB_UNPLUGGED: 0,
-  USB_READY: 1,
-  SAVING_LOGS: 2,
-  LOG_SAVE_SUCCESS: 3,
-  LOG_SAVE_FAIL: 4,
+enum UsbLogState {
+  USB_UNPLUGGED = 0,
+  USB_READY = 1,
+  SAVING_LOGS = 2,
+  LOG_SAVE_SUCCESS = 3,
+  LOG_SAVE_FAIL = 4,
+}
+
+// TODO(b/315002705): Replace this type with a mapped type that can infer
+// which shimless custom element is returned by `loadComponent`.
+type ShimlessCustomElementType = HTMLElement&{
+  confirmExitButtonClicked?: boolean,
+  hidden?: boolean,
+  errorCode?: RmadErrorCode,
+  getStartedButtonClicked?: boolean,
+  allButtonsDisabled?: boolean,
+  onNextButtonClick?: () => Promise<{stateResult: StateResult}>,
+  onExitButtonClick?: () => Promise<{stateResult: StateResult}>,
 };
 
 /**
  * The starting USB state for the logs dialog.
- * @type {!USBLogState}
  */
-const DEFAULT_USB_LOG_STATE = USBLogState.USB_READY;
+const DEFAULT_USB_LOG_STATE: UsbLogState = UsbLogState.USB_READY;
 
 /**
  * Enum for button states.
- * @enum {string}
  */
-export const ButtonState = {
-  VISIBLE: 'visible',
-  DISABLED: 'disabled',
-  HIDDEN: 'hidden',
-};
+export enum ButtonState {
+  VISIBLE = 'visible',
+  DISABLED = 'disabled',
+  HIDDEN = 'hidden',
+}
 
-/** @type {number} */
 const HEADER_FOOTER_HEIGHT_PX = 80;
 
-/** @type {number} */
 const OOBE_LARGE_SCREEN_WIDTH_PX = 80;
 
-/**
- * @typedef {{
- *  componentIs: string,
- *  requiresReloadWhenShown: boolean,
- *  buttonNext: !ButtonState,
- *  buttonNextLabelKey: ?string,
- *  buttonExitLabelKey: ?string,
- *  buttonExit: !ButtonState,
- *  buttonBack: !ButtonState,
- * }}
- */
-let PageInfo;
+interface PageInfo {
+  componentIs: string;
+  requiresReloadWhenShown?: boolean;
+  buttonNext: ButtonState;
+  buttonNextLabelKey?: string|null;
+  buttonExitLabelKey?: string|null;
+  buttonExit: ButtonState;
+  buttonBack: ButtonState;
+}
 
-/**
- * @type {!Object<!State, !PageInfo>}
- */
-export const StateComponentMapping = {
+export const StateComponentMapping: {[key in State]: PageInfo} = {
   // It is assumed that if state is kUnknown the error is kRmaNotRequired.
   [State.kUnknown]: {
-    componentIs: 'critical-error-page',
+    componentIs: CriticalErrorPage.is,
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },
   [State.kWelcomeScreen]: {
-    componentIs: 'onboarding-landing-page',
+    componentIs: OnboardingLandingPage.is,
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.HIDDEN,
     buttonNextLabelKey: 'getStartedButtonLabel',
@@ -113,7 +153,7 @@ export const StateComponentMapping = {
     buttonBack: ButtonState.HIDDEN,
   },
   [State.kConfigureNetwork]: {
-    componentIs: 'onboarding-network-page',
+    componentIs: OnboardingNetworkPage.is,
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
     buttonNextLabelKey: 'skipButtonLabel',
@@ -121,7 +161,7 @@ export const StateComponentMapping = {
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kUpdateOs]: {
-    componentIs: 'onboarding-update-page',
+    componentIs: OnboardingUpdatePageElement.is,
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
     buttonNextLabelKey: 'skipButtonLabel',
@@ -129,70 +169,73 @@ export const StateComponentMapping = {
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kSelectComponents]: {
-    componentIs: 'onboarding-select-components-page',
+    componentIs: OnboardingSelectComponentsPageElement.is,
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.DISABLED,
     buttonExit: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kChooseDestination]: {
-    componentIs: 'onboarding-choose-destination-page',
+    componentIs: OnboardingChooseDestinationPageElement.is,
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
     buttonExit: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kChooseWipeDevice]: {
-    componentIs: 'onboarding-choose-wipe-device-page',
+    componentIs: OnboardingChooseWipeDevicePage.is,
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
     buttonExit: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kChooseWriteProtectDisableMethod]: {
-    componentIs: 'onboarding-choose-wp-disable-method-page',
+    componentIs:
+        OnboardingChooseWpDisableMethodPage.is,
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
     buttonExit: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kEnterRSUWPDisableCode]: {
-    componentIs: 'onboarding-enter-rsu-wp-disable-code-page',
+    componentIs:
+        OnboardingEnterRsuWpDisableCodePage.is,
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.DISABLED,
     buttonExit: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kWaitForManualWPDisable]: {
-    componentIs: 'onboarding-wait-for-manual-wp-disable-page',
+    componentIs:
+        OnboardingWaitForManualWpDisablePage.is,
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kWPDisableComplete]: {
-    componentIs: 'onboarding-wp-disable-complete-page',
+    componentIs: OnboardingWpDisableCompletePage.is,
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
     buttonExit: ButtonState.VISIBLE,
     buttonBack: ButtonState.HIDDEN,
   },
   [State.kUpdateRoFirmware]: {
-    componentIs: 'reimaging-firmware-update-page',
+    componentIs: UpdateRoFirmwarePage.is,
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },
   [State.kUpdateDeviceInformation]: {
-    componentIs: 'reimaging-device-information-page',
+    componentIs: ReimagingDeviceInformationPage.is,
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
     buttonExit: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },
   [State.kCheckCalibration]: {
-    componentIs: 'reimaging-calibration-failed-page',
+    componentIs: ReimagingCalibrationFailedPage.is,
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.DISABLED,
     buttonExitLabelKey: 'calibrationFailedSkipCalibrationButtonLabel',
@@ -200,62 +243,63 @@ export const StateComponentMapping = {
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kRunCalibration]: {
-    componentIs: 'reimaging-calibration-run-page',
+    componentIs: ReimagingCalibrationRunPage.is,
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.DISABLED,
     buttonExit: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },
   [State.kSetupCalibration]: {
-    componentIs: 'reimaging-calibration-setup-page',
+    componentIs: ReimagingCalibrationSetupPage.is,
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.DISABLED,
     buttonExit: ButtonState.HIDDEN,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kProvisionDevice]: {
-    componentIs: 'reimaging-provisioning-page',
+    componentIs: ReimagingProvisioningPage.is,
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },
   [State.kWaitForManualWPEnable]: {
-    componentIs: 'wrapup-wait-for-manual-wp-enable-page',
+    componentIs:
+        WrapupWaitForManualWpEnablePage.is,
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },
   [State.kRestock]: {
-    componentIs: 'wrapup-restock-page',
+    componentIs: WrapupRestockPage.is,
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kFinalize]: {
-    componentIs: 'wrapup-finalize-page',
+    componentIs: WrapupFinalizePage.is,
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },
   [State.kRepairComplete]: {
-    componentIs: 'wrapup-repair-complete-page',
+    componentIs: WrapupRepairCompletePage.is,
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },
   [State.kHardwareError]: {
-    componentIs: 'hardware-error-page',
+    componentIs: HardwareErrorPage.is,
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },
   [State.kReboot]: {
-    componentIs: 'reboot-page',
+    componentIs: RebootPage.is,
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,
@@ -268,17 +312,11 @@ export const StateComponentMapping = {
  * 'shimless-rma' is the main page for the shimless rma process modal dialog.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ShimlessRmaBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const ShimlessRmaBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class ShimlessRma extends ShimlessRmaBase {
   static get is() {
-    return 'shimless-rma';
+    return 'shimless-rma' as const;
   }
 
   static get template() {
@@ -289,14 +327,12 @@ export class ShimlessRma extends ShimlessRmaBase {
     return {
       /**
        * Current PageInfo based on current state
-       * @protected
-       * @type {PageInfo}
        */
       currentPage: {
         reflectToAttribute: true,
         type: Object,
         value: {
-          componentIs: 'splash-screen',
+          componentIs: SplashScreen.is,
           requiresReloadWhenShown: false,
           buttonNext: ButtonState.HIDDEN,
           buttonExit: ButtonState.HIDDEN,
@@ -304,7 +340,6 @@ export class ShimlessRma extends ShimlessRmaBase {
         },
       },
 
-      /** @private {ShimlessRmaServiceInterface} */
       shimlessRmaService: {
         type: Object,
         value: {},
@@ -313,8 +348,6 @@ export class ShimlessRma extends ShimlessRmaBase {
       /**
        * Used to disable all buttons while waiting for long running mojo API
        * calls to complete. Also controls the busy state overlay.
-       * TODO(gavindodd): Handle disabling per page buttons.
-       * @protected
        */
       allButtonsDisabled: {
         type: Boolean,
@@ -324,7 +357,6 @@ export class ShimlessRma extends ShimlessRmaBase {
 
       /**
        * Show busy state overlay while waiting for the service response.
-       * @protected
        */
       showBusyStateOverlay: {
         type: Boolean,
@@ -335,7 +367,6 @@ export class ShimlessRma extends ShimlessRmaBase {
       /**
        * After the next button is clicked, true until the next state is
        * processed.
-       * @protected
        */
       nextButtonClicked: {
         type: Boolean,
@@ -345,7 +376,6 @@ export class ShimlessRma extends ShimlessRmaBase {
       /**
        * After the back button is clicked, true until the next state is
        * processed.
-       * @protected
        */
       backButtonClicked: {
         type: Boolean,
@@ -355,14 +385,12 @@ export class ShimlessRma extends ShimlessRmaBase {
       /**
        * After the exit button is clicked, true until the next state is
        * processed.
-       * @protected
        */
       confirmExitButtonClicked: {
         type: Boolean,
         value: false,
       },
 
-      /** @protected */
       log: {
         type: String,
         value: '',
@@ -370,14 +398,12 @@ export class ShimlessRma extends ShimlessRmaBase {
 
       /**
        * Tracks the current status of the USB and log saving.
-       * @protected {!USBLogState}
        */
       usbLogState: {
         type: Number,
         value: DEFAULT_USB_LOG_STATE,
       },
 
-      /** @protected */
       logSavedStatusText: {
         type: String,
         value: '',
@@ -385,24 +411,39 @@ export class ShimlessRma extends ShimlessRmaBase {
     };
   }
 
-  /** @override */
+  protected currentPage: PageInfo;
+  protected allButtonsDisabled: boolean;
+  protected showBusyStateOverlay: boolean;
+  protected nextButtonClicked: boolean;
+  protected backButtonClicked: boolean;
+  protected confirmExitButtonClicked: boolean;
+  protected log: string;
+  protected usbLogState: UsbLogState;
+  protected logSavedStatusText: string;
+  shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
+  errorObserverReceiver: ErrorObserverReceiver;
+  externalDiskStateReceiver: ExternalDiskStateObserverReceiver;
+  transitionState: (e: TransitionStateEvent) => void;
+  disableNextButtonCallback: (e: DisableNextButtonEvent) => void;
+  enableAllButtonsCallback: () => void;
+  disableAllButtonsCallback: (e: DisableAllButtonsEvent) => void;
+  exitButtonCallback: () => void;
+  nextButtonCallback: () => void;
+  setNextButtonLabelCallback: (e: SetNextButtonLabelEvent) => void;
+  fatalHardwareErrorCallback: (e: FatalHardwareEvent) => void;
+  openLogsDialogCallback: () => void;
+  onKeyDownCallback: (e: KeyboardEvent) => void;
+
   constructor() {
     super();
-    this.shimlessRmaService = getShimlessRmaService();
 
-    /** @protected {?ErrorObserverReceiver} */
-    this.errorObserverReceiver = new ErrorObserverReceiver(
-        /**
-         * @type {!ErrorObserverInterface}
-         */
-        (this));
+    this.errorObserverReceiver = new ErrorObserverReceiver(this);
 
     this.shimlessRmaService.observeError(
         this.errorObserverReceiver.$.bindNewPipeAndPassRemote());
 
-    /** @private {!ExternalDiskStateObserverReceiver} */
-    this.externalDiskStateReceiver = new ExternalDiskStateObserverReceiver(
-        /** @type {!ExternalDiskStateObserverInterface} */ (this));
+    this.externalDiskStateReceiver =
+        new ExternalDiskStateObserverReceiver(this);
 
     this.shimlessRmaService.observeExternalDiskState(
         this.externalDiskStateReceiver.$.bindNewPipeAndPassRemote());
@@ -410,9 +451,8 @@ export class ShimlessRma extends ShimlessRmaBase {
     /**
      * transitionState is used by page elements to trigger state transition
      * functions and switching to the next page without using the 'Next' button.
-     * @private {?Function}
      */
-    this.transitionState = (e) => {
+    this.transitionState = (e: TransitionStateEvent): void => {
       this.setAllButtonsState(
           /* shouldDisableButtons= */ true, /* showBusyStateOverlay= */ true);
       e.detail().then((stateResult) => this.processStateResult(stateResult));
@@ -421,9 +461,8 @@ export class ShimlessRma extends ShimlessRmaBase {
     /**
      * The disableNextButton callback is used by page elements to control the
      * disabled state of the 'Next' button.
-     * @private {?Function}
      */
-    this.disableNextButtonCallback = (e) => {
+    this.disableNextButtonCallback = (e: DisableNextButtonEvent): void => {
       this.currentPage.buttonNext =
           e.detail ? ButtonState.DISABLED : ButtonState.VISIBLE;
       // Allow polymer to observe the changed state.
@@ -433,9 +472,8 @@ export class ShimlessRma extends ShimlessRmaBase {
     /**
      * The enableAllButtons callback is used by page elements to enable all
      * buttons.
-     * @private {?Function}
      */
-    this.enableAllButtonsCallback = () => {
+    this.enableAllButtonsCallback = (): void => {
       this.setAllButtonsState(
           /* shouldDisableButtons= */ false, /* showBusyStateOverlay= */ false);
     };
@@ -443,43 +481,33 @@ export class ShimlessRma extends ShimlessRmaBase {
     /**
      * The disableAllButtons callback is used by page elements to disable all
      * buttons and optionally show a busy overlay.
-     * @private {?Function}
      */
-    this.disableAllButtonsCallback = (e) => {
-      const customEvent =
-          /**
-             @type {!CustomEvent<{showBusyStateOverlay: boolean}>}
-           */
-          (e);
+    this.disableAllButtonsCallback = (e: DisableAllButtonsEvent): void => {
       this.setAllButtonsState(
-          /* shouldDisableButtons= */ true,
-          customEvent.detail.showBusyStateOverlay);
+          /* shouldDisableButtons= */ true, e.detail.showBusyStateOverlay);
     };
 
     /**
      * The exitButtonCallback callback is used by the landing page to create
      * its own Exit button in the left pane.
-     * @private {?Function}
      */
-    this.exitButtonCallback = (e) => {
+    this.exitButtonCallback = (): void => {
       this.onExitButtonClicked();
     };
 
     /**
      * The nextButtonCallback callback is used by the landing page to simulate
      * the next button being clicked.
-     * @private {?Function}
      */
-    this.nextButtonCallback = (e) => {
+    this.nextButtonCallback = (): void => {
       this.onNextButtonClicked();
     };
 
     /**
      * The setNextButtonLabelCallback callback is used by page elements to set
      * the text label for the 'Next' button.
-     * @private {?Function}
      */
-    this.setNextButtonLabelCallback = (e) => {
+    this.setNextButtonLabelCallback = (e: SetNextButtonLabelEvent): void => {
       this.currentPage.buttonNextLabelKey = e.detail;
       this.notifyPath('currentPage.buttonNextLabelKey');
     };
@@ -488,9 +516,8 @@ export class ShimlessRma extends ShimlessRmaBase {
      * The fatalHardwareErrorCallback callback is used by the finalization
      * page and the provisioning page to tell the app that there is a fatal
      * hardware error.
-     * @private {?Function}
      */
-    this.fatalHardwareErrorCallback = (event) => {
+    this.fatalHardwareErrorCallback = (event: FatalHardwareEvent): void => {
       const errorState = {
         stateResult: {
           state: State.kHardwareError,
@@ -504,68 +531,64 @@ export class ShimlessRma extends ShimlessRmaBase {
 
     /**
      * Opens the logs dialog.
-     * @private {?Function}
      */
-    this.openLogsDialogCallback = () => {
+    this.openLogsDialogCallback = (): void => {
       this.openLogsDialog();
     };
 
-    /** @private {?Function} */
-    this.onKeyDownCallback = (event) => {
+    this.onKeyDownCallback = (event: KeyboardEvent): void => {
       this.handleKeyboardShortcut(event);
     };
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
-    window.addEventListener('transition-state', this.transitionState);
+    window.addEventListener(TRANSITION_STATE, this.transitionState);
     window.addEventListener(
-        'disable-next-button', this.disableNextButtonCallback);
+        DISABLE_NEXT_BUTTON, this.disableNextButtonCallback);
     window.addEventListener(
-        'set-next-button-label', this.setNextButtonLabelCallback);
+        SET_NEXT_BUTTON_LABEL, this.setNextButtonLabelCallback);
     window.addEventListener(
-        'disable-all-buttons', this.disableAllButtonsCallback);
+        DISABLE_ALL_BUTTONS, this.disableAllButtonsCallback);
+    window.addEventListener(ENABLE_ALL_BUTTONS, this.enableAllButtonsCallback);
+    window.addEventListener(CLICK_EXIT_BUTTON, this.exitButtonCallback);
+    window.addEventListener(CLICK_NEXT_BUTTON, this.nextButtonCallback);
     window.addEventListener(
-        'enable-all-buttons', this.enableAllButtonsCallback);
-    window.addEventListener('click-exit-button', this.exitButtonCallback);
-    window.addEventListener('click-next-button', this.nextButtonCallback);
-    window.addEventListener(
-        'fatal-hardware-error', this.fatalHardwareErrorCallback);
-    window.addEventListener('open-logs-dialog', this.openLogsDialogCallback);
+        FATAL_HARDWARE_ERROR, this.fatalHardwareErrorCallback);
+    window.addEventListener(OPEN_LOGS_DIALOG, this.openLogsDialogCallback);
 
     window.addEventListener('keydown', this.onKeyDownCallback);
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener('transition-state', this.transitionState);
+    window.removeEventListener(TRANSITION_STATE, this.transitionState);
     window.removeEventListener(
-        'disable-next-button', this.disableNextButtonCallback);
+        DISABLE_NEXT_BUTTON, this.disableNextButtonCallback);
     window.removeEventListener(
-        'set-next-button-label', this.setNextButtonLabelCallback);
+        SET_NEXT_BUTTON_LABEL, this.setNextButtonLabelCallback);
     window.removeEventListener(
-        'disable-all-buttons', this.disableAllButtonsCallback);
+        DISABLE_ALL_BUTTONS, this.disableAllButtonsCallback);
     window.removeEventListener(
-        'enable-all-buttons', this.enableAllButtonsCallback);
-    window.removeEventListener('click-exit-button', this.exitButtonCallback);
-    window.removeEventListener('click-next-button', this.nextButtonCallback);
+        ENABLE_ALL_BUTTONS, this.enableAllButtonsCallback);
+    window.removeEventListener(CLICK_EXIT_BUTTON, this.exitButtonCallback);
+    window.removeEventListener(CLICK_NEXT_BUTTON, this.nextButtonCallback);
     window.removeEventListener(
-        'fatal-hardware-error', this.fatalHardwareErrorCallback);
-    window.removeEventListener('open-logs-dialog', this.openLogsDialogCallback);
+        FATAL_HARDWARE_ERROR, this.fatalHardwareErrorCallback);
+    window.removeEventListener(OPEN_LOGS_DIALOG, this.openLogsDialogCallback);
 
     window.removeEventListener('keydown', this.onKeyDownCallback);
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     this.style.setProperty(
         '--header-footer-height', `${HEADER_FOOTER_HEIGHT_PX}px`);
 
     const screenWidth = window.innerWidth;
+    // TODO(b/315002705): Replace integers with variables for
+    // `containerHorizontalPadding` calculation.
     const containerHorizontalPadding =
         screenWidth > OOBE_LARGE_SCREEN_WIDTH_PX ? ((screenWidth - 1040) / 2) :
                                                    (screenWidth * .08);
@@ -591,16 +614,13 @@ export class ShimlessRma extends ShimlessRmaBase {
     splashComponent.hidden = false;
 
     // Get the initial state.
-    this.shimlessRmaService.getCurrentState().then((stateResult) => {
-      this.processStateResult(stateResult);
-    });
+    this.shimlessRmaService.getCurrentState().then(
+        (stateResult: {stateResult: StateResult}) => {
+          this.processStateResult(stateResult);
+        });
   }
 
-  /**
-   * @param {{stateResult: !StateResult}} stateResult
-   * @private
-   */
-  processStateResult(stateResult) {
+  private processStateResult(stateResult: {stateResult: StateResult}): void {
     // Do not show the state screen if the critical error screen was shown.
     if (this.handleStandardAndCriticalError(stateResult.stateResult.error)) {
       return;
@@ -625,18 +645,14 @@ export class ShimlessRma extends ShimlessRmaBase {
     this.showState(stateResult);
   }
 
-  /** @param {!RmadErrorCode} error */
-  onError(error) {
+  onError(error: RmadErrorCode): void {
     this.handleStandardAndCriticalError(error);
   }
 
   /**
-   * @param {!RmadErrorCode} error
-   * @return {boolean}
-   * @private
    * Returns true if the critical error screen was displayed.
    */
-  handleStandardAndCriticalError(error) {
+  private handleStandardAndCriticalError(error: RmadErrorCode): boolean {
     // Critical error - expected to be in RMA.
     if (error === RmadErrorCode.kRmaNotRequired) {
       const errorState = {
@@ -654,17 +670,14 @@ export class ShimlessRma extends ShimlessRmaBase {
     return false;
   }
 
-  /**
-   * @param {{stateResult: !StateResult}} stateResult
-   * @private
-   */
-  showState({stateResult}) {
+  private showState({stateResult}: {stateResult: StateResult}): void {
     // Reset clicked variables to hide the spinners.
     this.nextButtonClicked = false;
     this.backButtonClicked = false;
     this.confirmExitButtonClicked = false;
 
-    const nextStatePageInfo = StateComponentMapping[stateResult.state];
+    const nextStatePageInfo: PageInfo =
+        StateComponentMapping[stateResult.state];
     assert(nextStatePageInfo);
 
     if (this.currentPage.requiresReloadWhenShown) {
@@ -683,8 +696,7 @@ export class ShimlessRma extends ShimlessRmaBase {
         // The calibration failed page is a special case because the Exit button
         // is used as the Skip Calibration button. So we don't want to
         // acknowledge `canExit` here.
-        if (this.currentPage.componentIs !==
-            'reimaging-calibration-failed-page') {
+        if (this.currentPage.componentIs !== ReimagingCalibrationFailedPage.is) {
           this.currentPage.buttonExit = ButtonState.HIDDEN;
         }
       }
@@ -714,38 +726,31 @@ export class ShimlessRma extends ShimlessRmaBase {
   /**
    * Utility method to bulk hide all contents.
    */
-  hideAllComponents() {
-    const components = this.shadowRoot.querySelectorAll('.shimless-content');
-    Array.from(components).map((c) => c.hidden = true);
+  hideAllComponents(): void {
+    const components = this.shadowRoot!.querySelectorAll('.shimless-content');
+    Array.from(components).map((c) => (c as HTMLElement).hidden = true);
   }
 
-  /**
-   * @param {string} componentIs
-   * @private
-   */
-  removeComponent(componentIs) {
+  private removeComponent(componentIs: string): void {
     const currentPageComponent =
-        this.shadowRoot.querySelector(`#${componentIs}`);
+        this.shadowRoot!.querySelector(`#${componentIs}`);
     assert(!!currentPageComponent);
     currentPageComponent.remove();
   }
 
-  /**
-   * @param {string} componentIs
-   * @return {!Element}
-   * @private
-   */
-  loadComponent(componentIs) {
+  private loadComponent(componentIs: string): ShimlessCustomElementType {
     const alreadyLoadedComponent =
-        this.shadowRoot.querySelector(`#${componentIs}`);
+        this.shadowRoot!.querySelector(`#${componentIs}`) as
+        ShimlessCustomElementType;
     if (alreadyLoadedComponent) {
       return alreadyLoadedComponent;
     }
 
-    const shimlessBody = this.shadowRoot.querySelector('#contentContainer');
+    const shimlessBody = this.shadowRoot!.querySelector('#contentContainer');
+    assert(shimlessBody);
 
-    /** @type {!Element} */
-    const component = document.createElement(componentIs);
+    const component =
+        document.createElement(componentIs) as ShimlessCustomElementType;
     component.setAttribute('id', componentIs);
     component.setAttribute('class', 'shimless-content');
     component.hidden = true;
@@ -754,76 +759,60 @@ export class ShimlessRma extends ShimlessRmaBase {
     return component;
   }
 
-  /** @protected */
-  isButtonHidden(button) {
+  protected isButtonHidden(button: ButtonState): boolean {
     return button === ButtonState.HIDDEN;
   }
 
-  /**
-   * @param {ButtonState} button
-   * @protected
-   */
-  isButtonDisabled(button) {
+  protected isButtonDisabled(button: ButtonState): boolean {
     return (button === ButtonState.DISABLED) || this.allButtonsDisabled;
   }
 
-  /**
-   * @param {boolean} shouldDisableButtons
-   * @param {boolean} showBusyStateOverlay
-   * @protected
-   */
-  setAllButtonsState(shouldDisableButtons, showBusyStateOverlay) {
+  protected setAllButtonsState(
+      shouldDisableButtons: boolean, showBusyStateOverlay: boolean): void {
     // `showBusyStateOverlay` should only be true when disabling all buttons.
     assert(!showBusyStateOverlay || shouldDisableButtons);
 
     this.allButtonsDisabled = shouldDisableButtons;
     this.showBusyStateOverlay = showBusyStateOverlay;
-    const component =
-        this.shadowRoot.querySelector(`#${this.currentPage.componentIs}`);
+    const component = this.loadComponent(this.currentPage.componentIs);
     if (!component) {
       return;
     }
 
-    component.allButtonsDisabled = this.allButtonsDisabled;
+    component!.allButtonsDisabled = this.allButtonsDisabled;
   }
 
-  /**
-   * @param {string} buttonName
-   * @param {!ButtonState} buttonState
-   */
-  updateButtonState(buttonName, buttonState) {
+  updateButtonState(buttonName: string, buttonState: ButtonState): void {
     assert(this.currentPage.hasOwnProperty(buttonName));
     this.set(`currentPage.${buttonName}`, buttonState);
   }
 
-  /** @protected */
-  onBackButtonClicked() {
+  protected onBackButtonClicked(): void {
     this.backButtonClicked = true;
     this.setAllButtonsState(
         /* shouldDisableButtons= */ true, /* showBusyStateOverlay= */ true);
     this.shimlessRmaService.transitionPreviousState().then(
-        (stateResult) => this.processStateResult(stateResult));
+        (stateResult: {stateResult: StateResult}) =>
+            this.processStateResult(stateResult));
   }
 
-  /** @protected */
-  onNextButtonClicked() {
-    const page = this.shadowRoot.querySelector(this.currentPage.componentIs);
+  protected onNextButtonClicked(): void {
+    const page = this.loadComponent(this.currentPage.componentIs);
     assert(page, 'Could not find page ' + this.currentPage.componentIs);
     assert(
-        page.onNextButtonClick,
+        page!.onNextButtonClick,
         'No onNextButtonClick for ' + this.currentPage.componentIs);
     assert(
-        typeof page.onNextButtonClick === 'function',
+        typeof page!.onNextButtonClick === 'function',
         'onNextButtonClick not a function for ' + this.currentPage.componentIs);
     this.nextButtonClicked = true;
     this.setAllButtonsState(
         /* shouldDisableButtons= */ true, /* showBusyStateOverlay= */ true);
-    page.onNextButtonClick()
+    page!.onNextButtonClick()
         .then((stateResult) => {
           this.processStateResult(stateResult);
         })
-        // TODO(gavindodd): Better error handling.
-        .catch((err) => {
+        .catch((_err: Error) => {
           this.nextButtonClicked = false;
           this.setAllButtonsState(
               /* shouldDisableButtons= */ false,
@@ -831,39 +820,40 @@ export class ShimlessRma extends ShimlessRmaBase {
         });
   }
 
-  /** @protected */
-  onExitButtonClicked() {
-    const page = this.shadowRoot.querySelector(this.currentPage.componentIs);
+  protected onExitButtonClicked(): void {
+    const page = this.loadComponent(this.currentPage.componentIs);
+    assert(page);
 
     // Don't show the exit dialog if it's on calibration failed page.
     if (page.onExitButtonClick) {
       // A special case for the calibration failed page, where the skip button
       // replaces the exit button.
-      // TODO(swifton): find a more straightforward solution for this case.
       page.onExitButtonClick()
           .then((stateResult) => {
             this.processStateResult(stateResult);
           })
-          .catch((err) => {
+          .catch((_err: Error) => {
             this.confirmExitButtonClicked = false;
             this.setAllButtonsState(
                 /* shouldDisableButtons= */ false,
                 /* showBusyStateOverlay= */ false);
           });
     } else {
-      this.shadowRoot.querySelector('#exitDialog').showModal();
+      const dialog: CrDialogElement|null =
+          this.shadowRoot!.querySelector('#exitDialog');
+      assert(dialog);
+      dialog.showModal();
     }
   }
 
-  /** @protected */
-  onConfirmExitButtonClicked() {
+  protected onConfirmExitButtonClicked(): void {
     this.confirmExitButtonClicked = true;
-    this.shadowRoot.querySelector('#exitDialog').close();
+    this.closeDialog();
 
     // Show exit button spinner on the landing page
     const currentPageComponent =
-        this.shadowRoot.querySelector(this.currentPage.componentIs);
-    currentPageComponent.confirmExitButtonClicked = true;
+        this.loadComponent(this.currentPage.componentIs);
+    currentPageComponent!.confirmExitButtonClicked = true;
 
     this.setAllButtonsState(
         /* shouldDisableButtons= */ true, /* showBusyStateOverlay= */ true);
@@ -874,85 +864,78 @@ export class ShimlessRma extends ShimlessRmaBase {
     });
   }
 
-  /** @protected */
-  closeDialog() {
-    this.shadowRoot.querySelector('#exitDialog').close();
+  protected closeDialog(): void {
+    const dialog: CrDialogElement|null =
+        this.shadowRoot!.querySelector('#exitDialog');
+    assert(dialog);
+    dialog.close();
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getNextButtonLabel() {
+  private getNextButtonLabel(): string {
     return this.i18n(
         this.currentPage.buttonNextLabelKey ?
             this.currentPage.buttonNextLabelKey :
             'nextButtonLabel');
   }
 
-  /**
-   * @return {string}
-   * @protected
-   */
-  getExitButtonLabel() {
+  protected getExitButtonLabel(): string {
     return this.i18n(
         this.currentPage.buttonExitLabelKey ?
             this.currentPage.buttonExitLabelKey :
             'exitButtonLabel');
   }
 
-  /** @protected */
-  openLogsDialog() {
-    this.shimlessRmaService.getLog().then((res) => this.log = res.log);
-    const dialog = /** @type {!CrDialogElement} */ (
-        this.shadowRoot.querySelector('#logsDialog'));
+  protected openLogsDialog(): void {
+    this.shimlessRmaService.getLog().then(
+        (res: {log: string, error: RmadErrorCode}) => this.log = res.log);
+    const dialog: CrDialogElement|null =
+        this.shadowRoot!.querySelector('#logsDialog');
+    assert(dialog);
     if (!dialog.open) {
       dialog.showModal();
     }
   }
 
-  /** @protected */
-  launch3pDiagnostics() {
+  protected launch3pDiagnostics(): void {
     if (this.allButtonsDisabled) {
       return;
     }
 
-    const diagnostics = /** @type {!Shimless3pDiagnostics} */ (
-        this.shadowRoot.querySelector('#shimless3pDiagnostics'));
+    const diagnostics: Shimless3pDiagnostics|null =
+        this.shadowRoot!.querySelector('#shimless3pDiagnostics');
+    assert(diagnostics);
     diagnostics.launch3pDiagnostics();
   }
 
-  /** @private */
-  saveLog() {
-    this.shimlessRmaService.saveLog().then(
-        /*@type {!SaveLogResponse}*/ (result) => {
-          if (result.error === RmadErrorCode.kOk) {
-            this.logSavedStatusText =
-                this.i18n('rmaLogsSaveSuccessText', result.savePath.path);
-            this.usbLogState = USBLogState.LOG_SAVE_SUCCESS;
-          } else if (result.error === RmadErrorCode.kUsbNotFound) {
-            this.logSavedStatusText = this.i18n('rmaLogsSaveUsbNotFound');
-            this.usbLogState = USBLogState.LOG_SAVE_FAIL;
-          } else {
-            this.logSavedStatusText = this.i18n('rmaLogsSaveFailText');
-            this.usbLogState = USBLogState.LOG_SAVE_FAIL;
-          }
-        });
+  private saveLog(): void {
+    this.shimlessRmaService.saveLog().then((result: SaveLogResponse) => {
+      if (result.error === RmadErrorCode.kOk) {
+        this.logSavedStatusText =
+            this.i18n('rmaLogsSaveSuccessText', result.savePath.path);
+        this.usbLogState = UsbLogState.LOG_SAVE_SUCCESS;
+      } else if (result.error === RmadErrorCode.kUsbNotFound) {
+        this.logSavedStatusText = this.i18n('rmaLogsSaveUsbNotFound');
+        this.usbLogState = UsbLogState.LOG_SAVE_FAIL;
+      } else {
+        this.logSavedStatusText = this.i18n('rmaLogsSaveFailText');
+        this.usbLogState = UsbLogState.LOG_SAVE_FAIL;
+      }
+    });
   }
 
-  /** @protected */
-  onSaveLogClick() {
+  protected onSaveLogClick(): void {
     this.saveLog();
   }
 
-  /** @protected */
-  retrySaveLogs() {
+  protected retrySaveLogs(): void {
     this.saveLog();
   }
 
-  /** @protected */
-  closeLogsDialog() {
-    this.shadowRoot.querySelector('#logsDialog').close();
+  protected closeLogsDialog(): void {
+    const dialog: CrDialogElement|null =
+        this.shadowRoot!.querySelector('#logsDialog');
+    assert(dialog);
+    dialog.close();
 
     // Reset the USB state back to the default.
     this.usbLogState = DEFAULT_USB_LOG_STATE;
@@ -960,72 +943,47 @@ export class ShimlessRma extends ShimlessRmaBase {
 
   /**
    * Implements ExternalDiskStateObserver.onExternalDiskStateChanged()
-   * @param {boolean} detected
    */
-  onExternalDiskStateChanged(detected) {
+  onExternalDiskStateChanged(detected: boolean): void {
     if (!detected) {
-      this.usbLogState = USBLogState.USB_UNPLUGGED;
+      this.usbLogState = UsbLogState.USB_UNPLUGGED;
       return;
     }
 
-    if (this.usbLogState === USBLogState.USB_UNPLUGGED) {
-      this.usbLogState = USBLogState.USB_READY;
+    if (this.usbLogState === UsbLogState.USB_UNPLUGGED) {
+      this.usbLogState = UsbLogState.USB_READY;
     }
   }
 
-  /**
-   * @return {boolean}
-   * @protected
-   */
-  shouldShowSaveToUsbButton() {
-    return this.usbLogState === USBLogState.USB_READY;
+  protected shouldShowSaveToUsbButton(): boolean {
+    return this.usbLogState === UsbLogState.USB_READY;
   }
 
-  /**
-   * @return {boolean}
-   * @protected
-   */
-  shouldShowLogSaveAttemptContainer() {
-    return this.usbLogState === USBLogState.LOG_SAVE_SUCCESS ||
-        this.usbLogState === USBLogState.LOG_SAVE_FAIL;
+  protected shouldShowLogSaveAttemptContainer(): boolean {
+    return this.usbLogState === UsbLogState.LOG_SAVE_SUCCESS ||
+        this.usbLogState === UsbLogState.LOG_SAVE_FAIL;
   }
 
-  /**
-   * @return {boolean}
-   * @protected
-   */
-  shouldShowRetryButton() {
-    return this.usbLogState === USBLogState.LOG_SAVE_FAIL;
+  protected shouldShowRetryButton(): boolean {
+    return this.usbLogState === UsbLogState.LOG_SAVE_FAIL;
   }
 
-  /**
-   * @return {boolean}
-   * @protected
-   */
-  shouldShowLogUsbMessageContainer() {
-    return this.usbLogState === USBLogState.USB_UNPLUGGED;
+  protected shouldShowLogUsbMessageContainer(): boolean {
+    return this.usbLogState === UsbLogState.USB_UNPLUGGED;
   }
 
-  /**
-   * @return {string}
-   * @protected
-   */
-  getSaveLogResultIcon() {
+  protected getSaveLogResultIcon(): string {
     switch (this.usbLogState) {
-      case USBLogState.LOG_SAVE_SUCCESS:
+      case UsbLogState.LOG_SAVE_SUCCESS:
         return 'shimless-icon:check';
-      case USBLogState.LOG_SAVE_FAIL:
+      case UsbLogState.LOG_SAVE_FAIL:
         return 'shimless-icon:warning';
       default:
         return '';
     }
   }
 
-  /**
-   * @param {Event} event
-   * @private
-   */
-  handleKeyboardShortcut(event) {
+  private handleKeyboardShortcut(event: KeyboardEvent): void {
     // Handle `Alt + Shift + {key}` shortcuts.
     if (event.altKey && event.shiftKey) {
       switch (event.key.toLowerCase()) {
@@ -1037,6 +995,12 @@ export class ShimlessRma extends ShimlessRmaBase {
           break;
       }
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [ShimlessRma.is]: ShimlessRma;
   }
 }
 

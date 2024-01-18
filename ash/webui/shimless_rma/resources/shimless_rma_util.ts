@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CLICK_NEXT_BUTTON, ClickNextButtonEvent, createCustomEvent, DISABLE_ALL_BUTTONS, DISABLE_NEXT_BUTTON, DisableAllButtonsEvent, DisableNextButtonEvent, ENABLE_ALL_BUTTONS, EnableAllButtonsEvent, TRANSITION_STATE, TransitionStateEvent} from './events.js';
-import {StateResult} from './shimless_rma.mojom-webui.js';
+import {RmadErrorCode, StateResult} from './shimless_rma.mojom-webui.js';
 
 declare global {
   interface HTMLElementEventMap {
@@ -62,7 +62,9 @@ export function enableAllButtons(element: HTMLElement): void {
  * process the result, then transition to the next state.
  */
 export function executeThenTransitionState(
-    element: HTMLElement, fn: () => Promise<{stateResult: StateResult}>): void {
+    element: HTMLElement,
+    fn: () =>
+        Promise<{stateResult: StateResult, error?: RmadErrorCode}>): void {
   element.dispatchEvent(createCustomEvent(TRANSITION_STATE, fn));
 }
 

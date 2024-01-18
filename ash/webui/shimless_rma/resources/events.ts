@@ -15,8 +15,8 @@ export const ENABLE_ALL_BUTTONS = 'enable-all-buttons';
 export type EnableAllButtonsEvent = CustomEvent;
 
 export const TRANSITION_STATE = 'transition-state';
-export type TransitionStateEvent =
-    CustomEvent<() => Promise<{stateResult: StateResult}>>;
+export type TransitionStateEvent = CustomEvent<
+    () => Promise<{stateResult: StateResult, error?: RmadErrorCode}>>;
 
 export const CLICK_NEXT_BUTTON = 'click-next-button';
 export type ClickNextButtonEvent = CustomEvent;
@@ -41,6 +41,9 @@ export type FatalHardwareEvent = CustomEvent<{
   rmadErrorCode: RmadErrorCode,
   fatalErrorCode: number,
 }>;
+
+export const OPEN_LOGS_DIALOG = 'open-logs-dialog';
+export type OpenLogsDialogEvent = CustomEvent;
 
 type ExtractDetail<T> = T extends CustomEvent<infer U>? U : never;
 

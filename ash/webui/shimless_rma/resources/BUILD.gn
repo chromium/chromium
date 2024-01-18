@@ -58,7 +58,7 @@ build_webui("build") {
     "reimaging_provisioning_page.ts",
     "repair_component_chip.ts",
     "shimless_3p_diagnostics.ts",
-    "shimless_rma.js",
+    "shimless_rma.ts",
     "splash_screen.js",
     "wrapup_finalize_page.js",
     "wrapup_repair_complete_page.js",
