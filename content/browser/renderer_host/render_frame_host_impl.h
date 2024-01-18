@@ -2184,10 +2184,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   net::CookieSettingOverrides GetCookieSettingOverrides() override;
 
-  bool is_fenced_frame_root_originating_from_opaque_url() const {
-    return is_fenced_frame_root_originating_from_opaque_url_;
-  }
-
   PolicyContainerHost* policy_container_host() {
     return policy_container_host_.get();
   }
@@ -4957,13 +4953,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // https://w3c.github.io/webappsec-cspee/#required-csp,
   // stored when the frame commits the navigation.
   network::mojom::ContentSecurityPolicyPtr required_csp_;
-
-  // Only for fenced frames based on MPArch:
-  // Indicates whether this is the root of a fenced subtree whose last
-  // embedder-initiated navigation was to an opaque url (urn:uuid).
-  // Once this value is initially set, it doesn't change over the lifetime of
-  // the document.
-  bool is_fenced_frame_root_originating_from_opaque_url_ = false;
 
   // The PolicyContainerHost for the current document, containing security
   // policies that apply to it. It should never be null if the RenderFrameHost

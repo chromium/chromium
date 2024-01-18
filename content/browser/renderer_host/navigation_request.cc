@@ -1603,15 +1603,6 @@ NavigationRequest::NavigationRequest(
       is_pdf_(is_pdf),
       is_embedder_initiated_fenced_frame_navigation_(
           is_embedder_initiated_fenced_frame_navigation),
-      is_embedder_initiated_fenced_frame_opaque_url_navigation_(
-          is_embedder_initiated_fenced_frame_navigation
-              ? blink::IsValidUrnUuidURL(common_params_->url)
-              : false),
-      is_target_fenced_frame_root_originating_from_opaque_url_(
-          is_embedder_initiated_fenced_frame_navigation
-              ? is_embedder_initiated_fenced_frame_opaque_url_navigation_
-              : frame_tree_node->current_frame_host()
-                    ->is_fenced_frame_root_originating_from_opaque_url()),
       fenced_frame_properties_(
           is_embedder_initiated_fenced_frame_navigation
               ? std::make_optional(FencedFrameProperties(common_params_->url))
@@ -2417,20 +2408,17 @@ FencedFrameURLMapping& NavigationRequest::GetFencedFrameURLMap() {
 }
 
 bool NavigationRequest::NeedFencedFrameURLMapping() {
-  if (frame_tree_node_->IsFencedFrameRoot()) {
-    return is_embedder_initiated_fenced_frame_opaque_url_navigation_;
-  } else if (!frame_tree_node_->IsMainFrame() &&
-             blink::features::IsAllowURNsInIframeEnabled()) {
-    // In iframes, we want to ensure that fenced frame properties are respected
-    // after urn navigations.
-    // Any urn:uuid navigation is assumed to be initiated by the embedder,
-    // even though we know this is not necessarily the case in iframes.
-    // But it is true in all intended use cases.
-    is_embedder_initiated_fenced_frame_navigation_ =
-        blink::IsValidUrnUuidURL(common_params_->url);
-    return is_embedder_initiated_fenced_frame_navigation_;
+  if (!blink::IsValidUrnUuidURL(common_params_->url)) {
+    return false;
   }
-  return false;
+  if (blink::features::IsAllowURNsInIframeEnabled() &&
+      !frame_tree_node_->IsMainFrame() &&
+      !frame_tree_node_->IsFencedFrameRoot()) {
+    // When urn iframes are enabled, any urn:uuid navigation to an iframe is
+    // resolved using the urn mapping.
+    is_embedder_initiated_fenced_frame_navigation_ = true;
+  }
+  return is_embedder_initiated_fenced_frame_navigation_;
 }
 
 void NavigationRequest::OnFencedFrameURLMappingComplete(
@@ -6397,14 +6385,20 @@ net::Error NavigationRequest::CheckCSPDirectives(
 
   // [frame-src] or [fenced-frame-src]
   if (parent_policies) {
+    bool is_opaque_fenced_frame_root_navigation =
+        frame_tree_node_->IsFencedFrameRoot() &&
+        fenced_frame_properties_.has_value() &&
+        fenced_frame_properties_->mapped_url().has_value() &&
+        !fenced_frame_properties_->mapped_url()
+             ->GetValueForEntity(FencedFrameEntity::kEmbedder)
+             .has_value();
     if (!IsAllowedByCSPDirective(
             parent_policies->content_security_policies, &parent_context,
             frame_tree_node_->IsFencedFrameRoot()
                 ? network::mojom::CSPDirectiveName::FencedFrameSrc
                 : network::mojom::CSPDirectiveName::FrameSrc,
             has_followed_redirect, url_upgraded_after_redirect,
-            is_response_check,
-            is_target_fenced_frame_root_originating_from_opaque_url_,
+            is_response_check, is_opaque_fenced_frame_root_navigation,
             disposition)) {
       error = net::ERR_BLOCKED_BY_CSP;
     }

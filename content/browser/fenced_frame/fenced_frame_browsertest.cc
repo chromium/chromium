@@ -3491,10 +3491,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   // Navigate the fenced frame from the initial empty document toward a URL
   // with a client side redirect.
   //
-  // With MPArch, since this was a navigation toward an opaque URL, in the
-  // 'opaque-ads' mode, initiated from the embedder, the navigation must use
-  // and commit a document with
-  // `is_fenced_frame_root_originating_from_opaque_url` to true.
+  // Since this was a navigation toward an opaque URL initiated from the
+  // embedder, the navigation must use and commit FencedFrameProperties with
+  // an opaque URL.
   GURL fenced_frame_url(
       https_server()->GetURL("a.test", "/fenced_frames/redirect.html"));
   FencedFrameURLMapping& url_mapping =
@@ -3507,20 +3506,28 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, navigate_script);
 
-  EXPECT_TRUE(fenced_frame_root_node->current_frame_host()
-                  ->is_fenced_frame_root_originating_from_opaque_url());
+  // The mapped url of the fenced frame properties should be opaque to the
+  // embedder.
+  EXPECT_FALSE(fenced_frame_root_node->GetFencedFrameProperties()
+                   ->mapped_url()
+                   ->GetValueForEntity(FencedFrameEntity::kEmbedder)
+                   .has_value());
 
   // Navigate the fenced frame again, but toward a non-opaque URL. Since this
   // is initiated from the embedder, the new document must commit with
-  // `is_fenced_frame_root_originating_from_opaque_url` to false.
+  // FencedFrameProperties with a transparent URL.
   GURL second_url(
       https_server()->GetURL("a.test", "/fenced_frames/title0.html"));
   std::string second_navigate_script =
       JsReplace("f.config = new FencedFrameConfig($1);", second_url.spec());
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, second_navigate_script);
-  EXPECT_FALSE(fenced_frame_root_node->current_frame_host()
-                   ->is_fenced_frame_root_originating_from_opaque_url());
+  // The mapped url of the fenced frame properties should be visible to the
+  // embedder.
+  EXPECT_TRUE(fenced_frame_root_node->GetFencedFrameProperties()
+                  ->mapped_url()
+                  ->GetValueForEntity(FencedFrameEntity::kEmbedder)
+                  .has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
@@ -3543,9 +3550,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
       GetFencedFrameRootNode(root->child_at(0));
 
   // Navigate the fenced frame from the initial empty document toward an opaque
-  // URL. With MPArch, since this was in the 'opaque-ads' mode, initiated from
-  // the embedder, the navigation must use and commit a document with
-  // `is_fenced_frame_root_originating_from_opaque_url` to true.
+  // URL. The navigation must use and commit FencedFrameProperties with an
+  // opaque URL.
   GURL fenced_frame_url(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
   FencedFrameURLMapping& url_mapping =
@@ -3558,13 +3564,14 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, navigate_script);
 
-  EXPECT_TRUE(fenced_frame_root_node->current_frame_host()
-                  ->is_fenced_frame_root_originating_from_opaque_url());
+  EXPECT_FALSE(fenced_frame_root_node->GetFencedFrameProperties()
+                   ->mapped_url()
+                   ->GetValueForEntity(FencedFrameEntity::kEmbedder)
+                   .has_value());
 
   // Navigate the fenced frame again, but toward a non-opaque URL and the
   // navigation is cancelled. The navigation is not committed and therefore
-  // `is_fenced_frame_root_originating_from_opaque_url` of the document doesn't
-  // change.
+  // the FencedFrameProperties do not change.
   GURL second_url(https_server()->GetURL("a.test", "/nocontent"));
   std::string second_navigate_script =
       JsReplace("f.config = new FencedFrameConfig($1);", second_url.spec());
@@ -3576,8 +3583,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 
   // The fenced frame's document initiates a navigation. The previous cancelled
   // navigation from the embedder shouldn't have made any side effects. The next
-  // committed document must continue to have
-  // `is_fenced_frame_root_originating_from_opaque_url` true.
+  // committed document must continue to have the same FencedFrameProperties.
   GURL redirect_url(
       https_server()->GetURL("a.test", "/fenced_frames/title0.html"));
   EXPECT_TRUE(ExecJs(fenced_frame_root_node->current_frame_host(),
@@ -3587,8 +3593,10 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   EXPECT_EQ(fenced_frame_root_node->current_frame_host()->GetLastCommittedURL(),
             redirect_url);
 
-  EXPECT_TRUE(fenced_frame_root_node->current_frame_host()
-                  ->is_fenced_frame_root_originating_from_opaque_url());
+  EXPECT_FALSE(fenced_frame_root_node->GetFencedFrameProperties()
+                   ->mapped_url()
+                   ->GetValueForEntity(FencedFrameEntity::kEmbedder)
+                   .has_value());
 }
 
 namespace {

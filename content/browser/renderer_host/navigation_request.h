@@ -794,10 +794,6 @@ class CONTENT_EXPORT NavigationRequest
 
   bool is_credentialless() const { return is_credentialless_; }
 
-  bool is_target_fenced_frame_root_originating_from_opaque_url() const {
-    return is_target_fenced_frame_root_originating_from_opaque_url_;
-  }
-
   // Returns a pointer to the policies copied from the navigation initiator.
   // Returns nullptr if this navigation had no initiator.
   const PolicyContainerPolicies* GetInitiatorPolicyContainerPolicies() const;
@@ -2599,24 +2595,12 @@ class CONTENT_EXPORT NavigationRequest
   // TODO(crbug.com/1262022): Make this `const` again once ShadowDOM is gone.
   bool is_embedder_initiated_fenced_frame_navigation_ = false;
 
-  // Indicates that this navigation is to an opaque url (urn:uuid). This value
-  // may only be true when `is_embedder_initiated_fenced_frame_navigation` is
-  // true.
-  const bool is_embedder_initiated_fenced_frame_opaque_url_navigation_ = false;
-
-  // Indicates that the target of this navigation is the root of a fenced frame
-  // tree whose most recent embedder-initiated navigation was to an opaque URL
-  // (urn:uuid). The most recent navigation may be the current
-  // NavigationRequest.
-  const bool is_target_fenced_frame_root_originating_from_opaque_url_ = false;
-
   // On every embedder-initiated navigation of a fenced frame, i.e.
   // `is_embedder_initiated_fenced_frame_navigation_`, we reinitialize
-  // the fenced frame properties with the default `FencedFrameProperties()`
+  // the fenced frame properties with the default `FencedFrameProperties(url)`
   // constructor, which gives the fenced frame a fresh partition nonce.
   //
-  // If the embedder-initiated navigation is to an opaque url (urn:uuid), i.e.
-  // `is_embedder_initiated_fenced_frame_opaque_url_navigation_`, we overwrite
+  // If the embedder-initiated navigation is to a urn:uuid, we overwrite
   // the default properties stored in this `NavigationRequest` with the
   // `FencedFrameProperties` bound to that urn:uuid, in
   // `NavigationRequest::OnFencedFrameURLMappingComplete`.
