@@ -771,7 +771,7 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [5640],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/diagnostics_ui/resources/ash_diagnostics_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/diagnostics_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [200],}},
     "includes": [5660],
   },
