@@ -40715,6 +40715,7 @@ Called by update_scheduler_enums.py.-->
   <int value="1797107942" label="chrome://md-settings/"/>
   <int value="1834776370" label="chrome://password-change/"/>
   <int value="1887784693" label="chrome://policy/"/>
+  <int value="1906728906" label="chrome://privacy-sandbox-internals/"/>
   <int value="1926101309" label="chrome://cryptohome/"/>
   <int value="1928106753" label="chrome://app-disabled/"/>
   <int value="1961263039" label="chrome://profiler/"/>
