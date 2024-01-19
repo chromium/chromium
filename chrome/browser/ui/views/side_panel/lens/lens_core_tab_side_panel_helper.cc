@@ -29,21 +29,15 @@ namespace internal {
 
 bool IsSidePanelEnabled(content::WebContents* web_contents) {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+  // Side panel only works in the normal browser window. It does not work in
+  // other window types like PWA or picture-in-picture.
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   return GetTemplateURLService(web_contents)
              ->IsSideImageSearchSupportedForDefaultSearchProvider() &&
-         !IsInProgressiveWebApp(web_contents);
+         browser && browser->is_type_normal();
 #else
   return false;
 #endif
-}
-
-bool IsInProgressiveWebApp(content::WebContents* web_contents) {
-#if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  return browser && (browser->is_type_app() || browser->is_type_app_popup());
-#else
-  return false;
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 TemplateURLService* GetTemplateURLService(content::WebContents* web_contents) {
