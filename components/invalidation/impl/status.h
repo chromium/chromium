@@ -41,6 +41,9 @@ struct Status {
   Status(StatusCode status_code, const std::string& message);
   ~Status();
 
+  friend bool operator==(const Status& lhs, const Status& rhs) = default;
+  friend auto operator<=>(const Status& lhs, const Status& rhs) = default;
+
   // Errors always need a message but a success does not.
   static Status Success();
 

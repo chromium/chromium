@@ -254,6 +254,25 @@ void InvalidatorRegistrarWithMemory::DispatchInvalidationToHandlers(
   }
 }
 
+void InvalidatorRegistrarWithMemory::DispatchSuccessfullySubscribedToHandlers(
+    const Topic& topic) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // If we have no handlers, there's nothing to do.
+  if (handlers_.empty()) {
+    return;
+  }
+
+  for (const auto& [handler, registered_topics] :
+       registered_handler_to_topics_map_) {
+    for (const auto& registered_topic : registered_topics) {
+      if (topic != registered_topic.name) {
+        continue;
+      }
+      handler->OnSuccessfullySubscribed(topic);
+    }
+  }
+}
+
 void InvalidatorRegistrarWithMemory::UpdateInvalidatorState(
     InvalidatorState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -4,6 +4,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -13,12 +14,16 @@
 #include "base/test/task_environment.h"
 #include "components/invalidation/impl/fcm_invalidation_listener.h"
 #include "components/invalidation/impl/per_user_topic_subscription_manager.h"
+#include "components/invalidation/impl/status.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using testing::IsEmpty;
+using testing::UnorderedElementsAre;
 
 namespace invalidation {
 
@@ -79,6 +84,10 @@ class FakeDelegate : public FCMInvalidationListener::Delegate {
 
   InvalidatorState GetInvalidatorState() const { return state_; }
 
+  const std::set<Topic>& GetSuccessfullySubscribedTopics() const {
+    return successfully_subscribed_topics_;
+  }
+
   // FCMInvalidationListener::Delegate implementation.
   void OnInvalidate(const Invalidation& invalidation) override {
     invalidations_[invalidation.topic()].push_back(invalidation);
@@ -86,6 +95,10 @@ class FakeDelegate : public FCMInvalidationListener::Delegate {
 
   void OnInvalidatorStateChange(InvalidatorState state) override {
     state_ = state;
+  }
+
+  void OnSuccessfullySubscribed(const Topic& topic) override {
+    successfully_subscribed_topics_.insert(topic);
   }
 
  private:
@@ -96,6 +109,7 @@ class FakeDelegate : public FCMInvalidationListener::Delegate {
   Map invalidations_;
   InvalidatorState state_;
   DropMap dropped_invalidations_map_;
+  std::set<Topic> successfully_subscribed_topics_;
 };
 
 class MockSubscriptionManager : public PerUserTopicSubscriptionManager {
@@ -114,6 +128,13 @@ class MockSubscriptionManager : public PerUserTopicSubscriptionManager {
   MOCK_METHOD0(Init, void());
   MOCK_CONST_METHOD1(LookupSubscribedPublicTopicByPrivateTopic,
                      absl::optional<Topic>(const std::string& private_topic));
+  void NotifySubscriptionRequestFinished(
+      Topic topic,
+      PerUserTopicSubscriptionManager::RequestType request_type,
+      Status code) {
+    PerUserTopicSubscriptionManager::NotifySubscriptionRequestFinished(
+        topic, request_type, code);
+  }
 };
 
 class FCMInvalidationListenerTest : public testing::Test {
@@ -161,11 +182,23 @@ class FCMInvalidationListenerTest : public testing::Test {
     return fake_delegate_.GetInvalidatorState();
   }
 
+  const std::set<Topic>& GetSuccessfullySubscribedTopics() {
+    return fake_delegate_.GetSuccessfullySubscribedTopics();
+  }
+
   void FireInvalidate(const Topic& topic,
                       int64_t version,
                       const std::string& payload) {
     fcm_sync_network_channel_->DeliverIncomingMessage(payload, topic, topic,
                                                       version);
+  }
+
+  void NotifySubscriptionRequestFinished(
+      Topic topic,
+      PerUserTopicSubscriptionManager::RequestType request_type,
+      Status code) {
+    subscription_manager_->NotifySubscriptionRequestFinished(
+        topic, request_type, code);
   }
 
   void EnableNotifications() {
@@ -333,15 +366,16 @@ TEST_F(FCMInvalidationListenerTest, InvalidateMultipleIds) {
   ASSERT_EQ(0U, GetInvalidationCount(kExtensionsTopic_));
 }
 
-// Disable notifications, then enable them.
-TEST_F(FCMInvalidationListenerTest, ReEnableNotifications) {
-  DisableNotifications(FcmChannelState::NO_INSTANCE_ID_TOKEN);
+TEST_F(FCMInvalidationListenerTest, EmitSuccessfullySubscribedNotification) {
+  const Topic& topic = kPreferencesTopic_;
 
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, GetInvalidatorState());
+  EXPECT_THAT(GetSuccessfullySubscribedTopics(), IsEmpty());
 
-  EnableNotifications();
+  NotifySubscriptionRequestFinished(
+      topic, PerUserTopicSubscriptionManager::RequestType::kSubscribe,
+      Status(StatusCode::SUCCESS, /*message=*/std::string()));
 
-  EXPECT_EQ(INVALIDATIONS_ENABLED, GetInvalidatorState());
+  EXPECT_THAT(GetSuccessfullySubscribedTopics(), UnorderedElementsAre(topic));
 }
 
 }  // namespace

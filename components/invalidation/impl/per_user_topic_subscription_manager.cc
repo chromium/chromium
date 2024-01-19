@@ -361,7 +361,7 @@ void PerUserTopicSubscriptionManager::StartPendingSubscriptionRequest(
                          SubscriptionFinished,
                      base::Unretained(it->second.get())),
       url_loader_factory_);
-  NotifySubscriptionRequestStarted(topic);
+  NotifySubscriptionRequestStarted(topic, it->second->type);
 }
 
 void PerUserTopicSubscriptionManager::ActOnSuccessfulSubscription(
@@ -417,7 +417,7 @@ void PerUserTopicSubscriptionManager::SubscriptionFinishedForTopic(
     Status code,
     std::string private_topic_name,
     PerUserTopicSubscriptionRequest::RequestType type) {
-  NotifySubscriptionRequestFinished(topic, code);
+  NotifySubscriptionRequestFinished(topic, type, code);
   if (code.IsSuccess()) {
     ActOnSuccessfulSubscription(topic, private_topic_name, type);
     return;
@@ -591,17 +591,19 @@ void PerUserTopicSubscriptionManager::NotifySubscriptionChannelStateChange(
 }
 
 void PerUserTopicSubscriptionManager::NotifySubscriptionRequestStarted(
-    Topic topic) {
+    Topic topic,
+    RequestType request_type) {
   for (auto& observer : observers_) {
-    observer.OnSubscriptionRequestStarted(topic);
+    observer.OnSubscriptionRequestStarted(topic, request_type);
   }
 }
 
 void PerUserTopicSubscriptionManager::NotifySubscriptionRequestFinished(
     Topic topic,
+    RequestType request_type,
     Status code) {
   for (auto& observer : observers_) {
-    observer.OnSubscriptionRequestFinished(topic, code);
+    observer.OnSubscriptionRequestFinished(topic, request_type, code);
   }
 }
 

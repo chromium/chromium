@@ -41,6 +41,8 @@ class FCMInvalidationListener
     virtual void OnInvalidate(const Invalidation& invalidation) = 0;
 
     virtual void OnInvalidatorStateChange(InvalidatorState state) = 0;
+
+    virtual void OnSuccessfullySubscribed(const Topic& topic) = 0;
   };
 
   explicit FCMInvalidationListener(
@@ -77,11 +79,17 @@ class FCMInvalidationListener
   // PerUserTopicSubscriptionManager::Observer implementation.
   void OnSubscriptionChannelStateChanged(
       SubscriptionChannelState state) override;
-  void OnSubscriptionRequestStarted(Topic topic) override;
-  void OnSubscriptionRequestFinished(Topic topic, Status code) override;
+  void OnSubscriptionRequestStarted(
+      Topic topic,
+      PerUserTopicSubscriptionManager::RequestType request_type) override;
+  void OnSubscriptionRequestFinished(
+      Topic topic,
+      PerUserTopicSubscriptionManager::RequestType request_type,
+      Status code) override;
 
   void EmitStateChangeForTest(InvalidatorState state);
   void EmitSavedInvalidationForTest(const Invalidation& invalidation);
+  void EmitSuccessfullySubscribedForTest(const Topic& topic);
 
  private:
   // Callbacks for the |network_channel_|.

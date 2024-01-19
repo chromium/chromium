@@ -84,6 +84,7 @@ class FCMInvalidationService : public InvalidationService,
   // FCMInvalidationListener::Delegate implementation.
   void OnInvalidate(const Invalidation& invalidation) override;
   void OnInvalidatorStateChange(InvalidatorState state) override;
+  void OnSuccessfullySubscribed(const Topic& topic) override;
 
  private:
   friend class FCMInvalidationServiceTest;
