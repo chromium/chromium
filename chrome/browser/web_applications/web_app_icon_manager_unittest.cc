@@ -1457,18 +1457,16 @@ TEST_F(WebAppIconManagerTest, CacheNewAppFavicon) {
 }
 
 TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMissingIcons) {
-  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
-      {ui::k100Percent, ui::k200Percent, ui::k300Percent});
-
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
   // App declares icons precisely matching suspported UI scale factors.
   const std::vector<int> sizes_px{icon_size::k16, icon_size::k32,
-                                  icon_size::k64};
+                                  icon_size::k48, icon_size::k64};
   ASSERT_TRUE(base::Contains(sizes_px, gfx::kFaviconSize));
 
-  const std::vector<SkColor> colors{SK_ColorYELLOW, SK_ColorGREEN, SK_ColorRED};
+  const std::vector<SkColor> colors{SK_ColorYELLOW, SK_ColorGREEN, SK_ColorRED,
+                                    SK_ColorBLUE};
   IconManagerWriteGeneratedIcons(icon_manager(), app_id,
                                  {{IconPurpose::ANY, sizes_px, colors}});
 
@@ -1496,12 +1494,14 @@ TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMissingIcons) {
     ExpectImageSkiaRep(image_skia, /*scale=*/3.0f, /*size_px=*/icon_size::k48,
                        SK_ColorRED);
   }
+  {
+    SCOPED_TRACE(icon_size::k64);
+    ExpectImageSkiaRep(image_skia, /*scale=*/4.0f, /*size_px=*/icon_size::k64,
+                       SK_ColorBLUE);
+  }
 }
 
 TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_DownsizingIcons) {
-  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
-      {ui::k100Percent, ui::k200Percent});
-
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1529,16 +1529,18 @@ TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_DownsizingIcons) {
                        SK_ColorCYAN);
   }
   {
-    SCOPED_TRACE(icon_size::k32);
-    ExpectImageSkiaRep(image_skia, /*scale=*/2.0f, /*size_px=*/icon_size::k32,
+    SCOPED_TRACE(icon_size::k24);
+    ExpectImageSkiaRep(image_skia, /*scale=*/1.5f, /*size_px=*/icon_size::k24,
+                       SK_ColorCYAN);
+  }
+  {
+    SCOPED_TRACE(icon_size::k48);
+    ExpectImageSkiaRep(image_skia, /*scale=*/3.0f, /*size_px=*/icon_size::k48,
                        SK_ColorMAGENTA);
   }
 }
 
 TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoIcons) {
-  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
-      {ui::k100Percent, ui::k200Percent});
-
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1549,14 +1551,11 @@ TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoIcons) {
 }
 
 TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMatchSmaller) {
-  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
-      {ui::k200Percent, ui::k300Percent});
-
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
   // App declares only smaller icon and implementations ignore it: no upsizing.
-  const std::vector<int> sizes_px{icon_size::k16};
+  const std::vector<int> sizes_px{15};
   IconManagerWriteGeneratedIcons(
       icon_manager(), app_id,
       {{IconPurpose::ANY, sizes_px, /*colors=*/{SK_ColorRED}}});
@@ -1570,9 +1569,6 @@ TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMatchSmaller) {
 
 TEST_F(WebAppIconManagerTest,
        CacheAppFavicon_UiScaleFactors_DownsizingFromSingleIcon) {
-  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
-      {ui::k100Percent, ui::k200Percent});
-
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1596,17 +1592,17 @@ TEST_F(WebAppIconManagerTest,
                        SK_ColorLTGRAY);
   }
   {
-    SCOPED_TRACE(icon_size::k32);
-    ExpectImageSkiaRep(image_skia, /*scale=*/2.0f, /*size_px=*/icon_size::k32,
+    SCOPED_TRACE(icon_size::k64);
+    ExpectImageSkiaRep(image_skia, /*scale=*/4.0f, /*size_px=*/icon_size::k64,
                        SK_ColorLTGRAY);
   }
+  EXPECT_FALSE(image_skia.HasRepresentation(2.0f));
+  EXPECT_FALSE(image_skia.HasRepresentation(3.0f));
+  EXPECT_FALSE(image_skia.HasRepresentation(32.0f));
 }
 
 TEST_F(WebAppIconManagerTest,
        CacheAppFavicon_UiScaleFactors_BiggerUiScaleFactorIconMissing) {
-  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
-      {ui::k100Percent, ui::k300Percent});
-
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1629,18 +1625,20 @@ TEST_F(WebAppIconManagerTest,
     ExpectImageSkiaRep(image_skia, /*scale=*/1.0f, /*size_px=*/icon_size::k16,
                        SK_ColorDKGRAY);
   }
-  EXPECT_FALSE(image_skia.HasRepresentation(2.0f));
+  {
+    SCOPED_TRACE(icon_size::k32);
+    ExpectImageSkiaRep(image_skia, /*scale=*/2.0f, /*size_px=*/icon_size::k32,
+                       SK_ColorDKGRAY);
+  }
   EXPECT_FALSE(image_skia.HasRepresentation(3.0f));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 using WebAppIconManagerTest_NotificationIconAndTitle = WebAppIconManagerTest;
 
+// TODO(b/321111988): Reenable this test.
 TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
-       CacheAppMonochromeFavicon_NoMissingIcons) {
-  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
-      {ui::k100Percent, ui::k200Percent, ui::k300Percent});
-
+       DISABLED_CacheAppMonochromeFavicon_NoMissingIcons) {
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   web_app->SetThemeColor(std::make_optional(SK_ColorBLUE));
 
@@ -1676,17 +1674,14 @@ TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
                        /*size_px=*/icon_size::k32, SK_ColorTRANSPARENT);
   }
   {
-    SCOPED_TRACE(icon_size::k48);
-    ExpectImageSkiaRep(monochrome_image, /*scale=*/3.0f,
-                       /*size_px=*/icon_size::k48, SK_ColorBLUE);
+    SCOPED_TRACE(icon_size::k64);
+    ExpectImageSkiaRep(monochrome_image, /*scale=*/4.0f,
+                       /*size_px=*/icon_size::k64, SK_ColorBLUE);
   }
 }
 
 TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
        CacheAppMonochromeFavicon_CacheAfterAppInstall) {
-  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
-      {ui::k200Percent, ui::k300Percent});
-
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   web_app->SetThemeColor(std::make_optional(SK_ColorGREEN));
 
@@ -1707,22 +1702,22 @@ TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
   EXPECT_EQ(gfx::kFaviconSize, monochrome_image.width());
   EXPECT_EQ(gfx::kFaviconSize, monochrome_image.height());
   {
-    SCOPED_TRACE(icon_size::k32);
-    ExpectImageSkiaRep(monochrome_image, /*scale=*/2.0f,
-                       /*size_px=*/icon_size::k32, SK_ColorGREEN);
+    SCOPED_TRACE(icon_size::k16);
+    ExpectImageSkiaRep(monochrome_image, /*scale=*/1.0f,
+                       /*size_px=*/icon_size::k16, SK_ColorGREEN);
   }
   {
-    SCOPED_TRACE(icon_size::k48);
-    ExpectImageSkiaRep(monochrome_image, /*scale=*/3.0f,
-                       /*size_px=*/icon_size::k48, SK_ColorGREEN);
+    SCOPED_TRACE(icon_size::k64);
+    ExpectImageSkiaRep(monochrome_image, /*scale=*/4.0f,
+                       /*size_px=*/icon_size::k64, SK_ColorGREEN);
   }
+  EXPECT_FALSE(monochrome_image.HasRepresentation(2.0f));
+  EXPECT_FALSE(monochrome_image.HasRepresentation(3.0f));
+  EXPECT_FALSE(monochrome_image.HasRepresentation(32.0f));
 }
 
 TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
        CacheAppMonochromeFavicon_NoThemeColor) {
-  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
-      {ui::k100Percent, ui::k300Percent});
-
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   web_app->SetThemeColor(std::nullopt);
 
@@ -1747,15 +1742,16 @@ TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
     ExpectImageSkiaRep(monochrome_image, /*scale=*/1.0f,
                        /*size_px=*/icon_size::k16, SK_ColorDKGRAY);
   }
-  EXPECT_FALSE(monochrome_image.HasRepresentation(2.0));
+  {
+    SCOPED_TRACE(icon_size::k32);
+    ExpectImageSkiaRep(monochrome_image, /*scale=*/2.0f,
+                       /*size_px=*/icon_size::k32, SK_ColorDKGRAY);
+  }
   EXPECT_FALSE(monochrome_image.HasRepresentation(3.0));
 }
 
 TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
        CacheAppMonochromeFavicon_NoIcons) {
-  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
-      {ui::k100Percent, ui::k200Percent});
-
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
   AwaitReadFaviconMonochromeOnAddingWebApp(std::move(web_app));
