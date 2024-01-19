@@ -562,10 +562,10 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
   SkYUVAInfo yuva_info(gfx::SizeToSkISize(y_context->size()), plane_config,
                        subsampling, kIdentity_SkYUVColorSpace);
   sk_sp<SkImage> image;
-  void* fulfills[SkYUVAInfo::kMaxPlanes] = {};
   if (graphite_recorder_) {
     std::array<skgpu::graphite::TextureInfo, SkYUVAInfo::kMaxPlanes>
         texture_infos;
+    void* fulfills[SkYUVAInfo::kMaxPlanes] = {};
     for (size_t i = 0; i < contexts.size(); ++i) {
       auto* context = static_cast<ImageContextImpl*>(contexts[i]);
       auto format = context->format();
@@ -588,6 +588,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
         ReleaseGraphite, {}, fulfills);
   } else {
     GrBackendFormat formats[SkYUVAInfo::kMaxPlanes] = {};
+    void* fulfills[SkYUVAInfo::kMaxPlanes] = {};
     for (size_t i = 0; i < contexts.size(); ++i) {
       auto* context = static_cast<ImageContextImpl*>(contexts[i]);
       // NOTE: `yuv_color_space` is used only with external sampling and hence
@@ -608,13 +609,6 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
         gr_context_thread_safe_, yuva_backend_info,
         std::move(image_color_space), FulfillGanesh, CleanUp, fulfills);
   }
-  if (!image) {
-    LOG(ERROR) << "Failed to create the yuv promise sk image";
-    for (void* fulfill : fulfills) {
-      CleanUp(fulfill);
-    }
-    return nullptr;
-  }
   for (size_t i = 0; i < contexts.size(); ++i) {
     auto* context = static_cast<ImageContextImpl*>(contexts[i]);
     CHECK_EQ(context->origin(), kTopLeft_GrSurfaceOrigin);
@@ -624,6 +618,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
     }
     images_in_current_paint_.push_back(context);
   }
+  LOG_IF(ERROR, !image) << "Failed to create the yuv promise sk image";
   return image;
 }
 
@@ -662,11 +657,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
         graphite_recorder_, gfx::SizeToSkISize(image_context->size()),
         texture_info, color_info, origin, skgpu::graphite::Volatile::kYes,
         FulfillGraphite, CleanUp, ReleaseGraphite, fulfill);
-    if (!image) {
-      LOG(ERROR) << "Failed to create the promise sk image";
-      CleanUp(fulfill);
-      return;
-    }
+    LOG_IF(ERROR, !image) << "Failed to create the promise sk image";
     image_context->SetImage(std::move(image), {texture_info});
   } else {
     CHECK(gr_context_thread_safe_);
@@ -680,11 +671,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
         mipmap ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo,
         image_context->origin(), color_type, image_context->alpha_type(),
         image_context->color_space(), FulfillGanesh, CleanUp, fulfill);
-    if (!image) {
-      LOG(ERROR) << "Failed to create the promise sk image";
-      CleanUp(fulfill);
-      return;
-    }
+    LOG_IF(ERROR, !image) << "Failed to create the promise sk image";
     image_context->SetImage(std::move(image), {backend_format});
   }
 }
@@ -720,13 +707,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
         graphite_recorder_, yuva_backend_info, image_context->color_space(),
         skgpu::graphite::Volatile::kYes, FulfillGraphite, CleanUp,
         ReleaseGraphite, {}, fulfills);
-    if (!image) {
-      LOG(ERROR) << "Failed to create the yuv promise sk image";
-      for (void* fulfill : fulfills) {
-        CleanUp(fulfill);
-      }
-      return;
-    }
+    LOG_IF(ERROR, !image) << "Failed to create the yuv promise sk image";
     image_context->SetImage(std::move(image), std::move(texture_infos));
   } else {
     CHECK(gr_context_thread_safe_);
@@ -749,13 +730,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
     auto image = SkImages::PromiseTextureFromYUVA(
         gr_context_thread_safe_, yuva_backend_info,
         image_context->color_space(), FulfillGanesh, CleanUp, fulfills);
-    if (!image) {
-      LOG(ERROR) << "Failed to create the yuv promise sk image";
-      for (void* fulfill : fulfills) {
-        CleanUp(fulfill);
-      }
-      return;
-    }
+    LOG_IF(ERROR, !image) << "Failed to create the yuv promise sk image";
     image_context->SetImage(std::move(image), std::move(formats));
   }
 }
