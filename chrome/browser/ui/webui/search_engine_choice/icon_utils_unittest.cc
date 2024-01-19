@@ -36,7 +36,8 @@ class IconUtilsTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{switches::kSearchEngineChoice};
+  base::test::ScopedFeatureList feature_list_{
+      switches::kSearchEngineChoiceTrigger};
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<search_engines::SearchEngineChoiceService>
       search_engine_choice_service_;

@@ -4,7 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/search_engines/search_engines_pref_names.h"
-#import "components/signin/public/base/signin_switches.h"
+#import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
@@ -43,7 +43,7 @@
   // Set the country to one that is eligible for the choice screen (in this
   // case, France).
   config.additional_args.push_back("--search-engine-choice-country=FR");
-  config.features_enabled.push_back(switches::kSearchEngineChoice);
+  config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
   config.additional_args.push_back("-SearchEngineForceEnabled");
   config.additional_args.push_back("true");
   // Relaunches the app at each test to re-display the choice screen.
