@@ -48,6 +48,10 @@ constexpr gfx::Insets kBubbleTitleMargins = gfx::Insets::TLBR(20, 20, 10, 20);
 // elided.
 constexpr int kBubbleOriginTextMaximumWidth = 230;
 
+// Control view margins. The bubble control view refers to the view containing
+// the permission buttons.
+constexpr gfx::Insets kControlViewMargins = gfx::Insets::TLBR(8, 0, 0, 0);
+
 AutoPipSettingView::AutoPipSettingView(
     ResultCb result_cb,
     HideViewCb hide_view_cb,
@@ -124,6 +128,7 @@ void AutoPipSettingView::InitBubble() {
           .SetBetweenChildSpacing(kLayoutBetweenChildSpacing)
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
           .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
+          .SetInsideBorderInsets(kControlViewMargins)
           .Build());
 
   allow_once_button_ = InitControlViewButton(
