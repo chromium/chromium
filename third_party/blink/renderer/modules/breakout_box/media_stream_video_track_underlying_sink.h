@@ -71,8 +71,6 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSink
 
   std::unique_ptr<WebGraphicsContext3DVideoFramePool> accelerated_frame_pool_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  bool accelerated_frame_pool_callback_in_progress_
-      GUARDED_BY_CONTEXT(sequence_checker_) = false;
   int convert_to_nv12_gmb_failure_count_ GUARDED_BY_CONTEXT(sequence_checker_) =
       0;
 
