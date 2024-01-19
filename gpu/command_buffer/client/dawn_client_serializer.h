@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
 
@@ -33,6 +34,9 @@ class DawnClientSerializer : public dawn::wire::CommandSerializer {
   // dawn::wire::CommandSerializer implementation
   size_t GetMaximumAllocationSize() const final;
   void* GetCmdSpace(size_t size) final;
+#if DCHECK_IS_ON()
+  void OnSerializeError() final;
+#endif
 
   // Signal that it's important that the previously encoded commands are
   // flushed. Calling |AwaitingFlush| will return whether or not a flush still

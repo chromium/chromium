@@ -34,6 +34,12 @@ size_t DawnClientSerializer::GetMaximumAllocationSize() const {
   return transfer_buffer_->GetMaxSize();
 }
 
+#if DCHECK_IS_ON()
+void DawnClientSerializer::OnSerializeError() {
+  NOTREACHED() << "DawnClientSerializer error";
+}
+#endif
+
 void* DawnClientSerializer::GetCmdSpace(size_t size) {
   // Note: Dawn will never call this function with |size| >
   // GetMaximumAllocationSize().
