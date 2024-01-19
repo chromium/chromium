@@ -392,11 +392,21 @@ public class ReadAloudController
 
     /** Returns true if the web contents within current Tab is readable. */
     public boolean isReadable(Tab tab) {
-        if (isAvailable() && tab.getUrl().isValid()) {
+        if (isTabLanguageSupported(tab) && isAvailable() && tab.getUrl().isValid()) {
             Boolean isReadable = mReadabilityMap.get(stripUserData(tab.getUrl()).getSpec());
             return isReadable == null ? false : isReadable;
         }
         return false;
+    }
+
+    /** Returns true if the tab's current language is supported by the available voices. */
+    private boolean isTabLanguageSupported(Tab tab) {
+        if (mReadabilityHooks == null) {
+            return false;
+        }
+
+        String playbackLanguage = getLanguageForNewPlayback(tab);
+        return mReadabilityHooks.getCompatibleLanguages().contains(playbackLanguage);
     }
 
     /**

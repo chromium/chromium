@@ -87,6 +87,8 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 /** Unit tests for {@link ReadAloudController}. */
@@ -175,6 +177,8 @@ public class ReadAloudControllerUnitTest {
                             return tab;
                         });
         when(mHooksImpl.isEnabled()).thenReturn(true);
+        when(mHooksImpl.getCompatibleLanguages())
+                .thenReturn(new HashSet<String>(Arrays.asList("en", "es", "fr", "ja")));
         when(mPlaybackHooks.createPlayer(any())).thenReturn(mPlayerCoordinator);
         ReadAloudController.setReadabilityHooks(mHooksImpl);
         ReadAloudController.setPlaybackHooks(mPlaybackHooks);
@@ -426,6 +430,36 @@ public class ReadAloudControllerUnitTest {
                 .isPageReadable(
                         Mockito.anyString(),
                         Mockito.any(ReadAloudReadabilityHooks.ReadabilityCallback.class));
+    }
+
+    @Test
+    public void isReadable_languageSupported() {
+        mController.maybeCheckReadability(sTestGURL);
+
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+        assertTrue(mController.isReadable(mTab));
+
+        // check that URL is supported when the language is set to a supported language
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        assertTrue(mController.isReadable(mTab));
+    }
+
+    @Test
+    public void isReadable_languageUnsupported() {
+        mController.maybeCheckReadability(sTestGURL);
+
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+        assertTrue(mController.isReadable(mTab));
+
+        // check that URL isn't supported when the language is set to an unsupported language
+        mFakeTranslateBridge.setCurrentLanguage("he");
+        assertFalse(mController.isReadable(mTab));
     }
 
     @Test
