@@ -604,6 +604,8 @@ source_set("test_support") {
     "test/fake_test_cert_verifier_params_factory.h",
     "test/mock_devtools_observer.cc",
     "test/mock_devtools_observer.h",
+    "test/oblivious_http_request_test_helper.cc",
+    "test/oblivious_http_request_test_helper.h",
     "test/test_cookie_manager.cc",
     "test/test_cookie_manager.h",
     "test/test_data_pipe_getter.cc",

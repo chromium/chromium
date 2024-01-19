@@ -2331,6 +2331,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/interest_group/interest_group_permissions_browsertest.cc",
       "../browser/invalidation/profile_invalidation_provider_factory_browsertest.cc",
       "../browser/ip_protection/ip_protection_config_provider_browsertest.cc",
+      "../browser/k_anonymity_service/k_anonymity_service_client_browsertest.cc",
       "../browser/l10n_util_browsertest.cc",
       "../browser/launch_time_navigation_signal/launch_time_navigation_signal_browsertest.cc",
       "../browser/lifetime/browser_close_manager_browsertest.cc",
