@@ -20,6 +20,7 @@ export enum SeaPenActionName {
       'begin_load_selected_recent_sea_pen_image',
   SET_THUMBNAIL_RESPONSE_STATUS_CODE = 'set_thumbnail_response_status_code',
   BEGIN_SELECT_SEA_PEN_THUMBNAIL = 'begin_select_sea_pen_thumbnail',
+  CLEAR_SEA_PEN_THUMBNAILS = 'clear_sea_pen_thumbnails',
   END_SELECT_SEA_PEN_THUMBNAIL = 'end_select_sea_pen_thumbnail',
   BEGIN_SELECT_RECENT_SEA_PEN_IMAGE = 'begin_select_recent_sea_pen_image',
   END_SELECT_RECENT_SEA_PEN_IMAGE = 'end_select_recent_sea_pen_image',
@@ -32,10 +33,11 @@ export enum SeaPenActionName {
 export type SeaPenActions = BeginSearchSeaPenThumbnailsAction|
     BeginLoadRecentSeaPenImagesAction|BeginLoadRecentSeaPenImageDataAction|
     BeginLoadSelectedRecentSeaPenImageAction|BeginSelectRecentSeaPenImageAction|
-    EndSelectRecentSeaPenImageAction|SetThumbnailResponseStatusCodeAction|
-    SetSeaPenThumbnailsAction|SetRecentSeaPenImagesAction|
-    SetRecentSeaPenImageDataAction|SetSelectedRecentSeaPenImageAction|
-    BeginSelectSeaPenThumbnailAction|EndSelectSeaPenThumbnailAction;
+    ClearSeaPenThumbnailsAction|EndSelectRecentSeaPenImageAction|
+    SetThumbnailResponseStatusCodeAction|SetSeaPenThumbnailsAction|
+    SetRecentSeaPenImagesAction|SetRecentSeaPenImageDataAction|
+    SetSelectedRecentSeaPenImageAction|BeginSelectSeaPenThumbnailAction|
+    EndSelectSeaPenThumbnailAction;
 
 export interface BeginSearchSeaPenThumbnailsAction extends Action {
   name: SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS;
@@ -234,4 +236,12 @@ export function endSelectSeaPenThumbnailAction(
     thumbnail,
     success,
   };
+}
+
+export interface ClearSeaPenThumbnailsAction extends Action {
+  name: SeaPenActionName.CLEAR_SEA_PEN_THUMBNAILS;
+}
+
+export function clearSeaPenThumbnailsAction(): ClearSeaPenThumbnailsAction {
+  return {name: SeaPenActionName.CLEAR_SEA_PEN_THUMBNAILS};
 }

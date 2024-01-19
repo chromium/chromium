@@ -12,6 +12,7 @@ import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button
 import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
@@ -111,6 +112,10 @@ suite('SeaPenImagesElementTest', function() {
 
     let thumbnails = getWallpaperGridItems();
     assertEquals(4, thumbnails!.length, 'should be 4 images available');
+    let imageThumbnailGrid =
+        seaPenImagesElement!.shadowRoot!.querySelector('#grid');
+    assertTrue(
+        isVisible(imageThumbnailGrid!), 'thumbnail grid should be visible');
     assertDeepEquals(
         [false, true, false, false],
         thumbnails.map(thumbnail => thumbnail.selected),
@@ -129,6 +134,10 @@ suite('SeaPenImagesElementTest', function() {
 
     thumbnails = getWallpaperGridItems();
     assertEquals(4, thumbnails!.length, 'still 4 images available after click');
+    imageThumbnailGrid =
+        seaPenImagesElement!.shadowRoot!.querySelector('#grid');
+    assertTrue(
+        isVisible(imageThumbnailGrid!), 'thumbnail grid should be visible');
     assertDeepEquals(
         [true, false, false, false],
         thumbnails.map(thumbnail => thumbnail.selected),
@@ -159,6 +168,10 @@ suite('SeaPenImagesElementTest', function() {
     thumbnails = getWallpaperGridItems();
     assertEquals(
         4, thumbnails!.length, 'still 4 images available after resolve');
+    imageThumbnailGrid =
+        seaPenImagesElement!.shadowRoot!.querySelector('#grid');
+    assertTrue(
+        isVisible(imageThumbnailGrid!), 'thumbnail grid should be visible');
     assertDeepEquals(
         [true, false, false, false],
         thumbnails.map(thumbnail => thumbnail.selected),

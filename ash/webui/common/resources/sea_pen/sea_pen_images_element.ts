@@ -22,7 +22,7 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 
 import {Query} from './constants.js';
 import {MantaStatusCode, SeaPenTemplateId, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
-import {selectSeaPenWallpaper} from './sea_pen_controller.js';
+import {clearSeaPenThumbnails, selectSeaPenWallpaper} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_images_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
@@ -39,7 +39,10 @@ export class SeaPenImagesElement extends WithSeaPenStore {
 
   static get properties() {
     return {
-      templateId: String,
+      templateId: {
+        type: String,
+        observer: 'onTemplateIdChanged_',
+      },
 
       thumbnails_: Object,
 
@@ -113,6 +116,10 @@ export class SeaPenImagesElement extends WithSeaPenStore {
       default:
         return 'personalization-shared-illo:resource_error';
     }
+  }
+
+  private onTemplateIdChanged_() {
+    clearSeaPenThumbnails(this.getStore());
   }
 
   private shouldShowThumbnailPlaceholders_(

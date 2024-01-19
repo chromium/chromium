@@ -189,6 +189,8 @@ function thumbnailsReducer(
     case SeaPenActionName.SET_SEA_PEN_THUMBNAILS:
       assert(!!action.query, 'input text is empty.');
       return action.images;
+    case SeaPenActionName.CLEAR_SEA_PEN_THUMBNAILS:
+      return null;
     default:
       return state;
   }

@@ -59,6 +59,10 @@ export async function selectSeaPenWallpaper(
   }
 }
 
+export async function clearSeaPenThumbnails(store: SeaPenStoreInterface) {
+  store.dispatch(seaPenAction.clearSeaPenThumbnailsAction());
+}
+
 export async function deleteRecentSeaPenImage(
     image: FilePath, provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
