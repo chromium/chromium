@@ -55,21 +55,24 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
     ChromeOSListener& operator=(const ChromeOSListener&) = delete;
 
     // Is the merge session still running?
-    bool IsMergeSessionRunning() const;
+    // Virtual for testing.
+    virtual bool IsMergeSessionRunning() const;
 
     // Run |callback| on the calling sequence when the merge session has
     // finished (or timed out).
-    void RunWhenMergeSessionFinished(DelayedCallbackGroup::Callback callback);
+    // Virtual for testing.
+    virtual void RunWhenMergeSessionFinished(
+        DelayedCallbackGroup::Callback callback);
 
    protected:
     // chrome::mojom::ChromeOSListener:
     void MergeSessionComplete() override;
 
-   private:
-    friend class base::RefCountedThreadSafe<ChromeOSListener>;
-
     ChromeOSListener();
     ~ChromeOSListener() override;
+
+   private:
+    friend class base::RefCountedThreadSafe<ChromeOSListener>;
 
     void BindOnIOThread(mojo::PendingReceiver<chrome::mojom::ChromeOSListener>
                             chromeos_listener_receiver);

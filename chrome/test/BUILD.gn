@@ -6601,6 +6601,7 @@ if (!is_fuchsia) {
         "../browser/prefs/chrome_pref_service_factory_ash_unittest.cc",
         "../browser/ui/ash/arc_vm_data_migration_confirmation_dialog_unittest.cc",
         "../browser/ui/ash/clipboard_history_url_title_fetcher_impl_unittest.cc",
+        "../renderer/ash_merge_session_loader_throttle_unittest.cc",
         "../test/base/ash/v8_unit_test.cc",
         "../test/base/ash/v8_unit_test.h",
       ]
