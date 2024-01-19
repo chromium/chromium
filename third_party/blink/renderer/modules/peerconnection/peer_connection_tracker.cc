@@ -575,7 +575,7 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
       return base::Value(attribute.get<double>());
     }
     // Types not supported by `base::Value` are converted to string.
-    return base::Value(attribute.ValueToString());
+    return base::Value(attribute.ToString());
   }
 
   const int lid_;
