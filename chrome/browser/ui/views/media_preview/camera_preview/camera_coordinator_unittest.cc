@@ -73,7 +73,6 @@ class CameraCoordinatorTest : public TestWithBrowserView {
   }
 
   void TearDown() override {
-    base::RunLoop().RunUntilIdle();
     coordinator_.reset();
     parent_view_.reset();
     content::OverrideVideoCaptureServiceForTesting(nullptr);

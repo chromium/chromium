@@ -18,6 +18,7 @@ CameraMediator::CameraMediator(PrefService& prefs,
 
   content::GetVideoCaptureService().ConnectToVideoSourceProvider(
       video_source_provider_.BindNewPipeAndPassReceiver());
+  video_source_provider_.reset_on_disconnect();
   OnDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
 }
 
@@ -40,8 +41,9 @@ void CameraMediator::OnDevicesChanged(
     base::SystemMonitor::DeviceType device_type) {
   if (device_type == base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE &&
       video_source_provider_) {
-    video_source_provider_->GetSourceInfos(base::BindOnce(
-        &CameraMediator::OnVideoSourceInfosReceived, base::Unretained(this)));
+    video_source_provider_->GetSourceInfos(
+        base::BindOnce(&CameraMediator::OnVideoSourceInfosReceived,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

@@ -20,13 +20,16 @@ MicMediator::MicMediator(PrefService& prefs,
 
   content::GetAudioService().BindSystemInfo(
       system_info_.BindNewPipeAndPassReceiver());
+  system_info_.reset_on_disconnect();
   OnDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
 }
 
 void MicMediator::GetAudioInputDeviceFormats(
     const std::string& device_id,
     audio::mojom::SystemInfo::GetInputStreamParametersCallback callback) {
-  system_info_->GetInputStreamParameters(device_id, std::move(callback));
+  if (system_info_) {
+    system_info_->GetInputStreamParameters(device_id, std::move(callback));
+  }
 }
 
 void MicMediator::BindAudioStreamFactory(
@@ -37,7 +40,7 @@ void MicMediator::BindAudioStreamFactory(
 
 void MicMediator::OnDevicesChanged(
     base::SystemMonitor::DeviceType device_type) {
-  if (device_type == base::SystemMonitor::DEVTYPE_AUDIO) {
+  if (device_type == base::SystemMonitor::DEVTYPE_AUDIO && system_info_) {
     system_info_->GetInputDeviceDescriptions(base::BindOnce(
         &MicMediator::OnAudioSourceInfosReceived, base::Unretained(this)));
   }

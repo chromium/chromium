@@ -50,6 +50,8 @@ class CameraMediator : public base::SystemMonitor::DevicesChangedObserver {
 
   raw_ptr<PrefService> prefs_;
   DevicesChangedCallback devices_changed_callback_;
+
+  base::WeakPtrFactory<CameraMediator> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_CAMERA_PREVIEW_CAMERA_MEDIATOR_H_
