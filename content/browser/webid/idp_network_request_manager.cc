@@ -717,10 +717,16 @@ void OnTokenRequestParsed(
 
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
     if (IsFedCmErrorEnabled()) {
-      token_result.error = TokenError{kServerError, GURL()};
+      ErrorDialogType type;
+      if (fetch_status.response_code == net::HTTP_INTERNAL_SERVER_ERROR) {
+        token_result.error = TokenError{kServerError, GURL()};
+        type = ErrorDialogType::kServerErrorWithoutUrl;
+      } else {
+        token_result.error = TokenError{kGenericEmpty, GURL()};
+        type = ErrorDialogType::kGenericEmptyWithoutUrl;
+      }
       std::move(record_error_metrics_callback)
-          .Run(TokenResponseType::kTokenNotReceivedAndErrorNotReceived,
-               ErrorDialogType::kServerErrorWithoutUrl,
+          .Run(TokenResponseType::kTokenNotReceivedAndErrorNotReceived, type,
                /*error_url_type=*/std::nullopt);
     }
     std::move(callback).Run(fetch_status, token_result);
