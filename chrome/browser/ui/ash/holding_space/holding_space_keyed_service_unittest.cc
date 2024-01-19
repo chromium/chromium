@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 
+#include <map>
+#include <string>
 #include <vector>
 
 #include "ash/components/arc/session/arc_service_manager.h"
@@ -19,6 +21,7 @@
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/image_util.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -87,6 +90,7 @@ using ::ash::holding_space::ScopedTestMountPoint;
 using ::ash::holding_space_metrics::FilePickerBindingContext;
 using ::base::Bucket;
 using ::base::BucketsAre;
+using ::base::BucketsAreArray;
 using ::testing::AllOf;
 using ::testing::Conditional;
 using ::testing::ElementsAre;
@@ -99,6 +103,11 @@ using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::Value;
+
+// Constants -------------------------------------------------------------------
+
+constexpr char kTotalCountV2HistogramPrefix[] =
+    "HoldingSpace.Item.TotalCountV2";
 
 // Helpers ---------------------------------------------------------------------
 
@@ -155,6 +164,106 @@ HoldingSpaceItem* AddUninitializedItem(HoldingSpaceModel* model,
   return deserialized_item_ptr;
 }
 
+// Returns the expected TotalCountV2 histogram samples for the specified
+// `model`. The names of histograms returned are:
+// * "HoldingSpace.Item.TotalCountV2.All"
+// * "HoldingSpace.Item.TotalCountV2.All.FileSystemType.{fs_type}"
+// * "HoldingSpace.Item.TotalCountV2.{type}"
+// * "HoldingSpace.Item.TotalCountV2.{type}.FileSystemType.{fs_type}"
+std::map<std::string, std::vector<Bucket>>
+GetExpectedTotalCountV2HistogramSamples(const HoldingSpaceModel* model) {
+  // Aliases.
+  using FileSystemType = HoldingSpaceFile::FileSystemType;
+  using Type = HoldingSpaceItem::Type;
+
+  std::map<std::string, std::vector<Bucket>> result;
+
+  // Fill "HoldingSpace.Item.TotalCountV2.All".
+  result.emplace(base::StrCat({kTotalCountV2HistogramPrefix, ".All"}),
+                 std::vector<Bucket>(
+                     {Bucket(/*sample=*/model->items().size(), /*count=*/1u)}));
+
+  // File system types are allowlisted based on need to limit the number of
+  // recorded histograms arising from combinations with holding space item type.
+  constexpr auto kAllowlistedFsTypes = base::MakeFixedFlatSet<FileSystemType>(
+      {FileSystemType::kDriveFs, FileSystemType::kLocal});
+
+  // Fill "HoldingSpace.Item.TotalCountV2.All.FileSystemType.{fs_type}".
+  for (const FileSystemType fs_type : kAllowlistedFsTypes) {
+    result.emplace(
+        base::StrCat({kTotalCountV2HistogramPrefix, ".All.FileSystemType.",
+                      holding_space_util::ToString(fs_type)}),
+        std::vector<Bucket>({Bucket(/*sample=*/base::ranges::count(
+                                        model->items(), fs_type,
+                                        [&](const auto& item) {
+                                          return item->file().file_system_type;
+                                        }),
+                                    /*count=*/1u)}));
+  }
+
+  // Fill "HoldingSpace.Item.TotalCountV2.{type}".
+  for (const Type type : holding_space_util::GetAllItemTypes()) {
+    result.emplace(base::StrCat({kTotalCountV2HistogramPrefix, ".",
+                                 holding_space_util::ToString(type)}),
+                   std::vector<Bucket>({Bucket(
+                       /*sample=*/base::ranges::count(model->items(), type,
+                                                      &HoldingSpaceItem::type),
+                       /*count=*/1u)}));
+
+    // Fill "HoldingSpace.Item.TotalCountV2.{type}.FileSystemType.{fs_type}".
+    for (const FileSystemType fs_type : kAllowlistedFsTypes) {
+      result.emplace(
+          base::StrCat({kTotalCountV2HistogramPrefix, ".",
+                        holding_space_util::ToString(type), ".FileSystemType.",
+                        holding_space_util::ToString(fs_type)}),
+          std::vector<Bucket>({Bucket(
+              /*sample=*/base::ranges::count_if(
+                  model->items(),
+                  [&](const auto& item) {
+                    return item->type() == type &&
+                           item->file().file_system_type == fs_type;
+                  }),
+              /*count=*/1u)}));
+    }
+  }
+
+  return result;
+}
+
+// Returns a new map of histogram samples having merged `a` and `b`.
+std::map<std::string, std::vector<Bucket>> MergeHistogramSamples(
+    const std::map<std::string, std::vector<Bucket>>& a,
+    const std::map<std::string, std::vector<Bucket>>& b) {
+  std::map<std::string, std::vector<Bucket>> result = a;
+  for (const auto& [name, buckets] : b) {
+    auto name_it = result.find(name);
+
+    // Case: Name did *not* exist in other map. Add all buckets.
+    if (name_it == result.end()) {
+      result.emplace(name, buckets);
+      continue;
+    }
+
+    std::vector<Bucket>& result_buckets = name_it->second;
+
+    // Case: Name *did* exist in other map.
+    for (const auto& bucket : buckets) {
+      auto bucket_it =
+          base::ranges::find(result_buckets, bucket.min, &Bucket::min);
+
+      // Case: Bucket did *not* exist in other map. Add bucket.
+      if (bucket_it == result_buckets.end()) {
+        result_buckets.emplace_back(bucket);
+        continue;
+      }
+
+      // Case: Bucket *did* exist in other map. Update bucket.
+      bucket_it->count += bucket.count;
+    }
+  }
+  return result;
+}
+
 bool ShouldRestoreFromPersistence(HoldingSpaceItem::Type type) {
   if (HoldingSpaceItem::IsCameraAppType(type) &&
       !features::IsHoldingSpaceCameraAppIntegrationEnabled()) {
@@ -170,6 +279,8 @@ bool ShouldRestoreFromPersistence(HoldingSpaceItem::Type type) {
   }
   return true;
 }
+
+// Waiters ---------------------------------------------------------------------
 
 // Utility class which can wait until a `HoldingSpaceModel` for a given profile
 // is attached to the `HoldingSpaceController`.
@@ -394,6 +505,8 @@ class ItemImageUpdateWaiter {
   base::CallbackListSubscription image_subscription_;
 };
 
+// Mocks -----------------------------------------------------------------------
+
 // A mock `content::DownloadManager` which can notify observers of events.
 class MockDownloadManager : public content::MockDownloadManager {
  public:
@@ -423,6 +536,8 @@ class MockDownloadManager : public content::MockDownloadManager {
 };
 
 }  // namespace
+
+// HoldingSpaceKeyedServiceTest ------------------------------------------------
 
 class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
  public:
@@ -1375,13 +1490,9 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        RestorePersistentStorage) {
   // Verify expected histograms.
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount("HoldingSpace.Item.TotalCountV2.All", 0);
-  for (const auto type : holding_space_util::GetAllItemTypes()) {
-    histogram_tester.ExpectTotalCount(
-        base::StrCat({"HoldingSpace.Item.TotalCountV2.",
-                      holding_space_util::ToString(type)}),
-        0);
-  }
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix(kTotalCountV2HistogramPrefix),
+      IsEmpty());
 
   // Create file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
@@ -1390,6 +1501,15 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 
   HoldingSpaceKeyedService* const primary_holding_space_service =
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
+
+  // Verify `expected_histograms` after "waiting" for metrics debounce.
+  task_environment()->FastForwardBy(base::Seconds(30));
+  auto expected_histograms = GetExpectedTotalCountV2HistogramSamples(
+      primary_holding_space_service->model_for_testing());
+  for (const auto& [name, expected_buckets] : expected_histograms) {
+    EXPECT_THAT(histogram_tester.GetAllSamples(name),
+                BucketsAreArray(expected_buckets));
+  }
 
   HoldingSpaceModel::ItemList restored_holding_space_items;
   base::Value::List persisted_holding_space_items_after_restoration;
@@ -1486,16 +1606,15 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
             persisted_holding_space_items_after_restoration);
 
   // Verify expected histograms after "waiting" for metrics debounce.
+  // NOTE: Histograms are profile-agnostic and cumulative so we need to merge
+  // `expected_histograms` from the primary profile with those of the secondary.
   task_environment()->FastForwardBy(base::Seconds(30));
-  histogram_tester.ExpectBucketCount(
-      "HoldingSpace.Item.TotalCountV2.All",
-      secondary_holding_space_model->items().size(), 1);
-  for (const auto type : holding_space_util::GetAllItemTypes()) {
-    histogram_tester.ExpectBucketCount(
-        base::StrCat({"HoldingSpace.Item.TotalCountV2.",
-                      holding_space_util::ToString(type)}),
-        /*sample=*/1,
-        /*expected_count=*/ShouldRestoreFromPersistence(type) ? 1 : 0);
+  expected_histograms = MergeHistogramSamples(
+      expected_histograms,
+      GetExpectedTotalCountV2HistogramSamples(secondary_holding_space_model));
+  for (const auto& [name, expected_buckets] : expected_histograms) {
+    EXPECT_THAT(histogram_tester.GetAllSamples(name),
+                BucketsAreArray(expected_buckets));
   }
 }
 
@@ -2773,13 +2892,9 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
 
   // Verify expected histograms.
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount("HoldingSpace.Item.TotalCountV2.All", 0);
-  for (const auto type : holding_space_util::GetAllItemTypes()) {
-    histogram_tester.ExpectTotalCount(
-        base::StrCat({"HoldingSpace.Item.TotalCountV2.",
-                      holding_space_util::ToString(type)}),
-        0);
-  }
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix(kTotalCountV2HistogramPrefix),
+      IsEmpty());
 
   // Create a test mount point.
   std::unique_ptr<ScopedTestMountPoint> mount_point =
@@ -2831,16 +2946,12 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
            .bitmap(),
       *item->image().GetImageSkia().bitmap()));
 
-  // Verify expected histograms after "waiting" for metrics debounce.
+  // Verify `expected_histograms` after "waiting" for metrics debounce.
   task_environment()->FastForwardBy(base::Seconds(30));
-  histogram_tester.ExpectBucketCount("HoldingSpace.Item.TotalCountV2.All",
-                                     /*sample=*/1,
-                                     /*expected_count=*/1);
-  for (const auto type : holding_space_util::GetAllItemTypes()) {
-    histogram_tester.ExpectBucketCount(
-        base::StrCat({"HoldingSpace.Item.TotalCountV2.",
-                      holding_space_util::ToString(type)}),
-        /*sample=*/type == GetType() ? 1 : 0, /*expected_count=*/1);
+  auto expected_histograms = GetExpectedTotalCountV2HistogramSamples(model);
+  for (const auto& [name, expected_buckets] : expected_histograms) {
+    EXPECT_THAT(histogram_tester.GetAllSamples(name),
+                BucketsAreArray(expected_buckets));
   }
 
   // Attempt to add a holding space item of the same type and `file_path`.
@@ -2864,16 +2975,15 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
   GetService(profile)->RemoveItem(is_suggestion ? id2 : id);
   EXPECT_TRUE(model->items().empty());
 
-  // Verify expected histograms after "waiting" for metrics debounce.
+  // Verify `expected_histograms` after "waiting" for metrics debounce.
+  // NOTE: Histograms are cumulative so we need to merge `expected_histograms`
+  // from the previous state with those of the current.
   task_environment()->FastForwardBy(base::Seconds(30));
-  histogram_tester.ExpectBucketCount("HoldingSpace.Item.TotalCountV2.All",
-                                     /*sample=*/0,
-                                     /*expected_count=*/1);
-  for (const auto type : holding_space_util::GetAllItemTypes()) {
-    histogram_tester.ExpectBucketCount(
-        base::StrCat({"HoldingSpace.Item.TotalCountV2.",
-                      holding_space_util::ToString(type)}),
-        /*sample=*/0, /*expected_count=*/type == GetType() ? 1 : 2);
+  expected_histograms = MergeHistogramSamples(
+      expected_histograms, GetExpectedTotalCountV2HistogramSamples(model));
+  for (const auto& [name, expected_buckets] : expected_histograms) {
+    EXPECT_THAT(histogram_tester.GetAllSamples(name),
+                BucketsAreArray(expected_buckets));
   }
 }
 

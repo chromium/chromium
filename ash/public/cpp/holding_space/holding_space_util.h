@@ -68,6 +68,9 @@ ASH_PUBLIC_EXPORT bool ExecuteInProgressCommand(
     const HoldingSpaceItem* item,
     HoldingSpaceCommandId command_id);
 
+// Returns the string representation of the specified file system `type`.
+ASH_PUBLIC_EXPORT std::string ToString(HoldingSpaceFile::FileSystemType type);
+
 // Returns the string representation of the specified holding space item `type`.
 ASH_PUBLIC_EXPORT std::string ToString(HoldingSpaceItem::Type type);
 

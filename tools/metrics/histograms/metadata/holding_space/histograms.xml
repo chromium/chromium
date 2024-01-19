@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="HoldingSpaceFileSystemType">
+  <variant name="DriveFs" summary="Drive"/>
+  <variant name="Local" summary="local"/>
+</variants>
+
 <variants name="HoldingSpaceItemAction">
   <variant name="Cancel" summary="cancel"/>
   <variant name="Copy" summary="copy"/>
@@ -230,6 +235,21 @@ chromium-metrics-reviews@google.com.
   <token key="type" variants="HoldingSpaceItemType"/>
 </histogram>
 
+<histogram
+    name="HoldingSpace.Item.TotalCountV2.{type}.FileSystemType.{fs_type}"
+    units="items" expires_after="2024-06-01">
+  <owner>dmblack@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
+  <summary>
+    Records the total count of {type} items in holding space which are backed by
+    a file in the {fs_type} file system, on startup and as additions/removals
+    take place. Note that this histogram is emitted no more than once every
+    thirty seconds.
+  </summary>
+  <token key="fs_type" variants="HoldingSpaceFileSystemType"/>
+  <token key="type" variants="HoldingSpaceItemType"/>
+</histogram>
+
 <histogram name="HoldingSpace.Item.VisibleCount.{type}" units="items"
     expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
@@ -238,6 +258,20 @@ chromium-metrics-reviews@google.com.
     Records the visible count of {type} items in holding space at the moment
     holding space UI is shown.
   </summary>
+  <token key="type" variants="HoldingSpaceItemType"/>
+</histogram>
+
+<histogram
+    name="HoldingSpace.Item.VisibleCount.{type}.FileSystemType.{fs_type}"
+    units="items" expires_after="2024-06-01">
+  <owner>dmblack@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
+  <summary>
+    Records the visible count of {type} items in holding space which are backed
+    by a file in the {fs_type} file system at the moment holding space UI is
+    shown.
+  </summary>
+  <token key="fs_type" variants="HoldingSpaceFileSystemType"/>
   <token key="type" variants="HoldingSpaceItemType"/>
 </histogram>
 

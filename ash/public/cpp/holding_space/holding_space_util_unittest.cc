@@ -224,9 +224,83 @@ TEST_F(HoldingSpaceUtilTest, GetAllItemTypes) {
   }
 }
 
-// Verifies that `holding_space_util::ToString()` is WAI.
+// Verifies that `ToString(HoldingSpaceFile::FileSystemType)` is WAI.
 // NOTE: These values are persisted to histograms and must remain unchanged.
-TEST_F(HoldingSpaceUtilTest, ToString) {
+TEST_F(HoldingSpaceUtilTest, FileSystemTypeToString) {
+  for (const auto fs_type : GetAllFileSystemTypes()) {
+    std::string expected_string;
+    switch (fs_type) {
+      case HoldingSpaceFile::FileSystemType::kArcContent:
+        expected_string = "ArcContent";
+        break;
+      case HoldingSpaceFile::FileSystemType::kArcDocumentsProvider:
+        expected_string = "ArcDocumentsProvider";
+        break;
+      case HoldingSpaceFile::FileSystemType::kDeviceMedia:
+        expected_string = "DeviceMedia";
+        break;
+      case HoldingSpaceFile::FileSystemType::kDeviceMediaAsFileStorage:
+        expected_string = "DeviceMediaAsFileStorage";
+        break;
+      case HoldingSpaceFile::FileSystemType::kDragged:
+        expected_string = "Dragged";
+        break;
+      case HoldingSpaceFile::FileSystemType::kDriveFs:
+        expected_string = "DriveFs";
+        break;
+      case HoldingSpaceFile::FileSystemType::kExternal:
+        expected_string = "External";
+        break;
+      case HoldingSpaceFile::FileSystemType::kForTransientFile:
+        expected_string = "ForTransientFile";
+        break;
+      case HoldingSpaceFile::FileSystemType::kFuseBox:
+        expected_string = "FuseBox";
+        break;
+      case HoldingSpaceFile::FileSystemType::kIsolated:
+        expected_string = "Isolated";
+        break;
+      case HoldingSpaceFile::FileSystemType::kLocal:
+        expected_string = "Local";
+        break;
+      case HoldingSpaceFile::FileSystemType::kLocalForPlatformApp:
+        expected_string = "LocalForPlatformApp";
+        break;
+      case HoldingSpaceFile::FileSystemType::kLocalMedia:
+        expected_string = "LocalMedia";
+        break;
+      case HoldingSpaceFile::FileSystemType::kPersistent:
+        expected_string = "Persistent";
+        break;
+      case HoldingSpaceFile::FileSystemType::kProvided:
+        expected_string = "Provided";
+        break;
+      case HoldingSpaceFile::FileSystemType::kSmbFs:
+        expected_string = "SmbFs";
+        break;
+      case HoldingSpaceFile::FileSystemType::kSyncable:
+        expected_string = "Syncable";
+        break;
+      case HoldingSpaceFile::FileSystemType::kSyncableForInternalSync:
+        expected_string = "SyncableForInternalSync";
+        break;
+      case HoldingSpaceFile::FileSystemType::kTemporary:
+        expected_string = "Temporary";
+        break;
+      case HoldingSpaceFile::FileSystemType::kTest:
+        expected_string = "Test";
+        break;
+      case HoldingSpaceFile::FileSystemType::kUnknown:
+        expected_string = "Unknown";
+        break;
+    }
+    EXPECT_EQ(ToString(fs_type), expected_string);
+  }
+}
+
+// Verifies that `ToString(HoldingSpaceItem::Type)` is WAI.
+// NOTE: These values are persisted to histograms and must remain unchanged.
+TEST_F(HoldingSpaceUtilTest, ItemTypeToString) {
   for (const auto type : GetAllItemTypes()) {
     std::string expected_string;
     switch (type) {

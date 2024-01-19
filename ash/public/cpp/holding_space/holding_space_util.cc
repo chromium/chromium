@@ -211,6 +211,54 @@ bool ExecuteInProgressCommand(const HoldingSpaceItem* item,
 }
 
 // NOTE: These values are persisted to histograms and must remain unchanged.
+std::string ToString(HoldingSpaceFile::FileSystemType type) {
+  switch (type) {
+    case HoldingSpaceFile::FileSystemType::kArcContent:
+      return "ArcContent";
+    case HoldingSpaceFile::FileSystemType::kArcDocumentsProvider:
+      return "ArcDocumentsProvider";
+    case HoldingSpaceFile::FileSystemType::kDeviceMedia:
+      return "DeviceMedia";
+    case HoldingSpaceFile::FileSystemType::kDeviceMediaAsFileStorage:
+      return "DeviceMediaAsFileStorage";
+    case HoldingSpaceFile::FileSystemType::kDragged:
+      return "Dragged";
+    case HoldingSpaceFile::FileSystemType::kDriveFs:
+      return "DriveFs";
+    case HoldingSpaceFile::FileSystemType::kExternal:
+      return "External";
+    case HoldingSpaceFile::FileSystemType::kForTransientFile:
+      return "ForTransientFile";
+    case HoldingSpaceFile::FileSystemType::kFuseBox:
+      return "FuseBox";
+    case HoldingSpaceFile::FileSystemType::kIsolated:
+      return "Isolated";
+    case HoldingSpaceFile::FileSystemType::kLocal:
+      return "Local";
+    case HoldingSpaceFile::FileSystemType::kLocalForPlatformApp:
+      return "LocalForPlatformApp";
+    case HoldingSpaceFile::FileSystemType::kLocalMedia:
+      return "LocalMedia";
+    case HoldingSpaceFile::FileSystemType::kPersistent:
+      return "Persistent";
+    case HoldingSpaceFile::FileSystemType::kProvided:
+      return "Provided";
+    case HoldingSpaceFile::FileSystemType::kSmbFs:
+      return "SmbFs";
+    case HoldingSpaceFile::FileSystemType::kSyncable:
+      return "Syncable";
+    case HoldingSpaceFile::FileSystemType::kSyncableForInternalSync:
+      return "SyncableForInternalSync";
+    case HoldingSpaceFile::FileSystemType::kTemporary:
+      return "Temporary";
+    case HoldingSpaceFile::FileSystemType::kTest:
+      return "Test";
+    case HoldingSpaceFile::FileSystemType::kUnknown:
+      return "Unknown";
+  }
+}
+
+// NOTE: These values are persisted to histograms and must remain unchanged.
 std::string ToString(HoldingSpaceItem::Type type) {
   switch (type) {
     case HoldingSpaceItem::Type::kArcDownload:
