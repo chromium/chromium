@@ -7,6 +7,7 @@
 #include <queue>
 
 #include "ash/display/screen_orientation_controller.h"
+#include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -32,6 +33,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/header_view.h"
@@ -146,18 +148,44 @@ void VerifySnappedBounds(aura::Window* window, float expected_snap_ratio) {
   ASSERT_TRUE(window_state->IsSnapped());
 
   const bool in_tablet = display::Screen::GetScreen()->InTabletMode();
-  const auto* screen = display::Screen::GetScreen();
-  const gfx::Rect work_area = screen->GetPrimaryDisplay().work_area();
+  const auto display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  const gfx::Rect work_area = display.work_area();
+  const auto rotation = display.rotation();
   const bool is_primary =
       window_state->GetStateType() == WindowStateType::kPrimarySnapped;
 
-  const gfx::Size expected_size(
-      work_area.width() * expected_snap_ratio -
-          (in_tablet ? kSplitviewDividerShortSideLength / 2 : 0),
-      work_area.height());
-  const gfx::Point expected_origin(
-      is_primary ? work_area.x() : work_area.right() - expected_size.width(),
-      work_area.y());
+  // Following conditions assume that the natural display orientation is
+  // landscape.
+  ASSERT_TRUE(chromeos::IsLandscapeOrientation(
+      chromeos::GetDisplayNaturalOrientation(display)));
+  const bool is_landscape = rotation == display::Display::ROTATE_0 ||
+                            rotation == display::Display::ROTATE_180;
+  const bool is_top_or_left =
+      (rotation == display::Display::ROTATE_0 && is_primary) ||
+      (rotation == display::Display::ROTATE_90 && !is_primary) ||
+      (rotation == display::Display::ROTATE_180 && !is_primary) ||
+      (rotation == display::Display::ROTATE_270 && is_primary);
+
+  const int divider_margin =
+      in_tablet ? kSplitviewDividerShortSideLength / 2 : 0;
+  const gfx::Size expected_size =
+      is_landscape
+          ? gfx::Size(work_area.width() * expected_snap_ratio - divider_margin,
+                      work_area.height())
+          : gfx::Size(
+                work_area.width(),
+                work_area.height() * expected_snap_ratio - divider_margin);
+  const gfx::Point expected_origin =
+      is_landscape
+          ? gfx::Point(is_top_or_left
+                           ? work_area.x()
+                           : work_area.right() - expected_size.width(),
+                       work_area.y())
+          : gfx::Point(work_area.x(),
+                       is_top_or_left
+                           ? work_area.y()
+                           : work_area.bottom() - expected_size.height());
 
   const gfx::Rect bounds = window->GetTargetBounds();
   constexpr int eps = 1;  // Allow 1px rounding errors for partial snap.
@@ -846,6 +874,51 @@ TEST_F(ClientControlledStateTest, AutoPartialSnap) {
   VerifySnappedBounds(window(), chromeos::kTwoThirdSnapRatio);
   VerifySnappedBounds(non_client_controlled_window.get(),
                       chromeos::kOneThirdSnapRatio);
+}
+
+TEST_P(ClientControlledStateTestClamshellAndTablet, SnapAndRotate) {
+  ScreenOrientationControllerTestApi orientation_test_api(
+      Shell::Get()->screen_orientation_controller());
+  // Snap enabled.
+  widget_delegate()->EnableSnap();
+  ASSERT_TRUE(window_state()->CanSnap());
+
+  for (const bool is_primary : {true, false}) {
+    SCOPED_TRACE(::testing::Message() << "Testing in primary: " << is_primary);
+    const auto target_state_type = is_primary
+                                       ? WindowStateType::kPrimarySnapped
+                                       : WindowStateType::kSecondarySnapped;
+    for (const float snap_ratio :
+         {chromeos::kDefaultSnapRatio, chromeos::kOneThirdSnapRatio,
+          chromeos::kTwoThirdSnapRatio}) {
+      SCOPED_TRACE(::testing::Message()
+                   << "Testing in snap ratio: " << snap_ratio);
+      const WindowSnapWMEvent snap_event(
+          is_primary ? WM_EVENT_SNAP_PRIMARY : WM_EVENT_SNAP_SECONDARY,
+          snap_ratio);
+      window_state()->OnWMEvent(&snap_event);
+      state()->EnterNextState(window_state(), delegate()->new_state());
+      ApplyPendingRequestedBounds();
+      VerifySnappedBounds(window(), snap_ratio);
+      EXPECT_EQ(target_state_type, window_state()->GetStateType());
+
+      for (const auto& rotation :
+           {display::Display::ROTATE_90, display::Display::ROTATE_180,
+            display::Display::ROTATE_270, display::Display::ROTATE_0}) {
+        SCOPED_TRACE(::testing::Message()
+                     << "Testing in rotation: "
+                     << display::Display::RotationToDegrees(rotation));
+        // Rotate the display.
+        orientation_test_api.SetDisplayRotation(
+            rotation, display::Display::RotationSource::USER);
+        // Apply pending requests.
+        state()->EnterNextState(window_state(), delegate()->new_state());
+        ApplyPendingRequestedBounds();
+        VerifySnappedBounds(window(), snap_ratio);
+        EXPECT_EQ(target_state_type, window_state()->GetStateType());
+      }
+    }
+  }
 }
 
 // Pin events should not be applied immediately. The request should be sent
