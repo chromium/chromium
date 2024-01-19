@@ -35,6 +35,9 @@ const char kServiceTokenAuthHeaderPrefix[] = "GoogleLogin auth=";
 const char kDMTokenAuthHeaderPrefix[] = "GoogleDMToken token=";
 const char kEnrollmentTokenAuthHeaderPrefix[] = "GoogleEnrollmentToken token=";
 const char kOAuthTokenHeaderPrefix[] = "OAuth";
+const char kOidcAuthHeaderPrefix[] = "GoogleDM3PAuth";
+const char kOidcAuthTokenHeaderPrefix[] = " oauth_token=";
+const char kOidcIdTokenHeaderPrefix[] = " id_token=";
 
 // String constants for the device and app type we report to the server.
 const char kValueAppType[] = "Chrome";
@@ -45,6 +48,7 @@ const char kValueRequestPsmHasDeviceState[] = "enterprise_psm_check";
 const char kValueCheckUserAccount[] = "check_user_account";
 const char kValueRequestPolicy[] = "policy";
 const char kValueRequestRegister[] = "register";
+const char kValueRequestOidcRegister[] = "oidc-register";
 const char kValueRequestApiAuthorization[] = "api_authorization";
 const char kValueRequestUnregister[] = "unregister";
 const char kValueRequestUploadCertificate[] = "cert_upload";

@@ -414,6 +414,39 @@ void CloudPolicyClient::RegisterWithToken(
                               base::Unretained(this), std::move(config)));
 }
 
+void CloudPolicyClient::RegisterWithOidcResponse(
+    const RegistrationParameters& parameters,
+    const std::string& oauth_token,
+    const std::string& oidc_id_token,
+    const std::string& profile_id,
+    const std::string& client_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!oidc_id_token.empty());
+  CHECK(!oauth_token.empty());
+  CHECK(!profile_id.empty());
+
+  SetClientId(client_id);
+  auto params = DMServerJobConfiguration::CreateParams::WithClient(
+      DeviceManagementService::JobConfiguration::TYPE_OIDC_REGISTRATION, this);
+  params.profile_id = profile_id;
+  params.oauth_token = oauth_token;
+  params.auth_data = DMAuth::FromOidcResponse(oidc_id_token);
+  params.callback = base::BindOnce(&CloudPolicyClient::OnRegisterCompleted,
+                                   weak_ptr_factory_.GetWeakPtr());
+
+  auto config =
+      std::make_unique<RegistrationJobConfiguration>(std::move(params));
+
+  em::DeviceRegisterRequest* request =
+      config->request()->mutable_register_request();
+  CreateDeviceRegisterRequest(parameters, client_id, request);
+
+  // TODO(b/319479021): Reregistration behaviour is yet to be defined due to
+  // the expiring nature of OIDC responses.
+
+  unique_request_job_ = service_->CreateJob(std::move(config));
+}
+
 void CloudPolicyClient::OnRegisterWithCertificateRequestSigned(
     std::unique_ptr<SigningService> signing_service,
     bool success,

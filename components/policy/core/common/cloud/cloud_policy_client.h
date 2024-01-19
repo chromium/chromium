@@ -256,6 +256,16 @@ class POLICY_EXPORT CloudPolicyClient {
                                  const ClientDataDelegate& client_data_delegate,
                                  bool is_mandatory);
 
+  // Attempts to register the profile with the device management service using a
+  // OIDC response from a third party IdP's authentication. Results in a
+  // registration change or error notification.
+  virtual void RegisterWithOidcResponse(
+      const RegistrationParameters& parameters,
+      const std::string& oauth_token,
+      const std::string& oidc_id_token,
+      const std::string& profile_id,
+      const std::string& client_id);
+
   // Sets information about a policy invalidation. Subsequent fetch operations
   // will use the given info, and callers can use fetched_invalidation_version
   // to determine which version of policy was fetched.

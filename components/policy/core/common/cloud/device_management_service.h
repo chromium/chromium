@@ -222,6 +222,7 @@ class POLICY_EXPORT DeviceManagementService {
       TYPE_UPLOAD_EUICC_INFO = 29,
       TYPE_BROWSER_UPLOAD_PUBLIC_KEY = 30,
       TYPE_CHROME_PROFILE_REPORT = 31,
+      TYPE_OIDC_REGISTRATION = 32,
     };
 
     // The set of HTTP query parameters of the request.

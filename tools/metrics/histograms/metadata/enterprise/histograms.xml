@@ -1762,6 +1762,11 @@ chromium-metrics-reviews@google.com.
       <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
+    <variant name=".OidcRegistration"
+        summary="Registration with OIDC response.">
+      <owner>xzonghan@google.com</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
     <variant name=".PolicyFetch" summary="Policy Fetch.">
       <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
