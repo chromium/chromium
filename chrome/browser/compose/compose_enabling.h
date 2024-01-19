@@ -18,14 +18,14 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 
-class ComposeEnabling : public optimization_guide::SettingsEnabledObserver {
+class ComposeEnabling {
  public:
   explicit ComposeEnabling(
       TranslateLanguageProvider* translate_language_provider,
       Profile* profile,
       signin::IdentityManager* identity_manager,
       OptimizationGuideKeyedService* opt_guide);
-  ~ComposeEnabling() override;
+  ~ComposeEnabling();
 
   ComposeEnabling(const ComposeEnabling&) = delete;
   ComposeEnabling& operator=(const ComposeEnabling&) = delete;
@@ -56,11 +56,6 @@ class ComposeEnabling : public optimization_guide::SettingsEnabledObserver {
   compose::ComposeHintDecision GetOptimizationGuidanceForUrl(const GURL& url,
                                                              Profile* profile);
 
-  // SettingsEnabledObserver implementation
-  // TODO(b/314201066): This should be moved to another class that is
-  // instantiated once per-profile.
-  void PrepareToEnableOnRestart() override;
-
  private:
   base::expected<void, compose::ComposeShowStatus> PageLevelChecks(
       translate::TranslateManager* translate_manager,
@@ -70,7 +65,6 @@ class ComposeEnabling : public optimization_guide::SettingsEnabledObserver {
       bool is_newsted_within_fenced_frame);
 
   static base::expected<void, compose::ComposeShowStatus> CheckEnabling(
-      Profile* profile,
       OptimizationGuideKeyedService* opt_guide,
       signin::IdentityManager* identity_manager);
 

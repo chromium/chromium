@@ -39,27 +39,14 @@ ComposeEnabling::ComposeEnabling(
     Profile* profile,
     signin::IdentityManager* identity_manager,
     OptimizationGuideKeyedService* opt_guide)
-    : optimization_guide::SettingsEnabledObserver(
-          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE),
-      profile_(profile),
+    : profile_(profile),
       opt_guide_(opt_guide),
       identity_manager_(identity_manager) {
   DCHECK(profile_);
   translate_language_provider_ = translate_language_provider;
-  if (opt_guide_) {
-    // TODO(b/314199871): Add test when this call becomes mock-able.
-    opt_guide_->AddModelExecutionSettingsEnabledObserver(this);
-  } else {
-    LOG(WARNING) << "ComposeEnabling not monitoring for settings change. This "
-                    "is expected when running unrelated tests.";
-  }
 }
 
 ComposeEnabling::~ComposeEnabling() {
-  if (opt_guide_) {
-    opt_guide_->RemoveModelExecutionSettingsEnabledObserver(this);
-  }
-
   opt_guide_ = nullptr;
   identity_manager_ = nullptr;
   translate_language_provider_ = nullptr;
@@ -113,7 +100,7 @@ compose::ComposeHintDecision ComposeEnabling::GetOptimizationGuidanceForUrl(
 
 // Member function public entry point.
 base::expected<void, compose::ComposeShowStatus> ComposeEnabling::IsEnabled() {
-  return CheckEnabling(profile_, opt_guide_, identity_manager_);
+  return CheckEnabling(opt_guide_, identity_manager_);
 }
 
 // Static public entry point.
@@ -122,12 +109,11 @@ bool ComposeEnabling::IsEnabledForProfile(Profile* profile) {
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(profile);
-  return CheckEnabling(profile, opt_guide, identity_manager).has_value();
+  return CheckEnabling(opt_guide, identity_manager).has_value();
 }
 
-// Internal static.
+// Private static.
 base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
-    Profile* profile,
     OptimizationGuideKeyedService* opt_guide,
     signin::IdentityManager* identity_manager) {
   if (enabled_for_testing_) {
@@ -135,7 +121,7 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
     return base::ok();
   }
 
-  if (profile == nullptr || identity_manager == nullptr) {
+  if (identity_manager == nullptr || opt_guide == nullptr) {
     DVLOG(2) << "feature not reachable, a required pointer is nullptr";
     return base::unexpected(compose::ComposeShowStatus::kGenericBlocked);
   }
@@ -242,6 +228,7 @@ bool ComposeEnabling::ShouldTriggerContextMenu(
              blink::mojom::FormControlType::kTextArea))) {
     compose::LogComposeContextMenuShowStatus(
         compose::ComposeShowStatus::kIncompatibleFieldType);
+    DVLOG(2) << "not a supported text field";
     return false;
   }
 
@@ -255,6 +242,7 @@ bool ComposeEnabling::ShouldTriggerContextMenu(
       compose::ComposeHintDecision::COMPOSE_HINT_DECISION_COMPOSE_DISABLED) {
     compose::LogComposeContextMenuShowStatus(
         compose::ComposeShowStatus::kPerUrlChecksFailed);
+    DVLOG(2) << "disabled for the main frame URL";
     return false;
   }
 
@@ -267,36 +255,8 @@ bool ComposeEnabling::ShouldTriggerContextMenu(
     return true;
   }
   compose::LogComposeContextMenuShowStatus(show_status.error());
+  DVLOG(2) << "page level checks failed";
   return false;
-}
-
-// TODO(b/314327112): add a browser test to confirm correct enabling.
-void ComposeEnabling::PrepareToEnableOnRestart() {
-  std::unique_ptr<flags_ui::FlagsStorage> flags_storage;
-  about_flags::GetStorage(
-      profile_, base::BindOnce(
-                    [](std::unique_ptr<flags_ui::FlagsStorage>* final_storage,
-                       std::unique_ptr<flags_ui::FlagsStorage> storage,
-                       flags_ui::FlagAccess access) {
-                      CHECK(access == flags_ui::FlagAccess::kOwnerAccessToFlags)
-                          << "ChromeOS is not yet supported";
-                      *final_storage = std::move(storage);
-                    },
-                    base::Unretained(&flags_storage)));
-  CHECK(flags_storage) << "Flags storage must be set synchronously; ChromeOS "
-                          "(Ash) is not yet supported";
-
-  // Enable required features.
-  const std::string enabled_suffix =
-      std::string({flags_ui::kMultiSeparatorChar, '1'});
-  const std::string compose_enabled_name =
-      flag_descriptions::kComposeId + enabled_suffix;
-  about_flags::SetFeatureEntryEnabled(flags_storage.get(), compose_enabled_name,
-                                      true);
-  const std::string autofill_ce_enabled_name =
-      flag_descriptions::kAutofillContentEditablesId + enabled_suffix;
-  about_flags::SetFeatureEntryEnabled(flags_storage.get(),
-                                      autofill_ce_enabled_name, true);
 }
 
 base::expected<void, compose::ComposeShowStatus>

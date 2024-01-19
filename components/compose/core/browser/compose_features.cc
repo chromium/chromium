@@ -6,7 +6,8 @@
 
 namespace compose::features {
 
-BASE_FEATURE(kEnableCompose, "Compose", base::FEATURE_DISABLED_BY_DEFAULT);
+// Note: Compose is enabled by default because it requires settings UI enabling.
+BASE_FEATURE(kEnableCompose, "Compose", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kComposeInputParams,
              "ComposeInputParams",
@@ -26,7 +27,7 @@ BASE_FEATURE(kComposeEligible,
 
 BASE_FEATURE(kEnableComposeNudge,
              "ComposeNudge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableComposeLanguageBypass,
              "ComposeLanguageBypass",
