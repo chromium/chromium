@@ -11,6 +11,10 @@
 
 namespace IPC {
 
+TestChannelListener::TestChannelListener()
+    : sender_(nullptr), messages_left_(50) {}
+TestChannelListener::~TestChannelListener() {}
+
 // static
 void TestChannelListener::SendOneMessage(IPC::Sender* sender,
                                          const char* text) {
@@ -50,14 +54,17 @@ bool TestChannelListener::OnMessageReceived(const IPC::Message& message) {
 void TestChannelListener::OnChannelError() {
   // There is a race when closing the channel so the last message may be lost.
   EXPECT_LE(messages_left_, 1);
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  if (!quit_closure_.is_null()) {
+    std::move(quit_closure_).Run();
+  }
 }
 
 void TestChannelListener::SendNextMessage() {
-  if (--messages_left_ <= 0)
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
-  else
+  if (--messages_left_ <= 0) {
+    std::move(quit_closure_).Run();
+  } else {
     SendOneMessage(sender_, "Foo");
+  }
 }
 
 }

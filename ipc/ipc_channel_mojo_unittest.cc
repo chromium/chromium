@@ -155,13 +155,14 @@ TEST_F(IPCChannelMojoTest, ConnectedFromClient) {
 
   // Set up IPC channel and start client.
   TestChannelListenerWithExtraExpectations listener;
+  base::RunLoop loop;
+  listener.set_quit_closure(loop.QuitWhenIdleClosure());
   CreateChannel(&listener);
   listener.Init(sender());
   ASSERT_TRUE(ConnectChannel());
 
   IPC::TestChannelListener::SendOneMessage(sender(), "hello from parent");
-
-  base::RunLoop().Run();
+  loop.Run();
 
   channel()->Close();
 
@@ -179,7 +180,9 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT(IPCChannelMojoTestClient) {
   listener.Init(channel());
 
   IPC::TestChannelListener::SendOneMessage(channel(), "hello from child");
-  base::RunLoop().Run();
+  base::RunLoop loop;
+  listener.set_quit_closure(loop.QuitWhenIdleClosure());
+  loop.Run();
   EXPECT_TRUE(listener.is_connected_called());
   EXPECT_TRUE(listener.HasSentAll());
 
