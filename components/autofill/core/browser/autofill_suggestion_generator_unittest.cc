@@ -1974,13 +1974,14 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
   bool should_display_gpay_logo;
   bool with_offer;
+  bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_NUMBER,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, metadata_logging_context);
+          with_offer, with_cvc, metadata_logging_context);
 
   EXPECT_TRUE(with_offer);
   ASSERT_EQ(suggestions.size(), 3U);
@@ -2020,6 +2021,26 @@ TEST_F(AutofillSuggestionGeneratorTest,
   ASSERT_EQ(suggestions.size(), 1U);
 }
 
+// Ensures we appropriately generate suggestions for credit saved with CVC.
+TEST_F(AutofillSuggestionGeneratorTest, GetCardSuggestionsWithCvc) {
+  CreditCard card = test::WithCvc(test::GetMaskedServerCard2());
+  personal_data().AddServerCreditCard(card);
+
+  bool should_display_gpay_logo;
+  bool with_offer;
+  bool with_cvc;
+  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->GetSuggestionsForCreditCards(
+          FormFieldData(), CREDIT_CARD_NUMBER,
+          /*should_show_scan_credit_card=*/false,
+          /*should_show_cards_from_account=*/false, should_display_gpay_logo,
+          with_offer, with_cvc, metadata_logging_context);
+
+  ASSERT_EQ(suggestions.size(), 1U);
+  EXPECT_TRUE(with_cvc);
+}
+
 // Verifies that the `should_display_gpay_logo` is set correctly.
 TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
   // `should_display_gpay_logo` should be true if suggestions were all for
@@ -2035,13 +2056,14 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
 
     bool should_display_gpay_logo;
     bool with_offer;
+    bool with_cvc;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     std::vector<Suggestion> suggestions =
         suggestion_generator()->GetSuggestionsForCreditCards(
             FormFieldData(), CREDIT_CARD_NUMBER,
             /*should_show_scan_credit_card=*/false,
             /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-            with_offer, metadata_logging_context);
+            with_offer, with_cvc, metadata_logging_context);
 
     EXPECT_EQ(suggestions.size(), 2U);
     EXPECT_TRUE(should_display_gpay_logo);
@@ -2063,13 +2085,14 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
 
     bool should_display_gpay_logo;
     bool with_offer;
+    bool with_cvc;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     std::vector<Suggestion> suggestions =
         suggestion_generator()->GetSuggestionsForCreditCards(
             FormFieldData(), CREDIT_CARD_NUMBER,
             /*should_show_scan_credit_card=*/false,
             /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-            with_offer, metadata_logging_context);
+            with_offer, with_cvc, metadata_logging_context);
 
     EXPECT_EQ(suggestions.size(), 2U);
     EXPECT_FALSE(should_display_gpay_logo);
@@ -2093,13 +2116,14 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
 
     bool should_display_gpay_logo;
     bool with_offer;
+    bool with_cvc;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     std::vector<Suggestion> suggestions =
         suggestion_generator()->GetSuggestionsForCreditCards(
             FormFieldData(), CREDIT_CARD_NUMBER,
             /*should_show_scan_credit_card=*/false,
             /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-            with_offer, metadata_logging_context);
+            with_offer, with_cvc, metadata_logging_context);
 
     EXPECT_EQ(suggestions.size(), 1U);
     EXPECT_TRUE(should_display_gpay_logo);
@@ -2111,13 +2135,14 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
   {
     bool should_display_gpay_logo;
     bool with_offer;
+    bool with_cvc;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     std::vector<Suggestion> suggestions =
         suggestion_generator()->GetSuggestionsForCreditCards(
             FormFieldData(), CREDIT_CARD_NUMBER,
             /*should_show_scan_credit_card=*/false,
             /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-            with_offer, metadata_logging_context);
+            with_offer, with_cvc, metadata_logging_context);
 
     EXPECT_TRUE(suggestions.empty());
     EXPECT_TRUE(should_display_gpay_logo);
@@ -2127,13 +2152,14 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
 TEST_F(AutofillSuggestionGeneratorTest, NoSuggestionsWhenNoUserData) {
   bool should_display_gpay_logo;
   bool with_offer;
+  bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_NUMBER,
           /*should_show_scan_credit_card=*/true,
           /*should_show_cards_from_account=*/true, should_display_gpay_logo,
-          with_offer, metadata_logging_context);
+          with_offer, with_cvc, metadata_logging_context);
 
   EXPECT_TRUE(suggestions.empty());
 }
@@ -2142,13 +2168,14 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowScanCreditCard) {
   personal_data().AddCreditCard(test::GetCreditCard());
   bool should_display_gpay_logo;
   bool with_offer;
+  bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_NUMBER,
           /*should_show_scan_credit_card=*/true,
           /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, metadata_logging_context);
+          with_offer, with_cvc, metadata_logging_context);
 
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsSuggestion(PopupItemId::kCreditCardEntry),
@@ -2162,13 +2189,14 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
   personal_data().AddCreditCard(test::GetCreditCard());
   bool should_display_gpay_logo;
   bool with_offer;
+  bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_NUMBER,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/true, should_display_gpay_logo,
-          with_offer, metadata_logging_context);
+          with_offer, with_cvc, metadata_logging_context);
 
   EXPECT_EQ(suggestions.size(), 2ul);
   EXPECT_THAT(suggestions[0], EqualsSuggestion(PopupItemId::kCreditCardEntry));
@@ -3034,12 +3062,13 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   field_data.value = u"$$$";
   bool should_display_gpay_logo;
   bool with_offer;
+  bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
           field_data, UNKNOWN_TYPE, /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, metadata_logging_context);
+          with_offer, with_cvc, metadata_logging_context);
 
   // Credit card suggestions should not depend on the field's value.
   EXPECT_EQ(suggestions.size(), 1U);
@@ -3060,13 +3089,14 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   bool should_display_gpay_logo;
   bool with_offer;
+  bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   const std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, metadata_logging_context);
+          with_offer, with_cvc, metadata_logging_context);
 
   // Both local card and server card suggestion should be shown when CVC field
   // is focused.
@@ -3094,13 +3124,14 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   bool should_display_gpay_logo;
   bool with_offer;
+  bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   const std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, metadata_logging_context);
+          with_offer, with_cvc, metadata_logging_context);
 
   // Only 1 suggestion should be shown when CVC field is focused.
   ASSERT_EQ(suggestions.size(), 1U);
@@ -3118,13 +3149,14 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   bool should_display_gpay_logo;
   bool with_offer;
+  bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   const std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, metadata_logging_context);
+          with_offer, with_cvc, metadata_logging_context);
 
   // Both FPAN and VCN suggestion should be shown when CVC field is focused.
   ASSERT_EQ(suggestions.size(), 2U);
@@ -3156,13 +3188,14 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   bool should_display_gpay_logo;
   bool with_offer;
+  bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   const std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, metadata_logging_context);
+          with_offer, with_cvc, metadata_logging_context);
 
   // Both FPAN and VCN suggestion should be shown when CVC field is focused.
   ASSERT_EQ(suggestions.size(), 2U);
@@ -3374,12 +3407,13 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
 
     bool should_display_gpay_logo;
     bool with_offer;
+    bool with_cvc;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     suggestion_generator()->GetSuggestionsForCreditCards(
         FormFieldData(), CREDIT_CARD_NUMBER,
         /*should_show_scan_credit_card=*/false,
         /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-        with_offer, metadata_logging_context);
+        with_offer, with_cvc, metadata_logging_context);
 
     EXPECT_FALSE(metadata_logging_context.card_metadata_available);
     EXPECT_FALSE(metadata_logging_context.card_product_description_shown);
@@ -3406,12 +3440,13 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
 
     bool should_display_gpay_logo;
     bool with_offer;
+    bool with_cvc;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     suggestion_generator()->GetSuggestionsForCreditCards(
         FormFieldData(), CREDIT_CARD_NUMBER,
         /*should_show_scan_credit_card=*/false,
         /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-        with_offer, metadata_logging_context);
+        with_offer, with_cvc, metadata_logging_context);
 
     EXPECT_TRUE(metadata_logging_context.card_metadata_available);
     EXPECT_EQ(metadata_logging_context.card_product_description_shown,

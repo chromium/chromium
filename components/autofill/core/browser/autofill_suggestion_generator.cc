@@ -1465,6 +1465,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     bool should_show_cards_from_account,
     bool& should_display_gpay_logo,
     bool& with_offer,
+    bool& with_cvc,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
   std::vector<Suggestion> suggestions;
   // Manual fallback entries are shown for all non credit card fields.
@@ -1515,6 +1516,9 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
         suggestions.push_back(CreateCreditCardSuggestion(
             credit_card, trigger_field_type,
             /*virtual_card_option=*/true, card_linked_offer_available));
+      }
+      if (!credit_card.cvc().empty()) {
+        with_cvc = true;
       }
       suggestions.push_back(CreateCreditCardSuggestion(
           credit_card, trigger_field_type,

@@ -202,6 +202,28 @@ enum FormEvent {
   // and the suggested card had no metadata. Logged once per page load.
   FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_WILL_SUBMIT_ONCE = 78,
 
+  // Metric logged when a credit card suggestion with cvc info was shown.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SHOWN = 79,
+  // Metric logged when a credit card suggestion with cvc info was shown. Logged
+  // once per page load.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SHOWN_ONCE = 80,
+  // Metric logged when a credit card suggestion with cvc info was selected.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SELECTED = 81,
+  // Metric logged when a credit card suggestion with cvc info was selected.
+  // Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SELECTED_ONCE = 82,
+  // Metric logged when a credit card suggestion with cvc info was filled.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_FILLED = 83,
+  // Metric logged when a credit card suggestion with cvc info was filled.
+  // Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_FILLED_ONCE = 84,
+  // Metric logged when form is about to be submitted after a credit card
+  // suggestion with cvc info was filled. Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_WILL_SUBMIT_ONCE = 85,
+  // Metric logged when form was submitted after a credit card suggestion with
+  // cvc info was filled. Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SUBMITTED_ONCE = 86,
+
   NUM_FORM_EVENTS,
 };
 

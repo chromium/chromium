@@ -1232,6 +1232,18 @@ Called by update_autofill_enums.py.-->
   <int value="78"
       label="A card was about to be submitted after a suggestion without
              metadata was filled (once)"/>
+  <int value="79" label="Suggestions for card with CVC shown"/>
+  <int value="80" label="Suggestions for card with CVC shown (once)"/>
+  <int value="81" label="Suggestion for card with CVC selected"/>
+  <int value="82" label="Suggestion for card with CVC selected (once)"/>
+  <int value="83" label="Suggestion for card with CVC filled"/>
+  <int value="84" label="Suggestion for card with CVC filled (once)"/>
+  <int value="85"
+      label="Form about to be submitted after any suggestion for card with
+             CVC was filled (once)"/>
+  <int value="86"
+      label="Form submitted after any suggestion for card with CVC was filled
+             (once)"/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">

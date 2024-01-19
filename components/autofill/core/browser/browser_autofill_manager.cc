@@ -2868,6 +2868,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
 
   std::vector<Suggestion> suggestions;
   bool with_offer = false;
+  bool with_cvc = false;
   bool is_virtual_card_standalone_cvc_field = false;
   autofill_metrics::CardMetadataLoggingContext context;
   if (!IsInAutofillSuggestionsDisabledExperiment()) {
@@ -2889,12 +2890,13 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
           trigger_field, trigger_field_type,
           ShouldShowScanCreditCard(form, trigger_field),
           ShouldShowCardsFromAccountOption(form, trigger_field, trigger_source),
-          should_display_gpay_logo, with_offer, context);
+          should_display_gpay_logo, with_offer, with_cvc, context);
     }
   }
 
   credit_card_form_event_logger_->OnDidFetchSuggestion(
-      suggestions, with_offer, is_virtual_card_standalone_cvc_field, context);
+      suggestions, with_offer, with_cvc, is_virtual_card_standalone_cvc_field,
+      context);
   return suggestions;
 }
 

@@ -101,8 +101,10 @@ class AutofillSuggestionGenerator {
   // `should_display_gpay_logo` will be set to true if there are no credit card
   // suggestions, or all suggestions come from Payments server. `with_offer`
   // is set to true if ANY card has card-linked offers.
+  // `with_cvc` is set to true if ANY card has cvc saved.
   // `metadata_logging_context` contains card metadata related information used
   // for metrics logging.
+  // TODO(crbug.com/1519179): Merging out-parameters into a struct.
   std::vector<Suggestion> GetSuggestionsForCreditCards(
       const FormFieldData& trigger_field,
       FieldType trigger_field_type,
@@ -110,6 +112,7 @@ class AutofillSuggestionGenerator {
       bool should_show_cards_from_account,
       bool& should_display_gpay_logo,
       bool& with_offer,
+      bool& with_cvc,
       autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
 
   // Generates suggestions for standalone CVC fields. These only apply to
