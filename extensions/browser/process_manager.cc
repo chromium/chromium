@@ -869,9 +869,14 @@ void ProcessManager::DecrementServiceWorkerKeepaliveCount(
   // Example of when kWorkerNotRunning can happen is when the renderer process
   // is killed while handling a service worker request (e.g. because of a bad
   // IPC message).
+  // kNullContext can occur if the keepalive is being removed during browser
+  // context tear-down, since the ServiceWorkerContext can shut down before
+  // the ProcessManager.
   DCHECK((finish_result == content::ServiceWorkerExternalRequestResult::kOk) ||
          (finish_result ==
-          content::ServiceWorkerExternalRequestResult::kWorkerNotRunning))
+          content::ServiceWorkerExternalRequestResult::kWorkerNotRunning) ||
+         (finish_result ==
+          content::ServiceWorkerExternalRequestResult::kNullContext))
       << "; result = " << static_cast<int>(finish_result);
 }
 
