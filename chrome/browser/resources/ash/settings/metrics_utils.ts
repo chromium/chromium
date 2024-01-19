@@ -35,6 +35,12 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     type: PrefType.BOOLEAN,
   },
 
+  // Startup settings
+  'settings.restore_apps_and_pages': {
+    setting: Setting.kRestoreAppsAndPages,
+    type: PrefType.NUMBER,
+  },
+
   // device_page/audio.ts
   'ash.low_battery_sound.enabled': {
     setting: Setting.kLowBatterySound,
