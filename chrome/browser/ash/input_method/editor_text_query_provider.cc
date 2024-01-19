@@ -138,10 +138,16 @@ void TextQueryProviderForOrca::Process(orca::mojom::TextQueryRequestPtr request,
              ProcessCallback process_callback, base::Value::Dict dict,
              manta::MantaStatus status) {
             if (status.status_code == manta::MantaStatusCode::kOk) {
+              auto responses = ParseSuccessResponse(request_id, dict);
+              int number_of_responses = responses.size();
+
               std::move(process_callback)
                   .Run(orca::mojom::TextQueryResponse::NewResults(
-                      ParseSuccessResponse(request_id, dict)));
+                      std::move(responses)));
+
               metrics_recorder->LogEditorState(EditorStates::kSuccessResponse);
+              metrics_recorder->LogNumberOfResponsesFromServer(
+                  number_of_responses);
               return;
             }
 

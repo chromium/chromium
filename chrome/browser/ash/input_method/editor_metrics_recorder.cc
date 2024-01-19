@@ -13,6 +13,9 @@
 namespace ash::input_method {
 
 namespace {
+
+constexpr int kMaxNumResponsesFromServer = 20;
+
 std::string GetToneStringFromEnum(EditorTone tone) {
   switch (tone) {
     case EditorTone::kRephrase:
@@ -201,6 +204,28 @@ void EditorMetricsRecorder::LogNumberOfCharactersSelectedForInsert(
       "InputMethod.Manta.Orca.CharactersSelectedForInsert." +
           GetToneStringFromEnum(tone_),
       number_of_characters);
+}
+
+void EditorMetricsRecorder::LogNumberOfResponsesFromServer(
+    int number_of_responses) {
+  switch (mode_) {
+    case EditorOpportunityMode::kWrite:
+      base::UmaHistogramExactLinear("InputMethod.Manta.Orca.NumResponses.Write",
+                                    number_of_responses,
+                                    kMaxNumResponsesFromServer);
+      return;
+    case EditorOpportunityMode::kRewrite:
+      base::UmaHistogramExactLinear(
+          "InputMethod.Manta.Orca.NumResponses.Rewrite", number_of_responses,
+          kMaxNumResponsesFromServer);
+      base::UmaHistogramExactLinear(
+          base::StrCat({"InputMethod.Manta.Orca.NumResponses.",
+                        GetToneStringFromEnum(tone_)}),
+          number_of_responses, kMaxNumResponsesFromServer);
+      return;
+    case EditorOpportunityMode::kNone:
+      return;
+  }
 }
 
 }  // namespace ash::input_method
