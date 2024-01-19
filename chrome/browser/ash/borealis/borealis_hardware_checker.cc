@@ -131,9 +131,7 @@ bool InTargetSegment() {
 }
 
 bool Check() {
-  if (IsBoard("hatch")) {
-    return HasSufficientHardware(kIntelCpuRegex);
-  } else if (IsBoard("volteer")) {
+  if (IsBoard("volteer")) {
     bool valid_model =
         ModelIn({"delbin", "voxel", "volta", "lindar", "elemi", "volet",
                  "drobit", "lillipup", "delbing", "eldrid", "chronicler"});
