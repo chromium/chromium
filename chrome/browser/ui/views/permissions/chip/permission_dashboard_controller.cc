@@ -36,6 +36,60 @@ base::TimeDelta GetAnimationDuration(base::TimeDelta duration) {
   return gfx::Animation::ShouldRenderRichAnimation() ? duration
                                                      : base::TimeDelta();
 }
+
+// This method updates indicators' visibility set in
+// `PageSpecificContentSettings`.
+void UpdateIndicatorsVisibilityFlags(LocationBarView* location_bar) {
+  content_settings::PageSpecificContentSettings* pscs =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          location_bar->GetWebContents()->GetPrimaryMainFrame());
+
+  if (!pscs) {
+    return;
+  }
+
+  if (pscs->GetMicrophoneCameraState().Has(
+          content_settings::PageSpecificContentSettings::kCameraAccessed)) {
+    pscs->OnPermissionIndicatorShown(ContentSettingsType::MEDIASTREAM_CAMERA);
+  } else {
+    pscs->OnPermissionIndicatorHidden(ContentSettingsType::MEDIASTREAM_CAMERA);
+  }
+
+  if (pscs->GetMicrophoneCameraState().Has(
+          content_settings::PageSpecificContentSettings::kMicrophoneAccessed)) {
+    pscs->OnPermissionIndicatorShown(ContentSettingsType::MEDIASTREAM_MIC);
+  } else {
+    pscs->OnPermissionIndicatorHidden(ContentSettingsType::MEDIASTREAM_MIC);
+  }
+}
+
+// Returns `true` if there is misalignment in Camera & Mic usage and displayed
+// indicators.
+bool ShouldExpandChipIndicator(
+    content_settings::PageSpecificContentSettings* pscs) {
+  if (pscs->GetMicrophoneCameraState().Has(
+          content_settings::PageSpecificContentSettings::kCameraAccessed) &&
+      pscs->GetMicrophoneCameraState().Has(
+          content_settings::PageSpecificContentSettings::kMicrophoneAccessed) &&
+      pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_CAMERA) &&
+      pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_MIC)) {
+    return false;
+  }
+
+  if (pscs->GetMicrophoneCameraState().Has(
+          content_settings::PageSpecificContentSettings::kCameraAccessed) &&
+      pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_CAMERA)) {
+    return false;
+  }
+
+  if (pscs->GetMicrophoneCameraState().Has(
+          content_settings::PageSpecificContentSettings::kMicrophoneAccessed) &&
+      pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_MIC)) {
+    return false;
+  }
+
+  return true;
+}
 }  // namespace
 
 PermissionDashboardController::PermissionDashboardController(
@@ -82,10 +136,6 @@ bool PermissionDashboardController::Update(
     return true;
   }
 
-  if (indicator_chip->GetVisible()) {
-    return false;
-  }
-
   permission_dashboard_view_->SetVisible(true);
 
   indicator_chip->SetChipIcon(indicator_model->icon());
@@ -98,18 +148,19 @@ bool PermissionDashboardController::Update(
   }
 
   indicator_chip->ResetAnimation();
+
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
           location_bar_view_->GetWebContents()->GetPrimaryMainFrame());
-  if (!content_settings->IsIndicatorVisible(
-          ContentSettingsType::MEDIASTREAM_CAMERA) ||
-      !content_settings->IsIndicatorVisible(
-          ContentSettingsType::MEDIASTREAM_MIC)) {
+
+  if (ShouldExpandChipIndicator(content_settings)) {
     indicator_chip->SetMessage(GetIndicatorTitle(indicator_model));
     indicator_chip->AnimateExpand(
         GetAnimationDuration(kExpandAnimationDuration));
     // An alert role is required in order to fire the alert event.
     indicator_chip->SetAccessibleRole(ax::mojom::Role::kAlert);
+  } else {
+    UpdateIndicatorsVisibilityFlags(location_bar_view_);
   }
   indicator_chip->SetVisible(true);
 
@@ -120,13 +171,8 @@ void PermissionDashboardController::OnChipVisibilityChanged(bool is_visible) {}
 
 void PermissionDashboardController::OnExpandAnimationEnded() {
   is_verbose_ = true;
-  content_settings::PageSpecificContentSettings* content_settings =
-      content_settings::PageSpecificContentSettings::GetForFrame(
-          location_bar_view_->GetWebContents()->GetPrimaryMainFrame());
-  content_settings->OnPermissionIndicatorShown(
-      ContentSettingsType::MEDIASTREAM_CAMERA);
-  content_settings->OnPermissionIndicatorShown(
-      ContentSettingsType::MEDIASTREAM_MIC);
+
+  UpdateIndicatorsVisibilityFlags(location_bar_view_);
 
   StartCollapseTimer();
 }
@@ -162,16 +208,7 @@ void PermissionDashboardController::StartCollapseTimer() {
 
 void PermissionDashboardController::Collapse(bool hide) {
   if (hide) {
-    content_settings::PageSpecificContentSettings* content_settings =
-        content_settings::PageSpecificContentSettings::GetForFrame(
-            location_bar_view_->GetWebContents()->GetPrimaryMainFrame());
-
-    if (content_settings) {
-      content_settings->OnPermissionIndicatorHidden(
-          ContentSettingsType::MEDIASTREAM_CAMERA);
-      content_settings->OnPermissionIndicatorHidden(
-          ContentSettingsType::MEDIASTREAM_MIC);
-    }
+    UpdateIndicatorsVisibilityFlags(location_bar_view_);
   }
   permission_dashboard_view_->GetIndicatorChip()->AnimateCollapse(
       GetAnimationDuration(kCollapseAnimationDuration));
@@ -188,16 +225,7 @@ void PermissionDashboardController::HideIndicators() {
     permission_dashboard_view_->SetVisible(false);
   }
 
-  content_settings::PageSpecificContentSettings* content_settings =
-      content_settings::PageSpecificContentSettings::GetForFrame(
-          location_bar_view_->GetWebContents()->GetPrimaryMainFrame());
-
-  if (content_settings) {
-    content_settings->OnPermissionIndicatorHidden(
-        ContentSettingsType::MEDIASTREAM_CAMERA);
-    content_settings->OnPermissionIndicatorHidden(
-        ContentSettingsType::MEDIASTREAM_MIC);
-  }
+  UpdateIndicatorsVisibilityFlags(location_bar_view_);
 }
 
 void PermissionDashboardController::ShowPageInfoDialog() {

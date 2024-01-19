@@ -55,6 +55,10 @@ class PermissionDashboardController : public OmniboxChipButton::Observer {
   // running. Return `false` otherwise.
   bool SuppressVerboseIndicator();
 
+  base::OneShotTimer& get_collapse_timer_for_testing() {
+    return collapse_timer_;
+  }
+
  private:
   void StartCollapseTimer();
   void Collapse(bool hide);

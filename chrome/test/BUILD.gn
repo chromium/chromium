@@ -10058,6 +10058,7 @@ if (!is_fuchsia) {
         "../browser/ui/views/performance_controls/battery_saver_button_unittest.cc",
         "../browser/ui/views/performance_controls/memory_saver_bubble_view_unittest.cc",
         "../browser/ui/views/performance_controls/memory_saver_chip_view_unittest.cc",
+        "../browser/ui/views/permissions/chip/permission_dashboard_unittest.cc",
         "../browser/ui/views/permissions/permission_chip_unittest.cc",
         "../browser/ui/views/permissions/permission_prompt_bubble_one_origin_view_unittest.cc",
         "../browser/ui/views/permissions/permission_prompt_bubble_two_origins_view_unittest.cc",
