@@ -61,7 +61,7 @@ build_webui("build") {
     "shimless_rma.ts",
     "splash_screen.ts",
     "wrapup_finalize_page.ts",
-    "wrapup_repair_complete_page.js",
+    "wrapup_repair_complete_page.ts",
     "wrapup_restock_page.js",
     "wrapup_wait_for_manual_wp_enable_page.js",
   ]
