@@ -197,35 +197,46 @@ void AutofillProviderAndroid::OnAskForValuesToFill(
                              field.text_direction == base::i18n::RIGHT_TO_LEFT);
 }
 
+bool AutofillProviderAndroid::IsFormSimilarToCachedForm(
+    const FormData& form,
+    const FormStructure* form_structure) const {
+  if (!cached_data_ || !cached_data_->cached_form) {
+    return false;
+  }
+  if (form_structure &&
+      base::FeatureList::IsEnabled(
+          features::
+              kAndroidAutofillSignatureForPrefillRequestSimilarityCheck)) {
+    CHECK_EQ(form.global_id(), form_structure->global_id());
+    std::unique_ptr<PasswordForm> pw_form =
+        ParseToPasswordForm(*form_structure);
+    if (!pw_form || !ShouldCachePasswordForm(*pw_form)) {
+      return false;
+    }
+    PasswordParserOverrides overrides =
+        PasswordParserOverrides::FromLoginForm(*pw_form, *form_structure)
+            .value_or(PasswordParserOverrides());
+    return cached_data_->password_parser_overrides == overrides;
+  }
+  return cached_data_->cached_form->SimilarFormAs(form);
+}
+
 void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
                                               const FormData& form,
                                               const FormFieldData& field,
                                               const gfx::RectF& bounding_box) {
+  FormStructure* form_structure = manager->FindCachedFormById(form.global_id());
+  FormDataAndroid* cached_form =
+      cached_data_ ? cached_data_->cached_form.get() : nullptr;
+  const bool is_similar_to_cached_form =
+      IsFormSimilarToCachedForm(form, form_structure);
+
   // The form is assigned the same session id form sent to the Android framework
   // in the prefill request iff all of the following conditions are met:
   // - There is a cached form.
   // - This is the first time we try to show the bottom sheet for the cached
   //   form (on their second interaction, the user should see the keyboard).
-  // - The cached form is similar to the current form - i.e. it consists of the
-  //   same DOM elements as the cached form and their attributes have not
-  //   changed substantially enough - see `FormDataAndroid::SimilarFormAs`.
-  FormDataAndroid* cached_form =
-      cached_data_ ? cached_data_->cached_form.get() : nullptr;
-  FormDataAndroid::SimilarityCheckResult similarity_result =
-      cached_form ? cached_form->SimilarFormAsWithDiagnosis(form)
-                  : FormDataAndroid::kFormsAreSimilar;
-  const bool is_similar_to_cached_form = [&] {
-    if (!cached_form) {
-      return false;
-    }
-    if (base::FeatureList::IsEnabled(
-            features::
-                kAndroidAutofillSignatureForPrefillRequestSimilarityCheck)) {
-      return CalculateFormSignature(cached_form->form()) ==
-             CalculateFormSignature(form);
-    }
-    return similarity_result == FormDataAndroid::kFormsAreSimilar;
-  }();
+  // - The cached form is similar to the current form.
   const bool use_cached_form =
       is_similar_to_cached_form && !has_used_cached_form_;
   form_ = std::make_unique<FormDataAndroid>(
@@ -243,7 +254,6 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
   manager_ = manager->GetWeakPtrToLeafClass();
 
   // Set the field type predictions in `form_`.
-  FormStructure* form_structure = manager->FindCachedFormById(form.global_id());
   if (form_structure) {
     form_->UpdateFieldTypes(*form_structure);
     // If there a non-trivial overrides from `FormDataParse` in the cached form,
@@ -269,10 +279,15 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
       base::UmaHistogramEnumeration(
           kPrefillRequestStateUma,
           PrefillRequestState::kRequestSentFormChanged);
-      base::UmaHistogramExactLinear(
-          kSimilarityCheckCacheRequestUma,
-          ProjectSimilarityCheckResultToMetricsValue(similarity_result),
-          FormDataAndroid::kSimilaryCheckResultExclusiveMaximum);
+      if (!base::FeatureList::IsEnabled(
+              features::
+                  kAndroidAutofillSignatureForPrefillRequestSimilarityCheck)) {
+        base::UmaHistogramExactLinear(
+            kSimilarityCheckCacheRequestUma,
+            ProjectSimilarityCheckResultToMetricsValue(
+                cached_form->SimilarFormAsWithDiagnosis(form)),
+            FormDataAndroid::kSimilaryCheckResultExclusiveMaximum);
+      }
       return;
     }
 

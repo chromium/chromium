@@ -244,6 +244,18 @@ class AutofillProviderAndroid : public AutofillProvider,
     std::optional<FieldGlobalId> password_field_id;
   };
 
+  // Checks whether `form` is similar to the cached form. `form_structure` must
+  // be the `form_structure` corresponding to `form` if it is available (i.e.
+  // cached by the AutofillManager already). The check works as follows:
+  // - If `form_structure` is not null and
+  //   `kAndroidAutofillSignatureForPrefillRequestSimilarityCheck` is enabled,
+  //   the form is parsed using `password_manager::FormDataParser`. The form
+  //   is classified as similar if the fields classified as username and
+  //   passwords match between the cached and the focused form.
+  // - Alternatively, it returns the result of `FormDataAndroid::SimilarFormAs`.
+  bool IsFormSimilarToCachedForm(const FormData& form,
+                                 const FormStructure* form_structure) const;
+
   // In some cases we get two AskForValuesToFill events within short time frame
   // so we set timer to set the `was_bottom_sheet_just_shown_` to false after it
   // gets accessed.
