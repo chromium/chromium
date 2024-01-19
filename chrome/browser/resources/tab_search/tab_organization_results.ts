@@ -161,21 +161,29 @@ export class TabOrganizationResultsElement extends PolymerElement {
   }
 
   private onListKeyDown_(event: KeyboardEvent) {
-    if (event.shiftKey) {
-      return;
-    }
-
     const selector = this.$.selector;
     if (selector.selected === undefined) {
       return;
     }
 
-    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+    let handled = false;
+    if (event.shiftKey && event.key === 'Tab') {
+      // Explicitly focus the element prior to the list in focus order and
+      // override the default behavior, which would be to focus the row that
+      // the currently focused close button is in.
+      this.$.input.focus();
+      handled = true;
+    } else if (!event.shiftKey) {
       if (event.key === 'ArrowUp') {
         selector.selectPrevious();
-      } else {
+        handled = true;
+      } else if (event.key === 'ArrowDown') {
         selector.selectNext();
+        handled = true;
       }
+    }
+
+    if (handled) {
       event.stopPropagation();
       event.preventDefault();
     }
