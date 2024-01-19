@@ -22,7 +22,7 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 
 import {Query} from './constants.js';
 import {MantaStatusCode, SeaPenTemplateId, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
-import {clearSeaPenThumbnails, selectSeaPenWallpaper} from './sea_pen_controller.js';
+import {clearSeaPenThumbnails, openFeedbackDialog, selectSeaPenWallpaper} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_images_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
@@ -222,8 +222,13 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private onSelectedFeedbackChanged_(event:
                                          CustomEvent<{isThumbsUp: boolean}>) {
     const isThumbsUp = event.detail.isThumbsUp;
-    logSeaPenTemplateFeedback(
-        this.getTemplateNameFromId_(this.templateId), isThumbsUp);
+    const templateName = this.getTemplateNameFromId_(this.templateId);
+    logSeaPenTemplateFeedback(templateName, isThumbsUp);
+    const metadata = {
+      isPositive: isThumbsUp,
+      logId: templateName,
+    };
+    openFeedbackDialog(metadata, getSeaPenProvider());
   }
 }
 

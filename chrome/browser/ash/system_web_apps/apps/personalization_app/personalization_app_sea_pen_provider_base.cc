@@ -14,18 +14,30 @@
 #include "ash/public/cpp/image_util.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
+#include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/manta/features.h"
 #include "components/manta/manta_status.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace ash::personalization_app {
@@ -275,6 +287,35 @@ void PersonalizationAppSeaPenProviderBase::OnGetRecentSeaPenImageThumbnail(
   std::move(callback).Run(GURL(webui::GetBitmapDataUrl(
       *WallpaperResizer::GetResizedImage(image, kSeaPenImageThumbnailSizeDip)
            .bitmap())));
+}
+
+void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(
+    const mojom::SeaPenFeedbackMetadataPtr metadata) {
+  const std::string hashtag = "#AIWallpaper";
+  const std::string feedback_type =
+      metadata->is_positive ? "Positive" : "Negative";
+  CHECK(last_query_);
+  const std::string user_visible_query_text =
+      (last_query_->is_text_query())
+          ? last_query_->get_text_query()
+          : last_query_->get_template_query()->user_visible_query->text;
+  const std::string description_template =
+      hashtag + " " + feedback_type + ": " + user_visible_query_text + "\n";
+
+  base::Value::Dict ai_metadata;
+  ai_metadata.Set("from_chromeos", "true");
+  ai_metadata.Set("log_id", metadata->log_id);
+
+  base::RecordAction(base::UserMetricsAction("SeaPen_FeedbackPressed"));
+  chrome::ShowFeedbackPage(
+      /*browser=*/chrome::FindBrowserWithProfile(profile_),
+      /*source=*/chrome::kFeedbackSourceAI, description_template,
+      /*description_placeholder_text=*/
+      base::UTF16ToUTF8(
+          l10n_util::GetStringUTF16(IDS_SEA_PEN_FEEDBACK_PLACEHOLDER)),
+      /*category_tag=*/std::string(),
+      /*extra_diagnostics=*/std::string(),
+      /*autofill_data=*/base::Value::Dict(), std::move(ai_metadata));
 }
 
 }  // namespace ash::personalization_app

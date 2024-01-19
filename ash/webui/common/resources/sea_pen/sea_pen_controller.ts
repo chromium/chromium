@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MantaStatusCode, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
-import {isNonEmptyArray, isNonEmptyFilePath} from './sea_pen_utils.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
+import {MantaStatusCode, SeaPenFeedbackMetadata, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import * as seaPenAction from './sea_pen_actions.js';
 import {SeaPenStoreInterface} from './sea_pen_store.js';
+import {isNonEmptyArray, isNonEmptyFilePath} from './sea_pen_utils.js';
 
 export async function selectRecentSeaPenImage(
     image: FilePath, provider: SeaPenProviderInterface,
@@ -157,4 +157,9 @@ async function getMissingRecentSeaPenImageData(
               {path}, {url, queryInfo}));
         }));
   }
+}
+
+export function openFeedbackDialog(
+    metadata: SeaPenFeedbackMetadata, provider: SeaPenProviderInterface) {
+  provider.openFeedbackDialog(metadata);
 }

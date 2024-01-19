@@ -752,6 +752,22 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackInfoAiFlow) {
 
   EXPECT_EQ(FeedbackCommon::GetChromeBrowserProductId(),
             feedback_info->product_id);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto chromeos_ai_metadata = base::Value::Dict();
+  chromeos_ai_metadata.Set("from_chromeos", "true");
+  feedback_info = api->CreateFeedbackInfo(
+      /*description_template=*/unused, /*description_placeholder_text=*/unused,
+      /*category_tag=*/unused, /*extra_diagnostics=*/unused,
+      /*page_url=*/GURL(),
+      /*flow=*/api::feedback_private::FeedbackFlow::kAi,
+      /*from_assistant=*/false, /*include_bluetooth_logs=*/false,
+      /*show_questionnaire=*/false, /*from_chrome_labs_or_kaleidoscope=*/false,
+      /*from_autofill=*/false, /*autofill_metadata=*/base::Value::Dict(),
+      chromeos_ai_metadata);
+
+  EXPECT_EQ(FeedbackCommon::GetChromeOSProductId(), feedback_info->product_id);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace extensions

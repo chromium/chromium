@@ -141,6 +141,10 @@ class MockSeaPenProvider
               (const base::FilePath& file_path,
                DeleteRecentSeaPenImageCallback),
               (override));
+  MOCK_METHOD(void,
+              OpenFeedbackDialog,
+              (mojom::SeaPenFeedbackMetadataPtr metadata),
+              (override));
 };
 
 class MockPersonalizationAppThemeProvider

@@ -675,6 +675,12 @@ struct SeaPenTemplateQuery {
   SeaPenUserVisibleQuery user_visible_query;
 };
 
+// The metadata for the feedback dialog
+struct SeaPenFeedbackMetadata {
+  bool is_positive;
+  string log_id;
+};
+
 // A text or template query for constructing a Manta request.
 union SeaPenQuery {
   // Set if the query is from text input.
@@ -738,4 +744,7 @@ interface SeaPenProvider {
 
     // Deletes the selected Sea Pen image from Sea Pen directory.
     DeleteRecentSeaPenImage(mojo_base.mojom.FilePath path) => (bool success);
+
+    // Pops up a feedback dialog when user clicks feedback buttons.
+    OpenFeedbackDialog(SeaPenFeedbackMetadata metadata);
 };

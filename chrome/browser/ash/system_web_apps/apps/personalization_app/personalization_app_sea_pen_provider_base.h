@@ -73,6 +73,8 @@ class PersonalizationAppSeaPenProviderBase
       const base::FilePath& path,
       GetRecentSeaPenImageThumbnailCallback callback) override;
 
+  void OpenFeedbackDialog(mojom::SeaPenFeedbackMetadataPtr metadata) override;
+
  protected:
   virtual void SelectRecentSeaPenImageInternal(
       const base::FilePath& path,

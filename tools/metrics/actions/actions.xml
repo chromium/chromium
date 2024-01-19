@@ -30918,6 +30918,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SeaPen_FeedbackPressed">
+  <owner>pzliu@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <description>
+    Records that the user pressed the Sea Pen feedback button.
+  </description>
+</action>
+
 <action name="Search.ContextualSearch.All.ResultsSeen.true">
   <owner>donnd@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>

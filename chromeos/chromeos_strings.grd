@@ -3111,6 +3111,9 @@
         <message name="IDS_SEA_PEN_THUMBNAILS_LOADING" desc="Placeholder text displayed when thumbnails are loading">
           Generating images...
         </message>
+        <message name="IDS_SEA_PEN_FEEDBACK_PLACEHOLDER" desc="Placeholder text displayed in the feedback text box">
+          Feedback for wallpaper powered by Google AI
+        </message>
 
 
         <!-- Traffic Counters UI -->
