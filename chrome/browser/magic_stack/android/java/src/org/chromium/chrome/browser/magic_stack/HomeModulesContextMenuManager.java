@@ -15,6 +15,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -32,7 +34,7 @@ public class HomeModulesContextMenuManager {
         ContextMenuItemId.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
-    @interface ContextMenuItemId {
+    public @interface ContextMenuItemId {
         /** The "hide module" menu item is default shown on the context menu. */
         int HIDE_MODULE = 0;
 
@@ -127,10 +129,12 @@ public class HomeModulesContextMenuManager {
     /** Returns whether to show a context menu item. */
     @VisibleForTesting
     boolean shouldShowItem(@ContextMenuItemId int itemId, @NonNull ModuleProvider moduleProvider) {
-        if (itemId == ContextMenuItemId.HIDE_MODULE
-                || itemId == ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS) {
+        if (itemId == ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS
+                || itemId == ContextMenuItemId.HIDE_MODULE
+                        && moduleProvider.getModuleType() != ModuleType.SINGLE_TAB) {
             return true;
         }
+
         return moduleProvider.isContextMenuItemSupported(itemId);
     }
 
