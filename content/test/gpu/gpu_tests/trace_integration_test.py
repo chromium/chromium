@@ -18,6 +18,7 @@ import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
+from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
 from gpu_tests import pixel_test_pages
 
@@ -757,6 +758,9 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           'nv12_overlay_support'] == 'SOFTWARE'
 
       if expected.pixel_format is None:
+        # If no specific pixel format was requested via browser arguments, we
+        # expect use of NV12 > YUY2 > BGRA based on hardware support for
+        # NV12/YUY2.
         if supports_hw_nv12_overlays:
           expected.pixel_format = 'NV12'
         elif supports_hw_yuy2_overlays:
@@ -765,15 +769,20 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           assert supports_sw_nv12_overlays
           expected.pixel_format = 'BGRA'
       else:
-        if (not supports_hw_nv12_overlays and not supports_hw_yuy2_overlays):
+        # If a specific pixel format was requested via browser arguments that
+        # the browser does not support, we expect a direct fallback to BGRA.
+        if expected.pixel_format == 'NV12' and not supports_hw_nv12_overlays:
+          expected.pixel_format = 'BGRA'
+        elif expected.pixel_format == 'YUY2' and not supports_hw_yuy2_overlays:
           expected.pixel_format = 'BGRA'
 
       gpu = self.browser.GetSystemInfo().gpu.devices[0]
       supports_rotated_video_overlays = (
-          gpu.vendor_id == 0x1002 and
-          gpu.device_id in _SUPPORTED_WIN_AMD_GPUS_WITH_NV12_ROTATED_OVERLAYS)
+          gpu.vendor_id == gpu_helper.GpuVendors.AMD and gpu.device_id
+          in _SUPPORTED_WIN_AMD_GPUS_WITH_NV12_ROTATED_OVERLAYS)
 
-      supports_downscaled_overlay_promotion = gpu.vendor_id != 0x8086
+      supports_downscaled_overlay_promotion = (gpu.vendor_id
+                                               != gpu_helper.GpuVendors.INTEL)
       no_issue_with_downscaled_overlay_promotion = (
           video_is_not_scaled or supports_downscaled_overlay_promotion)
 

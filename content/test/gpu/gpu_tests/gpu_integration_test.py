@@ -66,6 +66,7 @@ _SUPPORTED_WIN_NVIDIA_GPUS_WITH_NV12_OVERLAYS = [0x2184]
 _SUPPORTED_WIN_NVIDIA_GPUS_WITH_YUY2_OVERLAYS = [0x2184]
 _MINIMUM_WIN_NVIDIA_DRIVER_WITH_NV12_OVERLAYS = '31.0.15.4601'
 _MINIMUM_WIN_NVIDIA_DRIVER_WITH_YUY2_OVERLAYS = '31.0.15.4601'
+_SUPPORTED_WIN_QUALCOMM_GPUS_WITH_NV12_OVERLAYS = [0x41333430]
 
 _ARGS_TO_CONSOLIDATE = frozenset([
     '--enable-features',
@@ -900,6 +901,8 @@ class GpuIntegrationTest(
         self._HandleIntelOverlays(gpu, config)
       elif gpu.vendor_id == gpu_helper.GpuVendors.NVIDIA:
         self._HandleNvidiaOverlays(gpu, config)
+      elif gpu.vendor_id == gpu_helper.GpuVendors.QUALCOMM:
+        self._HandleQualcommOverlays(gpu, config)
     return config
 
   # pylint: disable=no-self-use
@@ -941,6 +944,14 @@ class GpuIntegrationTest(
         and gpu_helper.EvaluateVersionComparison(
             gpu.driver_version, 'ge',
             _MINIMUM_WIN_NVIDIA_DRIVER_WITH_NV12_OVERLAYS)):
+      config['nv12_overlay_support'] = 'SCALING'
+
+  # pylint: enable=no-self-use
+
+  # pylint: disable=no-self-use
+  def _HandleQualcommOverlays(self, gpu: gpu_device.GPUDevice,
+                              config: Dict[str, Union[str, bool]]) -> None:
+    if gpu.device_id in _SUPPORTED_WIN_QUALCOMM_GPUS_WITH_NV12_OVERLAYS:
       config['nv12_overlay_support'] = 'SCALING'
 
   # pylint: enable=no-self-use
