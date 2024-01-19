@@ -75,7 +75,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     view.backgroundColor = UIColor(named: kGrey200Color)
 
     collectionView.translatesAutoresizingMaskIntoConstraints = false
-    collectionView.clipsToBounds = false
+    collectionView.clipsToBounds = true
     view.layer.masksToBounds = true
 
     collectionView.backgroundColor = .clear
@@ -90,24 +90,28 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     view.addSubview(newTabButton)
 
     NSLayoutConstraint.activate([
+      /// `collectionView` constraints.
       collectionView.leadingAnchor.constraint(
-        equalTo: view.leadingAnchor, constant: TabStripConstants.CollectionView.horizontalInset),
+        equalTo: view.leadingAnchor),
       collectionView.topAnchor.constraint(
-        equalTo: view.topAnchor, constant: TabStripConstants.CollectionView.topInset),
+        equalTo: view.topAnchor),
       collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
+      /// `newTabButton` constraints.
       newTabButton.leadingAnchor.constraint(
-        equalTo: collectionView.trailingAnchor,
-        constant: TabStripConstants.CollectionView.horizontalInset),
+        equalTo: collectionView.trailingAnchor),
       newTabButton.trailingAnchor.constraint(equalTo: view.trailingAnchor),
       newTabButton.bottomAnchor.constraint(equalTo: view.bottomAnchor),
       newTabButton.topAnchor.constraint(equalTo: view.topAnchor),
       newTabButton.widthAnchor.constraint(equalToConstant: TabStripConstants.NewTabButton.width),
 
-      leadingSeparatorView.trailingAnchor.constraint(equalTo: collectionView.leadingAnchor),
-      trailingSeparatorView.leadingAnchor.constraint(equalTo: collectionView.trailingAnchor),
+      /// `leadingSeparatorView` constraints.
+      leadingSeparatorView.leadingAnchor.constraint(equalTo: collectionView.leadingAnchor),
       leadingSeparatorView.bottomAnchor.constraint(
         equalTo: collectionView.bottomAnchor),
+
+      /// `trailingSeparatorView` constraints.
+      trailingSeparatorView.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor),
       trailingSeparatorView.bottomAnchor.constraint(
         equalTo: collectionView.bottomAnchor),
     ])

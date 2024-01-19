@@ -30,8 +30,8 @@ const CGFloat kCollapsedWidthThreshold = 150;
 // Separator constraints.
 const CGFloat kSeparatorWidth = 2;
 const CGFloat kSeparatorCornerRadius = 1;
-const CGFloat kSeparatorMaxHeight = 18;
-const CGFloat kSeparatorHorizontalInset = 2;
+const CGFloat kSeparatorHeight = 18;
+const CGFloat kSeparatorHorizontalInset = 3;
 
 // Content view constants.
 const CGFloat kFaviconLeadingMargin = 10;
@@ -473,7 +473,7 @@ UIImage* DefaultFavicon() {
     [_leadingSeparatorView.widthAnchor
         constraintEqualToConstant:kSeparatorWidth],
     [_leadingSeparatorView.heightAnchor
-        constraintLessThanOrEqualToConstant:kSeparatorMaxHeight],
+        constraintEqualToConstant:kSeparatorHeight],
     [_leadingSeparatorView.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
   ]];
@@ -486,7 +486,7 @@ UIImage* DefaultFavicon() {
     [_trailingSeparatorView.widthAnchor
         constraintEqualToConstant:kSeparatorWidth],
     [_trailingSeparatorView.heightAnchor
-        constraintLessThanOrEqualToConstant:kSeparatorMaxHeight],
+        constraintEqualToConstant:kSeparatorHeight],
     [_trailingSeparatorView.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
   ]];

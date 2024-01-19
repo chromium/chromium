@@ -33,7 +33,12 @@ class TabStripLayout: UICollectionViewFlowLayout {
   override init() {
     super.init()
     scrollDirection = .horizontal
-    minimumLineSpacing = TabStripConstants.TabItem.horizontalSpacing
+    minimumInteritemSpacing = TabStripConstants.TabItem.horizontalSpacing
+    sectionInset = UIEdgeInsets(
+      top: TabStripConstants.CollectionView.topInset,
+      left: TabStripConstants.CollectionView.horizontalInset,
+      bottom: 0,
+      right: TabStripConstants.CollectionView.horizontalInset)
   }
 
   required init?(coder: NSCoder) {
@@ -157,9 +162,9 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
       // Update the cell's origin horizontally to prevent it from being
       // partially hidden off-screen.
-      let maxOriginX = collectionViewSizeWidth - frame.size.width
+      let maxOriginX = collectionViewSizeWidth - frame.size.width - sectionInset.right
       // Check the left side.
-      origin.x = max(origin.x, contentOffset.x)
+      origin.x = max(origin.x, contentOffset.x + sectionInset.left)
       // Check the right side.
       origin.x = min(origin.x, contentOffset.x + maxOriginX)
 
@@ -180,19 +185,20 @@ class TabStripLayout: UICollectionViewFlowLayout {
     // Recalculate the cell width and origin when it intersects with the left
     // collection view's bounds. The cell should collapse within the collection
     // view's bounds until its width reaches 0.
-    if frame.minX < contentOffset.x && contentOffset.x < frame.maxX {
-      frame.origin.x = max(contentOffset.x, frame.origin.x)
+    let leftBounds: CGFloat = contentOffset.x + sectionInset.left
+    if frame.minX < leftBounds && leftBounds < frame.maxX {
+      frame.origin.x = max(leftBounds, frame.origin.x)
       let offsetLeft: CGFloat = abs(frame.origin.x - layoutAttributes.frame.origin.x)
       frame.size.width = min(frame.width - offsetLeft, frame.width)
     }
 
-    let offsetRight: CGFloat = collectionViewSizeWidth + contentOffset.x
+    let rightBounds: CGFloat = collectionViewSizeWidth + contentOffset.x - sectionInset.right
 
     // Recalculate the cell width when it intersects with the left collection
     // view's bounds. The cell should collapse within the collection view's
     // bounds until its width reaches 0.
-    if frame.minX < offsetRight && offsetRight < frame.maxX {
-      frame.size.width = min(offsetRight - frame.origin.x, frame.size.width)
+    if frame.minX < rightBounds && rightBounds < frame.maxX {
+      frame.size.width = min(rightBounds - frame.origin.x, frame.size.width)
     }
 
     cell.leadingSeparatorGradientViewHidden = true
@@ -202,7 +208,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
     /// before the cell intersects with the collection view's bounds.
     if collectionView.contentSize.width > collectionView.frame.width {
       let isRTL: Bool = collectionView.effectiveUserInterfaceLayoutDirection == .rightToLeft
-      if (frame.minX - TabStripConstants.TabItem.leadingSeparatorMinInset) <= contentOffset.x {
+      if (frame.minX - TabStripConstants.TabItem.leadingSeparatorMinInset) <= leftBounds {
         if !isRTL {
           cell.leadingSeparatorHidden = false
           cell.trailingSeparatorGradientViewHidden = false
@@ -211,16 +217,16 @@ class TabStripLayout: UICollectionViewFlowLayout {
           /// Hide the `trailingSeparatorGradientView` before it intersects with
           /// the `leadingSeparatorGradientView`.
           cell.trailingSeparatorGradientViewHidden =
-            (frame.maxX - TabStripConstants.TabItem.leadingSeparatorMinInset) <= contentOffset.x
+            (frame.maxX - TabStripConstants.TabItem.leadingSeparatorMinInset) <= leftBounds
         }
       }
-      if offsetRight <= (frame.maxX + TabStripConstants.TabItem.leadingSeparatorMinInset) {
+      if rightBounds <= (frame.maxX + TabStripConstants.TabItem.leadingSeparatorMinInset) {
         if !isRTL {
           cell.leadingSeparatorGradientViewHidden = false
           /// Hide the `trailingSeparatorGradientView` before it intersects with
           /// the `leadingSeparatorGradientView`.
           cell.trailingSeparatorGradientViewHidden =
-            (frame.minX + TabStripConstants.TabItem.leadingSeparatorMinInset) >= offsetRight
+            (frame.minX + TabStripConstants.TabItem.leadingSeparatorMinInset) >= rightBounds
         } else {
           cell.leadingSeparatorHidden = false
           cell.trailingSeparatorGradientViewHidden = false
@@ -278,7 +284,8 @@ class TabStripLayout: UICollectionViewFlowLayout {
     }
 
     let collectionViewWidth: CGFloat = CGRectGetWidth(collectionView.bounds)
-    let itemSpacingSum: CGFloat = minimumLineSpacing * (cellCount - 1)
+    let itemSpacingSum: CGFloat =
+      minimumLineSpacing * (cellCount - 1) + sectionInset.left + sectionInset.right
 
     var itemWidth: CGFloat =
       (collectionViewWidth - itemSpacingSum - groupCellWidthSum) / tabCellCount
