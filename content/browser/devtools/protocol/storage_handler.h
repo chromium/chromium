@@ -163,6 +163,11 @@ class StorageHandler
       base::optional_ref<const std::string> parent_auction_id,
       const base::Value::Dict& auction_config);
 
+  void NotifyInterestGroupAuctionNetworkRequestCreated(
+      content::InterestGroupAuctionFetchType type,
+      const std::string& request_id,
+      const std::vector<std::string>& devtools_auction_ids);
+
  private:
   // See definition for lifetime information.
   class CacheStorageObserver;

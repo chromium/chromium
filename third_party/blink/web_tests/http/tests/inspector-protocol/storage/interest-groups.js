@@ -22,13 +22,13 @@
 
   let nextAuctionId = 1;
   let auctionIdMap = new Map();
-  function normalizeAuctionId(event) {
-    if ('uniqueAuctionId' in event) {
-      if (!auctionIdMap.has(event.uniqueAuctionId)) {
-        auctionIdMap.set(event.uniqueAuctionId, nextAuctionId);
+  function normalizeAuctionId(uniqueAuctionId) {
+    if (uniqueAuctionId) {
+      if (!auctionIdMap.has(uniqueAuctionId)) {
+        auctionIdMap.set(uniqueAuctionId, nextAuctionId);
         ++nextAuctionId;
       }
-      return auctionIdMap.get(event.uniqueAuctionId);
+      return auctionIdMap.get(uniqueAuctionId);
     } else {
       return 'global';
     }
@@ -41,6 +41,13 @@
     return (aTypeOrder - bTypeOrder) ||
         a.ownerOrigin.localeCompare(b.ownerOrigin, 'en') ||
         a.name.localeCompare(b.name, 'en');
+  }
+
+  // Helper for sorting auction <-> network events. Only cares about types
+  // since it's good enough for this application, and everything else is
+  // a random ID.
+  function compareNetEvents(a, b) {
+    return a.type.localeCompare(b.type, 'en');
   }
 
   async function joinInterestGroups(id) {
@@ -73,13 +80,16 @@
     return session.evaluateAsync(auctionJs);
   }
 
-  events = [];
-  auctionEvents = [];
+  let networkRequestUrls = new Map();
+
+  let events = [];
+  let auctionEvents = [];
+  let auctionNetworkEvents = [];
   async function logAndClearEvents() {
     testRunner.log('Logged IG events:');
     // We expect only one auction event, so no ordering issue to worry about.
     for (let event of auctionEvents) {
-      event.uniqueAuctionId = normalizeAuctionId(event);
+      event.uniqueAuctionId = normalizeAuctionId(event.uniqueAuctionId);
 
       // Only some of auctionConfig fields are kept so this doesn't have to be
       // changed every time something new is added that shows up by default.
@@ -94,11 +104,18 @@
           event, 'interestGroupAuctionEventOccurred ', ['eventTime']);
     }
 
+    auctionNetworkEvents.sort(compareNetEvents);
+    for (let event of auctionNetworkEvents) {
+      event.auctions = event.auctions.map((a) => normalizeAuctionId(a));
+      event.url = networkRequestUrls.get(event.requestId);
+      testRunner.log(event, 'interestGroupAuctionNetworkRequestCreated ');
+    }
+
     // We need to sort IG events before dumping since ordering of bids is not
     // deterministic.
     events.sort(compareEvents);
     for (let event of events) {
-      event.uniqueAuctionId = normalizeAuctionId(event);
+      event.uniqueAuctionId = normalizeAuctionId(event.uniqueAuctionId);
       testRunner.log(event, 'interestGroupAccessed ', ['accessTime']);
       data = await dp.Storage.getInterestGroupDetails(
         {ownerOrigin: event.ownerOrigin, name: event.name});
@@ -106,8 +123,9 @@
       details.expirationTime = 0;
       testRunner.log(details, 'interestGroupDetails ');
     }
-    auctionEvents = [];
     events = [];
+    auctionEvents = [];
+    auctionNetworkEvents = [];
   }
 
   let resolveWaitForWinPromise;
@@ -119,13 +137,26 @@
     auctionEvents.push(messageObject.params);
   });
 
+  dp.Storage.onInterestGroupAuctionNetworkRequestCreated(messageObject => {
+    auctionNetworkEvents.push(messageObject.params);
+  });
+
   dp.Storage.onInterestGroupAccessed(messageObject => {
     events.push(messageObject.params);
     if (messageObject.params.type == 'win') {
       resolveWaitForWinPromise();
     }
   });
+
+  dp.Network.onRequestWillBeSent(messageObject => {
+    networkRequestUrls.set(
+        messageObject.params.requestId, messageObject.params.request.url);
+  });
+
   await page.navigate(base + 'empty.html');
+
+  // Enable network events, to check cross-referencing of them.
+  await dp.Network.enable();
 
   // Start tracking, join interest groups, and run an auction.
   await dp.Storage.setInterestGroupTracking({enable: true});

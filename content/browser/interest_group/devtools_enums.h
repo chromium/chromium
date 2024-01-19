@@ -9,6 +9,14 @@ namespace content {
 
 enum class InterestGroupAuctionEventType { kStarted, kConfigResolved };
 
+enum class InterestGroupAuctionFetchType {
+  kBidderJs,
+  kBidderWasm,
+  kSellerJs,
+  kBidderTrustedSignals,
+  kSellerTrustedSignals
+};
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_INTEREST_GROUP_DEVTOOLS_ENUMS_H_

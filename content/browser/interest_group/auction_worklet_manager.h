@@ -193,12 +193,17 @@ class CONTENT_EXPORT AuctionWorkletManager {
     const SubresourceUrlAuthorizations&
     GetSubresourceUrlAuthorizationsForTesting();
 
+    // Returns devtools IDs of all auctions that are using the worklet pointed
+    // to by this handle.
+    std::vector<std::string> GetDevtoolsAuctionIdsForTesting();
+
    private:
     friend class AuctionWorkletManager;
     friend class WorkletOwner;
 
     // These are only created by AuctionWorkletManager.
-    explicit WorkletHandle(scoped_refptr<WorkletOwner> worklet_owner,
+    explicit WorkletHandle(std::string devtools_auction_id,
+                           scoped_refptr<WorkletOwner> worklet_owner,
                            base::OnceClosure worklet_available_callback,
                            FatalErrorCallback fatal_error_callback);
 
@@ -212,6 +217,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
     bool worklet_created() const;
 
     scoped_refptr<WorkletOwner> worklet_owner_;
+    std::string devtools_auction_id_;
 
     base::OnceClosure worklet_available_callback_;
     FatalErrorCallback fatal_error_callback_;
@@ -243,6 +249,9 @@ class CONTENT_EXPORT AuctionWorkletManager {
   // Requests a worklet with the specified properties. The top frame origin and
   // debugging information are obtained from the Delegate's RenderFrameHost.
   //
+  // `devtools_auction_id` will be used to related network events to given
+  // auction. It serves no other purpose and does not affect worklet sharing.
+  //
   // The AuctionWorkletManager will handle requesting a process, hooking up
   // DevTools, and merging requests with the same parameters so they can share a
   // single worklet.
@@ -268,6 +277,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
   // The callbacks should not delete the AuctionWorkletManager itself, but are
   // free to release any WorkletHandle they wish.
   void RequestBidderWorklet(
+      std::string devtools_auction_id,
       const GURL& bidding_logic_url,
       const std::optional<GURL>& wasm_url,
       const std::optional<GURL>& trusted_bidding_signals_url,
@@ -278,6 +288,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
       FatalErrorCallback fatal_error_callback,
       std::unique_ptr<WorkletHandle>& out_worklet_handle);
   void RequestSellerWorklet(
+      std::string devtools_auction_id,
       const GURL& decision_logic_url,
       const std::optional<GURL>& trusted_scoring_signals_url,
       std::optional<uint16_t> experiment_group_id,
@@ -285,6 +296,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
       FatalErrorCallback fatal_error_callback,
       std::unique_ptr<WorkletHandle>& out_worklet_handle);
   void RequestWorkletByKey(WorkletKey worklet_info,
+                           std::string devtools_auction_id,
                            base::OnceClosure worklet_available_callback,
                            FatalErrorCallback fatal_error_callback,
                            std::unique_ptr<WorkletHandle>& out_worklet_handle);

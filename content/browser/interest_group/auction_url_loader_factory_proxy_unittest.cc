@@ -133,6 +133,7 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::Test {
                        base::Unretained(this)),
         base::BindRepeating(
             []() -> std::optional<std::string> { return std::nullopt; }),
+        base::BindRepeating([]() -> std::vector<std::string> { return {}; }),
         /*force_reload=*/force_reload_, top_frame_origin_, frame_origin_,
         /*renderer_process_id=*/kRenderProcessId, is_for_seller_,
         client_security_state_.Clone(), GURL(kScriptUrl), wasm_url_,

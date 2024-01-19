@@ -240,6 +240,11 @@ void OnInterestGroupAuctionEventOccurred(
     const std::string& unique_auction_id,
     base::optional_ref<const std::string> parent_auction_id,
     const base::Value::Dict& auction_config);
+void OnInterestGroupAuctionNetworkRequestCreated(
+    int frame_tree_node_id,
+    content::InterestGroupAuctionFetchType type,
+    const std::string& request_id,
+    const std::vector<std::string>& devtools_auction_ids);
 
 bool ShouldBypassCSP(const NavigationRequest& nav_request);
 
