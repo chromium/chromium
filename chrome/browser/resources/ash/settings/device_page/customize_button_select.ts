@@ -213,6 +213,7 @@ export class CustomizeButtonSelectElement extends
   }
 
   override focus(): void {
+    assert(this.$.selectDropdown);
     this.$.selectDropdown.focus();
   }
 
