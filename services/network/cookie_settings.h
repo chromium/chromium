@@ -154,8 +154,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // given top level site. PST for specific origins can be disabled through
   // content settings.
   bool ArePrivateStateTokensAllowed(const GURL& primary_url) const {
-    ContentSetting setting = GetContentSetting(primary_url, primary_url,
-                                               ContentSettingsType::COOKIES);
+    ContentSetting setting =
+        GetContentSetting(primary_url, primary_url,
+                          ContentSettingsType::COOKIES, /*info=*/nullptr);
     return (setting == CONTENT_SETTING_ALLOW);
   }
 
@@ -167,7 +168,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      content_settings::SettingInfo* info = nullptr) const override;
+      content_settings::SettingInfo* info) const override;
   bool IsThirdPartyCookiesAllowedScheme(
       const std::string& scheme) const override;
   bool ShouldBlockThirdPartyCookies() const override;

@@ -300,11 +300,10 @@ class CookieSettingsBase {
   // ContentSettingsTypes. Currently only COOKIES, TPCD_TRIAL, STORAGE_ACCESS,
   // TPCD_METADATA_GRANTS, TPCD_HEURISTICS_GRANTS, TOP_LEVEL_TPCD_TRIAL, and
   // TOP_LEVEL_STORAGE_ACCESS are required.
-  virtual ContentSetting GetContentSetting(
-      const GURL& primary_url,
-      const GURL& secondary_url,
-      ContentSettingsType content_type,
-      SettingInfo* info = nullptr) const = 0;
+  virtual ContentSetting GetContentSetting(const GURL& primary_url,
+                                           const GURL& secondary_url,
+                                           ContentSettingsType content_type,
+                                           SettingInfo* info) const = 0;
 
   bool IsAllowedByStorageAccessGrant(const GURL& url,
                                      const GURL& first_party_url) const;
