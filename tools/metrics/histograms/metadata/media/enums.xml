@@ -1833,6 +1833,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="PreviousErrorOnDecode"/>
   <int value="4" label="PreviousErrorOnRegisterCallback"/>
   <int value="5" label="ConsecutivePendingBufferOverflowDuringInit"/>
+  <int value="6" label="ParseErrorOnResolutionCheck"/>
+  <int value="7" label="TooManyInstancesAndSmallResolution"/>
 </enum>
 
 <enum name="ScreenCaptureKitFullscreenModuleMode">
