@@ -816,7 +816,8 @@ void LogNewlySavedPasswordMetrics(
     bool is_generated_password,
     bool is_username_empty,
     password_manager::features_util::PasswordAccountStorageUsageLevel
-        account_storage_usage_level);
+        account_storage_usage_level,
+    ukm::SourceId ukm_source_id);
 
 // Log whether the generated password was accepted or rejected for generation of
 // |type| (automatic or manual).
