@@ -223,6 +223,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="MachineLearningService.HeatmapPalmRejection.ExecuteResult.Event"
+    enum="MachineLearningServiceExecuteResultEvent" expires_after="2025-01-17">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <summary>
+    The result of heatmap palm rejection Execute request, which can be OK or
+    some specific error.
+  </summary>
+</histogram>
+
+<histogram
+    name="MachineLearningService.HeatmapPalmRejection.LoadModelResult.Event"
+    enum="MachineLearningServiceLoadHeatmapPalmRejectionResult"
+    expires_after="2025-01-17">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <summary>
+    The result of load heatmap palm rejection module, which can be OK or some
+    specific error.
+  </summary>
+</histogram>
+
 <histogram name="MachineLearningService.LoadModelResult"
     enum="MachineLearningServiceLoadModelResultEvent"
     expires_after="2024-06-01">

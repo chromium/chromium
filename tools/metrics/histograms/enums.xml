@@ -28965,6 +28965,14 @@ from previous Chrome versions.
   <int value="11" label="LOAD_MODEL_FILES_ERROR"/>
 </enum>
 
+<enum name="MachineLearningServiceLoadHeatmapPalmRejectionResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="UNKNOWN_ERROR"/>
+  <int value="2" label="LOAD_MODEL_ERROR"/>
+  <int value="3" label="CREATE_GRAPH_EXECUTOR_ERROR"/>
+  <int value="4" label="OPEN_DEVICE_ERROR"/>
+</enum>
+
 <enum name="MachineLearningServiceLoadModelResultEvent">
   <int value="0" label="OK"/>
   <int value="1" label="MODEL_SPEC_ERROR"/>
