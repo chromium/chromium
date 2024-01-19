@@ -5,7 +5,10 @@
 #include "components/password_manager/ios/account_select_fill_data.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/ios/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,6 +40,43 @@ const char* kAdditionalPasswords[] = {"secret", nullptr};
 // represents an unexisting field renderer ID.
 autofill::FieldRendererId UnexistingFieldRendererId() {
   return autofill::FieldRendererId(1000);
+}
+
+// Returns form data for a single username form with credentials eligible for
+// filling that has at least one non-empty username.
+PasswordFormFillData EligibleSingleUsernameFormData() {
+  // Set fill data with 1 non-empty username and 1 empty username.
+  PasswordFormFillData form_data;
+  test_helpers::SetPasswordFormFillData(
+      kUrl, /*form_name=*/"", /*unique_renderer_id=*/1, /*username_field=*/"",
+      /*username_field_id=*/1,
+      /*username_value=*/"", /*password_field=*/"", /*password_field_id=*/0,
+      /*password_value=*/"secret1", /*additional_username=*/"username",
+      /*addition_password=*/"secret2", &form_data);
+  return form_data;
+}
+
+// Returns form data with only empty usernames.
+PasswordFormFillData FormDataWithEmptyUsernamesOnly() {
+  // Set fill data with 2 empty usernames.
+  PasswordFormFillData form_data;
+  test_helpers::SetPasswordFormFillData(
+      kUrl, /*form_name=*/"", /*unique_renderer_id=*/1, /*username_field=*/"",
+      /*username_field_id=*/2,
+      /*username_value=*/"", /*password_field=*/"", /*password_field_id=*/3,
+      /*password_value=*/"secret1", /*additional_username=*/"",
+      /*addition_password=*/"secret2", &form_data);
+  return form_data;
+}
+
+// Returns form data for a single username form with credentials ineligible for
+// filling that only consist of empty usernames.
+PasswordFormFillData IneligibleSingleUsernameFormData() {
+  PasswordFormFillData form_data = FormDataWithEmptyUsernamesOnly();
+  // Set the default field id for the password field to make the form a single
+  // username form.
+  form_data.password_element_renderer_id = autofill::FieldRendererId(0);
+  return form_data;
 }
 
 class AccountSelectFillDataTest : public PlatformTest {
@@ -107,6 +147,74 @@ TEST_F(AccountSelectFillDataTest, IsSuggestionsAvailableTwoForms) {
       FormRendererId(404), form_data_[0].username_element_renderer_id, false));
 }
 
+// Test that, when sign-in uff is disabled, IsSuggestionsAvailable() returns
+// true on password forms when there are only empty usernames, as the
+// suggestions with empty usernames still hold passwords that can be filled.
+// This test makes sure that there is no regression in password filling with
+// sign-in uff disabled.
+TEST_F(AccountSelectFillDataTest, IsSuggestionsAvailable_EmptyUsernames) {
+  PasswordFormFillData form_data = FormDataWithEmptyUsernamesOnly();
+
+  AccountSelectFillData account_select_fill_data;
+  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+
+  EXPECT_TRUE(account_select_fill_data.IsSuggestionsAvailable(
+      form_data.form_renderer_id, form_data.username_element_renderer_id,
+      false));
+}
+
+// Test that, when sign-in uff is enabled, IsSuggestionsAvailable() still
+// returns true on password forms when there are only empty usernames, as the
+// suggestions with empty usernames still hold passwords that can be filled.
+// Sign-in uff should only target single username forms.
+TEST_F(AccountSelectFillDataTest,
+       IsSuggestionsAvailable_EmptyUsernames_WhenSigninUffEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordSignInUff);
+
+  PasswordFormFillData form_data = FormDataWithEmptyUsernamesOnly();
+
+  AccountSelectFillData account_select_fill_data;
+  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+
+  EXPECT_TRUE(account_select_fill_data.IsSuggestionsAvailable(
+      form_data.form_renderer_id, form_data.username_element_renderer_id,
+      false));
+}
+
+TEST_F(AccountSelectFillDataTest,
+       IsSuggestionsAvailable_OnSingleUsernameForm_WhenEligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordSignInUff);
+
+  PasswordFormFillData form_data = EligibleSingleUsernameFormData();
+
+  AccountSelectFillData account_select_fill_data;
+  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+
+  EXPECT_TRUE(account_select_fill_data.IsSuggestionsAvailable(
+      form_data.form_renderer_id, form_data.username_element_renderer_id,
+      false));
+}
+
+TEST_F(AccountSelectFillDataTest,
+       IsSuggestionsAvailable_OnSingleUsernameForm_WhenIneligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordSignInUff);
+
+  PasswordFormFillData form_data = IneligibleSingleUsernameFormData();
+
+  AccountSelectFillData account_select_fill_data;
+  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+
+  EXPECT_FALSE(account_select_fill_data.IsSuggestionsAvailable(
+      form_data.form_renderer_id, form_data.username_element_renderer_id,
+      false));
+}
+
 TEST_F(AccountSelectFillDataTest, RetrieveSuggestionsOneForm) {
   AccountSelectFillData account_select_fill_data;
   account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
@@ -148,6 +256,79 @@ TEST_F(AccountSelectFillDataTest, RetrieveSuggestionsTwoForm) {
       form_data_[1].username_element_renderer_id, false);
   EXPECT_EQ(1u, suggestions.size());
   EXPECT_EQ(base::ASCIIToUTF16(kUsernames[1]), suggestions[0].username);
+}
+
+// Test that, when sign-in uff is disabled, RetrieveSuggestions() returns all
+// suggestions on password forms when there are only empty usernames, as the
+// suggestions with empty usernames still hold passwords that can be filled.
+// This test makes sure that there is no regression in password filling with
+// sign-in uff disabled.
+TEST_F(AccountSelectFillDataTest, RetrieveSuggestions_EmptyUsernames) {
+  PasswordFormFillData form_data = FormDataWithEmptyUsernamesOnly();
+
+  AccountSelectFillData account_select_fill_data;
+  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+
+  EXPECT_THAT(account_select_fill_data.RetrieveSuggestions(
+                  form_data.form_renderer_id,
+                  form_data.username_element_renderer_id, false),
+              testing::SizeIs(2));
+}
+
+// Test that, when sign-in uff is enabled, RetrieveSuggestions() still returns
+// all suggestions on password forms when there are only empty usernames, as the
+// suggestions with empty usernames still hold passwords that can be filled.
+// This test makes sure that there is no regression in password filling with
+// sign-in uff disabled. Sign-in uff should only target single username forms.
+TEST_F(AccountSelectFillDataTest,
+       RetrieveSuggestions_EmptyUsernames_WhenSigninUffEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordSignInUff);
+
+  PasswordFormFillData form_data = FormDataWithEmptyUsernamesOnly();
+
+  AccountSelectFillData account_select_fill_data;
+  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+
+  EXPECT_THAT(account_select_fill_data.RetrieveSuggestions(
+                  form_data.form_renderer_id,
+                  form_data.username_element_renderer_id, false),
+              testing::SizeIs(2));
+}
+
+TEST_F(AccountSelectFillDataTest,
+       RetrieveSuggestions_OnSingleUsernameForm_WhenEligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordSignInUff);
+
+  PasswordFormFillData form_data = EligibleSingleUsernameFormData();
+
+  AccountSelectFillData account_select_fill_data;
+  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+
+  EXPECT_THAT(account_select_fill_data.RetrieveSuggestions(
+                  form_data.form_renderer_id,
+                  form_data.username_element_renderer_id, false),
+              testing::SizeIs(2));
+}
+
+TEST_F(AccountSelectFillDataTest,
+       RetrieveSuggestions_OnSingleUsernameForm_WhenIneligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordSignInUff);
+
+  PasswordFormFillData form_data = IneligibleSingleUsernameFormData();
+
+  AccountSelectFillData account_select_fill_data;
+  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+
+  EXPECT_THAT(account_select_fill_data.RetrieveSuggestions(
+                  form_data.form_renderer_id,
+                  form_data.username_element_renderer_id, false),
+              testing::IsEmpty());
 }
 
 TEST_F(AccountSelectFillDataTest, RetrievePSLMatchedSuggestions) {

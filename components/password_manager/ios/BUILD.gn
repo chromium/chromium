@@ -79,6 +79,7 @@ source_set("account_select_fill_data") {
     "//base",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser:util",
+    "//components/password_manager/core/browser/features:password_features",
     "//url",
   ]
 
@@ -142,6 +143,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/form_util:test_support",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//components/password_manager/ios:password_manager_feature_header",
     "//components/password_manager/ios:test_support",

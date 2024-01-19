@@ -4,14 +4,45 @@
 
 #include "components/password_manager/ios/account_select_fill_data.h"
 
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 
 using autofill::FieldRendererId;
 using autofill::FormRendererId;
 
 namespace password_manager {
+
+namespace {
+
+bool IsSigninUffEnabled() {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kIOSPasswordSignInUff);
+}
+
+// Returns true if credentials are eligible. For example, credentials are
+// ineglible when there are only credentials with an empty username available
+// for a single username form.
+bool AreCredentialsEligibleForFilling(
+    const FormInfo* form_info,
+    const std::vector<Credential>& credentials) {
+  // Check that this is only called when `form_info` is available.
+  CHECK(form_info);
+
+  const bool is_single_username = form_info && form_info->username_element_id &&
+                                  !form_info->password_element_id;
+
+  const auto has_empty_username = [](const Credential& c) {
+    return c.username.empty();
+  };
+  return !(is_single_username &&
+           base::ranges::all_of(credentials, has_empty_username) &&
+           IsSigninUffEnabled());
+}
+
+}  // namespace
 
 FillData::FillData() = default;
 FillData::~FillData() = default;
@@ -81,8 +112,9 @@ bool AccountSelectFillData::IsSuggestionsAvailable(
     FormRendererId form_identifier,
     FieldRendererId field_identifier,
     bool is_password_field) const {
-  return GetFormInfo(form_identifier, field_identifier, is_password_field) !=
-         nullptr;
+  const FormInfo* form_info =
+      GetFormInfo(form_identifier, field_identifier, is_password_field);
+  return form_info && AreCredentialsEligibleForFilling(form_info, credentials_);
 }
 
 std::vector<UsernameAndRealm> AccountSelectFillData::RetrieveSuggestions(
@@ -91,7 +123,12 @@ std::vector<UsernameAndRealm> AccountSelectFillData::RetrieveSuggestions(
     bool is_password_field) {
   last_requested_form_ =
       GetFormInfo(form_identifier, field_identifier, is_password_field);
-  DCHECK(last_requested_form_);
+  CHECK(last_requested_form_);
+
+  if (!AreCredentialsEligibleForFilling(last_requested_form_, credentials_)) {
+    return {};
+  }
+
   last_requested_password_field_id_ =
       is_password_field ? field_identifier : FieldRendererId();
   std::vector<UsernameAndRealm> result;

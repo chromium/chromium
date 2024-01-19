@@ -37,7 +37,7 @@ void SetPasswordFormFillData(const std::string& url,
   form_data->preferred_login.username_value = base::UTF8ToUTF16(username_value);
   form_data->password_element_renderer_id = FieldRendererId(password_unique_id);
   form_data->preferred_login.password_value = base::UTF8ToUTF16(password_value);
-  if (additional_username) {
+  if (additional_username != nullptr) {
     autofill::PasswordAndMetadata additional_password_data;
     additional_password_data.username_value =
         base::UTF8ToUTF16(additional_username);
