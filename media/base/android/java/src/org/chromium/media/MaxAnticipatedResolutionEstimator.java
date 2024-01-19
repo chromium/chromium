@@ -57,8 +57,11 @@ public class MaxAnticipatedResolutionEstimator {
         }
 
         // Cap screen size at 1080p for non-4K codecs
-        if (!format.getString(MediaFormat.KEY_MIME).equals(MimeTypes.VIDEO_HEVC)
-                && !format.getString(MediaFormat.KEY_MIME).equals(MimeTypes.VIDEO_VP9)) {
+        String mimeType = format.getString(MediaFormat.KEY_MIME);
+        if (!mimeType.equals(MimeTypes.VIDEO_HEVC)
+                && !mimeType.equals(MimeTypes.VIDEO_VP9)
+                && !mimeType.equals(MimeTypes.VIDEO_AV1)
+                && !mimeType.equals(MimeTypes.VIDEO_DV)) {
             resolution.mWidth = Math.min(resolution.mWidth, 1920);
             resolution.mHeight = Math.min(resolution.mHeight, 1080);
         }
