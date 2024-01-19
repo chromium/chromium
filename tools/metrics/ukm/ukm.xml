@@ -19350,6 +19350,13 @@ be describing additional metrics about the same event.
     <summary>
       Records '1' if the user has modified a generated a password on this form.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Generation.PopupShown" enum="PasswordGenerationPopupShown">
     <summary>
@@ -19382,6 +19389,13 @@ be describing additional metrics about the same event.
 
       This is replicated as PasswordManager.FillingAssistance in UMA.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ParsingComparison">
     <obsolete>
@@ -19441,6 +19455,13 @@ be describing additional metrics about the same event.
       In case a store() via the Credential Management API, a virtual password
       form is created, for which this metric is recorded.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Saving.Prompt.Trigger" enum="PasswordBubbleTrigger">
     <summary>
@@ -19468,6 +19489,13 @@ be describing additional metrics about the same event.
       Records whether a submission of a password form has been observered. The
       values 0 and 1 correspond to false and true respectively.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Submission.SubmissionResult"
       enum="PasswordFormSubmissionResult">
@@ -19593,6 +19621,13 @@ be describing additional metrics about the same event.
       user was shown a prompt that asked for permission to update existing
       credentials.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Updating.Prompt.Trigger" enum="PasswordBubbleTrigger">
     <summary>
