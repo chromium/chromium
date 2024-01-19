@@ -773,23 +773,6 @@ def make_blink_to_v8_function(cg_context):
         ])
 
     for index, member in enumerate(cg_context.dictionary_own_members):
-        # [DeprecateAs]
-        deprecate_as = member.extended_attributes.value_of("DeprecateAs")
-        deprecate_as_node = None
-        if deprecate_as:
-            deprecate_as_node = SequenceNode([
-                EmptyNode(),
-                T("// [DeprecateAs]"),
-                F(("Deprecation::CountDeprecation("
-                   "${execution_context}, "
-                   "WebFeature::k{deprecate_as});"),
-                  deprecate_as=deprecate_as),
-            ])
-            deprecate_as_node.accumulate(
-                CodeGenAccumulator.require_include_headers([
-                    "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
-                ]))
-
         node = CxxLikelyIfNode(
             cond="{}()".format(member.api_has),
             body=[
@@ -804,8 +787,7 @@ def make_blink_to_v8_function(cg_context):
                     "${current_context}, "
                     "${v8_own_member_names}[{index}].Get(${isolate}), "
                     "${v8_value}).ToChecked();",
-                    index=index),
-                deprecate_as_node,
+                    index=index)
             ])
 
         conditional = expr_from_exposure(member.exposure)
