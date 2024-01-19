@@ -5006,6 +5006,12 @@
       'Dawn Android arm64 Release (Pixel 6)': {
         'ci_only': True,
       },
+      'Dawn Win10 x64 ASAN Release (Intel)': {
+        # ASAN builds taking a bit longer so needs extra shards to not timeout.
+        'swarming': {
+          'shards': 10,
+        }
+      },
       # These tests must run with a GPU.
       'linux-code-coverage': {
         'swarming': {
