@@ -206,5 +206,9 @@ base::StringPiece DownloadDialogView::GetVisibleTimeHistogramName() const {
   return kFullBubbleVisibleHistogramName;
 }
 
+bool DownloadDialogView::IsPartialView() const {
+  return false;
+}
+
 BEGIN_METADATA(DownloadDialogView)
 END_METADATA

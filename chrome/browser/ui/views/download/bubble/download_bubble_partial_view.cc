@@ -257,6 +257,10 @@ base::StringPiece DownloadBubblePartialView::GetVisibleTimeHistogramName()
   return kPartialBubbleVisibleHistogramName;
 }
 
+bool DownloadBubblePartialView::IsPartialView() const {
+  return true;
+}
+
 void DownloadBubblePartialView::AddedToWidget() {
   auto* focus_manager = GetFocusManager();
   if (focus_manager) {
