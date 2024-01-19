@@ -1994,6 +1994,9 @@ extern const char kTpcdMetadataGrantsDescription[];
 extern const char kTpcdTrialSettingsName[];
 extern const char kTpcdTrialSettingsDescription[];
 
+extern const char kTopLevelTpcdTrialSettingsName[];
+extern const char kTopLevelTpcdTrialSettingsDescription[];
+
 extern const char kIpProtectionV1Name[];
 extern const char kIpProtectionV1Description[];
 

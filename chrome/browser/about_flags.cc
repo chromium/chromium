@@ -9103,6 +9103,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTpcdTrialSettingsDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kTpcdTrialSettings)},
 
+    {"top-level-third-party-cookie-deprecation-trial",
+     flag_descriptions::kTopLevelTpcdTrialSettingsName,
+     flag_descriptions::kTopLevelTpcdTrialSettingsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(net::features::kTopLevelTpcdTrialSettings)},
+
     {"bounce-tracking-mitigations", flag_descriptions::kDIPSName,
      flag_descriptions::kDIPSDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDIPS)},

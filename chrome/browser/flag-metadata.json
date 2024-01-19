@@ -7954,6 +7954,13 @@
     "expiry_milestone": -1
   },
   {
+    "name": "top-level-third-party-cookie-deprecation-trial",
+    "owners": [
+      "//chrome/browser/tpcd/OWNERS"
+    ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "top-toolbar-theme-color",
     "owners": [
       "bling-flags@google.com",
