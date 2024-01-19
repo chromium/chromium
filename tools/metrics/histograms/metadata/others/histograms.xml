@@ -2119,46 +2119,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CastV2.Transport.Connect.Latency.Unknown" units="ms"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <owner>cast-analytics@google.com</owner>
-  <summary>
-    The latency between when a Cast V2 connection is established and the first
-    message is received on that connection. &quot;Unknown&quot; is the peer
-    type, which is not known at this point in the CastV2 connection
-    establishment. Naming conforms to the CastV2 sender-side histogram naming
-    convention &quot;CastV2.[action].[name].[peer_type]&quot;.
-  </summary>
-</histogram>
-
-<histogram name="CastV2.Transport.SslHandshake.Error.Unknown"
-    enum="NetErrorCodes" expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <owner>cast-analytics@google.com</owner>
-  <summary>
-    On accepting a Cast V2 transport socket connection, if an error is
-    encountered, the error code is logged here. &quot;Unknown&quot; is the peer
-    type, which is not known at this point in the CastV2 connection
-    establishment. &quot;SslHandshake.Error&quot; is the name of the action.
-    Naming conforms to the CastV2 sender-side histogram naming convention
-    &quot;CastV2.[action].[name].[peer_type]&quot;.
-  </summary>
-</histogram>
-
-<histogram name="CastV2.Transport.SslHandshake.Unknown" units="ms"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <owner>cast-analytics@google.com</owner>
-  <summary>
-    The time taken to do the handshake during Cast V2 transport socket creation.
-    &quot;Unknown&quot; is the peer type, which is not known at this point in
-    the CastV2 connection establishment. Naming conforms to the CastV2
-    sender-side histogram naming convention
-    &quot;CastV2.[action].[name].[peer_type]&quot;.
-  </summary>
-</histogram>
-
 <histogram name="CertificateType2" units="units" expires_after="never">
 <!-- expires-never: histograms are used to assess policy -->
 
