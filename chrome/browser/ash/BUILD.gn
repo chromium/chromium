@@ -5115,6 +5115,7 @@ source_set("unit_tests") {
     "app_list/search/common/keyword_util_unittest.cc",
     "app_list/search/common/string_util_unittest.cc",
     "app_list/search/desks_admin_template_provider_unittest.cc",
+    "app_list/search/essential_search/socs_cookie_fetcher_unittest.cc",
     "app_list/search/federated_metrics_manager_unittest.cc",
     "app_list/search/files/file_result_unittest.cc",
     "app_list/search/files/file_search_provider_unittest.cc",

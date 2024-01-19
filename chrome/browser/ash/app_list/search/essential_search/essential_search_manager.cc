@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
+
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -16,6 +17,8 @@
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_options.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace app_list {
 
@@ -50,7 +53,7 @@ void EssentialSearchManager::FetchSocsCookie() {
 }
 
 void EssentialSearchManager::OnCookieFetched(const std::string& cookie_header) {
-  GURL google_url = GaiaUrls::GetInstance()->google_url();
+  GURL google_url = GaiaUrls::GetInstance()->secure_google_url();
 
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       google_url, cookie_header, base::Time::Now(),
@@ -58,6 +61,7 @@ void EssentialSearchManager::OnCookieFetched(const std::string& cookie_header) {
 
   if (!cc) {
     LOG(ERROR) << "Invalid cookie header";
+    OnApiCallFailed(SocsCookieFetcher::Status::kInvalidCookie);
     return;
   }
 
@@ -68,6 +72,10 @@ void EssentialSearchManager::OnCookieFetched(const std::string& cookie_header) {
       ->SetCanonicalCookie(
           *cc, google_url, options,
           network::mojom::CookieManager::SetCanonicalCookieCallback());
+}
+
+void EssentialSearchManager::OnApiCallFailed(SocsCookieFetcher::Status status) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace app_list

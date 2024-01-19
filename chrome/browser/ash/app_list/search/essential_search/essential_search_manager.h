@@ -42,6 +42,7 @@ class EssentialSearchManager : public ash::SessionObserver,
 
   // SocsCookieFetcher::Consumer
   void OnCookieFetched(const std::string& socs_cookie) override;
+  void OnApiCallFailed(SocsCookieFetcher::Status status) override;
 
  private:
   void FetchSocsCookie();
