@@ -111,7 +111,7 @@ if (use_fuzzing_engine) {
   }
 }
 
-if (use_blink) {
+if (build_with_chromium && use_blink) {
   source_set("renderer_fuzzing") {
     testonly = true
     sources = [
