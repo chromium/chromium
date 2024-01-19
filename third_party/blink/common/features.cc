@@ -858,6 +858,12 @@ BASE_FEATURE(kFencedFramesLocalUnpartitionedDataAccess,
              "FencedFramesLocalUnpartitionedDataAccess",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use "style" destinations for CSS modules.
+// TODO(crbug.com/1491336): Also use this for JSON modules
+BASE_FEATURE(kFetchDestinationJsonCssModules,
+             "kFetchDestinationJsonCssModules",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // File handling icons. https://crbug.com/1218213
 BASE_FEATURE(kFileHandlingIcons,
              "FileHandlingIcons",

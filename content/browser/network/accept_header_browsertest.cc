@@ -127,6 +127,7 @@ IN_PROC_BROWSER_TEST_F(AcceptHeaderTest, Check) {
 
   // ResourceType::kStylesheet
   EXPECT_EQ("text/css,*/*;q=0.1", GetFor("/test.css"));
+  EXPECT_EQ("text/css,*/*;q=0.1", GetFor("/test-css-module"));
 
   // ResourceType::kScript
   EXPECT_EQ("*/*", GetFor("/test.js"));

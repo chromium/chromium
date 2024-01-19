@@ -2698,6 +2698,18 @@
     "expires": "Jun 1, 2024"
   },
   {
+    "prefix": "import-attributes-json-css-modules",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/content-security-policy/connect-src/connect-src-json-import-allowed.sub.html",
+      "external/wpt/content-security-policy/connect-src/connect-src-json-import-blocked.sub.html",
+      "external/wpt/content-security-policy/style-src/import-style-allowed.sub.html",
+      "external/wpt/content-security-policy/style-src/import-style-blocked.sub.html"
+    ],
+    "args": ["--js-flags=--harmony-import-attributes"],
+    "expires": "Apr 1, 2024"
+  },
+  {
     "prefix": "stylable-select-disabled",
     "platforms": ["Linux"],
     "bases": [
