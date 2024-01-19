@@ -1177,17 +1177,33 @@ public class TabStripTest {
                 "Hover card should be visible.", View.VISIBLE, hoverCardView.getVisibility());
 
         // Simulate activity pause.
+        // Note: This doesn't really pause the activity; it just triggers the code
+        // that *would* be called if the activity were to be paused. We'll need to
+        // balance this with an onResumeWithNative call before ending the test.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivityTestRule.getActivity().onPauseWithNative();
                 });
 
+        // Validate that the hover card disappears when notified that the activity
+        // was paused.
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     Criteria.checkThat(
                             "Hover card should be hidden.",
                             hoverCardView.getVisibility(),
                             Matchers.is(View.GONE));
+                });
+
+        // Simulate activity resume.
+        // Note: This doesn't really resume the activity; it just triggers the code
+        // that *would* be called if the activity were to be resumed. The code above
+        // pretended to pause the activity. We need this simulated resume so that
+        // any book-keeping being performed by the activity balances out when the
+        // activity is paused, and ultimately destroyed, as this test shuts down.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sActivityTestRule.getActivity().onResumeWithNative();
                 });
     }
 
