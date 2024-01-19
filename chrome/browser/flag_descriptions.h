@@ -1181,6 +1181,11 @@ extern const char kInProductHelpSnoozeDescription[];
 extern const char kInProductHelpUseClientConfigName[];
 extern const char kInProductHelpUseClientConfigDescription[];
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kUserEducationExperienceVersion2Name[];
+extern const char kUserEducationExperienceVersion2Description[];
+#endif
+
 extern const char kInsecureDownloadWarningsName[];
 extern const char kInsecureDownloadWarningsDescription[];
 

@@ -8272,6 +8272,11 @@
     "expiry_milestone": 124
   },
   {
+    "name": "user-education-experience-v2",
+    "owners": [ "dfried@chromium.org", "mickeyburks@chromium.org", "kayceh@chromium.org", "estalin@chromium.org" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "user-notes-side-panel",
     "owners": [ "corising@chromium.org", "chrome-desktop-ui-sea@chromium.org" ],
     "expiry_milestone": 118

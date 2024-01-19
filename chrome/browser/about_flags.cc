@@ -339,6 +339,12 @@
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
+#if !BUILDFLAG(IS_ANDROID)
+// This causes a gn error on Android builds, because gn does not understand
+// buildflags.
+#include "components/user_education/common/user_education_features.h"  // nogncheck
+#endif
+
 #if defined(TOOLKIT_VIEWS)
 #include "ui/views/views_features.h"
 #include "ui/views/views_switches.h"
@@ -4758,6 +4764,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInProductHelpUseClientConfigName,
      flag_descriptions::kInProductHelpUseClientConfigDescription, kOsAll,
      FEATURE_VALUE_TYPE(feature_engagement::kUseClientConfigIPH)},
+#if !BUILDFLAG(IS_ANDROID)
+    {"user-education-experience-v2",
+     flag_descriptions::kUserEducationExperienceVersion2Name,
+     flag_descriptions::kUserEducationExperienceVersion2Description, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         user_education::features::kUserEducationExperienceVersion2)},
+#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-lock-screen-notification",
      flag_descriptions::kLockScreenNotificationName,

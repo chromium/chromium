@@ -2124,6 +2124,14 @@ const char kInProductHelpUseClientConfigName[] = "IPH Use Client Config";
 const char kInProductHelpUseClientConfigDescription[] =
     "Enable In-Product Help to use client side configuration.";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kUserEducationExperienceVersion2Name[] =
+    "User Education Experience Version 2";
+const char kUserEducationExperienceVersion2Description[] =
+    "Enables enhancements to the User Education and In-Product Help systems "
+    "such as startup grace period, more sophisticated rate limiting, etc.";
+#endif
+
 const char kInsecureDownloadWarningsName[] = "Warn on insecure downloads";
 const char kInsecureDownloadWarningsDescription[] =
     "Enables insecure download warnings. Requires users to bypass a warning "
