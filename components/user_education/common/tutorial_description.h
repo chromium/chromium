@@ -120,6 +120,20 @@ std::unique_ptr<TutorialHistograms> MakeTutorialHistograms(int max_steps) {
       max_steps);
 }
 
+// A class that manages a temporary state associated with the tutorial.
+// A new object via the temporary setup callback when a new tutorial is started
+// and maintained through the lifetime of the tutorial.
+class ScopedTutorialState {
+ public:
+  explicit ScopedTutorialState(ui::ElementContext context);
+  virtual ~ScopedTutorialState();
+
+  ui::ElementContext context() const { return context_; }
+
+ private:
+  const ui::ElementContext context_;
+};
+
 // A Struct that provides all of the data necessary to construct a Tutorial.
 // A Tutorial Description is a list of Steps for a tutorial. Each step has info
 // for constructing the InteractionSequence::Step from the
@@ -130,6 +144,10 @@ struct TutorialDescription {
                                    ui::TrackedElement*)>;
   using NextButtonCallback =
       base::RepeatingCallback<void(ui::TrackedElement* current_anchor)>;
+
+  using TemporaryStateCallback =
+      base::RepeatingCallback<std::unique_ptr<ScopedTutorialState>(
+          ui::ElementContext)>;
 
   TutorialDescription();
   TutorialDescription(TutorialDescription&& other) noexcept;
@@ -523,12 +541,17 @@ struct TutorialDescription {
     WaitForAnyOf& Or(ElementSpecifier element, bool wait_for_event = false);
   };
 
-  // the list of TutorialDescription steps
+  // The list of TutorialDescription steps.
   std::vector<Step> steps;
 
   // The histogram data to use. Use MakeTutorialHistograms() above to create a
   // value to use, if you want to record specific histograms for this tutorial.
   std::unique_ptr<TutorialHistograms> histograms;
+
+  // The callback for the tutorial which returns a scoped object which
+  // manages temporary state that is maintained through the lifetime of the
+  // tutorial.
+  TemporaryStateCallback temporary_state_callback;
 
   // The ability for the tutorial to be restarted. In some cases tutorials can
   // leave the UI in a state where it can not re-run the tutorial. In these

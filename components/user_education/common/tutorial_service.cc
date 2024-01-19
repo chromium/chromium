@@ -75,6 +75,10 @@ void TutorialService::StartTutorial(TutorialIdentifier id,
 
   // Start the tutorial and mark the params used to created it for restarting.
   most_recent_tutorial_id_ = id;
+  if (description->temporary_state_callback) {
+    running_tutorial_->SetState(
+        description->temporary_state_callback.Run(context));
+  }
   running_tutorial_->Start();
 }
 
@@ -134,6 +138,14 @@ bool TutorialService::RestartTutorial() {
   if (!running_tutorial_) {
     ResetRunningTutorial();
     return false;
+  }
+
+  if (running_tutorial_creation_params_->description_
+          ->temporary_state_callback) {
+    running_tutorial_->SetState(
+        running_tutorial_creation_params_->description_
+            ->temporary_state_callback.Run(
+                running_tutorial_creation_params_->context_));
   }
 
   // Note: if we restart the tutorial, we won't record whether the user pressed

@@ -420,4 +420,9 @@ void Tutorial::Abort() {
     interaction_sequence_.reset();
 }
 
+void Tutorial::SetState(std::unique_ptr<ScopedTutorialState> tutorial_state) {
+  CHECK(tutorial_state.get());
+  tutorial_state_ = std::move(tutorial_state);
+}
+
 }  // namespace user_education
