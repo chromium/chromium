@@ -96,69 +96,6 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
      ]
    }
  ],
- [
-   'OsPeoplePage',
-   'os_people_page/os_people_page_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsPeoplePageRevamp',
-   'os_people_page/os_people_page_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_test.js'],
- [
-   'OsPeoplePageFingerprintListSubpage',
-   'os_people_page/fingerprint_list_subpage_test.js'
- ],
- [
-   'OsPeoplePageOsSyncControlsSubpage',
-   'os_people_page/os_sync_controls_subpage_test.js'
- ],
- [
-   'OsPeoplePagePersonalizationOptions',
-   'os_people_page/personalization_options_test.js',
- ],
- ['OsPrintingPage', 'os_printing_page/os_printing_page_test.js'],
- [
-   'OsPrintingPagePrintingSettingsCard',
-   'os_printing_page/printing_settings_card_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsPrintingPageCupsPrintServer', 'os_printing_page/cups_print_server_test.js'
- ],
- [
-   'OsPrintingPageCupsPrinterDialog',
-   'os_printing_page/cups_printer_dialog_test.js'
- ],
- [
-   'OsPrintingPageCupsPrinterLandingPage',
-   'os_printing_page/cups_printer_landing_page_test.js', {
-     enabled: [
-       'ash::features::kPrinterSettingsRevamp',
-       'ash::features::kPrinterSettingsPrinterStatus'
-     ]
-   }
- ],
- [
-   'OsPrintingPageCupsPrinterPage',
-   'os_printing_page/cups_printer_page_test.js',
-   {enabled: ['ash::features::kPrinterSettingsRevamp']}
- ],
- [
-   'OsPrintingPageCupsPrintersEntry',
-   'os_printing_page/cups_printers_entry_test.js', {
-     enabled: [
-       'ash::features::kPrinterSettingsRevamp',
-       'ash::features::kPrinterSettingsPrinterStatus'
-     ]
-   }
- ],
- [
-   'OsPrintingPagePrinterStatus',
-   'os_printing_page/printer_status_test.js',
- ],
  ['OsPrivacyPage', 'os_privacy_page/os_privacy_page_test.js'],
  [
    'OsPrivacyPageManageUsersSubpage',

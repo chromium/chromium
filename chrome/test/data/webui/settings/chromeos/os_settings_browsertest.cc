@@ -1174,4 +1174,94 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
   RunSettingsTest("os_page_availability_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, OsPeoplePage) {
+  RunSettingsTest("os_people_page/os_people_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled, OsPeoplePageRevamp) {
+  RunSettingsTest("os_people_page/os_people_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPeoplePageAddUserDialog) {
+  RunSettingsTest("os_people_page/add_user_dialog_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsPeoplePageFingerprintListSubpage) {
+  RunSettingsTest("os_people_page/fingerprint_list_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPeoplePageOsSyncControlsSubpage) {
+  RunSettingsTest("os_people_page/os_sync_controls_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsPeoplePagePersonalizationOptions) {
+  RunSettingsTest("os_people_page/personalization_options_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPage) {
+  RunSettingsTest("os_printing_page/os_printing_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+                       OsPrintingPagePrintingSettingsCard) {
+  RunSettingsTest("os_printing_page/printing_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPageCupsPrintServer) {
+  RunSettingsTest("os_printing_page/cups_print_server_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPageCupsPrinterDialog) {
+  RunSettingsTest("os_printing_page/cups_printer_dialog_test.js");
+}
+
+class OSSettingsPrintingTestSettingsRevampAndStatusEnabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsPrintingTestSettingsRevampAndStatusEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kPrinterSettingsRevamp,
+            ash::features::kPrinterSettingsPrinterStatus,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsPrintingTestSettingsRevampAndStatusEnabled,
+                       OsPrintingPageCupsPrinterLandingPage) {
+  RunSettingsTest("os_printing_page/cups_printer_landing_page_test.js");
+}
+
+class OSSettingsAppsTestSettingsRevampEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsAppsTestSettingsRevampEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kPrinterSettingsRevamp);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsAppsTestSettingsRevampEnabled,
+                       OsPrintingPageCupsPrinterPage) {
+  RunSettingsTest("os_printing_page/cups_printer_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsPrintingTestSettingsRevampAndStatusEnabled,
+                       OsPrintingPageCupsPrintersEntry) {
+  RunSettingsTest("os_printing_page/cups_printers_entry_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPagePrinterStatus) {
+  RunSettingsTest("os_printing_page/printer_status_test.js");
+}
+
 }  // namespace ash::settings
