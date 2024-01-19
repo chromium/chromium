@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
+#include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -75,7 +76,7 @@ void CallGetSearchProvidersUsingLoadedEngines(
     PrefService* prefs,
     search_engines::SearchEngineChoiceService* search_engine_choice_service,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
-    int* resource_keyword_version) {
+    WDKeywordsResult::Metadata& inout_resource_metadata) {
   // Setup inspired by `//components/webdata_services/web_data_service_wrapper*`
 
   base::test::TaskEnvironment task_environment{
@@ -99,14 +100,12 @@ void CallGetSearchProvidersUsingLoadedEngines(
   {
     SearchTermsData search_terms_data;
     std::set<std::string> removed_keyword_guids;
-    int resource_starter_pack_version = 0;
 
     GetSearchProvidersUsingLoadedEngines(
         keyword_web_data.get(), prefs, search_engine_choice_service,
         template_urls,
         /*default_search_provider=*/nullptr, search_terms_data,
-        resource_keyword_version, &resource_starter_pack_version,
-        &removed_keyword_guids);
+        inout_resource_metadata, &removed_keyword_guids);
 
     EXPECT_TRUE(removed_keyword_guids.empty());
   }
@@ -269,17 +268,18 @@ TEST(TemplateURLServiceUtilTest, GetSearchProvidersUsingLoadedEngines) {
     }
 
     TemplateURLService::OwnedTemplateURLVector template_urls;
-    int resource_keyword_version = mocked_current_version;
-    CallGetSearchProvidersUsingLoadedEngines(
-        &prefs, &search_engine_choice_service, &template_urls,
-        &resource_keyword_version);
+    WDKeywordsResult::Metadata resource_metadata;
+    resource_metadata.builtin_keyword_version = mocked_current_version;
+    CallGetSearchProvidersUsingLoadedEngines(&prefs,
+                                             &search_engine_choice_service,
+                                             &template_urls, resource_metadata);
 
     struct {
       size_t loaded_engines_count;
-      int loaded_version;
+      WDKeywordsResult::Metadata loaded_metadata;
     } result{
         template_urls.size() - starter_pack_engines_count,
-        resource_keyword_version,
+        resource_metadata,
     };
 
     return result;
@@ -293,7 +293,9 @@ TEST(TemplateURLServiceUtilTest, GetSearchProvidersUsingLoadedEngines) {
   auto result = simulate_run(/*enable_feature=*/false,
                              /*mocked_current_version=*/0);
   EXPECT_EQ(result.loaded_engines_count, 5u);
-  EXPECT_EQ(result.loaded_version, kCurrentDataVersion);
+  EXPECT_TRUE(result.loaded_metadata.HasBuiltinKeywordData());
+  EXPECT_EQ(result.loaded_metadata.builtin_keyword_version,
+            kCurrentDataVersion);
   EXPECT_FALSE(
       prefs.GetBoolean(prefs::kDefaultSearchProviderKeywordsUseExtendedList));
 
@@ -302,7 +304,8 @@ TEST(TemplateURLServiceUtilTest, GetSearchProvidersUsingLoadedEngines) {
   result = simulate_run(/*enable_feature=*/false,
                         /*mocked_current_version=*/kCurrentDataVersion);
   EXPECT_EQ(result.loaded_engines_count, 0u);
-  EXPECT_EQ(result.loaded_version, 0);
+  EXPECT_FALSE(result.loaded_metadata.HasBuiltinKeywordData());
+  EXPECT_EQ(result.loaded_metadata.builtin_keyword_version, 0);
   EXPECT_FALSE(
       prefs.GetBoolean(prefs::kDefaultSearchProviderKeywordsUseExtendedList));
 
@@ -310,7 +313,9 @@ TEST(TemplateURLServiceUtilTest, GetSearchProvidersUsingLoadedEngines) {
   result = simulate_run(/*enable_feature=*/true,
                         /*mocked_current_version=*/kCurrentDataVersion);
   EXPECT_EQ(result.loaded_engines_count, 12u);
-  EXPECT_EQ(result.loaded_version, kCurrentDataVersion);
+  EXPECT_TRUE(result.loaded_metadata.HasBuiltinKeywordData());
+  EXPECT_EQ(result.loaded_metadata.builtin_keyword_version,
+            kCurrentDataVersion);
   EXPECT_TRUE(
       prefs.GetBoolean(prefs::kDefaultSearchProviderKeywordsUseExtendedList));
 
@@ -318,7 +323,7 @@ TEST(TemplateURLServiceUtilTest, GetSearchProvidersUsingLoadedEngines) {
   result = simulate_run(/*enable_feature=*/true,
                         /*mocked_current_version=*/kCurrentDataVersion);
   EXPECT_EQ(result.loaded_engines_count, 0u);
-  EXPECT_EQ(result.loaded_version, 0);
+  EXPECT_FALSE(result.loaded_metadata.HasBuiltinKeywordData());
   EXPECT_TRUE(
       prefs.GetBoolean(prefs::kDefaultSearchProviderKeywordsUseExtendedList));
 
@@ -326,7 +331,9 @@ TEST(TemplateURLServiceUtilTest, GetSearchProvidersUsingLoadedEngines) {
   result = simulate_run(/*enable_feature=*/false,
                         /*mocked_current_version=*/kCurrentDataVersion);
   EXPECT_EQ(result.loaded_engines_count, 5u);
-  EXPECT_EQ(result.loaded_version, kCurrentDataVersion);
+  EXPECT_TRUE(result.loaded_metadata.HasBuiltinKeywordData());
+  EXPECT_EQ(result.loaded_metadata.builtin_keyword_version,
+            kCurrentDataVersion);
   EXPECT_FALSE(
       prefs.GetBoolean(prefs::kDefaultSearchProviderKeywordsUseExtendedList));
 
@@ -337,7 +344,7 @@ TEST(TemplateURLServiceUtilTest, GetSearchProvidersUsingLoadedEngines) {
   result = simulate_run(/*enable_feature=*/true,
                         /*mocked_current_version=*/kCurrentDataVersion + 1);
   EXPECT_EQ(result.loaded_engines_count, 0u);
-  EXPECT_EQ(result.loaded_version, 0);
+  EXPECT_EQ(result.loaded_metadata.builtin_keyword_version, 0);
   EXPECT_FALSE(
       prefs.GetBoolean(prefs::kDefaultSearchProviderKeywordsUseExtendedList));
 }

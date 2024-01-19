@@ -41,6 +41,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/enterprise_site_search_manager.h"
+#include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
@@ -1283,8 +1284,7 @@ void TemplateURLService::OnWebDataServiceRequestDone(
 
   std::unique_ptr<OwnedTemplateURLVector> template_urls =
       std::make_unique<OwnedTemplateURLVector>();
-  int new_resource_keyword_version = 0;
-  int new_resource_starter_pack_version = 0;
+  WDKeywordsResult::Metadata updated_keywords_metadata;
   {
     GetSearchProvidersUsingKeywordResult(
         *result, web_data_service_.get(), prefs_, search_engine_choice_service_,
@@ -1292,8 +1292,7 @@ void TemplateURLService::OnWebDataServiceRequestDone(
         (default_search_provider_source_ == DefaultSearchManager::FROM_USER)
             ? pre_loading_providers_->default_search_provider()
             : nullptr,
-        search_terms_data(), &new_resource_keyword_version,
-        &new_resource_starter_pack_version, &pre_sync_deletes_);
+        search_terms_data(), updated_keywords_metadata, &pre_sync_deletes_);
   }
 
   Scoper scoper(this);
@@ -1313,12 +1312,15 @@ void TemplateURLService::OnWebDataServiceRequestDone(
       UpdateKeywordSearchTermsForURL(visits_to_add_[i]);
     visits_to_add_.clear();
 
-    if (new_resource_keyword_version)
-      web_data_service_->SetBuiltinKeywordVersion(new_resource_keyword_version);
+    if (updated_keywords_metadata.HasBuiltinKeywordData()) {
+      web_data_service_->SetBuiltinKeywordVersion(
+          updated_keywords_metadata.builtin_keyword_version);
+    }
 
-    if (new_resource_starter_pack_version)
+    if (updated_keywords_metadata.HasStarterPackData()) {
       web_data_service_->SetStarterPackKeywordVersion(
-          new_resource_starter_pack_version);
+          updated_keywords_metadata.starter_pack_version);
+    }
   }
 
   if (default_search_provider_) {
