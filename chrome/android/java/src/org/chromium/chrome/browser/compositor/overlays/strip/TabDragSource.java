@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import android.app.Activity;
-import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
@@ -306,6 +305,11 @@ public class TabDragSource implements View.OnDragListener {
 
         if (isDragSource()) return true;
 
+        if (dropEvent.getClipDescription() == null
+                || !dropEvent.getClipDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB)) {
+            return false;
+        }
+
         Tab tabBeingDragged = getTabFromGlobalState(dropEvent);
         if (tabBeingDragged == null) {
             return false;
@@ -316,31 +320,16 @@ public class TabDragSource implements View.OnDragListener {
             // Disallow dropping into another model when param enabled.
             return false;
         }
-        // If the event is received by a non source chrome window then move the dragged tab to the
-        // destination window.
-        ClipData clipData = dropEvent.getClipData();
-        for (int i = 0; i < clipData.getItemCount(); i++) {
-            int sourceTabId = getTabIdFromClipData(clipData.getItemAt(i));
-            // Ignore the drop if the dropped tab id does not match the id of tab being
-            // dragged. Return the original payload drop for next in line to receive the
-            // drop to handle.
-            if (sourceTabId != tabBeingDragged.getId() || mTabModelSelector == null) {
-                Log.w(TAG, "DnD: Received an invalid tab drop.");
-                return false;
-            }
-
-            if (!tabDraggedBelongToCurrentModel) {
-                mMultiInstanceManager.moveTabToWindow(
-                        getActivity(),
-                        tabBeingDragged,
-                        mTabModelSelector.getModel(tabBeingDragged.isIncognito()).getCount());
-                showDroppedDifferentModelToast(mWindowAndroid.getContext().get());
-            } else {
-                int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
-                mMultiInstanceManager.moveTabToWindow(getActivity(), tabBeingDragged, tabIndex);
-                helper.mergeToGroupForTabDropIfNeeded(
-                        groupRootId, tabBeingDragged.getId(), tabIndex);
-            }
+        if (!tabDraggedBelongToCurrentModel) {
+            mMultiInstanceManager.moveTabToWindow(
+                    getActivity(),
+                    tabBeingDragged,
+                    mTabModelSelector.getModel(tabBeingDragged.isIncognito()).getCount());
+            showDroppedDifferentModelToast(mWindowAndroid.getContext().get());
+        } else {
+            int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
+            mMultiInstanceManager.moveTabToWindow(getActivity(), tabBeingDragged, tabIndex);
+            helper.mergeToGroupForTabDropIfNeeded(groupRootId, tabBeingDragged.getId(), tabIndex);
         }
         DragDropMetricUtils.recordTabDragDropType(DragDropType.TAB_STRIP_TO_TAB_STRIP);
         return true;
@@ -424,12 +413,6 @@ public class TabDragSource implements View.OnDragListener {
 
     private boolean isDraggedTabIncognito() {
         return getTabFromGlobalState(null).isIncognito();
-    }
-
-    private int getTabIdFromClipData(ClipData.Item item) {
-        // TODO(b/285585036): Expand the ClipData definition to support dropping of the Tab info to
-        // be used by SysUI that can parse this format.
-        return ChromeDropDataAndroid.extractTabId(item.getText().toString());
     }
 
     /**

@@ -31,22 +31,9 @@ public class ChromeDropDataAndroid extends DropDataAndroid {
     /** Build clip data text with tab info. */
     public String buildTabClipDataText() {
         if (hasTab()) {
-            return TAB_DATA_PREFIX + mTab.getId() + TAB_DATA_DELIMITER + mTab.getUrl().getSpec();
+            return mTab.getUrl().getSpec();
         }
         return null;
-    }
-
-    /** Extract tabId from clip data item text. */
-    public static int extractTabId(String clipDataText) {
-        if (clipDataText == null) return Tab.INVALID_TAB_ID;
-        String[] parts = clipDataText.split(TAB_DATA_DELIMITER);
-        // Check if first part exists with atleast prefix length.
-        if (parts.length == 0 || parts[0].length() <= TAB_DATA_PREFIX.length())
-            return Tab.INVALID_TAB_ID;
-        String tabIdStr = parts[0].substring(TAB_DATA_PREFIX.length());
-        // Check string contains all digits since this is tabId.
-        if (!tabIdStr.matches("\\d+")) return Tab.INVALID_TAB_ID;
-        return Integer.parseInt(tabIdStr);
     }
 
     /** Builder for @{@link ChromeDropDataAndroid} instance. */
