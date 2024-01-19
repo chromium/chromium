@@ -11,8 +11,8 @@
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
 #import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
+#import "ios/chrome/browser/sessions/test_session_restoration_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -78,6 +78,8 @@ void GridMediatorTestClass::SetUp() {
                             AuthenticationServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                             ios::HistoryServiceFactory::GetDefaultFactory());
+  builder.AddTestingFactory(SessionRestorationServiceFactory::GetInstance(),
+                            TestSessionRestorationService::GetTestingFactory());
   browser_state_ = builder.Build();
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
       browser_state_.get(),
