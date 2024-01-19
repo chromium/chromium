@@ -438,8 +438,8 @@ TEST_P(OverviewSessionTest, SmallDisplay) {
 
 // Tests entering overview mode with two windows and selecting one by clicking.
 TEST_P(OverviewSessionTest, Basic) {
-  ui::ScopedAnimationDurationScaleMode anmatin_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   // Overview disabled by default.
   EXPECT_FALSE(InOverviewSession());
@@ -964,7 +964,7 @@ TEST_P(OverviewSessionTest, MaximizedFullscreenHistograms) {
   ASSERT_TRUE(WindowState::Get(fullscreen_window.get())->IsFullscreen());
 
   ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   // Enter and exit overview with the maximized window activated.
   wm::ActivateWindow(maximized_window.get());
@@ -992,8 +992,8 @@ TEST_P(OverviewSessionTest, MaximizedFullscreenHistograms) {
 
 // TODO(crbug.com/1493835): Re-enable this test. Disabled because of flakiness.
 TEST_P(OverviewSessionTest, DISABLED_TabletModeHistograms) {
-  ui::ScopedAnimationDurationScaleMode anmatin_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   EnterTabletMode();
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
@@ -1025,8 +1025,8 @@ TEST_P(OverviewSessionTest, DISABLED_TabletModeHistograms) {
 // mode correctly applies the transformations to the window and correctly
 // updates the window bounds on exiting overview mode: http://crbug.com/401664.
 TEST_P(OverviewSessionTest, FullscreenWindowTabletMode) {
-  ui::ScopedAnimationDurationScaleMode anmatin_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   UpdateDisplay("800x600");
   const gfx::Rect bounds(400, 400);
@@ -9098,8 +9098,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
 // opposite sides.
 TEST_F(SplitViewOverviewSessionInClamshellTest,
        BothSnappedOverviewExitAnimationHistogramTest) {
-  ui::ScopedAnimationDurationScaleMode anmatin_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> left_window(CreateWindow(bounds));
   std::unique_ptr<aura::Window> right_window(CreateWindow(bounds));
