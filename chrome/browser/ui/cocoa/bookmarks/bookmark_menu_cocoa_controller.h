@@ -7,11 +7,9 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/uuid.h"
 #include "ui/base/window_open_disposition.h"
 
 class BookmarkMenuBridge;
-class Profile;
 
 namespace bookmarks {
 class BookmarkNode;
@@ -33,16 +31,5 @@ class BookmarkNode;
 - (IBAction)openBookmarkMenuItem:(id)sender;
 
 @end  // BookmarkMenuCocoaController
-
-
-@interface BookmarkMenuCocoaController (ExposedForUnitTests)
-- (const bookmarks::BookmarkNode*)nodeForGUID:(const base::Uuid&)guid
-                                    inProfile:(Profile*)profile;
-- (void)openURLForIdentifier:(base::Uuid)guid inProfile:(Profile*)profile;
-- (void)openURLForIdentifier:(base::Uuid)guid;
-- (void)openAll:(NSInteger)tag
-    withDisposition:(WindowOpenDisposition)disposition;
-- (base::Uuid)guidForIdentifier:(int)identifier;
-@end  // BookmarkMenuCocoaController (ExposedForUnitTests)
 
 #endif  // CHROME_BROWSER_UI_COCOA_BOOKMARKS_BOOKMARK_MENU_COCOA_CONTROLLER_H_
