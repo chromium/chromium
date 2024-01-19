@@ -362,8 +362,8 @@ TEST_F(DownloadsListTrackerTest, CreateDownloadData_UrlFormatting_Idn) {
 
 TEST_F(DownloadsListTrackerTest, CreateDownloadData_UrlFormatting_VeryLong) {
   std::string url = "https://" + std::string(2 * 1024 * 1024, 'a') + ".test";
-  std::u16string expected =
-      u"https://" + std::u16string(2 * 1024 * 1024 - 8, 'a');
+  // The string should truncate the beginning.
+  std::u16string expected = std::u16string(2 * 1024 * 1024 - 5, 'a') + u".test";
 
   MockDownloadItem* item = CreateNextItem();
   ON_CALL(*item, GetURL()).WillByDefault(ReturnRefOfCopy(GURL(url)));

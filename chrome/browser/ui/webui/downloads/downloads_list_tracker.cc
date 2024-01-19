@@ -135,9 +135,11 @@ std::u16string GetFormattedDisplayUrl(const GURL& url) {
   std::u16string result = url_formatter::FormatUrlForSecurityDisplay(url);
   // Truncate long URL to avoid surpassing mojo data limit (c.f.
   // crbug.com/1070451). If it's really this long, the user won't be able to see
-  // the end of it anyway.
+  // the whole thing anyway. We truncate the beginning so that the end of it is
+  // shown, which contains the eTLD+1.
+  // Note: This may truncate the scheme part of the URL.
   if (result.size() > url::kMaxURLChars) {
-    result.resize(url::kMaxURLChars);
+    result = result.substr(result.size() - url::kMaxURLChars);
   }
   return result;
 }
