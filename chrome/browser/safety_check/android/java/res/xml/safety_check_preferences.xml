@@ -22,7 +22,13 @@ found in the LICENSE file.
         app:allowDividerBelow="false" />
     <!-- Passwords -->
     <org.chromium.chrome.browser.safety_check.SafetyCheckElementPreference
-        android:key="passwords"
+        android:key="passwords_account"
+        android:title="@string/safety_check_passwords_title"
+        android:icon="@drawable/ic_vpn_key_grey"
+        app:iconTint="@macro/default_icon_color"
+        app:allowDividerBelow="false" />
+    <org.chromium.chrome.browser.safety_check.SafetyCheckElementPreference
+        android:key="passwords_local"
         android:title="@string/safety_check_passwords_title"
         android:icon="@drawable/ic_vpn_key_grey"
         app:iconTint="@macro/default_icon_color"

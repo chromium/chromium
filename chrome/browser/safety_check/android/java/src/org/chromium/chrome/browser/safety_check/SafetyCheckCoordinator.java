@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.safety_check;
 
+import static org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge.usesSplitStoresAndUPMForLocal;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.DefaultLifecycleObserver;
@@ -11,6 +13,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
@@ -20,11 +23,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for the Safety check settings page. */
-public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
+public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyCheckComponentUi {
     private SafetyCheckSettingsFragment mSettingsFragment;
     private SafetyCheckUpdatesDelegate mUpdatesClient;
     private SyncConsentActivityLauncher mSigninLauncher;
     private SafetyCheckMediator mMediator;
+    private SyncService mSyncService;
+    private PrefService mPrefService;
 
     /**
      * Creates a new instance given a settings fragment, an updates client, and a settings launcher.
@@ -65,6 +70,9 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
             PrefService prefService) {
         mSettingsFragment = settingsFragment;
         mUpdatesClient = updatesClient;
+        mSyncService = syncService;
+        mPrefService = prefService;
+        mSettingsFragment.setComponentDelegate(this);
         // Create the model and the mediator once the view is created.
         // The view's lifecycle is not available at this point, so observe the {@link LiveData} for
         // it to get notified when {@link onCreateView} is called.
@@ -91,9 +99,15 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
                                     // and Mediator.
                                     PropertyModel safetyCheckModel =
                                             createSafetyCheckModelAndBind(mSettingsFragment);
+                                    String preferenceViewId =
+                                            isLocalPasswordStorageUsed()
+                                                    ? SafetyCheckViewBinder.PASSWORDS_KEY_LOCAL
+                                                    : SafetyCheckViewBinder.PASSWORDS_KEY_ACCOUNT;
                                     PropertyModel passwordsCheckPreferenceModel =
                                             createPasswordCheckPreferenceModelAndBind(
-                                                    mSettingsFragment, safetyCheckModel);
+                                                    mSettingsFragment,
+                                                    safetyCheckModel,
+                                                    preferenceViewId);
                                     mMediator =
                                             new SafetyCheckMediator(
                                                     safetyCheckModel,
@@ -133,7 +147,9 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
     }
 
     static PropertyModel createPasswordCheckPreferenceModelAndBind(
-            SafetyCheckSettingsFragment settingsFragment, PropertyModel safetyCheckModel) {
+            SafetyCheckSettingsFragment settingsFragment,
+            PropertyModel safetyCheckModel,
+            String preferenceViewId) {
         PropertyModel passwordSafetyCheckModel =
                 PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel();
         PropertyModelChangeProcessor.create(
@@ -141,7 +157,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
                 settingsFragment,
                 (model, fragment, key) ->
                         SafetyCheckViewBinder.bindPasswordSafetyCheck(
-                                safetyCheckModel, model, fragment, key));
+                                safetyCheckModel, model, fragment, key, preferenceViewId));
         return passwordSafetyCheckModel;
     }
 
@@ -156,5 +172,18 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
         mSettingsFragment = null;
         mUpdatesClient = null;
         mMediator = null;
+    }
+
+    @Override
+    public boolean isLocalPasswordStorageUsed() {
+        if (!PasswordManagerHelper.hasChosenToSyncPasswords(mSyncService)) return true;
+        if (usesSplitStoresAndUPMForLocal(mPrefService)) return true;
+        return false;
+    }
+
+    @Override
+    public boolean isAccountPasswordStorageUsed() {
+        if (PasswordManagerHelper.hasChosenToSyncPasswords(mSyncService)) return true;
+        return false;
     }
 }
