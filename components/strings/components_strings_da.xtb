@@ -82,7 +82,7 @@
 <translation id="1151972924205500581">En adgangskode er påkrævet</translation>
 <translation id="1156303062776767266">Du får vist en lokal eller delt fil</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> lukkede forbindelsen uventet.</translation>
-<translation id="115926840831309955">Tjek din kontrolkode, og prøv igen, eller opdater udløbsdatoen</translation>
+<translation id="115926840831309955">Tjek din CVC, og prøv igen, eller opdater udløbsdatoen</translation>
 <translation id="1161325031994447685">Genoprette forbindelse til Wi-Fi</translation>
 <translation id="11635448457105324">Knappen Administrer adresser, aktivér for at tilføje og administrere adresser i Chrome-indstillingerne</translation>
 <translation id="1165039591588034296">Fejl</translation>
@@ -281,7 +281,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
     &lt;p&gt;Du kan rette fejlen ved at klikke på &lt;strong&gt;Opret forbindelse&lt;/strong&gt; på den side, du forsøger at åbne.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">Landskabsarkitektur</translation>
 <translation id="1513706915089223971">Liste over historiske poster</translation>
-<translation id="1516097932025103760">Oplysningerne krypteres og gemmes på sikker vis. Kontrolkoden gemmes aldrig.</translation>
+<translation id="1516097932025103760">Oplysningerne krypteres og gemmes på sikker vis. Din CVC gemmes aldrig.</translation>
 <translation id="151720253492607760">Fortsæt ikke med at tillade</translation>
 <translation id="1517433312004943670">Telefonnummer er påkrævet</translation>
 <translation id="1519264250979466059">Versionsdato</translation>
@@ -1116,7 +1116,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3229041911291329567">Versionsoplysninger om din enhed og browser</translation>
 <translation id="3229277193950731405">Kopiér versionsstreng</translation>
-<translation id="323107829343500871">Angiv kontrolkoden for <ph name="CREDIT_CARD" /></translation>
+<translation id="323107829343500871">Angiv CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Registrer altid vigtigt indhold på dette website</translation>
 <translation id="3238395604961564389">Åbn link i inkognitovindue</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />– tryk på Tab-tasten efterfulgt af Enter for at tilpasse din browsers udseende</translation>
@@ -1333,7 +1333,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3646643500201740985">Måling af en annonces effektivitet</translation>
 <translation id="3647286794400715637">Hver webadressestreng skal indeholde mellem 1 og 2 webadresser.</translation>
 <translation id="3650584904733503804">Valideringen er fuldført</translation>
-<translation id="3650594806107685466">Af sikkerhedsmæssige årsager skal du angive kontrolkoden, som du finder på <ph name="SIDE_OF_CARD" />.</translation>
+<translation id="3650594806107685466">Af sikkerhedsmæssige årsager skal du angive din CVC, som du finder på <ph name="SIDE_OF_CARD" />.</translation>
 <translation id="3650917416636556301">Vandreture og camping</translation>
 <translation id="3653033846669030038">Forlystelsesparker</translation>
 <translation id="3655241534245626312">Gå til indstillingerne for tilladelser</translation>
@@ -1398,7 +1398,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3752543821772132562">Ignoreret, fordi <ph name="POLICY_NAME" /> ikke er angivet.</translation>
 <translation id="3754210790023674521">Afslut integreret billede</translation>
 <translation id="3759461132968374835">Du har ingen nyligt rapporterede nedbrud. Nedbrud, der opstod, mens rapportering om nedbrud var deaktiveret, vises ikke her.</translation>
-<translation id="3760561303380396507">Vil du bruge Windows Hello i stedet for kontrolkoden?</translation>
+<translation id="3760561303380396507">Vil du bruge Windows Hello i stedet for CVC?</translation>
 <translation id="3761153679507778975">Musik- og dansespil</translation>
 <translation id="3761171036307311438">Navn på kort:</translation>
 <translation id="3761718714832595332">Skjul status</translation>
@@ -1470,7 +1470,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3927932062596804919">Afvis</translation>
 <translation id="3930260846839546333">Håndtasker</translation>
 <translation id="393316646445601645">Internet og telekommunikation</translation>
-<translation id="3939773374150895049">Vil du bruge WebAuthn i stedet for kontrolkoden?</translation>
+<translation id="3939773374150895049">Vil du bruge WebAuthn i stedet for CVC?</translation>
 <translation id="3941630233824954464">Aktivér obligatorisk fornyet godkendelse</translation>
 <translation id="3942048175062210325">Prøv at åbne dine filer igen</translation>
 <translation id="3943857333388298514">Indsæt</translation>
@@ -1904,9 +1904,9 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4792686369684665359">De oplysninger, du er ved at indsende, er ikke sikre</translation>
 <translation id="4793219378458250238">11 x 12 tommer</translation>
 <translation id="4796594887379589189">Jobkonto-id</translation>
-<translation id="4798078619018708837">Opdater dine kortoplysninger ved at indtaste udløbsdatoen og kontrolkoden for <ph name="CREDIT_CARD" />. Når du bekræfter, deles kortoplysningerne på din Google-konto med dette website.</translation>
+<translation id="4798078619018708837">Opdater dine kortoplysninger ved at indtaste udløbsdatoen og CVC for <ph name="CREDIT_CARD" />. Når du bekræfter, deles kortoplysningerne på din Google-konto med dette website.</translation>
 <translation id="4798269756263412078">Få besked, hvis prisen falder på et website. Du modtager underretninger på din mailadresse.</translation>
-<translation id="4800132727771399293">Kontrollér, om din kontrolkode og udløbsdato er korrekte, og prøv igen.</translation>
+<translation id="4800132727771399293">Kontrollér, om din CVC og udløbsdato er korrekte, og prøv igen.</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Vejledninger fra din enhedsadministrator:</translation>
 <translation id="4811450222531576619">Få flere oplysninger om sidens kilde og emne</translation>
@@ -2095,7 +2095,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5161334686036120870">Emne:</translation>
 <translation id="5161506081086828129">Stabler 9</translation>
 <translation id="5164798890604758545">Tekst indtastes</translation>
-<translation id="516920405563544094">Angiv kontrolkoden for <ph name="CREDIT_CARD" />. Når du bekræfter, deles kortoplysningerne på din Google-konto med dette website.</translation>
+<translation id="516920405563544094">Angiv CVC for <ph name="CREDIT_CARD" />. Når du bekræfter, deles kortoplysningerne på din Google-konto med dette website.</translation>
 <translation id="5169827969064885044">Du kan miste adgangen til din organisations konto eller udsættes for identitetstyveri. Chrome anbefaler, at du skifter din adgangskode nu.</translation>
 <translation id="5171045022955879922">Søg, eller angiv webadresse</translation>
 <translation id="5172758083709347301">Maskine</translation>
@@ -2453,7 +2453,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5921185718311485855">Til</translation>
 <translation id="5921639886840618607">Vil du gemme kortet på din Google-konto?</translation>
 <translation id="5922853866070715753">Næsten færdig</translation>
-<translation id="5923492272538889093">Vil du bruge enhedsoplåsning i stedet for kontrolkoden?</translation>
+<translation id="5923492272538889093">Vil du bruge enhedsoplåsning i stedet for CVC?</translation>
 <translation id="5924510104057992926">Gennemgang er påkrævet før åbning</translation>
 <translation id="5924782825030413055">Kilde for seneste opdatering af samtykke:</translation>
 <translation id="5925040402342933574">Optisk disk (halvblank)</translation>
@@ -2699,7 +2699,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6403167778944553">Soveværelse og bad</translation>
 <translation id="6404511346730675251">Rediger bogmærke</translation>
 <translation id="6405181733356710802">Vil du fortsætte til <ph name="APP_NAME" />?</translation>
-<translation id="6410264514553301377">Angiv udløbsdatoen og kontrolkoden for <ph name="CREDIT_CARD" /></translation>
+<translation id="6410264514553301377">Angiv udløbsdatoen og CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6414010576370319452">Hud- og neglepleje</translation>
 <translation id="6415778972515849510">Chromium kan hjælpe dig med at beskytte din Google-konto og ændre din adgangskode.</translation>
@@ -3061,7 +3061,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7118618213916969306">Søg efter webadresse til udklipsholderen, <ph name="SHORT_URL" /></translation>
 <translation id="7119371694555167493">Kopieringen fik timeout</translation>
 <translation id="7119414471315195487">Luk andre faner eller programmer</translation>
-<translation id="7124354851782353862">Angiv din kontrolkode</translation>
+<translation id="7124354851782353862">Angiv din CVC</translation>
 <translation id="7129409597930077180">Der kan ikke sendes til denne adresse. Vælg en anden adresse.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Blokeret upload</translation>
@@ -3398,7 +3398,7 @@ Yderligere oplysninger:
 <translation id="7716375162095500223">Ignoreret eller endnu ikke uploadet</translation>
 <translation id="7716424297397655342">Dette website kan ikke indlæses fra cachen</translation>
 <translation id="7719791801330803993">Foto- og videosoftware</translation>
-<translation id="772128550427553158">Kontrolkoden står på forsiden af dit kort.</translation>
+<translation id="772128550427553158">CVC'en står på forsiden af dit kort.</translation>
 <translation id="7724603315864178912">Klip</translation>
 <translation id="7734285854693414638">Opret hurtigt en ny formular i Google Analyse</translation>
 <translation id="773466115871691567">Oversæt altid sider på <ph name="SOURCE_LANGUAGE" /></translation>
@@ -3458,7 +3458,7 @@ Yderligere oplysninger:
 <translation id="7844689747373518809">{COUNT,plural, =0{Ingen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Senere, når du besøger et website, kan websitet anmode Chrome om dine emner for at personligt tilpasse de annoncer, du får vist. Chrome deler op til 3 emner, samtidig med at din browserhistorik og identitet beskyttes.</translation>
-<translation id="7860345425589240791">Angiv din nye udløbsdato og kontrolkode, som du finder på <ph name="SIDE_OF_CARD" /></translation>
+<translation id="7860345425589240791">Angiv din nye udløbsdato og CVC, som du finder på <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Vil du forlade websitet?</translation>
 <translation id="7865448901209910068">Bedste hastighed</translation>
 <translation id="7870281855125116701">Der blev fundet en rabat</translation>
@@ -3468,7 +3468,7 @@ Yderligere oplysninger:
 <translation id="7880146494886811634">Gem adresse</translation>
 <translation id="7882421473871500483">Brun</translation>
 <translation id="7882995332186050355">Lastbiler og trailere</translation>
-<translation id="7887683347370398519">Kontrollér, om din kontrolkode er korrekt, og prøv igen.</translation>
+<translation id="7887683347370398519">Kontrollér, om din CVC er korrekt, og prøv igen.</translation>
 <translation id="7887885240995164102">Åbn integreret billede</translation>
 <translation id="7888575728750733395">Formål for udskriftsgengivelse</translation>
 <translation id="7894280532028510793">Hvis stavningen er korrekt, kan du <ph name="BEGIN_LINK" />prøve at køre Netværksdiagnosticering<ph name="END_LINK" />.</translation>
@@ -3823,7 +3823,7 @@ Yderligere oplysninger:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Nulstil tilladelse}one{Nulstil tilladelse}other{Nulstil tilladelser}}</translation>
 <translation id="8555010941760982128">Angiv denne kode ved betalingen</translation>
 <translation id="8556297087315686325">Overvågning og administration af netværk</translation>
-<translation id="8557066899867184262">Kontrolkoden findes på bagsiden af kortet.</translation>
+<translation id="8557066899867184262">Din CVC findes på bagsiden af kortet.</translation>
 <translation id="8557412555245662180">Få flere oplysninger om Sporingsbeskyttelse</translation>
 <translation id="8558347880669160417">Der er givet adgang til mikrofonen og kameraet denne gang</translation>
 <translation id="8559762987265718583">Der kan ikke oprettes en privat forbindelse til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, da tid og dato (<ph name="DATE_AND_TIME" />) på din enhed er forkerte.</translation>
