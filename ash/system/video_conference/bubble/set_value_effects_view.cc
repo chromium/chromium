@@ -5,6 +5,7 @@
 #include "ash/system/video_conference/bubble/set_value_effects_view.h"
 
 #include "ash/bubble/bubble_utils.h"
+#include "ash/constants/ash_features.h"
 #include "ash/style/tab_slider.h"
 #include "ash/style/tab_slider_button.h"
 #include "ash/style/typography.h"
@@ -66,8 +67,12 @@ SetValueEffectSlider::SetValueEffectSlider(const VcHostedEffect* effect)
   DCHECK(current_state.has_value());
 
   const int num_states = effect->GetNumStates();
-  DCHECK_LE(num_states, 3) << "UX Requests no more than 3 states, otherwise "
-                              "the bubble will need to be wider.";
+  const int max_num_states =
+      ::ash::features::IsVcBackgroundReplaceEnabled() ? 4 : 3;
+  DCHECK_LE(num_states, max_num_states)
+      << "UX Requests no more than " << max_num_states
+      << " states, otherwise "
+         "the bubble will need to be wider.";
 
   auto tab_slider = std::make_unique<TabSlider>(
       num_states, IconLabelSliderButton::kSliderParams);
