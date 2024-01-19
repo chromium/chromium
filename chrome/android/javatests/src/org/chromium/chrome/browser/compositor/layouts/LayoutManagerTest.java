@@ -426,6 +426,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+    @DisableFeatures({ChromeFeatureList.ANDROID_HUB})
     public void testTabSwitcherLayout_Enabled_HighEndPhone() throws Exception {
         verifyTabSwitcherLayoutEnable(TabListCoordinator.TabListMode.GRID);
     }
@@ -435,7 +436,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION, ChromeFeatureList.ANDROID_HUB})
     public void testTabSwitcherLayout_Enabled_LowEndPhone() throws Exception {
         verifyTabSwitcherLayoutEnable(TabListCoordinator.TabListMode.LIST);
     }
