@@ -14,12 +14,7 @@ import("//ui/gl/features.gni")
 # the code, or apply a local modification to remove them.
 #
 # Some helpful hints at //docs/static_initializers.md
-#
-# Define expectations only for GN args covered by trybots.
-if ((target_cpu == "arm" || target_cpu == "arm64") &&
-    (!using_sanitizer && proprietary_codecs &&
-     # Optimizations can remove static initializers (https://crbug.com/1434325)
-     !is_debug && !is_high_end_android && !is_component_build)) {
+if (proprietary_codecs && !is_debug && !is_component_build) {
   # Comments show static_initializers according to
   # tools/linux/dump-static-initializers.py.
   _chrome_common_count = 0
@@ -41,8 +36,12 @@ if ((target_cpu == "arm" || target_cpu == "arm64") &&
     _chrome_common_count += 1
   }
 
-  expected_static_initializer_32bit_count = _chrome_common_count
-  if (target_cpu == "arm64") {
+  # Define expectations only for GN args covered by android-binary-size trybot.
+  if ((target_cpu == "arm" && !is_high_end_android) ||
+      (target_cpu == "arm64" && !is_high_end_android_secondary_toolchain)) {
+    expected_static_initializer_32bit_count = _chrome_common_count
+  }
+  if (target_cpu == "arm64" && is_high_end_android) {
     expected_static_initializer_64bit_count =
         _chrome_common_count + _chrome_64only_count
   }
