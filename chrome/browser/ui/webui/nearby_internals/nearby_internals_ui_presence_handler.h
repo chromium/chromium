@@ -58,6 +58,8 @@ class NearbyInternalsPresenceHandler
 
   void HandleConnectToPresenceDevice(const base::Value::List& args);
 
+  void HandleSendUpdateCredentialsMessage(const base::Value::List& args);
+
  private:
   const raw_ptr<content::BrowserContext> context_;
   std::unique_ptr<ash::nearby::presence::NearbyPresenceService::ScanSession>

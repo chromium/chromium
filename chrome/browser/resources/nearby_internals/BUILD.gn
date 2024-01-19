@@ -30,7 +30,6 @@ build_webui("build") {
     "nearby_http_browser_proxy.ts",
     "cross_device_logs_browser_proxy.ts",
     "nearby_presence_browser_proxy.ts",
-    "push_notification_browser_proxy.ts",
     "nearby_prefs_browser_proxy.ts",
     "nearby_ui_trigger_browser_proxy.ts",
     "types.ts",

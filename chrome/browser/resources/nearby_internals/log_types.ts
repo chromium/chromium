@@ -48,7 +48,6 @@ export class LogTypesElement extends PolymerElement {
       checked = checkbox.checked;
     }
 
-
     if (checked &&
         !this.currentLogTypes.includes(FeatureValues.NEARBY_PRESENCE)) {
       this.currentLogTypes.push(FeatureValues.NEARBY_PRESENCE);

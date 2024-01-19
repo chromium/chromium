@@ -23,7 +23,6 @@ import {LogTypesElement} from './log_types.js';
 import {NearbyPrefsBrowserProxy} from './nearby_prefs_browser_proxy.js';
 import {NearbyPresenceBrowserProxy} from './nearby_presence_browser_proxy.js';
 import {NearbyUiTriggerBrowserProxy} from './nearby_ui_trigger_browser_proxy.js';
-import {PushNotificationBrowserProxy} from './push_notification_browser_proxy.js';
 import {ActionValues, FeatureValues, LogMessage, LogProvider, PresenceDevice, SelectOption, Severity} from './types.js';
 
 /**
@@ -79,7 +78,6 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
           {name: 'Nearby Share', value: FeatureValues.NEARBY_SHARE},
           {name: 'Nearby Connections', value: FeatureValues.NEARBY_CONNECTIONS},
           {name: 'Fast Pair', value: FeatureValues.FAST_PAIR},
-          {name: 'Push Notification', value: FeatureValues.PUSH_NOTIFICATION},
         ],
       },
 
@@ -90,6 +88,10 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
           {name: 'Stop Scan', value: ActionValues.STOP_SCAN},
           {name: 'Sync Credentials', value: ActionValues.SYNC_CREDENTIALS},
           {name: 'First time flow', value: ActionValues.FIRST_TIME_FLOW},
+          {
+            name: 'Send Update Credentials Message',
+            value: ActionValues.SEND_UPDATE_CREDENTIALS_MESSAGE,
+          },
         ],
       },
 
@@ -118,16 +120,6 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
       fastPairActionList_: {
         type: Array,
         value: () => [],
-      },
-
-      pushNotificationActionList_: {
-        type: Array,
-        value: [
-          {
-            name: 'Add Push Notification Client',
-            value: ActionValues.ADD_PUSH_NOTIFICATION_CLIENT,
-          },
-        ],
       },
 
       actionsSelectList_: {
@@ -168,7 +160,6 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
   private nearbyShareActionList_: SelectOption[];
   private nearbyConnectionsActionList_: SelectOption[];
   private fastPairActionList_: SelectOption[];
-  private pushNotificationActionList_: SelectOption[];
   private actionsSelectList_: SelectOption[];
   private logList_: LogMessage[];
   private filteredLogList_: LogMessage[];
@@ -180,8 +171,6 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
 
   private nearbyPresenceBrowserProxy_: NearbyPresenceBrowserProxy =
       NearbyPresenceBrowserProxy.getInstance();
-  private pushNotificationBrowserProxy_: PushNotificationBrowserProxy =
-      PushNotificationBrowserProxy.getInstance();
   private prefsBrowserProxy_: NearbyPrefsBrowserProxy =
       NearbyPrefsBrowserProxy.getInstance();
   private nearbyUITriggerBrowserProxy_: NearbyUiTriggerBrowserProxy =
@@ -196,7 +185,6 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
 
     this.nearbyPresenceBrowserProxy_.initialize();
     this.nearbyUITriggerBrowserProxy_.initialize();
-    this.pushNotificationBrowserProxy_.initialize();
     this.addWebUiListener(
         'presence-device-found',
         (device: PresenceDevice) => this.onPresenceDeviceFound_(device));
@@ -243,9 +231,6 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
         case FeatureValues.FAST_PAIR:
           this.set('actionsSelectList_', this.fastPairActionList_);
           break;
-        case FeatureValues.PUSH_NOTIFICATION:
-          this.set('actionsSelectList_', this.pushNotificationActionList_);
-          break;
       }
     }
   }
@@ -270,8 +255,9 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
         case ActionValues.RESET_NEARBY_SHARE:
           this.prefsBrowserProxy_.clearNearbyPrefs();
           break;
-        case ActionValues.ADD_PUSH_NOTIFICATION_CLIENT:
-          this.pushNotificationBrowserProxy_.sendAddPushNotificationClient();
+        case ActionValues.SEND_UPDATE_CREDENTIALS_MESSAGE:
+          this.nearbyPresenceBrowserProxy_
+              .sendUpdateCredentialsPushNotificationMessage();
           break;
         case ActionValues.SHOW_RECEIVED_NOTIFICATION:
           this.nearbyUITriggerBrowserProxy_
