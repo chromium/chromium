@@ -40,7 +40,7 @@ java_cpp_strings("java_pref_names_srcjar") {
     "//chrome/browser/enterprise/reporting/prefs.cc",
     "//chrome/common/pref_names.h",
     "//components/autofill/core/common/autofill_prefs.h",
-    "//components/commerce/core/pref_names.cc",
+    "//components/commerce/core/pref_names.h",
     "//components/dom_distiller/core/pref_names.h",
     "//components/embedder_support/pref_names.h",
     "//components/feed/core/common/pref_names.cc",
