@@ -11099,6 +11099,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kLockedMode)},
 #endif  // BUILDFLAG_(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"seed-accounts-revamp", flag_descriptions::kSeedAccountsRevampName,
+     flag_descriptions::kSeedAccountsRevampDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kSeedAccountsRevamp)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

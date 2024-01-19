@@ -3130,6 +3130,12 @@ const char kSecurePaymentConfirmationExtensionsDescription[] =
     "Enables extensions in the Secure Payment Confirmation API that allows "
     "using webauthn extensions with Secure Payment Confirmation";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kSeedAccountsRevampName[] = "Seed Accounts Revamp";
+const char kSeedAccountsRevampDescription[] =
+    "Refactors how and when accounts are seeded on Android";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kSidePanelJourneysFlagId[] = "side-panel-journeys";
 const char kSidePanelJourneysName[] = "Side panel journeys";
 const char kSidePanelJourneysDescription[] =

@@ -26798,6 +26798,7 @@ from previous Chrome versions.
   <int value="1235940786" label="ChromeHomePersistentIph:enabled"/>
   <int value="1236772382" label="BiometricAuthenticationInSettings:disabled"/>
   <int value="1237297772" label="no-pings"/>
+  <int value="1237420037" label="SeedAccountsRevamp:disabled"/>
   <int value="1237574783" label="SyncAccessHandleAllSyncSurface:enabled"/>
   <int value="1237659269"
       label="OmniboxHistoryQuickProviderAllowButDoNotScoreMidwordTerms:enabled"/>
@@ -27934,6 +27935,7 @@ from previous Chrome versions.
   <int value="1768759000" label="AutofillProfileServerValidation:disabled"/>
   <int value="1770189877" label="ConfirmNtpSuggestionRemovals:enabled"/>
   <int value="1771548551" label="DisableKeepaliveFetch:enabled"/>
+  <int value="1772248386" label="SeedAccountsRevamp:enabled"/>
   <int value="1772454319" label="enable-storage-manager"/>
   <int value="1772618273"
       label="WebAuthenticationFilterGooglePasskeys:disabled"/>

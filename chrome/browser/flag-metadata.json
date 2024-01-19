@@ -7321,6 +7321,11 @@
     "expiry_milestone" : 115
   },
   {
+    "name" : "seed-accounts-revamp",
+    "owners": ["chrome-signin-mobile@google.com", "samarchehade@google.com"],
+    "expiry_milestone":130
+  },
+  {
     "name": "send-tab-to-self-v2",
     "owners": ["ellyjones@chromium.org", "jeffreycohen@chromium.org", "chrome-with-friends-robots@google.com"],
     "expiry_milestone": 119
