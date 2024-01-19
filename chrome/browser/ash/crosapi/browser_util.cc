@@ -360,6 +360,9 @@ bool IsLacrosOnlyBrowserAllowed() {
 
 bool IsLacrosOnlyFlagAllowed() {
   return IsLacrosOnlyBrowserAllowed() &&
+         // Hide lacros_only flag for guest sessions as they do always start
+         // with a fresh and anonymous profile, hence ignoring this setting.
+         !UserManager::Get()->IsLoggedInAsGuest() &&
          (GetCachedLacrosAvailability() == LacrosAvailability::kUserChoice);
 }
 
