@@ -4,6 +4,7 @@
 
 #include "chrome/browser/compose/chrome_compose_client.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
@@ -131,7 +132,7 @@ class MockComposeDialog : public compose::mojom::ComposeDialog {
 class ChromeComposeClientTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
-    ComposeEnabling::SetEnabledForTesting(true);
+    scoped_compose_enabled_ = ComposeEnabling::ScopedEnableComposeForTesting();
     BrowserWithTestWindowTest::SetUp();
 
     scoped_feature_list_.InitWithFeatures(
@@ -360,6 +361,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   mojo::Remote<compose::mojom::ComposeClientPageHandler> client_page_handler_;
   mojo::Remote<compose::mojom::ComposeSessionPageHandler> page_handler_;
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
+  ComposeEnabling::ScopedOverride scoped_compose_enabled_;
 };
 
 TEST_F(ChromeComposeClientTest, TestCompose) {

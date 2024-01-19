@@ -12,12 +12,13 @@ class ComposeFocusTest : public WebUIMochaFocusTest {
  protected:
   ComposeFocusTest() {
     set_test_loader_host(chrome::kChromeUIComposeHost);
-    ComposeEnabling::SetEnabledForTesting(true);
+    scoped_compose_enabled_ = ComposeEnabling::ScopedEnableComposeForTesting();
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       compose::features::kEnableCompose};
+  ComposeEnabling::ScopedOverride scoped_compose_enabled_;
 };
 
 IN_PROC_BROWSER_TEST_F(ComposeFocusTest, App) {

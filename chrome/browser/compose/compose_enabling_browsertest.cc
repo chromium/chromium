@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/compose/chrome_compose_client.h"
+#include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -126,9 +129,10 @@ class ComposeEnablingWithFencedFramesBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ComposeEnablingWithFencedFramesBrowserTest,
                        DisabledInFencedFrames) {
-  // only checking the cross-fence functionality, can ignore other enablement
+  // Only checking the cross-fence functionality, can ignore other enablement
   // requirements.
-  GetComposeEnabling().SetEnabledForTesting(true);
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
 
   GURL main_url(https_server()->GetURL(
       "a.test", "/cross_site_iframe_factory.html?a.test(a.test{fenced})"));

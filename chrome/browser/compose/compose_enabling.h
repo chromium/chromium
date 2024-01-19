@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_COMPOSE_COMPOSE_ENABLING_H_
 #define CHROME_BROWSER_COMPOSE_COMPOSE_ENABLING_H_
 
+#include <memory>
+
+#include "base/functional/callback_helpers.h"
 #include "base/types/expected.h"
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "chrome/browser/compose/translate_language_provider.h"
@@ -20,6 +23,8 @@
 
 class ComposeEnabling {
  public:
+  using ScopedOverride = std::unique_ptr<base::ScopedClosureRunner>;
+
   explicit ComposeEnabling(
       TranslateLanguageProvider* translate_language_provider,
       Profile* profile,
@@ -39,8 +44,14 @@ class ComposeEnabling {
   // provided associated with this instance.
   base::expected<void, compose::ComposeShowStatus> IsEnabled();
 
-  static void SetEnabledForTesting(bool enabled);
-  static void SkipUserEnabledCheckForTesting(bool skip);
+  // The following methods allow overriding is-enabled checks to facilitate
+  // testing. The returned instances must be kept in scope while the override
+  // is required. When they go out of scope, the override is reverted. If
+  // multiple overrides are created, the override is reverted only when all
+  // instances are destroyed. These implementations are not multi-thread safe.
+  static ScopedOverride ScopedEnableComposeForTesting();
+  static ScopedOverride ScopedSkipUserCheckForTesting();
+
   bool ShouldTriggerPopup(std::string_view autocomplete_attribute,
                           Profile* profile,
                           translate::TranslateManager* translate_manager,
@@ -72,8 +83,8 @@ class ComposeEnabling {
   raw_ptr<Profile> profile_;
   raw_ptr<OptimizationGuideKeyedService> opt_guide_;
   raw_ptr<signin::IdentityManager> identity_manager_;
-  static bool enabled_for_testing_;
-  static bool skip_user_check_for_testing_;
+  static int enabled_for_testing_;
+  static int skip_user_check_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_COMPOSE_COMPOSE_ENABLING_H_

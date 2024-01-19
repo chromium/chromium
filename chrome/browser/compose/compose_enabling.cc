@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <type_traits>
-
 #include "chrome/browser/compose/compose_enabling.h"
 
+#include <functional>
+#include <memory>
+#include <type_traits>
+
 #include "base/check.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "chrome/browser/flag_descriptions.h"
@@ -31,8 +35,8 @@ bool AutocompleteAllowed(std::string_view autocomplete_attribute) {
 
 }  // namespace
 
-bool ComposeEnabling::enabled_for_testing_{false};
-bool ComposeEnabling::skip_user_check_for_testing_{false};
+int ComposeEnabling::enabled_for_testing_{0};
+int ComposeEnabling::skip_user_check_for_testing_{0};
 
 ComposeEnabling::ComposeEnabling(
     TranslateLanguageProvider* translate_language_provider,
@@ -54,13 +58,27 @@ ComposeEnabling::~ComposeEnabling() {
 }
 
 // Static.
-void ComposeEnabling::SetEnabledForTesting(bool enabled) {
-  enabled_for_testing_ = enabled;
+ComposeEnabling::ScopedOverride
+ComposeEnabling::ScopedEnableComposeForTesting() {
+  enabled_for_testing_++;
+  return std::make_unique<base::ScopedClosureRunner>(base::BindOnce(
+      [](int& enabled_for_testing) {
+        enabled_for_testing--;
+        DCHECK(enabled_for_testing >= 0);
+      },
+      std::ref(enabled_for_testing_)));
 }
 
 // Static.
-void ComposeEnabling::SkipUserEnabledCheckForTesting(bool skip) {
-  skip_user_check_for_testing_ = skip;
+ComposeEnabling::ScopedOverride
+ComposeEnabling::ScopedSkipUserCheckForTesting() {
+  skip_user_check_for_testing_++;
+  return std::make_unique<base::ScopedClosureRunner>(base::BindOnce(
+      [](int& skip_user_check_for_testing) {
+        skip_user_check_for_testing--;
+        DCHECK(skip_user_check_for_testing >= 0);
+      },
+      std::ref(skip_user_check_for_testing_)));
 }
 
 compose::ComposeHintDecision ComposeEnabling::GetOptimizationGuidanceForUrl(

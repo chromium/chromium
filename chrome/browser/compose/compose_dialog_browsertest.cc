@@ -4,8 +4,11 @@
 
 #include "chrome/browser/compose/compose_session.h"
 
+#include <optional>
+
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -31,7 +34,7 @@ namespace compose {
 class ComposeSessionBrowserTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
-    ComposeEnabling::SetEnabledForTesting(true);
+    scoped_compose_enabled_ = ComposeEnabling::ScopedEnableComposeForTesting();
     feature_list()->InitWithExistingFeatures(
         {compose::features::kEnableCompose,
          optimization_guide::features::kOptimizationGuideModelExecution,
@@ -39,7 +42,7 @@ class ComposeSessionBrowserTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::SetUp();
   }
 
-  void TearDown() override { ComposeEnabling::SetEnabledForTesting(false); }
+  void TearDown() override {}
 
   feature_engagement::test::ScopedIphFeatureList* feature_list() {
     return &feature_list_;
@@ -47,6 +50,7 @@ class ComposeSessionBrowserTest : public InteractiveBrowserTest {
 
  protected:
   feature_engagement::test::ScopedIphFeatureList feature_list_;
+  ComposeEnabling::ScopedOverride scoped_compose_enabled_;
 };
 
 IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, LifetimeOfBubbleWrapper) {
