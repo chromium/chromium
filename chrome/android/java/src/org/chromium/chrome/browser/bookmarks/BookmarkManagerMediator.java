@@ -141,8 +141,6 @@ class BookmarkManagerMediator
                                 openFolder(parent.getId());
                             }
                         } else {
-                            // Needs to remove the current node, and update any transitive parents
-                            // that may be showing child counts. Just refresh() for now.
                             int position = getPositionForBookmark(id);
                             // If the position couldn't be found, then do a full refresh. Otherwise
                             // be smart and remove only the index of the removed bookmark.
@@ -150,6 +148,8 @@ class BookmarkManagerMediator
                                 mPendingRefresh.post();
                             } else {
                                 mModelList.removeAt(position);
+                                updateAllLocations();
+
                                 // If the deleted node was selection, unselect it.
                                 if (mSelectionDelegate.isItemSelected(id)) {
                                     mSelectionDelegate.toggleSelectionForItem(id);

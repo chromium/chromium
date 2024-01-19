@@ -367,10 +367,10 @@ public class BookmarkManagerMediatorTest {
                 .getChildIds(mFolderId1);
         doReturn(mFolderItem1).when(mBookmarkModel).getBookmarkById(mFolderId1);
         doReturn(mFolderItem2).when(mBookmarkModel).getBookmarkById(mFolderId2);
+        doReturn(mFolderItem3).when(mBookmarkModel).getBookmarkById(mFolderId3);
         doReturn(mBookmarkItem21).when(mBookmarkModel).getBookmarkById(mBookmarkId21);
         doReturn(Arrays.asList(mBookmarkId21)).when(mBookmarkModel).getChildIds(mFolderId2);
         doReturn(1).when(mBookmarkModel).getTotalBookmarkCount(mFolderId2);
-        doReturn(mFolderItem3).when(mBookmarkModel).getBookmarkById(mFolderId3);
         doReturn(Arrays.asList(mReadingListId))
                 .when(mBookmarkModel)
                 .getChildIds(mReadingListFolderId);
@@ -748,16 +748,38 @@ public class BookmarkManagerMediatorTest {
     @Test
     public void testBookmarkRemoved() {
         finishLoading();
-        mMediator.openFolder(mFolderId1);
-        assertEquals(2, mModelList.size());
+        // Additional folder so that there's 3, and all the locations can be tested.
+        final BookmarkId folderId4 = new BookmarkId(mId++, BookmarkType.NORMAL);
+        final BookmarkItem folderItem4 =
+                new BookmarkItem(
+                        folderId4,
+                        "Folder4",
+                        null,
+                        true,
+                        mFolderId1,
+                        true,
+                        false,
+                        0,
+                        false,
+                        0,
+                        false);
+        doReturn(folderItem4).when(mBookmarkModel).getBookmarkById(folderId4);
+        doReturn(Arrays.asList(mFolderId2, mFolderId3, folderId4))
+                .when(mBookmarkModel)
+                .getChildIds(mFolderId1);
 
-        doReturn(Arrays.asList(mFolderId3)).when(mBookmarkModel).getChildIds(mFolderId1);
+        mMediator.openFolder(mFolderId1);
+        assertEquals(3, mModelList.size());
+        assertEquals(
+                Location.MIDDLE, mModelList.get(1).model.get(BookmarkManagerProperties.LOCATION));
+
         verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
         mBookmarkModelObserverArgumentCaptor
                 .getValue()
                 .bookmarkNodeRemoved(
                         mFolderItem1, 0, mFolderItem2, /* isDoingExtensiveChanges= */ false);
-        assertEquals(1, mModelList.size());
+        assertEquals(2, mModelList.size());
+        assertEquals(Location.TOP, mModelList.get(0).model.get(BookmarkManagerProperties.LOCATION));
     }
 
     @Test
