@@ -84,6 +84,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsCounterValue() const { return class_type_ == kCounterClass; }
   bool IsCursorImageValue() const { return class_type_ == kCursorImageClass; }
   bool IsCrossfadeValue() const { return class_type_ == kCrossfadeClass; }
+  bool IsDynamicRangeLimitMixValue() const {
+    return class_type_ == kDynamicRangeLimitMixClass;
+  }
   bool IsPaintValue() const { return class_type_ == kPaintClass; }
   bool IsFontFeatureValue() const { return class_type_ == kFontFeatureClass; }
   bool IsFontFamilyValue() const { return class_type_ == kFontFamilyClass; }
@@ -276,6 +279,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
 
     // Other class types.
     kBorderImageSliceClass,
+    kDynamicRangeLimitMixClass,
     kFontFeatureClass,
     kFontFaceSrcClass,
     kFontFamilyClass,

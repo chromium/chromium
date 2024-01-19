@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
+#include "third_party/blink/renderer/core/css/css_dynamic_range_limit_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
 #include "third_party/blink/renderer/core/css/css_font_feature_value.h"
@@ -206,6 +207,9 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<cssvalue::CSSCounterValue>(*this, other);
       case kCursorImageClass:
         return CompareCSSValues<cssvalue::CSSCursorImageValue>(*this, other);
+      case kDynamicRangeLimitMixClass:
+        return CompareCSSValues<cssvalue::CSSDynamicRangeLimitMixValue>(*this,
+                                                                        other);
       case kFontFaceSrcClass:
         return CompareCSSValues<CSSFontFaceSrcValue>(*this, other);
       case kFontFamilyClass:
@@ -366,6 +370,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSCounterValue>(this)->CustomCSSText();
     case kCursorImageClass:
       return To<cssvalue::CSSCursorImageValue>(this)->CustomCSSText();
+    case kDynamicRangeLimitMixClass:
+      return To<cssvalue::CSSDynamicRangeLimitMixValue>(this)->CustomCSSText();
     case kFontFaceSrcClass:
       return To<CSSFontFaceSrcValue>(this)->CustomCSSText();
     case kFontFamilyClass:
@@ -547,6 +553,10 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kCursorImageClass:
       To<cssvalue::CSSCursorImageValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kDynamicRangeLimitMixClass:
+      To<cssvalue::CSSDynamicRangeLimitMixValue>(this)->TraceAfterDispatch(
+          visitor);
       return;
     case kFontFaceSrcClass:
       To<CSSFontFaceSrcValue>(this)->TraceAfterDispatch(visitor);

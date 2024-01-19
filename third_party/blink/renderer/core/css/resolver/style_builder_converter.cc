@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
+#include "third_party/blink/renderer/core/css/css_dynamic_range_limit_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
 #include "third_party/blink/renderer/core/css/css_font_feature_value.h"
 #include "third_party/blink/renderer/core/css/css_font_style_range_value.h"
@@ -170,6 +171,19 @@ DynamicRangeLimit StyleBuilderConverter::ConvertDynamicRangeLimit(
 
 DynamicRangeLimit StyleBuilderConverterBase::ConvertDynamicRangeLimit(
     const CSSValue& value) {
+  if (auto* mix_value =
+          DynamicTo<cssvalue::CSSDynamicRangeLimitMixValue>(value)) {
+    const DynamicRangeLimit limit1 =
+        ConvertDynamicRangeLimit(mix_value->Limit1());
+    const DynamicRangeLimit limit2 =
+        ConvertDynamicRangeLimit(mix_value->Limit2());
+    const float fraction = 0.01f * mix_value->Percentage().GetFloatValue();
+    return DynamicRangeLimit(
+        /*standard_mix=*/(1 - fraction) * limit1.standard_mix +
+            fraction * limit2.standard_mix,
+        /*constrained_high_mix=*/(1 - fraction) * limit1.constrained_high_mix +
+            fraction * limit2.constrained_high_mix);
+  }
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     switch (identifier_value->GetValueID()) {
       case CSSValueID::kHigh:

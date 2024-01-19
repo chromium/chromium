@@ -1665,10 +1665,11 @@
     "numbers",
     "words",
 
-    // ([video]-dynamic-range) media feature
+    // ([video]-dynamic-range) media feature, and dynamic-range-limit property
     "standard",
     "high",
     "constrained-high",
+    "dynamic-range-limit-mix",
 
     // Layered @import rule
     "layer",
