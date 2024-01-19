@@ -13,20 +13,9 @@ import("//tools/typescript/ts_library.gni")
 
 assert(is_chromeos_ash)
 
-group("build") {
-  deps = [ ":copied_files" ]
-}
-
 switch_access_dir =
     "$root_out_dir/resources/chromeos/accessibility/switch_access"
-
-# Directory where typescript build will occur.
-ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
-
 tsc_out_dir = "$target_gen_dir/tsc"
-
-common_tsc_dir =
-    "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/common/tsc"
 
 # TS files to compile.
 ts_modules = [
@@ -37,49 +26,15 @@ ts_modules = [
   "navigator_interfaces.ts",
   "point_scan_manager.ts",
   "settings_manager.ts",
-  "switch_access_loader.ts",
 ]
 
 # JS files needed to compile TS.
-js_modules = [
-  "action_manager.js",
-  "cache.js",
-  "item_scan_manager.js",
-  "menu_manager.js",
-  "metrics.js",
-  "navigator.js",
-  "nodes/back_button_node.js",
-  "nodes/basic_node.js",
-  "nodes/combo_box_node.js",
-  "nodes/desktop_node.js",
-  "nodes/editable_text_node.js",
-  "nodes/group_node.js",
-  "nodes/keyboard_node.js",
-  "nodes/modal_dialog_node.js",
-  "nodes/slider_node.js",
-  "nodes/switch_access_node.js",
-  "nodes/tab_node.js",
-  "nodes/window_node.js",
-  "switch_access.js",
-  "switch_access_constants.js",
-  "switch_access_predicate.js",
-  "text_navigation_manager.js",
-]
+js_deps = []
 
 # Root dir must be the parent directory so it can reach common.
 ts_library("ts_build") {
-  root_dir = "$ts_build_staging_dir"
+  root_dir = "../"
   out_dir = tsc_out_dir
-
-  composite = true
-
-  deps = [ "../common:ts_build" ]
-
-  extra_deps = [ ":stage_ts_build" ]
-
-  path_mappings =
-      [ "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir) ]
-
   definitions = [
     "../definitions/accessibility_private_mv2.d.ts",
     "../definitions/automation.d.ts",
@@ -93,9 +48,19 @@ ts_library("ts_build") {
     "//tools/typescript/definitions/windows.d.ts",
   ]
 
-  in_files = ts_modules + js_modules
+  in_files = []
+  foreach(_js_file, js_deps) {
+    in_files += [ "switch_access/" + _js_file ]
+  }
+  foreach(_ts_file, ts_modules) {
+    in_files += [ "switch_access/" + _ts_file ]
+  }
 
   tsconfig_base = "../tsconfig.base.json"
+}
+
+group("build") {
+  deps = [ ":copied_files" ]
 }
 
 # Instead of setting up one copy target for each subdirectory, use a script
@@ -109,7 +74,9 @@ run_jsbundler("copied_files") {
     "../common:copied_files",
   ]
   sources = [
+    "action_manager.js",
     "background.html",
+    "cache.js",
     "icons/back.svg",
     "icons/copy.svg",
     "icons/cut.svg",
@@ -136,22 +103,34 @@ run_jsbundler("copied_files") {
     "icons/showContextMenu.svg",
     "icons/textSelectionEnd.svg",
     "icons/textSelectionStart.svg",
+    "item_scan_manager.js",
+    "menu_manager.js",
+    "metrics.js",
+    "navigator.js",
+    "nodes/back_button_node.js",
+    "nodes/basic_node.js",
+    "nodes/combo_box_node.js",
+    "nodes/desktop_node.js",
+    "nodes/editable_text_node.js",
+    "nodes/group_node.js",
+    "nodes/keyboard_node.js",
+    "nodes/modal_dialog_node.js",
+    "nodes/slider_node.js",
+    "nodes/switch_access_node.js",
+    "nodes/tab_node.js",
+    "nodes/window_node.js",
+    "switch_access.js",
+    "switch_access_constants.js",
+    "switch_access_predicate.js",
+    "text_navigation_manager.js",
   ]
   sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
-    rebase_path("$tsc_out_dir", root_build_dir) + ":",
+    rebase_path("$tsc_out_dir/switch_access", root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]
-}
-
-# Copy all JS and TS sources to a staging folder. All generated TS/JS files
-# will also be copied into this folder, which will allow us to support a TS
-# build that uses both checked-in and generated files.
-copy("stage_ts_build") {
-  sources = ts_modules + js_modules
-  outputs = [ "$ts_build_staging_dir/{{source_target_relative}}" ]
 }
 
 source_set("browser_tests") {

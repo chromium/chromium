@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {constants} from '/common/constants.js';
+import {constants} from '../common/constants.js';
 
 import {SAChildNode, SANode, SARootNode} from './nodes/switch_access_node.js';
 
