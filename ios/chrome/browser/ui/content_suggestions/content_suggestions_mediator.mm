@@ -52,11 +52,6 @@
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ntp/model/set_up_list.h"
-#import "ios/chrome/browser/ntp/model/set_up_list_delegate.h"
-#import "ios/chrome/browser/ntp/model/set_up_list_item.h"
-#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
-#import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/model/most_visited_sites_observer_bridge.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/metrics.h"
@@ -84,8 +79,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
-#import "ios/chrome/browser/sync/model/enterprise_utils.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions_bridge.h"
@@ -110,11 +103,11 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/start_suggest_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
-#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_metrics.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
@@ -131,7 +124,6 @@
 
 namespace {
 
-using credential_provider_promo::IOSCredentialProviderPromoAction;
 using CSCollectionViewItem = CollectionViewItem<SuggestedContent>;
 using RequestSource = SearchTermsData::RequestSource;
 
@@ -147,27 +139,16 @@ const CGFloat kMostVisitedFaviconSize = 48;
 const CGFloat kMostVisitedFaviconMinimalSize = 32;
 const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 
-// Checks the last action the user took on the Credential Provider Promo to
-// determine if it was dismissed.
-bool CredentialProviderPromoDismissed(PrefService* local_state) {
-  IOSCredentialProviderPromoAction last_action =
-      static_cast<IOSCredentialProviderPromoAction>(local_state->GetInteger(
-          prefs::kIosCredentialProviderPromoLastActionTaken));
-  return last_action == IOSCredentialProviderPromoAction::kNo;
-}
-
 }  // namespace
 
 @interface ContentSuggestionsMediator () <AppStateObserver,
-                                          AuthenticationServiceObserving,
-                                          SyncObserverModelBridge,
                                           IdentityManagerObserverBridgeDelegate,
+                                          SyncObserverModelBridge,
                                           MostVisitedSitesObserving,
                                           ReadingListModelBridgeObserver,
                                           PrefObserverDelegate,
                                           SafetyCheckManagerObserver,
-                                          SceneStateObserver,
-                                          SetUpListDelegate,
+                                          SetUpListMediatorObserver,
                                           SyncedSessionsObserver> {
   std::unique_ptr<ntp_tiles::MostVisitedSites> _mostVisitedSites;
   std::unique_ptr<ntp_tiles::MostVisitedSitesObserverBridge> _mostVisitedBridge;
@@ -223,8 +204,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 @property(nonatomic, assign) BOOL incognitoAvailable;
 // Browser reference.
 @property(nonatomic, assign) Browser* browser;
-// The SetUpList, a list of tasks a new user might want to complete.
-@property(nonatomic, strong) SetUpList* setUpList;
 
 // For testing-only
 @property(nonatomic, assign) BOOL hasReceivedMagicStackResponse;
@@ -240,8 +219,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   PrefService* _localState;
   // Used by SetUpList to get the sync status.
   syncer::SyncService* _syncService;
-  // Used by SetUpList to get signed-in status.
-  AuthenticationService* _authenticationService;
   // Used by the Safety Check (Magic Stack) module for the current Safety Check
   // state.
   SafetyCheckState* _safetyCheckState;
@@ -250,9 +227,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       _identityObserverBridge;
   // Observer for sync service status changes.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
-  // Observer for auth service status changes.
-  std::unique_ptr<AuthenticationServiceObserverBridge>
-      _authServiceObserverBridge;
   // Observer for Safety Check changes.
   std::unique_ptr<SafetyCheckObserverBridge> _safetyCheckManagerObserver;
   // Helper class for the tab resumption tile.
@@ -275,6 +249,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   // Most visited items from the MostVisitedSites service currently displayed.
   MostVisitedTilesConfig* _mostVisitedConfig;
   ShortcutsConfig* _shortcutsConfig;
+  SetUpListMediator* _setUpListMediator;
 }
 
 #pragma mark - Public
@@ -325,7 +300,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     _readingListModelBridge =
         std::make_unique<ReadingListModelBridge>(self, readingListModel);
 
-    _authenticationService = authenticationService;
     _syncService = syncService;
     _shoppingService = shoppingService;
 
@@ -339,26 +313,12 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     }
 
     if (isSetupListEnabled) {
-      _authServiceObserverBridge =
-          std::make_unique<AuthenticationServiceObserverBridge>(
-              _authenticationService, self);
-      _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
-      _prefChangeRegistrar.Init(_localState);
-      _prefObserverBridge->ObserveChangesForPreference(
-          prefs::kIosCredentialProviderPromoLastActionTaken,
-          &_prefChangeRegistrar);
-      _prefObserverBridge->ObserveChangesForPreference(
-          set_up_list_prefs::kDisabled, &_prefChangeRegistrar);
-      if (CredentialProviderPromoDismissed(_localState)) {
-        set_up_list_prefs::MarkItemComplete(_localState,
-                                            SetUpListItemType::kAutofill);
-      } else {
-        [self checkIfCPEEnabled];
-      }
-      _setUpList = [SetUpList buildFromPrefs:prefService
-                                  localState:_localState
-                                 syncService:syncService
-                       authenticationService:authenticationService];
+      _setUpListMediator = [[SetUpListMediator alloc]
+            initWithPrefService:prefService
+                    syncService:syncService
+                identityManager:identityManager
+          authenticationService:authenticationService
+                     sceneState:browser->GetSceneState()];
     }
 
     if (IsTabResumptionEnabled() &&
@@ -376,8 +336,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     }
 
     SceneState* sceneState = browser->GetSceneState();
-
-    [sceneState addObserver:self];
 
     [sceneState.appState addObserver:self];
 
@@ -402,6 +360,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
           &_prefChangeRegistrar);
 
       _safetyCheckState = [self initialSafetyCheckState];
+      _safetyCheckState.commandhandler = _presentationDelegate;
 
       _safetyCheckManagerObserver = std::make_unique<SafetyCheckObserverBridge>(
           self, IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
@@ -428,11 +387,11 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 }
 
 - (void)disconnect {
+  [_setUpListMediator disconnect];
+  _setUpListMediator = nil;
   _mostVisitedBridge.reset();
   _mostVisitedSites.reset();
   _readingListModelBridge.reset();
-  _authenticationService = nullptr;
-  _authServiceObserverBridge.reset();
   _syncObserverBridge.reset();
   _identityObserverBridge.reset();
   _safetyCheckManagerObserver.reset();
@@ -441,11 +400,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     _prefChangeRegistrar.RemoveAll();
     _prefObserverBridge.reset();
   }
-  [_setUpList disconnect];
-  _setUpList = nil;
   SceneState* sceneState = self.browser->GetSceneState();
   [sceneState.appState removeObserver:self];
-  [sceneState removeObserver:self];
   _localState = nullptr;
 }
 
@@ -521,7 +477,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 }
 
 - (void)disableSetUpList {
-  set_up_list_prefs::DisableSetUpList(_localState);
+  [_setUpListMediator disableSetUpList];
 }
 
 - (void)disableTabResumption {
@@ -616,18 +572,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
-    case signin::PrimaryAccountChangeEvent::Type::kSet: {
-      // User has signed in, mark SetUpList item complete. Delayed to allow
-      // Signin UI flow to be fully dismissed before starting SetUpList
-      // completion animation.
-      __weak __typeof(self) weakSelf = self;
-      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, base::BindOnce(^{
-            [weakSelf
-                markSetUpListItemPrefComplete:SetUpListItemType::kSignInSync];
-          }),
-          base::Seconds(0.5));
-    } break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared: {
       if (IsTabResumptionEnabled()) {
         // If the user is signed out, remove the tab resumption tile.
@@ -635,28 +579,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       }
       break;
     }
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
   }
-}
-
-#pragma mark - SetUpListDelegate
-
-- (void)setUpListItemDidComplete:(SetUpListItem*)item {
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlock completion = ^{
-    if ([weakSelf.setUpList allItemsComplete]) {
-      [weakSelf.consumer showSetUpListDoneWithAnimations:^{
-        if (!IsMagicStackEnabled()) {
-          [weakSelf.delegate contentSuggestionsWasUpdated];
-        }
-      }];
-    } else if (IsMagicStackEnabled()) {
-      [weakSelf.consumer scrollToNextMagicStackModuleForCompletedModule:
-                             SetUpListModuleTypeForSetUpListType(item.type)];
-    }
-  };
-  [self.consumer markSetUpListItemComplete:item.type completion:completion];
 }
 
 #pragma mark - ContentSuggestionsCommands
@@ -904,17 +830,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
 }
 
-#pragma mark - SceneStateObserver
-
-- (void)sceneState:(SceneState*)sceneState
-    transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (level == SceneActivationLevelForegroundActive) {
-    if (_setUpList) {
-      [self checkIfCPEEnabled];
-    }
-  }
-}
-
 #pragma mark - SyncedSessionsObserver
 
 - (void)onForeignSessionsChanged {
@@ -1131,9 +1046,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     [self.consumer setMostVisitedTilesConfig:_mostVisitedConfig];
   }
   if ([self shouldShowSetUpList]) {
-    self.setUpList.delegate = self;
+    _setUpListMediator.consumer = self.consumer;
+    _setUpListMediator.delegate = self.delegate;
     NSArray<SetUpListItemViewData*>* items = [self setUpListItems];
-    if (IsMagicStackEnabled() && [self.setUpList allItemsComplete]) {
+    if (IsMagicStackEnabled() && [_setUpListMediator allItemsComplete]) {
       SetUpListItemViewData* allSetItem =
           [[SetUpListItemViewData alloc] initWithType:SetUpListItemType::kAllSet
                                              complete:NO];
@@ -1539,10 +1455,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   if (set_up_list_utils::ShouldShowCompactedSetUpListModule()) {
     [order addObject:@(int(ContentSuggestionsModuleType::kCompactedSetUpList))];
   } else {
-    if ([self.setUpList allItemsComplete]) {
+    if ([_setUpListMediator allItemsComplete]) {
       [order addObject:@(int(ContentSuggestionsModuleType::kSetUpListAllSet))];
     } else {
-      for (SetUpListItem* model in self.setUpList.items) {
+      for (SetUpListItemViewData* model in _setUpListMediator.setUpListItems) {
         [order
             addObject:@(int(SetUpListModuleTypeForSetUpListType(model.type)))];
       }
@@ -1574,8 +1490,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     return NO;
   }
 
-  SetUpList* setUpList = self.setUpList;
-  if (!setUpList || setUpList.items.count == 0) {
+  if (!_setUpListMediator || _setUpListMediator.setUpListItems.count == 0) {
     return NO;
   }
 
@@ -1584,29 +1499,12 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 // Returns an array of all possible items in the Set Up List.
 - (NSArray<SetUpListItemViewData*>*)allSetUpListItems {
-  NSArray<SetUpListItem*>* items = [self.setUpList allItems];
-
-  NSMutableArray<SetUpListItemViewData*>* allItems =
-      [[NSMutableArray alloc] init];
-  for (SetUpListItem* model in items) {
-    SetUpListItemViewData* item =
-        [[SetUpListItemViewData alloc] initWithType:model.type
-                                           complete:model.complete];
-    [allItems addObject:item];
-  }
-  return allItems;
+  return [_setUpListMediator allItems];
 }
 
 // Returns an array of items to display in the Set Up List.
 - (NSArray<SetUpListItemViewData*>*)setUpListItems {
-  // Map the model objects to view objects.
-  NSMutableArray<SetUpListItemViewData*>* items = [[NSMutableArray alloc] init];
-  for (SetUpListItem* model in self.setUpList.items) {
-    SetUpListItemViewData* item =
-        [[SetUpListItemViewData alloc] initWithType:model.type
-                                           complete:model.complete];
-    [items addObject:item];
-  }
+  NSArray<SetUpListItemViewData*>* items = [_setUpListMediator setUpListItems];
   // For the compacted Set Up List Module in the Magic Stack, there will only be
   // two items shown.
   if (IsMagicStackEnabled() &&
@@ -1615,41 +1513,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     return [items subarrayWithRange:NSMakeRange(0, 2)];
   }
   return items;
-}
-
-// Checks if the CPE is enabled and marks the SetUpList Autofill item complete
-// if it is.
-- (void)checkIfCPEEnabled {
-  __weak __typeof(self) weakSelf = self;
-  scoped_refptr<base::SequencedTaskRunner> runner =
-      base::SequencedTaskRunner::GetCurrentDefault();
-  [ASCredentialIdentityStore.sharedStore
-      getCredentialIdentityStoreStateWithCompletion:^(
-          ASCredentialIdentityStoreState* state) {
-        if (state.isEnabled) {
-          // The completion handler sent to ASCredentialIdentityStore is
-          // executed on a background thread. Putting it back onto the main
-          // thread to update local state prefs.
-          runner->PostTask(
-              FROM_HERE, base::BindOnce(^{
-                [weakSelf
-                    markSetUpListItemPrefComplete:SetUpListItemType::kAutofill];
-              }));
-        }
-      }];
-}
-
-// Sets the pref for a SetUpList item to indicate it is complete.
-- (void)markSetUpListItemPrefComplete:(SetUpListItemType)type {
-  set_up_list_prefs::MarkItemComplete(_localState, type);
-}
-
-// Hides the Set Up List with an animation.
-- (void)hideSetUpList {
-  __weak __typeof(self) weakSelf = self;
-  [self.consumer hideSetUpListWithAnimations:^{
-    [weakSelf.delegate contentSuggestionsWasUpdated];
-  }];
 }
 
 // Shows the tab resumption tile if there is a `_tabResumptionItem` to present.
@@ -1900,13 +1763,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == prefs::kIosCredentialProviderPromoLastActionTaken &&
-      CredentialProviderPromoDismissed(_localState)) {
-    [self markSetUpListItemPrefComplete:SetUpListItemType::kAutofill];
-  } else if (preferenceName == set_up_list_prefs::kDisabled &&
-             set_up_list_prefs::IsSetUpListDisabled(_localState)) {
-    [self hideSetUpList];
-  }
   if (IsTabResumptionEnabled()) {
     if (_tabResumptionItem &&
         tab_resumption_prefs::IsTabResumptionDisabled(_localState)) {
@@ -2001,38 +1857,11 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  if (_setUpList) {
-    if (_syncService->HasDisableReason(
-            syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
-        HasManagedSyncDataType(_syncService)) {
-      // Sync is now disabled, so mark the SetUpList item complete so that it
-      // cannot be used again.
-      [self markSetUpListItemPrefComplete:SetUpListItemType::kSignInSync];
-    }
-  }
   if (IsTabResumptionEnabled()) {
     // If tabs are not synced, hide the tab resumption tile.
     if (!_syncService->GetUserSettings()->GetSelectedTypes().Has(
             syncer::UserSelectableType::kTabs)) {
       [self hideTabResumption];
-    }
-  }
-}
-
-#pragma mark - AuthenticationServiceObserving
-
-- (void)onServiceStatusChanged {
-  if (_setUpList) {
-    switch (_authenticationService->GetServiceStatus()) {
-      case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
-      case AuthenticationService::ServiceStatus::SigninAllowed:
-        break;
-      case AuthenticationService::ServiceStatus::SigninDisabledByUser:
-      case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
-      case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
-        // Signin is now disabled, so mark the SetUpList item complete so that
-        // it cannot be used again.
-        [self markSetUpListItemPrefComplete:SetUpListItemType::kSignInSync];
     }
   }
 }

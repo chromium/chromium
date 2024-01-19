@@ -38,6 +38,35 @@ source_set("set_up_list") {
   ]
 }
 
+source_set("mediator") {
+  sources = [
+    "set_up_list_mediator.h",
+    "set_up_list_mediator.mm",
+  ]
+  deps = [
+    ":set_up_list",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/browser/ntp/model:set_up_list",
+    "//ios/chrome/browser/ntp/model:set_up_list_item_type",
+    "//ios/chrome/browser/ntp/model:set_up_list_prefs",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
+    "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/credential_provider_promo",
+  ]
+  frameworks = [
+    "AuthenticationServices.framework",
+    "Foundation.framework",
+  ]
+}
 source_set("default_browser_promo") {
   sources = [
     "set_up_list_default_browser_promo_coordinator.h",

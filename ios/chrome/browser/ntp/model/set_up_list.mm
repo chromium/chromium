@@ -224,7 +224,8 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
       set_up_list_prefs::GetItemState(_localState, item.type);
   if (state == SetUpListItemState::kCompleteInList) {
     [item markComplete];
-    [self.delegate setUpListItemDidComplete:item];
+    [self.delegate setUpListItemDidComplete:item
+                          allItemsCompleted:[self allItemsComplete]];
   }
 }
 

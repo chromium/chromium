@@ -252,7 +252,7 @@ TEST_F(SetUpListTest, ObservesPrefs) {
   set_up_list_.delegate = delegate;
   SetUpListItem* item = FindItem(SetUpListItemType::kSignInSync);
   EXPECT_FALSE(item.complete);
-  OCMExpect([delegate setUpListItemDidComplete:item]);
+  OCMExpect([delegate setUpListItemDidComplete:item allItemsCompleted:NO]);
   set_up_list_prefs::MarkItemComplete(local_state_.Get(),
                                       SetUpListItemType::kSignInSync);
   EXPECT_TRUE(item.complete);

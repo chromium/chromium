@@ -30,7 +30,6 @@ source_set("content_suggestions") {
   sources = [
     "content_suggestions_coordinator.h",
     "content_suggestions_coordinator.mm",
-    "content_suggestions_delegate.h",
     "content_suggestions_mediator.h",
     "content_suggestions_mediator.mm",
     "content_suggestions_mediator_util.h",
@@ -81,7 +80,6 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/intents:intents_donation_helper",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/ntp/model",
-    "//ios/chrome/browser/ntp/model:set_up_list",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/ntp_tiles/model",
@@ -127,10 +125,10 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/content_suggestions/set_up_list",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:content_notification_promo",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:default_browser_promo",
+    "//ios/chrome/browser/ui/content_suggestions/set_up_list:mediator",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption:helper",
-    "//ios/chrome/browser/ui/credential_provider_promo",
     "//ios/chrome/browser/ui/favicon",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/ntp",
@@ -201,6 +199,7 @@ source_set("constants") {
 source_set("public") {
   sources = [
     "content_suggestions_commands.h",
+    "content_suggestions_delegate.h",
     "content_suggestions_image_data_source.h",
     "content_suggestions_menu_provider.h",
     "content_suggestions_view_controller_audience.h",
