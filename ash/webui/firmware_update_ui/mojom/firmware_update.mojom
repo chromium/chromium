@@ -87,11 +87,11 @@ enum DeviceRequestId {
 enum DeviceRequestKind {
   // Unknown request kind. Requests of this kind will be ignored.
   kUnknown,
-  // Immediate user action is required. Most common type of request.
-  kImmediate,
   // User action is required after the update is complete. The Firmware Updates
   // app doesn't handle this kind of request, so they will be ignored.
   kPost,
+  // Immediate user action is required. Most common type of request.
+  kImmediate,
 };
 
 struct DeviceRequest {
