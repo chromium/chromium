@@ -169,9 +169,13 @@ id<GREYMatcher> GetMatcherForSettingsLink() {
   ExpectModalHistogram(
       plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled,
       1);
-  ExpectModalTimeSample(plus_addresses::PlusAddressMetrics::
-                            PlusAddressModalCompletionStatus::kModalCanceled,
-                        1);
+  // The test server currently only response with reserve error. Thus, closing
+  // status is recorded as `kReservePlusAddressError`.
+  // TODO(b/321072266) Expand coverage to other responses.
+  ExpectModalTimeSample(
+      plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+          kReservePlusAddressError,
+      1);
 }
 
 - (void)testPlusAddressBottomSheetSettingsLink {
@@ -245,9 +249,10 @@ id<GREYMatcher> GetMatcherForSettingsLink() {
   ExpectModalHistogram(
       plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled,
       1);
-  ExpectModalTimeSample(plus_addresses::PlusAddressMetrics::
-                            PlusAddressModalCompletionStatus::kModalCanceled,
-                        1);
+  ExpectModalTimeSample(
+      plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+          kReservePlusAddressError,
+      1);
 }
 
 @end

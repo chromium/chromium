@@ -15,11 +15,15 @@ namespace plus_addresses {
 // metrics, plus_address_service metrics, and user interaction metrics.
 class PlusAddressMetrics {
  public:
+  // `PlusAddressModalEvent` is for categorizing user interactions with the
+  // modal/bottom sheet.
   enum class PlusAddressModalEvent {
     kModalShown = 0,
     kModalCanceled = 1,
     kModalConfirmed = 2,
     kMaxValue = kModalConfirmed,
+    // TODO(b/320541525) Expand record of user events once user flow becomes
+    // more complex.
   };
 
   enum class PlusAddressAutofillSuggestionEvent {
@@ -30,10 +34,21 @@ class PlusAddressMetrics {
     kMaxValue = kCreateNewPlusAddressChosen,
   };
 
+  // `PlusAddressModalCompletionStatus` indicates the reason modal/bottom sheet
+  // is dismissed.
+  // TODO(b/321060363) Re-evaluate metric if retry is enable when error occur.
   enum class PlusAddressModalCompletionStatus {
+    // User cancels the modal (independent of any error).
     kModalCanceled = 0,
+    // User successfully confirm plus address.
     kModalConfirmed = 1,
-    kMaxValue = kModalConfirmed,
+    // User cancels the modal after error occur during plus address reservation
+    // (cancel is the only option).
+    kReservePlusAddressError = 2,
+    // User cancels the modal after error occur during plus address confirmation
+    // (user has pressed confirm button).
+    kConfirmPlusAddressError = 3,
+    kMaxValue = kConfirmPlusAddressError,
   };
 
   // As of now, the class is intended to be stateless and static; do not allow
@@ -42,10 +57,10 @@ class PlusAddressMetrics {
   PlusAddressMetrics(const PlusAddressMetrics&) = delete;
   PlusAddressMetrics& operator=(const PlusAddressMetrics&) = delete;
 
-  // Log plus address creation modal events.
+  // Log plus address creation modal events triggered by user.
   static void RecordModalEvent(PlusAddressModalEvent plus_address_modal_event);
   // Log plus address creation modal/bottom sheet shown duration for each
-  // `status`.
+  // closing `status`.
   static void RecordModalShownDuration(PlusAddressModalCompletionStatus status,
                                        base::TimeDelta modal_shown_duration);
   // Log plus address autofill suggestion events.

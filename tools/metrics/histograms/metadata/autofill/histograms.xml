@@ -349,6 +349,8 @@ chromium-metrics-reviews@google.com.
 <variants name="AutofillPlusAddressModalCompletionStatus">
   <variant name="Canceled" summary="Modal canceled"/>
   <variant name="Confirmed" summary="Modal confirmed"/>
+  <variant name="ConfirmError" summary="Confirm error occured"/>
+  <variant name="ReserveError" summary="Reserve error occured"/>
 </variants>
 
 <variants name="AutofillPlusAddressNetworkRequestType">
@@ -3446,7 +3448,8 @@ chromium-metrics-reviews@google.com.
     plus addresses modal/bottomsheet on iOS, providing insight on the user
     experience with it. The duration is the span between when the
     modal/bottomsheet on iOS is shown and when the user decide to confirm or
-    cancel the plus address.
+    cancel the plus address(error status is recorded if user cancel after an
+    error occurs).
   </summary>
   <token key="Status" variants="AutofillPlusAddressModalCompletionStatus"/>
 </histogram>

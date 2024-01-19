@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/plus_addresses/plus_address_metrics.h"
+
 // Consumer for the plus_address bottom sheet. It is notified as required data
 // elements become available.
 @protocol PlusAddressBottomSheetConsumer
@@ -17,8 +19,11 @@
 // Used to indicate the successful confirmation of a plus address.
 - (void)didConfirmPlusAddress;
 
-// Used to indicate an error, whether with reservation or confirmation.
-- (void)notifyError;
+// Used to indicate an error, specifying whether error occur during reservation
+// or confirmation.
+- (void)notifyError:
+    (plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus)
+        status;
 
 @end
 

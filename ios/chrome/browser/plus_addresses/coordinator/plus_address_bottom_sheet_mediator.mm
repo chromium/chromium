@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/plus_addresses/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -53,7 +54,9 @@
       [weakSelf didReservePlusAddress:base::SysUTF8ToNSString(
                                           maybe_plus_profile->plus_address)];
     } else {
-      [weakSelf.consumer notifyError];
+      [weakSelf.consumer notifyError:plus_addresses::PlusAddressMetrics::
+                                         PlusAddressModalCompletionStatus::
+                                             kReservePlusAddressError];
     }
   });
   _plusAddressService->ReservePlusAddress(_mainFrameOrigin,
@@ -70,7 +73,9 @@
           [weakSelf runAutofillCallback:base::SysUTF8ToNSString(
                                             maybe_plus_profile->plus_address)];
         } else {
-          [weakSelf.consumer notifyError];
+          [weakSelf.consumer notifyError:plus_addresses::PlusAddressMetrics::
+                                             PlusAddressModalCompletionStatus::
+                                                 kConfirmPlusAddressError];
         }
       });
   _plusAddressService->ConfirmPlusAddress(

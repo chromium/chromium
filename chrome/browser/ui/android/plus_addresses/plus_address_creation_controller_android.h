@@ -78,6 +78,8 @@ class PlusAddressCreationControllerAndroid
   raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
   // This is set on `OfferCreation`.
   std::optional<base::Time> modal_shown_time_;
+  std::optional<PlusAddressMetrics::PlusAddressModalCompletionStatus>
+      modal_error_status_;
 
   base::WeakPtrFactory<PlusAddressCreationControllerAndroid> weak_ptr_factory_{
       this};

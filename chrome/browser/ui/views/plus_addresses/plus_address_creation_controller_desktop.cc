@@ -76,8 +76,6 @@ void PlusAddressCreationControllerDesktop::OnConfirmed() {
   CHECK(plus_profile_.has_value());
   PlusAddressMetrics::RecordModalEvent(
       PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed);
-  RecordModalShownDuration(
-      PlusAddressMetrics::PlusAddressModalCompletionStatus::kModalConfirmed);
 
   if (plus_profile_->is_confirmed) {
     OnPlusAddressConfirmed(plus_profile_.value());
@@ -98,13 +96,17 @@ void PlusAddressCreationControllerDesktop::OnConfirmed() {
   }
 }
 void PlusAddressCreationControllerDesktop::OnCanceled() {
-  // TODO(b/319874782) Prevent over-recording cancel metric when error occur
-  // as cancel is the only available option. Consider replacing with no-op or
-  // classified event as error (or cancel after error).
+  // TODO(b/320541525) ModalEvent is in sync with actual user action. May
+  // re-evaluate the use of this metric when modal becomes more complex.
   PlusAddressMetrics::RecordModalEvent(
       PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled);
-  RecordModalShownDuration(
-      PlusAddressMetrics::PlusAddressModalCompletionStatus::kModalCanceled);
+  if (modal_error_status_.has_value()) {
+    RecordModalShownDuration(modal_error_status_.value());
+    modal_error_status_.reset();
+  } else {
+    RecordModalShownDuration(
+        PlusAddressMetrics::PlusAddressModalCompletionStatus::kModalCanceled);
+  }
 }
 void PlusAddressCreationControllerDesktop::OnDialogDestroyed() {
   dialog_delegate_.reset();
@@ -118,10 +120,6 @@ PlusAddressCreationControllerDesktop::get_view_for_testing() {
 
 void PlusAddressCreationControllerDesktop::RecordModalShownDuration(
     const PlusAddressMetrics::PlusAddressModalCompletionStatus status) {
-  // Only record modal shown duration once on the first user action.
-  // TODO(b/319874782) Record error status if error occurs. Currently, if
-  // `ConfirmPlusAddress` fails, modal will not be dismissed and subsequent
-  // action to close or cancel modal is not recorded on the metrics.
   if (modal_shown_time_.has_value()) {
     PlusAddressMetrics::RecordModalShownDuration(
         status, clock_->Now() - modal_shown_time_.value());
@@ -151,6 +149,9 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressReserved(
   }
   if (maybe_plus_profile.has_value()) {
     plus_profile_ = maybe_plus_profile.value();
+  } else {
+    modal_error_status_ = PlusAddressMetrics::PlusAddressModalCompletionStatus::
+        kReservePlusAddressError;
   }
 }
 
@@ -161,6 +162,12 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
   }
   if (maybe_plus_profile.has_value()) {
     std::move(callback_).Run(maybe_plus_profile->plus_address);
+    // PlusAddress successfully confirmed, closing the modal.
+    RecordModalShownDuration(
+        PlusAddressMetrics::PlusAddressModalCompletionStatus::kModalConfirmed);
+  } else {
+    modal_error_status_ = PlusAddressMetrics::PlusAddressModalCompletionStatus::
+        kConfirmPlusAddressError;
   }
 }
 
