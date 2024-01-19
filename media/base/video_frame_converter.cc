@@ -11,8 +11,12 @@ namespace media {
 
 constexpr auto kDefaultFiltering = libyuv::kFilterBox;
 
-VideoFrameConverter::VideoFrameConverter() = default;
-VideoFrameConverter::~VideoFrameConverter() = default;
+VideoFrameConverter::VideoFrameConverter()
+    : frame_pool_(base::MakeRefCounted<FrameBufferPool>()) {}
+
+VideoFrameConverter::~VideoFrameConverter() {
+  frame_pool_->Shutdown();
+}
 
 EncoderStatus VideoFrameConverter::ConvertAndScale(const VideoFrame& src_frame,
                                                    VideoFrame& dest_frame) {
@@ -45,19 +49,27 @@ EncoderStatus VideoFrameConverter::ConvertAndScale(const VideoFrame& src_frame,
   }
 }
 
-bool VideoFrameConverter::AllocateScratchSpace(size_t needed_size) {
-  if (needed_size < scratch_space_size_) {
-    return true;
+scoped_refptr<VideoFrame> VideoFrameConverter::CreateTempFrame(
+    VideoPixelFormat format,
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size) {
+  const auto tmp_size = VideoFrame::AllocationSize(format, coded_size);
+
+  void* fb_id;
+  auto* scratch_space = frame_pool_->GetFrameBuffer(tmp_size, &fb_id);
+  if (!scratch_space) {
+    return nullptr;
   }
-  // Using unchecked malloc allows us to fail gracefully when OOM instead of
-  // triggering a crash.
-  uint8_t* data;
-  if (!base::UncheckedMalloc(needed_size, reinterpret_cast<void**>(&data))) {
-    return false;
+
+  auto tmp_frame = VideoFrame::WrapExternalData(
+      format, coded_size, visible_rect, natural_size, scratch_space, tmp_size,
+      base::TimeDelta());
+  if (tmp_frame) {
+    tmp_frame->AddDestructionObserver(frame_pool_->CreateFrameCallback(fb_id));
   }
-  scratch_space_.reset(data);
-  scratch_space_size_ = needed_size;
-  return true;
+
+  return tmp_frame;
 }
 
 scoped_refptr<VideoFrame> VideoFrameConverter::WrapNV12xFrameInI420xFrame(
@@ -65,33 +77,50 @@ scoped_refptr<VideoFrame> VideoFrameConverter::WrapNV12xFrameInI420xFrame(
   DCHECK(frame.format() == PIXEL_FORMAT_NV12 ||
          frame.format() == PIXEL_FORMAT_NV12A);
 
-  // Allocate scratch space for split U, V planes.
+  // What happens below is a bit complicated. We create an I420x frame with
+  // freshly allocated U, V planes, while the Y, A planes come from `frame`.
+  // This is done to avoid unnecessary copies of the Y, A planes when converting
+  // to and from NV12x formats.
+
+  // 1. Allocate scratch space for U, V planes.
   const auto u_plane_size = VideoFrame::PlaneSize(
       PIXEL_FORMAT_I420, VideoFrame::kUPlane, frame.coded_size());
   const auto v_plane_size = VideoFrame::PlaneSize(
       PIXEL_FORMAT_I420, VideoFrame::kVPlane, frame.coded_size());
-  if (!AllocateScratchSpace(u_plane_size.GetArea() + v_plane_size.GetArea())) {
+
+  void* fb_id;
+  auto* scratch_space = frame_pool_->GetFrameBuffer(
+      u_plane_size.GetArea() + v_plane_size.GetArea(), &fb_id);
+  if (!scratch_space) {
     return nullptr;
   }
 
-  // Link Y, A planes of the destination buffer with new temporary frame.
+  // 2. Link Y, A planes of `frame` plus `scratch_space` in a new frame.
+  scoped_refptr<media::VideoFrame> wrapped_frame;
   if (IsOpaque(frame.format())) {
-    return VideoFrame::WrapExternalYuvData(
+    wrapped_frame = VideoFrame::WrapExternalYuvData(
         PIXEL_FORMAT_I420, frame.coded_size(), frame.visible_rect(),
         frame.natural_size(), frame.stride(VideoFrame::kYPlane),
         u_plane_size.width(), v_plane_size.width(),
-        frame.data(VideoFrame::kYPlane), scratch_space_.get(),
-        scratch_space_.get() + u_plane_size.GetArea(), frame.timestamp());
+        frame.data(VideoFrame::kYPlane), scratch_space,
+        scratch_space + u_plane_size.GetArea(), frame.timestamp());
+  } else {
+    wrapped_frame = VideoFrame::WrapExternalYuvaData(
+        PIXEL_FORMAT_I420A, frame.coded_size(), frame.visible_rect(),
+        frame.natural_size(), frame.stride(VideoFrame::kYPlane),
+        u_plane_size.width(), v_plane_size.width(),
+        frame.stride(VideoFrame::kAPlaneTriPlanar),
+        frame.data(VideoFrame::kYPlane), scratch_space,
+        scratch_space + u_plane_size.GetArea(),
+        frame.data(VideoFrame::kAPlaneTriPlanar), frame.timestamp());
   }
 
-  return VideoFrame::WrapExternalYuvaData(
-      PIXEL_FORMAT_I420A, frame.coded_size(), frame.visible_rect(),
-      frame.natural_size(), frame.stride(VideoFrame::kYPlane),
-      u_plane_size.width(), v_plane_size.width(),
-      frame.stride(VideoFrame::kAPlaneTriPlanar),
-      frame.data(VideoFrame::kYPlane), scratch_space_.get(),
-      scratch_space_.get() + u_plane_size.GetArea(),
-      frame.data(VideoFrame::kAPlaneTriPlanar), frame.timestamp());
+  if (wrapped_frame) {
+    wrapped_frame->AddDestructionObserver(
+        frame_pool_->CreateFrameCallback(fb_id));
+  }
+
+  return wrapped_frame;
 }
 
 EncoderStatus VideoFrameConverter::ConvertAndScaleRGB(
@@ -99,9 +128,9 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleRGB(
     VideoFrame& dest_frame) {
   scoped_refptr<VideoFrame> tmp_frame;
   if (src_frame->visible_rect().size() != dest_frame.visible_rect().size()) {
-    tmp_frame = frame_pool_.CreateFrame(
-        src_frame->format(), dest_frame.coded_size(), dest_frame.visible_rect(),
-        dest_frame.natural_size(), dest_frame.timestamp());
+    tmp_frame =
+        CreateTempFrame(src_frame->format(), dest_frame.coded_size(),
+                        dest_frame.visible_rect(), dest_frame.natural_size());
     if (!tmp_frame ||
         !internals::ARGBScale(*src_frame, *tmp_frame, kDefaultFiltering)) {
       return EncoderStatus::Codes::kScalingError;

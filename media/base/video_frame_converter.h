@@ -5,17 +5,16 @@
 #ifndef MEDIA_BASE_VIDEO_FRAME_CONVERTER_H_
 #define MEDIA_BASE_VIDEO_FRAME_CONVERTER_H_
 
-#include "base/process/memory.h"
 #include "media/base/encoder_status.h"
+#include "media/base/frame_buffer_pool.h"
 #include "media/base/media_export.h"
 #include "media/base/video_frame.h"
-#include "media/base/video_frame_pool.h"
 
 namespace media {
 
 // A class for converting and scaling between two VideoFrame formats. Maintains
 // a scratch space, so if callers have multiples frames to convert they should
-// hold onto an instance of this class for all conversions.
+// hold onto an instance of this class for all conversions. Thread safe.
 class MEDIA_EXPORT VideoFrameConverter {
  public:
   VideoFrameConverter();
@@ -43,7 +42,11 @@ class MEDIA_EXPORT VideoFrameConverter {
                                 VideoFrame& dest_frame);
 
  private:
-  bool AllocateScratchSpace(size_t needed_size);
+  // Creates a temporary frame backed by `frame_pool_`.
+  scoped_refptr<VideoFrame> CreateTempFrame(VideoPixelFormat format,
+                                            const gfx::Size& coded_size,
+                                            const gfx::Rect& visible_rect,
+                                            const gfx::Size& natural_size);
 
   // Wraps an NV12x frame within an I420x frame with the Y and A planes of the
   // I420x wrapping frame pointing directly into the Y and A planes of the NV12x
@@ -64,14 +67,12 @@ class MEDIA_EXPORT VideoFrameConverter {
   EncoderStatus ConvertAndScaleNV12x(const VideoFrame* src_frame,
                                      VideoFrame& dest_frame);
 
-  // Two types of scratch space are used during conversion for simplicity. The
-  // `frame_pool_` is used when a whole intermediary frame is needed. While
-  // `scratch_space_` is used when only a partial intermediary frame is needed.
-  VideoFramePool frame_pool_;
+  // NOTE: This class is currently thread safe without locking, take care when
+  // adding any shared class state.
 
-  // See AllocateScratchSpace() and WrapNV12xFrameInI420xFrame() for details.
-  size_t scratch_space_size_ = 0u;
-  std::unique_ptr<uint8_t, base::UncheckedFreeDeleter> scratch_space_;
+  // Scratch space for conversions. FrameBufferPool is thread safe and will
+  // helpfully auto-expire stale buffers after some time.
+  scoped_refptr<FrameBufferPool> frame_pool_;
 };
 
 }  // namespace media
