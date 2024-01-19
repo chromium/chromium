@@ -102,7 +102,7 @@ class VideoStreamCoordinatorTest : public TestWithBrowserView {
   }
 
   void OnNextFrame() {
-    const int buffer_id = g_next_buffer_id++;
+    const int buffer_id = next_buffer_id_++;
     subscriber_->OnNewBuffer(
         buffer_id,
         GetBufferHandler(current_settings_.requested_format.frame_size));
@@ -150,7 +150,7 @@ class VideoStreamCoordinatorTest : public TestWithBrowserView {
       video_frame_access_handler_receiver_;
 
   // The next ID to be used for a newly created buffer.
-  int g_next_buffer_id = 0;
+  int next_buffer_id_ = 0;
 
   // The time at which this device started producing video frames.
   base::Time start_time_;

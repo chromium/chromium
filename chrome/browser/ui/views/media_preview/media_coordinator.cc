@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
+#include "ui/color/color_id.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/view.h"
@@ -39,9 +40,9 @@ MediaCoordinator::MediaCoordinator(ViewType view_type,
         provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
 
     media_view_->SetBorder(views::CreateThemedRoundedRectBorder(
-        kBorderThickness, kRoundedRadius, ui::kColorButtonBorder));
+        kBorderThickness, kRoundedRadius, ui::kColorSysSurface4));
     media_view_->SetBackground(views::CreateThemedRoundedRectBackground(
-        ui::kColorButtonBorder, kRoundedRadius));
+        ui::kColorSysSurface4, kRoundedRadius));
   }
 
   if (view_type != ViewType::kMicOnly) {

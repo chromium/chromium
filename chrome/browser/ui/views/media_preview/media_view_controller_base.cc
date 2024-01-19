@@ -16,6 +16,12 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 
+namespace {
+
+constexpr int kRoundedRadius = 12;
+
+}  // namespace
+
 MediaViewControllerBase::MediaViewControllerBase(
     MediaView& base_view,
     bool needs_borders,
@@ -38,8 +44,6 @@ MediaViewControllerBase::MediaViewControllerBase(
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 
   if (needs_borders) {
-    const int kRoundedRadius = provider->GetCornerRadiusMetric(
-        views::ShapeContextTokens::kOmniboxExpandedRadius);
     const int kBorderThickness =
         provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
 
