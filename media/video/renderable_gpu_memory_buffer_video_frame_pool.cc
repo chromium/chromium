@@ -209,8 +209,9 @@ bool FrameResources::Initialize() {
       // VideoFrames (this is what "renderable" means in this context). Hence,
       // GLES2_WRITE is required for raster-over-GLES.
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-      gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   uint32_t texture_target = GL_TEXTURE_2D;
 #if BUILDFLAG(IS_MAC)

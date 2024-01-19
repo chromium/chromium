@@ -1300,7 +1300,8 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     // Bind the texture and create or rebind the image.
     if (gpu_memory_buffer && !plane_resource.shared_image) {
       uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                       gpu::SHARED_IMAGE_USAGE_RASTER |
+                       gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                       gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                        gpu::SHARED_IMAGE_USAGE_SCANOUT;
 

@@ -238,7 +238,8 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
   // decode, and allow webgl/canvas access to read from it.
   uint32_t usage =
       gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE |
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER |
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   scoped_refptr<gpu::DXGISharedHandleState> dxgi_shared_handle_state;

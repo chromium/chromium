@@ -157,7 +157,8 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
   uint32_t mailbox_usage;
   auto& caps = provider_->ContextCapabilities();
   if (caps.gpu_rasterization) {
-    mailbox_usage = gpu::SHARED_IMAGE_USAGE_RASTER |
+    mailbox_usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                    gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   } else {
     mailbox_usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |

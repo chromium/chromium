@@ -1846,7 +1846,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     // intermediate SI over the raster interface - the usage bits depend on
     // whether OOP-Raster is enabled.
     if (raster_context_provider->ContextCapabilities().gpu_rasterization) {
-      usage |= gpu::SHARED_IMAGE_USAGE_RASTER |
+      usage |= gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+               gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     } else {
       usage |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
@@ -2079,7 +2080,8 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
         // We copy the contents of the source VideoFrame *into* the
         // cached SI over the raster interface - the usage bits depend on
         // whether OOP-Raster is enabled.
-        flags |= gpu::SHARED_IMAGE_USAGE_RASTER;
+        flags |= gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                 gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
         if (gpu_rasterization) {
           flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
         } else {

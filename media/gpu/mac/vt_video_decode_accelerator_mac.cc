@@ -2329,7 +2329,9 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
     const uint32_t shared_image_usage =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
         gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
-        gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+        gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+        gpu::SHARED_IMAGE_USAGE_GLES2_READ;
     GLenum target = gl_client_.supports_arb_texture_rectangle
                         ? GL_TEXTURE_RECTANGLE_ARB
                         : GL_TEXTURE_2D;
