@@ -298,30 +298,28 @@ void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
   if (it == anchor_elements_timing_stats_.end()) {
     return;
   }
-  auto& element_timing = it->value;
+  AnchorElementTimingStats& element_timing = it->value;
   if (event_type == event_type_names::kPointerover) {
-    if (!element_timing->pointer_over_timer_.has_value()) {
-      element_timing->pointer_over_timer_ = clock_->NowTicks();
+    if (!element_timing.pointer_over_timer_.has_value()) {
+      element_timing.pointer_over_timer_ = clock_->NowTicks();
 
-      auto msg = mojom::blink::AnchorElementPointerOver::New();
-      msg->anchor_id = anchor_id;
       base::TimeDelta navigation_start_to_pointer_over =
           clock_->NowTicks() - NavigationStart(element);
-      msg->navigation_start_to_pointer_over = navigation_start_to_pointer_over;
+      auto msg = mojom::blink::AnchorElementPointerOver::New(
+          anchor_id, navigation_start_to_pointer_over);
 
       metrics_host_->ReportAnchorElementPointerOver(std::move(msg));
     }
   } else if (event_type == event_type_names::kPointerout) {
-    if (!element_timing->pointer_over_timer_.has_value()) {
+    if (!element_timing.pointer_over_timer_.has_value()) {
       return;
     }
 
-    auto msg = mojom::blink::AnchorElementPointerOut::New();
-    msg->anchor_id = anchor_id;
     base::TimeDelta hover_dwell_time =
-        clock_->NowTicks() - element_timing->pointer_over_timer_.value();
-    element_timing->pointer_over_timer_.reset();
-    msg->hover_dwell_time = hover_dwell_time;
+        clock_->NowTicks() - element_timing.pointer_over_timer_.value();
+    element_timing.pointer_over_timer_.reset();
+    auto msg =
+        mojom::blink::AnchorElementPointerOut::New(anchor_id, hover_dwell_time);
     metrics_host_->ReportAnchorElementPointerOut(std::move(msg));
   } else if (event_type == event_type_names::kPointerdown) {
     // TODO(crbug.com/1297312): Check if user changed the default mouse
@@ -333,11 +331,10 @@ void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
       return;
     }
 
-    auto msg = mojom::blink::AnchorElementPointerDown::New();
-    msg->anchor_id = anchor_id;
     base::TimeDelta navigation_start_to_pointer_down =
         clock_->NowTicks() - NavigationStart(element);
-    msg->navigation_start_to_pointer_down = navigation_start_to_pointer_down;
+    auto msg = mojom::blink::AnchorElementPointerDown::New(
+        anchor_id, navigation_start_to_pointer_down);
     metrics_host_->ReportAnchorElementPointerDown(std::move(msg));
   }
 }
@@ -345,40 +342,40 @@ void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
 void AnchorElementMetricsSender::EnqueueLeftViewport(
     const HTMLAnchorElement& element) {
   const auto anchor_id = AnchorElementId(element);
-  DCHECK(anchor_elements_timing_stats_.Contains(anchor_id));
-  auto* timing_stats = anchor_elements_timing_stats_.at(anchor_id);
-  timing_stats->entered_viewport_should_be_enqueued_ = true;
+  auto it = anchor_elements_timing_stats_.find(anchor_id);
+  DCHECK(it != anchor_elements_timing_stats_.end());
+  AnchorElementTimingStats& timing_stats = it->value;
+  timing_stats.entered_viewport_should_be_enqueued_ = true;
   absl::optional<base::TimeTicks>& entered_viewport =
-      timing_stats->viewport_entry_time_;
+      timing_stats.viewport_entry_time_;
   if (!entered_viewport.has_value()) {
     return;
   }
 
-  auto msg = mojom::blink::AnchorElementLeftViewport::New();
-  msg->anchor_id = anchor_id;
   base::TimeDelta time_in_viewport =
       clock_->NowTicks() - entered_viewport.value();
   entered_viewport.reset();
-  msg->time_in_viewport = time_in_viewport;
+  auto msg =
+      mojom::blink::AnchorElementLeftViewport::New(anchor_id, time_in_viewport);
   left_viewport_messages_.push_back(std::move(msg));
 }
 
 void AnchorElementMetricsSender::EnqueueEnteredViewport(
     const HTMLAnchorElement& element) {
   const auto anchor_id = AnchorElementId(element);
-  DCHECK(anchor_elements_timing_stats_.Contains(anchor_id));
-  auto* timing_stats = anchor_elements_timing_stats_.at(anchor_id);
-  timing_stats->viewport_entry_time_ = clock_->NowTicks();
-  if (!timing_stats->entered_viewport_should_be_enqueued_) {
+  auto it = anchor_elements_timing_stats_.find(anchor_id);
+  DCHECK(it != anchor_elements_timing_stats_.end());
+  AnchorElementTimingStats& timing_stats = it->value;
+  timing_stats.viewport_entry_time_ = clock_->NowTicks();
+  if (!timing_stats.entered_viewport_should_be_enqueued_) {
     return;
   }
-  timing_stats->entered_viewport_should_be_enqueued_ = false;
+  timing_stats.entered_viewport_should_be_enqueued_ = false;
 
-  auto msg = mojom::blink::AnchorElementEnteredViewport::New();
-  msg->anchor_id = anchor_id;
   base::TimeDelta time_entered_viewport =
       clock_->NowTicks() - NavigationStart(element);
-  msg->navigation_start_to_entered_viewport = time_entered_viewport;
+  auto msg = mojom::blink::AnchorElementEnteredViewport::New(
+      anchor_id, time_entered_viewport);
   entered_viewport_messages_.push_back(std::move(msg));
 }
 
@@ -433,10 +430,8 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
     if (random == 1) {
       // This anchor element is sampled in.
       const auto anchor_id = AnchorElementId(anchor_element);
-      if (!anchor_elements_timing_stats_.Contains(anchor_id)) {
-        anchor_elements_timing_stats_.insert(
-            anchor_id, std::make_unique<AnchorElementTimingStats>());
-      }
+      anchor_elements_timing_stats_.insert(anchor_id,
+                                           AnchorElementTimingStats{});
       // Observe the element to collect time_in_viewport stats.
       intersection_observer_->observe(&anchor_element);
     }

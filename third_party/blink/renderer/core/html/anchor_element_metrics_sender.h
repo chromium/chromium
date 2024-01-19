@@ -166,7 +166,7 @@ class CORE_EXPORT AnchorElementMetricsSender final
     absl::optional<base::TimeTicks> viewport_entry_time_;
     absl::optional<base::TimeTicks> pointer_over_timer_;
   };
-  WTF::HashMap<AnchorId, std::unique_ptr<AnchorElementTimingStats>>
+  WTF::HashMap<AnchorId, AnchorElementTimingStats>
       anchor_elements_timing_stats_;
 
   WTF::Vector<mojom::blink::AnchorElementLeftViewportPtr>
