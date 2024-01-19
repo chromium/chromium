@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -53,6 +54,8 @@ import java.util.List;
  * incognito modes.
  */
 public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandler {
+    private static final String TAG = "TabSwitcherPaneBase";
+
     protected final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
             new ObservableSupplierImpl<>();
     protected final ObservableSupplierImpl<FullButtonData> mNewTabButtonDataSupplier =
@@ -252,6 +255,11 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
                         finalRect = coordinator.getRecyclerViewRect();
                         leftOffset = finalRect.left;
                     }
+                    boolean useFallbackAnimation = false;
+                    if (initialRect.isEmpty() || finalRect.isEmpty()) {
+                        Log.d(TAG, "Geometry not ready using fallback animation.");
+                        useFallbackAnimation = true;
+                    }
                     // Ignore left offset and just ensure the width is correct. See crbug/1502437.
                     initialRect.offset(-leftOffset, -hubRect.top);
                     finalRect.offset(-leftOffset, -hubRect.top);
@@ -260,7 +268,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
                                     initialRect,
                                     finalRect,
                                     coordinator.getThumbnailSize(),
-                                    /* useFallbackAnimation= */ false));
+                                    useFallbackAnimation));
                 };
         coordinator.waitForLayoutWithTab(tabId, provideAnimationData);
         return animationDataSupplier;
