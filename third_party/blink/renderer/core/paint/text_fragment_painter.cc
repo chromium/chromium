@@ -395,10 +395,9 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   // Set our font.
-  const Font& font =
-      UNLIKELY(text_combine && text_combine->UsesCompressedFont())
-          ? text_combine->CompressedFont()
-          : text_item.ScaledFont();
+  const Font& font = UNLIKELY(text_combine && text_combine->CompressedFont())
+                         ? *text_combine->CompressedFont()
+                         : text_item.ScaledFont();
   const SimpleFontData* font_data = font.PrimaryFont();
   DCHECK(font_data);
 

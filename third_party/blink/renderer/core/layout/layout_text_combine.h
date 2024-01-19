@@ -28,17 +28,18 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutNGBlockFlow {
   LayoutTextCombine();
   ~LayoutTextCombine() override;
 
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(compressed_font_);
+    LayoutNGBlockFlow::Trace(visitor);
+  }
+
   float DesiredWidth() const;
   String GetTextContent() const;
 
   // Compressed font
-  const Font& CompressedFont() const {
+  const Font* CompressedFont() const {
     NOT_DESTROYED();
-    return compressed_font_.value();
-  }
-  bool UsesCompressedFont() const {
-    NOT_DESTROYED();
-    return compressed_font_.has_value();
+    return has_compressed_font_ ? &compressed_font_ : nullptr;
   }
   void SetCompressedFont(const Font& font);
 
@@ -122,12 +123,16 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutNGBlockFlow {
   float ComputeInlineSpacing() const;
   bool UsingSyntheticOblique() const;
 
-  // |compressed_font_| hold width variant of |StyleRef().GetFont()|.
-  absl::optional<Font> compressed_font_;
-
   // |scale_x_| holds scale factor to width of text content to 1em. When we
   // use |scale_x_|, we use |StyleRef().GetFont()| instead of compressed font.
   absl::optional<float> scale_x_;
+
+  // |compressed_font_| hold width variant of |StyleRef().GetFont()|.
+  //
+  // NOTE: This doesn't use a std::optional to avoid a potentially racy branch
+  // within the Trace method.
+  Font compressed_font_;
+  bool has_compressed_font_ = false;
 };
 
 // static
