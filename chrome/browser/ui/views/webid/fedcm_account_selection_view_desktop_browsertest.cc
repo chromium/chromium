@@ -39,7 +39,8 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
           content::ClientMetadata(GURL::EmptyGURL(), GURL::EmptyGURL()),
           blink::mojom::RpContext::kSignIn, /*request_permission=*/true,
           /*has_login_status_mismatch=*/false}},
-        Account::SignInMode::kExplicit, /*show_auto_reauthn_checkbox=*/false);
+        Account::SignInMode::kExplicit, blink::mojom::RpMode::kWidget,
+        /*show_auto_reauthn_checkbox=*/false);
   }
 
   void Show() {
@@ -47,8 +48,8 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
     ShowUi("");
   }
 
-  base::WeakPtr<views::Widget> GetBubble() {
-    return account_selection_view_->bubble_widget_;
+  base::WeakPtr<views::Widget> GetDialog() {
+    return account_selection_view_->dialog_widget_;
   }
 
   FakeDelegate* delegate() { return delegate_.get(); }
@@ -69,69 +70,69 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ShowAndVerifyUi) {
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, Hide) {
   Show();
-  ASSERT_TRUE(GetBubble());
-  EXPECT_TRUE(GetBubble()->IsVisible());
+  ASSERT_TRUE(GetDialog());
+  EXPECT_TRUE(GetDialog()->IsVisible());
   browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
-  // The bubble should be closed after the WebContents is Hidden.
-  ASSERT_TRUE(GetBubble());
-  EXPECT_FALSE(GetBubble()->IsVisible());
+  // The dialog should be closed after the WebContents is Hidden.
+  ASSERT_TRUE(GetDialog());
+  EXPECT_FALSE(GetDialog()->IsVisible());
   // Test workaround for http://crbug.com/1367309 where
   // NativeWidgetMac::Activate() ignores views::Widget::IsVisible().
-  EXPECT_FALSE(GetBubble()->widget_delegate()->CanActivate());
+  EXPECT_FALSE(GetDialog()->widget_delegate()->CanActivate());
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, NavigateAway) {
   Show();
-  ASSERT_TRUE(GetBubble());
-  EXPECT_TRUE(GetBubble()->IsVisible());
+  ASSERT_TRUE(GetDialog());
+  EXPECT_TRUE(GetDialog()->IsVisible());
   // Navigate away to a real URL, otherwise it does not seem to work.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
-  // The bubble should be closed after the browser navigates away from the page.
-  EXPECT_FALSE(GetBubble());
+  // The dialog should be closed after the browser navigates away from the page.
+  EXPECT_FALSE(GetDialog());
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ReShow) {
   Show();
   browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
-  // The bubble should be closed after the WebContents is Hidden.
-  ASSERT_TRUE(GetBubble());
-  EXPECT_FALSE(GetBubble()->IsVisible());
+  // The dialog should be closed after the WebContents is Hidden.
+  ASSERT_TRUE(GetDialog());
+  EXPECT_FALSE(GetDialog()->IsVisible());
 
   browser()->tab_strip_model()->GetActiveWebContents()->WasShown();
-  // The bubble should be reshown after the WebContents is Visible.
-  ASSERT_TRUE(GetBubble());
-  EXPECT_TRUE(GetBubble()->IsVisible());
+  // The dialog should be reshown after the WebContents is Visible.
+  ASSERT_TRUE(GetDialog());
+  EXPECT_TRUE(GetDialog()->IsVisible());
   // Test workaround for http://crbug.com/1367309 where
   // NativeWidgetMac::Activate() ignores views::Widget::IsVisible().
-  EXPECT_TRUE(GetBubble()->widget_delegate()->CanActivate());
+  EXPECT_TRUE(GetDialog()->widget_delegate()->CanActivate());
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ShowWhileHidden) {
   browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
   Show();
-  // Since Show() was called while hidden, the bubble should have been created,
+  // Since Show() was called while hidden, the dialog should have been created,
   // but should not be visible.
-  ASSERT_TRUE(GetBubble());
-  EXPECT_FALSE(GetBubble()->IsVisible());
+  ASSERT_TRUE(GetDialog());
+  EXPECT_FALSE(GetDialog()->IsVisible());
   browser()->tab_strip_model()->GetActiveWebContents()->WasShown();
-  ASSERT_TRUE(GetBubble());
-  EXPECT_TRUE(GetBubble()->IsVisible());
+  ASSERT_TRUE(GetDialog());
+  EXPECT_TRUE(GetDialog()->IsVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, DetachAndDelete) {
   Show();
   browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
-  EXPECT_FALSE(GetBubble());
+  EXPECT_FALSE(GetDialog());
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
                        DetachForInsertion) {
   Show();
   browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
-  // TODO(npm): it would be better if the bubble actually moves with the
+  // TODO(npm): it would be better if the dialog actually moves with the
   // corresponding tab, instead of being altogether deleted.
-  EXPECT_FALSE(GetBubble());
+  EXPECT_FALSE(GetDialog());
 }
 
 // Tests crash scenario from crbug.com/1473691.
@@ -142,5 +143,5 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ClosedBrowser) {
 
   // Invoking this after browser is closed should not cause a crash.
   ShowUi("");
-  EXPECT_FALSE(GetBubble());
+  EXPECT_FALSE(GetDialog());
 }

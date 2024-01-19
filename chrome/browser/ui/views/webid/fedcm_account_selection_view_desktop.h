@@ -18,7 +18,7 @@
 
 using TokenError = content::IdentityCredentialTokenError;
 
-class AccountSelectionBubbleViewInterface;
+class AccountSelectionViewInterface;
 
 // Provides an implementation of the AccountSelectionView interface on desktop,
 // which creates the AccountSelectionBubbleView dialog to display the FedCM
@@ -57,17 +57,20 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const std::optional<std::string>& iframe_etld_plus_one,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       Account::SignInMode sign_in_mode,
+      blink::mojom::RpMode rp_mode,
       bool show_auto_reauthn_checkbox) override;
   void ShowFailureDialog(
       const std::string& top_frame_etld_plus_one,
       const std::optional<std::string>& iframe_etld_plus_one,
       const std::string& idp_etld_plus_one,
-      const blink::mojom::RpContext& rp_context,
+      blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
       const content::IdentityProviderMetadata& idp_metadata) override;
   void ShowErrorDialog(const std::string& top_frame_etld_plus_one,
                        const std::optional<std::string>& iframe_etld_plus_one,
                        const std::string& idp_etld_plus_one,
-                       const blink::mojom::RpContext& rp_context,
+                       blink::mojom::RpContext rp_context,
+                       blink::mojom::RpMode rp_mode,
                        const content::IdentityProviderMetadata& idp_metadata,
                        const std::optional<TokenError>& error) override;
   void ShowUrl(LinkType link_type, const GURL& url) override;
@@ -101,16 +104,19 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Creates the bubble. Sets the bubble's accessible title. Registers any
   // observers. May fail and return nullptr if there is no browser or tab strip
   // model.
-  virtual views::Widget* CreateBubbleWithAccessibleTitle(
+  virtual views::Widget* CreateWidgetWithAccessibleTitle(
       const std::u16string& top_frame_etld_plus_one,
       const std::optional<std::u16string>& iframe_etld_plus_one,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
       bool show_auto_reauthn_checkbox);
 
-  // Returns AccountSelectionBubbleViewInterface for bubble views::Widget.
-  virtual AccountSelectionBubbleViewInterface* GetBubbleView();
-  virtual const AccountSelectionBubbleViewInterface* GetBubbleView() const;
+  // Returns an AccountSelectionViewInterface to render bubble dialogs for
+  // widget flows, otherwise returns an AccountSelectionViewInterface to render
+  // modal dialogs for button flows.
+  virtual AccountSelectionViewInterface* GetAccountSelectionView();
+  virtual const AccountSelectionViewInterface* GetAccountSelectionView() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
@@ -229,7 +235,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Whether to notify the delegate when the widget is closed.
   bool notify_delegate_of_dismiss_{true};
 
-  base::WeakPtr<views::Widget> bubble_widget_;
+  base::WeakPtr<views::Widget> dialog_widget_;
 
   std::unique_ptr<views::InputEventActivationProtector> input_protector_;
 
@@ -245,17 +251,17 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // If dialog has NOT been populated with accounts yet as a result of the IDP
   // sign-in flow and the IDP sign-in pop-up window has been closed, we use this
-  // boolean to let bubble widget know it should unhide itself when the dialog
-  // is ready. This can happen when the accounts fetch has yet to finish but the
+  // boolean to let the widget know it should unhide itself when the dialog is
+  // ready. This can happen when the accounts fetch has yet to finish but the
   // pop-up window has already been closed.
   bool is_modal_closed_but_accounts_fetch_pending_{false};
 
   // If IDP sign-in pop-up window is closed through means other than
   // IdentityProvider.close() such as the user closing the pop-up window or
-  // window.close(), we should destroy the bubble widget and reject the
+  // window.close(), we should destroy the widget and reject the
   // navigator.credentials.get promise. This boolean tracks whether
   // IdentityProvider.close() was called.
-  bool should_destroy_bubble_widget_{true};
+  bool should_destroy_dialog_widget_{true};
 
   // Whether the associated WebContents is visible or not.
   bool is_web_contents_visible_;

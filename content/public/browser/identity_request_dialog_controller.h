@@ -56,7 +56,7 @@ struct CONTENT_EXPORT IdentityProviderData {
                        const std::vector<IdentityRequestAccount>& accounts,
                        const IdentityProviderMetadata& idp_metadata,
                        const ClientMetadata& client_metadata,
-                       const blink::mojom::RpContext& rp_context,
+                       blink::mojom::RpContext rp_context,
                        bool request_permission,
                        bool has_login_status_mismatch);
   IdentityProviderData(const IdentityProviderData& other);
@@ -138,6 +138,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       const std::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
+      blink::mojom::RpMode rp_mode,
       bool show_auto_reauthn_checkbox,
       AccountSelectionCallback on_selected,
       LoginToIdPCallback on_add_account,
@@ -150,7 +151,8 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
-      const blink::mojom::RpContext& rp_context,
+      blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
       const IdentityProviderMetadata& idp_metadata,
       DismissCallback dismiss_callback,
       LoginToIdPCallback login_callback);
@@ -160,7 +162,8 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
-      const blink::mojom::RpContext& rp_context,
+      blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
       const IdentityProviderMetadata& idp_metadata,
       const std::optional<IdentityCredentialTokenError>& error,
       DismissCallback dismiss_callback,

@@ -31,8 +31,8 @@ constexpr char kIframeEtldPlusOne[] = "iframe-example.com";
 constexpr char kIdpEtldPlusOne[] = "idp-example.com";
 constexpr char kLoginUrl[] = "https://idp-example.com/login";
 
-// Mock AccountSelectionBubbleViewInterface which tracks state.
-class TestBubbleView : public AccountSelectionBubbleViewInterface {
+// Mock AccountSelectionViewInterface which tracks state.
+class TestAccountSelectionView : public AccountSelectionViewInterface {
  public:
   enum class SheetType {
     kAccountPicker,
@@ -42,11 +42,11 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
     kError
   };
 
-  TestBubbleView() = default;
-  ~TestBubbleView() override = default;
+  TestAccountSelectionView() = default;
+  ~TestAccountSelectionView() override = default;
 
-  TestBubbleView(const TestBubbleView&) = delete;
-  TestBubbleView& operator=(const TestBubbleView&) = delete;
+  TestAccountSelectionView(const TestAccountSelectionView&) = delete;
+  TestAccountSelectionView& operator=(const TestAccountSelectionView&) = delete;
 
   void ShowMultiAccountPicker(
       const std::vector<IdentityProviderDisplayData>& idp_data_list) override {
@@ -129,15 +129,16 @@ class MockFedCmModalDialogView : public FedCmModalDialogView {
   }
 };
 
-// Test FedCmAccountSelectionView which uses TestBubbleView.
+// Test FedCmAccountSelectionView which uses TestAccountSelectionView.
 class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
  public:
-  TestFedCmAccountSelectionView(Delegate* delegate,
-                                views::Widget* widget,
-                                TestBubbleView* bubble_view)
+  TestFedCmAccountSelectionView(
+      Delegate* delegate,
+      views::Widget* widget,
+      TestAccountSelectionView* account_selection_view)
       : FedCmAccountSelectionView(delegate),
-        widget_(widget),
-        bubble_view_(bubble_view) {
+        dialog_widget_(widget),
+        account_selection_view_(account_selection_view) {
     auto input_protector =
         std::make_unique<views::MockInputEventActivationProtector>();
     ON_CALL(*input_protector, IsPossiblyUnintendedInteraction)
@@ -149,28 +150,29 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
   TestFedCmAccountSelectionView& operator=(
       const TestFedCmAccountSelectionView&) = delete;
 
-  const blink::mojom::RpContext& GetRpContext() { return rp_context_; }
-  size_t num_bubbles_{0u};
+  blink::mojom::RpContext GetRpContext() { return rp_context_; }
+  size_t num_dialogs_{0u};
 
  protected:
-  views::Widget* CreateBubbleWithAccessibleTitle(
+  views::Widget* CreateWidgetWithAccessibleTitle(
       const std::u16string& top_frame_etld_plus_one,
       const std::optional<std::u16string>& iframe_etld_plus_one,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
       bool show_auto_reauthn_checkbox) override {
-    ++num_bubbles_;
+    ++num_dialogs_;
     rp_context_ = rp_context;
-    return widget_;
+    return dialog_widget_;
   }
 
-  AccountSelectionBubbleViewInterface* GetBubbleView() override {
-    return bubble_view_;
+  AccountSelectionViewInterface* GetAccountSelectionView() override {
+    return account_selection_view_;
   }
 
  private:
-  raw_ptr<views::Widget> widget_;
-  raw_ptr<TestBubbleView> bubble_view_;
+  raw_ptr<views::Widget> dialog_widget_;
+  raw_ptr<TestAccountSelectionView> account_selection_view_;
   blink::mojom::RpContext rp_context_;
 };
 
@@ -215,8 +217,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     delegate_ = std::make_unique<StubAccountSelectionViewDelegate>(
         test_web_contents_.get());
 
-    widget_.reset(CreateTestWidget().release());
-    bubble_view_ = std::make_unique<TestBubbleView>();
+    dialog_widget_.reset(CreateTestWidget().release());
+    account_selection_view_ = std::make_unique<TestAccountSelectionView>();
   }
 
   IdentityProviderDisplayData CreateIdentityProviderDisplayData(
@@ -237,17 +239,19 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
 
   std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShow(
       const std::vector<content::IdentityRequestAccount>& accounts,
-      SignInMode mode,
+      SignInMode sign_in_mode,
+      blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kWidget,
       bool show_auto_reauthn_checkbox = false) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
-        delegate_.get(), widget_.get(), bubble_view_.get());
-    Show(*controller, accounts, mode);
+        delegate_.get(), dialog_widget_.get(), account_selection_view_.get());
+    Show(*controller, accounts, sign_in_mode, rp_mode);
     return controller;
   }
 
   void Show(TestFedCmAccountSelectionView& controller,
             const std::vector<content::IdentityRequestAccount>& accounts,
-            SignInMode mode,
+            SignInMode sign_in_mode,
+            blink::mojom::RpMode rp_mode,
             bool show_auto_reauthn_checkbox = false) {
     controller.Show(
         kTopFrameEtldPlusOne,
@@ -256,28 +260,32 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
           content::ClientMetadata(GURL(), GURL()),
           blink::mojom::RpContext::kSignIn, /*request_permission=*/true,
           /*has_login_status_mismatch=*/false}},
-        mode, show_auto_reauthn_checkbox);
+        sign_in_mode, rp_mode, show_auto_reauthn_checkbox);
   }
 
   std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShowMismatchDialog(
-      blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn) {
+      blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn,
+      blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kWidget) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
-        delegate_.get(), widget_.get(), bubble_view_.get());
+        delegate_.get(), dialog_widget_.get(), account_selection_view_.get());
     controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIframeEtldPlusOne,
-                                  kIdpEtldPlusOne, rp_context,
+                                  kIdpEtldPlusOne, rp_context, rp_mode,
                                   content::IdentityProviderMetadata());
-    EXPECT_EQ(TestBubbleView::SheetType::kFailure, bubble_view_->sheet_type_);
+    EXPECT_EQ(TestAccountSelectionView::SheetType::kFailure,
+              account_selection_view_->sheet_type_);
     return controller;
   }
 
   std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShowErrorDialog(
-      blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn) {
+      blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn,
+      blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kWidget) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
-        delegate_.get(), widget_.get(), bubble_view_.get());
+        delegate_.get(), dialog_widget_.get(), account_selection_view_.get());
     controller->ShowErrorDialog(
         kTopFrameEtldPlusOne, kIframeEtldPlusOne, kIdpEtldPlusOne, rp_context,
-        content::IdentityProviderMetadata(), /*error=*/std::nullopt);
-    EXPECT_EQ(TestBubbleView::SheetType::kError, bubble_view_->sheet_type_);
+        rp_mode, content::IdentityProviderMetadata(), /*error=*/std::nullopt);
+    EXPECT_EQ(TestAccountSelectionView::SheetType::kError,
+              account_selection_view_->sheet_type_);
     return controller;
   }
 
@@ -293,9 +301,10 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
 
   std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShowMultiIdp(
       const std::vector<IdentityProviderDisplayData>& idp_list,
-      SignInMode mode) {
+      SignInMode sign_in_mode,
+      blink::mojom::RpMode rp_mode) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
-        delegate_.get(), widget_.get(), bubble_view_.get());
+        delegate_.get(), dialog_widget_.get(), account_selection_view_.get());
     std::vector<content::IdentityProviderData> idp_data;
     for (const auto& idp : idp_list) {
       idp_data.emplace_back(
@@ -306,7 +315,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     }
     controller->Show(kTopFrameEtldPlusOne,
                      std::make_optional<std::string>(kIframeEtldPlusOne),
-                     idp_data, mode, /*show_auto_reauthn_checkbox=*/false);
+                     idp_data, sign_in_mode, rp_mode,
+                     /*show_auto_reauthn_checkbox=*/false);
     return controller;
   }
 
@@ -322,8 +332,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler test_render_host_factories_;
 
   std::unique_ptr<content::WebContents> test_web_contents_;
-  views::ViewsTestBase::WidgetAutoclosePtr widget_;
-  std::unique_ptr<TestBubbleView> bubble_view_;
+  views::ViewsTestBase::WidgetAutoclosePtr dialog_widget_;
+  std::unique_ptr<TestAccountSelectionView> account_selection_view_;
   std::unique_ptr<AccountSelectionView::Delegate> delegate_;
 
   base::HistogramTester histogram_tester_;
@@ -339,14 +349,17 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlow) {
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
-  EXPECT_FALSE(bubble_view_->show_back_button_);
-  EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
-            bubble_view_->sheet_type_);
-  EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
 
   observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
-  EXPECT_EQ(TestBubbleView::SheetType::kVerifying, bubble_view_->sheet_type_);
-  EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowReturning) {
@@ -360,15 +373,17 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowReturning) {
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
-  EXPECT_FALSE(bubble_view_->show_back_button_);
-  EXPECT_EQ(TestBubbleView::SheetType::kAccountPicker,
-            bubble_view_->sheet_type_);
-  EXPECT_THAT(bubble_view_->account_ids_,
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
   observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
-  EXPECT_EQ(TestBubbleView::SheetType::kVerifying, bubble_view_->sheet_type_);
-  EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId1));
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId1));
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBack) {
@@ -384,34 +399,38 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBack) {
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
-  EXPECT_FALSE(bubble_view_->show_back_button_);
-  EXPECT_EQ(TestBubbleView::SheetType::kAccountPicker,
-            bubble_view_->sheet_type_);
-  EXPECT_THAT(bubble_view_->account_ids_,
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
   observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
-  EXPECT_TRUE(bubble_view_->show_back_button_);
-  EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
-            bubble_view_->sheet_type_);
-  EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId1));
+  EXPECT_TRUE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId1));
 
   observer->OnBackButtonClicked();
-  EXPECT_FALSE(bubble_view_->show_back_button_);
-  EXPECT_EQ(TestBubbleView::SheetType::kAccountPicker,
-            bubble_view_->sheet_type_);
-  EXPECT_THAT(bubble_view_->account_ids_,
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
   observer->OnAccountSelected(accounts[1], idp_data, CreateMouseEvent());
-  EXPECT_TRUE(bubble_view_->show_back_button_);
-  EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
-            bubble_view_->sheet_type_);
-  EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId2));
+  EXPECT_TRUE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId2));
 
   observer->OnAccountSelected(accounts[1], idp_data, CreateMouseEvent());
-  EXPECT_EQ(TestBubbleView::SheetType::kVerifying, bubble_view_->sheet_type_);
-  EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId2));
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId2));
 }
 
 // Test transitioning from IdP sign-in status mismatch failure dialog to regular
@@ -423,22 +442,25 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
-  EXPECT_EQ(TestBubbleView::SheetType::kFailure, bubble_view_->sheet_type_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kFailure,
+            account_selection_view_->sheet_type_);
 
   const char kAccountId[] = "account_id";
   IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
       {kAccountId, LoginState::kSignUp},
   });
-  Show(*controller, idp_data.accounts, SignInMode::kExplicit);
+  Show(*controller, idp_data.accounts, SignInMode::kExplicit,
+       blink::mojom::RpMode::kWidget);
 
-  EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
-            bubble_view_->sheet_type_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
   observer->OnAccountSelected(idp_data.accounts[0], idp_data,
                               CreateMouseEvent());
-  EXPECT_EQ(TestBubbleView::SheetType::kVerifying, bubble_view_->sheet_type_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
 
   // Failure bubble should have been re-used for sign-in dialog.
-  EXPECT_EQ(1u, controller->num_bubbles_);
+  EXPECT_EQ(1u, controller->num_dialogs_);
 }
 
 // Test transitioning from IdP sign-in status mismatch failure dialog to regular
@@ -451,7 +473,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
-  EXPECT_EQ(TestBubbleView::SheetType::kFailure, bubble_view_->sheet_type_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kFailure,
+            account_selection_view_->sheet_type_);
 
   const char kAccountId[] = "account_id";
   IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
@@ -462,20 +485,22 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // the associated FedCM tab is inactive. Show() should not show the
   // views::Widget in this case.
   controller->OnVisibilityChanged(content::Visibility::HIDDEN);
-  Show(*controller, idp_data.accounts, SignInMode::kExplicit);
-  EXPECT_FALSE(widget_->IsVisible());
+  Show(*controller, idp_data.accounts, SignInMode::kExplicit,
+       blink::mojom::RpMode::kWidget);
+  EXPECT_FALSE(dialog_widget_->IsVisible());
 
   controller->OnVisibilityChanged(content::Visibility::VISIBLE);
-  EXPECT_TRUE(widget_->IsVisible());
+  EXPECT_TRUE(dialog_widget_->IsVisible());
 
-  EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
-            bubble_view_->sheet_type_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
   observer->OnAccountSelected(idp_data.accounts[0], idp_data,
                               CreateMouseEvent());
-  EXPECT_EQ(TestBubbleView::SheetType::kVerifying, bubble_view_->sheet_type_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
 
   // Failure bubble should have been re-used for sign-in dialog.
-  EXPECT_EQ(1u, controller->num_bubbles_);
+  EXPECT_EQ(1u, controller->num_dialogs_);
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, AutoReauthnSingleAccountFlow) {
@@ -486,9 +511,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AutoReauthnSingleAccountFlow) {
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kAuto);
 
-  EXPECT_FALSE(bubble_view_->show_back_button_);
-  EXPECT_EQ(TestBubbleView::SheetType::kVerifying, bubble_view_->sheet_type_);
-  EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
 }
 
 namespace {
@@ -570,15 +597,18 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtection) {
 
   observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
   // Nothing should change after first account selected.
-  EXPECT_FALSE(bubble_view_->show_back_button_);
-  EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
-            bubble_view_->sheet_type_);
-  EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
 
   observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
   // Should show verifying sheet after first account selected.
-  EXPECT_EQ(TestBubbleView::SheetType::kVerifying, bubble_view_->sheet_type_);
-  EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
 }
 
 // Tests that when the auth re-authn dialog is closed, the relevant metric is
@@ -610,8 +640,9 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult", 0);
 
   // Emulate user clicking the close icon.
-  widget_->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
-  controller->OnWidgetDestroying(widget_.get());
+  dialog_widget_->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+  controller->OnWidgetDestroying(dialog_widget_.get());
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
@@ -630,8 +661,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult", 0);
 
   // Emulate user closing the mismatch dialog for an unspecified reason.
-  widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-  controller->OnWidgetDestroying(widget_.get());
+  dialog_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  controller->OnWidgetDestroying(dialog_widget_.get());
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
@@ -722,7 +753,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
     CreateAndShowPopupWindow(*controller);
 
     // When pop-up window is shown, mismatch dialog should be hidden.
-    EXPECT_FALSE(widget_->IsVisible());
+    EXPECT_FALSE(dialog_widget_->IsVisible());
 
     // Emulate user completing the sign-in flow and IdP prompts closing the
     // pop-up window.
@@ -730,7 +761,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
     // Mismatch dialog should remain hidden because it has not been updated to
     // an accounts dialog yet.
-    EXPECT_FALSE(widget_->IsVisible());
+    EXPECT_FALSE(dialog_widget_->IsVisible());
 
     histogram_tester_.ExpectTotalCount(
         "Blink.FedCm.IdpSigninStatus."
@@ -745,10 +776,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
     IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
         {kAccountId, LoginState::kSignUp},
     });
-    Show(*controller, idp_data.accounts, SignInMode::kExplicit);
+    Show(*controller, idp_data.accounts, SignInMode::kExplicit,
+         blink::mojom::RpMode::kWidget);
 
     // Accounts dialog should now be visible.
-    EXPECT_TRUE(widget_->IsVisible());
+    EXPECT_TRUE(dialog_widget_->IsVisible());
   }
 
   histogram_tester_.ExpectTotalCount(
@@ -779,7 +811,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
     CreateAndShowPopupWindow(*controller);
 
     // When pop-up window is shown, mismatch dialog should be hidden.
-    EXPECT_FALSE(widget_->IsVisible());
+    EXPECT_FALSE(dialog_widget_->IsVisible());
 
     // Emulate IdP sending the IdP sign-in status header which updates the
     // mismatch dialog to an accounts dialog.
@@ -787,11 +819,12 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
     IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
         {kAccountId, LoginState::kSignUp},
     });
-    Show(*controller, idp_data.accounts, SignInMode::kExplicit);
+    Show(*controller, idp_data.accounts, SignInMode::kExplicit,
+         blink::mojom::RpMode::kWidget);
 
     // Accounts dialog should remain hidden because the pop-up window has not
     // been closed yet.
-    EXPECT_FALSE(widget_->IsVisible());
+    EXPECT_FALSE(dialog_widget_->IsVisible());
 
     histogram_tester_.ExpectTotalCount(
         "Blink.FedCm.IdpSigninStatus."
@@ -804,7 +837,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
     controller->CloseModalDialog();
 
     // Accounts dialog should now be visible.
-    EXPECT_TRUE(widget_->IsVisible());
+    EXPECT_TRUE(dialog_widget_->IsVisible());
   }
 
   histogram_tester_.ExpectTotalCount(
@@ -840,7 +873,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
     IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
         {kAccountId, LoginState::kSignUp},
     });
-    Show(*controller, idp_data.accounts, SignInMode::kExplicit);
+    Show(*controller, idp_data.accounts, SignInMode::kExplicit,
+         blink::mojom::RpMode::kWidget);
 
     histogram_tester_.ExpectTotalCount(
         "Blink.FedCm.IdpSigninStatus.PopupWindowResult", 0);
@@ -925,7 +959,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   controller->CloseModalDialog();
 
   // Widget should not be closed.
-  EXPECT_FALSE(widget_->IsClosed());
+  EXPECT_FALSE(dialog_widget_->IsClosed());
 }
 
 // Test closing the IdP sign-in pop-up window through means other than
@@ -943,7 +977,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   controller->OnPopupWindowDestroyed();
 
   // Widget should be closed.
-  EXPECT_TRUE(widget_->IsClosed());
+  EXPECT_TRUE(dialog_widget_->IsClosed());
 }
 
 // Test that the mismatch dialog can be shown again after the pop-up window is
@@ -958,22 +992,23 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   CreateAndShowPopupWindow(*controller);
 
   // Mismatch dialog should be hidden because pop-up window is open.
-  EXPECT_FALSE(widget_->IsVisible());
+  EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate IdentityProvider.close() being called in the pop-up window.
   controller->CloseModalDialog();
 
   // Mismatch dialog should remain hidden because it has not been updated to an
   // accounts dialog yet.
-  EXPECT_FALSE(widget_->IsVisible());
+  EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate another mismatch so we need to show the mismatch dialog again.
   controller->ShowFailureDialog(
       kTopFrameEtldPlusOne, kIframeEtldPlusOne, kIdpEtldPlusOne,
-      blink::mojom::RpContext::kSignIn, content::IdentityProviderMetadata());
+      blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kWidget,
+      content::IdentityProviderMetadata());
 
   // Mismatch dialog is visible again.
-  EXPECT_TRUE(widget_->IsVisible());
+  EXPECT_TRUE(dialog_widget_->IsVisible());
 }
 
 // Tests that RP context is properly set for the mismatch UI.
@@ -1029,13 +1064,14 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
       {kAccountId, LoginState::kSignUp},
   });
-  Show(*controller, idp_data.accounts, SignInMode::kExplicit);
-  EXPECT_FALSE(widget_->IsVisible());
+  Show(*controller, idp_data.accounts, SignInMode::kExplicit,
+       blink::mojom::RpMode::kWidget);
+  EXPECT_FALSE(dialog_widget_->IsVisible());
 
   controller->OnVisibilityChanged(content::Visibility::VISIBLE);
-  EXPECT_TRUE(widget_->IsVisible());
-  EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
-            bubble_view_->sheet_type_);
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
 }
 
 // Tests the following
@@ -1063,9 +1099,9 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // should remain hidden because the mismatch dialog has not been updated into
   // an accounts dialog yet.
   controller->OnVisibilityChanged(content::Visibility::HIDDEN);
-  EXPECT_FALSE(widget_->IsVisible());
+  EXPECT_FALSE(dialog_widget_->IsVisible());
   controller->OnVisibilityChanged(content::Visibility::VISIBLE);
-  EXPECT_FALSE(widget_->IsVisible());
+  EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate IdP sending the IdP sign-in status header which updates the
   // mismatch dialog to an accounts dialog.
@@ -1073,19 +1109,20 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
       {kAccountId, LoginState::kSignUp},
   });
-  Show(*controller, idp_data.accounts, SignInMode::kExplicit);
+  Show(*controller, idp_data.accounts, SignInMode::kExplicit,
+       blink::mojom::RpMode::kWidget);
 
   // The widget should now be visible.
-  EXPECT_TRUE(widget_->IsVisible());
-  EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
-            bubble_view_->sheet_type_);
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
 }
 
 // Tests that the error dialog can be shown.
 TEST_F(FedCmAccountSelectionViewDesktopTest, ErrorDialogShown) {
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowErrorDialog();
-  EXPECT_TRUE(widget_->IsVisible());
+  EXPECT_TRUE(dialog_widget_->IsVisible());
 }
 
 // Tests that RP context is properly set for the error dialog.
@@ -1117,7 +1154,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ErrorDialogGotItClicked) {
   // Trigger error dialog.
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowErrorDialog();
-  EXPECT_TRUE(widget_->IsVisible());
+  EXPECT_TRUE(dialog_widget_->IsVisible());
 
   // Emulate user clicking on "got it" button in the error dialog.
   AccountSelectionBubbleView::Observer* observer =
@@ -1136,7 +1173,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ErrorDialogMoreDetailsClicked) {
   // Trigger error dialog.
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowErrorDialog();
-  EXPECT_TRUE(widget_->IsVisible());
+  EXPECT_TRUE(dialog_widget_->IsVisible());
 
   // Emulate user clicking on "more details" button in the error dialog.
   AccountSelectionBubbleView::Observer* observer =
@@ -1157,21 +1194,24 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultiIdpWithOneIdpMismatch) {
       CreateIdentityProviderDisplayData(/*account_infos=*/{},
                                         /*has_login_status_mismatch*/ true)};
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
-      CreateAndShowMultiIdp(idp_list, SignInMode::kExplicit);
+      CreateAndShowMultiIdp(idp_list, SignInMode::kExplicit,
+                            blink::mojom::RpMode::kWidget);
 
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
-  EXPECT_FALSE(bubble_view_->show_back_button_);
-  EXPECT_EQ(TestBubbleView::SheetType::kAccountPicker,
-            bubble_view_->sheet_type_);
-  EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
 
   observer->OnAccountSelected(idp_list[0].accounts[0], idp_list[0],
                               CreateMouseEvent());
-  EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
-            bubble_view_->sheet_type_);
-  EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
 }
 
 // Tests that if a pop-up window is opened in button flow mode, closing the
@@ -1180,8 +1220,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
        ButtonFlowPopupCloseTriggersDismissCallback) {
   // Initialize a controller but do not trigger any dialogs.
   auto controller = std::make_unique<TestFedCmAccountSelectionView>(
-      delegate_.get(), widget_.get(), bubble_view_.get());
-  EXPECT_FALSE(widget_->IsVisible());
+      delegate_.get(), dialog_widget_.get(), account_selection_view_.get());
+  EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate user clicking on a button to sign in with an IDP via button flow.
   auto popup_window = std::make_unique<MockFedCmModalDialogView>(
@@ -1200,5 +1240,5 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Reset the widget explicitly since no widget was shown. Otherwise, the test
   // will complain that a widget is still open.
-  widget_.reset();
+  dialog_widget_.reset();
 }

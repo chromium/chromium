@@ -675,6 +675,7 @@ class TestDialogController
       const std::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
+      blink::mojom::RpMode rp_mode,
       bool show_auto_reauthn_checkbox,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::LoginToIdPCallback on_add_account,
@@ -729,7 +730,8 @@ class TestDialogController
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
-      const blink::mojom::RpContext& rp_context,
+      blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
       const IdentityProviderMetadata& idp_metadata,
       IdentityRequestDialogController::DismissCallback dismiss_callback,
       IdentityRequestDialogController::LoginToIdPCallback
@@ -760,7 +762,8 @@ class TestDialogController
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
-      const blink::mojom::RpContext& rp_context,
+      blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
       const IdentityProviderMetadata& idp_metadata,
       const std::optional<TokenError>& error,
       IdentityRequestDialogController::DismissCallback dismiss_callback,
@@ -3124,6 +3127,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
       const std::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       SignInMode sign_in_mode,
+      blink::mojom::RpMode rp_mode,
       bool show_auto_reauthn_checkbox,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::LoginToIdPCallback on_add_account,
@@ -3136,7 +3140,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
     // Call parent class method in order to store callback parameters.
     TestDialogController::ShowAccountsDialog(
         top_frame_for_display, iframe_for_display,
-        std::move(identity_provider_data), sign_in_mode,
+        std::move(identity_provider_data), sign_in_mode, rp_mode,
         show_auto_reauthn_checkbox, std::move(on_selected),
         std::move(on_add_account), std::move(dismiss_callback));
   }

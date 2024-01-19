@@ -1648,7 +1648,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       idp_data_for_display_,
       identity_selection_type_ == kExplicit ? SignInMode::kExplicit
                                             : SignInMode::kAuto,
-      show_auto_reauthn_checkbox,
+      rp_mode_, show_auto_reauthn_checkbox,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FederatedAuthRequestImpl::LoginToIdP,
@@ -1771,7 +1771,7 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
   login_url_ = idp_info->metadata.idp_login_url;
   request_dialog_controller_->ShowFailureDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
-      FormatOriginForDisplay(idp_origin), idp_info->rp_context,
+      FormatOriginForDisplay(idp_origin), idp_info->rp_context, rp_mode_,
       idp_info->metadata,
       base::BindOnce(&FederatedAuthRequestImpl::OnDismissFailureDialog,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -2216,7 +2216,7 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
   request_dialog_controller_->ShowErrorDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
-      idp_infos_[idp_config_url]->rp_context,
+      idp_infos_[idp_config_url]->rp_context, rp_mode_,
       idp_infos_[idp_config_url]->metadata, token_error,
       base::BindOnce(&FederatedAuthRequestImpl::OnDismissErrorDialog,
                      weak_ptr_factory_.GetWeakPtr(), idp_config_url, status,

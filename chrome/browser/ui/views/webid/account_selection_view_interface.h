@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_INTERFACE_H_
-#define CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_INTERFACE_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_VIEW_INTERFACE_H_
+#define CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_VIEW_INTERFACE_H_
 
 #include <string>
 #include <vector>
@@ -16,16 +16,16 @@ namespace content {
 struct IdentityRequestAccount;
 }  // namespace content
 
-// Interface for interacting with FedCM account selection bubble.
-class AccountSelectionBubbleViewInterface {
+// Interface for interacting with FedCM account selection dialog.
+class AccountSelectionViewInterface {
  public:
-  virtual ~AccountSelectionBubbleViewInterface() = default;
+  virtual ~AccountSelectionViewInterface() = default;
 
-  // Updates the FedCM bubble to show the "account picker" sheet.
+  // Updates the FedCM dialog to show the "account picker" sheet.
   virtual void ShowMultiAccountPicker(
       const std::vector<IdentityProviderDisplayData>& idp_data_list) = 0;
 
-  // Updates the FedCM bubble to show the "verifying" sheet.
+  // Updates the FedCM dialog to show the "verifying" sheet.
   virtual void ShowVerifyingSheet(
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_data,
@@ -40,14 +40,14 @@ class AccountSelectionBubbleViewInterface {
       const IdentityProviderDisplayData& idp_data,
       bool show_back_button) = 0;
 
-  // Updates the FedCM bubble to show the "failure" sheet.
+  // Updates the FedCM dialog to show the "failure" sheet.
   virtual void ShowFailureDialog(
       const std::u16string& top_frame_for_display,
       const std::optional<std::u16string>& iframe_for_display,
       const std::u16string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata) = 0;
 
-  // Updates the FedCM bubble to show the "error" sheet.
+  // Updates the FedCM dialog to show the "error" sheet.
   virtual void ShowErrorDialog(
       const std::u16string& top_frame_for_display,
       const std::optional<std::u16string>& iframe_for_display,
@@ -59,4 +59,4 @@ class AccountSelectionBubbleViewInterface {
   virtual std::optional<std::string> GetDialogSubtitle() const = 0;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_INTERFACE_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_VIEW_INTERFACE_H_

@@ -33,15 +33,17 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       const std::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
+      blink::mojom::RpMode rp_mode,
       bool show_auto_reauthn_checkbox,
       AccountSelectionCallback on_selected,
       LoginToIdPCallback on_add_account,
-      DismissCallback dismmiss_callback) override;
+      DismissCallback dismiss_callback) override;
 
   void ShowFailureDialog(const std::string& top_frame_for_display,
                          const std::optional<std::string>& iframe_for_display,
                          const std::string& idp_for_display,
-                         const blink::mojom::RpContext& rp_context,
+                         blink::mojom::RpContext rp_context,
+                         blink::mojom::RpMode rp_mode,
                          const IdentityProviderMetadata& idp_metadata,
                          DismissCallback dismiss_callback,
                          LoginToIdPCallback login_callback) override;
@@ -49,7 +51,8 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
   void ShowErrorDialog(const std::string& top_frame_for_display,
                        const std::optional<std::string>& iframe_for_display,
                        const std::string& idp_for_display,
-                       const blink::mojom::RpContext& rp_context,
+                       blink::mojom::RpContext rp_context,
+                       blink::mojom::RpMode rp_mode,
                        const IdentityProviderMetadata& idp_metadata,
                        const std::optional<TokenError>& error,
                        DismissCallback dismiss_callback,

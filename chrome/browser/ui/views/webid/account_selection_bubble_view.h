@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/webid/account_selection_bubble_view_interface.h"
+#include "chrome/browser/ui/views/webid/account_selection_view_interface.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "content/public/browser/identity_request_account.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -36,7 +36,7 @@ class IdpImageView;
 // account chooser for the user, and it changes the content of that dialog as
 // user moves through the FedCM flow steps.
 class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
-                                   public AccountSelectionBubbleViewInterface {
+                                   public AccountSelectionViewInterface {
   METADATA_HEADER(AccountSelectionBubbleView, views::BubbleDialogDelegateView)
 
  public:
@@ -91,7 +91,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       Observer* observer);
   ~AccountSelectionBubbleView() override;
 
-  // AccountSelectionBubbleViewInterface:
+  // AccountSelectionViewInterface:
   void ShowMultiAccountPicker(const std::vector<IdentityProviderDisplayData>&
                                   idp_display_data_list) override;
   void ShowVerifyingSheet(const content::IdentityRequestAccount& account,

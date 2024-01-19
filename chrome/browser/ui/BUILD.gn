@@ -6170,7 +6170,7 @@ static_library("ui") {
       "views/webauthn/webauthn_hover_button.h",
       "views/webid/account_selection_bubble_view.cc",
       "views/webid/account_selection_bubble_view.h",
-      "views/webid/account_selection_bubble_view_interface.h",
+      "views/webid/account_selection_view_interface.h",
       "views/webid/fedcm_account_selection_view_desktop.cc",
       "views/webid/fedcm_account_selection_view_desktop.h",
       "views/webid/fedcm_modal_dialog_view.cc",
