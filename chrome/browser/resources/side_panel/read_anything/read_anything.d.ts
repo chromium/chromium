@@ -140,6 +140,9 @@ declare namespace chrome {
     function onFontSizeChanged(increase: boolean): void;
     function onFontSizeReset(): void;
 
+    // Called when a user toggles links via the webui toolbar.
+    function onLinksEnabledToggled(): void;
+
     // Called when the letter spacing is changed via the webui toolbar.
     function onStandardLetterSpacing(): void;
     function onWideLetterSpacing(): void;

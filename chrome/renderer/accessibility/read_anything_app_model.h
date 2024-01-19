@@ -178,6 +178,7 @@ class ReadAnythingAppModel {
   void IncreaseTextSize();
   void DecreaseTextSize();
   void ResetTextSize();
+  void ToggleLinksEnabled();
 
   // PDF handling.
   void SetIsPdf(const GURL& url);

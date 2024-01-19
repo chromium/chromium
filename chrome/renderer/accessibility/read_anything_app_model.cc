@@ -868,6 +868,10 @@ void ReadAnythingAppModel::ResetTextSize() {
   font_size_ = kReadAnythingDefaultFontScale;
 }
 
+void ReadAnythingAppModel::ToggleLinksEnabled() {
+  links_enabled_ = !links_enabled_;
+}
+
 void ReadAnythingAppModel::SetIsPdf(const GURL& url) {
   is_pdf_ = url.spec().ends_with(kPDFExtension);
 }
