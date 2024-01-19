@@ -14,9 +14,8 @@ const routerRules = {
   ],
   'condition-urlpattern-constructed-ignore-case-source-network': [{
     condition: {
-      urlPattern: new URLPattern(
-          {pathname: '/**/DiReCT.TxT'},
-          {ignoreCase: true})
+      urlPattern:
+          new URLPattern({pathname: '/**/DiReCT.TxT'}, {ignoreCase: true})
     },
     source: 'network'
   }],
@@ -37,6 +36,15 @@ const routerRules = {
     },
     source: 'network'
   }],
+  'multiple-router-rules': [
+    {
+      condition: {
+        urlPattern: '/**/direct.txt',
+      },
+      source: 'network'
+    },
+    {condition: {urlPattern: '/**/direct.html'}, source: 'network'}
+  ]
 };
 
 export {routerRules};
