@@ -456,6 +456,13 @@ void ComposeSession::ModelExecutionComplete(
     token->set_high(session_id_.high());
     token->set_low(session_id_.low());
     most_recent_ok_state_->SetModelingLogEntry(std::move(log_entry));
+    // In the event that we are holding onto an error log upload it before it
+    // gets overwritten
+    if (most_recent_error_log_ && model_quality_logs_uploader_) {
+      model_quality_logs_uploader_->UploadModelQualityLogs(
+          std::move(most_recent_error_log_));
+    }
+
     // if we have a valid most recent state we no longer need an error state.
     most_recent_error_log_.reset();
   }
@@ -801,6 +808,12 @@ void ComposeSession::SetQualityLogEntryUponError(
 
     log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_was_generated_via_edit(was_input_edited);
+    // In the event that we are holding onto an error log upload it before it
+    // gets overwritten
+    if (most_recent_error_log_ && model_quality_logs_uploader_) {
+      model_quality_logs_uploader_->UploadModelQualityLogs(
+          std::move(most_recent_error_log_));
+    }
 
     most_recent_error_log_ = std::move(log_entry);
   }

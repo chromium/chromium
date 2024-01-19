@@ -1841,6 +1841,75 @@ TEST_F(ChromeComposeClientTest, TestComposeQualitySessionId) {
                 .low());
 }
 
+TEST_F(ChromeComposeClientTest, TestComposeQualityLoggedOnSubsequentError) {
+  ShowDialogAndBindMojo();
+  EXPECT_CALL(session(), ExecuteModel(_, _))
+      .WillRepeatedly(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            std::move(callback).Run(
+                base::unexpected(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        FromModelExecutionError(
+                            optimization_guide::
+                                OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kGenericFailure)),
+
+                std::make_unique<optimization_guide::ModelQualityLogEntry>(
+                    std::make_unique<
+                        optimization_guide::proto::LogAiDataRequest>()));
+          })));
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillRepeatedly(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            compose_future.SetValue(std::move(response));
+          }));
+
+  base::test::TestFuture<
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
+      quality_test_future;
+  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
+      .WillRepeatedly(testing::Invoke(
+          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+                  response) {
+            quality_test_future.SetValue(std::move(response));
+          }));
+
+  page_handler()->Compose("a user typed this", false);
+
+  compose::mojom::ComposeResponsePtr compose_result = compose_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kServerError,
+            compose_result->status);
+
+  page_handler()->Compose("a user typed that", false);
+
+  compose_result = compose_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kServerError,
+            compose_result->status);
+
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> quality_result =
+      quality_test_future.Take();
+
+  // Ensure that a quality log is emitted after a second compose error.
+  EXPECT_EQ(
+      kSessionIdLow,
+      quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+          ->session_id()
+          .low());
+  // Close UI to submit remaining quality logs.
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  quality_result = quality_test_future.Take();
+
+  EXPECT_EQ(
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds(),
+      quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+          ->request_latency_ms());
+}
+
 TEST_F(ChromeComposeClientTest, TestComposeQualityLatency) {
   ShowDialogAndBindMojo();
 
