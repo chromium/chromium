@@ -100,8 +100,11 @@ void SetUp(const base::FieldTrial::EntropyProvider& entropy_provider,
 
   // Set up the state of the features based on the obtained group.
   base::FeatureList::OverrideState feature_state =
-      group_name == kEnabledGroup ? base::FeatureList::OVERRIDE_ENABLE_FEATURE
-                                  : base::FeatureList::OVERRIDE_DISABLE_FEATURE;
+      group_name == kDefaultGroup
+          ? base::FeatureList::OVERRIDE_USE_DEFAULT
+          : (group_name == kEnabledGroup
+                 ? base::FeatureList::OVERRIDE_ENABLE_FEATURE
+                 : base::FeatureList::OVERRIDE_DISABLE_FEATURE);
 
   if (feature_state == base::FeatureList::OVERRIDE_ENABLE_FEATURE) {
     base::AssociateFieldTrialParams(

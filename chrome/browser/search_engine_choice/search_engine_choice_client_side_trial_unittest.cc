@@ -89,8 +89,19 @@ TEST_P(SearchEngineChoiceClientSideTrialTest, SetUpIfNeeded) {
 
   EXPECT_EQ(GetParam().expect_feature_enabled,
             base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger));
-  EXPECT_EQ(GetParam().expect_feature_enabled,
-            switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get());
+
+  // Using explicit checks per branch here because the value of this property
+  // depends not only on the study state set in the test, but also on the
+  // hardcoded default value, which might be subject to cherry picks on branch.
+  if (GetParam().expect_feature_enabled) {
+    // Client-side study config explicitly sets it to true.
+    EXPECT_TRUE(
+        switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get());
+  } else {
+    // Default value of the flag, independent from the feature state.
+    EXPECT_FALSE(
+        switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get());
+  }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive("WaffleStudy"));
@@ -115,11 +126,11 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     SearchEngineChoiceClientSideTrialTest,
     testing::Values(
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
         // `entropy_value` makes the group be assigned according to the
         // specified weight of each group and the order in which they are
         // declared. So for a split at 33% enabled, 33% disabled, 33% default
         // a .4 entropy value should select the "disabled" group.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
         SearchEngineChoiceFieldTrialTestParams{
             .entropy_value = 0.01,
             .channel = version_info::Channel::BETA,
@@ -154,6 +165,12 @@ INSTANTIATE_TEST_SUITE_P(
         SearchEngineChoiceFieldTrialTestParams{
             .entropy_value = 0.01,
             .channel = version_info::Channel::BETA,
+            // On other platforms we never enroll clients.
+            .expect_study_enabled = false,
+            .expect_feature_enabled = false},
+        SearchEngineChoiceFieldTrialTestParams{
+            .entropy_value = 0.01,
+            .channel = version_info::Channel::STABLE,
             // On other platforms we never enroll clients.
             .expect_study_enabled = false,
             .expect_feature_enabled = false}
