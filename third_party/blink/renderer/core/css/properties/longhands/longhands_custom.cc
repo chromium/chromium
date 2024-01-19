@@ -6830,12 +6830,15 @@ void Resize::ApplyValue(StyleResolverState& state,
   const CSSIdentifierValue& identifier_value = To<CSSIdentifierValue>(value);
 
   EResize r = EResize::kNone;
-  if (identifier_value.GetValueID() == CSSValueID::kAuto) {
+  if (identifier_value.GetValueID() == CSSValueID::kAuto ||
+      identifier_value.GetValueID() == CSSValueID::kInternalTextareaAuto) {
     if (Settings* settings = state.GetDocument().GetSettings()) {
       r = settings->GetTextAreasAreResizable() ? EResize::kBoth
                                                : EResize::kNone;
     }
-    UseCounter::Count(state.GetDocument(), WebFeature::kCSSResizeAuto);
+    if (identifier_value.GetValueID() == CSSValueID::kAuto) {
+      UseCounter::Count(state.GetDocument(), WebFeature::kCSSResizeAuto);
+    }
   } else {
     r = identifier_value.ConvertTo<EResize>();
   }

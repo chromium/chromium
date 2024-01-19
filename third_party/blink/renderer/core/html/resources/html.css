@@ -442,7 +442,7 @@ textarea {
   border: 1px solid -internal-light-dark(#767676, #858585);
   column-count: initial !important;
   -webkit-rtl-ordering: logical;
-  resize: auto;
+  resize: -internal-textarea-auto;
   cursor: text;
   padding: 2px;
   white-space: pre-wrap;

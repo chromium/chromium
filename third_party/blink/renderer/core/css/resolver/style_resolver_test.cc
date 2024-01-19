@@ -3736,4 +3736,26 @@ TEST_P(ParameterizedStyleResolverTest,
             "#target::before { content: \"X\"; color: green; }");
 }
 
+TEST_P(ParameterizedStyleResolverTest, ResizeAutoInUANotCounted) {
+  SetBodyInnerHTML(R"HTML(<textarea></textarea>)HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSResizeAuto))
+      << "resize:auto UA rule for textarea should not be counted";
+}
+
+TEST_P(ParameterizedStyleResolverTest, ResizeAutoCounted) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #resize {
+        width: 100px;
+        height: 100px;
+        overflow: scroll;
+        resize: auto;
+      }
+    </style>
+    <div id="resize"></div>
+  )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSResizeAuto))
+      << "Author style resize:auto applied to div should be counted";
+}
+
 }  // namespace blink

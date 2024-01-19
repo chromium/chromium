@@ -1774,5 +1774,15 @@
     "x-self-end",
     "y-self-start",
     "y-self-end",
+
+    // resize
+    // none
+    // both
+    // horizontal
+    // vertical
+    // block
+    // inline
+    // auto (legacy version of -internal-textarea-auto)
+    "-internal-textarea-auto",
   ],
 }
