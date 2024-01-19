@@ -395,6 +395,10 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
         return '';
     }
   }
+
+  private roundTo2DecimalPoints_(n: number): string {
+    return n.toFixed(2);
+  }
 }
 
 declare global {
