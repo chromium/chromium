@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsPrivacyHubGeolocationSubpage} from 'chrome://os-settings/lazy_load.js';
-import {appPermissionHandlerMojom, CrLinkRowElement, GeolocationAccessLevel, OpenWindowProxyImpl, Router, routes, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import {appPermissionHandlerMojom, CrLinkRowElement, GeolocationAccessLevel, OpenWindowProxyImpl, Router, routes, setAppPermissionProviderForTesting, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertNotReached, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -15,7 +15,7 @@ import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js
 import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 
 import {FakeAppPermissionHandler} from './fake_app_permission_handler.js';
-import {createApp, createFakeMetricsPrivate} from './privacy_hub_app_permission_test_util.js';
+import {createApp, createFakeMetricsPrivate, getSystemServiceName, getSystemServicePermissionText, getSystemServicesFromSubpage} from './privacy_hub_app_permission_test_util.js';
 
 type App = appPermissionHandlerMojom.App;
 
@@ -101,6 +101,63 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
 
   function getAppList(): DomRepeat|null {
     return privacyHubGeolocationSubpage.shadowRoot!.querySelector('#appList');
+  }
+
+  function checkService(
+      systemService: SettingsPrivacyHubSystemServiceRow, nameVarName: string,
+      expectedName: string, allowedTextVarName: string, allowedText: string,
+      blockedTextVarName: string, blockedText: string) {
+    // Check  service name.
+    assertEquals(privacyHubGeolocationSubpage.i18n(nameVarName), expectedName);
+    assertEquals(expectedName, getSystemServiceName(systemService));
+
+    // Check subtext.
+    switch (getGeolocationAccessLevel()) {
+      case GeolocationAccessLevel.DISALLOWED:
+        assertEquals(
+            privacyHubGeolocationSubpage.i18n(blockedTextVarName), blockedText);
+        assertEquals(
+            getSystemServicePermissionText(systemService), blockedText);
+        break;
+      case GeolocationAccessLevel.ALLOWED:
+        // Falls through to ONLY_ALLOWED_FOR_SYSTEM
+      case GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM:
+        assertEquals(
+            privacyHubGeolocationSubpage.i18n(allowedTextVarName), allowedText);
+        assertEquals(
+            getSystemServicePermissionText(systemService), allowedText);
+        break;
+    }
+  }
+
+  function checkServiceSection() {
+    assertEquals(
+        privacyHubGeolocationSubpage.i18n(
+            'privacyHubSystemServicesSectionTitle'),
+        privacyHubGeolocationSubpage.shadowRoot!
+            .querySelector<HTMLElement>(
+                '#systemServicesSectionTitle')!.innerText!.trim());
+
+    const systemServices =
+        getSystemServicesFromSubpage(privacyHubGeolocationSubpage);
+
+    assertEquals(4, systemServices.length);
+    checkService(
+        systemServices[0]!, 'privacyHubSystemServicesAutomaticTimeZoneName',
+        'Automatic time zone', 'privacyHubSystemServicesAllowedText', 'Allowed',
+        'privacyHubSystemServicesBlockedText', 'Blocked');
+    checkService(
+        systemServices[1]!, 'privacyHubSystemServicesSunsetScheduleName',
+        'Sunset schedule', 'privacyHubSystemServicesAllowedText', 'Allowed',
+        'privacyHubSystemServicesBlockedText', 'Blocked');
+    checkService(
+        systemServices[2]!, 'privacyHubSystemServicesLocalWeatherName',
+        'Local weather', 'privacyHubSystemServicesAllowedText', 'Allowed',
+        'privacyHubSystemServicesBlockedText', 'Blocked');
+    checkService(
+        systemServices[3]!, 'privacyHubSystemServicesDarkThemeName',
+        'Dark theme', 'privacyHubSystemServicesAllowedText', 'Allowed',
+        'privacyHubSystemServicesBlockedText', 'Blocked');
   }
 
   test('App list displayed when geolocation allowed', async () => {
@@ -313,4 +370,18 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
     assertNull(getManagePermissionsInChromeRow());
     assertTrue(!!getNoWebsiteHasAccessTextRow());
   });
+
+  test('System services section', async () => {
+    await initPage();
+
+    setGeolocationAccessLevel(GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM);
+    checkServiceSection();
+
+    setGeolocationAccessLevel(GeolocationAccessLevel.DISALLOWED);
+    checkServiceSection();
+
+    setGeolocationAccessLevel(GeolocationAccessLevel.ALLOWED);
+    checkServiceSection();
+  });
+
 });

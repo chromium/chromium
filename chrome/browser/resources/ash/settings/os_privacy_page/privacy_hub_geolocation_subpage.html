@@ -1,4 +1,8 @@
 <style include="settings-shared">
+  .list-item:not(:last-of-type) {
+    border-bottom: var(--cr-separator-line);
+  }
+
   h2 {
     padding-inline-start: var(--cr-section-padding);
   }
@@ -55,6 +59,7 @@
     </div>
   </template>
 </div>
+
 <div class="hr"></div>
 <div id="websitesSection">
   <h2 id="websitesSectionTitle">$i18n{websitesSectionTitle}</h2>
@@ -75,4 +80,40 @@
     </template>
   </div>
 </div>
+
 <div class="hr"></div>
+<div id="systemServicesSection">
+  <h2 id="systemServicesSectionTitle">
+    $i18n{privacyHubSystemServicesSectionTitle}
+  </h2>
+  <div class="list-frame">
+      <settings-privacy-hub-system-service-row
+          class="list-item"
+          name="$i18n{privacyHubSystemServicesAutomaticTimeZoneName}"
+          permission-state="[[getSystemServicesPermissionText_(
+            prefs.ash.user.geolocation_access_level.value)]]"
+          icon-source="chrome://app-icon/$i18n{osSettingsAppId}/64">
+      </settings-privacy-hub-system-service-row>
+      <settings-privacy-hub-system-service-row
+          class="list-item"
+          name="$i18n{privacyHubSystemServicesSunsetScheduleName}"
+          permission-state="[[getSystemServicesPermissionText_(
+            prefs.ash.user.geolocation_access_level.value)]]"
+          icon-source="chrome://app-icon/$i18n{osSettingsAppId}/64">
+      </settings-privacy-hub-system-service-row>
+      <settings-privacy-hub-system-service-row
+          class="list-item"
+          name="$i18n{privacyHubSystemServicesLocalWeatherName}"
+          permission-state="[[getSystemServicesPermissionText_(
+            prefs.ash.user.geolocation_access_level.value)]]"
+          icon-source="chrome://app-icon/$i18n{osSettingsAppId}/64">
+      </settings-privacy-hub-system-service-row>
+      <settings-privacy-hub-system-service-row
+          class="list-item"
+          name="$i18n{privacyHubSystemServicesDarkThemeName}"
+          permission-state="[[getSystemServicesPermissionText_(
+            prefs.ash.user.geolocation_access_level.value)]]"
+          icon-source="chrome://app-icon/$i18n{osSettingsAppId}/64">
+      </settings-privacy-hub-system-service-row>
+  </div>
+</div>

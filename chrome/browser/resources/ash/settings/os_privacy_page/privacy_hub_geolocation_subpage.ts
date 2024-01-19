@@ -192,6 +192,17 @@ export class SettingsPrivacyHubGeolocationSubpage extends
         LOCATION_PERMISSION_CHANGE_FROM_SETTINGS_HISTOGRAM_NAME, accessLevel,
         GEOLOCATION_ACCESS_LEVEL_ENUM_SIZE);
   }
+
+  private geolocationAllowedForSystem_(): boolean {
+    return this.getPref<GeolocationAccessLevel>(
+                   'ash.user.geolocation_access_level')
+               .value !== GeolocationAccessLevel.DISALLOWED;
+  }
+  private getSystemServicesPermissionText_(): string {
+    return this.geolocationAllowedForSystem_() ?
+        this.i18n('privacyHubSystemServicesAllowedText') :
+        this.i18n('privacyHubSystemServicesBlockedText');
+  }
 }
 
 declare global {
