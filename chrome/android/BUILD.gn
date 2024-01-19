@@ -1629,6 +1629,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/language/android:javatests",
       "//chrome/browser/lens:java",
       "//chrome/browser/locale:java",
+      "//chrome/browser/magic_stack/android:java",
       "//chrome/browser/notifications:java",
       "//chrome/browser/notifications:javatests",
       "//chrome/browser/omaha/android:java",

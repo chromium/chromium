@@ -1039,7 +1039,7 @@ public final class ReturnToChromeUtil {
         NewTabPage newTabPage = (NewTabPage) nativePage;
         homeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(ntpTab, lastActiveTab);
         if (StartSurfaceConfiguration.useMagicStack()) {
-            newTabPage.showMagicStackWithHomeSurfaceUi(lastActiveTab);
+            newTabPage.showMagicStack(lastActiveTab);
         } else {
             newTabPage.showHomeSurfaceUi(lastActiveTab);
         }

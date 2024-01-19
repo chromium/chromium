@@ -103,7 +103,11 @@ public class ShowNtpAtStartupTest {
         StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
 
         verifyTabCountAndActiveTabUrl(
-                mActivityTestRule.getActivity(), 1, TAB_URL, /* expectHomeSurfaceUiShown= */ null);
+                mActivityTestRule.getActivity(),
+                1,
+                TAB_URL,
+                /* expectHomeSurfaceUiShown= */ null,
+                /* magicStackEnabled= */ false);
     }
 
     @Test
@@ -118,7 +122,11 @@ public class ShowNtpAtStartupTest {
         StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
 
         verifyTabCountAndActiveTabUrl(
-                mActivityTestRule.getActivity(), 1, TAB_URL, /* expectHomeSurfaceUiShown= */ null);
+                mActivityTestRule.getActivity(),
+                1,
+                TAB_URL,
+                /* expectHomeSurfaceUiShown= */ null,
+                /* magicStackEnabled= */ false);
     }
 
     @Test
@@ -140,7 +148,8 @@ public class ShowNtpAtStartupTest {
                 mActivityTestRule.getActivity(),
                 2,
                 UrlConstants.NTP_URL,
-                /* expectHomeSurfaceUiShown= */ true);
+                /* expectHomeSurfaceUiShown= */ true,
+                /* magicStackEnabled= */ false);
         histogram.assertExpected();
     }
 
@@ -168,7 +177,8 @@ public class ShowNtpAtStartupTest {
                 mActivityTestRule.getActivity(),
                 3,
                 UrlConstants.NTP_URL,
-                /* expectHomeSurfaceUiShown= */ true);
+                /* expectHomeSurfaceUiShown= */ true,
+                /* magicStackEnabled= */ false);
         histogram.assertExpected();
     }
 
@@ -197,7 +207,8 @@ public class ShowNtpAtStartupTest {
                 mActivityTestRule.getActivity(),
                 2,
                 modifiedNtpUrl,
-                /* expectHomeSurfaceUiShown= */ false);
+                /* expectHomeSurfaceUiShown= */ false,
+                /* magicStackEnabled= */ false);
         histogram.assertExpected();
     }
 
@@ -214,7 +225,11 @@ public class ShowNtpAtStartupTest {
         StartSurfaceTestUtils.waitForTabModel(cta);
         // Verifies that a NTP is created and set as the current Tab.
         verifyTabCountAndActiveTabUrl(
-                cta, 2, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
+                cta,
+                2,
+                UrlConstants.NTP_URL,
+                /* expectHomeSurfaceUiShown= */ true,
+                /* magicStackEnabled= */ false);
 
         waitForNtpLoaded(cta.getActivityTab());
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
@@ -255,7 +270,11 @@ public class ShowNtpAtStartupTest {
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
+                cta,
+                3,
+                UrlConstants.NTP_URL,
+                /* expectHomeSurfaceUiShown= */ true,
+                /* magicStackEnabled= */ false);
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
@@ -303,12 +322,47 @@ public class ShowNtpAtStartupTest {
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
+                cta,
+                3,
+                UrlConstants.NTP_URL,
+                /* expectHomeSurfaceUiShown= */ true,
+                /* magicStackEnabled= */ false);
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
         Assert.assertTrue(ntp.isSingleTabCardVisibleForTesting());
         onViewWaiting(allOf(withId(R.id.single_tab_view), isDisplayed()));
+        View singleTabModule = cta.findViewById(R.id.single_tab_view);
+        Assert.assertEquals(
+                View.VISIBLE, singleTabModule.findViewById(R.id.tab_thumbnail).getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @EnableFeatures({
+        ChromeFeatureList.SURFACE_POLISH,
+        ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID,
+        ChromeFeatureList.MAGIC_STACK_ANDROID + "<Study"
+    })
+    @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
+    public void testSingleTabModule_MagicStack() throws IOException {
+        StartSurfaceTestUtils.prepareTabStateMetadataFile(
+                new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
+        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+
+        // Verifies that a new NTP is created and set as the active Tab.
+        verifyTabCountAndActiveTabUrl(
+                cta,
+                3,
+                UrlConstants.NTP_URL,
+                /* expectHomeSurfaceUiShown= */ true,
+                /* magicStackEnabled= */ true);
+        waitForNtpLoaded(cta.getActivityTab());
+
+        onViewWaiting(allOf(withId(R.id.home_modules_recycler_view), isDisplayed()));
         View singleTabModule = cta.findViewById(R.id.single_tab_view);
         Assert.assertEquals(
                 View.VISIBLE, singleTabModule.findViewById(R.id.tab_thumbnail).getVisibility());
@@ -637,6 +691,24 @@ public class ShowNtpAtStartupTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     public void testClickSingleTabCardCloseNtpHomeSurface() throws IOException {
+        testClickSingleTabCardCloseNtpHomeSurfaceImpl(/* magicStackEnabled= */ false);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @EnableFeatures({
+        ChromeFeatureList.SURFACE_POLISH,
+        ChromeFeatureList.MAGIC_STACK_ANDROID,
+        ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID
+    })
+    @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
+    public void testClickSingleTabCardCloseNtpHomeSurface_MagicStack() throws IOException {
+        testClickSingleTabCardCloseNtpHomeSurfaceImpl(/* magicStackEnabled= */ true);
+    }
+
+    private void testClickSingleTabCardCloseNtpHomeSurfaceImpl(boolean magicStackEnabled)
+            throws IOException {
         StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -644,7 +716,11 @@ public class ShowNtpAtStartupTest {
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta, 2, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
+                cta,
+                2,
+                UrlConstants.NTP_URL,
+                /* expectHomeSurfaceUiShown= */ true,
+                /* magicStackEnabled= */ magicStackEnabled);
         waitForNtpLoaded(cta.getActivityTab());
 
         try {
@@ -655,7 +731,12 @@ public class ShowNtpAtStartupTest {
         }
 
         // Verifies that the last active Tab is showing, and NTP home surface is closed.
-        verifyTabCountAndActiveTabUrl(cta, 1, TAB_URL, /* expectHomeSurfaceUiShown= */ null);
+        verifyTabCountAndActiveTabUrl(
+                cta,
+                1,
+                TAB_URL,
+                /* expectHomeSurfaceUiShown= */ null,
+                /* magicStackEnabled= */ false);
     }
 
     /**
@@ -675,7 +756,11 @@ public class ShowNtpAtStartupTest {
         StartSurfaceTestUtils.waitForTabModel(cta);
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta, 2, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
+                cta,
+                2,
+                UrlConstants.NTP_URL,
+                /* expectHomeSurfaceUiShown= */ true,
+                /* magicStackEnabled= */ false);
         waitForNtpLoaded(cta.getActivityTab());
 
         Tab lastActiveTab = cta.getCurrentTabModel().getTabAt(0);
@@ -1044,7 +1129,11 @@ public class ShowNtpAtStartupTest {
     }
 
     private void verifyTabCountAndActiveTabUrl(
-            ChromeTabbedActivity cta, int tabCount, String url, Boolean expectHomeSurfaceUiShown) {
+            ChromeTabbedActivity cta,
+            int tabCount,
+            String url,
+            Boolean expectHomeSurfaceUiShown,
+            boolean magicStackEnabled) {
         Assert.assertEquals(tabCount, cta.getCurrentTabModel().getCount());
         Tab tab = StartSurfaceTestUtils.getCurrentTabFromUIThread(cta);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -1052,9 +1141,15 @@ public class ShowNtpAtStartupTest {
                     Assert.assertTrue(TextUtils.equals(url, tab.getUrl().getSpec()));
                 });
         if (expectHomeSurfaceUiShown != null) {
-            Assert.assertEquals(
-                    expectHomeSurfaceUiShown,
-                    ((NewTabPage) tab.getNativePage()).isSingleTabCardVisibleForTesting());
+            if (magicStackEnabled) {
+                Assert.assertEquals(
+                        expectHomeSurfaceUiShown,
+                        ((NewTabPage) tab.getNativePage()).isMagicStackVisibleForTesting());
+            } else {
+                Assert.assertEquals(
+                        expectHomeSurfaceUiShown,
+                        ((NewTabPage) tab.getNativePage()).isSingleTabCardVisibleForTesting());
+            }
         }
     }
 

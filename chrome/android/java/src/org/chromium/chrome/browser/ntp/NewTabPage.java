@@ -85,6 +85,7 @@ import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -575,22 +576,7 @@ public class NewTabPage
                     mTab.loadUrl(new LoadUrlParams(gurl));
                 });
 
-        boolean useMagicStack = StartSurfaceConfiguration.useMagicStack();
-        if (useMagicStack) {
-            mContextMenuStartPosition =
-                    ReturnToChromeUtil.calculateContextMenuStartPosition(mActivity.getResources());
-        }
-
-        // If new NewTabPage is created via back operations, re-show the single Tab card with the
-        // previously tracked Tab.
-        if (mHomeSurfaceTracker != null && mHomeSurfaceTracker.isHomeSurfaceTab(mTab)) {
-            if (useMagicStack) {
-                showMagicStackWithHomeSurfaceUi(mHomeSurfaceTracker.getLastActiveTabToTrack());
-            } else {
-                showHomeSurfaceUi(mHomeSurfaceTracker.getLastActiveTabToTrack());
-            }
-            ReturnToChromeUtil.recordHomeSurfaceShown();
-        }
+        initializeHomeModules();
 
         TraceEvent.end(TAG);
     }
@@ -661,6 +647,36 @@ public class NewTabPage
                         HelpAndFeedbackLauncherImpl.getForProfile(profile),
                         mTabStripHeightSupplier);
         mFeedSurfaceProvider = feedSurfaceCoordinator;
+    }
+
+    /** Initialize the single tab card on home surface NTP or magic stack. */
+    private void initializeHomeModules() {
+        boolean isTrackingTabReady =
+                mHomeSurfaceTracker != null && mHomeSurfaceTracker.isHomeSurfaceTab(mTab);
+        // The magic stack is shown on every NTP. There are three cases:
+        // 1) on any normal NewTabPage. Initialize the magic stack here.
+        // 2) The home surface NewTabPage which is created via back operations. Initialize the
+        // magic stack here, and re-show the single Tab card with the previously tracked Tab.
+        // 3) The home surface NewTabPage which is created at startup. The magic stack will be
+        // initialized later since its tracking Tab hasn't been available yet.
+        // The launch type of a home surface NTP is TabLaunchType.FROM_STARTUP.
+        if (StartSurfaceConfiguration.useMagicStack()) {
+            mContextMenuStartPosition =
+                    ReturnToChromeUtil.calculateContextMenuStartPosition(mActivity.getResources());
+            if (isTrackingTabReady) {
+                // Case 2) on home surface NTP via back operations.
+                showMagicStack(mHomeSurfaceTracker.getLastActiveTabToTrack());
+            } else if (mTab.getLaunchType() != TabLaunchType.FROM_STARTUP) {
+                // Case 1) on normal NTP.
+                showMagicStack(null);
+            }
+        } else if (isTrackingTabReady) { // On NTP home surface with magic stack disabled.
+            showHomeSurfaceUi(mHomeSurfaceTracker.getLastActiveTabToTrack());
+        }
+
+        if (isTrackingTabReady) {
+            ReturnToChromeUtil.recordHomeSurfaceShown();
+        }
     }
 
     /**
@@ -1210,18 +1226,17 @@ public class NewTabPage
     /**
      * Shows the magic stack on the home surface NTP.
      *
-     * @param mostRecentTab The last shown Tab.
+     * @param mostRecentTab The last shown Tab if exists. It is non null for NTP home surface only.
      */
-    public void showMagicStackWithHomeSurfaceUi(Tab mostRecentTab) {
+    public void showMagicStack(Tab mostRecentTab) {
         if (mostRecentTab != null && !UrlUtilities.isNtpUrl(mostRecentTab.getUrl())) {
             mMostRecentTabSupplier.set(mostRecentTab);
         }
 
         if (mHomeModulesCoordinator == null) {
             initializeMagicStack(mostRecentTab);
-        } else {
-            mHomeModulesCoordinator.show(this::onMagicStackShown);
         }
+        mHomeModulesCoordinator.show(this::onMagicStackShown);
     }
 
     /** Show the module when the current new tab page is been used as the home surface. */
@@ -1270,7 +1285,6 @@ public class NewTabPage
                                 .inflate();
         updateSingleTabCardContainerMargins(mHomeModulesContainer);
         mHomeModulesCoordinator = new HomeModulesCoordinator(mActivity, this, mNewTabPageLayout);
-        mHomeModulesCoordinator.show(this::onMagicStackShown);
     }
 
     private void onMagicStackShown(boolean isVisible) {
@@ -1312,6 +1326,12 @@ public class NewTabPage
         if (mSingleTabSwitcherCoordinator == null) return false;
 
         return mSingleTabSwitcherCoordinator.isVisible();
+    }
+
+    public boolean isMagicStackVisibleForTesting() {
+        if (mHomeModulesContainer == null) return false;
+
+        return mHomeModulesContainer.getVisibility() == View.VISIBLE;
     }
 
     /* Destroy the single tab card on the {@link NewTabPageLayout}. */
