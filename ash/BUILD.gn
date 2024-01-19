@@ -4504,6 +4504,8 @@ static_library("test_support") {
     "system/status_area_widget_test_helper.cc",
     "system/status_area_widget_test_helper.h",
     "system/unified/system_tray_test_api.cc",
+    "test/active_window_waiter.cc",
+    "test/active_window_waiter.h",
     "test/ash_test_base.cc",
     "test/ash_test_base.h",
     "test/ash_test_color_generator.cc",

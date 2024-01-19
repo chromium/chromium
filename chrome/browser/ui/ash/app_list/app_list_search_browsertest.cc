@@ -11,7 +11,7 @@
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
-#include "base/memory/raw_ptr.h"
+#include "ash/test/active_window_waiter.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/search/test/app_list_search_test_helper.h"
@@ -27,46 +27,9 @@
 #include "components/app_constants/constants.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/wm/public/activation_change_observer.h"
-#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 namespace {
-
-// Waits for a window to be activated and returns it via the Wait() method.
-class ActiveWindowWaiter : public wm::ActivationChangeObserver {
- public:
-  explicit ActiveWindowWaiter(aura::Window* root_window)
-      : root_window_(root_window) {
-    wm::GetActivationClient(root_window_)->AddObserver(this);
-  }
-
-  ~ActiveWindowWaiter() override {
-    if (!found_window_) {
-      wm::GetActivationClient(root_window_)->RemoveObserver(this);
-    }
-  }
-
-  aura::Window* Wait() {
-    run_loop_.Run();
-    return found_window_;
-  }
-
-  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override {
-    if (gained_active) {
-      found_window_ = gained_active;
-      wm::GetActivationClient(root_window_)->RemoveObserver(this);
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  base::RunLoop run_loop_;
-  raw_ptr<aura::Window> root_window_ = nullptr;
-  raw_ptr<aura::Window> found_window_ = nullptr;
-};
 
 class AppListSearchBrowserTest : public InProcessBrowserTest {
  public:
