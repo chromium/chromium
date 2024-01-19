@@ -4,7 +4,12 @@
 
 #include "chrome/browser/ui/views/compose/compose_dialog_view.h"
 
+#include <vector>
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
+#include "components/renderer_context_menu/context_menu_delegate.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -100,7 +105,41 @@ gfx::Rect ComposeDialogView::GetBubbleBounds() {
 bool ComposeDialogView::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
-  return false;
+  ContextMenuDelegate* menu_delegate = ContextMenuDelegate::FromWebContents(
+      content::WebContents::FromRenderFrameHost(&render_frame_host));
+  DCHECK(menu_delegate);
+
+  std::unique_ptr<RenderViewContextMenuBase> menu =
+      menu_delegate->BuildMenu(render_frame_host, params);
+  // Remove everything that is not copy, paste, or cut or spellcheck
+  // suggestions.
+  std::vector<int> command_ids;
+  for (size_t index = 0; index < menu->menu_model().GetItemCount(); index++) {
+    int command_id = menu->menu_model().GetCommandIdAt(index);
+    if ((command_id < IDC_CONTENT_CONTEXT_COPY ||
+         command_id > IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE) &&
+        (command_id < IDC_SPELLCHECK_SUGGESTION_0 ||
+         command_id > IDC_SPELLCHECK_SUGGESTION_LAST) &&
+        command_id != IDC_CONTENT_CONTEXT_INSPECTELEMENT && command_id > 0) {
+      command_ids.push_back(command_id);
+    }
+  }
+
+  for (size_t index = 0; index < command_ids.size(); index++) {
+    menu->RemoveMenuItem(command_ids[index]);
+  }
+  menu->RemoveAdjacentSeparators();
+
+  // There's no method to remove the final separator if there is one, so we have
+  // to hack around it.
+  menu->RemoveSeparatorBeforeMenuItem(IDC_CONTENT_CONTEXT_INSPECTELEMENT);
+  menu->RemoveMenuItem(IDC_CONTENT_CONTEXT_INSPECTELEMENT);
+
+  // Only show the menu if there are items in it.
+  if (menu->menu_model().GetItemCount() > 0) {
+    menu_delegate->ShowMenu(std::move(menu));
+  }
+  return true;
 }
 
 base::WeakPtr<ComposeDialogView> ComposeDialogView::GetWeakPtr() {
