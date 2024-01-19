@@ -11,74 +11,69 @@
 // Requires functions from fill.js, form.js, and autofill_form_features.js.
 
 import {processChildFrameMessage} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
-
-/**
- * Namespace for this file. It depends on |__gCrWeb| having already been
- * injected. String 'formHandlers' is used in |__gCrWeb['formHandlers']| as it
- * needs to be accessed in Objective-C code.
- */
-__gCrWeb.formHandlers = {};
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * The MutationObserver tracking form related changes.
  */
-let formMutationObserver = null;
+let formMutationObserver: MutationObserver|null = null;
 
 /**
  * The form mutation message scheduled to be sent to browser.
  */
-let formMutationMessageToSend = null;
+let formMutationMessageToSend: object|null = null;
 
 /**
  * A message scheduled to be sent to host on the next runloop.
  */
-let messageToSend = null;
+let messageToSend: object|null = null;
 
 /**
  * The last HTML element that had focus.
  */
-let lastFocusedElement = null;
+let lastFocusedElement: Element|null = null;
 
 /**
  * The original implementation of HTMLFormElement.submit that will be called by
  * the hook.
- * @private
  */
-let formSubmitOriginalFunction = null;
+let formSubmitOriginalFunction: Function|null = null;
 
 /**
- * Schedule |mesg| to be sent on next runloop.
+ * Schedule `mesg` to be sent on next runloop.
  * If called multiple times on the same runloop, only the last message is really
  * sent.
  */
-function sendMessageOnNextLoop_(mesg) {
+function sendMessageOnNextLoop(mesg: object): void {
   if (!messageToSend) {
     setTimeout(function() {
-      __gCrWeb.common.sendWebKitMessage('FormHandlersMessage', messageToSend);
+      sendWebKitMessage('FormHandlersMessage', messageToSend!);
       messageToSend = null;
     }, 0);
   }
   messageToSend = mesg;
 }
 
-/** @private
- * @param {string} originalURL A string containing a URL (absolute, relative...)
- * @return {string} A string containing a full URL (absolute with scheme)
+/**
+ * @param originalURL A string containing a URL (absolute, relative...)
+ * @return A string containing a full URL (absolute with scheme)
  */
-function getFullyQualifiedUrl_(originalURL) {
+function getFullyQualifiedUrl(originalURL: string): string {
   // A dummy anchor (never added to the document) is used to obtain the
-  // fully-qualified URL of |originalURL|.
+  // fully-qualified URL of `originalURL`.
   const anchor = document.createElement('a');
   anchor.href = originalURL;
   return anchor.href;
 }
 
 /**
- * @param {Element} A form element to check.
- * @return {boolean} Whether the element is an input of type password.
+ * @param A form element to check.
+ * @return Whether the element is an input of type password.
  */
-function isPasswordField_(element) {
-  return element.tagName === 'INPUT' && element.type === 'password';
+function isPasswordField(element: Element): boolean {
+  return element.tagName === 'INPUT' &&
+      (element as HTMLInputElement).type === 'password';
 }
 
 /**
@@ -97,14 +92,16 @@ function isPasswordField_(element) {
  * This is done with a single event handler for each type being added to the
  * main document element which checks the source element of the event; this
  * is much easier to manage than adding handlers to individual elements.
- * @private
  */
-function formActivity_(evt) {
+function formActivity(evt: Event): void {
   const validTagNames = ['FORM', 'INPUT', 'OPTION', 'SELECT', 'TEXTAREA'];
-  let target = evt.target;
+  if (!evt.target) {
+    return;
+  }
 
+  let target = evt.target as Element;
   if (!validTagNames.includes(target.tagName)) {
-    const path = evt.composedPath();
+    const path = evt.composedPath() as Element[];
     let foundValidTagName = false;
 
     // Checks if a valid tag name is found in the event path when the tag name
@@ -126,76 +123,77 @@ function formActivity_(evt) {
     lastFocusedElement = document.activeElement;
   }
   if (['change', 'input'].includes(evt.type) &&
-      __gCrWeb.form.wasEditedByUser !== null) {
-    __gCrWeb.form.wasEditedByUser.set(target, evt.isTrusted);
+      gCrWeb.form.wasEditedByUser !== null) {
+    gCrWeb.form.wasEditedByUser.set(target, evt.isTrusted);
   }
 
   if (evt.target !== lastFocusedElement) {
     return;
   }
-  const form = target.tagName === 'FORM' ? target : target.form;
+  const form = target.tagName ===
+      'FORM' ? target : (target as HTMLFormElement)['form'];
   const field = target.tagName === 'FORM' ? null : target;
 
-  __gCrWeb.fill.setUniqueIDIfNeeded(form);
-  const formUniqueId = __gCrWeb.fill.getUniqueID(form);
-  __gCrWeb.fill.setUniqueIDIfNeeded(field);
-  const fieldUniqueId = __gCrWeb.fill.getUniqueID(field);
+  gCrWeb.fill.setUniqueIDIfNeeded(form);
+  const formUniqueId = gCrWeb.fill.getUniqueID(form);
+  gCrWeb.fill.setUniqueIDIfNeeded(field);
+  const fieldUniqueId = gCrWeb.fill.getUniqueID(field);
 
-  const fieldType = target.type || '';
-  const fieldValue = target.value || '';
+  const fieldType = 'type' in target ? target.type : '';
+  const fieldValue = 'value' in target ? target.value : '';
 
   const msg = {
     'command': 'form.activity',
-    'frameID': __gCrWeb.message.getFrameId(),
-    'formName': __gCrWeb.form.getFormIdentifier(form),
+    'frameID': gCrWeb.message.getFrameId(),
+    'formName': gCrWeb.form.getFormIdentifier(form),
     'uniqueFormID': formUniqueId,
-    'fieldIdentifier': __gCrWeb.form.getFieldIdentifier(field),
+    'fieldIdentifier': gCrWeb.form.getFieldIdentifier(field),
     'uniqueFieldID': fieldUniqueId,
     'fieldType': fieldType,
     'type': evt.type,
     'value': fieldValue,
     'hasUserGesture': evt.isTrusted,
   };
-  sendMessageOnNextLoop_(msg);
+  sendMessageOnNextLoop(msg);
 }
 
 
 /**
  * Capture form submit actions.
  */
-function submitHandler_(evt) {
+function submitHandler(evt: Event): void {
   if (evt['defaultPrevented']) return;
-  if (evt.target.tagName !== 'FORM') {
+  if (!evt.target || (evt.target as Element).tagName !== 'FORM') {
     return;
   }
 
-  formSubmitted_(evt.target);
+  formSubmitted(evt.target as HTMLFormElement);
 }
 
 // Send the form data to the browser.
-function formSubmitted_(form) {
+function formSubmitted(form: HTMLFormElement): void {
   // Default action is to re-submit to same page.
   const action = form.getAttribute('action') || document.location.href;
-  __gCrWeb.common.sendWebKitMessage('FormHandlersMessage', {
+  sendWebKitMessage('FormHandlersMessage', {
     'command': 'form.submit',
-    'frameID': __gCrWeb.message.getFrameId(),
-    'formName': __gCrWeb.form.getFormIdentifier(form),
-    'href': getFullyQualifiedUrl_(action),
-    'formData': __gCrWeb.fill.autofillSubmissionData(form),
+    'frameID': gCrWeb.message.getFrameId(),
+    'formName': gCrWeb.form.getFormIdentifier(form),
+    'href': getFullyQualifiedUrl(action),
+    'formData': gCrWeb.fill.autofillSubmissionData(form),
   });
 }
 
 /**
- * Schedules |msg| to be sent after |delay|. Until |msg| is sent, further calls
+ * Schedules `msg` to be sent after `delay`. Until `msg` is sent, further calls
  * to this function are ignored.
  */
-function sendFormMutationMessageAfterDelay_(msg, delay) {
+function sendFormMutationMessageAfterDelay(msg: object, delay: number): void {
   if (formMutationMessageToSend) return;
 
   formMutationMessageToSend = msg;
   setTimeout(function() {
-    __gCrWeb.common.sendWebKitMessage(
-        'FormHandlersMessage', formMutationMessageToSend);
+    sendWebKitMessage(
+        'FormHandlersMessage', formMutationMessageToSend!);
     formMutationMessageToSend = null;
   }, delay);
 }
@@ -204,78 +202,79 @@ function sendFormMutationMessageAfterDelay_(msg, delay) {
  * Checks if cross-frame filling is enabled and, if so, forwards messages to
  * the Child Frame Registration lib.
  */
-function maybeProcessChildFrame_(event) {
-  if (__gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled()) {
+function maybeProcessChildFrame(event: MessageEvent<any>): void {
+  if (gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled()) {
     processChildFrameMessage(event);
   }
 }
 
-function attachListeners_() {
+function attachListeners(): void {
   /**
    * Focus events performed on the 'capture' phase otherwise they are often
    * not received.
    * Input and change performed on the 'capture' phase as they are needed to
    * detect if the current value is entered by the user.
    */
-  document.addEventListener('focus', formActivity_, true);
-  document.addEventListener('blur', formActivity_, true);
-  document.addEventListener('change', formActivity_, true);
-  document.addEventListener('input', formActivity_, true);
-  document.addEventListener('reset', formActivity_, true);
+  document.addEventListener('focus', formActivity, true);
+  document.addEventListener('blur', formActivity, true);
+  document.addEventListener('change', formActivity, true);
+  document.addEventListener('input', formActivity, true);
+  document.addEventListener('reset', formActivity, true);
 
   /**
    * Other events are watched at the bubbling phase as this seems adequate in
    * practice and it is less obtrusive to page scripts than capture phase.
    */
-  document.addEventListener('keyup', formActivity_, false);
-  document.addEventListener('submit', submitHandler_, false);
+  document.addEventListener('keyup', formActivity, false);
+  document.addEventListener('submit', submitHandler, false);
 
   /**
    * Receipt of cross-frame messages for Child Frame Registration don't use the
-   * `formActivity_` handler, but need to be attached under the same conditions.
+   * `formActivity` handler, but need to be attached under the same conditions.
    */
-  window.addEventListener('message', maybeProcessChildFrame_);
+  window.addEventListener('message', maybeProcessChildFrame);
 
   // Per specification, SubmitEvent is not triggered when calling form.submit().
   // Hook the method to call the handler in that case.
   if (formSubmitOriginalFunction === null) {
     formSubmitOriginalFunction = HTMLFormElement.prototype.submit;
     HTMLFormElement.prototype.submit = function() {
-      // If an error happens in formSubmitted_, this will cancel the form
+      // If an error happens in formSubmitted, this will cancel the form
       // submission which can lead to usability issue for the user.
-      // Put the formSubmitted_ in a try catch to ensure the original function
+      // Put the formSubmitted in a try catch to ensure the original function
       // is always called.
       try {
-        formSubmitted_(this);
+        formSubmitted(this);
       } catch (e) {
       }
-      formSubmitOriginalFunction.call(this);
+      formSubmitOriginalFunction!.call(this);
     };
   }
 }
 
 // Attach the listeners immediately to try to catch early actions of the user.
-attachListeners_();
+attachListeners();
 
 // Initial page loading can remove the listeners. Schedule a reattach after page
 // build.
-setTimeout(attachListeners_, 1000);
+setTimeout(attachListeners, 1000);
 
 /**
  * Finds recursively all the form control elements in a node list.
  *
- * @param {NodeList} The node list from which to extract the elements.
- * @return {Element} The extracted elements or an empty list if there is no
+ * @param nodeList The node list from which to extract the elements.
+ * @return The extracted elements or an empty list if there is no
  *     match.
  */
-function findAllFormElementsInNodes_(nodeList) {
+function findAllFormElementsInNodes(nodeList: NodeList): Element[] {
   return [...nodeList]
       .filter(n => n.nodeType === Node.ELEMENT_NODE)
-      .map(n => [n, ...n.getElementsByTagName('*')])
+      .map(n => [n, ...(n as Element).getElementsByTagName('*')])
       .map(
           elems => elems.filter(
-              e => e.tagName.match(/^(FORM|INPUT|SELECT|OPTION|TEXTAREA)$/)))
-      .flat();
+              e =>(e as Element).tagName.match(
+                  /^(FORM|INPUT|SELECT|OPTION|TEXTAREA)$/)))
+      .flat() as Element[];
 }
 
 /**
@@ -285,26 +284,28 @@ function findAllFormElementsInNodes_(nodeList) {
  * For example: <from><input type="password"></form> is considered as a password
  * form.
  *
- * @param {Array<Element>} Array of elements within which to search.
- * @return {HTMLFormElement} Extracted password form or undefined if there is no
+ * @param elements Array of elements within which to search.
+ * @return Extracted password form or undefined if there is no
  *   match.
  */
-function findPasswordForm_(elements) {
+function findPasswordForm(elements: Element[]): HTMLFormElement|undefined {
   return elements.filter(e => e.tagName === 'FORM')
-      .find(e => [...e.elements].some(isPasswordField_));
+      .find(e => [...(e as HTMLFormElement).elements]
+      .some(isPasswordField)) as HTMLFormElement;
 }
 
 /**
  * Finds the renderer IDs of the formless password input elements in an array of
  * elements.
  *
- * @param {Array<Element>} Array of elements within which to search.
- * @return {Array<String>} Renderer ids of the formless password fields.
+ * @param elements Array of elements within which to search.
+ * @return Renderer ids of the formless password fields.
  */
-function findFormlessPasswordFieldsIds_(elements) {
+function findFormlessPasswordFieldsIds(elements: Element[]): string[] {
   return elements
-      .filter(e => e.tagName === 'INPUT' && !e.form && isPasswordField_(e))
-      .map(__gCrWeb.fill.getUniqueID);
+      .filter(e => e.tagName === 'INPUT' &&
+          !(e as HTMLInputElement).form && isPasswordField(e))
+      .map(gCrWeb.fill.getUniqueID);
 }
 
 /**
@@ -313,7 +314,7 @@ function findFormlessPasswordFieldsIds_(elements) {
  * form mutations are likely to come in batches. An undefined or zero value for
  * |delay| would stop the MutationObserver, if any.
  */
-__gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
+function trackFormMutations(delay: number): void {
   if (formMutationObserver) {
     formMutationObserver.disconnect();
     formMutationObserver = null;
@@ -322,18 +323,17 @@ __gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
   if (!delay) return;
 
   formMutationObserver = new MutationObserver(function(mutations) {
-    for (let i = 0; i < mutations.length; i++) {
-      const mutation = mutations[i];
+    for (const mutation of mutations) {
       // Only process mutations to the tree of nodes.
       if (mutation.type !== 'childList') {
         continue;
       }
 
       // Handle added nodes.
-      if (findAllFormElementsInNodes_(mutation.addedNodes).length > 0) {
+      if (findAllFormElementsInNodes(mutation.addedNodes).length > 0) {
         const msg = {
           'command': 'form.activity',
-          'frameID': __gCrWeb.message.getFrameId(),
+          'frameID': gCrWeb.message.getFrameId(),
           'formName': '',
           'uniqueFormID': '',
           'fieldIdentifier': '',
@@ -343,40 +343,40 @@ __gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
           'value': '',
           'hasUserGesture': false,
         };
-        return sendFormMutationMessageAfterDelay_(msg, delay);
+        return sendFormMutationMessageAfterDelay(msg, delay);
       }
 
       // Handle removed nodes by starting from the specific removal cases down
       // to the generic form modification case.
 
       const removedFormElements =
-          findAllFormElementsInNodes_(mutation.removedNodes);
-      const pwdFormGone = findPasswordForm_(removedFormElements);
+          findAllFormElementsInNodes(mutation.removedNodes);
+      const pwdFormGone = findPasswordForm(removedFormElements);
       if (pwdFormGone) {
         // Handle the removed password form case.
-        const uniqueFormId = __gCrWeb.fill.getUniqueID(pwdFormGone);
+        const uniqueFormId = gCrWeb.fill.getUniqueID(pwdFormGone);
         const msg = {
           'command': 'pwdform.removal',
-          'frameID': __gCrWeb.message.getFrameId(),
-          'formName': __gCrWeb.form.getFormIdentifier(pwdFormGone),
+          'frameID': gCrWeb.message.getFrameId(),
+          'formName': gCrWeb.form.getFormIdentifier(pwdFormGone),
           'uniqueFormID': uniqueFormId,
           'uniqueFieldID': '',
         };
-        return sendFormMutationMessageAfterDelay_(msg, delay);
+        return sendFormMutationMessageAfterDelay(msg, delay);
       }
 
       const removedFormlessPasswordFieldsIds =
-          findFormlessPasswordFieldsIds_(removedFormElements);
+          findFormlessPasswordFieldsIds(removedFormElements);
       if (removedFormlessPasswordFieldsIds.length > 0) {
         // Handle the removed formless password field case.
         const msg = {
           'command': 'pwdform.removal',
-          'frameID': __gCrWeb.message.getFrameId(),
+          'frameID': gCrWeb.message.getFrameId(),
           'formName': '',
           'uniqueFormID': '',
-          'uniqueFieldID': __gCrWeb.stringify(removedFormlessPasswordFieldsIds),
+          'uniqueFieldID': gCrWeb.stringify(removedFormlessPasswordFieldsIds),
         };
-        return sendFormMutationMessageAfterDelay_(msg, delay);
+        return sendFormMutationMessageAfterDelay(msg, delay);
       }
 
       if (removedFormElements.length > 0) {
@@ -384,7 +384,7 @@ __gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
         // mutation that is treated the same way as adding a new form.
         const msg = {
           'command': 'form.activity',
-          'frameID': __gCrWeb.message.getFrameId(),
+          'frameID': gCrWeb.message.getFrameId(),
           'formName': '',
           'uniqueFormID': '',
           'fieldIdentifier': '',
@@ -394,21 +394,23 @@ __gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
           'value': '',
           'hasUserGesture': false,
         };
-        return sendFormMutationMessageAfterDelay_(msg, delay);
+        return sendFormMutationMessageAfterDelay(msg, delay);
       }
     }
   });
   formMutationObserver.observe(document, {childList: true, subtree: true});
-};
+}
 
 /**
  * Enables or disables the tracking of input event sources.
  */
-__gCrWeb.formHandlers['toggleTrackingUserEditedFields'] = function(track) {
+function toggleTrackingUserEditedFields(track: boolean): void {
   if (track) {
-    __gCrWeb.form.wasEditedByUser =
-        __gCrWeb.form.wasEditedByUser || new WeakMap();
+    gCrWeb.form.wasEditedByUser =
+        gCrWeb.form.wasEditedByUser || new WeakMap();
   } else {
-    __gCrWeb.form.wasEditedByUser = null;
+    gCrWeb.form.wasEditedByUser = null;
   }
-};
+}
+
+gCrWeb.formHandlers = {trackFormMutations, toggleTrackingUserEditedFields};
