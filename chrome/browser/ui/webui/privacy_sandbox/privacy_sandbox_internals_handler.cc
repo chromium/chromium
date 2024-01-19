@@ -65,6 +65,14 @@ void PrivacySandboxInternalsHandler::GetTpcdTrial(
       map->GetSettingsForOneType(ContentSettingsType::TPCD_TRIAL));
 }
 
+void PrivacySandboxInternalsHandler::GetTopLevelTpcdTrial(
+    GetTpcdMetadataGrantsCallback callback) {
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile_);
+  std::move(callback).Run(
+      map->GetSettingsForOneType(ContentSettingsType::TOP_LEVEL_TPCD_TRIAL));
+}
+
 void PrivacySandboxInternalsHandler::ContentSettingsPatternToString(
     const ContentSettingsPattern& pattern,
     ContentSettingsPatternToStringCallback callback) {

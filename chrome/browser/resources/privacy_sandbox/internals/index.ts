@@ -171,6 +171,16 @@ class DataLoader {
       item.setAttribute('collapsed', 'true');
     });
 
+    const topLevelTpcdTrialParent =
+        document.querySelector<HTMLElement>('#top-level-tpcd-trial')!;
+    const topLevelTpcdTrial = await this.pageHandler.getTopLevelTpcdTrial();
+    topLevelTpcdTrial.contentSettings.forEach((cs) => {
+      const item = document.createElement('content-setting-pattern-source');
+      topLevelTpcdTrialParent.appendChild(item);
+      item.configure(this.pageHandler, cs);
+      item.setAttribute('collapsed', 'true');
+    });
+
     this.maybeAddPrefsToDom(
         document.querySelector<HTMLElement>('#advertising-prefs'),
         [...advertisingPrefNames.keys()]);

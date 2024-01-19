@@ -33,6 +33,11 @@ interface PageHandler {
   GetTpcdTrial() => (
     array<content_settings.mojom.ContentSettingPatternSource> content_settings);
 
+  // Return a list of TOP_LEVEL_TPCD_TRIAL ContentSettings for the current
+  // profile.
+  GetTopLevelTpcdTrial() => (
+    array<content_settings.mojom.ContentSettingPatternSource> content_settings);
+
   // Convert ContentSettingsPattern into a string representation.
   ContentSettingsPatternToString(
     content_settings.mojom.ContentSettingsPattern pattern) => (string s);
