@@ -129,6 +129,7 @@ class ReadAnythingAppModel {
       base::Value::Dict* voices,
       read_anything::mojom::HighlightGranularity granularity);
   void OnScroll(bool on_selection, bool from_reading_mode) const;
+  void OnSelection(ax::mojom::EventFrom event_from);
 
   void Reset(const std::vector<ui::AXNodeID>& content_node_ids);
   bool PostProcessSelection();

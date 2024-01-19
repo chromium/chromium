@@ -642,6 +642,42 @@ void ReadAnythingAppModel::OnScroll(bool on_selection,
   }
 }
 
+void ReadAnythingAppModel::OnSelection(ax::mojom::EventFrom event_from) {
+  // If event_from is kUser, the user selected text on the main web page.
+  // If event_from is kAction, the user selected text in RM and the main web
+  // page was updated with that selection.
+  // Edgecases:
+  // 1. For selections in PDFs coming from the main pane or from the side
+  // panel, event_from is set to kNone.
+  // 2. When the user clicks and drags the cursor to highlight text on a
+  // webpage, such that the anchor node and offset stays the same and the focus
+  // node and/or offset changes, the first few selection events have event_from
+  // kUser, but the subsequent selection events have event_from kPage. This is
+  // the way UserActivationState is implemented. To detect this case, compare
+  // the new selection to the saved selection. If the anchor is the same, update
+  // the selection in RM.
+  ui::AXSelection selection =
+      GetTreeFromId(GetActiveTreeId())->GetUnignoredSelection();
+  bool is_click_and_drag_selection =
+      (selection.anchor_object_id == start_node_id_ &&
+       selection.anchor_offset == start_offset_ &&
+       (selection.focus_object_id != end_node_id_ ||
+        selection.focus_offset != end_offset_)) ||
+      (selection.anchor_object_id == end_node_id_ &&
+       selection.anchor_offset == end_offset_ &&
+       (selection.focus_object_id != start_node_id_ ||
+        selection.focus_offset != start_offset_));
+
+  if (event_from == ax::mojom::EventFrom::kUser ||
+      event_from == ax::mojom::EventFrom::kAction ||
+      (event_from == ax::mojom::EventFrom::kPage &&
+       is_click_and_drag_selection) ||
+      is_pdf_) {
+    requires_post_process_selection_ = true;
+    selection_from_action_ = event_from == ax::mojom::EventFrom::kAction;
+  }
+}
+
 void ReadAnythingAppModel::ProcessNonGeneratedEvents(
     const std::vector<ui::AXEvent>& events) {
   // Note that this list of events may overlap with generated events in the
@@ -735,15 +771,7 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
   for (const auto& event : event_generator) {
     switch (event.event_params->event) {
       case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
-        // For selections in PDFs coming from the main pane or from the side
-        // panel, event_from is set to kNone so skip this check.
-        if (event.event_params->event_from == ax::mojom::EventFrom::kUser ||
-            event.event_params->event_from == ax::mojom::EventFrom::kAction ||
-            is_pdf_) {
-          requires_post_process_selection_ = true;
-          selection_from_action_ =
-              event.event_params->event_from == ax::mojom::EventFrom::kAction;
-        }
+        OnSelection(event.event_params->event_from);
         break;
       case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
       case ui::AXEventGenerator::Event::ALERT:
