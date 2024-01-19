@@ -369,8 +369,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // RequestEnable() has a check in order not to trigger starting procedure
   // twice. This method can be called to bypass that check when restarting.
-  // Returns true if ARC is started directly.
-  bool RequestEnableImpl();
+  void RequestEnableImpl();
 
   // Called when activation necessity check is done.
   void OnActivationNecessityChecked(bool result);

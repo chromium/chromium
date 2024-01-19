@@ -1051,6 +1051,7 @@ TEST_F(ArcSessionManagerTest, SetArcSignedIn) {
   EXPECT_TRUE(prefs->GetBoolean(prefs::kArcSignedIn));
   EXPECT_TRUE(
       arc_session_manager()->GetArcSessionRunnerForTesting()->arc_signed_in());
+  EXPECT_TRUE(arc_session_manager()->skipped_terms_of_service_negotiation());
 
   // Correctly stop service.
   arc_session_manager()->Shutdown();
@@ -1073,6 +1074,7 @@ TEST_F(ArcSessionManagerTest, ClearArcSignedIn) {
   EXPECT_FALSE(prefs->GetBoolean(prefs::kArcSignedIn));
   EXPECT_FALSE(
       arc_session_manager()->GetArcSessionRunnerForTesting()->arc_signed_in());
+  EXPECT_FALSE(arc_session_manager()->skipped_terms_of_service_negotiation());
 
   // Correctly stop service.
   arc_session_manager()->Shutdown();
@@ -1304,6 +1306,7 @@ TEST_F(ArcSessionManagerTest, DataCleanUpOnNextStart) {
             arc_session_manager()->state());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+  EXPECT_TRUE(arc_session_manager()->skipped_terms_of_service_negotiation());
 
   arc_session_manager()->Shutdown();
 }
