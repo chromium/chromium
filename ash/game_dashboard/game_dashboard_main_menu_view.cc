@@ -48,6 +48,8 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/table_layout.h"
@@ -59,7 +61,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kBubbleCornerRadius = 8;
+constexpr int kBubbleCornerRadius = 24;
 // Horizontal padding for the border around the main menu.
 constexpr int kPaddingWidth = 20;
 // Vertical padding for the border around the main menu.
@@ -396,6 +398,10 @@ GameDashboardMainMenuView::GameDashboardMainMenuView(
   DCHECK(context_);
   DCHECK(context_->game_dashboard_button_widget());
 
+  SetBorder(views::CreateRoundedRectBorder(
+      /*thickness=*/1, kBubbleCornerRadius,
+      cros_tokens::kCrosSysSystemHighlight1));
+  set_shadow(views::BubbleBorder::Shadow::DIALOG_SHADOW);
   set_corner_radius(kBubbleCornerRadius);
   set_close_on_deactivate(true);
   set_internal_name("GameDashboardMainMenuView");
@@ -824,6 +830,12 @@ GameDashboardMainMenuView::GetGameControlsSetupNudgeForTesting() {
             kSetupNudgeId);
   }
   return nullptr;
+}
+
+void GameDashboardMainMenuView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  set_color(GetColorProvider()->GetColor(
+      cros_tokens::kCrosSysSystemBaseElevatedOpaque));
 }
 
 BEGIN_METADATA(GameDashboardMainMenuView, views::BubbleDialogDelegateView)

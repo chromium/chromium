@@ -123,6 +123,9 @@ class ASH_EXPORT GameDashboardMainMenuView
   // For test to access the nudge ID in the anonymous namespace.
   AnchoredNudge* GetGameControlsSetupNudgeForTesting();
 
+  // views::Views:
+  void OnThemeChanged() override;
+
   // Allows this class to access `GameDashboardContext` owned functions/objects.
   const raw_ptr<GameDashboardContext> context_;
 
