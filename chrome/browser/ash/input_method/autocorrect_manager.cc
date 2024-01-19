@@ -455,6 +455,14 @@ void AutocorrectManager::ProcessSetAutocorrectRangeDone(
 
   LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectUnderlined);
+
+  if (base::FeatureList::IsEnabled(features::kAutocorrectFederatedPhh)) {
+    // Report `original_text` to the Federated Service.
+    federated_manager_.ReportSingleString(
+        /*client_name*/ "input_autocorrect_phh",
+        /*example_feature_name*/ "original_text",
+        /*example_str*/ base::UTF16ToUTF8(original_text));
+  }
 }
 
 void AutocorrectManager::RecordPendingMetricsAwaitingKeyPress() {

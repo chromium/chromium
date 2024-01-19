@@ -6317,6 +6317,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/device_sync/proto",
     "//chromeos/ash/services/device_sync/public/cpp",
     "//chromeos/ash/services/device_sync/public/cpp:test_support",
+    "//chromeos/ash/services/federated/public/cpp:cpp",
     "//chromeos/ash/services/federated/public/cpp:test_support",
     "//chromeos/ash/services/ime/public/cpp:structs",
     "//chromeos/ash/services/ime/public/mojom",
