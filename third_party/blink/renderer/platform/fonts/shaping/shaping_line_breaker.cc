@@ -285,8 +285,9 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
   if (UNLIKELY(first_safe.offset != start)) {
     const float first_safe_position =
         result_->CachedPositionForOffset(first_safe.offset - range_start);
-    line_start_result = Shape(start, first_safe.offset,
-                              {.han_kerning_start = first_safe.han_kerning});
+    line_start_result = Shape(
+        start, first_safe.offset,
+        {.is_line_start = true, .han_kerning_start = first_safe.han_kerning});
     // Adjust the available space to take the reshaping into account.
     const LayoutUnit old_width = LayoutUnit::FromFloatCeil(
         FlipRtl(first_safe_position - start_position, direction));
@@ -473,7 +474,8 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
     CheckBreakOffset(result_out->break_offset, start, range_end);
     return ShapeResultView::Create(
         Shape(start, break_opportunity.offset,
-              {.han_kerning_start = first_safe.han_kerning})
+              {.is_line_start = true,
+               .han_kerning_start = first_safe.han_kerning})
             .get());
   }
   DCHECK_GE(first_safe.offset, start);
@@ -652,7 +654,8 @@ const ShapeResultView* ShapingLineBreaker::ShapeLineAt(unsigned start,
   DCHECK_GE(first_safe.offset, start);
   scoped_refptr<const ShapeResult> line_start_result;
   if (first_safe.offset != start) {
-    const ShapeOptions options{.han_kerning_start = first_safe.han_kerning};
+    const ShapeOptions options{.is_line_start = true,
+                               .han_kerning_start = first_safe.han_kerning};
     if (first_safe.offset >= end) {
       // There is no safe-to-break, reshape the whole range.
       scoped_refptr<ShapeResult> line_result = Shape(start, end, options);

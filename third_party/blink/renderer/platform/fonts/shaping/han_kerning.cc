@@ -175,7 +175,7 @@ void HanKerning::Compute(const String& text,
   if (UNLIKELY(options.apply_start)) {
     indices.push_back(start);
     last_type = GetCharType(text[start], font_data);
-  } else if (start) {
+  } else if (start && !options.is_line_start) {
     last_type = GetCharType(text[start - 1], font_data);
     const CharType type = GetCharType(text[start], font_data);
     if (ShouldKern(type, last_type)) {

@@ -13,6 +13,7 @@ namespace blink {
 // Options when shaping by `HarfBuzzShaper`.
 //
 struct PLATFORM_EXPORT ShapeOptions {
+  bool is_line_start = false;
   bool han_kerning_start = false;
   bool han_kerning_end = false;
 };

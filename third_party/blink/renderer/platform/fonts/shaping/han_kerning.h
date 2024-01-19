@@ -45,6 +45,7 @@ class PLATFORM_EXPORT HanKerning {
  public:
   struct Options {
     bool is_horizontal = true;
+    bool is_line_start = false;
     bool apply_start = false;
     bool apply_end = false;
   };

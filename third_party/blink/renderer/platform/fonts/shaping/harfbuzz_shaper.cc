@@ -865,6 +865,8 @@ void HarfBuzzShaper::ShapeSegment(
     HanKerning han_kerning(
         text_, shape_start, shape_end, *adjusted_font, font_description,
         {.is_horizontal = HB_DIRECTION_IS_HORIZONTAL(direction),
+         .is_line_start = range_data->options.is_line_start &&
+                          range_data->start == shape_start,
          .apply_start = range_data->options.han_kerning_start &&
                         range_data->start == shape_start,
          .apply_end = range_data->options.han_kerning_end &&
