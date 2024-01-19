@@ -352,7 +352,6 @@
 <translation id="2946420957526726953">Басқа құрылғыларға қосылу үшін Chrome жаңартылуда</translation>
 <translation id="2951071800649516099">Беттерді кейінірек оқу тізіміне қосу</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> оқылмаған бет.}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> оқылмаған бет.}}</translation>
-<translation id="2961210776189273067">Атауы</translation>
 <translation id="296370266220139811">Уақытты үнемдеу және аз теру</translation>
 <translation id="2977350910003566746">Соңғы ашылғаны бойынша сұрыптау</translation>
 <translation id="297771753501244313">Соңғы ашылғаны бойынша сұрыптау</translation>
@@ -1126,7 +1125,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="694267552845942083">Қазір синхрондау параметрлерін реттеп жатырсыз. Синхрондау функциясын қосу үшін экранның төменгі жағындағы "Растау" түймесін түртіңіз. Жоғары қарай өту</translation>
 <translation id="6945221475159498467">Таңдау</translation>
 <translation id="6955535239952325894">Бұл параметр басқарылатын браузерлерде өшірілген.</translation>
-<translation id="6958103823951858863">PDF файлын жүктеп алғаннан кейін автоматты түрде ашу</translation>
 <translation id="6963766334940102469">Бетбелгілерді жою</translation>
 <translation id="696447261358045621">Инкогнито режимінен шығу</translation>
 <translation id="6965382102122355670">Жарайды</translation>

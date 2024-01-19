@@ -291,6 +291,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2547458583188611426">Sinkronizacija ne funkcionira. Unesite šifru da biste pokrenuli sinkronizaciju.</translation>
 <translation id="2551153019974022505">Pogreška računa</translation>
 <translation id="2556092377360758201">Bez zaštite (ne preporučuje se)</translation>
+<translation id="2561375093019333908">OTVORI</translation>
 <translation id="2562041823070056534">Šalje se uređaju <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Koristite i spremajte zaporke sa svojeg Google računa</translation>
 <translation id="2577522251608256362">Četvrt</translation>
@@ -383,7 +384,6 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="2952278131021475699">Traženje fotoaparatom u Objektivu</translation>
 <translation id="2956733177489514605">Prijavite se Google računom da biste sinkronizirali zaporke i ostalo.</translation>
 <translation id="2958718410589002129">Zaporke</translation>
-<translation id="2961210776189273067">Titula</translation>
 <translation id="2964349545761222050">Blokiraj kolačiće trećih strana</translation>
 <translation id="2969979262385602596">Prijava nije uspjela. Pokušajte ponovo kasnije.</translation>
 <translation id="2975121486251958312">Dostupan je samo anonimni način</translation>
@@ -849,6 +849,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5513681519188741830">Prije <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Stvaranje zaporke</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} slaba zaporka}one{{COUNT} slaba zaporka}few{{COUNT} slabe zaporke}other{{COUNT} slabih zaporki}}</translation>
+<translation id="5532545557415295622">Dijaloški okvir za vrijeme čekanja u mirovanju</translation>
 <translation id="5542540507657872337">Pronađeno: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff vam omogućuje da počnete pregledavati web-lokaciju na ovom uređaju i nastavite na Macu. Trenutačno otvorena web-lokacija pojavit će se u Docku na vašem Macu.
 
@@ -1289,6 +1290,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7781829728241885113">Danas</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Nakon jedan dan}one{Nakon {COUNT} dan}few{Nakon {COUNT} dana}other{Nakon {COUNT} dana}}</translation>
 <translation id="7791543448312431591">Dodajte</translation>
+<translation id="7792549458069452436">DOHVATI APLIKACIJU</translation>
 <translation id="7807060072011926525">Omogućuje Google</translation>
 <translation id="7812377703891978671">Svojoj povijesti pregledavanja možete pristupiti tako da odaberete <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Preuzimanja</translation>

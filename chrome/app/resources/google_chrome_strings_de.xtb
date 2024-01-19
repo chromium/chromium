@@ -195,6 +195,7 @@
 <translation id="4053720452172726777">Google Chrome anpassen und verwalten</translation>
 <translation id="4106587138345390261">Wir testen neue Funktionen für Chrome, mit denen Websites weniger Nutzerdaten verwenden, ohne dabei die Nutzererfahrung einzuschränken</translation>
 <translation id="4110895483821904099">Neues Chrome-Profil einrichten</translation>
+<translation id="4128488089242627000">Chrome wird schneller ausgeführt und JavaScript-Funktionen sollten wie vorgesehen funktionieren (empfohlen)</translation>
 <translation id="4147555960264124640">Du meldest dich mit einem verwalteten Konto an und ermöglichst dessen Administrator Zugriff auf dein Google Chrome-Profil. Deine Chrome-Daten, wie Apps, Lesezeichen, Verlauf, Passwörter und andere Einstellungen, werden dauerhaft mit <ph name="USER_NAME" /> verknüpft. Du kannst diese Daten über das Google Konten-Dashboard löschen, aber nicht mit einem anderen Konto verknüpfen. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installation wird ausgeführt...</translation>
 <translation id="4149882025268051530">Das Installationsprogramm konnte das Archiv nicht dekomprimieren. Lade Google Chrome erneut herunter.</translation>
@@ -241,6 +242,7 @@
 <translation id="4793679854893018356">So trägt Chrome zu deinem Schutz bei</translation>
 <translation id="4828579605166583682">Google Chrome versucht, vorhandene Passwörter zu ersetzen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="4842397268809523050">Chrome OS Flex konnte deine Daten nicht synchronisieren, da die Synchronisierung für deine Domain nicht zur Verfügung steht.</translation>
+<translation id="4873692836499071887">Du benötigst macOS 11 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Auf diesem Computer wird macOS 10.15 ausgeführt.</translation>
 <translation id="4873783916118289636">Hiermit kannst du dir die wichtigsten Datenschutz- und Sicherheitseinstellungen in Chrome ansehen</translation>
 <translation id="4891791193823137474">Google Chrome im Hintergrund ausführen</translation>
 <translation id="4895437082222824641">Link in neuem Chrome-Tab öffnen</translation>
@@ -345,6 +347,7 @@
 <translation id="677276454032249905">Chrome trotzdem beenden?</translation>
 <translation id="6794858689789885890">Beim Schließen von Chrome immer die Websitedaten von deinem Gerät löschen</translation>
 <translation id="683440813066116847">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Canary</translation>
+<translation id="6851981911629679515">Zusätzlichen Schutz in der JavaScript- und WebAssembly-Engine von Chrome aktivieren</translation>
 <translation id="6881299373831449287">Chrome wird aktualisiert</translation>
 <translation id="6885412569789873916">Chrome Beta-Apps</translation>
 <translation id="6933858244219479645">Chrome OS-System</translation>
@@ -466,6 +469,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="873133009373065397">Google Chrome kann den Standardbrowser nicht bestimmen oder festlegen</translation>
 <translation id="8765470054473112089">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chrome deine Eingabe an deine Standardsuchmaschine, damit du bessere Vorschläge erhältst. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
 <translation id="878572486461146056">Installationsfehler: Dein Netzwerkadministrator hat eine Gruppenrichtlinie angewendet, die die Installation verhindert: <ph name="INSTALL_ERROR" />.</translation>
+<translation id="8801657293260363985">V8 ist die JavaScript- und WebAssembly-Engine von Chrome, mit der die Websiteleistung verbessert wird</translation>
 <translation id="8821043148920470810">Du benötigst Windows 10 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Dieser Computer verwendet Windows 7.</translation>
 <translation id="8823341990149967727">Chrome ist veraltet.</translation>
 <translation id="8825634023950448068">Zum Schutz deiner Daten löschen wir automatisch deine Interessen, die älter als vier Wochen sind. Je nach deinen Browsingaktivitäten können die Interessen wieder in der Liste erscheinen. Falls Chrome falsch liegt oder du bestimmte Werbung nicht sehen möchtest, kannst du einzelne Interessen entfernen.</translation>

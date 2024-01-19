@@ -100,7 +100,6 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chromium“ f
 
 Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chromium“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Atidarykite „Chromium“ naudodami bet kurią programą</translation>
-<translation id="4002314982058020967">Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chromium“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Atidaroma ir vykdoma saugos patikra naršyklėje „Chromium“.</translation>
 <translation id="4043291146360695975">Slaptažodžiai saugomi Slaptažodžių tvarkytuvėje tik šiame įrenginyje.</translation>
 <translation id="4099085513035183040">Nepalaikoma „Chromium“ beta versijoje</translation>
@@ -113,7 +112,6 @@ Duomenys užšifruoti naudojant slaptafrazę. Įveskite ją, kad galėtumėte na
 <translation id="4408912345039114853">„Chromium“ saugos patikros vykdymas</translation>
 <translation id="4432744876818348753">Prisijunkite, kad išnaudotumėte visas „Chromium“ galimybes.</translation>
 <translation id="4445228361214254027">Organizacija išjungė galimybę naudoti ir išsaugoti „Chromium“ duomenis „Google“ paskyroje. Nauji slaptažodžiai, žymės ir kt. bus išsaugoti tik šiame įrenginyje.</translation>
-<translation id="4485517920713468480">„Chromium“ aptiks stebėjimo numerius svetainėse, kuriose lankotės, ir rodys siuntinių atnaujinimus naujo skirtuko puslapyje. Jūsų duomenys bus bendrinami su „Google“, kad būtų galima teikti šią funkciją ir tobulinti Apsipirkimo funkcijas visiems. Tai galite pakeisti <ph name="BEGIN_LINK" />siuntinio stebėjimo nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Pridedami įvesti URL prie skaitymo sąrašo naršyklėje „Chromium“.</translation>
 <translation id="452436063477828504">Užtikrinkite, kad visada galėtumėte naudoti „Chromium“ duomenis „Google“ paskyroje</translation>
 <translation id="4555020257205549924">Kai ši funkcija bus įjungta, „Chromium“ siūlys versti kitomis kalbomis parašytus puslapius naudojant „Google“ vertėją. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>

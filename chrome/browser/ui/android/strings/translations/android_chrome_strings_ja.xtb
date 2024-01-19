@@ -353,7 +353,6 @@
 <translation id="2946420957526726953">他のデバイスに接続するよう Chrome を更新しています</translation>
 <translation id="2951071800649516099">後で読めるようにページをリーディング リストに追加します</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 件の未読ページ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 件の未読ページ}}</translation>
-<translation id="2961210776189273067">敬称</translation>
 <translation id="296370266220139811">時間と入力の手間を省く</translation>
 <translation id="2977350910003566746">最終閲覧日で並べ替え</translation>
 <translation id="297771753501244313">最後に開いた日付で並べ替え</translation>
@@ -686,7 +685,7 @@
 <translation id="4763480195061959176">動画</translation>
 <translation id="4766313118839197559">パスワードは、このデバイスのパスワード マネージャーに保存されます</translation>
 <translation id="4766678251456904326">デバイスへのアカウントの追加</translation>
-<translation id="4767947714785277816">広告の測定という新しい広告プライバシー機能をリリースします。Chrome では、広告の効果測定に役立てるため、広告が表示されたときに、ごく少量の限定的な情報のみがサイトやアプリと共有されます。</translation>
+<translation id="4767947714785277816">広告の測定という新しい広告プライバシー機能をリリースします。Chrome からは、広告の効果測定に役立てるため、広告が表示された日時など、限られた種類のデータがサイトやアプリと共有されます。</translation>
 <translation id="4769095993849849966">新しいファイル名</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" />の閲覧履歴データを削除しました</translation>
 <translation id="4778653490315793244">コンテンツはまだありません</translation>
@@ -1127,7 +1126,6 @@
 <translation id="694267552845942083">同期の設定をカスタマイズしています。同期を有効にしたら、画面の下部にある [確認] をタップしてください。上へ移動</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6955535239952325894">この設定は管理対象のブラウザでは無効です</translation>
-<translation id="6958103823951858863">ダウンロード後に PDF を自動的に開く</translation>
 <translation id="6963766334940102469">ブックマークを削除</translation>
 <translation id="696447261358045621">シークレット モードを終了</translation>
 <translation id="6965382102122355670">OK</translation>

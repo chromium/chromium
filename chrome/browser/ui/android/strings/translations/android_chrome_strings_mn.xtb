@@ -352,7 +352,6 @@
 <translation id="2946420957526726953">Бусад төхөөрөмжид холбогдохын тулд Chrome-г шинэчилж байна</translation>
 <translation id="2951071800649516099">Хуудаснуудыг дараа уншихаар унших жагсаалтдаа нэмээрэй</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{Уншаагүй <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> хуудас}other{Уншаагүй <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> хуудас}}</translation>
-<translation id="2961210776189273067">Цол хэргэм</translation>
 <translation id="296370266220139811">Цаг хэмнэж, бага бичээрэй</translation>
 <translation id="2977350910003566746">Сүүлд нээснээр нь эрэмбэлж байна</translation>
 <translation id="297771753501244313">Сүүлд нээснээр эрэмбэлэх</translation>
@@ -1125,7 +1124,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="694267552845942083">Та одоогоор Синк хийх тохиргоогоо өөрчилж байна. Синкийг асааж дуусгахын тулд дэлгэцийн доод хэсгийн ойролцоо байгаа Баталгаажуулах товчлуурыг товшино уу. Дээш шилжих</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="6955535239952325894">Удирдсан хөтчүүд дээр энэ тохиргоог идэвхгүй болгосон</translation>
-<translation id="6958103823951858863">Татсаны дараа PDF-г автоматаар нээх</translation>
 <translation id="6963766334940102469">Хавчуургыг устгах</translation>
 <translation id="696447261358045621">Нууцлалтай горимоос гарах</translation>
 <translation id="6965382102122355670">OK</translation>

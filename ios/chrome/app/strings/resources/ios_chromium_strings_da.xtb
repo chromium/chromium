@@ -100,7 +100,6 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chromium-o
 
 Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chromium-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Åbn Chromium fra en hvilken som helst app</translation>
-<translation id="4002314982058020967">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chromium-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Åbner og kører et sikkerhedstjek i Chromium.</translation>
 <translation id="4043291146360695975">Adgangskoder gemmes kun i Adgangskodeadministrator på denne enhed.</translation>
 <translation id="4099085513035183040">Understøttes ikke i Chromium Beta</translation>
@@ -113,7 +112,6 @@ Dine data krypteres med din adgangssætning. Angiv adgangssætningen for at brug
 <translation id="4408912345039114853">Kør Chromium-sikkerhedstjek</translation>
 <translation id="4432744876818348753">Log ind for at få mest muligt ud af Chromium.</translation>
 <translation id="4445228361214254027">Din organisation har deaktiveret muligheden for at bruge og gemme Chromium-data på din Google-konto. Nye bogmærker, adgangskoder m.m. gemmes kun på denne enhed.</translation>
-<translation id="4485517920713468480">Chromium registrerer sporingsnumre på de websites, du besøger, og viser dig pakkeopdateringer på siden Ny fane. Dine data deles med Google med henblik på at levere denne funktion og forbedre Shopping for alle. Du kan ændre dette i <ph name="BEGIN_LINK" />indstillingerne for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Føjer de angivne webadresser til din læseliste i Chromium.</translation>
 <translation id="452436063477828504">Sørg for, at du altid kan bruge Chromium-dataene på din Google-konto.</translation>
 <translation id="4555020257205549924">Når denne funktion er aktiveret, vil Chromium tilbyde at oversætte sider, der er skrevet på andre sprog, ved hjælp af Google Oversæt. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>

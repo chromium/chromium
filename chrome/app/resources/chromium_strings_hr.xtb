@@ -88,6 +88,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="2583187216237139145">Sve podatke iz Chromiuma koji se generiraju tijekom upotrebe ovog profila (primjerice izradom oznaka, povijesti, zaporki i drugih postavki) može ukloniti administrator poslovnog profila. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Nastavi s upotrebom Chromiuma</translation>
 <translation id="259935314519650377">Spremanje preuzetog alata za instalaciju u predmemoriju nije uspjelo. Pogreška: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium se pokreće brže, a značajke koje upotrebljavaju JavaScript trebale bi funkcionirati kako je predviđeno (preporučeno)</translation>
 <translation id="2648074677641340862">Došlo je do pogreške operativnog sustava tijekom instalacije. Ponovo preuzmite Chromium.</translation>
 <translation id="2661879430930417727">Ako dijelite uređaj, prijatelji i članovi obitelji mogu zasebno pregledavati i postaviti Chromium prema svojim željama</translation>
 <translation id="268602741124540128">Dobro došli u Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -123,6 +124,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="3258596308407688501">Chromium ne može čitati iz svojeg podatkovnog direktorija niti u njega pisati:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 je Chromiumov alat za JavaScript i WebAssembly koji se upotrebljava za poboljšanje izvedbe web-lokacija</translation>
 <translation id="3283186697780795848">Instalirana je Chromiumova verzija <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Ponovo pokreni sad</translation>
 <translation id="328888136576916638">Nedostaju ključevi Google API-ja. Neke funkcije Chromiuma bit će onemogućene.</translation>
@@ -159,7 +161,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="388648406173476553">Prilagodite Chromium i upravljajte njime. Trebate obratiti pozornost na nešto – kliknite za pojedinosti.</translation>
 <translation id="3889543394854987837">Kliknite svoje ime da biste otvorili Chromium i počeli s pregledavanjem.</translation>
 <translation id="390528597099634151">Korisnik <ph name="EXISTING_USER" /> već je prijavljen na taj profil u Chromiumu. Da bi vaše pregledavanje ostalo odvojeno, Chromium vam može izraditi vlastiti profil.</translation>
-<translation id="3909353120217047026">To proširenje krši pravila Chrome web-trgovine i možda nije sigurno. Uklonite ga iz Chromiuma kako više ne bi moglo vidjeti i mijenjati vaše podatke na web-lokacijama koje posjećujete, uključujući vaše osobne podatke.</translation>
+<translation id="3909353120217047026">To proširenje krši pravila Chrome Web Storea i možda nije sigurno. Uklonite ga iz Chromiuma kako više ne bi moglo vidjeti i mijenjati vaše podatke na web-lokacijama koje posjećujete, uključujući vaše osobne podatke.</translation>
 <translation id="391789666908693569">Vašim računom upravlja <ph name="MANAGER_NAME" />. Vaš administrator može pregledavati i uređivati ovaj profil preglednika Chromium i njegove podatke, kao što su oznake, povijest i zaporke.</translation>
 <translation id="3922825997980843979">Dok tipkate, Chromium vašoj zadanoj tražilici šalje sadržaj adresne trake ili okvira za pretraživanje</translation>
 <translation id="3941890832296813527">Pogreška pri instalaciji: naziv datoteke programa za instalaciju nije važeći ili nije podržan.</translation>
@@ -216,6 +218,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="4814736265800133385">Koristi Chromium bez računa</translation>
 <translation id="4888717733111232871">Ulazno pravilo kako bi Chromium dopustio mDNS promet.</translation>
 <translation id="4893347770495441059">Ponovno pokretanje radi ažuriranja &amp;Chromiuma</translation>
+<translation id="4942295735032723435">Da biste primali buduća Chromiumova ažuriranja, trebat će vam macOS 11 ili novija verzija. Na ovom se računalu upotrebljava macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium radi u pozadini.</translation>
 <translation id="4987820182225656817">Gosti mogu upotrebljavati Chromium bez ostavljanja tragova o upotrebi.</translation>
 <translation id="4994636714258228724">Dodajte sebe kao korisnika Chromiuma</translation>
@@ -405,6 +408,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="8105840573057009683">Chromium treba dopuštenje za lokaciju za ovu web-lokaciju</translation>
 <translation id="8133124826068723441">Chromium OS nije mogao sinkronizirati vaše podatke jer sinkronizacija nije dostupna za vašu domenu.</translation>
 <translation id="813913629614996137">Pokretanje...</translation>
+<translation id="8166782796394721554">Uključite dodatnu zaštitu u Chromiumovom alatu za JavaScript i WebAssembly</translation>
 <translation id="81770708095080097">Datoteka je opasna i Chromium ju je blokirao.</translation>
 <translation id="8213374284266571500">Chromium je blokirao datoteku jer je ta vrsta datoteke opasna</translation>
 <translation id="8248265253516264921">Ako slika nema koristan opis, Chromium će ga pokušati pružiti. Da bi se izradili opisi, slike se šalju Googleu. To možete isključiti u bilo kojem trenutku u postavkama.</translation>

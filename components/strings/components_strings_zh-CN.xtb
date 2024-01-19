@@ -1176,7 +1176,6 @@
 <translation id="33073482541490531">系统检测到，您刚才使用的密码遭遇了数据泄露。密码管理工具建议您立即更改此密码。</translation>
 <translation id="3307649904964670439">“自定义 Chrome”按钮，激活它即可自定义您的浏览器外观</translation>
 <translation id="3308006649705061278">组织单位 (OU)</translation>
-<translation id="3324223664999044166">总结想法的至少 3 个字词</translation>
 <translation id="3324687287337751929">4 x 6 英寸</translation>
 <translation id="3324983252691184275">深红色</translation>
 <translation id="3325027355611702542">野营挂车与休闲车</translation>
@@ -1416,7 +1415,6 @@
 <translation id="3748009735914587286">金属（高光）</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻击者可能会诱骗您做一些危险的事情，例如安装软件或泄露您的个人信息（如密码、电话号码或信用卡信息）。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">航空业</translation>
-<translation id="3751020515020988516">系统无法理解您的请求。请尝试提交其他请求。</translation>
 <translation id="3752543821772132562">已忽略，因为未设置 <ph name="POLICY_NAME" />。</translation>
 <translation id="3754210790023674521">退出“画中画”模式</translation>
 <translation id="3759461132968374835">您最近未收到崩溃报告。崩溃报告停用时发生的崩溃不会在此处显示。</translation>
@@ -2848,7 +2846,6 @@
 <translation id="6643016212128521049">清除</translation>
 <translation id="6645291930348198241">访问 Cookie 和网站数据。</translation>
 <translation id="6645478838938543427">系统会将降价提醒发送到 <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{无}=1{来自 1 个网站（这不会致使您退出自己的 Google 账号）}other{来自 # 个网站（这不会致使您退出自己的 Google 账号）}}</translation>
 <translation id="6648459603387803038">您的管理员可以远程更改您的浏览器设置。此设备上的活动可能也在接受 Chrome 外部的管理。</translation>
 <translation id="6648524591329069940">Serif 字体</translation>
 <translation id="6649510485211003056">195 x 270 毫米</translation>
@@ -3226,7 +3223,6 @@
 <translation id="7378877318020334501">电视喜剧</translation>
 <translation id="7380398842872229465">10 x 15 英寸</translation>
 <translation id="738439098860678026">幼儿教育</translation>
-<translation id="7388071710882496863">诸如“为这家餐厅撰写 5 星好评”之类的请求</translation>
 <translation id="7388594495505979117">{0,plural, =1{您的设备将在 1 分钟后重启}other{您的设备将在 # 分钟后重启}}</translation>
 <translation id="7390545607259442187">确认信用卡</translation>
 <translation id="7392089738299859607">更新地址</translation>

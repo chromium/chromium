@@ -100,7 +100,6 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chromium-upplifuni
 
 Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chromium-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Opnaðu Chromium í hvaða forriti sem er</translation>
-<translation id="4002314982058020967">Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chromium-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Opnar og keyrir öryggisathugun í Chromium.</translation>
 <translation id="4043291146360695975">Aðgangsorð eru aðeins vistuð í aðgangsorðastjórnun í þessu tæki.</translation>
 <translation id="4099085513035183040">Ekki stutt í Chromium Beta</translation>
@@ -113,7 +112,6 @@ Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota
 <translation id="4408912345039114853">Keyra öryggisathugun Chromium</translation>
 <translation id="4432744876818348753">Skráðu þig inn til að fá sem mest út úr Chromium.</translation>
 <translation id="4445228361214254027">Fyrirtækið þitt slökkti á möguleikanum á að nota og vista Chromium-gögn á Google-reikningnum þínum. Ný bókamerki, aðgangsorð og fleira verður aðeins vistað í þessu tæki.</translation>
-<translation id="4485517920713468480">Chromium mun greina rakningarnúmer á vefsvæðum sem þú opnar og birta þér fréttir af pökkum á síðu nýrra flipa. Gögnunum verður deilt með Google til að veita þennan eiginleika og til að bæta Shopping hjá öllum. Þú getur breytt þessu í <ph name="BEGIN_LINK" />stillingum pakkarakningar<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Bætir innfærðum vefslóðum við leslistann þinn í Chromium.</translation>
 <translation id="452436063477828504">Gakktu úr skugga um að þú getir alltaf notað Chromium-gögnin á Google-reikningnum þínum</translation>
 <translation id="4555020257205549924">Þegar þessi eiginleiki er virkur mun Chromium bjóðast til að þýða vefsíður sem eru ritaðar á öðru tungumáli með Google Translate. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>

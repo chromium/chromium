@@ -291,6 +291,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2547458583188611426">Synchronisatie werkt niet. Geef je wachtwoordzin op om de synchronisatie te starten.</translation>
 <translation id="2551153019974022505">Accountfout</translation>
 <translation id="2556092377360758201">Geen beveiliging (niet aanbevolen)</translation>
+<translation id="2561375093019333908">OPENEN</translation>
 <translation id="2562041823070056534">Verzenden naar <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">Wachtwoorden in je Google-account gebruiken en opslaan</translation>
 <translation id="2577522251608256362">Buurt</translation>
@@ -383,7 +384,6 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="2952278131021475699">Zoeken met Lens-camera</translation>
 <translation id="2956733177489514605">Log in met je Google-account om onder andere je wachtwoorden te synchroniseren.</translation>
 <translation id="2958718410589002129">Wachtwoorden</translation>
-<translation id="2961210776189273067">Titel</translation>
 <translation id="2964349545761222050">Cookies van derden blokkeren</translation>
 <translation id="2969979262385602596">Kan niet inloggen. Probeer het later opnieuw.</translation>
 <translation id="2975121486251958312">Alleen de incognitomodus is beschikbaar</translation>
@@ -849,6 +849,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5513681519188741830"><ph name="TIME" /> u geleden</translation>
 <translation id="5525269841082836315">Wachtwoordzin maken</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} zwak wachtwoord}other{{COUNT} zwakke wachtwoorden}}</translation>
+<translation id="5532545557415295622">Dialoogvenster voor time-out bij inactiviteit</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> gevonden</translation>
 <translation id="5548760955356983418">Met Handoff kun je een website op dit apparaat bezoeken en vervolgens makkelijk verder bezoeken op je Mac. De momenteel geopende website zie je in het Dock van je Mac.
 
@@ -1289,6 +1290,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7781829728241885113">Gisteren</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Na 1 dag}other{Na {COUNT} dagen}}</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
+<translation id="7792549458069452436">DE APP DOWNLOADEN</translation>
 <translation id="7807060072011926525">Geleverd door Google</translation>
 <translation id="7812377703891978671">Je krijgt toegang tot je hele browsegeschiedenis door <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> te selecteren.</translation>
 <translation id="78146569776629510">Downloads</translation>

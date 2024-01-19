@@ -46,7 +46,6 @@ Notas importantes:
 <translation id="1917964099031477364">Esta cuenta y los datos sin guardar se quitarán de Chrome y de las demás aplicaciones de Google instaladas en este dispositivo.</translation>
 <translation id="1965935827552890526">Termina lo que estabas haciendo en otra ventana abierta de Chrome.</translation>
 <translation id="1987779152850321833">Completa las siguientes acciones sugeridas para sacar el máximo partido a Chrome.</translation>
-<translation id="2008357574463816229">Si olvidas tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Haz más cosas con Google Chrome: funciona más rápido que nunca y es sencillo y seguro.</translation>
 <translation id="2120238739383482109">Abre los marcadores de Chrome.</translation>
 <translation id="2147651015520127414">Chrome ha verificado que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
@@ -203,7 +202,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="686691656039982452">Puedes <ph name="BEGIN_LINK" />gestionar qué datos de Chrome se guardan<ph name="END_LINK" /> en tu cuenta de Google.
 
 Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrome, ve a los <ph name="BEGIN_LINK" />servicios de Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome detectará los números de seguimiento de los sitios que visites y te mostrará novedades sobre los envíos en la página Nueva pestaña. Tus datos se compartirán con Google para ofrecerte esta función y mejorar Shopping para todos. Puedes cambiar esta opción en la <ph name="BEGIN_LINK" />configuración del seguimiento de envíos<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Buscar por voz en Chrome</translation>
 <translation id="6964931465519938134">Ahora puedes usar Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="6975725306479268850">Elige Chrome para la función Autocompletar</translation>

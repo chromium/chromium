@@ -2635,7 +2635,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2960208947600937804">Ett fel uppstod när Linux skulle konfigureras. Kontakta administratören.</translation>
 <translation id="2960942820860729477">Uppdateringsfrekvens</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (tillägg har angetts)</translation>
-<translation id="2961210776189273067">Titel</translation>
 <translation id="2961695502793809356">Klicka för att fortsätta, håll ned för att se historik</translation>
 <translation id="2963151496262057773">Följande pluginprogram svarar inte: <ph name="PLUGIN_NAME" />. Vill du stoppa det?</translation>
 <translation id="2964193600955408481">Inaktivera wifi</translation>
@@ -6075,7 +6074,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5697832193891326782">Emojiväljare</translation>
 <translation id="5698878456427040674">Kontrollera att det valda kontot stöds.</translation>
 <translation id="570043786759263127">Appar och tjänster i Google Play</translation>
-<translation id="5700761515355162635">Cookies från tredje part har tillåtits</translation>
+<translation id="5700761515355162635">Tredjepartscookies tillåts</translation>
 <translation id="5700836101007545240">Lägg till anslutning har inaktiverats av administratören</translation>
 <translation id="5701080607174488915">Ett fel uppstod när policyn skulle hämtas från servern.</translation>
 <translation id="5701212929149679556">Roaming i mobilnätverk</translation>

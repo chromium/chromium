@@ -352,7 +352,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2946420957526726953">Chrome opdateres for at oprette forbindelse til andre enheder</translation>
 <translation id="2951071800649516099">Føj sider til din læseliste, så du kan læse dem senere</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ulæst side}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ulæst side}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ulæste sider}}</translation>
-<translation id="2961210776189273067">Titel</translation>
 <translation id="296370266220139811">Spar tid, og skriv mindre</translation>
 <translation id="2977350910003566746">Sorteres efter sidst åbnet</translation>
 <translation id="297771753501244313">Sortér efter sidst åbnet</translation>
@@ -1126,7 +1125,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="694267552845942083">Du er i øjeblikket ved at tilpasse dine indstillinger for Synkronisering. Afslut aktiveringen af Synkronisering ved at trykke på knappen Bekræft nederst på skærmen. Gå op</translation>
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="6955535239952325894">Denne indstilling er deaktiveret i administrerede browsere</translation>
-<translation id="6958103823951858863">Åbn automatisk PDF-filen efter download</translation>
 <translation id="6963766334940102469">Slet bogmærker</translation>
 <translation id="696447261358045621">Forlad inkognitotilstand</translation>
 <translation id="6965382102122355670">OK</translation>

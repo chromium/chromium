@@ -46,7 +46,6 @@ Stvari za razmatranje:
 <translation id="1917964099031477364">Ovaj račun i svi podaci koji nisu sačuvani će se ukloniti iz Chromea i drugih Googleovih aplikacija na ovom uređaju.</translation>
 <translation id="1965935827552890526">Završite započetu radnju na drugom otvorenom prozoru Chromea.</translation>
 <translation id="1987779152850321833">Izvršite predložene radnje u nastavku da izvučete maksimum iz Chromea.</translation>
-<translation id="2008357574463816229">Ako zaboravite pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea na računu<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Obavite više s jednostavnim i sigurnim Google Chromeom koji je brži nego ikad.</translation>
 <translation id="2120238739383482109">Otvaranje oznaka u Chromeu.</translation>
 <translation id="2147651015520127414">Chrome je potvrdio da <ph name="ISSUER" /> izdaje potvrdu ove web lokacije.</translation>
@@ -203,7 +202,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="686691656039982452">Možete <ph name="BEGIN_LINK" />upravljati podacima Chromea koji se pohranjuju<ph name="END_LINK" /> na Google račun.
 
 Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idite na <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome će otkrivati brojeve za praćenje na web lokacijama koje posjetite i prikazivat će vam novosti o paketima na stranici Nova kartica. Vaši podaci će se dijeliti s Googleom radi pružanja ove funkcije i poboljšavanja Kupovine za sve. Ovo možete promijeniti u <ph name="BEGIN_LINK" />Postavkama praćenja paketa<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Pretražujte glasom u Chromeu</translation>
 <translation id="6964931465519938134">Sada možete koristiti Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="6975725306479268850">Odaberite Chrome za automatsko popunjavanje</translation>

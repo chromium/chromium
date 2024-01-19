@@ -291,6 +291,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2547458583188611426">Synchronisierung funktioniert nicht. Gib deine Passphrase ein, um die Synchronisierung zu starten.</translation>
 <translation id="2551153019974022505">Kontofehler</translation>
 <translation id="2556092377360758201">Kein Schutz (nicht empfohlen)</translation>
+<translation id="2561375093019333908">ÖFFNEN</translation>
 <translation id="2562041823070056534">Wird an <ph name="DEVICE_NAME" /> gesendet…</translation>
 <translation id="2576499762020411840">Passwort im Google-Konto speichern &amp; nutzen</translation>
 <translation id="2577522251608256362">Stadtteil</translation>
@@ -383,7 +384,6 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2952278131021475699">Lens-Kamerasuche</translation>
 <translation id="2956733177489514605">Melde dich mit deinem Google-Konto an, um deine Passwörter und mehr zu synchronisieren.</translation>
 <translation id="2958718410589002129">Passwörter</translation>
-<translation id="2961210776189273067">Anrede</translation>
 <translation id="2964349545761222050">Drittanbieter-Cookies blockieren</translation>
 <translation id="2969979262385602596">Anmeldefehler, bitte später erneut versuchen</translation>
 <translation id="2975121486251958312">Nur der Inkognitomodus ist verfügbar</translation>
@@ -849,6 +849,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5513681519188741830">Vor <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Passphrase erstellen</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} schwaches Passwort}other{{COUNT} schwache Passwörter}}</translation>
+<translation id="5532545557415295622">Dialogfeld für Zeitüberschreitung bei Inaktivität</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> gefunden</translation>
 <translation id="5548760955356983418">Mit Handoff kannst du auf diesem Gerät auf einer Website stöbern und dann einfach auf deinem Mac an derselben Stelle weitermachen. Die aktuell geöffnete Website wird im Dock deines Macs angezeigt.
 
@@ -1289,6 +1290,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7781829728241885113">Gestern</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Nach 1 Tag}other{Nach {COUNT} Tagen}}</translation>
 <translation id="7791543448312431591">Hinzufügen</translation>
+<translation id="7792549458069452436">APP HERUNTERLADEN</translation>
 <translation id="7807060072011926525">Von Google bereitgestellt</translation>
 <translation id="7812377703891978671">Du kannst auf deinen gesamten Browserverlauf zugreifen, indem du „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“ auswählst.</translation>
 <translation id="78146569776629510">Downloads</translation>

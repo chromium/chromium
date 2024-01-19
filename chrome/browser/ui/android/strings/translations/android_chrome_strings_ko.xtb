@@ -352,7 +352,6 @@
 <translation id="2946420957526726953">다른 기기에 연결하기 위해 Chrome을 업데이트하는 중</translation>
 <translation id="2951071800649516099">나중에 읽을 수 있도록 읽기 목록에 페이지를 추가합니다.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{읽지 않은 페이지 <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />개}other{읽지 않은 페이지 <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />개}}</translation>
-<translation id="2961210776189273067">제목</translation>
 <translation id="296370266220139811">적게 입력하고 시간 절약하기</translation>
 <translation id="2977350910003566746">마지막으로 연 시간순으로 정렬</translation>
 <translation id="297771753501244313">최근 연 날짜순으로 정렬</translation>
@@ -1126,7 +1125,6 @@
 <translation id="694267552845942083">현재 동기화 설정을 맞춤설정 중입니다. 동기화 사용 설정을 마무리하려면 화면 하단 근처에 있는 확인 버튼을 탭하세요. 위로 이동</translation>
 <translation id="6945221475159498467">선택</translation>
 <translation id="6955535239952325894">관리 브라우저에서 설정이 사용 중지됨</translation>
-<translation id="6958103823951858863">다운로드 후 자동으로 PDF 열기</translation>
 <translation id="6963766334940102469">북마크 삭제</translation>
 <translation id="696447261358045621">시크릿 모드 종료</translation>
 <translation id="6965382102122355670">확인</translation>

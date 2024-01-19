@@ -100,7 +100,6 @@
 
 כדי לשנות את ההגדרה הזו, עליך <ph name="BEGIN_LINK" />לנקות את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">‏פתיחת Chromium מכל אפליקציה</translation>
-<translation id="4002314982058020967">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך לנקות את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">‏פתיחה והפעלה של 'טיימר לדיווח על מצב מסוכן' ב-Chromium.</translation>
 <translation id="4043291146360695975">סיסמאות נשמרות במנהל הסיסמאות במכשיר הזה בלבד.</translation>
 <translation id="4099085513035183040">‏אין תמיכה ב-Chromium בטא</translation>
@@ -113,7 +112,6 @@
 <translation id="4408912345039114853">‏הפעלת 'טיימר לדיווח על מצב מסוכן' ב-Chromium</translation>
 <translation id="4432744876818348753">‏כדי להפיק את המרב מ-Chromium, עליך להיכנס לחשבון.</translation>
 <translation id="4445228361214254027">‏הארגון שלך השבית את האפשרות להשתמש בנתוני Chromium ולשמור אותם בחשבון Google. סימניות, סיסמאות ונתונים נוספים חדשים יישמרו רק במכשיר הזה.</translation>
-<translation id="4485517920713468480">‏Chromium יזהה מספרי מעקב באתרים שבהם ביקרת, ואפשר יהיה לראות עדכונים על חבילות בדף 'כרטיסייה חדשה'. כדי שניתן יהיה לספק את התכונה הזו, וגם לשפר את שופינג לכולם, הנתונים שלך ישותפו עם Google. אפשר לשנות את זה <ph name="BEGIN_LINK" />בהגדרות של המעקב אחר חבילות<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">‏הוספה של כתובות ה-URL שהוזנו לרשימת הקריאה ב-Chromium.</translation>
 <translation id="452436063477828504">‏כדאי לוודא שתמיד תהיה לך אפשרות להשתמש בנתוני Chromium בחשבון Google שלך</translation>
 <translation id="4555020257205549924">‏כשהתכונה הזו פועלת, Chromium יציע לתרגם באמצעות Google Translate דפים שנכתבו בשפות אחרות‏. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>

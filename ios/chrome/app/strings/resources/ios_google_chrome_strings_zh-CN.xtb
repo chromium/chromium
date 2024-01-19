@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1066101356081285416">Chrome 将检测您所访问的网站上的跟踪编号，并在新标签页中向您显示包裹动态。系统会将包裹跟踪编号和网站名称发送给 Google，以便提供此功能和改进 Google 购物功能，让所有用户受益。您可以随时在<ph name="BEGIN_LINK" />包裹跟踪设置<ph name="END_LINK" />中更新此设置。</translation>
 <translation id="1085696779717592361">默认使用 Chrome</translation>
 <translation id="1105362920864247682">清除 Chrome 中的浏览数据。</translation>
 <translation id="1113057722807951993">口令加密不涵盖 Google Pay 中的付款方式和地址。若要更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
@@ -44,7 +45,6 @@
 <translation id="1917964099031477364">系统会从该设备上的 Chrome 和其他 Google 应用中移除此账号以及所有未保存的数据。</translation>
 <translation id="1965935827552890526">请完成您先前在另一已打开的 Chrome 窗口中正在执行的操作。</translation>
 <translation id="1987779152850321833">请完成下面这些建议的操作，以便充分利用 Chrome。</translation>
-<translation id="2008357574463816229">如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="2056123005618757196">借助比以前更简单、更安全、更快速的 Google Chrome 提高工作效率。</translation>
 <translation id="2120238739383482109">打开 Chrome 书签。</translation>
 <translation id="2147651015520127414">Chrome 已证实此网站的证书是由 <ph name="ISSUER" /> 签发的。</translation>
@@ -199,7 +199,6 @@
 <translation id="686691656039982452">您可以<ph name="BEGIN_LINK" />管理要将哪些 Chrome 数据保存<ph name="END_LINK" />到您的 Google 账号。
 
 如需更多使用数据来提升 Chrome 体验的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />。</translation>
-<translation id="687586529977635009">Chrome 将检测您所访问的网站上的跟踪编号，并在新标签页中向您显示包裹动态。您的数据将分享给 Google，以便系统提供此功能和改进 Google 购物，让所有人都受益。您可在<ph name="BEGIN_LINK" />包裹跟踪设置<ph name="END_LINK" />中更改此设置。</translation>
 <translation id="6916015246697034114">在 Chrome 中使用语音搜索</translation>
 <translation id="6964931465519938134">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="6975725306479268850">选择使用 Chrome 的自动填充功能</translation>

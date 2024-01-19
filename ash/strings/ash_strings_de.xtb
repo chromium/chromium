@@ -267,7 +267,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2064048859448024834">Kameravorschau wird angezeigt</translation>
 <translation id="2067602449040652523">Tastaturhelligkeit</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ein-/ausschalten. <ph name="CAPTURE_MEDIUM" /> ist <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Wische mit vier Fingern nach rechts, um zum nächsten Desktop zu wechseln</translation>
 <translation id="2079545284768500474">Rückgängig</translation>
 <translation id="2083190527011054446">Gute Nacht <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Emoji-Auswahl öffnen</translation>
@@ -283,7 +282,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2149229036084364364">Zum vorherigen Titel wechseln</translation>
 <translation id="2152895518047545149">Dir fehlen keine Aufgaben. Gut gemacht!</translation>
 <translation id="2161132820593978283">Probiere den automatischen Bildausschnitt aus – dabei wird die Kamera so angepasst, dass du dich bei Videoanrufen in der Mitte des Bildschirm siehst. Du kannst die Funktion in den Schnelleinstellungen aktivieren.</translation>
-<translation id="2170530631236737939">Wische mit drei Fingern nach unten, um die Übersicht zu schließen</translation>
 <translation id="2185166372312820725">Zum vorherigen Tab wechseln</translation>
 <translation id="2185444992308415167">Tabs 1 bis 8 durchgehen</translation>
 <translation id="2198625180564913276">Profil wird hinzugefügt. Das kann einige Minuten dauern.</translation>
@@ -1694,7 +1692,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7850320739366109486">Bitte nicht stören</translation>
 <translation id="7851039877802112575">Fokus auf Pop-up-Fenster und Dialogfelder verschieben</translation>
 <translation id="7851768487828137624">Kanarienvogel</translation>
-<translation id="7860671499921112077">Wische mit drei Fingern nach oben, um die Übersicht aufzurufen</translation>
 <translation id="7862292329216937261">Wenn du das Gerät als Gast verwenden möchtest, musst du dich abmelden und unten auf dem Bildschirm „Als Gast nutzen“ auswählen.</translation>
 <translation id="7866482334467279021">an</translation>
 <translation id="7872786842639831132">Aus</translation>
@@ -1805,7 +1802,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8262312463845990408">Wiedergabe aktivieren/deaktivieren</translation>
 <translation id="8270450402312105425">{0,plural, =1{Gerät innerhalb von einer Stunde auf eine frühere Version zurücksetzen}other{Gerät innerhalb von # Stunden auf eine frühere Version zurücksetzen}}</translation>
 <translation id="8277261673056602147">Text auf dem Bildschirm markieren</translation>
-<translation id="8284362522226889623">Wische mit vier Fingern nach links, um zum vorigen Desktop zu wechseln</translation>
 <translation id="828708037801473432">Aus</translation>
 <translation id="8297006494302853456">Schwach</translation>
 <translation id="8308637677604853869">Vorheriges Menü</translation>

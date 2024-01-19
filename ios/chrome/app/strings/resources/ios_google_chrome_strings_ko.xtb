@@ -46,7 +46,6 @@
 <translation id="1917964099031477364">이 계정 및 저장되지 않은 모든 데이터가 Chrome 및 이 기기의 기타 Google 앱에서 삭제됩니다.</translation>
 <translation id="1965935827552890526">열려 있는 다른 Chrome 창에서 진행 중이던 작업을 완료하세요.</translation>
 <translation id="1987779152850321833">아래의 추천 작업을 완료하여 Chrome을 최대한 활용하세요.</translation>
-<translation id="2008357574463816229">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="2056123005618757196">간소하고 안전하며 그 어느 때보다 빠른 속도의 Chrome을 더욱 다양하게 활용하세요</translation>
 <translation id="2120238739383482109">Chrome 북마크를 엽니다.</translation>
 <translation id="2147651015520127414">Chrome이 <ph name="ISSUER" />에서 이 웹사이트의 인증서를 발행했음을 확인했습니다.</translation>
@@ -203,7 +202,6 @@
 <translation id="686691656039982452">Google 계정에 <ph name="BEGIN_LINK" />저장되는 Chrome 데이터를 관리<ph name="END_LINK" />할 수 있습니다.
 
 Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />로 이동하세요.</translation>
-<translation id="687586529977635009">Chrome은 사용자가 방문한 사이트에서 운송장 번호를 감지하여 새 탭 페이지에 배송 현황을 표시합니다. 이 기능을 제공하고 Google 쇼핑을 개선하기 위해 내 데이터가 Google과 공유됩니다. <ph name="BEGIN_LINK" />배송 추적 설정<ph name="END_LINK" />에서 이를 변경할 수 있습니다.</translation>
 <translation id="6916015246697034114">Chrome에서 음성으로 검색하기</translation>
 <translation id="6964931465519938134">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
 <translation id="6975725306479268850">Chrome 자동 완성을 선택하세요</translation>

@@ -47,7 +47,6 @@ Bularni hisobga olish kerak:
 <translation id="1917964099031477364">Bu hisob va uning barcha saqlanmagan maʼlumotlari Chromedan olib tashlanadi.</translation>
 <translation id="1965935827552890526">Yopilmagan Chrome oynangizdagi ishni davom ettiring.</translation>
 <translation id="1987779152850321833">Chromedan maksimal foydalanish uchun quyidagi tavsiya etilgan amallarni bajaring.</translation>
-<translation id="2008357574463816229">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Oddiy, xavfsiz va har qachongidan tezkor Google Chrome brauzerida koʻplab imkoniyatlar.</translation>
 <translation id="2120238739383482109">Chrome bukmarklarini ochadi.</translation>
 <translation id="2147651015520127414">Chrome ushbu veb-sayt haqiqiyligi <ph name="ISSUER" /> tomonidan tasdiqlanganligini aniqladi.</translation>
@@ -204,7 +203,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="686691656039982452">Google hisobida <ph name="BEGIN_LINK" />saqlangan Chrome maʼlumotlarini boshqarish<ph name="END_LINK" /> mumkin.
 
 Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> sahifasida ochish mumkin.</translation>
-<translation id="687586529977635009">Chrome siz ochgan saytlardagi treking raqamlarini aniqlaydi va yangi varaqda paket yangilanishlarini koʻrsatadi. Bu funksiyani taqdim etish va xaridlarni yaxshilash uchun maʼlumotlaringiz Googleʼga ulashiladi. Siz buni <ph name="BEGIN_LINK" />Joʻnatmani kuzatish sozlamalari<ph name="END_LINK" /> orqali oʻzgartirishingiz mumkin.</translation>
 <translation id="6916015246697034114">Chromeda ovoz bilan qidirish</translation>
 <translation id="6964931465519938134">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="6975725306479268850">Avtomatik kiritish uchun Chromeni tanlang</translation>

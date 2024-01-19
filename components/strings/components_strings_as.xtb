@@ -42,6 +42,7 @@
 <translation id="1062407476771304334">সাল সলনি কৰক</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">ডেস্কটপ বুকমার্ক</translation>
+<translation id="1067029985695494416">সন্ধান ইঞ্জিনৰ সবিশেষ</translation>
 <translation id="1068672505746868501">পৃষ্ঠা <ph name="SOURCE_LANGUAGE" />লৈ কেতিয়াও অনুবাদ নকৰিব</translation>
 <translation id="1070333806075222467">মেটেল (গ্লছযুক্ত)</translation>
 <translation id="1070853536588271387">হাইব্ৰিড আৰু বিকল্প বাহন</translation>
@@ -1175,7 +1176,6 @@
 <translation id="33073482541490531">আপুনি এইমাত্ৰ ব্যৱহাৰ কৰা পাছৱৰ্ডটো এক ডেটা উলংঘনত বিচাৰি পোৱা গৈছে। Password Managerএ এই পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰে।</translation>
 <translation id="3307649904964670439">Chrome কাষ্টমাইজ কৰাৰ বুটাম, আপোনাৰ ব্ৰাউজাৰৰ ৰূপ কাষ্টমাইজ কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="3308006649705061278">প্ৰতিষ্ঠানৰ ইউনিট (অ’ইউ)</translation>
-<translation id="3324223664999044166">আপোনাৰ মনৰ ভাৱৰ চমু আভাস দিব পৰা ৩ টা বা অধিক শব্দ</translation>
 <translation id="3324687287337751929">৪ x ৬ ইঞ্চি</translation>
 <translation id="3324983252691184275">ক্ৰিমছন</translation>
 <translation id="3325027355611702542">কেম্পাৰ আৰু RV</translation>
@@ -1416,7 +1416,6 @@
 <translation id="3748009735914587286">মেটেল (হাই-গ্লছ)</translation>
 <translation id="3748148204939282805">আক্ৰমণকাৰীয়ে <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ত আপোনাৰ দ্বাৰা কিছুমান বিপজ্জনক কাম কৰাবলৈ চেষ্টা কৰিব পাৰে, যেনে কোনো ছফ্টৱেৰ ইনষ্টল কৰোৱা বা আপোনাৰ ব্যক্তিগত তথ্য (উদাহৰণস্বৰূপে, পাছৱর্ড, ফ’ন নম্বৰ বা ক্ৰেডিট কার্ড) ফাদিল কৰা। <ph name="BEGIN_LEARN_MORE_LINK" />অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">উৰণৰ সৈতে জড়িত উদ্যােগ</translation>
-<translation id="3751020515020988516">আপোনাৰ অনুৰোধটো বুজি পোৱা নাছিল। অন্য এটা অনুৰোধ কৰি চাওক।</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ছেট কৰা হোৱা নাই বাবে উপেক্ষা কৰা হৈছে।</translation>
 <translation id="3754210790023674521">চিত্ৰৰ ভিতৰত চিত্ৰ ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="3759461132968374835">আপোনাৰ শেহতীয়াকৈ ৰিপ’ৰ্ট কৰা কোনো ক্ৰেশ্ব নাই।  ক্ৰেশ্ব ৰিপ’ৰ্টিং অক্ষম কৰি ৰখাৰ সময়ত হোৱা ক্ৰেশ্ব ইয়াত দেখা পোৱা নাযাব।</translation>
@@ -2847,7 +2846,6 @@
 <translation id="6643016212128521049">মচক</translation>
 <translation id="6645291930348198241">কুকীসমূহ আৰু ছাইটৰ ডেটা এক্সেছ কৰক।</translation>
 <translation id="6645478838938543427">মূল্য কমাৰ সতৰ্কবাৰ্তা <ph name="EMAIL_ADDRESS" />লৈ পঠিওৱা হ’ব</translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{এটাৰ পৰাও নহয়}=1{১টা ছাইটৰ পৰা (আপুনি নিজৰ Google Accountৰ পৰা ছাইন আউট হৈ নাযায়)}one{#টা ছাইটৰ পৰা (আপুনি নিজৰ Google Accountৰ পৰা ছাইন আউট হৈ নাযায়)}other{#টা ছাইটৰ পৰা (আপুনি নিজৰ Google Accountৰ পৰা ছাইন আউট হৈ নাযায়)}}</translation>
 <translation id="6648459603387803038">আপোনাৰ প্ৰশাসকে দূৰৰ পৰাই আপোনাৰ ব্ৰাউজাৰৰ ছেটআপ সলনি কৰিব পাৰে। এই ডিভাইচটোত কৰা কাৰ্যকলাপ Chromeৰ বাহিৰৰ পৰাও পৰিচালনা কৰা হ’ব পাৰে।</translation>
 <translation id="6648524591329069940">Serif ফ’ণ্ট</translation>
 <translation id="6649510485211003056">১৯৫ x ২৭০ মি.মি.</translation>
@@ -3225,7 +3223,6 @@
 <translation id="7378877318020334501">টিভিৰ হাস্য-ব্যংগৰ অনুষ্ঠান</translation>
 <translation id="7380398842872229465">১০ x ১৫ ইঞ্চি</translation>
 <translation id="738439098860678026">শিশুকালৰ শিক্ষা</translation>
-<translation id="7388071710882496863">"এই ৰেষ্টুৰেণ্টখনৰ বাবে ৫ টা তৰাৰে মূল্যাংকন কৰা এটা পৰ্যালোচনা লিখক"ৰ দৰে অনুৰোধ</translation>
 <translation id="7388594495505979117">{0,plural, =1{আপোনাৰ ডিভাইচটো ১ মিনিটত ৰিষ্টাৰ্ট হ'ব}one{আপোনাৰ ডিভাইচটো # মিনিটত ৰিষ্টাৰ্ট হ'ব}other{আপোনাৰ ডিভাইচটো # মিনিটত ৰিষ্টাৰ্ট হ'ব}}</translation>
 <translation id="7390545607259442187">কাৰ্ডখন নিশ্চিত কৰক</translation>
 <translation id="7392089738299859607">ঠিকনা আপডে’ট কৰক</translation>

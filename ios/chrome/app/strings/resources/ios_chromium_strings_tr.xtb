@@ -100,7 +100,6 @@ Veri kullanarak Chromium deneyiminizi iyileştiren daha fazla ayar görmek için
 
 Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chromium verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Chromium'u İstediğiniz Uygulamadan Açın</translation>
-<translation id="4002314982058020967">Parolanızı unutursanız veya bu ayarı değiştirmek isterseniz <ph name="BEGIN_LINK" />hesabınızdaki Chromium verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Chromium'da Güvenlik Kontrolü'nü açar ve yürütür.</translation>
 <translation id="4043291146360695975">Şifreler yalnızca bu cihazda Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="4099085513035183040">Chromium Beta'da desteklenmiyor</translation>
@@ -113,7 +112,6 @@ Verileriniz parolanızla şifrelenir. Chromium verilerini kullanmak ve Google He
 <translation id="4408912345039114853">Chromium Güvenlik Kontrolü yürüt</translation>
 <translation id="4432744876818348753">Chromium'dan en iyi şekilde yararlanmak için oturum açın.</translation>
 <translation id="4445228361214254027">Kuruluşunuz, Chromium verilerini Google Hesabınızda kullanma ve kaydetme özelliğini devre dışı bıraktı. Yeni yer işaretleri, şifreler ve diğer öğeler yalnızca bu cihaza kaydedilecek.</translation>
-<translation id="4485517920713468480">Chromium, ziyaret ettiğiniz sitelerdeki takip numaralarını algılar ve kargoyla ilgili güncellemeleri Yeni Sekme sayfasında gösterir. Verileriniz, bu özelliği sunmak ve Alışveriş'i herkes için iyileştirmek üzere Google ile paylaşılır. Bunu <ph name="BEGIN_LINK" />Kargo Takibi Ayarları<ph name="END_LINK" />'ndan değiştirebilirsiniz.</translation>
 <translation id="4498832288620833153">Girilen URL'leri Chromium'daki okuma listenize ekler.</translation>
 <translation id="452436063477828504">Google Hesabınızdaki Chromium verilerini her zaman kullanabildiğinizden emin olun</translation>
 <translation id="4555020257205549924">Bu özellik açık durumdayken Chromium, diğer dillerde yazılmış sayfaları Google Çeviri'yi kullanarak çevirmeyi teklif eder. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>

@@ -383,7 +383,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2952278131021475699">Lens Camera Search</translation>
 <translation id="2956733177489514605">Sign in with your Google Account to sync your passwords and more.</translation>
 <translation id="2958718410589002129">Passwords</translation>
-<translation id="2961210776189273067">Title</translation>
 <translation id="2964349545761222050">Block third-party cookies</translation>
 <translation id="2969979262385602596">Failed to sign in. Please try again later.</translation>
 <translation id="2975121486251958312">Only Incognito mode is available</translation>
@@ -925,6 +924,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5922999516621365983">Drag tab here to pin it.</translation>
 <translation id="5938160824633642847">Your device is almost full. Free up space and try again.</translation>
 <translation id="5948291296578561264">This lets you save photos to your photo library.</translation>
+<translation id="5954562874938077107">Go to Lens</translation>
 <translation id="5955891643922670672">Viewing Offline Version</translation>
 <translation id="5957613098218939406">More Options</translation>
 <translation id="595769230373966252">Search with <ph name="SEARCH_PROVIDER" /></translation>

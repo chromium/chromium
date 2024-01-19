@@ -1177,7 +1177,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="33073482541490531">Die wagwoord wat jy sopas gebruik het, is in ’n dataskending gekry. Wagwoordbestuurder beveel aan dat jy hierdie wagwoord nou verander.</translation>
 <translation id="3307649904964670439">Knoppie om Chrome te pasmaak; aktiveer om jou blaaier se voorkoms te pasmaak</translation>
 <translation id="3308006649705061278">Organisatoriese eenheid (OU)</translation>
-<translation id="3324223664999044166">3 of meer woorde wat jou gedagtes opsom</translation>
 <translation id="3324687287337751929">4x6 dm.</translation>
 <translation id="3324983252691184275">Karmosyn</translation>
 <translation id="3325027355611702542">Kampeervoertuie en motorwoonwaens</translation>
@@ -1419,7 +1418,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3748009735914587286">Metaal (glansryk)</translation>
 <translation id="3748148204939282805">Aanvallers op <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> kan jou dalk mislei om iets gevaarlik te doen, soos om sagteware te installeer of jou persoonlike inligting bekend te maak (byvoorbeeld: wagwoorde, foonnommers of kredietkaartinligting). <ph name="BEGIN_LEARN_MORE_LINK" />Kom meer te wete<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Lugvaartbedryf</translation>
-<translation id="3751020515020988516">Jou versoek is nie verstaan nie. Probeer ’n ander versoek.</translation>
 <translation id="3752543821772132562">Geïgnoreer omdat <ph name="POLICY_NAME" /> nie gestel is nie.</translation>
 <translation id="3754210790023674521">Verlaat prent-in-prent</translation>
 <translation id="3759461132968374835">Jy het geen omvalle wat onlangs aangemeld is nie. Omvalle wat plaasgevind het toe omvalverslaggewing gedeaktiveer is, sal nie hier verskyn nie.</translation>
@@ -2852,7 +2850,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6643016212128521049">Vee uit</translation>
 <translation id="6645291930348198241">Kry toegang tot webkoekies en werfdata.</translation>
 <translation id="6645478838938543427">Opletberigte oor prysdalings sal na <ph name="EMAIL_ADDRESS" /> toe gestuur word</translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Geen}=1{Vanaf 1 werf (jy sal nie uit jou Google-rekening afgemeld word nie)}other{Vanaf # werwe (jy sal nie uit jou Google-rekening afgemeld word nie)}}</translation>
 <translation id="6648459603387803038">Jou administrateur kan jou blaaieropstelling oor 'n afstand verander. Aktiwiteit op hierdie toestel kan ook buite Chrome bestuur word.</translation>
 <translation id="6648524591329069940">Seriflettertipe</translation>
 <translation id="6649510485211003056">195x270 mm</translation>
@@ -3230,7 +3227,6 @@ Bykomende besonderhede:
 <translation id="7378877318020334501">TV-komedies</translation>
 <translation id="7380398842872229465">10x15 dm.</translation>
 <translation id="738439098860678026">Vroeëkinderonderwys</translation>
-<translation id="7388071710882496863">versoeke soos “skryf ’n 5-ster resensie vir hierdie restaurant”</translation>
 <translation id="7388594495505979117">{0,plural, =1{Jou toestel sal oor 1 minuut herbegin}other{Jou toestel sal oor # minute herbegin}}</translation>
 <translation id="7390545607259442187">Bevestig kaart</translation>
 <translation id="7392089738299859607">Dateer adres op</translation>

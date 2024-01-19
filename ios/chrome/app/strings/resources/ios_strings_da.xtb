@@ -383,7 +383,6 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2952278131021475699">Lens-kamerasøgning</translation>
 <translation id="2956733177489514605">Log ind med din Google-konto for at synkronisere dine adgangskoder m.m.</translation>
 <translation id="2958718410589002129">Adgangskoder</translation>
-<translation id="2961210776189273067">Titel</translation>
 <translation id="2964349545761222050">Bloker cookies fra tredjeparter</translation>
 <translation id="2969979262385602596">Login mislykkedes. Prøv igen senere.</translation>
 <translation id="2975121486251958312">Kun inkognitotilstand er tilgængelig</translation>
@@ -925,6 +924,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5922999516621365983">Træk fanen hertil for at fastgøre den.</translation>
 <translation id="5938160824633642847">Din enhed er ved at løbe tør for plads. Frigør plads, og prøv igen.</translation>
 <translation id="5948291296578561264">Dermed kan du gemme billeder i din billederamling.</translation>
+<translation id="5954562874938077107">Gå til Lens</translation>
 <translation id="5955891643922670672">Viser offlineversion</translation>
 <translation id="5957613098218939406">Flere valgmuligheder</translation>
 <translation id="595769230373966252">Søg med <ph name="SEARCH_PROVIDER" /></translation>

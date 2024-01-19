@@ -383,7 +383,6 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="2952278131021475699">Lens Kamera ile Arama</translation>
 <translation id="2956733177489514605">Şifrelerinizi ve daha fazlasını senkronize etmek için Google Hesabınızla oturum açın.</translation>
 <translation id="2958718410589002129">Şifreler</translation>
-<translation id="2961210776189273067">Ünvan</translation>
 <translation id="2964349545761222050">Üçüncü Taraf Çerezlerini Engelle</translation>
 <translation id="2969979262385602596">Oturum açılamadı. Daha sonra tekrar deneyin.</translation>
 <translation id="2975121486251958312">Sadece Gizli Mod Kullanılabilir</translation>
@@ -925,6 +924,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5922999516621365983">Sabitlemek için sekmeyi buraya sürükleyin.</translation>
 <translation id="5938160824633642847">Cihazınızın depolama alanı dolmak üzere. Yer boşaltın ve tekrar deneyin.</translation>
 <translation id="5948291296578561264">Böylece, fotoğrafları fotoğraf kitaplığınıza kaydedebilirsiniz.</translation>
+<translation id="5954562874938077107">Lens'e Git</translation>
 <translation id="5955891643922670672">Çevrimdışı Sürüm Gösteriliyor</translation>
 <translation id="5957613098218939406">Diğer Seçenekler</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> ile ara</translation>

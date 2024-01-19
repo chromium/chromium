@@ -291,6 +291,7 @@
 <translation id="2547458583188611426">مطابقت پذیری کام نہیں کر رہی ہے۔ مطابقت پذیری شروع کرنے کے لیے اپنا پاس فریز درج کریں۔</translation>
 <translation id="2551153019974022505">اکاؤنٹ کی خرابی</translation>
 <translation id="2556092377360758201">کوئی تحفظ نہیں (تجویز نہیں کی جاتی ہے)</translation>
+<translation id="2561375093019333908">کھولیں</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> پر بھیجا جا رہا ہے…</translation>
 <translation id="2576499762020411840">‏اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کریں اور انہیں محفوظ کریں</translation>
 <translation id="2577522251608256362">نواحی علاقہ</translation>
@@ -383,7 +384,6 @@
 <translation id="2952278131021475699">لینز کیمرا کے ذریعے تلاش</translation>
 <translation id="2956733177489514605">‏اپنے پاس ورڈز وغیرہ کو مطابقت پذیر بنانے کیلئے، اپنے Google اکاؤنٹ کے ساتھ سائن ان کریں۔</translation>
 <translation id="2958718410589002129">پاس ورڈز</translation>
-<translation id="2961210776189273067">عنوان</translation>
 <translation id="2964349545761222050">فریق ثالث کوکیز کو مسدود کریں</translation>
 <translation id="2969979262385602596">سائن ان کرنے میں ناکام ہوگیا۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="2975121486251958312">صرف پوشیدگی وضع دستیاب ہے</translation>
@@ -849,6 +849,7 @@
 <translation id="5513681519188741830"><ph name="TIME" /> گھنٹہ پہلے</translation>
 <translation id="5525269841082836315">پاس فریز بنائیں</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} کمزور پاس ورڈ}other{{COUNT} کمزور پاس ورڈز}}</translation>
+<translation id="5532545557415295622">غیر فعال ٹائم آؤٹ ڈائیلاگ</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> ملے</translation>
 <translation id="5548760955356983418">‏Handoff آپ کو اس آلہ پر کسی ویب سائٹ کی براؤزنگ شروع کرنے اور پھر آسانی سےآپ کے Mac پر جاری رکھنے دیتا ہے۔ موجودہ کھلی ویب سائٹ آپ کے Mac کے ڈاک میں ظاہر ہوگی۔
 
@@ -1289,6 +1290,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7781829728241885113">گزشتہ کل</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{1 دن کے بعد}other{{COUNT} دن کے بعد}}</translation>
 <translation id="7791543448312431591">شامل کریں</translation>
+<translation id="7792549458069452436">ایپ حاصل کریں</translation>
 <translation id="7807060072011926525">‏Google کے ذریعے فراہم کردہ</translation>
 <translation id="7812377703891978671">آپ <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> کا انتخاب کر کے اپنی براؤزنگ کی تمام سرگزشت تک رسائی حاصل کر سکتے ہیں۔</translation>
 <translation id="78146569776629510">ڈاؤن لوڈز</translation>

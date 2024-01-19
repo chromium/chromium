@@ -1178,7 +1178,6 @@
 <translation id="33073482541490531">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 비밀번호 관리자에서 지금 바로 비밀번호를 변경하시기를 바랍니다.</translation>
 <translation id="3307649904964670439">Chrome 맞춤설정 버튼, 브라우저 테마를 맞춤설정하려면 활성화하세요.</translation>
 <translation id="3308006649705061278">조직 구성 단위(OU)</translation>
-<translation id="3324223664999044166">생각을 요약하는 3개 이상의 단어</translation>
 <translation id="3324687287337751929">4x6인치</translation>
 <translation id="3324983252691184275">진홍색</translation>
 <translation id="3325027355611702542">캠핑카 및 레저용 차량</translation>
@@ -1420,7 +1419,6 @@
 <translation id="3748009735914587286">금속(고광택)</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />의 공격자가 소프트웨어를 설치하거나 개인정보(예: 비밀번호, 전화번호, 신용카드)를 공개하는 등의 위험한 행동을 하도록 사용자를 속일 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">항공 산업</translation>
-<translation id="3751020515020988516">요청을 이해할 수 없습니다. 다른 요청을 시도해 보세요.</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" />가 설정되지 않아 무시되었습니다.</translation>
 <translation id="3754210790023674521">PIP 모드 종료</translation>
 <translation id="3759461132968374835">최근에 보고된 비정상 종료가 없습니다. 비정상 종료 보고를 사용 중지했을 때 발생한 비정상 종료는 여기에 표시되지 않습니다.</translation>
@@ -2853,7 +2851,6 @@
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6645291930348198241">쿠키 및 사이트 데이터에 액세스합니다.</translation>
 <translation id="6645478838938543427">가격 인하 알림이 <ph name="EMAIL_ADDRESS" /> 주소로 전송됩니다.</translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{없음}=1{사이트 1개(Google 계정에서 로그아웃되지 않음)}other{사이트 #개(Google 계정에서 로그아웃되지 않음)}}</translation>
 <translation id="6648459603387803038">관리자가 원격으로 브라우저 설정을 변경할 수 있습니다. 이 기기의 활동은 Chrome 외부에서도 관리할 수 있습니다.</translation>
 <translation id="6648524591329069940">Serif 체</translation>
 <translation id="6649510485211003056">195x270mm</translation>
@@ -3231,7 +3228,6 @@
 <translation id="7378877318020334501">TV 코미디</translation>
 <translation id="7380398842872229465">10x15인치</translation>
 <translation id="738439098860678026">유아 교육</translation>
-<translation id="7388071710882496863">'이 음식점에 대해 별 5개 리뷰를 작성해 줘'와 같은 요청</translation>
 <translation id="7388594495505979117">{0,plural, =1{1분 후에 기기가 다시 시작됩니다}other{#분 후에 기기가 다시 시작됩니다}}</translation>
 <translation id="7390545607259442187">카드 확인</translation>
 <translation id="7392089738299859607">주소 업데이트</translation>

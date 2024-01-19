@@ -291,6 +291,7 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2547458583188611426">Sinhronizacija ne funkcionira. Da pokrenete sinhronizaciju, unesite pristupni izraz.</translation>
 <translation id="2551153019974022505">Greška na računu</translation>
 <translation id="2556092377360758201">Bez zaštite (ne preporučuje se)</translation>
+<translation id="2561375093019333908">OTVORI</translation>
 <translation id="2562041823070056534">Slanje na uređaj <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Koristite lozinke s Google računa i pohranjujte ih na njemu</translation>
 <translation id="2577522251608256362">Naselje</translation>
@@ -383,7 +384,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="2952278131021475699">Pretraživanje kamerom u Objektivu</translation>
 <translation id="2956733177489514605">Prijavite se s Google računom da sinhronizirate lozinke i drugo.</translation>
 <translation id="2958718410589002129">Lozinke</translation>
-<translation id="2961210776189273067">Titula</translation>
 <translation id="2964349545761222050">Blokiraj kolačiće trećih strana</translation>
 <translation id="2969979262385602596">Prijava nije uspjela. Pokušajte ponovo kasnije.</translation>
 <translation id="2975121486251958312">Dostupan je samo anonimni način rada</translation>
@@ -849,6 +849,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="5513681519188741830">Prije <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Kreirajte pristupni izraz</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} slaba lozinka}one{{COUNT} slaba lozinka}few{{COUNT} slabe lozinke}other{{COUNT} slabih lozinki}}</translation>
+<translation id="5532545557415295622">Dijaloški okvir za vrijeme čekanja u mirovanju</translation>
 <translation id="5542540507657872337">Pronašli smo: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff vam omogućava da počnete pregledati web lokaciju na ovom uređaju i jednostavno nastavite na Macu. Trenutno otvorena web lokacija će se pojaviti na priključnoj stranici na Macu.
 
@@ -925,7 +926,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5922999516621365983">Povucite karticu ovamo da je zakačite.</translation>
 <translation id="5938160824633642847">Vaš uređaj je skoro pun. Oslobodite prostor i pokušajte ponovo.</translation>
 <translation id="5948291296578561264">Ovo vam omogućava da sačuvate fotografije u biblioteku fotografija.</translation>
-<translation id="5954562874938077107">Otvori Objektiv</translation>
+<translation id="5954562874938077107">Idi u Objektiv</translation>
 <translation id="5955891643922670672">Prikaz verzije van mreže</translation>
 <translation id="5957613098218939406">Više opcija</translation>
 <translation id="595769230373966252">Pretražite putem pružaoca <ph name="SEARCH_PROVIDER" /></translation>
@@ -1289,6 +1290,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7781829728241885113">Jučer</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Nakon 1 dana}one{Nakon {COUNT} dana}few{Nakon {COUNT} dana}other{Nakon {COUNT} dana}}</translation>
 <translation id="7791543448312431591">Dodaj</translation>
+<translation id="7792549458069452436">DOHVATI APLIKACIJU</translation>
 <translation id="7807060072011926525">Pruža Google</translation>
 <translation id="7812377703891978671">Možete pristupiti svoj historiji pregledanja odabirom dugmeta <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Preuzimanja</translation>

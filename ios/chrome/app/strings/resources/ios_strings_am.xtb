@@ -291,6 +291,7 @@
 <translation id="2547458583188611426">ማስመር እየሰራ አይደለም። ማስመር ለመጀመር የይለፍ ሐረግዎን ያስገቡ።</translation>
 <translation id="2551153019974022505">የመለያ ስህተት</translation>
 <translation id="2556092377360758201">ምንም ጥበቃ የለም (አይመከርም)</translation>
+<translation id="2561375093019333908">ክፍት</translation>
 <translation id="2562041823070056534">ወደ <ph name="DEVICE_NAME" /> በመላክ ላይ...</translation>
 <translation id="2576499762020411840">በGoogle መለያዎ ውስጥ የይለፍ ቃላትን ይጠቀሙ እና ያስቀምጡ</translation>
 <translation id="2577522251608256362">ሰፈር</translation>
@@ -383,7 +384,6 @@
 <translation id="2952278131021475699">የሌንስ ካሜራ ፍለጋ</translation>
 <translation id="2956733177489514605">የእርስዎን የይለፍ ቃላት እና ሌሎችንም ለማስመር በGoogle መለያዎ ይግቡ።</translation>
 <translation id="2958718410589002129">የይለፍ ቃላት</translation>
-<translation id="2961210776189273067">ርዕስ</translation>
 <translation id="2964349545761222050">የሶስተኛ ወገን ኩኪዎችን ያግዱ</translation>
 <translation id="2969979262385602596">በመለያ መግባት አልተሳካም። እባክዎ ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="2975121486251958312">ማንነት የማያሳውቅ ሁነታ ብቻ ይገኛል</translation>
@@ -849,6 +849,7 @@
 <translation id="5513681519188741830">ከ<ph name="TIME" /> ሰ በፊት</translation>
 <translation id="5525269841082836315">የይለፍ ሐረግ ፍጠር</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} ደካማ የይለፍ ቃል}one{{COUNT} ደካማ የይለፍ ቃል}other{{COUNT} ደካማ የይለፍ ቃሎች}}</translation>
+<translation id="5532545557415295622">የስራ መፍታት ጊዜ መገናኛ</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> ተገኝቷል</translation>
 <translation id="5548760955356983418">Handoff በዚህ መሣሪያ ላይ አንድ ድር ጣቢያ ማሰስ እንዲጀምሩና በቀላሉ በእርስዎ Mac ላይ እንዲቀጥሉ ያስችልዎታል። አሁን ክፍት የሆነው ድር ጣቢያ በእርስዎ Mac ላይ ባለው Dock ላይ ይታያል።
 
@@ -1289,6 +1290,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7781829728241885113">ትናንት</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{ከ1 ቀን በኋላ}one{ከ{COUNT} ቀን በኋላ}other{ከ{COUNT} ቀናት በኋላ}}</translation>
 <translation id="7791543448312431591">ያክሉ</translation>
+<translation id="7792549458069452436">መተግበሪያውን ያግኙ</translation>
 <translation id="7807060072011926525">በGoogle የቀረበ</translation>
 <translation id="7812377703891978671">ሁሉንም የአሰሳ ታሪክዎን <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> በመምረጥ መድረስ ይችላሉ።</translation>
 <translation id="78146569776629510">ውርዶች</translation>

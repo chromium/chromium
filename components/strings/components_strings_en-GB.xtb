@@ -42,6 +42,7 @@
 <translation id="1062407476771304334">Replace</translation>
 <translation id="1064054731605354900">A3 x 5</translation>
 <translation id="106701514854093668">Desktop Bookmarks</translation>
+<translation id="1067029985695494416">Search engine details</translation>
 <translation id="1068672505746868501">Never translate pages in <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Metal (glossy)</translation>
 <translation id="1070853536588271387">Hybrid and alternative vehicles</translation>
@@ -1107,7 +1108,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3182185041786697613">Save security code?</translation>
 <translation id="3185635157430775689">Computer Components</translation>
 <translation id="3187306450550410410">Flexible work arrangements</translation>
-<translation id="3187472288455401631">Ad measurement</translation>
+<translation id="3187472288455401631">Ads measurement</translation>
 <translation id="3190736958609431397">Untrack</translation>
 <translation id="319282854780294203">Social networks</translation>
 <translation id="3194737229810486521"><ph name="URL" /> wants to permanently store data on your device</translation>
@@ -1177,7 +1178,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="33073482541490531">The password that you just used was found in a data breach. Password Manager recommends changing this password now.</translation>
 <translation id="3307649904964670439">Customise Chrome button, activate to customise the look of your browser</translation>
 <translation id="3308006649705061278">Organisational Unit (OU)</translation>
-<translation id="3324223664999044166">Three or more words that sum up your thoughts</translation>
 <translation id="3324687287337751929">4 in x 6 in</translation>
 <translation id="3324983252691184275">Crimson</translation>
 <translation id="3325027355611702542">Campers and Motorhomes</translation>
@@ -1419,7 +1419,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3748009735914587286">Metal (high gloss)</translation>
 <translation id="3748148204939282805">Attackers on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> may trick you into doing something dangerous like installing software or revealing your personal information (for example, passwords, phone numbers or credit cards). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Aviation industry</translation>
-<translation id="3751020515020988516">Your request wasn't understood. Try a different request.</translation>
 <translation id="3752543821772132562">Ignored because <ph name="POLICY_NAME" /> is not set.</translation>
 <translation id="3754210790023674521">Exit picture-in-picture</translation>
 <translation id="3759461132968374835">You have no recently reported crashes.  Crashes that occurred when crash reporting was disabled will not appear here.</translation>
@@ -2852,7 +2851,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6645291930348198241">Access cookies and site data.</translation>
 <translation id="6645478838938543427">Price drop alerts will be sent to <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{None}=1{From 1 site (you won't be signed out of your Google Account)}other{From # sites (you won't be signed out of your Google Account)}}</translation>
 <translation id="6648459603387803038">Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome.</translation>
 <translation id="6648524591329069940">Serif Font</translation>
 <translation id="6649510485211003056">195 mm x 270 mm</translation>
@@ -3230,7 +3228,6 @@ Additional details:
 <translation id="7378877318020334501">TV comedies</translation>
 <translation id="7380398842872229465">10 in x 15 in</translation>
 <translation id="738439098860678026">Early childhood education</translation>
-<translation id="7388071710882496863">requests like 'write a five-star review for this restaurant'</translation>
 <translation id="7388594495505979117">{0,plural, =1{Your device will restart in 1 minute}other{Your device will restart in # minutes}}</translation>
 <translation id="7390545607259442187">Confirm Card</translation>
 <translation id="7392089738299859607">Update Address</translation>

@@ -267,7 +267,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2064048859448024834">Förhandsgranskning av kamera visas</translation>
 <translation id="2067602449040652523">Ljusstyrka för tangentbordet</translation>
 <translation id="2075520525463668108">Aktivera och inaktivera <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> är <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Svep till höger med fyra fingrar för att byta till nästa skrivbord</translation>
 <translation id="2079545284768500474">Ångra</translation>
 <translation id="2083190527011054446">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Öppna emojiväljaren</translation>
@@ -283,7 +282,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2149229036084364364">Tillbaka till föregående spår</translation>
 <translation id="2152895518047545149">Inget verkar saknas. Bra gjort!</translation>
 <translation id="2161132820593978283">Testa kamerainramning så att du hamnar i mitten av skärmen i videosamtal. Aktivera det i snabbinställningarna.</translation>
-<translation id="2170530631236737939">Stäng översikten genom att svepa nedåt med tre fingrar</translation>
 <translation id="2185166372312820725">Öppna föregående flik</translation>
 <translation id="2185444992308415167">Gå igenom flikarna 1 till 8</translation>
 <translation id="2198625180564913276">Lägger till profil. Det kan ta några minuter.</translation>
@@ -1694,7 +1692,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7850320739366109486">Stör inte</translation>
 <translation id="7851039877802112575">Flytta fokus till popupfönster och dialogrutor</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Öppna översikten genom att svepa uppåt med tre fingrar</translation>
 <translation id="7862292329216937261">Om du vill använda enheten som gäst måste du logga ut och sedan välja Använd som gäst längst ned på skärmen.</translation>
 <translation id="7866482334467279021">på</translation>
 <translation id="7872786842639831132">Av</translation>
@@ -1805,7 +1802,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8262312463845990408">Aktivera och inaktivera uppspelning</translation>
 <translation id="8270450402312105425">{0,plural, =1{Byt till en tidigare version av enheten inom en timme}other{Byt till en tidigare version av enheten inom # timmar}}</translation>
 <translation id="8277261673056602147">Markera text på skärmen</translation>
-<translation id="8284362522226889623">Svep till vänster med fyra fingrar för att byta till det föregående skrivbordet</translation>
 <translation id="828708037801473432">Av</translation>
 <translation id="8297006494302853456">Svag</translation>
 <translation id="8308637677604853869">Föregående meny</translation>

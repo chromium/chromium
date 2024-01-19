@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="1066101356081285416">Chrome registrerer sporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Pakkesporingsnummeret og navnet på nettstedet sendes til Google, slik at Google kan levere denne funksjonen og gjøre Google Shopping-funksjonene bedre for alle. Du kan når som helst oppdatere dette i <ph name="BEGIN_LINK" />innstillingene for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Bruk Chrome som standard</translation>
 <translation id="1105362920864247682">Slett nettlesingsdata i Chrome.</translation>
 <translation id="1113057722807951993">Kryptering med passordfrase inkluderer ikke betalingsmåter og adresser fra Google Pay.
@@ -46,7 +47,6 @@ Du bør tenke på følgende:
 <translation id="1917964099031477364">Denne kontoen og eventuelle ulagrede data blir fjernet fra Chrome og andre Google-apper på enheten.</translation>
 <translation id="1965935827552890526">Gjør deg ferdig med det du holdt på med i det andre åpne Chrome-vinduet.</translation>
 <translation id="1987779152850321833">Fullfør de foreslåtte handlingene under for å få mest mulig ut av Chrome.</translation>
-<translation id="2008357574463816229">Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Få mer gjort med Google Chrome-nettleseren, som er enkel, sikker og raskere enn noensinne.</translation>
 <translation id="2120238739383482109">Åpner Chrome-bokmerkene.</translation>
 <translation id="2147651015520127414">Chrome bekreftet at sertifikatet for dette nettstedet er utstedt av <ph name="ISSUER" />.</translation>
@@ -203,7 +203,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="686691656039982452">Du kan <ph name="BEGIN_LINK" />administrere hvilke Chrome-data som lagres<ph name="END_LINK" /> i Google-kontoen din.
 
 For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen din, gå til <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome registrerer sporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Dataene dine blir delt med Google, slik at vi kan tilby denne funksjonen og gjøre Shopping enda bedre for alle. Du kan endre dette i <ph name="BEGIN_LINK" />innstillingene for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Søk med stemmen i Chrome</translation>
 <translation id="6964931465519938134">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="6975725306479268850">Velg Chrome for autofyll</translation>

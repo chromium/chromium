@@ -267,7 +267,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2064048859448024834">Podgląd z aparatu jest włączony</translation>
 <translation id="2067602449040652523">Jasność klawiatury</translation>
 <translation id="2075520525463668108">Przełącz: <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> – <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Aby przełączyć się na następne biurko, przesuń 4 palcami w prawo</translation>
 <translation id="2079545284768500474">Cofnij</translation>
 <translation id="2083190527011054446">Dobranoc <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Otwórz selektor emotikonów</translation>
@@ -283,7 +282,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2149229036084364364">Przejdź do poprzedniego utworu</translation>
 <translation id="2152895518047545149">Wygląda na to, że niczego nie brakuje. Dobra robota!</translation>
 <translation id="2161132820593978283">Spróbuj ustawić kadr, aby na obrazie z kamery podczas rozmów wideo znaleźć się pośrodku ekranu. Włącz tę funkcję w Szybkich ustawieniach.</translation>
-<translation id="2170530631236737939">Aby zamknąć Przegląd, przesuń 3 palcami w dół</translation>
 <translation id="2185166372312820725">Przejdź do poprzedniej karty</translation>
 <translation id="2185444992308415167">Poruszaj się między kartami 1–8</translation>
 <translation id="2198625180564913276">Dodaję profil. Może to potrwać kilka minut.</translation>
@@ -1693,7 +1691,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7850320739366109486">Nie przeszkadzać</translation>
 <translation id="7851039877802112575">Przenieś zaznaczenie na wyskakujące okienka i okna dialogowe</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Przesuń 3 palcami w górę, aby otworzyć Przegląd</translation>
 <translation id="7862292329216937261">Aby korzystać z urządzenia jako gość, musisz się wylogować i kliknąć Przeglądaj jako gość u dołu ekranu.</translation>
 <translation id="7866482334467279021">włączono</translation>
 <translation id="7872786842639831132">Wyłączono</translation>
@@ -1804,7 +1801,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8262312463845990408">Włącz lub wyłącz odtwarzanie</translation>
 <translation id="8270450402312105425">{0,plural, =1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 godziny}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godzin}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godzin}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godziny}}</translation>
 <translation id="8277261673056602147">Zaznacz tekst na ekranie</translation>
-<translation id="8284362522226889623">Aby przełączyć się na poprzednie biurko, przesuń 4 palcami w lewo</translation>
 <translation id="828708037801473432">Wyłączono</translation>
 <translation id="8297006494302853456">Słaby</translation>
 <translation id="8308637677604853869">Poprzednie menu</translation>

@@ -352,7 +352,6 @@
 <translation id="2946420957526726953">Chrome-ը թարմացվում է, որպեսզի հնարավոր լինի միանալ այլ սարքերի</translation>
 <translation id="2951071800649516099">Ավելացրեք էջեր ձեր ընթերցանության ցանկում</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> չկարդացված էջ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> չկարդացված էջ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> չկարդացված էջ}}</translation>
-<translation id="2961210776189273067">Դիմելաձև</translation>
 <translation id="296370266220139811">Քիչ մուտքագրելով՝ ժամանակ խնայեք</translation>
 <translation id="2977350910003566746">Տեսակավորում ըստ վերջին բացվածի</translation>
 <translation id="297771753501244313">Ըստ օգտագործման ամսաթվի</translation>
@@ -1126,7 +1125,6 @@
 <translation id="694267552845942083">Այս պահին դուք համաժամացման կարգավորումների էջում եք։ Համաժամացումը միացնելու համար սեղմեք «Հաստատել» կոճակը էկրանի ներքևի հատվածում: Անցնել վերև</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
 <translation id="6955535239952325894">Այս կարգավորումը ցուցադրվում է կառավարվող դիտարկիչներում</translation>
-<translation id="6958103823951858863">Ավտոմատ բացել PDF ֆայլը՝ ներբեռնելուց հետո</translation>
 <translation id="6963766334940102469">Ջնջել էջանիշները</translation>
 <translation id="696447261358045621">Դուրս գալ ինկոգնիտո ռեժիմից</translation>
 <translation id="6965382102122355670">Եղավ</translation>

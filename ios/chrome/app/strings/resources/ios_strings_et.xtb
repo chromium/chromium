@@ -383,7 +383,6 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="2952278131021475699">Lensi kaameraotsing</translation>
 <translation id="2956733177489514605">Paroolide ja muu sisu sünkroonimiseks logige sisse oma Google'i kontoga.</translation>
 <translation id="2958718410589002129">Paroolid</translation>
-<translation id="2961210776189273067">Pealkiri</translation>
 <translation id="2964349545761222050">Kolmanda osapoole küpsisefailide blokeerimine</translation>
 <translation id="2969979262385602596">Sisselogimine ebaõnnestus. Proovige hiljem uuesti.</translation>
 <translation id="2975121486251958312">Ainult inkognito režiim on saadaval</translation>
@@ -925,6 +924,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5922999516621365983">Vahelehe kinnitamiseks lohistage see siia.</translation>
 <translation id="5938160824633642847">Seade on peaaegu täis. Vabastage ruumi ja proovige uuesti.</translation>
 <translation id="5948291296578561264">See võimaldab teil salvestada fotod fotokogusse.</translation>
+<translation id="5954562874938077107">Ava Lens</translation>
 <translation id="5955891643922670672">Kuvatakse võrguühenduseta versioon</translation>
 <translation id="5957613098218939406">Rohkem valikuid</translation>
 <translation id="595769230373966252">Otsing teenusepakkujaga <ph name="SEARCH_PROVIDER" /></translation>

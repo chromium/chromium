@@ -267,7 +267,6 @@
 <translation id="2064048859448024834">已显示相机预览画面</translation>
 <translation id="2067602449040652523">键盘亮度</translation>
 <translation id="2075520525463668108">开启/关闭<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" />已<ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">若要切换到下一个桌面，请用四根手指向右滑动</translation>
 <translation id="2079545284768500474">撤消</translation>
 <translation id="2083190527011054446"><ph name="GIVEN_NAME" />，晚安！</translation>
 <translation id="2086334242442703436">打开表情符号选择器</translation>
@@ -283,7 +282,6 @@
 <translation id="2149229036084364364">切换到上一曲</translation>
 <translation id="2152895518047545149">您似乎未曾缺交任何作业。表现不错！</translation>
 <translation id="2161132820593978283">试用相机取景功能，使自己在视频通话过程中位于屏幕中央。您可在“快捷设置”中开启此功能。</translation>
-<translation id="2170530631236737939">若要退出“概览”模式，请用三根手指向下滑动</translation>
 <translation id="2185166372312820725">转到上一个标签页</translation>
 <translation id="2185444992308415167">逐一浏览第 1 至 8 个标签页</translation>
 <translation id="2198625180564913276">正在添加配置文件。这可能需要几分钟的时间。</translation>
@@ -1692,7 +1690,6 @@
 <translation id="7850320739366109486">请勿打扰</translation>
 <translation id="7851039877802112575">将焦点移至弹出式窗口和对话框</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">若要进入“概览”模式，请用三根手指向上滑动</translation>
 <translation id="7862292329216937261">要以访客身份使用设备，您需要退出账号，然后选择屏幕底部的“以访客身份浏览”。</translation>
 <translation id="7866482334467279021">开启</translation>
 <translation id="7872786842639831132">关闭</translation>
@@ -1803,7 +1800,6 @@
 <translation id="8262312463845990408">播放/暂停切换按钮</translation>
 <translation id="8270450402312105425">{0,plural, =1{请在 1 小时内将设备回滚到上一个版本}other{请在 # 小时内将设备回滚到上一个版本}}</translation>
 <translation id="8277261673056602147">突出显示屏幕上的文字</translation>
-<translation id="8284362522226889623">若要切换到上一个桌面，请用四根手指向左滑动</translation>
 <translation id="828708037801473432">已关闭</translation>
 <translation id="8297006494302853456">弱</translation>
 <translation id="8308637677604853869">上一菜单</translation>

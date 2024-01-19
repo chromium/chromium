@@ -267,7 +267,6 @@
 <translation id="2064048859448024834">התצוגה המקדימה של המצלמה מופעלת</translation>
 <translation id="2067602449040652523">בהירות מקלדת</translation>
 <translation id="2075520525463668108">החלפת המצב של ה<ph name="CAPTURE_MEDIUM" />. ה<ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">יש להחליק שמאלה עם ארבע אצבעות כדי לעבור לשולחן העבודה הווירטואלי הבא</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2083190527011054446">לילה טוב <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">פתיחה של בוחר אמוג'י</translation>
@@ -283,7 +282,6 @@
 <translation id="2149229036084364364">מעבר לטראק הקודם</translation>
 <translation id="2152895518047545149">נראה שכלום לא חסר. כל הכבוד!</translation>
 <translation id="2161132820593978283">אפשר להפעיל את הפריים האוטומטי במצלמה כדי למקם את עצמך במרכז המסך בשיחות וידאו. ניתן להפעיל אותו בהגדרות המהירות.</translation>
-<translation id="2170530631236737939">כדי לצאת מ'מסכים אחרונים', יש להחליק למטה בעזרת שלוש אצבעות</translation>
 <translation id="2185166372312820725">מעבר לכרטיסייה הקודמת</translation>
 <translation id="2185444992308415167">מקשי קיצור למעבר בין כרטיסיות 1 עד 8</translation>
 <translation id="2198625180564913276">הוספת הפרופיל מתבצעת. הפעולה עשויה להימשך מספר דקות.</translation>
@@ -1696,7 +1694,6 @@
 <translation id="7850320739366109486">נא לא להפריע</translation>
 <translation id="7851039877802112575">הזזת המיקוד לתיבות דו-שיח ולחלונות קופצים</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">כדי להיכנס אל 'מסכים אחרונים', יש להחליק למעלה בעזרת שלוש אצבעות</translation>
 <translation id="7862292329216937261">כדי להשתמש במכשיר כאורח, צריך לצאת מהחשבון ואז לבחור באפשרות 'גלישה כאורח' בתחתית המסך.</translation>
 <translation id="7866482334467279021">פועלת</translation>
 <translation id="7872786842639831132">כבוי</translation>
@@ -1807,7 +1804,6 @@
 <translation id="8262312463845990408">הפעלה או השהיה של הקראת הטקסט</translation>
 <translation id="8270450402312105425">{0,plural, =1{שינוי המכשיר לגרסה קודמת בתוך שעה}one{שינוי המכשיר לגרסה קודמת בתוך # שעות}two{שינוי המכשיר לגרסה קודמת בתוך שעתיים}other{שינוי המכשיר לגרסה קודמת בתוך # שעות}}</translation>
 <translation id="8277261673056602147">יש להדגיש טקסט במסך</translation>
-<translation id="8284362522226889623">יש להחליק ימינה בעזרת ארבע אצבעות כדי לעבור לשולחן העבודה הווירטואלי הקודם</translation>
 <translation id="828708037801473432">כבויה</translation>
 <translation id="8297006494302853456">חלש</translation>
 <translation id="8308637677604853869">התפריט הקודם</translation>

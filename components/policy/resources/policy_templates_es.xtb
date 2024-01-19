@@ -9376,9 +9376,6 @@ Si se habilita esta política o no se establece, se permitirán las consultas de
 Si se inhabilita esta política, no se permitirán las consultas de mayor protección mediante proxy. Los hashes parciales de las URLs se subirán directamente a Google con mucha menos frecuencia, lo que disminuirá la protección.</translation>
 <translation id="8858642179038618439">Forzar el modo de seguridad de YouTube</translation>
 <translation id="8860342862142842017">Inhabilitar los requisitos de la transparencia en los certificados en una lista de hashes subjectPublicKeyInfo</translation>
-<translation id="8860474826929590628">Si se habilita o no se le asigna ningún valor, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> se permitirá en todas las páginas web.
-
-Si se inhabilita, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> no estará disponible en ninguna página web.</translation>
 <translation id="8860894781631833477">Los usuarios pueden configurar el canal de lanzamiento de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8862086508140571198">Esta política permite crear una lista de DLCs (contenido descargable) para que se descarguen lo antes posible. Una vez se hayan descargado los DLCs, estarán disponibles para todos los usuarios del dispositivo.
 

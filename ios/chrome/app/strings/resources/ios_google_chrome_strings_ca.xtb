@@ -46,7 +46,6 @@ Aspectes que cal tenir en compte:
 <translation id="1917964099031477364">Aquest compte i totes les dades que no s'hagin desat se suprimiran de Chrome i de la resta d'aplicacions de Google instal·lades en aquest dispositiu.</translation>
 <translation id="1965935827552890526">Acaba el que estaves fent a l'altra finestra de Chrome oberta.</translation>
 <translation id="1987779152850321833">Completa aquestes accions suggerides per treure el màxim profit de Chrome.</translation>
-<translation id="2008357574463816229">Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Augmenta la teva productivitat amb un Google Chrome senzill, segur i més ràpid que mai.</translation>
 <translation id="2120238739383482109">Obre les adreces d'interès de Chrome.</translation>
 <translation id="2147651015520127414">Chrome ha verificat que <ph name="ISSUER" /> ha emès el certificat d'aquest lloc web.</translation>
@@ -203,7 +202,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="686691656039982452">Pots <ph name="BEGIN_LINK" />gestionar quines dades de Chrome es desen<ph name="END_LINK" /> al teu Compte de Google.
 
 Per veure més opcions de configuració que utilitzin dades per millorar la teva experiència de Chrome, ves a <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome detectarà els números de seguiment als llocs web que visitis i et mostrarà novetats sobre els paquets a la pàgina Pestanya nova. Les teves dades es compartiran amb Google per proporcionar aquesta funció i millorar Shopping per a tothom. Pots canviar aquesta opció a la <ph name="BEGIN_LINK" />configuració del seguiment d'enviaments<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Cerca amb la veu a Chrome</translation>
 <translation id="6964931465519938134">Ara pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="6975725306479268850">Tria Chrome a Emplenament automàtic</translation>

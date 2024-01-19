@@ -42,6 +42,7 @@
 <translation id="1062407476771304334">جایگزینی</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">نشانک‌های دسک‌تاپ</translation>
+<translation id="1067029985695494416">جزئیات موتور جستجو</translation>
 <translation id="1068672505746868501">هرگز صفحه‌های <ph name="SOURCE_LANGUAGE" /> ترجمه نشوند</translation>
 <translation id="1070333806075222467">فلز (براق)</translation>
 <translation id="1070853536588271387">وسیله نقلیه دوگانه‌سوز و با سوخت جایگزین</translation>
@@ -1177,7 +1178,6 @@
 <translation id="33073482541490531">گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. «مدیر گذرواژه» توصیه می‌کند این گذرواژه را همین‌حالا تغییر دهید.</translation>
 <translation id="3307649904964670439">‏دکمه «سفارشی کردن Chrome»؛ برای سفارشی کردن ظاهر مرورگر، آن را فعال کنید</translation>
 <translation id="3308006649705061278">‏واحد سازمانی (OU)</translation>
-<translation id="3324223664999044166">خلاصه‌ای از نظرتان در ۳ کلمه یا بیشتر</translation>
 <translation id="3324687287337751929">۶ × ۴ اینچ</translation>
 <translation id="3324983252691184275">زرشکی</translation>
 <translation id="3325027355611702542">کاروان و وسایل نقلیه تفریحی</translation>
@@ -1419,7 +1419,6 @@
 <translation id="3748009735914587286">فلز (خیلی براق)</translation>
 <translation id="3748148204939282805">ممکن است مهاجم‌ها در <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> شما را فریب دهند تا اقدام خطرناکی همچون نصب نرم‌افزار یا افشای اطلاعات شخصی (مانند گذرواژه‌ها، پیام‌ها یا کارت‌های اعتباری) انجام دهید. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">صنعت هوانوردی</translation>
-<translation id="3751020515020988516">درخواستتان درک نشد. درخواست دیگری را امتحان کنید.</translation>
 <translation id="3752543821772132562">نادیده گرفته می‌شود زیرا <ph name="POLICY_NAME" /> تنظیم نشده است.</translation>
 <translation id="3754210790023674521">خروج از تصویردرتصویر</translation>
 <translation id="3759461132968374835">شما اخیراً گزارش خرابی ارسال نکرده‌اید. مشکلاتی که در هنگام غیرفعال بودن ویژگی ارائه گزارش خرابی ایجاد شده است، در اینجا نمایش داده نمی‌شود.</translation>
@@ -2852,7 +2851,6 @@
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6645291930348198241">به کوکی‌ها و داده‌های سایت دسترسی داشته باشد.</translation>
 <translation id="6645478838938543427">هشدارهای کاهش قیمت به <ph name="EMAIL_ADDRESS" /> ارسال خواهد شد</translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{هیچ‌کدام}=1{‏از ۱ سایت (از سیستم حساب Google خود خارج نخواهید شد)}one{‏از # سایت (از سیستم حساب Google خود خارج نخواهید شد)}other{‏از # سایت (از سیستم حساب Google خود خارج نخواهید شد)}}</translation>
 <translation id="6648459603387803038">‏سرپرستتان می‌تواند تنظیم مرورگرتان را ازراه‌دور تغییر دهد. فعالیت انجام‌شده در این دستگاه می‌تواند از خارج از Chrome هم مدیریت شود.</translation>
 <translation id="6648524591329069940">‏قلم Serif</translation>
 <translation id="6649510485211003056">۲۷۰ × ۱۹۵ میلی‌متر</translation>
@@ -3230,7 +3228,6 @@
 <translation id="7378877318020334501">نمایش تلویزیونی کمدی</translation>
 <translation id="7380398842872229465">۱۵ × ۱۰ اینچ</translation>
 <translation id="738439098860678026">آموزش خردسالان</translation>
-<translation id="7388071710882496863">درخواست‌هایی مثل «مرور ۵ ستاره‌ای برای این رستوران بنویسید»</translation>
 <translation id="7388594495505979117">{0,plural, =1{دستگاه یک دقیقه دیگر بازراه‌اندازی خواهد شد}one{دستگاه # دقیقه دیگر بازراه‌اندازی خواهد شد}other{دستگاه # دقیقه دیگر بازراه‌اندازی خواهد شد}}</translation>
 <translation id="7390545607259442187">تأیید کارت</translation>
 <translation id="7392089738299859607">به‌روزرسانی نشانی</translation>

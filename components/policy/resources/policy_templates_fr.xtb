@@ -651,6 +651,7 @@ Si cette règle n'est pas configurée, l'outil de sélection d'emoji est activé
 <translation id="1534007181698071943">Autoriser les gestionnaires d'événements "unload" à être désactivés par défaut pendant le processus d'abandon</translation>
 <translation id="1542491165152947087">Autorisez les utilisateurs à activer ou désactiver le paramètre des thèmes publicitaires de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.</translation>
 <translation id="1550295162561011575">Cette règle permet aux administrateurs de configurer l'automatisation pour le lancement des applis sur les appareils <ph name="PRODUCT_NAME" />. Ces applis peuvent être lancées dès que l'utilisateur se connecte. L'utilisateur peut aussi les lancer depuis le lanceur d'applis.</translation>
+<translation id="1551782388466447648">Active le clavier virtuel tactile sur l'écran de connexion</translation>
 <translation id="1552418937045050762">Si ce paramètre est activé, les utilisateurs sont autorisés à activer le Partage à proximité, qui leur permet d'envoyer des fichiers aux personnes à proximité et inversement, de recevoir des fichiers de ces personnes.
 
       Si ce paramètre est désactivé, les utilisateurs ne sont pas autorisés à activer le Partage à proximité.
@@ -842,6 +843,14 @@ Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, aucun
 <translation id="1713829924716792485">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs connectés à un hôte d'accès à distance peuvent transférer des fichiers entre le client et l'hôte. Cela ne s'applique pas aux connexions d'assistance à distance, qui ne sont pas compatibles avec le transfert de fichiers.
 
       Si cette règle est désactivée, ces utilisateurs ne peuvent pas transférer de fichiers.</translation>
+<translation id="1714498967590789694">Le <ph name="WEBVIEW_TAG_NAME" /> des applications Chrome autorise un comportement qui est en cours de suppression dans <ph name="PRODUCT_NAME" />.
+
+Le comportement précédent permet à l'événement <ph name="WEBVIEW_TAG_NAME" /> <ph name="NEWWINDOW_EVENT_NAME" /> (https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow) d'associer la nouvelle fenêtre à un élément <ph name="WEBVIEW_TAG_NAME" /> dans une fenêtre d'application distincte du <ph name="WEBVIEW_TAG_NAME" /> d'origine. Avec le nouveau comportement, cette association est toujours autorisée, mais la référence de fenêtre renvoyée par l'appel à <ph name="WINDOW_OPEN_NAME" /> dans le <ph name="WEBVIEW_TAG_NAME" /> d'origine n'est pas valide.
+
+Si cette règle est activée, le comportement précédent est utilisé.
+Si elle est désactivée ou qu'elle n'est pas configurée, le changement de comportement prend effet au fur et à mesure de son déploiement lors du processus de lancement de <ph name="PRODUCT_NAME" />.
+
+Cette règle constitue une solution temporaire au cas où des entreprises rencontreraient des problèmes dus à cette modification. Sa dernière version compatible était la version 121. Elle a été supprimée dans la version 122.</translation>
 <translation id="1714790754501130659">Nom d'utilisateur pour authentifier les services système auprès du proxy Web à distance.</translation>
 <translation id="171511968762040550">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs peuvent ajouter, supprimer ou modifier des favoris.
 
@@ -974,6 +983,7 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
       Si la règle <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> est activée, les utilisateurs de Family Link sont autorisés (en plus des comptes définis dans cette règle).</translation>
 <translation id="18186215616223740">Forcer le téléchargement des documents Office gérés par <ph name="BASIC_EDITOR_NAME" />, auxquels l'utilisateur accède</translation>
 <translation id="1819272352048746487">Permet d'activer ou de désactiver les différentes fonctionnalités du clavier à l'écran</translation>
+<translation id="1822163547472114648">Paramètres de Créer des thèmes avec l'IA</translation>
 <translation id="1823974945066396306">Définit la liste des utilisateurs autorisés à se connecter à l'appareil. Les entrées se présentent sous la forme suivante : <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (<ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />, par exemple). Pour autoriser des utilisateurs arbitraires sur un domaine, utilisez les entrées sous la forme suivante : <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
       Si cette règle n'est pas configurée, aucune restriction ne s'applique quant aux utilisateurs autorisés à se connecter. Notez que la création d'utilisateurs nécessite toujours de configurer correctement la règle <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" />.
@@ -2138,6 +2148,7 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisate
 <translation id="2731627323327011390">Désactiver l'utilisation de certificats <ph name="PRODUCT_OS_NAME" /> pour les applications ARC</translation>
 <translation id="273678600057164019">La résolution DNS du système sera exécutée dans le processus réseau.</translation>
 <translation id="2737917415184832294">Utiliser HTTPS pour télécharger les mises à jour</translation>
+<translation id="2739213523971537320">Désactive le clavier virtuel tactile sur l'écran de connexion</translation>
 <translation id="2742843273354638707">Masque l'application Chrome Web Store et le lien de bas de page sur la page Nouvel onglet et dans le lanceur d'applications de <ph name="PRODUCT_OS_NAME" />.
 
       Lorsque cette règle est définie sur "True", les icônes sont masquées.
@@ -2193,6 +2204,7 @@ Définir "command_line" empêche le chargement de l'extension à partir de la li
 
       À moins que les supports de stockage externes ne soient bloqués, si vous définissez la règle ExternalStorageReadOnly sur "False" ou qu'elle n'est pas configurée, les utilisateurs peuvent créer et modifier des fichiers sur les périphériques de stockage externes accessibles en écriture. (Vous pouvez bloquer les supports de stockage externes en définissant la règle ExternalStorageDisable sur "True".)</translation>
 <translation id="2789742777235177478">Limiter la durée pendant laquelle un utilisateur authentifié via GAIA sans SAML peut se connecter hors connexion sur l'écran de verrouillage</translation>
+<translation id="2794180170614133361">Active le clavier virtuel tactile en fonction de l'heuristique système par défaut sur l'écran de connexion</translation>
 <translation id="2795923835422513629">Si cette règle est définie sur "1", les sites Web peuvent afficher des pop-ups. Si cette règle est définie sur "2", les sites ne sont pas autorisés à afficher de pop-ups.
 
 Si cette règle n'est pas configurée, la règle <ph name="BLOCK_POPUPS_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
@@ -4837,6 +4849,16 @@ Si cette règle est définie sur "True" ou si elle n'est pas définie, les rappo
 <translation id="5109866581154565900">Cette règle détermine si l'écran de direction du défilement sur le pavé tactile est visible par l'utilisateur lors de la première connexion.
       Si elle est définie sur "False", l'écran de direction du défilement sur le pavé tactile ne s'affiche pas.
       Si elle est définie sur "True", l'écran de direction du défilement sur le pavé tactile s'affiche.</translation>
+<translation id="5110138546901711282">Contrôle le clavier virtuel tactile sur l'écran de connexion en agissant comme règle complémentaire de la règle <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
+
+    Si le clavier virtuel d'accessibilité est activé, cette règle n'a aucune incidence.
+
+    Sinon, elle a les effets suivants sur l'écran de connexion :
+      Si cette règle n'est pas configurée, le clavier virtuel s'affiche en fonction de l'heuristique système par défaut, par exemple si un clavier est connecté ou non.
+    Si cette règle est définie sur "True", le clavier virtuel est toujours affiché.
+    Si cette règle est définie sur "False", le clavier virtuel n'est jamais affiché.
+
+    Le clavier virtuel peut adopter une disposition compacte en fonction du mode de saisie.</translation>
 <translation id="5117533544648311089">Permet de spécifier les configurations pour les URL d'authentification dans <ph name="WEBVIEW_PRODUCT_NAME" />.
 
       Ces URL d'authentification seraient traitées spécialement par <ph name="WEBVIEW_PRODUCT_NAME" />, de sorte que durant l'authentification, lorsque la page Web dans <ph name="WEBVIEW_PRODUCT_NAME" /> navigue vers les URL d'authentification, l'appli d'authentification des fournisseurs d'identité correspondants qui peut traiter cette URL d'authentification est lancée.
@@ -4869,6 +4891,7 @@ Si cette règle n'est pas configurée ou qu'elle est désactivée, les cookies e
 <translation id="5163889437570441600">Permet de caster du contenu sur l'appareil avec <ph name="PRODUCT_NAME" />.
 
           Si cette règle est définie sur "False", les utilisateurs ne peuvent pas caster de contenu sur leur appareil. Si elle est définie sur "True", les utilisateurs sont autorisés à caster du contenu. Si elle n'est pas définie, les utilisateurs ne peuvent pas caster de contenu sur les appareils Chrome OS enregistrés, mais ils peuvent le faire sur des appareils non enregistrés.</translation>
+<translation id="5164141068091580679">Active la fonctionnalité et envoie des données à Google afin d'entraîner les modèles d'IA</translation>
 <translation id="516520353995300280">Permet de désactiver l'application des exigences de divulgation stipulées dans les règles de transparence des certificats. S'applique à une liste d'autorités de certification héritées, concernant les chaînes de certificats avec un hachage <ph name="SUBJECT_PUBLIC_KEY_INFO" /> spécifié. Les hôtes Enterprise peuvent ainsi continuer d'utiliser des certificats qui ne seraient sinon pas jugés fiables (pour ne pas avoir été communiqués au public comme il se doit). Pour procéder à cette désactivation, le hachage <ph name="SUBJECT_PUBLIC_KEY_INFO" /> doit figurer dans un certificat CA reconnu comme une autorité de certification héritée. Une autorité de certification héritée est reconnue publiquement par un ou plusieurs systèmes d'exploitation compatibles avec <ph name="PRODUCT_NAME" /> (mais pas avec le Projet Android Open Source ni avec <ph name="PRODUCT_OS_NAME" />).
 
       Spécifiez un hachage <ph name="SUBJECT_PUBLIC_KEY_INFO" /> en concaténant le nom de l'algorithme de hachage, une barre oblique et l'encodage Base64 de cet algorithme de hachage, appliqué à l'élément <ph name="SUBJECT_PUBLIC_KEY_INFO" /> encodé en DER du certificat spécifié. Le format d'encodage Base64 correspond à celui d'une empreinte SPKI. SHA-256 est le seul algorithme de hachage reconnu (les autres sont ignorés).
@@ -5575,6 +5598,7 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> le sera également.
           Si cette règle est activée ou si elle n'est pas configurée, l'élément de menu contextuel de votre moteur de recherche par défaut sera disponible.
 
           La valeur de la règle ne s'applique que si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, et pas autrement.</translation>
+<translation id="5695907219125832836">Active la fonctionnalité, mais n'envoie pas de données à Google afin d'entraîner les modèles d'IA</translation>
 <translation id="5697306356229823047">Générer une liste des utilisateurs de l'appareil</translation>
 <translation id="569777361305162263">Désactiver l'affichage du contenu promotionnel en mode "Plein onglet"</translation>
 <translation id="5698923148503075597">Si cette règle est activée, les règles relatives au cloud prévalent en cas de conflit avec celles relatives aux plates-formes.
@@ -6007,6 +6031,7 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
       4 : blocage des fichiers malveillants identifiés par le serveur de navigation sécurisée ; les types de fichiers dangereux ne sont pas bloqués. Recommandé.
 
       Remarque : Ces restrictions s'appliquent aux téléchargements déclenchés à partir du contenu d'une page Web et de l'option de menu "Télécharger le lien". Elles ne s'appliquent pas au téléchargement de la page actuellement affichée ni à l'enregistrement au format PDF depuis les options d'impression. Pour en savoir plus sur la navigation sécurisée, consultez la page https://developers.google.com/safe-browsing.</translation>
+<translation id="6115254134376460539">Désactive la fonctionnalité</translation>
 <translation id="6118226055960302400">Restaurer le comportement permissif.</translation>
 <translation id="6119207979839638596">Cette règle a été supprimée dans la version M75, après que la règle concernant la version maximale de TLS a été supprimée de <ph name="PRODUCT_NAME" />.
 
@@ -6185,6 +6210,7 @@ Remarque : Pour le moment, seule la première entrée est prise en compte. Les 
           Cette règle n'a aucune incidence sur l'activation du clavier virtuel tactile. Par exemple, le clavier virtuel tactile s'affiche toujours sur une tablette, même si cette règle est définie sur "False".</translation>
 <translation id="6254498834449523938">Interdire à l'utilisateur de contourner l'avertissement de navigation sécurisée</translation>
 <translation id="625580680776945310">Le mode Haute efficacité sera activé.</translation>
+<translation id="6258314216623064461">Paramètres de M'aider à écrire</translation>
 <translation id="6258658183356534534">Contrôlez la fonctionnalité de mise à jour GREASE des indications du client user-agent.</translation>
 <translation id="6261643884958898336">Enregistrer les informations d'identification de l'ordinateur</translation>
 <translation id="6264247808139384018">Si cette règle est activée ou n'est pas configurée, les utilisateurs qui s'authentifient avec un mot de passe peuvent verrouiller l'écran.
@@ -6855,6 +6881,7 @@ Si cette règle est définie sur "False", le transfert de port dans les conteneu
       Si elle est activée, cela active Réponses rapides.
       Si elle est désactivée, cela désactive Réponses rapides.
       Si elle n'est pas configurée, les utilisateurs peuvent décider d'activer ou de désactiver Réponses rapides.</translation>
+<translation id="670675748066383347">Paramètres de l'organisateur d'onglets</translation>
 <translation id="6712624291905573620">Cette règle permet de contrôler la création de rapports cloud <ph name="PRODUCT_NAME" />, une option qui permet d'importer des informations sur le fonctionnement du navigateur dans la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
 Si cette règle n'est pas configurée ou si elle est désactivée, aucune donnée n'est collectée ni importée.
@@ -7576,6 +7603,7 @@ Si cette règle est désactivée ou n'est pas configurée, les paramètres de co
 <translation id="7298197471363105063">Ignorer les ensembles propriétaires.</translation>
 <translation id="7300320787419338290">Les paramètres F11/F12 utilisent le raccourci qui contient les touches de modification Ctrl et Maj</translation>
 <translation id="7302043767260300182">Délai de verrouillage de l'écran (secteur)</translation>
+<translation id="7303655680460311843">Active le clavier virtuel tactile sur l'écran de connexion</translation>
 <translation id="7303902834678570827">Les utilisateurs d'une session Invité gérée ne peuvent pas stocker les paramètres d'affichage au niveau de l'appareil</translation>
 <translation id="7306926210354955892">Cette règle permet de spécifier l'action à effectuer lorsque le répertoire de données ARC de l'utilisateur a été créé avec virtio-fs. À moins que les données virtio-fs ne soient migrées vers virtio-blk, les applications Android peuvent s'exécuter plus lentement sur ARCVM.
 
@@ -9326,9 +9354,6 @@ Si cette règle est activée ou n'est pas configurée, la recherche d'une protec
 Si cette règle est désactivée, la recherche d'une protection supérieure via proxy est désactivée. Les hachages partiels d'URL sont importés directement sur Google avec une fréquence beaucoup plus faible, ce qui réduit la protection.</translation>
 <translation id="8858642179038618439">Forcer le mode sécurisé de YouTube</translation>
 <translation id="8860342862142842017">Désactiver l'application des règles de transparence des certificats pour une liste de hachages subjectPublicKeyInfo</translation>
-<translation id="8860474826929590628">Si cette règle est activée ou n'est pas configurée, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> est autorisé sur toutes les pages Web.
-
-Si elle est désactivée, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> n'est disponible sur aucune page Web.</translation>
 <translation id="8860894781631833477">Les utilisateurs peuvent configurer la version disponible de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8862086508140571198">Cette règle permet de définir une liste de contenus téléchargeables à télécharger dès que possible. Les contenus téléchargeables téléchargés sont ensuite disponibles pour tous les utilisateurs de l'appareil.
 

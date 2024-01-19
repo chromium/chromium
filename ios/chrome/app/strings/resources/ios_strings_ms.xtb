@@ -291,6 +291,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2547458583188611426">Penyegerakan tidak berfungsi. Masukkan ungkapan laluan anda untuk memulakan penyegerakan.</translation>
 <translation id="2551153019974022505">Ralat akaun</translation>
 <translation id="2556092377360758201">Tiada Perlindungan (tidak disyorkan)</translation>
+<translation id="2561375093019333908">BUKA</translation>
 <translation id="2562041823070056534">Menghantar kepada <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Gunakan dan Simpan Kata Laluan dalam Google Account Anda</translation>
 <translation id="2577522251608256362">Kawasan kejiranan</translation>
@@ -383,7 +384,6 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2952278131021475699">Carian Kamera Lens</translation>
 <translation id="2956733177489514605">Log masuk dengan Google Account anda untuk menyegerakkan kata laluan anda dan pelbagai lagi.</translation>
 <translation id="2958718410589002129">Kata laluan</translation>
-<translation id="2961210776189273067">Tajuk</translation>
 <translation id="2964349545761222050">Sekat Kuki Pihak Ketiga</translation>
 <translation id="2969979262385602596">Gagal melog masuk. Sila cuba sebentar lagi.</translation>
 <translation id="2975121486251958312">Hanya Mod Inkognito Tersedia</translation>
@@ -849,6 +849,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5513681519188741830"><ph name="TIME" /> j yang lalu</translation>
 <translation id="5525269841082836315">Buat Frasa Laluan</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} kata laluan lemah}other{{COUNT} kata laluan lemah}}</translation>
+<translation id="5532545557415295622">Dialog tamat masa melahu</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> Ditemui</translation>
 <translation id="5548760955356983418">Ciri Serah membolehkan anda mula menyemak imbas laman web pada peranti ini, kemudian meneruskannya pada Mac anda dengan mudah. Tapak web yang dibuka pada masa ini akan muncul dalam Dock Mac anda.
 
@@ -1289,6 +1290,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7781829728241885113">Semalam</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Selepas 1 Hari}other{Selepas {COUNT} Hari}}</translation>
 <translation id="7791543448312431591">Tambah</translation>
+<translation id="7792549458069452436">DAPATKAN APL</translation>
 <translation id="7807060072011926525">Disediakan oleh Google</translation>
 <translation id="7812377703891978671">Anda boleh mengakses semua sejarah penyemakan imbas anda dengan memilih <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Muat turun</translation>

@@ -100,7 +100,6 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 
 To change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Open Chromium from any app</translation>
-<translation id="4002314982058020967">If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Opens and Runs Safety Check in Chromium.</translation>
 <translation id="4043291146360695975">Passwords are saved to Password Manager on this device only.</translation>
 <translation id="4099085513035183040">Not supported on Chromium beta</translation>
@@ -113,7 +112,6 @@ Your data is encrypted with your passphrase. Enter it to use and save Chromium d
 <translation id="4408912345039114853">Run Chromium Safety Check</translation>
 <translation id="4432744876818348753">Sign in to get the most out of Chromium.</translation>
 <translation id="4445228361214254027">Your organisation turned off the ability to use and save Chromium data in your Google Account. New bookmarks, passwords and more will be saved only to this device.</translation>
-<translation id="4485517920713468480">Chromium will detect tracking numbers on sites that you visit and show you package updates on the New Tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone. You can change this in <ph name="BEGIN_LINK" />Package tracking settings<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Adds the inputted URLs to your reading list in Chromium.</translation>
 <translation id="452436063477828504">Make sure that you can always use the Chromium data in your Google Account</translation>
 <translation id="4555020257205549924">When this feature is turned on, Chromium will offer to translate pages written in other languages using Google Translate. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>

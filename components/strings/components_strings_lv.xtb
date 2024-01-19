@@ -42,6 +42,7 @@
 <translation id="1062407476771304334">Aizstāt</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Datora grāmatzīmes</translation>
+<translation id="1067029985695494416">Detalizēta informācija par meklētājprogrammu</translation>
 <translation id="1068672505746868501">Nekad netulkot lapas šādā valodā: <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Metāls (glancēts)</translation>
 <translation id="1070853536588271387">Hibrīdtransportlīdzekļi un ar alternatīvo degvielu darbināmi transportlīdzekļi</translation>
@@ -1177,7 +1178,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="33073482541490531">Nupat izmantotā parole ir atklāta datu aizsardzības pārkāpuma dēļ. Paroļu pārvaldnieks iesaka nekavējoties nomainīt šo paroli.</translation>
 <translation id="3307649904964670439">Poga “Pielāgot pārlūkprogrammu Chrome”. Aktivizējiet, lai pielāgotu pārlūkprogrammas izskatu.</translation>
 <translation id="3308006649705061278">Organizacionālā vienība (OU)</translation>
-<translation id="3324223664999044166">vismaz trīs vārdus, kas apkopo jūsu domas;</translation>
 <translation id="3324687287337751929">4 x 6 collas</translation>
 <translation id="3324983252691184275">Tumši sarkana</translation>
 <translation id="3325027355611702542">Kemperi un atpūtas transportlīdzekļi</translation>
@@ -1418,7 +1418,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3748009735914587286">Metāls (augsti glancēts)</translation>
 <translation id="3748148204939282805">Uzbrucēji vietnē <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> var mudināt jūs veikt bīstamas darbības, piemēram, instalēt programmatūru vai atklāt personas informāciju (piemēram, paroles, tālruņa numurus vai kredītkaršu datus). <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3748912308089554501">Aviācijas nozare</translation>
-<translation id="3751020515020988516">Jūsu pieprasījums netika saprasts. Izmēģiniet citu pieprasījumu.</translation>
 <translation id="3752543821772132562">Ignorēta, jo nav iestatīta politika <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Iziet no režīma “Attēls attēlā”</translation>
 <translation id="3759461132968374835">Pēdējā laikā neesat ziņojis par avārijām. Šeit nebūs redzamas avārijas, kas radās laikā, kad avāriju pārskatu izveide bija atspējota.</translation>
@@ -2851,7 +2850,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6643016212128521049">Notīrīt</translation>
 <translation id="6645291930348198241">Piekļūt sīkfailiem un vietnes datiem</translation>
 <translation id="6645478838938543427">Paziņojums par cenas kritumu tiks nosūtīts uz adresi <ph name="EMAIL_ADDRESS" />.</translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Nav}=1{No 1 vietnes (jūs netiksiet izrakstīts no sava Google konta)}zero{No # vietnēm (jūs netiksiet izrakstīts no sava Google konta)}one{No # vietnes (jūs netiksiet izrakstīts no sava Google konta)}other{No # vietnēm (jūs netiksiet izrakstīts no sava Google konta)}}</translation>
 <translation id="6648459603387803038">Jūsu administrators var attālināti mainīt jūsu pārlūka iestatījumus. Darbību šajā ierīcē var pārvaldīt arī ārpus Chrome.</translation>
 <translation id="6648524591329069940">Serif fonts</translation>
 <translation id="6649510485211003056">195 x 270 mm</translation>
@@ -3229,7 +3227,6 @@ Papildu informācija:
 <translation id="7378877318020334501">TV komēdijas</translation>
 <translation id="7380398842872229465">10 x 15 collas</translation>
 <translation id="738439098860678026">Pirmsskolas izglītība</translation>
-<translation id="7388071710882496863">tādus pieprasījumus kā “uzrakstīt atsauksmi ar 5 zvaigznītēm par šo restorānu”.</translation>
 <translation id="7388594495505979117">{0,plural, =1{Jūsu ierīce tiks restartēta pēc 1 minūtes}zero{Jūsu ierīce tiks restartēta pēc # minūtēm}one{Jūsu ierīce tiks restartēta pēc # minūtes}other{Jūsu ierīce tiks restartēta pēc # minūtēm}}</translation>
 <translation id="7390545607259442187">Kartes apstiprināšana</translation>
 <translation id="7392089738299859607">Adreses atjaunināšana</translation>

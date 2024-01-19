@@ -2620,7 +2620,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="2960208947600937804">Errore bat gertatu da Linux konfiguratzean. Jarri administratzailearekin harremanetan.</translation>
 <translation id="2960942820860729477">Freskatze-abiadura</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (luzapenak emandakoa)</translation>
-<translation id="2961210776189273067">Trataera</translation>
 <translation id="2961695502793809356">Sakatu aurrera joateko; eduki sakatuta historia ikusteko</translation>
 <translation id="2963151496262057773"><ph name="PLUGIN_NAME" /> pluginak ez du erantzuten. Gelditu egin nahi duzu?</translation>
 <translation id="2964193600955408481">Desgaitu wifi-konexioa</translation>
@@ -6731,7 +6730,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6233154960150021497">Lehenetsi ahotsa erabiltzea, teklatuaren gainetik</translation>
 <translation id="6234108445915742946">Chrome-ren Zerbitzu-baldintzak martxoaren 31n aldatuko dira</translation>
 <translation id="6234474535228214774">Instalatzeke</translation>
-<translation id="6235208551686043831">Gailuaren kamera piztu duzu. Jarri eSIMaren QR kodea kameraren aurrean.</translation>
+<translation id="6235208551686043831">Gailuaren kamera aktibatu duzu. Jarri eSIMaren QR kodea kameraren aurrean.</translation>
 <translation id="6237297174664969437">Sinkronizatu nahi dituzun arakatze-datuak aukeratzeko, joan Chrome-ren ezarpenetara. <ph name="LINK_BEGIN" />Gailuaren ezarpenetan<ph name="LINK_END" />, Chrome arakatzailearen bidez instalatutako sareko aplikazioen sinkronizazioa kontrola dezakezu. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="6237474966939441970">Arkatzarekin oharrak hartzeko aplikazioa</translation>
 <translation id="623755660902014047">Irakurtzeko modua</translation>

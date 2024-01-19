@@ -517,6 +517,8 @@
 <translation id="1956486093533522234">หา รักษาความปลอดภัย หรือลบข้อมูลในอุปกรณ์</translation>
 <translation id="1958218078413065209">คะแนนสูงสุดของคุณคือ <ph name="SCORE" /></translation>
 <translation id="1959001866257244765">ช่วยปรับปรุงความปลอดภัยในอินเทอร์เน็ตสำหรับทุกคนโดยการส่ง <ph name="BEGIN_WHITEPAPER_LINK" />URL ของหน้าเว็บบางหน้าที่คุณเข้าชม ข้อมูลระบบที่จำกัด และเนื้อหาบางส่วนของหน้า<ph name="END_WHITEPAPER_LINK" />ให้ Google <ph name="BEGIN_PRIVACY_PAGE_LINK" />นโยบายความเป็นส่วนตัว<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959445535228047762">ระบบจะส่งข้อความและเนื้อหาหน้าเว็บของคุณไปยัง Google และอาจนำไปใช้เพื่อปรับปรุงฟีเจอร์นี้
+  <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">บุ๊กมาร์กของ <ph name="DOMAIN" /></translation>
 <translation id="196752089528718902">โดยปกติคุณจะเชื่อมต่อกับเว็บไซต์ต่างๆ อย่างปลอดภัย แต่ Chrome ไม่สามารถใช้การเชื่อมต่อที่ปลอดภัยได้ในขณะนี้ ผู้โจมตีอาจกำลังพยายามดักฟังหรือแก้ไขการเชื่อมต่อเครือข่ายของคุณ <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">ข้อผิดพลาดในการจัดเรียง</translation>
@@ -720,6 +722,7 @@
 <translation id="2354430244986887761">เมื่อเร็วๆ นี้ Google Safe Browsing <ph name="BEGIN_LINK" />พบแอปอันตราย<ph name="END_LINK" />ใน <ph name="SITE" /></translation>
 <translation id="2355395290879513365">ผู้โจมตีอาจเห็นรูปภาพที่คุณกำลังดูอยู่บนเว็บไซต์นี้และหลอกลวงคุณโดยการแก้ไขรูปภาพ</translation>
 <translation id="2356070529366658676">ถาม</translation>
+<translation id="2356926036049612643">เครื่องมือเพิ่มประสิทธิภาพ V8</translation>
 <translation id="2357481397660644965">อุปกรณ์ของคุณจัดการโดย <ph name="DEVICE_MANAGER" /> และบัญชีของคุณจัดการโดย <ph name="ACCOUNT_MANAGER" /></translation>
 <translation id="2359629602545592467">หลายรายการ</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
@@ -1178,7 +1181,6 @@
 <translation id="33073482541490531">ระบบพบว่ารหัสผ่านที่คุณเพิ่งใช้มีการรั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เครื่องมือจัดการรหัสผ่านแนะนำให้เปลี่ยนรหัสผ่านนี้ทันที</translation>
 <translation id="3307649904964670439">ปุ่มปรับแต่ง Chrome เปิดใช้งานเพื่อปรับแต่งรูปลักษณ์ของเบราว์เซอร์</translation>
 <translation id="3308006649705061278">หน่วยองค์กร (OU)</translation>
-<translation id="3324223664999044166">สรุปความคิดของคุณอย่างน้อย 3 คำ</translation>
 <translation id="3324687287337751929">4 x 6 นิ้ว</translation>
 <translation id="3324983252691184275">แดงเข้ม</translation>
 <translation id="3325027355611702542">รถสำหรับตั้งแคมป์และรถบ้าน</translation>
@@ -1419,7 +1421,6 @@
 <translation id="3748009735914587286">โลหะ (เงามาก)</translation>
 <translation id="3748148204939282805">ผู้โจมตีที่อยู่ใน <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> อาจหลอกล่อให้คุณทำบางสิ่งที่อันตราย เช่น การติดตั้งซอฟต์แวร์หรือเปิดเผยข้อมูลส่วนบุคคล (ตัวอย่างเช่น รหัสผ่าน หมายเลขโทรศัพท์ หรือบัตรเครดิต) <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">อุตสาหกรรมการบิน</translation>
-<translation id="3751020515020988516">ระบบไม่เข้าใจคำขอของคุณ โปรดลองส่งคำขออื่น</translation>
 <translation id="3752543821772132562">ไม่สนใจเนื่องจากไม่ได้ตั้งค่า <ph name="POLICY_NAME" /></translation>
 <translation id="3754210790023674521">ออกจากการแสดงภาพซ้อนภาพ</translation>
 <translation id="3759461132968374835">คุณไม่ได้รายงานข้อขัดข้องเมื่อเร็วๆ นี้ ข้อขัดข้องที่เกิดขึ้นเมื่อปิดใช้งานการรายงานข้อขัดข้อง จะไม่ปรากฏที่นี่</translation>
@@ -1655,7 +1656,7 @@
 <translation id="422722221769396062">บริการส่งอาหารจากร้าน</translation>
 <translation id="4230204356098880324">สามารถขอใช้และเลื่อนกล้องของคุณได้</translation>
 <translation id="4231448684371260244">8 x 13 นิ้ว</translation>
-<translation id="4233220688695460165">Chrome จะลบหัวข้อและเว็บไซต์ที่แนะนำโฆษณาภายใน 30 วันออกโดยอัตโนมัติ หรือคุณจะบล็อกบางหัวข้อและเว็บไซต์ที่คุณไม่ชอบก็ได้</translation>
+<translation id="4233220688695460165">Chrome จะลบหัวข้อและเว็บไซต์ที่แนะนำโฆษณาออกโดยอัตโนมัติภายใน 30 วัน หรือคุณจะบล็อกบางหัวข้อและเว็บไซต์ที่คุณไม่ชอบก็ได้</translation>
 <translation id="4235360514405112390">ถูกต้อง</translation>
 <translation id="4239799716689808527">ป้าย</translation>
 <translation id="4242380780309416996">ซอง (น้ำหนักมาก)</translation>
@@ -1687,7 +1688,7 @@
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{บันทึกบัตรนี้ลงในบัญชี Google ของคุณแล้ว}other{บันทึกบัตรเหล่านี้ลงในบัญชี Google ของคุณแล้ว}}</translation>
 <translation id="4287495839370498922">ความเป็นส่วนตัวเกี่ยวกับโฆษณาที่เพิ่มขึ้นบน Chrome</translation>
 <translation id="4290920330097335010">ไม่อนุญาต</translation>
-<translation id="4296207570293932800">ฟีเจอร์ใหม่ๆ ด้านความเป็นส่วนตัวเกี่ยวกับโฆษณาพร้อมใช้งานแล้ว</translation>
+<translation id="4296207570293932800">ฟีเจอร์ใหม่ด้านความเป็นส่วนตัวเกี่ยวกับโฆษณาพร้อมใช้งานแล้ว</translation>
 <translation id="4297502707443874121">ภาพขนาดย่อของหน้า <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">การลงทุน</translation>
 <translation id="42981349822642051">ขยาย</translation>
@@ -2013,7 +2014,7 @@
 <translation id="4953689047182316270">ตอบสนองต่อเหตุการณ์การเข้าถึงพิเศษ</translation>
 <translation id="4957080528849277028">ปุ่มดูประวัติการเข้าชมใน Chrome เปิดใช้งานเพื่อดูและจัดการประวัติการท่องเว็บในการตั้งค่า Chrome</translation>
 <translation id="4958444002117714549">ขยายรายการ</translation>
-<translation id="4960068118612257147">คุณทำการเปลี่ยนแปลงได้ในการตั้งค่าความเป็นส่วนตัวของ Chrome</translation>
+<translation id="4960068118612257147">คุณทำการเปลี่ยนแปลงได้ในการตั้งค่าความเป็นส่วนตัวเกี่ยวกับโฆษณาของ Chrome</translation>
 <translation id="4960203958361543136">เลือกเครื่องมือค้นหา</translation>
 <translation id="4964505745997821360">ประกันสุขภาพ</translation>
 <translation id="4967366744630699583">แก้ไขที่อยู่</translation>
@@ -2852,7 +2853,6 @@
 <translation id="6643016212128521049">ล้าง</translation>
 <translation id="6645291930348198241">เข้าถึงคุกกี้และข้อมูลเว็บไซต์</translation>
 <translation id="6645478838938543427">ระบบจะส่งการแจ้งเตือนราคาลดลงไปยัง <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{ไม่มี}=1{จาก 1 เว็บไซต์ (คุณจะไม่ออกจากระบบบัญชี Google)}other{จาก # เว็บไซต์ (คุณจะไม่ออกจากระบบบัญชี Google)}}</translation>
 <translation id="6648459603387803038">ผู้ดูแลระบบจะเปลี่ยนการตั้งค่าเบราว์เซอร์จากระยะไกลได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chrome ได้ด้วย</translation>
 <translation id="6648524591329069940">แบบอักษร Serif</translation>
 <translation id="6649510485211003056">195 x 270 มม.</translation>
@@ -3230,7 +3230,6 @@
 <translation id="7378877318020334501">รายการตลกทางทีวี</translation>
 <translation id="7380398842872229465">10 x 15 นิ้ว</translation>
 <translation id="738439098860678026">การศึกษาปฐมวัย</translation>
-<translation id="7388071710882496863">คำขอ เช่น "เขียนรีวิว 5 ดาวสำหรับร้านอาหารนี้"</translation>
 <translation id="7388594495505979117">{0,plural, =1{อุปกรณ์จะรีสตาร์ทใน 1 นาที}other{อุปกรณ์จะรีสตาร์ทใน # นาที}}</translation>
 <translation id="7390545607259442187">ยืนยันบัตร</translation>
 <translation id="7392089738299859607">อัปเดตที่อยู่</translation>

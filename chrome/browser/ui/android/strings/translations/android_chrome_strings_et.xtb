@@ -352,7 +352,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2946420957526726953">Chrome'i värskendamine, et luua ühendus teiste seadmetega</translation>
 <translation id="2951071800649516099">Lisage lugemisloendisse lehti, mida hiljem lugeda</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> lugemata leht}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> lugemata lehte}}</translation>
-<translation id="2961210776189273067">Pealkiri</translation>
 <translation id="296370266220139811">Säästke aega ja tippige vähem</translation>
 <translation id="2977350910003566746">Sortimine viimase avamise järgi</translation>
 <translation id="297771753501244313">Sorditud: viimati avatud</translation>
@@ -1126,7 +1125,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="694267552845942083">Kohandate praegu oma sünkroonimisseadeid. Sünkroonimise sisselülitamiseks puudutage ekraani alaosas nuppu Kinnita. Navigeeri üles</translation>
 <translation id="6945221475159498467">Vali</translation>
 <translation id="6955535239952325894">See seade on hallatud brauserites keelatud</translation>
-<translation id="6958103823951858863">Ava PDF pärast allalaadimist automaatselt</translation>
 <translation id="6963766334940102469">Kustuta järjehoidjad</translation>
 <translation id="696447261358045621">Lahkumine inkognito režiimist</translation>
 <translation id="6965382102122355670">OK</translation>

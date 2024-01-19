@@ -267,7 +267,6 @@
 <translation id="2064048859448024834">የካሜራ ቅድመ-ዕይታ በርቷል</translation>
 <translation id="2067602449040652523">የቁልፍ ሰሌዳ ብሩህነት</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ቀያይር። <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> ነው</translation>
-<translation id="2078034614700056995">ወደ ቀጣዩ ዴስክ ለመቀየር በአራት ጣቶች ወደ ቀኝ ያንሸራትቱ</translation>
 <translation id="2079545284768500474">ቀልብስ</translation>
 <translation id="2083190527011054446">ደህና አመሹ <ph name="GIVEN_NAME" />፣</translation>
 <translation id="2086334242442703436">ስሜት ገላጭ ምስል መራጭን ይክፈቱ</translation>
@@ -283,7 +282,6 @@
 <translation id="2149229036084364364">ወደ ቀዳሚ ትራክ ሂድ</translation>
 <translation id="2152895518047545149">ምንም የጎደለ ነገር ያለ አይመስልም። በጣም ጥሩ ሥራ!</translation>
 <translation id="2161132820593978283">የቪድዮ ጥሪዎች ላይ በማያ ገጹ መሃል ላይ እንዲሆኑ የካሜራ ክፈፍ መስራትን ይሞክሩ። በፈጣን ቅንብሮች ውስጥ ያብሩት።</translation>
-<translation id="2170530631236737939">ከአጠቃላይ ዕይታ ለመውጣት በሦስት ጣቶች ወደ ታች ያንሸራትቱ</translation>
 <translation id="2185166372312820725">ወደ ቀዳሚው ትር ሂድ</translation>
 <translation id="2185444992308415167">ከ1 እስከ 8 ድረስ ያሉ ትሮችን ይመልከቱ</translation>
 <translation id="2198625180564913276">መገለጫን በማከል ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
@@ -1695,7 +1693,6 @@
 <translation id="7850320739366109486">አትረብሽ</translation>
 <translation id="7851039877802112575">ትኩረቱን ወደ ብቅ-ባዮች እና መገናኛዎች ይውሰዱ</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">ወደ አጠቃላይ ዕይታ ለመግባት በሦስት ጣቶች ወደ ላይ ያንሸራትቱ</translation>
 <translation id="7862292329216937261">መሣሪያውን እንደ እንግዳ ለመጠቀም ዘግተው መውጣት እና ከዚያም በማያ ገጹ ታች ላይ እንደ እንግዳ አስስ የሚለውን መምረጥ ያስፈልግዎታል።</translation>
 <translation id="7866482334467279021">በርቷል</translation>
 <translation id="7872786842639831132">አጥፋ</translation>
@@ -1806,7 +1803,6 @@
 <translation id="8262312463845990408">መልሶ ማጫወትን ይቀያይሩ</translation>
 <translation id="8270450402312105425">{0,plural, =1{በአንድ ሰዓት ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}one{በ# ሰዓታት ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}other{በ# ሰዓታት ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}}</translation>
 <translation id="8277261673056602147">በማያ ገጽዎ ላይ ጽሁፍ ያድምቁ</translation>
-<translation id="8284362522226889623">ወደ ቀዳሚው ዴስክ ለመቀየር በአራት ጣቶች ወደ ግራ ያንሸራትቱ</translation>
 <translation id="828708037801473432">ጠፍቷል</translation>
 <translation id="8297006494302853456">ደካማ</translation>
 <translation id="8308637677604853869">ቀዳሚ ምናሌ</translation>

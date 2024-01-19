@@ -44,7 +44,6 @@
 <translation id="1917964099031477364">系統會將這個帳戶和所有未儲存的資料從 Chrome 以及這部裝置上的其他 Google 應用程式中移除。</translation>
 <translation id="1965935827552890526">請完成你在其他已開啟的 Chrome 視窗中正在執行的動作。</translation>
 <translation id="1987779152850321833">完成下列建議動作，充分運用 Chrome 的各項功能。</translation>
-<translation id="2008357574463816229">如果忘記通關密語或想要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="2056123005618757196">Google Chrome 操作簡便、安全且速度遠勝以往，讓你事半功倍。</translation>
 <translation id="2120238739383482109">開啟 Chrome 書籤。</translation>
 <translation id="2147651015520127414">Chrome 已驗證這個網站的憑證是由「<ph name="ISSUER" />」所核發。</translation>
@@ -201,7 +200,6 @@
 <translation id="686691656039982452">你可以前往 Google 帳戶<ph name="BEGIN_LINK" />管理要儲存哪些 Chrome 資料<ph name="END_LINK" />。
 
 如需其他會運用資料提升 Chrome 使用體驗的設定，請前往 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
-<translation id="687586529977635009">當你造訪網站時，Chrome 會在網站上偵測是否有追蹤號碼，並在新分頁顯示包裹配送動態。為提供這項功能，系統會將你的資料分享給 Google，以改善所有使用者的購物體驗。你可以前往<ph name="BEGIN_LINK" />包裹追蹤設定<ph name="END_LINK" />進行變更。</translation>
 <translation id="6916015246697034114">在 Chrome 中使用語音搜尋</translation>
 <translation id="6964931465519938134">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
 <translation id="6975725306479268850">選擇使用 Chrome 的自動填入功能</translation>

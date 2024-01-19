@@ -352,7 +352,6 @@
 <translation id="2946420957526726953">অন্য ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ Chrome আপডে’ট কৰি থকা হৈছে</translation>
 <translation id="2951071800649516099">পৰৱৰ্তী সময়ৰ বাবে আপোনাৰ পঢ়াৰ সূচীত পৃষ্ঠাসমূহ যোগ দিয়ক</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> খন নপঢ়া পৃষ্ঠা}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> খন নপঢ়া পৃষ্ঠা}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> খন নপঢ়া পৃষ্ঠা}}</translation>
-<translation id="2961210776189273067">শিৰোনাম</translation>
 <translation id="296370266220139811">সময় ৰাহি কৰক আৰু কমকৈ টাইপ কৰক</translation>
 <translation id="2977350910003566746">শেহতীয়াকৈ খোলা অনুসৰি সজাই থকা হৈছে</translation>
 <translation id="297771753501244313">শেহতীয়াকৈ খোলা অনুসৰি সজাওক</translation>
@@ -1126,7 +1125,6 @@
 <translation id="694267552845942083">আপুনি বৰ্তমান আপোনাৰ ছিংক কৰাৰ ছেটিং কাষ্টমাইজ কৰি আছে। ছিংক কৰাৰ সুবিধাটো অন কৰাটো সম্পূৰ্ণ কৰিবলৈ স্ক্ৰীনখনৰ একেবাৰে তলিৰ কাষত থকা নিশ্চিত কৰক বুটামটো টিপক। ওপৰলৈ যাওক</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
 <translation id="6955535239952325894">পৰিচালিত ব্ৰাউজাৰসমূহত এই ছেটিংটো অক্ষম কৰা হৈছে</translation>
-<translation id="6958103823951858863">ডাউনল’ড কৰাৰ পাছত pdf স্বয়ংক্ৰিয়ভাৱে খোলক</translation>
 <translation id="6963766334940102469">বুকমার্ক মচক</translation>
 <translation id="696447261358045621">ইনক’গনিট’ ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>

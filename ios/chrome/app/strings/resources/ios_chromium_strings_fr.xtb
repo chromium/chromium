@@ -100,7 +100,6 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Ouvrir Chromium depuis n'importe quelle appli</translation>
-<translation id="4002314982058020967">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Lance le contrôle de sécurité dans Chromium.</translation>
 <translation id="4043291146360695975">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe uniquement sur cet appareil.</translation>
 <translation id="4099085513035183040">Non disponible dans la version bêta de Chromium</translation>
@@ -113,7 +112,6 @@ Vos données sont chiffrées avec votre phrase secrète. Saisissez-la pour utili
 <translation id="4408912345039114853">Effectuer le contrôle de sécurité de Chromium</translation>
 <translation id="4432744876818348753">Connectez-vous pour profiter pleinement de Chromium.</translation>
 <translation id="4445228361214254027">Votre organisation a désactivé la possibilité d'utiliser et d'enregistrer les données Chromium dans votre compte Google. Les nouveaux favoris, mots de passe, etc. ne seront enregistrés que sur cet appareil.</translation>
-<translation id="4485517920713468480">Chromium détectera le numéro de suivi sur les sites que vous consulterez et vous présentera les notifications concernant les colis sur la page "Nouvel onglet". Vos données seront partagées avec Google afin d'assurer cette fonctionnalité et d'améliorer l'expérience d'achat pour tous les utilisateurs. Vous pouvez modifier cette option dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Ajoute les URL saisies à votre liste de lecture dans Chromium.</translation>
 <translation id="452436063477828504">Assurez-vous de toujours pouvoir utiliser les données Chromium de votre compte Google</translation>
 <translation id="4555020257205549924">Lorsque cette fonctionnalité est activée dans Chromium, un message s'affiche pour vous proposer que les pages de ce site rédigées dans d'autres langues soient traduites à l'aide de Google Traduction. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>

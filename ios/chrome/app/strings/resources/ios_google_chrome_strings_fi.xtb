@@ -46,7 +46,6 @@ Huomioitavaa:
 <translation id="1917964099031477364">Tämä tili ja kaikki tallentamaton data poistetaan Chromesta ja muista Google-sovelluksista tällä laitteella.</translation>
 <translation id="1965935827552890526">Siirry toiseen avoimeen Chrome-ikkunaan ja viimeistele aloittamasi.</translation>
 <translation id="1987779152850321833">Näillä ehdotuksilla saat Chromesta mahdollisimman paljon irti.</translation>
-<translation id="2008357574463816229">Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Helppokäyttöisellä, turvallisella ja entistäkin nopeammalla Google Chromella saat enemmän aikaan.</translation>
 <translation id="2120238739383482109">Avaa Chrome-kirjanmerkit.</translation>
 <translation id="2147651015520127414">Chrome vahvisti, että <ph name="ISSUER" /> on myöntänyt tämän sivuston varmenteen.</translation>
@@ -203,7 +202,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="686691656039982452">Voit <ph name="BEGIN_LINK" />valita, mitä Chrome-dataa tallennetaan<ph name="END_LINK" /> Google-tilillesi.
 
 Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos haluat nähdä lisää asetuksia, jotka käyttävät dataa Chromen käyttökokemuksen parantamiseen.</translation>
-<translation id="687586529977635009">Chrome tunnistaa seurantanumerot avaamillasi sivustoilla ja näyttää pakettien päivitykset Uusi välilehti ‐sivulla. Datasi jaetaan Googlelle tämän ominaisuuden tarjoamiseen ja Shoppingin parantamiseen kaikille käyttäjille. Voit muuttaa tätä <ph name="BEGIN_LINK" />lähetyksen seuranta-asetuksista<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Hae puhumalla Chromesta</translation>
 <translation id="6964931465519938134">Voit nyt käyttää Chromea aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa.</translation>
 <translation id="6975725306479268850">Chromen valinta automaattiseen täyttöön</translation>

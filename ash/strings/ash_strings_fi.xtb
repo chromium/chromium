@@ -267,7 +267,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2064048859448024834">Kameran esikatselu päällä</translation>
 <translation id="2067602449040652523">Näppäimistön kirkkaus</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> päälle/pois. <ph name="CAPTURE_MEDIUM" /> on <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Siirry seuraavaan työpöytään pyyhkäisemällä oikealle neljällä sormella</translation>
 <translation id="2079545284768500474">Kumoa</translation>
 <translation id="2083190527011054446">Hyvää yötä <ph name="GIVEN_NAME" /></translation>
 <translation id="2086334242442703436">Avaa emojien valitsin</translation>
@@ -283,7 +282,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2149229036084364364">Siirry edelliseen kappaleeseen</translation>
 <translation id="2152895518047545149">Sinulla ei ole puuttuvia töitä. Hienoa!</translation>
 <translation id="2161132820593978283">Kokeile kameran kehystystä, jotta näyt näytön keskellä videopuheluissa. Voit laittaa sen päälle pika-asetuksista.</translation>
-<translation id="2170530631236737939">Poistu Viimeisimmät-osiosta pyyhkäisemällä kolmella sormella alaspäin</translation>
 <translation id="2185166372312820725">Siirry edelliselle välilehdelle</translation>
 <translation id="2185444992308415167">Avaa välilehdet 1–8</translation>
 <translation id="2198625180564913276">Lisätään profiilia… Tämä voi kestää muutaman minuutin.</translation>
@@ -1694,7 +1692,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7850320739366109486">Älä häiritse</translation>
 <translation id="7851039877802112575">Siirrä tarkennus ponnahdus- ja valintaikkunoihin</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Siirry Viimeisimmät-osioon pyyhkäisemällä kolmella sormella ylöspäin</translation>
 <translation id="7862292329216937261">Jos haluat käyttää laitetta vieraana, kirjaudu ulos ja valitse näytön alareunasta Selaa vierailijana.</translation>
 <translation id="7866482334467279021">päälle</translation>
 <translation id="7872786842639831132">Pois päältä</translation>
@@ -1805,7 +1802,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8262312463845990408">Käynnistä tai keskeytä toisto</translation>
 <translation id="8270450402312105425">{0,plural, =1{Päivitä laite aiempaan versioon tunnin kuluessa}other{Päivitä laite aiempaan versioon # tunnin kuluessa}}</translation>
 <translation id="8277261673056602147">Korosta tekstiä näytöllä</translation>
-<translation id="8284362522226889623">Siirry edelliseen työpöytään pyyhkäisemälle vasemmalle neljällä sormella</translation>
 <translation id="828708037801473432">Poissa päältä</translation>
 <translation id="8297006494302853456">Heikko</translation>
 <translation id="8308637677604853869">Edellinen valikko</translation>

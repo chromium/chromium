@@ -46,7 +46,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="1917964099031477364">Tento účet bude spolu so všetkými neuloženými údajmi odstránený z Chromu a ďalších aplikácií Google v tomto zariadení.</translation>
 <translation id="1965935827552890526">V ďalšom otvorenom okne Chromu dokončite, čo ste robili</translation>
 <translation id="1987779152850321833">Vykonajte tieto navrhované akcie nižšie a budete môcť Chrome využívať naplno.</translation>
-<translation id="2008357574463816229">Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Zvýšte svoju výkonnosť pomocou jednoduchého a zabezpečeného prehliadača Google Chrome, ktorý je rýchlejší než kedykoľvek predtým.</translation>
 <translation id="2120238739383482109">Otvorí záložky v Chrome.</translation>
 <translation id="2147651015520127414">Chrome overil, že certifikát tohto webu vydal vydavateľ <ph name="ISSUER" />.</translation>
@@ -203,7 +202,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="686691656039982452">Vo svojom účte Google môžete <ph name="BEGIN_LINK" />spravovať, ktoré údaje Chromu sa majú ukladať<ph name="END_LINK" />.
 
 Ďalšie nastavenia, ktoré zlepšujú prostredie Chromu pomocou údajov, nájdete v <ph name="BEGIN_LINK" />službách Googlu<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome zistí čísla zásielok na weboch, ktoré navštívite, a zobrazí aktuálne informácie o zásielke na stránke na novej karte. Vaše údaje sa budú zdieľať s Googlom na účely poskytovania tejto funkcie a zlepšovania Nákupov pre všetkých. Môžete to zmeniť v <ph name="BEGIN_LINK" />nastaveniach sledovania zásielok<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Vyhľadávať hlasom v Chrome</translation>
 <translation id="6964931465519938134">Chrome môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="6975725306479268850">Ak chcete využívať automatické dopĺňanie, vyberte si Chrome</translation>

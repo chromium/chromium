@@ -352,7 +352,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2946420957526726953">Oppdaterer Chrome for å kunne koble til andre enheter</translation>
 <translation id="2951071800649516099">Legg til sider på leselisten til senere</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ulest side}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> uleste sider}}</translation>
-<translation id="2961210776189273067">Tittel</translation>
 <translation id="296370266220139811">Spar tid og skriv mindre</translation>
 <translation id="2977350910003566746">Sorteres etter sist åpnet</translation>
 <translation id="297771753501244313">Sorter etter sist åpnet</translation>
@@ -1126,7 +1125,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="694267552845942083">Du holder på å tilpasse innstillingene for Synkronisering. For å gjøre deg ferdig med å slå på synkronisering, trykk på Bekreft-knappen nederst på skjermen. Gå opp</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6955535239952325894">Denne innstillingen er slått av for administrerte nettlesere</translation>
-<translation id="6958103823951858863">Åpne PDF automatisk etter nedlasting</translation>
 <translation id="6963766334940102469">Slett bokmerker</translation>
 <translation id="696447261358045621">Avslutt Inkognitomodus</translation>
 <translation id="6965382102122355670">OK</translation>

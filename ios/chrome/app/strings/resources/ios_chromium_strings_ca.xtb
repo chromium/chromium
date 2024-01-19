@@ -100,7 +100,6 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 
 Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Obre Chromium des de qualsevol aplicació</translation>
-<translation id="4002314982058020967">Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Obre i executa la comprovació de seguretat a Chromium.</translation>
 <translation id="4043291146360695975">Les contrasenyes es desen al gestor de contrasenyes només en aquest dispositiu.</translation>
 <translation id="4099085513035183040">No s'admeten a la versió beta de Chromium</translation>
@@ -113,7 +112,6 @@ Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i de
 <translation id="4408912345039114853">Executa la comprovació de seguretat de Chromium</translation>
 <translation id="4432744876818348753">Inicia la sessió per treure el màxim profit de Chromium.</translation>
 <translation id="4445228361214254027">La teva organització ha desactivat l'opció de fer servir i desar dades de Chromium al teu Compte de Google. Les adreces d'interès noves, les contrasenyes i altres dades només es desaran en aquest dispositiu.</translation>
-<translation id="4485517920713468480">Chromium detectarà els números de seguiment als llocs web que visitis i et mostrarà novetats sobre els paquets a la pàgina Pestanya nova. Les teves dades es compartiran amb Google per proporcionar aquesta funció i millorar Shopping per a tothom. Pots canviar aquesta opció a la <ph name="BEGIN_LINK" />configuració del seguiment d'enviaments<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Afegeix a la llista de lectura de Chromium els URL introduïts.</translation>
 <translation id="452436063477828504">Assegura't de poder utilitzar sempre les dades de Chromium al teu Compte de Google</translation>
 <translation id="4555020257205549924">Quan aquesta funció està activada, Chromium ofereix la possibilitat de traduir pàgines escrites en altres idiomes mitjançant el Traductor de Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>

@@ -291,6 +291,7 @@
 <translation id="2547458583188611426">การซิงค์ไม่ทำงาน หากต้องการเริ่มการซิงค์ ให้ป้อนรหัสผ่าน</translation>
 <translation id="2551153019974022505">ข้อผิดพลาดของบัญชี</translation>
 <translation id="2556092377360758201">ไม่มีการปกป้อง (ไม่แนะนำ)</translation>
+<translation id="2561375093019333908">เปิด</translation>
 <translation id="2562041823070056534">กำลังส่งไปยัง <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">ใช้และบันทึกรหัสผ่านในบัญชี Google</translation>
 <translation id="2577522251608256362">ย่านใกล้เคียง</translation>
@@ -383,7 +384,6 @@
 <translation id="2952278131021475699">การค้นหาด้วยกล้องโดยใช้ Lens</translation>
 <translation id="2956733177489514605">ลงชื่อเข้าใช้ด้วยบัญชี Google เพื่อซิงค์รหัสผ่านและอื่นๆ</translation>
 <translation id="2958718410589002129">รหัสผ่าน</translation>
-<translation id="2961210776189273067">คำนำหน้าชื่อ</translation>
 <translation id="2964349545761222050">บล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="2969979262385602596">ไม่สามารถลงชื่อเข้าใช้ได้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="2975121486251958312">ใช้ได้เฉพาะโหมดไม่ระบุตัวตน</translation>
@@ -849,6 +849,7 @@
 <translation id="5513681519188741830"><ph name="TIME" /> ชม. ที่ผ่านมา</translation>
 <translation id="5525269841082836315">สร้างข้อความรหัสผ่าน</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}other{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}}</translation>
+<translation id="5532545557415295622">กล่องโต้ตอบระยะหมดเวลาเนื่องจากไม่มีการใช้งาน</translation>
 <translation id="5542540507657872337">พบ <ph name="COUNT" /> แท็บ</translation>
 <translation id="5548760955356983418">Handoff ช่วยให้คุณสามารถเริ่มการท่องเว็บไซต์บนอุปกรณ์นี้และใช้งานต่อบน Mac ได้อย่างง่ายดาย เว็บไซต์ที่เปิดอยู่ในปัจจุบันจะปรากฏในแท่นชาร์จของ Mac
 
@@ -1289,6 +1290,7 @@
 <translation id="7781829728241885113">เมื่อวานนี้</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{หลังจาก 1 วัน}other{หลังจาก {COUNT} วัน}}</translation>
 <translation id="7791543448312431591">เพิ่ม</translation>
+<translation id="7792549458069452436">ติดตั้งแอป</translation>
 <translation id="7807060072011926525">ให้บริการโดย Google</translation>
 <translation id="7812377703891978671">คุณเข้าถึงประวัติการท่องเว็บทั้งหมดได้โดยเลือก "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />"</translation>
 <translation id="78146569776629510">ดาวน์โหลด</translation>

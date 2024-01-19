@@ -517,6 +517,8 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1956486093533522234">Znajdź swoje urządzenie, zabezpiecz je lub wymaż z niego dane</translation>
 <translation id="1958218078413065209">Twój najwyższy wynik to: <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Pomóż nam poprawić bezpieczeństwo wszystkich użytkowników w sieci, wysyłając do Google <ph name="BEGIN_WHITEPAPER_LINK" />adresy URL niektórych odwiedzanych stron, niektóre informacje o systemie oraz część zawartości stron<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Polityka prywatności<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959445535228047762">Twój tekst i zawartość strony są wysyłane do Google i mogą zostać wykorzystane do ulepszenia tej funkcji.
+  <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">Zakładki z <ph name="DOMAIN" /></translation>
 <translation id="196752089528718902">Zazwyczaj łączysz się z witrynami w bezpieczny sposób, ale tym razem w Chrome nie udało się użyć bezpiecznego połączenia. Osoba przeprowadzająca atak może próbować podsłuchać lub zmodyfikować Twoje połączenie sieciowe. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Podczas przekształcania do postaci szeregowej wystąpił błąd</translation>
@@ -720,6 +722,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2354430244986887761">Funkcja Bezpieczne przeglądanie Google niedawno <ph name="BEGIN_LINK" />wykryła szkodliwe aplikacje<ph name="END_LINK" /> na <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Osoby dokonujące ataków mogą widzieć te same obrazy w witrynie co Ty i zmodyfikować je, by Cię oszukać.</translation>
 <translation id="2356070529366658676">Pytaj</translation>
+<translation id="2356926036049612643">Optymalizator V8</translation>
 <translation id="2357481397660644965">Twoim urządzeniem zarządza <ph name="DEVICE_MANAGER" />, a Twoim kontem – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Różne</translation>
 <translation id="2359808026110333948">Dalej</translation>
@@ -1178,7 +1181,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="33073482541490531">Użyte właśnie hasło znaleźliśmy jako ujawnione w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł zaleca, aby jak najszybciej je zmienić.</translation>
 <translation id="3307649904964670439">Przycisk Dostosuj Chrome; aktywuj, aby dostosować wygląd przeglądarki</translation>
 <translation id="3308006649705061278">Jednostka organizacyjna (OU)</translation>
-<translation id="3324223664999044166">co najmniej 3 słowa podsumowujące Twoje przemyślenia,</translation>
 <translation id="3324687287337751929">4 x 6 cali</translation>
 <translation id="3324983252691184275">Karmazynowy</translation>
 <translation id="3325027355611702542">Przyczepy kempingowe i kampery</translation>
@@ -1420,7 +1422,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3748009735914587286">Metal (wysoki połysk)</translation>
 <translation id="3748148204939282805">Osoby atakujące na stronie <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mogą podstępem nakłonić Cię do wykonania czynności niebezpiecznych takich jak zainstalowanie oprogramowania czy ujawnienie danych osobowych (na przykład haseł, numerów telefonów lub danych kart kredytowych). <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Branża lotnicza</translation>
-<translation id="3751020515020988516">Twoje prośba nie została zrozumiana. Spróbuj poprosić o coś innego.</translation>
 <translation id="3752543821772132562">Ignorowana, bo zasada <ph name="POLICY_NAME" /> nie jest skonfigurowana.</translation>
 <translation id="3754210790023674521">Wyłącz tryb obrazu w obrazie</translation>
 <translation id="3759461132968374835">Brak ostatnio zgłoszonych awarii. Awarie, które nastąpiły wówczas, gdy funkcja zgłaszania awarii była wyłączona, nie są tutaj wymienione.</translation>
@@ -2853,7 +2854,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
 <translation id="6645291930348198241">Dostęp do plików cookie i danych witryn.</translation>
 <translation id="6645478838938543427">Alerty o obniżkach cen będą wysyłane na adres <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Brak}=1{Z 1 witryny (nie spowoduje to wylogowania z konta Google)}few{Z # witryn (nie spowoduje to wylogowania z konta Google)}many{Z # witryn (nie spowoduje to wylogowania z konta Google)}other{Z # witryny (nie spowoduje to wylogowania z konta Google)}}</translation>
 <translation id="6648459603387803038">Administrator może zdalnie zmienić konfigurację przeglądarki. Aktywność na tym urządzeniu może być zarządzana również poza Chrome.</translation>
 <translation id="6648524591329069940">Czcionka szeryfowa</translation>
 <translation id="6649510485211003056">195 x 270 mm</translation>
@@ -3231,7 +3231,6 @@ Dodatkowe informacje:
 <translation id="7378877318020334501">Komedie telewizyjne</translation>
 <translation id="7380398842872229465">10 x 15 cali</translation>
 <translation id="738439098860678026">Pedagogika przedszkolna i wczesnoszkolna</translation>
-<translation id="7388071710882496863">prośbę typu „napisz opinię przyznającą tej restauracji 5 gwiazdek”.</translation>
 <translation id="7388594495505979117">{0,plural, =1{Twoje urządzenie uruchomi się ponownie za 1 minutę}few{Twoje urządzenie uruchomi się ponownie za # minuty}many{Twoje urządzenie uruchomi się ponownie za # minut}other{Twoje urządzenie uruchomi się ponownie za # minuty}}</translation>
 <translation id="7390545607259442187">Potwierdź kartę</translation>
 <translation id="7392089738299859607">Zmień adres</translation>

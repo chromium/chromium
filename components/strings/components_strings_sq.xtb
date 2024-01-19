@@ -1177,7 +1177,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="33073482541490531">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. "Menaxheri i fjalëkalimeve" rekomandon që ta ndryshosh këtë fjalëkalim tani.</translation>
 <translation id="3307649904964670439">Butoni "Personalizo Chrome". Aktivizoje për të personalizuar pamjen e shfletuesit tënd</translation>
 <translation id="3308006649705061278">Njësia organizative (OU)</translation>
-<translation id="3324223664999044166">3 fjalë ose më shumë që përmbledhin mendimet e tua</translation>
 <translation id="3324687287337751929">4 x 6 inç</translation>
 <translation id="3324983252691184275">E kuqe e fortë</translation>
 <translation id="3325027355611702542">Kamperë dhe rulota</translation>
@@ -1419,7 +1418,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3748009735914587286">Metal (me shumë shkëlqim)</translation>
 <translation id="3748148204939282805">Sulmuesit në  <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mund të të mashtrojnë që të bësh diçka të rrezikshme si instalimi i softuerëve ose të zbulosh informacion personal (për shembull, fjalëkalime, numra telefoni ose karta krediti). <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industria e aviacionit</translation>
-<translation id="3751020515020988516">Kërkesa jote nuk u kuptua. Provo një kërkesë tjetër.</translation>
 <translation id="3752543821772132562">Shpërfillur sepse politika <ph name="POLICY_NAME" /> nuk është caktuar.</translation>
 <translation id="3754210790023674521">Dil nga "Figura brenda figurës"</translation>
 <translation id="3759461132968374835">Nuk ke ndërprerje aksidentale të raportuara së fundi. Ndërprerjet aksidentale që kanë ndodhur kur raportimi i tyre ka qenë i çaktivizuar, nuk do të shfaqen këtu.</translation>
@@ -2851,7 +2849,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="6645291930348198241">Të ketë qasje te kukit dhe të dhënat e sajtit.</translation>
 <translation id="6645478838938543427">Sinjalizimet për uljet e çmimeve do të dërgohen te <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Asnjë}=1{Nga 1 sajt (nuk do të dalësh nga llogaria jote e Google)}other{Nga # sajte (nuk do të dalësh nga llogaria jote e Google)}}</translation>
 <translation id="6648459603387803038">Administratori yt mund të ndryshojë konfigurimin e shfletuesit në distancë. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chrome.</translation>
 <translation id="6648524591329069940">Fonti serif</translation>
 <translation id="6649510485211003056">195 x 270 mm</translation>
@@ -3229,7 +3226,6 @@ Detaje shtesë:
 <translation id="7378877318020334501">Komeditë televizive</translation>
 <translation id="7380398842872229465">10 x 15 inç</translation>
 <translation id="738439098860678026">Arsimi në fëmijërinë e hershme</translation>
-<translation id="7388071710882496863">kërkesa si p.sh. "shkruaj një koment me 5 yje për këtë restorant"</translation>
 <translation id="7388594495505979117">{0,plural, =1{Pajisja do të riniset pas 1 minute}other{Pajisja do të riniset pas # minutash}}</translation>
 <translation id="7390545607259442187">Konfirmo kartën</translation>
 <translation id="7392089738299859607">Përditëso adresën</translation>

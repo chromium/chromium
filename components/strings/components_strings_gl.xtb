@@ -42,6 +42,7 @@
 <translation id="1062407476771304334">Substituír</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Marcadores do escritorio</translation>
+<translation id="1067029985695494416">Detalles do buscador</translation>
 <translation id="1068672505746868501">Non traducir nunca páxinas en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Metal (brillo)</translation>
 <translation id="1070853536588271387">Vehículos alternativos e híbridos</translation>
@@ -1177,7 +1178,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="33073482541490531">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. O xestor de contrasinais recomenda que o cambies de inmediato.</translation>
 <translation id="3307649904964670439">Botón para personalizar Chrome. Actívao para personalizar o aspecto do navegador</translation>
 <translation id="3308006649705061278">Unidade organizativa (UO)</translation>
-<translation id="3324223664999044166">tres ou máis palabras que resuman o que pensas</translation>
 <translation id="3324687287337751929">4 x 6 polgadas</translation>
 <translation id="3324983252691184275">Carmesí</translation>
 <translation id="3325027355611702542">Campistas e caravanas</translation>
@@ -1419,7 +1419,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3748009735914587286">Metal (alto brillo)</translation>
 <translation id="3748148204939282805">Os piratas informáticos de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> poden enganarte para que realices accións perigosas, como instalar un software ou revelar información persoal (por exemplo, contrasinais, números de teléfono ou tarxetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Máis información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industria aeronáutica</translation>
-<translation id="3751020515020988516">Non se entendeu a túa solicitude. Proba con outra.</translation>
 <translation id="3752543821772132562">Ignórase porque non se configurou <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Saír do modo de pantalla superposta</translation>
 <translation id="3759461132968374835">Non informaches de ningún erro recentemente. Os erros producidos mentres estaban desactivados os informes de erros non aparecerán aquí.</translation>
@@ -2852,7 +2851,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6645291930348198241">Acceder ás cookies e aos datos dos sitios.</translation>
 <translation id="6645478838938543427">Enviaranse as alertas de baixada de prezo a<ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Ningún}=1{De 1 sitio (non se pechará sesión na túa conta de Google)}other{De # sitios (non se pechará sesión na túa conta de Google)}}</translation>
 <translation id="6648459603387803038">O teu administrador pode cambiar a configuración do navegador de forma remota. A actividade deste dispositivo tamén se pode xestionar fóra de Chrome.</translation>
 <translation id="6648524591329069940">Tipo de letra con serifas</translation>
 <translation id="6649510485211003056">195 x 270 mm</translation>
@@ -3230,7 +3228,6 @@ Detalles adicionais:
 <translation id="7378877318020334501">Comedias de televisión</translation>
 <translation id="7380398842872229465">10 x 15 polgadas</translation>
 <translation id="738439098860678026">Educación infantil</translation>
-<translation id="7388071710882496863">solicitudes do tipo "escribir unha recensión de 5 estrelas sobre este restaurante"</translation>
 <translation id="7388594495505979117">{0,plural, =1{O dispositivo reiniciarase en 1 minuto}other{O dispositivo reiniciarase en # minutos}}</translation>
 <translation id="7390545607259442187">Confirmar tarxeta</translation>
 <translation id="7392089738299859607">Actualizar enderezo</translation>

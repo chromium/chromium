@@ -352,7 +352,6 @@
 <translation id="2946420957526726953">အခြားစက်များကို ချိတ်ဆက်ရန် Chrome ကို အပ်ဒိတ်လုပ်နေသည်</translation>
 <translation id="2951071800649516099">နောင်အတွက် သင်၏ဖတ်ရန် စာရင်းတွင် စာမျက်နှာများထည့်ပါ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{မဖတ်ရသေးသော <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> မျက်နှာ}other{မဖတ်ရသေးသော <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> မျက်နှာ}}</translation>
-<translation id="2961210776189273067">ဂုဏ်ပုဒ်</translation>
 <translation id="296370266220139811">အချိန်သက်သာပြီး စာအနည်းငယ်သာရိုက်ပါ</translation>
 <translation id="2977350910003566746">နောက်ဆုံးဖွင့်ချိန်ဖြင့် စီနေသည်</translation>
 <translation id="297771753501244313">နောက်ဆုံးဖွင့်ချိန်ဖြင့် စီရန်</translation>
@@ -1125,7 +1124,6 @@
 <translation id="694267552845942083">သင်သည် လက်ရှိတွင် 'စင့်ခ်လုပ်ရန် ဆက်တင်များ' ကို စိတ်ကြိုက်ပြင်နေသည်။ စင့်ခ်ဖွင့်ခြင်း အပြီးသတ်ရန် ဖန်သားပြင်အောက်ခြေနားရှိ 'အတည်ပြုရန်' ခလုတ်ကို တို့ပါ။ အပေါ်သို့ သွားရန်</translation>
 <translation id="6945221475159498467">ရွေးရန်</translation>
 <translation id="6955535239952325894">ကြီးကြပ်ထားသောဘရောင်ဇာများတွင် ဤဆက်တင်ကို ပိတ်ထားသည်</translation>
-<translation id="6958103823951858863">ဒေါင်းလုဒ်လုပ်ပြီးနောက် PDF အလိုအလျောက်ဖွင့်ခြင်း</translation>
 <translation id="6963766334940102469">မှတ်သားချက်များ ဖျက်မည်</translation>
 <translation id="696447261358045621">ရုပ်ဖျက်မုဒ်မှ ထွက်ရန်</translation>
 <translation id="6965382102122355670">OK</translation>

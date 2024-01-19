@@ -291,6 +291,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2547458583188611426">Synchronizacja nie działa. Aby ją rozpocząć, wpisz hasło.</translation>
 <translation id="2551153019974022505">Błąd konta</translation>
 <translation id="2556092377360758201">Brak ochrony (niezalecane)</translation>
+<translation id="2561375093019333908">OTWÓRZ</translation>
 <translation id="2562041823070056534">Wysyłam na urządzenie <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">Używaj haseł na swoim koncie Google i je zapisuj</translation>
 <translation id="2577522251608256362">Dzielnica</translation>
@@ -383,7 +384,6 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2952278131021475699">Wyszukiwanie za pomocą aparatu i Obiektywu</translation>
 <translation id="2956733177489514605">Zaloguj się na konto Google, aby synchronizować swoje hasła i inne dane.</translation>
 <translation id="2958718410589002129">Hasła</translation>
-<translation id="2961210776189273067">Tytuł</translation>
 <translation id="2964349545761222050">Blokowanie plików cookie innych firm</translation>
 <translation id="2969979262385602596">Nie udało się zalogować. Spróbuj ponownie później.</translation>
 <translation id="2975121486251958312">Dostępny jest tylko tryb incognito</translation>
@@ -849,6 +849,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5513681519188741830"><ph name="TIME" /> g temu</translation>
 <translation id="5525269841082836315">Utwórz hasło</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} słabe hasło}few{{COUNT} słabe hasła}many{{COUNT} słabych haseł}other{{COUNT} słabego hasła}}</translation>
+<translation id="5532545557415295622">Okno limitu czasu bezczynności</translation>
 <translation id="5542540507657872337">Znaleziono <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Dzięki funkcji Handoff możesz rozpocząć przeglądanie strony na tym urządzeniu, a następnie płynnie kontynuować na Macu. Aktualnie otwarta strona internetowa wyświetli się w Docku na Macu.
 
@@ -1289,6 +1290,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7781829728241885113">Wczoraj</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Po 1 dniu}few{Po {COUNT} dniach}many{Po {COUNT} dniach}other{Po {COUNT} dnia}}</translation>
 <translation id="7791543448312431591">Dodaj</translation>
+<translation id="7792549458069452436">POBIERZ APLIKACJĘ</translation>
 <translation id="7807060072011926525">Udostępniany przez Google</translation>
 <translation id="7812377703891978671">Aby uzyskać dostęp do całej historii przeglądania, wybierz <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Pobrane</translation>

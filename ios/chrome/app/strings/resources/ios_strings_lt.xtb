@@ -291,6 +291,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2547458583188611426">Sinchronizavimas neveikia. Jei norite pradėti sinchronizuoti, įveskite slaptafrazę.</translation>
 <translation id="2551153019974022505">Paskyros klaida</translation>
 <translation id="2556092377360758201">Apsaugos nėra (nerekomenduojama)</translation>
+<translation id="2561375093019333908">ATIDARYTI</translation>
 <translation id="2562041823070056534">Siunčiama į „<ph name="DEVICE_NAME" />“...</translation>
 <translation id="2576499762020411840">Naudoti ir išsaugoti slaptažodžius „Google“ paskyroje</translation>
 <translation id="2577522251608256362">Kaimynystė</translation>
@@ -383,7 +384,6 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="2952278131021475699">„Lens“ fotoaparato paieška</translation>
 <translation id="2956733177489514605">Prisijunkite naudodami „Google“ paskyrą, kad sinchronizuotumėte slaptažodžius ir kt.</translation>
 <translation id="2958718410589002129">Slaptažodžiai</translation>
-<translation id="2961210776189273067">Kreipinys / titulas</translation>
 <translation id="2964349545761222050">Trečiosios šalies slapukų blokavimas</translation>
 <translation id="2969979262385602596">Nepavyko prisijungti. Bandykite dar kartą vėliau.</translation>
 <translation id="2975121486251958312">Pasiekiamas tik inkognito režimas</translation>
@@ -849,6 +849,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5513681519188741830">Prieš <ph name="TIME" /> val.</translation>
 <translation id="5525269841082836315">Kurti slaptafrazę</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} nesudėtingas slaptažodis}one{{COUNT} nesudėtingas slaptažodis}few{{COUNT} nesudėtingi slaptažodžiai}many{{COUNT} nesudėtingo slaptažodžio}other{{COUNT} nesudėtingų slaptažodžių}}</translation>
+<translation id="5532545557415295622">Neveikos skirtojo laiko dialogo langas</translation>
 <translation id="5542540507657872337">Rasta: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Naudodami „Handoff“ galite pradėti naršyti svetainę šiame įrenginyje ir lengvai tęsti darbą „Mac“ įrenginiu. Dabartinė atidaryta svetainė bus rodoma „Mac“ įrenginio doke.
 
@@ -1289,6 +1290,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Po vienos dienos}one{Po {COUNT} dienos}few{Po {COUNT} dienų}many{Po {COUNT} dienos}other{Po {COUNT} dienų}}</translation>
 <translation id="7791543448312431591">Pridėti</translation>
+<translation id="7792549458069452436">GAUTI PROGRAMĄ</translation>
 <translation id="7807060072011926525">Pateikė „Google“</translation>
 <translation id="7812377703891978671">Visą naršymo istoriją galite pasiekti pasirinkdami „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“.</translation>
 <translation id="78146569776629510">Atsisiuntimai</translation>

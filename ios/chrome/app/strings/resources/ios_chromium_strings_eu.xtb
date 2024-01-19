@@ -100,7 +100,6 @@ Chromium-en erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikust
 
 Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chromium-eko datuak<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Ireki Chromium edozein aplikaziotatik</translation>
-<translation id="4002314982058020967">Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />garbitu kontuko Chromium-eko datuak<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Chromium-en segurtasun-egiaztapena irekitzen eta exekutatzen du.</translation>
 <translation id="4043291146360695975">Pasahitzak gailu honetan soilik gordetzen dira Pasahitz-kudeatzailea zerbitzuan.</translation>
 <translation id="4099085513035183040">Ez da bateragarria Chromium Beta-rekin</translation>
@@ -113,7 +112,6 @@ Datuak pasaesaldiarekin enkriptatuta daude. Chromium-eko datuak Google-ko kontua
 <translation id="4408912345039114853">Exekutatu Chromium-en segurtasun-egiaztapena</translation>
 <translation id="4432744876818348753">Hasi saioa Chromium-i etekinik handiena ateratzeko.</translation>
 <translation id="4445228361214254027">Erakundeak Chromium-eko datuak Google-ko kontuan erabiltzeko eta gordetzeko aukera desaktibatu du. Laster-marka, pasahitz eta bestelako elementu berriak gailu honetan soilik gordeko dira.</translation>
-<translation id="4485517920713468480">Chromium-ek jarraipen-zenbakiak hautemango ditu bisitatzen dituzun webguneetan, eta paketeei buruzko informazio eguneratua erakutsiko dizu Fitxa berria orrian. Eginbide hori emateko eta erosketak guztientzat hobetzeko, datuak Google-rekin partekatuko dira. Hori aldatzeko, joan <ph name="BEGIN_LINK" />paketeen jarraipenaren ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Idatzitako URLak Chromium-eko irakurketa-zerrendan gehitzen ditu.</translation>
 <translation id="452436063477828504">Izan beti Google-ko kontuko Chromium-en datuak erabiltzeko aukera</translation>
 <translation id="4555020257205549924">Eginbide hau aktibatuta dagoenean, Chromium-ek beste hizkuntzetan idatzita dauden orriak Google Translate bidez itzultzea proposatuko dizu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>

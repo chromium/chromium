@@ -42,6 +42,7 @@
 <translation id="1062407476771304334">Nahradiť</translation>
 <translation id="1064054731605354900">A3×5</translation>
 <translation id="106701514854093668">Záložky v počítači</translation>
+<translation id="1067029985695494416">Podrobnosti vyhľadávača</translation>
 <translation id="1068672505746868501">Nikdy neprekladať stránky v jazyku <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Kov (lesklý)</translation>
 <translation id="1070853536588271387">Automobily s hybridným a alternatívnym pohonom</translation>
@@ -1174,7 +1175,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="33073482541490531">Heslo, ktoré ste práve použili, bolo nájdené v zozname hesiel odhalených pri porušení ochrany údajov. Správca hesiel ho odporúča okamžite zmeniť.</translation>
 <translation id="3307649904964670439">Tlačidlo Prispôsobiť Chrome, ktorého aktivovaním prispôsobíte vzhľad prehliadača</translation>
 <translation id="3308006649705061278">Organizačná jednotka (OU)</translation>
-<translation id="3324223664999044166">tri alebo viac slov, ktoré vyjadrujú vaše myšlienky;</translation>
 <translation id="3324687287337751929">4 × 6 palcov</translation>
 <translation id="3324983252691184275">Karmínová</translation>
 <translation id="3325027355611702542">Karavany a obytné vozidlá</translation>
@@ -1415,7 +1415,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3748009735914587286">Kov (vysoký lesk)</translation>
 <translation id="3748148204939282805">Útočníci na webe <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> vás môžu oklamať, aby ste urobili niečo nebezpečné, napríklad nainštalovali softvér alebo odhalili svoje osobné informácie (napríklad heslá, telefónne čísla a kreditné karty). <ph name="BEGIN_LEARN_MORE_LINK" />Ďalšie informácie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Letecký priemysel</translation>
-<translation id="3751020515020988516">Vašej žiadosti sme nerozumeli. Skúste inú.</translation>
 <translation id="3752543821772132562">Ignorované, pretože nie sú nastavené pravidlá <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Ukončiť obraz v obraze</translation>
 <translation id="3759461132968374835">Nemáte žiadne nedávno nahlásené zlyhania. Na tejto stránke sa nezobrazujú zlyhania, ktoré nastali pri zakázanej možnosti hlásení zlyhaní.</translation>
@@ -2847,7 +2846,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6643016212128521049">Vymazať</translation>
 <translation id="6645291930348198241">Používať súbory cookie a údaje webov.</translation>
 <translation id="6645478838938543427">Upozornenia na pokles ceny sa budú odosielať na <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Žiadne}=1{Z 1 webu (neodhlásime vás z účtu Google)}few{Z # webov (neodhlásime vás z účtu Google)}many{From # sites (you won't be signed out of your Google Account)}other{Z # webov (neodhlásime vás z účtu Google)}}</translation>
 <translation id="6648459603387803038">Nastavenia prehliadača môže vzdialene zmeniť správca. Aktivita v tomto zariadení môže byť tiež spravovaná mimo Chromu.</translation>
 <translation id="6648524591329069940">Písmo Serif</translation>
 <translation id="6649510485211003056">195 × 270 mm</translation>
@@ -3225,7 +3223,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7378877318020334501">Televízne komédie</translation>
 <translation id="7380398842872229465">10 × 15 palcov</translation>
 <translation id="738439098860678026">Vzdelávanie v ranom detstve</translation>
-<translation id="7388071710882496863">žiadosti, napríklad „napísať 5‐hviezdičkovú recenziu tejto reštaurácie“;</translation>
 <translation id="7388594495505979117">{0,plural, =1{Vaše zariadenie sa reštartuje o 1 minútu}few{Vaše zariadenie sa reštartuje o # minúty}many{Vaše zariadenie sa reštartuje o # minúty}other{Vaše zariadenie sa reštartuje o # minút}}</translation>
 <translation id="7390545607259442187">Overenie karty</translation>
 <translation id="7392089738299859607">Aktualizácia adresy</translation>

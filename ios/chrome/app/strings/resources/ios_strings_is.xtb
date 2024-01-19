@@ -383,7 +383,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2952278131021475699">Myndavélarleit Linsu</translation>
 <translation id="2956733177489514605">Skráðu þig inn á Google-reikninginn þinn til að samstilla aðgangsorð og fleira.</translation>
 <translation id="2958718410589002129">Aðgangsorð</translation>
-<translation id="2961210776189273067">Titill</translation>
 <translation id="2964349545761222050">Loka á fótspor frá þriðja aðila</translation>
 <translation id="2969979262385602596">Innskráning mistókst. Reyndu aftur síðar.</translation>
 <translation id="2975121486251958312">Aðeins huliðsstilling er í boði</translation>
@@ -925,6 +924,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5922999516621365983">Dragðu flipann hingað til að festa hann.</translation>
 <translation id="5938160824633642847">Tækið er næstum því fullt. Losaðu um pláss og reyndu aftur.</translation>
 <translation id="5948291296578561264">Þetta gerir þér kleift að vista myndir í myndasafninu þínu.</translation>
+<translation id="5954562874938077107">Fara í Linsu</translation>
 <translation id="5955891643922670672">Skoðar útgáfu án nettengingar</translation>
 <translation id="5957613098218939406">Fleiri valkostir</translation>
 <translation id="595769230373966252">Leita með <ph name="SEARCH_PROVIDER" /></translation>

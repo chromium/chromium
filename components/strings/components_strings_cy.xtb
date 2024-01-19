@@ -42,6 +42,7 @@
 <translation id="1062407476771304334">Disodli</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Nodau Tudalen Bwrdd Gwaith</translation>
+<translation id="1067029985695494416">Manylion peiriant chwilio</translation>
 <translation id="1068672505746868501">Peidio byth â chyfieithu tudalennau yn <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Metel (Sglein)</translation>
 <translation id="1070853536588271387">Cerbydau hybrid ac amgen</translation>
@@ -1177,7 +1178,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="33073482541490531">Canfuwyd y cyfrinair rydych newydd ei ddefnyddio mewn achos o dor data. Mae'r Rheolwr Cyfrineiriau yn argymell newid y cyfrinair hwn ar unwaith.</translation>
 <translation id="3307649904964670439">Botwm personoleiddio Chrome, gweithredwch i bersonoleiddio gwedd eich porwr</translation>
 <translation id="3308006649705061278">Uned Sefydliadol (OU)</translation>
-<translation id="3324223664999044166">3 gair neu fwy sy'n crynhoi eich meddyliau</translation>
 <translation id="3324687287337751929">4 x 6 modfedd</translation>
 <translation id="3324983252691184275">Rhuddgoch</translation>
 <translation id="3325027355611702542">Cerbydau Gwersylla</translation>
@@ -1419,7 +1419,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3748009735914587286">Metel (Sglein Uchel)</translation>
 <translation id="3748148204939282805">Gall ymosodwyr ar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> eich twyllo i wneud rhywbeth peryglus megis gosod meddalwedd neu ddatgelu eich gwybodaeth bersonol (er enghraifft, cyfrineiriau, rhifau ffôn neu rifau cardiau credyd). <ph name="BEGIN_LEARN_MORE_LINK" />Dysgu rhagor<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Diwydiant hedfan</translation>
-<translation id="3751020515020988516">Ni chafodd eich cais ei ddeall. Rhowch gynnig ar gais gwahanol.</translation>
 <translation id="3752543821772132562">Wedi'i anwybyddu oherwydd nid yw <ph name="POLICY_NAME" /> wedi ei osod.</translation>
 <translation id="3754210790023674521">Gadael llun-mewn-llun</translation>
 <translation id="3759461132968374835">Nid ydych wedi adrodd am unrhyw doriadau yn ddiweddar.  Ni fydd toriadau a ddigwyddodd pan oedd adrodd am doriadau wedi'i analluogi yn ymddangos yma.</translation>
@@ -2852,7 +2851,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6643016212128521049">Clirio</translation>
 <translation id="6645291930348198241">Cael mynediad at gwcis a data gwefan.</translation>
 <translation id="6645478838938543427">Anfonir rhybuddion gostyngiad pris i <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Dim}=1{O 1 wefan (ni fyddwch yn cael eich allgofnodi o'ch Cyfrif Google)}two{O # wefan (ni fyddwch yn cael eich allgofnodi o'ch Cyfrif Google)}few{O # gwefan (ni fyddwch yn cael eich allgofnodi o'ch Cyfrif Google)}many{O # gwefan (ni fyddwch yn cael eich allgofnodi o'ch Cyfrif Google)}other{O # gwefan (ni fyddwch yn cael eich allgofnodi o'ch Cyfrif Google)}}</translation>
 <translation id="6648459603387803038">Gall eich gweinyddwr newid gosodiadau eich porwr o bell. Gellir rheoli gweithgarwch ar y ddyfais hon y tu allan i Chrome hefyd.</translation>
 <translation id="6648524591329069940">Ffont serif</translation>
 <translation id="6649510485211003056">195 x 270 mm</translation>
@@ -3230,7 +3228,6 @@ Manylion ychwanegol:
 <translation id="7378877318020334501">Rhaglenni teledu comedi</translation>
 <translation id="7380398842872229465">10 x 15 modfedd</translation>
 <translation id="738439098860678026">Addysg plentyndod cynnar</translation>
-<translation id="7388071710882496863">ceisiadau fel "ysgrifennu adolygiad 5-seren ar gyfer y bwyty hwn"</translation>
 <translation id="7388594495505979117">{0,plural, =1{Bydd eich dyfais yn ailgychwyn mewn 1 funud}zero{Bydd eich dyfais yn ailgychwyn mewn # munud}two{Bydd eich dyfais yn ailgychwyn mewn # funud}few{Bydd eich dyfais yn ailgychwyn mewn # munud}many{Bydd eich dyfais yn ailgychwyn mewn # munud}other{Bydd eich dyfais yn ailgychwyn mewn # munud}}</translation>
 <translation id="7390545607259442187">Cadarnhau Cerdyn</translation>
 <translation id="7392089738299859607">Diweddaru'r Cyfeiriad</translation>

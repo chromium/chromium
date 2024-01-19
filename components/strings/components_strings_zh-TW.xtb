@@ -42,6 +42,7 @@
 <translation id="1062407476771304334">取代</translation>
 <translation id="1064054731605354900">A3 x 5</translation>
 <translation id="106701514854093668">電腦版書籤</translation>
+<translation id="1067029985695494416">搜尋引擎詳細資料</translation>
 <translation id="1068672505746868501">一律不翻譯<ph name="SOURCE_LANGUAGE" />網頁</translation>
 <translation id="1070333806075222467">金屬 (光面)</translation>
 <translation id="1070853536588271387">混合與替代動力車輛</translation>
@@ -1175,7 +1176,6 @@
 <translation id="33073482541490531">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。密碼管理工具建議你立即變更這組密碼。</translation>
 <translation id="3307649904964670439">「自訂 Chrome」按鈕，啟動後即可自訂瀏覽器外觀</translation>
 <translation id="3308006649705061278">組織單位 (OU)</translation>
-<translation id="3324223664999044166">用 3 個以上的字詞歸納想法</translation>
 <translation id="3324687287337751929">4 x 6 吋</translation>
 <translation id="3324983252691184275">深紅色</translation>
 <translation id="3325027355611702542">露營車與休旅車</translation>
@@ -1417,7 +1417,6 @@
 <translation id="3748009735914587286">金屬 (高光面)</translation>
 <translation id="3748148204939282805">攻擊者可能會試圖透過 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 誘使你做一些危險行為，例如安裝軟體或提供個人資訊 (包括密碼、電話號碼或信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">航空產業</translation>
-<translation id="3751020515020988516">系統無法理解你提出的要求，請試試其他要求。</translation>
 <translation id="3752543821772132562">忽略的原因：未設定 <ph name="POLICY_NAME" />。</translation>
 <translation id="3754210790023674521">離開子母畫面</translation>
 <translation id="3759461132968374835">最近沒有收到當機資訊。當機回報功能停用時發生的當機不會列在這裡。</translation>
@@ -2850,7 +2849,6 @@
 <translation id="6643016212128521049">清除</translation>
 <translation id="6645291930348198241">存取 Cookie 和網站資料。</translation>
 <translation id="6645478838938543427">系統會將降價快訊將傳送到 <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{無}=1{1 個網站 (你不會因此登出 Google 帳戶)}other{# 個網站 (你不會因此登出 Google 帳戶)}}</translation>
 <translation id="6648459603387803038">你的系統管理員可以遠端變更瀏覽器設定。這部裝置上的活動也可以透過 Chrome 以外的服務管理。</translation>
 <translation id="6648524591329069940">Serif 字型</translation>
 <translation id="6649510485211003056">195 x 270 公釐</translation>
@@ -3228,7 +3226,6 @@
 <translation id="7378877318020334501">電視喜劇</translation>
 <translation id="7380398842872229465">10 x 15 吋</translation>
 <translation id="738439098860678026">幼兒教育</translation>
-<translation id="7388071710882496863">提出要求，例如「為這間餐廳撰寫 5 星評論」</translation>
 <translation id="7388594495505979117">{0,plural, =1{裝置將於 1 分鐘後重新啟動}other{裝置將於 # 分鐘後重新啟動}}</translation>
 <translation id="7390545607259442187">驗證信用卡</translation>
 <translation id="7392089738299859607">更新地址</translation>

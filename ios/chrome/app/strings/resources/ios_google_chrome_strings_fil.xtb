@@ -46,7 +46,6 @@ Mga bagay na dapat isaalang-alang:
 <translation id="1917964099031477364">Aalisin sa Chrome at sa iba pang Google app sa device na ito ang account na ito at anumang hindi naka-save na data.</translation>
 <translation id="1965935827552890526">Tapusin ang ginagawa mo sa iyong iba pang nakabukas na window ng Chrome.</translation>
 <translation id="1987779152850321833">Kumpletuhin ang mga iminumungkahing pagkilos na ito sa ibaba para masulit ang Chrome.</translation>
-<translation id="2008357574463816229">Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Makagawa ng mas maraming bagay gamit ang simple, secure, at mas mabilis na ngayong Google Chrome.</translation>
 <translation id="2120238739383482109">Mabubuksan ang mga bookmark sa Chrome.</translation>
 <translation id="2147651015520127414">Na-verify ng Chrome na ang <ph name="ISSUER" /> ang nagbigay sa certificate ng website na ito.</translation>
@@ -203,7 +202,6 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
 <translation id="686691656039982452">Puwede mong <ph name="BEGIN_LINK" />pamahalaan kung anong data ng Chrome ang nase-save<ph name="END_LINK" /> sa iyong Google Account.
 
 Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experience sa Chrome, pumunta sa <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Made-detect ng Chrome ang mga tracking number sa mga site na binibisita mo at magpapakita ito sa iyo ng mga update sa package sa page na Bagong Tab. Ishe-share sa Google ang iyong data para maibigay ang feature na ito at mapahusay ang Shopping para sa lahat. Puwede mo itong baguhin sa <ph name="BEGIN_LINK" />Mga Setting ng Pagsubaybay sa Package<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Maghanap Gamit ang Boses sa Chrome</translation>
 <translation id="6964931465519938134">Magagamit mo na ngayon ang Chrome sa tuwing magta-tap ka sa mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="6975725306479268850">Piliin ang Chrome para sa AutoFill</translation>

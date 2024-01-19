@@ -267,7 +267,6 @@
 <translation id="2064048859448024834">동영상 카메라 미리보기 켜짐</translation>
 <translation id="2067602449040652523">키보드 밝기</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> 기능을 켜거나 끕니다. <ph name="CAPTURE_MEDIUM" /> 기능이 <ph name="CAPTURE_STATE" /> 상태입니다.</translation>
-<translation id="2078034614700056995">다음 데스크로 전환하려면 네 손가락을 사용해 오른쪽으로 스와이프하세요.</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="2083190527011054446">편안한 밤 보내세요, <ph name="GIVEN_NAME" />님</translation>
 <translation id="2086334242442703436">그림 이모티콘 선택 도구 열기</translation>
@@ -283,7 +282,6 @@
 <translation id="2149229036084364364">이전 트랙으로 이동</translation>
 <translation id="2152895518047545149">누락된 항목이 없는 것 같습니다. 훌륭합니다.</translation>
 <translation id="2161132820593978283">영상 통화에서 화면 중앙에 표시되도록 카메라 프레이밍을 사용해 보세요. 빠른 설정에서 사용 설정하면 됩니다.</translation>
-<translation id="2170530631236737939">최근 사용을 종료하려면 세 손가락을 사용해 아래로 스와이프하세요.</translation>
 <translation id="2185166372312820725">이전 탭으로 이동</translation>
 <translation id="2185444992308415167">탭 1~8 살펴보기</translation>
 <translation id="2198625180564913276">프로필을 추가하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
@@ -1694,7 +1692,6 @@
 <translation id="7850320739366109486">알림 일시중지</translation>
 <translation id="7851039877802112575">포커스를 팝업 및 대화상자로 이동</translation>
 <translation id="7851768487828137624">카나리아 </translation>
-<translation id="7860671499921112077">최근 사용을 시작하려면 세 손가락을 사용해 위로 스와이프하세요.</translation>
 <translation id="7862292329216937261">게스트로 기기를 사용하려면 로그아웃한 다음 화면 하단에서 게스트로 로그인을 선택해야 합니다.</translation>
 <translation id="7866482334467279021">사용</translation>
 <translation id="7872786842639831132">꺼짐</translation>
@@ -1805,7 +1802,6 @@
 <translation id="8262312463845990408">재생/일시중지 전환</translation>
 <translation id="8270450402312105425">{0,plural, =1{1시간 이내에 기기를 이전 버전으로 되돌리세요}other{#시간 이내에 기기를 이전 버전으로 되돌리세요}}</translation>
 <translation id="8277261673056602147">화면에서 텍스트 강조표시</translation>
-<translation id="8284362522226889623">이전 데스크로 전환하려면 네 손가락을 사용해 왼쪽으로 스와이프하세요.</translation>
 <translation id="828708037801473432">사용 안함</translation>
 <translation id="8297006494302853456">약함</translation>
 <translation id="8308637677604853869">이전 메뉴</translation>

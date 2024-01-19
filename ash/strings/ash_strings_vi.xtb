@@ -267,7 +267,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2064048859448024834">Đang hiện chế độ xem trước máy ảnh</translation>
 <translation id="2067602449040652523">Độ sáng bàn phím</translation>
 <translation id="2075520525463668108">Bật/tắt <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> ở trạng thái <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Hãy vuốt sang phải bằng 4 ngón tay để chuyển sang không gian làm việc tiếp theo</translation>
 <translation id="2079545284768500474">Hoàn tác</translation>
 <translation id="2083190527011054446">Xin chào <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Mở Bộ chọn biểu tượng cảm xúc</translation>
@@ -283,7 +282,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2149229036084364364">Quay về bản nhạc trước</translation>
 <translation id="2152895518047545149">Có vẻ bạn không nộp thiếu bài tập nào cả. Tuyệt vời!</translation>
 <translation id="2161132820593978283">Dùng thử tính năng lấy khung hình của máy ảnh để bạn luôn xuất hiện ở chính giữa màn hình khi gọi video. Bạn có thể bật tính năng này trong phần Cài đặt nhanh.</translation>
-<translation id="2170530631236737939">Vuốt xuống bằng 3 ngón tay để thoát khỏi chế độ Tổng quan</translation>
 <translation id="2185166372312820725">Quay về thẻ trước</translation>
 <translation id="2185444992308415167">Xem qua các thẻ từ 1 đến 8</translation>
 <translation id="2198625180564913276">Đang thêm hồ sơ. Quá trình này có thể mất vài phút.</translation>
@@ -1694,7 +1692,6 @@ Mới cài đặt</translation>
 <translation id="7850320739366109486">Không làm phiền</translation>
 <translation id="7851039877802112575">Di chuyển tiêu điểm đến cửa sổ bật lên và hộp thoại</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Vuốt lên bằng 3 ngón tay để chuyển sang chế độ Tổng quan</translation>
 <translation id="7862292329216937261">Để dùng thiết bị với tư cách khách, bạn cần đăng xuất, rồi chọn Duyệt với tư cách khách ở cuối màn hình.</translation>
 <translation id="7866482334467279021">đang bật</translation>
 <translation id="7872786842639831132">Tắt</translation>
@@ -1805,7 +1802,6 @@ Mới cài đặt</translation>
 <translation id="8262312463845990408">Phát hoặc dừng phát</translation>
 <translation id="8270450402312105425">{0,plural, =1{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 giờ}other{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng # giờ}}</translation>
 <translation id="8277261673056602147">Đánh dấu văn bản trên màn hình</translation>
-<translation id="8284362522226889623">Hãy vuốt sang trái bằng 4 ngón tay để chuyển sang không gian làm việc trước</translation>
 <translation id="828708037801473432">Đang tắt</translation>
 <translation id="8297006494302853456">Yếu</translation>
 <translation id="8308637677604853869">Menu trước</translation>

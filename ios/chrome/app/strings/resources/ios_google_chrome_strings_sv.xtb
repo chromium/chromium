@@ -46,7 +46,6 @@ Tänk på detta:
 <translation id="1917964099031477364">Det här kontot och data som inte har sparats tas bort från Chrome och andra Google-appar på den här enheten.</translation>
 <translation id="1965935827552890526">Gör klart det du höll på med i det andra öppna Chrome-fönstret.</translation>
 <translation id="1987779152850321833">Slutför de rekommenderade åtgärderna nedan så att du får ut mesta möjliga av Chrome.</translation>
-<translation id="2008357574463816229">Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Få mer gjort med Google Chrome, som är enklare, säkrare och snabbare än någonsin.</translation>
 <translation id="2120238739383482109">Öppnar bokmärken i Chrome.</translation>
 <translation id="2147651015520127414">Chrome har verifierat att <ph name="ISSUER" /> har utfärdat webbplatsens certifikat.</translation>
@@ -203,7 +202,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="686691656039982452">Du kan <ph name="BEGIN_LINK" />styra vilken Chrome-data som sparas<ph name="END_LINK" /> i Google-kontot.
 
 Du hittar fler inställningar som använder data för att förbättra Chrome-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome identifierar spårningsnummer på webbplatser du besöker och visar uppdateringar om försändelser på sidan Ny flik. Din data delas med Google för att tillhandahålla den här funktionen och förbättra Shopping för alla. Du kan ändra detta i <ph name="BEGIN_LINK" />inställningarna för spårning av försändelser<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Sök med rösten i Chrome</translation>
 <translation id="6964931465519938134">Nu kan du använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="6975725306479268850">Välj Chrome för Autofyll</translation>

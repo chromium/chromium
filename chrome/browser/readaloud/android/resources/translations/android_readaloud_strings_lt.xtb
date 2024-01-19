@@ -4,9 +4,12 @@
 <translation id="1173075331199604451">Balso meniu</translation>
 <translation id="1178581264944972037">Pristabdyti</translation>
 <translation id="1246424317317450637">Pusjuodis</translation>
+<translation id="1586836055630070874">Raminantis</translation>
+<translation id="1741047078107369903">Šiltas</translation>
 <translation id="1921351128855867012">Prasukti pirmyn <ph name="NUMBER_OF_SECONDS" /> sek.</translation>
 <translation id="1984328900355667246">Atkūrimas nepasiekiamas</translation>
 <translation id="2224347680315897176">Vienodas</translation>
+<translation id="2611765907167846862">Tylus</translation>
 <translation id="3023502830214299618">Deja, šiuo metu šio puslapio atkūrimas nepasiekiamas. Vėliau bandykite dar kartą.</translation>
 <translation id="3807208219231826020">Kontroliuoti atkūrimą</translation>
 <translation id="385051799172605136">Atgal</translation>
@@ -15,7 +18,9 @@
 <translation id="4431240646217225907">Teksto paryškinimas ir automatinis slinkimas</translation>
 <translation id="4494605076346185630">Vidutinis tonas</translation>
 <translation id="4710974520964166851">Ne pagal laiką</translation>
+<translation id="4773921449011281499">Ramus</translation>
 <translation id="4872475766448853257">Grįžti <ph name="NUMBER_OF_SECONDS" /> sek.</translation>
+<translation id="5026371835667036198">Ryškus</translation>
 <translation id="5234971936051226002">Leistuvė „Klausyti šio puslapio“ sumažinta.</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
 <translation id="5694491020339060116">Atkūrimo spartos meniu</translation>
@@ -26,6 +31,8 @@
 <translation id="6831043979455480757">Vertėjas</translation>
 <translation id="6846298663435243399">Įkeliama…</translation>
 <translation id="6889157801232138307">Leistuvė „Klausytis šio puslapio“</translation>
+<translation id="7221920857098237570">Švelnus</translation>
+<translation id="7237590978482584900">Linksmas</translation>
 <translation id="7282547042039404307">Leidžiama sklandžiai</translation>
 <translation id="7587250070160020374">Dabar „Chrome“ leidžiama</translation>
 <translation id="8136852699834914183">Šio puslapio negalima atkurti.</translation>

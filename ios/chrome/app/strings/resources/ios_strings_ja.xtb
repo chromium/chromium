@@ -383,7 +383,6 @@
 <translation id="2952278131021475699">レンズでカメラ検索</translation>
 <translation id="2956733177489514605">Google アカウントでログインすると、パスワードなどを同期できます。</translation>
 <translation id="2958718410589002129">パスワード</translation>
-<translation id="2961210776189273067">敬称</translation>
 <translation id="2964349545761222050">サードパーティの Cookie をブロックする</translation>
 <translation id="2969979262385602596">ログインできません。後でもう一度お試しください。</translation>
 <translation id="2975121486251958312">シークレット モードのみ使用できます</translation>
@@ -925,6 +924,7 @@
 <translation id="5922999516621365983">ここにタブをドラッグして固定します。</translation>
 <translation id="5938160824633642847">デバイスの空き容量が少なくなっています。空き容量を増やしてからもう一度お試しください。</translation>
 <translation id="5948291296578561264">フォト ライブラリに写真を保存します。</translation>
+<translation id="5954562874938077107">レンズに移動</translation>
 <translation id="5955891643922670672">オフライン版を表示しています</translation>
 <translation id="5957613098218939406">その他のオプション</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> で検索</translation>

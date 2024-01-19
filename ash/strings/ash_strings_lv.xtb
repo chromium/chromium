@@ -267,7 +267,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2064048859448024834">Kameras priekšskatījums tiek rādīts</translation>
 <translation id="2067602449040652523">Tastatūras spilgtums</translation>
 <translation id="2075520525463668108">Pārslēgt funkciju “<ph name="CAPTURE_MEDIUM" />”. Funkcija “<ph name="CAPTURE_MEDIUM" />” ir <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Lai pārslēgtos uz nākamo darbvietu, ar četriem pirkstiem velciet pa labi</translation>
 <translation id="2079545284768500474">Atsaukt</translation>
 <translation id="2083190527011054446">Arlabunakti, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Atvērt emocijzīmju atlasītāju</translation>
@@ -283,7 +282,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2149229036084364364">Pāriet uz iepriekšējo ierakstu</translation>
 <translation id="2152895518047545149">Šķiet, viss vajadzīgais ir iesniegts. Lieliski!</translation>
 <translation id="2161132820593978283">Izmēģiniet kameras kadrēšanu, lai videozvanu laikā jūs būtu ekrāna centrā. Varat to ieslēgt ātrajos iestatījumos.</translation>
-<translation id="2170530631236737939">Lai aizvērtu pārskatu, ar trim pirkstiem velciet lejup</translation>
 <translation id="2185166372312820725">Pāriet uz iepriekšējo cilni</translation>
 <translation id="2185444992308415167">Secīgi pāriet no 1. līdz 8. cilnei</translation>
 <translation id="2198625180564913276">Notiek profila pievienošana. Tas var ilgt dažas minūtes.</translation>
@@ -1694,7 +1692,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7850320739366109486">Netraucēt</translation>
 <translation id="7851039877802112575">Izcelt uznirstošos logus un dialoglodziņus</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Lai atvērtu pārskatu, ar trim pirkstiem velciet augšup</translation>
 <translation id="7862292329216937261">Lai izmantotu ierīci viesa režīmā, izrakstieties un pēc tam ekrāna apakšdaļā atlasiet Pārlūkot kā viesim.</translation>
 <translation id="7866482334467279021">ieslēgts</translation>
 <translation id="7872786842639831132">Izslēgts</translation>
@@ -1805,7 +1802,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8262312463845990408">Pārslēgt atskaņošanu</translation>
 <translation id="8270450402312105425">{0,plural, =1{Atjaunojiet ierīcē iepriekšējo versiju pēc vienas stundas}zero{Atjaunojiet ierīcē iepriekšējo versiju pēc # stundām}one{Atjaunojiet ierīcē iepriekšējo versiju pēc # stundas}other{Atjaunojiet ierīcē iepriekšējo versiju pēc # stundām}}</translation>
 <translation id="8277261673056602147">Ekrānā atzīmējiet tekstu</translation>
-<translation id="8284362522226889623">Lai pārslēgtos uz iepriekšējo darbvietu, ar četriem pirkstiem velciet pa kreisi</translation>
 <translation id="828708037801473432">Izslēgts</translation>
 <translation id="8297006494302853456">Vājš</translation>
 <translation id="8308637677604853869">Iepriekšējā izvēlne</translation>

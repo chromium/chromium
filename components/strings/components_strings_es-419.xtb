@@ -1178,7 +1178,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="33073482541490531">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. El Administrador de contraseñas te recomienda cambiar la contraseña ahora.</translation>
 <translation id="3307649904964670439">Botón Personalizar Chrome: actívalo para personalizar el estilo del navegador</translation>
 <translation id="3308006649705061278">Unidad organizativa (OU)</translation>
-<translation id="3324223664999044166">3 o más palabras que resuman tus pensamientos</translation>
 <translation id="3324687287337751929">10.2 × 15.2 cm (4 × 6 in)</translation>
 <translation id="3324983252691184275">Carmesí</translation>
 <translation id="3325027355611702542">Casas rodantes y autocaravanas</translation>
@@ -1420,7 +1419,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3748009735914587286">Metal (brillo intenso)</translation>
 <translation id="3748148204939282805">Es posible que los atacantes en <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> intenten engañarte para que realices alguna acción peligrosa, como instalar software o revelar información personal (p. ej., contraseñas, números de teléfono o tarjetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industria aeronáutica</translation>
-<translation id="3751020515020988516">No se entendió tu solicitud. Prueba con otra solicitud.</translation>
 <translation id="3752543821772132562">Se ignoró porque no se estableció <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Salir del modo de pantalla en pantalla</translation>
 <translation id="3759461132968374835">No has notificado ningún bloqueo recientemente. Los bloqueos que se hayan producido mientras la función de notificación de bloqueos estaba desactivada no aparecerán en esta página.</translation>
@@ -2853,7 +2851,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6645291930348198241">Acceder a las cookies y los datos de sitios</translation>
 <translation id="6645478838938543427">Las alertas de descuentos se enviarán a <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Ninguno}=1{De 1 sitio (no saldrás de tu cuenta de Google)}other{De # sitios (no saldrás de tu cuenta de Google)}}</translation>
 <translation id="6648459603387803038">El administrador puede cambiar la configuración de tu navegador de forma remota. Es posible que la actividad en este dispositivo también se administre fuera de Chrome.</translation>
 <translation id="6648524591329069940">Fuente Serif</translation>
 <translation id="6649510485211003056">195 × 270 mm</translation>
@@ -3231,7 +3228,6 @@ Detalles adicionales:
 <translation id="7378877318020334501">Comedias de televisión</translation>
 <translation id="7380398842872229465">25.4 × 38.1 cm (10 × 15 in)</translation>
 <translation id="738439098860678026">Educación infantil</translation>
-<translation id="7388071710882496863">solicitudes como "escribir una opinión de 5 estrellas sobre este restaurante"</translation>
 <translation id="7388594495505979117">{0,plural, =1{El dispositivo se reiniciará dentro de 1 minuto}other{El dispositivo se reiniciará dentro de # minutos}}</translation>
 <translation id="7390545607259442187">Confirmar tarjeta</translation>
 <translation id="7392089738299859607">Actualizar dirección</translation>

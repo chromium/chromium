@@ -352,7 +352,6 @@
 <translation id="2946420957526726953">ఇతర పరికరాలతో కనెక్ట్ చేయడానికి Chromeను అప్‌డేట్ చేస్తోంది</translation>
 <translation id="2951071800649516099">తర్వాత చదవడానికి మీ చదవాల్సిన లిస్ట్‌కు పేజీలను జోడించండి</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> చదవని పేజీ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> చదవని పేజీలు}}</translation>
-<translation id="2961210776189273067">టైటిల్</translation>
 <translation id="296370266220139811">టైమ్ ఆదా చేయండి, తక్కువ టైప్ చేయండి</translation>
 <translation id="2977350910003566746">చివరిగా తెరిచిన దాని ఆధారంగా క్రమపద్ధతిలో అమర్చుతున్నారు</translation>
 <translation id="297771753501244313">'చివరిగా తెరిచినది' వారీగా క్రమపద్ధతిలో అమర్చండి</translation>
@@ -1126,7 +1125,6 @@
 <translation id="694267552845942083">మీరు ప్రస్తుతం మీ సింక్ సెట్టింగ్‌లను అనుకూలీకరిస్తున్నారు. సింక్‌ను ఆన్ చేయడం పూర్తి చేయడానికి, స్క్రీన్ దిగువ భాగం సమీపంలోని 'నిర్ధారించు' బటన్‌ను ట్యాప్ చేయండి. పైకి నావిగేట్ చేయి</translation>
 <translation id="6945221475159498467">ఎంచుకోండి</translation>
 <translation id="6955535239952325894">మేనేజ్ అవుతోన్న బ్రౌజర్‌లలో ఈ సెట్టింగ్ డిజేబుల్ చేయబడింది.</translation>
-<translation id="6958103823951858863">డౌన్‌లోడ్ పూర్తయిన తర్వాత ఆటోమేటిక్‌గా pdfను తెరుస్తుంది</translation>
 <translation id="6963766334940102469">బుక్‌మార్క్‌లను తొలగించండి</translation>
 <translation id="696447261358045621">అజ్ఞాత మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="6965382102122355670">సరే</translation>

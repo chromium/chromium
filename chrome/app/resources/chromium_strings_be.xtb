@@ -90,6 +90,7 @@
 <translation id="2583187216237139145">Любыя даныя Chromium, створаныя пры выкарыстанні гэтага профілю (напрыклад, закладкі, гісторыя, паролі і іншыя налады), могуць быць выдалены адміністратарам працоўнага профілю. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Працягнуць работу ў Chromium</translation>
 <translation id="259935314519650377">Не ўдалося кэшаваць спампаваны ўсталёўшчык. Памылка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Павышаецца хуткасць Chromium, і правільна працуюць функцыі, якія выкарыстоўваюць JavaScript (рэкамендуецца)</translation>
 <translation id="2648074677641340862">Падчас усталявання адбылася памылка аперацыйнай сістэмы. Спампуйце Chromium зноў.</translation>
 <translation id="2661879430930417727">Калі прыладу выкарыстоўваюць некалькі чалавек, кожны з іх можа наладзіць Chromium для сябе і праглядаць старонкі асобна ад іншых</translation>
 <translation id="268602741124540128">Вітаем вас у Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -125,6 +126,7 @@
 <translation id="3258596308407688501">Chromium не можа чытаць з каталога даных і запісваць у яго:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 – гэта рухавік JavaScript і WebAssembly у Chromium, які павышае эфектыўнасць сайтаў</translation>
 <translation id="3283186697780795848">Усталявана версія Chromium <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Перазапусціць</translation>
 <translation id="328888136576916638">Адсутнічаюць ключы Google API. Некаторыя функцыі Chromium будуць выключаны.</translation>
@@ -218,6 +220,7 @@
 <translation id="4814736265800133385">Выкарыстоўваць Chromium без уліковага запісу</translation>
 <translation id="4888717733111232871">Уваходнае правіла для Chromium, якое дазваляе трафік mDNS.</translation>
 <translation id="4893347770495441059">Перазапусціць, каб абнавіць &amp;Chromium</translation>
+<translation id="4942295735032723435">Каб атрымліваць будучыя абнаўленні Chromium, патрабуецца macOS 11 ці пазнейшай версіі. На гэтым камп'ютары выкарыстоўваецца macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium працуе ў фонавым рэжыме.</translation>
 <translation id="4987820182225656817">Госці могуць выкарыстоўваць Chromium, не пакідаючы нічога пасля сябе.</translation>
 <translation id="4994636714258228724">Дадаць мяне ў Chromium</translation>
@@ -406,6 +409,7 @@
 <translation id="8105840573057009683">Chromium запытвае дазвол на вызначэнне месцазнаходжання для гэтага сайта</translation>
 <translation id="8133124826068723441">Сістэме Chromium OS не ўдалося сінхранізаваць вашы даныя: для вашага дамена сінхранізацыя недаступная.</translation>
 <translation id="813913629614996137">Ідзе ініцыялізацыя...</translation>
+<translation id="8166782796394721554">Уключыць дадатковую абарону рухавіка JavaScript і WebAssembly у Chromium</translation>
 <translation id="81770708095080097">Файл небяспечны, таму Chromium заблакіраваў яго.</translation>
 <translation id="8213374284266571500">Браўзер Chromium заблакіраваў гэты файл, бо гэты тып файлаў з'яўляецца небяспечным</translation>
 <translation id="8248265253516264921">Калі відарыс не мае прыдатнага апісання, Chromium паспрабуе дадаць яго для вас. Каб стварыць апісанні, відарысы адпраўляюцца ў Google. Гэты параметр можна адключыць у наладах у любы час.</translation>

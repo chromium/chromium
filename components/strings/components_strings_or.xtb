@@ -42,6 +42,7 @@
 <translation id="1062407476771304334">ପ୍ରତିସ୍ଥାପନ କରନ୍ତୁ</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">ଡେସ୍କଟପ୍ ବୁକ୍‍ମାର୍କଗୁଡିକ</translation>
+<translation id="1067029985695494416">ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ବିବରଣୀ</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" />ରେ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଅନୁବାଦ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="1070333806075222467">ମେଟାଲ (ଗ୍ଲସି)</translation>
 <translation id="1070853536588271387">ହାଇବ୍ରିଡ ଏବଂ ବୈକଳ୍ପିକ ଗାଡ଼ିଗୁଡ଼ିକ</translation>
@@ -1175,7 +1176,6 @@
 <translation id="33073482541490531">ଆପଣ ଏବେ ବ୍ୟବହାର କରିଥିବା ପାସୱାର୍ଡ ଏକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଛି। Password Manager ବର୍ତ୍ତମାନ ଏହି ପାସୱାର୍ଡକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସୁପାରିଶ କରେ।</translation>
 <translation id="3307649904964670439">'Chromeକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ' ବଟନ, ଆପଣଙ୍କ ବ୍ରାଉଜରର ଲୁକ କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="3308006649705061278">ସାଙ୍ଗଠନିକ‍ ୟୁନିଟ୍‌ (OU)</translation>
-<translation id="3324223664999044166">ଆପଣଙ୍କ ଚିନ୍ତାଧାରକୁ ସଂକ୍ଷପରେ ପ୍ରକାଶ କରୁଥିବା 3 କିମ୍ବା ଅଧିକ ଶବ୍ଦ</translation>
 <translation id="3324687287337751929">4 x 6 ଇଞ୍ଚ</translation>
 <translation id="3324983252691184275">ଗାଢ଼ ଲାଲ୍‌ ରଙ୍ଗ</translation>
 <translation id="3325027355611702542">କେମ୍ପର ଏବଂ RV</translation>
@@ -1416,7 +1416,6 @@
 <translation id="3748009735914587286">ମେଟାଲ (ହାଇ-ଗ୍ଲସ)</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ରେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କୁ ହୁଏତ କିଛି ବିପଜ୍ଜନକ କାର୍ଯ୍ୟ ଯେପରିକି, ସଫ୍ଟୱେର୍ ଇନ୍‌ଷ୍ଟଲେସନ୍ କିମ୍ବା ନିଜର ବ୍ୟକ୍ତିଗତ ତଥ୍ୟ (ଉଦାହରଣସ୍ୱରୂପ ପାସ୍‌ୱର୍ଡ, ଫୋନ୍‌ ନମ୍ବର କିମ୍ବା କ୍ରେଡିଟ୍ କାର୍ଡ) ପ୍ରକାଶ କରିବା ପାଇଁ ପ୍ରତାରିତ କରିପାରନ୍ତି। <ph name="BEGIN_LEARN_MORE_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">ଏଭିଏସନ ଇଣ୍ଡଷ୍ଟ୍ରି</translation>
-<translation id="3751020515020988516">ଆପଣଙ୍କ ଅନୁରୋଧ ବୁଝି ହେଉନାହିଁ। ଏକ ଭିନ୍ନ ଅନୁରୋଧ କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ସେଟ ଅପ କରାଯାଇନଥିବା ଯୋଗୁଁ ଅଣଦେଖା କରାଯାଇଛି।</translation>
 <translation id="3754210790023674521">ପିକଚର୍-ଇନ୍-ପିକଚର୍‌ରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="3759461132968374835">ଆପଣଙ୍କ ପାଖରେ ନିକଟରେ ରିପୋର୍ଟ କରାଯାଇଥିବା କ୍ରାସ୍‌ ନାହିଁ।  କ୍ରାସ୍‍ ରିପୋର୍ଟ ଅକ୍ଷମ ହେଉଥିବା ସମୟରେ ହୋ‍ଇଥିବା କ୍ରାସ୍‌ ଏଠାରେ ଦେଖାଯିବ ନାହିଁ।</translation>
@@ -2849,7 +2848,6 @@
 <translation id="6643016212128521049">ଖାଲି କରନ୍ତୁ</translation>
 <translation id="6645291930348198241">କୁକୀ ଏବଂ ସାଇଟ୍ ଡାଟା ଆକ୍ସେସ୍ କରନ୍ତୁ।</translation>
 <translation id="6645478838938543427">ମୂଲ୍ୟ ହ୍ରାସ ଆଲର୍ଟ <ph name="EMAIL_ADDRESS" />କୁ ପଠାଯିବ</translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{କୌଣସିଟି ନୁହେଁ}=1{1ଟି ସାଇଟ୍‌ରୁ (ଆପଣ ନିଜ Google Accountରୁ ସାଇନ୍ ଆଉଟ୍ ହେବେ ନାହିଁ)}other{#ଟି ସାଇଟ୍‌ରୁ (ଆପଣ ନିଜ Google Accountରୁ ସାଇନ୍ ଆଉଟ୍ ହେବେ ନାହିଁ)}}</translation>
 <translation id="6648459603387803038">ଆପଣଙ୍କର ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଆପଣଙ୍କ ବ୍ରାଉଜର୍ ସେଟଅପକୁ ରିମୋଟ୍ ଭାବରେ ବଦଳାଇପାରିବେ। ଏହି ଡିଭାଇସରେ କରାଯାଉଥିବା କାର୍ଯ୍ୟକଳାପ Chrome ବାହାରେ ମଧ୍ୟ ପରିଚାଳନା କରାଯାଇପାରେ।</translation>
 <translation id="6648524591329069940">Serif ଫଣ୍ଟ</translation>
 <translation id="6649510485211003056">195 x 270 ମିମି</translation>
@@ -3227,7 +3225,6 @@
 <translation id="7378877318020334501">ଟିଭି କମେଡିଗୁଡ଼ିକ</translation>
 <translation id="7380398842872229465">10 x 15 ଇଞ୍ଚ</translation>
 <translation id="738439098860678026">ଶୈଶବ ଶିକ୍ଷା</translation>
-<translation id="7388071710882496863">"ଏହି ରେଷ୍ଟୁରାଣ୍ଟ ପାଇଁ ଏକ 5-ଷ୍ଟାର ବିଶିଷ୍ଟ ସମୀକ୍ଷା ଲେଖ" ପରି ଅନୁରୋଧ</translation>
 <translation id="7388594495505979117">{0,plural, =1{ଆପଣଙ୍କ ଡିଭାଇସ 1 ମିନିଟରେ ରିଷ୍ଟାର୍ଟ ହେବ}other{ଆପଣଙ୍କ ଡିଭାଇସ # ମିନିଟରେ ରିଷ୍ଟାର୍ଟ ହେବ}}</translation>
 <translation id="7390545607259442187">କାର୍ଡ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="7392089738299859607">ଠିକଣା ଅପଡେଟ୍ କରନ୍ତୁ</translation>

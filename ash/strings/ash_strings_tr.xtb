@@ -267,7 +267,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2064048859448024834">Kamera önizlemesi açık</translation>
 <translation id="2067602449040652523">Klavye parlaklığı</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> özelliğini aç/kapat. <ph name="CAPTURE_MEDIUM" /> özelliği <ph name="CAPTURE_STATE" /> durumda</translation>
-<translation id="2078034614700056995">Sonraki masaya geçmek için dört parmakla sağa kaydırın</translation>
 <translation id="2079545284768500474">Geri al</translation>
 <translation id="2083190527011054446">İyi geceler <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Emoji Seçiciyi Aç</translation>
@@ -283,7 +282,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2149229036084364364">Önceki parçaya gidin</translation>
 <translation id="2152895518047545149">Eksik bir şey yok gibi görünüyor. Harika!</translation>
 <translation id="2161132820593978283">Görüntülü görüşmelerde kendinizi ekranın ortasına yerleştirmek için kamera çerçevelemesini deneyin. Bu özelliği Hızlı Ayarlar'dan açın.</translation>
-<translation id="2170530631236737939">Genel Bakış'tan çıkmak için üç parmakla aşağı kaydırın</translation>
 <translation id="2185166372312820725">Önceki sekmeye gider</translation>
 <translation id="2185444992308415167">1 ile 8 arasındaki sekmelere git</translation>
 <translation id="2198625180564913276">Profil ekleniyor. Bu işlem birkaç dakika sürebilir.</translation>
@@ -1694,7 +1692,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7850320739366109486">Rahatsız Etmeyin</translation>
 <translation id="7851039877802112575">Odağı pop-up'lara ve iletişim kutularına taşır</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Genel Bakış'a girmek için üç parmakla yukarı kaydırın</translation>
 <translation id="7862292329216937261">Cihazı misafir olarak kullanmak için oturumu kapattıktan sonra ekranın alt tarafındaki Misafir olarak göz at'ı seçmeniz gerekir.</translation>
 <translation id="7866482334467279021">açık</translation>
 <translation id="7872786842639831132">Kapalı</translation>
@@ -1805,7 +1802,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8262312463845990408">Çal/duraklat</translation>
 <translation id="8270450402312105425">{0,plural, =1{Cihazı bir saat içinde önceki sürüme geçirin}other{Cihazı # saat içinde önceki sürüme geçirin}}</translation>
 <translation id="8277261673056602147">Ekrandaki metni vurgula</translation>
-<translation id="8284362522226889623">Önceki masaya geçmek için dört parmakla sola kaydırın</translation>
 <translation id="828708037801473432">Kapalı</translation>
 <translation id="8297006494302853456">Zayıf</translation>
 <translation id="8308637677604853869">Önceki menü</translation>

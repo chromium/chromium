@@ -352,7 +352,6 @@
 <translation id="2946420957526726953">正在更新 Chrome 以連線到其他裝置</translation>
 <translation id="2951071800649516099">將網頁新增至閱讀清單以供日後使用</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 個未讀取的網頁}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 個未讀取的網頁}}</translation>
-<translation id="2961210776189273067">稱謂</translation>
 <translation id="296370266220139811">不必重複輸入網址，節省寶貴時間</translation>
 <translation id="2977350910003566746">依上次開啟時間排序</translation>
 <translation id="297771753501244313">依上次開啟時間排序</translation>
@@ -1126,7 +1125,6 @@
 <translation id="694267552845942083">你正在自訂同步功能設定。如要開啟同步功能，請輕觸畫面底部附近的 [確認] 按鈕。向上瀏覽</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6955535239952325894">受管理的瀏覽器已停用這項設定</translation>
-<translation id="6958103823951858863">下載完成後自動開啟 PDF</translation>
 <translation id="6963766334940102469">刪除書籤</translation>
 <translation id="696447261358045621">退出無痕模式</translation>
 <translation id="6965382102122355670">確定</translation>

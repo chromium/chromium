@@ -2612,7 +2612,6 @@
 <translation id="2960208947600937804">配置 Linux 时出错。请与您的管理员联系。</translation>
 <translation id="2960942820860729477">刷新率</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" />（已提供扩展功能）</translation>
-<translation id="2961210776189273067">称谓</translation>
 <translation id="2961695502793809356">点击可前进，按住可查看历史记录</translation>
 <translation id="2963151496262057773">以下插件没有响应：<ph name="PLUGIN_NAME" />。是否要停止使用该插件？</translation>
 <translation id="2964193600955408481">停用 Wi-Fi</translation>
@@ -9798,7 +9797,7 @@
 <translation id="8641946446576357115">在 iOS 设备上使用您的密码</translation>
 <translation id="8642900771896232685">2 秒</translation>
 <translation id="8642947597466641025">放大文字</translation>
-<translation id="8643403533759285912">删除群组</translation>
+<translation id="8643403533759285912">删除组</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 高级保护进行扫描？</translation>
 <translation id="864423554496711319">已保存在您账号下的设备</translation>
 <translation id="8644655801811752511">无法重置此安全密钥。请尝试在插入此密钥后立即重置它。</translation>

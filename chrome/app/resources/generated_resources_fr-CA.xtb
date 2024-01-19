@@ -366,7 +366,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1272508081857842302">Ouverture des <ph name="BEGIN_LINK" />liens compatibles<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">Ce compte d'utilisateur n'appartient pas au domaine pour lequel cet appareil est enregistré. Si vous souhaitez vous enregistrer à un autre domaine, vous devez d'abord suivre la procédure de récupération de votre appareil.</translation>
 <translation id="1273937721055267968">Bloquer <ph name="DOMAIN" /></translation>
-<translation id="1274997165432133392">Témoins et autres données de sites</translation>
+<translation id="1274997165432133392">Témoins et autres données relatives aux sites</translation>
 <translation id="1275718070701477396">Sélectionné</translation>
 <translation id="1275936815032730048">lanceur+flèche vers la droite</translation>
 <translation id="1276994519141842946">Impossible de désinstaller <ph name="APP_NAME" /></translation>
@@ -2623,7 +2623,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2960208947600937804">Une erreur s'est produite lors de la configuration de Linux. Communiquez avec votre administrateur.</translation>
 <translation id="2960942820860729477">Fréquence d'actualisation</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (extension fournie)</translation>
-<translation id="2961210776189273067">Titre</translation>
 <translation id="2961695502793809356">Cliquer pour avancer, maintenir enfoncé pour voir l'historique</translation>
 <translation id="2963151496262057773">Le plugiciel suivant ne répond pas : <ph name="PLUGIN_NAME" />. Voulez-vous l'arrêter?</translation>
 <translation id="2964193600955408481">Désactiver le réseau Wi-Fi</translation>

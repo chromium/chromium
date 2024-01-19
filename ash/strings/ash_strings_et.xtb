@@ -267,7 +267,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2064048859448024834">Kaamera eelvaade on sisse lülitatud</translation>
 <translation id="2067602449040652523">Klaviatuuri eredus</translation>
 <translation id="2075520525463668108">Lülitage <ph name="CAPTURE_MEDIUM" /> sisse/välja. <ph name="CAPTURE_MEDIUM" /> on <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Järgmisele töölauale lülitumiseks pühkige nelja sõrmega paremale</translation>
 <translation id="2079545284768500474">Võta tagasi</translation>
 <translation id="2083190527011054446">Head ööd, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Emotikonide valija avamine</translation>
@@ -283,7 +282,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2149229036084364364">Mine eelmisele loole</translation>
 <translation id="2152895518047545149">Tundub, et midagi ei ole puudu. Väga hea!</translation>
 <translation id="2161132820593978283">Proovige kaamera kadreerimist, et oleksite videokõnedes ekraanikuva keskel. Lülitage see sisse kiirseadete kaudu.</translation>
-<translation id="2170530631236737939">Ülevaatest lahkumiseks pühkige kolme sõrmega alla</translation>
 <translation id="2185166372312820725">Eelmisele vahelehele liikumine</translation>
 <translation id="2185444992308415167">Vahelehtede 1 kuni 8 läbivaatamine</translation>
 <translation id="2198625180564913276">Profiili lisamine. See võib võtta mõne minuti.</translation>
@@ -1695,7 +1693,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7850320739366109486">Mitte segada</translation>
 <translation id="7851039877802112575">Hüpik- ja dialoogiakende esile tõstmine</translation>
 <translation id="7851768487828137624">Kanaarilind</translation>
-<translation id="7860671499921112077">Ülevaate avamiseks pühkige kolme sõrmega üles</translation>
 <translation id="7862292329216937261">Seadme külalisena kasutamiseks peate välja logima ja seejärel ekraani allservas tegema valiku Sirvi külalisena.</translation>
 <translation id="7866482334467279021">sisse</translation>
 <translation id="7872786842639831132">Väljas</translation>
@@ -1806,7 +1803,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8262312463845990408">Taasesituse käivitamine/peatamine</translation>
 <translation id="8270450402312105425">{0,plural, =1{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega üks tund}other{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega # tundi}}</translation>
 <translation id="8277261673056602147">Tõstke tekst oma ekraanikuval esile</translation>
-<translation id="8284362522226889623">Eelmisele töölauale lülitumiseks pühkige nelja sõrmega vasakule</translation>
 <translation id="828708037801473432">Väljas</translation>
 <translation id="8297006494302853456">Nõrk</translation>
 <translation id="8308637677604853869">Eelmine menüü</translation>

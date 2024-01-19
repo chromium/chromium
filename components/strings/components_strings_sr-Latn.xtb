@@ -1178,7 +1178,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="33073482541490531">Lozinka koju ste upravo koristili je pronađena pri povredi podataka. Menadžer lozinki preporučuje da odmah promenite ovu lozinku.</translation>
 <translation id="3307649904964670439">Dugme Prilagodi Chrome, aktivirajte ga da biste prilagodili izgled pregledača</translation>
 <translation id="3308006649705061278">Organizaciona jedinica (OU)</translation>
-<translation id="3324223664999044166">3 ili više reči kao rezime svojih misli</translation>
 <translation id="3324687287337751929">4×6 in</translation>
 <translation id="3324983252691184275">Jarkocrvena</translation>
 <translation id="3325027355611702542">Kamperi i rekreativna vozila</translation>
@@ -1420,7 +1419,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3748009735914587286">Metal (sjajni)</translation>
 <translation id="3748148204939282805">Napadači na <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mogu da vas navedu da uradite nešto opasno, na primer, da instalirate softver ili otkrijete lične podatke (poput lozinki, brojeva telefona ili brojeva kreditnih kartica). <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Avioindustrija</translation>
-<translation id="3751020515020988516">Zahtev nije razumljiv. Probajte sa drugim zahtevom.</translation>
 <translation id="3752543821772132562">Zanemaruje se jer smernice <ph name="POLICY_NAME" /> nisu podešene.</translation>
 <translation id="3754210790023674521">Izađi iz režima slike u slici</translation>
 <translation id="3759461132968374835">Nemate nijedno nedavno prijavljeno otkazivanje. Otkazivanja koja su se desila dok je prijavljivanje otkazivanja bilo onemogućeno neće se ovde prikazati.</translation>
@@ -2852,7 +2850,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6645291930348198241">da pristupa kolačićima i podacima o sajtovima.</translation>
 <translation id="6645478838938543427">Obaveštenja o sniženjima će se slati na <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{None}=1{Sa 1 sajta (nećemo vas odjaviti sa Google naloga)}one{Sa # sajta (nećemo vas odjaviti sa Google naloga)}few{Sa # sajta (nećemo vas odjaviti sa Google naloga)}other{Sa # sajtova (nećemo vas odjaviti sa Google naloga)}}</translation>
 <translation id="6648459603387803038">Administrator može daljinski da promeni podešavanje pregledača. Aktivnostima na ovom uređaju može da se upravlja i van Chrome-a.</translation>
 <translation id="6648524591329069940">Font Serif</translation>
 <translation id="6649510485211003056">195×270 mm</translation>
@@ -3230,7 +3227,6 @@ Dodatni detalji:
 <translation id="7378877318020334501">TV komedije</translation>
 <translation id="7380398842872229465">10×15 in</translation>
 <translation id="738439098860678026">Predškolsko obrazovanje</translation>
-<translation id="7388071710882496863">zahteve kao što je „napišite recenziju sa 5 zvezdica za ovaj restoran“</translation>
 <translation id="7388594495505979117">{0,plural, =1{Uređaj će se restartovati za 1 minut}one{Uređaj će se restartovati za # minut}few{Uređaj će se restartovati za # minuta}other{Uređaj će se restartovati za # minuta}}</translation>
 <translation id="7390545607259442187">Potvrdite karticu</translation>
 <translation id="7392089738299859607">Ažurirajte adresu</translation>

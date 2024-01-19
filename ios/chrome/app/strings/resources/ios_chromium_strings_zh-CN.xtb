@@ -100,7 +100,6 @@
 
 如要更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="3955621079070267756">从任意应用内打开 Chromium</translation>
-<translation id="4002314982058020967">如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="4005283307739974863">在 Chromium 中打开并运行安全检查。</translation>
 <translation id="4043291146360695975">系统会将密码仅保存到此设备上的密码管理器中。</translation>
 <translation id="4099085513035183040">在 Chromium Beta 版中不受支持</translation>
@@ -113,7 +112,6 @@
 <translation id="4408912345039114853">运行 Chromium 安全检查</translation>
 <translation id="4432744876818348753">登录即可充分利用 Chromium。</translation>
 <translation id="4445228361214254027">贵组织已关闭在您的 Google 账号中保存 Chromium 数据并使用这些数据的功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
-<translation id="4485517920713468480">Chromium 将检测您所访问的网站上的跟踪编号，并在新标签页中向您显示包裹动态。您的数据将分享给 Google，以便系统提供此功能和改进 Google 购物，让所有人都受益。您可在<ph name="BEGIN_LINK" />包裹跟踪设置<ph name="END_LINK" />中更改此设置。</translation>
 <translation id="4498832288620833153">将所输入的网址添加到 Chromium 中的阅读清单。</translation>
 <translation id="452436063477828504">请确保您可以一直使用 Google 账号中的 Chromium 数据</translation>
 <translation id="4555020257205549924">启用此功能后，Chromium 将使用 Google 翻译对其他语言的网页进行翻译。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -283,6 +281,7 @@
 <translation id="8776843108004031667">系统会从 Chromium 中移除此账号以及所有未保存的数据。</translation>
 <translation id="88376265765385899">打开 Chromium 书签。</translation>
 <translation id="8860548555286245440">在 Chromium 中以无痕模式打开网址</translation>
+<translation id="8866191443434488382">Chromium 将检测您所访问的网站上的跟踪编号，并在新标签页中向您显示包裹动态。系统会将包裹跟踪编号和网站名称发送给 Chromium，以便提供此功能和改进购物功能，让所有用户受益。您可以随时在<ph name="BEGIN_LINK" />包裹跟踪设置<ph name="END_LINK" />中更新此设置。</translation>
 <translation id="8909995017390087892">Chromium（iOS 版）</translation>
 <translation id="8924617840944134898">打开 Chromium 无痕式标签页</translation>
 <translation id="894437814105052438">当您退出登录后，Chromium 不会将任何新数据同步到您的 Google 账号。先前已同步的数据将会保留在账号中。</translation>

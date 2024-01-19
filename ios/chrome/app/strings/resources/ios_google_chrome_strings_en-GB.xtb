@@ -46,7 +46,6 @@ Things to consider:
 <translation id="1917964099031477364">This account and any unsaved data will be removed from Chrome and other Google apps on this device.</translation>
 <translation id="1965935827552890526">Finish what you were doing in your other open Chrome window.</translation>
 <translation id="1987779152850321833">Complete these suggested actions below to get the most out of Chrome.</translation>
-<translation id="2008357574463816229">If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Get more done with a simple, secure and faster-than-ever Google Chrome.</translation>
 <translation id="2120238739383482109">Opens the Chrome bookmarks.</translation>
 <translation id="2147651015520127414">Chrome verified that <ph name="ISSUER" /> issued this website's certificate.</translation>
@@ -203,7 +202,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="686691656039982452">You can <ph name="BEGIN_LINK" />manage what Chrome data is saved<ph name="END_LINK" /> in your Google Account.
 
 For more settings that use data to improve your Chrome experience, go to <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome will detect tracking numbers on sites you visit and show you package updates on the New Tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone. You can change this in <ph name="BEGIN_LINK" />Package Tracking Settings<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Search with Voice in Chrome</translation>
 <translation id="6964931465519938134">You can now use Chrome whenever you tap on links in messages, documents and other apps.</translation>
 <translation id="6975725306479268850">Choose Chrome for auto-fill</translation>

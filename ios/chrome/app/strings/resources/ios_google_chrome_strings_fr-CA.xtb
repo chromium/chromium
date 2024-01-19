@@ -46,7 +46,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1917964099031477364">Ce compte et toutes les données non enregistrées seront supprimés de Chrome et des autres applications Google sur cet appareil.</translation>
 <translation id="1965935827552890526">Terminez ce que vous faisiez dans votre autre fenêtre de Chrome.</translation>
 <translation id="1987779152850321833">Effectuez les actions suggérées ci-dessous pour tirer le meilleur parti de Chrome.</translation>
-<translation id="2008357574463816229">Si vous oubliez votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Faites-en plus avec le navigateur Google Chrome : simple, sécuritaire et plus rapide que jamais.</translation>
 <translation id="2120238739383482109">Ouvre les favoris Chrome.</translation>
 <translation id="2147651015520127414">Chrome a vérifié que <ph name="ISSUER" /> a émis le certificat de ce site Web.</translation>
@@ -203,7 +202,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="686691656039982452">Vous pouvez <ph name="BEGIN_LINK" />gérer les données Chrome enregistrées<ph name="END_LINK" /> dans votre compte Google.
 
 Afin d'accéder à plus de paramètres utilisant des données pour améliorer votre expérience Chrome, accédez aux <ph name="BEGIN_LINK" />services Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome détectera les numéros de suivi sur les sites que vous visitez et vous montrera les mises à jour des colis sur la page Nouvel onglet. Vos données seront partagées avec Google pour fournir cette fonctionnalité et améliorer Shopping pour tous. Vous pouvez modifier cette option dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Effectuer une recherche vocale dans Chrome</translation>
 <translation id="6964931465519938134">Vous pouvez maintenant utiliser Chrome chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>
 <translation id="6975725306479268850">Choisissez Chrome pour le remplissage automatique</translation>

@@ -352,7 +352,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2946420957526726953">Diğer cihazlara bağlanmak için Chrome güncelleniyor</translation>
 <translation id="2951071800649516099">Daha sonra okumak için sayfaları okuma listenize ekleyin</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{Okunmamış <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> sayfa}other{Okunmamış <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> sayfa}}</translation>
-<translation id="2961210776189273067">Ünvan</translation>
 <translation id="296370266220139811">Daha az yazarak zaman kazanın</translation>
 <translation id="2977350910003566746">Son açılana göre sıralanıyor</translation>
 <translation id="297771753501244313">Son açılana göre sırala</translation>
@@ -1126,7 +1125,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="694267552845942083">Şu anda Senkronizasyon ayarlarınızı özelleştiriyorsunuz. Senkronizasyonu etkinleştirme işlemini tamamlamak için ekranın altına yakın bir yerde bulunan Onayla düğmesine dokunun. Yukarı git</translation>
 <translation id="6945221475159498467">Seç</translation>
 <translation id="6955535239952325894">Bu ayar yönetilen tarayıcılarda devre dışı bırakıldı</translation>
-<translation id="6958103823951858863">PDF'yi indirdikten sonra otomatik olarak aç</translation>
 <translation id="6963766334940102469">Yer işaretlerini silme</translation>
 <translation id="696447261358045621">Gizli moddan çık</translation>
 <translation id="6965382102122355670">Tamam</translation>

@@ -46,7 +46,6 @@
 <translation id="1917964099031477364">このアカウントと保存されていないデータは、Chrome やこのデバイスの他の Google アプリから削除されます。</translation>
 <translation id="1965935827552890526">開いている別の Chrome ウィンドウでの作業を終了してください。</translation>
 <translation id="1987779152850321833">Chrome を最大限に活用するには、下記のおすすめの操作を行ってください。</translation>
-<translation id="2008357574463816229">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを消去<ph name="END_LINK" />してください。</translation>
 <translation id="2056123005618757196">シンプル、安全で、さらに高速になった Google Chrome をご活用ください。</translation>
 <translation id="2120238739383482109">Chrome のブックマークを開きます。</translation>
 <translation id="2147651015520127414">このウェブサイトの証明書が <ph name="ISSUER" /> 発行のものであると確認されました。</translation>
@@ -203,7 +202,6 @@
 <translation id="686691656039982452">Google アカウントに<ph name="BEGIN_LINK" />保存する Chrome データを管理<ph name="END_LINK" />できます。
 
 Chrome を使いやすくするためにデータを使用するその他の設定については、<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />をご覧ください。</translation>
-<translation id="687586529977635009">Chrome はアクセスしたサイトで追跡番号を検出し、新しいタブページに最新情報を表示します。データは Google と共有され、この機能の提供と、すべてのユーザーに対するショッピングの利便性向上に役立てられます。この設定は<ph name="BEGIN_LINK" />荷物追跡設定<ph name="END_LINK" />で変更できます。</translation>
 <translation id="6916015246697034114">Chrome で音声検索</translation>
 <translation id="6964931465519938134">メッセージ、ドキュメント、他のアプリでタップしたリンクが常に Chrome で開かれるようになります。</translation>
 <translation id="6975725306479268850">自動入力で Chrome を選択する</translation>

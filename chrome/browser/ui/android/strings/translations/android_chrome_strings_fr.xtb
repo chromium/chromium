@@ -352,7 +352,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2946420957526726953">Mise à jour de Chrome pour la connexion à d'autres appareils…</translation>
 <translation id="2951071800649516099">Ajoutez des pages à votre liste de lecture pour plus tard</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page non lue}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page non lue}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pages non lues}}</translation>
-<translation id="2961210776189273067">Civilité</translation>
 <translation id="296370266220139811">Saisissez vos recherches plus rapidement</translation>
 <translation id="2977350910003566746">Tri par les derniers ouverts</translation>
 <translation id="297771753501244313">Trier par dernier ouvert</translation>
@@ -1126,7 +1125,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="694267552845942083">Vous personnalisez actuellement vos paramètres de synchronisation. Pour valider l'activation de la synchronisation, appuyez sur le bouton "Confirmer" en bas de l'écran. Revenir en haut de la page</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6955535239952325894">Ce paramètre est désactivé sur les navigateurs gérés</translation>
-<translation id="6958103823951858863">Ouvrir automatiquement le PDF après le téléchargement</translation>
 <translation id="6963766334940102469">Supprimer des favoris</translation>
 <translation id="696447261358045621">Quitter le mode navigation privée</translation>
 <translation id="6965382102122355670">OK</translation>

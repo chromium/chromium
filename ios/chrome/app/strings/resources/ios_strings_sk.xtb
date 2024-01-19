@@ -383,7 +383,6 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="2952278131021475699">Vyhľadávanie kamerou pomocou funkcie Lens</translation>
 <translation id="2956733177489514605">Ak chcete synchronizovať heslá a ďalší obsah, prihláste sa účtom Google.</translation>
 <translation id="2958718410589002129">Heslá</translation>
-<translation id="2961210776189273067">Oslovenie</translation>
 <translation id="2964349545761222050">Blokovať súbory cookie tretích strán</translation>
 <translation id="2969979262385602596">Prihlásenie zlyhalo. Skúste to neskôr.</translation>
 <translation id="2975121486251958312">K dispozícii je iba režim inkognito</translation>
@@ -925,6 +924,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5922999516621365983">Ak kartu chcete pripnúť, presuňte ju sem.</translation>
 <translation id="5938160824633642847">Vaše zariadenie je takmer plné. Uvoľnite miesto a skúste to znova.</translation>
 <translation id="5948291296578561264">Umožňuje ukladať fotky do knižnice fotiek.</translation>
+<translation id="5954562874938077107">Prejsť na Lens</translation>
 <translation id="5955891643922670672">Zobrazuje sa offline verzia</translation>
 <translation id="5957613098218939406">Ďalšie možnosti</translation>
 <translation id="595769230373966252">Hľadať prostredníctvom poskytovateľa <ph name="SEARCH_PROVIDER" /></translation>

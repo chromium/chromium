@@ -517,6 +517,8 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1956486093533522234">Cari, lindungi atau padamkan peranti anda</translation>
 <translation id="1958218078413065209">Markah tertinggi anda ialah <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Bantu kami meningkatkan keselamatan di web untuk semua orang dengan menghantar <ph name="BEGIN_WHITEPAPER_LINK" />URL sesetengah halaman yang anda lawati, maklumat sistem terhad dan sesetengah kandungan halaman<ph name="END_WHITEPAPER_LINK" /> kepada Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Dasar privasi<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959445535228047762">Kandungan teks dan halaman anda dihantar kepada Google dan boleh digunakan untuk meningkatkan ciri ini.
+  <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Penanda halaman</translation>
 <translation id="196752089528718902">Anda biasanya menyambung kepada laman secara selamat tetapi Chrome tidak dapat menggunakan sambungan selamat pada kali ini. Penyerang mungkin cuba untuk mencuri dengar atau mengubah suai sambungan rangkaian anda. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Ralat penyirian</translation>
@@ -720,6 +722,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2354430244986887761">Penyemakan Imbas Selamat Google <ph name="BEGIN_LINK" />menemui apl yang memudaratkan<ph name="END_LINK" /> di <ph name="SITE" /> baru-baru ini.</translation>
 <translation id="2355395290879513365">Penyerang mungkin dapat melihat imej yang anda lihat di tapak ini dan menipu anda dengan mengubah suainya.</translation>
 <translation id="2356070529366658676">Tanya</translation>
+<translation id="2356926036049612643">Pengoptimum V8</translation>
 <translation id="2357481397660644965">Peranti anda diurus oleh <ph name="DEVICE_MANAGER" /> dan akaun anda diurus oleh <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Berbilang</translation>
 <translation id="2359808026110333948">Teruskan</translation>
@@ -1178,7 +1181,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="33073482541490531">Kata laluan yang baru anda gunakan ditemukan dalam pelanggaran data. Password Manager mengesyorkan agar anda menukar kata laluan ini sekarang.</translation>
 <translation id="3307649904964670439">Butang sesuaikan Chrome, aktifkan untuk menyesuaikan rupa penyemak imbas anda</translation>
 <translation id="3308006649705061278">Unit Organisasi (OU)</translation>
-<translation id="3324223664999044166">3 atau lebih perkataan yang menyimpulkan pemikiran anda</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">Merah lembayung</translation>
 <translation id="3325027355611702542">Pekhemah &amp; RV</translation>
@@ -1421,7 +1423,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3748009735914587286">Logam (Kilat Tinggi)</translation>
 <translation id="3748148204939282805">Penyerang di <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mungkin memperdaya anda agar melakukan sesuatu yang berbahaya seperti memasang perisian atau mendedahkan maklumat peribadi anda (contohnya, kata laluan, nombor telefon atau kad kredit). <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industri penerbangan</translation>
-<translation id="3751020515020988516">Permintaan anda tidak difahami. Cuba buat permintaan lain.</translation>
 <translation id="3752543821772132562">Diabaikan kerana <ph name="POLICY_NAME" /> tidak ditetapkan.</translation>
 <translation id="3754210790023674521">Keluar daripada gambar dalam gambar</translation>
 <translation id="3759461132968374835">Tiada laporan nahas yang dibuat baru-baru ini.  Nahas yang berlaku apabila laporan nahas dilumpuhkan tidak akan kelihatan di sini.</translation>
@@ -2854,7 +2855,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6643016212128521049">Kosongkan</translation>
 <translation id="6645291930348198241">Akses kuki dan data tapak.</translation>
 <translation id="6645478838938543427">Pemakluman penurunan harga akan dihantar ke <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Tiada}=1{Daripada 1 tapak (anda tidak akan dilog keluar daripada Google Account anda)}other{Daripada # tapak (anda tidak akan dilog keluar daripada Google Account anda)}}</translation>
 <translation id="6648459603387803038">Pentadbir anda boleh menukar persediaan penyemak imbas anda dari jauh. Aktiviti pada peranti ini mungkin turut diurus di luar Chrome.</translation>
 <translation id="6648524591329069940">Fon Serif</translation>
 <translation id="6649510485211003056">195 x 270 mm</translation>
@@ -3232,7 +3232,6 @@ Butiran tambahan:
 <translation id="7378877318020334501">Komedi TV</translation>
 <translation id="7380398842872229465">10 x 15 in</translation>
 <translation id="738439098860678026">Pendidikan awal kanak-kanak</translation>
-<translation id="7388071710882496863">permintaan seperti "tulis ulasan 5 bintang untuk restoran ini"</translation>
 <translation id="7388594495505979117">{0,plural, =1{Peranti anda akan dimulakan semula dalam masa 1 minit}other{Peranti anda akan dimulakan semula dalam masa # minit}}</translation>
 <translation id="7390545607259442187">Sahkan Kad</translation>
 <translation id="7392089738299859607">Kemas Kini Alamat</translation>

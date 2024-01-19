@@ -267,7 +267,6 @@
 <translation id="2064048859448024834">کیمرا کا پیش منظر آن ہے</translation>
 <translation id="2067602449040652523">کی بورڈ کی چمک</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> کو ٹوگل کریں۔ <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> ہے</translation>
-<translation id="2078034614700056995">اگلے ڈیسک پر سوئچ کرنے کے لیے چار انگلیوں سے دائیں سوائپ کریں۔</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
 <translation id="2083190527011054446">شب بخیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="2086334242442703436">ایموجی منتخب کنندہ کھولیں</translation>
@@ -283,7 +282,6 @@
 <translation id="2149229036084364364">پچھلے ٹریک پر جائیں</translation>
 <translation id="2152895518047545149">ایسا لگتا ہے کہ کچھ بھی غائب نہیں ہے۔ بہت اچھا!</translation>
 <translation id="2161132820593978283">کیمرا فریمنگ کو آزمائیں تاکہ آپ ویڈیو کالز پر اسکرین کے وسط میں رہیں۔ فوری ترتیبات میں اسے آن کریں۔</translation>
-<translation id="2170530631236737939">مجموعی جائزے سے باہر نکلنے کے لیے تین انگلیوں سے نیچے سوائپ کریں</translation>
 <translation id="2185166372312820725">پچھلے ٹیب پر جائیں</translation>
 <translation id="2185444992308415167">ٹیبز 1 سے 8 تک جائیں</translation>
 <translation id="2198625180564913276">پروفائل شامل کی جا رہی ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
@@ -1693,7 +1691,6 @@
 <translation id="7850320739366109486">ڈسٹرب نہ کریں</translation>
 <translation id="7851039877802112575">فوکس کو پوپ اپس اور ڈائیلاگز پر منتقل کریں</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">مجموعی جائزے میں داخل ہونے کے لیے تین انگلیوں سے اوپر سوائپ کریں</translation>
 <translation id="7862292329216937261">آلہ کو بطور مہمان استعمال کرنے کے لیے، آپ کو سائن آؤٹ کرنے اور پھر اسکرین کے نیچے مہمان کے طور پر براؤز کریں کو منتخب کرنے کی ضرورت ہے۔</translation>
 <translation id="7866482334467279021">آن</translation>
 <translation id="7872786842639831132">آف</translation>
@@ -1804,7 +1801,6 @@
 <translation id="8262312463845990408">پلے بیک ٹوگل کریں</translation>
 <translation id="8270450402312105425">{0,plural, =1{ایک گھنٹے کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}other{# گھنٹے کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}}</translation>
 <translation id="8277261673056602147">اپنی اسکرین پر ٹیکسٹ کو نمایاں کریں</translation>
-<translation id="8284362522226889623">پچھلے ڈیسک پر سوئچ کرنے کے لیے، چار انگلیوں سے بائیں سوائپ کریں</translation>
 <translation id="828708037801473432">آف</translation>
 <translation id="8297006494302853456">کمزور</translation>
 <translation id="8308637677604853869">پچھلا مینیو</translation>

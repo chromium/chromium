@@ -291,6 +291,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2547458583188611426">Hindi gumagana ang pag-sync. Para simulan ang pag-sync, ilagay ang iyong passphrase.</translation>
 <translation id="2551153019974022505">Error sa account</translation>
 <translation id="2556092377360758201">Walang Proteksyon (hindi inirerekomenda)</translation>
+<translation id="2561375093019333908">BUKSAN</translation>
 <translation id="2562041823070056534">Ipinapadala sa <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Gumamit at Mag-save ng Mga Password sa Iyong Google Account</translation>
 <translation id="2577522251608256362">Kapitbahayan</translation>
@@ -383,7 +384,6 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2952278131021475699">Paghahanap Gamit ang Camera ng Lens</translation>
 <translation id="2956733177489514605">Mag-sign in sa Google Account mo para ma-sync ang iyong mga password at higit pa.</translation>
 <translation id="2958718410589002129">Mga Password</translation>
-<translation id="2961210776189273067">Pamagat</translation>
 <translation id="2964349545761222050">I-block ang Third-Party Cookies</translation>
 <translation id="2969979262385602596">Hindi nakapag-sign in. Pakisubukang muli mamaya.</translation>
 <translation id="2975121486251958312">Incognito Mode lang ang Available</translation>
@@ -849,6 +849,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5513681519188741830"><ph name="TIME" /> (na) oras na ang nakalipas</translation>
 <translation id="5525269841082836315">Lumikha ng Passphrase</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} mahinang password}one{{COUNT} mahinang password}other{{COUNT} na mahinang password}}</translation>
+<translation id="5532545557415295622">Dialog ng pag-time out dahil sa pagiging idle</translation>
 <translation id="5542540507657872337">Nakita ang <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Nagbibigay-daan sa iyo ang handoff na magsimula sa pagba-browse sa isang website sa device na ito at pagkatapos ay magpatuloy kaagad sa iyong Mac. Lalabas ang kasalukuyang nakabukas na website sa Dock ng iyong Mac.
 
@@ -925,6 +926,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5922999516621365983">I-drag ang tab dito para i-pin ito.</translation>
 <translation id="5938160824633642847">Malapit nang mapuno ang iyong device. Magbakante ng espasyo at subukan ulit.</translation>
 <translation id="5948291296578561264">Binibigyang-daan ka nito na mag-save ng mga larawan sa iyong library ng larawan.</translation>
+<translation id="5954562874938077107">Pumunta Sa Lens</translation>
 <translation id="5955891643922670672">Tinitingnan ang Offline na Bersyon</translation>
 <translation id="5957613098218939406">Higit Pang Mga Opsyon</translation>
 <translation id="595769230373966252">Maghanap gamit ang <ph name="SEARCH_PROVIDER" /></translation>
@@ -1288,6 +1290,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7781829728241885113">Kahapon</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Pagkalipas ng 1 Araw}one{Pagkalipas ng {COUNT} Araw}other{Pagkalipas ng {COUNT} na Araw}}</translation>
 <translation id="7791543448312431591">Idagdag</translation>
+<translation id="7792549458069452436">KUNIN ANG APP</translation>
 <translation id="7807060072011926525">Ibinibigay ng Google</translation>
 <translation id="7812377703891978671">Maa-access mo ang lahat ng iyong history ng pag-browse sa pamamagitan ng pagpili sa <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Mga Download</translation>

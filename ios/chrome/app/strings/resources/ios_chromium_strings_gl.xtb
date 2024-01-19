@@ -100,7 +100,6 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 
 Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chromium da túa conta<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Abre Chromium desde calquera aplicación</translation>
-<translation id="4002314982058020967">Se esqueces a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chromium da túa conta<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Abre e executa Comprobación de seguranza en Chromium.</translation>
 <translation id="4043291146360695975">Os contrasinais gárdanse no xestor de contrasinais só neste dispositivo.</translation>
 <translation id="4099085513035183040">Non compatible na versión beta de Chromium</translation>
@@ -113,7 +112,6 @@ Os teus datos están encriptados coa túa frase de acceso. Introdúcea para usar
 <translation id="4408912345039114853">Executa Comprobación de seguranza en Chromium</translation>
 <translation id="4432744876818348753">Inicia sesión para sacarlle o máximo partido a Chromium.</translation>
 <translation id="4445228361214254027">A túa organización desactivou a opción de usar e gardar os datos de Chromium na túa Conta de Google. Os marcadores, contrasinais e demais datos que engadas gardaranse só neste dispositivo.</translation>
-<translation id="4485517920713468480">Chromium detectará os números de seguimento nos sitios que visites e mostrarache a información actualizada na páxina Nova pestana. Os teus datos compartiranse con Google para poder fornecer esta función e mellorar a experiencia de compra para todo o mundo. Podes cambiar esta opción na <ph name="BEGIN_LINK" />configuración de seguimento de paquetes<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Engade os URL introducidos á túa lista de lectura de Chromium.</translation>
 <translation id="452436063477828504">Asegúrate de poder usar sempre os datos de Chromium na túa Conta de Google</translation>
 <translation id="4555020257205549924">Se esta función está activada, Chromium utilizará o Tradutor de Google para ofrecer a tradución de páxinas escritas noutros idiomas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>

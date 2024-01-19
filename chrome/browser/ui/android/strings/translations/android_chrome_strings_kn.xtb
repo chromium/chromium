@@ -352,7 +352,6 @@
 <translation id="2946420957526726953">Chrome ಅನ್ನು ಇತರ ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2951071800649516099">ನಂತರದಲ್ಲಿ ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಗೆ ಪುಟಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ಓದದಿರುವ ಪುಟ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ಓದದಿರುವ ಪುಟಗಳು}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ಓದದಿರುವ ಪುಟಗಳು}}</translation>
-<translation id="2961210776189273067">ಶೀರ್ಷಿಕೆ</translation>
 <translation id="296370266220139811">ಸಮಯ ಉಳಿಸಿ ಮತ್ತು ಟೈಪಿಂಗ್ ಕಡಿಮೆ ಮಾಡಿ</translation>
 <translation id="2977350910003566746">ಕೊನೆಯದಾಗಿ ತೆರೆದಿರುವುದು ಎಂಬ ಪ್ರಕಾರವಾಗಿ ವಿಂಗಡಿಸುವುದು</translation>
 <translation id="297771753501244313">ಕೊನೆಯದಾಗಿ ತೆರೆದಿರುವುದು ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
@@ -795,7 +794,7 @@
 <translation id="5304593522240415983">ಈ ಕ್ಷೇತ್ರವು ಖಾಲಿಯಾಗಿರುವಂತಿಲ್ಲ</translation>
 <translation id="5308380583665731573">ಸಂಪರ್ಕಿಸು</translation>
 <translation id="5316947901395241499">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಪಾಸ್‌ವರ್ಡ್ ಸೇವ್ ಮಾಡುವಿಕೆಯನ್ನು ಆಫ್ ಮಾಡಿದ್ದಾರೆ</translation>
-<translation id="5317780077021120954">ಉಳಿಸು</translation>
+<translation id="5317780077021120954">ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="5319359161174645648">Chrome ಅನ್ನು Google ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ</translation>
 <translation id="5320351714793324716">ನೀವು ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಿದರೆ, ಪ್ರಿಲೋಡ್ ಮಾಡುವಾಗ Chrome ಅವುಗಳನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="5326921373682845375">ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಮಾಡಿದ ಪುಟಗಳು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಆಗಿರುವುದರಿಂದ, ಮತ್ತು ಪುಟಗಳಿಗೆ ಲಿಂಕ್ ಮಾಡುತ್ತಿರುವ ಸೈಟ್ Google ಸೈಟ್ ಆಗಿರುವುದರಿಂದ, ಈ ಪುಟಗಳನ್ನು ಖಾಸಗಿಯಾಗಿ, ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಮಾಡುವಾಗ Google ಸರ್ವರ್‌ಗಳು ಹೊಸ ಮಾಹಿತಿಯನ್ನು ಪಡೆಯುವುದಿಲ್ಲ.</translation>
@@ -1125,7 +1124,6 @@
 <translation id="694267552845942083">ನೀವು ಪ್ರಸ್ತುತ ನಿಮ್ಮ ಸಿಂಕ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡುತ್ತಿದ್ದೀರಿ. ಸಿಂಕ್ ಆನ್ ಮಾಡುವುದನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು, ಸ್ಕ್ರೀನ್‌ನ ಕೆಳಭಾಗದ ಸಮೀಪದಲ್ಲಿರುವ 'ದೃಢೀಕರಿಸಿ' ಬಟನ್ ಟ್ಯಾಪ್ ಮಾಡಿ. ಮೇಲಕ್ಕೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
 <translation id="6945221475159498467">ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6955535239952325894">ನಿರ್ವಹಿಸಲಾದ ಬ್ರೌಸರ್‌ಗಳಲ್ಲಿ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
-<translation id="6958103823951858863">ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ನಂತರ ಸ್ವಯಂಚಾಲಿತವಾಗಿ pdf ತೆರೆಯಿರಿ</translation>
 <translation id="6963766334940102469">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಿ</translation>
 <translation id="696447261358045621">ಅಜ್ಞಾತ ಮೋಡ್‌‌ ಅನ್ನು ತೊರೆಯಿರಿ</translation>
 <translation id="6965382102122355670">ಸರಿ</translation>

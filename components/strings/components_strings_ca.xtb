@@ -42,6 +42,7 @@
 <translation id="1062407476771304334">Substitueix</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Adreces d'interès d'escriptori</translation>
+<translation id="1067029985695494416">Detalls del motor de cerca</translation>
 <translation id="1068672505746868501">No tradueixis mai les pàgines en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Metall (brillant)</translation>
 <translation id="1070853536588271387">Vehicles híbrids i alternatius</translation>
@@ -516,6 +517,8 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1956486093533522234">Cerca el dispositiu, protegeix-lo o esborra'n les dades</translation>
 <translation id="1958218078413065209">La teva puntuació més alta és <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Per ajudar a millorar la seguretat al web per a tothom, envia a Google <ph name="BEGIN_WHITEPAPER_LINK" />URL d'algunes pàgines que visites, informació limitada del sistema i part del contingut de les pàgines<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Política de privadesa<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959445535228047762">El text i el contingut de la pàgina s'envien a Google i es poden utilitzar per millorar aquesta funció.
+  <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">Adreces d'interès de <ph name="DOMAIN" /></translation>
 <translation id="196752089528718902">Normalment et connectes a llocs web de manera segura, però aquesta vegada Chrome no ha pogut utilitzar una connexió segura. És possible que un atacant estigui provant d'espiar o de modificar la connexió a la xarxa. <ph name="BEGIN_LEARN_MORE_LINK" />Més informació<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Error de serialització</translation>
@@ -719,6 +722,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2354430244986887761">Recentment, Navegació segura de Google <ph name="BEGIN_LINK" />ha trobat aplicacions perjudicials<ph name="END_LINK" /> a <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">És possible que els atacants puguin veure les imatges que miris en aquest lloc i que les modifiquin per enganyar-te.</translation>
 <translation id="2356070529366658676">Pregunta-ho</translation>
+<translation id="2356926036049612643">Optimitzador de V8</translation>
 <translation id="2357481397660644965">El dispositiu està gestionat per <ph name="DEVICE_MANAGER" /> i el compte està gestionat per <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Diverses</translation>
 <translation id="2359808026110333948">Continua</translation>
@@ -1177,7 +1181,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="33073482541490531">La contrasenya que acabes d'utilitzar s'ha trobat en una violació de les dades. El gestor de contrasenyes recomana que la canviïs ara.</translation>
 <translation id="3307649904964670439">Botó Personalitza Chrome: activa'l per personalitzar l'aspecte del navegador</translation>
 <translation id="3308006649705061278">Unitat organitzativa (OU)</translation>
-<translation id="3324223664999044166">Tres paraules o més que resumeixin els teus pensaments</translation>
 <translation id="3324687287337751929">4 x 6 polzades</translation>
 <translation id="3324983252691184275">Carmesí</translation>
 <translation id="3325027355611702542">Autocaravanes i vehicles recreatius</translation>
@@ -1419,7 +1422,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3748009735914587286">Metall (brillantor alta)</translation>
 <translation id="3748148204939282805">Els atacants del lloc web <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> et poden enganyar perquè facis alguna acció perillosa, com ara instal·lar programari o revelar informació personal (per exemple, contrasenyes, números de telèfon o targetes de crèdit). <ph name="BEGIN_LEARN_MORE_LINK" />Més informació<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Sector de l'aviació</translation>
-<translation id="3751020515020988516">La teva sol·licitud no s'ha entès. Prova de fer-ne una altra.</translation>
 <translation id="3752543821772132562">S'ha ignorat perquè la política <ph name="POLICY_NAME" /> no està establerta.</translation>
 <translation id="3754210790023674521">Surt d'imatge sobre imatge</translation>
 <translation id="3759461132968374835">No has informat de cap error recentment. Els errors que s'hagin produït mentre la creació d'informes d'error estava desactivada no es mostraran aquí.</translation>
@@ -2852,7 +2854,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6645291930348198241">Accedir a les galetes i a les dades del lloc web.</translation>
 <translation id="6645478838938543427">Les alertes de baixada de preu s'enviaran a <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Cap}=1{D'1 lloc web (no se't tancarà la sessió del Compte de Google)}other{De # llocs web (no se't tancarà la sessió del Compte de Google)}}</translation>
 <translation id="6648459603387803038">L'administrador pot modificar la configuració del navegador de manera remota. És possible que l'activitat d'aquest dispositiu també es gestioni fora de Chrome.</translation>
 <translation id="6648524591329069940">Tipus de lletra Serif</translation>
 <translation id="6649510485211003056">195 x 270 mm</translation>
@@ -3230,7 +3231,6 @@ Detalls addicionals:
 <translation id="7378877318020334501">Comèdies de televisió</translation>
 <translation id="7380398842872229465">10 x 15 polzades</translation>
 <translation id="738439098860678026">Ensenyament preescolar</translation>
-<translation id="7388071710882496863">Sol·licituds com ara "Escriu una ressenya de 5 estrelles per a aquest restaurant"</translation>
 <translation id="7388594495505979117">{0,plural, =1{El dispositiu es reiniciarà d'aquí a 1 minut}other{El dispositiu es reiniciarà d'aquí a # minuts}}</translation>
 <translation id="7390545607259442187">Confirma la targeta</translation>
 <translation id="7392089738299859607">Actualitza l'adreça</translation>

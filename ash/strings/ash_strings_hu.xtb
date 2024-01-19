@@ -267,7 +267,6 @@
 <translation id="2064048859448024834">Kamera-előnézet bekapcsolva</translation>
 <translation id="2067602449040652523">Billentyűzet világossága</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> be-/kikapcsolása. A <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> van.</translation>
-<translation id="2078034614700056995">Csúsztasson jobbra négy ujjal a következő asztalra váltáshoz</translation>
 <translation id="2079545284768500474">Visszavonás</translation>
 <translation id="2083190527011054446">Jó éjszakát, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Emojiválasztó megnyitása</translation>
@@ -283,7 +282,6 @@
 <translation id="2149229036084364364">Ugrás az előző számra</translation>
 <translation id="2152895518047545149">A jelek szerint semmi sem hiányzik. Szép munka!</translation>
 <translation id="2161132820593978283">Próbálja ki a keretezést, hogy videohívás közben a képernyő közepére kerüljön. Ezt a funkciót a Gyorsbeállításokban kapcsolhatja be.</translation>
-<translation id="2170530631236737939">Ha szeretne kilépni az Áttekintés nézetből, csúsztasson lefelé három ujjával</translation>
 <translation id="2185166372312820725">Ugrás az előző lapra</translation>
 <translation id="2185444992308415167">Lapozás az 1–8. lapon</translation>
 <translation id="2198625180564913276">A profil hozzáadása folyamatban van. Ez eltarthat néhány percig.</translation>
@@ -624,6 +622,7 @@
 <translation id="3577473026931028326">Hiba történt. Próbálja újra.</translation>
 <translation id="3580650856351781466">Beszédfájlok letöltése…</translation>
 <translation id="3585296979871889131">A telefonján lévő legutóbbi fotók, médiatartalmak, értesítések és alkalmazások megtekintése</translation>
+<translation id="3590441166907930941">Oldalsó gomb</translation>
 <translation id="3593039967545720377">Nyomja le a(z) <ph name="SHORTCUT_KEY_NAME" /> + V billentyűkombinációt a vágólap előzményeinek megtekintéséhez. Kezdésként másoljon valamit a vágólapra.</translation>
 <translation id="3593646411856133110">Felfelé csúsztatva és nyomva tartva megjelenik a többi alkalmazás</translation>
 <translation id="3595596368722241419">Akkumulátor feltöltve</translation>
@@ -1037,6 +1036,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="5163434717504750796">Akkumulátor állapota: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Ciklusok száma: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Asztal mentése sablonként</translation>
 <translation id="5168181903108465623">Cast-eszközök állnak rendelkezésre</translation>
+<translation id="5168753792967365150">Szerkesztés a Google Tasksban</translation>
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
 <translation id="5176318573511391780">Részleges képernyő rögzítése</translation>
 <translation id="5187627942836026988">Hotspotadatok megjelenítése. A rendszergazda letiltotta a hotspotot.</translation>
@@ -1306,6 +1306,8 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="6168622430237609329">Telepített alkalmazások</translation>
 <translation id="6173151025443907148">Második felhasználó bejelentkezése nem támogatott, ha a Lacros böngésző engedélyezve van. Bejelentkezés helyett használjon második böngészőprofilt, vagy zárja be a Lacrost, és próbálja újra.</translation>
 <translation id="6179832488876878285">Ide kitűzheti a fontos fájlokat. A kezdéshez nyissa meg a Fájlok alkalmazást.</translation>
+<translation id="6180193585172850042">Vissza gomb</translation>
+<translation id="6180651297859206670">Előre gomb</translation>
 <translation id="6182592640011875895">Asztal megnyitása</translation>
 <translation id="6185696379715117369">Lapozás felfelé</translation>
 <translation id="619335566042889110">Töltés a teljes akkumulátorszint eléréséig most</translation>
@@ -1695,7 +1697,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7850320739366109486">Ne zavarj</translation>
 <translation id="7851039877802112575">A fókusz áthelyezése az előugró és párbeszédablakokra</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Az Áttekintés nézetbe való belépéshez csúsztasson felfelé három ujjával</translation>
 <translation id="7862292329216937261">Ha vendég módban szeretné az eszközt használni, előbb jelentkezzen ki, majd válassza a Böngészés vendégként lehetőséget a képernyő alján.</translation>
 <translation id="7866482334467279021">be</translation>
 <translation id="7872786842639831132">Ki</translation>
@@ -1806,7 +1807,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8262312463845990408">Lejátszás vagy szüneteltetés</translation>
 <translation id="8270450402312105425">{0,plural, =1{Eszköz módosítása az előző verzióra egy órán belül}other{Eszköz módosítása az előző verzióra # órán belül}}</translation>
 <translation id="8277261673056602147">A képernyőn lévő szöveg kiemelése</translation>
-<translation id="8284362522226889623">Csúsztasson balra négy ujjal az előző asztalra váltáshoz</translation>
 <translation id="828708037801473432">Ki</translation>
 <translation id="8297006494302853456">Gyenge</translation>
 <translation id="8308637677604853869">Előző menü</translation>

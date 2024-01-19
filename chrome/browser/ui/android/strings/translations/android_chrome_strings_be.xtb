@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">Стандартнае размяшчэнне спамповак можна змяніць у любы час</translation>
 <translation id="1796666869097395659">Згарнуць укладку, каб вярнуцца да яе пазней</translation>
 <translation id="1807246157184219062">Светлая</translation>
+<translation id="1807709131360304325">Адкрыць новае акно</translation>
 <translation id="1810845389119482123">Першапачатковая наладка сінхранізацыі не завершана</translation>
 <translation id="1812027881030482584">Нельга выканаць уваход на сайце <ph name="SITE_ETLD_PLUS_ONE" /> з дапамогай сэрвісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
 <translation id="1829244130665387512">Пошук на старонцы</translation>
@@ -352,7 +353,6 @@
 <translation id="2946420957526726953">Chrome абнаўляецца, каб мець магчымасць падключацца да іншых прылад</translation>
 <translation id="2951071800649516099">Захоўвайце старонкі, каб прачытаць іх пазней, – дадавайце іх у спіс на прагляд</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрачытаная старонка}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаная старонка}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаныя старонкі}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаных старонак}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытанай старонкі}}</translation>
-<translation id="2961210776189273067">Форма звароту</translation>
 <translation id="296370266220139811">Эканомце час, менш пішыце</translation>
 <translation id="2977350910003566746">Адсартавана па часе апошняга адкрыцця</translation>
 <translation id="297771753501244313">Па часе адкрыцця</translation>
@@ -1126,7 +1126,6 @@
 <translation id="694267552845942083">Вы знаходзіцеся на старонцы налад сінхранізацыі. Каб завяршыць уключэнне сінхранізацыі, націсніце кнопку "Пацвердзіць" унізе экрана. Перайсці ўверх</translation>
 <translation id="6945221475159498467">Выбраць</translation>
 <translation id="6955535239952325894">Гэта налада выключана ў браўзерах, якія знаходзяцца пад кіраваннем</translation>
-<translation id="6958103823951858863">Аўтаматычна адкрываць PDF пасля спампоўвання</translation>
 <translation id="6963766334940102469">Выдаліць закладкі</translation>
 <translation id="696447261358045621">Выйсці з рэжыму інкогніта</translation>
 <translation id="6965382102122355670">ОК</translation>
@@ -1329,6 +1328,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> – версія састарэла.</translation>
 <translation id="7944772052836377867">Для сінхранізацыі неабходна спраўдзіць вашу асобу</translation>
 <translation id="7947953824732555851">Прыняць і ўвайсці</translation>
+<translation id="7951102827450076904">Заўсёды адкрываць спампаваныя PDF</translation>
 <translation id="7957413488482743710">Каб абараніць вас ад патэнцыяльнага махлярства, замест захаванай вамі карткі будзе паказвацца віртуальная. <ph name="BEGIN_LINK1" />Даведацца больш пра віртуальныя карткі<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Кнопка "Назад" на старонцы статыстыкі</translation>
 <translation id="7961926449547174351">Вы забаранілі доступ да сховішча. Каб дазволіць доступ зноў, перайдзіце ў Налады.</translation>

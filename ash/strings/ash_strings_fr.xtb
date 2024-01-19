@@ -267,7 +267,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2064048859448024834">Aperçu de la caméra affiché</translation>
 <translation id="2067602449040652523">Luminosité du clavier</translation>
 <translation id="2075520525463668108">Activer/Désactiver <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Balayez l'écran vers la droite avec quatre doigts pour passer au bureau suivant</translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2083190527011054446">Bonsoir <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Ouvrir le sélecteur d'emoji</translation>
@@ -283,7 +282,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2149229036084364364">Passer au titre précédent</translation>
 <translation id="2152895518047545149">On dirait que rien ne manque. Bien joué !</translation>
 <translation id="2161132820593978283">Essayez le cadrage de la caméra pour être au centre de l'écran lors d'appels vidéo. Activez-le dans les Réglages rapides.</translation>
-<translation id="2170530631236737939">Balayez l'écran vers le bas avec trois doigts pour quitter l'Aperçu</translation>
 <translation id="2185166372312820725">Accéder à l'onglet précédent</translation>
 <translation id="2185444992308415167">Parcourir les onglets 1 à 8</translation>
 <translation id="2198625180564913276">Ajout du profil… Cela peut prendre quelques minutes.</translation>
@@ -1695,7 +1693,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7850320739366109486">Ne pas déranger</translation>
 <translation id="7851039877802112575">Passer aux pop-ups et aux boîtes de dialogue</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Balayez l'écran vers le haut avec trois doigts pour accéder à l'aperçu</translation>
 <translation id="7862292329216937261">Pour utiliser l'appareil en tant qu'invité, vous devez vous déconnecter, puis sélectionner "Naviguer en tant qu'invité" en bas de l'écran.</translation>
 <translation id="7866482334467279021">activé</translation>
 <translation id="7872786842639831132">Désactivé</translation>
@@ -1806,7 +1803,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8262312463845990408">Activer/Désactiver la lecture</translation>
 <translation id="8270450402312105425">{0,plural, =1{Rétablir une version antérieure de l'appareil d'ici une heure}one{Rétablir une version antérieure de l'appareil d'ici # heure}other{Rétablir une version antérieure de l'appareil d'ici # heures}}</translation>
 <translation id="8277261673056602147">Mettre en surbrillance du texte à l'écran</translation>
-<translation id="8284362522226889623">Balayez l'écran vers la gauche avec quatre doigts pour passer au bureau précédent</translation>
 <translation id="828708037801473432">Désactivé</translation>
 <translation id="8297006494302853456">Faible</translation>
 <translation id="8308637677604853869">Menu précédent</translation>

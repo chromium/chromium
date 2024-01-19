@@ -352,7 +352,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2946420957526726953">Wrthi'n diweddaru Chrome i gysylltu â dyfeisiau eraill</translation>
 <translation id="2951071800649516099">Ychwanegu tudalennau at eich rhestr ddarllen ar gyfer nes ymlaen</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> dudalen sydd heb ei darllen}zero{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> tudalen sydd heb eu darllen}two{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> dudalen sydd heb eu darllen}few{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> tudalen sydd heb eu darllen}many{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> thudalen sydd heb eu darllen}other{Mae <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> tudalen sydd heb eu darllen}}</translation>
-<translation id="2961210776189273067">Teitl</translation>
 <translation id="296370266220139811">Arbed amser a theipio llai</translation>
 <translation id="2977350910003566746">Wrthi'n trefnu yn ôl agorwyd ddiwethaf</translation>
 <translation id="297771753501244313">Trefnu yn ôl agorwyd ddiwethaf</translation>
@@ -1126,7 +1125,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="694267552845942083">Ar hyn o bryd rydych yn personoleiddio'ch gosodiadau Cysoni. I orffen troi cysoni ymlaen, tapiwch y botwm Cadarnhau ger gwaelod y sgrîn. Llywio i fyny</translation>
 <translation id="6945221475159498467">Dewis</translation>
 <translation id="6955535239952325894">Mae'r gosodiad hwn wedi'i analluogi ar borwyr a reolir</translation>
-<translation id="6958103823951858863">Agor pdf yn awtomatig ar ôl ei lawrlwytho</translation>
 <translation id="6963766334940102469">Dileu nodau tudalen</translation>
 <translation id="696447261358045621">Gadael y modd Anhysbys</translation>
 <translation id="6965382102122355670">Iawn</translation>

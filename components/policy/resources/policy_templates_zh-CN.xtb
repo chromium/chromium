@@ -9298,9 +9298,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如果此政策已停用，系统将禁止以更高保护级别通过代理进行查询。网址的部分哈希值被直接上传到 Google 的频率会大大降低，这会削弱保护效果。</translation>
 <translation id="8858642179038618439">强制启用 YouTube 安全模式</translation>
 <translation id="8860342862142842017">对于指定的一系列 subjectPublicKeyInfo 哈希，不强制执行证书透明化要求</translation>
-<translation id="8860474826929590628">如果已启用或未设置“<ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" />”政策，系统会允许在所有网页上使用此政策。
-
-如果已停用“<ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" />”政策，所有网页上都无法使用此政策。</translation>
 <translation id="8860894781631833477">用户可以配置 <ph name="PRODUCT_OS_NAME" /> 发布渠道</translation>
 <translation id="8862086508140571198">此政策可用于设置一系列要尽快下载的 DLC（可下载的内容）。然后，相应设备的所有用户便都能使用已下载的 DLC。
 

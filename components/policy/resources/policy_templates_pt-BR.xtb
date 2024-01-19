@@ -3021,6 +3021,17 @@ Se a política for deixada sem definição, a navegação no navegador será blo
 <translation id="3423703250826790403">Apps Android</translation>
 <translation id="3426434797050451264">Esta política também pode ser usada para especificar apps Android como gerenciadores de arquivos padrão.</translation>
 <translation id="3428247105888806363">Ativar previsão de rede</translation>
+<translation id="3430198032663063246">O recurso "Quero ajuda para escrever" é um assistente de escrita baseado em IA para conteúdos curtos na Web. As sugestões são baseadas nos comandos inseridos pelo usuário e no conteúdo da página da Web.
+
+0 = ativa o recurso para usuários e envia dados relevantes ao Google para treinar ou melhorar os modelos de IA. Os dados relevantes podem incluir comandos, entradas, saídas e materiais de origem, dependendo do recurso. Eles podem ser analisados por humanos com o único propósito de melhorar os modelos de IA.
+
+O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+1 = ativa o recurso para os usuários, mas não envia dados ao Google para treinar ou melhorar os modelos de IA. "1" é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+2 = desativa o recurso. "2" é o valor padrão para contas do Education gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3432863169147125747">Controla configurações de impressão.</translation>
 <translation id="3434053014926283175">Usar o botão direito do mouse como o principal na tela de login.
 
@@ -5425,6 +5436,7 @@ Na versão 92 e mais recentes do <ph name="PRODUCT_NAME" />, esta política tamb
 
           Se ela for definida como "Desativada", o recurso será desativado à força.
           </translation>
+<translation id="5433865420958136693">Usar aceleração gráfica quando disponível</translation>
 <translation id="5435888298115339571">Ativar o compartilhamento da área de trabalho na omnibox e no menu de três pontos</translation>
 <translation id="5441508088704391614">Nenhuma restrição especial (padrão).</translation>
 <translation id="5442026853063570579">Esta política também controla o acesso às Opções do desenvolvedor Android. Se esta política for definida como "DeveloperToolsDisallowed" (valor 2), os usuários não poderão acessar as Opções do desenvolvedor. Se for definida como falsa ou se não for definida, os usuários poderão acessar as Opções do desenvolvedor tocando sete vezes no número da versão no app de configurações do Android.</translation>
@@ -5497,6 +5509,9 @@ Se a política for desativada ou deixada sem definição, as configurações de 
 <translation id="5480380613778757009">Se a política for desativada ou deixada sem definição, todas as configurações de tela que foram definidas em Sessões de visitante gerenciadas serão redefinidas assim que a sessão for encerrada. Se a política for definida como "Verdadeira", as propriedades de tela permanecerão após a Sessão de visitante gerenciada ser encerrada.</translation>
 <translation id="5483012943408894695">Origens ou padrões de nome do host aos quais as restrições sobre origens não seguras não se aplicam</translation>
 <translation id="5483065054530244863">Permitir certificados SHA-1 assinados emitidos pelas âncoras de confiança locais</translation>
+<translation id="5486917900445838803">Se a política for ativada ou deixada sem definição, a aceleração gráfica também será ativada, se disponível.
+
+      Se ela for desativada, a aceleração gráfica também será.</translation>
 <translation id="5487758664517243511">Se esta configuração estiver ativada, os usuários que já ativaram o recurso "Seu smartphone" poderão continuar tarefas no ChromeOS, como visualizar as páginas da Web do smartphone.
 
       Se a configuração estiver desativada, os usuários não vão ter permissão para usar o recurso. Se a política PhoneHubAllowed estiver desativada, os usuários também não terão permissão para usar o recurso.
@@ -6678,6 +6693,7 @@ resolução de localização baseada no <ph name="IP" />.</translation>
 Desativar a política ou deixá-la sem definição faz com que a pesquisa CNAME determine o nome canônico do servidor ao gerar o SPN do Kerberos.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">Realizar as verificações do "Navegação segura" em todos os arquivos transferidos por download</translation>
+<translation id="6426899507714989471">Desativar aceleração gráfica</translation>
 <translation id="6433697627431665375">Evitar que os dados do <ph name="PRODUCT_NAME" /> sejam incluídos em backups</translation>
 <translation id="6436052172226685535">Comportamento padrão para LBS.</translation>
 <translation id="6438472072089952201">O <ph name="PRODUCT_NAME" /> tenta fazer upgrade de algumas
@@ -8898,6 +8914,17 @@ Esta política é válida para o modo de navegação anônima. Isso significa qu
 <translation id="822055204938220476">Lista de URLs que têm permissão para continuar no modo de tela cheia sem mostrar uma notificação</translation>
 <translation id="8225579382697740712">Controlar o uso da API WebHID</translation>
 <translation id="8229912067600517877">Ativar as Ferramentas para desenvolvedores</translation>
+<translation id="8234565689501421293">A criação de temas com IA permite que os usuários criem temas/planos de fundo personalizados pré-selecionando em uma lista de opções.
+
+0 = ativa o recurso para usuários e envia dados relevantes ao Google para treinar ou melhorar os modelos de IA. Os dados relevantes podem incluir comandos, entradas, saídas e materiais de origem, dependendo do recurso. Eles podem ser analisados por humanos com o único propósito de melhorar os modelos de IA.
+
+O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+1 = ativa o recurso para os usuários, mas não envia dados ao Google para treinar ou melhorar os modelos de IA. "1" é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+2 = desativa o recurso. "2" é o valor padrão para contas do Education gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8238421250255592181">Uma sinalização booleana indicando se o teclado na tela pode oferecer preenchimento automático.</translation>
 <translation id="8239109177194627162">Desativar o preenchimento automático de cartões de crédito</translation>
 <translation id="8239143983379015783">Forçar a ativação da cota persistente</translation>
@@ -9646,9 +9673,6 @@ serão permitidas. Os hashes parciais dos URLs serão enviados diretamente para 
 muito menor, o que vai prejudicar a proteção.</translation>
 <translation id="8858642179038618439">Forçar modo de segurança do YouTube</translation>
 <translation id="8860342862142842017">Desativar a aplicação da Transparência dos certificados para uma lista de hashes subjectPublicKeyInfo</translation>
-<translation id="8860474826929590628">Se a política for ativada ou deixada sem definição, o <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> terá permissão para aparecer em todas as páginas da Web.
-
-Se ela for desativada, o <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> não vai estar disponível em nenhuma página da Web.</translation>
 <translation id="8860894781631833477">Os usuários podem configurar o canal de lançamento do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8862086508140571198">Esta política permite configurar uma lista de Conteúdos transferidos por download para download o mais rápido possível. Depois do download, o conteúdo fica disponível para todos os usuários no dispositivo.
 
@@ -10081,6 +10105,7 @@ Se a política for ativada ou deixada sem definição, as pesquisas no produto p
 Quando ela estiver desativada, as pesquisas no produto não vão ser mostradas aos usuários.
 
 A política não terá efeito se a <ph name="METRICS_REPORTING_ENABLED_POLICY_NAME" /> for desativada, o que também desativa as pesquisas no produto.</translation>
+<translation id="9173633148008709976">Ativar aceleração gráfica</translation>
 <translation id="9180108183162961002">Permitir logins em navegação como visitante</translation>
 <translation id="9185963199234034321">Ativar o alto contraste na tela de login e permitir que o usuário o desative temporariamente</translation>
 <translation id="9187743794267626640">Desativa a montagem de armazenamento externo</translation>
@@ -10125,6 +10150,17 @@ O padrão é RollbackDisabled.</translation>
 <translation id="943865157632139008">Permite configurar o renderizador padrão de HTML quando o <ph name="PRODUCT_FRAME_NAME" /> estiver instalado.
 A configuração padrão é permitir que o navegador do host faça a renderização, mas você pode modificá-la, se quiser, e fazer com que o <ph name="PRODUCT_FRAME_NAME" /> renderize páginas HTML por padrão.</translation>
 <translation id="944817693306670849">Definir o tamanho do disco de cache</translation>
+<translation id="946458935955389273">O organizador de guias é uma ferramenta baseada em IA que cria automaticamente grupos de guias com base nas guias abertas do usuário. As sugestões são baseadas nas guias abertas, mas não no conteúdo da página.
+
+0 = ativa o recurso para usuários e envia dados relevantes ao Google para treinar ou melhorar os modelos de IA. Os dados relevantes podem incluir comandos, entradas, saídas e materiais de origem, dependendo do recurso. Eles podem ser analisados por humanos com o único propósito de melhorar os modelos de IA.
+
+O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+1 = ativa o recurso para os usuários, mas não envia dados ao Google para treinar ou melhorar os modelos de IA. "1" é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+2 = desativa o recurso. "2" é o valor padrão para contas do Education gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="957322141096206402">A resolução de DNS pode ser executada dentro ou fora do processo de rede, dependendo da configuração do sistema e das flags de recursos.</translation>
 <translation id="957778406002650056">O URL no qual o download da imagem do <ph name="PLUGIN_VM_NAME" /> pode ser feito.</translation>
 <translation id="957920984193041197">Permitir que as páginas mostrem pop-ups durante o descarregamento</translation>

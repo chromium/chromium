@@ -100,7 +100,6 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 
 Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chromium-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Öppna Chromium från valfri app</translation>
-<translation id="4002314982058020967">Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du kontots Chromium-data<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Säkerhetskontrollen öppnas och körs i Chromium.</translation>
 <translation id="4043291146360695975">Lösenorden sparas med Lösenordshantering endast på den här enheten.</translation>
 <translation id="4099085513035183040">Stöds inte på Chromium Beta</translation>
@@ -113,7 +112,6 @@ Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chro
 <translation id="4408912345039114853">Kör en säkerhetskontroll i Chromium</translation>
 <translation id="4432744876818348753">Logga in så att du får ut mesta möjliga av Chromium.</translation>
 <translation id="4445228361214254027">Din organisation har inaktiverat möjligheten att använda och spara Chromium-data i ditt Google-konto. Nya bokmärken, lösenord med mera sparas endast på den här enheten.</translation>
-<translation id="4485517920713468480">Chromium identifierar spårningsnummer på webbplatser du besöker och visar uppdateringar om försändelser på sidan Ny flik. Din data delas med Google för att tillhandahålla den här funktionen och förbättra Shopping för alla. Du kan ändra detta i <ph name="BEGIN_LINK" />inställningarna för spårning av försändelser<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Lägger till de angivna webbadresserna i läslistan i Chromium.</translation>
 <translation id="452436063477828504">Se till att du alltid kan använda Chromium-data i Google-kontot</translation>
 <translation id="4555020257205549924">När den här funktionen har aktiverats visas alternativet i Chromium att översätta sidor som är skrivna på andra språk med hjälp av Google Översätt. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>

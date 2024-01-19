@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="1066101356081285416">Chrome na navštívených webech rozpozná čísla zásilek a bude vám na stránce Nová karta zobrazovat aktuální informace o zásilkách. Sledovací číslo zásilky a název webu se odešlou do Googlu, aby bylo možné tuto funkci poskytovat a zlepšovat funkce Google k nakupování pro všechny. Toto nastavení můžete kdykoli změnit v <ph name="BEGIN_LINK" />Nastavení sledování zásilek<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Používejte Chrome ve výchozím nastavení</translation>
 <translation id="1105362920864247682">Vymazat údaje o prohlížení v Chromu.</translation>
 <translation id="1113057722807951993">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy z Google Pay.
@@ -46,7 +47,6 @@ Co je třeba zvážit:
 <translation id="1917964099031477364">Tento účet a všechna neuložená data budou z Chromu a z ostatních aplikací v tomto zařízení odstraněny.</translation>
 <translation id="1965935827552890526">Dokončete akci, kterou jste prováděli v jiném otevřeném okně Chromu.</translation>
 <translation id="1987779152850321833">Pokud Chrome chcete využít na maximum, proveďte níže uvedené navrhované akce.</translation>
-<translation id="2008357574463816229">Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">S Google Chrome toho stihnete víc – je jednoduchý, bezpečný a rychlejší než kdy dřív.</translation>
 <translation id="2120238739383482109">Otevře záložky prohlížeče Chrome.</translation>
 <translation id="2147651015520127414">Chrome ověřil, že certifikát tohoto webu byl vydán vydavatelem <ph name="ISSUER" />.</translation>
@@ -203,7 +203,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="686691656039982452">Můžete <ph name="BEGIN_LINK" />spravovat, která data prohlížeče Chrome se ukládají<ph name="END_LINK" /> do účtu Google.
 
 Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chrome najdete v sekci <ph name="BEGIN_LINK" />Služby Google<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome na navštívených webech rozpozná čísla zásilek a bude vám na stránce Nová karta zobrazovat aktuální informace o zásilkách. Vaše data budou sdílena se společností Google za účelem poskytování této funkce a zlepšování Nákupů pro všechny. Můžete to změnit v <ph name="BEGIN_LINK" />Nastavení sledování zásilek<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Vyhledávat hlasem v prohlížeči Chrome</translation>
 <translation id="6964931465519938134">Nyní můžete Chrome použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích.</translation>
 <translation id="6975725306479268850">Vyberte Chrome pro automatické vyplňování</translation>

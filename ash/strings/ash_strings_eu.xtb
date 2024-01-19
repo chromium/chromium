@@ -267,7 +267,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2064048859448024834">Kameraren aurrebista aktibatuta dago</translation>
 <translation id="2067602449040652523">Teklatuaren distira</translation>
 <translation id="2075520525463668108">Aldatu <ph name="CAPTURE_MEDIUM" /> eginbidearen egoera. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Hurrengo lan-eremura joateko, pasatu lau hatz eskuinera</translation>
 <translation id="2079545284768500474">Desegin</translation>
 <translation id="2083190527011054446">Gabon, <ph name="GIVEN_NAME" />:</translation>
 <translation id="2086334242442703436">Ireki emoji-hautatzailea</translation>
@@ -283,7 +282,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2149229036084364364">Joan aurreko pistara</translation>
 <translation id="2152895518047545149">Ez duzu egitekorik. Bikain!</translation>
 <translation id="2161132820593978283">Probatu kamerako markoa beti pantailaren erdian egon zaitezen bideodeietan. Aktiba ezazu ezarpen bizkorretan.</translation>
-<translation id="2170530631236737939">Pasatu hiru hatz behera ikuspegi orokorretik irteteko</translation>
 <translation id="2185166372312820725">Joan aurreko fitxara</translation>
 <translation id="2185444992308415167">Mugitu lehenengo zortzi fitxen artean</translation>
 <translation id="2198625180564913276">Profila gehitzen. Agian minutu batzuk beharko dira.</translation>
@@ -1695,7 +1693,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7850320739366109486">Ez molestatu</translation>
 <translation id="7851039877802112575">Fokuratu leiho gainerakorrak eta arruntak</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Pasatu hiru hatz gora ikuspegi orokorrean sartzeko</translation>
 <translation id="7862292329216937261">Gailua gonbidatu gisa erabiltzeko, saioa amaitu behar duzu. Jarraian, hautatu Arakatu gonbidatu gisa aukera pantailaren behealdean.</translation>
 <translation id="7866482334467279021">aktibatuta</translation>
 <translation id="7872786842639831132">Desaktibatuta</translation>
@@ -1806,7 +1803,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8262312463845990408">Erreproduzitu/Pausatu</translation>
 <translation id="8270450402312105425">{0,plural, =1{Itzuli gailuaren aurreko bertsiora ordubete barru}other{Itzuli gailuaren aurreko bertsiora # ordu barru}}</translation>
 <translation id="8277261673056602147">Nabarmendu pantailako testua</translation>
-<translation id="8284362522226889623">Aurreko lan-eremura itzultzeko, pasatu lau hatz ezkerrera</translation>
 <translation id="828708037801473432">Desaktibatuta</translation>
 <translation id="8297006494302853456">Ahula</translation>
 <translation id="8308637677604853869">Aurreko menua</translation>

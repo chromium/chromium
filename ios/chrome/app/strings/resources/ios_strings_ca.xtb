@@ -291,6 +291,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2547458583188611426">La sincronització no funciona. Per iniciar la sincronització, introdueix la frase de contrasenya.</translation>
 <translation id="2551153019974022505">Error del compte</translation>
 <translation id="2556092377360758201">Sense protecció (opció no recomanada)</translation>
+<translation id="2561375093019333908">OBRE</translation>
 <translation id="2562041823070056534">S'està enviant a <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Utilitza i desa contrasenyes al teu Compte de Google</translation>
 <translation id="2577522251608256362">Veïnat</translation>
@@ -383,7 +384,6 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2952278131021475699">Cerca amb la càmera de Lens</translation>
 <translation id="2956733177489514605">Inicia la sessió amb el teu Compte de Google per sincronitzar les contrasenyes i altres elements.</translation>
 <translation id="2958718410589002129">Contrasenyes</translation>
-<translation id="2961210776189273067">Títol</translation>
 <translation id="2964349545761222050">Bloqueja les galetes de tercers</translation>
 <translation id="2969979262385602596">No s'ha pogut iniciar la sessió. Torneu-ho a provar més tard.</translation>
 <translation id="2975121486251958312">Només està disponible el mode d'incògnit</translation>
@@ -849,6 +849,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5513681519188741830">Fa <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Crea una frase de contrasenya</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} contrasenya poc segura}other{{COUNT} contrasenyes poc segures}}</translation>
+<translation id="5532545557415295622">Quadre de diàleg del temps d'espera d'inactivitat</translation>
 <translation id="5542540507657872337">Se n'han trobat <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff us permet començar a navegar per un lloc web en aquest dispositiu i després continuar fàcilment al dispositiu Mac. El lloc web obert actualment apareixerà al Dock de Mac.
 
@@ -925,6 +926,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5922999516621365983">Arrossega la pestanya aquí per fixar-la.</translation>
 <translation id="5938160824633642847">El dispositiu està gairebé ple. Allibera espai i torna-ho a provar.</translation>
 <translation id="5948291296578561264">Et permet desar fotos a la biblioteca de fotos.</translation>
+<translation id="5954562874938077107">Ves a Lens</translation>
 <translation id="5955891643922670672">Se n'està mostrant la versió sense connexió</translation>
 <translation id="5957613098218939406">Més opcions</translation>
 <translation id="595769230373966252">Cerca amb <ph name="SEARCH_PROVIDER" /></translation>
@@ -1288,6 +1290,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7781829728241885113">Ahir</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Al cap d'1 dia}other{Al cap de {COUNT} dies}}</translation>
 <translation id="7791543448312431591">Afegeix</translation>
+<translation id="7792549458069452436">OBTÉN L'APLICACIÓ</translation>
 <translation id="7807060072011926525">Proporcionat per Google</translation>
 <translation id="7812377703891978671">Pots accedir a tot l'historial de navegació seleccionant <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Baixades</translation>

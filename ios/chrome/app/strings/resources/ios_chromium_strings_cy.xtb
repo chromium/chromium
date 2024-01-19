@@ -100,7 +100,6 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chromium, ewch i <ph
 
 I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chromium yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Agor Chromium o Unrhyw Ap</translation>
-<translation id="4002314982058020967">Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chromium yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Yn Agor a Rhedeg Gwiriad Diogelwch yn Chromium.</translation>
 <translation id="4043291146360695975">Mae cyfrineiriau'n cael eu cadw i'r Rheolwr Cyfrineiriau ar y ddyfais hon yn unig.</translation>
 <translation id="4099085513035183040">Ni chefnogir ar Feta Chromium</translation>
@@ -113,7 +112,6 @@ Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd. Rhowch ef i ddefnyddio a c
 <translation id="4408912345039114853">Rhedeg Gwiriad Diogelwch Chromium</translation>
 <translation id="4432744876818348753">Mewngofnodwch i gael y gorau o Chromium.</translation>
 <translation id="4445228361214254027">Diffoddodd eich sefydliad y gallu i ddefnyddio a chadw data Chromium yn eich Cyfrif Google. Dim ond i'r ddyfais hon y bydd nodau tudalen, cyfrineiriau a rhagor sy'n newydd yn cael eu cadw.</translation>
-<translation id="4485517920713468480">Bydd Chromium yn canfod rhifau olrhain ar wefannau rydych chi'n ymweld â nhw ac yn dangos diweddariadau pecyn ar y dudalen Tab Newydd. Bydd eich data yn cael eu rhannu gyda Google i ddarparu'r nodwedd hon ac i wella Siopa i bawb. Gallwch newid hwn yn y <ph name="BEGIN_LINK" />Gosodiadau Olrhain Pecynnau<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Yn ychwanegu'r cyfeiriadau URL sydd wedi'u mewnbynnu at eich rhestr ddarllen yn Chromium.</translation>
 <translation id="452436063477828504">Gwnewch yn siŵr y gallwch chi bob amser ddefnyddio'r data Chromium yn eich Cyfrif Google</translation>
 <translation id="4555020257205549924">Pan fydd y nodwedd hon yn cael ei droi ymlaen, bydd Chromium yn cynnig cyfieithu tudalennau sydd wedi'u hysgrifennu mewn ieithoedd eraill gan ddefnyddio Google Translate. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>

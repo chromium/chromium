@@ -291,6 +291,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2547458583188611426">A sincronização não está funcionando. Para iniciar a sincronização, digite a senha longa.</translation>
 <translation id="2551153019974022505">Erro na conta</translation>
 <translation id="2556092377360758201">Sem proteção (não recomendado)</translation>
+<translation id="2561375093019333908">ABRIR</translation>
 <translation id="2562041823070056534">Enviando para <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">Usar e salvar senhas na Conta do Google</translation>
 <translation id="2577522251608256362">Bairro</translation>
@@ -383,7 +384,6 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2952278131021475699">Pesquisa com a câmera do Lens</translation>
 <translation id="2956733177489514605">Faça login com sua Conta do Google para sincronizar suas senhas e muito mais.</translation>
 <translation id="2958718410589002129">Senhas</translation>
-<translation id="2961210776189273067">Título</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
 <translation id="2969979262385602596">Falha durante o login. Tente novamente mais tarde.</translation>
 <translation id="2975121486251958312">Apenas o modo de navegação anônima está disponível</translation>
@@ -849,6 +849,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5513681519188741830"><ph name="TIME" />h atrás</translation>
 <translation id="5525269841082836315">Criar senha</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} senha fraca}one{{COUNT} senha fraca}other{{COUNT} senhas fracas}}</translation>
+<translation id="5532545557415295622">Caixa de diálogo de tempo limite de inatividade</translation>
 <translation id="5542540507657872337">Encontradas: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">A "Transição" permite que você comece a navegar por um website neste dispositivo e, em seguida, continue facilmente no seu Mac. O website aberto aparecerá no Dock do Mac.
 
@@ -1289,6 +1290,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Após 1 dia}one{Após {COUNT} dia}other{Após {COUNT} dias}}</translation>
 <translation id="7791543448312431591">Adicionar</translation>
+<translation id="7792549458069452436">INSTALAR O APP</translation>
 <translation id="7807060072011926525">Fornecido pelo Google</translation>
 <translation id="7812377703891978671">Você pode acessar todo seu histórico de navegação selecionando <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Downloads</translation>

@@ -100,7 +100,6 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 
 Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Abrir o Chromium por qualquer app</translation>
-<translation id="4002314982058020967">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Abre e realiza a Confirmação de segurança no Chromium.</translation>
 <translation id="4043291146360695975">As senhas são salvas no Gerenciador de senhas somente neste dispositivo.</translation>
 <translation id="4099085513035183040">Indisponível no Chromium Beta</translation>
@@ -113,7 +112,6 @@ Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os
 <translation id="4408912345039114853">Realizar a Confirmação de segurança do Chromium</translation>
 <translation id="4432744876818348753">Faça login para aproveitar o Chromium ao máximo.</translation>
 <translation id="4445228361214254027">Sua organização desativou a capacidade de usar e salvar dados do Chromium na Conta do Google. Novos favoritos, senhas e outros itens serão salvos apenas neste dispositivo.</translation>
-<translation id="4485517920713468480">O Chromium vai detectar números de rastreamento nos sites que você visitar e mostrar atualizações de pacotes na página "Nova guia". Seus dados serão compartilhados com o Google para fornecer este recurso e melhorar o Shopping para todos. É possível mudar isso nas <ph name="BEGIN_LINK" />Configurações de rastreamento de pacote<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Adiciona os URLs inseridos à sua Lista de leitura no Chromium.</translation>
 <translation id="452436063477828504">Garanta que você sempre possa usar os dados do Chromium na sua Conta do Google</translation>
 <translation id="4555020257205549924">Quando este recurso está ativado, o Chromium oferece a tradução de páginas escritas em outros idiomas usando o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>

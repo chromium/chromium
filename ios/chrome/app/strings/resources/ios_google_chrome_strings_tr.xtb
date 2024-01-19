@@ -46,7 +46,6 @@ Dikkate alınması gereken noktalar:
 <translation id="1917964099031477364">Bu hesap ve kaydedilmemiş tüm veriler, Chrome'un yanı sıra bu cihazdaki diğer Google uygulamalarından kaldırılacak.</translation>
 <translation id="1965935827552890526">Açık olan diğer Chrome pencerenizde yaptığınız işlemi tamamlayın.</translation>
 <translation id="1987779152850321833">Chrome'dan en iyi şekilde yararlanmak için aşağıdaki önerilen işlemleri tamamlayın.</translation>
-<translation id="2008357574463816229">Parolanızı unutursanız veya bu ayarı değiştirmek isterseniz <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Basit, güvenli ve her zamankinden daha hızlı Google Chrome ile daha fazlasını yapın.</translation>
 <translation id="2120238739383482109">Chrome yer işaretlerini açar.</translation>
 <translation id="2147651015520127414">Chrome, bu web sitesi sertifikasının <ph name="ISSUER" /> tarafından yayınlandığını doğruladı.</translation>
@@ -203,7 +202,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="686691656039982452">Google Hesabınıza <ph name="BEGIN_LINK" />hangi Chrome verilerinin kaydedileceğini yönetebilirsiniz<ph name="END_LINK" />.
 
 Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" />'ne gidin.</translation>
-<translation id="687586529977635009">Chrome, ziyaret ettiğiniz sitelerdeki takip numaralarını algılar ve kargoyla ilgili güncellemeleri Yeni Sekme sayfasında gösterir. Verileriniz, bu özelliği sunmak ve Alışveriş'i herkes için iyileştirmek üzere Google ile paylaşılır. Bunu <ph name="BEGIN_LINK" />Kargo Takibi Ayarları<ph name="END_LINK" />'ndan değiştirebilirsiniz.</translation>
 <translation id="6916015246697034114">Chrome'da Sesle Arama Yap</translation>
 <translation id="6964931465519938134">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chrome'u kullanabilirsiniz.</translation>
 <translation id="6975725306479268850">Otomatik doldurma için Chrome'u seçin</translation>

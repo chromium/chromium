@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1066101356081285416">Chrome herkent trackingcodes op sites die je bezoekt en toont pakketupdates op de pagina Nieuw tabblad. Het nummer voor pakkettracking en de naam van de website worden naar Google gestuurd om deze functie te bieden en de Shopping-functies voor iedereen te verbeteren. Je kunt dit altijd updaten in de <ph name="BEGIN_LINK" />instellingen voor Verzendstatus bijhouden<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Chrome standaard gebruiken</translation>
 <translation id="1105362920864247682">Wis browsegegevens in Chrome.</translation>
 <translation id="1113057722807951993">Betaalmethoden en adressen van Google Pay vallen niet onder versleuteling met een wachtwoordzin.
@@ -46,7 +47,6 @@ Aandachtspunten:
 <translation id="1917964099031477364">Dit account en niet-opgeslagen gegevens worden verwijderd uit Chrome en andere Google-apps op dit apparaat.</translation>
 <translation id="1965935827552890526">Maak af wat je aan het doen was in het andere geopende Chrome-venster.</translation>
 <translation id="1987779152850321833">Voer de voorgestelde acties hieronder uit om het maximale uit Chrome te halen.</translation>
-<translation id="2008357574463816229">Als je je wachtwoordzin vergeet of een andere instelling wilt, <ph name="BEGIN_LINK" />wis je Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Krijg meer gedaan met Google Chrome. Nu nog makkelijker, veiliger en sneller dan ooit.</translation>
 <translation id="2120238739383482109">Opent de Chrome-bookmarks.</translation>
 <translation id="2147651015520127414">Chrome heeft geverifieerd dat <ph name="ISSUER" /> het certificaat voor deze website heeft verstrekt.</translation>
@@ -203,7 +203,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="686691656039982452">Je kunt <ph name="BEGIN_LINK" />beheren welke Chrome-gegevens worden opgeslagen<ph name="END_LINK" /> in je Google-account.
 
 Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer instellingen die gegevens gebruiken om je Chrome-functionaliteit te verbeteren.</translation>
-<translation id="687586529977635009">Chrome spoort trackingcodes op op sites die je bezoekt en toont pakketupdates op de pagina Nieuw tabblad. Je gegevens worden gedeeld met Google om deze functie te kunnen bieden en Shopping voor iedereen te verbeteren. Je kunt dit wijzigen in de <ph name="BEGIN_LINK" />instellingen voor Verzendstatus bijhouden<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Zoeken met je stem in Chrome</translation>
 <translation id="6964931465519938134">Je kunt Chrome nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="6975725306479268850">Chrome kiezen voor automatisch invullen</translation>

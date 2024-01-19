@@ -100,7 +100,6 @@
 
 لتغيير هذه الإعدادات، يُرجى <ph name="BEGIN_LINK" />محو بيانات Chromium في حسابك<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">‏فتح Chromium من أي تطبيق</translation>
-<translation id="4002314982058020967">‏في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />محو بيانات Chromium في حسابك<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">‏يؤدي هذا الاختصار إلى فتح صفحة "التحقّق من الأمان" وإجرائه في Chromium.</translation>
 <translation id="4043291146360695975">يتم حفظ كلمات المرور في "مدير كلمات المرور" على هذا الجهاز فقط.</translation>
 <translation id="4099085513035183040">‏غير متاح على الإصدار التجريبي من Chromium</translation>
@@ -113,7 +112,6 @@
 <translation id="4408912345039114853">‏إجراء "التحقّق من الأمان" في Chromium</translation>
 <translation id="4432744876818348753">‏يمكنك تسجيل الدخول للاستفادة إلى أقصى حدّ من Chromium</translation>
 <translation id="4445228361214254027">‏أوقفت مؤسستك إمكانية استخدام وحفظ بيانات Chromium في حسابك على Google. سيتم حفظ كلمات المرور والإشارات المرجعية الجديدة وغيرها على هذا الجهاز فقط.</translation>
-<translation id="4485517920713468480">‏سيرصد Chromium أرقام التتبُّع على المواقع الإلكترونية التي تزورها ويعرض لك إشعارات بشأن الطرود في صفحة "علامة تبويب جديدة". وستتم مشاركة بياناتك مع Google لتوفير هذه الميزة وتحسين خدمة Shopping للجميع. ويمكنك تغيير ذلك في <ph name="BEGIN_LINK" />إعدادات تتبُّع الطرود<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">‏يُضيف هذا الاختصار عناوين URL التي تم إدخالها إلى "قائمة القراءة" في Chromium.</translation>
 <translation id="452436063477828504">‏يُرجى التأكُّد من أنّه يمكنك استخدام بيانات Chromium في حسابك على Google في أي وقت.</translation>
 <translation id="4555020257205549924">‏عند تفعيل هذه الميزة، سيقترح Chromium ترجمة الصفحات المكتوبة بلغات أخرى باستخدام "ترجمة Google". <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>

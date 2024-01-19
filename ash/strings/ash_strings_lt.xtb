@@ -267,7 +267,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2064048859448024834">Fotoaparato peržiūra įjungta</translation>
 <translation id="2067602449040652523">Klaviatūros šviesumas</translation>
 <translation id="2075520525463668108">Perjungti „<ph name="CAPTURE_MEDIUM" />“. „<ph name="CAPTURE_MEDIUM" />“ būsena: <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Perbraukite į dešinę keturiais pirštais, kad perjungtumėte į kitą darbalaukį</translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
 <translation id="2083190527011054446">Labanakt, <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Atidaryti jaustukų rinkiklį</translation>
@@ -283,7 +282,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2149229036084364364">Eiti į ankstesnį takelį</translation>
 <translation id="2152895518047545149">Atrodo, kad nieko netrūksta. Gerai padirbėta!</translation>
 <translation id="2161132820593978283">Pabandykite naudoti fotoaparato kadravimo funkciją, kad būtumėte vaizdo skambučių ekrano centre. Įjunkite šią funkciją sparčiuosiuose nustatymuose.</translation>
-<translation id="2170530631236737939">Perbraukite žemyn trimis pirštais, kad išeitumėte iš „Apžvalgos“ skilties</translation>
 <translation id="2185166372312820725">Eiti į ankstesnį skirtuką</translation>
 <translation id="2185444992308415167">Peržiūrėti pirmą–aštuntą skirtukus</translation>
 <translation id="2198625180564913276">Pridedamas profilis. Tai gali užtrukti kelias minutes.</translation>
@@ -1694,7 +1692,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7850320739366109486">Netrukdyti</translation>
 <translation id="7851039877802112575">Paryškinti iššokančiuosius ir dialogo langus</translation>
 <translation id="7851768487828137624">Kanarų</translation>
-<translation id="7860671499921112077">Perbraukite aukštyn trimis pirštais, kad apsilankytumėte „Apžvalgos“ skiltyje</translation>
 <translation id="7862292329216937261">Jei norite naudoti įrenginį kaip svečias, turite atsijungti ir ekrano apačioje pasirinkti „Naršyti kaip svečiui“.</translation>
 <translation id="7866482334467279021">įjungta</translation>
 <translation id="7872786842639831132">Išjungta</translation>
@@ -1805,7 +1802,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8262312463845990408">Perjungti atkūrimą</translation>
 <translation id="8270450402312105425">{0,plural, =1{Grąžinkite ankstesnę įrenginio versiją per valandą}one{Grąžinkite ankstesnę įrenginio versiją per # valandą}few{Grąžinkite ankstesnę įrenginio versiją per # valandas}many{Grąžinkite ankstesnę įrenginio versiją per # valandos}other{Grąžinkite ankstesnę įrenginio versiją per # valandų}}</translation>
 <translation id="8277261673056602147">Teksto paryškinimas ekrane</translation>
-<translation id="8284362522226889623">Perbraukite į kairę keturiais pirštais, kad perjungtumėte į ankstesnį darbalaukį</translation>
 <translation id="828708037801473432">Išjungta</translation>
 <translation id="8297006494302853456">Silpnas</translation>
 <translation id="8308637677604853869">Ankstesnis meniu</translation>

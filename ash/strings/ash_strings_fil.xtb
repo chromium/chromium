@@ -267,7 +267,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2064048859448024834">Naka-on ang preview ng camera</translation>
 <translation id="2067602449040652523">Liwanag ng keyboard</translation>
 <translation id="2075520525463668108">I-toggle ang <ph name="CAPTURE_MEDIUM" />. Ang <ph name="CAPTURE_MEDIUM" /> ay <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Mag-swipe pakanan gamit ang apat na daliri para lumipat sa susunod na desk</translation>
 <translation id="2079545284768500474">I-undo</translation>
 <translation id="2083190527011054446">Magandang gabi <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Buksan ang Picker ng Emoji</translation>
@@ -283,7 +282,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2149229036084364364">Pumunta sa nakaraang track</translation>
 <translation id="2152895518047545149">Mukhang wala namang nawawala. Magaling!</translation>
 <translation id="2161132820593978283">Subukan ang camera framing para mapunta ka sa gitna ng screen sa mga video call. I-on ito sa Mga Mabilisang Setting.</translation>
-<translation id="2170530631236737939">Mag-swipe pababa gamit ang tatlong daliri para lumabas sa Overview</translation>
 <translation id="2185166372312820725">Pumunta sa nakaraang tab</translation>
 <translation id="2185444992308415167">Tingnan ang tab 1 hanggang 8</translation>
 <translation id="2198625180564913276">Idinaragdag ang profile. Puwede itong tumagal nang ilang minuto.</translation>
@@ -1693,7 +1691,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7850320739366109486">Huwag Istorbohin</translation>
 <translation id="7851039877802112575">Ilipat ang focus sa mga pop-up at dialog</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Mag-swipe pataas gamit ang tatlong daliri para makapasok sa Overview</translation>
 <translation id="7862292329216937261">Para gamitin ang device bilang bisita, kailangan mong mag-sign out at pagkatapos ay piliin ang Mag-browse bilang Bisita sa ibaba ng screen.</translation>
 <translation id="7866482334467279021">naka-on</translation>
 <translation id="7872786842639831132">Naka-off</translation>
@@ -1804,7 +1801,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8262312463845990408">I-toggle ang pag-playback</translation>
 <translation id="8270450402312105425">{0,plural, =1{Ibalik sa nakaraang bersyon ang device sa loob ng isang oras}one{Ibalik sa nakaraang bersyon ang device sa loob ng # oras}other{Ibalik sa nakaraang bersyon ang device sa loob ng # na oras}}</translation>
 <translation id="8277261673056602147">I-highlight ang text sa iyong screen</translation>
-<translation id="8284362522226889623">Mag-swipe pakaliwa gamit ang apat na daliri para lumipat sa nakaraang desk</translation>
 <translation id="828708037801473432">Naka-off</translation>
 <translation id="8297006494302853456">Mahina</translation>
 <translation id="8308637677604853869">Nakaraang menu</translation>

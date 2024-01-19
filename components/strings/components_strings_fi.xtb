@@ -1179,7 +1179,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="33073482541490531">Juuri käyttämäsi salasana on löytynyt tietosuojaloukkauksesta. Salasanat suosittelee, että vaihdat sen heti.</translation>
 <translation id="3307649904964670439">Muokkaa Chromea ‑painike, aktivoi muokataksesi selaimen ulkoasua</translation>
 <translation id="3308006649705061278">Organisaatioyksikkö (OU)</translation>
-<translation id="3324223664999044166">Vähintään kolme sanaa, jotka tiivistävät ajatuksesi</translation>
 <translation id="3324687287337751929">4 x 6 tuumaa</translation>
 <translation id="3324983252691184275">Karmiininpunainen</translation>
 <translation id="3325027355611702542">Asuntovaunut ja matkailuautot</translation>
@@ -1421,7 +1420,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3748009735914587286">Metalli (erittäin kiiltävä)</translation>
 <translation id="3748148204939282805">Sivustolle <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> hyökännyt taho voi yrittää huijata sinua tekemään jotain vaarallista, kuten asentamaan ohjelmia tai paljastamaan henkilötietojasi (esimerkiksi salasanoja, puhelinnumeroita tai luottokorttitietoja). <ph name="BEGIN_LEARN_MORE_LINK" />Lisätietoja<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Lentokoneteollisuus</translation>
-<translation id="3751020515020988516">Pyyntöäsi ei ymmärretty. Kokeile toista pyyntöä.</translation>
 <translation id="3752543821772132562">Ohitettu, koska <ph name="POLICY_NAME" /> on määrittämättä.</translation>
 <translation id="3754210790023674521">Sulje kuva kuvassa ‑tila</translation>
 <translation id="3759461132968374835">Ei viimeaikaisia kaatumisilmoituksia. Jos selain kaatui kaatumisilmoitusten ollessa pois käytöstä, ilmoituksia ei näytetä täällä.</translation>
@@ -2854,7 +2852,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6645291930348198241">päästä evästeisiin ja sivustodataan.</translation>
 <translation id="6645478838938543427">Hinnanlaskuilmoitukset lähetetään osoitteeseen <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Ei mitään}=1{1 sivustolta (sinua ei kirjata ulos Google-tililtäsi)}other{# sivustolta (sinua ei kirjata ulos Google-tililtäsi)}}</translation>
 <translation id="6648459603387803038">Järjestelmänvalvoja voi muuttaa selaimen määrityksiä etäyhteydellä. Toimintaa tällä laitteella saatetaan ylläpitää myös Chromen ulkopuolelta.</translation>
 <translation id="6648524591329069940">Serif-fontti</translation>
 <translation id="6649510485211003056">195 x 270 mm</translation>
@@ -3232,7 +3229,6 @@ Lisätietoja:
 <translation id="7378877318020334501">Komediasarjat</translation>
 <translation id="7380398842872229465">10 x 15 tuumaa</translation>
 <translation id="738439098860678026">Varhaisopetus</translation>
-<translation id="7388071710882496863">pyynnöt, kuten "kirjoita 5 tähden arvostelu tästä ravintolasta"</translation>
 <translation id="7388594495505979117">{0,plural, =1{Laitteesi käynnistyy uudelleen 1 minuutin kuluttua}other{Laitteesi käynnistyy uudelleen # minuutin kuluttua}}</translation>
 <translation id="7390545607259442187">Vahvista kortti</translation>
 <translation id="7392089738299859607">Päivitä osoite</translation>

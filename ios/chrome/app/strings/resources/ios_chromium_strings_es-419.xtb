@@ -100,7 +100,6 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 
 Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Abre Chromium desde cualquier app</translation>
-<translation id="4002314982058020967">Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Abre y ejecuta la Verificación de seguridad en Chromium.</translation>
 <translation id="4043291146360695975">Las contraseñas se guardan en el Administrador de contraseñas solo en este dispositivo.</translation>
 <translation id="4099085513035183040">No es compatible en la versión beta de Chromium</translation>
@@ -113,7 +112,6 @@ Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guard
 <translation id="4408912345039114853">Ejecutar la Verificación de seguridad en Chromium</translation>
 <translation id="4432744876818348753">Para aprovechar Chromium al máximo, accede a tu cuenta.</translation>
 <translation id="4445228361214254027">Tu organización desactivó la función para usar y guardar datos de Chromium en tu Cuenta de Google. Los favoritos, las contraseñas y otros elementos nuevos se guardarán solo en este dispositivo.</translation>
-<translation id="4485517920713468480">Chromium detectará los números de seguimiento en los sitios que visites y te mostrará actualizaciones de paquetes en la página Nueva pestaña. Tus datos se compartirán con Google para proporcionar esta función y mejorar Shopping para todos los usuarios. Puedes cambiar esta opción en la <ph name="BEGIN_LINK" />Configuración de seguimiento de paquetes<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Agrega las URLs ingresadas a tu Lista de lectura en Chromium.</translation>
 <translation id="452436063477828504">Asegúrate de que siempre puedas usar los datos de Chromium en tu Cuenta de Google</translation>
 <translation id="4555020257205549924">Si activas esta función, Chromium te preguntará si deseas usar Google Traductor para traducir páginas en otros idiomas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>

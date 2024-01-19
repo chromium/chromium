@@ -268,7 +268,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2532336938189706096">Affichage Web</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> éléments supprimés</translation>
 <translation id="2536728043171574184">Affichage d’une copie hors ligne de cette page en cours</translation>
-<translation id="2546283357679194313">Témoins et données de site</translation>
+<translation id="2546283357679194313">Témoins et données des sites</translation>
 <translation id="2567385386134582609">IMAGE</translation>
 <translation id="2567545343356994513">Ce mode offre une protection proactive et plus rapide contre les extensions, les sites Web et les téléchargements dangereux</translation>
 <translation id="2569733278091928697">Vous pourrez facilement gérer les commandes multimédias, les sessions de navigation privée, les téléchargements et plus encore</translation>
@@ -352,7 +352,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2946420957526726953">Mise à jour de Chrome pour se connecter à d'autres appareils en cours…</translation>
 <translation id="2951071800649516099">Ajouter des pages à votre liste de lecture pour plus tard</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page non lue}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page non lue}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pages non lues}}</translation>
-<translation id="2961210776189273067">Titre</translation>
 <translation id="296370266220139811">Gagnez du temps, moins d'entrée</translation>
 <translation id="2977350910003566746">Tri par dernière ouverture</translation>
 <translation id="297771753501244313">Trier : dernière ouvert.</translation>
@@ -1126,7 +1125,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="694267552845942083">Vous êtes en train de personnaliser vos paramètres de synchronisation. Pour valider l'activation de la synchronisation, touchez le bouton Confirmer dans le bas de l'écran. Revenir en haut</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6955535239952325894">Ce paramètre est désactivé sur les navigateurs gérés</translation>
-<translation id="6958103823951858863">Ouvrir un PDF automatiquement après le téléchargement</translation>
 <translation id="6963766334940102469">Supprimer des favoris</translation>
 <translation id="696447261358045621">Désactiver le mode de navigation privée</translation>
 <translation id="6965382102122355670">OK</translation>

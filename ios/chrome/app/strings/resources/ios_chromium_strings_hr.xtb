@@ -100,7 +100,6 @@ Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u 
 
 Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromiuma na svom računu<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Otvaranje Chromiuma iz bilo koje aplikacije</translation>
-<translation id="4002314982058020967">Ako zaboravite šifru ili želite promijeniti tu postavku, <ph name="BEGIN_LINK" />izbrišite Chromiumove podatke na računu<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Otvara i pokreće sigurnosnu provjeru u Chromiumu.</translation>
 <translation id="4043291146360695975">Zaporke se spremaju u Upravitelj zaporki samo na ovom uređaju.</translation>
 <translation id="4099085513035183040">Nije podržano u beta verziji Chromiuma</translation>
@@ -113,7 +112,6 @@ Vaši se podaci šifriraju vašom šifrom. Unesite je da biste upotrebljavali i 
 <translation id="4408912345039114853">Pokreni sigurnosnu provjeru u Chromiumu</translation>
 <translation id="4432744876818348753">Prijavite se da biste iskoristili sve prednosti Chromiuma.</translation>
 <translation id="4445228361214254027">Vaša organizacija isključila je mogućnost upotrebe i spremanja Chromiumovih podataka na vaš Google račun. Nove oznake, zaporke i drugi podaci spremat će se samo na ovom uređaju.</translation>
-<translation id="4485517920713468480">Chromium će otkriti evidencijske brojeve na web-lokacijama koje posjećujete i prikazati vam novosti o paketima na novoj kartici preglednika. Vaši će se podaci podijeliti s Googleom radi pružanja te značajke i poboljšanja Shoppinga za sve korisnike. To možete promijeniti u <ph name="BEGIN_LINK" />postavkama praćenja paketa<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Dodaje unesene URL-ove na vaš popis za čitanje u Chromiumu.</translation>
 <translation id="452436063477828504">Provjerite možete li uvijek upotrebljavati podatke iz Chromiuma na svom Google računu</translation>
 <translation id="4555020257205549924">Kada je ta značajka uključena, Chromium će ponuditi prijevod stranica napisanih na drugim jezicima pomoću Google prevoditelja. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>

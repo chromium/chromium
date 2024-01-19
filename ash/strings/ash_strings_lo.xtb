@@ -267,7 +267,6 @@
 <translation id="2064048859448024834">ເປີດຕົວຢ່າງກ້ອງຖ່າຍຮູບແລ້ວ</translation>
 <translation id="2067602449040652523">ຄວາມແຈ້ງຂອງແປ້ນພິມ</translation>
 <translation id="2075520525463668108">ສະຫຼັບ <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> ແມ່ນ <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">ໃຊ້ສີ່ນິ້ວມືປັດໄປຂວາເພື່ອປ່ຽນໄປໃຊ້ໂຕະກ່ອນໜ້າ</translation>
 <translation id="2079545284768500474">ບໍ່ເຮັດ</translation>
 <translation id="2083190527011054446">ຝັນດີ <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ເປີດຕົວເລືອກອີໂມຈິ</translation>
@@ -283,7 +282,6 @@
 <translation id="2149229036084364364">ໄປຫາແທຣັກກ່ອນໜ້າ</translation>
 <translation id="2152895518047545149">ບໍ່ໜ້າຈະມີຫຍັງຂາດຫາຍໄປ. ດີຫຼາຍ!</translation>
 <translation id="2161132820593978283">ລອງໃຊ້ການວາງເຟຣມກ້ອງຖ່າຍຮູບເພື່ອໃຫ້ທ່ານຢູ່ກາງຈໍໃນເວລາໂທວິດີໂອ ເປີດໃຊ້ມັນໃນການຕັ້ງຄ່າດ່ວນ.</translation>
-<translation id="2170530631236737939">ໃຊ້ສາມນິ້ວມືປັດລົງເພື່ອອອກຈາກພາບຮວມ</translation>
 <translation id="2185166372312820725">ໄປຫາແຖບກ່ອນນີ້</translation>
 <translation id="2185444992308415167">ເຂົ້າໄປແຖບ 1 ຫາ 8</translation>
 <translation id="2198625180564913276">ກຳລັງເພີ່ມໂປຣໄຟລ໌. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
@@ -1694,7 +1692,6 @@
 <translation id="7850320739366109486">ຢ່າລົບ​ກວນ</translation>
 <translation id="7851039877802112575">ຍ້າຍໂຟກັສໄປຫາປັອບອັບ ແລະ ກ່ອງໂຕ້ຕອບ</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">ໃຊ້ສາມນິ້ວມືປັດຂຶ້ນເພື່ອເຂົ້າຫາພາບຮວມ</translation>
 <translation id="7862292329216937261">ເພື່ອໃຊ້ອຸປະກອນໃນຖານະແຂກ, ທ່ານຕ້ອງອອກຈາກລະບົບ ແລະ ຈາກນັ້ນເລືອກ ເລືອກເບິ່ງໃນຖານະແຂກ ຢູ່ລຸ່ມສຸດຂອງໜ້າຈໍ.</translation>
 <translation id="7866482334467279021">ເປີດ</translation>
 <translation id="7872786842639831132">ປິດ</translation>
@@ -1805,7 +1802,6 @@
 <translation id="8262312463845990408">ສະຫຼັບການຫຼິ້ນ</translation>
 <translation id="8270450402312105425">{0,plural, =1{ປ່ຽນອຸປະກອນເປັນເວີຊັນກ່ອນໜ້າພາຍໃນໜຶ່ງຊົ່ວໂມງ}other{ປ່ຽນອຸປະກອນເປັນເວີຊັນກ່ອນໜ້າພາຍໃນ # ຊົ່ວໂມງ}}</translation>
 <translation id="8277261673056602147">ໄຮໄລ້ຂໍ້ຄວາມຢູ່ໜ້າຈໍຂອງທ່ານ</translation>
-<translation id="8284362522226889623">ໃຊ້ສີ່ນິ້ວມືປັດໄປຊ້າຍເພື່ອປ່ຽນໄປໃຊ້ໂຕະກ່ອນໜ້າ</translation>
 <translation id="828708037801473432">ປິດ</translation>
 <translation id="8297006494302853456">ອ່ອນ</translation>
 <translation id="8308637677604853869">ເມ​ນູ​ຜ່ານ​ມາ</translation>

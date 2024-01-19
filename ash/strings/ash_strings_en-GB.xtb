@@ -267,7 +267,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2064048859448024834">Camera preview on</translation>
 <translation id="2067602449040652523">Keyboard brightness</translation>
 <translation id="2075520525463668108">Toggle <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Swipe right with four fingers to switch to the next desk</translation>
 <translation id="2079545284768500474">Undo</translation>
 <translation id="2083190527011054446">Good night <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Open emoji picker</translation>
@@ -283,7 +282,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2149229036084364364">Go to previous track</translation>
 <translation id="2152895518047545149">Looks like nothing is missing. Nice work!</translation>
 <translation id="2161132820593978283">Try camera framing so that you’ll be in the centre of the screen on video calls. Turn it on in Quick Settings.</translation>
-<translation id="2170530631236737939">Swipe down with three fingers to exit Overview.</translation>
 <translation id="2185166372312820725">Go to previous tab</translation>
 <translation id="2185444992308415167">Go through tabs 1 to 8</translation>
 <translation id="2198625180564913276">Adding profile. This may take a few minutes.</translation>
@@ -1694,7 +1692,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7850320739366109486">Do not disturb</translation>
 <translation id="7851039877802112575">Move focus to pop-ups and dialogues</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Swipe up with three fingers to enter Overview</translation>
 <translation id="7862292329216937261">To use the device as a guest, you'll need to sign out and then select Browse as guest at the bottom of the screen.</translation>
 <translation id="7866482334467279021">on</translation>
 <translation id="7872786842639831132">Off</translation>
@@ -1805,7 +1802,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8262312463845990408">Toggle -playback</translation>
 <translation id="8270450402312105425">{0,plural, =1{Change device to previous version within an hour}other{Change device to previous version within # hours}}</translation>
 <translation id="8277261673056602147">Highlight text on your screen</translation>
-<translation id="8284362522226889623">Swipe left with four fingers to switch to the previous desk</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Weak</translation>
 <translation id="8308637677604853869">Previous menu</translation>

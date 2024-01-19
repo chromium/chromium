@@ -4,9 +4,12 @@
 <translation id="1173075331199604451">เมนูเสียง</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
 <translation id="1246424317317450637">ตัวหนา</translation>
+<translation id="1586836055630070874">สบายๆ</translation>
+<translation id="1741047078107369903">อบอุ่น</translation>
 <translation id="1921351128855867012">กรอไปข้างหน้า <ph name="NUMBER_OF_SECONDS" /> วินาที</translation>
 <translation id="1984328900355667246">เล่นเสียงไม่ได้</translation>
 <translation id="2224347680315897176">คงที่</translation>
+<translation id="2611765907167846862">เรียบๆ</translation>
 <translation id="3023502830214299618">ขออภัย ไม่สามารถเล่นเสียงสำหรับหน้านี้ได้ในขณะนี้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="3807208219231826020">สครับการเล่น</translation>
 <translation id="385051799172605136">กลับ</translation>
@@ -15,7 +18,9 @@
 <translation id="4431240646217225907">ไฮไลต์ข้อความและการเลื่อนอัตโนมัติ</translation>
 <translation id="4494605076346185630">ระดับเสียงกลาง</translation>
 <translation id="4710974520964166851">สบายๆ</translation>
+<translation id="4773921449011281499">สงบ</translation>
 <translation id="4872475766448853257">ย้อนกลับ <ph name="NUMBER_OF_SECONDS" /> วินาที</translation>
+<translation id="5026371835667036198">สดใส</translation>
 <translation id="5234971936051226002">โปรแกรมเล่น "ฟังหน้านี้" ที่ย่อขนาดอยู่</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
 <translation id="5694491020339060116">เมนูความเร็วในการเล่น</translation>
@@ -26,6 +31,8 @@
 <translation id="6831043979455480757">แปลภาษา</translation>
 <translation id="6846298663435243399">กำลังโหลด…</translation>
 <translation id="6889157801232138307">โปรแกรมเล่น "ฟังหน้านี้"</translation>
+<translation id="7221920857098237570">อ่อนโยน</translation>
+<translation id="7237590978482584900">สดชื่น</translation>
 <translation id="7282547042039404307">ราบรื่น</translation>
 <translation id="7587250070160020374">กําลังเล่น Chrome</translation>
 <translation id="8136852699834914183">การเล่นไม่พร้อมใช้งานสำหรับหน้านี้</translation>

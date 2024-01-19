@@ -46,7 +46,6 @@ Tasub teada
 <translation id="1917964099031477364">See konto ja kõik salvestamata andmed eemaldatakse Chrome'ist ja muudest selles seadmes olevatest Google'i rakendustest.</translation>
 <translation id="1965935827552890526">Lõpetage teises avatud Chrome'i aknas pooleliolev toiming.</translation>
 <translation id="1987779152850321833">Viige lõpule allolevad soovitatavad toimingud, et Chrome'i parimal moel kasutada.</translation>
-<translation id="2008357574463816229">Kui parooli unustate või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i andmed<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Google Chrome on nüüd lihtsam, turvalisem ja kiirem kui kunagi varem ning aitab teil veelgi rohkem toiminguid teha.</translation>
 <translation id="2120238739383482109">Avab Chrome'i järjehoidjad.</translation>
 <translation id="2147651015520127414">Chrome kinnitas, et veebisaidi sertifikaadi väljastas <ph name="ISSUER" />.</translation>
@@ -203,7 +202,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="686691656039982452">Teil on võimalik <ph name="BEGIN_LINK" />hallata, milliseid Chrome'i andmeid salvestatakse<ph name="END_LINK" /> teie Google'i kontole.
 
 Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'i kasutuskogemust, avage <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome tuvastab teie külastatud saitidel jälgimisnumbrid ja kuvab teile saadetise värskendusi uuel vahelehel. Teie andmeid jagatakse Google'iga, et pakkuda seda funktsiooni ja parandada ostlemist kõigi jaoks. Saate seda muuta jaotises <ph name="BEGIN_LINK" />Saadetise jälgimisseaded<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Chrome'is hääle abil otsimine</translation>
 <translation id="6964931465519938134">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="6975725306479268850">Valige automaattäite jaoks Chrome</translation>

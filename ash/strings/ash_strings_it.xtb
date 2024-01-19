@@ -267,7 +267,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2064048859448024834">Anteprima della videocamera attiva</translation>
 <translation id="2067602449040652523">Luminosità della tastiera</translation>
 <translation id="2075520525463668108">Attiva/disattiva <ph name="CAPTURE_MEDIUM" />. La funzionalità <ph name="CAPTURE_MEDIUM" /> è <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Scorri verso destra con quattro dita per passare alla scrivania successiva</translation>
 <translation id="2079545284768500474">Annulla</translation>
 <translation id="2083190527011054446">Buonanotte <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Aprire il selettore di emoji</translation>
@@ -283,7 +282,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2149229036084364364">Vai alla traccia precedente</translation>
 <translation id="2152895518047545149">Sembra che non manchi nulla. Ottimo!</translation>
 <translation id="2161132820593978283">Prova Zoom automatico per essere al centro dello schermo durante le videochiamate. Attiva la funzionalità nelle Impostazioni rapide.</translation>
-<translation id="2170530631236737939">Scorri con tre dita verso il basso per uscire dalla modalità Panoramica</translation>
 <translation id="2185166372312820725">Passa alla scheda precedente</translation>
 <translation id="2185444992308415167">Scorri le schede da 1 a 8</translation>
 <translation id="2198625180564913276">Aggiunta del profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
@@ -1691,7 +1689,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7850320739366109486">Non disturbare</translation>
 <translation id="7851039877802112575">Sposta lo stato attivo su finestre di dialogo e popup</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Scorri con tre dita verso l'alto per attivare la modalità Panoramica</translation>
 <translation id="7862292329216937261">Per utilizzare il dispositivo come ospite, devi uscire e selezionare Naviga come ospite nella parte inferiore della schermata.</translation>
 <translation id="7866482334467279021">on</translation>
 <translation id="7872786842639831132">Off</translation>
@@ -1802,7 +1799,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8262312463845990408">Attiva/disattiva riproduzione</translation>
 <translation id="8270450402312105425">{0,plural, =1{Ripristina la versione precedente del dispositivo entro un'ora}other{Ripristina la versione precedente del dispositivo entro # ore}}</translation>
 <translation id="8277261673056602147">Evidenzia il testo sullo schermo</translation>
-<translation id="8284362522226889623">Scorri verso sinistra con quattro dita per passare alla scrivania precedente</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Debole</translation>
 <translation id="8308637677604853869">Menu precedente</translation>

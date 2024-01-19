@@ -267,7 +267,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2064048859448024834">Ukážka kamery je zapnutá</translation>
 <translation id="2067602449040652523">Jas klávesnice</translation>
 <translation id="2075520525463668108">Prepnúť funkciu <ph name="CAPTURE_MEDIUM" />. Funkcia <ph name="CAPTURE_MEDIUM" /> je <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Na ďalšiu plochu prepnete potiahnutím štyrmi prstami doprava</translation>
 <translation id="2079545284768500474">Späť</translation>
 <translation id="2083190527011054446">Dobrú noc, <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Otvoriť výber emodži</translation>
@@ -283,7 +282,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2149229036084364364">Prechod na predchádzajúcu skladbu</translation>
 <translation id="2152895518047545149">Zdá sa, že nič nechýba. Výborne!</translation>
 <translation id="2161132820593978283">Vyskúšajte centrovanie kamery, aby ste boli počas videohovorov v strede obrazovky. Zapnite ho v rýchlych nastaveniach.</translation>
-<translation id="2170530631236737939">Prehľad ukončíte potiahnutím troma prstami nadol</translation>
 <translation id="2185166372312820725">Prechod na predchádzajúcu kartu</translation>
 <translation id="2185444992308415167">Prechádzanie od 1. po 8. kartu</translation>
 <translation id="2198625180564913276">Pridáva sa profil. Môže to trvať niekoľko minút.</translation>
@@ -1694,7 +1692,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7850320739366109486">Nerušiť</translation>
 <translation id="7851039877802112575">Presunutie označenia na vyskakovacie a dialógové okná</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Prehľad otvoríte potiahnutím troma prstami nahor</translation>
 <translation id="7862292329216937261">Ak chcete zariadenie používať ako hosť, musíte sa odhlásiť a potom dole na obrazovke vybrať Prehliadať ako hosť.</translation>
 <translation id="7866482334467279021">zapnuté</translation>
 <translation id="7872786842639831132">Vypnuté</translation>
@@ -1805,7 +1802,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8262312463845990408">Prepnúť prehrávanie</translation>
 <translation id="8270450402312105425">{0,plural, =1{Do hodiny obnovte v zariadení predchádzajúcu verziu}few{Do # hodín obnovte v zariadení predchádzajúcu verziu}many{Do # hodiny obnovte v zariadení predchádzajúcu verziu}other{Do # hodín obnovte v zariadení predchádzajúcu verziu}}</translation>
 <translation id="8277261673056602147">Zvýrazňovať text na obrazovke</translation>
-<translation id="8284362522226889623">Na predchádzajúcu plochu prepnete potiahnutím štyrmi prstami doľava</translation>
 <translation id="828708037801473432">Vypnuté</translation>
 <translation id="8297006494302853456">Slabé</translation>
 <translation id="8308637677604853869">Predchádzajúca ponuka</translation>

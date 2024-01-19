@@ -383,7 +383,6 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="2952278131021475699">Iskanje s fotoaparatom v Googlu Lens</translation>
 <translation id="2956733177489514605">Prijavite se z računom Google, če želite sinhronizirati gesla in drugo.</translation>
 <translation id="2958718410589002129">Gesla</translation>
-<translation id="2961210776189273067">Naslov</translation>
 <translation id="2964349545761222050">Blokiranje piškotkov drugih spletnih mest</translation>
 <translation id="2969979262385602596">Failed to sign in. Please try again later.</translation>
 <translation id="2975121486251958312">Na voljo je samo anonimni način</translation>
@@ -925,6 +924,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5922999516621365983">Povlecite zavihek sem, če ga želite pripeti.</translation>
 <translation id="5938160824633642847">Shramba naprave je skoraj polna. Sprostite prostor in poskusite znova.</translation>
 <translation id="5948291296578561264">S tem je mogoče shranjevati fotografije v knjižnico fotografij.</translation>
+<translation id="5954562874938077107">Odpri Lens</translation>
 <translation id="5955891643922670672">Ogled različice brez povezave</translation>
 <translation id="5957613098218939406">Več možnosti</translation>
 <translation id="595769230373966252">Iskanje z iskalnikom <ph name="SEARCH_PROVIDER" /></translation>

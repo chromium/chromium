@@ -42,7 +42,7 @@
 <translation id="1779089405699405702">इमेज डीकोडर</translation>
 <translation id="1785415724048343560">बेहतरीन अनुभव पाने के लिए इसे चुनें</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> को एआर (ऑगमेंटेड रिएलिटी) का इस्तेमाल करने देने के लिए, <ph name="BEGIN_LINK" />Android की सेटिंग<ph name="END_LINK" /> में जाकर भी कैमरा चालू करें.</translation>
-<translation id="1887786770086287077">इस डिवाइस के लिए जगह की जानकारी का एक्सेस बंद है. उसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
+<translation id="1887786770086287077">इस डिवाइस के लिए जगह की जानकारी का एक्सेस बंद है. इसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
 <translation id="1915307458270490472">कॉल खत्म करें</translation>
 <translation id="1919950603503897840">संपर्कों को चुनें</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -94,7 +94,7 @@
 <translation id="2501278716633472235">वापस जाएं</translation>
 <translation id="2546283357679194313">कुकी और साइट डेटा</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 कुकी को ब्लॉक किया गया}one{# कुकी को ब्लॉक किया गया}other{# कुकी ब्लॉक किए गए}}</translation>
-<translation id="2570922361219980984">इस डिवाइस के लिए जगह की जानकारी का एक्सेस भी बंद है. उसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
+<translation id="2570922361219980984">इस डिवाइस के लिए जगह की जानकारी का एक्सेस भी बंद है. इसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
 <translation id="257931822824936280">बड़ा किया गया - छोटा करने के लिए क्‍लिक करें.</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2597457036804169544">साइटों पर गहरे रंग वाली थीम लागू न करें</translation>

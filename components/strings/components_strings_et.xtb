@@ -42,6 +42,7 @@
 <translation id="1062407476771304334">Asenda</translation>
 <translation id="1064054731605354900">A3 × 5</translation>
 <translation id="106701514854093668">Töölaua järjehoidjad</translation>
+<translation id="1067029985695494416">Otsingumootori üksikasjad</translation>
 <translation id="1068672505746868501">Ära tõlgi kunagi <ph name="SOURCE_LANGUAGE" /> keeles olevaid lehti</translation>
 <translation id="1070333806075222467">Metall (läikega)</translation>
 <translation id="1070853536588271387">Alternatiivkütusega ja hübriidsõidukid</translation>
@@ -1177,7 +1178,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="33073482541490531">Äsja kasutatud parool leiti andmetega seotud rikkumisest. Paroolihaldur soovitab kohe seda parooli muuta.</translation>
 <translation id="3307649904964670439">Nupp Chrome'i kohandamine, aktiveerige nupp, et kohandada oma brauseri välimust</translation>
 <translation id="3308006649705061278">Organisatsiooniüksus (OU)</translation>
-<translation id="3324223664999044166">kolm või rohkem sõna, mis võtavad teie mõtted kokku;</translation>
 <translation id="3324687287337751929">4 × 6 tolli</translation>
 <translation id="3324983252691184275">Tulipunane</translation>
 <translation id="3325027355611702542">Vagunelamud ja autosuvilad</translation>
@@ -1419,7 +1419,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3748009735914587286">Metall (kõrgläikega)</translation>
 <translation id="3748148204939282805">Saidil <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> asuvad ründajad võivad teid meelitada ohtlikele tegevustele, nagu tarkvara installimine või isiklike andmete (nt paroolid, telefoninumbrid või krediitkaarditeave) avaldamine. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Lennutööstus</translation>
-<translation id="3751020515020988516">Teie päringust ei saadud aru. Proovige mõnda muud päringut.</translation>
 <translation id="3752543821772132562">Eirati, sest reegel <ph name="POLICY_NAME" /> on seadistamata.</translation>
 <translation id="3754210790023674521">Välju režiimist Pilt pildis</translation>
 <translation id="3759461132968374835">Hiljuti teatatud krahhe ei ole. Siin ei ilmu krahhid, mis toimusid siis, kui krahhide aruandlus oli keelatud.</translation>
@@ -2852,7 +2851,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6643016212128521049">Tühjenda</translation>
 <translation id="6645291930348198241">Juurdepääs küpsisefailidele ja saidi andmetele.</translation>
 <translation id="6645478838938543427">Hinnaalanduse teatised saadetakse e-posti aadressile <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Mitte ükski}=1{1 saidilt (teid ei logita Google'i kontolt välja)}other{# saidilt (teid ei logita Google'i kontolt välja)}}</translation>
 <translation id="6648459603387803038">Teie administraator saab brauseri seadistust kaugühenduse kaudu muuta. Selle seadme tegevusi võidakse hallata ka väljaspool Chrome'i.</translation>
 <translation id="6648524591329069940">Seriifidega font</translation>
 <translation id="6649510485211003056">195 × 270 mm</translation>
@@ -3230,7 +3228,6 @@ Lisateave:
 <translation id="7378877318020334501">Telekomöödiad</translation>
 <translation id="7380398842872229465">10 × 15 tolli</translation>
 <translation id="738439098860678026">Alusharidus</translation>
-<translation id="7388071710882496863">päringuid, nt „kirjuta sellele restoranile 5 tärniga arvustus“;</translation>
 <translation id="7388594495505979117">{0,plural, =1{Teie seade taaskäivitub 1 minuti pärast}other{Teie seade taaskäivitub # minuti pärast}}</translation>
 <translation id="7390545607259442187">Kaardi kinnitamine</translation>
 <translation id="7392089738299859607">Värskenda aadressi</translation>

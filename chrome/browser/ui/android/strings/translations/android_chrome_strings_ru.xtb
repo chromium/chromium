@@ -352,7 +352,6 @@
 <translation id="2946420957526726953">Обновление Chrome для подключения к другим устройствам</translation>
 <translation id="2951071800649516099">Добавьте страницы в список для чтения.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитанная страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанная страница}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанные страницы}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанных страниц}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанной страницы}}</translation>
-<translation id="2961210776189273067">Обращение</translation>
 <translation id="296370266220139811">Экономьте время на вводе</translation>
 <translation id="2977350910003566746">Сортировка по дате использования</translation>
 <translation id="297771753501244313">По дате использования</translation>
@@ -1126,7 +1125,6 @@
 <translation id="694267552845942083">Сейчас вы находитесь на странице настроек синхронизации. Чтобы включить синхронизацию, нажмите кнопку "Подтвердить" в нижней части экрана. Перейти вверх</translation>
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="6955535239952325894">В управляемых браузерах эта настройка отключена</translation>
-<translation id="6958103823951858863">Автоматически открывать файлы PDF после скачивания</translation>
 <translation id="6963766334940102469">Удалить закладки</translation>
 <translation id="696447261358045621">Выйти из режима инкогнито</translation>
 <translation id="6965382102122355670">ОК</translation>

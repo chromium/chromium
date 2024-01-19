@@ -267,7 +267,6 @@
 <translation id="2064048859448024834">已開啟攝影機預覽畫面</translation>
 <translation id="2067602449040652523">鍵盤亮度</translation>
 <translation id="2075520525463668108">切換<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" /><ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">以四指向右滑動即可切換至下一個桌面</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2083190527011054446">晚安，<ph name="GIVEN_NAME" />：</translation>
 <translation id="2086334242442703436">開啟表情符號挑選器</translation>
@@ -283,7 +282,6 @@
 <translation id="2149229036084364364">播放上一首曲目</translation>
 <translation id="2152895518047545149">你沒有缺交任何作業，表現真好！</translation>
 <translation id="2161132820593978283">試用相機取景功能，讓你在視訊通話時處於畫面中央。你可以在「快速設定」中開啟這項功能。</translation>
-<translation id="2170530631236737939">以三指向下滑動即可結束「總覽」</translation>
 <translation id="2185166372312820725">前往上一個分頁</translation>
 <translation id="2185444992308415167">瀏覽分頁 1 至 8</translation>
 <translation id="2198625180564913276">正在新增設定檔。請稍候片刻。</translation>
@@ -1690,7 +1688,6 @@
 <translation id="7850320739366109486">請勿打擾</translation>
 <translation id="7851039877802112575">將焦點移至彈出式視窗和對話方塊</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">以三指向上滑動即可進入「總覽」</translation>
 <translation id="7862292329216937261">如要以訪客身分使用這部裝置，請務必登出並選取畫面底部的「以訪客身分瀏覽」。</translation>
 <translation id="7866482334467279021">開啟</translation>
 <translation id="7872786842639831132">關閉</translation>
@@ -1801,7 +1798,6 @@
 <translation id="8262312463845990408">切換播放</translation>
 <translation id="8270450402312105425">{0,plural, =1{在 1 小時內將裝置復原為先前的版本}other{在 # 小時內將裝置復原為先前的版本}}</translation>
 <translation id="8277261673056602147">醒目顯示畫面上的文字</translation>
-<translation id="8284362522226889623">以四指向左滑動即可切換至上一個桌面</translation>
 <translation id="828708037801473432">關閉</translation>
 <translation id="8297006494302853456">弱</translation>
 <translation id="8308637677604853869">前一個選單</translation>

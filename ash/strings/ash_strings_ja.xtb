@@ -267,7 +267,6 @@
 <translation id="2064048859448024834">カメラ プレビューがオンになっています</translation>
 <translation id="2067602449040652523">キーボードの明るさ</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" />を切り替えます。<ph name="CAPTURE_MEDIUM" />は<ph name="CAPTURE_STATE" />です</translation>
-<translation id="2078034614700056995">次のデスクに切り替えるには 4 本の指で右にスワイプします</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="2083190527011054446">おやすみなさい、<ph name="GIVEN_NAME" /> さん</translation>
 <translation id="2086334242442703436">絵文字選択ツールを開く</translation>
@@ -283,7 +282,6 @@
 <translation id="2149229036084364364">前のトラックに移動する</translation>
 <translation id="2152895518047545149">未提出のものはないようです。よくできました！</translation>
 <translation id="2161132820593978283">ビデオ通話で画面の中央にくるように、カメラのフレーミングをお試しください。クイック設定でオンにできます。</translation>
-<translation id="2170530631236737939">概要モードを終了するには、3 本の指で下にスワイプします</translation>
 <translation id="2185166372312820725">前のタブに移動する</translation>
 <translation id="2185444992308415167">タブ 1～8 に移動する</translation>
 <translation id="2198625180564913276">プロファイルを追加しています。この処理には数分かかることがあります。</translation>
@@ -1695,7 +1693,6 @@
 <translation id="7850320739366109486">通知を一時的にミュート</translation>
 <translation id="7851039877802112575">ポップアップとダイアログにフォーカスを移動する</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">概要モードに切り替えるには、3 本の指で上にスワイプします</translation>
 <translation id="7862292329216937261">このデバイスをゲストとして使用するには、ログアウトして、画面の下部にある [ゲストとしてブラウジング] を選択する必要があります。</translation>
 <translation id="7866482334467279021">オン</translation>
 <translation id="7872786842639831132">オフ</translation>
@@ -1806,7 +1803,6 @@
 <translation id="8262312463845990408">再生を切り替える</translation>
 <translation id="8270450402312105425">{0,plural, =1{1 時間以内にデバイスを以前のバージョンに戻してください}other{# 時間以内にデバイスを以前のバージョンに戻してください}}</translation>
 <translation id="8277261673056602147">画面上のテキストを選択</translation>
-<translation id="8284362522226889623">前のデスクに切り替えるには 4 本の指で左にスワイプします</translation>
 <translation id="828708037801473432">オフ</translation>
 <translation id="8297006494302853456">弱い</translation>
 <translation id="8308637677604853869">前のメニュー</translation>

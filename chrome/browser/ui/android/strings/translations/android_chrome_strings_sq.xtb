@@ -352,7 +352,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2946420957526726953">Chrome po përditësohet për t'u lidhur me pajisjet e tjera</translation>
 <translation id="2951071800649516099">Shto faqe në listën tënde të leximit për më vonë</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> faqe e palexuar}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> faqe të palexuara}}</translation>
-<translation id="2961210776189273067">Titulli</translation>
 <translation id="296370266220139811">Kurse kohën dhe shkruaj më pak</translation>
 <translation id="2977350910003566746">Po renditen sipas hapjes së fundit</translation>
 <translation id="297771753501244313">Rendit sipas hapjes së fundit</translation>
@@ -1126,7 +1125,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="694267552845942083">Aktualisht po personalizon cilësimet e "Sinkronizimit". Për të përfunduar aktivizimin e sinkronizimit, trokit butonin "Konfirmo" pranë fundit të ekranit. Ngjitu lart</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
 <translation id="6955535239952325894">Ky cilësim është i çaktivizuar në shfletuesit e menaxhuar</translation>
-<translation id="6958103823951858863">Hap automatikisht skedarin PDF pas shkarkimit</translation>
 <translation id="6963766334940102469">Fshi faqeshënuesit</translation>
 <translation id="696447261358045621">Dil nga modaliteti "i fshehtë"</translation>
 <translation id="6965382102122355670">Në rregull</translation>

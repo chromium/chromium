@@ -9620,9 +9620,6 @@ tidak akan diizinkan. Hash sebagian dari URL akan diupload ke Google secara lang
 yang jauh lebih rendah, yang akan menurunkan perlindungan.</translation>
 <translation id="8858642179038618439">Memaksakan Mode Perlindungan YouTube</translation>
 <translation id="8860342862142842017">Nonaktifkan penerapan Transparansi Sertifikat untuk daftar hash subjectPublicKeyInfo</translation>
-<translation id="8860474826929590628">Jika disetel ke Aktif atau tidak disetel, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> akan diizinkan di semua halaman web.
-
-Jika disetel ke Nonaktif, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> tidak akan tersedia di halaman web mana pun.</translation>
 <translation id="8860894781631833477">Pengguna dapat mengonfigurasi saluran rilis <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8862086508140571198">Dengan kebijakan ini, Anda dapat menetapkan daftar DLC (Konten yang Dapat Didownload) untuk didownload sesegera mungkin. DLC yang telah didownload akan tersedia untuk semua pengguna di perangkat.
 

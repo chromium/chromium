@@ -517,6 +517,8 @@
 <translation id="1956486093533522234">መሣሪያዎን ይፈልጉ፣ ይጠብቁ ወይም ይሰርዙ</translation>
 <translation id="1958218078413065209">የእርስዎ ከፍተኛ ውጤት <ph name="SCORE" /> ነው።</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />የጎበኙትን የአንዳንድ ገጾች ዩአርኤልዎች፣ የተገደበ የስርዓት መረጃ እና አንዳንድ የገጽ ይዘት<ph name="END_WHITEPAPER_LINK" /> ወደ Google በመላክ ለሁሉም ሰው ድር ላይ ደህንነት እንዲሻሻል ያግዙ። <ph name="BEGIN_PRIVACY_PAGE_LINK" />የግላዊነት መመሪያ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959445535228047762">የእርስዎ ጽሑፍ እና የገጽ ይዘት ወደ Google ይላካሉ እና ይህንን ባህሪ ለማሻሻል ጥቅም ላይ ሊውሉ ይችላሉ
+  <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> እልባቶች</translation>
 <translation id="196752089528718902">እርስዎ በተለምዶ ከጣቢያዎች ጋር ደህንነቱ በተጠበቀ መንገድ ይገናኛሉ፣ ነገር ግን Chrome በዚህ ጊዜ ደህንነቱ የተጠበቀ ግንኙነትን መጠቀም አልቻለም። አንድ አጥቂ የእርስዎን አውታረ መረብ በድብቅ ሊከታተል ወይም ሊያሻሻል ይችላል። <ph name="BEGIN_LEARN_MORE_LINK" />የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">የመለያ ቁጥር መስጠት ላይ ስህተት</translation>
@@ -720,6 +722,7 @@
 <translation id="2354430244986887761">Google የጥንቃቄ አሰሳ በቅርብ ጊዜ በ<ph name="SITE" /> ላይ <ph name="BEGIN_LINK" />ጎጂ መተግበሪያዎችን አግኝቷል<ph name="END_LINK" />።</translation>
 <translation id="2355395290879513365">አጥቂዎች በዚህ ጣቢያ ላይ እርስዎ እየተመለከቱዋቸው ያሉ ምስሎችን ማየት እና በላያቸው ላይ ለውጦችን በማድረግ ሊያታልልዎት ይችሉ ይሆናል።</translation>
 <translation id="2356070529366658676">ጠይቅ</translation>
+<translation id="2356926036049612643">V8 አመቻች</translation>
 <translation id="2357481397660644965">የእርስዎ መሣሪያ የሚተዳደረው በ<ph name="DEVICE_MANAGER" /> ሲሆን መለያዎ የሚተዳደረው በ<ph name="ACCOUNT_MANAGER" /> ነው።</translation>
 <translation id="2359629602545592467">በርካታ</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
@@ -1177,7 +1180,6 @@
 <translation id="33073482541490531">አሁን የተጠቀሙበት የይለፍ ቃል በውሂብ ጥሰት ውስጥ ተገኝቷል። የይለፍ ቃል አስተዳዳሪ ይህን የይለፍ ቃል አሁን እንዲቀይሩት ይመክራል።</translation>
 <translation id="3307649904964670439">የChrome አዝራርን ያብጁ፣ የአሳሽዎን መልክ ለማበጀት ያግብሩ</translation>
 <translation id="3308006649705061278">ድርጅታዊ መስፈርት (OU)</translation>
-<translation id="3324223664999044166">ሐሳቦችዎን በአጭሩ የሚያጠቃልሉ 3 ወይም ከዚያ በላይ ቃላት</translation>
 <translation id="3324687287337751929">4 x 6 ኢንች</translation>
 <translation id="3324983252691184275">ክሪምሶን</translation>
 <translation id="3325027355611702542">ካምፕ አድራጊዎች እና አርቪዎች</translation>
@@ -1419,7 +1421,6 @@
 <translation id="3748009735914587286">ብረት (ከፍተኛ ማንጸባረቅ)</translation>
 <translation id="3748148204939282805">በ<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ላይ ያሉ አጥቂዎች ልክ እንደ ሶፍትዌርን መጫን ወይም የግል መረጃዎችን (ለምሳሌ፦ የይለፍ ቃላትን፣ የስልክ ቁጥሮችን ወይም የክሬዲት ካርዶችን የመሳሰሉ) አጋልጦ መስጠት እንዲያደርጉ ሊያታልለዎት ይችላል። <ph name="BEGIN_LEARN_MORE_LINK" />የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">የአየር በረራ ኢንዱስትሪ</translation>
-<translation id="3751020515020988516">ጥያቄዎ አልገባንም። የተለየ ጥያቄ ይሞክሩ።</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ስላልተቀናበረ ችላ ተብሏል።</translation>
 <translation id="3754210790023674521">ከሥዕል-ውስጥ-ሥዕል ውጣ</translation>
 <translation id="3759461132968374835">በቅርብ ጊዜ ሪፖርት የተደረጉ ብልሽቶች የለዎትም።  የብልሽት ሪፖርት ማድረግ ተሰናክሎ ሳለ የተከሰቱ ብልሽቶች እዚህ አይታዩም።</translation>
@@ -2852,7 +2853,6 @@
 <translation id="6643016212128521049">አጽዳ</translation>
 <translation id="6645291930348198241">ኩኪዎችን እና የጣቢያ ውሂብን ይድረሱ።</translation>
 <translation id="6645478838938543427">የዋጋ ቅነሳ ማንቂያዎች ወደ <ph name="EMAIL_ADDRESS" /> ይላካሉ</translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{ምንም}=1{ከ1 ጣቢያ (ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም)}one{ከ# ጣቢያዎች (ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም)}other{ከ# ጣቢያዎች (ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም)}}</translation>
 <translation id="6648459603387803038">የእርስዎ አስተዳዳሪ በርቀት የአሳሽዎን ውቅረት መቀየር ይችላል። በዚህ መሣሪያ ላይ ያለ እንቅስቃሴ ከChrome ውጭም ሊስተዳደር ይችላል።</translation>
 <translation id="6648524591329069940">ባለጭረት ቅርጸ-ቁምፊ</translation>
 <translation id="6649510485211003056">195 x 270 ሚሜ</translation>
@@ -3230,7 +3230,6 @@
 <translation id="7378877318020334501">የቲቪ ኮሜዲዎች</translation>
 <translation id="7380398842872229465">10 x 15 ኢንች</translation>
 <translation id="738439098860678026">የቀድሞ ልጅነት ትምህርት</translation>
-<translation id="7388071710882496863">እንደ «ለዚህ ምግብ ቤት ባለ 5-ኮከብ ግምገማ ይጻፉ» ያሉ ጥያቄዎች</translation>
 <translation id="7388594495505979117">{0,plural, =1{መሣሪያዎ በ1 ደቂቃ ውስጥ ዳግም ይነሳል}one{መሣሪያዎ በ# ደቂቃዎች ውስጥ ዳግም ይነሳል}other{መሣሪያዎ በ# ደቂቃዎች ውስጥ ዳግም ይነሳል}}</translation>
 <translation id="7390545607259442187">ካርድ ያረጋግጡ</translation>
 <translation id="7392089738299859607">አድራሻን ያዘምኑ</translation>

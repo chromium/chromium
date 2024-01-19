@@ -267,7 +267,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2064048859448024834">Predogled kamere je vklopljen</translation>
 <translation id="2067602449040652523">Svetlost tipkovnice</translation>
 <translation id="2075520525463668108">Preklop funkcije <ph name="CAPTURE_MEDIUM" />. Nastavitev funkcije <ph name="CAPTURE_MEDIUM" /> je: <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Povlecite s štirimi prsti v desno, če želite preklopiti na naslednje namizje.</translation>
 <translation id="2079545284768500474">Razveljavi</translation>
 <translation id="2083190527011054446">Lahko noč, <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Odpiranje izbirnika emodžijev</translation>
@@ -283,7 +282,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2149229036084364364">Na prejšnjo skladbo</translation>
 <translation id="2152895518047545149">Videti je, da nič ne manjka. Bravo!</translation>
 <translation id="2161132820593978283">Preizkusite kadriranje fotoaparata, da boste v videoklicih prikazani na sredini zaslona. Vklopite ga v hitrih nastavitvah.</translation>
-<translation id="2170530631236737939">Če želite zapreti način pregleda, povlecite s tremi prsti navzdol.</translation>
 <translation id="2185166372312820725">Premik na prejšnji zavihek</translation>
 <translation id="2185444992308415167">Pomikanje od 1. do 8. zavihka</translation>
 <translation id="2198625180564913276">Dodajanje profila. To lahko traja nekaj minut.</translation>
@@ -1694,7 +1692,6 @@ Nova namestitev</translation>
 <translation id="7850320739366109486">Ne moti</translation>
 <translation id="7851039877802112575">Pomik na pojavna okna in pogovorna okna</translation>
 <translation id="7851768487828137624">Delovna različica</translation>
-<translation id="7860671499921112077">Če želite odpreti pregled, povlecite s tremi prsti navzgor.</translation>
 <translation id="7862292329216937261">Če želite napravo uporabljati kot gost, se odjavite in na dnu zaslona izberite »Brskajte kot gost«.</translation>
 <translation id="7866482334467279021">vklopljeno</translation>
 <translation id="7872786842639831132">Izklopljeno</translation>
@@ -1805,7 +1802,6 @@ Nova namestitev</translation>
 <translation id="8262312463845990408">Preklop predvajanja</translation>
 <translation id="8270450402312105425">{0,plural, =1{Spremenite napravo na prejšnjo različico v eni uri}one{Spremenite napravo na prejšnjo različico v # uri}two{Spremenite napravo na prejšnjo različico v # urah}few{Spremenite napravo na prejšnjo različico v # urah}other{Spremenite napravo na prejšnjo različico v # urah}}</translation>
 <translation id="8277261673056602147">Označevanje besedila na zaslonu</translation>
-<translation id="8284362522226889623">Povlecite s štirimi prsti v levo, če želite preklopiti na prejšnje namizje.</translation>
 <translation id="828708037801473432">Izklopljeno</translation>
 <translation id="8297006494302853456">Šibek</translation>
 <translation id="8308637677604853869">Prejšnji meni</translation>

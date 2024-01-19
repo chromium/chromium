@@ -1174,7 +1174,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="33073482541490531">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Google-ren Pasahitz-kudeatzailea aplikazioak pasahitza orain aldatzea gomendatzen du.</translation>
 <translation id="3307649904964670439">Chrome pertsonalizatzeko botoia: aktiba ezazu arakatzailearen itxura pertsonalizatzeko</translation>
 <translation id="3308006649705061278">Erakundeko unitatea</translation>
-<translation id="3324223664999044166">zure pentsamenduak laburtzen dituzten 3 hitz edo gehiago</translation>
 <translation id="3324687287337751929">10,16 × 15,24 cm (4 × 6 in)</translation>
 <translation id="3324983252691184275">Gorrimina</translation>
 <translation id="3325027355611702542">Karabanak eta autokarabanak</translation>
@@ -1415,7 +1414,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3748009735914587286">Metala (oso distiratsua)</translation>
 <translation id="3748148204939282805">Baliteke <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> webguneko erasotzaileak zu iruzurtzen saiatzea arriskutsua izan litekeen zerbait egin dezazun; besteak beste, segurua ez den softwarea instalatzea edo informazio pertsonala ezagutaraztea (adibidez, pasahitzak, telefono-zenbakiak edo kreditu-txartelen datuak) izan liteke hori. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Abiazioaren industria</translation>
-<translation id="3751020515020988516">Ez da ulertu zure eskaera. Egin beste eskaera bat.</translation>
 <translation id="3752543821772132562">Ez ikusi egin zaio, <ph name="POLICY_NAME" /> ezarri ez delako.</translation>
 <translation id="3754210790023674521">Irten pantaila txiki gainjarriko modutik</translation>
 <translation id="3759461132968374835">Ez da hutsegiterik izan azken aldian. Ez dira hemen agertuko jakinarazpenak desgaituta zeudenean gertatutako hutsegiteak.</translation>
@@ -2847,7 +2845,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6643016212128521049">Garbitu</translation>
 <translation id="6645291930348198241">Cookieak eta webguneko datuak atzitu.</translation>
 <translation id="6645478838938543427">Helbide honetara bidaliko dira prezio-jaitsieren alertak: <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Bat ere ez}=1{1 gune (ez da amaituko Google-ko kontuko saioa)}other{# gune (ez da amaituko Google-ko kontuko saioa)}}</translation>
 <translation id="6648459603387803038">Administratzaileak urrunetik alda dezake arakatzailearen konfigurazioa. Baliteke gailu honetako jarduerak Chrome-tik kanpo ere kudeatzea.</translation>
 <translation id="6648524591329069940">Serif letra</translation>
 <translation id="6649510485211003056">195 × 270 mm</translation>
@@ -3225,7 +3222,6 @@ Xehetasun gehiago:
 <translation id="7378877318020334501">Komedia-saioak</translation>
 <translation id="7380398842872229465">25,4 × 38,1 cm (10 × 15 in)</translation>
 <translation id="738439098860678026">Haur-hezkuntza goiztiarra</translation>
-<translation id="7388071710882496863">"idatzi 5 izarreko iritzia jatetxe honi buruz" bezalako eskaerak</translation>
 <translation id="7388594495505979117">{0,plural, =1{1 minutu barru berrabiaraziko da gailua}other{# minutu barru berrabiaraziko da gailua}}</translation>
 <translation id="7390545607259442187">Berretsi txartela</translation>
 <translation id="7392089738299859607">Eguneratu helbidea</translation>

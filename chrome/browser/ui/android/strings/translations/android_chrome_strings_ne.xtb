@@ -352,7 +352,6 @@
 <translation id="2946420957526726953">तपाईंको फोन अन्य डिभाइससँग कनेक्ट गर्न Chrome अपडेट गरिँदै छ</translation>
 <translation id="2951071800649516099">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा वेबपेजहरू हाल्नुहोस्</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> वटा पेज पढ्न बाँकी छ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> वटा पेज पढ्न बाँकी छ}}</translation>
-<translation id="2961210776189273067">सम्बोधन</translation>
 <translation id="296370266220139811">कम टाइप गरी समय बचाउनुहोस्</translation>
 <translation id="2977350910003566746">पछिल्लो पटक खोलिएको आधारमा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="297771753501244313">पछिल्लो पटक खोलिएको आधारमा क्रमबद्ध गर्नुहोस्</translation>
@@ -1125,7 +1124,6 @@
 <translation id="694267552845942083">तपाईं हाल सिंकसम्बन्धी तपाईंका सेटिङ आफ्नो आवश्यकता अनुकूल पार्दै हुनुहुन्छ। सिंक गर्ने सुविधा अन गर्ने प्रक्रिया पूरा गर्न स्क्रिनको फेदको छेवैमा रहेको 'पुष्टि गर्नुहोस्' नामक बटनमा ट्याप गर्नुहोस्। माथि जानुहोस्</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6955535239952325894">व्यवस्थापन गरिएका ब्राउजरहरूमा यो सेटिङ असक्षम पारिएको हुन्छ</translation>
-<translation id="6958103823951858863">PDF डाउनलोड भएपछि उक्त PDF स्वतः खोलियोस्</translation>
 <translation id="6963766334940102469">बुकमार्कहरू मेट्नुहोस्</translation>
 <translation id="696447261358045621">इन्कोग्निटो मोडबाट बाहिरिनुहोस्</translation>
 <translation id="6965382102122355670">ठिक छ</translation>

@@ -291,6 +291,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2547458583188611426">A sincronização não está a funcionar. Para iniciar a sincronização, introduza a sua frase de acesso.</translation>
 <translation id="2551153019974022505">Erro de conta</translation>
 <translation id="2556092377360758201">Sem proteção (não recomendado)</translation>
+<translation id="2561375093019333908">ABRIR</translation>
 <translation id="2562041823070056534">A enviar para o dispositivo <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">Usar e guardar palavras-passe na sua Conta Google</translation>
 <translation id="2577522251608256362">Bairro</translation>
@@ -383,7 +384,6 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2952278131021475699">Pesquisa com a câmara do Lens</translation>
 <translation id="2956733177489514605">Inicie sessão com a sua Conta Google para sincronizar as palavras-passe e muito mais.</translation>
 <translation id="2958718410589002129">Palavras-passe</translation>
-<translation id="2961210776189273067">Título</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
 <translation id="2969979262385602596">Falha ao iniciar sessão. Tente nov. mais tarde.</translation>
 <translation id="2975121486251958312">Só está disponível o Modo de navegação anónima</translation>
@@ -849,6 +849,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5513681519188741830">Há <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Criar Frase de Acesso</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} palavra-passe fraca}other{{COUNT} palavras-passe fracas}}</translation>
+<translation id="5532545557415295622">Caixa de diálogo de limite de tempo de inatividade</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> encontrado(s)</translation>
 <translation id="5548760955356983418">A Entrega permite-lhe começar a navegar num Website neste dispositivo e, em seguida, continuar facilmente no seu Mac. O Website atualmente aberto aparece na Dock do seu Mac.
 
@@ -1289,6 +1290,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Após 1 dia}other{Após {COUNT} dias}}</translation>
 <translation id="7791543448312431591">Adicionar</translation>
+<translation id="7792549458069452436">INSTALAR APP</translation>
 <translation id="7807060072011926525">Disponibilizados pela Google</translation>
 <translation id="7812377703891978671">Pode aceder a todo o seu histórico de navegação selecionando o botão <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Transferências</translation>

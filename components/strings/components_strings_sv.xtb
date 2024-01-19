@@ -1178,7 +1178,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="33073482541490531">Lösenordet som du precis använde har läckt ut vid ett dataintrång. Du rekommenderas av Google Lösenordshantering att byta detta lösenord nu.</translation>
 <translation id="3307649904964670439">Knappen Anpassa Chrome: aktivera om du vill anpassa webbläsarens utseende</translation>
 <translation id="3308006649705061278">Organisationsenhet (OU)</translation>
-<translation id="3324223664999044166">tre eller fler ord som sammanfattar dina tankar</translation>
 <translation id="3324687287337751929">4 x 6 tum</translation>
 <translation id="3324983252691184275">Karmosinröd</translation>
 <translation id="3325027355611702542">Husbilar och husvagnar</translation>
@@ -1420,7 +1419,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3748009735914587286">Metall (högblank)</translation>
 <translation id="3748148204939282805">Angripare på <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> kan försöka lura dig att göra något riskfyllt, som att installera programvara eller avslöja personliga uppgifter (t.ex. lösenord, telefonnummer eller kreditkortsuppgifter). <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Luftfartsindustri</translation>
-<translation id="3751020515020988516">Din begäran förstods inte. Prova med en annan begäran.</translation>
 <translation id="3752543821772132562">Ignoreras eftersom <ph name="POLICY_NAME" /> inte har angetts.</translation>
 <translation id="3754210790023674521">Avsluta bild-i-bild-läge</translation>
 <translation id="3759461132968374835">Inga krascher har rapporterats nyligen. Krascher som uppstod när kraschrapporteringen var inaktiverad visas inte här.</translation>
@@ -2388,7 +2386,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5691848789297492617">Uppmaningen till att spara kortet har öppnats över hela skärmen.</translation>
 <translation id="5695542892312572833">Vill du verifiera och slutföra köpet med Windows Hello?</translation>
 <translation id="5699628521141772782">Mejeriprodukter och ägg</translation>
-<translation id="5700761515355162635">Cookies från tredje part har tillåtits</translation>
+<translation id="5700761515355162635">Tredjepartscookies tillåts</translation>
 <translation id="5701381305118179107">Centrera</translation>
 <translation id="5707154300732650394">Återuppta sökningen</translation>
 <translation id="57094364128775171">Föreslå ett starkt lösenord …</translation>
@@ -2853,7 +2851,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6645291930348198241">få åtkomst till cookies och webbplatsdata.</translation>
 <translation id="6645478838938543427">Aviseringar om prissänkning skickas till <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Ingen}=1{Från 1 webbplats (du loggas inte ut från Google-kontot)}other{Från # webbplatser (du loggas inte ut från Google-kontot)}}</translation>
 <translation id="6648459603387803038">Administratören kan ändra webbläsarinställningarna på distans. Aktivitet på den här enheten kan hanteras även utanför Chrome.</translation>
 <translation id="6648524591329069940">Serif-teckensnitt</translation>
 <translation id="6649510485211003056">195 x 270 mm</translation>
@@ -3231,7 +3228,6 @@ Mer information.
 <translation id="7378877318020334501">Tv-komedier</translation>
 <translation id="7380398842872229465">10 x 15 tum</translation>
 <translation id="738439098860678026">Pedagogik för yngre barn</translation>
-<translation id="7388071710882496863">förfrågningar som ”skriv en femstjärnig recension om den här restaurangen”.</translation>
 <translation id="7388594495505979117">{0,plural, =1{Om 1 minut startas enheten om}other{Om # minuter startas enheten om}}</translation>
 <translation id="7390545607259442187">Bekräfta kort</translation>
 <translation id="7392089738299859607">Uppdatera adressen</translation>

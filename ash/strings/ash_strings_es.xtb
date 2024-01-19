@@ -267,7 +267,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2064048859448024834">Vista previa de cámara activada</translation>
 <translation id="2067602449040652523">Brillo del teclado</translation>
 <translation id="2075520525463668108">Activar/Desactivar <ph name="CAPTURE_MEDIUM" />. Estado de <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Desliza cuatro dedos hacia la derecha por la pantalla para ir al escritorio siguiente</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2083190527011054446">Buenas noches, <ph name="GIVEN_NAME" /></translation>
 <translation id="2086334242442703436">Abrir el selector de emojis</translation>
@@ -283,7 +282,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2149229036084364364">Ir a la pista anterior</translation>
 <translation id="2152895518047545149">Parece que no falta nada. ¡Genial!</translation>
 <translation id="2161132820593978283">Prueba el encuadre de cámara para aparecer en el centro de la pantalla durante las videollamadas. Actívalo en los ajustes rápidos.</translation>
-<translation id="2170530631236737939">Desliza tres dedos hacia abajo para salir de la vista general</translation>
 <translation id="2185166372312820725">Ir a la pestaña anterior</translation>
 <translation id="2185444992308415167">Comprobar las pestañas de la 1 a la 8</translation>
 <translation id="2198625180564913276">Añadiendo perfil. Este proceso puede durar unos minutos.</translation>
@@ -1695,7 +1693,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7850320739366109486">No molestar</translation>
 <translation id="7851039877802112575">Mover el enfoque a ventanas emergentes y cuadros de diálogo</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Desliza tres dedos hacia arriba para acceder a la vista general</translation>
 <translation id="7862292329216937261">Para usar el dispositivo como invitado, debes cerrar sesión y seleccionar Navegar como invitado en la parte inferior de la pantalla.</translation>
 <translation id="7866482334467279021">activado</translation>
 <translation id="7872786842639831132">No</translation>
@@ -1806,7 +1803,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8262312463845990408">Reproducir/Pausar</translation>
 <translation id="8270450402312105425">{0,plural, =1{Cambia el dispositivo a la versión anterior en un plazo de 1 hora}other{Cambia el dispositivo a la versión anterior en un plazo de # horas}}</translation>
 <translation id="8277261673056602147">Destacar texto en la pantalla</translation>
-<translation id="8284362522226889623">Desliza cuatro dedos hacia la izquierda por la pantalla para cambiar al escritorio anterior</translation>
 <translation id="828708037801473432">Desactivada</translation>
 <translation id="8297006494302853456">Débil</translation>
 <translation id="8308637677604853869">Menú anterior</translation>

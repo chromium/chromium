@@ -291,6 +291,7 @@
 <translation id="2547458583188611426">Сінхранізацыя не працуе. Каб запусціць сінхранізацыю, увядзіце фразу-пароль.</translation>
 <translation id="2551153019974022505">Памылка ва ўліковым запісе</translation>
 <translation id="2556092377360758201">Без абароны (не рэкамендуецца)</translation>
+<translation id="2561375093019333908">АДКРЫЦЬ</translation>
 <translation id="2562041823070056534">Ідзе адпраўка на прыладу "<ph name="DEVICE_NAME" />"...</translation>
 <translation id="2576499762020411840">Захоўваць паролі ва Уліковым запісе Google</translation>
 <translation id="2577522251608256362">Раён</translation>
@@ -383,7 +384,6 @@
 <translation id="2952278131021475699">Пошук з дапамогай камеры і Аб'ектыва</translation>
 <translation id="2956733177489514605">Увайдзіце ва Уліковы запіс Google, каб сінхранізаваць паролі і іншыя даныя.</translation>
 <translation id="2958718410589002129">Паролі</translation>
-<translation id="2961210776189273067">Форма звароту</translation>
 <translation id="2964349545761222050">Блакіраваць староннія файлы cookie</translation>
 <translation id="2969979262385602596">Не ўдалося ўвайсці. Паўтарыце спробу пазней.</translation>
 <translation id="2975121486251958312">Даступны толькі рэжым інкогніта</translation>
@@ -849,6 +849,7 @@
 <translation id="5513681519188741830"><ph name="TIME" /> гадз таму</translation>
 <translation id="5525269841082836315">Стварэнне фразы-пароля</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} ненадзейны пароль}one{{COUNT} ненадзейны пароль}few{{COUNT} ненадзейныя паролі}many{{COUNT} ненадзейных пароляў}other{{COUNT} ненадзейнага пароля}}</translation>
+<translation id="5532545557415295622">Дыялогавае акно пра час чакання пры бяздзейнасці</translation>
 <translation id="5542540507657872337">Знойдзена: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Функцыя перадачы вэб-сайта дазваляе пачаць прагляд вэб-старонкі на адной прыладзе, а затым працягнуць, перайшоўшы на Mac. Адкрыты вэб-сайт з'явіцца ў док-панэлі камп'ютара Mac.
 
@@ -1289,6 +1290,7 @@
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Праз 1 дзень}one{Праз {COUNT} дзень}few{Праз {COUNT} дні}many{Праз {COUNT} дзён}other{Праз {COUNT} дня}}</translation>
 <translation id="7791543448312431591">Дадаць</translation>
+<translation id="7792549458069452436">УСТАЛЯВАЦЬ ПРАГРАМУ</translation>
 <translation id="7807060072011926525">Ад кампаніі Google</translation>
 <translation id="7812377703891978671">Атрымаць доступ да ўсёй гісторыі прагляду сайтаў можна, выбраўшы пункт "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="78146569776629510">Спампоўкі</translation>

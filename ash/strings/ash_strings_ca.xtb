@@ -267,7 +267,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2064048859448024834">La previsualització de la càmera està activada</translation>
 <translation id="2067602449040652523">Brillantor del teclat</translation>
 <translation id="2075520525463668108">Commuta <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> està <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Fes lliscar quatre dits cap a la dreta per canviar a l'escriptori següent</translation>
 <translation id="2079545284768500474">Desfés</translation>
 <translation id="2083190527011054446">Bona nit, <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Obre el selector d'emojis</translation>
@@ -283,7 +282,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2149229036084364364">Ves a la pista anterior</translation>
 <translation id="2152895518047545149">No queda cap tasca per entregar. Molt bé!</translation>
 <translation id="2161132820593978283">Prova l'enquadrament de la càmera per ser al centre de la pantalla a les videotrucades. Activa'l a Configuració ràpida.</translation>
-<translation id="2170530631236737939">Fes lliscar tres dits cap avall per sortir de Visió general</translation>
 <translation id="2185166372312820725">Ves a la pestanya anterior</translation>
 <translation id="2185444992308415167">Navega per les pestanyes de l'1 a la 8</translation>
 <translation id="2198625180564913276">S'està afegint el perfil. Aquest procés pot tardar uns minuts.</translation>
@@ -1694,7 +1692,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7850320739366109486">No molestis</translation>
 <translation id="7851039877802112575">Mou el focus a les finestres emergents i als quadres de diàleg</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Fes lliscar tres dits cap amunt per entrar a Visió general</translation>
 <translation id="7862292329216937261">Per utilitzar el dispositiu com a convidat, tanca la sessió i, a la part inferior de la pantalla, selecciona Navega com a convidat.</translation>
 <translation id="7866482334467279021">activat</translation>
 <translation id="7872786842639831132">Desactivat</translation>
@@ -1805,7 +1802,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8262312463845990408">Commuta la reproducció</translation>
 <translation id="8270450402312105425">{0,plural, =1{Canvia el dispositiu a la versió anterior en el termini d’una hora}other{Canvia el dispositiu a la versió anterior en el termini de # hores}}</translation>
 <translation id="8277261673056602147">Marca el text en pantalla</translation>
-<translation id="8284362522226889623">Fes lliscar quatre dits cap a l'esquerra per canviar a l'escriptori anterior</translation>
 <translation id="828708037801473432">Desactivada</translation>
 <translation id="8297006494302853456">Feble</translation>
 <translation id="8308637677604853869">Menú anterior</translation>

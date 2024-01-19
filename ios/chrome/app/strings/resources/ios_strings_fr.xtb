@@ -383,7 +383,6 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2952278131021475699">Recherche Lens avec l'appareil photo</translation>
 <translation id="2956733177489514605">Connectez-vous avec votre compte Google pour synchroniser vos mots de passe, etc.</translation>
 <translation id="2958718410589002129">Mots de passe</translation>
-<translation id="2961210776189273067">Civilité</translation>
 <translation id="2964349545761222050">Bloquer les cookies tiers</translation>
 <translation id="2969979262385602596">Échec de la connexion. Veuillez réessayer plus tard.</translation>
 <translation id="2975121486251958312">Seul le mode navigation privée est disponible</translation>
@@ -925,6 +924,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5922999516621365983">Faites glisser l'onglet ici pour l'épingler.</translation>
 <translation id="5938160824633642847">Votre appareil est presque saturé. Libérez de l'espace et réessayez.</translation>
 <translation id="5948291296578561264">Cela vous permet d'enregistrer des photos dans votre bibliothèque.</translation>
+<translation id="5954562874938077107">Accéder à Lens</translation>
 <translation id="5955891643922670672">Affichage de la version hors connexion</translation>
 <translation id="5957613098218939406">Plus d'options</translation>
 <translation id="595769230373966252">Rechercher avec <ph name="SEARCH_PROVIDER" /></translation>

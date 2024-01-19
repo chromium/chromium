@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Pranešti</translation>
 <translation id="4133493477912226187">Skirtukai (iš viso: <ph name="NUMBER_OF_TABS" />) atrodo susiję. Grupuoti juos?</translation>
 <translation id="4212246570487010370">Tęsti naršymą</translation>
+<translation id="427987768447457592">Nauja skirtukų grupė</translation>
 <translation id="4648718555153979859">Čia skirtukai suskirstyti į grupes</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> atsiliepimas)}one{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimas)}few{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimai)}many{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimo)}other{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimų)}}</translation>
 <translation id="4850886885716139402">Žiūrėti</translation>

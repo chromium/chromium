@@ -40,13 +40,13 @@ Megjegyzések:
 <translation id="1682483655351012182">Chrome-adatok szinkronizálása</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">A bevitt URL-eket felveszi a könyvjelzők közé a Chrome-ban.</translation>
+<translation id="1799920918471566157">Chrome-tippek</translation>
 <translation id="1830634592642484976">A címet jelenleg a Chrome-ba menti a rendszer. Ha szeretné más Google-termékekben is használni, mentse saját Google-fiókjába (<ph name="USER_EMAIL" />).</translation>
 <translation id="1843217788865538014">Beállíthatja, hogy a rendszer automatikusan a Chrome-ot használja, amikor üzenetekben, dokumentumokban és más alkalmazásokban található linkekre kattint.</translation>
 <translation id="1910975740091000991">Chrome iOS rendszerhez</translation>
 <translation id="1917964099031477364">Ezzel a fiók és a nem mentett adatok eltávolításra kerülnek a Chrome-ból és az eszközön lévő többi Google-alkalmazásból.</translation>
 <translation id="1965935827552890526">A másik megnyitott Chrome-ablakban fejezze be, amit csinál.</translation>
 <translation id="1987779152850321833">Hajtsa végre az alábbi javasolt műveleteket, hogy a lehető legtöbbet ki tudja hozni a Chrome-ból.</translation>
-<translation id="2008357574463816229">Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Még több mindent elvégezhet az egyszerű, biztonságos és minden eddiginél gyorsabb Google Chrome segítségével.</translation>
 <translation id="2120238739383482109">Megnyitja a Chrome-könyvjelzőket.</translation>
 <translation id="2147651015520127414">A Chrome ellenőrizte, hogy a(z) <ph name="ISSUER" /> adta ki ezt a webhelytanúsítványt.</translation>
@@ -75,6 +75,7 @@ Megjegyzések:
 <translation id="2702250627063295552">Olvasólista-elem felvétele a Chrome-ba</translation>
 <translation id="2736805085127235148">A Chrome-értesítések jelenleg ki vannak kapcsolva az eszköz beállításaiban.</translation>
 <translation id="2767464022270041271">Nincsenek mentett jelszavak. A Google Jelszókezelő képes a jelszavak ellenőrzésére, amikor Ön menti őket.</translation>
+<translation id="2789947168960170215">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">A Chrome-ban lévő böngészési adatok törlése</translation>
 <translation id="2869959624320573933">Bejelentkezés a Chrome-ba</translation>
 <translation id="2876628302275096482">További információ arról, <ph name="BEGIN_LINK" />hogyan gondoskodik az Ön adatainak védelméről a Chrome<ph name="END_LINK" />.</translation>
@@ -203,7 +204,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="686691656039982452"><ph name="BEGIN_LINK" />Kezelheti, hogy milyen Chrome-adatokat mentsen<ph name="END_LINK" /> a rendszer az Ön Google-fiókjába.
 
 Az adatokat a Chrome-élmény javítására használó további beállításokért keresse fel a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> oldalát.</translation>
-<translation id="687586529977635009">A Chrome észleli a nyomon követési számokat az Ön által felkeresett webhelyeken, és csomagokkal kapcsolatos friss információkat jelenít meg az Új lap oldalon. Adatait megosztjuk a Google-lal, hogy biztosítani tudjuk ezt a funkciót, és mindenki számára jobbá tehessük a Shopping szolgáltatást. Ezt a <ph name="BEGIN_LINK" />csomagkövetési beállítások<ph name="END_LINK" /> között módosíthatja.</translation>
 <translation id="6916015246697034114">Hangalapú keresés a Chrome-ban</translation>
 <translation id="6964931465519938134">Mostantól bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre koppint.</translation>
 <translation id="6975725306479268850">A Chrome kiválasztása az automatikus kitöltéshez</translation>

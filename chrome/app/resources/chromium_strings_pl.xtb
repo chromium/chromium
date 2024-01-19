@@ -88,6 +88,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="2583187216237139145">Wszystkie dane Chromium wygenerowane podczas używania tego profilu (takie jak zakładki, historia, hasła i inne ustawienia) mogą zostać usunięte przez administratora profilu służbowego. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Nadal korzystaj z Chromium</translation>
 <translation id="259935314519650377">Pobranego instalatora nie udało się załadować do pamięci podręcznej. Błąd: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium działa szybciej, a funkcje używające JavaScriptu powinny działać zgodnie z założeniami (zalecane)</translation>
 <translation id="2648074677641340862">Podczas instalacji wystąpił błąd systemu operacyjnego. Pobierz Chromium ponownie.</translation>
 <translation id="2661879430930417727">Jeśli dzielisz urządzenie ze znajomymi lub rodziną, wszyscy możecie niezależnie przeglądać internet i skonfigurować Chromium po swojemu</translation>
 <translation id="268602741124540128">Witamy w Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -121,6 +122,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="3185330573522821672">Dostosuj swój nowy profil Chromium</translation>
 <translation id="3190315855212034486">O kurczę! Chromium uległ awarii. Uruchomić go teraz ponownie?</translation>
 <translation id="3258596308407688501">Chromium nie może odczytać ani zapisać danych w katalogu <ph name="USER_DATA_DIRECTORY" />.</translation>
+<translation id="3268051428841342958">V8 to mechanizm JavaScript i WebAssembly Chromium używany do zwiększania wydajności witryny</translation>
 <translation id="3283186697780795848">Zainstalowana jest wersja Chromium <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Uruchom ponownie teraz</translation>
 <translation id="328888136576916638">Brakuje kluczy interfejsu Google API. Niektóre funkcje Chromium będą wyłączone.</translation>
@@ -214,6 +216,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="4814736265800133385">Używaj Chromium bez konta</translation>
 <translation id="4888717733111232871">Reguła dla ruchu przychodzącego w Chromium zezwalająca na ruch mDNS.</translation>
 <translation id="4893347770495441059">Uruchom ponownie, aby zaktualizować &amp;Chromium</translation>
+<translation id="4942295735032723435">Aby otrzymywać w przyszłości aktualizacje Chromium, musisz mieć system macOS 11 lub nowszy. Na tym komputerze jest zainstalowany system macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium jest w trybie działania w tle</translation>
 <translation id="4987820182225656817">Goście mogą korzystać z Chromium, nie pozostawiając żadnych danych.</translation>
 <translation id="4994636714258228724">Dodaj siebie do Chromium</translation>
@@ -402,6 +405,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8105840573057009683">Ta strona musi mieć w Chromium dostęp do lokalizacji</translation>
 <translation id="8133124826068723441">System operacyjny Chromium nie może zsynchronizować danych, ponieważ synchronizacja jest niedostępna w Twojej domenie.</translation>
 <translation id="813913629614996137">Inicjuję…</translation>
+<translation id="8166782796394721554">Włącz dodatkową ochronę w mechanizmie JavaScript i WebAssembly w Chromium</translation>
 <translation id="81770708095080097">Ten plik jest niebezpieczny, dlatego został zablokowany przez Chromium.</translation>
 <translation id="8213374284266571500">Plik został zablokowany przez Chromium, bo ten typ pliku jest niebezpieczny</translation>
 <translation id="8248265253516264921">Jeśli obraz nie ma przydatnego opisu, Chromium spróbuje go dla Ciebie stworzyć. W tym celu obrazy zostaną wysłane do Google. W każdej chwili możesz wyłączyć tę funkcję w ustawieniach.</translation>

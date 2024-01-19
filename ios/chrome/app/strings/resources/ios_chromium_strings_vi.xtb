@@ -100,7 +100,6 @@
 
 Để thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chromium khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Mở Chromium từ ứng dụng bất kỳ</translation>
-<translation id="4002314982058020967">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chromium khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Mở và chạy quy trình Kiểm tra an toàn trên Chromium.</translation>
 <translation id="4043291146360695975">Chỉ lưu mật khẩu vào Trình quản lý mật khẩu trên thiết bị này.</translation>
 <translation id="4099085513035183040">Chưa hỗ trợ trên Chromium phiên bản thử nghiệm</translation>
@@ -113,7 +112,6 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="4408912345039114853">Chạy quy trình Kiểm tra an toàn trên Chromium</translation>
 <translation id="4432744876818348753">Đăng nhập để khai thác tối đa Chromium.</translation>
 <translation id="4445228361214254027">Tổ chức của bạn đã tắt tính năng sử dụng và lưu dữ liệu Chromium vào Tài khoản Google. Dấu trang, mật khẩu mới và các nội dung khác sẽ chỉ được lưu vào thiết bị này.</translation>
-<translation id="4485517920713468480">Chromium sẽ phát hiện số vận đơn trên các trang web bạn truy cập và cho bạn thấy thông tin cập nhật về gói hàng trên trang Thẻ mới. Dữ liệu của bạn sẽ được chia sẻ với Google để cung cấp tính năng này và cải thiện trải nghiệm Mua sắm cho mọi người. Bạn có thể thay đổi chế độ này trong phần <ph name="BEGIN_LINK" />Cài đặt theo dõi gói hàng<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Thêm các URL đã nhập vào danh sách đọc trong Chromium.</translation>
 <translation id="452436063477828504">Đảm bảo bạn luôn có thể sử dụng dữ liệu Chromium trong Tài khoản Google của mình</translation>
 <translation id="4555020257205549924">Khi tính năng này được bật, Chromium sẽ đề xuất sử dụng Google Dịch để dịch các trang viết bằng ngôn ngữ khác. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>

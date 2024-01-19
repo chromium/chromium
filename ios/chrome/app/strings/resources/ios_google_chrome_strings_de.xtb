@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="1066101356081285416">Chrome erkennt Sendungsnummern auf Websites, die du besuchst, und zeigt dir aktuelle Informationen zu deinen Paketen auf der Seite „Neuer Tab“ an. Die Sendungsnummer und der Name der Website werden an Google gesendet, um diese Funktion bereitzustellen und die Google Shopping-Funktionen für alle zu verbessern. Du kannst dies jederzeit in den <ph name="BEGIN_LINK" />Einstellungen für die Paketverfolgung<ph name="END_LINK" /> aktualisieren.</translation>
 <translation id="1085696779717592361">Standardmäßig Chrome verwenden</translation>
 <translation id="1105362920864247682">Browserdaten in Chrome löschen.</translation>
 <translation id="1113057722807951993">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay.
@@ -46,7 +47,6 @@ Wichtige Hinweise:
 <translation id="1917964099031477364">Dieses Konto und alle nicht gespeicherten Daten werden aus Chrome und anderen Google Apps auf diesem Gerät entfernt.</translation>
 <translation id="1965935827552890526">Du kannst zu deinem offenen Chrome-Fenster zurückkehren, um dein vorherige Aktion abzuschließen.</translation>
 <translation id="1987779152850321833">Mit den unten vorgeschlagenen Aktionen lässt sich das Beste aus Chrome herausholen.</translation>
-<translation id="2008357574463816229">Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Jetzt mit dem neuen ultraschnellen Google Chrome ganz einfach und sicherer noch mehr erledigen.</translation>
 <translation id="2120238739383482109">Öffnet die Chrome-Lesezeichen.</translation>
 <translation id="2147651015520127414">Chrome hat verifiziert, dass <ph name="ISSUER" /> das Zertifikat dieser Website ausgestellt hat.</translation>
@@ -203,7 +203,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="686691656039982452">Du kannst in deinem Google-Konto <ph name="BEGIN_LINK" />festlegen, welche Chrome-Daten gespeichert werden<ph name="END_LINK" />.
 
 Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet werden, findest du in den <ph name="BEGIN_LINK" />Google-Diensten<ph name="END_LINK" />.</translation>
-<translation id="687586529977635009">Chrome erkennt Sendungsnummern auf Websites, die du besuchst, und zeigt dir aktuelle Informationen zu deinen Paketen auf der Seite „Neuer Tab“ an. Deine Daten werden mit Google geteilt, um diese Funktion bereitzustellen und das Onlineshopping für alle zu verbessern. Du kannst dies in den <ph name="BEGIN_LINK" />Einstellungen für die Paketverfolgung<ph name="END_LINK" /> ändern.</translation>
 <translation id="6916015246697034114">Sprachsuche in Chrome</translation>
 <translation id="6964931465519938134">Du kannst jetzt Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="6975725306479268850">Chrome für Autofill auswählen</translation>

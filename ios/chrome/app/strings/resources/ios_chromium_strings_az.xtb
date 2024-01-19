@@ -100,7 +100,6 @@ Chromium təcrübənizi təkmilləşdirmək məqsədilə data istifadə edən di
 
 Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chromium datasını silin<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Chromium-u istənilən tətbiqdən açın</translation>
-<translation id="4002314982058020967">Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />hesabda Chromium datasını silin<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Chromium-da Təhlükəsizlik yoxlanışını açır və icra edir.</translation>
 <translation id="4043291146360695975">Parollar yalnız bu cihazda Parol Menecerində saxlanılır.</translation>
 <translation id="4099085513035183040">Chromium Beta'da dəstəklənmir</translation>
@@ -113,7 +112,6 @@ Data parol ifadəsi ilə şifrələnib. Google Hesabında Chromium datasını is
 <translation id="4408912345039114853">Chromium Təhlükəsizlik yoxlanışı aparın</translation>
 <translation id="4432744876818348753">Chromium'dan maksimum yararlanmaq üçün daxil olun.</translation>
 <translation id="4445228361214254027">Təşkilat Chromium datasını istifadə etmək və Google Hesabında yadda saxlamaq imkanını deaktiv edib. Yeni əlfəcin, parol və s. yalnız bu cihazda yadda saxlanacaq.</translation>
-<translation id="4485517920713468480">Chromium daxil olduğunuz saytlarda izləmə nömrələrini aşkar edəcək və Yeni tab səhifəsində bağlama yeniləmələrini göstərəcək. Bu funksiyanı təmin etmək və Şopinq xidmətini təkmilləşdirmək üçün data Google ilə paylaşılacaq. Bunu <ph name="BEGIN_LINK" />Bağlama izləmə ayarlarında<ph name="END_LINK" /> dəyişə bilərsiniz.</translation>
 <translation id="4498832288620833153">Daxil edilən URL-ləri Chromium-da oxu siyahısına əlavə edir.</translation>
 <translation id="452436063477828504">Google Hesabında hər zaman Chromium datasından istifadə edə biləcəyinizdən əmin olun</translation>
 <translation id="4555020257205549924">Bu funksiya aktiv olduqda, Chromium Google Tərcümədən istifadə edərək başqa dillərdə yazılmış səhifələri tərcümə etməyi təklif edəcək. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -285,6 +283,7 @@ Bunları nəzərə alın:
 <translation id="8776843108004031667">Bu hesab və bütün saxlanmamış data Chromium'dan silinəcək.</translation>
 <translation id="88376265765385899">Chromium əlfəcinlərini açır.</translation>
 <translation id="8860548555286245440">URL-ləri Chromium-da Anonim rejimdə açın</translation>
+<translation id="8866191443434488382">Chromium daxil olduğunuz saytlarda izləmə nömrələrini aşkar edəcək və Yeni tab səhifəsində bağlama yeniləmələrini göstərəcək. Bu funksiyanı təmin etmək və alış-veriş funksiyalarını təkmilləşdirmək üçün bağlamanın izlənilməsi nömrəsi və veb-sayt adı Chromium-a göndəriləcək. Bunu <ph name="BEGIN_LINK" />Bağlamanın izlənilməsi ayarlarında<ph name="END_LINK" /> güncəlləyə bilərsiniz.</translation>
 <translation id="8909995017390087892">iOS üçün Chromium</translation>
 <translation id="8924617840944134898">Anonim Chromium tabı açın</translation>
 <translation id="894437814105052438">Hesabdan çıxdığınız zaman Chromium heç bir yeni datanı Google Hesabınızla sinxronizasiya edilməyəcək. Daha əvvəl sinxronizasiya edilmiş data hesabda qalır.</translation>

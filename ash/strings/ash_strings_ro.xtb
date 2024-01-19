@@ -267,7 +267,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2064048859448024834">Previzualizarea camerei este activată</translation>
 <translation id="2067602449040652523">Luminozitatea tastaturii</translation>
 <translation id="2075520525463668108">Activează / dezactivează <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> este <ph name="CAPTURE_STATE" /></translation>
-<translation id="2078034614700056995">Glisează spre dreapta cu patru degete pentru a comuta la desktopul următor</translation>
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="2083190527011054446">Bună seara, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Deschide selectorul de emoji</translation>
@@ -283,7 +282,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2149229036084364364">Accesează melodia anterioară</translation>
 <translation id="2152895518047545149">Se pare că nu lipsește nimic. Bravo!</translation>
 <translation id="2161132820593978283">Încearcă încadrarea camerei ca să fii în centrul ecranului în apelurile video. Activează în Setări rapide.</translation>
-<translation id="2170530631236737939">Glisează în jos cu trei degete pentru a ieși din modul Prezentare generală</translation>
 <translation id="2185166372312820725">Accesează fila anterioară</translation>
 <translation id="2185444992308415167">Parcurge filele de la 1 la 8</translation>
 <translation id="2198625180564913276">Se adaugă profilul. Poate dura câteva minute.</translation>
@@ -1694,7 +1692,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7850320739366109486">Nu deranja</translation>
 <translation id="7851039877802112575">Mută focalizarea pe ferestrele pop-up și pe dialoguri</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Glisează cu trei degete în sus pentru a intra în modul Prezentare generală</translation>
 <translation id="7862292329216937261">Pentru a folosi dispozitivul ca invitat, trebuie să te deconectezi și să selectezi Navighează ca invitat în partea de jos a ecranului.</translation>
 <translation id="7866482334467279021">activată</translation>
 <translation id="7872786842639831132">Dezactivat</translation>
@@ -1805,7 +1802,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8262312463845990408">Schimbă redarea</translation>
 <translation id="8270450402312105425">{0,plural, =1{Treci la versiunea anterioară a dispozitivului în cel mult o oră}few{Treci la versiunea anterioară a dispozitivului în # ore}other{Treci la versiunea anterioară a dispozitivului în # de ore}}</translation>
 <translation id="8277261673056602147">Evidențiază textul pe ecran</translation>
-<translation id="8284362522226889623">Glisează spre stânga cu patru degete pentru a comuta la desktopul anterior</translation>
 <translation id="828708037801473432">Dezactivat</translation>
 <translation id="8297006494302853456">Slab</translation>
 <translation id="8308637677604853869">Meniul anterior</translation>

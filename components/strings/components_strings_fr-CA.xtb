@@ -812,7 +812,7 @@
 <translation id="2544644783021658368">Document simple</translation>
 <translation id="254524874071906077">Définir Chrome comme navigateur par défaut</translation>
 <translation id="2545721997179863249">L'option Tout remplir a été sélectionnée</translation>
-<translation id="2546283357679194313">Témoins et données de site</translation>
+<translation id="2546283357679194313">Témoins et données des sites</translation>
 <translation id="2547466893236767989">Conception et développement Web</translation>
 <translation id="254947805923345898">La valeur attribuée à la politique n'est pas valide.</translation>
 <translation id="2549836668759467704">Services conseil et sous traitance en construction</translation>
@@ -1177,7 +1177,6 @@
 <translation id="33073482541490531">Le mot de passe que vous venez d'utiliser a été trouvé dans un cas de violation de données. Le Gestionnaire de mots de passe vous recommande de modifier ce mot de passe maintenant.</translation>
 <translation id="3307649904964670439">Bouton Personnaliser Chrome, activez-le pour personnaliser l'apparence de votre navigateur</translation>
 <translation id="3308006649705061278">Unité organisationnelle (« OU »)</translation>
-<translation id="3324223664999044166">Trois mots ou plus qui résument vos pensées</translation>
 <translation id="3324687287337751929">4 po x 6 po</translation>
 <translation id="3324983252691184275">Cramoisi</translation>
 <translation id="3325027355611702542">Fourgonnettes de camping et véhicules de plaisance</translation>
@@ -1419,7 +1418,6 @@
 <translation id="3748009735914587286">Métal (haute brillance)</translation>
 <translation id="3748148204939282805">Les cyberpirates à l'œuvre sur le site <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> peuvent vous inciter à faire quelque chose de dangereux comme installer un logiciel ou révéler vos renseignements personnels (par exemple, des mots de passe, des numéros de téléphone ou des numéros de carte de crédit). <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industrie aéronautique</translation>
-<translation id="3751020515020988516">Impossible de comprendre la demande. Essayez-en une autre.</translation>
 <translation id="3752543821772132562">Ignorée, car <ph name="POLICY_NAME" /> n'est pas définie.</translation>
 <translation id="3754210790023674521">Quitter le mode d'incrustation d'image</translation>
 <translation id="3759461132968374835">Aucune erreur n'a été signalée récemment. Les erreurs n'apparaissent ici que lorsque l'envoi de rapports d'erreur est activé.</translation>
@@ -2852,7 +2850,6 @@
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6645291930348198241">Accéder aux témoins et aux données relatives aux sites.</translation>
 <translation id="6645478838938543427">Les alertes de réduction seront envoyées à <ph name="EMAIL_ADDRESS" /></translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Aucun}=1{De 1 site (vous ne serez pas déconnecté de votre compte Google)}one{De # site (vous ne serez pas déconnecté de votre compte Google)}other{De # sites (vous ne serez pas déconnecté de votre compte Google)}}</translation>
 <translation id="6648459603387803038">Votre administrateur peut modifier la configuration de votre navigateur à distance. L'activité sur cet appareil peut aussi être gérée à l'extérieur de Chrome.</translation>
 <translation id="6648524591329069940">Police avec empattement</translation>
 <translation id="6649510485211003056">195 mm x 270 mm</translation>
@@ -3230,7 +3227,6 @@ Détails supplémentaires :
 <translation id="7378877318020334501">Comédies télévisuelles</translation>
 <translation id="7380398842872229465">10 po x 15 po</translation>
 <translation id="738439098860678026">Éducation préscolaire et enseignement primaire</translation>
-<translation id="7388071710882496863">Des requêtes, telles que « rédige un avis pour ce restaurant et donne-lui la note de cinq étoiles »</translation>
 <translation id="7388594495505979117">{0,plural, =1{Votre appareil va redémarrer dans 1 minute}one{Votre appareil va redémarrer dans # minute}other{Votre appareil va redémarrer dans # minutes}}</translation>
 <translation id="7390545607259442187">Confirmer la carte</translation>
 <translation id="7392089738299859607">Mettre à jour l'adresse</translation>

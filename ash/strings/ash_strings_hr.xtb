@@ -267,7 +267,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2064048859448024834">Pregled kamere uključen</translation>
 <translation id="2067602449040652523">Svjetlina tipkovnice</translation>
 <translation id="2075520525463668108">Uključite ili isključite značajku <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />.</translation>
-<translation id="2078034614700056995">Za prelazak na sljedeću radnu površinu prijeđite s četiri prsta udesno</translation>
 <translation id="2079545284768500474">Poništi</translation>
 <translation id="2083190527011054446">Laku noć, <ph name="GIVEN_NAME" /></translation>
 <translation id="2086334242442703436">Otvaranje alata za odabir emojija</translation>
@@ -283,7 +282,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2149229036084364364">Prelazak na prethodnu verziju</translation>
 <translation id="2152895518047545149">Izgleda da ništa ne nedostaje. Izvrsno!</translation>
 <translation id="2161132820593978283">Isprobajte okvir kamere da biste se prikazivali u središtu zaslona tijekom videopoziva. Uključite ga u Brzim postavkama.</translation>
-<translation id="2170530631236737939">Prijeđite s tri prsta prema dolje da biste zatvorili Pregled</translation>
 <translation id="2185166372312820725">Prelazak na prethodnu karticu</translation>
 <translation id="2185444992308415167">Otvaranje kartica od jedan do osam</translation>
 <translation id="2198625180564913276">Dodaje se profil. To može potrajati nekoliko minuta.</translation>
@@ -1694,7 +1692,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7850320739366109486">Ne ometaj</translation>
 <translation id="7851039877802112575">Premještanje fokusa na skočne prozore i dijaloge</translation>
 <translation id="7851768487828137624">Canary</translation>
-<translation id="7860671499921112077">Prijeđite s tri prsta prema gore da biste otvorili Pregled</translation>
 <translation id="7862292329216937261">Da biste upotrebljavali uređaj kao gost, morate se odjaviti, a zatim pri dnu zaslona odabrati Pregledavaj kao gost.</translation>
 <translation id="7866482334467279021">uključeno</translation>
 <translation id="7872786842639831132">Isključeno</translation>
@@ -1805,7 +1802,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8262312463845990408">Uključi/isključi reprodukciju</translation>
 <translation id="8270450402312105425">{0,plural, =1{Vratite uređaj na prethodnu verziju u roku od sat vremena}one{Vratite uređaj na prethodnu verziju u roku od # h}few{Vratite uređaj na prethodnu verziju u roku od # h}other{Vratite uređaj na prethodnu verziju u roku od # h}}</translation>
 <translation id="8277261673056602147">Istaknite tekst na zaslonu</translation>
-<translation id="8284362522226889623">Da biste prešli na prethodnu radnu površinu, prijeđite s četiri prsta ulijevo</translation>
 <translation id="828708037801473432">Isključeno</translation>
 <translation id="8297006494302853456">Slab</translation>
 <translation id="8308637677604853869">Prethodni izbornik</translation>

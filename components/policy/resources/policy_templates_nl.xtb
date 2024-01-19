@@ -5240,6 +5240,7 @@ Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in d
          wordt de <ph name="PRODUCT_NAME" />-functie aangezet.
 
           Als je dit beleid niet toepast, wordt de functie verplicht uitgezet.</translation>
+<translation id="5433865420958136693">Grafische versnelling gebruiken indien beschikbaar</translation>
 <translation id="5435888298115339571">Delen van bureaublad aanzetten in de omnibox en het menu met 3 stippen</translation>
 <translation id="5441508088704391614">Geen speciale beperkingen. Standaard.</translation>
 <translation id="5442026853063570579">Met dit beleid wordt ook de toegang tot de ontwikkelaarsopties van Android beheerd. Als je dit beleid instelt op 'DeveloperToolsDisallowed' (waarde 2), hebben gebruikers geen toegang tot ontwikkelaarsopties. Als je dit beleid instelt op een andere waarde of niet instelt, hebben gebruikers toegang tot ontwikkelaarsopties door zeven keer op het buildnummer te tikken in de app Instellingen van Android.</translation>
@@ -5313,6 +5314,9 @@ Als je het beleid niet toepast of niet instelt, wordt op basis van de instelling
 <translation id="5480380613778757009">Als je dit beleid uitzet of niet instelt, worden alle weergave-instellingen die zijn ingesteld in de beheerde gastsessie, gereset zodra de sessie wordt beëindigd. Als je dit beleid instelt op True, worden de weergave-eigenschappen bewaard nadat de beheerde gastsessie is beëindigd.</translation>
 <translation id="5483012943408894695">Beginpunten of hostnaampatronen waarvoor geen beperkingen voor niet-beveiligde herkomsten zouden moeten gelden.</translation>
 <translation id="5483065054530244863">Door lokale vertrouwensinstanties verstrekte, met SHA-1 ondertekende certificaten toestaan</translation>
+<translation id="5486917900445838803">Als je dit beleid toepast of niet instelt, wordt grafische versnelling gebruikt als dit beschikbaar is.
+
+Als je het beleid niet toepast, wordt grafische versnelling niet gebruikt.</translation>
 <translation id="5487758664517243511">Als je deze instelling aanzet, kunnen gebruikers die Telefoonhub al hebben toegestaan, taken voortzetten in Chrome OS, zoals de webpagina's van hun telefoon bekijken.
 
       Als je deze instelling uitzet, mogen gebruikers deze functie niet gebruiken. Als het beleid PhoneHubAllowed niet wordt toegepast, mogen gebruikers deze functie ook niet gebruiken.
@@ -6433,6 +6437,7 @@ Als je dit beleid niet instelt, wordt het virtuele toetsenbord getoond op basis 
 Als je het beleid niet toepast of niet instelt, bepaalt CNAME-lookup de canonieke naam van de server tijdens het maken van de Kerberos SPN.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">Safe Browsing-checks uitvoeren op alle gedownloade bestanden</translation>
+<translation id="6426899507714989471">Grafische versnelling uitzetten</translation>
 <translation id="6433697627431665375">Voorkomen dat <ph name="PRODUCT_NAME" />-gegevens in back-ups worden opgenomen</translation>
 <translation id="6436052172226685535">Standaardgedrag voor LBS.</translation>
 <translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> probeert waar mogelijk bepaalde navigatie te upgraden van HTTP naar HTTPS. Je kunt dit beleid gebruiken om dit gedrag uit te zetten. Als je dit instelt op True of niet instelt, wordt deze functie standaard aangezet.
@@ -9339,9 +9344,6 @@ Als je het beleid toepast of niet instelt, zijn de lookups via proxy met een bet
 Als je het beleid niet toepast, zijn lookups via proxy met een betere beveiliging niet toegestaan. Gedeeltelijke hashes van URL's worden rechtstreeks naar Google geüpload met een veel lagere frequentie, waardoor de bescherming afneemt.</translation>
 <translation id="8858642179038618439">Beperkte modus van YouTube afdwingen</translation>
 <translation id="8860342862142842017">Handhaving van Certificaattransparantie voor een lijst met subjectPublicKeyInfo-hashes</translation>
-<translation id="8860474826929590628">Als je dit beleid toepast of niet instelt, is <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> toegestaan op alle webpagina's.
-
-Als je dit beleid niet toepast, is <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> op geen enkele webpagina beschikbaar.</translation>
 <translation id="8860894781631833477">Gebruikers kunnen het releasekanaal voor <ph name="PRODUCT_OS_NAME" /> instellen</translation>
 <translation id="8862086508140571198">Met dit beleid kun je een lijst met DLC's (downloadbare content) instellen die zo snel mogelijk moeten worden gedownload. De gedownloade DLC's zijn dan beschikbaar voor alle gebruikers op het apparaat.
 
@@ -9757,6 +9759,7 @@ Als je dit beleid toepast of niet instelt, kunnen in het product enquêtes aan g
 Als je dit beleid niet toepast, worden er geen enquêtes in het product aan gebruikers getoond.
 
 Dit beleid heeft geen effect als <ph name="METRICS_REPORTING_ENABLED_POLICY_NAME" /> uitstaat, waardoor enquêtes in het product ook worden uitgezet.</translation>
+<translation id="9173633148008709976">Grafische versnelling aanzetten</translation>
 <translation id="9180108183162961002">Toestaan dat gebruikers als gast inloggen bij de browser</translation>
 <translation id="9185963199234034321">Hoog contrast op het inlogscherm aanzetten en de gebruiker toestaan dit tijdelijk uit te zetten</translation>
 <translation id="9187743794267626640">Koppeling van externe opslag uitzetten</translation>

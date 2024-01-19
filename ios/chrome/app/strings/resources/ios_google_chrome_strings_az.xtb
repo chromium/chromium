@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
+<translation id="1066101356081285416">Chrome daxil olduğunuz saytlarda izləmə nömrələrini aşkar edəcək və Yeni tab səhifəsində bağlama yeniləmələrini göstərəcək. Bu funksiyanı təmin etmək və alış-veriş funksiyalarını təkmilləşdirmək üçün bağlamanın izlənilməsi nömrəsi və veb-sayt adı Google-a göndəriləcək. Bunu <ph name="BEGIN_LINK" />Bağlamanın izlənilməsi ayarlarında<ph name="END_LINK" /> güncəlləyə bilərsiniz.</translation>
 <translation id="1085696779717592361">Defolt olaraq Chrome istifadə edin</translation>
 <translation id="1105362920864247682">Chrome-da baxış datasını silin.</translation>
 <translation id="1113057722807951993">Parol ifadəsi şifrələməsinə Google Pay-dən ödəniş metodu və ünvanlar daxil deyil.
@@ -46,7 +47,6 @@ Nəzərə alın ki:
 <translation id="1917964099031477364">Bu hesab və bütün saxlanmamış data Chrome'dan və bu cihazdakı digər Google tətbiqlərindən silinəcək.</translation>
 <translation id="1965935827552890526">Digər açıq Chrome pəncərəsində gördüyünüz işi bitirin.</translation>
 <translation id="1987779152850321833">Chrome-dan maksimum yararlanmaq üçün aşağıda təklif edilənləri tamamlayın.</translation>
-<translation id="2008357574463816229">Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />hesabda Chrome datasını silin<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Sadə, etibarlı və həmişəkindən daha sürətli bir Google Chrome ilə daha çox iş görün.</translation>
 <translation id="2120238739383482109">Chrome əlfəcinlərini açır.</translation>
 <translation id="2147651015520127414">Chrome təsdiq edir ki, <ph name="ISSUER" /> bu veb saytı sertifikatlaşdırıb.</translation>
@@ -203,7 +203,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="686691656039982452">Google Hesabında <ph name="BEGIN_LINK" />yadda saxlanan Chrome datasını idarə edə bilərsiniz<ph name="END_LINK" />.
 
 Chrome təcrübənizi təkmilləşdirmək məqsədilə data istifadə edən digər ayarlar üçün <ph name="BEGIN_LINK" />Google Xidmətlərinə<ph name="END_LINK" /> keçin.</translation>
-<translation id="687586529977635009">Chrome daxil olduğunuz saytlarda izləmə nömrələrini aşkar edəcək və Yeni tab səhifəsində bağlama yeniləmələrini göstərəcək. Bu funksiyanı təmin etmək və Şopinq xidmətini təkmilləşdirmək üçün data Google ilə paylaşılacaq. Bunu <ph name="BEGIN_LINK" />Bağlama izləmə ayarlarında<ph name="END_LINK" /> dəyişə bilərsiniz.</translation>
 <translation id="6916015246697034114">Chrome-da səs ilə axtarın</translation>
 <translation id="6964931465519938134">İndi istənilən vaxt mesajlar, sənədlər və digər tətbiqlərdə keçidlərə toxunduqda Chrome'u istifadə edə bilərsiniz.</translation>
 <translation id="6975725306479268850">Avtodoldurma üçün Chrome'u seçin</translation>

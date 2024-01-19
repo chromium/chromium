@@ -100,7 +100,6 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 
 Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Otwieraj Chromium z dowolnej aplikacji</translation>
-<translation id="4002314982058020967">Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Otwiera i uruchamia kontrolę zabezpieczeń w Chromium.</translation>
 <translation id="4043291146360695975">Hasła są zapisywane w Menedżerze haseł tylko na tym urządzeniu.</translation>
 <translation id="4099085513035183040">Nieobsługiwane w Chromium Beta</translation>
@@ -113,7 +112,6 @@ Dane zostały zaszyfrowane Twoim hasłem. Podaj hasło, aby korzystać z danych
 <translation id="4408912345039114853">Uruchom kontrolę zabezpieczeń w Chromium</translation>
 <translation id="4432744876818348753">Zaloguj się, aby w pełni wykorzystać możliwości Chromium.</translation>
 <translation id="4445228361214254027">Twoja organizacja wyłączyła możliwość używania i zapisywania danych Chromium na Twoim koncie Google. Nowe zakładki, hasła i inne ustawienia będą zapisywane tylko na tym urządzeniu.</translation>
-<translation id="4485517920713468480">Chromium wykryje numery śledzenia w odwiedzanych przez Ciebie witrynach i wyświetli aktualne informacje o przesyłkach na stronie Nowa karta. Aby ta funkcja mogła działać, Twoje dane będą udostępniane Google. Pozwoli to też na ulepszanie Zakupów Google. Możesz to zmienić w <ph name="BEGIN_LINK" />ustawieniach śledzenia przesyłek<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Dodaje wpisane adresy URL do listy Do przeczytania w Chromium.</translation>
 <translation id="452436063477828504">Upewnij się, że zawsze możesz używać danych Chromium na swoim koncie Google</translation>
 <translation id="4555020257205549924">Gdy ta funkcja jest włączona, Chromium oferuje tłumaczenie stron w innych językach przy użyciu Tłumacza Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>

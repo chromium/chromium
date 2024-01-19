@@ -100,7 +100,6 @@ For å se flere innstillinger som bruker data for å forbedre Chromium-opplevels
 
 For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Åpne Chromium fra hvilken som helst app</translation>
-<translation id="4002314982058020967">Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Åpner og kjører sikkerhetssjekken i Chromium.</translation>
 <translation id="4043291146360695975">Passord lagres i Passordlagring kun på denne enheten.</translation>
 <translation id="4099085513035183040">Støttes ikke i Chromium Beta</translation>
@@ -113,7 +112,6 @@ Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og la
 <translation id="4408912345039114853">Kjør Chromium-sikkerhetssjekk</translation>
 <translation id="4432744876818348753">Logg på for å få mest mulig ut av Chromium.</translation>
 <translation id="4445228361214254027">Organisasjonen din har slått av muligheten til å bruke og lagre Chromium-data i Google-kontoen din. Nye bokmerker, passord med mer lagres bare på denne enheten.</translation>
-<translation id="4485517920713468480">Chromium registrerer sporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Dataene dine blir delt med Google, slik at vi kan tilby denne funksjonen og gjøre Shopping enda bedre for alle. Du kan endre dette i <ph name="BEGIN_LINK" />innstillingene for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="4498832288620833153">Legger til de angitte nettadressene på leselisten i Chromium.</translation>
 <translation id="452436063477828504">Sørg for at du alltid kan bruke Chromium-dataene i Google-kontoen din</translation>
 <translation id="4555020257205549924">Når denne funksjonen er slått på, tilbyr Chromium å oversette sider som er skrevet på andre språk, ved hjelp av Google Oversetter. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -285,6 +283,7 @@ Dette bør du tenke over:
 <translation id="8776843108004031667">Denne kontoen og eventuelle ulagrede data blir fjernet fra Chromium.</translation>
 <translation id="88376265765385899">Åpner Chromium-bokmerkene.</translation>
 <translation id="8860548555286245440">Åpne nettadresser i Chromium i Inkognito</translation>
+<translation id="8866191443434488382">Chromium registrerer sporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Pakkesporingsnummeret og navnet på nettstedet sendes til Chromium, slik at Chromium kan levere denne funksjonen og gjøre Shopping-funksjonene bedre for alle. Du kan når som helst oppdatere dette i <ph name="BEGIN_LINK" />innstillingene for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium for iOS</translation>
 <translation id="8924617840944134898">Åpne en inkognitofane i Chromium</translation>
 <translation id="894437814105052438">Når du logger av, synkroniserer ikke Chromium nye data med Google-kontoen din. Tidligere synkroniserte data blir værende på kontoen.</translation>

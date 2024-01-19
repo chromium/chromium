@@ -352,7 +352,6 @@
 <translation id="2946420957526726953">‏درحال به‌روزرسانی Chrome برای اتصال به دستگاه‌های دیگر</translation>
 <translation id="2951071800649516099">صفحه‌ها را برای خواندن در فرصتی دیگر به فهرست خواندن اضافه کنید</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> صفحه خوانده‌نشده}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحه خوانده‌نشده}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحه خوانده‌نشده}}</translation>
-<translation id="2961210776189273067">عنوان</translation>
 <translation id="296370266220139811">صرفه‌جویی در زمان و تایپ کمتر</translation>
 <translation id="2977350910003566746">ترتیب براساس آخرین باز شدن</translation>
 <translation id="297771753501244313">به‌ترتیب آخرین باز شدن</translation>
@@ -1126,7 +1125,6 @@
 <translation id="694267552845942083">اکنون درحال سفارشی کردن تنظیمات «همگام‌سازی» هستید. برای تکمیل روشن کردن همگام‌سازی، روی دکمه «تأیید» در پایین صفحه ضربه بزنید. پیمایش به بالا</translation>
 <translation id="6945221475159498467">انتخاب</translation>
 <translation id="6955535239952325894">این تنظیم در مرورگرهای مدیریت‌شده غیرفعال است</translation>
-<translation id="6958103823951858863">‏باز کردن خودکار PDF بعداز بارگیری</translation>
 <translation id="6963766334940102469">حذف نشانک‌ها</translation>
 <translation id="696447261358045621">خروج از «حالت ناشناس»</translation>
 <translation id="6965382102122355670">تأیید</translation>

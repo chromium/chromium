@@ -46,7 +46,6 @@ Kontuan hartu beharrekoak:
 <translation id="1917964099031477364">Kontu hau eta gorde gabeko datuak kendu egingo dira Chromium-etik eta gailuko Google-ren beste aplikazio batzuetatik.</translation>
 <translation id="1965935827552890526">Amaitu egiten ari zarena irekita daukazun Chrome-ko beste leihoan.</translation>
 <translation id="1987779152850321833">Gauzatu behean iradokitako ekintzak Chrome-ri etekinik handiena ateratzeko.</translation>
-<translation id="2008357574463816229">Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">Egin gauza gehiago Google Chrome-rekin: sinplea, segurua eta inoiz baino bizkorragoa da.</translation>
 <translation id="2120238739383482109">Chrome-ko laster-markak irekitzen ditu.</translation>
 <translation id="2147651015520127414">Webgunearen ziurtagiria <ph name="ISSUER" /> hornitzaileak jaulki duela egiaztatu du Chrome-k.</translation>
@@ -203,7 +202,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="686691656039982452"><ph name="BEGIN_LINK" />Chrome-ko zein datu gordetzen diren<ph name="END_LINK" /> kudea dezakezu Google Kontua atalean.
 
 Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
-<translation id="687586529977635009">Chrome-k jarraipen-zenbakiak hautemango ditu bisitatzen dituzun webguneetan, eta paketeei buruzko informazio eguneratua erakutsiko dizu Fitxa berria orrian. Eginbide hori emateko eta erosketak guztientzat hobetzeko, datuak Google-rekin partekatuko dira. Hori aldatzeko, joan <ph name="BEGIN_LINK" />paketeen jarraipenaren ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Bilatu Voice-rekin Chrome-n</translation>
 <translation id="6964931465519938134">Orain, mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean, Chrome erabili ahalko duzu.</translation>
 <translation id="6975725306479268850">Aukeratu Chrome betetze automatikorako</translation>

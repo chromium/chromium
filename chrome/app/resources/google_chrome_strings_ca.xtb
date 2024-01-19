@@ -195,6 +195,7 @@
 <translation id="4053720452172726777">Personalitza i controla Google Chrome</translation>
 <translation id="4106587138345390261">Chrome està explorant noves funcions que permetin als llocs web oferir la mateixa experiència de navegació utilitzant menys informació teva</translation>
 <translation id="4110895483821904099">Configura el teu perfil de Chrome nou</translation>
+<translation id="4128488089242627000">Chrome s'executa més ràpidament i les funcions que utilitzen JavaScript haurien de funcionar tal com es van dissenyar (opció recomanada)</translation>
 <translation id="4147555960264124640">Esteu a punt d'iniciar la sessió amb un compte gestionat i d'atorgar el control del vostre perfil de Google Chrome a l'administrador corresponent. Les vostres dades de Chrome, com ara aplicacions, adreces d'interès, historial, contrasenyes i altres opcions, s'enllaçaran permanentment amb <ph name="USER_NAME" />. Podreu suprimir aquestes dades mitjançant el tauler de control de comptes de Google, però no les podreu associar amb un altre compte. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">S'està instal·lant...</translation>
 <translation id="4149882025268051530">L'instal·lador no ha pogut descomprimir el fitxer. Torna a baixar Google Chrome.</translation>
@@ -241,6 +242,7 @@
 <translation id="4793679854893018356">Informació sobre com et protegeix Chrome</translation>
 <translation id="4828579605166583682">Google Chrome està provant de substituir les contrasenyes existents. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
 <translation id="4842397268809523050">ChromeOS Flex no ha pogut sincronitzar les teves dades perquè la sincronització no està disponible per al teu domini.</translation>
+<translation id="4873692836499071887">Per obtenir actualitzacions de Google Chrome en un futur, necessitaràs macOS 11 o una versió posterior. Aquest ordinador utilitza macOS 10.15.</translation>
 <translation id="4873783916118289636">Revisa els controls principals de privadesa i seguretat a Chrome</translation>
 <translation id="4891791193823137474">Permet que Google Chrome s'executi en procés de fons</translation>
 <translation id="4895437082222824641">Obre l'enllaç en una pes&amp;tanya nova a Chrome</translation>
@@ -345,6 +347,7 @@
 <translation id="677276454032249905">Vols sortir de Chrome igualment?</translation>
 <translation id="6794858689789885890">Suprimeix sempre les dades dels llocs web del dispositiu quan tanquis Chrome</translation>
 <translation id="683440813066116847">Regla d'entrada de Google Chrome Canary per permetre el trànsit de mDNS.</translation>
+<translation id="6851981911629679515">Activa la protecció addicional al motor JavaScript i WebAssembly de Chrome</translation>
 <translation id="6881299373831449287">S'està actualitzant Chrome</translation>
 <translation id="6885412569789873916">Aplicacions de Chrome Beta</translation>
 <translation id="6933858244219479645">Sistema Chrome OS</translation>
@@ -466,6 +469,7 @@
 <translation id="873133009373065397">Google Chrome no pot determinar ni definir el navegador predeterminat</translation>
 <translation id="8765470054473112089">Quan escrius a la barra d'adreces o al quadre de cerca, Chrome envia el que escrius al teu motor de cerca predeterminat per obtenir millors suggeriments. Aquesta opció està desactivada en el mode d'incògnit.</translation>
 <translation id="878572486461146056">Error d'instal·lació: l'administrador de la xarxa ha aplicat una norma de grup que impedeix la instal·lació (<ph name="INSTALL_ERROR" />)</translation>
+<translation id="8801657293260363985">V8 és el motor JavaScript i WebAssembly de Chrome que s'utilitza per millorar el rendiment dels llocs web</translation>
 <translation id="8821043148920470810">Per obtenir actualitzacions de Google Chrome en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 7.</translation>
 <translation id="8823341990149967727">Chrome no està actualitzat</translation>
 <translation id="8825634023950448068">Amb la finalitat de protegir la teva privadesa, suprimim automàticament els interessos que tenen més de 4 setmanes. A mesura que continuïs navegant, és possible que torni a aparèixer un interès a la llista. Si Chrome s'equivoca o no vols veure determinats anuncis, pots suprimir un interès.</translation>

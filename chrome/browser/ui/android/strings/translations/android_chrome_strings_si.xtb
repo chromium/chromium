@@ -352,7 +352,6 @@
 <translation id="2946420957526726953">වෙනත් උපාංගවලට සම්බන්ධ වීමට Chrome යාවත්කාලීන කරමින්.</translation>
 <translation id="2951071800649516099">පසුව ලබා ගැනීම සඳහා ඔබගේ කියවීම් ලැයිස්තුවට පිටු එක් කරන්න</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{නොකියවූ පිටු <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />}one{නොකියවූ පිටු <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />}other{නොකියවූ පිටු <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />}}</translation>
-<translation id="2961210776189273067">මාතෘකාව</translation>
 <translation id="296370266220139811">කාලය ඉතිරි කර අඩුවෙන් ටයිප් කරන්න</translation>
 <translation id="2977350910003566746">අවසන් වරට විවෘත කළ අනුව වර්ග කිරීම</translation>
 <translation id="297771753501244313">අවසන් විවෘත අනුව සුබෙදීම</translation>
@@ -1126,7 +1125,6 @@
 <translation id="694267552845942083">ඔබ දැනට ඔබගේ සමමුහුර්ත සැකසීම් අභිරුචිකරණය කරමින් සිටී. සමමුහුර්තය ක්‍රියාත්මක කිරීම අවසන් කිරීමට, තිරයේ පහළම ළඟ ඇති තහවුරු කිරීමේ බොත්තම තට්ටු කරන්න. ඉහළට සංචාලනය කරන්න</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>
 <translation id="6955535239952325894">මෙම සැකසීම කළමනා කෙරෙන බ්‍රවුසර මත අබල කෙරේ</translation>
-<translation id="6958103823951858863">බා ගත් පසු PDF එක ස්වයංක්‍රීයව විවෘත කරන්න</translation>
 <translation id="6963766334940102469">පිටුසන් මකන්න</translation>
 <translation id="696447261358045621">අප්‍රසිද්ධ ප්‍රකාරය හැර යන්න</translation>
 <translation id="6965382102122355670">හරි</translation>

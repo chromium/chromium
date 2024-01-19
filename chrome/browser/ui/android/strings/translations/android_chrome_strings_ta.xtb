@@ -352,7 +352,6 @@
 <translation id="2946420957526726953">பிற சாதனங்களுடன் இணைப்பதற்காக Chromeமைப் புதுப்பிக்கிறது</translation>
 <translation id="2951071800649516099">பின்னர் படிக்க, வாசிப்புப் பட்டியலில் பக்கங்களைச் சேர்க்கலாம்</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{படிக்காத பக்கம்: <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />}other{படிக்காத பக்கங்கள்: <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />}}</translation>
-<translation id="2961210776189273067">பெயரின் முன்னொட்டு</translation>
 <translation id="296370266220139811">டைப் செய்யும் நேரத்தைச் சேமியுங்கள்</translation>
 <translation id="2977350910003566746">கடைசியாகத் திறந்ததன்படி வரிசைப்படுத்துகிறது</translation>
 <translation id="297771753501244313">கடைசியாகத் திறந்ததன்படி வரிசைப்படுத்து</translation>
@@ -1126,7 +1125,6 @@
 <translation id="694267552845942083">தற்போது ஒத்திசைவு அமைப்புகளைப் பிரத்தியேகமாக்குகிறீர்கள். ஒத்திசைவை இயக்க திரையின் கீழ்ப்பகுதிக்கு அருகிலுள்ள ‘உறுதிப்படுத்து’ பட்டனைத் தட்டவும். மேலே செல்</translation>
 <translation id="6945221475159498467">தேர்ந்தெடு</translation>
 <translation id="6955535239952325894">நிர்வகிக்கப்பட்ட உலாவிகளில் இந்த அமைப்பு முடக்கப்பட்டுள்ளது</translation>
-<translation id="6958103823951858863">பதிவிறக்கியபிறகு PDF ஃபைலைத் தானாகவே திறத்தல்</translation>
 <translation id="6963766334940102469">புத்தகக்குறிகளை நீக்கு</translation>
 <translation id="696447261358045621">மறைநிலைப் பயன்முறையில் இருந்து வெளியேறும்</translation>
 <translation id="6965382102122355670">சரி</translation>
