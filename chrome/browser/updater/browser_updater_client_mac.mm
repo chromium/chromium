@@ -18,11 +18,14 @@ std::string BrowserUpdaterClient::GetAppId() {
 }
 
 updater::RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
+  base::FilePath bundle = base::apple::OuterBundlePath();
   updater::RegistrationRequest req;
   req.app_id = GetAppId();
   google_brand::GetBrand(&req.brand_code);
   req.version = base::Version(version_info::GetVersionNumber());
+  req.version_path = bundle.AppendASCII("Contents").AppendASCII("Info.plist");
+  req.version_key = "KSVersion";
   req.ap = chrome::GetChannelName(chrome::WithExtendedStable(true));
-  req.existence_checker_path = base::apple::OuterBundlePath();
+  req.existence_checker_path = bundle;
   return req;
 }
