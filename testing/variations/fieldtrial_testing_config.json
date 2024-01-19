@@ -13158,7 +13158,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "brp-mode": "enabled-in-same-slot-mode",
+                        "brp-mode": "enabled",
                         "enabled-processes": "all-processes"
                     },
                     "enable_features": [
