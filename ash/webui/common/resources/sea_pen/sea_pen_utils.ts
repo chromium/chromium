@@ -6,7 +6,7 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {parseTemplateText, SeaPenOption, SeaPenTemplate} from './constants.js';
-import {SeaPenTemplateChip} from './sea_pen.mojom-webui.js';
+import {SeaPenTemplateChip, SeaPenTemplateId} from './sea_pen.mojom-webui.js';
 
 // Returns true if `maybeDataUrl` is a Url that contains a base64 encoded image.
 export function isImageDataUrl(maybeDataUrl: unknown): maybeDataUrl is Url {
@@ -31,6 +31,16 @@ export function logSeaPenTemplateFeedback(
     templateName: string, positiveFeedback: boolean) {
   chrome.metricsPrivate.recordBoolean(
       `Ash.SeaPen.${templateName}.UserFeedback`, positiveFeedback);
+}
+
+export function logGenerateSeaPenWallpaper(seaPenTemplateId: SeaPenTemplateId) {
+  // TODO(b:321157226): Set up UMA logging for VC background.
+  if (window.location.origin !== 'chrome://personalization') {
+    return;
+  }
+  chrome.metricsPrivate.recordEnumerationValue(
+      `Ash.SeaPen.CreateButton`, seaPenTemplateId,
+      SeaPenTemplateId.MAX_VALUE + 1);
 }
 
 /**

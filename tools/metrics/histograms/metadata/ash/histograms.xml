@@ -6024,6 +6024,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.SeaPen.CreateButton" enum="SeaPenTemplateId"
+    expires_after="2024-12-31">
+  <owner>ericamlee@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records the user's selected template when they create a Sea Pen wallpaper.
+  </summary>
+</histogram>
+
 <histogram name="Ash.SeaPen.{TemplateName}.UserFeedback" enum="Boolean"
     expires_after="2024-12-31">
   <owner>pzliu@google.com</owner>

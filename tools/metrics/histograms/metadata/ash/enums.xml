@@ -1640,6 +1640,20 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="AlreadyAcceptedDialog"/>
 </enum>
 
+<enum name="SeaPenTemplateId">
+<!-- Defined in ash/webui/common/mojom/sea_pen.mojom -->
+
+  <int value="0" label="kFlower"/>
+  <int value="1" label="kMineral"/>
+  <int value="2" label="kArt"/>
+  <int value="3" label="kCharacters"/>
+  <int value="4" label="kTerrain"/>
+  <int value="5" label="kCurious"/>
+  <int value="6" label="kDreamscapes"/>
+  <int value="7" label="kTranslucent"/>
+  <int value="8" label="kScifi"/>
+</enum>
+
 <enum name="SetWallpaperResult">
   <int value="0" label="Success"/>
   <int value="1" label="Permission Denied"/>

@@ -11,16 +11,18 @@ import "url/mojom/url.mojom";
 // TODO(b/318565684): Move generated code to a separate file.
 
 // The unique ID to identify a template.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum SeaPenTemplateId {
   kFlower = 0,
-  kMineral,
-  kArt,
-  kCharacters,
-  kTerrain,
-  kCurious,
-  kDreamscapes,
-  kTranslucent,
-  kScifi,
+  kMineral = 1,
+  kArt = 2,
+  kCharacters = 3,
+  kTerrain = 4,
+  kCurious = 5,
+  kDreamscapes = 6,
+  kTranslucent = 7,
+  kScifi = 8,
 };
 
 // A variable in the template text that can be mapped to multiple option values.

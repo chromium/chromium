@@ -23,7 +23,7 @@ import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {SeaPenPaths, SeaPenRouterElement} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_template_query_element.html.js';
-import {ChipToken, getDefaultOptions, getTemplateTokens, TemplateToken} from './sea_pen_utils.js';
+import {ChipToken, getDefaultOptions, getTemplateTokens, logGenerateSeaPenWallpaper, TemplateToken} from './sea_pen_utils.js';
 
 export interface SeaPenTemplateQueryElement {
   $: {
@@ -205,12 +205,16 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     };
   }
 
+  private getSeaPenTemplateId_(): SeaPenTemplateId {
+    return parseInt(this.templateId!, 10);
+  }
+
   private getTemplateRequest_(): SeaPenQuery {
     const optionMap = new Map<SeaPenTemplateChip, SeaPenTemplateOption>();
     this.selectedOptions_.forEach((option, chip) => {
       optionMap.set(chip, option.value);
     });
-    const id: SeaPenTemplateId = parseInt(this.templateId!, 10);
+    const id = this.getSeaPenTemplateId_();
     assert(!isNaN(id));
     return {
       templateQuery: {
@@ -224,6 +228,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   private onClickSearchButton_() {
     searchSeaPenThumbnails(
         this.getTemplateRequest_(), getSeaPenProvider(), this.getStore());
+    logGenerateSeaPenWallpaper(this.getSeaPenTemplateId_());
     SeaPenRouterElement.instance().goToRoute(
         SeaPenPaths.RESULTS, {seaPenTemplateId: this.templateId!.toString()});
   }
