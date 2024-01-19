@@ -130,7 +130,7 @@ class FwupdClientImpl : public FwupdClient {
       dbus::MethodCall method_call(kFwupdServiceInterface,
                                    kFwupdSetFeatureFlagsMethodName);
       dbus::MessageWriter writer(&method_call);
-      writer.AppendInt64(kRequestsFeatureFlag);
+      writer.AppendUint64(kRequestsFeatureFlag);
 
       proxy_->CallMethodWithErrorResponse(
           &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,

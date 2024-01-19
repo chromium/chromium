@@ -707,15 +707,15 @@ TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagEnabled) {
   // Expect that the D-Bus method "SetFeatureFlags" is called when the Firmware
   // Updates v2 flag is enabled.
 
-  // Helper function to get the int64 args passed to the given method_call.
-  auto GetInt64ArgumentOfMethod =
-      [](dbus::MethodCall* method_call) -> std::optional<int64_t> {
+  // Helper function to get the uint64 args passed to the given method_call.
+  auto GetUint64ArgumentOfMethod =
+      [](dbus::MethodCall* method_call) -> std::optional<uint64_t> {
     dbus::MessageReader reader(method_call);
     if (!reader.HasMoreData()) {
       return std::nullopt;
     }
-    int64_t feature_flag_arguments;
-    if (!reader.PopInt64(&feature_flag_arguments)) {
+    uint64_t feature_flag_arguments;
+    if (!reader.PopUint64(&feature_flag_arguments)) {
       return std::nullopt;
     }
     return feature_flag_arguments;
@@ -731,7 +731,7 @@ TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagEnabled) {
                                 std::mem_fn(&dbus::MethodCall::GetMember),
                                 testing::StrEq("SetFeatureFlags")),
               testing::ResultOf("feature flag passed to the method call",
-                                GetInt64ArgumentOfMethod,
+                                GetUint64ArgumentOfMethod,
                                 testing::Eq(kRequestsFeatureFlag))),
           _, _))
       .Times(1);
