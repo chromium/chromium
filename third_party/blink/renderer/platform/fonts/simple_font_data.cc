@@ -495,7 +495,7 @@ void SimpleFontData::BoundsForGlyphs(const Vector<Glyph, 256>& glyphs,
   SkFontGetBoundsForGlyphs(font_, glyphs, bounds->data());
 }
 
-float SimpleFontData::PlatformWidthForGlyph(Glyph glyph) const {
+float SimpleFontData::WidthForGlyph(Glyph glyph) const {
   if (!platform_data_.size())
     return 0;
 

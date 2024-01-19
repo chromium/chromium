@@ -140,7 +140,6 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   void BoundsForGlyphs(const Vector<Glyph, 256>&, Vector<SkRect, 256>*) const;
   gfx::RectF PlatformBoundsForGlyph(Glyph) const;
   float WidthForGlyph(Glyph) const;
-  float PlatformWidthForGlyph(Glyph) const;
 
   float SpaceWidth() const { return space_width_; }
   void SetSpaceWidth(float space_width) { space_width_ = space_width; }
@@ -252,7 +251,6 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
 // too slow to be able to remove the caching layer we have here.
 #if BUILDFLAG(IS_APPLE)
   mutable std::unique_ptr<GlyphMetricsMap<gfx::RectF>> glyph_to_bounds_map_;
-  mutable GlyphMetricsMap<float> glyph_to_width_map_;
 #endif
 };
 
@@ -273,20 +271,6 @@ ALWAYS_INLINE gfx::RectF SimpleFontData::BoundsForGlyph(Glyph glyph) const {
   glyph_to_bounds_map_->SetMetricsForGlyph(glyph, bounds_result);
 
   return bounds_result;
-#endif
-}
-
-ALWAYS_INLINE float SimpleFontData::WidthForGlyph(Glyph glyph) const {
-#if !BUILDFLAG(IS_APPLE)
-  return PlatformWidthForGlyph(glyph);
-#else
-  if (absl::optional<float> width = glyph_to_width_map_.MetricsForGlyph(glyph))
-    return *width;
-
-  float width = PlatformWidthForGlyph(glyph);
-
-  glyph_to_width_map_.SetMetricsForGlyph(glyph, width);
-  return width;
 #endif
 }
 
