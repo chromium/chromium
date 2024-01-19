@@ -141,6 +141,7 @@ ci.builder(
 # and measuring performance to see if we can roll LSan into ASan.
 ci.builder(
     name = "mac-lsan-fyi-rel",
+    description_html = "Runs basic Mac tests with is_lsan=true",
     schedule = "with 24h interval",
     triggered_by = [],
     builder_spec = builder_config.builder_spec(

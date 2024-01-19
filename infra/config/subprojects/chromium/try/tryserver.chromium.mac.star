@@ -264,6 +264,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "mac-lsan-fyi-rel",
+    mirrors = [
+        "ci/mac-lsan-fyi-rel",
+    ],
+    gn_args = "ci/mac-lsan-fyi-rel",
+)
+
+try_.builder(
+    name = "mac-ubsan-fyi-rel",
+    mirrors = [
+        "ci/mac-ubsan-fyi-rel",
+    ],
+    gn_args = "ci/mac-ubsan-fyi-rel",
+)
+
+try_.builder(
     name = "mac12-arm64-rel",
     branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [

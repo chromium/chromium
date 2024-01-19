@@ -2,7 +2,7 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/mac-ubsan-fyi-rel/gn-args.json"
+        "infra/config/generated/builders/try/mac-ubsan-fyi-rel/gn-args.json"
       ],
       "builder_db": {
         "entries": [
@@ -37,18 +37,11 @@
           "builder": "mac-ubsan-fyi-rel",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "mac-ubsan-fyi-rel",
-          "group": "tryserver.chromium.mac"
-        }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 250,
+    "instance": "rbe-chromium-untrusted",
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -59,6 +52,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.memory.fyi",
-  "recipe": "chromium"
+  "builder_group": "tryserver.chromium.mac",
+  "recipe": "chromium_trybot"
 }
