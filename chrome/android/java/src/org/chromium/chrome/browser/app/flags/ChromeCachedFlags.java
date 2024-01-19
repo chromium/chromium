@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsFeatureHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 
 import java.util.ArrayList;
@@ -122,6 +123,7 @@ public class ChromeCachedFlags {
                         TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD,
                         TabUiFeatureUtilities.DISABLE_DRAG_TO_NEW_INSTANCE_DD,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
+                        ToolbarFeatures.DTC_TRANSITION_THRESHOLD_DP,
                         VersionNumberGetter.MIN_SDK_VERSION,
                         MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK,
                         MinimizedFeatureUtils.ICON_VARIANT,

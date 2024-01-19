@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTa
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIPHController;
 import org.chromium.chrome.browser.dragdrop.ChromeTabbedOnDragListener;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
@@ -1006,10 +1007,21 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // TODO(crbug.com/1503029): Remove the reference to toolbar_height_no_shadow.
         final int toolbarHeight =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
-        final int topControlsNewHeight =
-                toolbarHeight
-                        + mToolbarManager.getTabStripHeightSupplier().get()
-                        + mStatusIndicatorHeight;
+        final int tabStripHeight = mToolbarManager.getTabStripHeightSupplier().get();
+        final int topControlsNewHeight = toolbarHeight + tabStripHeight + mStatusIndicatorHeight;
+
+        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+        if (tabStripHeight > 0 && !isTablet) {
+            String msg =
+                    "Non-zero tab strip height found on non-tablet form factor. tabStripHeight= "
+                            + tabStripHeight
+                            + " toolbarHeight= "
+                            + toolbarHeight
+                            + " statusIndicatorHeight= "
+                            + mStatusIndicatorHeight;
+            ChromePureJavaExceptionReporter.reportJavaException(
+                    new Throwable(msg), /* withLogWarning= */ true);
+        }
 
         browserControlsSizer.setAnimateBrowserControlsHeightChanges(animate);
         browserControlsSizer.setTopControlsHeight(topControlsNewHeight, mStatusIndicatorHeight);
@@ -1098,6 +1110,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void initTabStripTransitionCoordinator() {
+        // Tab strip transition is only supported for tablets.
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
+                || !ChromeFeatureList.sDynamicTopChrome.isEnabled()) return;
+
         mOnTabStripHeightChangedCallback = (height) -> updateTopControlsHeight();
         mToolbarManager.getTabStripHeightSupplier().addObserver(mOnTabStripHeightChangedCallback);
     }

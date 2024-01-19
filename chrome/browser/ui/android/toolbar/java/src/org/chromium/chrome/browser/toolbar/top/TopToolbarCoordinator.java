@@ -370,8 +370,7 @@ public class TopToolbarCoordinator implements Toolbar {
         }
 
         int tabStripHeightResource = mToolbarLayout.getTabStripHeightFromResource();
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DYNAMIC_TOP_CHROME)
-                && tabStripHeightResource > 0) {
+        if (ChromeFeatureList.sDynamicTopChrome.isEnabled() && tabStripHeightResource > 0) {
             mTabStripTransitionCoordinator =
                     new TabStripTransitionCoordinator(
                             browserControlsVisibilityManager,

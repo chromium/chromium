@@ -37,13 +37,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.ui.base.TestActivity;
 
@@ -77,14 +75,6 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     @Before
     public void setup() {
-        FeatureList.TestValues testValue = new FeatureList.TestValues();
-        testValue.addFeatureFlagOverride(ChromeFeatureList.DYNAMIC_TOP_CHROME, true);
-        testValue.addFieldTrialParamOverride(
-                ChromeFeatureList.DYNAMIC_TOP_CHROME,
-                TabStripTransitionCoordinator.DTC_TRANSITION_THRESHOLD_DP_PARAM_NAME,
-                String.valueOf(TabStripTransitionCoordinator.DEFAULT_DTC_THRESHOLD_DP));
-        FeatureList.setTestValues(testValue);
-
         mActivityScenario.getScenario().onActivity(activity -> mActivity = activity);
         mSpyControlContainer = TestControlContainer.createSpy(mActivity);
         mActivity.setContentView(mSpyControlContainer);
