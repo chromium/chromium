@@ -210,6 +210,32 @@ void PrepareSvgPaints(const TextPainter::SvgTextPaintState& state,
   }
 }
 
+using OrderedPaints = std::array<const cc::PaintFlags*, 2>;
+
+OrderedPaints OrderPaints(const SvgPaints& paints, EPaintOrder paint_order) {
+  OrderedPaints ordered_paints = {
+      base::OptionalToPtr(paints.fill),
+      base::OptionalToPtr(paints.stroke),
+  };
+  const PaintOrderArray paint_order_array(paint_order,
+                                          PaintOrderArray::Type::kNoMarkers);
+  if (paint_order_array[0] == PT_STROKE) {
+    std::swap(ordered_paints[0], ordered_paints[1]);
+  }
+  return ordered_paints;
+}
+
+template <typename PassFunction>
+void DrawPaintOrderPasses(const OrderedPaints& ordered_paints,
+                          PassFunction pass) {
+  for (const auto* paint : ordered_paints) {
+    if (!paint) {
+      continue;
+    }
+    pass(*paint);
+  }
+}
+
 }  // namespace
 
 void TextPainter::Paint(const TextFragmentPaintInfo& fragment_paint_info,
@@ -424,31 +450,13 @@ void TextPainter::PaintSvgTextFragment(
   const SvgTextPaintState& state = svg_text_paint_state_.value();
   PrepareSvgPaints(state, SvgPaintMode::kText, paints);
 
-  const PaintOrderArray paint_order(state.Style().PaintOrder());
-  for (unsigned i = 0; i < 3; i++) {
-    const cc::PaintFlags* flags = nullptr;
-    switch (paint_order[i]) {
-      case PT_FILL:
-        flags = base::OptionalToPtr(paints.fill);
-        break;
-      case PT_STROKE:
-        flags = base::OptionalToPtr(paints.stroke);
-        break;
-      case PT_MARKERS:
-        // Markers don't apply to text
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
-    if (!flags) {
-      continue;
-    }
-
+  const OrderedPaints ordered_paints =
+      OrderPaints(paints, state.Style().PaintOrder());
+  DrawPaintOrderPasses(ordered_paints, [&](const cc::PaintFlags& flags) {
     graphics_context_.DrawText(font_, fragment_paint_info,
-                               gfx::PointF(text_origin_), *flags, node_id,
+                               gfx::PointF(text_origin_), flags, node_id,
                                auto_dark_mode);
-  }
+  });
 }
 
 void TextPainter::PaintSvgDecorationsExceptLineThrough(
@@ -461,31 +469,13 @@ void TextPainter::PaintSvgDecorationsExceptLineThrough(
   const SvgTextPaintState& state = svg_text_paint_state_.value();
   PrepareSvgPaints(state, SvgPaintMode::kTextDecoration, paints);
 
-  const PaintOrderArray paint_order(state.Style().PaintOrder());
-  for (unsigned i = 0; i < 3; i++) {
-    const cc::PaintFlags* flags = nullptr;
-    switch (paint_order[i]) {
-      case PT_FILL:
-        flags = base::OptionalToPtr(paints.fill);
-        break;
-      case PT_STROKE:
-        flags = base::OptionalToPtr(paints.stroke);
-        break;
-      case PT_MARKERS:
-        // Markers don't apply to text-decorations
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
-    if (!flags) {
-      continue;
-    }
-
+  const OrderedPaints ordered_paints =
+      OrderPaints(paints, state.Style().PaintOrder());
+  DrawPaintOrderPasses(ordered_paints, [&](const cc::PaintFlags& flags) {
     TextPainterBase::PaintUnderOrOverLineDecorations(
         fragment_paint_info, decoration_offset, decoration_info, lines_to_paint,
-        text_style, flags);
-  }
+        text_style, &flags);
+  });
 }
 
 void TextPainter::PaintSvgDecorationsOnlyLineThrough(
@@ -495,30 +485,12 @@ void TextPainter::PaintSvgDecorationsOnlyLineThrough(
   const SvgTextPaintState& state = svg_text_paint_state_.value();
   PrepareSvgPaints(state, SvgPaintMode::kTextDecoration, paints);
 
-  const PaintOrderArray paint_order(state.Style().PaintOrder());
-  for (unsigned i = 0; i < 3; i++) {
-    const cc::PaintFlags* flags = nullptr;
-    switch (paint_order[i]) {
-      case PT_FILL:
-        flags = base::OptionalToPtr(paints.fill);
-        break;
-      case PT_STROKE:
-        flags = base::OptionalToPtr(paints.stroke);
-        break;
-      case PT_MARKERS:
-        // Markers don't apply to text-decorations
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
-    if (!flags) {
-      continue;
-    }
-
+  const OrderedPaints ordered_paints =
+      OrderPaints(paints, state.Style().PaintOrder());
+  DrawPaintOrderPasses(ordered_paints, [&](const cc::PaintFlags& flags) {
     TextPainterBase::PaintDecorationsOnlyLineThrough(decoration_info,
-                                                     text_style, flags);
-  }
+                                                     text_style, &flags);
+  });
 }
 
 TextPainter::SvgTextPaintState& TextPainter::SetSvgState(
