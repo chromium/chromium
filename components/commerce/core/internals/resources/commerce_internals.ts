@@ -83,8 +83,13 @@ function initialize() {
 
   getProxy().getIsShoppingListEligible().then(({eligible}) => {
     updateShoppingListEligibleStatus(eligible);
+    if (eligible) {
+      renderSubscriptions();
+    }
   });
+}
 
+function renderSubscriptions() {
   getProxy().getSubscriptionDetails().then(({subscriptions}) => {
     if (!subscriptions || subscriptions.length == 0) {
       return;

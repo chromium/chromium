@@ -212,6 +212,12 @@ void CommerceInternalsHandler::GetProductInfoForUrl(
 
 void CommerceInternalsHandler::GetSubscriptionDetails(
     GetSubscriptionDetailsCallback callback) {
+  if (!shopping_service_->IsShoppingListEligible()) {
+    std::vector<commerce::mojom::SubscriptionPtr> subscription_list;
+    std::move(callback).Run(std::move(subscription_list));
+    return;
+  }
+
   shopping_service_->GetAllSubscriptions(
       SubscriptionType::kPriceTrack,
       base::BindOnce(
