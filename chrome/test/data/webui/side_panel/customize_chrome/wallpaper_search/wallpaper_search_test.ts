@@ -763,6 +763,29 @@ suite('WallpaperSearchTest', () => {
           [[{high: 10, low: 1}], 321],
           handler.getArgs('setResultRenderTime').at(-1));
     });
+
+    test('triggers hats survey on success', async () => {
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+      handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
+        status: WallpaperSearchStatus.kOk,
+        results: [{image: '123', id: {high: 10, low: 1}}],
+      }));
+      wallpaperSearchElement.$.submitButton.click();
+      await flushTasks();
+      assertEquals(1, handler.getCallCount('launchHatsSurvey'));
+    });
+
+    test('does not trigger hats survey on error', async () => {
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({status: WallpaperSearchStatus.kError, results: []}));
+      wallpaperSearchElement.$.submitButton.click();
+      await flushTasks();
+      assertEquals(0, handler.getCallCount('launchHatsSurvey'));
+    });
   });
 
   suite('History', () => {

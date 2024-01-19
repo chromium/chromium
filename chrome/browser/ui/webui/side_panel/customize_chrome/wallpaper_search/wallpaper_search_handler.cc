@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -31,7 +32,10 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/customize_chrome_colors.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -501,6 +505,16 @@ void WallpaperSearchHandler::OpenHelpArticle() {
   navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&navigate_params);
+}
+
+void WallpaperSearchHandler::LaunchHatsSurvey() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&WallpaperSearchHandler::LaunchDelayedHatsSurvey,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::GetFieldTrialParamByFeatureAsTimeDelta(
+          features::kHappinessTrackingSurveysForWallpaperSearch,
+          ntp_features::kWallpaperSearchHatsDelayParam, base::TimeDelta()));
 }
 
 void WallpaperSearchHandler::ShowFeedbackPage() {
@@ -992,4 +1006,11 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsDecoded(
   std::move(callback).Run(
       side_panel::customize_chrome::mojom::WallpaperSearchStatus::kOk,
       std::move(thumbnails));
+}
+
+void WallpaperSearchHandler::LaunchDelayedHatsSurvey() {
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
+  CHECK(hats_service);
+  hats_service->LaunchSurvey(kHatsSurveyTriggerWallpaperSearch);
 }

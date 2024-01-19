@@ -680,6 +680,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
           if (this.status_ === WallpaperSearchStatus.kOk) {
             announcer.announce(
                 this.i18n('wallpaperSearchSuccessA11yMessage', results.length));
+            this.wallpaperSearchHandler_.launchHatsSurvey();
           }
           recordStatusChange(status);
           this.selectedFeedbackOption_ = CrFeedbackOption.UNSPECIFIED;

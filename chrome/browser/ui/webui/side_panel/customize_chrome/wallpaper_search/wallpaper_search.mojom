@@ -138,6 +138,9 @@ interface WallpaperSearchHandler {
   // Opens help article about the feature in a new tab when use clicks
   // "Learn more".
   OpenHelpArticle();
+
+  // Triggers the wallpaper search HaTS survey if eligible.
+  LaunchHatsSurvey();
 };
 
 // WebUI-side handler for requests from the browser.

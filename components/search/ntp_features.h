@@ -192,6 +192,8 @@ extern const char kNtpHistoryClustersModuleMaxClustersParam[];
 extern const char kNtpHistoryClustersModuleScoreThresholdParam[];
 extern const char kNtpRealboxWidthBehaviorParam[];
 extern const char kNtpTabResumptionModuleDataParam[];
+// Parameter determining the trigger delay of the Wallpaper Search HaTS survey.
+extern const char kWallpaperSearchHatsDelayParam[];
 
 // Parameter determining the background color of the expanded state realbox.
 extern const base::FeatureParam<bool>

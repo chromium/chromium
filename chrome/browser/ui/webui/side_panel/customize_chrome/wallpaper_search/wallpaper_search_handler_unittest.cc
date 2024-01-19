@@ -27,6 +27,10 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_data.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
@@ -115,6 +119,8 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
         return std::make_unique<
             testing::NiceMock<MockOptimizationGuideKeyedService>>();
       }));
+  profile_builder.AddTestingFactory(HatsServiceFactory::GetInstance(),
+                                    base::BindRepeating(&BuildMockHatsService));
   profile_builder.SetSharedURLLoaderFactory(url_loader_factory);
   auto profile = profile_builder.Build();
   return profile;
@@ -138,7 +144,10 @@ class WallpaperSearchHandlerTest : public testing::Test {
                 OptimizationGuideKeyedServiceFactory::GetForProfile(
                     profile_.get()))),
         mock_wallpaper_search_background_manager_(
-            MockWallpaperSearchBackgroundManager(profile_.get())) {}
+            MockWallpaperSearchBackgroundManager(profile_.get())),
+        mock_hats_service_(static_cast<MockHatsService*>(
+            HatsServiceFactory::GetForProfile(profile_.get(),
+                                              /*create_if_necessary=*/true))) {}
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
@@ -208,6 +217,7 @@ class WallpaperSearchHandlerTest : public testing::Test {
   network::TestURLLoaderFactory& test_url_loader_factory() {
     return test_url_loader_factory_;
   }
+  MockHatsService& mock_hats_service() { return *mock_hats_service_; }
 
  private:
   // NOTE: The initialization order of these members matters.
@@ -225,6 +235,7 @@ class WallpaperSearchHandlerTest : public testing::Test {
   MockWallpaperSearchBackgroundManager
       mock_wallpaper_search_background_manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+  raw_ptr<MockHatsService> mock_hats_service_;
 };
 
 TEST_F(WallpaperSearchHandlerTest, GetHistory) {
@@ -1471,6 +1482,22 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
             qualities[0]->user_feedback());
   EXPECT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP,
             qualities[1]->user_feedback());
+}
+
+TEST_F(WallpaperSearchHandlerTest, LaunchHatsSurvey) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {
+          {features::kHappinessTrackingSurveysForWallpaperSearch,
+           {{ntp_features::kWallpaperSearchHatsDelayParam, "5m"}}},
+      },
+      {});
+  EXPECT_CALL(mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerWallpaperSearch, _, _, _, _))
+      .Times(1);
+  auto handler = MakeHandler(/*session_id=*/123);
+  handler->LaunchHatsSurvey();
+  task_environment().FastForwardBy(base::Minutes(5));
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {

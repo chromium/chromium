@@ -88,6 +88,7 @@ class WallpaperSearchHandler
   void SetUserFeedback(side_panel::customize_chrome::mojom::UserFeedback
                            selected_option) override;
   void OpenHelpArticle() override;
+  void LaunchHatsSurvey() override;
 #if BUILDFLAG(IS_CHROMEOS)
   void SkipShowFeedbackPageForTesting(bool should_skip_check) {
     skip_show_feedback_page_for_testing_ = should_skip_check;
@@ -130,6 +131,7 @@ class WallpaperSearchHandler
       base::ElapsedTimer timer,
       side_panel::customize_chrome::mojom::ResultDescriptorsPtr descriptors,
       const gfx::Image& image);
+  void LaunchDelayedHatsSurvey();
 
   raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
