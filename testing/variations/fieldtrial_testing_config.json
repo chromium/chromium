@@ -9658,6 +9658,21 @@
             ]
         }
     ],
+    "IdleTimeoutPolicies": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IdleTimeout"
+                    ]
+                }
+            ]
+        }
+    ],
     "IgnoreSyncEncryptionKeysLongMissing": [
         {
             "platforms": [
