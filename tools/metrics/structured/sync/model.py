@@ -40,21 +40,21 @@ class Model:
 
     A Model is initialized with an XML string representing the top-level of
     the structured.xml file. This file is built from three building blocks:
-    metrics, events, and projects. These have the following attributes.
-
-      METRIC
-      - summary
-      - data type
-
-      EVENT
-      - summary
-      - one or more metrics
+    projects, events, and metrics. These have the following attributes.
 
       PROJECT
       - summary
       - id specifier
       - one or more owners
       - one or more events
+
+      EVENT
+      - summary
+      - one or more metrics
+
+      METRIC
+      - summary
+      - data type
 
     The following is an example input XML.
 
@@ -90,7 +90,6 @@ class Model:
     util.check_attributes(elem, set())
     util.check_children(elem, {"project"})
     util.check_child_names_unique(elem, "project")
-
     projects = util.get_compound_children(elem, "project")
     self.projects = [Project(p) for p in projects]
 

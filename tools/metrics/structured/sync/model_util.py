@@ -15,7 +15,6 @@ Functions use the concept of 'compound' and 'text' XML nodes.
 import collections
 import re
 
-
 BOOLEAN_REGEX = r"(?i)(true|false|)$"
 
 
@@ -48,7 +47,7 @@ def get_attr(elem, tag, regex=None):
   attr = elem.attrib.get(tag, None)
   if not attr:
     error(elem, f"missing attribute '{tag}'")
-  if regex and not re.match(regex, attr):
+  if regex and not re.fullmatch(regex, attr):
     error(
         elem,
         (f"has '{tag}' attribute '{attr}' which does "
@@ -77,7 +76,7 @@ def get_optional_attr(elem, tag, regex=None):
   attr = elem.attrib.get(tag)
   if not attr:
     return None
-  if regex and not re.match(regex, attr):
+  if regex and not re.fullmatch(regex, attr):
     error(
         elem,
         (f"has '{tag}' attribute '{attr}' which does "
@@ -164,7 +163,7 @@ def get_text_children(elem, tag, regex=None):
     text = child.text.strip()
     if not text:
       error(elem, f"missing text in '{tag}'")
-    if regex and not re.match(regex, text):
+    if regex and not re.fullmatch(regex, text):
       error(
           elem,
           (f"has '{tag}' node '{text}' which does "
@@ -198,7 +197,19 @@ def get_text_child(elem, tag, regex=None):
 
 
 def check_attributes(elem, expected_attrs, optional_attrs=None):
-  """Ensure `elem` has no attributes except those in `expected_attrs`."""
+  """Ensure `elem` has no attributes except those in `expected_attrs`.
+
+    Args:
+      elem: structured.xml file element tree.
+      expected_attrs: set of the expected attribute names.
+      optional_attrs: Optional set of attributes that are optional.
+
+    Returns:
+      None
+
+    Raises:
+      ValueError: Unexpected attributes exist for 'elem'.
+    """
   actual_attrs = set(elem.attrib.keys())
   unexpected_attrs = actual_attrs - set(expected_attrs)
   if optional_attrs:
@@ -209,7 +220,18 @@ def check_attributes(elem, expected_attrs, optional_attrs=None):
 
 
 def check_children(elem, expected_children):
-  """Ensure all children in `expected_children` are in `elem`."""
+  """Ensure all children in `expected_children` are in `elem`.
+
+    Args:
+      elem: structured.xml file element tree.
+      expected_children: set of expected children by tag name.
+
+    Returns:
+      None
+
+    Raises:
+      ValueError: Not all expected children exist for 'elem'.
+    """
   actual_children = {child.tag for child in elem}
   unexpected_children = set(expected_children) - actual_children
   if unexpected_children:
@@ -218,6 +240,15 @@ def check_children(elem, expected_children):
 
 
 def get_boolean_attr(elem, attr_name):
+  """Get the Boolean value of the specified attribute 'attr_name'.
+
+    Args:
+      elem: structured.xml file element tree.
+      attr_name: Name of the attribute to find.
+
+    Returns:
+      Boolean of the specified attribute, False if the attribute does not exist.
+    """
   maybe_attr = get_optional_attr(elem, attr_name, BOOLEAN_REGEX)
   if maybe_attr:
     return maybe_attr.lower() == "true"
@@ -225,7 +256,18 @@ def get_boolean_attr(elem, attr_name):
 
 
 def check_child_names_unique(elem, tag):
-  """Ensure uniqueness of the 'name' of all children of `elem` with `tag`."""
+  """Ensure uniqueness of the 'name' of all children of `elem` with `tag`.
+
+    Args:
+      elem: structured.xml file element tree.
+      tag: Name of the tag/attribute to find.
+
+    Returns:
+      None
+
+    Raises:
+      ValueError: children of 'elem' with 'tag' are not unique.
+    """
   names = [child.attrib.get("name", None) for child in elem if child.tag == tag]
   name_counts = collections.Counter(names)
   has_duplicates = any(c > 1 for c in name_counts.values())
