@@ -8,12 +8,13 @@
 #include <memory>
 #include <utility>
 
+#include "partition_alloc/internal_allocator_forward.h"
 #include "partition_alloc/starscan/pcscan_internal.h"
 #include "partition_alloc/starscan/raceful_worklist.h"
 
 namespace partition_alloc::internal {
 
-class StarScanSnapshot final : public AllocatedOnPCScanMetadataPartition {
+class StarScanSnapshot final : public InternalPartitionAllocated {
  public:
   using SuperPageBase = uintptr_t;
   using SuperPagesWorklist = RacefulWorklist<SuperPageBase>;

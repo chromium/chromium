@@ -388,6 +388,7 @@ if (is_clang_or_gcc) {
       "gwp_asan_support.h",
       "internal_allocator.cc",
       "internal_allocator.h",
+      "internal_allocator_forward.h",
       "lightweight_quarantine.cc",
       "lightweight_quarantine.h",
       "memory_reclaimer.cc",
@@ -456,8 +457,6 @@ if (is_clang_or_gcc) {
     if (use_starscan) {
       sources += [
         "starscan/logging.h",
-        "starscan/metadata_allocator.cc",
-        "starscan/metadata_allocator.h",
         "starscan/pcscan.cc",
         "starscan/pcscan.h",
         "starscan/pcscan_internal.cc",

@@ -18,7 +18,7 @@
 #include "partition_alloc/partition_alloc.h"
 
 #if BUILDFLAG(USE_STARSCAN)
-#include "partition_alloc/starscan/metadata_allocator.h"
+#include "partition_alloc/internal_allocator_forward.h"
 #endif
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -67,7 +67,7 @@ class NonScannableAllocatorImpl final {
 
 #if BUILDFLAG(USE_STARSCAN)
   std::unique_ptr<partition_alloc::PartitionAllocator,
-                  partition_alloc::internal::PCScanMetadataDeleter>
+                  partition_alloc::internal::InternalPartitionDeleter>
       allocator_;
   std::atomic_bool pcscan_enabled_{false};
 #endif  // BUILDFLAG(USE_STARSCAN)

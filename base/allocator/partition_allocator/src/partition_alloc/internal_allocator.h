@@ -8,6 +8,7 @@
 #include <new>
 #include <type_traits>
 
+#include "partition_alloc/internal_allocator_forward.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_root.h"
 
@@ -22,6 +23,38 @@ namespace partition_alloc::internal {
 
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 PartitionRoot& InternalAllocatorRoot();
+
+// A class that meets C++ named requirements, Allocator.
+template <typename T>
+InternalAllocator<T>::value_type* InternalAllocator<T>::allocate(
+    std::size_t count) {
+  PA_CHECK(count <=
+           std::numeric_limits<std::size_t>::max() / sizeof(value_type));
+  return static_cast<value_type*>(
+      InternalAllocatorRoot().Alloc<AllocFlags::kNoHooks>(count *
+                                                          sizeof(value_type)));
+}
+template <typename T>
+void InternalAllocator<T>::deallocate(value_type* ptr, std::size_t) {
+  InternalAllocatorRoot().Free<FreeFlags::kNoHooks>(ptr);
+}
+
+// Create an object on heap in the internal partition.
+template <typename T, typename... Args>
+T* ConstructAtInternalPartition(Args&&... args) {
+  auto* memory = static_cast<T*>(
+      InternalAllocatorRoot().Alloc<AllocFlags::kNoHooks>(sizeof(T)));
+  return new (memory) T(std::forward<Args>(args)...);
+}
+
+// Destroy an object on heap in the internal partition.
+template <typename T>
+void DestroyAtInternalPartition(T* ptr) {
+  // Destroying an array is not supported.
+  static_assert(!std::is_array_v<T>);
+  ptr->~T();
+  InternalAllocatorRoot().Free<FreeFlags::kNoHooks>(ptr);
+}
 
 }  // namespace partition_alloc::internal
 

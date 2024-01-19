@@ -9,10 +9,10 @@
 #include <atomic>
 #include <vector>
 
+#include "partition_alloc/internal_allocator_forward.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/rand_util.h"
 #include "partition_alloc/partition_alloc_check.h"
-#include "partition_alloc/starscan/metadata_allocator.h"
 
 namespace partition_alloc::internal {
 
@@ -30,7 +30,7 @@ class RacefulWorklist {
     std::atomic<bool> is_being_visited{false};
     std::atomic<bool> is_visited{false};
   };
-  using Underlying = std::vector<Node, MetadataAllocator<Node>>;
+  using Underlying = std::vector<Node, internal::InternalAllocator<Node>>;
 
  public:
   class RandomizedView {
@@ -88,7 +88,7 @@ template <typename Function>
 void RacefulWorklist<T>::RandomizedView::Visit(Function f) {
   auto& data = worklist_.data_;
   std::vector<typename Underlying::iterator,
-              MetadataAllocator<typename Underlying::iterator>>
+              internal::InternalAllocator<typename Underlying::iterator>>
       to_revisit;
 
   // To avoid worklist iteration, quick check if the worklist was already

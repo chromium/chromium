@@ -7,6 +7,7 @@
 #include <memory>
 #include <mutex>
 
+#include "partition_alloc/internal_allocator.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/starscan/pcscan_internal.h"
 
