@@ -4,6 +4,8 @@
 
 #include "partition_alloc/starscan/scan_loop.h"
 
+#include <algorithm>
+
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_base/cpu.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
