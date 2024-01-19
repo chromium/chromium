@@ -146,6 +146,8 @@ enum CloseReason {
   kInsertButton,
   // The MSBB dialog was shown and dismissed.
   kMSBBCloseButton,
+  // The main app dialog lost focus.
+  kLostFocus,
 };
 
 //TODO(b/311697865) move this to a common location.

@@ -33,6 +33,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
@@ -131,6 +132,13 @@ void ChromeComposeClient::ShowComposeDialog(
     std::optional<autofill::AutofillClient::PopupScreenLocation>
         popup_screen_location,
     ComposeCallback callback) {
+  // Do not show multiple dialogs at the same time.
+  if (IsDialogShowing() &&
+      base::FeatureList::IsEnabled(
+          compose::features::kEnableComposeSavedStateNotification)) {
+    compose_dialog_controller_->Close();
+  }
+
   if (ui_entry_point == EntryPoint::kContextMenu) {
     // TODO(b/319478359): move this closer to the menu code to capture clicks
     // even when the UI failed to open.
@@ -193,9 +201,15 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
               kFirstRunDisclaimerAcknowledgedWithInsert);
       page_ukm_tracker_->ComposeTextInserted();
       break;
+    case compose::mojom::CloseReason::kLostFocus:
+      break;
   }
 
-  RemoveActiveSession();
+  if (reason != compose::mojom::CloseReason::kLostFocus) {
+    // Do not remove session when closing after showing the saved state
+    // notification.
+    RemoveActiveSession();
+  }
 
   if (compose_dialog_controller_) {
     compose_dialog_controller_->Close();
@@ -447,10 +461,20 @@ bool ChromeComposeClient::ShouldTriggerPopup(
 
   GURL url = GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL();
 
-  return compose_enabling_->ShouldTriggerPopup(
+  bool should_trigger_popup = compose_enabling_->ShouldTriggerPopup(
       form_field_data.autocomplete_attribute, profile_, translate_manager,
       HasSession(form_field_data.global_id()),
       top_level_frame->GetLastCommittedOrigin(), form_field_data.origin, url);
+
+  if (IsDialogShowing() && should_trigger_popup &&
+      base::FeatureList::IsEnabled(
+          compose::features::kEnableComposeSavedStateNotification)) {
+    // If there is a current dialog showing and we are about to show the nudge,
+    // close the current dialog so that both are not shown at the same time.
+    compose_dialog_controller_->Close();
+  }
+
+  return should_trigger_popup;
 }
 
 bool ChromeComposeClient::ShouldTriggerContextMenu(
@@ -531,6 +555,13 @@ void ChromeComposeClient::PrimaryPageChanged(content::Page& page) {
   page_ukm_tracker_ = std::make_unique<compose::PageUkmTracker>(
       page.GetMainDocument().GetPageUkmSourceId());
 
+  if (IsDialogShowing() &&
+      base::FeatureList::IsEnabled(
+          compose::features::kEnableComposeSavedStateNotification)) {
+    // Close the dialog on navigation.
+    compose_dialog_controller_->Close();
+  }
+
   compose::ComposeTextUsageLogger::GetOrCreateForCurrentDocument(
       &page.GetMainDocument());
 }
@@ -561,6 +592,15 @@ void ChromeComposeClient::DidGetUserInteraction(
   if (IsDialogShowing() &&
       event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
     // TODO(b/318571287): Log when the dialog is closed due to scrolling.
+    compose_dialog_controller_->Close();
+  }
+}
+
+void ChromeComposeClient::OnVisibilityChanged(content::Visibility visibility) {
+  if (IsDialogShowing() && visibility != content::Visibility::VISIBLE &&
+      base::FeatureList::IsEnabled(
+          compose::features::kEnableComposeSavedStateNotification)) {
+    // Close the dialog when the WebContents is no longer visible.
     compose_dialog_controller_->Close();
   }
 }

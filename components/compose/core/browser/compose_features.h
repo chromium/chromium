@@ -38,6 +38,9 @@ BASE_DECLARE_FEATURE(kEnableComposeWebUIAnimations);
 // used.
 BASE_DECLARE_FEATURE(kEnableComposeOnDeviceDogfoodFooter);
 
+// Controls whether or not the saved state notification is shown.
+BASE_DECLARE_FEATURE(kEnableComposeSavedStateNotification);
+
 }  // namespace compose::features
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_FEATURES_H_

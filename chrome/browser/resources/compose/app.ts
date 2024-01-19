@@ -220,6 +220,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private router_: ComposeDialogCallbackRouter = this.apiProxy_.getRouter();
   private showFirstRunDialog_: boolean;
   private showMainAppDialog_: boolean;
+  private showSavedStateDialog_: boolean;
   private showMSBBDialog_: boolean;
   private shouldShowMSBBDialog_: boolean;
   private editedInput_: string;
@@ -241,6 +242,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private undoEnabled_: boolean;
   private userHasModifiedState_: boolean = false;
   private lastTriggerElement_: TriggerElement;
+  private savedStateNotificationTimeout_: number;
 
   constructor() {
     super();
@@ -264,6 +266,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
         // Ensure app state is saved when hiding the dialog.
         this.saveComposeAppState_();
       }
+    });
+    // For detecting when to show the Saved State Notification.
+    this.eventTracker_.add(window, 'blur', () => {
+      this.onWindowBlur_();
     });
     this.bodyResizeObserver_ = new ResizeObserver(() => {
       this.scrollCheckDebouncer_ = Debouncer.debounce(
@@ -299,6 +305,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
       this.showMainAppDialog_ =
           initialState.freComplete && initialState.msbbState;
+      this.showSavedStateDialog_ = false;
 
       if (initialState.initialInput) {
         this.input_ = initialState.initialInput;
@@ -512,6 +519,28 @@ export class ComposeAppElement extends ComposeAppElementBase {
     e.preventDefault();
     // Instruct the browser to open the corresponding settings page.
     this.apiProxy_.openComposeSettings();
+  }
+
+  private onWindowBlur_() {
+    if (!loadTimeData.getBoolean('enableSavedStateNotification')) {
+      return;
+    }
+
+    // Show Saved State Notification if losing focus from the main app dialog.
+    if (this.showMainAppDialog_) {
+      this.showMainAppDialog_ = false;
+      this.showSavedStateDialog_ = true;
+
+      this.savedStateNotificationTimeout_ = setTimeout(() => {
+        this.apiProxy_.closeUi(CloseReason.kLostFocus);
+      }, loadTimeData.getInteger('savedStateTimeoutInMilliseconds'));
+    }
+  }
+
+  private onSavedStateDialogClick_() {
+    clearTimeout(this.savedStateNotificationTimeout_);
+    this.showMainAppDialog_ = true;
+    this.showSavedStateDialog_ = false;
   }
 
   private compose_(inputEdited: boolean = false) {

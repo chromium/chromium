@@ -27,6 +27,9 @@ struct Config {
   // If nudging is enabled, show the popup when focus appears on a field with
   // saved state.
   bool popup_with_saved_state = true;
+  // The duration that the saved state notification is shown before
+  // auto-dismissal.
+  unsigned int saved_state_timeout_milliseconds = 2000;
 
   Config();
   Config(const Config& other);

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_COMPOSE_CHROME_COMPOSE_DIALOG_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/compose/compose_dialog_view.h"
@@ -14,6 +15,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace gfx {
 class RectF;
@@ -21,7 +24,8 @@ class RectF;
 
 // Controls how Compose dialogs are shown and hidden, and animations related to
 // both actions.
-class ChromeComposeDialogController : public compose::ComposeDialogController {
+class ChromeComposeDialogController : public compose::ComposeDialogController,
+                                      views::WidgetObserver {
  public:
   explicit ChromeComposeDialogController(content::WebContents* contents);
   ~ChromeComposeDialogController() override;
@@ -41,11 +45,24 @@ class ChromeComposeDialogController : public compose::ComposeDialogController {
 
   bool IsDialogShowing() override;
 
+  // views::WidgetObserver implementation.
+  // Invoked when `widget` changes bounds.
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
+
+  // views::WidgetObserver implementation.
+  // The destroying event occurs immediately before the widget is destroyed.
+  void OnWidgetDestroying(views::Widget* widget) override;
+
  private:
   friend class ChromeComposeDialogControllerTest;
 
   base::WeakPtr<ComposeDialogView> bubble_;
   base::WeakPtr<content::WebContents> web_contents_;
+
+  // Observer for the parent widget.
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 
   base::WeakPtrFactory<ChromeComposeDialogController> weak_ptr_factory_{this};
 };

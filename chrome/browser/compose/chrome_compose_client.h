@@ -109,6 +109,10 @@ class ChromeComposeClient
   // Used to close the dialog when the user scrolls.
   void DidGetUserInteraction(const blink::WebInputEvent& event) override;
 
+  // content::WebContentsObserver implementation.
+  // Invoked every time the WebContents changes visibility.
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
   void SetOptimizationGuideForTest(
       optimization_guide::OptimizationGuideDecider* opt_guide);
 

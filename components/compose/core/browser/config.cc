@@ -56,6 +56,10 @@ Config::Config() {
   popup_with_no_saved_state = base::GetFieldTrialParamByFeatureAsBool(
       features::kEnableComposeNudge, "popup_with_no_saved_state",
       popup_with_no_saved_state);
+
+  saved_state_timeout_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
+      features::kEnableComposeSavedStateNotification,
+      "saved_state_timeout_milliseconds", saved_state_timeout_milliseconds);
 }
 
 Config::Config(const Config& other) = default;
