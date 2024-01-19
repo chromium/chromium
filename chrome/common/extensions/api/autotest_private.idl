@@ -777,7 +777,7 @@ namespace autotestPrivate {
     // Event name
     DOMString name;
     // Number of frames actually shown for this animation.
-    long microsecnods_since_unix_epoch;
+    double microsecnods_since_unix_epoch;
   };
 
   // Callback invoked to report the collection ui::LoginEventRecorder data
