@@ -14,13 +14,36 @@
 #include "base/process/memory.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 
 namespace media {
+
+// Helper class to allow thread safe memory dumping without a task runner.
+class FrameBufferPool::FrameBufferMemoryDumpProviderImpl
+    : public base::trace_event::MemoryDumpProvider {
+ public:
+  explicit FrameBufferMemoryDumpProviderImpl(
+      scoped_refptr<FrameBufferPool> pool)
+      : pool_(std::move(pool)) {
+    DCHECK(pool_);
+    base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+        this, "FrameBufferPool", nullptr);
+  }
+
+  ~FrameBufferMemoryDumpProviderImpl() override = default;
+
+  // base::MemoryDumpProvider implementation.
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override {
+    return pool_->OnMemoryDump(args, pmd);
+  }
+
+ private:
+  scoped_refptr<FrameBufferPool> pool_;
+};
 
 struct FrameBufferPool::FrameBuffer {
   // Not using std::vector<uint8_t> as resize() calls take a really long time
@@ -37,8 +60,7 @@ struct FrameBufferPool::FrameBuffer {
 
 FrameBufferPool::FrameBufferPool(bool zero_initialize_memory)
     : zero_initialize_memory_(zero_initialize_memory),
-      tick_clock_(base::DefaultTickClock::GetInstance()),
-      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
+      tick_clock_(base::DefaultTickClock::GetInstance()) {}
 
 FrameBufferPool::~FrameBufferPool() {
   base::AutoLock lock(lock_);
@@ -51,21 +73,9 @@ uint8_t* FrameBufferPool::GetFrameBuffer(size_t min_size, void** fb_priv) {
   base::AutoLock lock(lock_);
   DCHECK(!in_shutdown_);
 
-  if (!registered_dump_provider_) {
-    // We tell the dump provider to call us on `task_runner_`, which will also
-    // be the thread that will call `Shutdown()` to unregister us.  This lets
-    // the call to `Shutdown()` unregister us synchronously with respect to
-    // calls into `OnMemoryDump()`, so that there won't be calls into
-    // `OnMemoryDump()` after `Shutdown()` completes.  The alternative is to
-    // give the `MemoryDumpManager` ownership of `this`, so that it can delete
-    // it after any outstanding dump requests are complete.  Since we're
-    // refcounted, that would require a wrapper object to own the ref.  This is
-    // much simpler.
-    base::trace_event::MemoryDumpManager::GetInstance()
-        ->RegisterDumpProviderWithSequencedTaskRunner(
-            this, "FrameBufferPool", task_runner_,
-            MemoryDumpProvider::Options());
-    registered_dump_provider_ = true;
+  if (!memory_dump_impl_) {
+    memory_dump_impl_ =
+        std::make_unique<FrameBufferMemoryDumpProviderImpl>(this);
   }
 
   // Check if a free frame buffer exists.
@@ -167,11 +177,11 @@ base::OnceClosure FrameBufferPool::CreateFrameCallback(void* fb_priv) {
 bool FrameBufferPool::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
-  // While there's nothing thread-unsafe about this method, if we're ever not
-  // called on `task_runner_`, it likely means that `MemoryDumpManager` is using
-  // the wrong ownership semantics.  See `GetFrameBuffer()` for details.
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   base::AutoLock lock(lock_);
+
+  if (in_shutdown_) {
+    return false;
+  }
 
   base::trace_event::MemoryAllocatorDump* memory_dump =
       pmd->CreateAllocatorDump(
@@ -207,16 +217,13 @@ bool FrameBufferPool::OnMemoryDump(
 }
 
 void FrameBufferPool::Shutdown() {
-  // The memory dump manager requires that we unregister on the same thread that
-  // we're expecting memory dump requests on.
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-
   base::AutoLock lock(lock_);
   in_shutdown_ = true;
 
-  if (registered_dump_provider_) {
-    base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
-        this);
+  // Hand over our dump implementation to the manager for eventual deletion.
+  if (memory_dump_impl_) {
+    base::trace_event::MemoryDumpManager::GetInstance()
+        ->UnregisterAndDeleteDumpProviderSoon(std::move(memory_dump_impl_));
   }
 
   // Clear any refs held by the library which isn't good about cleaning up after

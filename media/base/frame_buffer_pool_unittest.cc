@@ -5,7 +5,6 @@
 #include "media/base/frame_buffer_pool.h"
 
 #include "base/test/simple_test_tick_clock.h"
-#include "base/test/test_message_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -13,7 +12,6 @@ namespace media {
 constexpr size_t kBufferSize = 1024;
 
 TEST(FrameBufferPool, BasicFunctionality) {
-  base::TestMessageLoop message_loop;
   auto pool = base::MakeRefCounted<FrameBufferPool>();
 
   void* priv1 = nullptr;
@@ -58,8 +56,8 @@ TEST(FrameBufferPool, BasicFunctionality) {
 }
 
 TEST(FrameBufferPool, ForceAllocationError) {
-  base::TestMessageLoop message_loop;
   auto pool = base::MakeRefCounted<FrameBufferPool>();
+
   pool->force_allocation_error_for_testing();
 
   void* priv1 = nullptr;
@@ -70,8 +68,8 @@ TEST(FrameBufferPool, ForceAllocationError) {
 }
 
 TEST(FrameBufferPool, DeferredDestruction) {
-  base::TestMessageLoop message_loop;
   auto pool = base::MakeRefCounted<FrameBufferPool>();
+
   base::SimpleTestTickClock test_clock;
   pool->set_tick_clock_for_testing(&test_clock);
 
@@ -114,9 +112,8 @@ TEST(FrameBufferPool, DeferredDestruction) {
 }
 
 TEST(FrameBufferPool, DoesClearAllocations) {
-  base::TestMessageLoop message_loop;
-  scoped_refptr<FrameBufferPool> pool =
-      new FrameBufferPool(/*clear_allocations=*/true);
+  auto pool = base::MakeRefCounted<FrameBufferPool>(
+      /*zero_initialize_memory=*/true);
 
   // Certainly this is not foolproof, but even flaky failures here indicate that
   // something is broken.

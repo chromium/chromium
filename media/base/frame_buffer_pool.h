@@ -17,23 +17,13 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "media/base/media_export.h"
 
-namespace base {
-class SequencedTaskRunner;
-}
-
 namespace media {
 
 // FrameBufferPool is a pool of simple CPU memory. This class needs to be ref-
 // counted since frames created using this memory may live beyond the lifetime
-// of the caller to this class.
-//
-// This class is thread-safe, with the exception that it must be constructed on
-// the same thread that `Shutdown()` is called on.  Destruction may happen on
-// any thread after `Shutdown()` returns. All other methods may be called on any
-// thread safely, unless noted.
+// of the caller to this class. This class is thread-safe.
 class MEDIA_EXPORT FrameBufferPool
-    : public base::RefCountedThreadSafe<FrameBufferPool>,
-      public base::trace_event::MemoryDumpProvider {
+    : public base::RefCountedThreadSafe<FrameBufferPool> {
  public:
   // Must be called on the same thread that `Shutdown()` is called on.  If
   // `zero_initialize_memory` is true, then initial allocations will be
@@ -85,15 +75,14 @@ class MEDIA_EXPORT FrameBufferPool
 
  private:
   friend class base::RefCountedThreadSafe<FrameBufferPool>;
-  ~FrameBufferPool() override;
+  ~FrameBufferPool();
 
   // Internal structure holding memory for decoding.
   struct FrameBuffer;
 
   // base::MemoryDumpProvider.
-  // Will always be called on `task_runner_`, though it is actually thread-safe.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
-                    base::trace_event::ProcessMemoryDump* pmd) override;
+                    base::trace_event::ProcessMemoryDump* pmd);
 
   // Not safe to concurrent modifications to `buf`.  While the method is static,
   // it's expected, but unchecked, that the caller holds `locked_` to prevent
@@ -121,17 +110,16 @@ class MEDIA_EXPORT FrameBufferPool
 
   bool in_shutdown_ GUARDED_BY(lock_) = false;
 
-  bool registered_dump_provider_ GUARDED_BY(lock_) = false;
-
   bool force_allocation_error_ GUARDED_BY(lock_) = false;
 
   // |tick_clock_| is always a DefaultTickClock outside of testing.
   raw_ptr<const base::TickClock> tick_clock_ GUARDED_BY(lock_);
 
-  // Task runner that we tell the `MemoryDumpManager` about.  It is the task
-  // runner on which we'll be asked to provide a memory dump, and the one on
-  // which `Shutdown()` should be called.  It is set during construction.
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  // Maintains ownership of the memory dumping infrastructure. Holds a ref on
+  // FrameBufferPool until Shutdown().
+  class FrameBufferMemoryDumpProviderImpl;
+  std::unique_ptr<FrameBufferMemoryDumpProviderImpl> memory_dump_impl_
+      GUARDED_BY(lock_);
 };
 
 }  // namespace media
