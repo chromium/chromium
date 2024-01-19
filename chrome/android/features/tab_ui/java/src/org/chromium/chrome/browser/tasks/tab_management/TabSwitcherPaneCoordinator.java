@@ -241,6 +241,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     /** Destroys the coordinator. */
     public void destroy() {
+        mMediator.destroy();
         mTabListCoordinator.onDestroy();
         mContainerViewChangeProcessor.destroy();
         if (mTabGridDialogCoordinator != null) {
