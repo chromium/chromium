@@ -78,7 +78,7 @@ class PartitionedOriginIdentifierValueMap {
                               const PartitionKey& partition_key) const
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  void SetValue(const ContentSettingsPattern& primary_pattern,
+  bool SetValue(const ContentSettingsPattern& primary_pattern,
                 const ContentSettingsPattern& secondary_pattern,
                 ContentSettingsType content_type,
                 base::Value value,
@@ -86,7 +86,7 @@ class PartitionedOriginIdentifierValueMap {
                 const PartitionKey& partition_key)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  void DeleteValue(const ContentSettingsPattern& primary_pattern,
+  bool DeleteValue(const ContentSettingsPattern& primary_pattern,
                    const ContentSettingsPattern& secondary_pattern,
                    ContentSettingsType content_type,
                    const PartitionKey& partition_key)

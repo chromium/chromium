@@ -102,7 +102,7 @@ const base::Value* PartitionedOriginIdentifierValueMap::GetValue(
   return it->second.GetValue(primary_url, secondary_url, content_type);
 }
 
-void PartitionedOriginIdentifierValueMap::SetValue(
+bool PartitionedOriginIdentifierValueMap::SetValue(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
@@ -111,28 +111,32 @@ void PartitionedOriginIdentifierValueMap::SetValue(
     const PartitionKey& partition_key) {
   auto& partition = partitions_[partition_key];
   base::AutoLock auto_lock(partition.GetLock());
-  partition.SetValue(primary_pattern, secondary_pattern, content_type,
-                     std::move(value), metadata);
+  return partition.SetValue(primary_pattern, secondary_pattern, content_type,
+                            std::move(value), metadata);
 }
 
-void PartitionedOriginIdentifierValueMap::DeleteValue(
+bool PartitionedOriginIdentifierValueMap::DeleteValue(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     const PartitionKey& partition_key) {
   auto it = partitions_.find(partition_key);
   if (it == partitions_.end()) {
-    return;
+    return false;
   }
-  bool is_empty;
+  bool is_empty = false;
+  bool updated = false;
   {
     base::AutoLock auto_lock(it->second.GetLock());
-    it->second.DeleteValue(primary_pattern, secondary_pattern, content_type);
+    updated = it->second.DeleteValue(primary_pattern, secondary_pattern,
+                                     content_type);
     is_empty = it->second.empty();
   }
   if (is_empty) {
     partitions_.erase(it);
   }
+
+  return updated;
 }
 
 void PartitionedOriginIdentifierValueMap::DeleteValues(

@@ -30,10 +30,11 @@ TEST(PartitionedOriginIdentifierValueMap, GetValueAndSetValue) {
   EXPECT_EQ(map.GetValue(GURL(kUrl), GURL(kUrl), ContentSettingsType::COOKIES,
                          PartitionKey::GetDefaultForTesting()),
             nullptr);
-  map.SetValue(ContentSettingsPattern::FromString(kUrl),
-               ContentSettingsPattern::FromString("*"),
-               ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK),
-               RuleMetaData(), PartitionKey::GetDefaultForTesting());
+  EXPECT_TRUE(map.SetValue(ContentSettingsPattern::FromString(kUrl),
+                           ContentSettingsPattern::FromString("*"),
+                           ContentSettingsType::COOKIES,
+                           base::Value(CONTENT_SETTING_BLOCK), RuleMetaData(),
+                           PartitionKey::GetDefaultForTesting()));
   EXPECT_EQ(*map.GetValue(GURL(kUrl), GURL(kUrl), ContentSettingsType::COOKIES,
                           PartitionKey::GetDefaultForTesting()),
             base::Value(CONTENT_SETTING_BLOCK));
@@ -41,13 +42,19 @@ TEST(PartitionedOriginIdentifierValueMap, GetValueAndSetValue) {
   EXPECT_EQ(
       map.GetValue(GURL(kUrl), GURL(kUrl), ContentSettingsType::COOKIES, kKey),
       nullptr);
-  map.SetValue(ContentSettingsPattern::FromString(kUrl),
-               ContentSettingsPattern::FromString("*"),
-               ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_ALLOW),
-               RuleMetaData(), kKey);
+  EXPECT_TRUE(map.SetValue(
+      ContentSettingsPattern::FromString(kUrl),
+      ContentSettingsPattern::FromString("*"), ContentSettingsType::COOKIES,
+      base::Value(CONTENT_SETTING_ALLOW), RuleMetaData(), kKey));
   EXPECT_EQ(
       *map.GetValue(GURL(kUrl), GURL(kUrl), ContentSettingsType::COOKIES, kKey),
       base::Value(CONTENT_SETTING_ALLOW));
+
+  EXPECT_FALSE(map.SetValue(
+      ContentSettingsPattern::FromString(kUrl),
+      ContentSettingsPattern::FromString("*"), ContentSettingsType::COOKIES,
+      base::Value(CONTENT_SETTING_ALLOW), RuleMetaData(), kKey))
+      << "expecting false for setting the value to the same value";
 }
 
 TEST(PartitionedOriginIdentifierValueMap, GetRuleIterator) {
@@ -118,10 +125,10 @@ TEST(PartitionedOriginIdentifierValueMap, DeleteValue) {
         map.GetValue(GURL(kUrl), GURL(kUrl), ContentSettingsType::COOKIES, key),
         nullptr);
   }
-  map.DeleteValue(ContentSettingsPattern::FromString(kUrl),
-                  ContentSettingsPattern::FromString("*"),
-                  ContentSettingsType::COOKIES,
-                  PartitionKey::GetDefaultForTesting());
+  EXPECT_TRUE(map.DeleteValue(ContentSettingsPattern::FromString(kUrl),
+                              ContentSettingsPattern::FromString("*"),
+                              ContentSettingsType::COOKIES,
+                              PartitionKey::GetDefaultForTesting()));
   EXPECT_EQ(map.GetValue(GURL(kUrl), GURL(kUrl), ContentSettingsType::COOKIES,
                          PartitionKey::GetDefaultForTesting()),
             nullptr);
@@ -129,12 +136,17 @@ TEST(PartitionedOriginIdentifierValueMap, DeleteValue) {
       map.GetValue(GURL(kUrl), GURL(kUrl), ContentSettingsType::COOKIES, kKey),
       nullptr);
 
-  map.DeleteValue(ContentSettingsPattern::FromString(kUrl),
-                  ContentSettingsPattern::FromString("*"),
-                  ContentSettingsType::COOKIES, kKey);
+  EXPECT_TRUE(map.DeleteValue(ContentSettingsPattern::FromString(kUrl),
+                              ContentSettingsPattern::FromString("*"),
+                              ContentSettingsType::COOKIES, kKey));
   EXPECT_EQ(
       map.GetValue(GURL(kUrl), GURL(kUrl), ContentSettingsType::COOKIES, kKey),
       nullptr);
+
+  EXPECT_FALSE(map.DeleteValue(ContentSettingsPattern::FromString(kUrl),
+                               ContentSettingsPattern::FromString("*"),
+                               ContentSettingsType::COOKIES, kKey))
+      << "expecting false for deleting a non-exist value";
 }
 
 TEST(PartitionedOriginIdentifierValueMap, DeleteValues) {
