@@ -293,32 +293,27 @@ void SoftNavigationHeuristics::CheckSoftNavigationConditions(
 
   // Here we consider that we've detected a soft navigation.
   soft_navigation_conditions_met_ = true;
-
   soft_navigation_interaction_data_ = &data;
 
-  if (data.user_interaction_timestamp.is_null()) {
-    return;
-  }
-
-  if (paint_conditions_met_) {
-    v8::HandleScope handle_scope(script_state->GetIsolate());
-    LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
-    if (frame && frame->IsOutermostMainFrame()) {
-      EmitSoftNavigationEntry(frame);
-    }
-  }
+  v8::HandleScope handle_scope(script_state->GetIsolate());
+  LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
+  EmitSoftNavigationEntryIfAllConditionsMet(frame);
 }
 
-void SoftNavigationHeuristics::EmitSoftNavigationEntry(LocalFrame* frame) {
+void SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
+    LocalFrame* frame) {
+  if (!paint_conditions_met_ || !soft_navigation_conditions_met_ ||
+      !soft_navigation_interaction_data_ ||
+      soft_navigation_interaction_data_->url.IsNull() ||
+      soft_navigation_interaction_data_->user_interaction_timestamp.is_null() ||
+      !frame || !frame->IsOutermostMainFrame()) {
+    return;
+  }
   LocalDOMWindow* window = frame->DomWindow();
   CHECK(window);
   ++soft_navigation_count_;
   window->GenerateNewNavigationId();
   auto* performance = DOMWindowPerformance::performance(*window);
-  CHECK(soft_navigation_interaction_data_);
-  CHECK(!soft_navigation_interaction_data_->url.IsNull());
-  CHECK(
-      !soft_navigation_interaction_data_->user_interaction_timestamp.is_null());
   performance->AddSoftNavigationEntry(
       AtomicString(soft_navigation_interaction_data_->url),
       soft_navigation_interaction_data_->user_interaction_timestamp);
@@ -385,12 +380,7 @@ void SoftNavigationHeuristics::RecordPaint(
 
     if (((softnav_painted_area_ * HUNDRED_PERCENT) > paint_threshold)) {
       paint_conditions_met_ = true;
-      if (soft_navigation_conditions_met_ &&
-          soft_navigation_interaction_data_ &&
-          !soft_navigation_interaction_data_->user_interaction_timestamp
-               .is_null()) {
-        EmitSoftNavigationEntry(frame);
-      }
+      EmitSoftNavigationEntryIfAllConditionsMet(frame);
     }
   } else if (!initial_interaction_encountered_) {
     initial_painted_area_ += painted_area;
@@ -441,17 +431,10 @@ void SoftNavigationHeuristics::SetCurrentTimeAsStartTime() {
     // nested event scope).
     data->user_interaction_timestamp = base::TimeTicks::Now();
   }
-  if (soft_navigation_conditions_met_ && paint_conditions_met_) {
-    // This can happen in a case where the paint conditions were met by a
-    // previous interaction. That's a correctness tradeoff we made when
-    // supporting multiple interactions.
-    LocalDOMWindow* window = GetSupplementable();
-    LocalFrame* frame =
-        window->IsCurrentlyDisplayedInFrame() ? window->GetFrame() : nullptr;
-    if (frame && frame->IsOutermostMainFrame()) {
-      EmitSoftNavigationEntry(frame);
-    }
-  }
+  LocalDOMWindow* window = GetSupplementable();
+  LocalFrame* frame =
+      window->IsCurrentlyDisplayedInFrame() ? window->GetFrame() : nullptr;
+  EmitSoftNavigationEntryIfAllConditionsMet(frame);
 }
 
 void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(

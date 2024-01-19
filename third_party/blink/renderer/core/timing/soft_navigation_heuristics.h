@@ -132,7 +132,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   void ResetHeuristic();
   void ResetPaintsIfNeeded();
   void CommitPreviousPaints(LocalFrame*);
-  void EmitSoftNavigationEntry(LocalFrame*);
+  void EmitSoftNavigationEntryIfAllConditionsMet(LocalFrame*);
 
   PerInteractionData* GetCurrentInteractionData(scheduler::TaskAttributionId);
 
