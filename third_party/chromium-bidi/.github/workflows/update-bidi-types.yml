@@ -85,7 +85,7 @@ jobs:
       - name: Download WebDriverBidi CDDL for Permissions
         uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
         with:
-          name: permissions.cddl
+          name: permissions-cddl
       - name: Generate TypeScript types for the main spec
         run: npm run bidi-types -- --cddl-file all.cddl
       - name: Generate TypeScript types for Permissions spec
