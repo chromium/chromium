@@ -1121,9 +1121,6 @@ extern const char kCrasSplitAlsaUsbInternalDescription[];
 extern const char kPwaRestoreUiName[];
 extern const char kPwaRestoreUiDescription[];
 
-extern const char kRestoreTabsOnFREName[];
-extern const char kRestoreTabsOnFREDescription[];
-
 extern const char kRestoreSyncedPlaceholderTabsName[];
 extern const char kRestoreSyncedPlaceholderTabsDescription[];
 
@@ -2628,9 +2625,6 @@ extern const char kTabGroupParityAndroidDescription[];
 
 extern const char kTabGroupsForTabletsName[];
 extern const char kTabGroupsForTabletsDescription[];
-
-extern const char kThumbnailPlaceholderName[];
-extern const char kThumbnailPlaceholderDescription[];
 
 extern const char kTouchDragAndContextMenuName[];
 extern const char kTouchDragAndContextMenuDescription[];

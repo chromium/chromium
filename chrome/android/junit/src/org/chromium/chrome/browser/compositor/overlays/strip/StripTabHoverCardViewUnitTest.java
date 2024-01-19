@@ -208,7 +208,6 @@ public class StripTabHoverCardViewUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.THUMBNAIL_PLACEHOLDER)
     public void hoveredTabHasMissingThumbnail() {
         var url = JUnitTestGURLs.EXAMPLE_URL;
         var title = "Tab 1";

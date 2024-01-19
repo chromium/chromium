@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 
 /**
@@ -121,9 +120,7 @@ public class TabThumbnailView extends ImageView {
         if (!mInitialized) return;
 
         mRectF.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
-        if (useThumbnailPlaceholder()) {
-            resizeIconDrawable();
-        }
+        resizeIconDrawable();
     }
 
     @Override
@@ -180,10 +177,7 @@ public class TabThumbnailView extends ImageView {
         // If the drawable is empty, display a placeholder image.
         if (isPlaceholder()) {
             setBackground(mBackgroundDrawable);
-
-            if (useThumbnailPlaceholder()) {
-                updateIconDrawable();
-            }
+            updateIconDrawable();
             return;
         }
 
@@ -213,18 +207,13 @@ public class TabThumbnailView extends ImageView {
      * @return whether the image drawable is a placeholder.
      */
     public boolean isPlaceholder() {
-        if (useThumbnailPlaceholder()) {
-            // The drawable can only be null if we just removed the drawable and need to set the
-            // mIconDrawable.
-            if (getDrawable() == null) return true;
+        // The drawable can only be null if we just removed the drawable and need to set the
+        // mIconDrawable.
+        if (getDrawable() == null) return true;
 
-            // Otherwise there should always be a thumbnail or placeholder drawable.
-            if (mIconDrawable == null) return false;
-            return getDrawable() == mIconDrawable;
-        } else {
-            // There is only a drawable when the thumbnail is set.
-            return getDrawable() == null;
-        }
+        // Otherwise there should always be a thumbnail or placeholder drawable.
+        if (mIconDrawable == null) return false;
+        return getDrawable() == mIconDrawable;
     }
 
     /**
@@ -247,7 +236,7 @@ public class TabThumbnailView extends ImageView {
         // Make property changes outside the flag intentionally in the event the flag flips status
         // these will have no material effect on the UI and are safe.
         mIconColor = newColor;
-        if (useThumbnailPlaceholder() && mIconDrawable != null) {
+        if (mIconDrawable != null) {
             setColorFilter(mIconColor, PorterDuff.Mode.SRC_IN);
         }
 
@@ -322,11 +311,6 @@ public class TabThumbnailView extends ImageView {
                     (float) (height - edgeLength) / 2f - sVerticalOffsetPx);
             setImageMatrix(mIconMatrix);
         }
-    }
-
-    private boolean useThumbnailPlaceholder() {
-        return ChromeFeatureList.sThumbnailPlaceholder.isEnabled()
-                || ChromeFeatureList.sAdvancedPeripheralsSupportTabStrip.isEnabled();
     }
 
     public VectorDrawable getIconDrawableForTesting() {

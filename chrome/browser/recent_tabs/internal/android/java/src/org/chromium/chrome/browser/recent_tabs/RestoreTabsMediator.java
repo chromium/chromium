@@ -390,10 +390,8 @@ public class RestoreTabsMediator {
         mForeignSessionHelper.openForeignSessionTabsAsBackgroundTabs(
                 tabs, mModel.get(RestoreTabsProperties.SELECTED_DEVICE), mTabCreatorManager);
 
-        if (!mDelegate.getSkipFeatureEngagementParam().getValue()) {
-            TrackerFactory.getTrackerForProfile(mProfile)
-                    .notifyEvent(EventConstants.RESTORE_TABS_PROMO_USED);
-        }
+        TrackerFactory.getTrackerForProfile(mProfile)
+                .notifyEvent(EventConstants.RESTORE_TABS_PROMO_USED);
 
         recordTabRestorationMetrics(tabs, selectedTabs);
         mModel.set(RestoreTabsProperties.VISIBLE, false);

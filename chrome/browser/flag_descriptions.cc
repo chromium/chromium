@@ -2015,10 +2015,6 @@ const char kPwaRestoreUiName[] = "Enable the PWA Restore UI";
 const char kPwaRestoreUiDescription[] =
     "When enabled, the PWA Restore UI can be shown";
 
-const char kRestoreTabsOnFREName[] = "Restore tabs on FRE";
-const char kRestoreTabsOnFREDescription[] =
-    "Enable promo sheet to indicate tabs from synced devices can be restored";
-
 const char kRestoreSyncedPlaceholderTabsName[] =
     "Restore synced placeholder tabs";
 const char kRestoreSyncedPlaceholderTabsDescription[] =
@@ -4472,10 +4468,6 @@ const char kSurfaceControlMagnifierDescription[] =
 const char kSurfacePolishName[] = "Surface Polish";
 const char kSurfacePolishDescription[] =
     "Enable clank home surface polish for Start surface and NTP.";
-
-const char kThumbnailPlaceholderName[] = "Thumbnail placeholder";
-const char kThumbnailPlaceholderDescription[] =
-    "Display a placeholder image for missing thumbnails.";
 
 const char kTabletToolbarReorderingAndroidName[] =
     "Tablet Toolbar Reordering Android.";

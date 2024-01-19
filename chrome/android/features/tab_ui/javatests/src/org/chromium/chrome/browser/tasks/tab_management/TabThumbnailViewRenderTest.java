@@ -34,10 +34,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
@@ -176,7 +173,6 @@ public class TabThumbnailViewRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.THUMBNAIL_PLACEHOLDER})
     public void testPlaceholderDrawable() throws IOException, InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -219,57 +215,6 @@ public class TabThumbnailViewRenderTest {
                     mTabThumbnailView.setImageDrawable(null);
                 });
         mRenderTestRule.render(mTabCard, "placeholder_incognito_without_thumbnail_selected");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @DisableFeatures({
-        ChromeFeatureList.THUMBNAIL_PLACEHOLDER,
-        ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP
-    })
-    public void testNoPlaceholderDrawable() throws IOException, InterruptedException {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    updateColor(/* isIncognito= */ true, /* isSelected= */ false);
-                    mTabThumbnailView.setImageDrawable(null);
-                });
-        mRenderTestRule.render(mTabCard, "no_placeholder_incognito_without_thumbnail_deselected");
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    updateColor(/* isIncognito= */ false, /* isSelected= */ false);
-                    mTabThumbnailView.setImageDrawable(null);
-                });
-        mRenderTestRule.render(mTabCard, "no_placeholder_without_thumbnail_deselected");
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mTabThumbnailView.setImageBitmap(mBitmap);
-                    mTabThumbnailView.setImageMatrix(new Matrix());
-                });
-        mRenderTestRule.render(mTabCard, "no_placeholder_with_thumbnail_deselected");
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    updateColor(/* isIncognito= */ false, /* isSelected= */ true);
-                    mTabThumbnailView.setImageDrawable(null);
-                });
-        mRenderTestRule.render(mTabCard, "no_placeholder_without_thumbnail_selected");
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mTabThumbnailView.setImageBitmap(mBitmap);
-                    mTabThumbnailView.setImageMatrix(new Matrix());
-                });
-        mRenderTestRule.render(mTabCard, "no_placeholder_with_thumbnail_selected");
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    updateColor(/* isIncognito= */ true, /* isSelected= */ true);
-                    mTabThumbnailView.setImageDrawable(null);
-                });
-        mRenderTestRule.render(mTabCard, "no_placeholder_incognito_without_thumbnail_selected");
     }
 
     private void updateColor(boolean isIncognito, boolean isSelected) {

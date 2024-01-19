@@ -7,12 +7,8 @@ package org.chromium.chrome.browser.recent_tabs;
 import android.app.Activity;
 
 import org.chromium.base.Callback;
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
-import org.chromium.base.cached_flags.PostNativeFlag;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeFeatureMap;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
@@ -26,15 +22,6 @@ import java.util.List;
 
 /** A class of helper methods that assist in the restore tabs workflow. */
 public class RestoreTabsFeatureHelper {
-    public static final PostNativeFlag RESTORE_TABS_PROMO =
-            new PostNativeFlag(
-                    ChromeFeatureMap.getInstance(), ChromeFeatureList.RESTORE_TABS_ON_FRE);
-    public static final BooleanCachedFieldTrialParameter
-            RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT =
-                    ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                            ChromeFeatureList.RESTORE_TABS_ON_FRE,
-                            "skip_feature_engagement",
-                            false);
     private RestoreTabsController mController;
     private RestoreTabsControllerDelegate mDelegate;
     private RestoreTabsControllerDelegate mDelegateForTesting;
@@ -74,8 +61,7 @@ public class RestoreTabsFeatureHelper {
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
 
-        if (!RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.getValue()
-                && !tracker.wouldTriggerHelpUI(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE)) {
+        if (!tracker.wouldTriggerHelpUI(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE)) {
             RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
                     RestoreTabsOnFREPromoShowResult.NOT_ELIGIBLE);
             return;
@@ -104,9 +90,7 @@ public class RestoreTabsFeatureHelper {
         // is expected to show, which can help determine if it is being shown for the first or
         // second time.
         if (hasValidSyncedDevices(sessions)
-                && (RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.getValue()
-                        || tracker.shouldTriggerHelpUI(
-                                FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE))) {
+                && (tracker.shouldTriggerHelpUI(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE))) {
             setDelegate(
                     activity,
                     profile,
@@ -160,19 +144,10 @@ public class RestoreTabsFeatureHelper {
                                 assert !mWasDismissed : "Promo should only be dismissed once.";
                                 mWasDismissed = true;
 
-                                if (!RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.getValue()) {
-                                    TrackerFactory.getTrackerForProfile(profile)
-                                            .dismissed(
-                                                    FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE);
-                                }
+                                TrackerFactory.getTrackerForProfile(profile)
+                                        .dismissed(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE);
 
                                 destroy();
-                            }
-
-                            @Override
-                            public BooleanCachedFieldTrialParameter
-                                    getSkipFeatureEngagementParam() {
-                                return RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT;
                             }
 
                             @Override

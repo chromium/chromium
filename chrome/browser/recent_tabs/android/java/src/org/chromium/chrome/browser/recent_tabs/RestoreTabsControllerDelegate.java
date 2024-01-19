@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 
 import java.util.List;
@@ -20,11 +19,6 @@ public interface RestoreTabsControllerDelegate {
 
     /** Action to perform when the restore tabs promo is done showing. */
     public void onDismissed();
-
-    /**
-     * Helper method to retrieve the param value stored for skipping the feature engagement check.
-     */
-    public BooleanCachedFieldTrialParameter getSkipFeatureEngagementParam();
 
     /** Get the tab switcher's current tab list model size. */
     public int getGTSTabListModelSize();
