@@ -37,6 +37,7 @@ BASE_DECLARE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kAutofillEnablePaymentsAndroidBottomSheet);
+BASE_DECLARE_FEATURE(kAutofillEnablePaymentsAndroidBottomSheetAccountEmail);
 #endif
 
 BASE_DECLARE_FEATURE(kAutofillEnablePaymentsMandatoryReauth);

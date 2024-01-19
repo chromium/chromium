@@ -149,6 +149,12 @@ BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,
 BASE_FEATURE(kAutofillEnablePaymentsAndroidBottomSheet,
              "AutofillEnablePaymentsAndroidBottomSheet",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, the account email is included in the legal message provided
+// from the payments server. Only on Android.
+BASE_FEATURE(kAutofillEnablePaymentsAndroidBottomSheetAccountEmail,
+             "AutofillEnablePaymentsAndroidBottomSheetAccountEmail",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // When enabled, in use-cases where we would not have triggered any user-visible

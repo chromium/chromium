@@ -356,6 +356,14 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnablePaymentsAndroidBottomSheetAccountEmail)) {
+    upload_request_.client_behavior_signals.push_back(
+        ClientBehaviorConstants::kShowAccountEmailInLegalMessage);
+  }
+#endif
+
   if (!upload_request_.card.cvc().empty() &&
       personal_data_manager_->IsPaymentCvcStorageEnabled() &&
       // kAutofillEnableNewSaveCardBubbleUi affects the overall save bubble
