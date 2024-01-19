@@ -200,7 +200,10 @@ void AutofillDriverIOS::RendererShouldAcceptDataListSuggestion(
     const std::u16string& value) {}
 
 void AutofillDriverIOS::TriggerFormExtractionInDriverFrame() {
-  NOTIMPLEMENTED();  // TODO(crbug.com/1441921) implement.
+  if (!is_processed()) {
+    return;
+  }
+  [bridge_ scanFormsInWebState:web_state_ inFrame:web_frame()];
 }
 
 void AutofillDriverIOS::TriggerFormExtractionInAllFrames(

@@ -479,6 +479,11 @@ using UserDecision =
   // Not supported.
 }
 
+- (void)scanFormsInWebState:(web::WebState*)webState
+                    inFrame:(web::WebFrame*)webFrame {
+  [_autofillAgent scanFormsInWebState:webState inFrame:webFrame];
+}
+
 #pragma mark - CRWWebStateObserver
 
 - (void)webState:(web::WebState*)webState

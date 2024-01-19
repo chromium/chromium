@@ -672,6 +672,27 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       frame, std::move(predictionData));
 }
 
+- (void)scanFormsInWebState:(web::WebState*)webState
+                    inFrame:(web::WebFrame*)webFrame {
+  __weak AutofillAgent* weakSelf = self;
+  id completionHandler = ^(BOOL success, const FormDataVector& forms) {
+    if (!success || forms.empty()) {
+      return;
+    }
+    [weakSelf notifyFormsSeen:forms inFrame:webFrame];
+  };
+  // The document has now been fully loaded. Scan for forms to be extracted.
+  size_t min_required_fields =
+      MIN(autofill::kMinRequiredFieldsForUpload,
+          MIN(autofill::kMinRequiredFieldsForHeuristics,
+              autofill::kMinRequiredFieldsForQuery));
+  [self fetchFormsFiltered:NO
+                        withName:std::u16string()
+      minimumRequiredFieldsCount:min_required_fields
+                         inFrame:webFrame
+               completionHandler:completionHandler];
+}
+
 #pragma mark - AutofillClientIOSBridge
 
 - (void)showAutofillPopup:
@@ -928,28 +949,6 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       /*track_user_edited_fields=*/true);
 
   [self scanFormsInWebState:webState inFrame:frame];
-}
-
-- (void)scanFormsInWebState:(web::WebState*)webState
-                    inFrame:(web::WebFrame*)webFrame {
-  __weak AutofillAgent* weakSelf = self;
-  id completionHandler = ^(BOOL success, const FormDataVector& forms) {
-    AutofillAgent* strongSelf = weakSelf;
-    if (!strongSelf || !success || forms.empty()) {
-      return;
-    }
-    [strongSelf notifyFormsSeen:forms inFrame:webFrame];
-  };
-  // The document has now been fully loaded. Scan for forms to be extracted.
-  size_t min_required_fields =
-      MIN(autofill::kMinRequiredFieldsForUpload,
-          MIN(autofill::kMinRequiredFieldsForHeuristics,
-              autofill::kMinRequiredFieldsForQuery));
-  [self fetchFormsFiltered:NO
-                        withName:std::u16string()
-      minimumRequiredFieldsCount:min_required_fields
-                         inFrame:webFrame
-               completionHandler:completionHandler];
 }
 
 #pragma mark -
