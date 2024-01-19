@@ -152,6 +152,54 @@ TEST_F(PartitionAllocFreeSlotBitmapTest, ResetBitmap) {
   EXPECT_EQ(kAllFree, *(cell_first_slot + 2));
 }
 
+TEST_F(PartitionAllocFreeSlotBitmapTest, ResetBitmapWithZeroLengthRange) {
+  const size_t kNumSlots = 3 * kFreeSlotBitmapBitsPerCell;
+  for (size_t i = 0; i < kNumSlots; ++i) {
+    FreeSlotBitmapMarkSlotAsFree(SlotAddr(i));
+  }
+
+  // Test with an aligned address.
+  uintptr_t aligned_addr = SlotAddr(0);
+  auto [cell_aligned, bit_index_aligned] =
+      GetFreeSlotBitmapCellPtrAndBitIndex(aligned_addr);
+  EXPECT_EQ(0u, bit_index_aligned);
+  EXPECT_EQ(kAllFree, *cell_aligned);
+
+  FreeSlotBitmapReset(aligned_addr, aligned_addr, kSmallestBucket);
+  EXPECT_EQ(kAllFree, *cell_aligned);
+
+  // Test with a non-aligned address.
+  uintptr_t non_aligned_addr = SlotAddr(1);
+  auto [cell_non_aligned, bit_index_non_aligned] =
+      GetFreeSlotBitmapCellPtrAndBitIndex(non_aligned_addr);
+  EXPECT_EQ(1u, bit_index_non_aligned);
+  EXPECT_EQ(kAllFree, *cell_non_aligned);
+
+  FreeSlotBitmapReset(non_aligned_addr, non_aligned_addr, kSmallestBucket);
+  EXPECT_EQ(kAllFree, *cell_non_aligned);
+}
+
+TEST_F(PartitionAllocFreeSlotBitmapTest, ResetSingleBitInMiddleOfCell) {
+  const size_t kNumSlots = 3 * kFreeSlotBitmapBitsPerCell;
+  for (size_t i = 0; i < kNumSlots; ++i) {
+    FreeSlotBitmapMarkSlotAsFree(SlotAddr(i));
+  }
+
+  // Choose a slot address that is in the middle of a cell.
+  uintptr_t mid_cell_slot_addr = SlotAddr(kFreeSlotBitmapBitsPerCell / 2);
+
+  auto [cell_mid, bit_index_mid] =
+      GetFreeSlotBitmapCellPtrAndBitIndex(mid_cell_slot_addr);
+  EXPECT_NE(0u, bit_index_mid);
+  EXPECT_TRUE(*cell_mid & CellWithAOne(bit_index_mid));
+
+  // Reset the single bit in the middle of the cell.
+  FreeSlotBitmapReset(mid_cell_slot_addr, mid_cell_slot_addr + kSmallestBucket,
+                      kSmallestBucket);
+
+  EXPECT_FALSE(*cell_mid & CellWithAOne(bit_index_mid));
+}
+
 }  // namespace partition_alloc::internal
 
 #endif  // BUILDFLAG(USE_FREESLOT_BITMAP) &&
