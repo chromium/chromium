@@ -2609,8 +2609,8 @@ class WebMediaPlayerImplBackgroundBehaviorTest
   }
 
   int GetMaxKeyframeDistanceSec() const {
-    return WebMediaPlayerImpl::kMaxKeyframeDistanceToDisableBackgroundVideoMs /
-           base::Time::kMillisecondsPerSecond;
+    return WebMediaPlayerImpl::kMaxKeyframeDistanceToDisableBackgroundVideo
+        .InSeconds();
   }
 
   bool ShouldDisableVideoWhenHidden() const {
@@ -2779,13 +2779,13 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         ::testing::Bool(),
         ::testing::Values(
-            WebMediaPlayerImpl::kMaxKeyframeDistanceToDisableBackgroundVideoMs /
-                    base::Time::kMillisecondsPerSecond -
+            WebMediaPlayerImpl::kMaxKeyframeDistanceToDisableBackgroundVideo
+                    .InSeconds() -
                 1,
             300),
         ::testing::Values(
-            WebMediaPlayerImpl::kMaxKeyframeDistanceToDisableBackgroundVideoMs /
-                    base::Time::kMillisecondsPerSecond -
+            WebMediaPlayerImpl::kMaxKeyframeDistanceToDisableBackgroundVideo
+                    .InSeconds() -
                 1,
             100),
         ::testing::Bool(),

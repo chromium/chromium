@@ -3580,9 +3580,6 @@ bool WebMediaPlayerImpl::ShouldDisableVideoWhenHidden() const {
 
   // Videos shorter than the maximum allowed keyframe distance can be optimized.
   base::TimeDelta duration = GetPipelineMediaDuration();
-
-  constexpr base::TimeDelta kMaxKeyframeDistanceToDisableBackgroundVideo =
-      base::Milliseconds(kMaxKeyframeDistanceToDisableBackgroundVideoMs);
   if (duration < kMaxKeyframeDistanceToDisableBackgroundVideo)
     return true;
 
