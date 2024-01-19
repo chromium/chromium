@@ -396,7 +396,7 @@ public class TabDragSourceTest {
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
         verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify clear.
-        verify(mSourceStripLayoutHelper, times(1)).clearActiveClickedTab();
+        verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
         verifyNoInteractions(mDestStripLayoutHelper);
         // Verify metric is not recorded.
@@ -427,7 +427,7 @@ public class TabDragSourceTest {
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
         verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify tab cleared.
-        verify(mSourceStripLayoutHelper, times(1)).clearActiveClickedTab();
+        verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
         verifyNoInteractions(mDestStripLayoutHelper);
         // Verify metric is not recorded.
@@ -452,7 +452,7 @@ public class TabDragSourceTest {
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
         verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify tab cleared.
-        verify(mSourceStripLayoutHelper, times(1)).clearActiveClickedTab();
+        verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
         verifyNoInteractions(mDestStripLayoutHelper);
         // Verify metric is not recorded.
@@ -477,7 +477,7 @@ public class TabDragSourceTest {
         // Chrome Window.
         verify(mSourceMultiInstanceManager, times(1)).moveTabToNewWindow(mTabBeingDragged);
         // Verify tab cleared.
-        verify(mSourceStripLayoutHelper, times(1)).clearActiveClickedTab();
+        verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
         verifyNoInteractions(mDestStripLayoutHelper);
     }
@@ -496,7 +496,7 @@ public class TabDragSourceTest {
         verify(mDestMultiInstanceManager, times(1))
                 .moveTabToWindow(any(), eq(mTabBeingDragged), eq(TAB_INDEX));
         // Verify tab cleared.
-        verify(mSourceStripLayoutHelper, times(1)).clearActiveClickedTab();
+        verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip calls.
         verify(mDestStripLayoutHelper)
                 .prepareForTabDrop(anyLong(), anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
@@ -585,7 +585,7 @@ public class TabDragSourceTest {
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
         verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify tab cleared.
-        verify(mSourceStripLayoutHelper, times(1)).clearActiveClickedTab();
+        verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify metric is not recorded.
         histogramExpectation.assertExpected();
     }
@@ -613,7 +613,7 @@ public class TabDragSourceTest {
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
         verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify clear.
-        verify(mSourceStripLayoutHelper, times(1)).clearActiveClickedTab();
+        verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
         verifyNoInteractions(mDestStripLayoutHelper);
         // Verify metric is not recorded.

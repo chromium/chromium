@@ -2623,7 +2623,7 @@ public class StripLayoutHelperTest {
         StripLayoutTab theClickedTab = tabs[5];
 
         // Clean active tab environment and ensure.
-        mStripLayoutHelper.clearActiveClickedTab();
+        mStripLayoutHelper.clearTabDragState();
         assertTrue(
                 "Dragged Tab should be empty before drag action.",
                 mStripLayoutHelper.getActiveClickedTabForTesting() == null);
@@ -2638,10 +2638,30 @@ public class StripLayoutHelperTest {
         assertTrue(
                 "Dragged Tab should match selected tab during drag action.",
                 mStripLayoutHelper.getActiveClickedTabForTesting() == theClickedTab);
-        mStripLayoutHelper.clearActiveClickedTab();
+        mStripLayoutHelper.clearTabDragState();
         assertTrue(
                 "Dragged Tab should be cleared at the end of drag action.",
                 mStripLayoutHelper.getActiveClickedTabForTesting() == null);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testDrag_clearState() {
+        // Initialize with 10 tabs.
+        int selectedIndex = 5;
+        initializeTest(false, false, false, selectedIndex, 10);
+        StripLayoutTab draggedTab =
+                mStripLayoutHelper.getStripLayoutTabsForTesting()[selectedIndex];
+        draggedTab.setIsDraggedOffStrip(true);
+
+        // Clear any animators.
+        mStripLayoutHelper.finishAnimationsAndPushTabUpdates();
+        assertNull("Should not be animating.", mStripLayoutHelper.getRunningAnimatorForTesting());
+
+        // Act and verify.
+        mStripLayoutHelper.clearTabDragState();
+        assertNotNull("Should be animating.", mStripLayoutHelper.getRunningAnimatorForTesting());
     }
 
     @Test

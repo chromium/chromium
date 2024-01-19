@@ -359,7 +359,7 @@ public class TabDragSource implements View.OnDragListener {
         }
 
         // TODO (crbug.com/1497784): Remove this method.
-        mStripLayoutHelperSupplier.get().clearActiveClickedTab();
+        mStripLayoutHelperSupplier.get().clearTabDragState();
         if (mShadowView != null) {
             mShadowView.clear();
         }
