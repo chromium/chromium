@@ -35,6 +35,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
@@ -251,21 +252,48 @@ class NudgePasswordButtons : public views::View {
         views::BoxLayout::Orientation::kHorizontal));
     layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
 
-    AddChildView(std::make_unique<views::MdTextButton>(
+    auto cancel_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(&NudgePasswordButtons::CancelButtonPressed,
                             base::Unretained(this)),
-        l10n_util::GetStringUTF16(
-            IDS_PASSWORD_GENERATION_NUDGE_CANCEL_BUTTON)));
+        l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_NUDGE_CANCEL_BUTTON));
+    cancel_button_ = AddChildView(std::move(cancel_button));
 
     AddSpacerWithSize(autofill::PopupBaseView::GetHorizontalPadding(),
                       /*resize=*/false, this);
 
-    auto* accept_button = AddChildView(std::make_unique<views::MdTextButton>(
+    auto accept_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(&NudgePasswordButtons::AcceptButtonPressed,
                             base::Unretained(this)),
-        l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM)));
+        l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM));
     accept_button->SetStyle(ui::ButtonStyle::kProminent);
+    accept_button_ = AddChildView(std::move(accept_button));
+
+    // Set up custom focus predicates for buttons as the default ones check if
+    // they actually have focus, which won't be happening since the parent
+    // widget (of the popup view) is not activatable.
+    views::FocusRing::Get(accept_button_)
+        ->SetHasFocusPredicate(base::BindRepeating(
+            [](const NudgePasswordButtons* buttons, const views::View* view) {
+              return buttons->accept_button_has_focus_;
+            },
+            base::Unretained(this)));
+    views::FocusRing::Get(cancel_button_)
+        ->SetHasFocusPredicate(base::BindRepeating(
+            [](const NudgePasswordButtons* buttons, const views::View* view) {
+              return buttons->cancel_button_has_focus_;
+            },
+            base::Unretained(this)));
   }
+
+  void UpdateFocus(bool accept_button_focused) {
+    accept_button_has_focus_ = accept_button_focused;
+    cancel_button_has_focus_ = !accept_button_focused;
+    views::FocusRing::Get(accept_button_)->SchedulePaint();
+    views::FocusRing::Get(cancel_button_)->SchedulePaint();
+  }
+
+  views::View* GetAcceptButton() { return accept_button_; }
+  views::View* GetCancelButton() { return cancel_button_; }
 
  private:
   void CancelButtonPressed() {
@@ -280,6 +308,10 @@ class NudgePasswordButtons : public views::View {
   }
 
   base::WeakPtr<PasswordGenerationPopupController> controller_ = nullptr;
+  raw_ptr<views::View> accept_button_ = nullptr;
+  raw_ptr<views::View> cancel_button_ = nullptr;
+  bool accept_button_has_focus_ = false;
+  bool cancel_button_has_focus_ = false;
 };
 
 BEGIN_METADATA(NudgePasswordButtons)
@@ -305,9 +337,6 @@ std::unique_ptr<views::View> CreateNudgePasswordView(
       /*link_message_id=*/
       IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
       controller->GetPrimaryAccountEmail()));
-
-  nudge_password_view->AddChildView(
-      std::make_unique<NudgePasswordButtons>(controller));
 
   return nudge_password_view;
 }
@@ -498,6 +527,7 @@ void PasswordGenerationPopupViewViews::Hide() {
 void PasswordGenerationPopupViewViews::UpdateState() {
   password_view_ = nullptr;
   edit_password_view_ = nullptr;
+  nudge_password_buttons_view_ = nullptr;
   RemoveAllChildViews();
   CreateLayoutAndChildren();
 }
@@ -514,7 +544,7 @@ bool PasswordGenerationPopupViewViews::UpdateBoundsAndRedrawPopup() {
 }
 
 void PasswordGenerationPopupViewViews::PasswordSelectionUpdated() {
-  if (!GetWidget()) {
+  if (!GetWidget() || !password_view_) {
     return;
   }
 
@@ -546,6 +576,21 @@ void PasswordGenerationPopupViewViews::EditPasswordSelectionUpdated() {
   SchedulePaint();
 }
 
+void PasswordGenerationPopupViewViews::NudgePasswordSelectionUpdated() {
+  if (!GetWidget() || !nudge_password_buttons_view_) {
+    return;
+  }
+
+  auto* nudge_password_buttons =
+      static_cast<NudgePasswordButtons*>(nudge_password_buttons_view_);
+  if (controller_->accept_button_selected()) {
+    NotifyAXSelection(*nudge_password_buttons->GetAcceptButton());
+  } else if (controller_->cancel_button_selected()) {
+    NotifyAXSelection(*nudge_password_buttons->GetCancelButton());
+  }
+  nudge_password_buttons->UpdateFocus(controller_->accept_button_selected());
+}
+
 void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
   SetBackground(
       views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
@@ -563,8 +608,9 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
       provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
 
   if (controller_->ShouldShowNudgePassword()) {
-    auto* nudge_password_view =
-        AddChildView(CreateNudgePasswordView(controller_));
+    auto nudge_password_view = CreateNudgePasswordView(controller_);
+    nudge_password_buttons_view_ = nudge_password_view->AddChildView(
+        std::make_unique<NudgePasswordButtons>(controller_));
     nudge_password_view->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
     AddChildView(std::move(nudge_password_view));

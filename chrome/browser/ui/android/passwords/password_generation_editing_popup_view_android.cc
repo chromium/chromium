@@ -100,6 +100,9 @@ void PasswordGenerationEditingPopupViewAndroid::PasswordSelectionUpdated() {}
 void PasswordGenerationEditingPopupViewAndroid::EditPasswordSelectionUpdated() {
 }
 
+void PasswordGenerationEditingPopupViewAndroid::
+    NudgePasswordSelectionUpdated() {}
+
 // static
 PasswordGenerationPopupView* PasswordGenerationPopupView::Create(
     base::WeakPtr<PasswordGenerationPopupController> controller) {
