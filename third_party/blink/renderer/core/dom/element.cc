@@ -5058,7 +5058,10 @@ bool Element::ShouldRecalcHighlightPseudoStyle(
           blink::IsHorizontalWritingMode(highlight_parent->GetWritingMode())) {
     return true;
   }
-
+  // We do not need to return true for viewport unit dependencies because the
+  // parent, if there is one, will have the same viewport dimensions. If the
+  // parent otherwise has different units we must have already decided to do
+  // a recalc.
   return false;
 }
 

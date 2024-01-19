@@ -811,6 +811,10 @@ class ComputedStyle final : public ComputedStyleBase {
     return HasEmUnits() || HasRootFontRelativeUnits() ||
            HasGlyphRelativeUnits();
   }
+  bool HasAnyRelativeUnits() const {
+    return HasFontRelativeUnits() || HasContainerRelativeUnits() ||
+           HasLogicalDirectionRelativeUnits() || HasViewportUnits();
+  }
 
   // If true, the ComputedStyle must be recalculated when fonts are updated.
   bool DependsOnFontMetrics() const {
@@ -819,6 +823,8 @@ class ComputedStyle final : public ComputedStyleBase {
   }
   bool CachedPseudoElementStylesDependOnFontMetrics() const;
   bool HighlightPseudoElementStylesDependOnRelativeUnits() const;
+  bool HighlightPseudoElementStylesDependOnContainerUnits() const;
+  bool HighlightPseudoElementStylesDependOnViewportUnits() const;
 
   // font-size
   int FontSize() const { return GetFontDescription().ComputedPixelSize(); }

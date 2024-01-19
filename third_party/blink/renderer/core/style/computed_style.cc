@@ -582,35 +582,83 @@ bool ComputedStyle::operator==(const ComputedStyle& o) const {
 bool ComputedStyle::HighlightPseudoElementStylesDependOnRelativeUnits() const {
   const StyleHighlightData& highlight_data = HighlightData();
   if (highlight_data.Selection() &&
-      (highlight_data.Selection()->HasFontRelativeUnits() ||
-       highlight_data.Selection()->HasContainerRelativeUnits() ||
-       highlight_data.Selection()->HasLogicalDirectionRelativeUnits())) {
+      highlight_data.Selection()->HasAnyRelativeUnits()) {
     return true;
   }
   if (highlight_data.TargetText() &&
-      (highlight_data.TargetText()->HasFontRelativeUnits() ||
-       highlight_data.TargetText()->HasContainerRelativeUnits() ||
-       highlight_data.TargetText()->HasLogicalDirectionRelativeUnits())) {
+      highlight_data.TargetText()->HasAnyRelativeUnits()) {
     return true;
   }
   if (highlight_data.SpellingError() &&
-      (highlight_data.SpellingError()->HasFontRelativeUnits() ||
-       highlight_data.SpellingError()->HasContainerRelativeUnits() ||
-       highlight_data.SpellingError()->HasLogicalDirectionRelativeUnits())) {
+      highlight_data.SpellingError()->HasAnyRelativeUnits()) {
     return true;
   }
   if (highlight_data.GrammarError() &&
-      (highlight_data.GrammarError()->HasFontRelativeUnits() ||
-       highlight_data.GrammarError()->HasContainerRelativeUnits() ||
-       highlight_data.GrammarError()->HasLogicalDirectionRelativeUnits())) {
+      highlight_data.GrammarError()->HasAnyRelativeUnits()) {
     return true;
   }
   const CustomHighlightsStyleMap& custom_highlights =
       highlight_data.CustomHighlights();
   for (auto custom_highlight : custom_highlights) {
-    if (custom_highlight.value->HasFontRelativeUnits() ||
-        custom_highlight.value->HasContainerRelativeUnits() ||
-        custom_highlight.value->HasLogicalDirectionRelativeUnits()) {
+    if (custom_highlight.value->HasAnyRelativeUnits()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool ComputedStyle::HighlightPseudoElementStylesDependOnContainerUnits() const {
+  const StyleHighlightData& highlight_data = HighlightData();
+  if (highlight_data.Selection() &&
+      highlight_data.Selection()->HasContainerRelativeUnits()) {
+    return true;
+  }
+  if (highlight_data.TargetText() &&
+      highlight_data.TargetText()->HasContainerRelativeUnits()) {
+    return true;
+  }
+  if (highlight_data.SpellingError() &&
+      highlight_data.SpellingError()->HasContainerRelativeUnits()) {
+    return true;
+  }
+  if (highlight_data.GrammarError() &&
+      highlight_data.GrammarError()->HasContainerRelativeUnits()) {
+    return true;
+  }
+  const CustomHighlightsStyleMap& custom_highlights =
+      highlight_data.CustomHighlights();
+  for (auto custom_highlight : custom_highlights) {
+    if (custom_highlight.value->HasContainerRelativeUnits()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool ComputedStyle::HighlightPseudoElementStylesDependOnViewportUnits() const {
+  const StyleHighlightData& highlight_data = HighlightData();
+  if (highlight_data.Selection() &&
+      highlight_data.Selection()->HasViewportUnits()) {
+    return true;
+  }
+  if (highlight_data.TargetText() &&
+      highlight_data.TargetText()->HasViewportUnits()) {
+    return true;
+  }
+  if (highlight_data.SpellingError() &&
+      highlight_data.SpellingError()->HasViewportUnits()) {
+    return true;
+  }
+  if (highlight_data.GrammarError() &&
+      highlight_data.GrammarError()->HasViewportUnits()) {
+    return true;
+  }
+  const CustomHighlightsStyleMap& custom_highlights =
+      highlight_data.CustomHighlights();
+  for (auto custom_highlight : custom_highlights) {
+    if (custom_highlight.value->HasViewportUnits()) {
       return true;
     }
   }
