@@ -150,8 +150,8 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
 - (void)forceVisibilityRefresh {
   // Toggling the controller visibility will allow the content view to resize
   // below Top Chrome and fix the positioning issue of the toolbar.
-  self.hidden = !self.hidden;
-  self.hidden = !self.hidden;
+  self.hidden = YES;
+  self.hidden = NO;
 }
 
 @end
