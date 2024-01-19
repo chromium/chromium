@@ -20,7 +20,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
@@ -138,7 +137,7 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
   if (url.is_empty())
     url = GURL(captive_portal::CaptivePortalDetector::kDefaultURL);
 
-  SigninMode mode = GetSigninMode();
+  SigninMode mode = GetSigninMode(portal_state);
   NET_LOG(EVENT) << "Show signin mode: " << mode << " from: " << source;
   base::UmaHistogramEnumeration("Network.NetworkPortalSigninMode", mode);
   base::UmaHistogramEnumeration("Network.NetworkPortalSigninSource", source);
@@ -171,7 +170,8 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
 }
 
 NetworkPortalSigninController::SigninMode
-NetworkPortalSigninController::GetSigninMode() const {
+NetworkPortalSigninController::GetSigninMode(
+    NetworkState::PortalState portal_state) const {
   if (!user_manager::UserManager::IsInitialized()
       || !user_manager::UserManager::Get()->IsUserLoggedIn()) {
     NET_LOG(DEBUG) << "GetSigninMode: Not logged in";
@@ -190,10 +190,15 @@ NetworkPortalSigninController::GetSigninMode() const {
     return SigninMode::kSigninDialog;
   }
 
+  // When showing a proxy auth window, use a normal tab with proxies enabled.
+  if (portal_state == NetworkState::PortalState::kProxyAuthRequired) {
+    return SigninMode::kNormalTab;
+  }
+
   // This pref defaults to true, but if a policy is active the policy value
   // defaults to false ("any captive portal authentication pages are shown in a
   // regular tab [if a proxy is active]").
-  // Note: Generally we always want to show the portal signin UI in an incognito
+  // Note: Generally we always want to show the portal signin UI in an OTR
   // tab to avoid providing cookies, see b/245578628 for details.
   const bool ignore_proxy = profile->GetPrefs()->GetBoolean(
       prefs::kCaptivePortalAuthenticationIgnoresProxy);
