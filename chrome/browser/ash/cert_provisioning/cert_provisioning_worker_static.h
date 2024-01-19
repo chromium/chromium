@@ -119,7 +119,11 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
   void ScheduleNextStep(base::TimeDelta delay);
   void CancelScheduledTasks();
 
-  enum class ContinueReason { kTimeout, kInvalidation };
+  enum class ContinueReason {
+    kTimeout,
+    kSubscribedToInvalidation,
+    kInvalidationReceived
+  };
   void OnShouldContinue(ContinueReason reason);
 
   // Registers for |invalidation_topic_| that allows to receive notification

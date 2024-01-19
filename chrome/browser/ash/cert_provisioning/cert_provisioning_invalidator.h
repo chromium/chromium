@@ -26,6 +26,13 @@ namespace ash::cert_provisioning {
 enum class CertScope;
 
 enum class InvalidationEvent {
+  // The client has successfully subscribed to the invalidation topic.
+  // This is relevant because if an invalidation was published for that
+  // invalidation topic before the client has successfully subscribed, the
+  // client will not receive that invalidation.
+  // This could be called multiple times because the registration could need to
+  // be re-established by the FCM client.
+  kSuccessfullySubscribed,
   // An invalidation has been received.
   kInvalidationReceived,
 };
@@ -72,6 +79,8 @@ class CertProvisioningInvalidationHandler
 
   // invalidation::InvalidationHandler:
   void OnInvalidatorStateChange(invalidation::InvalidatorState state) override;
+  void OnSuccessfullySubscribed(
+      const invalidation::Topic& invalidation) override;
   void OnIncomingInvalidation(
       const invalidation::Invalidation& invalidation) override;
   std::string GetOwnerName() const override;

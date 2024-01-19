@@ -27,7 +27,10 @@ enum class CertProvisioningEvent {
   kWorkerCreated = 5,
   kWorkerDeserialized = 6,
   kWorkerDeserializationFailed = 7,
-  kMaxValue = kWorkerDeserializationFailed
+  // The subscription to an invalidation topic (the start of which is reported
+  // as kRegisteredToInvalidationTopic) has successfully finished.
+  kSuccessfullySubscribedToInvalidationTopic = 8,
+  kMaxValue = kSuccessfullySubscribedToInvalidationTopic
 };
 
 // Records the |final_state| of a worker. If the worker is failed, also records

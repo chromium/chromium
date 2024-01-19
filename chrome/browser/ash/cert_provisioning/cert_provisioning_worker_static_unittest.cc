@@ -1238,7 +1238,8 @@ TEST_F(CertProvisioningWorkerStaticTest, ServiceActivationPendingResponse) {
 }
 
 // Checks that when the server returns try_again_later field, the worker will
-// retry when the invalidation is triggered.
+// retry when successfully subscribed for the invalidation or when the
+// invalidation is triggered.
 TEST_F(CertProvisioningWorkerStaticTest, InvalidationRespected) {
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
@@ -1333,6 +1334,20 @@ TEST_F(CertProvisioningWorkerStaticTest, InvalidationRespected) {
     FastForwardBy(finish_csr_delay + small_delay);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kFinishCsrResponseReceived);
+  }
+
+  {
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kFinishCsrResponseReceived);
+
+    testing::InSequence seq;
+
+    EXPECT_DOWNLOAD_CERT_TRY_LATER(
+        DownloadCert(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        download_cert_server_delay.InMilliseconds());
+
+    on_invalidation_event_callback.Run(
+        InvalidationEvent::kSuccessfullySubscribed);
   }
 
   {

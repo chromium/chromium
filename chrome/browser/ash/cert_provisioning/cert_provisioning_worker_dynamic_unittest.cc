@@ -542,6 +542,27 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
   {
+    // A signal that the the client has successfully subscribed to the
+    // invalidation topic should result in a retry of the waiting action.
+    // In this particular scenario, the result is still
+    // InstructionNotYetAvailable.
+    testing::InSequence seq;
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
+
+    // kReadyForNextOperation -> kReadyForNextOperation is still reported as a
+    // state change.
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce(VerifyNoBackendErrorsSeen);
+
+    on_invalidation_event_callback.Run(
+        InvalidationEvent::kSuccessfullySubscribed);
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kReadyForNextOperation);
+  }
+  {
     testing::InSequence seq;
 
     EXPECT_GET_NEXT_INSTRUCTION(
@@ -676,8 +697,11 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
   histogram_tester.ExpectBucketCount(
       "ChromeOS.CertProvisioning.Event.Dynamic.User",
       CertProvisioningEvent::kInvalidationReceived, 2);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.CertProvisioning.Event.Dynamic.User",
+      CertProvisioningEvent::kSuccessfullySubscribedToInvalidationTopic, 1);
   histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.Event.Dynamic.User", 3);
+      "ChromeOS.CertProvisioning.Event.Dynamic.User", 4);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.CertProvisioning.KeypairGenerationTime.Dynamic.User", 1);
   histogram_tester.ExpectTotalCount(

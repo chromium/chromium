@@ -326,6 +326,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kWorkerCreated"/>
   <int value="6" label="kWorkerDeserialized"/>
   <int value="7" label="kWorkerDeserializationFailed"/>
+  <int value="8" label="kSuccessfullySubscribedToInvalidationTopic"/>
 </enum>
 
 <enum name="CertProvisioningWorkerState">

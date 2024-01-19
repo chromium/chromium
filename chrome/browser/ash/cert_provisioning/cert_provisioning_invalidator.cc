@@ -124,6 +124,16 @@ void CertProvisioningInvalidationHandler::OnInvalidatorStateChange(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void CertProvisioningInvalidationHandler::OnSuccessfullySubscribed(
+    const invalidation::Topic& topic) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(topic, topic_)
+      << "Successfully subscribed notification for wrong topic";
+
+  on_invalidation_event_callback_.Run(
+      InvalidationEvent::kSuccessfullySubscribed);
+}
+
 void CertProvisioningInvalidationHandler::OnIncomingInvalidation(
     const invalidation::Invalidation& invalidation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

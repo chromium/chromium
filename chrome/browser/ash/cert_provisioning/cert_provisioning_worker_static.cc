@@ -837,7 +837,12 @@ void CertProvisioningWorkerStatic::ScheduleNextStep(base::TimeDelta delay) {
 
 void CertProvisioningWorkerStatic::OnShouldContinue(ContinueReason reason) {
   switch (reason) {
-    case ContinueReason::kInvalidation:
+    case ContinueReason::kSubscribedToInvalidation:
+      RecordEvent(
+          cert_profile_.protocol_version, cert_scope_,
+          CertProvisioningEvent::kSuccessfullySubscribedToInvalidationTopic);
+      break;
+    case ContinueReason::kInvalidationReceived:
       RecordEvent(cert_profile_.protocol_version, cert_scope_,
                   CertProvisioningEvent::kInvalidationReceived);
       break;
@@ -1040,9 +1045,18 @@ void CertProvisioningWorkerStatic::UnregisterFromInvalidationTopic() {
 
 void CertProvisioningWorkerStatic::OnInvalidationEvent(
     InvalidationEvent invalidation_event) {
-  // TODO - b/307340577: Also react on a new "registered successfully" event.
-  VLOG(0) << "Invalidation received";
-  OnShouldContinue(ContinueReason::kInvalidation);
+  // This function logs as WARNING so the messages are visible in feedback logs
+  // to monitor for b/307340577 .
+  switch (invalidation_event) {
+    case InvalidationEvent::kSuccessfullySubscribed:
+      LOG(WARNING) << "Successfully subscribed to invalidations";
+      OnShouldContinue(ContinueReason::kSubscribedToInvalidation);
+      break;
+    case InvalidationEvent::kInvalidationReceived:
+      LOG(WARNING) << "Invalidation received";
+      OnShouldContinue(ContinueReason::kInvalidationReceived);
+      break;
+  }
 }
 
 }  // namespace ash::cert_provisioning
