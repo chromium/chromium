@@ -263,6 +263,7 @@ class VideoDetector;
 class WallpaperControllerImpl;
 class WindowBoundsTracker;
 class WindowCycleController;
+class WindowTilingController;
 class WindowTreeHostManager;
 class WmModeController;
 class ArcInputMethodBoundsTracker;
@@ -784,6 +785,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   WindowRestoreController* window_restore_controller() {
     return window_restore_controller_.get();
   }
+  WindowTilingController* window_tiling_controller() {
+    return window_tiling_controller_.get();
+  }
   OverviewController* overview_controller() {
     return overview_controller_.get();
   }
@@ -1095,6 +1099,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<WallpaperControllerImpl> wallpaper_controller_;
   std::unique_ptr<WindowCycleController> window_cycle_controller_;
   std::unique_ptr<WindowRestoreController> window_restore_controller_;
+  std::unique_ptr<WindowTilingController> window_tiling_controller_;
   std::unique_ptr<OverviewController> overview_controller_;
   std::unique_ptr<GameDashboardController> game_dashboard_controller_;
   // Owned by |focus_controller_|.

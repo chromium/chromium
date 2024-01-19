@@ -159,13 +159,13 @@
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/locale/locale_update_controller_impl.h"
 #include "ash/system/media/media_notification_provider.h"
-#include "ash/system/notification_center/message_center_ash_impl.h"
-#include "ash/system/notification_center/message_center_controller.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/virtual_keyboard_model.h"
 #include "ash/system/nearby_share/nearby_share_controller_impl.h"
 #include "ash/system/network/sms_observer.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
+#include "ash/system/notification_center/message_center_ash_impl.h"
+#include "ash/system/notification_center/message_center_controller.h"
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "ash/system/power/adaptive_charging_controller.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
@@ -222,6 +222,7 @@
 #include "ash/wm/system_modal_container_layout_manager.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
+#include "ash/wm/tile_group/window_tiling_controller.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/video_detector.h"
 #include "ash/wm/window_animations.h"
@@ -1768,6 +1769,10 @@ void Shell::Init(
   if (features::IsPickerUpdateEnabled() &&
       PickerController::IsFeatureKeyMatched()) {
     picker_controller_ = std::make_unique<PickerController>();
+  }
+
+  if (features::IsTilingWindowResizeEnabled()) {
+    window_tiling_controller_ = std::make_unique<WindowTilingController>();
   }
 
   // Injects the factory which fulfills the implementation of the text context
