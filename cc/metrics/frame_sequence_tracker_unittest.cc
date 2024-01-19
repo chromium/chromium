@@ -914,7 +914,7 @@ TEST_F(FrameSequenceTrackerTest, CustomTrackers) {
   // Tracker 2 has zero expected frames.
   collection_.NotifyFramePresented(frame_token, {});
   EXPECT_EQ(1u, results.size());
-  EXPECT_EQ(0u, results[2].frames_expected);
+  EXPECT_EQ(0u, results[2].frames_expected_v3);
 
   // Simple sequence of one frame.
   const char sequence[] = "b(1)B(0,1)s(1)S(1)e(1,0)P(1)";
@@ -928,12 +928,12 @@ TEST_F(FrameSequenceTrackerTest, CustomTrackers) {
   // Tracker 1 and 3 and should report.
   collection_.NotifyFramePresented(frame_token, {});
   EXPECT_EQ(3u, results.size());
-  EXPECT_EQ(1u, results[1].frames_produced);
-  EXPECT_EQ(1u, results[1].frames_expected);
-  EXPECT_EQ(0u, results[2].frames_produced);
-  EXPECT_EQ(0u, results[2].frames_expected);
-  EXPECT_EQ(1u, results[3].frames_produced);
-  EXPECT_EQ(1u, results[3].frames_expected);
+  EXPECT_EQ(0u, results[1].frames_dropped_v3);
+  EXPECT_EQ(1u, results[1].frames_expected_v3);
+  EXPECT_EQ(0u, results[2].frames_dropped_v3);
+  EXPECT_EQ(0u, results[2].frames_expected_v3);
+  EXPECT_EQ(0u, results[3].frames_dropped_v3);
+  EXPECT_EQ(1u, results[3].frames_expected_v3);
 }
 
 TEST_F(FrameSequenceTrackerTest, CustomTrackerOutOfOrderFramesMissingV3Data) {

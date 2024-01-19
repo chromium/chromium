@@ -5874,9 +5874,10 @@ void AutotestPrivateStopSmoothnessTrackingFunction::OnReportData(
   timeout_timer_.AbandonAndStop();
 
   api::autotest_private::DisplaySmoothnessData result_data;
-  result_data.frames_expected = frame_data.frames_expected;
-  result_data.frames_produced = frame_data.frames_produced;
-  result_data.jank_count = frame_data.jank_count;
+  result_data.frames_expected = frame_data.frames_expected_v3;
+  result_data.frames_produced =
+      frame_data.frames_expected_v3 - frame_data.frames_dropped_v3;
+  result_data.jank_count = frame_data.jank_count_v3;
   result_data.throughput = std::move(throughput);
 
   Respond(ArgumentList(
@@ -6078,9 +6079,10 @@ AutotestPrivateStopThroughputTrackerDataCollectionFunction::Run() {
     animation_data.stop_offset_ms =
         (data.stop_tick - g_last_start_throughput_data_collection_tick)
             .InMilliseconds();
-    animation_data.frames_expected = data.smoothness_data.frames_expected;
-    animation_data.frames_produced = data.smoothness_data.frames_produced;
-    animation_data.jank_count = data.smoothness_data.jank_count;
+    animation_data.frames_expected = data.smoothness_data.frames_expected_v3;
+    animation_data.frames_produced = data.smoothness_data.frames_expected_v3 -
+                                     data.smoothness_data.frames_dropped_v3;
+    animation_data.jank_count = data.smoothness_data.jank_count_v3;
     result_data.emplace_back(std::move(animation_data));
   }
   return RespondNow(
@@ -6111,9 +6113,10 @@ AutotestPrivateGetThroughputTrackerDataFunction::Run() {
     animation_data.stop_offset_ms =
         (data.stop_tick - g_last_start_throughput_data_collection_tick)
             .InMilliseconds();
-    animation_data.frames_expected = data.smoothness_data.frames_expected;
-    animation_data.frames_produced = data.smoothness_data.frames_produced;
-    animation_data.jank_count = data.smoothness_data.jank_count;
+    animation_data.frames_expected = data.smoothness_data.frames_expected_v3;
+    animation_data.frames_produced = data.smoothness_data.frames_expected_v3 -
+                                     data.smoothness_data.frames_dropped_v3;
+    animation_data.jank_count = data.smoothness_data.jank_count_v3;
     result_data.emplace_back(std::move(animation_data));
   }
   return RespondNow(ArgumentList(

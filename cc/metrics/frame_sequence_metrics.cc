@@ -301,9 +301,6 @@ void FrameSequenceMetrics::ReportMetrics() {
     DCHECK(!custom_reporter_.is_null());
     std::move(custom_reporter_)
         .Run({
-            main_throughput_.frames_expected,
-            main_throughput_.frames_produced,
-            jank_reporter_->jank_count(),
             v3_.frames_expected,
             v3_.frames_dropped,
             v3_.jank_count,

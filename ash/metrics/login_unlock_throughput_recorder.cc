@@ -101,7 +101,7 @@ void RecordDurationMetrics(
     const char* jank_name,
     const char* duration_name_short,
     const char* duration_name_long) {
-  DCHECK(data.frames_expected);
+  DCHECK(data.frames_expected_v3);
 
   // Report could happen during Shell shutdown. Early out in that case.
   if (!Shell::HasInstance() || !Shell::Get()->tablet_mode_controller())
@@ -137,7 +137,7 @@ void RecordDurationMetrics(
 void ReportLoginTotalAnimationThroughput(
     base::TimeTicks start,
     const cc::FrameSequenceMetrics::CustomReportData& data) {
-  if (!data.frames_expected) {
+  if (!data.frames_expected_v3) {
     LOG(WARNING) << "Zero frames expected in login animation throughput data";
     return;
   }
@@ -156,7 +156,7 @@ void ReportLoginTotalAnimationThroughput(
 void RecordSmoothnessMetrics(
     const cc::FrameSequenceMetrics::CustomReportData& data,
     const char* smoothness_name) {
-  DCHECK(data.frames_expected);
+  DCHECK(data.frames_expected_v3);
 
   // Report could happen during Shell shutdown. Early out in that case.
   if (!Shell::HasInstance() || !Shell::Get()->tablet_mode_controller()) {
@@ -172,7 +172,7 @@ void RecordSmoothnessMetrics(
 }
 
 void ReportUnlock(const cc::FrameSequenceMetrics::CustomReportData& data) {
-  if (!data.frames_expected) {
+  if (!data.frames_expected_v3) {
     LOG(WARNING) << "Zero frames expected in unlock animation throughput data";
     return;
   }

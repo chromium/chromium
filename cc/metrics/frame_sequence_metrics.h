@@ -103,9 +103,6 @@ class CC_EXPORT FrameSequenceMetrics {
   void SetScrollingThread(FrameInfo::SmoothEffectDrivingThread thread);
 
   struct CustomReportData {
-    uint32_t frames_expected = 0;
-    uint32_t frames_produced = 0;
-    int jank_count = 0;
     uint32_t frames_expected_v3 = 0;
     uint32_t frames_dropped_v3 = 0;
     uint32_t jank_count_v3 = 0;
