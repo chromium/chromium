@@ -321,4 +321,36 @@ TEST(TimeUtilsTest, Iso8601DateWeekAsTimeWeek53) {
   EXPECT_EQ(result.value(), expected_ts);
 }
 
+TEST(TimeUtilsTest, ConvertTimeToISO8601String) {
+  // Call the method under test.
+  // Cross validated against calculator: https://planetcalc.com/8540/
+  struct {
+    base::Time::Exploded exploded;
+    std::string_view expected_yyyy_mm;
+  } kTestCases[] = {
+      {{2025, 1, 0, 1, 12, 30, 0, 0}, "2025-01"},
+      {{2020, 1, 0, 1, 12, 30, 0, 0}, "2020-01"},
+      {{2023, 1, 0, 1, 12, 30, 0, 0}, "2022-52"},
+      {{2023, 12, 0, 30, 12, 30, 0, 0}, "2023-52"},
+      {{2019, 12, 0, 30, 12, 30, 0, 0}, "2020-01"},
+      {{2019, 8, 0, 25, 12, 30, 0, 0}, "2019-34"},
+      {{2020, 8, 0, 25, 12, 30, 0, 0}, "2020-35"},
+      {{2021, 8, 0, 25, 12, 30, 0, 0}, "2021-34"},
+      {{2023, 11, 0, 25, 12, 30, 0, 0}, "2023-47"},
+      {{2020, 12, 0, 27, 12, 30, 0, 0}, "2020-52"},
+      {{2020, 12, 0, 28, 12, 30, 0, 0}, "2020-53"},
+      {{2021, 1, 0, 4, 12, 30, 0, 0}, "2021-01"},
+      // Edge Case: Returns 52 weeks, even though previous year has 53 weeks.
+      // ISO calendar date to Gregorian calendar calculator outputs 2020-53.
+      {{2021, 1, 0, 3, 12, 30, 0, 0}, "2020-52"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "Case: " << test_case.expected_yyyy_mm);
+    base::Time test_ts;
+    EXPECT_TRUE(base::Time::FromUTCExploded(test_case.exploded, &test_ts));
+    EXPECT_EQ(ConvertTimeToISO8601String(test_ts), test_case.expected_yyyy_mm);
+  }
+}
+
 }  // namespace ash::report::utils

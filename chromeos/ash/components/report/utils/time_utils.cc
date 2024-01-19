@@ -285,4 +285,57 @@ std::optional<base::Time> Iso8601DateWeekAsTime(int activate_year,
   return first_monday_iso_year.value() + base::Days(days_in_iso_period);
 }
 
+std::string ConvertTimeToISO8601String(base::Time ts) {
+  if (ts.is_null()) {
+    LOG(ERROR) << "Timestamp ts is not defined correctly. ts = " << ts;
+    return std::string();
+  }
+
+  // Calculate the year of the given time
+  base::Time::Exploded exploded;
+  ts.UTCExplode(&exploded);
+  int activate_year = exploded.year;
+
+  std::optional<base::Time> first_monday_iso_year =
+      FirstMondayOfISONewYear(activate_year);
+
+  if (!first_monday_iso_year.has_value()) {
+    return std::string();
+  }
+
+  // Assign to the last ISO week of previous year. We use W52 for simplicity.
+  // Some years have 53 weeks, but we simply use 52 to avoid complexity here.
+  // This captures ts for up to the 3 days after the new year that are apart of
+  // the previous year last ISO week.
+  if (ts < first_monday_iso_year.value()) {
+    return std::to_string(activate_year - 1) + "-52";
+  }
+
+  std::optional<base::Time> first_monday_iso_year_next =
+      FirstMondayOfISONewYear(activate_year + 1);
+
+  if (!first_monday_iso_year_next.has_value()) {
+    return std::string();
+  }
+
+  // Assign to first ISO week of next year.
+  // This captures ts for up to the 3 days before the new year that are apart of
+  // the current year first ISO week.
+  if (ts >= first_monday_iso_year_next.value()) {
+    return std::to_string(activate_year + 1) + "-01";
+  }
+
+  // Calculate the number of days between the given time and the first
+  // Monday of the year
+  base::TimeDelta delta = ts - first_monday_iso_year.value();
+  int days_difference = delta.InDays();
+
+  // Calculate the ISO 8601 week number
+  int activate_week_of_year = days_difference / 7 + 1;
+
+  return std::to_string(activate_year) + "-" +
+         (activate_week_of_year < 10 ? "0" : "") +
+         std::to_string(activate_week_of_year);
+}
+
 }  // namespace ash::report::utils

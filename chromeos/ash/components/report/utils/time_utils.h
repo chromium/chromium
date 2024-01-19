@@ -69,6 +69,13 @@ std::optional<base::Time> FirstMondayOfISONewYear(int iso_year);
 std::optional<base::Time> Iso8601DateWeekAsTime(int activate_year,
                                                 int activate_week_of_year);
 
+// Convert base::Time object to YYYY-WW similar to ISO8601.
+// ISO calendar new year may start 1-3 days before the Gregorian new year or
+// 1-3 days later.
+// i.e. 2020-01 year by ISO calendar starts 2 days before, on December 30
+// i.e. 2021-01 year by ISO calendar starts 3 days later, on January 4
+std::string ConvertTimeToISO8601String(base::Time ts);
+
 }  // namespace ash::report::utils
 
 #endif  // CHROMEOS_ASH_COMPONENTS_REPORT_UTILS_TIME_UTILS_H_
