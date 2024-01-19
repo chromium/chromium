@@ -126,9 +126,11 @@ message ChurnObservationMetadata {
   // Value exists after first OOBE completion and device restart.
   // Statistics provider loads VPD file in the chrome browser preloop,
   // before ActivateDate may be first written.
-  optional string first_activate_week = 4;
+  // Field is only set if ActivateDate is <= 4 months old.
+  optional string first_active_week = 4;
 
   // Device last powerwash week. Formatted YYYY-WW in ISO8601 format.
+  // Field is only set if ActivateDate is <= 4 months old.
   optional string last_powerwash_week = 5;
 }
 
