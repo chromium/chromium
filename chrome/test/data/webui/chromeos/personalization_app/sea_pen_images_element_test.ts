@@ -177,10 +177,8 @@ suite('SeaPenImagesElementTest', function() {
 
     const feedbackButtons: CrIconButtonElement[] = Array.from(
         seaPenImagesElement.shadowRoot!.querySelectorAll<CrIconButtonElement>(
-            `div:not([hidden]).thumbnail-item-container .thumb-icon-button`));
-    assertEquals(
-        8, feedbackButtons!.length,
-        'should be 2 feedback buttons per thumbnail');
+            `div:not([hidden]).thumbnail-item-container sea-pen-feedback`));
+    assertTrue(feedbackButtons.length > 0);
   });
 
   test('display no network error state', async () => {

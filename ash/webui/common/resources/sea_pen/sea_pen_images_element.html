@@ -100,12 +100,6 @@
     bottom: 36px;
   }
 
-  .thumb-icon-button {
-    --cr-icon-button-size: 24px;
-    background-color: var(--cros-bg-color);
-    margin-inline: 0;
-  }
-
   .error-container {
     align-items: center;
     display: flex;
@@ -173,14 +167,9 @@
             <paper-spinner-lite active></paper-spinner-lite>
           </template>
           <div class="feedback-icon-container">
-            <div class="feedback-icon-container-inner">
-              <cr-icon-button class="thumb-icon-button" iron-icon="cr:thumbs-up"
-                  role="button" on-click="onClickThumbsUp_">
-              </cr-icon-button>
-              <cr-icon-button class="thumb-icon-button" iron-icon="cr:thumbs-down"
-                  role="button" on-click="onClickThumbsDown_">
-              </cr-icon-button>
-            </div>
+            <sea-pen-feedback
+                on-selected-feedback-changed="onSelectedFeedbackChanged_">
+            </sea-pen-feedback>
             <div class="feedback-icon-container-shadow-left"></div>
             <div class="feedback-icon-container-shadow-top"></div>
           </div>

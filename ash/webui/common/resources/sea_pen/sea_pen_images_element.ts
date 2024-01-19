@@ -16,6 +16,7 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import './sea_pen_feedback_element.js';
 
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
@@ -199,14 +200,11 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     }
   }
 
-  private onClickThumbsUp_() {
+  private onSelectedFeedbackChanged_(event:
+                                         CustomEvent<{isThumbsUp: boolean}>) {
+    const isThumbsUp = event.detail.isThumbsUp;
     logSeaPenTemplateFeedback(
-        this.getTemplateNameFromId_(this.templateId), true);
-  }
-
-  private onClickThumbsDown_() {
-    logSeaPenTemplateFeedback(
-        this.getTemplateNameFromId_(this.templateId), false);
+        this.getTemplateNameFromId_(this.templateId), isThumbsUp);
   }
 }
 
