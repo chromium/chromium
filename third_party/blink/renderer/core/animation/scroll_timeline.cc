@@ -95,21 +95,22 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
   // 1. If scroll timeline is inactive, return an unresolved time value.
   // https://github.com/WICG/scroll-animations/issues/31
   // https://wicg.github.io/scroll-animations/#current-time-algorithm
-  if (!ComputeIsResolved(state.resolved_source)) {
+  LayoutBox* scroll_container = ComputeScrollContainer(state.resolved_source);
+  if (!scroll_container) {
     return state;
   }
-  DCHECK(state.resolved_source);
-  LayoutBox* layout_box = state.resolved_source->GetLayoutBox();
 
-  // Layout box and scrollable area must exist since the timeline is active.
-  DCHECK(layout_box);
-  DCHECK(layout_box->GetScrollableArea());
+  // The scrollable area must exist since the timeline is active.
+  DCHECK(scroll_container->GetScrollableArea());
 
   // Depending on the writing-mode and direction, the scroll origin shifts and
   // the scroll offset may be negative. The easiest way to deal with this is to
   // use only the magnitude of the scroll offset, and compare it to (max_offset
   // - min_offset).
-  PaintLayerScrollableArea* scrollable_area = layout_box->GetScrollableArea();
+  PaintLayerScrollableArea* scrollable_area =
+      scroll_container->GetScrollableArea();
+  // Scrollable area must exist since the timeline is active.
+  DCHECK(scrollable_area);
 
   // Using the absolute value of the scroll offset only makes sense if either
   // the max or min scroll offset for a given axis is 0. This should be
@@ -121,7 +122,7 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
 
   ScrollOffset scroll_offset = scrollable_area->GetScrollOffset();
   auto physical_orientation =
-      ToPhysicalScrollOrientation(GetAxis(), *layout_box);
+      ToPhysicalScrollOrientation(GetAxis(), *scroll_container);
   double current_offset = (physical_orientation == kHorizontalScroll)
                               ? scroll_offset.x()
                               : scroll_offset.y();
@@ -138,7 +139,7 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
     return state;
   }
 
-  state.zoom = layout_box->StyleRef().EffectiveZoom();
+  state.zoom = scroll_container->StyleRef().EffectiveZoom();
   // Timeline is inactive unless the scroll offset range is positive.
   // github.com/w3c/csswg-drafts/issues/7401
   if (std::abs(state.scroll_offsets->end - state.scroll_offsets->start) > 0) {
@@ -201,6 +202,21 @@ Element* ScrollTimeline::ComputeSourceNoLayout() const {
   }
 
   Node* node = scroll_container->GetNode();
+  DCHECK(node || scroll_container->IsAnonymous());
+  if (!node) {
+    // The content scroller for a FieldSet is an anonymous block.  In this case,
+    // the parent's node is the fieldset element.
+    const LayoutBox* parent = DynamicTo<LayoutBox>(scroll_container->Parent());
+    if (parent && parent->StyleRef().IsScrollContainer()) {
+      node = parent->GetNode();
+    }
+  }
+
+  if (!node) {
+    NOTREACHED();
+    return nullptr;
+  }
+
   if (node->IsElementNode()) {
     return DynamicTo<Element>(node);
   }
@@ -253,19 +269,20 @@ absl::optional<double> ScrollTimeline::GetMaximumScrollPosition() const {
   if (!scroll_offsets) {
     return absl::nullopt;
   }
-  LayoutBox* layout_box = ResolvedSource()->GetLayoutBox();
-  if (!layout_box) {
+  LayoutBox* scroll_container = ScrollContainer();
+  if (!scroll_container) {
     return absl::nullopt;
   }
 
-  PaintLayerScrollableArea* scrollable_area = layout_box->GetScrollableArea();
+  PaintLayerScrollableArea* scrollable_area =
+      scroll_container->GetScrollableArea();
   if (!scrollable_area) {
     return absl::nullopt;
   }
   ScrollOffset scroll_dimensions = scrollable_area->MaximumScrollOffset() -
                                    scrollable_area->MinimumScrollOffset();
   auto physical_orientation =
-      ToPhysicalScrollOrientation(GetAxis(), *layout_box);
+      ToPhysicalScrollOrientation(GetAxis(), *scroll_container);
   return physical_orientation == kHorizontalScroll ? scroll_dimensions.x()
                                                    : scroll_dimensions.y();
 }

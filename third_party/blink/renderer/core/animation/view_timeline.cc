@@ -307,8 +307,8 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
   // Do not call this method with an unresolved timeline.
   // Called from ScrollTimeline::ComputeTimelineState, which has safeguard.
   // Any new call sites will require a similar safeguard.
-  DCHECK(state->resolved_source);
-  DCHECK(ComputeIsResolved(state->resolved_source));
+  LayoutBox* scroll_container = ComputeScrollContainer(state->resolved_source);
+  DCHECK(scroll_container);
   DCHECK(subject());
 
   absl::optional<gfx::SizeF> subject_size = SubjectSize();
@@ -318,7 +318,7 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
   }
 
   absl::optional<gfx::PointF> subject_position =
-      SubjectPosition(state->resolved_source);
+      SubjectPosition(scroll_container);
   DCHECK(subject_position);
 
   // TODO(crbug.com/1448801): Handle nested sticky elements.
@@ -371,7 +371,7 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
   ViewOffsets view_offsets = {target_size, target_size};
   ApplyStickyAdjustments(scroll_offsets, view_offsets, viewport_size_double,
                          target_size, target_offset, physical_orientation,
-                         state->resolved_source);
+                         scroll_container);
 
   state->scroll_offsets = scroll_offsets;
   state->view_offsets = view_offsets;
@@ -383,19 +383,18 @@ void ViewTimeline::ApplyStickyAdjustments(ScrollOffsets& scroll_offsets,
                                           double target_size,
                                           double target_offset,
                                           ScrollOrientation orientation,
-                                          Node* resolved_source) const {
+                                          LayoutBox* scroll_container) const {
   if (!subject()) {
     return;
   }
 
   LayoutBox* subject_layout_box = subject()->GetLayoutBox();
-  LayoutBox* source_layout_box = resolved_source->GetLayoutBox();
-  if (!subject_layout_box || !source_layout_box) {
+  if (!subject_layout_box || !scroll_container) {
     return;
   }
 
   const LayoutBoxModelObject* sticky_container =
-      subject_layout_box->FindFirstStickyContainer(source_layout_box);
+      subject_layout_box->FindFirstStickyContainer(scroll_container);
   if (!sticky_container) {
     return;
   }
@@ -532,19 +531,18 @@ absl::optional<gfx::SizeF> ViewTimeline::SubjectSize() const {
 }
 
 absl::optional<gfx::PointF> ViewTimeline::SubjectPosition(
-    Node* resolved_source) const {
-  if (!subject() || !resolved_source) {
+    LayoutBox* scroll_container) const {
+  if (!subject() || !scroll_container) {
     return absl::nullopt;
   }
   LayoutObject* subject_layout_object = subject()->GetLayoutObject();
-  LayoutBox* source_layout_box = resolved_source->GetLayoutBox();
-  if (!subject_layout_object || !source_layout_box) {
+  if (!subject_layout_object || !scroll_container) {
     return absl::nullopt;
   }
   MapCoordinatesFlags flags =
       kIgnoreScrollOffset | kIgnoreStickyOffset | kIgnoreTransforms;
   gfx::PointF subject_pos = subject_layout_object->LocalToAncestorPoint(
-      gfx::PointF(), source_layout_box, flags);
+      gfx::PointF(), scroll_container, flags);
 
   // We call LayoutObject::ClientLeft/Top directly and avoid
   // Element::clientLeft/Top because:
@@ -555,8 +553,8 @@ absl::optional<gfx::PointF> ViewTimeline::SubjectPosition(
   //   values.
 
   return gfx::PointF(
-      subject_pos.x() - source_layout_box->ClientLeft().ToDouble(),
-      subject_pos.y() - source_layout_box->ClientTop().ToDouble());
+      subject_pos.x() - scroll_container->ClientLeft().ToDouble(),
+      subject_pos.y() - scroll_container->ClientTop().ToDouble());
 }
 
 // https://www.w3.org/TR/scroll-animations-1/#named-range-getTime
