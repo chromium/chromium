@@ -45,8 +45,7 @@ class CORE_EXPORT CallableHolder final : public ScriptWrappable {
     // The wrapper is held alive by the CallHandlerInfo internally in V8 as long
     // as the function is alive.
     return v8::Function::New(script_state->GetContext(), CallCallback,
-                             holder->Wrap(script_state).ToLocalChecked(),
-                             callable->Length(),
+                             holder->Wrap(script_state), callable->Length(),
                              v8::ConstructorBehavior::kThrow)
         .ToLocalChecked();
   }

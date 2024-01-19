@@ -87,7 +87,7 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
   // the ArrayBuffer while at the same time exposing a NonShared TypedArray.
   virtual bool ShareNonSharedForInternalUse(ArrayBufferContents& result);
 
-  v8::MaybeLocal<v8::Value> Wrap(ScriptState*) override;
+  v8::Local<v8::Value> Wrap(ScriptState*) override;
 
   void Trace(Visitor*) const override;
 

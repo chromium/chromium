@@ -25,7 +25,7 @@ class PLATFORM_EXPORT DictionaryBase : public GarbageCollected<DictionaryBase> {
  public:
   virtual ~DictionaryBase() = default;
 
-  v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state) const;
+  v8::Local<v8::Value> ToV8(ScriptState* script_state) const;
 
   virtual void Trace(Visitor*) const {}
 

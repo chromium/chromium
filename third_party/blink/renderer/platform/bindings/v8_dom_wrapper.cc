@@ -37,9 +37,8 @@
 
 namespace blink {
 
-v8::MaybeLocal<v8::Object> V8DOMWrapper::CreateWrapper(
-    ScriptState* script_state,
-    const WrapperTypeInfo* type) {
+v8::Local<v8::Object> V8DOMWrapper::CreateWrapper(ScriptState* script_state,
+                                                  const WrapperTypeInfo* type) {
   RUNTIME_CALL_TIMER_SCOPE(script_state->GetIsolate(),
                            RuntimeCallStats::CounterId::kCreateWrapper);
 

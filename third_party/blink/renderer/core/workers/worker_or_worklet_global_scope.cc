@@ -233,7 +233,7 @@ const AtomicString& WorkerOrWorkletGlobalScope::InterfaceName() const {
   return g_null_atom;
 }
 
-v8::MaybeLocal<v8::Value> WorkerOrWorkletGlobalScope::Wrap(ScriptState*) {
+v8::Local<v8::Value> WorkerOrWorkletGlobalScope::Wrap(ScriptState*) {
   LOG(FATAL) << "WorkerOrWorkletGlobalScope must never be wrapped with wrap "
                 "method. The global object of ECMAScript environment is used "
                 "as the wrapper.";

@@ -62,9 +62,10 @@ class FrozenArray final : public bindings::FrozenArrayBase {
 
  protected:
   // FrozenArrayBase overrides:
-  v8::MaybeLocal<v8::Value> MakeV8ArrayToBeFrozen(
+  v8::Local<v8::Value> MakeV8ArrayToBeFrozen(
       ScriptState* script_state) const override {
-    return ToV8Traits<IDLSequence<IDLType>>::ToV8(script_state, array_);
+    return ToV8Traits<IDLSequence<IDLType>>::ToV8(script_state, array_)
+        .ToLocalChecked();
   }
 
  private:

@@ -56,7 +56,7 @@ class CORE_EXPORT DOMSharedArrayBuffer final : public DOMArrayBufferBase {
     return true;
   }
 
-  v8::MaybeLocal<v8::Value> Wrap(ScriptState*) override;
+  v8::Local<v8::Value> Wrap(ScriptState*) override;
 };
 
 }  // namespace blink

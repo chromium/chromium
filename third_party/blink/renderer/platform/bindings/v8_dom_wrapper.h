@@ -52,7 +52,7 @@ class V8DOMWrapper {
   STATIC_ONLY(V8DOMWrapper);
 
  public:
-  PLATFORM_EXPORT static v8::MaybeLocal<v8::Object> CreateWrapper(
+  PLATFORM_EXPORT static v8::Local<v8::Object> CreateWrapper(
       ScriptState*,
       const WrapperTypeInfo*);
   PLATFORM_EXPORT static bool IsWrapper(v8::Isolate*, v8::Local<v8::Value>);

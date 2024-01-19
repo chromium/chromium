@@ -19,7 +19,7 @@ struct SameSizeAsScriptWrappable {
 
 ASSERT_SIZE(ScriptWrappable, SameSizeAsScriptWrappable);
 
-v8::MaybeLocal<v8::Value> ScriptWrappable::ToV8(ScriptState* script_state) {
+v8::Local<v8::Value> ScriptWrappable::ToV8(ScriptState* script_state) {
   v8::Local<v8::Value> wrapper =
       DOMDataStore::GetWrapper(this, script_state->GetIsolate());
   if (LIKELY(!wrapper.IsEmpty())) {
@@ -28,7 +28,7 @@ v8::MaybeLocal<v8::Value> ScriptWrappable::ToV8(ScriptState* script_state) {
   return Wrap(script_state);
 }
 
-v8::MaybeLocal<v8::Value> ScriptWrappable::ToV8(
+v8::Local<v8::Value> ScriptWrappable::ToV8(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context_object) {
   v8::Local<v8::Value> wrapper = DOMDataStore::GetWrapper(this, isolate);
@@ -41,14 +41,13 @@ v8::MaybeLocal<v8::Value> ScriptWrappable::ToV8(
   return Wrap(script_state);
 }
 
-v8::MaybeLocal<v8::Value> ScriptWrappable::Wrap(ScriptState* script_state) {
+v8::Local<v8::Value> ScriptWrappable::Wrap(ScriptState* script_state) {
   const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
 
   DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
 
   v8::Local<v8::Object> wrapper =
-      V8DOMWrapper::CreateWrapper(script_state, wrapper_type_info)
-          .ToLocalChecked();
+      V8DOMWrapper::CreateWrapper(script_state, wrapper_type_info);
   return AssociateWithWrapper(script_state->GetIsolate(), wrapper_type_info,
                               wrapper);
 }

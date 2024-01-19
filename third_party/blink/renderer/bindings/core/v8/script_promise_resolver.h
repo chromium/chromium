@@ -226,7 +226,7 @@ class CORE_EXPORT ScriptPromiseResolver
     if (UNLIKELY(!impl)) {
       return v8::Null(isolate);
     }
-    return impl->ToV8(isolate, creation_context).ToLocalChecked();
+    return impl->ToV8(isolate, creation_context);
   }
 
   // Dictionary
@@ -238,7 +238,7 @@ class CORE_EXPORT ScriptPromiseResolver
     }
     ScriptState* script_state =
         ScriptState::From(creation_context->GetCreationContextChecked());
-    return dictionary->ToV8(script_state).ToLocalChecked();
+    return dictionary->ToV8(script_state);
   }
 
   // Union

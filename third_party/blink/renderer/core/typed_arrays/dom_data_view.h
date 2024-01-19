@@ -27,7 +27,7 @@ class CORE_EXPORT DOMDataView final : public DOMArrayBufferView {
       : DOMArrayBufferView(dom_array_buffer, byte_offset),
         raw_byte_length_(byte_length) {}
 
-  v8::MaybeLocal<v8::Value> Wrap(ScriptState*) override;
+  v8::Local<v8::Value> Wrap(ScriptState*) override;
 
   size_t byteLength() const final {
     return !IsDetached() ? raw_byte_length_ : 0;

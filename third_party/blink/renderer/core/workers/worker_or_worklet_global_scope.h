@@ -72,7 +72,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   const AtomicString& InterfaceName() const override;
 
   // ScriptWrappable
-  v8::MaybeLocal<v8::Value> Wrap(ScriptState*) final;
+  v8::Local<v8::Value> Wrap(ScriptState*) final;
   v8::Local<v8::Object> AssociateWithWrapper(
       v8::Isolate*,
       const WrapperTypeInfo*,

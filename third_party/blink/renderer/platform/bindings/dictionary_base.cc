@@ -12,16 +12,14 @@ namespace blink {
 
 namespace bindings {
 
-v8::MaybeLocal<v8::Value> DictionaryBase::ToV8(
-    ScriptState* script_state) const {
+v8::Local<v8::Value> DictionaryBase::ToV8(ScriptState* script_state) const {
   v8::Local<v8::Object> v8_dictionary;
   {
     v8::Context::Scope context_scope(script_state->GetContext());
     v8_dictionary = v8::Object::New(script_state->GetIsolate());
   }
 
-  if (!FillV8ObjectWithMembers(script_state, v8_dictionary))
-    return v8::MaybeLocal<v8::Value>();
+  CHECK(FillV8ObjectWithMembers(script_state, v8_dictionary));
 
   return v8_dictionary;
 }

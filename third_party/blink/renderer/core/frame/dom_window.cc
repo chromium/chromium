@@ -74,7 +74,7 @@ DOMWindow::~DOMWindow() {
   DCHECK(!frame_);
 }
 
-v8::MaybeLocal<v8::Value> DOMWindow::Wrap(ScriptState* script_state) {
+v8::Local<v8::Value> DOMWindow::Wrap(ScriptState* script_state) {
   // TODO(yukishiino): Get understanding of why it's possible to initialize
   // the context after the frame is detached.  And then, remove the following
   // lines.  See also https://crbug.com/712638 .

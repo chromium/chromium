@@ -18,7 +18,7 @@ v8::Local<v8::Value> V8ValueOrScriptWrappableAdapter::V8Value(
   if (!v8_value_.IsEmpty())
     return v8_value_;
 
-  return script_wrappable_->ToV8(script_state).ToLocalChecked();
+  return script_wrappable_->ToV8(script_state);
 }
 
 }  // namespace bindings

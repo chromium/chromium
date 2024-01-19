@@ -74,7 +74,7 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
   virtual bool IsLocalDOMWindow() const = 0;
 
   // ScriptWrappable overrides:
-  v8::MaybeLocal<v8::Value> Wrap(ScriptState*) final;
+  v8::Local<v8::Value> Wrap(ScriptState*) final;
   v8::Local<v8::Object> AssociateWithWrapper(
       v8::Isolate*,
       const WrapperTypeInfo*,

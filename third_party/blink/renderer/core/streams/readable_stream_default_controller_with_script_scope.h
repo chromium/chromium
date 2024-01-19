@@ -37,7 +37,7 @@ class CORE_EXPORT ReadableStreamDefaultControllerWithScriptScope
              std::derived_from<ChunkType, ScriptWrappable>
   void Enqueue(ChunkType* chunk) const {
     ScriptState::Scope scope(script_state_);
-    Enqueue(chunk->ToV8(script_state_).ToLocalChecked());
+    Enqueue(chunk->ToV8(script_state_));
   }
 
   template <typename ErrorType>
@@ -45,7 +45,7 @@ class CORE_EXPORT ReadableStreamDefaultControllerWithScriptScope
              std::derived_from<ErrorType, ScriptWrappable>
   void Error(ErrorType* error) {
     ScriptState::Scope scope(script_state_);
-    Error(error->ToV8(script_state_).ToLocalChecked());
+    Error(error->ToV8(script_state_));
   }
 
   ReadableStreamDefaultController* GetOriginalController() {
