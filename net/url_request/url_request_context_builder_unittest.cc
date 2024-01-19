@@ -101,8 +101,12 @@ class URLRequestContextBuilderTest : public PlatformTest,
   URLRequestContextBuilderTest() {
     test_server_.AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("net/data/url_request_unittest")));
+    SetUpURLRequestContextBuilder(builder_);
+  }
+
+  void SetUpURLRequestContextBuilder(URLRequestContextBuilder& builder) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-    builder_.set_proxy_config_service(std::make_unique<ProxyConfigServiceFixed>(
+    builder.set_proxy_config_service(std::make_unique<ProxyConfigServiceFixed>(
         ProxyConfigWithAnnotation::CreateDirect()));
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
@@ -311,8 +315,12 @@ TEST_F(URLRequestContextBuilderTest, DefaultHostResolver) {
       HostResolver::ManagerOptions(), nullptr /* system_dns_config_notifier */,
       nullptr /* net_log */);
 
-  builder_.set_host_resolver_manager(manager.get());
-  std::unique_ptr<URLRequestContext> context = builder_.Build();
+  // Use a stack allocated builder instead of `builder_` to avoid dangling
+  // pointer of `manager`.
+  URLRequestContextBuilder builder;
+  SetUpURLRequestContextBuilder(builder);
+  builder.set_host_resolver_manager(manager.get());
+  std::unique_ptr<URLRequestContext> context = builder.Build();
 
   EXPECT_EQ(context.get(), context->host_resolver()->GetContextForTesting());
   EXPECT_EQ(manager.get(), context->host_resolver()->GetManagerForTesting());
