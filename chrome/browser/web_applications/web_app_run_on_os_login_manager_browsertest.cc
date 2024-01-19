@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/run_until.h"
@@ -32,15 +33,20 @@
 #include "chrome/browser/web_applications/web_app_run_on_os_login_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 using testing::_;
 using testing::AllOf;
+using testing::DoAll;
 using testing::Eq;
 using testing::Field;
+using testing::Invoke;
 using testing::Property;
+using testing::Return;
+using testing::SetArgPointee;
 
 namespace web_app {
 
@@ -50,6 +56,26 @@ constexpr char kTestApp[] = "https://test.test";
 
 constexpr char kTestAppName[] = "WebApp";
 
+class MockNetworkConnectionTracker : public network::NetworkConnectionTracker {
+ public:
+  MockNetworkConnectionTracker() = default;
+  MockNetworkConnectionTracker(MockNetworkConnectionTracker&) = delete;
+  MockNetworkConnectionTracker& operator=(const MockNetworkConnectionTracker&) =
+      delete;
+  ~MockNetworkConnectionTracker() override = default;
+
+  MOCK_METHOD(bool,
+              GetConnectionType,
+              (network::mojom::ConnectionType*,
+               network::NetworkConnectionTracker::ConnectionTypeCallback),
+              (override));
+
+  // Make this function visible so we can simulate a call from the test.
+  void OnNetworkChanged(network::mojom::ConnectionType type) override {
+    network::NetworkConnectionTracker::OnNetworkChanged(type);
+  }
+};
+
 class WebAppRunOnOsLoginManagerBrowserTest
     : public WebAppControllerBrowserTest,
       public NotificationDisplayService::Observer {
@@ -57,8 +83,8 @@ class WebAppRunOnOsLoginManagerBrowserTest
   WebAppRunOnOsLoginManagerBrowserTest()
       :  // ROOL startup done manually to ensure that SetUpOnMainThread is run
          // before
-        skip_run_on_os_login_startup_(
-            WebAppRunOnOsLoginManager::SkipStartupForTesting()),
+        skip_run_on_os_login_startup_(std::make_unique<base::AutoReset<bool>>(
+            WebAppRunOnOsLoginManager::SkipStartupForTesting())),
         skip_preinstalled_web_app_startup_(
             PreinstalledWebAppManager::SkipStartupForTesting()) {
     scoped_feature_list_.InitWithFeatures(
@@ -70,7 +96,15 @@ class WebAppRunOnOsLoginManagerBrowserTest
   void SetUpOnMainThread() override {
     notification_tester_ = std::make_unique<NotificationDisplayServiceTester>(
         /*profile=*/profile());
+    mock_tracker_ = std::make_unique<MockNetworkConnectionTracker>();
     WebAppControllerBrowserTest::SetUpOnMainThread();
+    content::SetNetworkConnectionTrackerForTesting(
+        /*network_connection_tracker=*/nullptr);
+    content::SetNetworkConnectionTrackerForTesting(mock_tracker_.get());
+  }
+
+  void TearDownOnMainThread() override {
+    content::SetNetworkConnectionTrackerForTesting(nullptr);
   }
 
   // NotificationDisplayService::Observer:
@@ -143,15 +177,24 @@ class WebAppRunOnOsLoginManagerBrowserTest
     return AppBrowserController::FindForWebApp(*profile(), app_id);
   }
 
-  void RunOsLoginAndWait() {
-    provider().run_on_os_login_manager().RunAppsOnOsLoginForTesting();
-    base::test::TestFuture<void> future;
+  void RunOsLogin() {
+    auto& rool_manager = provider().run_on_os_login_manager();
+    rool_manager.SetCompletedClosureForTesting(completed_future_.GetCallback());
+    rool_manager.Start();
+  }
+
+  void WaitForAllCommandsFinished() {
+    // Wait until the top-level command is added and done.
+    ASSERT_TRUE(completed_future_.Wait());
+    // Wait for the triggered sub-commands to be done.
     provider().command_manager().AwaitAllCommandsCompleteForTesting();
   }
 
-  base::AutoReset<bool> skip_run_on_os_login_startup_;
+  std::unique_ptr<MockNetworkConnectionTracker> mock_tracker_;
+  std::unique_ptr<base::AutoReset<bool>> skip_run_on_os_login_startup_;
   base::AutoReset<bool> skip_preinstalled_web_app_startup_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
+  base::test::TestFuture<void> completed_future_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedObservation<NotificationDisplayService,
                           WebAppRunOnOsLoginManagerBrowserTest>
@@ -161,11 +204,18 @@ class WebAppRunOnOsLoginManagerBrowserTest
 IN_PROC_BROWSER_TEST_F(
     WebAppRunOnOsLoginManagerBrowserTest,
     WebAppRunOnOsLoginWithInitialPolicyValueLaunchesBrowserWindow) {
+  skip_run_on_os_login_startup_ = nullptr;
+  EXPECT_CALL(*mock_tracker_, GetConnectionType(_, _))
+      .WillRepeatedly(DoAll(
+          SetArgPointee<0>(network::mojom::ConnectionType::CONNECTION_ETHERNET),
+          Return(true)));
+
   AddForceInstalledApp(kTestApp, kTestAppName);
   AddRoolApp(kTestApp, kRunWindowed);
 
   // Wait for ROOL.
-  RunOsLoginAndWait();
+  RunOsLogin();
+  WaitForAllCommandsFinished();
 
   // Should have 2 browsers: normal and app.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
@@ -177,11 +227,132 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     WebAppRunOnOsLoginManagerBrowserTest,
     WebAppRunOnOsLoginWithForceInstallLaunchesBrowserWindow) {
+  skip_run_on_os_login_startup_ = nullptr;
+  EXPECT_CALL(*mock_tracker_, GetConnectionType(_, _))
+      .WillRepeatedly(DoAll(
+          SetArgPointee<0>(network::mojom::ConnectionType::CONNECTION_ETHERNET),
+          Return(true)));
+
   AddForceInstalledApp(kTestApp, kTestAppName);
   AddRoolApp(kTestApp, kRunWindowed);
 
   // Wait for ROOL.
-  RunOsLoginAndWait();
+  RunOsLogin();
+  WaitForAllCommandsFinished();
+
+  // Should have 2 browsers: normal and app.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  Browser* app_browser = FindAppBrowser(GURL(kTestApp));
+
+  ASSERT_TRUE(app_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppRunOnOsLoginManagerBrowserTest,
+                       WebAppRunOnOsLoginNetworkNotConnectedCallSynchronous) {
+  skip_run_on_os_login_startup_ = nullptr;
+  EXPECT_CALL(*mock_tracker_, GetConnectionType(_, _))
+      .WillRepeatedly(DoAll(
+          SetArgPointee<0>(network::mojom::ConnectionType::CONNECTION_NONE),
+          Return(true)));
+
+  AddForceInstalledApp(kTestApp, kTestAppName);
+  AddRoolApp(kTestApp, kRunWindowed);
+
+  // Wait for ROOL.
+  RunOsLogin();
+  base::RunLoop().RunUntilIdle();
+
+  // Should have only the normal browser as there is no network.
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+
+  // Simulate the network coming back.
+  mock_tracker_->OnNetworkChanged(
+      network::mojom::ConnectionType::CONNECTION_WIFI);
+  WaitForAllCommandsFinished();
+
+  // Should have 2 browsers: normal and app.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  Browser* app_browser = FindAppBrowser(GURL(kTestApp));
+
+  ASSERT_TRUE(app_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppRunOnOsLoginManagerBrowserTest,
+    WebAppRunOnOsLoginNetworkNotConnectedCallAsynchronousInitiallyConnected) {
+  skip_run_on_os_login_startup_ = nullptr;
+  base::OnceCallback<void(network::mojom::ConnectionType)>
+      connection_changed_callback;
+  EXPECT_CALL(*mock_tracker_, GetConnectionType(_, _))
+      .WillRepeatedly(
+          DoAll([&connection_changed_callback](
+                    network::mojom::ConnectionType*,
+                    base::OnceCallback<void(network::mojom::ConnectionType)>
+                        callback) {
+            connection_changed_callback = std::move(callback);
+            return false;
+          }));
+
+  AddForceInstalledApp(kTestApp, kTestAppName);
+  AddRoolApp(kTestApp, kRunWindowed);
+
+  // Wait for ROOL.
+  RunOsLogin();
+  base::RunLoop().RunUntilIdle();
+
+  // Should have only the normal browser as there is no network.
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+
+  // Asynchronously notify that there is a network connection
+  std::move(connection_changed_callback)
+      .Run(network::mojom::ConnectionType::CONNECTION_WIFI);
+  WaitForAllCommandsFinished();
+
+  // Should have 2 browsers: normal and app.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  Browser* app_browser = FindAppBrowser(GURL(kTestApp));
+
+  ASSERT_TRUE(app_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppRunOnOsLoginManagerBrowserTest,
+    WebAppRunOnOsLoginNetworkNotConnectedCallAsynchronousInitiallyDisconnected) {
+  skip_run_on_os_login_startup_ = nullptr;
+  base::OnceCallback<void(network::mojom::ConnectionType)>
+      connection_changed_callback;
+  EXPECT_CALL(*mock_tracker_, GetConnectionType(_, _))
+      .WillRepeatedly(
+          DoAll([&connection_changed_callback](
+                    network::mojom::ConnectionType*,
+                    base::OnceCallback<void(network::mojom::ConnectionType)>
+                        callback) {
+            connection_changed_callback = std::move(callback);
+            return false;
+          }));
+
+  AddForceInstalledApp(kTestApp, kTestAppName);
+  AddRoolApp(kTestApp, kRunWindowed);
+
+  // Wait for ROOL.
+  RunOsLogin();
+  base::RunLoop().RunUntilIdle();
+
+  // Should have only the normal browser as there is no network.
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+
+  // Asynchronously notify that the device is connected.
+  std::move(connection_changed_callback)
+      .Run(network::mojom::ConnectionType::CONNECTION_NONE);
+  base::RunLoop().RunUntilIdle();
+
+  // Should have only the normal browser as there is no network.
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+
+  // Simulate the network coming back.
+  mock_tracker_->OnNetworkChanged(
+      network::mojom::ConnectionType::CONNECTION_WIFI);
+  WaitForAllCommandsFinished();
 
   // Should have 2 browsers: normal and app.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
@@ -209,6 +380,12 @@ class WebAppRunOnOsLoginNotificationBrowserTest
 
 IN_PROC_BROWSER_TEST_P(WebAppRunOnOsLoginNotificationBrowserTest,
                        WebAppRunOnOsLoginNotificationOpensManagementUI) {
+  skip_run_on_os_login_startup_ = nullptr;
+  EXPECT_CALL(*mock_tracker_, GetConnectionType(_, _))
+      .WillRepeatedly(DoAll(
+          SetArgPointee<0>(network::mojom::ConnectionType::CONNECTION_ETHERNET),
+          Return(true)));
+
   const auto test_params = GetParam();
   for (size_t i = 0; i < test_params.number_of_rool_apps; i++) {
     const auto app_id = base::StrCat({kTestApp, base::ToString(i)});
@@ -219,7 +396,8 @@ IN_PROC_BROWSER_TEST_P(WebAppRunOnOsLoginNotificationBrowserTest,
   const absl::Cleanup policy_cleanup = [this]() { ClearWebAppSettings(); };
 
   // Wait for ROOL.
-  RunOsLoginAndWait();
+  RunOsLogin();
+  WaitForAllCommandsFinished();
 
   // Should have `number_of_rool_apps` + 1 browsers: normal and
   // `number_of_rool_apps` apps.
@@ -255,6 +433,12 @@ IN_PROC_BROWSER_TEST_P(WebAppRunOnOsLoginNotificationBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(WebAppRunOnOsLoginNotificationBrowserTest,
                        WebAppRunOnOsLoginNotification) {
+  skip_run_on_os_login_startup_ = nullptr;
+  EXPECT_CALL(*mock_tracker_, GetConnectionType(_, _))
+      .WillRepeatedly(DoAll(
+          SetArgPointee<0>(network::mojom::ConnectionType::CONNECTION_ETHERNET),
+          Return(true)));
+
   const auto test_params = GetParam();
   for (size_t i = 0; i < test_params.number_of_rool_apps; i++) {
     const auto app_id = base::StrCat({kTestApp, base::ToString(i)});
@@ -265,7 +449,8 @@ IN_PROC_BROWSER_TEST_P(WebAppRunOnOsLoginNotificationBrowserTest,
   const absl::Cleanup policy_cleanup = [this]() { ClearWebAppSettings(); };
 
   // Wait for ROOL.
-  RunOsLoginAndWait();
+  RunOsLogin();
+  WaitForAllCommandsFinished();
 
   bool notification_shown = base::test::RunUntil([&]() {
     return notification_tester_->GetNotification(kRunOnOsLoginNotificationId)
