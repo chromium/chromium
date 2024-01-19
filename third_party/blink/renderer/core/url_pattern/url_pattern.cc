@@ -286,8 +286,7 @@ URLPatternComponentResult* MakeURLPatternComponentResult(
     if (pair.second.IsNull()) {
       v8_value = v8::Undefined(script_state->GetIsolate());
     } else {
-      v8_value = ToV8Traits<IDLUSVString>::ToV8(script_state, pair.second)
-                     .ToLocalChecked();
+      v8_value = ToV8Traits<IDLUSVString>::ToV8(script_state, pair.second);
     }
     v8_group_values.emplace_back(
         pair.first,

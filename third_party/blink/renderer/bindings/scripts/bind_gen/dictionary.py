@@ -793,23 +793,18 @@ def make_blink_to_v8_function(cg_context):
         node = CxxLikelyIfNode(
             cond="{}()".format(member.api_has),
             body=[
-                CxxUnlikelyIfNode(  #
-                    cond=_format(
-                        "!ToV8Traits<{native_value_tag}>::"
-                        "ToV8(${script_state}, {blink_value})"
-                        ".ToLocal(&${v8_value})",
-                        native_value_tag=native_value_tag(member.idl_type),
-                        blink_value=member.type_info.member_var_to_ref_expr(
-                            member.value_var)),
-                    body=T("return false;")),
-                CxxUnlikelyIfNode(  #
-                    cond=_format(
-                        "!${v8_dictionary}->CreateDataProperty("
-                        "${current_context}, "
-                        "${v8_own_member_names}[{index}].Get(${isolate}), "
-                        "${v8_value}).To(&${was_property_created})",
-                        index=index),
-                    body=T("return false;")),
+                F(
+                    "${v8_value} = ToV8Traits<{native_value_tag}>::"
+                    "ToV8(${script_state}, {blink_value});",
+                    native_value_tag=native_value_tag(member.idl_type),
+                    blink_value=member.type_info.member_var_to_ref_expr(
+                        member.value_var)),
+                F(
+                    "${v8_dictionary}->CreateDataProperty("
+                    "${current_context}, "
+                    "${v8_own_member_names}[{index}].Get(${isolate}), "
+                    "${v8_value}).ToChecked();",
+                    index=index),
                 deprecate_as_node,
             ])
 

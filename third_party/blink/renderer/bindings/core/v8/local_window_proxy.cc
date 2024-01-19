@@ -347,8 +347,7 @@ void LocalWindowProxy::UpdateDocumentProperty() {
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Context> context = script_state_->GetContext();
   v8::Local<v8::Value> document_wrapper =
-      ToV8Traits<Document>::ToV8(script_state_, GetFrame()->GetDocument())
-          .ToLocalChecked();
+      ToV8Traits<Document>::ToV8(script_state_, GetFrame()->GetDocument());
   DCHECK(document_wrapper->IsObject());
 
   // Update the cached accessor for window.document.
@@ -485,16 +484,13 @@ static v8::Local<v8::Value> GetNamedProperty(
     if (auto* iframe = DynamicTo<HTMLIFrameElement>(*element)) {
       if (Frame* frame = iframe->ContentFrame()) {
         return ToV8Traits<DOMWindow>::ToV8(isolate, frame->DomWindow(),
-                                           creation_context)
-            .ToLocalChecked();
+                                           creation_context);
       }
     }
-    return ToV8Traits<HTMLElement>::ToV8(isolate, element, creation_context)
-        .ToLocalChecked();
+    return ToV8Traits<HTMLElement>::ToV8(isolate, element, creation_context);
   }
   return ToV8Traits<DocumentNameCollection>::ToV8(isolate, items,
-                                                  creation_context)
-      .ToLocalChecked();
+                                                  creation_context);
 }
 
 static void Getter(v8::Local<v8::Name> property,

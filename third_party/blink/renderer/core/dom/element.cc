@@ -961,7 +961,6 @@ v8::Local<v8::Object> Element::GetCachedAttrAssociatedElementsObject(
   V8PrivateProperty::Symbol private_property = V8PrivateProperty::GetSymbol(
       isolate, kPrivatePropertyCachedAttrAssociatedElements);
   v8::Local<v8::Object> element = ToV8Traits<Element>::ToV8(script_state, this)
-                                      .ToLocalChecked()
                                       .As<v8::Object>();
   v8::Local<v8::Value> cached_elements_value =
       private_property.GetOrUndefined(element).ToLocalChecked();
@@ -1063,8 +1062,7 @@ ScriptValue Element::GetElementArrayAttribute(ScriptState* script_state,
 
   // 3. Let elementsAsFrozenArray be elements, converted to a FrozenArray<T>?.
   v8::Local<v8::Value> v8_elements_as_frozen_array =
-      ToV8Traits<IDLArray<Element>>::ToV8(script_state, *elements)
-          .ToLocalChecked();
+      ToV8Traits<IDLArray<Element>>::ToV8(script_state, *elements);
 
   // 4. Set this's cached attr-associated elements to elementsAsFrozenArray.
   SetCachedAttrAssociatedElements(script_state, name,

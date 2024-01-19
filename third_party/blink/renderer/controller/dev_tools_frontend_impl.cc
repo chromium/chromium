@@ -94,8 +94,7 @@ void DevToolsFrontendImpl::DidClearWindowObject() {
     devtools_host_ =
         MakeGarbageCollected<DevToolsHost>(this, GetSupplementable());
     v8::Local<v8::Value> devtools_host_obj =
-        ToV8Traits<DevToolsHost>::ToV8(script_state, devtools_host_.Get())
-            .ToLocalChecked();
+        ToV8Traits<DevToolsHost>::ToV8(script_state, devtools_host_.Get());
     DCHECK(!devtools_host_obj.IsEmpty());
     script_state->GetContext()
         ->Global()

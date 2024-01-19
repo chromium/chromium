@@ -77,8 +77,7 @@ NavigationResult* EarlyErrorResult(ScriptState* script_state,
 NavigationResult* EarlySuccessResult(ScriptState* script_state,
                                      NavigationHistoryEntry* entry) {
   auto* result = NavigationResult::Create();
-  auto v8_entry = ToV8Traits<NavigationHistoryEntry>::ToV8(script_state, entry)
-                      .ToLocalChecked();
+  auto v8_entry = ToV8Traits<NavigationHistoryEntry>::ToV8(script_state, entry);
   result->setCommitted(ScriptPromise::Cast(script_state, v8_entry));
   result->setFinished(ScriptPromise::Cast(script_state, v8_entry));
   return result;

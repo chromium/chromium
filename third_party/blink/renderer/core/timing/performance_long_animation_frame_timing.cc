@@ -104,8 +104,7 @@ void PerformanceLongAnimationFrameTiming::BuildJSONValue(
   builder.AddNumber("blockingDuration", blockingDuration());
   builder.AddV8Value("scripts",
                      ToV8Traits<IDLArray<PerformanceScriptTiming>>::ToV8(
-                         builder.GetScriptState(), scripts())
-                         .ToLocalChecked());
+                         builder.GetScriptState(), scripts()));
 }
 
 void PerformanceLongAnimationFrameTiming::Trace(Visitor* visitor) const {

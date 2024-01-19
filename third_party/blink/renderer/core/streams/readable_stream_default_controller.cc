@@ -623,8 +623,7 @@ void ReadableStreamDefaultController::SetUpFromUnderlyingSource(
   // JavaScript. So the execution context should be valid and this call should
   // not crash.
   auto controller_value = ToV8Traits<ReadableStreamDefaultController>::ToV8(
-                              script_state, controller)
-                              .ToLocalChecked();
+      script_state, controller);
 
   // 3. Let startAlgorithm be the following steps:
   //   a. Return ? InvokeOrNoop(underlyingSource, "start", « controller »).

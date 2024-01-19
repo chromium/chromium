@@ -544,18 +544,13 @@ def bind_callback_local_vars(code_node, cg_context):
 
     # v8_return_value
     def create_v8_return_value(symbol_node):
-        return SymbolDefinitionNode(
-            symbol_node,
-            [
-                T("v8::Local<v8::Value> ${v8_return_value};"),
-                CxxUnlikelyIfNode(  #
-                    cond=F(
-                        "!ToV8Traits<{}>::ToV8"
-                        "(${script_state}, ${return_value})"
-                        ".ToLocal(&${v8_return_value})",
-                        native_value_tag(cg_context.return_type)),
-                    body=T("return;")),
-            ])
+        return SymbolDefinitionNode(symbol_node, [
+            F(
+                "v8::Local<v8::Value> ${v8_return_value} = "
+                "ToV8Traits<{}>::ToV8"
+                "(${script_state}, ${return_value})"
+                ";", native_value_tag(cg_context.return_type)),
+        ])
 
     local_vars.append(
         S("v8_return_value", definition_constructor=create_v8_return_value))
@@ -1796,14 +1791,12 @@ def make_v8_set_return_value(cg_context):
                     T("bindings::V8SetReturnValue(${info}, nullptr);"),
                     T("return;")
                 ]),
-            T("v8::Local<v8::Value> v8_value;"),
-            CxxUnlikelyIfNode(cond=F(
-                "!ToV8Traits<{}>::ToV8("
+            F(
+                "v8::Local<v8::Value> v8_value = "
+                "ToV8Traits<{}>::ToV8("
                 "ToScriptState(To<LocalFrame>(blink_frame), "
                 "${script_state}->World()),"
-                "${return_value}).ToLocal(&v8_value)",
-                native_value_tag(return_type)),
-                              body=T("return;")),
+                "${return_value});", native_value_tag(return_type)),
             T("bindings::V8SetReturnValue(${info}, v8_value);"),
         ])
         node.accumulate(
@@ -3771,7 +3764,7 @@ bindings::V8SetReturnValue(
     ${info},
     ToV8Traits<IDLSequence<IDLString>>::ToV8(${script_state},
                                              blink_property_names)
-         .ToLocalChecked().As<v8::Array>());
+         .As<v8::Array>());
 """)
     ])
 

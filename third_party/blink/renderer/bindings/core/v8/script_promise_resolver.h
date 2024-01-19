@@ -245,9 +245,8 @@ class CORE_EXPORT ScriptPromiseResolver
   static v8::Local<v8::Value> ToV8(const bindings::UnionBase* union_value,
                                    v8::Local<v8::Object> creation_context,
                                    v8::Isolate* isolate) {
-    return union_value
-        ->ToV8(ScriptState::From(creation_context->GetCreationContextChecked()))
-        .ToLocalChecked();
+    return union_value->ToV8(
+        ScriptState::From(creation_context->GetCreationContextChecked()));
   }
 
   // Primitives

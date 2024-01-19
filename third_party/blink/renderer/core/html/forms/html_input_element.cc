@@ -1353,8 +1353,7 @@ ScriptValue HTMLInputElement::valueAsDate(ScriptState* script_state) const {
   return ScriptValue(
       isolate,
       ToV8Traits<IDLNullable<IDLDate>>::ToV8(
-          script_state, base::Time::FromMillisecondsSinceUnixEpoch(date))
-          .ToLocalChecked());
+          script_state, base::Time::FromMillisecondsSinceUnixEpoch(date)));
 }
 
 void HTMLInputElement::setValueAsDate(ScriptState* script_state,

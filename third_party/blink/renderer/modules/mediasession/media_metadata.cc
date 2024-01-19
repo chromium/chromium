@@ -91,8 +91,7 @@ v8::LocalVector<v8::Value> MediaMetadata::artwork(
 
   for (wtf_size_t i = 0; i < artwork_.size(); ++i) {
     result[i] =
-        FreezeV8Object(ToV8Traits<MediaImage>::ToV8(script_state, artwork_[i])
-                           .ToLocalChecked(),
+        FreezeV8Object(ToV8Traits<MediaImage>::ToV8(script_state, artwork_[i]),
                        script_state->GetIsolate());
   }
 
@@ -106,8 +105,7 @@ v8::LocalVector<v8::Value> MediaMetadata::chapterInfo(
 
   for (wtf_size_t i = 0; i < chapterInfo_.size(); ++i) {
     result[i] = FreezeV8Object(
-        ToV8Traits<ChapterInformation>::ToV8(script_state, chapterInfo_[i])
-            .ToLocalChecked(),
+        ToV8Traits<ChapterInformation>::ToV8(script_state, chapterInfo_[i]),
         script_state->GetIsolate());
   }
 

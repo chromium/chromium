@@ -322,10 +322,8 @@ void V8ScriptValueSerializer::PrepareTransfer(ExceptionState& exception_state) {
   for (uint32_t i = 0; i < transferables_->array_buffers.size(); i++) {
     DOMArrayBufferBase* array_buffer = transferables_->array_buffers[i].Get();
     if (!array_buffer->IsShared()) {
-      v8::Local<v8::Value> wrapper =
-          ToV8Traits<DOMArrayBuffer>::ToV8(
-              script_state_, static_cast<DOMArrayBuffer*>(array_buffer))
-              .ToLocalChecked();
+      v8::Local<v8::Value> wrapper = ToV8Traits<DOMArrayBuffer>::ToV8(
+          script_state_, static_cast<DOMArrayBuffer*>(array_buffer));
       serializer_.TransferArrayBuffer(
           i, v8::Local<v8::ArrayBuffer>::Cast(wrapper));
     } else {

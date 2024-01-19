@@ -158,16 +158,13 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseRead) {
     chunk3->Data()[3] = 0x4a;
     underlying_source->Enqueue(
         ScriptValue(script_state->GetIsolate(),
-                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk1)
-                        .ToLocalChecked()));
+                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk1)));
     underlying_source->Enqueue(
         ScriptValue(script_state->GetIsolate(),
-                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk2)
-                        .ToLocalChecked()));
+                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk2)));
     underlying_source->Enqueue(
         ScriptValue(script_state->GetIsolate(),
-                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk3)
-                        .ToLocalChecked()));
+                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk3)));
     underlying_source->Close();
   }
 
@@ -265,9 +262,9 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedDuringRead) {
   chunk->Data()[1] = 0x44;
   chunk->Data()[2] = 0x45;
   chunk->Data()[3] = 0x46;
-  underlying_source->Enqueue(ScriptValue(
-      script_state->GetIsolate(),
-      ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk).ToLocalChecked()));
+  underlying_source->Enqueue(
+      ScriptValue(script_state->GetIsolate(),
+                  ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk)));
   underlying_source->Close();
 
   Persistent<BytesConsumer> consumer =
@@ -318,9 +315,9 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedBetweenReads) {
   chunk->Data()[1] = 0x44;
   chunk->Data()[2] = 0x45;
   chunk->Data()[3] = 0x46;
-  underlying_source->Enqueue(ScriptValue(
-      script_state->GetIsolate(),
-      ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk).ToLocalChecked()));
+  underlying_source->Enqueue(
+      ScriptValue(script_state->GetIsolate(),
+                  ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk)));
   underlying_source->Close();
 
   Persistent<BytesConsumer> consumer =

@@ -169,8 +169,7 @@ v8::Local<v8::Value> IDBKeyPath::ToV8(ScriptState* script_state) const {
     case mojom::IDBKeyPathType::String:
       return V8String(isolate, GetString());
     case mojom::IDBKeyPathType::Array:
-      return ToV8Traits<IDLSequence<IDLString>>::ToV8(script_state, Array())
-          .ToLocalChecked();
+      return ToV8Traits<IDLSequence<IDLString>>::ToV8(script_state, Array());
   }
   NOTREACHED();
   return v8::Undefined(isolate);

@@ -89,8 +89,7 @@ class RTCEncodedVideoUnderlyingSinkTest : public testing::Test {
         MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(mock_frame));
     return ScriptValue(
         script_state->GetIsolate(),
-        ToV8Traits<RTCEncodedVideoFrame>::ToV8(script_state, frame)
-            .ToLocalChecked());
+        ToV8Traits<RTCEncodedVideoFrame>::ToV8(script_state, frame));
   }
 
  protected:

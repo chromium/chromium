@@ -448,7 +448,7 @@ protocol::Response InspectorAnimationAgent::resolveAnimation(
       ToV8InspectorStringView(kAnimationObjectGroup));
   *result = v8_session_->wrapObject(
       script_state->GetContext(),
-      ToV8Traits<Animation>::ToV8(script_state, animation).ToLocalChecked(),
+      ToV8Traits<Animation>::ToV8(script_state, animation),
       ToV8InspectorStringView(kAnimationObjectGroup),
       false /* generatePreview */);
   if (!*result) {

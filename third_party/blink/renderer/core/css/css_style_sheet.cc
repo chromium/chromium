@@ -513,8 +513,7 @@ ScriptPromise CSSStyleSheet::replace(ScriptState* script_state,
   // nothing else happens asynchronously. This API is left as-is, so that future
   // async parsing can still be supported here.
   return ScriptPromise::Cast(
-      script_state,
-      ToV8Traits<CSSStyleSheet>::ToV8(script_state, this).ToLocalChecked());
+      script_state, ToV8Traits<CSSStyleSheet>::ToV8(script_state, this));
 }
 
 void CSSStyleSheet::replaceSync(const String& text,

@@ -284,8 +284,7 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
     {
       ScriptForbiddenScope::AllowUserAgentScript allow_script;
       v8::Local<v8::Value> v8_exception =
-          ToV8Traits<DOMException>::ToV8(script_state_, exception)
-              .ToLocalChecked();
+          ToV8Traits<DOMException>::ToV8(script_state_, exception);
       streaming_->Abort(v8_exception);
       streaming_.reset();
     }

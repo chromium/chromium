@@ -241,8 +241,7 @@ void V8ScriptValueDeserializer::Transfer() {
   for (unsigned i = 0; i < array_buffers.size(); i++) {
     DOMArrayBufferBase* array_buffer = array_buffers.at(i);
     v8::Local<v8::Value> wrapper =
-        ToV8Traits<DOMArrayBufferBase>::ToV8(script_state_, array_buffer)
-            .ToLocalChecked();
+        ToV8Traits<DOMArrayBufferBase>::ToV8(script_state_, array_buffer);
     if (array_buffer->IsShared()) {
       // Crash if we are receiving a SharedArrayBuffer and this isn't allowed.
       auto* execution_context = ExecutionContext::From(script_state_);
@@ -873,8 +872,7 @@ v8::MaybeLocal<v8::Object> V8ScriptValueDeserializer::ReadHostObject(
     return v8::MaybeLocal<v8::Object>();
   }
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<ScriptWrappable>::ToV8(script_state_, wrappable)
-          .ToLocalChecked();
+      ToV8Traits<ScriptWrappable>::ToV8(script_state_, wrappable);
   DCHECK(wrapper->IsObject());
   return wrapper.As<v8::Object>();
 }
@@ -900,8 +898,7 @@ V8ScriptValueDeserializer::GetSharedArrayBufferFromId(v8::Isolate* isolate,
     DOMSharedArrayBuffer* shared_array_buffer =
         DOMSharedArrayBuffer::Create(contents);
     v8::Local<v8::Value> wrapper = ToV8Traits<DOMSharedArrayBuffer>::ToV8(
-                                       script_state_, shared_array_buffer)
-                                       .ToLocalChecked();
+        script_state_, shared_array_buffer);
     DCHECK(wrapper->IsSharedArrayBuffer());
     return v8::Local<v8::SharedArrayBuffer>::Cast(wrapper);
   }

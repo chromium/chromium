@@ -44,8 +44,8 @@ TEST(SerializedScriptValueThreadedTest,
   scoped_refptr<SerializedScriptValue> serialized =
       SerializedScriptValue::Serialize(
           scope.GetIsolate(),
-          ToV8Traits<DOMArrayBuffer>::ToV8(scope.GetScriptState(), array_buffer)
-              .ToLocalChecked(),
+          ToV8Traits<DOMArrayBuffer>::ToV8(scope.GetScriptState(),
+                                           array_buffer),
           options, ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(serialized);
   EXPECT_TRUE(array_buffer->IsDetached());

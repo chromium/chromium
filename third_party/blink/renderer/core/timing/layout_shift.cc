@@ -52,8 +52,7 @@ void LayoutShift::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddNumber("lastInputTime", most_recent_input_timestamp_);
   builder.AddV8Value("sources",
                      ToV8Traits<IDLArray<LayoutShiftAttribution>>::ToV8(
-                         builder.GetScriptState(), sources_)
-                         .ToLocalChecked());
+                         builder.GetScriptState(), sources_));
 }
 
 void LayoutShift::Trace(Visitor* visitor) const {

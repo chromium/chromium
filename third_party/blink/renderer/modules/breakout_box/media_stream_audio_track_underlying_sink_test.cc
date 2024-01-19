@@ -94,9 +94,8 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
         MakeGarbageCollected<AudioData>(std::move(media_buffer));
     if (audio_data_out)
       *audio_data_out = audio_data;
-    return ScriptValue(
-        script_state->GetIsolate(),
-        ToV8Traits<AudioData>::ToV8(script_state, audio_data).ToLocalChecked());
+    return ScriptValue(script_state->GetIsolate(),
+                       ToV8Traits<AudioData>::ToV8(script_state, audio_data));
   }
 
   static ScriptValue CreateInvalidAudioData(ScriptState* script_state,
@@ -113,9 +112,8 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
 
     AudioData* audio_data =
         AudioData::Create(script_state, init, exception_state);
-    return ScriptValue(
-        script_state->GetIsolate(),
-        ToV8Traits<AudioData>::ToV8(script_state, audio_data).ToLocalChecked());
+    return ScriptValue(script_state->GetIsolate(),
+                       ToV8Traits<AudioData>::ToV8(script_state, audio_data));
   }
 
  protected:

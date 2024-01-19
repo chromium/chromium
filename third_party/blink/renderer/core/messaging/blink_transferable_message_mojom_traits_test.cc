@@ -161,8 +161,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
     V8TestingScope scope;
     ImageBitmap* image_bitmap = CreateBitmap();
     v8::Local<v8::Value> wrapper =
-        ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), image_bitmap)
-            .ToLocalChecked();
+        ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), image_bitmap);
     Transferables transferables;
     transferables.image_bitmaps.push_back(image_bitmap);
     BlinkTransferableMessage msg;
@@ -191,8 +190,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   scoped_refptr<SharedBuffer> original_bitmap_data =
       original_bitmap->BitmapImage()->Data();
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), original_bitmap)
-          .ToLocalChecked();
+      ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), original_bitmap);
   Transferables transferables;
   transferables.image_bitmaps.push_back(std::move(original_bitmap));
   BlinkTransferableMessage msg;
@@ -279,10 +277,8 @@ TEST_F(BlinkTransferableMessageStructTraitsWithFakeGpuTest,
       ->PostTask(
           FROM_HERE, base::BindLambdaForTesting([&]() {
             ImageBitmap* image_bitmap = CreateAcceleratedStaticImageBitmap();
-            v8::Local<v8::Value> wrapper =
-                ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(),
-                                              image_bitmap)
-                    .ToLocalChecked();
+            v8::Local<v8::Value> wrapper = ToV8Traits<ImageBitmap>::ToV8(
+                scope.GetScriptState(), image_bitmap);
             Transferables transferables;
             transferables.image_bitmaps.push_back(image_bitmap);
             BlinkTransferableMessage msg;
@@ -329,10 +325,8 @@ TEST_F(BlinkTransferableMessageStructTraitsWithFakeGpuTest,
           FROM_HERE, base::BindLambdaForTesting([&]() {
             ImageBitmap* image_bitmap = CreateAcceleratedStaticImageBitmap();
 
-            v8::Local<v8::Value> wrapper =
-                ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(),
-                                              image_bitmap)
-                    .ToLocalChecked();
+            v8::Local<v8::Value> wrapper = ToV8Traits<ImageBitmap>::ToV8(
+                scope.GetScriptState(), image_bitmap);
             Transferables transferables;
             transferables.image_bitmaps.push_back(image_bitmap);
             BlinkTransferableMessage msg;

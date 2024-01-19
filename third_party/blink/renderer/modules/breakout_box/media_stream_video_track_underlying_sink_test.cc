@@ -69,8 +69,7 @@ class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
     if (video_frame_out)
       *video_frame_out = video_frame;
     return ScriptValue(script_state->GetIsolate(),
-                       ToV8Traits<VideoFrame>::ToV8(script_state, video_frame)
-                           .ToLocalChecked());
+                       ToV8Traits<VideoFrame>::ToV8(script_state, video_frame));
   }
 
  protected:

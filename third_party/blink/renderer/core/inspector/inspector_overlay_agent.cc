@@ -1395,8 +1395,7 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
       isolate, ToMicrotaskQueue(script_state),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Local<v8::Value> overlay_host_obj =
-      ToV8Traits<InspectorOverlayHost>::ToV8(script_state, overlay_host_.Get())
-          .ToLocalChecked();
+      ToV8Traits<InspectorOverlayHost>::ToV8(script_state, overlay_host_.Get());
   DCHECK(!overlay_host_obj.IsEmpty());
   script_state->GetContext()
       ->Global()

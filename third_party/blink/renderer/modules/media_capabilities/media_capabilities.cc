@@ -188,8 +188,7 @@ ScriptPromise CreateResolvedPromiseToDecodingInfoWith(
       ExecutionContext::From(script_state), config, info);
   return ScriptPromise::Cast(
       script_state,
-      ToV8Traits<MediaCapabilitiesDecodingInfo>::ToV8(script_state, info)
-          .ToLocalChecked());
+      ToV8Traits<MediaCapabilitiesDecodingInfo>::ToV8(script_state, info));
 }
 
 MediaCapabilitiesDecodingInfo* CreateEncryptedDecodingInfoWith(
@@ -949,8 +948,7 @@ ScriptPromise MediaCapabilities::decodingInfo(
           ExecutionContext::From(script_state), config, info);
       return ScriptPromise::Cast(
           script_state,
-          ToV8Traits<MediaCapabilitiesDecodingInfo>::ToV8(script_state, info)
-              .ToLocalChecked());
+          ToV8Traits<MediaCapabilitiesDecodingInfo>::ToV8(script_state, info));
     }
   }
 

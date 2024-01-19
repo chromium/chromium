@@ -192,19 +192,16 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
   if (element) {
     scopes[scopes_size++] =
         ToV8Traits<Document>::ToV8(script_state_of_event_target, document)
-            .ToLocalChecked()
             .As<v8::Object>();
   }
   if (form_owner) {
     scopes[scopes_size++] = ToV8Traits<HTMLFormElement>::ToV8(
                                 script_state_of_event_target, form_owner)
-                                .ToLocalChecked()
                                 .As<v8::Object>();
   }
   if (element) {
     scopes[scopes_size++] =
         ToV8Traits<Element>::ToV8(script_state_of_event_target, element)
-            .ToLocalChecked()
             .As<v8::Object>();
   }
   DCHECK_LE(scopes_size, std::size(scopes));

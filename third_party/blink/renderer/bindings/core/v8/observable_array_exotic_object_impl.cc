@@ -82,8 +82,7 @@ v8::Local<v8::Value> ObservableArrayExoticObjectImpl::Wrap(
   // supported just because there is no use case so far.
   v8::Local<v8::Value> backing_list_wrapper =
       ToV8Traits<bindings::ObservableArrayBase>::ToV8(script_state,
-                                                      GetBackingListObject())
-          .ToLocalChecked();
+                                                      GetBackingListObject());
   CHECK(backing_list_wrapper->IsObject());
   v8::Local<v8::Array> target = v8::Array::New(isolate);
   auto private_property =

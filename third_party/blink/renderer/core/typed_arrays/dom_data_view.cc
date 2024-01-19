@@ -54,7 +54,7 @@ v8::Local<v8::Value> DOMDataView::Wrap(ScriptState* script_state) {
 
   const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
   v8::Local<v8::Value> v8_buffer =
-      ToV8Traits<DOMArrayBuffer>::ToV8(script_state, buffer()).ToLocalChecked();
+      ToV8Traits<DOMArrayBuffer>::ToV8(script_state, buffer());
   DCHECK(v8_buffer->IsArrayBuffer());
 
   v8::Local<v8::Object> wrapper;

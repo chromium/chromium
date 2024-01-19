@@ -1232,8 +1232,7 @@ ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
   auto result = ConvertLayout(dest_layout);
   return ScriptPromise::Cast(
       script_state,
-      ToV8Traits<IDLSequence<PlaneLayout>>::ToV8(script_state, result)
-          .ToLocalChecked());
+      ToV8Traits<IDLSequence<PlaneLayout>>::ToV8(script_state, result));
 }
 
 void VideoFrame::close() {

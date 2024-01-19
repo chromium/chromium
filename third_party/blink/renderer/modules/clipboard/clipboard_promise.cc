@@ -369,8 +369,7 @@ void ClipboardPromise::ResolveRead() {
   for (const auto& [type, data] : clipboard_item_data_) {
     if (data) {
       ScriptPromise promise = ScriptPromise::Cast(
-          script_state,
-          ToV8Traits<Blob>::ToV8(script_state, data).ToLocalChecked());
+          script_state, ToV8Traits<Blob>::ToV8(script_state, data));
       items.emplace_back(type, promise);
     }
     if (!RuntimeEnabledFeatures::EmptyClipboardReadEnabled() && !items.size()) {

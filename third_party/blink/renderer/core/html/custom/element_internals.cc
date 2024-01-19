@@ -384,12 +384,11 @@ ScriptValue ElementInternals::GetElementArrayAttribute(
     ScriptState* script_state,
     const QualifiedName& name) {
   HeapVector<Member<Element>>* elements = GetAttrAssociatedElements(name);
-  v8::Local<v8::Value> v8_elements_as_frozen_array;
   v8::Isolate* isolate = script_state->GetIsolate();
 
-  if (!ToV8Traits<IDLNullable<IDLArray<Element>>>::ToV8(script_state, elements)
-           .ToLocal(&v8_elements_as_frozen_array) ||
-      v8_elements_as_frozen_array->IsNull()) {
+  v8::Local<v8::Value> v8_elements_as_frozen_array =
+      ToV8Traits<IDLNullable<IDLArray<Element>>>::ToV8(script_state, elements);
+  if (v8_elements_as_frozen_array->IsNull()) {
     return ScriptValue::CreateNull(isolate);
   }
   return ScriptValue(isolate, v8_elements_as_frozen_array);

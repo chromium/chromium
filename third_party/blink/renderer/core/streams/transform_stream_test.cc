@@ -60,14 +60,12 @@ class TransformStreamTest : public ::testing::Test {
     EXPECT_TRUE(
         global
             ->Set(scope.GetContext(), V8String(scope.GetIsolate(), "readable"),
-                  ToV8Traits<ReadableStream>::ToV8(script_state, readable)
-                      .ToLocalChecked())
+                  ToV8Traits<ReadableStream>::ToV8(script_state, readable))
             .IsJust());
     EXPECT_TRUE(
         global
             ->Set(scope.GetContext(), V8String(scope.GetIsolate(), "writable"),
-                  ToV8Traits<WritableStream>::ToV8(script_state, writable)
-                      .ToLocalChecked())
+                  ToV8Traits<WritableStream>::ToV8(script_state, writable))
             .IsJust());
   }
 

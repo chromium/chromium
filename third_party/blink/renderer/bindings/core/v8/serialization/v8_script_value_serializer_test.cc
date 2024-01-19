@@ -255,8 +255,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMPoint) {
   V8TestingScope scope;
   DOMPoint* point = DOMPoint::Create(1, 2, 3, 4);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<DOMPoint>::ToV8(scope.GetScriptState(), point)
-          .ToLocalChecked();
+      ToV8Traits<DOMPoint>::ToV8(scope.GetScriptState(), point);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   DOMPoint* new_point = V8DOMPoint::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_point, nullptr);
@@ -292,8 +291,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMPointReadOnly) {
   V8TestingScope scope;
   DOMPointReadOnly* point = DOMPointReadOnly::Create(1, 2, 3, 4);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<DOMPointReadOnly>::ToV8(scope.GetScriptState(), point)
-          .ToLocalChecked();
+      ToV8Traits<DOMPointReadOnly>::ToV8(scope.GetScriptState(), point);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   EXPECT_FALSE(V8DOMPoint::HasInstance(scope.GetIsolate(), result));
   DOMPointReadOnly* new_point =
@@ -332,7 +330,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMRect) {
   V8TestingScope scope;
   DOMRect* rect = DOMRect::Create(1, 2, 3, 4);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<DOMRect>::ToV8(scope.GetScriptState(), rect).ToLocalChecked();
+      ToV8Traits<DOMRect>::ToV8(scope.GetScriptState(), rect);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   DOMRect* new_rect = V8DOMRect::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_rect, nullptr);
@@ -368,8 +366,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMRectReadOnly) {
   V8TestingScope scope;
   DOMRectReadOnly* rect = DOMRectReadOnly::Create(1, 2, 3, 4);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<DOMRectReadOnly>::ToV8(scope.GetScriptState(), rect)
-          .ToLocalChecked();
+      ToV8Traits<DOMRectReadOnly>::ToV8(scope.GetScriptState(), rect);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   EXPECT_FALSE(V8DOMRect::HasInstance(scope.GetIsolate(), result));
   DOMRectReadOnly* new_rect =
@@ -428,7 +425,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMQuad) {
   pi4->setW(16);
   DOMQuad* quad = DOMQuad::Create(pi1, pi2, pi3, pi4);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<DOMQuad>::ToV8(scope.GetScriptState(), quad).ToLocalChecked();
+      ToV8Traits<DOMQuad>::ToV8(scope.GetScriptState(), quad);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   DOMQuad* new_quad = V8DOMQuad::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_quad, nullptr);
@@ -509,8 +506,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMMatrix2D) {
   DOMMatrix* matrix = DOMMatrix::fromMatrix(init, scope.GetExceptionState());
   EXPECT_TRUE(matrix->is2D());
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<DOMMatrix>::ToV8(scope.GetScriptState(), matrix)
-          .ToLocalChecked();
+      ToV8Traits<DOMMatrix>::ToV8(scope.GetScriptState(), matrix);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   DOMMatrix* new_matrix = V8DOMMatrix::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_matrix, nullptr);
@@ -568,8 +564,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMMatrixReadOnly2D) {
       DOMMatrixReadOnly::fromMatrix(init, scope.GetExceptionState());
   EXPECT_TRUE(matrix->is2D());
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<DOMMatrixReadOnly>::ToV8(scope.GetScriptState(), matrix)
-          .ToLocalChecked();
+      ToV8Traits<DOMMatrixReadOnly>::ToV8(scope.GetScriptState(), matrix);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   EXPECT_FALSE(V8DOMMatrix::HasInstance(scope.GetIsolate(), result));
   DOMMatrixReadOnly* new_matrix =
@@ -639,8 +634,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMMatrix) {
   DOMMatrix* matrix = DOMMatrix::fromMatrix(init, scope.GetExceptionState());
   EXPECT_FALSE(matrix->is2D());
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<DOMMatrix>::ToV8(scope.GetScriptState(), matrix)
-          .ToLocalChecked();
+      ToV8Traits<DOMMatrix>::ToV8(scope.GetScriptState(), matrix);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   DOMMatrix* new_matrix = V8DOMMatrix::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_matrix, nullptr);
@@ -731,8 +725,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMMatrixReadOnly) {
       DOMMatrixReadOnly::fromMatrix(init, scope.GetExceptionState());
   EXPECT_FALSE(matrix->is2D());
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<DOMMatrixReadOnly>::ToV8(scope.GetScriptState(), matrix)
-          .ToLocalChecked();
+      ToV8Traits<DOMMatrixReadOnly>::ToV8(scope.GetScriptState(), matrix);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   EXPECT_FALSE(V8DOMMatrix::HasInstance(scope.GetIsolate(), result));
   DOMMatrixReadOnly* new_matrix =
@@ -812,8 +805,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageData) {
   pm.writable_addr32(0, 0)[0] = 200u;
   pm.writable_addr32(1, 0)[0] = 100u;
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<ImageData>::ToV8(scope.GetScriptState(), image_data)
-          .ToLocalChecked();
+      ToV8Traits<ImageData>::ToV8(scope.GetScriptState(), image_data);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   ImageData* new_image_data =
       V8ImageData::ToWrappable(scope.GetIsolate(), result);
@@ -838,8 +830,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDetachedImageData) {
   image_data->data()->GetAsUint8ClampedArray()->BufferBase()->Detach();
 
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<ImageData>::ToV8(scope.GetScriptState(), image_data)
-          .ToLocalChecked();
+      ToV8Traits<ImageData>::ToV8(scope.GetScriptState(), image_data);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   EXPECT_FALSE(V8ImageData::HasInstance(scope.GetIsolate(), result));
 }
@@ -860,8 +851,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
   static_cast<float*>(pm.writable_addr(0, 0))[0] = 200.f;
 
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<ImageData>::ToV8(scope.GetScriptState(), image_data)
-          .ToLocalChecked();
+      ToV8Traits<ImageData>::ToV8(scope.GetScriptState(), image_data);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   ImageData* new_image_data =
       V8ImageData::ToWrappable(scope.GetIsolate(), result);
@@ -974,8 +964,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripMessagePort) {
   MessagePort* port =
       MakeMessagePort(scope.GetExecutionContext(), &unowned_handle);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<MessagePort>::ToV8(scope.GetScriptState(), port)
-          .ToLocalChecked();
+      ToV8Traits<MessagePort>::ToV8(scope.GetScriptState(), port);
   Transferables transferables;
   transferables.message_ports.push_back(port);
 
@@ -999,8 +988,7 @@ TEST(V8ScriptValueSerializerTest, NeuteredMessagePortThrowsDataCloneError) {
   auto* port = MakeGarbageCollected<MessagePort>(*scope.GetExecutionContext());
   EXPECT_TRUE(port->IsNeutered());
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<MessagePort>::ToV8(scope.GetScriptState(), port)
-          .ToLocalChecked();
+      ToV8Traits<MessagePort>::ToV8(scope.GetScriptState(), port);
   Transferables transferables;
   transferables.message_ports.push_back(port);
 
@@ -1019,8 +1007,7 @@ TEST(V8ScriptValueSerializerTest,
 
   MessagePort* port = MakeMessagePort(scope.GetExecutionContext());
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<MessagePort>::ToV8(scope.GetScriptState(), port)
-          .ToLocalChecked();
+      ToV8Traits<MessagePort>::ToV8(scope.GetScriptState(), port);
   Transferables transferables;
 
   RoundTrip(wrapper, scope, &exception_state, &transferables);
@@ -1076,8 +1063,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripMojoHandle) {
   auto* handle = MakeGarbageCollected<MojoHandle>(
       mojo::ScopedHandle::From(std::move(pipe.handle0)));
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<MojoHandle>::ToV8(scope.GetScriptState(), handle)
-          .ToLocalChecked();
+      ToV8Traits<MojoHandle>::ToV8(scope.GetScriptState(), handle);
   Transferables transferables;
   transferables.mojo_handles.push_back(handle);
 
@@ -1101,8 +1087,7 @@ TEST(V8ScriptValueSerializerTest, UntransferredMojoHandleThrowsDataCloneError) {
   auto* handle = MakeGarbageCollected<MojoHandle>(
       mojo::ScopedHandle::From(std::move(pipe.handle0)));
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<MojoHandle>::ToV8(scope.GetScriptState(), handle)
-          .ToLocalChecked();
+      ToV8Traits<MojoHandle>::ToV8(scope.GetScriptState(), handle);
   Transferables transferables;
 
   RoundTrip(wrapper, scope, &exception_state, &transferables);
@@ -1128,8 +1113,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageBitmap) {
 
   // Serialize and deserialize it.
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), image_bitmap)
-          .ToLocalChecked();
+      ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), image_bitmap);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   ImageBitmap* new_image_bitmap =
       V8ImageBitmap::ToWrappable(scope.GetIsolate(), result);
@@ -1167,8 +1151,7 @@ TEST(V8ScriptValueSerializerTest, ImageBitmapEXIFImageOrientation) {
     ASSERT_TRUE(image_bitmap->BitmapImage());
     // Serialize and deserialize it.
     v8::Local<v8::Value> wrapper =
-        ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), image_bitmap)
-            .ToLocalChecked();
+        ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), image_bitmap);
     v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
     ImageBitmap* new_image_bitmap =
         V8ImageBitmap::ToWrappable(scope.GetIsolate(), result);
@@ -1196,8 +1179,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageBitmapWithColorSpaceInfo) {
 
   // Serialize and deserialize it.
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), image_bitmap)
-          .ToLocalChecked();
+      ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), image_bitmap);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   ImageBitmap* new_image_bitmap =
       V8ImageBitmap::ToWrappable(scope.GetIsolate(), result);
@@ -1568,8 +1550,7 @@ TEST(V8ScriptValueSerializerTest, TransferImageBitmap) {
   ASSERT_TRUE(image_bitmap->BitmapImage());
 
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), image_bitmap)
-          .ToLocalChecked();
+      ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), image_bitmap);
   Transferables transferables;
   transferables.image_bitmaps.push_back(image_bitmap);
   v8::Local<v8::Value> result =
@@ -1603,8 +1584,7 @@ TEST(V8ScriptValueSerializerTest, TransferOffscreenCanvas) {
       OffscreenCanvas::Create(scope.GetScriptState(), 10, 7);
   canvas->SetPlaceholderCanvasId(519);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<OffscreenCanvas>::ToV8(scope.GetScriptState(), canvas)
-          .ToLocalChecked();
+      ToV8Traits<OffscreenCanvas>::ToV8(scope.GetScriptState(), canvas);
   Transferables transferables;
   transferables.offscreen_canvases.push_back(canvas);
   v8::Local<v8::Value> result =
@@ -1628,7 +1608,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripBlob) {
   String uuid = blob->Uuid();
   EXPECT_FALSE(uuid.empty());
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<Blob>::ToV8(scope.GetScriptState(), blob).ToLocalChecked();
+      ToV8Traits<Blob>::ToV8(scope.GetScriptState(), blob);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   Blob* new_blob = V8Blob::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_blob, nullptr);
@@ -1665,7 +1645,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripBlobIndex) {
   String uuid = blob->Uuid();
   EXPECT_FALSE(uuid.empty());
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<Blob>::ToV8(scope.GetScriptState(), blob).ToLocalChecked();
+      ToV8Traits<Blob>::ToV8(scope.GetScriptState(), blob);
   WebBlobInfoArray blob_info_array;
   v8::Local<v8::Value> result =
       RoundTrip(wrapper, scope, nullptr, nullptr, &blob_info_array);
@@ -1737,7 +1717,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileNative) {
       MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path");
   file_factory_helper.FlushForTesting();
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<File>::ToV8(scope.GetScriptState(), file).ToLocalChecked();
+      ToV8Traits<File>::ToV8(scope.GetScriptState(), file);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   File* new_file = V8File::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_file, nullptr);
@@ -1754,7 +1734,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileBackedByBlob) {
   auto* file = MakeGarbageCollected<File>("/native/path", kModificationTime,
                                           blob_data_handle);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<File>::ToV8(scope.GetScriptState(), file).ToLocalChecked();
+      ToV8Traits<File>::ToV8(scope.GetScriptState(), file);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   File* new_file = V8File::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_file, nullptr);
@@ -1773,7 +1753,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileNativeSnapshot) {
   File* file = File::CreateForFileSystemFile(context, "name", metadata,
                                              File::kIsUserVisible);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<File>::ToV8(scope.GetScriptState(), file).ToLocalChecked();
+      ToV8Traits<File>::ToV8(scope.GetScriptState(), file);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   File* new_file = V8File::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_file, nullptr);
@@ -1792,7 +1772,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileNonNativeSnapshot) {
   File* file = File::CreateForFileSystemFile(
       url, metadata, File::kIsUserVisible, BlobDataHandle::Create());
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<File>::ToV8(scope.GetScriptState(), file).ToLocalChecked();
+      ToV8Traits<File>::ToV8(scope.GetScriptState(), file);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   File* new_file = V8File::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_file, nullptr);
@@ -1964,7 +1944,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileIndex) {
       MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path");
   file_factory_helper.FlushForTesting();
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<File>::ToV8(scope.GetScriptState(), file).ToLocalChecked();
+      ToV8Traits<File>::ToV8(scope.GetScriptState(), file);
   WebBlobInfoArray blob_info_array;
   v8::Local<v8::Value> result =
       RoundTrip(wrapper, scope, nullptr, nullptr, &blob_info_array);
@@ -2045,8 +2025,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileList) {
       MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path2"));
   file_factory_helper.FlushForTesting();
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<FileList>::ToV8(scope.GetScriptState(), file_list)
-          .ToLocalChecked();
+      ToV8Traits<FileList>::ToV8(scope.GetScriptState(), file_list);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   FileList* new_file_list = V8FileList::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_file_list, nullptr);
@@ -2117,8 +2096,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileListIndex) {
       MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path2"));
   file_factory_helper.FlushForTesting();
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<FileList>::ToV8(scope.GetScriptState(), file_list)
-          .ToLocalChecked();
+      ToV8Traits<FileList>::ToV8(scope.GetScriptState(), file_list);
   WebBlobInfoArray blob_info_array;
   v8::Local<v8::Value> result =
       RoundTrip(wrapper, scope, nullptr, nullptr, &blob_info_array);
@@ -2226,8 +2204,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripReadableStream) {
 
   auto* rs = ReadableStream::Create(script_state, ASSERT_NO_EXCEPTION);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<ReadableStream>::ToV8(scope.GetScriptState(), rs)
-          .ToLocalChecked();
+      ToV8Traits<ReadableStream>::ToV8(scope.GetScriptState(), rs);
   HeapVector<ScriptValue> transferable_array = {ScriptValue(isolate, wrapper)};
   Transferables transferables;
   ASSERT_TRUE(SerializedScriptValue::ExtractTransferables(
@@ -2252,8 +2229,7 @@ TEST(V8ScriptValueSerializerTest, TransformStreamIntegerOverflow) {
   // properly.
   auto* ts = TransformStream::Create(script_state, ASSERT_NO_EXCEPTION);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<TransformStream>::ToV8(scope.GetScriptState(), ts)
-          .ToLocalChecked();
+      ToV8Traits<TransformStream>::ToV8(scope.GetScriptState(), ts);
   HeapVector<ScriptValue> transferable_array = {ScriptValue(isolate, wrapper)};
   Transferables transferables;
   ASSERT_TRUE(SerializedScriptValue::ExtractTransferables(
@@ -2306,8 +2282,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMException) {
   DOMException* exception =
       DOMException::Create("message", "InvalidStateError");
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<DOMException>::ToV8(scope.GetScriptState(), exception)
-          .ToLocalChecked();
+      ToV8Traits<DOMException>::ToV8(scope.GetScriptState(), exception);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   DOMException* new_exception =
       V8DOMException::ToWrappable(scope.GetIsolate(), result);
@@ -2379,8 +2354,7 @@ TEST(V8ScriptValueSerializerTest, SSVTrailerWriteExposureAssertionDisabled) {
   // while the feature to write the assertion is disabled.
   DOMPoint* point = DOMPoint::Create(0, 0);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<DOMPoint>::ToV8(scope.GetScriptState(), point)
-          .ToLocalChecked();
+      ToV8Traits<DOMPoint>::ToV8(scope.GetScriptState(), point);
   V8ScriptValueSerializer serializer(scope.GetScriptState());
   auto value = serializer.Serialize(wrapper, ASSERT_NO_EXCEPTION);
   TrailerReader trailer_reader(value->GetWireData());
@@ -2415,8 +2389,7 @@ TEST(V8ScriptValueSerializerTest, SSVTrailerEnforceExposureAssertionDisabled) {
     options.transferables = &transferables;
     V8ScriptValueSerializer serializer(scope.GetScriptState(), options);
     ssv = serializer.Serialize(
-        ToV8Traits<MojoHandle>::ToV8(scope.GetScriptState(), handle)
-            .ToLocalChecked(),
+        ToV8Traits<MojoHandle>::ToV8(scope.GetScriptState(), handle),
         ASSERT_NO_EXCEPTION);
   }
 
@@ -2437,8 +2410,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfig) {
       gfx::Size(32, 16), FencedFrameConfig::AttributeVisibility::kOpaque,
       FencedFrameConfig::AttributeVisibility::kTransparent, true);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<FencedFrameConfig>::ToV8(scope.GetScriptState(), config)
-          .ToLocalChecked();
+      ToV8Traits<FencedFrameConfig>::ToV8(scope.GetScriptState(), config);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   FencedFrameConfig* new_config =
       V8FencedFrameConfig::ToWrappable(scope.GetIsolate(), result);
@@ -2469,8 +2441,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfigNullValues) {
   ASSERT_FALSE(config->container_size_.has_value());
   ASSERT_FALSE(config->content_size_.has_value());
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<FencedFrameConfig>::ToV8(scope.GetScriptState(), config)
-          .ToLocalChecked();
+      ToV8Traits<FencedFrameConfig>::ToV8(scope.GetScriptState(), config);
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   FencedFrameConfig* new_config =
       V8FencedFrameConfig::ToWrappable(scope.GetIsolate(), result);

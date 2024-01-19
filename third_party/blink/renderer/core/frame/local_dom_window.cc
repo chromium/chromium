@@ -296,9 +296,8 @@ ScriptValue LocalDOMWindow::event(ScriptState* script_state) {
                        v8::Undefined(script_state->GetIsolate()));
   }
 
-  return ScriptValue(
-      script_state->GetIsolate(),
-      ToV8Traits<Event>::ToV8(script_state, CurrentEvent()).ToLocalChecked());
+  return ScriptValue(script_state->GetIsolate(),
+                     ToV8Traits<Event>::ToV8(script_state, CurrentEvent()));
 }
 
 Event* LocalDOMWindow::CurrentEvent() const {

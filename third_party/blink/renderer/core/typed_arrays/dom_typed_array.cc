@@ -17,8 +17,7 @@ v8::Local<v8::Value> DOMTypedArray<T, V8TypedArray, clamped>::Wrap(
   const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
   DOMArrayBufferBase* buffer = BufferBase();
   v8::Local<v8::Value> v8_buffer =
-      ToV8Traits<DOMArrayBufferBase>::ToV8(script_state, buffer)
-          .ToLocalChecked();
+      ToV8Traits<DOMArrayBufferBase>::ToV8(script_state, buffer);
   DCHECK_EQ(IsShared(), v8_buffer->IsSharedArrayBuffer());
 
   v8::Local<v8::Object> wrapper;

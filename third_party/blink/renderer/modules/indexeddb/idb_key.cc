@@ -197,8 +197,7 @@ v8::Local<v8::Value> IDBKey::ToV8(ScriptState* script_state) const {
     case mojom::IDBKeyType::Binary:
       // https://w3c.github.io/IndexedDB/#convert-a-value-to-a-key
       return ToV8Traits<DOMArrayBuffer>::ToV8(script_state,
-                                              DOMArrayBuffer::Create(Binary()))
-          .ToLocalChecked();
+                                              DOMArrayBuffer::Create(Binary()));
     case mojom::IDBKeyType::Date:
       return v8::Date::New(context, Date()).ToLocalChecked();
     case mojom::IDBKeyType::Array: {

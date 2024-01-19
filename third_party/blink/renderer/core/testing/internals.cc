@@ -3990,14 +3990,12 @@ ScriptValue Internals::createWritableStreamAndSink(
   object
       ->Set(script_state->GetContext(),
             V8String(script_state->GetIsolate(), "stream"),
-            ToV8Traits<WritableStream>::ToV8(script_state, stream)
-                .ToLocalChecked())
+            ToV8Traits<WritableStream>::ToV8(script_state, stream))
       .Check();
   object
       ->Set(script_state->GetContext(),
             V8String(script_state->GetIsolate(), "sink"),
-            ToV8Traits<IDLPromise>::ToV8(script_state, resolver->Promise())
-                .ToLocalChecked())
+            ToV8Traits<IDLPromise>::ToV8(script_state, resolver->Promise()))
       .Check();
   return ScriptValue(script_state->GetIsolate(), object);
 }

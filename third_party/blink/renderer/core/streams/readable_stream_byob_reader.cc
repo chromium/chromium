@@ -31,12 +31,10 @@ class ReadableStreamBYOBReader::BYOBReaderReadIntoRequest final
     auto* read_result = ReadableStreamReadResult::Create();
     read_result->setValue(
         ScriptValue(script_state->GetIsolate(),
-                    ToV8Traits<DOMArrayBufferView>::ToV8(script_state, chunk)
-                        .ToLocalChecked()));
+                    ToV8Traits<DOMArrayBufferView>::ToV8(script_state, chunk)));
     read_result->setDone(false);
     resolver_->Resolve(script_state, ToV8Traits<ReadableStreamReadResult>::ToV8(
-                                         script_state, read_result)
-                                         .ToLocalChecked());
+                                         script_state, read_result));
   }
 
   void CloseSteps(ScriptState* script_state,
@@ -45,13 +43,11 @@ class ReadableStreamBYOBReader::BYOBReaderReadIntoRequest final
     read_result->setValue(ScriptValue(
         script_state->GetIsolate(),
         chunk ? ToV8Traits<DOMArrayBufferView>::ToV8(script_state, chunk)
-                    .ToLocalChecked()
               : static_cast<v8::Local<v8::Value>>(
                     v8::Undefined(script_state->GetIsolate()))));
     read_result->setDone(true);
     resolver_->Resolve(script_state, ToV8Traits<ReadableStreamReadResult>::ToV8(
-                                         script_state, read_result)
-                                         .ToLocalChecked());
+                                         script_state, read_result));
   }
 
   void ErrorSteps(ScriptState* script_state,

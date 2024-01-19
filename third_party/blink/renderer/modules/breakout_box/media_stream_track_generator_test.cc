@@ -45,9 +45,8 @@ ScriptValue CreateVideoFrameChunk(ScriptState* script_state) {
       media::VideoFrame::CreateBlackFrame(gfx::Size(10, 5));
   VideoFrame* video_frame = MakeGarbageCollected<VideoFrame>(
       std::move(media_frame), ExecutionContext::From(script_state));
-  return ScriptValue(
-      script_state->GetIsolate(),
-      ToV8Traits<VideoFrame>::ToV8(script_state, video_frame).ToLocalChecked());
+  return ScriptValue(script_state->GetIsolate(),
+                     ToV8Traits<VideoFrame>::ToV8(script_state, video_frame));
 }
 
 ScriptValue CreateAudioDataChunk(ScriptState* script_state) {
@@ -57,9 +56,8 @@ ScriptValue CreateAudioDataChunk(ScriptState* script_state) {
           /*channel_count=*/2,
           /*sample_rate=*/44100,
           /*frame_count=*/500, base::TimeDelta()));
-  return ScriptValue(
-      script_state->GetIsolate(),
-      ToV8Traits<AudioData>::ToV8(script_state, audio_data).ToLocalChecked());
+  return ScriptValue(script_state->GetIsolate(),
+                     ToV8Traits<AudioData>::ToV8(script_state, audio_data));
 }
 
 }  // namespace

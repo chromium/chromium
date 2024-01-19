@@ -38,8 +38,8 @@ V8ObjectBuilder& V8ObjectBuilder::AddNumber(const StringView& name,
 
 V8ObjectBuilder& V8ObjectBuilder::AddInteger(const StringView& name,
                                              uint64_t value) {
-  AddInternal(name, ToV8Traits<IDLUnsignedLongLong>::ToV8(script_state_, value)
-                        .ToLocalChecked());
+  AddInternal(name,
+              ToV8Traits<IDLUnsignedLongLong>::ToV8(script_state_, value));
   return *this;
 }
 

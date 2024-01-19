@@ -328,8 +328,7 @@ ScriptValue File::lastModifiedDate(ScriptState* script_state) const {
   return ScriptValue(
       script_state->GetIsolate(),
       ToV8Traits<IDLNullable<IDLDate>>::ToV8(
-          script_state, absl::optional<base::Time>(LastModifiedTime()))
-          .ToLocalChecked());
+          script_state, absl::optional<base::Time>(LastModifiedTime())));
 }
 
 absl::optional<base::Time> File::LastModifiedTimeForSerialization() const {

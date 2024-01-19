@@ -1008,8 +1008,7 @@ ScriptPromise ImageBitmap::CreateAsync(
     if (bitmap->BitmapImage()) {
       bitmap->BitmapImage()->SetOriginClean(!image->WouldTaintOrigin());
       return ScriptPromise::Cast(
-          script_state,
-          ToV8Traits<ImageBitmap>::ToV8(script_state, bitmap).ToLocalChecked());
+          script_state, ToV8Traits<ImageBitmap>::ToV8(script_state, bitmap));
     } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,

@@ -116,21 +116,19 @@ class PairAsyncIterationSource : public AsyncIterationSourceBase {
     switch (GetKind()) {
       case Kind::kKey: {
         v8::Local<v8::Value> v8_key =
-            ToV8Traits<IDLKeyType>::ToV8(script_state, key).ToLocalChecked();
+            ToV8Traits<IDLKeyType>::ToV8(script_state, key);
         return ESCreateIterResultObject(script_state, false, v8_key);
       }
       case Kind::kValue: {
         v8::Local<v8::Value> v8_value =
-            ToV8Traits<IDLValueType>::ToV8(script_state, value)
-                .ToLocalChecked();
+            ToV8Traits<IDLValueType>::ToV8(script_state, value);
         return ESCreateIterResultObject(script_state, false, v8_value);
       }
       case Kind::kKeyValue: {
         v8::Local<v8::Value> v8_key =
-            ToV8Traits<IDLKeyType>::ToV8(script_state, key).ToLocalChecked();
+            ToV8Traits<IDLKeyType>::ToV8(script_state, key);
         v8::Local<v8::Value> v8_value =
-            ToV8Traits<IDLValueType>::ToV8(script_state, value)
-                .ToLocalChecked();
+            ToV8Traits<IDLValueType>::ToV8(script_state, value);
         return ESCreateIterResultObject(script_state, false, v8_key, v8_value);
       }
     }
@@ -151,7 +149,7 @@ class ValueAsyncIterationSource : public AsyncIterationSourceBase {
     ScriptState* script_state = GetScriptState();
     DCHECK_EQ(GetKind(), Kind::kValue);
     v8::Local<v8::Value> v8_value =
-        ToV8Traits<IDLValueType>::ToV8(script_state, value).ToLocalChecked();
+        ToV8Traits<IDLValueType>::ToV8(script_state, value);
     return ESCreateIterResultObject(script_state, false, v8_value);
   }
 };

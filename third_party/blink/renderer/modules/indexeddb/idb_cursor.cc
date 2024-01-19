@@ -88,8 +88,7 @@ v8::Local<v8::Object> IDBCursor::AssociateWithWrapper(
     static const V8PrivateProperty::SymbolKey kPrivatePropertyRequest;
     V8PrivateProperty::GetSymbol(isolate, kPrivatePropertyRequest)
         .Set(wrapper,
-             ToV8Traits<IDBRequest>::ToV8(isolate, request_.Get(), wrapper)
-                 .ToLocalChecked());
+             ToV8Traits<IDBRequest>::ToV8(isolate, request_.Get(), wrapper));
   }
   return wrapper;
 }

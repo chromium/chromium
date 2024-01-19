@@ -208,8 +208,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripRTCCertificate) {
 
   // Round trip test.
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<RTCCertificate>::ToV8(scope.GetScriptState(), certificate)
-          .ToLocalChecked();
+      ToV8Traits<RTCCertificate>::ToV8(scope.GetScriptState(), certificate);
   v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
   RTCCertificate* new_certificate =
       V8RTCCertificate::ToWrappable(scope.GetIsolate(), result);
@@ -459,7 +458,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyAES) {
 
   // Round trip it and check the visible attributes.
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<CryptoKey>::ToV8(scope.GetScriptState(), key).ToLocalChecked();
+      ToV8Traits<CryptoKey>::ToV8(scope.GetScriptState(), key);
   v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
   CryptoKey* new_key = V8CryptoKey::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_key, nullptr);
@@ -534,7 +533,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyHMAC) {
 
   // Round trip it and check the visible attributes.
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<CryptoKey>::ToV8(scope.GetScriptState(), key).ToLocalChecked();
+      ToV8Traits<CryptoKey>::ToV8(scope.GetScriptState(), key);
   v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
   CryptoKey* new_key = V8CryptoKey::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_key, nullptr);
@@ -612,8 +611,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyRSAHashed) {
 
   // Round trip the private key and check the visible attributes.
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<CryptoKey>::ToV8(scope.GetScriptState(), private_key)
-          .ToLocalChecked();
+      ToV8Traits<CryptoKey>::ToV8(scope.GetScriptState(), private_key);
   v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
   CryptoKey* new_private_key =
       V8CryptoKey::ToWrappable(scope.GetIsolate(), result);
@@ -709,8 +707,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEC) {
 
   // Round trip the private key and check the visible attributes.
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<CryptoKey>::ToV8(scope.GetScriptState(), private_key)
-          .ToLocalChecked();
+      ToV8Traits<CryptoKey>::ToV8(scope.GetScriptState(), private_key);
   v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
   CryptoKey* new_private_key =
       V8CryptoKey::ToWrappable(scope.GetIsolate(), result);
@@ -796,8 +793,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEd25519) {
 
   // Round trip the private key and check the visible attributes.
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<CryptoKey>::ToV8(scope.GetScriptState(), private_key)
-          .ToLocalChecked();
+      ToV8Traits<CryptoKey>::ToV8(scope.GetScriptState(), private_key);
   v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
   CryptoKey* new_private_key =
       V8CryptoKey::ToWrappable(scope.GetIsolate(), result);
@@ -876,8 +872,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyX25519) {
 
   // Round trip the private key and check the visible attributes.
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<CryptoKey>::ToV8(scope.GetScriptState(), private_key)
-          .ToLocalChecked();
+      ToV8Traits<CryptoKey>::ToV8(scope.GetScriptState(), private_key);
   v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
   CryptoKey* new_private_key =
       V8CryptoKey::ToWrappable(scope.GetIsolate(), result);
@@ -970,7 +965,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyNoParams) {
 
   // Round trip the key and check the visible attributes.
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<CryptoKey>::ToV8(scope.GetScriptState(), key).ToLocalChecked();
+      ToV8Traits<CryptoKey>::ToV8(scope.GetScriptState(), key);
   v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
   CryptoKey* new_key = V8CryptoKey::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_key, nullptr);
@@ -1154,8 +1149,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripDOMFileSystem) {
   // At time of writing, this can only happen for filesystems from PPAPI.
   fs->MakeClonable();
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<DOMFileSystem>::ToV8(scope.GetScriptState(), fs)
-          .ToLocalChecked();
+      ToV8Traits<DOMFileSystem>::ToV8(scope.GetScriptState(), fs);
   v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
   ASSERT_FALSE(result.IsEmpty());
   DOMFileSystem* new_fs =
@@ -1180,8 +1174,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripDOMFileSystemNotClonable) {
       KURL("filesystem:http://example.com/persistent/0/"));
   ASSERT_FALSE(fs->Clonable());
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<DOMFileSystem>::ToV8(scope.GetScriptState(), fs)
-          .ToLocalChecked();
+      ToV8Traits<DOMFileSystem>::ToV8(scope.GetScriptState(), fs);
   EXPECT_FALSE(V8ScriptValueSerializer(scope.GetScriptState())
                    .Serialize(wrapper, exception_state));
   EXPECT_TRUE(HadDOMExceptionInModulesTest(
@@ -1252,8 +1245,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripVideoFrame) {
 
   // Round trip the frame and make sure the size is the same.
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<VideoFrame>::ToV8(scope.GetScriptState(), blink_frame)
-          .ToLocalChecked();
+      ToV8Traits<VideoFrame>::ToV8(scope.GetScriptState(), blink_frame);
   v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
 
   VideoFrame* new_frame = V8VideoFrame::ToWrappable(scope.GetIsolate(), result);
@@ -1288,8 +1280,7 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferVideoFrame) {
       transferables.GetOrCreateTransferList<VideoFrameTransferList>();
   transfer_list->video_frames.push_back(blink_frame);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<VideoFrame>::ToV8(scope.GetScriptState(), blink_frame)
-          .ToLocalChecked();
+      ToV8Traits<VideoFrame>::ToV8(scope.GetScriptState(), blink_frame);
   v8::Local<v8::Value> result =
       RoundTripForModules(wrapper, scope, &transferables);
 
@@ -1325,8 +1316,7 @@ TEST(V8ScriptValueSerializerForModulesTest, ClosedVideoFrameThrows) {
 
   // Serializing the closed frame should throw an error.
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<VideoFrame>::ToV8(scope.GetScriptState(), blink_frame)
-          .ToLocalChecked();
+      ToV8Traits<VideoFrame>::ToV8(scope.GetScriptState(), blink_frame);
   EXPECT_FALSE(V8ScriptValueSerializer(scope.GetScriptState())
                    .Serialize(wrapper, exception_state));
   EXPECT_TRUE(HadDOMExceptionInModulesTest(
@@ -1363,8 +1353,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
 
   // Round trip the frame and make sure the size is the same.
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<AudioData>::ToV8(scope.GetScriptState(), audio_data)
-          .ToLocalChecked();
+      ToV8Traits<AudioData>::ToV8(scope.GetScriptState(), audio_data);
   v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
 
   // The data should have been copied, not transferred.
@@ -1419,8 +1408,7 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferAudioData) {
       transferables.GetOrCreateTransferList<AudioDataTransferList>();
   transfer_list->audio_data_collection.push_back(audio_data);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<AudioData>::ToV8(scope.GetScriptState(), audio_data)
-          .ToLocalChecked();
+      ToV8Traits<AudioData>::ToV8(scope.GetScriptState(), audio_data);
   v8::Local<v8::Value> result =
       RoundTripForModules(wrapper, scope, &transferables);
 
@@ -1457,8 +1445,7 @@ TEST(V8ScriptValueSerializerForModulesTest, ClosedAudioDataThrows) {
 
   // Serializing the closed frame should throw an error.
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<AudioData>::ToV8(scope.GetScriptState(), audio_data)
-          .ToLocalChecked();
+      ToV8Traits<AudioData>::ToV8(scope.GetScriptState(), audio_data);
   EXPECT_FALSE(V8ScriptValueSerializer(scope.GetScriptState())
                    .Serialize(wrapper, exception_state));
   EXPECT_TRUE(HadDOMExceptionInModulesTest(
@@ -1488,8 +1475,7 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
   Transferables transferables;
   transferables.media_stream_tracks.push_back(blink_track);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track)
-          .ToLocalChecked();
+      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track);
   v8::Local<v8::Value> result =
       RoundTripForModules(wrapper, scope, &transferables);
 
@@ -1540,8 +1526,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   Transferables transferables;
   transferables.media_stream_tracks.push_back(blink_track);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track)
-          .ToLocalChecked();
+      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track);
   v8::Local<v8::Value> result =
       RoundTripForModules(wrapper, scope, &transferables);
 
@@ -1571,8 +1556,7 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferAudioMediaStreamTrack) {
   Transferables transferables;
   transferables.media_stream_tracks.push_back(blink_track);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track)
-          .ToLocalChecked();
+      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track);
   v8::Local<v8::Value> result =
       RoundTripForModules(wrapper, scope, &transferables);
 
@@ -1626,8 +1610,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
       Transferables transferables;
       transferables.media_stream_tracks.push_back(track);
       v8::Local<v8::Value> wrapper =
-          ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), track)
-              .ToLocalChecked();
+          ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), track);
       V8ScriptValueSerializer::Options serialize_options;
       serialize_options.transferables = &transferables;
       EXPECT_FALSE(
@@ -1675,8 +1658,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   Transferables transferables;
   transferables.media_stream_tracks.push_back(blink_track);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track)
-          .ToLocalChecked();
+      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track);
   V8ScriptValueSerializer::Options serialize_options;
   serialize_options.transferables = &transferables;
   ScriptState* script_state = scope.GetScriptState();
@@ -1730,8 +1712,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   Transferables transferables;
   transferables.media_stream_tracks.push_back(blink_track);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track)
-          .ToLocalChecked();
+      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track);
   V8ScriptValueSerializer::Options serialize_options;
   serialize_options.transferables = &transferables;
   ScriptState* script_state = scope.GetScriptState();
@@ -1785,8 +1766,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   Transferables transferables;
   transferables.media_stream_tracks.push_back(blink_track);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track)
-          .ToLocalChecked();
+      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track);
   V8ScriptValueSerializer::Options serialize_options;
   serialize_options.transferables = &transferables;
   ScriptState* script_state = scope.GetScriptState();
@@ -1823,8 +1803,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   Transferables transferables;
   transferables.media_stream_tracks.push_back(blink_track);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track)
-          .ToLocalChecked();
+      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track);
   V8ScriptValueSerializer::Options serialize_options;
   serialize_options.transferables = &transferables;
   EXPECT_FALSE(
@@ -1858,8 +1837,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   Transferables transferables;
   transferables.media_stream_tracks.push_back(blink_track);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track)
-          .ToLocalChecked();
+      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track);
   V8ScriptValueSerializer::Options serialize_options;
   serialize_options.transferables = &transferables;
   EXPECT_FALSE(V8ScriptValueSerializer(script_state, serialize_options)
@@ -1912,8 +1890,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   Transferables transferables;
   transferables.media_stream_tracks.push_back(blink_track);
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track)
-          .ToLocalChecked();
+      ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track);
   V8ScriptValueSerializer::Options serialize_options;
   serialize_options.transferables = &transferables;
   EXPECT_FALSE(
@@ -1934,8 +1911,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCropTarget) {
   CropTarget* const crop_target = MakeGarbageCollected<CropTarget>(crop_id);
 
   v8::Local<v8::Value> wrapper =
-      ToV8Traits<CropTarget>::ToV8(scope.GetScriptState(), crop_target)
-          .ToLocalChecked();
+      ToV8Traits<CropTarget>::ToV8(scope.GetScriptState(), crop_target);
   v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
 
   CropTarget* const new_crop_target =
@@ -1955,8 +1931,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripRestrictionTarget) {
       MakeGarbageCollected<RestrictionTarget>(restriction_id);
 
   v8::Local<v8::Value> wrapper = ToV8Traits<RestrictionTarget>::ToV8(
-                                     scope.GetScriptState(), restriction_target)
-                                     .ToLocalChecked();
+      scope.GetScriptState(), restriction_target);
   v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
 
   RestrictionTarget* const new_restriction_target =
@@ -1976,7 +1951,6 @@ TEST(V8ScriptValueSerializerForModulesTest,
   DOMArrayBuffer* ab = DOMArrayBuffer::Create(10, sizeof(float));
   v8::Local<v8::ArrayBuffer> v8_ab =
       ToV8Traits<DOMArrayBuffer>::ToV8(script_state, ab)
-          .ToLocalChecked()
           .As<v8::ArrayBuffer>();
   v8_ab->SetDetachKey(V8AtomicString(isolate, "my key"));
 
@@ -2010,7 +1984,6 @@ TEST(V8ScriptValueSerializerForModulesTest,
   DOMArrayBuffer* ab = DOMArrayBuffer::Create(10, sizeof(float));
   v8::Local<v8::ArrayBuffer> v8_ab =
       ToV8Traits<DOMArrayBuffer>::ToV8(script_state, ab)
-          .ToLocalChecked()
           .As<v8::ArrayBuffer>();
   v8_ab->SetDetachKey(V8AtomicString(isolate, "my key"));
 

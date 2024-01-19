@@ -342,14 +342,12 @@ ScriptValue MessageEvent::data(ScriptState* script_state) {
       break;
 
     case MessageEvent::kDataTypeBlob:
-      value =
-          ToV8Traits<Blob>::ToV8(script_state, data_as_blob_).ToLocalChecked();
+      value = ToV8Traits<Blob>::ToV8(script_state, data_as_blob_);
       break;
 
     case MessageEvent::kDataTypeArrayBuffer:
       value =
-          ToV8Traits<DOMArrayBuffer>::ToV8(script_state, data_as_array_buffer_)
-              .ToLocalChecked();
+          ToV8Traits<DOMArrayBuffer>::ToV8(script_state, data_as_array_buffer_);
       break;
   }
 
@@ -439,8 +437,7 @@ v8::Local<v8::Object> MessageEvent::AssociateWithWrapper(
           .Set(wrapper,
                ToV8Traits<DOMArrayBuffer>::ToV8(
                    ScriptState::From(wrapper->GetCreationContextChecked()),
-                   data_as_array_buffer_)
-                   .ToLocalChecked());
+                   data_as_array_buffer_));
       break;
   }
 

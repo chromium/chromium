@@ -126,12 +126,8 @@ void JSBasedEventListener::Invoke(
     return;
   }
 
-  v8::Local<v8::Value> js_event;
-  if (!ToV8Traits<Event>::ToV8(ScriptState::From(v8_context_of_event_target),
-                               event)
-           .ToLocal(&js_event)) {
-    return;
-  }
+  v8::Local<v8::Value> js_event = ToV8Traits<Event>::ToV8(
+      ScriptState::From(v8_context_of_event_target), event);
 
   // Step 7: Let |current_event| be undefined.
   Event* current_event = nullptr;

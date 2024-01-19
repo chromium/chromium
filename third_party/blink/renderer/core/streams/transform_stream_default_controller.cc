@@ -214,8 +214,7 @@ v8::Local<v8::Value> TransformStreamDefaultController::SetUpFromTransformer(
   // JavaScript. So the execution context should be valid and this call should
   // not crash.
   auto controller_value = ToV8Traits<TransformStreamDefaultController>::ToV8(
-                              script_state, controller)
-                              .ToLocalChecked();
+      script_state, controller);
 
   // The following steps are reordered from the standard for efficiency, but the
   // effect is the same.

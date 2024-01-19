@@ -228,7 +228,6 @@ void DOMWindow::setOpenerForBindings(v8::Isolate* isolate,
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Object> this_wrapper =
       ToV8Traits<DOMWindow>::ToV8(ScriptState::From(context), this)
-          .ToLocalChecked()
           .As<v8::Object>();
   v8::PropertyDescriptor desc(opener.V8Value(), /*writable=*/true);
   desc.set_enumerable(true);

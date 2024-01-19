@@ -467,8 +467,7 @@ void MainThreadDebugger::QuerySelectorCallback(
   if (element) {
     ScriptState* script_state =
         ScriptState::From(info.Holder()->GetCreationContextChecked());
-    info.GetReturnValue().Set(
-        ToV8Traits<Element>::ToV8(script_state, element).ToLocalChecked());
+    info.GetReturnValue().Set(ToV8Traits<Element>::ToV8(script_state, element));
   } else {
     info.GetReturnValue().Set(v8::Null(info.GetIsolate()));
   }
@@ -501,10 +500,8 @@ void MainThreadDebugger::QuerySelectorAllCallback(
       ScriptState::From(info.Holder()->GetCreationContextChecked());
   for (wtf_size_t i = 0; i < element_list->length(); ++i) {
     Element* element = element_list->item(i);
-    v8::Local<v8::Value> value;
-    if (!ToV8Traits<Element>::ToV8(script_state, element).ToLocal(&value)) {
-      return;
-    }
+    v8::Local<v8::Value> value =
+        ToV8Traits<Element>::ToV8(script_state, element);
     if (!CreateDataPropertyInArray(context, nodes, i, value).FromMaybe(false)) {
       return;
     }
@@ -549,10 +546,8 @@ void MainThreadDebugger::XpathSelectorCallback(
     while (Node* next_node = result->iterateNext(exception_state)) {
       if (exception_state.HadException())
         return;
-      v8::Local<v8::Value> value;
-      if (!ToV8Traits<Node>::ToV8(script_state, next_node).ToLocal(&value)) {
-        return;
-      }
+      v8::Local<v8::Value> value =
+          ToV8Traits<Node>::ToV8(script_state, next_node);
       if (!CreateDataPropertyInArray(context, nodes, index++, value)
                .FromMaybe(false)) {
         return;

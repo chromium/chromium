@@ -198,12 +198,10 @@ TEST_P(BodyStreamBufferTest, TeeFromHandleMadeFromStream) {
 
   underlying_source->Enqueue(ScriptValue(
       scope.GetIsolate(),
-      ToV8Traits<DOMUint8Array>::ToV8(scope.GetScriptState(), chunk1)
-          .ToLocalChecked()));
+      ToV8Traits<DOMUint8Array>::ToV8(scope.GetScriptState(), chunk1)));
   underlying_source->Enqueue(ScriptValue(
       scope.GetIsolate(),
-      ToV8Traits<DOMUint8Array>::ToV8(scope.GetScriptState(), chunk2)
-          .ToLocalChecked()));
+      ToV8Traits<DOMUint8Array>::ToV8(scope.GetScriptState(), chunk2)));
   underlying_source->Close();
 
   Checkpoint checkpoint;
@@ -668,8 +666,7 @@ TEST_P(BodyStreamBufferTest, NestedPull) {
           scope.GetScriptState()->GetContext(),
           V8String(scope.GetIsolate(), "stream"),
           ToV8Traits<ReadableStream>::ToV8(scope.GetScriptState(),
-                                           buffer->Stream())
-              .ToLocalChecked());
+                                           buffer->Stream()));
 
   ASSERT_TRUE(result.IsJust());
   ASSERT_TRUE(result.FromJust());

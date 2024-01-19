@@ -108,19 +108,16 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
     arguments = {
         ScriptValue(isolate,
                     ToV8Traits<IDLString>::ToV8(script_state_of_listener,
-                                                error_event->message())
-                        .ToLocalChecked()),
+                                                error_event->message())),
         ScriptValue(isolate,
                     ToV8Traits<IDLString>::ToV8(script_state_of_listener,
-                                                error_event->filename())
-                        .ToLocalChecked()),
+                                                error_event->filename())),
         ScriptValue(isolate,
                     ToV8Traits<IDLUnsignedLong>::ToV8(script_state_of_listener,
-                                                      error_event->lineno())
-                        .ToLocalChecked()),
-        ScriptValue(isolate, ToV8Traits<IDLUnsignedLong>::ToV8(
-                                 script_state_of_listener, error_event->colno())
-                                 .ToLocalChecked()),
+                                                      error_event->lineno())),
+        ScriptValue(isolate,
+                    ToV8Traits<IDLUnsignedLong>::ToV8(script_state_of_listener,
+                                                      error_event->colno())),
         error_attribute};
   } else {
     arguments.push_back(ScriptValue(isolate, js_event));

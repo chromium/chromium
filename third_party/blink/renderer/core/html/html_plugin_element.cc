@@ -486,7 +486,6 @@ NamedPropertySetterResult HTMLPlugInElement::AnonymousNamedSetter(
       V8AtomicString(script_state->GetIsolate(), name);
   v8::Local<v8::Object> this_wrapper =
       ToV8Traits<HTMLPlugInElement>::ToV8(script_state, this)
-          .ToLocalChecked()
           .As<v8::Object>();
   bool instance_has_property;
   bool holder_has_property;

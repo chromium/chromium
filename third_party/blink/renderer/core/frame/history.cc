@@ -93,7 +93,6 @@ ScriptValue History::state(ScriptState* script_state,
       V8PrivateProperty::GetSymbol(isolate, kHistoryStatePrivateProperty);
   v8::Local<v8::Object> v8_history =
       ToV8Traits<History>::ToV8(script_state, this)
-          .ToLocalChecked()
           .As<v8::Object>();
   v8::Local<v8::Value> v8_state;
 

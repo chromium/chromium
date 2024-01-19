@@ -453,8 +453,7 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
 
   builder.AddV8Value("serverTiming",
                      ToV8Traits<IDLArray<PerformanceServerTiming>>::ToV8(
-                         builder.GetScriptState(), serverTiming())
-                         .ToLocalChecked());
+                         builder.GetScriptState(), serverTiming()));
 }
 
 void PerformanceResourceTiming::Trace(Visitor* visitor) const {

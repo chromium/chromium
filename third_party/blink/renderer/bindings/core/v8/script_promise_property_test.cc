@@ -174,8 +174,7 @@ class ScriptPromisePropertyTestBase {
     ScriptState::Scope scope(script_state);
     return ScriptValue(
         GetIsolate(),
-        ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(script_state, value)
-            .ToLocalChecked());
+        ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(script_state, value));
   }
 
  private:
@@ -566,7 +565,6 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
         v8::MicrotasksScope::kDoNotRunMicrotasks);
     main_v8_resolution = ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(
                              MainScriptState(), resolution)
-                             .ToLocalChecked()
                              .As<v8::Object>();
     v8::PropertyDescriptor descriptor(
         MakeGarbageCollected<ScriptFunction>(
@@ -587,7 +585,6 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
         v8::MicrotasksScope::kDoNotRunMicrotasks);
     other_v8_resolution = ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(
                               OtherScriptState(), resolution)
-                              .ToLocalChecked()
                               .As<v8::Object>();
     v8::PropertyDescriptor descriptor(
         MakeGarbageCollected<ScriptFunction>(

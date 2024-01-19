@@ -153,8 +153,7 @@ v8::Local<v8::Value> ServiceWorkerErrorForUpdate::Take(
                                                web_error.message);
     default:
       return ToV8Traits<DOMException>::ToV8(
-                 script_state, ServiceWorkerError::Take(resolver, web_error))
-          .ToLocalChecked();
+          script_state, ServiceWorkerError::Take(resolver, web_error));
   }
 }
 

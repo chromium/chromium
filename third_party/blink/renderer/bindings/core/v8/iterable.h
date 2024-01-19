@@ -73,23 +73,19 @@ class PairSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
     switch (kind) {
       case SyncIteratorBase::Kind::kKey: {
         v8::Local<v8::Value> v8_key =
-            ToV8Traits<IDLKeyType>::ToV8(script_state, key.content)
-                .ToLocalChecked();
+            ToV8Traits<IDLKeyType>::ToV8(script_state, key.content);
         return ESCreateIterResultObject(script_state, false, v8_key);
       }
       case SyncIteratorBase::Kind::kValue: {
         v8::Local<v8::Value> v8_value =
-            ToV8Traits<IDLValueType>::ToV8(script_state, value.content)
-                .ToLocalChecked();
+            ToV8Traits<IDLValueType>::ToV8(script_state, value.content);
         return ESCreateIterResultObject(script_state, false, v8_value);
       }
       case SyncIteratorBase::Kind::kKeyValue: {
         v8::Local<v8::Value> v8_key =
-            ToV8Traits<IDLKeyType>::ToV8(script_state, key.content)
-                .ToLocalChecked();
+            ToV8Traits<IDLKeyType>::ToV8(script_state, key.content);
         v8::Local<v8::Value> v8_value =
-            ToV8Traits<IDLValueType>::ToV8(script_state, value.content)
-                .ToLocalChecked();
+            ToV8Traits<IDLValueType>::ToV8(script_state, value.content);
         return ESCreateIterResultObject(script_state, false, v8_key, v8_value);
       }
     }
@@ -116,10 +112,8 @@ class PairSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
                          exception_state))
         return;
 
-      v8_key = ToV8Traits<IDLKeyType>::ToV8(script_state, key.content)
-                   .ToLocalChecked();
-      v8_value = ToV8Traits<IDLValueType>::ToV8(script_state, value.content)
-                     .ToLocalChecked();
+      v8_key = ToV8Traits<IDLKeyType>::ToV8(script_state, key.content);
+      v8_value = ToV8Traits<IDLValueType>::ToV8(script_state, value.content);
 
       if (callback
               ->Invoke(v8_callback_this_value,
@@ -155,8 +149,7 @@ class ValueSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
     }
 
     v8::Local<v8::Value> v8_value =
-        ToV8Traits<IDLValueType>::ToV8(script_state, value.content)
-            .ToLocalChecked();
+        ToV8Traits<IDLValueType>::ToV8(script_state, value.content);
 
     switch (kind) {
       case SyncIteratorBase::Kind::kKey:
@@ -186,8 +179,7 @@ class ValueSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
       if (!FetchNextItem(script_state, value.content, exception_state))
         return;
 
-      v8_value = ToV8Traits<IDLValueType>::ToV8(script_state, value.content)
-                     .ToLocalChecked();
+      v8_value = ToV8Traits<IDLValueType>::ToV8(script_state, value.content);
       ScriptValue script_value(script_state->GetIsolate(), v8_value);
 
       if (callback

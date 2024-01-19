@@ -48,8 +48,7 @@ void PerformanceLongTaskTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
   builder.AddV8Value("attribution",
                      ToV8Traits<IDLArray<TaskAttributionTiming>>::ToV8(
-                         builder.GetScriptState(), attribution_)
-                         .ToLocalChecked());
+                         builder.GetScriptState(), attribution_));
 }
 
 void PerformanceLongTaskTiming::Trace(Visitor* visitor) const {

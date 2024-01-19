@@ -294,8 +294,7 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
     support->setSupported(false);
     return ScriptPromise::Cast(
         script_state,
-        ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support)
-            .ToLocalChecked());
+        ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support));
   }
 
   // Check that we can make a media::VideoDecoderConfig. The |js_error_message|
@@ -306,8 +305,7 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
     support->setSupported(false);
     return ScriptPromise::Cast(
         script_state,
-        ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support)
-            .ToLocalChecked());
+        ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support));
   }
 
   // If hardware is preferred, asynchronously check for a hardware decoder.
@@ -325,8 +323,8 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
   // Otherwise, the config is supported.
   support->setSupported(true);
   return ScriptPromise::Cast(
-      script_state, ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support)
-                        .ToLocalChecked());
+      script_state,
+      ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support));
 }
 
 HardwarePreference VideoDecoder::GetHardwarePreference(

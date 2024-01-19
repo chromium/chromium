@@ -78,8 +78,7 @@ void ScriptWrappableTaskState::SetCurrent(
                        ->EnsureContinuationPreservedEmbedderDataScriptState();
     ScriptState::Scope scope(script_state);
     isolate->SetContinuationPreservedEmbedderData(
-        ToV8Traits<ScriptWrappableTaskState>::ToV8(script_state, task_state)
-            .ToLocalChecked());
+        ToV8Traits<ScriptWrappableTaskState>::ToV8(script_state, task_state));
   }
 }
 
