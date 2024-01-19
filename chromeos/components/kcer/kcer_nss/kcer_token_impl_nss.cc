@@ -739,10 +739,18 @@ std::vector<SigningScheme> GetSigningSchemes(bool supports_pss,
   return result;
 }
 
-base::expected<std::optional<chaps::KeyPermissions>, Error>
-GetKeyPermissionsOnWorkerThread(
+void GetKeyPermissionsOnWorkerThread(
     KeyPermissionsAttributeId key_permissions_attribute_id,
-    const crypto::ScopedSECKEYPrivateKey& sec_private_key) {
+    crypto::ScopedPK11Slot slot,
+    PrivateKeyHandle key,
+    Kcer::GetKeyPermissionsCallback callback) {
+  base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
+      GetSECKEYPrivateKey(slot, key);
+  if (!private_key.has_value()) {
+    return std::move(callback).Run(base::unexpected(private_key.error()));
+  }
+  const crypto::ScopedSECKEYPrivateKey& sec_private_key = private_key.value();
+
   crypto::ScopedSECItem key_permissions_attribute(
       SECITEM_AllocItem(/*arena=*/nullptr,
                         /*item=*/nullptr,
@@ -760,24 +768,34 @@ GetKeyPermissionsOnWorkerThread(
     // and to return nullopt |attribute_value| instead.
     int error = PORT_GetError();
     if (error == SEC_ERROR_BAD_DATA) {
-      return std::nullopt;
+      return std::move(callback).Run(std::nullopt);
     } else {
-      return base::unexpected(Error::kFailedToReadAttribute);
+      return std::move(callback).Run(
+          base::unexpected(Error::kFailedToReadAttribute));
     }
   }
 
   chaps::KeyPermissions key_permissions;
   if (!key_permissions.ParseFromArray(key_permissions_attribute->data,
                                       key_permissions_attribute->len)) {
-    return base::unexpected(Error::kFailedToParseKeyPermissions);
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToParseKeyPermissions));
   }
-  return key_permissions;
+  return std::move(callback).Run(key_permissions);
 }
 
-base::expected<std::optional<std::string>, Error>
-GetCertProvisioningIdOnWorkerThread(
+void GetCertProvisioningIdOnWorkerThread(
     CertProvisioningIdAttributeId cert_prov_attribute_id,
-    const crypto::ScopedSECKEYPrivateKey& sec_private_key) {
+    crypto::ScopedPK11Slot slot,
+    PrivateKeyHandle key,
+    Kcer::GetCertProvisioningProfileIdCallback callback) {
+  base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
+      GetSECKEYPrivateKey(slot, key);
+  if (!private_key.has_value()) {
+    return std::move(callback).Run(base::unexpected(private_key.error()));
+  }
+  const crypto::ScopedSECKEYPrivateKey& sec_private_key = private_key.value();
+
   crypto::ScopedSECItem cert_prov_attribute(SECITEM_AllocItem(/*arena=*/nullptr,
                                                               /*item=*/nullptr,
                                                               /*len=*/0));
@@ -794,14 +812,16 @@ GetCertProvisioningIdOnWorkerThread(
     // and to return nullopt |attribute_value| instead.
     int error = PORT_GetError();
     if (error == SEC_ERROR_BAD_DATA) {
-      return std::nullopt;
+      return std::move(callback).Run(std::nullopt);
     } else {
-      return base::unexpected(Error::kFailedToReadAttribute);
+      return std::move(callback).Run(
+          base::unexpected(Error::kFailedToReadAttribute));
     }
   }
 
-  return std::string(cert_prov_attribute->data,
-                     cert_prov_attribute->data + cert_prov_attribute->len);
+  return std::move(callback).Run(
+      std::string(cert_prov_attribute->data,
+                  cert_prov_attribute->data + cert_prov_attribute->len));
 }
 
 void GetTokenInfoOnWorkerThread(crypto::ScopedPK11Slot slot,
@@ -813,12 +833,9 @@ void GetTokenInfoOnWorkerThread(crypto::ScopedPK11Slot slot,
   return std::move(callback).Run(std::move(token_info));
 }
 
-void GetKeyInfoOnWorkerThread(
-    KeyPermissionsAttributeId key_permissions_attribute_id,
-    CertProvisioningIdAttributeId cert_prov_attribute_id,
-    crypto::ScopedPK11Slot slot,
-    PrivateKeyHandle key,
-    Kcer::GetKeyInfoCallback callback) {
+void GetKeyInfoOnWorkerThread(crypto::ScopedPK11Slot slot,
+                              PrivateKeyHandle key,
+                              Kcer::GetKeyInfoCallback callback) {
   KeyInfo key_info;
 
   base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
@@ -853,22 +870,6 @@ void GetKeyInfoOnWorkerThread(
     key_info.nickname = nickname;
     PORT_Free(nickname);
   }
-
-  base::expected<std::optional<chaps::KeyPermissions>, Error> key_permissions =
-      GetKeyPermissionsOnWorkerThread(key_permissions_attribute_id,
-                                      sec_private_key);
-  if (!key_permissions.has_value()) {
-    return std::move(callback).Run(base::unexpected(key_permissions.error()));
-  }
-  key_info.key_permissions = std::move(key_permissions).value();
-
-  base::expected<std::optional<std::string>, Error> cert_prov_id =
-      GetCertProvisioningIdOnWorkerThread(cert_prov_attribute_id,
-                                          sec_private_key);
-  if (!cert_prov_id.has_value()) {
-    return std::move(callback).Run(base::unexpected(cert_prov_id.error()));
-  }
-  key_info.cert_provisioning_profile_id = std::move(cert_prov_id).value();
 
   return std::move(callback).Run(std::move(key_info));
 }
@@ -1326,7 +1327,56 @@ void KcerTokenImplNss::GetKeyInfo(PrivateKeyHandle key,
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&GetKeyInfoOnWorkerThread, GetKeyPermissionsAttributeId(),
+      base::BindOnce(&GetKeyInfoOnWorkerThread,
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(key), std::move(unblocking_callback)));
+}
+
+void KcerTokenImplNss::GetKeyPermissions(
+    PrivateKeyHandle key,
+    Kcer::GetKeyPermissionsCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  } else if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(
+        &KcerTokenImplNss::GetKeyPermissions, weak_factory_.GetWeakPtr(),
+        std::move(key), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&GetKeyPermissionsOnWorkerThread,
+                     GetKeyPermissionsAttributeId(),
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(key), std::move(unblocking_callback)));
+}
+
+void KcerTokenImplNss::GetCertProvisioningProfileId(
+    PrivateKeyHandle key,
+    Kcer::GetCertProvisioningProfileIdCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  } else if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(
+        &KcerTokenImplNss::GetCertProvisioningProfileId,
+        weak_factory_.GetWeakPtr(), std::move(key), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&GetCertProvisioningIdOnWorkerThread,
                      GetCertProvisioningIdAttributeId(),
                      crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
                      std::move(key), std::move(unblocking_callback)));

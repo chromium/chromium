@@ -93,6 +93,11 @@ class COMPONENT_EXPORT(KCER) KcerToken {
   virtual void GetTokenInfo(Kcer::GetTokenInfoCallback callback) = 0;
   virtual void GetKeyInfo(PrivateKeyHandle key,
                           Kcer::GetKeyInfoCallback callback) = 0;
+  virtual void GetKeyPermissions(PrivateKeyHandle key,
+                                 Kcer::GetKeyPermissionsCallback callback) = 0;
+  virtual void GetCertProvisioningProfileId(
+      PrivateKeyHandle key,
+      Kcer::GetCertProvisioningProfileIdCallback callback) = 0;
   virtual void SetKeyNickname(PrivateKeyHandle key,
                               std::string nickname,
                               Kcer::StatusCallback callback) = 0;

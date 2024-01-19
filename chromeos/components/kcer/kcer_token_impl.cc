@@ -1550,6 +1550,22 @@ void KcerTokenImpl::GetKeyInfo(PrivateKeyHandle key,
 
 //==============================================================================
 
+void KcerTokenImpl::GetKeyPermissions(
+    PrivateKeyHandle key,
+    Kcer::GetKeyPermissionsCallback callback) {
+  // TODO(244409232): Implement.
+}
+
+//==============================================================================
+
+void KcerTokenImpl::GetCertProvisioningProfileId(
+    PrivateKeyHandle key,
+    Kcer::GetCertProvisioningProfileIdCallback callback) {
+  // TODO(244409232): Implement.
+}
+
+//==============================================================================
+
 KcerTokenImpl::SetKeyAttributeTask::SetKeyAttributeTask(
     PrivateKeyHandle in_key,
     HighLevelChapsClient::AttributeId in_attribute_id,
