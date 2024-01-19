@@ -119,12 +119,14 @@ void AudioWorkletHandler::Process(uint32_t frames_to_process) {
     return;
   }
 
-  // If the input is not connected, inform the processor with nullptr.
+  // If the input or the output is not connected, inform the processor with
+  // nullptr.
   for (unsigned i = 0; i < NumberOfInputs(); ++i) {
     inputs_[i] = Input(i).IsConnected() ? Input(i).Bus() : nullptr;
   }
   for (unsigned i = 0; i < NumberOfOutputs(); ++i) {
-    outputs_[i] = WrapRefCounted(Output(i).Bus());
+    outputs_[i] = Output(i).RenderingFanOutCount() > 0
+        ? WrapRefCounted(Output(i).Bus()) : nullptr;
   }
 
   for (const auto& param_name : param_value_map_.Keys()) {
