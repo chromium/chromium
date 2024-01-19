@@ -1,0 +1,6 @@
+# UI tests need to know details of the relevant UI under test.
+specific_include_rules = {
+  ".*_uitest\.cc": [
+    "+chrome/browser/ui/views",
+  ],
+}

@@ -46,6 +46,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleBaseView,
                                       kBlockButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleBaseView,
                                       kAllowButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleBaseView,
+                                      kAllowOnceButtonElementId);
 
 PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
     Browser* browser,
@@ -83,13 +85,18 @@ void PermissionPromptBubbleBaseView::CreatePermissionButtons(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
         DISTANCE_BUTTON_VERTICAL));
 
-    auto allow_once_button = std::make_unique<views::MdTextButton>(
-        base::BindRepeating(&PermissionPromptBubbleBaseView::
-                                FilterUnintenedEventsAndRunCallbacks,
-                            base::Unretained(this),
-                            GetViewId(PermissionDialogButton::kAcceptOnce)),
-        l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
-    allow_once_button->SetID(GetViewId(PermissionDialogButton::kAcceptOnce));
+    auto allow_once_button =
+        views::Builder<views::MdTextButton>()
+            .SetText(l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME))
+            .SetCallback(base::BindRepeating(
+                &PermissionPromptBubbleBaseView::
+                    FilterUnintenedEventsAndRunCallbacks,
+                base::Unretained(this),
+                GetViewId(PermissionDialogButton::kAcceptOnce)))
+            .SetID(GetViewId(PermissionDialogButton::kAcceptOnce))
+            .SetProperty(views::kElementIdentifierKey,
+                         kAllowOnceButtonElementId)
+            .Build();
 
     auto allow_always_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(&PermissionPromptBubbleBaseView::
