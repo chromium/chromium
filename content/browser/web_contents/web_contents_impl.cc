@@ -198,7 +198,9 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/android/java_interfaces_impl.h"
 #include "content/browser/android/nfc_host.h"
+#include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
 #include "content/browser/web_contents/web_contents_android.h"
+#include "content/browser/web_contents/web_contents_view_android.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/android/view_android.h"
@@ -10562,6 +10564,16 @@ void WebContentsImpl::UpdateAttributionSupportRenderer() {
         }
       },
       support));
+}
+
+BackForwardTransitionAnimationManager*
+WebContentsImpl::GetBackForwardTransitionAnimationManager() {
+  BackForwardTransitionAnimationManager* manager = nullptr;
+#if BUILDFLAG(IS_ANDROID)
+  manager = static_cast<WebContentsViewAndroid*>(GetView())
+                ->back_forward_animation_manager();
+#endif
+  return manager;
 }
 
 // static

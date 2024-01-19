@@ -3183,6 +3183,8 @@ source_set("browser") {
       "media/session/media_session_android.h",
       "memory/swap_metrics_driver_impl_linux.cc",
       "memory/swap_metrics_driver_impl_linux.h",
+      "navigation_transitions/back_forward_transition_animation_manager_android.cc",
+      "navigation_transitions/back_forward_transition_animation_manager_android.h",
       "navigation_transitions/physics_model.cc",
       "navigation_transitions/physics_model.h",
       "renderer_host/compositor_dependencies_android.cc",
@@ -3246,6 +3248,7 @@ source_set("browser") {
       "//ui/android",
       "//ui/android:ui_android_jni_headers",
       "//ui/compositor",
+      "//ui/gfx/animation/keyframe",
       "//url",
     ]
     if (enable_vulkan) {

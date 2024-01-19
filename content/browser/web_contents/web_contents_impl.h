@@ -901,6 +901,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   network::mojom::AttributionSupport GetAttributionSupport() override;
   void UpdateAttributionSupportRenderer() override;
   static void UpdateAttributionSupportAllRenderers();
+  BackForwardTransitionAnimationManager*
+  GetBackForwardTransitionAnimationManager() override;
 
   void GetMediaCaptureRawDeviceIdsOpened(
       blink::mojom::MediaStreamType type,

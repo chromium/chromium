@@ -96,6 +96,7 @@ class ColorProviderSource;
 
 namespace content {
 
+class BackForwardTransitionAnimationManager;
 class BrowserContext;
 class BrowserPluginGuestDelegate;
 class RenderFrameHost;
@@ -1501,6 +1502,12 @@ class WebContents : public PageNavigator,
   virtual void GetMediaCaptureRawDeviceIdsOpened(
       blink::mojom::MediaStreamType type,
       base::OnceCallback<void(std::vector<std::string>)> callback) = 0;
+
+  // Returns an animation manager that displays a preview of the history page
+  // during a session history navigation gesture. Only non-null if
+  // `features::kBackForwardTransitions` is enabled for the supported platform.
+  virtual BackForwardTransitionAnimationManager*
+  GetBackForwardTransitionAnimationManager() = 0;
 
  private:
   // This interface should only be implemented inside content.

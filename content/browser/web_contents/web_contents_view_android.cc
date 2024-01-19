@@ -22,6 +22,7 @@
 #include "content/browser/android/gesture_listener_manager.h"
 #include "content/browser/android/select_popup.h"
 #include "content/browser/android/selection/selection_popup_controller.h"
+#include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
 #include "content/browser/renderer_host/render_view_host_factory.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
@@ -127,6 +128,12 @@ WebContentsViewAndroid::WebContentsViewAndroid(
   // `rwhva_parent_` is a child layer of `view_`.
   parent_for_web_page_widgets_ = cc::slim::Layer::Create();
   view_.GetLayer()->AddChild(parent_for_web_page_widgets_);
+
+  if (base::FeatureList::IsEnabled(features::kBackForwardTransitions)) {
+    back_forward_animation_manager_ =
+        std::make_unique<BackForwardTransitionAnimationManagerAndroid>(
+            this, &web_contents_->GetController());
+  }
 }
 
 WebContentsViewAndroid::~WebContentsViewAndroid() {
@@ -279,6 +286,14 @@ void WebContentsViewAndroid::RenderViewHostChanged(RenderViewHost* old_host,
     if (rwhv && rwhv->GetNativeView()) {
       static_cast<RenderWidgetHostViewAndroid*>(rwhv)->UpdateNativeViewTree(
           /*parent_native_view=*/nullptr, /*parent_layer=*/nullptr);
+    }
+
+    // Notify `manager` that it should listen to new frame submission
+    // notifications.
+    if (BackForwardTransitionAnimationManagerAndroid* manager =
+            back_forward_animation_manager()) {
+      manager->OnRenderWidgetHostViewSwapped(old_host->GetWidget(),
+                                             new_host->GetWidget());
     }
   }
 
@@ -720,6 +735,11 @@ void WebContentsViewAndroid::AddScreenshotLayerForNavigationTransitions(
 
   view_.GetLayer()->InsertChild(std::move(screenshot_layer),
                                 static_cast<size_t>(index));
+}
+
+BackForwardTransitionAnimationManagerAndroid*
+WebContentsViewAndroid::back_forward_animation_manager() {
+  return back_forward_animation_manager_.get();
 }
 
 } // namespace content

@@ -46,6 +46,7 @@ source_set("browser_sources") {
     "ax_inspect_factory.cc",
     "ax_inspect_factory.h",
     "back_forward_cache.h",
+    "back_forward_transition_animation_manager.h",
     "background_fetch_delegate.cc",
     "background_fetch_delegate.h",
     "background_fetch_description.cc",
