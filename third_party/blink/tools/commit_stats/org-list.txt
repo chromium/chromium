@@ -51,3 +51,4 @@ Broadcom,broadcom.com
 TensorFlow,tensorflow.org
 GNU,gnu.org
 Netflix,netflix.com
+Shopify,shopify.com

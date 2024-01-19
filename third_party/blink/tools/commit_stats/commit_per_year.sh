@@ -27,10 +27,10 @@ botpatterns="chrome-metrics-team+robot@google.com|chrome-release-bot@chromium.or
 
 cd $topdir
 
-declare -A pattern_to_org
+declare -A domain_to_org
 for o in `cat $scriptdir/org-list.txt`; do
   p=(${o//,/ })
-  pattern_to_org["${p[1]}"]=${p[0]}
+  domain_to_org["${p[1]}"]=${p[0]}
 done
 
 function distribution {
@@ -45,12 +45,20 @@ function distribution {
     then
       cd $d
 
-      for pattern in $( \
+      for log_output in $( \
         git log --after="$1-${date}" --before="$2-${date}" \
-          --pretty=format:"%ae" | \
-          grep -Ev ${botpatterns} | awk -F@ '{print $2}'); do
-        if [ -n "${pattern_to_org["$pattern"]}" ]; then
-          echo ${pattern_to_org["$pattern"]}
+          --pretty=format:"%ae@%as" | \
+          grep -Ev ${botpatterns} ); do
+        user=`echo $log_output | awk -F@ '{print $1}'`
+        domain=`echo $log_output | awk -F@ '{print $2}'`
+        date=`echo $log_output | awk -F@ '{print $3}'`
+        email=`echo $user@$domain`
+        affiliation=`$scriptdir/affiliation.py $email $date`
+        if [ $affiliation != "None" ]; then
+          domain=$affiliation
+        fi
+        if [ -n "${domain_to_org["$domain"]}" ]; then
+          echo ${domain_to_org["$domain"]}
         else
           echo Others
         fi
@@ -72,3 +80,5 @@ distribution 2019 2020
 distribution 2020 2021
 distribution 2021 2022
 distribution 2022 2023
+distribution 2023 2024
+distribution 2024 2025
