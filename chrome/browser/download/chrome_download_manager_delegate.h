@@ -204,7 +204,7 @@ class ChromeDownloadManagerDelegate
 #endif
 
   // Returns true if |path| should open in the browser.
-  virtual bool IsOpenInBrowserPreferreredForFile(const base::FilePath& path);
+  virtual bool IsOpenInBrowserPreferredForFile(const base::FilePath& path);
 
  protected:
 #if BUILDFLAG(FULL_SAFE_BROWSING)

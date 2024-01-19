@@ -1659,7 +1659,7 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
                      std::move(callback)));
 }
 
-bool ChromeDownloadManagerDelegate::IsOpenInBrowserPreferreredForFile(
+bool ChromeDownloadManagerDelegate::IsOpenInBrowserPreferredForFile(
     const base::FilePath& path) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)

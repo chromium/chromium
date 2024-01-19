@@ -132,13 +132,13 @@ class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
   ~TestChromeDownloadManagerDelegate() override;
 
   // ChromeDownloadManagerDelegate override:
-  bool IsOpenInBrowserPreferreredForFile(const base::FilePath& path) override;
+  bool IsOpenInBrowserPreferredForFile(const base::FilePath& path) override;
 };
 
 TestChromeDownloadManagerDelegate::~TestChromeDownloadManagerDelegate() =
     default;
 
-bool TestChromeDownloadManagerDelegate::IsOpenInBrowserPreferreredForFile(
+bool TestChromeDownloadManagerDelegate::IsOpenInBrowserPreferredForFile(
     const base::FilePath& path) {
   return true;
 }
