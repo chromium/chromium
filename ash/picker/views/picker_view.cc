@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/bubble/bubble_event_filter.h"
 #include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_category_view.h"
@@ -16,6 +17,7 @@
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
@@ -140,10 +142,17 @@ std::unique_ptr<views::NonClientFrameView> PickerView::CreateNonClientFrameView(
 
 void PickerView::AddedToWidget() {
   session_metrics_.StartRecording(*GetWidget());
+  // `base::Unretained` is safe here because this class owns
+  // `bubble_event_filter_`.
+  bubble_event_filter_ = std::make_unique<BubbleEventFilter>(
+      GetWidget(), /*button=*/nullptr,
+      base::BindRepeating(&PickerView::OnClickOutsideWidget,
+                          base::Unretained(this)));
 }
 
 void PickerView::RemovedFromWidget() {
   session_metrics_.StopRecording();
+  bubble_event_filter_.reset();
 }
 
 void PickerView::StartSearch(const std::u16string& query) {
@@ -179,6 +188,12 @@ void PickerView::SelectCategory(PickerCategory category) {
 
 void PickerView::PublishCategoryResults(const PickerSearchResults& results) {
   category_view_->SetResults(results);
+}
+
+void PickerView::OnClickOutsideWidget() {
+  if (auto* widget = GetWidget()) {
+    widget->Close();
+  }
 }
 
 BEGIN_METADATA(PickerView, views::View)

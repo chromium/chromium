@@ -5,6 +5,7 @@
 #ifndef ASH_PICKER_VIEWS_PICKER_VIEW_H_
 #define ASH_PICKER_VIEWS_PICKER_VIEW_H_
 
+#include <memory>
 #include <optional>
 
 #include "ash/ash_export.h"
@@ -24,6 +25,7 @@ class NonClientFrameView;
 
 namespace ash {
 
+class BubbleEventFilter;
 class PickerContentsView;
 class PickerSearchFieldView;
 class PickerSearchResult;
@@ -92,7 +94,12 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   // Displays `results` in the category view.
   void PublishCategoryResults(const PickerSearchResults& results);
 
+  void OnClickOutsideWidget();
+
   std::optional<PickerCategory> selected_category_;
+
+  // Used to close the Picker widget when the user clicks outside of it.
+  std::unique_ptr<BubbleEventFilter> bubble_event_filter_;
 
   PickerSessionMetrics session_metrics_;
   raw_ptr<PickerViewDelegate> delegate_ = nullptr;
