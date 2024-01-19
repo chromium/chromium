@@ -368,7 +368,6 @@ void ChromeComposeClient::SetMSBBSessionCloseReason(
   }
 
   ComposeSession* active_session = GetSessionForActiveComposeField();
-  open_settings_requested_ = false;
 
   if (active_session) {
     active_session->SetMSBBCloseReason(close_reason);
@@ -382,7 +381,6 @@ void ChromeComposeClient::SetFirstRunSessionCloseReason(
   }
 
   ComposeSession* active_session = GetSessionForActiveComposeField();
-  open_settings_requested_ = false;
 
   if (active_session) {
     active_session->SetFirstRunCloseReason(close_reason);
@@ -396,7 +394,6 @@ void ChromeComposeClient::SetSessionCloseReason(
   }
 
   ComposeSession* active_session = GetSessionForActiveComposeField();
-  open_settings_requested_ = false;
 
   if (active_session) {
     active_session->SetCloseReason(close_reason);
@@ -408,23 +405,8 @@ void ChromeComposeClient::RemoveAllSessions() {
     debug_session_.reset();
   }
 
-  // Since this is being called upon switching tabs we need to not close the
-  // active session in the case where it will be reopened upon return.
-  ComposeSession* active_session = GetSessionForActiveComposeField();
-  open_settings_requested_ = false;
-
-  if (active_session && open_settings_requested_) {
-    for (auto it = sessions_.begin(); it != sessions_.end();) {
-      if (it->first != active_compose_ids_.value().first) {
-        it = sessions_.erase(it);
-      } else {
-        ++it;
-      }
-    }
-  } else {
-    sessions_.erase(sessions_.begin(), sessions_.end());
-    active_compose_ids_.reset();
-  }
+  sessions_.erase(sessions_.begin(), sessions_.end());
+  active_compose_ids_.reset();
 }
 
 ComposeSession* ChromeComposeClient::GetSessionForActiveComposeField() {
@@ -542,7 +524,6 @@ int ChromeComposeClient::GetSessionCountForTest() {
 
 void ChromeComposeClient::OpenFeedbackPageForTest(std::string feedback_id) {
   ComposeSession* active_session = GetSessionForActiveComposeField();
-  open_settings_requested_ = false;
 
   if (active_session) {
     active_session->OpenFeedbackPage(feedback_id);
