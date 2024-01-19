@@ -12,6 +12,7 @@
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
+#include "test_bluetooth_adapter_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
@@ -80,6 +81,11 @@ void TestBluetoothAdapterObserver::Reset() {
   last_gatt_descriptor_id_.clear();
   last_gatt_descriptor_uuid_ = BluetoothUUID();
   last_changed_descriptor_value_.clear();
+}
+
+void TestBluetoothAdapterObserver::set_quit_closure(
+    base::OnceClosure quit_closure) {
+  quit_closure_ = std::move(quit_closure);
 }
 
 void TestBluetoothAdapterObserver::AdapterPresentChanged(
@@ -445,8 +451,10 @@ void TestBluetoothAdapterObserver::
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 void TestBluetoothAdapterObserver::QuitMessageLoop() {
-  if (base::RunLoop::IsRunningOnCurrentThread())
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  // only call closure if set
+  if (!quit_closure_.is_null()) {
+    std::move(quit_closure_).Run();
+  }
 }
 
 }  // namespace device

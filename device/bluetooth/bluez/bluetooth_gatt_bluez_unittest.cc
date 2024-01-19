@@ -298,7 +298,6 @@ class BluetoothGattBlueZTest : public testing::Test {
       std::unique_ptr<BluetoothGattNotifySession> session) {
     ++success_callback_count_;
     update_sessions_.push_back(std::move(session));
-    QuitMessageLoop();
   }
 
   void ServiceErrorCallback(BluetoothGattService::GattErrorCode err) {
@@ -314,10 +313,6 @@ class BluetoothGattBlueZTest : public testing::Test {
   }
 
  protected:
-  void QuitMessageLoop() {
-    if (base::RunLoop::IsRunningOnCurrentThread())
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
-  }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 
@@ -613,6 +608,10 @@ TEST_F(BluetoothGattBlueZTest, ServicesDiscoveredBeforeAdapterIsCreated) {
   adapter_.reset();
   ASSERT_FALSE(device::BluetoothAdapterFactory::HasSharedInstanceForTesting());
 
+  // Create the adapter. This should create all the GATT objects.
+  GetAdapter();
+  TestBluetoothAdapterObserver observer(adapter_);
+
   // Create the fake D-Bus objects.
   fake_bluetooth_device_client_->CreateDevice(
       dbus::ObjectPath(bluez::FakeBluetoothAdapterClient::kAdapterPath),
@@ -623,15 +622,14 @@ TEST_F(BluetoothGattBlueZTest, ServicesDiscoveredBeforeAdapterIsCreated) {
 
   fake_bluetooth_gatt_service_client_->ExposeHeartRateService(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath));
-  while (!fake_bluetooth_gatt_characteristic_client_->IsHeartRateVisible())
+  while (!fake_bluetooth_gatt_characteristic_client_->IsHeartRateVisible()) {
     base::RunLoop().RunUntilIdle();
+  }
   ASSERT_TRUE(fake_bluetooth_gatt_service_client_->IsHeartRateVisible());
   ASSERT_TRUE(fake_bluetooth_gatt_characteristic_client_->IsHeartRateVisible());
 
   properties->services_resolved.ReplaceValue(true);
 
-  // Create the adapter. This should create all the GATT objects.
-  GetAdapter();
 
   BluetoothDevice* device =
       adapter_->GetDevice(bluez::FakeBluetoothDeviceClient::kLowEnergyAddress);
@@ -660,7 +658,11 @@ TEST_F(BluetoothGattBlueZTest, ServicesDiscoveredAfterAdapterIsCreated) {
   fake_bluetooth_gatt_service_client_->ExposeHeartRateService(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath));
   // Run the message loop so that the characteristics/descriptors appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
   properties->services_resolved.ReplaceValue(true);
 
   EXPECT_TRUE(device->IsGattServicesDiscoveryComplete());
@@ -693,7 +695,11 @@ TEST_F(BluetoothGattBlueZTest, ServicesDiscoveredAfterAdapterIsCreated) {
   fake_bluetooth_gatt_service_client_->ExposeHeartRateService(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath));
   // Run the message loop so that the characteristics/descriptors appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
   properties->services_resolved.ReplaceValue(true);
 
   EXPECT_TRUE(device->IsGattServicesDiscoveryComplete());
@@ -718,8 +724,10 @@ TEST_F(BluetoothGattBlueZTest, DiscoverCachedServices) {
 
   fake_bluetooth_gatt_service_client_->ExposeHeartRateService(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath));
-  while (!fake_bluetooth_gatt_characteristic_client_->IsHeartRateVisible())
+  while (!fake_bluetooth_gatt_characteristic_client_->IsHeartRateVisible()) {
     base::RunLoop().RunUntilIdle();
+  }
+
   ASSERT_TRUE(fake_bluetooth_gatt_service_client_->IsHeartRateVisible());
   ASSERT_TRUE(fake_bluetooth_gatt_characteristic_client_->IsHeartRateVisible());
 
@@ -767,8 +775,9 @@ TEST_F(BluetoothGattBlueZTest, DiscoverNewServices) {
   properties->services_resolved.ReplaceValue(false);
   fake_bluetooth_gatt_service_client_->ExposeHeartRateService(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath));
-  while (!fake_bluetooth_gatt_characteristic_client_->IsHeartRateVisible())
+  while (!fake_bluetooth_gatt_characteristic_client_->IsHeartRateVisible()) {
     base::RunLoop().RunUntilIdle();
+  }
   ASSERT_TRUE(fake_bluetooth_gatt_service_client_->IsHeartRateVisible());
   ASSERT_TRUE(fake_bluetooth_gatt_characteristic_client_->IsHeartRateVisible());
 
@@ -807,8 +816,9 @@ TEST_F(BluetoothGattBlueZTest, DiscoverCachedAndNewServices) {
 
   fake_bluetooth_gatt_service_client_->ExposeHeartRateService(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath));
-  while (!fake_bluetooth_gatt_characteristic_client_->IsHeartRateVisible())
+  while (!fake_bluetooth_gatt_characteristic_client_->IsHeartRateVisible()) {
     base::RunLoop().RunUntilIdle();
+  }
   ASSERT_TRUE(fake_bluetooth_gatt_service_client_->IsHeartRateVisible());
   ASSERT_TRUE(fake_bluetooth_gatt_characteristic_client_->IsHeartRateVisible());
 
@@ -875,7 +885,11 @@ TEST_F(BluetoothGattBlueZTest, GattCharacteristicAddedAndRemoved) {
   EXPECT_TRUE(service->GetCharacteristics().empty());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
 
   // 3 characteristics should appear. Only 1 of the characteristics sends
   // value changed signals. Service changed should be fired once for
@@ -941,7 +955,12 @@ TEST_F(BluetoothGattBlueZTest, GattDescriptorAddedAndRemoved) {
   EXPECT_TRUE(service->GetCharacteristics().empty());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
+
   EXPECT_EQ(0, observer.gatt_service_changed_count());
 
   // Only the Heart Rate Measurement characteristic has a descriptor.
@@ -1028,7 +1047,11 @@ TEST_F(BluetoothGattBlueZTest, GattCharacteristicValue) {
   EXPECT_EQ(0, observer.gatt_characteristic_value_changed_count());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
 
   // Issue write request to non-writable characteristics.
   observer.Reset();
@@ -1239,7 +1262,11 @@ TEST_F(BluetoothGattBlueZTest, DeprecatedGattCharacteristicValue) {
   EXPECT_EQ(0, observer.gatt_characteristic_value_changed_count());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
 
   // Issue write request to non-writable characteristics.
   observer.Reset();
@@ -1449,7 +1476,11 @@ TEST_F(BluetoothGattBlueZTest, GattCharacteristicValue_Nested_Read_Read) {
       device->GetGattService(observer.last_gatt_service_id());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
 
   // Obtain readable Body Sensor Location characteristic.
   BluetoothRemoteGattCharacteristic* characteristic =
@@ -1496,7 +1527,11 @@ TEST_F(BluetoothGattBlueZTest, GattCharacteristicValue_Nested_Write_Write) {
       device->GetGattService(observer.last_gatt_service_id());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
 
   // Obtain writable Heart Rate Control Point characteristic.
   BluetoothRemoteGattCharacteristic* characteristic =
@@ -1547,7 +1582,11 @@ TEST_F(BluetoothGattBlueZTest,
       device->GetGattService(observer.last_gatt_service_id());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
 
   // Obtain writable Heart Rate Control Point characteristic.
   BluetoothRemoteGattCharacteristic* characteristic =
@@ -1596,7 +1635,11 @@ TEST_F(BluetoothGattBlueZTest, GattCharacteristicValue_Nested_Read_Write) {
       device->GetGattService(observer.last_gatt_service_id());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
 
   // Obtain readable Body Sensor Location characteristic.
   BluetoothRemoteGattCharacteristic* characteristic =
@@ -1651,7 +1694,11 @@ TEST_F(BluetoothGattBlueZTest,
       device->GetGattService(observer.last_gatt_service_id());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
 
   // Obtain readable Body Sensor Location characteristic.
   BluetoothRemoteGattCharacteristic* characteristic =
@@ -1705,7 +1752,11 @@ TEST_F(BluetoothGattBlueZTest, GattCharacteristicValue_Nested_Write_Read) {
       device->GetGattService(observer.last_gatt_service_id());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
 
   // Obtain writable Heart Rate Control Point characteristic.
   BluetoothRemoteGattCharacteristic* characteristic =
@@ -1759,7 +1810,11 @@ TEST_F(BluetoothGattBlueZTest,
       device->GetGattService(observer.last_gatt_service_id());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
 
   // Obtain writable Heart Rate Control Point characteristic.
   BluetoothRemoteGattCharacteristic* characteristic =
@@ -1811,7 +1866,11 @@ TEST_F(BluetoothGattBlueZTest, GattCharacteristicProperties) {
   EXPECT_TRUE(service->GetCharacteristics().empty());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
 
   BluetoothRemoteGattCharacteristic* characteristic =
       service->GetCharacteristic(fake_bluetooth_gatt_characteristic_client_
@@ -1859,7 +1918,12 @@ TEST_F(BluetoothGattBlueZTest, GattDescriptorValue) {
   EXPECT_TRUE(service->GetCharacteristics().empty());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
+
   EXPECT_EQ(0, observer.gatt_service_changed_count());
 
   // Only the Heart Rate Measurement characteristic has a descriptor.
@@ -1929,12 +1993,17 @@ TEST_F(BluetoothGattBlueZTest, GattDescriptorValue) {
 
   // Start notifications on the descriptor's characteristic. The descriptor
   // value should change.
+  base::RunLoop loop;
   characteristic->StartNotifySession(
-      base::BindOnce(&BluetoothGattBlueZTest::NotifySessionCallback,
-                     base::Unretained(this)),
+      base::BindLambdaForTesting(
+          [&loop, this](std::unique_ptr<BluetoothGattNotifySession> session) {
+            NotifySessionCallback(std::move(session));
+            loop.Quit();
+          }),
       base::BindOnce(&BluetoothGattBlueZTest::ServiceErrorCallback,
                      base::Unretained(this)));
-  base::RunLoop().Run();
+  loop.Run();
+
   EXPECT_EQ(3, success_callback_count_);
   EXPECT_EQ(1, error_callback_count_);
   EXPECT_EQ(1U, update_sessions_.size());
@@ -1974,7 +2043,11 @@ TEST_F(BluetoothGattBlueZTest, NotifySessions) {
   EXPECT_EQ(0, observer.gatt_characteristic_value_changed_count());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
 
   BluetoothRemoteGattCharacteristic* characteristic =
       service->GetCharacteristic(fake_bluetooth_gatt_characteristic_client_
@@ -1983,11 +2056,16 @@ TEST_F(BluetoothGattBlueZTest, NotifySessions) {
   ASSERT_TRUE(characteristic);
   EXPECT_FALSE(characteristic->IsNotifying());
   EXPECT_TRUE(update_sessions_.empty());
-
+  base::RunLoop loop1;
+  base::RunLoop loop2;
+  base::RunLoop loop3;
   // Request to start notifications.
   characteristic->StartNotifySession(
-      base::BindOnce(&BluetoothGattBlueZTest::NotifySessionCallback,
-                     base::Unretained(this)),
+      base::BindLambdaForTesting(
+          [&loop1, this](std::unique_ptr<BluetoothGattNotifySession> session) {
+            NotifySessionCallback(std::move(session));
+            loop1.Quit();
+          }),
       base::BindOnce(&BluetoothGattBlueZTest::ServiceErrorCallback,
                      base::Unretained(this)));
 
@@ -2000,13 +2078,19 @@ TEST_F(BluetoothGattBlueZTest, NotifySessions) {
 
   // Send a two more requests, which should get queued.
   characteristic->StartNotifySession(
-      base::BindOnce(&BluetoothGattBlueZTest::NotifySessionCallback,
-                     base::Unretained(this)),
+      base::BindLambdaForTesting(
+          [&loop2, this](std::unique_ptr<BluetoothGattNotifySession> session) {
+            NotifySessionCallback(std::move(session));
+            loop2.Quit();
+          }),
       base::BindOnce(&BluetoothGattBlueZTest::ServiceErrorCallback,
                      base::Unretained(this)));
   characteristic->StartNotifySession(
-      base::BindOnce(&BluetoothGattBlueZTest::NotifySessionCallback,
-                     base::Unretained(this)),
+      base::BindLambdaForTesting(
+          [&loop3, this](std::unique_ptr<BluetoothGattNotifySession> session) {
+            NotifySessionCallback(std::move(session));
+            loop3.Quit();
+          }),
       base::BindOnce(&BluetoothGattBlueZTest::ServiceErrorCallback,
                      base::Unretained(this)));
   EXPECT_EQ(0, success_callback_count_);
@@ -2017,7 +2101,9 @@ TEST_F(BluetoothGattBlueZTest, NotifySessions) {
 
   // Run the main loop. The initial call should complete. The queued call should
   // succeed immediately.
-  base::RunLoop().Run();
+  loop1.Run();
+  loop2.Run();
+  loop3.Run();
 
   EXPECT_TRUE(characteristic->IsNotifying());
   EXPECT_EQ(3, success_callback_count_);
@@ -2026,7 +2112,12 @@ TEST_F(BluetoothGattBlueZTest, NotifySessions) {
   EXPECT_EQ(3U, update_sessions_.size());
 
   // Notifications should be getting sent regularly now.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
+
   EXPECT_GT(observer.gatt_characteristic_value_changed_count(), 1);
 
   // Stop one of the sessions. The session should become inactive but the
@@ -2037,7 +2128,11 @@ TEST_F(BluetoothGattBlueZTest, NotifySessions) {
                                base::Unretained(this)));
 
   // Run message loop to stop the notify session.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
 
   EXPECT_EQ(4, success_callback_count_);
   EXPECT_EQ(0, error_callback_count_);
@@ -2064,11 +2159,14 @@ TEST_F(BluetoothGattBlueZTest, NotifySessions) {
 
   success_callback_count_ = 0;
   observer.Reset();
-
+  base::RunLoop loop4;
   // Enable notifications again.
   characteristic->StartNotifySession(
-      base::BindOnce(&BluetoothGattBlueZTest::NotifySessionCallback,
-                     base::Unretained(this)),
+      base::BindLambdaForTesting(
+          [&loop4, this](std::unique_ptr<BluetoothGattNotifySession> session) {
+            NotifySessionCallback(std::move(session));
+            loop4.Quit();
+          }),
       base::BindOnce(&BluetoothGattBlueZTest::ServiceErrorCallback,
                      base::Unretained(this)));
   EXPECT_EQ(0, success_callback_count_);
@@ -2078,7 +2176,7 @@ TEST_F(BluetoothGattBlueZTest, NotifySessions) {
   EXPECT_FALSE(characteristic->IsNotifying());
 
   // Run the message loop. Notifications should begin.
-  base::RunLoop().Run();
+  loop4.Run();
 
   EXPECT_EQ(1, success_callback_count_);
   EXPECT_EQ(0, error_callback_count_);
@@ -2088,18 +2186,27 @@ TEST_F(BluetoothGattBlueZTest, NotifySessions) {
   EXPECT_TRUE(characteristic->IsNotifying());
 
   // Check that notifications are happening.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
+
   EXPECT_GT(observer.gatt_characteristic_value_changed_count(), 1);
 
+  base::RunLoop loop5;
   // Request another session. This should return immediately.
   characteristic->StartNotifySession(
-      base::BindOnce(&BluetoothGattBlueZTest::NotifySessionCallback,
-                     base::Unretained(this)),
+      base::BindLambdaForTesting(
+          [&loop5, this](std::unique_ptr<BluetoothGattNotifySession> session) {
+            NotifySessionCallback(std::move(session));
+            loop5.Quit();
+          }),
       base::BindOnce(&BluetoothGattBlueZTest::ServiceErrorCallback,
                      base::Unretained(this)));
 
   // Run message loop to stop the notify session.
-  base::RunLoop().Run();
+  loop5.Run();
 
   EXPECT_EQ(2, success_callback_count_);
   EXPECT_EQ(0, error_callback_count_);
@@ -2137,7 +2244,11 @@ TEST_F(BluetoothGattBlueZTest, NotifySessionsMadeInactive) {
   EXPECT_EQ(0, observer.gatt_characteristic_value_changed_count());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
 
   BluetoothRemoteGattCharacteristic* characteristic =
       service->GetCharacteristic(fake_bluetooth_gatt_characteristic_client_
@@ -2146,26 +2257,41 @@ TEST_F(BluetoothGattBlueZTest, NotifySessionsMadeInactive) {
   ASSERT_TRUE(characteristic);
   EXPECT_FALSE(characteristic->IsNotifying());
   EXPECT_TRUE(update_sessions_.empty());
-
+  base::RunLoop loop1;
   // Send several requests to start notifications.
   characteristic->StartNotifySession(
-      base::BindOnce(&BluetoothGattBlueZTest::NotifySessionCallback,
-                     base::Unretained(this)),
+      base::BindLambdaForTesting(
+          [&loop1, this](std::unique_ptr<BluetoothGattNotifySession> session) {
+            NotifySessionCallback(std::move(session));
+            loop1.Quit();
+          }),
       base::BindOnce(&BluetoothGattBlueZTest::ServiceErrorCallback,
                      base::Unretained(this)));
+  base::RunLoop loop2;
   characteristic->StartNotifySession(
-      base::BindOnce(&BluetoothGattBlueZTest::NotifySessionCallback,
-                     base::Unretained(this)),
+      base::BindLambdaForTesting(
+          [&loop2, this](std::unique_ptr<BluetoothGattNotifySession> session) {
+            NotifySessionCallback(std::move(session));
+            loop2.Quit();
+          }),
       base::BindOnce(&BluetoothGattBlueZTest::ServiceErrorCallback,
                      base::Unretained(this)));
+  base::RunLoop loop3;
   characteristic->StartNotifySession(
-      base::BindOnce(&BluetoothGattBlueZTest::NotifySessionCallback,
-                     base::Unretained(this)),
+      base::BindLambdaForTesting(
+          [&loop3, this](std::unique_ptr<BluetoothGattNotifySession> session) {
+            NotifySessionCallback(std::move(session));
+            loop3.Quit();
+          }),
       base::BindOnce(&BluetoothGattBlueZTest::ServiceErrorCallback,
                      base::Unretained(this)));
+  base::RunLoop loop4;
   characteristic->StartNotifySession(
-      base::BindOnce(&BluetoothGattBlueZTest::NotifySessionCallback,
-                     base::Unretained(this)),
+      base::BindLambdaForTesting(
+          [&loop4, this](std::unique_ptr<BluetoothGattNotifySession> session) {
+            NotifySessionCallback(std::move(session));
+            loop4.Quit();
+          }),
       base::BindOnce(&BluetoothGattBlueZTest::ServiceErrorCallback,
                      base::Unretained(this)));
 
@@ -2179,7 +2305,10 @@ TEST_F(BluetoothGattBlueZTest, NotifySessionsMadeInactive) {
 
   // Run the main loop. The initial call should complete. The queued calls
   // should succeed immediately.
-  base::RunLoop().Run();
+  loop1.Run();
+  loop2.Run();
+  loop3.Run();
+  loop4.Run();
 
   EXPECT_EQ(4, success_callback_count_);
   EXPECT_EQ(0, error_callback_count_);
@@ -2215,14 +2344,22 @@ TEST_F(BluetoothGattBlueZTest, NotifySessionsMadeInactive) {
   update_sessions_.clear();
   success_callback_count_ = 0;
   observer.Reset();
+  base::RunLoop loop5;
   characteristic->StartNotifySession(
-      base::BindOnce(&BluetoothGattBlueZTest::NotifySessionCallback,
-                     base::Unretained(this)),
+      base::BindLambdaForTesting(
+          [&loop5, this](std::unique_ptr<BluetoothGattNotifySession> session) {
+            NotifySessionCallback(std::move(session));
+            loop5.Quit();
+          }),
       base::BindOnce(&BluetoothGattBlueZTest::ServiceErrorCallback,
                      base::Unretained(this)));
 
   // Run message loop to start the notify session.
-  base::RunLoop().RunUntilIdle();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
 
   EXPECT_EQ(0, success_callback_count_);
   EXPECT_EQ(0, error_callback_count_);
@@ -2230,7 +2367,7 @@ TEST_F(BluetoothGattBlueZTest, NotifySessionsMadeInactive) {
   EXPECT_FALSE(characteristic->IsNotifying());
   EXPECT_TRUE(update_sessions_.empty());
 
-  base::RunLoop().Run();
+  loop5.Run();
 
   EXPECT_EQ(1, success_callback_count_);
   EXPECT_EQ(0, error_callback_count_);
@@ -2261,19 +2398,28 @@ TEST_F(BluetoothGattBlueZTest, ReliableWrite) {
       device->GetGattService(observer.last_gatt_service_id());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
 
+  base::RunLoop loop;
   // Request to start notifications.
   service
       ->GetCharacteristic(fake_bluetooth_gatt_characteristic_client_
                               ->GetHeartRateMeasurementPath()
                               .value())
       ->StartNotifySession(
-          base::BindOnce(&BluetoothGattBlueZTest::NotifySessionCallback,
-                         base::Unretained(this)),
+          base::BindLambdaForTesting(
+              [&loop,
+               this](std::unique_ptr<BluetoothGattNotifySession> session) {
+                NotifySessionCallback(std::move(session));
+                loop.Quit();
+              }),
           base::BindOnce(&BluetoothGattBlueZTest::ServiceErrorCallback,
                          base::Unretained(this)));
-  base::RunLoop().Run();
+  loop.Run();
 
   // Obtain writable Heart Rate Control Point characteristic.
   BluetoothRemoteGattCharacteristic* characteristic =
@@ -2355,20 +2501,31 @@ TEST_F(BluetoothGattBlueZTest, NotificationType) {
       device->GetGattService(observer.last_gatt_service_id());
 
   // Run the message loop so that the characteristics appear.
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    observer.set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
+
   BluetoothRemoteGattCharacteristic* characteristic =
       service->GetCharacteristic(fake_bluetooth_gatt_characteristic_client_
                                      ->GetHeartRateMeasurementPath()
                                      .value());
 
   // Request to start notifications.
-  characteristic->StartNotifySession(
-      device::BluetoothGattCharacteristic::NotificationType::kNotification,
-      base::BindOnce(&BluetoothGattBlueZTest::NotifySessionCallback,
-                     base::Unretained(this)),
-      base::BindOnce(&BluetoothGattBlueZTest::ServiceErrorCallback,
-                     base::Unretained(this)));
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    characteristic->StartNotifySession(
+        device::BluetoothGattCharacteristic::NotificationType::kNotification,
+        base::BindLambdaForTesting(
+            [&loop, this](std::unique_ptr<BluetoothGattNotifySession> session) {
+              NotifySessionCallback(std::move(session));
+              loop.Quit();
+            }),
+        base::BindOnce(&BluetoothGattBlueZTest::ServiceErrorCallback,
+                       base::Unretained(this)));
+    loop.Run();
+  }
   EXPECT_EQ(1, observer.gatt_characteristic_value_changed_count());
 
   // Request to start indications.
@@ -2378,13 +2535,19 @@ TEST_F(BluetoothGattBlueZTest, NotificationType) {
                      base::Unretained(this)),
       base::BindOnce(&BluetoothGattBlueZTest::DBusErrorCallback,
                      base::Unretained(this)));
-  characteristic->StartNotifySession(
-      device::BluetoothGattCharacteristic::NotificationType::kIndication,
-      base::BindOnce(&BluetoothGattBlueZTest::NotifySessionCallback,
-                     base::Unretained(this)),
-      base::BindOnce(&BluetoothGattBlueZTest::ServiceErrorCallback,
-                     base::Unretained(this)));
-  base::RunLoop().Run();
+  {
+    base::RunLoop loop;
+    characteristic->StartNotifySession(
+        device::BluetoothGattCharacteristic::NotificationType::kIndication,
+        base::BindLambdaForTesting(
+            [&loop, this](std::unique_ptr<BluetoothGattNotifySession> session) {
+              NotifySessionCallback(std::move(session));
+              loop.Quit();
+            }),
+        base::BindOnce(&BluetoothGattBlueZTest::ServiceErrorCallback,
+                       base::Unretained(this)));
+    loop.Run();
+  }
   EXPECT_EQ(2, observer.gatt_characteristic_value_changed_count());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -2398,10 +2561,13 @@ TEST_F(BluetoothGattBlueZTest, MultipleDevices) {
           dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath));
   properties1->services_resolved.ReplaceValue(false);
 
+  TestBluetoothAdapterObserver observer(adapter_);
+
   fake_bluetooth_gatt_service_client_->ExposeHeartRateService(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath));
-  while (!fake_bluetooth_gatt_characteristic_client_->IsHeartRateVisible())
+  while (!fake_bluetooth_gatt_characteristic_client_->IsHeartRateVisible()) {
     base::RunLoop().RunUntilIdle();
+  }
   ASSERT_TRUE(fake_bluetooth_gatt_service_client_->IsHeartRateVisible());
   ASSERT_TRUE(fake_bluetooth_gatt_characteristic_client_->IsHeartRateVisible());
 
@@ -2424,7 +2590,6 @@ TEST_F(BluetoothGattBlueZTest, MultipleDevices) {
       adapter_->GetDevice(bluez::FakeBluetoothDeviceClient::kDualAddress));
   ASSERT_TRUE(device2);
 
-  TestBluetoothAdapterObserver observer(adapter_);
 
   EXPECT_EQ(0, observer.gatt_discovery_complete_count());
 
