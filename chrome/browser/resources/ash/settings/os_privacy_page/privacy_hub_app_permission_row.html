@@ -56,7 +56,7 @@
   </template>
   <cr-toggle id="permissionToggle"
       checked="[[checked_]]"
-      on-click="onPermissionRowClick_"
+      on-change="onToggleChangeByUser_"
       disabled="[[shouldDisableToggle_]]"
       aria-label="[[getAriaLabel_()]]"
       aria-description="[[ariaDescription_]]">

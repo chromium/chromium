@@ -146,6 +146,35 @@ suite('<settings-privacy-hub-app-permission-row>', () => {
     assertEquals(TriState.kAllow, updatedPermission.value.tristateValue);
   });
 
+  test(
+      'Pressing Enter when toggle selected triggers permission update',
+      async () => {
+        assertEquals(
+            0,
+            metrics.countMetricValue(
+                'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
+                PrivacyHubSensorSubpageUserAction.APP_PERMISSION_CHANGED));
+        assertEquals(
+            PermissionType.kUnknown,
+            fakeHandler.getLastUpdatedPermission().permissionType);
+
+        getPermissionToggle().dispatchEvent(
+            new KeyboardEvent('keydown', {key: 'Enter'}));
+
+        await fakeHandler.whenCalled('setPermission');
+
+        assertEquals(
+            1,
+            metrics.countMetricValue(
+                'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
+                PrivacyHubSensorSubpageUserAction.APP_PERMISSION_CHANGED));
+        const updatedPermission = fakeHandler.getLastUpdatedPermission();
+        assertEquals(
+            permissionType, PermissionType[updatedPermission.permissionType]);
+        assertTrue(isTriStateValue(updatedPermission.value));
+        assertEquals(TriState.kAllow, updatedPermission.value.tristateValue);
+      });
+
   function isPermissionManaged(): boolean {
     const permission = app.permissions[PermissionType[permissionType]];
     assertTrue(!!permission);
