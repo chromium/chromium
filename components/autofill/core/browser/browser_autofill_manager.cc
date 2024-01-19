@@ -137,6 +137,12 @@ namespace {
 
 constexpr size_t kMaxRecentFormSignaturesToRemember = 3;
 
+// The minimum required number of fields for an user perception survey to be
+// triggered. This makes sure that for example forms that only contain a single
+// email field do not prompt a survey. Such survey answer would likely taint
+// our analysis.
+constexpr size_t kMinFormSizeToTriggerUserPerceptionSurvey = 4;
+
 // Time to wait after a dynamic form change before triggering a refill.
 // This is used for sites that change multiple things consecutively.
 constexpr base::TimeDelta kWaitTimeForDynamicForms = base::Milliseconds(200);
@@ -2095,12 +2101,19 @@ void BrowserAutofillManager::OnSubmissionFieldTypesDetermined(
     base::TimeTicks submission_time,
     bool observed_submission,
     ukm::SourceId source_id) {
-  if (submitted_form->GetFormTypes().contains(FormType::kAddressForm) &&
+  size_t address_fields_count = base::ranges::count_if(
+      submitted_form->fields(),
+      [](const std::unique_ptr<AutofillField>& field) {
+        return FieldTypeGroupToFormType(field->Type().group()) ==
+               FormType::kAddressForm;
+      });
+
+  if (address_fields_count >= kMinFormSizeToTriggerUserPerceptionSurvey &&
       base::FeatureList::IsEnabled(
           features::kAutofillAddressUserPerceptionSurvey)) {
     autofill_metrics::FormGroupFillingStats filling_stats =
         autofill_metrics::GetAddressFormFillingStats(*submitted_form);
-    if (filling_stats.TotalFilled() != 0) {
+    if (filling_stats.TotalFilled() > 0) {
       client().TriggerUserPerceptionOfAutofillSurvey(
           AddressFormFillingStatsToSurveyStringData(filling_stats));
     }

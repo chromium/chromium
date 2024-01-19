@@ -400,9 +400,10 @@ autofill_metrics::FormGroupFillingStats GetAddressFormFillingStats(
   autofill_metrics::FormGroupFillingStats address_field_stats;
 
   for (auto& field : form_structure) {
-    CHECK_EQ(FieldTypeGroupToFormType(field->Type().group()),
-             FormType::kAddressForm);
-
+    if (FieldTypeGroupToFormType(field->Type().group()) !=
+        FormType::kAddressForm) {
+      continue;
+    }
     address_field_stats.AddFieldFillingStatus(
         autofill_metrics::GetFieldFillingStatus(*field));
   }

@@ -5661,7 +5661,49 @@ TEST_F(BrowserAutofillManagerTest, FormSubmitted_FormDataImporter) {
 // Test that the user perception of autofill survey is triggered after a form
 // submission.
 TEST_F(BrowserAutofillManagerTest,
-       TriggerUserPerceptionOfAutofillSurveyOnAddressSubmission) {
+       UserPerceptionOfAutofillSurvey_MinFormSizeReached_TriggerSurvey) {
+  base::test::ScopedFeatureList enabled_features(
+      features::kAutofillAddressUserPerceptionSurvey);
+  TestAutofillClock clock(AutofillClock::Now());
+  // Set up a form with 4 fields (minimum form size to trigger a survey) and
+  // fill them. The specific field types do not matter.
+  const size_t n_fields = 4;
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+                  {.role = NAME_LAST, .autocomplete_attribute = "family-name"},
+                  {.role = ADDRESS_HOME_LINE1,
+                   .autocomplete_attribute = "address-line1"},
+                  {.role = ADDRESS_HOME_LINE2,
+                   .autocomplete_attribute = "address-line2"}}});
+  FormsSeen({form});
+  // Fill the form.
+  FormData response_data =
+      FillAutofillFormDataAndGetResults(form, form.fields[0], MakeGuid(1));
+  const std::map<std::string, std::string> expected_field_filling_stats_data = {
+      {"Accepted fields", base::NumberToString(n_fields)},
+      {"Corrected to same type", "0"},
+      {"Corrected to a different type", "0"},
+      {"Corrected to an unknown type", "0"},
+      {"Corrected to empty", "0"},
+      {"Manually filled to same type", "0"},
+      {"Manually filled to a different type", "0"},
+      {"Manually filled to an unknown type", "0"},
+      {"Total corrected", "0"},
+      {"Total filled", base::NumberToString(n_fields)},
+      {"Total unfilled", "0"},
+      {"Total manually filled", "0"},
+      {"Total number of fields", base::NumberToString(n_fields)}};
+
+  EXPECT_CALL(autofill_client_, TriggerUserPerceptionOfAutofillSurvey(
+                                    expected_field_filling_stats_data));
+
+  // Simulate form submission.
+  FormSubmitted(response_data);
+}
+
+TEST_F(
+    BrowserAutofillManagerTest,
+    UserPerceptionOfAutofillSurvey_MinFormSizeNotReached_DoNotTriggerSurvey) {
   base::test::ScopedFeatureList enabled_features(
       features::kAutofillAddressUserPerceptionSurvey);
   TestAutofillClock clock(AutofillClock::Now());
@@ -5673,27 +5715,12 @@ TEST_F(BrowserAutofillManagerTest,
   // Fill the form.
   FormData response_data =
       FillAutofillFormDataAndGetResults(form, form.fields[0], MakeGuid(1));
-  const std::map<std::string, std::string> expected_field_filling_stats_data = {
-      {"Accepted fields", "1"},
-      {"Corrected to same type", "0"},
-      {"Corrected to a different type", "0"},
-      {"Corrected to an unknown type", "0"},
-      {"Corrected to empty", "0"},
-      {"Manually filled to same type", "0"},
-      {"Manually filled to a different type", "0"},
-      {"Manually filled to an unknown type", "0"},
-      {"Total corrected", "0"},
-      {"Total filled", "1"},
-      {"Total unfilled", "0"},
-      {"Total manually filled", "0"},
-      {"Total number of fields", "1"}};
-  EXPECT_CALL(autofill_client_, TriggerUserPerceptionOfAutofillSurvey(
-                                    expected_field_filling_stats_data));
+
+  EXPECT_CALL(autofill_client_, TriggerUserPerceptionOfAutofillSurvey).Times(0);
 
   // Simulate form submission.
   FormSubmitted(response_data);
 }
-
 // Test the field log events at the form submission.
 class BrowserAutofillManagerWithLogEventsTest
     : public BrowserAutofillManagerTest {
