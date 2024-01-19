@@ -4,6 +4,7 @@
 
 #include "base/version.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/manifest_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -109,6 +110,37 @@ TEST_F(SharedModuleManifestTest, Import) {
   EXPECT_EQ(imports[0].minimum_version, "");
   EXPECT_EQ(imports[1].extension_id, kImportId2);
   EXPECT_TRUE(base::Version(imports[1].minimum_version).IsValid());
+  EXPECT_TRUE(
+      SharedModuleInfo::ImportsExtensionById(extension.get(), kImportId1));
+  EXPECT_TRUE(
+      SharedModuleInfo::ImportsExtensionById(extension.get(), kImportId2));
+  EXPECT_FALSE(
+      SharedModuleInfo::ImportsExtensionById(extension.get(), kNoImport));
+}
+
+TEST_F(SharedModuleManifestTest, ImportRepeats) {
+  scoped_refptr<Extension> extension =
+      LoadAndExpectWarnings("shared_module_import_repeats.json",
+                            {"Unrecognized manifest key 'import'.",
+                             manifest_errors::kInvalidImportRepeatedImport});
+
+  EXPECT_FALSE(SharedModuleInfo::IsSharedModule(extension.get()))
+      << extension.get()->name();
+  EXPECT_TRUE(SharedModuleInfo::ImportsModules(extension.get()))
+      << extension.get()->name();
+  const std::vector<SharedModuleInfo::ImportInfo>& imports =
+      SharedModuleInfo::GetImports(extension.get());
+  ASSERT_EQ(4u, imports.size());
+  EXPECT_EQ(imports[0].extension_id, kImportId1);
+  EXPECT_EQ(imports[0].minimum_version, "");
+  EXPECT_EQ(imports[1].extension_id, kImportId2);
+  EXPECT_EQ(imports[1].minimum_version, "");
+  EXPECT_EQ(imports[2].extension_id, kImportId1);
+  EXPECT_EQ(imports[2].minimum_version, "1.0");
+  EXPECT_EQ(imports[3].extension_id, kImportId1);
+  EXPECT_EQ(imports[3].minimum_version, "1.1");
+  EXPECT_TRUE(base::Version(imports[2].minimum_version).IsValid());
+  EXPECT_TRUE(base::Version(imports[3].minimum_version).IsValid());
   EXPECT_TRUE(
       SharedModuleInfo::ImportsExtensionById(extension.get(), kImportId1));
   EXPECT_TRUE(

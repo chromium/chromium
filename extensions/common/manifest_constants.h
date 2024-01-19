@@ -435,6 +435,9 @@ inline constexpr char16_t kInvalidImportAndExport[] =
 inline constexpr char kInvalidImportId[] = "Invalid value for 'import[*].id'.";
 inline constexpr char kInvalidImportVersion[] =
     "Invalid value for 'import[*].minimum_version'.";
+inline constexpr char kInvalidImportRepeatedImport[] =
+    "There are multiple occurences of the same extension ID in 'import'. Only "
+    "one version will be installed.";
 inline constexpr char kInvalidInputComponents[] =
     "Invalid value for 'input_components'";
 inline constexpr char16_t kInvalidInputComponents16[] =
