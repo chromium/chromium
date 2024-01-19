@@ -81,7 +81,8 @@ class MockDownloadManagerDelegate : public DownloadManagerDelegate {
   void GetNextId(DownloadIdCallback cb) override { GetNextId_(cb); }
   MOCK_METHOD1(GetNextId_, void(DownloadIdCallback&));
   MOCK_METHOD2(DetermineDownloadTarget,
-               bool(download::DownloadItem*, DownloadTargetCallback*));
+               bool(download::DownloadItem*,
+                    download::DownloadTargetCallback*));
   MOCK_METHOD1(ShouldOpenFileBasedOnExtension, bool(const base::FilePath&));
   bool ShouldCompleteDownload(download::DownloadItem* item,
                               base::OnceClosure cb) override {
@@ -155,7 +156,7 @@ class MockDownloadItemFactory
       base::Time start_time,
       base::Time end_time,
       const std::string& etag,
-      const std::string& last_modofied,
+      const std::string& last_modified,
       int64_t received_bytes,
       int64_t total_bytes,
       const std::string& hash,
@@ -540,21 +541,14 @@ class DownloadManagerTest : public testing::Test {
   }
 
   void DownloadTargetDeterminedCallback(
-      const base::FilePath& target_path,
-      download::DownloadItem::TargetDisposition disposition,
-      download::DownloadDangerType danger_type,
-      download::DownloadItem::InsecureDownloadStatus insecure_download_status,
-      const base::FilePath& intermediate_path,
-      const base::FilePath& display_name,
-      const std::string& mime_type,
-      download::DownloadInterruptReason interrupt_reason) {
+      download::DownloadTargetInfo target_info) {
     callback_called_ = true;
-    target_path_ = target_path;
-    target_disposition_ = disposition;
-    danger_type_ = danger_type;
-    intermediate_path_ = intermediate_path;
-    mime_type_ = mime_type;
-    interrupt_reason_ = interrupt_reason;
+    target_path_ = target_info.target_path;
+    target_disposition_ = target_info.target_disposition;
+    danger_type_ = target_info.danger_type;
+    intermediate_path_ = target_info.intermediate_path;
+    mime_type_ = target_info.mime_type;
+    interrupt_reason_ = target_info.interrupt_reason;
   }
 
   void DetermineDownloadTarget(download::DownloadItemImpl* item) {
@@ -584,7 +578,7 @@ class DownloadManagerTest : public testing::Test {
   base::WeakPtr<MockDownloadFileFactory> mock_download_file_factory_;
   base::WeakPtr<MockDownloadItemFactory> mock_download_item_factory_;
 
-  // Target detetermined callback.
+  // Target determined callback.
   bool callback_called_;
   base::FilePath target_path_;
   download::DownloadItem::TargetDisposition target_disposition_;

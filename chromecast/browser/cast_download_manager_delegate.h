@@ -26,7 +26,7 @@ class CastDownloadManagerDelegate : public content::DownloadManagerDelegate,
   void GetNextId(content::DownloadIdCallback callback) override;
   bool DetermineDownloadTarget(
       download::DownloadItem* item,
-      content::DownloadTargetCallback* callback) override;
+      download::DownloadTargetCallback* callback) override;
   bool ShouldCompleteDownload(download::DownloadItem* item,
                               base::OnceClosure complete_callback) override;
   bool ShouldOpenDownload(

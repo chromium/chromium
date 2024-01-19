@@ -458,8 +458,6 @@ static_library("browser") {
     "download/download_target_determiner.cc",
     "download/download_target_determiner.h",
     "download/download_target_determiner_delegate.h",
-    "download/download_target_info.cc",
-    "download/download_target_info.h",
     "download/download_ui_controller.cc",
     "download/download_ui_controller.h",
     "download/download_ui_model.cc",

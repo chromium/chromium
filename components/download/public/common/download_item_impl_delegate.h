@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_target_info.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
@@ -44,15 +45,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImplDelegate {
   void Attach();
   void Detach();
 
-  using DownloadTargetCallback = base::OnceCallback<void(
-      const base::FilePath& target_path,
-      DownloadItem::TargetDisposition disposition,
-      DownloadDangerType danger_type,
-      DownloadItem::InsecureDownloadStatus insecure_download_status,
-      const base::FilePath& intermediate_path,
-      const base::FilePath& display_name,
-      const std::string& mime_type,
-      DownloadInterruptReason interrupt_reason)>;
   // Request determination of the download target from the delegate.
   virtual void DetermineDownloadTarget(DownloadItemImpl* download,
                                        DownloadTargetCallback callback);

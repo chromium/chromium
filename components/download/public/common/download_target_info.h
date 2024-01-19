@@ -2,18 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_TARGET_INFO_H_
-#define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_TARGET_INFO_H_
+#ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_TARGET_INFO_H_
+#define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_TARGET_INFO_H_
 
 #include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "components/download/public/common/download_danger_type.h"
+#include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 
-struct DownloadTargetInfo {
+namespace download {
+
+struct COMPONENTS_DOWNLOAD_EXPORT DownloadTargetInfo {
   DownloadTargetInfo();
   ~DownloadTargetInfo();
 
@@ -33,12 +36,14 @@ struct DownloadTargetInfo {
   // |target_path|.
   base::FilePath intermediate_path;
 
-  // Display name of the file.
+  // Display name of the file. If empty, the existing display name of the
+  // download will be kept.
   base::FilePath display_name;
 
   // MIME type based on the file type of the download. This may be different
   // from DownloadItem::GetMimeType() since the latter is based on the server
-  // response, and this one is based on the filename.
+  // response, and this one is based on the filename. If empty, the existing
+  // MIME type will be kept.
   std::string mime_type;
 
   // Whether the |target_path| would be handled safely by the browser if it were
@@ -60,7 +65,7 @@ struct DownloadTargetInfo {
       download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
 
   // Result of the download target determination.
-  download::DownloadInterruptReason result =
+  download::DownloadInterruptReason interrupt_reason =
       download::DOWNLOAD_INTERRUPT_REASON_NONE;
 
   // What sort of blocking should be used if the download is insecure.
@@ -68,4 +73,9 @@ struct DownloadTargetInfo {
       download::DownloadItem::InsecureDownloadStatus::UNKNOWN;
 };
 
-#endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_TARGET_INFO_H_
+// A callback type for functions that want to be provided a DownloadTargetInfo.
+using DownloadTargetCallback = base::OnceCallback<void(DownloadTargetInfo)>;
+
+}  // namespace download
+
+#endif  // COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_TARGET_INFO_H_

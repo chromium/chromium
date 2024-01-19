@@ -31,7 +31,6 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_prompt_status.h"
 #include "chrome/browser/download/download_stats.h"
-#include "chrome/browser/download/download_target_info.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_paths.h"
@@ -39,6 +38,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
+#include "components/download/public/common/download_target_info.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -345,7 +345,7 @@ class DownloadTargetDeterminerTest : public ChromeRenderViewHostTestHarness {
   // Runs |test_case| with |item|. When the DownloadTargetDeterminer is done,
   // returns the resulting DownloadTargetInfo and DangerLevel.
   struct TargetInfoAndDangerLevel {
-    DownloadTargetInfo target_info;
+    download::DownloadTargetInfo target_info;
     safe_browsing::DownloadFileType::DangerLevel danger_level;
   };
   TargetInfoAndDangerLevel RunDownloadTargetDeterminer(
@@ -526,7 +526,7 @@ DownloadTargetDeterminerTest::TargetInfoAndDangerLevel
 DownloadTargetDeterminerTest::RunDownloadTargetDeterminer(
     const base::FilePath& initial_virtual_path,
     download::MockDownloadItem* item) {
-  base::test::TestFuture<DownloadTargetInfo,
+  base::test::TestFuture<download::DownloadTargetInfo,
                          safe_browsing::DownloadFileType::DangerLevel>
       future;
   DownloadTargetDeterminer::Start(

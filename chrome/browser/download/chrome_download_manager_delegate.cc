@@ -323,18 +323,15 @@ void OnDownloadDialogClosed(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void OnCheckExistingDownloadPathDone(DownloadTargetInfo target_info,
-                                     content::DownloadTargetCallback callback,
+void OnCheckExistingDownloadPathDone(download::DownloadTargetInfo target_info,
+                                     download::DownloadTargetCallback callback,
                                      bool file_exists) {
   if (file_exists) {
-    target_info.result = download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED;
+    target_info.interrupt_reason =
+        download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED;
   }
 
-  std::move(callback).Run(
-      target_info.target_path, target_info.target_disposition,
-      target_info.danger_type, target_info.insecure_download_status,
-      target_info.intermediate_path, target_info.display_name,
-      target_info.mime_type, target_info.result);
+  std::move(callback).Run(std::move(target_info));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -342,18 +339,17 @@ void OnCheckExistingDownloadPathDone(DownloadTargetInfo target_info,
 // this infobar's entire life occurs prior to download start.
 void HandleInsecureDownloadInfoBarResult(
     download::DownloadItem* download_item,
-    DownloadTargetInfo target_info,
-    content::DownloadTargetCallback callback,
+    download::DownloadTargetInfo target_info,
+    download::DownloadTargetCallback callback,
     bool should_download) {
   // If the download should be blocked, we can call the callback directly.
   if (!should_download) {
-    std::move(callback).Run(target_info.target_path,
-                            target_info.target_disposition,
-                            download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-                            DownloadItem::InsecureDownloadStatus::SILENT_BLOCK,
-                            target_info.intermediate_path,
-                            target_info.display_name, target_info.mime_type,
-                            download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
+    target_info.danger_type = download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
+    target_info.interrupt_reason =
+        download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED;
+    target_info.insecure_download_status =
+        DownloadItem::InsecureDownloadStatus::SILENT_BLOCK;
+    std::move(callback).Run(std::move(target_info));
     return;
   }
   target_info.insecure_download_status =
@@ -601,7 +597,7 @@ void ChromeDownloadManagerDelegate::ReturnNextId(
 
 bool ChromeDownloadManagerDelegate::DetermineDownloadTarget(
     DownloadItem* download,
-    content::DownloadTargetCallback* callback) {
+    download::DownloadTargetCallback* callback) {
   if (download->GetTargetFilePath().empty() &&
       download->GetMimeType() == kPDFMimeType && !download->HasUserGesture()) {
     ReportPDFLoadStatus(PDFLoadStatus::kTriggeredNoGestureDriveByDownload);
@@ -1383,7 +1379,7 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
     switch (result) {
       case safe_browsing::DownloadCheckResult::UNKNOWN:
       case safe_browsing::DownloadCheckResult::SAFE:
-        // For DANGEROUS file types, we still want to warng the user, even if
+        // For DANGEROUS file types, we still want to warn the user, even if
         // Safe Browsing is unsure about the file.
         if (DownloadItemModel(item).GetDangerLevel() ==
             DownloadFileType::DANGEROUS) {
@@ -1550,7 +1546,7 @@ void ChromeDownloadManagerDelegate::CheckSavePackageScanningDone(
 
   // RunSavePackageScanningCallback is called after OnAsyncScanningCompleted or
   // OnContentCheckCompleted so that the package completes correctly after a
-  // scanning-specific UI has been applie to `item`.
+  // scanning-specific UI has been applied to `item`.
   switch (result) {
     // These results imply the scanning is either not done or that the Save
     // Package being allowed/blocked depends on user action following a
@@ -1606,8 +1602,8 @@ void ChromeDownloadManagerDelegate::OnInstallerDone(
 
 void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
     uint32_t download_id,
-    content::DownloadTargetCallback callback,
-    DownloadTargetInfo target_info,
+    download::DownloadTargetCallback callback,
+    download::DownloadTargetInfo target_info,
     safe_browsing::DownloadFileType::DangerLevel danger_level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DownloadItem* item = download_manager_->GetDownload(download_id);
@@ -1621,7 +1617,8 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
     MaybeReportDangerousDownloadBlocked(
         download_prefs_->download_restriction(), "DANGEROUS_FILE_TYPE",
         target_info.target_path.AsUTF8Unsafe(), item);
-    target_info.result = download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED;
+    target_info.interrupt_reason =
+        download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED;
     // A dangerous type would take precedence over the blocking of the file.
     target_info.danger_type = download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
   }
@@ -1635,7 +1632,8 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
   // shown in parallel with the download. Those warnings don't exist for
   // Android, so for simplicity we prompt before starting the download instead.
   auto ids = target_info.insecure_download_status;
-  if (target_info.result == download::DOWNLOAD_INTERRUPT_REASON_NONE &&
+  if (target_info.interrupt_reason ==
+          download::DOWNLOAD_INTERRUPT_REASON_NONE &&
       (ids == download::DownloadItem::InsecureDownloadStatus::BLOCK ||
        ids == download::DownloadItem::InsecureDownloadStatus::WARN)) {
     auto* web_contents = content::DownloadItemUtils::GetWebContents(item);
@@ -1744,7 +1742,7 @@ bool ChromeDownloadManagerDelegate::ShouldBlockFile(
       return true;
 
     default:
-      LOG(ERROR) << "Invalid download restruction value: "
+      LOG(ERROR) << "Invalid download restriction value: "
                  << static_cast<int>(download_restriction);
   }
 
@@ -1904,7 +1902,7 @@ bool ChromeDownloadManagerDelegate::IsFromExternalApp(
 
   return false;
 }
-#endif  // BUILDFLAG(IS_ANRDOID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 ChromeDownloadManagerDelegate::SafeBrowsingState::~SafeBrowsingState() {}

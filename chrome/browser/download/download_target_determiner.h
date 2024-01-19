@@ -15,10 +15,10 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_target_determiner_delegate.h"
-#include "chrome/browser/download/download_target_info.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
+#include "components/download/public/common/download_target_info.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -81,7 +81,7 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   //       SafeBrowsing may flag the file as being malicious, in which case the
   //       malicious classification should take precedence.
   using CompletionCallback = base::OnceCallback<void(
-      DownloadTargetInfo target_info,
+      download::DownloadTargetInfo target_info,
       safe_browsing::DownloadFileType::DangerLevel danger_level)>;
 
   DownloadTargetDeterminer(const DownloadTargetDeterminer&) = delete;

@@ -31,6 +31,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_target_info.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
@@ -1108,19 +1109,19 @@ void DownloadTargetDeterminer::ScheduleCallbackAndDeleteSelf(
             << " Danger type:" << danger_type_
             << " Danger level:" << danger_level_
             << " Result:" << static_cast<int>(result);
-  DownloadTargetInfo target_info;
+  download::DownloadTargetInfo target_info;
 
   target_info.target_path = local_path_;
-  target_info.result = result;
+  target_info.intermediate_path = intermediate_path_;
+  target_info.mime_type = mime_type_;
+  target_info.is_filetype_handled_safely = is_filetype_handled_safely_;
   target_info.target_disposition =
       (HasPromptedForPath() ||
                confirmation_reason_ != DownloadConfirmationReason::NONE
            ? DownloadItem::TARGET_DISPOSITION_PROMPT
            : DownloadItem::TARGET_DISPOSITION_OVERWRITE);
   target_info.danger_type = danger_type_;
-  target_info.intermediate_path = intermediate_path_;
-  target_info.mime_type = mime_type_;
-  target_info.is_filetype_handled_safely = is_filetype_handled_safely_;
+  target_info.interrupt_reason = result;
   target_info.insecure_download_status = insecure_download_status_;
 #if BUILDFLAG(IS_ANDROID)
   // If |virtual_path_| is content URI, there is no need to prompt the user.

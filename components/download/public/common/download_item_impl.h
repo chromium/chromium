@@ -25,6 +25,7 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_job.h"
+#include "components/download/public/common/download_target_info.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/resume_mode.h"
 #include "components/download/public/common/url_loader_factory_provider.h"
@@ -67,7 +68,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
                 int64_t range_request_from,
                 int64_t range_request_to);
     RequestInfo();
-    explicit RequestInfo(const RequestInfo& other);
+    RequestInfo(const RequestInfo& other);
     explicit RequestInfo(const GURL& url);
     ~RequestInfo();
 
@@ -101,7 +102,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
     // the target path.
     base::FilePath forced_file_path;
 
-    // Page transition that triggerred the download.
+    // Page transition that triggered the download.
     ui::PageTransition transition_type = ui::PAGE_TRANSITION_LINK;
 
     // Whether the download was triggered with a user gesture.
@@ -136,7 +137,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
                     base::Time end_time);
     DestinationInfo();
     explicit DestinationInfo(TargetDisposition target_disposition);
-    explicit DestinationInfo(const DestinationInfo& other);
+    DestinationInfo(const DestinationInfo& other);
     ~DestinationInfo();
 
     // Whether the target should be overwritten, uniquified or prompted for.
@@ -462,7 +463,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
     // Embedder is in the process of determining the target of the download, and
     // the download is in an interrupted state. The interrupted state is not
-    // exposed to the emedder until target determination is complete.
+    // exposed to the embedder until target determination is complete.
     //
     // Transitions to (regular):
     //   INTERRUPTED_INTERNAL:    Once the target is determined, the download
@@ -587,22 +588,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // to be called when the target information is available.
   void DetermineDownloadTarget();
 
-  // Called when the target path has been determined. |target_path| is the
-  // suggested target path. |disposition| indicates how the target path should
-  // be used (see TargetDisposition). |danger_type| is the danger level of
-  // |target_path| as determined by the caller. |intermediate_path| is the path
-  // to use to store the download until OnDownloadCompleting() is called.
-  // If |display_name| is empty, the download should keep its current display
-  // name. Otherwise, the new display name should be used.
-  virtual void OnDownloadTargetDetermined(
-      const base::FilePath& target_path,
-      TargetDisposition disposition,
-      DownloadDangerType danger_type,
-      InsecureDownloadStatus insecure_download_status,
-      const base::FilePath& intermediate_path,
-      const base::FilePath& display_name,
-      const std::string& mime_type,
-      DownloadInterruptReason interrupt_reason);
+  // Called when the target path has been determined.
+  virtual void OnDownloadTargetDetermined(DownloadTargetInfo target_info);
 
   void OnDownloadRenamedToIntermediateName(DownloadInterruptReason reason,
                                            const base::FilePath& full_path);
@@ -637,8 +624,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // be restarted.
   void InterruptAndDiscardPartialState(DownloadInterruptReason reason);
 
-  // Indiates that an error has occurred on the download. The |bytes_so_far| and
-  // |hash_state| should correspond to the state of the DownloadFile. If the
+  // Indicates that an error has occurred on the download. The |bytes_so_far|
+  // and |hash_state| should correspond to the state of the DownloadFile. If the
   // interrupt reason allows, this partial state may be allowed to continue the
   // interrupted download upon resumption.
   void InterruptWithPartialState(int64_t bytes_so_far,
@@ -791,7 +778,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // True if the item was downloaded temporarily.
   bool is_temporary_ = false;
 
-  // True if the item was explicity paused by the user. This should be checked
+  // True if the item was explicitly paused by the user. This should be checked
   // in conjunction with the download state to determine whether the download
   // was truly paused.
   bool paused_ = false;

@@ -72,9 +72,15 @@ class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
 
   bool DetermineDownloadTarget(
       download::DownloadItem* item,
-      content::DownloadTargetCallback* callback) override {
-    content::DownloadTargetCallback dangerous_callback = base::BindOnce(
-        &TestDownloadManagerDelegate::SetDangerous, std::move(*callback));
+      download::DownloadTargetCallback* callback) override {
+    auto set_dangerous = [](download::DownloadTargetCallback callback,
+                            download::DownloadTargetInfo target_info) {
+      target_info.danger_type = download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL;
+      std::move(callback).Run(std::move(target_info));
+    };
+
+    download::DownloadTargetCallback dangerous_callback =
+        base::BindOnce(set_dangerous, std::move(*callback));
     bool run = ChromeDownloadManagerDelegate::DetermineDownloadTarget(
         item, &dangerous_callback);
     // ChromeDownloadManagerDelegate::DetermineDownloadTarget() needs to run the
@@ -82,20 +88,6 @@ class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
     DCHECK(run);
     DCHECK(!dangerous_callback);
     return true;
-  }
-
-  static void SetDangerous(content::DownloadTargetCallback callback,
-                           const base::FilePath& target_path,
-                           download::DownloadItem::TargetDisposition disp,
-                           download::DownloadDangerType danger_type,
-                           download::DownloadItem::InsecureDownloadStatus ids,
-                           const base::FilePath& intermediate_path,
-                           const base::FilePath& display_name,
-                           const std::string& mime_type,
-                           download::DownloadInterruptReason reason) {
-    std::move(callback).Run(target_path, disp,
-                            download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL, ids,
-                            intermediate_path, display_name, mime_type, reason);
   }
 };
 

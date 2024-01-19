@@ -10,6 +10,7 @@
 #include "components/download/public/common/auto_resumption_handler.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item_impl.h"
+#include "components/download/public/common/download_target_info.h"
 
 namespace download {
 
@@ -33,12 +34,11 @@ void DownloadItemImplDelegate::Detach() {
 void DownloadItemImplDelegate::DetermineDownloadTarget(
     DownloadItemImpl* download,
     DownloadTargetCallback callback) {
-  base::FilePath target_path(download->GetForcedFilePath());
-  std::move(callback).Run(
-      target_path, DownloadItem::TARGET_DISPOSITION_OVERWRITE,
-      DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-      DownloadItem::InsecureDownloadStatus::UNKNOWN, target_path,
-      base::FilePath(), std::string(), DOWNLOAD_INTERRUPT_REASON_NONE);
+  DownloadTargetInfo target_info;
+  target_info.target_path = download->GetForcedFilePath();
+  target_info.intermediate_path = download->GetForcedFilePath();
+
+  std::move(callback).Run(std::move(target_info));
 }
 
 bool DownloadItemImplDelegate::ShouldCompleteDownload(

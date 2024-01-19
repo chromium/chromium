@@ -1712,31 +1712,26 @@ void DownloadItemImpl::DetermineDownloadTarget() {
 
 // Called by delegate_ when the download target path has been determined.
 void DownloadItemImpl::OnDownloadTargetDetermined(
-    const base::FilePath& target_path,
-    TargetDisposition disposition,
-    DownloadDangerType danger_type,
-    InsecureDownloadStatus insecure_download_status,
-    const base::FilePath& intermediate_path,
-    const base::FilePath& display_name,
-    const std::string& mime_type,
-    DownloadInterruptReason interrupt_reason) {
+    DownloadTargetInfo target_info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (state_ == CANCELLED_INTERNAL)
     return;
 
   DCHECK(state_ == TARGET_PENDING_INTERNAL ||
          state_ == INTERRUPTED_TARGET_PENDING_INTERNAL);
-  DVLOG(20) << __func__ << "() target_path:" << target_path.value()
-            << " intermediate_path:" << intermediate_path.value()
-            << " disposition:" << disposition << " danger_type:" << danger_type
+  DVLOG(20) << __func__ << "() target_path:" << target_info.target_path.value()
+            << " intermediate_path:" << target_info.intermediate_path.value()
+            << " disposition:" << target_info.target_disposition
+            << " danger_type:" << target_info.danger_type
             << " interrupt_reason:"
-            << DownloadInterruptReasonToString(interrupt_reason)
+            << DownloadInterruptReasonToString(target_info.interrupt_reason)
             << " this:" << DebugString(true);
 
   RecordDownloadCountWithSource(DOWNLOAD_TARGET_DETERMINED_COUNT,
                                 download_source_);
 
-  if (IsCancellation(interrupt_reason) || target_path.empty()) {
+  if (IsCancellation(target_info.interrupt_reason) ||
+      target_info.target_path.empty()) {
     Cancel(true);
     return;
   }
@@ -1747,21 +1742,23 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
   // intermediate rename. In the case of a new download, we'll lose the partial
   // data that may have been downloaded, but that should be a small loss.
   if (state_ == TARGET_PENDING_INTERNAL &&
-      interrupt_reason != DOWNLOAD_INTERRUPT_REASON_NONE) {
-    deferred_interrupt_reason_ = interrupt_reason;
+      target_info.interrupt_reason != DOWNLOAD_INTERRUPT_REASON_NONE) {
+    deferred_interrupt_reason_ = target_info.interrupt_reason;
     TransitionTo(INTERRUPTED_TARGET_PENDING_INTERNAL);
     OnTargetResolved();
     return;
   }
 
-  destination_info_.target_path = target_path;
-  destination_info_.target_disposition = disposition;
-  SetDangerType(danger_type);
-  insecure_download_status_ = insecure_download_status;
-  if (!display_name.empty())
-    SetDisplayName(display_name);
-  if (!mime_type.empty())
-    mime_type_ = mime_type;
+  destination_info_.target_path = target_info.target_path;
+  destination_info_.target_disposition = target_info.target_disposition;
+  SetDangerType(target_info.danger_type);
+  insecure_download_status_ = target_info.insecure_download_status;
+  if (!target_info.display_name.empty()) {
+    SetDisplayName(target_info.display_name);
+  }
+  if (!target_info.mime_type.empty()) {
+    mime_type_ = target_info.mime_type;
+  }
 
   // This was an interrupted download that was looking for a filename. Resolve
   // early without performing the intermediate rename. If there is a
@@ -1775,7 +1772,8 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
   // We want the intermediate and target paths to refer to the same directory so
   // that they are both on the same device and subject to same
   // space/permission/availability constraints.
-  DCHECK(intermediate_path.DirName() == target_path.DirName());
+  DCHECK(target_info.intermediate_path.DirName() ==
+         target_info.target_path.DirName());
 
   // During resumption, we may choose to proceed with the same intermediate
   // file. No rename is necessary if our intermediate file already has the
@@ -1784,9 +1782,9 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
   // The intermediate name may change from its original value during filename
   // determination on resumption, for example if the reason for the interruption
   // was the download target running out space, resulting in a user prompt.
-  if (intermediate_path == GetFullPath()) {
+  if (target_info.intermediate_path == GetFullPath()) {
     OnDownloadRenamedToIntermediateName(DOWNLOAD_INTERRUPT_REASON_NONE,
-                                        intermediate_path);
+                                        target_info.intermediate_path);
     return;
   }
 
@@ -1802,7 +1800,7 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
       base::BindOnce(
           &DownloadFile::RenameAndUniquify,
           // Safe because we control download file lifetime.
-          base::Unretained(download_file_.get()), intermediate_path,
+          base::Unretained(download_file_.get()), target_info.intermediate_path,
           base::BindOnce(&DownloadItemImpl::OnDownloadRenamedToIntermediateName,
                          weak_ptr_factory_.GetWeakPtr())));
 }
