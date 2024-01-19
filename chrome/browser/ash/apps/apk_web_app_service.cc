@@ -491,6 +491,10 @@ void ApkWebAppService::OnWebAppProviderBridgeConnected() {
   SyncArcAndWebApps();
 }
 
+void ApkWebAppService::OnWebAppServiceAshDestroyed() {
+  web_app_service_observer_.Reset();
+}
+
 void ApkWebAppService::MaybeRemoveArcPackageForWebApp(
     const webapps::AppId& web_app_id) {
   std::optional<std::string> package_name = GetPackageNameForWebApp(web_app_id);

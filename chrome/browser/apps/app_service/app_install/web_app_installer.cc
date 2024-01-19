@@ -137,6 +137,10 @@ void WebAppInstaller::OnWebAppProviderBridgeConnected() {
   InstallAllAppsWhenReady();
 }
 
+void WebAppInstaller::OnWebAppServiceAshDestroyed() {
+  web_app_service_observer_.Reset();
+}
+
 void WebAppInstaller::InstallAllAppsWhenReady() {
   if (!requests_for_installation_.has_value()) {
     return;

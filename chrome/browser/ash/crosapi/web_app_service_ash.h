@@ -26,6 +26,7 @@ class WebAppServiceAsh : public crosapi::mojom::WebAppService {
    public:
     virtual void OnWebAppProviderBridgeConnected() {}
     virtual void OnWebAppProviderBridgeDisconnected() {}
+    virtual void OnWebAppServiceAshDestroyed() = 0;
   };
 
   WebAppServiceAsh();

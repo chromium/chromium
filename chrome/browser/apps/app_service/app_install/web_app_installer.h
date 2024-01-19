@@ -72,6 +72,7 @@ class WebAppInstaller : public crosapi::WebAppServiceAsh::Observer {
  private:
   // croapi::WebAppServiceAsh::Observer overrides:
   void OnWebAppProviderBridgeConnected() override;
+  void OnWebAppServiceAshDestroyed() override;
 
   // Called when the environment is ready to perform app installation. When
   // lacros is enabled, this means lacros is ready. In ash, this means the
