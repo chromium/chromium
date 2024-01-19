@@ -6753,3 +6753,4 @@ crbug.com/1511285 [ Mac12-arm64 ] virtual/force-eager/external/wpt/measure-memor
 crbug.com/1511285 [ Mac11 ] virtual/force-eager/external/wpt/measure-memory/redirect.server.https.window.html [ Skip Timeout ]
 crbug.com/1511285 [ Mac11-arm64 ] virtual/force-eager/external/wpt/measure-memory/redirect.server.https.window.html [ Skip Timeout ]
 crbug.com/1511285 [ Linux ] virtual/force-eager/external/wpt/measure-memory/redirect.server.https.window.html [ Skip Timeout ]
+crbug.com/1518938 [ Linux ] http/tests/devtools/resource-tree/resource-tree-non-unique-url.js [ Failure Pass ]
