@@ -27,18 +27,35 @@ jobs:
     name: Build WebDriverBidi types
     runs-on: ubuntu-latest
     steps:
-      - name: Check out spec repository
+      - name: Check out the main spec repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           repository: ${{ github.event.inputs.repository || 'w3c/webdriver-bidi' }}
           ref: ${{ github.event.inputs.source_ref || 'main' }}
+          path: webdriver-bidi
+      - name: Check out w3c/permissions spec repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          repository: w3c/permissions
+          ref: main
+          path: permissions
       - name: Generate WebDriverBidi CDDL
         run: ./scripts/test.sh
+        working-directory: webdriver-bidi
       - name: Upload WebDriverBidi CDDL
         uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
         with:
           name: all-cddl
-          path: all.cddl
+          path: webdriver-bidi/all.cddl
+      - name: Generate WebDriverBidi CDDL for Permissions
+        run: ../webdriver-bidi/scripts/cddl/generate.js ./index.html && mv all.cddl permissions.cddl
+        working-directory: permissions
+      - name: Upload WebDriverBidi CDDL for Permissions
+        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+        with:
+          name: permissions-cddl
+          path: permissions/permissions.cddl
+
   pr:
     name: Send PR
     needs: build
@@ -65,8 +82,14 @@ jobs:
         uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
         with:
           name: all-cddl
-      - name: Generate TypeScript types
+      - name: Download WebDriverBidi CDDL for Permissions
+        uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+        with:
+          name: permissions.cddl
+      - name: Generate TypeScript types for the main spec
         run: npm run bidi-types -- --cddl-file all.cddl
+      - name: Generate TypeScript types for Permissions spec
+        run: npm run bidi-types -- --cddl-file permissions.cddl --ts-file src/protocol/generated/webdriver-bidi-permissions.ts --zod-file src/protocol-parser/generated/webdriver-bidi-permissions.ts
       # Needed for `npm run format`.
       - name: Install pre-commit
         uses: pre-commit/action@646c83fcd040023954eafda54b4db0192ce70507 #v3.0.0
