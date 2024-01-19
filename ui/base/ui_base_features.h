@@ -57,7 +57,6 @@ BASE_DECLARE_FEATURE(kInputPaneOnScreenKeyboard);
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kPointerEventsForTouch);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kScreenPowerListenerForNativeWinOcclusion);
-COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kTSFImeSupport);
 
 // Returns true if the system should use WM_POINTER events for touch events.
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsUsingWMPointerForTouch();
