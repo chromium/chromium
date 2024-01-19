@@ -1,5 +1,8 @@
 Need tests for (likely not a complete list):
 
+* Test biddingLogicURL passed to generateBid.
+* Test empty ads array:
+   Maybe simplest to test its numBids is empty?  Hard to test a script isn't run.
 * directFromSellerSignals.
     * The expected order when both responses use the same ad slot is currently
         undefined. However, we are in the process of resolving this matter by

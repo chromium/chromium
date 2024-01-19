@@ -13,13 +13,34 @@
 // META: variant=?36-40
 // META: variant=?41-45
 // META: variant=?46-50
-// META: variant=?51-last
+// META: variant=?51-55
+// META: variant=?56-60
+// META: variant=?61-65
+// META: variant=?66-70
+// META: variant=?71-75
+// META: variant=?76-last
 
 "use strict;"
 
 // These tests focus on making sure InterestGroup fields are passed to generateBid(),
 // and are normalized if necessary. This test does not check the behaviors of the
 // fields.
+
+// Modifies "ads". Replaces "REPLACE_WITH_UUID" in all "renderURL" or "renderUrl"
+// fields of objects in "ads" array with "uuid". Generated ad URLs have embedded
+// UUIDs to prevent InterestGroups unexpectedly left over from one test from
+// messing up another test, but these tests need ad URLs before the UUID is
+// generated. To get around that, "REPLACE_WITH_UUID" is used in place of UUIDs
+// and then this is used to replace them with the real UUID.
+function updateAdRenderURLs(ads, uuid) {
+  for (let i = 0; i < ads.length; ++i) {
+    let ad = ads[i];
+    if (ad.renderURL)
+      ad.renderURL = ad.renderURL.replace('REPLACE_WITH_UUID', uuid);
+    if (ad.renderUrl)
+      ad.renderUrl = ad.renderUrl.replace('REPLACE_WITH_UUID', uuid);
+  }
+}
 
 const makeTest = ({
   // Test name.
@@ -39,6 +60,19 @@ const makeTest = ({
   subsetTest(promise_test, async test => {
     const uuid = generateUuid(test);
 
+    // It's not strictly necessary to replace UUIDs in "adComponents", but do it for consistency.
+    if (fieldName === 'ads' || fieldName === 'adComponents' && fieldValue) {
+      updateAdRenderURLs(fieldValue, uuid);
+    }
+
+    if (interestGroupOverrides.ads) {
+      updateAdRenderURLs(interestGroupOverrides.ads, uuid);
+    }
+
+    if (interestGroupOverrides.adComponents) {
+      updateAdRenderURLs(interestGroupOverrides.adComponents, uuid);
+    }
+
     if (!(fieldName in interestGroupOverrides) && fieldValue !== undefined)
       interestGroupOverrides[fieldName] = fieldValue;
 
@@ -53,12 +87,22 @@ const makeTest = ({
     if (interestGroupOverrides.owner)
       origin = new URL(interestGroupOverrides.owner).origin;
 
-    interestGroupOverrides.biddingLogicURL =
+      interestGroupOverrides.biddingLogicURL =
       createBiddingScriptURL(
           { origin: origin,
             generateBid:
-                `if (!${comparison})
-                  throw "Unexpected value: " + JSON.stringify(interestGroup["${fieldName}"]);`
+                `// Delete deprecated "renderUrl" fields from ads and adComponents, if
+                 // present.
+                 for (let field in interestGroup) {
+                   if (field == "ads" || field == "adComponents") {
+                     for (let i = 0; i < interestGroup[field].length; ++i) {
+                       let ad = interestGroup[field][i];
+                       delete ad.renderUrl;
+                     }
+                   }
+                 }
+                 if (!${comparison})
+                   throw "Unexpected value: " + JSON.stringify(interestGroup["${fieldName}"]);`
           });
     if (origin !== location.origin) {
       await joinCrossOriginInterestGroup(test, uuid, origin, interestGroupOverrides);
@@ -451,4 +495,169 @@ makeTest({
   fieldName: 'nonStandardField',
   fieldValue: undefined,
   interestGroupOverrides: {nonStandardField: 'This value should not be passed to worklets'}
+});
+
+// Note that all ad tests have a deprecated "renderUrl" field passed to generateBid.
+
+// Ad URLs need the right UUID for seller scripts to accept their bids. Since UUID changes
+// for each test, and is not available outside makeTest(), have to use string that will
+// be replaced with the real UUID.
+const AD1_URL = createRenderURL('REPLACE_WITH_UUID', /*script=*/';');
+const AD2_URL = createRenderURL('REPLACE_WITH_UUID', /*script=*/';;');
+
+makeTest({
+  name: 'InterestGroup.ads with one ad.',
+  fieldName: 'ads',
+  fieldValue: [{renderURL: AD1_URL}]
+});
+
+makeTest({
+  name: 'InterestGroup.ads one ad with metadata object.',
+  fieldName: 'ads',
+  fieldValue: [{renderURL: AD1_URL, metadata: {foo: 1, bar: [2, 3], baz: '4'}}]
+});
+
+makeTest({
+  name: 'InterestGroup.ads one ad with metadata string.',
+  fieldName: 'ads',
+  fieldValue: [{renderURL: AD1_URL, metadata: 'foo'}]
+});
+
+makeTest({
+  name: 'InterestGroup.ads one ad with null metadata.',
+  fieldName: 'ads',
+  fieldValue: [{renderURL: AD1_URL, metadata: null}]
+});
+
+makeTest({
+  name: 'InterestGroup.ads one ad with adRenderId. This field should not be passed to generateBid.',
+  fieldName: 'ads',
+  fieldValue: [{renderURL: AD1_URL}],
+  interestGroupOverrides: {ads: [{renderURL: AD1_URL, adRenderId: 'twelve chars'}]}
+});
+
+makeTest({
+  name: 'InterestGroup.ads one ad with buyerAndSellerReportingId. This field should not be passed to generateBid.',
+  fieldName: 'ads',
+  fieldValue: [{renderURL: AD1_URL}],
+  interestGroupOverrides: {ads: [{renderURL: AD1_URL,
+                                  buyerAndSellerReportingId: 'Arbitrary text'}]}
+});
+
+makeTest({
+  name: 'InterestGroup.ads one ad with buyerReportingId. This field should not be passed to generateBid.',
+  fieldName: 'ads',
+  fieldValue: [{renderURL: AD1_URL}],
+  interestGroupOverrides: {ads: [{renderURL: AD1_URL,
+                                  buyerReportingId: 'Arbitrary text'}]}
+});
+
+makeTest({
+  name: 'InterestGroup.ads one ad with novel field. This field should not be passed to generateBid.',
+  fieldName: 'ads',
+  fieldValue: [{renderURL: AD1_URL}],
+  interestGroupOverrides: {ads: [{renderURL: AD1_URL, novelField: 'Foo'}]}
+});
+
+makeTest({
+  name: 'InterestGroup.ads with multiple ads.',
+  fieldName: 'ads',
+  fieldValue: [{renderURL: AD1_URL, metadata: 1},
+               {renderURL: AD2_URL, metadata: [2]}],
+  interestGroupOverrides: {ads: [{renderURL: AD1_URL, metadata: 1},
+                                 {renderURL: AD2_URL, metadata: [2]}]}
+});
+
+// This should probably be an error. This WPT test serves to encourage there to be a
+// new join-leave WPT test when that is fixed.
+makeTest({
+  name: 'InterestGroup.ads duplicate ad.',
+  fieldName: 'ads',
+  fieldValue: [{renderURL: AD1_URL}, {renderURL: AD1_URL}],
+  interestGroupOverrides: {ads: [{renderURL: AD1_URL}, {renderURL: AD1_URL}]}
+});
+
+makeTest({
+  name: 'InterestGroup.adComponents is undefined.',
+  fieldName: 'adComponents',
+  fieldValue: undefined
+});
+
+// This one is likely a bug.
+makeTest({
+  name: 'InterestGroup.adComponents is empty array.',
+  fieldName: 'adComponents',
+  fieldValue: undefined,
+  interestGroupOverrides: {adComponents: []}
+});
+
+makeTest({
+  name: 'InterestGroup.adComponents with one ad.',
+  fieldName: 'adComponents',
+  fieldValue: [{renderURL: AD1_URL}]
+});
+
+makeTest({
+  name: 'InterestGroup.adComponents one ad with metadata object.',
+  fieldName: 'adComponents',
+  fieldValue: [{renderURL: AD1_URL, metadata: {foo: 1, bar: [2, 3], baz: '4'}}]
+});
+
+makeTest({
+  name: 'InterestGroup.adComponents one ad with metadata string.',
+  fieldName: 'adComponents',
+  fieldValue: [{renderURL: AD1_URL, metadata: 'foo'}]
+});
+
+makeTest({
+  name: 'InterestGroup.adComponents one ad with null metadata.',
+  fieldName: 'adComponents',
+  fieldValue: [{renderURL: AD1_URL, metadata: null}]
+});
+
+makeTest({
+  name: 'InterestGroup.adComponents one ad with adRenderId. This field should not be passed to generateBid.',
+  fieldName: 'adComponents',
+  fieldValue: [{renderURL: AD1_URL}],
+  interestGroupOverrides: {adComponents: [{renderURL: AD1_URL,
+                                           adRenderId: 'twelve chars'}]}
+});
+
+makeTest({
+  name: 'InterestGroup.adComponents one ad with buyerAndSellerReportingId. This field should not be passed to generateBid.',
+  fieldName: 'adComponents',
+  fieldValue: [{renderURL: AD1_URL}],
+  interestGroupOverrides: {adComponents: [{renderURL: AD1_URL,
+                                           buyerAndSellerReportingId: 'Arbitrary text'}]}
+});
+
+makeTest({
+  name: 'InterestGroup.adComponents one ad with buyerReportingId. This field should not be passed to generateBid.',
+  fieldName: 'adComponents',
+  fieldValue: [{renderURL: AD1_URL}],
+  interestGroupOverrides: {adComponents: [{renderURL: AD1_URL,
+                                           buyerReportingId: 'Arbitrary text'}]}
+});
+
+makeTest({
+  name: 'InterestGroup.adComponents one ad with novel field. This field should not be passed to generateBid.',
+  fieldName: 'adComponents',
+  fieldValue: [{renderURL: AD1_URL}],
+  interestGroupOverrides: {adComponents: [{renderURL: AD1_URL,
+                                           novelField: 'Foo'}]}
+});
+
+makeTest({
+  name: 'InterestGroup.adComponents with multiple ads.',
+  fieldName: 'adComponents',
+  fieldValue: [{renderURL: AD1_URL, metadata: 1}, {renderURL: AD2_URL, metadata: [2]}]
+});
+
+// This should probably be an error. This WPT test serves to encourage there to be a
+// new join-leave WPT test when that is fixed.
+makeTest({
+  name: 'InterestGroup.adComponents duplicate ad.',
+  fieldName: 'adComponents',
+  fieldValue: [{renderURL: AD1_URL}, {renderURL: AD1_URL}],
+  interestGroupOverrides: {adComponents: [{renderURL: AD1_URL}, {renderURL: AD1_URL}]}
 });
