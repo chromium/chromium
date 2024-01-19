@@ -1287,14 +1287,15 @@ _CET_ENDBR
 $L$128_dec_start:
 	vzeroupper
 	vmovdqa	xmm0,XMMWORD[rdx]
+
+
+	vmovdqu	xmm15,XMMWORD[16+rdx]
+	vpor	xmm15,xmm15,XMMWORD[OR_MASK]
 	mov	rax,rdx
 
 	lea	rax,[32+rax]
 	lea	rcx,[32+rcx]
 
-
-	vmovdqu	xmm15,XMMWORD[r9*1+rdi]
-	vpor	xmm15,xmm15,XMMWORD[OR_MASK]
 	and	r9,~15
 
 
@@ -2583,14 +2584,15 @@ _CET_ENDBR
 $L$256_dec_start:
 	vzeroupper
 	vmovdqa	xmm0,XMMWORD[rdx]
+
+
+	vmovdqu	xmm15,XMMWORD[16+rdx]
+	vpor	xmm15,xmm15,XMMWORD[OR_MASK]
 	mov	rax,rdx
 
 	lea	rax,[32+rax]
 	lea	rcx,[32+rcx]
 
-
-	vmovdqu	xmm15,XMMWORD[r9*1+rdi]
-	vpor	xmm15,xmm15,XMMWORD[OR_MASK]
 	and	r9,~15
 
 
