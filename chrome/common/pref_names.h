@@ -4021,6 +4021,11 @@ inline constexpr char kCADistrustedCertificates[] =
 // building. Only specifiable as an enterprise policy.
 inline constexpr char kCAHintCertificates[] =
     "certificates.ca_hint_certificates";
+
+// Boolean that specifies whether to use user-added certificates that are in the
+// platform trust stores.
+inline constexpr char kCAPlatformIntegrationEnabled[] =
+    "certificates.ca_platform_integration_enabled";
 #endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 
 }  // namespace prefs

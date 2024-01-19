@@ -1,0 +1,31 @@
+caption: Use user-added TLS certificates from platform trust stores for server authentication
+default: true
+desc: |-
+  If enabled(or not set), user-added TLS certificates from platform trust stores will be used in path-building for TLS server authentication.
+
+  If disabled, user-added TLS certificates from platform trust stores will not be used in path-building for TLS server authentication.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- dadrian@chromium.org
+- davidben@chromium.org
+- hchao@chromium.org
+- mattm@chromium.org
+items:
+- caption: Import user-added TLS server certificates from platform trust stores.
+  value: true
+- caption: Do not import user-added TLS server certificates from platform trust stores.
+  value: false
+schema:
+  type: boolean
+# Supported platforms should be kept in sync with the
+# chrome_certificate_policies_supported build flag in
+# chrome/common/features.gni
+future_on:
+- chrome.linux
+- chrome.mac
+- chrome.win
+tags: []
+type: main

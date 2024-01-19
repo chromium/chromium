@@ -40,6 +40,9 @@ struct AdditionalCertificates {
 
   // List of SPKIs that are explicitly distrusted.
   array<array<uint8>> distrusted_spkis;
+
+  // If true, use user-added certs in the system trust store.
+  bool include_system_trust_store = true;
 };
 
 // Allows the CertVerifierService to connect a new URLLoaderFactory if its

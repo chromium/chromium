@@ -29,6 +29,13 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "crypto/scoped_test_nss_db.h"
+#include "net/cert/nss_cert_database.h"
+#include "net/cert/scoped_nss_types.h"
+#include "net/cert/x509_util_nss.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
@@ -229,6 +236,86 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServiceCAHintCertificatesPolicyTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          CertVerifierServiceCAHintCertificatesPolicyTest,
                          ::testing::Bool());
+
+#if BUILDFLAG(IS_LINUX)
+// Test the CAPlatformIntegrationEnabled policy.
+//
+// Ideally we'd have this set up for every platform where this policy is
+// supported, but on most platforms its really hard to modify the OS root
+// store in an integration test without possibly messing up other tests.
+// Except on Linux.
+class CertVerifierServiceCAPlatformIntegrationPolicyTest
+    : public policy::PolicyTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpOnMainThread() override {
+    policy::PolicyTest::SetUpOnMainThread();
+
+    // Set up test NSS DB
+    nss_db_ = std::make_unique<crypto::ScopedTestNSSDB>();
+    cert_db_ = std::make_unique<net::NSSCertDatabase>(
+        crypto::ScopedPK11Slot(PK11_ReferenceSlot(nss_db_->slot())),
+        crypto::ScopedPK11Slot(PK11_ReferenceSlot(nss_db_->slot())));
+    ASSERT_TRUE(nss_db_->is_open());
+
+    // Add root cert to test NSS DB.
+    scoped_refptr<net::X509Certificate> root_cert =
+        net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+    ASSERT_TRUE(root_cert);
+    net::ScopedCERTCertificateList nss_certs;
+    net::ScopedCERTCertificate nss_cert =
+        net::x509_util::CreateCERTCertificateFromX509Certificate(
+            root_cert.get());
+    ASSERT_TRUE(nss_cert);
+    nss_certs.push_back(std::move(nss_cert));
+
+    net::NSSCertDatabase::ImportCertFailureList failure_list;
+    cert_db_->ImportCACerts(nss_certs,
+                            /*trust_bits=*/net::NSSCertDatabase::TRUSTED_SSL,
+                            &failure_list);
+    ASSERT_TRUE(failure_list.empty());
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+    policy::PolicyMap policies;
+    SetPolicy(&policies, policy::key::kCAPlatformIntegrationEnabled,
+              absl::optional<base::Value>(platform_root_store_enabled()));
+    UpdateProviderPolicy(policies);
+  }
+
+  bool platform_root_store_enabled() const { return GetParam(); }
+
+ private:
+  std::unique_ptr<crypto::ScopedTestNSSDB> nss_db_;
+  std::unique_ptr<net::NSSCertDatabase> cert_db_;
+};
+
+IN_PROC_BROWSER_TEST_P(CertVerifierServiceCAPlatformIntegrationPolicyTest,
+                       TestCAPlatformIntegrationPolicy) {
+  net::EmbeddedTestServer https_test_server(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server.SetSSLConfig(
+      net::test_server::EmbeddedTestServer::CERT_AUTO);
+  https_test_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_test_server.Start());
+
+  // `net::EmbeddedTestServer` uses `net::TestRootCerts` to install a trusted
+  // root.
+  // Clear test roots so that cert validation only happens with
+  // what's in the relevant root store + policies.
+  net::TestRootCerts::GetInstance()->Clear();
+
+  ASSERT_TRUE(NavigateToUrl(https_test_server.GetURL("/simple.html"), this));
+  EXPECT_NE(platform_root_store_enabled(),
+            chrome_browser_interstitials::IsShowingInterstitial(
+                chrome_test_utils::GetActiveWebContents(this)));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CertVerifierServiceCAPlatformIntegrationPolicyTest,
+                         ::testing::Bool());
+#endif  // BUILDFLAG(IS_LINUX)
 
 #endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 

@@ -1,0 +1,41 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "certificates.ca_platform_integration_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "true value.",
+        "policies": {
+          "CAPlatformIntegrationEnabled": true
+        },
+        "prefs": {
+          "certificates.ca_platform_integration_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "false value.",
+        "policies": {
+          "CAPlatformIntegrationEnabled": false
+        },
+        "prefs": {
+          "certificates.ca_platform_integration_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

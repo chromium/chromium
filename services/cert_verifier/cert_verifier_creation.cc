@@ -171,8 +171,13 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
                                          user_slot_restriction_.get()))
                                    : nullptr);
 #else
-    trust_store =
-        net::CreateSslSystemTrustStoreChromeRoot(std::move(chrome_root));
+    if (instance_params.include_system_trust_store) {
+      trust_store =
+          net::CreateSslSystemTrustStoreChromeRoot(std::move(chrome_root));
+    } else {
+      trust_store =
+          net::CreateChromeOnlySystemTrustStore(std::move(chrome_root));
+    }
 #endif
 
 #if BUILDFLAG(IS_WIN)

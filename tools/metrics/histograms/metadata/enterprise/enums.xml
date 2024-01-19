@@ -2013,6 +2013,7 @@ chromium-metrics-reviews@google.com.
   <int value="1193" label="CAHintCertificates"/>
   <int value="1194" label="DeviceLoginScreenTouchVirtualKeyboardEnabled"/>
   <int value="1195" label="DeviceExtendedAutoUpdateEnabled"/>
+  <int value="1196" label="CAPlatformIntegrationEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

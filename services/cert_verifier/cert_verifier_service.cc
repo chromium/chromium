@@ -152,6 +152,9 @@ void CertVerifierServiceImpl::UpdateAdditionalCertificates(
   instance_params_.additional_distrusted_spkis =
       additional_certificates->distrusted_spkis;
 
+  instance_params_.include_system_trust_store =
+      additional_certificates->include_system_trust_store;
+
   verifier_->UpdateVerifyProcData(cert_net_fetcher_,
                                   service_factory_impl_->get_impl_params(),
                                   instance_params_);

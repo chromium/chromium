@@ -88,6 +88,9 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
 
     instance_params.additional_distrusted_spkis =
         creation_params->initial_additional_certificates->distrusted_spkis;
+    instance_params.include_system_trust_store =
+        creation_params->initial_additional_certificates
+            ->include_system_trust_store;
   }
 
   std::unique_ptr<net::CertVerifierWithUpdatableProc> cert_verifier =

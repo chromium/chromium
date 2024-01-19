@@ -302,21 +302,17 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
 #if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
   // When any of the following Certificate preferences change, we schedule an
   // update to aggregate the actual update using a |cert_policy_update_timer_|.
-  pref_change_registrar_.Add(
-      prefs::kCACertificates,
-      base::BindRepeating(
-          &ProfileNetworkContextService::ScheduleUpdateCertificatePolicy,
-          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kCADistrustedCertificates,
-      base::BindRepeating(
-          &ProfileNetworkContextService::ScheduleUpdateCertificatePolicy,
-          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kCAHintCertificates,
-      base::BindRepeating(
-          &ProfileNetworkContextService::ScheduleUpdateCertificatePolicy,
-          base::Unretained(this)));
+  base::RepeatingClosure schedule_update_cert_policy = base::BindRepeating(
+      &ProfileNetworkContextService::ScheduleUpdateCertificatePolicy,
+      base::Unretained(this));
+  pref_change_registrar_.Add(prefs::kCACertificates,
+                             schedule_update_cert_policy);
+  pref_change_registrar_.Add(prefs::kCADistrustedCertificates,
+                             schedule_update_cert_policy);
+  pref_change_registrar_.Add(prefs::kCAHintCertificates,
+                             schedule_update_cert_policy);
+  pref_change_registrar_.Add(prefs::kCAPlatformIntegrationEnabled,
+                             schedule_update_cert_policy);
 #endif
 
   pref_change_registrar_.Add(
@@ -392,6 +388,8 @@ void ProfileNetworkContextService::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kCACertificates);
   registry->RegisterListPref(prefs::kCADistrustedCertificates);
   registry->RegisterListPref(prefs::kCAHintCertificates);
+  // Include user added platform certs by default.
+  registry->RegisterBooleanPref(prefs::kCAPlatformIntegrationEnabled, true);
 #endif
 }
 
@@ -586,11 +584,14 @@ ProfileNetworkContextService::GetCertificatePolicy() {
     }
   }
 
+  bool include_system_trust_store =
+      prefs->GetBoolean(prefs::kCAPlatformIntegrationEnabled);
+
   return cert_verifier::mojom::AdditionalCertificates::New(
       std::move(additional_untrusted_certificates),
       std::move(additional_trust_anchors),
       std::move(additional_trust_anchors_enforced_constraints),
-      std::move(additional_distrusted_spkis));
+      std::move(additional_distrusted_spkis), include_system_trust_store);
 }
 
 void ProfileNetworkContextService::UpdateCertificatePolicy() {
