@@ -294,6 +294,7 @@ def __step_config(ctx, step_config):
             new_rule = {
                 "name": rule["name"],
                 "action": rule["action"],
+                "exclude_input_patterns": rule.get("exclude_input_patterns"),
                 "handler": "rewrite_rewrapper",
             }
             new_rules.append(new_rule)
