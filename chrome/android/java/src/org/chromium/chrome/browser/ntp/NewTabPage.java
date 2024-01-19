@@ -1018,6 +1018,9 @@ public class NewTabPage
         if (mSingleTabSwitcherCoordinator != null) {
             destroySingleTabCard();
         }
+        if (mHomeModulesCoordinator != null) {
+            mHomeModulesCoordinator.destroy();
+        }
         mIsDestroyed = true;
     }
 
@@ -1397,8 +1400,15 @@ public class NewTabPage
 
     @Override
     public int getStartMargin() {
-        return mContext.getResources()
-                .getDimensionPixelSize(R.dimen.single_tab_card_lateral_margin);
+        boolean isInNarrowWindowOnTablet =
+                mIsTablet
+                        && NewTabPageLayout.isInNarrowWindowOnTablet(
+                                mIsTablet, mFeedSurfaceProvider.getUiConfig());
+        int marginResourceId =
+                isInNarrowWindowOnTablet
+                        ? R.dimen.search_box_lateral_margin_polish
+                        : R.dimen.mvt_container_lateral_margin_polish;
+        return mContext.getResources().getDimensionPixelSize(marginResourceId);
     }
 
     @Nullable

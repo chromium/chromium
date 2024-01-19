@@ -27,9 +27,7 @@ public interface ModuleDelegateHost {
 
     /** Gets the instance of {@link UiConfig} of the host surface. */
     @Nullable
-    default UiConfig getUiConfig() {
-        return null;
-    }
+    UiConfig getUiConfig();
 
     /**
      * Called when the user clicks a module to open a URL.

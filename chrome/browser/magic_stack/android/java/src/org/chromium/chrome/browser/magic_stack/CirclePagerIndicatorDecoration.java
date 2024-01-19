@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -21,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 
 /** Circle pager indicator for recyclerview. */
 public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration {
@@ -42,12 +45,15 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
     /** Padding between indicators in pixel. */
     private final float mIndicatorItemPaddingPx;
 
-    /** The start margin of the recyclerview in pixel. */
-    private final int mStartMarginPx;
-
     private final Paint mPaint = new Paint();
     private final UiConfig mUiConfig;
     private final boolean mIsTablet;
+
+    /** The start margin of the recyclerview in pixel. */
+    private int mStartMarginPx;
+
+    /** The value is updated in {@link getItemOffsetsImpl()} for tablets. */
+    private int mItemPerScreen;
 
     /**
      * @param context The {@link Context} that the application is running.
@@ -72,6 +78,7 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
         mPaint.setStrokeWidth(mIndicatorStrokeWidthPx);
         mPaint.setStyle(Style.STROKE);
         mPaint.setAntiAlias(true);
+        mItemPerScreen = 1;
 
         mIndicatorItemPaddingPx =
                 (float) resources.getDimensionPixelSize(R.dimen.page_indicator_internal_padding);
@@ -87,8 +94,8 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
         super.onDrawOver(canvas, parent, state);
 
         int itemCount = parent.getAdapter().getItemCount();
-        // Don't draw page indicator if there is only one item.
-        if (itemCount <= 1) return;
+        // Don't draw a page indicator if all of the items can fit in one screen.
+        if (itemCount <= mItemPerScreen) return;
 
         // The page indicators are center-horizontal. Calculates the total width and subtracts half
         // from the center.
@@ -99,18 +106,30 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
 
         // The page indicators are center-vertical in the allotted space.
         float indicatorPosY = parent.getHeight() - mIndicatorItemDiameterPx;
-
         drawInactiveIndicators(canvas, indicatorStartX, indicatorPosY, itemCount);
 
         // Finds the active page which should be highlighted.
         LinearLayoutManager layoutManager = (LinearLayoutManager) parent.getLayoutManager();
         int activePosition = layoutManager.findFirstVisibleItemPosition();
+        int dotHighlightPosition = activePosition;
         assert activePosition != RecyclerView.NO_POSITION;
 
         final View activeChild = layoutManager.findViewByPosition(activePosition);
+        // The left offset of the first visible view. We always track the first visible view to get
+        // a consistent offset.
         int left = activeChild.getLeft() - mStartMarginPx;
+        if ((left != 0 || activePosition != 0) && isMultiItemPerScreen()) {
+            // When multiple items are visible on the screen, the last completely visible view is
+            // highlighted, rather than the first visible view unless it is the first one and the
+            // recyclerview hasn't been scrolled yet. This allows to highlight the dot of the last
+            // view if the recyclerview can't be scrolled any further.
+            dotHighlightPosition = layoutManager.findLastCompletelyVisibleItemPosition();
+        }
 
-        drawHighlights(canvas, indicatorStartX, indicatorPosY, activePosition, left == 0);
+        // When multiple items are shown per screen, we only highlight a dot but don't draw any
+        // animation when scrolling.
+        boolean showDot = isMultiItemPerScreen() ? true : left == 0;
+        drawHighlights(canvas, indicatorStartX, indicatorPosY, dotHighlightPosition, showDot);
     }
 
     /** Draws the inactive indicator dots. */
@@ -128,10 +147,7 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
         }
     }
 
-    /**
-     * Draws the active (highlighted) indicator dot and animation. TODO(https://crbug.com/1512962):
-     * Make drawing highlights work on wider screen which could show two items.
-     */
+    /** Draws the active (highlighted) indicator dot and animation. */
     private void drawHighlights(
             Canvas canvas,
             float indicatorStartX,
@@ -140,7 +156,7 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
             boolean drawDot) {
         mPaint.setColor(mColorActive);
 
-        // The width of item indicator including padding.
+        // The width of an indicator dot with padding.
         final float itemWidth = mIndicatorItemDiameterPx + mIndicatorItemPaddingPx;
         float highlightStart = indicatorStartX + itemWidth * highlightPosition;
         if (drawDot) {
@@ -160,6 +176,11 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
         }
     }
 
+    /** Returns whether to show more than a single item per screen. */
+    private boolean isMultiItemPerScreen() {
+        return mItemPerScreen > 1;
+    }
+
     @Override
     public void getItemOffsets(
             Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
@@ -172,20 +193,40 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
     void getItemOffsetsImpl(
             Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         outRect.bottom = mIndicatorHeightPx;
+        // Don't need to change the width of a child view if:
+        // 1) On phones. This is because we always show one item per screen.
+        // 2) If there is only one item to show on tablets.
+        if (!mIsTablet || parent.getAdapter().getItemCount() == 1) return;
 
-        if (!mIsTablet
-                || mUiConfig != null && mUiConfig.getCurrentDisplayStyle().isSmall()
-                || parent.getAdapter().getItemCount() < 2) return;
+        mItemPerScreen = showSingleItem(mUiConfig.getCurrentDisplayStyle()) ? 1 : 2;
+        MarginLayoutParams marginLayoutParams = (MarginLayoutParams) view.getLayoutParams();
+        if (mItemPerScreen == 1) {
+            // If showing one item per screen, the view's width should match the parent
+            // recyclerview.
+            marginLayoutParams.width = MATCH_PARENT;
+            return;
+        }
 
-        // On wide screen, we will show 2 cards instead of 1 on the magic stack.
+        // On a wide screen, we will show 2 cards instead of 1 on the magic stack.
         int position = parent.getChildAdapterPosition(view);
         boolean isFirstPosition = position == 0;
 
-        // Updates the width of the card.
+        // Updates the width of the view.
         outRect.left = isFirstPosition ? 0 : (int) mIndicatorItemPaddingPx;
-        MarginLayoutParams marginLayoutParams = (MarginLayoutParams) view.getLayoutParams();
         int width = (int) (parent.getMeasuredWidth() / 2 - mIndicatorItemPaddingPx);
         marginLayoutParams.width = width;
-        view.setMinimumWidth(width);
+    }
+
+    void onDisplayStyleChanged(int startMarginPx) {
+        mStartMarginPx = startMarginPx;
+    }
+
+    /** Returns whether to show a single item per screen. */
+    static boolean showSingleItem(DisplayStyle displayStyle) {
+        return !displayStyle.isWide();
+    }
+
+    void setItemPerScreenForTesting(int itemPerScreen) {
+        mItemPerScreen = itemPerScreen;
     }
 }

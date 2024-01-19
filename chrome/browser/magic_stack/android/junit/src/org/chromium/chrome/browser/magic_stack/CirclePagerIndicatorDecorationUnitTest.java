@@ -4,13 +4,19 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.magic_stack.CirclePagerIndicatorDecoration.showSingleItem;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -73,12 +79,8 @@ public class CirclePagerIndicatorDecorationUnitTest {
         mContext = ApplicationProvider.getApplicationContext();
         when(mRecyclerView.getAdapter()).thenReturn(mAdapter);
         when(mRecyclerView.getLayoutManager()).thenReturn(mLayoutManager);
-        mDecoration =
-                new CirclePagerIndicatorDecoration(
-                        mContext, mUiConfig, 0, Color.BLACK, Color.GRAY, /* isTablet= */ false);
 
         Resources resources = mContext.getResources();
-
         mIndicatorItemPadding =
                 (float) resources.getDimensionPixelSize(R.dimen.page_indicator_internal_padding);
         mIndicatorItemDiameter = resources.getDimensionPixelSize(R.dimen.page_indicator_dot_size);
@@ -95,7 +97,19 @@ public class CirclePagerIndicatorDecorationUnitTest {
 
     @Test
     @SmallTest
-    public void testNoScrolling() {
+    public void testNoScrolling_Phone() {
+        testNoScrollingImpl(/* isTablet= */ false);
+    }
+
+    @Test
+    @SmallTest
+    public void testNoScrolling_Tablet() {
+        testNoScrollingImpl(/* isTablet= */ true);
+    }
+
+    private void testNoScrollingImpl(boolean isTablet) {
+        mDecoration = create(isTablet);
+
         int count = 3;
         when(mAdapter.getItemCount()).thenReturn(count);
         when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(0);
@@ -133,7 +147,9 @@ public class CirclePagerIndicatorDecorationUnitTest {
 
     @Test
     @SmallTest
-    public void testScrollTheRecyclerView() {
+    public void testScrollTheRecyclerView_Phone() {
+        mDecoration = create(/* isTablet= */ false);
+
         int count = 3;
         when(mAdapter.getItemCount()).thenReturn(count);
         float dotsTotalLength = mIndicatorItemDiameter * count;
@@ -204,31 +220,136 @@ public class CirclePagerIndicatorDecorationUnitTest {
 
     @Test
     @SmallTest
-    public void testGetItemOffsets() {
+    public void testScrollTheRecyclerView_Tablet() {
+        mDecoration = create(/* isTablet= */ true);
+        mDecoration.setItemPerScreenForTesting(2);
+
+        int count = 3;
+        when(mAdapter.getItemCount()).thenReturn(count);
+        float dotsTotalLength = mIndicatorItemDiameter * count;
+        float paddingBetweenItems = (count - 1) * mIndicatorItemPadding;
+        float indicatorTotalWidth = dotsTotalLength + paddingBetweenItems;
+        float indicatorStartX = (mParentViewWidth - indicatorTotalWidth) / 2f;
+        float itemWidth = mIndicatorItemDiameter + mIndicatorItemPadding;
+        float indicatorStartY = mParentHeight - mIndicatorItemDiameter;
+
+        // Begin to scroll the recyclerview.
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(0);
+        when(mLayoutManager.findViewByPosition(0)).thenReturn(mView1);
+        when(mLayoutManager.findLastCompletelyVisibleItemPosition()).thenReturn(1);
+        when(mView1.getLeft()).thenReturn(10);
+
+        // Every time when onDrawOver() is called, all of the dots will be first drawn as inactive
+        // dots. Use drawAsInactiveDotTimes to log how many times a dot is draw as inactive one (not
+        // the highlighted one).
+        int drawAsInactiveDotTimes = 1;
+        // Verifies that highlighted dot is drawn.
+        mDecoration.onDrawOver(mCanvas, mRecyclerView, mState);
+        verify(mCanvas, times(drawAsInactiveDotTimes + 1))
+                .drawCircle(
+                        eq(indicatorStartX + itemWidth),
+                        eq(indicatorStartY),
+                        eq(mIndicatorRadius),
+                        any(Paint.class));
+
+        drawAsInactiveDotTimes++;
+        // Verifies that the same highlighted dot is drawn again.
+        when(mView1.getLeft()).thenReturn(20);
+        mDecoration.onDrawOver(mCanvas, mRecyclerView, mState);
+        verify(mCanvas, times(drawAsInactiveDotTimes + 2))
+                .drawCircle(
+                        eq(indicatorStartX + itemWidth),
+                        eq(indicatorStartY),
+                        eq(mIndicatorRadius),
+                        any(Paint.class));
+
+        // Scroll to the second item of the recyclerview.
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(1);
+        when(mLayoutManager.findViewByPosition(1)).thenReturn(mView2);
+        when(mLayoutManager.findLastCompletelyVisibleItemPosition()).thenReturn(2);
+
+        drawAsInactiveDotTimes++;
+        // Verifies that the second doc is highlighted.
+        when(mView2.getLeft()).thenReturn(0);
+        mDecoration.onDrawOver(mCanvas, mRecyclerView, mState);
+        verify(mCanvas, times(drawAsInactiveDotTimes + 1))
+                .drawCircle(
+                        eq(indicatorStartX + itemWidth * 2),
+                        eq(indicatorStartY),
+                        eq(mIndicatorRadius),
+                        any(Paint.class));
+
+        drawAsInactiveDotTimes++;
+        // Verifies that the same highlighted dot is drawn again.
+        when(mView2.getLeft()).thenReturn(10);
+        mDecoration.onDrawOver(mCanvas, mRecyclerView, mState);
+        verify(mCanvas, times(drawAsInactiveDotTimes + 2))
+                .drawCircle(
+                        eq(indicatorStartX + itemWidth * 2),
+                        eq(indicatorStartY),
+                        eq(mIndicatorRadius),
+                        any(Paint.class));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetItemOffsets_Phone() {
+        mDecoration = create(/* isTablet= */ false);
+
         Rect rect = new Rect();
         View view = Mockito.mock(View.class);
         RecyclerView.State state = Mockito.mock(State.class);
+        when(mRecyclerView.getMeasuredWidth()).thenReturn(mParentViewWidth);
+        when(mAdapter.getItemCount()).thenReturn(3);
 
+        mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
+        // Verifies that the width is not updated for phones.
+        assertEquals(mIndicatorHeight, rect.bottom);
+        assertEquals(0, rect.left);
+        verify(view, never()).getLayoutParams();
+    }
+
+    @Test
+    @SmallTest
+    public void testGetItemOffsets_Tablet() {
+        mDecoration = create(/* isTablet= */ true);
+
+        Rect rect = new Rect();
+        View view = Mockito.mock(View.class);
+        RecyclerView.State state = Mockito.mock(State.class);
+        when(mRecyclerView.getMeasuredWidth()).thenReturn(mParentViewWidth);
+        int expectedItemWith = (int) (mParentViewWidth / 2 - mIndicatorItemPadding);
+        // The recyclerview has 3 items shown.
+        when(mAdapter.getItemCount()).thenReturn(3);
+
+        // Sets the tablet as a wide screen.
         DisplayStyle displayStyle =
                 new DisplayStyle(HorizontalDisplayStyle.WIDE, VerticalDisplayStyle.REGULAR);
         when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyle);
-        assertFalse(displayStyle.isSmall());
-        when(mAdapter.getItemCount()).thenReturn(3);
+        assertFalse(showSingleItem(mUiConfig.getCurrentDisplayStyle()));
 
-        MarginLayoutParams layoutParams = Mockito.mock(MarginLayoutParams.class);
+        MarginLayoutParams layoutParams = new MarginLayoutParams(0, 0);
         when(view.getLayoutParams()).thenReturn(layoutParams);
 
-        when(mRecyclerView.getMeasuredWidth()).thenReturn(mParentViewWidth);
-        int expectedItemWith = (int) (mParentViewWidth / 2 - mIndicatorItemPadding);
-
-        mDecoration =
-                new CirclePagerIndicatorDecoration(
-                        mContext, mUiConfig, 0, Color.BLACK, Color.GRAY, /* isTablet= */ true);
-
         mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
-        // Verifies that the minimum width is updated for the view.
+        // Verifies that the width is updated for the view when multiple items are shown per screen.
         assertEquals(mIndicatorHeight, rect.bottom);
         assertEquals(0, rect.left);
-        verify(view).setMinimumWidth(eq(expectedItemWith));
+        assertEquals(expectedItemWith, layoutParams.width);
+
+        // Changes the current screen to a narrow window on tablets.
+        displayStyle =
+                new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
+        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyle);
+        assertTrue(showSingleItem(mUiConfig.getCurrentDisplayStyle()));
+        mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
+
+        // Verifies that the width is set to MATCH_PARENT if a single item is shown per screen.
+        assertEquals(MATCH_PARENT, layoutParams.width);
+    }
+
+    private CirclePagerIndicatorDecoration create(boolean isTablet) {
+        return new CirclePagerIndicatorDecoration(
+                mContext, mUiConfig, 0, Color.BLACK, Color.GRAY, isTablet);
     }
 }

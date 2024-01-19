@@ -101,6 +101,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.features.start_surface.StartSurface.TabSwitcherViewObserver;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
@@ -193,6 +194,7 @@ class StartSurfaceMediator
     @NewTabPageLaunchOrigin private int mLaunchOrigin;
     @Nullable private TabModel mNormalTabModel;
     @Nullable private TabModelObserver mNormalTabModelObserver;
+    @Nullable private UiConfig mUiConfig;
     private final int mStartMargin;
 
     @Nullable
@@ -696,7 +698,7 @@ class StartSurfaceMediator
             mLogoCoordinator = null;
         }
         if (mHomeModulesCoordinator != null) {
-            mHomeModulesCoordinator.hide();
+            mHomeModulesCoordinator.destroy();
         }
         if (mCallbackController != null) {
             mCallbackController.destroy();
@@ -1374,6 +1376,7 @@ class StartSurfaceMediator
                 mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR);
         if (exploreSurfaceCoordinator != null) {
             exploreSurfaceCoordinator.enableSwipeRefresh(isVisible);
+            mUiConfig = exploreSurfaceCoordinator.getUiConfig();
         }
     }
 
@@ -1845,6 +1848,12 @@ class StartSurfaceMediator
     @Override
     public Point getContextMenuStartPoint() {
         return mContextMenuStartPosotion;
+    }
+
+    @Nullable
+    @Override
+    public UiConfig getUiConfig() {
+        return mUiConfig;
     }
 
     @Override

@@ -54,6 +54,7 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/magic_stack/CirclePagerIndicatorDecorationUnitTest.java",
     "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesContextMenuManagerUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesMetricsUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/magic_stack/ModuleRegistryUnitTest.java",
@@ -69,6 +70,7 @@ robolectric_library("junit") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/util:java",
     "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
