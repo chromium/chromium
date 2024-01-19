@@ -37,7 +37,6 @@ namespace blink {
 class ANGLEInstancedArrays;
 class CanvasContextCreationAttributesCore;
 class ExceptionState;
-class EXTBlendFuncExtended;
 class EXTBlendMinMax;
 class EXTClipControl;
 class EXTColorBufferHalfFloat;
@@ -59,6 +58,7 @@ class OESTextureFloat;
 class OESTextureFloatLinear;
 class OESTextureHalfFloat;
 class OESTextureHalfFloatLinear;
+class WebGLBlendFuncExtended;
 class WebGLColorBufferFloat;
 class WebGLDebugRendererInfo;
 class WebGLDepthTexture;
@@ -106,7 +106,6 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
  private:
   // Enabled extension objects.
   Member<ANGLEInstancedArrays> angle_instanced_arrays_;
-  Member<EXTBlendFuncExtended> ext_blend_func_extended_;
   Member<EXTBlendMinMax> ext_blend_min_max_;
   Member<EXTClipControl> ext_clip_control_;
   Member<EXTColorBufferHalfFloat> ext_color_buffer_half_float_;
@@ -130,6 +129,7 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
   Member<OESTextureHalfFloat> oes_texture_half_float_;
   Member<OESTextureHalfFloatLinear> oes_texture_half_float_linear_;
   Member<OESVertexArrayObject> oes_vertex_array_object_;
+  Member<WebGLBlendFuncExtended> webgl_blend_func_extended_;
   Member<WebGLColorBufferFloat> webgl_color_buffer_float_;
   Member<WebGLCompressedTextureASTC> webgl_compressed_texture_astc_;
   Member<WebGLCompressedTextureETC> webgl_compressed_texture_etc_;

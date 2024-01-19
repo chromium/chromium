@@ -34,7 +34,6 @@ class WebGL2ConformanceIntegrationTest(
   @classmethod
   def _GetExtensionList(cls) -> List[str]:
     return [
-        'EXT_blend_func_extended',
         'EXT_clip_control',
         'EXT_color_buffer_float',
         'EXT_color_buffer_half_float',
@@ -56,6 +55,7 @@ class WebGL2ConformanceIntegrationTest(
         'OES_shader_multisample_interpolation',
         'OES_texture_float_linear',
         'OVR_multiview2',
+        'WEBGL_blend_func_extended',
         'WEBGL_clip_cull_distance',
         'WEBGL_compressed_texture_astc',
         'WEBGL_compressed_texture_etc',

@@ -15,7 +15,6 @@ namespace blink {
 
 class CanvasContextCreationAttributesCore;
 class ExceptionState;
-class EXTBlendFuncExtended;
 class EXTClipControl;
 class EXTColorBufferFloat;
 class EXTColorBufferHalfFloat;
@@ -36,6 +35,7 @@ class OESSampleVariables;
 class OESShaderMultisampleInterpolation;
 class OESTextureFloatLinear;
 class OVRMultiview2;
+class WebGLBlendFuncExtended;
 class WebGLClipCullDistance;
 class WebGLDebugRendererInfo;
 class WebGLDrawInstancedBaseVertexBaseInstance;
@@ -86,7 +86,6 @@ class WebGL2RenderingContext : public WebGL2RenderingContextBase {
   void Trace(Visitor*) const override;
 
  protected:
-  Member<EXTBlendFuncExtended> ext_blend_func_extended_;
   Member<EXTClipControl> ext_clip_control_;
   Member<EXTColorBufferFloat> ext_color_buffer_float_;
   Member<EXTColorBufferHalfFloat> ext_color_buffer_half_float_;
@@ -110,6 +109,7 @@ class WebGL2RenderingContext : public WebGL2RenderingContextBase {
       oes_shader_multisample_interpolation_;
   Member<OESTextureFloatLinear> oes_texture_float_linear_;
   Member<OVRMultiview2> ovr_multiview2_;
+  Member<WebGLBlendFuncExtended> webgl_blend_func_extended_;
   Member<WebGLClipCullDistance> webgl_clip_cull_distance_;
   Member<WebGLCompressedTextureASTC> webgl_compressed_texture_astc_;
   Member<WebGLCompressedTextureETC> webgl_compressed_texture_etc_;

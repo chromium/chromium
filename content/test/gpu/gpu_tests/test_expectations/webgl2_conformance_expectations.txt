@@ -136,7 +136,7 @@ crbug.com/1058744 [ no-passthrough ] WebglExtension_OES_draw_buffers_indexed [ S
 
 # Extensions unavailable on Android.
 [ android ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Skip ]
-crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
+crbug.com/1473838 [ android passthrough ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_conservative_depth [ Skip ]
 crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
 crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_polygon_offset_clamp [ Skip ]
@@ -148,7 +148,7 @@ crbug.com/1473838 [ android passthrough angle-opengles ] WebglExtension_WEBGL_re
 [ android qualcomm ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
 
 # Extensions only available via passthrough decoder.
-[ no-passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
+[ no-passthrough ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 [ no-passthrough ] WebglExtension_EXT_clip_control [ Skip ]
 [ no-passthrough ] WebglExtension_EXT_conservative_depth [ Skip ]
 [ no-passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
@@ -224,7 +224,7 @@ crbug.com/1473838 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExt
 crbug.com/1473838 [ chromeos chromeos-board-amd64-generic angle-opengles passthrough ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
 
 # Extensions not available on jacuzzi ChromeOS devices.
-crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
+crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_clip_control [ Skip ]
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_conservative_depth [ Skip ]
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
@@ -385,7 +385,7 @@ crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough an
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_NV_shader_noperspective_interpolation [ Skip ]
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough angle-opengles ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
+crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 
 ###############################
 # Permanent Slow Expectations #
@@ -426,9 +426,6 @@ crbug.com/angleproject/6245 [ desktop no-passthrough target-cpu-64 ] conformance
 crbug.com/angleproject/6245 [ desktop no-passthrough target-cpu-64 ] conformance/extensions/ext-texture-compression-rgtc.html [ Failure ]
 crbug.com/angleproject/6245 [ desktop no-passthrough target-cpu-64 ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/angleproject/6245 [ desktop no-passthrough target-cpu-64 ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
-# finder:disable-narrowing Intentionally broad to suppress failures until validating decoder is removed.
-crbug.com/1473838 [ no-passthrough ] conformance2/extensions/ext-blend-func-extended.html [ Failure ]
-# finder:enable-narrowing
 
 # Failing on some platforms.
 crbug.com/1175371 [ angle-opengl display-server-x linux passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]

@@ -1602,6 +1602,13 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                 GLenum src,
                                 GLenum dst);
 
+  // Helper function to validate WEBGL_blend_func_extended
+  // factors. Needed only to make negative tests pass on the
+  // validating command decoder.
+  bool ValidateBlendFuncExtendedFactors(const char* function_name,
+                                        GLenum src,
+                                        GLenum dst);
+
   // Helper function to validate a GL capability.
   virtual bool ValidateCapability(const char* function_name, GLenum);
 
