@@ -85,37 +85,6 @@ bool HasRequiredSafetyFiles(const ModelInfo& model_info) {
          model_info.GetAdditionalFileWithBaseName(kTsSpModelFile);
 }
 
-base::flat_map<proto::ModelExecutionFeature,
-               proto::FeatureTextSafetyConfiguration>
-GetFeatureTextSafetyConfigs(const ModelInfo& model_info) {
-  ScopedTextSafetyModelMetadataValidityLogger logger;
-
-  if (!model_info.GetModelMetadata()) {
-    logger.set_validity(TextSafetyModelMetadataValidity::kNoMetadata);
-    return {};
-  }
-
-  std::optional<proto::TextSafetyModelMetadata> model_metadata =
-      ParsedAnyMetadata<proto::TextSafetyModelMetadata>(
-          *model_info.GetModelMetadata());
-  if (!model_metadata) {
-    logger.set_validity(TextSafetyModelMetadataValidity::kMetadataWrongType);
-    return {};
-  }
-
-  logger.set_validity(TextSafetyModelMetadataValidity::kNoFeatureConfigs);
-
-  base::flat_map<proto::ModelExecutionFeature,
-                 proto::FeatureTextSafetyConfiguration>
-      feature_configs;
-  for (const auto& feature_config :
-       model_metadata->feature_text_safety_configurations()) {
-    logger.set_validity(TextSafetyModelMetadataValidity::kValid);
-    feature_configs[feature_config.feature()] = feature_config;
-  }
-  return feature_configs;
-}
-
 }  // namespace
 
 OnDeviceModelServiceController::OnDeviceModelServiceController(
@@ -283,10 +252,14 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
   int max_tokens = features::GetOnDeviceModelMaxTokensForContext() +
                    features::GetOnDeviceModelMaxTokensForExecute() +
                    features::GetOnDeviceModelMaxTokensForOutput();
+  auto params = on_device_model::mojom::LoadModelParams::New();
+  params->assets = std::move(assets);
+  params->max_tokens = max_tokens;
+  if (safety_model_info_) {
+    params->ts_dimension = safety_model_info_->num_output_categories;
+  }
   service_remote_->LoadModel(
-      on_device_model::mojom::LoadModelParams::New(std::move(assets),
-                                                   max_tokens, std::nullopt),
-      std::move(model),
+      std::move(params), std::move(model),
       base::BindOnce(&OnDeviceModelServiceController::OnLoadModelResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -294,13 +267,7 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
 void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
     base::optional_ref<const ModelInfo> model_info) {
   if (model_info.has_value() && HasRequiredSafetyFiles(*model_info)) {
-    base::flat_map<proto::ModelExecutionFeature,
-                   proto::FeatureTextSafetyConfiguration>
-        feature_configs = GetFeatureTextSafetyConfigs(*model_info);
-    if (!feature_configs.empty()) {
-      safety_model_info_ = std::make_unique<SafetyModelInfo>(
-          *model_info, std::move(feature_configs));
-
+    if (InitializeSafetyModelInfo(*model_info)) {
       // Update the paths to be used in subsequent sessions.
       if (model_paths_) {
         model_paths_->ts_data =
@@ -340,6 +307,40 @@ void OnDeviceModelServiceController::StateChanged(
   } else {
     ClearModelPath();
   }
+}
+
+bool OnDeviceModelServiceController::InitializeSafetyModelInfo(
+    const ModelInfo& model_info) {
+  ScopedTextSafetyModelMetadataValidityLogger logger;
+
+  if (!model_info.GetModelMetadata()) {
+    logger.set_validity(TextSafetyModelMetadataValidity::kNoMetadata);
+    return false;
+  }
+
+  std::optional<proto::TextSafetyModelMetadata> model_metadata =
+      ParsedAnyMetadata<proto::TextSafetyModelMetadata>(
+          *model_info.GetModelMetadata());
+  if (!model_metadata) {
+    logger.set_validity(TextSafetyModelMetadataValidity::kMetadataWrongType);
+    return false;
+  }
+
+  logger.set_validity(TextSafetyModelMetadataValidity::kNoFeatureConfigs);
+
+  base::flat_map<proto::ModelExecutionFeature,
+                 proto::FeatureTextSafetyConfiguration>
+      feature_configs;
+  for (const auto& feature_config :
+       model_metadata->feature_text_safety_configurations()) {
+    logger.set_validity(TextSafetyModelMetadataValidity::kValid);
+    feature_configs[feature_config.feature()] = feature_config;
+  }
+
+  safety_model_info_ = std::make_unique<SafetyModelInfo>(
+      model_info, model_metadata->num_output_categories(),
+      std::move(feature_configs));
+  return true;
 }
 
 void OnDeviceModelServiceController::OnLoadModelResult(
@@ -413,9 +414,13 @@ OnDeviceModelServiceController::GetFeatureTextSafetyConfigForFeature(
 
 OnDeviceModelServiceController::SafetyModelInfo::SafetyModelInfo(
     const ModelInfo& model_info,
+    uint32_t num_output_categories,
     base::flat_map<proto::ModelExecutionFeature,
                    proto::FeatureTextSafetyConfiguration> feature_configs)
-    : model_info(model_info), feature_configs(std::move(feature_configs)) {}
+    : model_info(model_info),
+      num_output_categories(num_output_categories),
+      feature_configs(std::move(feature_configs)) {}
+
 OnDeviceModelServiceController::SafetyModelInfo::~SafetyModelInfo() = default;
 
 }  // namespace optimization_guide

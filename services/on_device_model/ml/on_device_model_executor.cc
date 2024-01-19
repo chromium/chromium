@@ -365,6 +365,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .max_tokens = params->max_tokens,
       .temperature = static_cast<float>(kTemperature.Get()),
       .top_k = kTopK.Get(),
+      .ts_dimension = params->ts_dimension.value_or(0),
   };
   if (ts_data_.IsValid()) {
     CHECK(ts_sp_model_.IsValid());

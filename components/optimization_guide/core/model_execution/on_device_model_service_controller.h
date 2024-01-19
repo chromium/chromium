@@ -4,6 +4,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_SERVICE_CONTROLLER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_SERVICE_CONTROLLER_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -118,15 +119,19 @@ class OnDeviceModelServiceController
    public:
     SafetyModelInfo(
         const ModelInfo& model_info,
+        uint32_t num_output_categories,
         base::flat_map<proto::ModelExecutionFeature,
                        proto::FeatureTextSafetyConfiguration> feature_configs);
     ~SafetyModelInfo();
 
-    ModelInfo model_info;
+    const ModelInfo model_info;
+    const uint32_t num_output_categories;
     base::flat_map<proto::ModelExecutionFeature,
                    proto::FeatureTextSafetyConfiguration>
         feature_configs;
   };
+
+  bool InitializeSafetyModelInfo(const ModelInfo& model_info);
 
   // Sets the base model directory and initializes the on-device model
   // controller with the parameters, to be ready to load models and execute.
