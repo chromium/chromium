@@ -1,0 +1,41 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("client") {
+  sources = [
+    "tips_notification_client.h",
+    "tips_notification_client.mm",
+  ]
+  deps = [
+    ":utils",
+    "//base",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/shared/model/utils",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "utils.h",
+    "utils.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tips_notification_client_unittest.mm" ]
+  deps = [
+    ":client",
+    ":utils",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/default_browser/model:test_support",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/testing:block_swizzler",
+    "//third_party/ocmock",
+  ]
+}

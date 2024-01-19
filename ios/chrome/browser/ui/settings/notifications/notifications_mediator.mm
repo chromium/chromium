@@ -254,6 +254,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self updateDetailTextForItem:_priceTrackingItem withClientID:clientID];
       break;
     }
+    case PushNotificationClientId::kTips:
     case PushNotificationClientId::kContent: {
       break;
     }

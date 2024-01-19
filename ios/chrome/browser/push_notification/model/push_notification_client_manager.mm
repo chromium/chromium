@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 
 #import <Foundation/Foundation.h>
+
 #import <vector>
 
 #import "components/optimization_guide/core/optimization_guide_features.h"
@@ -13,12 +14,17 @@
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tips_notifications/model/tips_notification_client.h"
 
 PushNotificationClientManager::PushNotificationClientManager() {
   if (IsPriceNotificationsEnabled() &&
       optimization_guide::features::IsPushNotificationsEnabled()) {
     AddPushNotificationClient(
         std::make_unique<CommercePushNotificationClient>());
+  }
+
+  if (IsIOSTipsNotificationsEnabled()) {
+    AddPushNotificationClient(std::make_unique<TipsNotificationClient>());
   }
 }
 PushNotificationClientManager::~PushNotificationClientManager() = default;
@@ -85,11 +91,15 @@ void PushNotificationClientManager::RegisterActionableNotifications() {
 
 std::vector<PushNotificationClientId>
 PushNotificationClientManager::GetClients() {
+  std::vector<PushNotificationClientId> client_ids = {
+      PushNotificationClientId::kCommerce};
   if (IsContentPushNotificationsEnabled()) {
-    return {PushNotificationClientId::kCommerce,
-            PushNotificationClientId::kContent};
+    client_ids.push_back(PushNotificationClientId::kContent);
   }
-  return {PushNotificationClientId::kCommerce};
+  if (IsIOSTipsNotificationsEnabled()) {
+    client_ids.push_back(PushNotificationClientId::kTips);
+  }
+  return client_ids;
 }
 
 void PushNotificationClientManager::OnSceneActiveForegroundBrowserReady() {
@@ -106,6 +116,9 @@ std::string PushNotificationClientManager::PushNotificationClientIdToString(
     }
     case PushNotificationClientId::kContent: {
       return kContentNotificationKey;
+    }
+    case PushNotificationClientId::kTips: {
+      return kTipsNotificationKey;
     }
   }
 }

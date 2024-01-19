@@ -47,8 +47,9 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
         initWithChromeBrowserStateManager:test_manager_.get()];
     fake_id_ = [FakeSystemIdentity fakeIdentity1];
     // TODO(b/318863934): Remove flag when enabled by default.
-    feature_list_.InitWithFeatures({/*enabled=*/kContentPushNotifications},
-                                   {/*disabled=*/});
+    feature_list_.InitWithFeatures(
+        {/*enabled=*/kContentPushNotifications, kIOSTipsNotifications},
+        {/*disabled=*/});
     AddTestCasesToManager(manager_, browser_state_info(),
                           base::SysNSStringToUTF8(fake_id_.gaiaID),
                           default_browser_state_file_path_);
@@ -113,8 +114,16 @@ TEST_F(PushNotificationSettingsUtilTest, TestPermissionState) {
   TurnNotificationForKey(YES, kContentNotificationKey, pref_service_);
   state = GetNotificationPermissionState(
       base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
+  EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
+  TurnNotificationForKey(YES, kTipsNotificationKey, pref_service_);
+  state = GetNotificationPermissionState(
+      base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
   EXPECT_EQ(ClientPermissionState::ENABLED, state);
   // Start disabling in a different order.
+  TurnNotificationForKey(NO, kTipsNotificationKey, pref_service_);
+  state = GetNotificationPermissionState(
+      base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
+  EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnNotificationForKey(NO, kContentNotificationKey, pref_service_);
   state = GetNotificationPermissionState(
       base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
@@ -181,6 +190,31 @@ TEST_F(PushNotificationSettingsUtilTest,
   EXPECT_EQ(ClientPermissionState::DISABLED, state);
   TurnNotificationForKey(YES, kContentNotificationKey, pref_service_);
   state = GetClientPermissionState(PushNotificationClientId::kContent,
+                                   base::SysNSStringToUTF8(fake_id_.gaiaID),
+                                   pref_service_);
+  EXPECT_EQ(ClientPermissionState::ENABLED, state);
+}
+
+#pragma mark - Tips Notifications Tests
+
+TEST_F(PushNotificationSettingsUtilTest,
+       TestMobileNotificationsEnabledForTips) {
+  BOOL isMobileNotificationsEnabled = IsMobileNotificationsEnabledForAnyClient(
+      base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
+  EXPECT_FALSE(isMobileNotificationsEnabled);
+  TurnNotificationForKey(YES, kTipsNotificationKey, pref_service_);
+  isMobileNotificationsEnabled = IsMobileNotificationsEnabledForAnyClient(
+      base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
+  EXPECT_TRUE(isMobileNotificationsEnabled);
+}
+
+TEST_F(PushNotificationSettingsUtilTest, TestGetClientPermissionStateForTips) {
+  ClientPermissionState state = GetClientPermissionState(
+      PushNotificationClientId::kTips, base::SysNSStringToUTF8(fake_id_.gaiaID),
+      pref_service_);
+  EXPECT_EQ(ClientPermissionState::DISABLED, state);
+  TurnNotificationForKey(YES, kTipsNotificationKey, pref_service_);
+  state = GetClientPermissionState(PushNotificationClientId::kTips,
                                    base::SysNSStringToUTF8(fake_id_.gaiaID),
                                    pref_service_);
   EXPECT_EQ(ClientPermissionState::ENABLED, state);

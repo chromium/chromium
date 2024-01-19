@@ -295,6 +295,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/tabs/model:unit_tests",
     "//ios/chrome/browser/tabs/model/inactive_tabs:unit_tests",
     "//ios/chrome/browser/tabs_search/model:unit_tests",
+    "//ios/chrome/browser/tips_notifications/model:unit_tests",
     "//ios/chrome/browser/translate/model:unit_tests",
     "//ios/chrome/browser/ui/account_picker:unit_tests",
     "//ios/chrome/browser/ui/alert_view:unit_tests",

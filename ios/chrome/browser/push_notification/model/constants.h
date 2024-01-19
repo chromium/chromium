@@ -9,9 +9,12 @@
 
 // Key of commerce notification used in pref
 // kFeaturePushNotificationPermissions.
-extern std::string const kCommerceNotificationKey;
+extern const char kCommerceNotificationKey[];
 
 // Key of content notification used in pref kFeaturePushNotificationPermissions.
-extern std::string const kContentNotificationKey;
+extern const char kContentNotificationKey[];
+
+// Key of tips notification used in pref kFeaturePushNotificationPermissions.
+extern const char kTipsNotificationKey[];
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_CONSTANTS_H_

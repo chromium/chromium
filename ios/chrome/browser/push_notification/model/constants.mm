@@ -4,5 +4,6 @@
 
 #import "ios/chrome/browser/push_notification/model/constants.h"
 
-std::string const kCommerceNotificationKey = "PRICE_DROP";
-std::string const kContentNotificationKey = "CONTENT";
+const char kCommerceNotificationKey[] = "PRICE_DROP";
+const char kContentNotificationKey[] = "CONTENT";
+const char kTipsNotificationKey[] = "TIPS";
