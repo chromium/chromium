@@ -128,6 +128,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
 
   // BrowserListObserver
   void OnBrowserSetLastActive(Browser* browser) override;
+  void OnBrowserNoLongerActive(Browser* browser) override;
 
   // Deactivates the automatic closing of the partial bubble.
   void DeactivateAutoClose();
@@ -229,6 +230,10 @@ class DownloadToolbarButtonView : public ToolbarButton,
 
   SkColor GetProgressColor(bool is_disabled, bool is_active) const;
 
+  // Makes the required visual changes to set/unset the button into a dormant
+  // or normal state.
+  void UpdateIconDormant();
+
   // DownloadBubbleRowListViewInfoObserver implementation:
   void OnAnyRowRemoved() override;
 
@@ -240,6 +245,21 @@ class DownloadToolbarButtonView : public ToolbarButton,
   std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
   raw_ptr<DownloadBubbleContentsView> bubble_contents_ = nullptr;
+
+  // Whether the progress ring in the icon should be updated continuously
+  // (false), or the icon should be displayed as dormant (true). This is a
+  // performance optimization to avoid redrawing the progress ring too many
+  // times when a download is occurring. If the button is dormant, the progress
+  // ring is drawn as a solid circle, and the icon color is the inactive color.
+  // The badge is still drawn, and the icon shape is still updated. (These
+  // change relatively infrequently, so it's ok to update them when they
+  // change.) Buttons on browsers other than the most recent active browser for
+  // the profile are generally dormant.
+  bool is_dormant_ = false;
+
+  // Following 3 fields are updated by the display controller and determine the
+  // visual characteristics of the button icon. Note that they are still updated
+  // as if the button is normal, even when the button is in a dormant state.
 
   // Current or pending state of the icon. If changing these, trigger
   // UpdateIcon() afterwards.
