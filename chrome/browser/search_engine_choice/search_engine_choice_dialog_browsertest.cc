@@ -12,12 +12,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
@@ -32,6 +34,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -280,6 +283,20 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
 
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
+  }
+
+  // Unlike `CreateGuestBrowser()` which opens a blank tab, this opens a guest
+  // profile and shows the Guest NTP.
+  Browser* CreateGuestBrowserAndLoadNTP() {
+    base::test::TestFuture<Browser*> browser_future;
+    profiles::SwitchToGuestProfile(browser_future.GetCallback());
+    Browser* guest_browser = browser_future.Get();
+    CHECK(guest_browser);
+    content::WebContents* ntp_contents =
+        guest_browser->tab_strip_model()->GetActiveWebContents();
+    content::WaitForLoadStop(ntp_contents);
+    CHECK(NewTabUI::IsNewTab(ntp_contents->GetURL()));
+    return guest_browser;
   }
 
  private:
@@ -745,33 +762,21 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   // Initial browser
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
 
-  Browser* first_guest_session = CreateGuestBrowser();
+  Browser* first_guest_session = CreateGuestBrowserAndLoadNTP();
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
   auto* first_service = static_cast<MockSearchEngineChoiceDialogService*>(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           first_guest_session->profile()));
 
-  // Navigate to a URL to display the dialog.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      first_guest_session, GURL(chrome::kChromeUINewTabPageURL),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-
   EXPECT_TRUE(first_service->IsShowingDialog(first_guest_session));
   CloseBrowserSynchronously(first_guest_session);
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
 
-  Browser* second_guest_session = CreateGuestBrowser();
+  Browser* second_guest_session = CreateGuestBrowserAndLoadNTP();
   auto* second_service = static_cast<MockSearchEngineChoiceDialogService*>(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           second_guest_session->profile()));
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
-
-  // Navigate to a URL to display the dialog.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      second_guest_session, GURL(chrome::kChromeUINewTabPageURL),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   EXPECT_TRUE(second_service->IsShowingDialog(second_guest_session));
 }

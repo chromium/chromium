@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -343,7 +344,17 @@ bool SearchEngineChoiceDialogService::HasPendingDialog(Browser& browser) {
 }
 
 bool SearchEngineChoiceDialogService::IsUrlSuitableForDialog(GURL url) {
-  if (url == chrome::kChromeUINewTabPageURL || url == url::kAboutBlankURL) {
+  if (url == chrome::kChromeUINewTabPageURL) {
+    return true;  // NTP URL for regular profiles.
+  }
+
+  if (NewTabUI::IsNewTab(url)) {
+    // This is the NTP URL for Guest and incognito profiles. This service is not
+    // instantiated for incognito profiles, so this is only Guest in practice.
+    return true;
+  }
+
+  if (url == url::kAboutBlankURL) {
     return true;
   }
   if (url.SchemeIs(content::kChromeDevToolsScheme)) {
