@@ -104,7 +104,8 @@ void InsecureCredentialsManager::StartWeakCheck(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void InsecureCredentialsManager::SaveInsecureCredential(
-    const LeakCheckCredential& leak) {
+    const LeakCheckCredential& leak,
+    TriggerBackendNotification should_trigger_notification) {
   // Iterate over all currently saved credentials and mark those as insecure
   // that have the same canonicalized username and password.
   const std::u16string canonicalized_username =
@@ -117,7 +118,7 @@ void InsecureCredentialsManager::SaveInsecureCredential(
       credential_to_update.password_issues.insert_or_assign(
           InsecureType::kLeaked,
           InsecurityMetadata(base::Time::Now(), IsMuted(false),
-                             TriggerBackendNotification(false)));
+                             should_trigger_notification));
       presenter_->EditSavedCredentials(credential, credential_to_update);
     }
   }

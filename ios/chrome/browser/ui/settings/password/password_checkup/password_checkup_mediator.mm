@@ -88,7 +88,8 @@ bool DidPasswordCheckupFail(PasswordCheckState currentState) {
 #pragma mark - PasswordCheckupViewControllerDelegate
 
 - (void)startPasswordCheck {
-  _passwordCheckManager->StartPasswordCheck();
+  _passwordCheckManager->StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
 }
 
 #pragma mark - PasswordCheckObserver

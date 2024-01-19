@@ -58,6 +58,7 @@ source_set("leak_detection") {
     ":proto",
     "//base",
     "//components/autofill/core/common",
+    "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
     "//components/prefs",

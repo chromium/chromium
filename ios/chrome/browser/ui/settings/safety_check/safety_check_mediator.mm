@@ -862,7 +862,8 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
             }
           });
     } else {
-      self.passwordCheckManager->StartPasswordCheck();
+      self.passwordCheckManager->StartPasswordCheck(
+          password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
     }
     // Want to show the loading wheel momentarily.
     dispatch_after(

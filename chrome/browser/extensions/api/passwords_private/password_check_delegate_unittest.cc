@@ -350,7 +350,8 @@ TEST_F(PasswordCheckDelegateTest, GetInsecureCredentialsFillsFieldsCorrectly) {
   store().AddLogin(MakeSavedAndroidPassword(
       kExampleApp, kUsername2, "Example App", kExampleCom, kWeakPassword2));
   RunUntilIdle();
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   RunUntilIdle();
 
   EXPECT_THAT(
@@ -371,7 +372,8 @@ TEST_F(PasswordCheckDelegateTest, WeakCheckNotifiesObservers) {
   EXPECT_FALSE(base::Contains(event_router_observer().events(), kEventName));
 
   // Verify that the event gets fired after weak check is complete.
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   RunUntilIdle();
   EXPECT_EQ(events::PASSWORDS_PRIVATE_ON_INSECURE_CREDENTIALS_CHANGED,
             event_router_observer().events().at(kEventName)->histogram_value);
@@ -381,7 +383,8 @@ TEST_F(PasswordCheckDelegateTest, WeakCheckNotifiesObservers) {
 TEST_F(PasswordCheckDelegateTest, WeakCheckWhenUserSignedOut) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
   RunUntilIdle();
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   RunUntilIdle();
 
   EXPECT_THAT(
@@ -667,7 +670,8 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundDoesNotCreateCredential) {
   PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   store().AddLogin(form);
   RunUntilIdle();
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   store().RemoveLogin(form);
   RunUntilIdle();
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
@@ -685,7 +689,8 @@ TEST_F(PasswordCheckDelegateTest, NoLeakedFound) {
   store().AddLogin(form);
   RunUntilIdle();
 
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
       LeakCheckCredential(kUsername1, kPassword1), IsLeaked(false));
   RunUntilIdle();
@@ -702,7 +707,8 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesCredential) {
   store().AddLogin(form);
   RunUntilIdle();
 
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
       LeakCheckCredential(kUsername1, kPassword1), IsLeaked(true));
   RunUntilIdle();
@@ -740,7 +746,8 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesMultipleCredential) {
   RunUntilIdle();
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
       LeakCheckCredential(kUsername1, kPassword1), IsLeaked(true));
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
@@ -792,7 +799,8 @@ TEST_F(PasswordCheckDelegateTest, GetPasswordCheckStatusSignedOut) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   RunUntilIdle();
 
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   EXPECT_EQ(api::passwords_private::PasswordCheckState::kSignedOut,
             delegate().GetPasswordCheckStatus().state);
 }
@@ -804,7 +812,8 @@ TEST_F(PasswordCheckDelegateTest, GetPasswordCheckStatusRunning) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   RunUntilIdle();
 
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   PasswordCheckStatus status = delegate().GetPasswordCheckStatus();
   EXPECT_EQ(api::passwords_private::PasswordCheckState::kRunning, status.state);
   EXPECT_EQ(0, *status.already_processed);
@@ -830,7 +839,8 @@ TEST_F(PasswordCheckDelegateTest, GetPasswordCheckStatusCount) {
   store().AddLogin(MakeSavedFederatedCredential(kExampleCom, kUsername3));
   RunUntilIdle();
 
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   PasswordCheckStatus status = delegate().GetPasswordCheckStatus();
   EXPECT_EQ(*status.total_number_of_passwords, 2);
 }
@@ -841,7 +851,8 @@ TEST_F(PasswordCheckDelegateTest, GetPasswordCheckStatusOffline) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   RunUntilIdle();
 
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   identity_test_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError::FromConnectionError(net::ERR_TIMED_OUT));
 
@@ -856,7 +867,8 @@ TEST_F(PasswordCheckDelegateTest, GetPasswordCheckStatusOther) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   RunUntilIdle();
 
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   identity_test_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
@@ -908,7 +920,8 @@ TEST_F(PasswordCheckDelegateTest,
 
   // Verify that a subsequent call to StartPasswordCheck() results in the
   // expected event.
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   EXPECT_EQ(events::PASSWORDS_PRIVATE_ON_PASSWORD_CHECK_STATUS_CHANGED,
             event_router_observer().events().at(kEventName)->histogram_value);
 }
@@ -935,7 +948,8 @@ TEST_F(PasswordCheckDelegateTest, LastTimePasswordCheckCompletedIsSet) {
 // Checks that a transition into the idle state after starting a check results
 // in resetting the kLastTimePasswordCheckCompleted pref to the current time.
 TEST_F(PasswordCheckDelegateTest, LastTimePasswordCheckCompletedReset) {
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   RunUntilIdle();
 
   service()->set_state_and_notify(BulkLeakCheckService::State::kIdle);
@@ -958,7 +972,8 @@ TEST_F(PasswordCheckDelegateTest, OnCredentialDoneUpdatesProgress) {
   RunUntilIdle();
 
   const auto event_iter = event_router_observer().events().find(kEventName);
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   EXPECT_EQ(events::PASSWORDS_PRIVATE_ON_PASSWORD_CHECK_STATUS_CHANGED,
             event_iter->second->histogram_value);
   auto status =
@@ -1008,8 +1023,12 @@ TEST_F(PasswordCheckDelegateTest,
                                         /*account_store=*/nullptr);
   PasswordCheckDelegate delegate = CreateDelegate(&new_presenter);
   new_presenter.Init();
-  delegate.StartPasswordCheck(callback1.Get());
-  delegate.StartPasswordCheck(callback2.Get());
+  delegate.StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck,
+      callback1.Get());
+  delegate.StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck,
+      callback2.Get());
   RunUntilIdle();
 }
 
@@ -1055,7 +1074,8 @@ TEST_F(PasswordCheckDelegateTest,
   store().AddLogin(MakeSavedAndroidPassword(
       kExampleApp, kUsername1, "Example App", kExampleCom, kWeakPassword2));
   RunUntilIdle();
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   RunUntilIdle();
 
   auto credential_with_the_same_password =
@@ -1088,7 +1108,8 @@ TEST_F(PasswordCheckDelegateTest,
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
   store().AddLogin(MakeSavedPassword(kExampleApp, kUsername2, kWeakPassword1));
   RunUntilIdle();
-  delegate().StartPasswordCheck();
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
   RunUntilIdle();
 
   EXPECT_EQ(1u, delegate().GetCredentialsWithReusedPassword().size());

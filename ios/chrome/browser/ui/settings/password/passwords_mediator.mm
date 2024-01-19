@@ -159,7 +159,8 @@ using password_manager::WarningType;
 }
 
 - (void)startPasswordCheck {
-  _passwordCheckManager->StartPasswordCheck();
+  _passwordCheckManager->StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
 }
 
 - (NSString*)formattedElapsedTimeSinceLastCheck {

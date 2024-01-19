@@ -18,6 +18,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -269,6 +270,8 @@ void PasswordStatusCheckService::RunPasswordCheckAsync() {
   CHECK(IsInfrastructureReady());
   password_check_state_ = PasswordCheckState::kStarting;
   password_check_delegate_->StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::
+          kDesktopProactivePasswordCheckup,
       base::BindOnce(&PasswordStatusCheckService::OnStartedPasswordCheck,
                      weak_ptr_factory_.GetWeakPtr()));
   base::RecordAction(base::UserMetricsAction("SafetyHub_PasswordCheckRun"));

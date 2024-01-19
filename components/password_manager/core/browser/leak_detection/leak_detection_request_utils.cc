@@ -180,4 +180,19 @@ std::unique_ptr<signin::AccessTokenFetcher> RequestAccessToken(
       signin::AccessTokenFetcher::Mode::kImmediate);
 }
 
+TriggerBackendNotification ShouldTriggerBackendNotificationForInitiator(
+    LeakDetectionInitiator initiator) {
+  switch (initiator) {
+    case LeakDetectionInitiator::kDesktopProactivePasswordCheckup:
+    case LeakDetectionInitiator::kIosProactivePasswordCheckup:
+      return TriggerBackendNotification(true);
+    case LeakDetectionInitiator::kSignInCheck:
+    case LeakDetectionInitiator::kBulkSyncedPasswordsCheck:
+    case LeakDetectionInitiator::kEditCheck:
+    case LeakDetectionInitiator::kIGABulkSyncedPasswordsCheck:
+    case LeakDetectionInitiator::kClientUseCaseUnspecified:
+      return TriggerBackendNotification(false);
+  }
+}
+
 }  // namespace password_manager

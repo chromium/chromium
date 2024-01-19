@@ -235,7 +235,8 @@ TEST_F(IOSChromePasswordCheckManagerTest,
 TEST_F(IOSChromePasswordCheckManagerTest, LastTimePasswordCheckCompletedReset) {
   FastForwardBy(base::Days(1));
 
-  manager().StartPasswordCheck();
+  manager().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kIosProactivePasswordCheckup);
   RunUntilIdle();
 
   static_cast<BulkLeakCheckServiceInterface::Observer*>(&manager())
@@ -274,7 +275,8 @@ TEST_F(IOSChromePasswordCheckManagerTest, InsecureCredentialCountsMetrics) {
                  /*is_muted=*/true);
   store().AddLogin(muted_form);
 
-  manager().StartPasswordCheck();
+  manager().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kIosProactivePasswordCheckup);
   RunUntilIdle();
 
   static_cast<BulkLeakCheckServiceInterface::Observer*>(&manager())
@@ -347,7 +349,8 @@ TEST_F(IOSChromePasswordCheckManagerTest, CheckFinishedWithDelay) {
   EXPECT_CALL(observer, InsecureCredentialsChanged).Times(2);
   EXPECT_CALL(observer, PasswordCheckStatusChanged(PasswordCheckState::kIdle))
       .Times(2);
-  manager().StartPasswordCheck();
+  manager().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kIosProactivePasswordCheckup);
   RunUntilIdle();
 
   static_cast<BulkLeakCheckServiceInterface::Observer*>(&manager())
@@ -373,7 +376,8 @@ TEST_F(IOSChromePasswordCheckManagerTest, WeakCredentialsAreReturned) {
   store().AddLogin(weak_form);
 
   RunUntilIdle();
-  manager().StartPasswordCheck();
+  manager().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kIosProactivePasswordCheckup);
   RunUntilIdle();
 
   EXPECT_THAT(manager().GetInsecureCredentials(),
@@ -391,7 +395,8 @@ TEST_F(IOSChromePasswordCheckManagerTest, ReusedCredentialsAreReturned) {
   store().AddLogin(form_with_same_password_2);
 
   RunUntilIdle();
-  manager().StartPasswordCheck();
+  manager().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kIosProactivePasswordCheckup);
   RunUntilIdle();
 
   std::vector<CredentialUIEntry> insecure_credentials =

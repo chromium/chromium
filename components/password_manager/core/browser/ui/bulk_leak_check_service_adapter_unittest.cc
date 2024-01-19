@@ -167,7 +167,9 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheck) {
       .WillOnce(MoveArg<1>(&credentials));
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
-  adapter().StartBulkLeakCheck();
+  adapter().StartBulkLeakCheck(
+      LeakDetectionInitiator::kBulkSyncedPasswordsCheck,
+      /*key=*/nullptr, /*data=*/nullptr);
 
   std::vector<LeakCheckCredential> expected;
   expected.push_back(MakeLeakCheckCredential(kUsername1, kPassword1));
@@ -195,7 +197,8 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckAttachesData) {
       .WillOnce(MoveArg<1>(&credentials));
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
-  adapter().StartBulkLeakCheck(kKey, &data);
+  adapter().StartBulkLeakCheck(
+      LeakDetectionInitiator::kBulkSyncedPasswordsCheck, kKey, &data);
 
   EXPECT_NE(nullptr, credentials.at(0).GetUserData(kKey));
 }
@@ -215,13 +218,15 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckDedupes) {
 
   auto leak_check = std::make_unique<NiceMockBulkLeakCheck>();
   std::vector<LeakCheckCredential> credentials;
-  EXPECT_CALL(
-      *leak_check,
-      CheckCredentials(LeakDetectionInitiator::kBulkSyncedPasswordsCheck, _))
+  EXPECT_CALL(*leak_check,
+              CheckCredentials(
+                  LeakDetectionInitiator::kDesktopProactivePasswordCheckup, _))
       .WillOnce(MoveArg<1>(&credentials));
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
-  adapter().StartBulkLeakCheck();
+  adapter().StartBulkLeakCheck(
+      LeakDetectionInitiator::kDesktopProactivePasswordCheckup,
+      /*key=*/nullptr, /*data=*/nullptr);
 
   std::vector<LeakCheckCredential> expected;
   expected.push_back(MakeLeakCheckCredential(u"alice", kPassword1));
@@ -239,10 +244,12 @@ TEST_F(BulkLeakCheckServiceAdapterTest, MultipleStarts) {
   EXPECT_CALL(leak_check_ref, CheckCredentials);
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
-  EXPECT_TRUE(adapter().StartBulkLeakCheck());
+  EXPECT_TRUE(adapter().StartBulkLeakCheck(
+      LeakDetectionInitiator::kDesktopProactivePasswordCheckup));
 
   EXPECT_CALL(leak_check_ref, CheckCredentials).Times(0);
-  EXPECT_FALSE(adapter().StartBulkLeakCheck());
+  EXPECT_FALSE(adapter().StartBulkLeakCheck(
+      LeakDetectionInitiator::kDesktopProactivePasswordCheckup));
 }
 
 // Checks that stopping the leak check correctly resets the state of the bulk
@@ -255,7 +262,8 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StopBulkLeakCheck) {
   EXPECT_CALL(*leak_check, CheckCredentials);
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
-  adapter().StartBulkLeakCheck();
+  adapter().StartBulkLeakCheck(
+      LeakDetectionInitiator::kDesktopProactivePasswordCheckup);
   EXPECT_EQ(BulkLeakCheckService::State::kRunning,
             adapter().GetBulkLeakCheckState());
 

@@ -9,6 +9,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/task_runner.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 
 namespace password_manager {
@@ -20,7 +21,10 @@ enum class LeakDetectionInitiator {
   kBulkSyncedPasswordsCheck = 1,
   kEditCheck = 2,
   kIGABulkSyncedPasswordsCheck = 3,
-  kMaxValue = kIGABulkSyncedPasswordsCheck,
+  kClientUseCaseUnspecified = 4,
+  kDesktopProactivePasswordCheckup = 5,
+  kIosProactivePasswordCheckup = 6,
+  kMaxValue = kIosProactivePasswordCheckup,
 };
 
 // Contains the payload for analysing one credential against the leaks.
@@ -95,6 +99,11 @@ void AnalyzeResponse(std::unique_ptr<SingleLookupResponse> response,
 [[nodiscard]] std::unique_ptr<signin::AccessTokenFetcher> RequestAccessToken(
     signin::IdentityManager* identity_manager,
     signin::AccessTokenFetcher::TokenCallback callback);
+
+// Checks if for given initiator a backend notification should be triggered for
+// newly detected leaked credentials.
+TriggerBackendNotification ShouldTriggerBackendNotificationForInitiator(
+    LeakDetectionInitiator initiator);
 
 }  // namespace password_manager
 

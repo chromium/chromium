@@ -2078,6 +2078,7 @@ static_library("ui") {
       "//components/page_load_metrics/browser",
       "//components/paint_preview/buildflags",
       "//components/password_manager/content/common",
+      "//components/password_manager/core/browser/leak_detection:leak_detection",
       "//components/performance_manager:site_data_proto",
       "//components/power_bookmarks/core:features",
       "//components/push_notification:push_notification",

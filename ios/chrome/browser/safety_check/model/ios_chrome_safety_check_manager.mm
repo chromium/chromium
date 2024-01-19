@@ -9,6 +9,7 @@
 #import "base/functional/bind.h"
 #import "base/location.h"
 #import "base/time/time.h"
+#import "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -152,7 +153,8 @@ void IOSChromeSafetyCheckManager::StartPasswordCheck() {
 
   previous_password_check_state_ = password_check_state_;
 
-  password_check_manager_->StartPasswordCheck();
+  password_check_manager_->StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kIosProactivePasswordCheckup);
 
   // NOTE: There's no need to explicitly set `password_check_state_` to
   // `kRunning` here because this class conforms to

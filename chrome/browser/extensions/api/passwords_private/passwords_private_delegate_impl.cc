@@ -54,6 +54,7 @@
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
@@ -857,7 +858,9 @@ bool PasswordsPrivateDelegateImpl::UnmuteInsecureCredential(
 
 void PasswordsPrivateDelegateImpl::StartPasswordCheck(
     StartPasswordCheckCallback callback) {
-  password_check_delegate_.StartPasswordCheck(std::move(callback));
+  password_check_delegate_.StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck,
+      std::move(callback));
   auto* sentiment_service =
       TrustSafetySentimentServiceFactory::GetForProfile(profile_);
   if (!sentiment_service) {

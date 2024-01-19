@@ -566,7 +566,8 @@ TEST_F(InsecureCredentialsManagerTest, SaveCompromisedPassword) {
 
   password_form.password_issues[InsecureType::kLeaked].create_time =
       base::Time::Now();
-  provider().SaveInsecureCredential(credential);
+  provider().SaveInsecureCredential(credential,
+                                    TriggerBackendNotification(true));
   RunUntilIdle();
 
   EXPECT_THAT(provider().GetInsecureCredentialEntries(),
@@ -589,7 +590,8 @@ TEST_F(InsecureCredentialsManagerTest, SaveCompromisedPasswordForExistingLeak) {
   store().AddLogin(password_form);
   RunUntilIdle();
 
-  provider().SaveInsecureCredential(credential);
+  provider().SaveInsecureCredential(credential,
+                                    TriggerBackendNotification(false));
   RunUntilIdle();
 
   EXPECT_EQ(insecurity_metadata,
@@ -1386,7 +1388,8 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest, SaveCompromisedPassword) {
 
   // Mark `kUsername1`, `kPassword1` as compromised, a new entry should be
   // added to both stores.
-  provider().SaveInsecureCredential(MakeLeakCredential(kUsername1, kPassword1));
+  provider().SaveInsecureCredential(MakeLeakCredential(kUsername1, kPassword1),
+                                    TriggerBackendNotification(false));
   RunUntilIdle();
 
   EXPECT_EQ(2U, provider().GetInsecureCredentialEntries().size());
@@ -1409,7 +1412,8 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest, SaveCompromisedPassword) {
   // Now, mark `kUsername1`, `kPassword216` as compromised, a new entry should
   // be added only to the account store.
   provider().SaveInsecureCredential(
-      MakeLeakCredential(kUsername1, kPassword216));
+      MakeLeakCredential(kUsername1, kPassword216),
+      TriggerBackendNotification(false));
   RunUntilIdle();
 
   EXPECT_EQ(3U, provider().GetInsecureCredentialEntries().size());
