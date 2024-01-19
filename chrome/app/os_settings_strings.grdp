@@ -6387,10 +6387,10 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_WEBSITES_SECTION_TITLE" translateable="false" desc="The title of the Websites section of the privacy hub sensor subpages.">
     Websites
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_CAMERA_PERMISSIONS_IN_CHROME_TEXT" translateable="false" desc="The label of the Chrome row in the Websites section of the camera subpage. This row is displayed when camera is allowed.">
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_CAMERA_PERMISSIONS_IN_CHROME_TEXT" desc="The label of the Chrome row in the Websites section of the camera subpage. This row is displayed when camera is allowed.">
     Manage site camera permissions in Chrome
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_MIC_PERMISSIONS_IN_CHROME_TEXT" translateable="false" desc="The label of the Chrome row in the Websites section of the microphone subpage. This row is displayed when microphone is allowed.">
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_MIC_PERMISSIONS_IN_CHROME_TEXT" desc="The label of the Chrome row in the Websites section of the microphone subpage. This row is displayed when microphone is allowed.">
     Manage site microphone permissions in Chrome
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_LOCATION_PERMISSIONS_IN_CHROME_TEXT" translateable="false" desc="The label of the Chrome row in the Websites section of the location subpage. This row is displayed when location is allowed.">
