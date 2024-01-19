@@ -4,6 +4,7 @@
 
 #include "base/message_loop/message_pump_epoll.h"
 
+#include <errno.h>
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
 
@@ -13,6 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/ranges/algorithm.h"
@@ -160,7 +162,15 @@ void MessagePumpEpoll::AddEpollEvent(EpollEventEntry& entry) {
   const uint32_t events = entry.ComputeActiveEvents();
   epoll_event event{.events = events, .data = {.ptr = &entry}};
   int rv = epoll_ctl(epoll_.get(), EPOLL_CTL_ADD, entry.fd, &event);
-  DPCHECK(rv == 0);
+  if (rv != 0) {
+    // TODO(crbug.com/1519703): Certain tests use regular files to simulate
+    // devices, which does not support epoll. Adding a fake entry for testing
+    // purposes as a temporary workaround. Tests need to be fixed and this
+    // workaround removed.
+    DLOG(WARNING) << "Can not register file descriptor for epoll event";
+    DPCHECK(errno == EPERM);
+    entry.stopped = true;
+  }
   entry.registered_events = events;
 }
 
