@@ -101,7 +101,7 @@ void PCMQueueInAudioInputStream::Start(AudioInputCallback* callback) {
     // actually runs, we can cancel the pending start.
     deferred_start_cb_.Reset(base::BindOnce(&PCMQueueInAudioInputStream::Start,
                                             base::Unretained(this), callback));
-    manager_->GetTaskRunnerForStreamClient()->PostDelayedTask(
+    manager_->GetTaskRunner()->PostDelayedTask(
         FROM_HERE, deferred_start_cb_.callback(), defer_start);
     return;
   }
@@ -158,7 +158,7 @@ void PCMQueueInAudioInputStream::Close() {
       HandleError(err);
   }
 
-  manager_->ReleaseInputStreamUsingRealDevice(this);
+  manager_->ReleaseInputStream(this);
   // CARE: This object may now be destroyed.
 }
 

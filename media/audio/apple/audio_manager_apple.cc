@@ -10,4 +10,6 @@ AudioManagerApple::AudioManagerApple(std::unique_ptr<AudioThread> audio_thread,
                                      AudioLogFactory* audio_log_factory)
     : AudioManagerBase(std::move(audio_thread), audio_log_factory) {}
 
+AudioManagerApple::~AudioManagerApple() = default;
+
 }  // namespace media

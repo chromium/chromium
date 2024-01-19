@@ -1028,11 +1028,6 @@ base::TimeDelta AudioManagerMac::GetDeferStreamStartTimeout() const {
   return base::TimeDelta();
 }
 
-base::SingleThreadTaskRunner* AudioManagerMac::GetTaskRunnerForStreamClient()
-    const {
-  return AudioManagerBase::GetTaskRunner();
-}
-
 void AudioManagerMac::StopAmplitudePeakTrace() {
   TraceAmplitudePeak(/*trace_start=*/false);
 }
@@ -1247,32 +1242,6 @@ void AudioManagerMac::ReleaseOutputStream(AudioOutputStream* stream) {
 }
 
 void AudioManagerMac::ReleaseInputStream(AudioInputStream* stream) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  auto stream_it = base::ranges::find(basic_input_streams_, stream);
-  if (stream_it == basic_input_streams_.end()) {
-    low_latency_input_streams_.remove(static_cast<AUAudioInputStream*>(stream));
-  } else {
-    basic_input_streams_.erase(stream_it);
-  }
-
-  AudioManagerBase::ReleaseInputStream(stream);
-}
-
-void AudioManagerMac::ReleaseOutputStreamUsingRealDevice(
-    AudioOutputStream* stream,
-    AudioDeviceID device_id) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  DVLOG(1) << __FUNCTION__ << " Closing output stream with id=0x" << std::hex
-           << device_id << " requested_buffer_size: "
-           << static_cast<AUHALStream*>(stream)->requested_buffer_size();
-
-  // Start by closing down the specified output stream.
-  output_streams_.remove(static_cast<AUHALStream*>(stream));
-  AudioManagerBase::ReleaseOutputStream(stream);
-}
-
-void AudioManagerMac::ReleaseInputStreamUsingRealDevice(
-    AudioInputStream* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   auto stream_it = base::ranges::find(basic_input_streams_, stream);
   if (stream_it == basic_input_streams_.end()) {

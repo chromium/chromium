@@ -16,7 +16,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
-#include "media/audio/apple/audio_io_stream_client.h"
 #include "media/audio/apple/audio_manager_apple.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/mac/audio_auhal_mac.h"
@@ -82,14 +81,6 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   void ReleaseOutputStream(AudioOutputStream* stream) override;
   void ReleaseInputStream(AudioInputStream* stream) override;
 
-  // Called by AUHALStream::Close() before releasing the stream.
-  // This method is a special contract between the real stream and the audio
-  // manager and it ensures that we only try to increase the IO buffer size
-  // for real streams and not for fake or mocked streams.
-  void ReleaseOutputStreamUsingRealDevice(AudioOutputStream* stream,
-                                          AudioDeviceID device_id) override;
-  void ReleaseInputStreamUsingRealDevice(AudioInputStream* stream) override;
-
   // Changes the I/O buffer size for |device_id| if |desired_buffer_size| is
   // lower than the current device buffer size. The buffer size can also be
   // modified under other conditions. See comments in the corresponding cc-file
@@ -100,7 +91,6 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
                              AudioUnitElement element,
                              size_t desired_buffer_size) override;
   base::TimeDelta GetDeferStreamStartTimeout() const override;
-  base::SingleThreadTaskRunner* GetTaskRunnerForStreamClient() const override;
   void StopAmplitudePeakTrace() override;
 
   // Implementation of AudioManagerApple

@@ -31,7 +31,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "media/audio/apple/audio_io_stream_client.h"
+#include "media/audio/apple/audio_manager_apple.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/mac/scoped_audio_unit.h"
@@ -81,7 +81,7 @@ class AUHALStream : public AudioOutputStream {
   // |client| creates this object.
   // |device| is the CoreAudio device to use for the stream.
   // It will often be the default output device.
-  AUHALStream(AudioIOStreamClient* client,
+  AUHALStream(AudioManagerApple* manager,
               const AudioParameters& params,
               AudioDeviceID device,
               const AudioManager::LogCallback& log_callback);
@@ -140,7 +140,7 @@ class AUHALStream : public AudioOutputStream {
   void UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp);
 
   // Our creator, the audio manager needs to be notified when we close.
-  const raw_ptr<AudioIOStreamClient> client_;
+  const raw_ptr<AudioManagerApple> manager_;
 
   const AudioParameters params_;
 

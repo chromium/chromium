@@ -157,7 +157,6 @@ source_set("audio") {
 
   if (is_apple) {
     sources += [
-      "apple/audio_io_stream_client.h",
       "apple/audio_manager_apple.cc",
       "apple/audio_manager_apple.h",
       "mac/audio_auhal_mac.cc",
