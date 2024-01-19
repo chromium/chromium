@@ -5,7 +5,10 @@
 #include "components/qr_code_generator/qr_code_generator.h"
 
 #include <limits>
+#include <map>
 #include <optional>
+#include <string>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/rand_util.h"

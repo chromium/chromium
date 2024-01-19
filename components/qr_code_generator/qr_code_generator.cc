@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include <ostream>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
@@ -746,7 +747,7 @@ absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
   }
 
   const size_t total_bytes = version_info_->total_bytes();
-  uint8_t interleaved_data[total_bytes];
+  std::vector<uint8_t> interleaved_data(total_bytes);
   CHECK(total_bytes == group1_block_bytes * group1_num_blocks +
                            group2_block_bytes * group2_num_blocks)
       << "internal error";
@@ -807,7 +808,7 @@ absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
     // It's translated into a 15-bit value using the table on page 80.
     PutFormatBits(FormatInformationForECC(version_info_->ecc)[mask_num]);
 
-    PutBits(interleaved_data, sizeof(interleaved_data),
+    PutBits(interleaved_data.data(), interleaved_data.size(),
             kMaskFunctions[mask_num]);
 
     const unsigned penalty = CountPenaltyPoints();
@@ -819,7 +820,7 @@ absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
 
   // Repaint with the best mask function.
   PutFormatBits(FormatInformationForECC(version_info_->ecc)[best_mask]);
-  PutBits(interleaved_data, sizeof(interleaved_data),
+  PutBits(interleaved_data.data(), interleaved_data.size(),
           kMaskFunctions[best_mask]);
 
   GeneratedCode code;
@@ -1153,9 +1154,9 @@ void QRCodeGenerator::AddErrorCorrection(base::span<uint8_t> out,
   // the coefficient of z^i.
 
   // Multiplication of |in| by x^k thus just involves moving it up.
-  uint8_t remainder[block_bytes];
+  std::vector<uint8_t> remainder(block_bytes);
   DCHECK_LE(block_ec_bytes, block_bytes);
-  memset(remainder, 0, block_ec_bytes);
+  memset(remainder.data(), 0, block_ec_bytes);
   size_t block_data_bytes = block_bytes - block_ec_bytes;
   // Reed-Solomon input is backwards. See section 7.5.2.
   for (size_t i = 0; i < block_data_bytes; i++) {
