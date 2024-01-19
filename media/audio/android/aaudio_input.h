@@ -7,6 +7,7 @@
 
 #include <aaudio/AAudio.h>
 
+#include "base/android/requires_api.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -21,8 +22,9 @@ namespace media {
 class AudioManagerAndroid;
 
 // Class which uses the AAudio library to record input.
-class AAudioInputStream : public AudioInputStream,
-                          public AAudioStreamWrapper::DataCallback {
+class REQUIRES_ANDROID_API(AAUDIO_MIN_API) AAudioInputStream
+    : public AudioInputStream,
+      public AAudioStreamWrapper::DataCallback {
  public:
   AAudioInputStream(AudioManagerAndroid* manager,
                     const AudioParameters& params);

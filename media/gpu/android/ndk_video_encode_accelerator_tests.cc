@@ -27,6 +27,8 @@
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
 
+#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \
+    NDK_MEDIA_CODEC_MIN_API)
 using testing::Return;
 
 namespace media {
@@ -41,8 +43,11 @@ class NdkVideoEncoderAcceleratorTest
       public VideoEncodeAccelerator::Client {
  public:
   void SetUp() override {
-    if (!NdkVideoEncodeAccelerator::IsSupported())
+    if (__builtin_available(android NDK_MEDIA_CODEC_MIN_API, *)) {
+      // Negation results in compiler warning.
+    } else {
       GTEST_SKIP() << "Not supported Android version";
+    }
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     feature_list_.InitAndEnableFeature(kPlatformHEVCEncoderSupport);
@@ -336,3 +341,4 @@ INSTANTIATE_TEST_SUITE_P(AllNdkEncoderTests,
                          PrintTestParams);
 
 }  // namespace media
+#pragma clang attribute pop

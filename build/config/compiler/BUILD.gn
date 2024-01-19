@@ -1760,9 +1760,9 @@ config("default_warnings") {
       cflags += [ "/wd4244" ]
     }
   } else {
-    if (is_apple && !is_nacl) {
-      # When compiling Objective-C, warns if a method is used whose
-      # availability is newer than the deployment target.
+    if ((is_apple || is_android) && !is_nacl) {
+      # Warns if a method is used whose availability is newer than the
+      # deployment target.
       cflags += [ "-Wunguarded-availability" ]
     }
 
