@@ -32,17 +32,17 @@ class ConvergeToExtremeLengthAddressMetricsTest
 
     old_address_ = i18n_model_definition::CreateAddressComponentModel();
     new_address_ = i18n_model_definition::CreateAddressComponentModel();
-    old_street_ = test_api(old_address_.get())
+    old_street_ = test_api(old_address_.Root())
                       .GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
-    new_street_ = test_api(new_address_.get())
+    new_street_ = test_api(new_address_.Root())
                       .GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
   }
   void TearDown() override { TearDownHelper(); }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<AddressComponent> old_address_;
-  std::unique_ptr<AddressComponent> new_address_;
+  AddressComponentsStore old_address_;
+  AddressComponentsStore new_address_;
   raw_ptr<AddressComponent> old_street_ = nullptr;
   raw_ptr<AddressComponent> new_street_ = nullptr;
 };

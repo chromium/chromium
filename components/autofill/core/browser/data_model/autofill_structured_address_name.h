@@ -94,6 +94,10 @@ class NameLast : public AddressComponent {
  private:
   // As the fallback, write everything to the second last name.
   void ParseValueAndAssignSubcomponentsByFallbackMethod() override;
+
+  NameLastFirst last_first_;
+  NameLastConjunction last_conjuntion_;
+  NameLastSecond last_second_;
 };
 
 // Compound that represents a full name. It contains a honorific, a first
@@ -130,6 +134,10 @@ class NameFull : public AddressComponent {
 
   // Returns the format string to create the full name from its subcomponents.
   std::u16string GetFormatString() const override;
+
+  NameFirst first_;
+  NameMiddle middle_;
+  NameLast last_;
 };
 
 }  // namespace autofill

@@ -140,7 +140,14 @@ enum MergeMode {
 class AddressComponent {
  public:
   // List of node subcomponents.
-  using SubcomponentsList = std::vector<std::unique_ptr<AddressComponent>>;
+  //
+  // Nodes within the tree-like structure do not directly manage the lifetime
+  // of their child nodes. Instead, the AddressComponentsStore serves as the
+  // central owner and manager of AddressComponent nodes. When the
+  // AddressComponentsStore is being destroyed, the WipeRawPtrsForDestruction
+  // function is used to clear the list of child pointers. This prevents
+  // dangling pointers during the destruction process.
+  using SubcomponentsList = std::vector<AddressComponent*>;
 
   // Constructor for a compound child node.
   AddressComponent(FieldType storage_type,
@@ -162,9 +169,9 @@ class AddressComponent {
   bool operator==(const AddressComponent& right) const = delete;
   bool operator!=(const AddressComponent& right) const = delete;
 
-  // Compares the values and verification statuses with |other| recursively down
-  // the tree. Returns true iff all values and verification statuses of this
-  // node and its subtree and |other| with its subtree are the same.
+  // Compares the values and verification statuses with |other| recursively
+  // down the tree. Returns true iff all values and verification statuses of
+  // this node and its subtree and |other| with its subtree are the same.
   bool SameAs(const AddressComponent& other) const;
 
   // Copies the values and verification statuses from |other| recursively down
@@ -174,9 +181,9 @@ class AddressComponent {
   // Returns the autofill storage type stored in |storage_type_|.
   FieldType GetStorageType() const;
 
-  // Returns the type to be used instead of `field_type` when this type does not
-  // contain information. It is assumed that `field_type` is a supported type of
-  // the node,
+  // Returns the type to be used instead of `field_type` when this type does
+  // not contain information. It is assumed that `field_type` is a supported
+  // type of the node,
   FieldType GetFallbackType(FieldType field_type) const;
 
   // Returns the string representation of |storage_type_|.
@@ -322,7 +329,8 @@ class AddressComponent {
   const SubcomponentsList& Subcomponents() const { return subcomponents_; }
 
   // Returns a vector containing sorted normalized tokens of the
-  // value of the component. The tokens are lazily calculated when first needed.
+  // value of the component. The tokens are lazily calculated when first
+  // needed.
   const std::vector<AddressToken> GetSortedTokens() const;
 
   // Recursively unsets all subcomponents.
@@ -349,6 +357,10 @@ class AddressComponent {
 
   // Returns true if all values of all descendent nodes are empty.
   bool AllDescendantsAreEmpty() const;
+
+  // Wipes internal pointers to guarantee that no pointers are kept to other
+  // potentially destructed nodes.
+  void WipeRawPtrsForDestruction();
 
  protected:
   // Returns the verification score of this component and its substructure.
@@ -460,9 +472,10 @@ class AddressComponent {
   // from the component to a leaf node.
   int MaximumNumberOfAssignedAddressComponentsOnNodeToLeafPaths() const;
 
-  // Function to be called by child nodes on construction to register
-  // themselves as child nodes.
-  void RegisterChildNode(std::unique_ptr<AddressComponent> child);
+  // Function to be called by nodes to register new children in their
+  // `subcomponents_` list. Note that children are owned by the corresponding
+  // `AddressComponentsStore` and not by `this`.
+  void RegisterChildNode(AddressComponent* child);
 
   // Returns the node in the tree that supports `field_type`. This node, if it
   // exists, is unique by definition. Returns nullptr if no such node exists.
@@ -570,7 +583,10 @@ class AddressComponent {
   std::optional<std::vector<AddressToken>> sorted_normalized_tokens_;
 
   // A pointer to the parent node. It is set to nullptr if the node is the root
-  // node of the AddressComponent tree.
+  // node of the AddressComponent tree. Similarly to the `subcomponents_`, the
+  // parent node is owned by the `AddressComponentsStore`. The pointer is
+  // cleared during the destruction process of the `AddressComponentsStore` to
+  // prevent dangling pointers to other nodes.
   raw_ptr<AddressComponent> parent_ = nullptr;
 
   // Defines if and how two components can be merged.

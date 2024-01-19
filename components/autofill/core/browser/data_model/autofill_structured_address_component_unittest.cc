@@ -71,14 +71,19 @@ class TestCompoundNameAddressComponent : public AddressComponent {
  public:
   TestCompoundNameAddressComponent()
       : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
-    RegisterChildNode(std::make_unique<TestAtomicFirstNameAddressComponent>());
-    RegisterChildNode(std::make_unique<TestAtomicMiddleNameAddressComponent>());
-    RegisterChildNode(std::make_unique<TestAtomicLastNameAddressComponent>());
+    RegisterChildNode(&first_name);
+    RegisterChildNode(&middle_name);
+    RegisterChildNode(&last_name);
   }
 
   AddressComponent* GetFirstNameSubComponentForTesting() {
     return test_api(this).GetNodeForType(NAME_FIRST);
   }
+
+ private:
+  TestAtomicFirstNameAddressComponent first_name;
+  TestAtomicMiddleNameAddressComponent middle_name;
+  TestAtomicLastNameAddressComponent last_name;
 };
 
 // Creates a compound name for testing purposes that uses an expression to
@@ -87,9 +92,9 @@ class TestCompoundNameRegExParsedAddressComponent : public AddressComponent {
  public:
   TestCompoundNameRegExParsedAddressComponent()
       : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
-    RegisterChildNode(std::make_unique<TestAtomicFirstNameAddressComponent>());
-    RegisterChildNode(std::make_unique<TestAtomicMiddleNameAddressComponent>());
-    RegisterChildNode(std::make_unique<TestAtomicLastNameAddressComponent>());
+    RegisterChildNode(&first_name);
+    RegisterChildNode(&middle_name);
+    RegisterChildNode(&last_name);
 
     expression1_ =
         BuildRegExFromPattern("(?P<NAME_FULL>(?P<NAME_MIDDLE>\\d*))");
@@ -106,6 +111,10 @@ class TestCompoundNameRegExParsedAddressComponent : public AddressComponent {
  private:
   std::unique_ptr<const RE2> expression1_;
   std::unique_ptr<const RE2> expression2_;
+
+  TestAtomicFirstNameAddressComponent first_name;
+  TestAtomicMiddleNameAddressComponent middle_name;
+  TestAtomicLastNameAddressComponent last_name;
 };
 
 // Creates a compound name with a custom format for testing purposes.
@@ -113,15 +122,20 @@ class TestCompoundNameCustomFormatAddressComponent : public AddressComponent {
  public:
   TestCompoundNameCustomFormatAddressComponent()
       : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
-    RegisterChildNode(std::make_unique<TestAtomicFirstNameAddressComponent>());
-    RegisterChildNode(std::make_unique<TestAtomicMiddleNameAddressComponent>());
-    RegisterChildNode(std::make_unique<TestAtomicLastNameAddressComponent>());
+    RegisterChildNode(&first_name);
+    RegisterChildNode(&middle_name);
+    RegisterChildNode(&last_name);
   }
 
   // Introduces a custom format with a leading last name.
   std::u16string GetFormatString() const override {
     return u"${NAME_LAST}, ${NAME_FIRST}";
   }
+
+ private:
+  TestAtomicFirstNameAddressComponent first_name;
+  TestAtomicMiddleNameAddressComponent middle_name;
+  TestAtomicLastNameAddressComponent last_name;
 };
 
 // Creates a compound name with a custom format for testing purposes.
@@ -130,15 +144,20 @@ class TestCompoundNameCustomAffixedFormatAddressComponent
  public:
   TestCompoundNameCustomAffixedFormatAddressComponent()
       : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
-    RegisterChildNode(std::make_unique<TestAtomicFirstNameAddressComponent>());
-    RegisterChildNode(std::make_unique<TestAtomicMiddleNameAddressComponent>());
-    RegisterChildNode(std::make_unique<TestAtomicLastNameAddressComponent>());
+    RegisterChildNode(&first_name);
+    RegisterChildNode(&middle_name);
+    RegisterChildNode(&last_name);
   }
 
   // Introduces a custom format with a leading last name.
   std::u16string GetFormatString() const override {
     return u"${NAME_LAST;Dr. ; MD}, ${NAME_FIRST}";
   }
+
+ private:
+  TestAtomicFirstNameAddressComponent first_name;
+  TestAtomicMiddleNameAddressComponent middle_name;
+  TestAtomicLastNameAddressComponent last_name;
 };
 
 // Creates a fictional compound component with sub- and sub subcomponents.
@@ -146,8 +165,11 @@ class TestCompoundNameWithTitleAddressComponent : public AddressComponent {
  public:
   TestCompoundNameWithTitleAddressComponent()
       : AddressComponent(CREDIT_CARD_NAME_FULL, {}, MergeMode::kDefault) {
-    RegisterChildNode(std::make_unique<TestCompoundNameAddressComponent>());
+    RegisterChildNode(&name);
   }
+
+ private:
+  TestCompoundNameAddressComponent name;
 };
 
 // Creates a tree that is not proper in the sense that it contains the same type
@@ -156,8 +178,11 @@ class TestNonProperFirstNameAddressComponent : public AddressComponent {
  public:
   TestNonProperFirstNameAddressComponent()
       : AddressComponent(NAME_FIRST, {}, MergeMode::kDefault) {
-    RegisterChildNode(std::make_unique<TestAtomicFirstNameAddressComponent>());
+    RegisterChildNode(&first_name);
   }
+
+ private:
+  TestAtomicFirstNameAddressComponent first_name;
 };
 
 // Tests the merging of two atomic component with |type|, and values
@@ -664,15 +689,20 @@ class TestCompoundNameAddressComponentCustomFormatSeparator
  public:
   TestCompoundNameAddressComponentCustomFormatSeparator()
       : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
-    RegisterChildNode(std::make_unique<TestAtomicFirstNameAddressComponent>());
-    RegisterChildNode(std::make_unique<TestAtomicMiddleNameAddressComponent>());
-    RegisterChildNode(std::make_unique<TestAtomicLastNameAddressComponent>());
+    RegisterChildNode(&first_name);
+    RegisterChildNode(&middle_name);
+    RegisterChildNode(&last_name);
   }
 
   // Introduces a custom format with multiple separators.
   std::u16string GetFormatString() const override {
     return u"${NAME_FIRST}, ${NAME_MIDDLE} .,${NAME_LAST}";
   }
+
+ private:
+  TestAtomicFirstNameAddressComponent first_name;
+  TestAtomicMiddleNameAddressComponent middle_name;
+  TestAtomicLastNameAddressComponent last_name;
 };
 
 // Tests formatting the unstructured value from the subcomponents.
@@ -736,15 +766,20 @@ class TestCompoundNameAddressComponentCustomFormatNewLineSeparator
  public:
   TestCompoundNameAddressComponentCustomFormatNewLineSeparator()
       : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
-    RegisterChildNode(std::make_unique<TestAtomicFirstNameAddressComponent>());
-    RegisterChildNode(std::make_unique<TestAtomicMiddleNameAddressComponent>());
-    RegisterChildNode(std::make_unique<TestAtomicLastNameAddressComponent>());
+    RegisterChildNode(&first_name);
+    RegisterChildNode(&middle_name);
+    RegisterChildNode(&last_name);
   }
 
   // Introduces a custom format with multiple separators.
   std::u16string GetFormatString() const override {
     return u"${NAME_FIRST}\n${NAME_MIDDLE} .,${NAME_LAST}";
   }
+
+ private:
+  TestAtomicFirstNameAddressComponent first_name;
+  TestAtomicMiddleNameAddressComponent middle_name;
+  TestAtomicLastNameAddressComponent last_name;
 };
 
 // Tests formatting the unstructured value from the subcomponents.
@@ -1623,8 +1658,8 @@ TEST(AutofillStructuredAddressAddressComponent, MergeChildsAndReformatRoot) {
   test_api(&older).SetMergeMode(MergeMode::kMergeChildrenAndReformatIfNeeded);
   // Set the merge modes of the children to replace empty values and use
   // supersets.
-  for (auto& subcomponent : older.Subcomponents()) {
-    test_api(subcomponent.get()).SetMergeMode(kReplaceEmpty | kReplaceSubset);
+  for (AddressComponent* subcomponent : older.Subcomponents()) {
+    test_api(subcomponent).SetMergeMode(kReplaceEmpty | kReplaceSubset);
   }
 
   AddressComponentTestValues older_values = {
@@ -1835,8 +1870,9 @@ TEST(AutofillStructuredAddressAddressComponent,
   base::test::ScopedFeatureList feature{
       features::kAutofillEnableSupportForApartmentNumbers};
 
-  std::unique_ptr<AddressComponent> address =
+  AddressComponentsStore store =
       i18n_model_definition::CreateAddressComponentModel();
+  AddressComponent* root = store.Root();
 
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
@@ -1863,9 +1899,9 @@ TEST(AutofillStructuredAddressAddressComponent,
        .value = "Flat 42",
        .status = VerificationStatus::kObserved}};
 
-  SetTestValues(address.get(), test_values);
-  address->CompleteFullTree();
-  VerifyTestValues(address.get(), expectation);
+  SetTestValues(root, test_values);
+  root->CompleteFullTree();
+  VerifyTestValues(root, expectation);
 }
 
 TEST(AutofillStructuredAddressAddressComponent, TestFillTreeGapsParsing) {

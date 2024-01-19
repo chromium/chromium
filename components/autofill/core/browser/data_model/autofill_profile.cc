@@ -536,8 +536,7 @@ void AutofillProfile::GetSupportedTypes(FieldTypeSet* supported_types) const {
 FieldType AutofillProfile::GetStorableTypeOf(FieldType type) const {
   const FieldTypeGroup group = GroupTypeOfFieldType(type);
   if (group == FieldTypeGroup::kAddress) {
-    return address_.GetStructuredAddress().GetStorableTypeOf(type).value_or(
-        type);
+    return address_.GetRoot().GetStorableTypeOf(type).value_or(type);
   } else if (group == FieldTypeGroup::kName) {
     return name_.GetStructuredName().GetStorableTypeOf(type).value_or(type);
   } else if (group == FieldTypeGroup::kPhone) {
@@ -692,9 +691,8 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
   // TODO(crbug.com/1417975): Remove when
   // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
   bool has_different_address = false;
-  const AddressComponent& address = GetAddress().GetStructuredAddress();
-  const AddressComponent& other_address =
-      profile.GetAddress().GetStructuredAddress();
+  const AddressComponent& address = GetAddress().GetRoot();
+  const AddressComponent& other_address = profile.GetAddress().GetRoot();
 
   for (FieldType type : types) {
     // Prefer GetInfo over GetRawInfo so that a reasonable value is retrieved
@@ -1358,9 +1356,8 @@ AutofillType AutofillProfile::GetFillingType(AutofillType field_type) const {
           GetNameInfo().GetStructuredName().GetFallbackTypeForType(
               field_type.GetStorableType()));
     case FieldTypeGroup::kAddress:
-      return AutofillType(
-          GetAddress().GetStructuredAddress().GetFallbackTypeForType(
-              field_type.GetStorableType()));
+      return AutofillType(GetAddress().GetRoot().GetFallbackTypeForType(
+          field_type.GetStorableType()));
     case FieldTypeGroup::kEmail:
     case FieldTypeGroup::kCompany:
     case FieldTypeGroup::kPhone:

@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_I18N_API_H_
 
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_model/autofill_address_component_store.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_hierarchies.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_parsing_expression_components.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
@@ -20,10 +21,11 @@ constexpr AddressCountryCode kLegacyHierarchyCountryCode =
     AddressCountryCode(kLegacyHierarchyCountryCodeString);
 
 // Creates an instance of the address hierarchy model corresponding to the
-// provided country. All the nodes have empty values, except for the country
-// node (if exist). If no country is provided, returns the legacy address
-// hierarchy.
-std::unique_ptr<AddressComponent> CreateAddressComponentModel(
+// provided country. All the hierarchy nodes are contained within the store.
+// The hierarchy is accessible through its root (e.g. ADDRESS_HOME_ADDRESS). All
+// the nodes have empty values, except for the country node (if exist). If no
+// country is provided, returns the legacy address hierarchy.
+AddressComponentsStore CreateAddressComponentModel(
     AddressCountryCode country_code = AddressCountryCode(""));
 
 // Returns the formatting expression corresponding to the provided parameters.

@@ -86,14 +86,14 @@ class AutofillStructuredAddress : public testing::Test {
 };
 
 void TestAddressLineParsing(const AddressLineParsingTestCase& test_case) {
-  std::unique_ptr<AddressComponent> address =
+  AddressComponentsStore address =
       i18n_model_definition::CreateAddressComponentModel();
   const AddressComponentTestValues test_value = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
        .value = test_case.street_address,
        .status = VerificationStatus::kObserved}};
 
-  SetTestValues(address.get(), test_value);
+  SetTestValues(address.Root(), test_value);
 
   SCOPED_TRACE(test_case);
 
@@ -125,12 +125,14 @@ void TestAddressLineParsing(const AddressLineParsingTestCase& test_case) {
       {.type = ADDRESS_HOME_FLOOR,
        .value = test_case.floor,
        .status = VerificationStatus::kParsed}};
-  VerifyTestValues(address.get(), expectation);
+  VerifyTestValues(address.Root(), expectation);
 }
 
 void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
-  std::unique_ptr<AddressComponent> address =
+  AddressComponentsStore store =
       i18n_model_definition::CreateAddressComponentModel();
+  AddressComponent* root = store.Root();
+
   const AddressComponentTestValues test_value = {
       {.type = ADDRESS_HOME_COUNTRY,
        .value = test_case.country_code,
@@ -157,7 +159,7 @@ void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
        .value = test_case.admin_level_2,
        .status = VerificationStatus::kObserved}};
 
-  SetTestValues(address.get(), test_value);
+  SetTestValues(root, test_value);
 
   SCOPED_TRACE(test_case);
 
@@ -192,7 +194,7 @@ void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
       {.type = ADDRESS_HOME_ADMIN_LEVEL2,
        .value = test_case.admin_level_2,
        .status = VerificationStatus::kObserved}};
-  VerifyTestValues(address.get(), expectation);
+  VerifyTestValues(root, expectation);
 }
 
 using AddressComponentTestValues = std::vector<AddressComponentTestValue>;
@@ -414,7 +416,7 @@ TEST_F(AutofillStructuredAddress, TestStreetAddressFormatting) {
 
 // Test setting the first address line.
 TEST_F(AutofillStructuredAddress, TestSettingsAddressLine1) {
-  std::unique_ptr<AddressComponent> address =
+  AddressComponentsStore store =
       i18n_model_definition::CreateAddressComponentModel();
 
   AddressComponentTestValues test_values = {
@@ -422,7 +424,7 @@ TEST_F(AutofillStructuredAddress, TestSettingsAddressLine1) {
        .value = "line1",
        .status = VerificationStatus::kObserved}};
 
-  SetTestValues(address.get(), test_values);
+  SetTestValues(store.Root(), test_values);
 
   AddressComponentTestValues expectation = {
       {.type = ADDRESS_HOME_LINE1,
@@ -432,13 +434,14 @@ TEST_F(AutofillStructuredAddress, TestSettingsAddressLine1) {
        .value = "line1",
        .status = VerificationStatus::kObserved}};
 
-  VerifyTestValues(address.get(), expectation);
+  VerifyTestValues(store.Root(), expectation);
 }
 
 // Test settings all three address lines.
 TEST_F(AutofillStructuredAddress, TestSettingsAddressLines) {
-  std::unique_ptr<AddressComponent> address =
+  AddressComponentsStore store =
       i18n_model_definition::CreateAddressComponentModel();
+
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_LINE1,
        .value = "line1",
@@ -450,7 +453,7 @@ TEST_F(AutofillStructuredAddress, TestSettingsAddressLines) {
        .value = "line3",
        .status = VerificationStatus::kObserved}};
 
-  SetTestValues(address.get(), test_values);
+  SetTestValues(store.Root(), test_values);
 
   AddressComponentTestValues expectation = {
       {.type = ADDRESS_HOME_LINE1,
@@ -466,19 +469,20 @@ TEST_F(AutofillStructuredAddress, TestSettingsAddressLines) {
        .value = "line1\nline2\nline3",
        .status = VerificationStatus::kObserved}};
 
-  VerifyTestValues(address.get(), expectation);
+  VerifyTestValues(store.Root(), expectation);
 }
 
 // Test setting the home street address and retrieving the address lines.
 TEST_F(AutofillStructuredAddress, TestGettingAddressLines) {
-  std::unique_ptr<AddressComponent> address =
+  AddressComponentsStore store =
       i18n_model_definition::CreateAddressComponentModel();
+
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
        .value = "line1\nline2\nline3",
        .status = VerificationStatus::kObserved}};
 
-  SetTestValues(address.get(), test_values);
+  SetTestValues(store.Root(), test_values);
 
   AddressComponentTestValues expectation = {
       {.type = ADDRESS_HOME_LINE1,
@@ -494,20 +498,21 @@ TEST_F(AutofillStructuredAddress, TestGettingAddressLines) {
        .value = "line1\nline2\nline3",
        .status = VerificationStatus::kObserved}};
 
-  VerifyTestValues(address.get(), expectation);
+  VerifyTestValues(store.Root(), expectation);
 }
 
 // Test setting the home street address and retrieving the address lines.
 TEST_F(AutofillStructuredAddress,
        TestGettingAddressLines_JoinedAdditionalLines) {
-  std::unique_ptr<AddressComponent> address =
+  AddressComponentsStore store =
       i18n_model_definition::CreateAddressComponentModel();
+
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
        .value = "line1\nline2\nline3\nline4",
        .status = VerificationStatus::kObserved}};
 
-  SetTestValues(address.get(), test_values);
+  SetTestValues(store.Root(), test_values);
 
   AddressComponentTestValues expectation = {
       {.type = ADDRESS_HOME_LINE1,
@@ -523,14 +528,16 @@ TEST_F(AutofillStructuredAddress,
        .value = "line1\nline2\nline3\nline4",
        .status = VerificationStatus::kObserved}};
 
-  VerifyTestValues(address.get(), expectation);
+  VerifyTestValues(store.Root(), expectation);
 }
 
 // Tests that a structured address gets successfully migrated and subsequently
 // completed.
 TEST_F(AutofillStructuredAddress, TestMigrationAndFinalization) {
-  std::unique_ptr<AddressComponent> address =
+  AddressComponentsStore store =
       i18n_model_definition::CreateAddressComponentModel();
+  AddressComponent* root = store.Root();
+
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
        .value = "123 Street name",
@@ -542,11 +549,11 @@ TEST_F(AutofillStructuredAddress, TestMigrationAndFinalization) {
        .value = "CA",
        .status = VerificationStatus::kNoStatus}};
 
-  SetTestValues(address.get(), test_values, /*finalize=*/false);
+  SetTestValues(root, test_values, /*finalize=*/false);
 
   // Invoke the migration. This should only change the verification statuses of
   // the set values.
-  address->MigrateLegacyStructure();
+  root->MigrateLegacyStructure();
 
   AddressComponentTestValues expectation_after_migration = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
@@ -566,10 +573,10 @@ TEST_F(AutofillStructuredAddress, TestMigrationAndFinalization) {
        .status = VerificationStatus::kNoStatus},
   };
 
-  VerifyTestValues(address.get(), expectation_after_migration);
+  VerifyTestValues(root, expectation_after_migration);
 
   // Complete the address tree and check the expectations.
-  address->CompleteFullTree();
+  root->CompleteFullTree();
 
   AddressComponentTestValues expectation_after_completion = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
@@ -595,15 +602,17 @@ TEST_F(AutofillStructuredAddress, TestMigrationAndFinalization) {
        .status = VerificationStatus::kParsed},
   };
 
-  VerifyTestValues(address.get(), expectation_after_completion);
+  VerifyTestValues(root, expectation_after_completion);
 }
 
 // Tests that the migration does not happen of the root node
 // (ADDRESS_HOME_ADDRESS) already has a verification status.
 TEST_F(AutofillStructuredAddress,
        TestMigrationAndFinalization_AlreadyMigrated) {
-  std::unique_ptr<AddressComponent> address =
+  AddressComponentsStore store =
       i18n_model_definition::CreateAddressComponentModel();
+  AddressComponent* root = store.Root();
+
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
        .value = "123 Street name",
@@ -618,21 +627,22 @@ TEST_F(AutofillStructuredAddress,
        .value = "the address",
        .status = VerificationStatus::kFormatted}};
 
-  SetTestValues(address.get(), test_values, /*finalize=*/false);
+  SetTestValues(root, test_values, /*finalize=*/false);
 
   // Invoke the migration. Since the ADDRESS_HOME_ADDRESS node already has a
   // verification status, the address is considered as already migrated.
-  address->MigrateLegacyStructure();
+  root->MigrateLegacyStructure();
 
   // Verify that the address was not changed by the migration.
-  VerifyTestValues(address.get(), test_values);
+  VerifyTestValues(root, test_values);
 }
 
 // Tests that a valid address structure is not wiped.
 TEST_F(AutofillStructuredAddress,
        TestWipingAnInvalidSubstructure_ValidStructure) {
-  std::unique_ptr<AddressComponent> address =
+  AddressComponentsStore store =
       i18n_model_definition::CreateAddressComponentModel();
+  AddressComponent* root = store.Root();
   AddressComponentTestValues address_with_valid_structure = {
       // This structure is valid because all structured components are contained
       // in the unstructured representation.
@@ -647,18 +657,19 @@ TEST_F(AutofillStructuredAddress,
        .status = VerificationStatus::kParsed},
   };
 
-  SetTestValues(address.get(), address_with_valid_structure,
+  SetTestValues(root, address_with_valid_structure,
                 /*finalize=*/false);
 
-  EXPECT_FALSE(address->WipeInvalidStructure());
-  VerifyTestValues(address.get(), address_with_valid_structure);
+  EXPECT_FALSE(root->WipeInvalidStructure());
+  VerifyTestValues(root, address_with_valid_structure);
 }
 
 // Tests that an invalid address structure is wiped.
 TEST_F(AutofillStructuredAddress,
        TestWipingAnInvalidSubstructure_InValidStructure) {
-  std::unique_ptr<AddressComponent> address =
+  AddressComponentsStore store =
       i18n_model_definition::CreateAddressComponentModel();
+  AddressComponent* root = store.Root();
   AddressComponentTestValues address_with_valid_structure = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
        .value = "Some other name",
@@ -676,10 +687,10 @@ TEST_F(AutofillStructuredAddress,
        .status = VerificationStatus::kParsed},
   };
 
-  SetTestValues(address.get(), address_with_valid_structure,
+  SetTestValues(root, address_with_valid_structure,
                 /*finalize=*/false);
 
-  EXPECT_TRUE(address->WipeInvalidStructure());
+  EXPECT_TRUE(root->WipeInvalidStructure());
 
   AddressComponentTestValues address_with_wiped_structure = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
@@ -692,20 +703,20 @@ TEST_F(AutofillStructuredAddress,
        .value = "",
        .status = VerificationStatus::kNoStatus},
   };
-  VerifyTestValues(address.get(), address_with_wiped_structure);
+  VerifyTestValues(root, address_with_wiped_structure);
 }
 
 // Test that the correct common country between structured addresses is
 // computed.
 TEST_F(AutofillStructuredAddress, TestGetCommonCountry) {
-  std::unique_ptr<AddressComponent> address1 =
+  AddressComponentsStore address1 =
       i18n_model_definition::CreateAddressComponentModel();
-  std::unique_ptr<AddressComponent> address2 =
+  AddressComponentsStore address2 =
       i18n_model_definition::CreateAddressComponentModel();
   AddressComponent* country1 =
-      test_api(address1.get()).GetNodeForType(ADDRESS_HOME_COUNTRY);
+      test_api(address1.Root()).GetNodeForType(ADDRESS_HOME_COUNTRY);
   AddressComponent* country2 =
-      test_api(address2.get()).GetNodeForType(ADDRESS_HOME_COUNTRY);
+      test_api(address2.Root()).GetNodeForType(ADDRESS_HOME_COUNTRY);
 
   // No countries set.
   EXPECT_EQ(country1->GetCommonCountry(*country2), u"");
@@ -729,14 +740,15 @@ TEST_F(AutofillStructuredAddress, TestGetCommonCountry) {
 
 // Tests retrieving a value for comparison for a field type.
 TEST_F(AutofillStructuredAddress, TestGetValueForComparisonForType) {
-  std::unique_ptr<AddressComponent> address =
+  AddressComponentsStore store =
       i18n_model_definition::CreateAddressComponentModel();
+
   AddressComponent* country_code =
-      test_api(address.get()).GetNodeForType(ADDRESS_HOME_COUNTRY);
+      test_api(store.Root()).GetNodeForType(ADDRESS_HOME_COUNTRY);
   country_code->SetValue(u"US", VerificationStatus::kObserved);
 
   AddressComponent* street_address =
-      test_api(address.get()).GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
+      test_api(store.Root()).GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
   EXPECT_TRUE(street_address->SetValueForType(ADDRESS_HOME_STREET_ADDRESS,
                                               u"Main Street\nOther Street",
                                               VerificationStatus::kObserved));
@@ -776,12 +788,14 @@ class HasNewerStreetAddressPrecedenceInMergingTest
     using TestFeatureState =
         HasNewerStreetAddressPrecedenceInMergingTestCase::FeatureState;
     HasNewerStreetAddressPrecedenceInMergingTestCase test_case = GetParam();
-    root_old_node_ = i18n_model_definition::CreateAddressComponentModel();
-    root_old_node_->SetValueForType(ADDRESS_HOME_COUNTRY, u"US",
-                                    VerificationStatus::kParsed);
-    root_new_node_ = i18n_model_definition::CreateAddressComponentModel();
-    root_new_node_->SetValueForType(ADDRESS_HOME_COUNTRY, u"US",
-                                    VerificationStatus::kParsed);
+    old_address_ = i18n_model_definition::CreateAddressComponentModel();
+    test_api(old_address_.Root())
+        .GetNodeForType(ADDRESS_HOME_COUNTRY)
+        ->SetValue(u"US", VerificationStatus::kParsed);
+    new_address_ = i18n_model_definition::CreateAddressComponentModel();
+    test_api(new_address_.Root())
+        .GetNodeForType(ADDRESS_HOME_COUNTRY)
+        ->SetValue(u"US", VerificationStatus::kParsed);
     if (test_case.feature_state != TestFeatureState::kDisabled) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
           features::kAutofillConvergeToExtremeLengthStreetAddress,
@@ -796,8 +810,8 @@ class HasNewerStreetAddressPrecedenceInMergingTest
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<AddressComponent> root_old_node_;
-  std::unique_ptr<AddressComponent> root_new_node_;
+  AddressComponentsStore old_address_;
+  AddressComponentsStore new_address_;
 };
 
 // Tests the logging of which street name (old or new) was chosen during merging
@@ -805,10 +819,10 @@ class HasNewerStreetAddressPrecedenceInMergingTest
 TEST_P(HasNewerStreetAddressPrecedenceInMergingTest,
        HasNewerStreetAddressPrecedenceInMergingTestCase) {
   HasNewerStreetAddressPrecedenceInMergingTestCase test_case = GetParam();
-  auto* old_street = test_api(root_old_node_.get())
-                         .GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
-  auto* new_street = test_api(root_new_node_.get())
-                         .GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
+  auto* old_street =
+      test_api(old_address_.Root()).GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
+  auto* new_street =
+      test_api(new_address_.Root()).GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
   old_street->SetValue(test_case.old_street_address_name,
                        test_case.old_street_address_status);
   new_street->SetValue(test_case.new_street_address_name,
@@ -980,23 +994,24 @@ TEST_P(MergeStatesWithCanonicalNamesTest, MergeTest) {
                      : test_case.older_status},
   };
 
-  std::unique_ptr<AddressComponent> older_address =
+  AddressComponentsStore older_address =
       i18n_model_definition::CreateAddressComponentModel();
-  SetTestValues(older_address.get(), older_values);
+  SetTestValues(older_address.Root(), older_values);
 
-  std::unique_ptr<AddressComponent> newer_address =
+  AddressComponentsStore newer_address =
       i18n_model_definition::CreateAddressComponentModel();
-  SetTestValues(newer_address.get(), newer_values);
+  SetTestValues(newer_address.Root(), newer_values);
 
-  EXPECT_EQ(test_case.is_mergeable,
-            older_address->IsMergeableWithComponent(*newer_address));
+  EXPECT_EQ(
+      test_case.is_mergeable,
+      older_address.Root()->IsMergeableWithComponent(*newer_address.Root()));
 
-  std::unique_ptr<AddressComponent> expectation_address =
+  AddressComponentsStore expectation_address =
       i18n_model_definition::CreateAddressComponentModel();
-  SetTestValues(expectation_address.get(), expectation_values);
+  SetTestValues(expectation_address.Root(), expectation_values);
 
-  older_address->MergeWithComponent(*newer_address);
-  EXPECT_TRUE(older_address->SameAs(*expectation_address));
+  older_address.Root()->MergeWithComponent(*newer_address.Root());
+  EXPECT_TRUE(older_address.Root()->SameAs(*expectation_address.Root()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1166,7 +1181,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressLegacy) {
   };
 
   for (const auto &test_case : test_cases) {
-    std::unique_ptr<AddressComponent> address =
+    AddressComponentsStore address =
         i18n_model_definition::CreateAddressComponentModel(
             AddressCountryCode(test_case.country_code));
 
@@ -1175,7 +1190,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressLegacy) {
          .value = test_case.street_address,
          .status = VerificationStatus::kObserved}};
 
-    SetTestValues(address.get(), test_value);
+    SetTestValues(address.Root(), test_value);
 
     const AddressComponentTestValues expectation = {
         {.type = ADDRESS_HOME_COUNTRY,
@@ -1202,7 +1217,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressLegacy) {
         {.type = ADDRESS_HOME_FLOOR,
          .value = test_case.floor,
          .status = VerificationStatus::kParsed}};
-    VerifyTestValues(address.get(), expectation);
+    VerifyTestValues(address.Root(), expectation);
   }
 }
 
@@ -1287,7 +1302,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressMX) {
   };
 
   for (const auto& test_case : test_cases) {
-    std::unique_ptr<AddressComponent> address =
+    AddressComponentsStore address =
         i18n_model_definition::CreateAddressComponentModel(
             AddressCountryCode(test_case.country_code));
 
@@ -1296,7 +1311,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressMX) {
          .value = test_case.street_address,
          .status = VerificationStatus::kObserved}};
 
-    SetTestValues(address.get(), test_value);
+    SetTestValues(address.Root(), test_value);
 
     const AddressComponentTestValues expectation = {
         {.type = ADDRESS_HOME_COUNTRY,
@@ -1345,12 +1360,12 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressMX) {
          .value = test_case.landmark,
          .status = VerificationStatus::kParsed},
     };
-    VerifyTestValues(address.get(), expectation);
+    VerifyTestValues(address.Root(), expectation);
   }
 }
 
 TEST_F(AutofillI18nStructuredAddress, ParseSubpremiseMX) {
-  std::unique_ptr<AddressComponent> address =
+  AddressComponentsStore address =
       i18n_model_definition::CreateAddressComponentModel(
           AddressCountryCode("MX"));
 
@@ -1365,7 +1380,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseSubpremiseMX) {
        .value = test_case.subpremise,
        .status = VerificationStatus::kObserved}};
 
-  SetTestValues(address.get(), test_value);
+  SetTestValues(address.Root(), test_value);
 
   const AddressComponentTestValues expectation = {
       {.type = ADDRESS_HOME_SUBPREMISE,
@@ -1383,7 +1398,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseSubpremiseMX) {
       {.type = ADDRESS_HOME_FLOOR,
        .value = test_case.floor,
        .status = VerificationStatus::kParsed}};
-  VerifyTestValues(address.get(), expectation);
+  VerifyTestValues(address.Root(), expectation);
 }
 
 TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressBR) {
@@ -1478,7 +1493,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressBR) {
   };
 
   for (const auto& test_case : test_cases) {
-    std::unique_ptr<AddressComponent> address =
+    AddressComponentsStore address =
         i18n_model_definition::CreateAddressComponentModel(
             AddressCountryCode(test_case.country_code));
 
@@ -1487,7 +1502,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressBR) {
          .value = test_case.street_address,
          .status = VerificationStatus::kObserved}};
 
-    SetTestValues(address.get(), test_value);
+    SetTestValues(address.Root(), test_value);
 
     const AddressComponentTestValues expectation = {
         {.type = ADDRESS_HOME_COUNTRY,
@@ -1530,12 +1545,12 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressBR) {
          .value = test_case.overflow_and_landmark,
          .status = VerificationStatus::kFormatted},
     };
-    VerifyTestValues(address.get(), expectation);
+    VerifyTestValues(address.Root(), expectation);
   }
 }
 
 TEST_F(AutofillI18nStructuredAddress, ParseOverflowAndLandmarkBR) {
-  std::unique_ptr<AddressComponent> address =
+  AddressComponentsStore address =
       i18n_model_definition::CreateAddressComponentModel(
           AddressCountryCode("BR"));
 
@@ -1553,7 +1568,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseOverflowAndLandmarkBR) {
        .value = test_case.overflow_and_landmark,
        .status = VerificationStatus::kObserved}};
 
-  SetTestValues(address.get(), test_value);
+  SetTestValues(address.Root(), test_value);
 
   const AddressComponentTestValues expectation = {
       {.type = ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
@@ -1574,7 +1589,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseOverflowAndLandmarkBR) {
       {.type = ADDRESS_HOME_LANDMARK,
        .value = test_case.landmark,
        .status = VerificationStatus::kParsed}};
-  VerifyTestValues(address.get(), expectation);
+  VerifyTestValues(address.Root(), expectation);
 }
 
 TEST_F(AutofillI18nStructuredAddress, ParseSubpremiseBR) {
@@ -1592,7 +1607,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseSubpremiseBR) {
   };
 
   for (const auto& test_case : test_cases) {
-    std::unique_ptr<AddressComponent> address =
+    AddressComponentsStore address =
         i18n_model_definition::CreateAddressComponentModel(
             AddressCountryCode("BR"));
 
@@ -1601,7 +1616,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseSubpremiseBR) {
          .value = test_case.subpremise,
          .status = VerificationStatus::kObserved}};
 
-    SetTestValues(address.get(), test_value);
+    SetTestValues(address.Root(), test_value);
 
     const AddressComponentTestValues expectation = {
         {.type = ADDRESS_HOME_SUBPREMISE,
@@ -1619,7 +1634,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseSubpremiseBR) {
         {.type = ADDRESS_HOME_FLOOR,
          .value = test_case.floor,
          .status = VerificationStatus::kParsed}};
-    VerifyTestValues(address.get(), expectation);
+    VerifyTestValues(address.Root(), expectation);
   }
 }
 

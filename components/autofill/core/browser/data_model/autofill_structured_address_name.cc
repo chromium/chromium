@@ -98,9 +98,9 @@ NameLastSecond::NameLastSecond()
 NameLastSecond::~NameLastSecond() = default;
 
 NameLast::NameLast() : AddressComponent(NAME_LAST, {}, MergeMode::kDefault) {
-  RegisterChildNode(std::make_unique<NameLastFirst>());
-  RegisterChildNode(std::make_unique<NameLastConjunction>());
-  RegisterChildNode(std::make_unique<NameLastSecond>());
+  RegisterChildNode(&last_first_);
+  RegisterChildNode(&last_conjuntion_);
+  RegisterChildNode(&last_second_);
 }
 
 NameLast::~NameLast() = default;
@@ -111,9 +111,9 @@ void NameLast::ParseValueAndAssignSubcomponentsByFallbackMethod() {
 
 // TODO(crbug.com/1113617): Honorifics are temporally disabled.
 NameFull::NameFull() : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
-  RegisterChildNode(std::make_unique<NameFirst>());
-  RegisterChildNode(std::make_unique<NameMiddle>());
-  RegisterChildNode(std::make_unique<NameLast>());
+  RegisterChildNode(&first_);
+  RegisterChildNode(&middle_);
+  RegisterChildNode(&last_);
 }
 
 NameFull::NameFull(const NameFull& other) : NameFull() {
@@ -134,7 +134,7 @@ void NameFull::MigrateLegacyStructure() {
     SetValue(GetValue(), VerificationStatus::kObserved);
 
     // Set the verification status of all subcomponents to |kParsed|.
-    for (auto& subcomponent : Subcomponents()) {
+    for (AddressComponent* subcomponent : Subcomponents()) {
       subcomponent->SetValue(subcomponent->GetValue(),
                              subcomponent->GetValue().empty()
                                  ? VerificationStatus::kNoStatus
@@ -153,7 +153,7 @@ void NameFull::MigrateLegacyStructure() {
 
   // Otherwise, at least one of the subcomponents should be set.
   // Set its verification status to observed.
-  for (auto& subcomponent : Subcomponents()) {
+  for (AddressComponent* subcomponent : Subcomponents()) {
     if (!subcomponent->GetValue().empty())
       subcomponent->SetValue(subcomponent->GetValue(),
                              VerificationStatus::kObserved);

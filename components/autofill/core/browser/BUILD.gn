@@ -117,6 +117,8 @@ static_library("browser") {
     "crowdsourcing/autofill_crowdsourcing_manager.h",
     "data_model/address.cc",
     "data_model/address.h",
+    "data_model/autofill_address_component_store.cc",
+    "data_model/autofill_address_component_store.h",
     "data_model/autofill_data_model.cc",
     "data_model/autofill_data_model.h",
     "data_model/autofill_feature_guarded_address_component.cc",
