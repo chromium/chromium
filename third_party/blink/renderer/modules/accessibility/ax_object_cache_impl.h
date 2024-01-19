@@ -893,6 +893,8 @@ class MODULES_EXPORT AXObjectCacheImpl
 
 #if DCHECK_IS_ON()
   bool updating_layout_and_ax_ = false;
+  int tree_check_counter_ = 0;
+  base::Time last_tree_check_time_stamp_ = base::Time::Now();
 #endif
 
   // If non-zero, do not do work to process a11y or build the a11y tree in
