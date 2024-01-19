@@ -72,6 +72,7 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"errorUnsupportedLanguage", IDS_COMPOSE_ERROR_UNSUPPORTED_LANGUAGE},
       {"errorPermissionDenied", IDS_COMPOSE_ERROR_PERMISSION_DENIED},
       {"errorRequestThrottled", IDS_COMPOSE_ERROR_REQUEST_THROTTLED},
+      {"errorOffline", IDS_COMPOSE_ERROR_OFFLINE},
       {"editButton", IDS_COMPOSE_EDIT},
       {"editCancelButton", IDS_CANCEL},
       {"editUpdateButton", IDS_COMPOSE_EDIT_UPDATE_BUTTON},

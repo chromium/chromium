@@ -163,6 +163,9 @@
   <message name="IDS_COMPOSE_ERROR_REQUEST_THROTTLED" desc="Error that the request was throttled.">
     You've reached your writing help limit for now. Try again later.
   </message>
+  <message name="IDS_COMPOSE_ERROR_OFFLINE" desc="Error that the user is offline.">
+    Check your internet connection and try again
+  </message>
 
   <!-- Cross-dialog -->
   <message name="IDS_COMPOSE_FOOTER_FISHFOOD" desc="The footer text used for Fishfood in the input and result dialogs." translateable="false">

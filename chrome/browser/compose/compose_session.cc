@@ -38,6 +38,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/referrer.h"
@@ -408,7 +409,11 @@ void ComposeSession::ModelExecutionComplete(
 
   if (status != compose::mojom::ComposeStatus::kOk) {
     compose::LogComposeRequestDuration(request_delta, /* is_valid */ false);
-    ProcessError(status);
+    if (content::GetNetworkConnectionTracker()->IsOffline()) {
+      ProcessError(compose::mojom::ComposeStatus::kOffline);
+    } else {
+      ProcessError(status);
+    }
     SetQualityLogEntryUponError(std::move(log_entry), request_delta,
                                 was_input_edited);
     return;

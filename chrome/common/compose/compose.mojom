@@ -66,6 +66,8 @@ enum ComposeStatus {
   kCancelled = 15,
   // No response received from the server.
   kNoResponse = 16,
+  // If the user is offline.
+  kOffline = 17,
 };
 
 // Configuration parameters used in rewrite requests, specifying how the

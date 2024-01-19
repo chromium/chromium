@@ -470,6 +470,7 @@ suite('ComposeApp', () => {
     testError(ComposeStatus.kUnsupportedLanguage, 'errorUnsupportedLanguage');
     testError(ComposeStatus.kPermissionDenied, 'errorPermissionDenied');
     testError(ComposeStatus.kRequestThrottled, 'errorRequestThrottled');
+    testError(ComposeStatus.kOffline, 'errorOffline');
     testError(ComposeStatus.kClientError, 'errorTryAgain');
     testError(ComposeStatus.kMisconfiguration, 'errorTryAgain');
     testError(ComposeStatus.kServerError, 'errorTryAgain');

@@ -84,6 +84,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Compose service was disabled"/>
   <int value="15" label="Request was cancelled"/>
   <int value="16" label="No response received from the server"/>
+  <int value="17" label="The user is offline"/>
 </enum>
 
 <enum name="ComposeSessionCloseReasonType">
