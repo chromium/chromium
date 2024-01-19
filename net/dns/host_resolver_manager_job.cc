@@ -835,11 +835,9 @@ void HostResolverManager::Job::OnMdnsImmediateFailure(int rv) {
 
 void HostResolverManager::Job::StartNat64Task() {
   DCHECK(!nat64_task_);
-  RequestImpl* req = requests_.head()->value();
   nat64_task_ = std::make_unique<HostResolverNat64Task>(
-      std::string{HostResolver::GetHostname(key_.host)},
-      req->network_anonymization_key(), req->source_net_log(),
-      req->resolve_context(), resolver_);
+      HostResolver::GetHostname(key_.host), key_.network_anonymization_key,
+      net_log_, &*key_.resolve_context, resolver_);
   nat64_task_->Start(base::BindOnce(&Job::OnNat64TaskComplete,
                                     weak_ptr_factory_.GetWeakPtr()));
 }
