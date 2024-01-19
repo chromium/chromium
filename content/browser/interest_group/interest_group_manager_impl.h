@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_IMPL_H_
 
+#include <cstddef>
 #include <list>
 #include <memory>
 #include <optional>
@@ -144,7 +145,9 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   //
   // `url_loader_factory` is the factory for renderer frame where
   // navigator.joinAdInterestGroup() was invoked, and will be used for the
-  // .well-known fetch if one is needed.
+  // .well-known fetch if one is needed. It will also be used to pre-fetch
+  // B&A server keys if the B&A server is enabled and if this is the first
+  // joinAdInterestGroup call since browser start.
   //
   // `report_result_only`, if true, results in calling `callback` with the
   // result of the permissions check, but not actually joining the interest

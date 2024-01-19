@@ -51,6 +51,11 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
   BiddingAndAuctionServerKeyFetcher& operator=(
       const BiddingAndAuctionServerKeyFetcher&) = delete;
 
+  // Fetch keys for all coordinators in kFledgeBiddingAndAuctionKeyConfig if
+  // kFledgePrefetchBandAKeys and kFledgeBiddingAndAuctionServer are enabled and
+  // if the keys haven't been fetched yet.
+  void MaybePrefetchKeys(network::mojom::URLLoaderFactory* loader_factory);
+
   // GetOrFetchKey provides a key in the callback, fetching the key over the
   // network with the provided loader_factory if necessary. If the key is
   // immediately available then the callback may be called synchronously.
@@ -59,18 +64,6 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
                      BiddingAndAuctionServerKeyFetcherCallback callback);
 
  private:
-  // Called when the JSON blob containing the keys have been successfully
-  // fetched over the network.
-  void OnFetchKeyComplete(url::Origin coordinator,
-                          std::unique_ptr<std::string> response);
-
-  // Called when the JSON blob containing the keys has be parsed into
-  // base::Values. Uses the parsed result to add keys to the cache and calls
-  // queued callbacks.
-  void OnParsedKeys(url::Origin coordinator,
-                    data_decoder::DataDecoder::ValueOrError result);
-  void FailAllCallbacks(url::Origin coordinator);
-
   struct PerCoordinatorFetcherState {
     PerCoordinatorFetcherState();
     ~PerCoordinatorFetcherState();
@@ -96,6 +89,26 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
     // loader_ contains the SimpleURLLoader being used to fetch the keys.
     std::unique_ptr<network::SimpleURLLoader> loader;
   };
+
+  // Fetch keys for a particular coordinator.
+  void FetchKeys(network::mojom::URLLoaderFactory* loader_factory,
+                 const url::Origin& coordinator,
+                 PerCoordinatorFetcherState& state,
+                 BiddingAndAuctionServerKeyFetcherCallback callback);
+
+  // Called when the JSON blob containing the keys have been successfully
+  // fetched over the network.
+  void OnFetchKeyComplete(url::Origin coordinator,
+                          std::unique_ptr<std::string> response);
+
+  // Called when the JSON blob containing the keys has be parsed into
+  // base::Values. Uses the parsed result to add keys to the cache and calls
+  // queued callbacks.
+  void OnParsedKeys(url::Origin coordinator,
+                    data_decoder::DataDecoder::ValueOrError result);
+  void FailAllCallbacks(url::Origin coordinator);
+
+  bool did_prefetch_keys_ = false;
 
   base::flat_map<url::Origin, PerCoordinatorFetcherState> fetcher_state_map_;
 

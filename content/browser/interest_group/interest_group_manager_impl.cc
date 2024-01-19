@@ -220,6 +220,7 @@ void InterestGroupManagerImpl::CheckPermissionsAndJoinInterestGroup(
     AreReportingOriginsAttestedCallback attestation_callback,
     blink::mojom::AdAuctionService::JoinInterestGroupCallback callback) {
   url::Origin interest_group_owner = group.owner;
+  ba_key_fetcher_.MaybePrefetchKeys(&url_loader_factory);
   permissions_checker_.CheckPermissions(
       InterestGroupPermissionsChecker::Operation::kJoin, frame_origin,
       interest_group_owner, network_isolation_key, url_loader_factory,

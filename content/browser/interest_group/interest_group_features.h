@@ -20,6 +20,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableUpdatingUserBiddingSignals);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeFacilitatedTestingSignalsHeaders);
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgePrefetchBandAKeys);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_FEATURES_H_

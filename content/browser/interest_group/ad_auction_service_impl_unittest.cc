@@ -10645,6 +10645,44 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithFullAds) {
                                test_origin, testing::ElementsAre("cars"))));
 }
 
+TEST_F(AdAuctionServiceImplBAndATest, JoinInterestGroupPrefetchesKeys) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFledgePrefetchBandAKeys);
+  RegisterDeferredKeys();
+  blink::InterestGroup interest_group = CreateInterestGroup();
+
+  mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+  AdAuctionServiceImpl::CreateMojoService(
+      main_rfh(), interest_service.BindNewPipeAndPassReceiver());
+
+  // A first JoinInterestGroup should cause the key to be fetched.
+  {
+    base::RunLoop run_loop;
+    interest_service->JoinInterestGroup(
+        interest_group,
+        base::BindLambdaForTesting(
+            [&](bool failed_well_known_check) { run_loop.Quit(); }));
+    task_environment()->RunUntilIdle();
+    ASSERT_TRUE(network_responder_->HasPendingResponse(kBAndAKeyPath));
+    ProvideDeferredKeys();
+    interest_service.FlushForTesting();
+    run_loop.Run();
+  }
+
+  // Now that the key has been fetched, another call to JoinInterestGroup
+  // won't fetch it again.
+  RegisterDeferredKeys();
+  {
+    base::RunLoop run_loop;
+    interest_service->JoinInterestGroup(
+        interest_group,
+        base::BindLambdaForTesting(
+            [&](bool failed_well_known_check) { run_loop.Quit(); }));
+    task_environment()->RunUntilIdle();
+    ASSERT_FALSE(network_responder_->HasPendingResponse(kBAndAKeyPath));
+  }
+}
+
 TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
   ProvideKeys();
   NavigateAndCommit(kUrlA);

@@ -5,9 +5,11 @@
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 
 #include "base/base64.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -109,6 +111,27 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher() {
 BiddingAndAuctionServerKeyFetcher::~BiddingAndAuctionServerKeyFetcher() =
     default;
 
+void BiddingAndAuctionServerKeyFetcher::MaybePrefetchKeys(
+    network::mojom::URLLoaderFactory* loader_factory) {
+  // We only prefetch keys if the prefetching is enabled and if
+  // kFledgeBiddingAndAuctionServer is enabled. We don't need to check
+  // kFledgeBiddingAndAuctionServer because if it's not enabled
+  // fetcher_state_map_ would have no keys.
+  if (!base::FeatureList::IsEnabled(features::kFledgePrefetchBandAKeys)) {
+    return;
+  }
+  // We only want to prefetch once.
+  if (did_prefetch_keys_) {
+    return;
+  }
+  did_prefetch_keys_ = true;
+  for (auto& [coordinator, state] : fetcher_state_map_) {
+    if (state.keys.size() == 0 || state.expiration > base::Time::Now()) {
+      FetchKeys(loader_factory, coordinator, state, base::DoNothing());
+    }
+  }
+}
+
 void BiddingAndAuctionServerKeyFetcher::GetOrFetchKey(
     network::mojom::URLLoaderFactory* loader_factory,
     std::optional<url::Origin> maybe_coordinator,
@@ -140,11 +163,19 @@ void BiddingAndAuctionServerKeyFetcher::GetOrFetchKey(
   }
   base::UmaHistogramBoolean("Ads.InterestGroup.ServerAuction.KeyFetch.Cached",
                             false);
+  FetchKeys(loader_factory, coordinator, state, std::move(callback));
+}
 
+void BiddingAndAuctionServerKeyFetcher::FetchKeys(
+    network::mojom::URLLoaderFactory* loader_factory,
+    const url::Origin& coordinator,
+    PerCoordinatorFetcherState& state,
+    BiddingAndAuctionServerKeyFetcherCallback callback) {
   state.queue.push_back(std::move(callback));
   if (state.queue.size() > 1) {
     return;
   }
+
   state.fetch_start = base::TimeTicks::Now();
   state.keys.clear();
 
