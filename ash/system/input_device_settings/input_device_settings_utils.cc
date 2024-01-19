@@ -252,6 +252,7 @@ bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device) {
           {0x3434, 0x0311},  // Keychron V1
           {0x3496, 0x0006},  // Keyboardio Model 100
           {0x4c44, 0x0040},  // LazyDesigners Dimple
+          {0x594d, 0x4409},  // YMDK YMD09
           {0xfeed, 0x1307},  // ErgoDox EZ
       });
 
