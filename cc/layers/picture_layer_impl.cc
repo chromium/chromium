@@ -1060,8 +1060,7 @@ bool PictureLayerImpl::ShouldAnimate(PaintImage::Id paint_image_id) const {
 }
 
 gfx::Size PictureLayerImpl::CalculateTileSize(const gfx::Size& content_bounds) {
-  content_bounds_ = content_bounds;
-  return tile_size_calculator_.CalculateTileSize();
+  return tile_size_calculator_.CalculateTileSize(content_bounds);
 }
 
 void PictureLayerImpl::GetContentsResourceId(

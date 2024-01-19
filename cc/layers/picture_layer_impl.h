@@ -164,8 +164,6 @@ class CC_EXPORT PictureLayerImpl
     return paint_worklet_records_;
   }
 
-  gfx::Size content_bounds() { return content_bounds_; }
-
   // Invalidates all PaintWorklets in this layer who depend on the given
   // property to be painted. Used when the value for the property is changed by
   // an animation, at which point the PaintWorklet must be re-painted.
@@ -331,7 +329,6 @@ class CC_EXPORT PictureLayerImpl
   // |LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation|.
   PaintWorkletRecordMap paint_worklet_records_;
 
-  gfx::Size content_bounds_;
   TileSizeCalculator tile_size_calculator_{this};
 
   // Denotes an area that is damaged and needs redraw. This is in the layer's
