@@ -42,22 +42,14 @@ namespace {
 
 const char kClearCookiesHeader[] = "\"cookies\"";
 
-BrowserContext* FakeBrowserContextGetter() {
-  return nullptr;
-}
-
-WebContents* FakeWebContentsGetter() {
-  return nullptr;
-}
-
 const StoragePartitionConfig kTestStoragePartitionConfig;
 
 // A slightly modified ClearSiteDataHandler for testing with dummy clearing
 // functionality.
 class TestHandler : public ClearSiteDataHandler {
  public:
-  TestHandler(base::RepeatingCallback<BrowserContext*()> browser_context_getter,
-              base::RepeatingCallback<WebContents*()> web_contents_getter,
+  TestHandler(base::WeakPtr<BrowserContext> browser_context,
+              base::WeakPtr<WebContents> web_contents,
               const StoragePartitionConfig& storage_partition_config,
               const GURL& url,
               const std::string& header_value,
@@ -67,8 +59,8 @@ class TestHandler : public ClearSiteDataHandler {
               bool partitioned_state_allowed_only,
               base::OnceClosure callback,
               std::unique_ptr<ConsoleMessagesDelegate> delegate)
-      : ClearSiteDataHandler(browser_context_getter,
-                             web_contents_getter,
+      : ClearSiteDataHandler(browser_context,
+                             web_contents,
                              storage_partition_config,
                              url,
                              header_value,
@@ -124,8 +116,7 @@ class VectorConsoleMessagesDelegate : public ConsoleMessagesDelegate {
       : message_buffer_(message_buffer) {}
   ~VectorConsoleMessagesDelegate() override = default;
 
-  void OutputMessages(const base::RepeatingCallback<WebContents*()>&
-                          web_contents_getter) override {
+  void OutputMessages(base::WeakPtr<WebContents> web_contents) override {
     *message_buffer_ = GetMessagesForTesting();
   }
 
@@ -321,10 +312,8 @@ TEST_P(ClearSiteDataHandlerTest, ParseHeaderAndExecuteClearingTask) {
     std::unique_ptr<net::URLRequest> request(context->CreateRequest(
         url, net::DEFAULT_PRIORITY, nullptr, TRAFFIC_ANNOTATION_FOR_TESTS));
     TestHandler handler(
-        base::BindRepeating(&FakeBrowserContextGetter),
-        base::BindRepeating(&FakeWebContentsGetter),
-        kTestStoragePartitionConfig, request->url(), test_case.header,
-        request->load_flags(),
+        nullptr, nullptr, kTestStoragePartitionConfig, request->url(),
+        test_case.header, request->load_flags(),
         /*cookie_partition_key=*/std::nullopt, /*storage_key=*/std::nullopt,
         /*partitioned_state_allowed_only=*/false, base::DoNothing(),
         std::make_unique<ConsoleMessagesDelegate>());
@@ -392,9 +381,8 @@ TEST_F(ClearSiteDataHandlerTest, ClearCookieSuccess) {
                              nullptr, TRAFFIC_ANNOTATION_FOR_TESTS));
   std::vector<Message> message_buffer;
   TestHandler handler(
-      base::BindRepeating(&FakeBrowserContextGetter),
-      base::BindRepeating(&FakeWebContentsGetter), kTestStoragePartitionConfig,
-      request->url(), kClearCookiesHeader, request->load_flags(),
+      nullptr, nullptr, kTestStoragePartitionConfig, request->url(),
+      kClearCookiesHeader, request->load_flags(),
       /*cookie_partition_key=*/std::nullopt, /*storage_key=*/std::nullopt,
       /*partitioned_state_allowed_only=*/false, base::DoNothing(),
       std::make_unique<VectorConsoleMessagesDelegate>(&message_buffer));
@@ -421,9 +409,8 @@ TEST_F(ClearSiteDataHandlerTest, LoadDoNotSaveCookies) {
   request->SetLoadFlags(net::LOAD_DO_NOT_SAVE_COOKIES);
   std::vector<Message> message_buffer;
   TestHandler handler(
-      base::BindRepeating(&FakeBrowserContextGetter),
-      base::BindRepeating(&FakeWebContentsGetter), kTestStoragePartitionConfig,
-      request->url(), kClearCookiesHeader, request->load_flags(),
+      nullptr, nullptr, kTestStoragePartitionConfig, request->url(),
+      kClearCookiesHeader, request->load_flags(),
       /*cookie_partition_key=*/std::nullopt, /*storage_key=*/std::nullopt,
       /*partitioned_state_allowed_only=*/false, base::DoNothing(),
       std::make_unique<VectorConsoleMessagesDelegate>(&message_buffer));
@@ -472,10 +459,8 @@ TEST_F(ClearSiteDataHandlerTest, InvalidOrigin) {
                                nullptr, TRAFFIC_ANNOTATION_FOR_TESTS));
     std::vector<Message> message_buffer;
     TestHandler handler(
-        base::BindRepeating(&FakeBrowserContextGetter),
-        base::BindRepeating(&FakeWebContentsGetter),
-        kTestStoragePartitionConfig, request->url(), kClearCookiesHeader,
-        request->load_flags(),
+        nullptr, nullptr, kTestStoragePartitionConfig, request->url(),
+        kClearCookiesHeader, request->load_flags(),
         /*cookie_partition_key=*/std::nullopt, /*storage_key=*/std::nullopt,
         /*partitioned_state_allowed_only=*/false, base::DoNothing(),
         std::make_unique<VectorConsoleMessagesDelegate>(&message_buffer));
@@ -582,10 +567,8 @@ TEST_F(ClearSiteDataHandlerTest, FormattedConsoleOutput) {
     // navigation, redirect, or subresource header responses.
     for (const auto& test : kTestCases) {
       TestHandler handler(
-          base::BindRepeating(&FakeBrowserContextGetter),
-          base::BindRepeating(&FakeWebContentsGetter),
-          kTestStoragePartitionConfig, GURL(test.url), test.header,
-          request->load_flags(),
+          nullptr, nullptr, kTestStoragePartitionConfig, GURL(test.url),
+          test.header, request->load_flags(),
           /*cookie_partition_key=*/std::nullopt, /*storage_key=*/std::nullopt,
           /*partitioned_state_allowed_only=*/false, base::DoNothing(),
           std::make_unique<StringConsoleMessagesDelegate>(&output_buffer));
@@ -625,9 +608,7 @@ TEST_F(ClearSiteDataHandlerTest, CookiePartitionKey) {
                                TRAFFIC_ANNOTATION_FOR_TESTS));
     std::string output_buffer;
     TestHandler handler(
-        base::BindRepeating(&FakeBrowserContextGetter),
-        base::BindRepeating(&FakeWebContentsGetter),
-        kTestStoragePartitionConfig, kTestURL, "\"cookies\"",
+        nullptr, nullptr, kTestStoragePartitionConfig, kTestURL, "\"cookies\"",
         request->load_flags(), cookie_partition_key,
         /*storage_key=*/std::nullopt,
         /*partitioned_state_allowed_only=*/false, base::DoNothing(),
@@ -651,9 +632,7 @@ TEST_F(ClearSiteDataHandlerTest, StorageKey) {
                                TRAFFIC_ANNOTATION_FOR_TESTS));
     std::string output_buffer;
     TestHandler handler(
-        base::BindRepeating(&FakeBrowserContextGetter),
-        base::BindRepeating(&FakeWebContentsGetter),
-        kTestStoragePartitionConfig, kTestURL, "\"storage\"",
+        nullptr, nullptr, kTestStoragePartitionConfig, kTestURL, "\"storage\"",
         request->load_flags(), /*cookie_partition_key=*/std::nullopt,
         storage_key,
         /*partitioned_state_allowed_only=*/false, base::DoNothing(),
@@ -676,9 +655,7 @@ TEST_F(ClearSiteDataHandlerTest, ThirdPartyCookieBlockingEnabled) {
                                TRAFFIC_ANNOTATION_FOR_TESTS));
     std::string output_buffer;
     TestHandler handler(
-        base::BindRepeating(&FakeBrowserContextGetter),
-        base::BindRepeating(&FakeWebContentsGetter),
-        kTestStoragePartitionConfig, kTestURL, "\"storage\"",
+        nullptr, nullptr, kTestStoragePartitionConfig, kTestURL, "\"storage\"",
         request->load_flags(), /*cookie_partition_key=*/std::nullopt,
         /*storage_key=*/std::nullopt, partitioned_state_allowed_only,
         base::DoNothing(),
@@ -712,9 +689,8 @@ TEST_F(ClearSiteDataHandlerTest, CorrectStoragePartition) {
                                TRAFFIC_ANNOTATION_FOR_TESTS));
     std::string output_buffer;
     TestHandler handler(
-        base::BindRepeating(&FakeBrowserContextGetter),
-        base::BindRepeating(&FakeWebContentsGetter), storage_partition_config,
-        kTestURL, "\"storage\"", request->load_flags(),
+        nullptr, nullptr, storage_partition_config, kTestURL, "\"storage\"",
+        request->load_flags(),
         /*cookie_partition_key=*/std::nullopt,
         /*storage_key=*/std::nullopt, /*partitioned_state_allowed_only=*/false,
         base::DoNothing(),

@@ -834,11 +834,7 @@ void WebAppPublisherHelper::UninstallWebApp(
       [](std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive) {},
       std::move(profile_keep_alive));
   content::ClearSiteData(
-      base::BindRepeating(
-          [](content::BrowserContext* browser_context) {
-            return browser_context;
-          },
-          base::Unretained(profile())),
+      profile()->GetWeakPtr(),
       /*storage_partition_config=*/std::nullopt, origin,
       content::ClearSiteDataTypeSet::All(),
       /*storage_buckets_to_remove=*/{}, /*avoid_closing_connections=*/false,

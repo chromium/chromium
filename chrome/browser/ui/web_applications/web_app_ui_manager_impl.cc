@@ -791,11 +791,7 @@ void WebAppUiManagerImpl::ClearWebAppSiteDataIfNeeded(
   // app has been uninstalled completely, or it was previously uninstalled but
   // some data had been left over.
   if (webapps::UninstallSucceeded(uninstall_code)) {
-    content::ClearSiteData(base::BindRepeating(
-                               [](content::BrowserContext* browser_context) {
-                                 return browser_context;
-                               },
-                               base::Unretained(profile_)),
+    content::ClearSiteData(profile_->GetWeakPtr(),
                            /*storage_partition_config=*/std::nullopt,
                            url::Origin::Create(app_start_url),
                            content::ClearSiteDataTypeSet::All(),

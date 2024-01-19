@@ -54,10 +54,8 @@ class CONTENT_EXPORT ClearSiteDataHandler {
                             const std::string& text,
                             blink::mojom::ConsoleMessageLevel level);
 
-    // Outputs stored messages to the console of WebContents identified by
-    // |web_contents_getter|.
-    virtual void OutputMessages(
-        const base::RepeatingCallback<WebContents*()>& web_contents_getter);
+    // Outputs stored messages to the console of WebContents.
+    virtual void OutputMessages(base::WeakPtr<WebContents> web_contents);
 
     const std::vector<Message>& GetMessagesForTesting() const {
       return messages_;
@@ -79,8 +77,8 @@ class CONTENT_EXPORT ClearSiteDataHandler {
   // method calls ParseHeader() to parse it, and then ExecuteClearingTask() if
   // applicable.
   static void HandleHeader(
-      base::RepeatingCallback<BrowserContext*()> browser_context_getter,
-      base::RepeatingCallback<WebContents*()> web_contents_getter,
+      base::WeakPtr<BrowserContext> browser_context,
+      base::WeakPtr<WebContents> web_contents,
       const StoragePartitionConfig& storage_partition_config,
       const GURL& url,
       const std::string& header_value,
@@ -100,8 +98,8 @@ class CONTENT_EXPORT ClearSiteDataHandler {
 
  protected:
   ClearSiteDataHandler(
-      base::RepeatingCallback<BrowserContext*()> browser_context_getter,
-      base::RepeatingCallback<WebContents*()> web_contents_getter,
+      base::WeakPtr<BrowserContext> browser_context,
+      base::WeakPtr<WebContents> web_contents,
       const StoragePartitionConfig& storage_partition_config,
       const GURL& url,
       const std::string& header_value,
@@ -141,11 +139,10 @@ class CONTENT_EXPORT ClearSiteDataHandler {
   // Signals that a parsing and deletion task was finished.
   // |clearing_started| is the time when the last clearing operation started.
   // Used when clearing finishes to compute the duration.
-  static void TaskFinished(
-      base::TimeTicks clearing_started,
-      std::unique_ptr<ConsoleMessagesDelegate> delegate,
-      base::RepeatingCallback<WebContents*()> web_contents_getter,
-      base::OnceClosure callback);
+  static void TaskFinished(base::TimeTicks clearing_started,
+                           std::unique_ptr<ConsoleMessagesDelegate> delegate,
+                           base::WeakPtr<WebContents> web_contents,
+                           base::OnceClosure callback);
 
   // Outputs the console messages in the |delegate_|.
   void OutputConsoleMessages();
@@ -174,8 +171,8 @@ class CONTENT_EXPORT ClearSiteDataHandler {
 
  private:
   // Required to clear the data.
-  base::RepeatingCallback<BrowserContext*()> browser_context_getter_;
-  base::RepeatingCallback<WebContents*()> web_contents_getter_;
+  base::WeakPtr<BrowserContext> browser_context_;
+  base::WeakPtr<WebContents> web_contents_;
 
   // The config for the target storage partition which stores the data.
   const StoragePartitionConfig storage_partition_config_;

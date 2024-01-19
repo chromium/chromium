@@ -2073,12 +2073,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, ClearSiteData) {
                          GetURL("/shared_dictionary/test.dict"));
   base::RunLoop loop;
   content::ClearSiteData(
-      /*browser_context_getter=*/base::BindRepeating(
-          [](content::BrowserContext* browser_context) {
-            return browser_context;
-          },
-          base::Unretained(
-              GetTargetShell()->web_contents()->GetBrowserContext())),
+      GetTargetShell()->web_contents()->GetBrowserContext()->GetWeakPtr(),
       /*storage_partition_config=*/std::nullopt,
       /*origin=*/url::Origin::Create(GetURL("/")),
       content::ClearSiteDataTypeSet::All(),

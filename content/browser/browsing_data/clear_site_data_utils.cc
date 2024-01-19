@@ -205,7 +205,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
 }  // namespace
 
 void ClearSiteData(
-    const base::RepeatingCallback<BrowserContext*()>& browser_context_getter,
+    base::WeakPtr<BrowserContext> browser_context,
     const std::optional<StoragePartitionConfig> storage_partition_config,
     const url::Origin& origin,
     const ClearSiteDataTypeSet clear_site_data_types,
@@ -220,12 +220,11 @@ void ClearSiteData(
   // It's not possible to clear all storage and also only specific buckets.
   DCHECK(!clear_site_data_types.Has(ClearSiteDataType::kStorage) ||
          storage_buckets_to_remove.empty());
-  BrowserContext* browser_context = browser_context_getter.Run();
   if (!browser_context) {
     std::move(callback).Run();
     return;
   }
-  (new SiteDataClearer(browser_context, storage_partition_config, origin,
+  (new SiteDataClearer(browser_context.get(), storage_partition_config, origin,
                        clear_site_data_types, storage_buckets_to_remove,
                        avoid_closing_connections, cookie_partition_key,
                        storage_key, partitioned_state_allowed_only,

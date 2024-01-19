@@ -2459,10 +2459,22 @@ void StoragePartitionImpl::OnClearSiteData(
     bool partitioned_state_allowed_only,
     OnClearSiteDataCallback callback) {
   DCHECK(initialized_);
-  auto browser_context_getter = base::BindRepeating(
-      GetBrowserContextFromStoragePartition, weak_factory_.GetWeakPtr());
+
+  base::WeakPtr<BrowserContext> weak_browser_context;
+  BrowserContext* browser_context =
+      GetBrowserContextFromStoragePartition(weak_factory_.GetWeakPtr());
+  if (browser_context) {
+    weak_browser_context = browser_context->GetWeakPtr();
+  }
   auto web_contents_getter = base::BindRepeating(
       GetWebContents, url_loader_network_observers_.current_context());
+
+  base::WeakPtr<WebContents> weak_web_contents;
+  WebContents* web_contents =
+      GetWebContents(url_loader_network_observers_.current_context());
+  if (web_contents) {
+    weak_web_contents = web_contents->GetWeakPtr();
+  }
 
   std::optional<blink::StorageKey> storage_key = CalculateStorageKey(
       url::Origin::Create(url),
@@ -2471,8 +2483,8 @@ void StoragePartitionImpl::OnClearSiteData(
           : nullptr);
 
   ClearSiteDataHandler::HandleHeader(
-      browser_context_getter, web_contents_getter, GetConfig(), url,
-      header_value, load_flags, cookie_partition_key, storage_key,
+      weak_browser_context, weak_web_contents, GetConfig(), url, header_value,
+      load_flags, cookie_partition_key, storage_key,
       partitioned_state_allowed_only, std::move(callback));
 }
 
