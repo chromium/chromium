@@ -428,6 +428,12 @@ BASE_FEATURE(kFedCmDisconnect,
              "FedCmDisconnect",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables setting login status from same-site subresources (instead of
+// same-origin)
+BASE_FEATURE(kFedCmSameSiteLoginStatus,
+             "FedCmSameSiteLoginStatus",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables usage of the FedCM API with the Selective Disclosure API at the same
 // time.
 BASE_FEATURE(kFedCmSelectiveDisclosure,

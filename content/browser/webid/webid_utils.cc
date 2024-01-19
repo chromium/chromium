@@ -39,7 +39,10 @@ bool IsSameOriginWithAncestors(const url::Origin& origin,
                                RenderFrameHost* render_frame_host) {
   while (render_frame_host) {
     if (!origin.IsSameOriginWith(render_frame_host->GetLastCommittedOrigin())) {
-      return false;
+      if (!IsFedCmSameSiteLoginStatusEnabled() ||
+          !IsSameSite(origin, render_frame_host->GetLastCommittedOrigin())) {
+        return false;
+      }
     }
     render_frame_host = render_frame_host->GetParent();
   }

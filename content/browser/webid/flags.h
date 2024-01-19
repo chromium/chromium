@@ -62,6 +62,10 @@ bool IsFedCmExemptIdpWithThirdPartyCookiesEnabled();
 
 // Whether the ButtonMode feature is enabled.
 bool IsFedCmButtonModeEnabled();
+
+// Whether same-site login status is enabled.
+bool IsFedCmSameSiteLoginStatusEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

@@ -2245,6 +2245,7 @@
     "bases": ["external/wpt/credential-management/fedcm-login-status/"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=FedCmIdpSigninStatusEnabled",
+             "--enable-features=FedCmSameSiteLoginStatus",
              "--enable-features=FencedFramesDefaultMode",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["cbiesinger@chromium.org", "npm@chromium.org"],
