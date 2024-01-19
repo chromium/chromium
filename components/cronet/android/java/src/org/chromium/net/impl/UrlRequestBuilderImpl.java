@@ -115,7 +115,7 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
             throw new NullPointerException("Invalid header value.");
         }
         if (ACCEPT_ENCODING.equalsIgnoreCase(header)) {
-            Log.w(
+            Log.i(
                     TAG,
                     "It's not necessary to set Accept-Encoding on requests - cronet will do"
                             + " this automatically for you, and setting it yourself has no "

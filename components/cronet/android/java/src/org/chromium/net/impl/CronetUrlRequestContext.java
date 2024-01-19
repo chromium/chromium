@@ -222,7 +222,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                     getCronetSource());
         } catch (RuntimeException e) {
             // Handle any issue gracefully, we should never crash due failures while logging.
-            Log.e(LOG_TAG, "Error while trying to log CronetEngine creation: ", e);
+            Log.i(LOG_TAG, "Error while trying to log CronetEngine creation: ", e);
         }
 
         // Init native Chromium URLRequestContext on init thread.
