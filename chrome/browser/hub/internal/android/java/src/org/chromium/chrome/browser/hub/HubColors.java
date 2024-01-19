@@ -15,11 +15,15 @@ import androidx.annotation.StyleRes;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.util.ColorUtils;
+import org.chromium.ui.util.ValueUtils;
 
 /** Util class to handle various color operations shared between hub classes. */
 public final class HubColors {
     private static final int[][] SELECTED_AND_NORMAL_STATES =
             new int[][] {new int[] {android.R.attr.state_selected}, new int[] {}};
+    private static final int[][] DISABLED_AND_NORMAL_STATES =
+            new int[][] {new int[] {-android.R.attr.state_enabled}, new int[] {}};
 
     private HubColors() {}
 
@@ -43,15 +47,17 @@ public final class HubColors {
     }
 
     /** Returns the color most icons should use per the given color scheme. */
-    public static @ColorInt int getIconColor(Context context, @HubColorScheme int colorScheme) {
+    public static ColorStateList getIconColor(Context context, @HubColorScheme int colorScheme) {
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                return SemanticColorUtils.getDefaultIconColor(context);
+                return ContextCompat.getColorStateList(
+                        context, R.color.default_icon_color_tint_list);
             case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColor(context, R.color.default_icon_color_light);
+                return ContextCompat.getColorStateList(
+                        context, R.color.default_icon_color_light_tint_list);
             default:
                 assert false;
-                return Color.TRANSPARENT;
+                return ColorStateList.valueOf(Color.TRANSPARENT);
         }
     }
 
@@ -67,6 +73,16 @@ public final class HubColors {
                 assert false;
                 return Color.TRANSPARENT;
         }
+    }
+
+    /** Returns the color of secondary contains that reacts to being disabled. */
+    public static ColorStateList getSecondaryContainerColorStateList(
+            Context context, @HubColorScheme int colorScheme) {
+        Resources resources = context.getResources();
+        @ColorInt int color = getSecondaryContainerColor(context, colorScheme);
+        float alpha = ValueUtils.getFloat(resources, R.dimen.filled_button_bg_disabled_alpha);
+        int[] colors = new int[] {ColorUtils.setAlphaComponentWithFloat(color, alpha), color};
+        return new ColorStateList(DISABLED_AND_NORMAL_STATES, colors);
     }
 
     /** Returns the color of secondary contains like the floating action button. */
