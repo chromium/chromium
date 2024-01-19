@@ -20,7 +20,10 @@ class MockPasswordManagerErrorMessageHelperBridge
               StartUpdateAccountCredentialsFlow,
               (content::WebContents * web_contents),
               (override));
-
+  MOCK_METHOD(void,
+              StartTrustedVaultKeyRetrievalFlow,
+              (content::WebContents * web_contents),
+              (override));
   MOCK_METHOD(bool,
               ShouldShowErrorUI,
               (content::WebContents * web_contents),

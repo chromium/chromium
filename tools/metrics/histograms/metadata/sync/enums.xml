@@ -979,6 +979,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Profile menu"/>
   <int value="2" label="OS-level notification"/>
   <int value="3" label="New Tab Page Infobar"/>
+  <int value="4" label="Password Manager Error Message"/>
 </enum>
 
 </enums>

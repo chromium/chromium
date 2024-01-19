@@ -15,6 +15,8 @@ class PasswordManagerErrorMessageHelperBridgeImpl
  public:
   void StartUpdateAccountCredentialsFlow(
       content::WebContents* web_contents) override;
+  void StartTrustedVaultKeyRetrievalFlow(
+      content::WebContents* web_contents) override;
   bool ShouldShowErrorUI(content::WebContents* web_contents) override;
   void SaveErrorUIShownTimestamp(content::WebContents* web_contents) override;
 };

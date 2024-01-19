@@ -134,7 +134,7 @@ void PasswordManagerErrorMessageDelegate::HandleActionButtonClicked(
       helper_bridge_->StartUpdateAccountCredentialsFlow(web_contents);
       break;
     case PasswordStoreBackendErrorType::kKeyRetrievalRequired:
-      // TODO(crbug.com/1507820): Implement actual handling for the error.
+      helper_bridge_->StartTrustedVaultKeyRetrievalFlow(web_contents);
       return;
     default:
       // Other error types aren't supported.

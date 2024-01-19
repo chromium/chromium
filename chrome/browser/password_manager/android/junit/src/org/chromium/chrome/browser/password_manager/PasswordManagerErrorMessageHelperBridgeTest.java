@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import android.accounts.Account;
 import android.app.Activity;
+import android.app.PendingIntent;
 
 import org.junit.After;
 import org.junit.Before;
@@ -28,9 +29,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.Promise;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -42,12 +45,15 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
@@ -83,6 +89,12 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
 
     @Mock private IdentityManager mIdentityManagerMock;
 
+    @Mock private TrustedVaultClient mTrustedVaultClient;
+
+    @Mock private SyncService mSyncService;
+
+    @Mock private PendingIntent mPendingIntent;
+
     private SharedPreferencesManager mSharedPrefsManager;
 
     private CoreAccountInfo mCoreAccountInfo;
@@ -101,6 +113,8 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
                 .thenReturn(mCoreAccountInfo);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
+        TrustedVaultClient.setInstanceForTesting(mTrustedVaultClient);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
     }
 
     @After
@@ -236,5 +250,23 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                 mWindowAndroidMock, mProfile);
         verify(mFakeAccountManagerFacade, never())
                 .updateCredentials(any(Account.class), any(Activity.class), any(Callback.class));
+    }
+
+    @Test
+    public void testStartTrustedVaultKeyRetrievalFlow() {
+        final Activity activity = mock(Activity.class);
+        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
+        when(mSyncService.getAccountInfo()).thenReturn(mCoreAccountInfo);
+
+        Promise<PendingIntent> intentPromise = new Promise<>();
+        when(mTrustedVaultClient.createKeyRetrievalIntent(any())).thenReturn(intentPromise);
+
+        PasswordManagerErrorMessageHelperBridge.startTrustedVaultKeyRetrievalFlow(
+                mWindowAndroidMock, mProfile);
+
+        intentPromise.fulfill(mPendingIntent);
+        ShadowLooper.idleMainLooper();
+
+        verify(activity).startActivity(any(), any());
     }
 }

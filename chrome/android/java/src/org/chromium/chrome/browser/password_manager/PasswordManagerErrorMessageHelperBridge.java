@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -17,10 +18,14 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.TrustedVaultClient;
+import org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -97,6 +102,29 @@ public class PasswordManagerErrorMessageHelperBridge {
                         (success) -> {
                             RecordHistogram.recordBooleanHistogram(
                                     "PasswordManager.UPMUpdateSignInCredentialsSucces", success);
+                        });
+    }
+
+    /**
+     * Starts the Android process to retrieve encryption keys in Chrome. This method will only work for users that have been previously syncing in Chrome.
+     */
+    @CalledByNative
+    static void startTrustedVaultKeyRetrievalFlow(WindowAndroid windowAndroid, Profile profile) {
+        final CoreAccountInfo primaryAccountInfo =
+                SyncServiceFactory.getForProfile(profile).getAccountInfo();
+        // If the account has been removed before calling this method, there is nothing to do.
+        if (primaryAccountInfo == null) return;
+        final Activity activity = windowAndroid.getActivity().get();
+
+        TrustedVaultClient.get()
+                .createKeyRetrievalIntent(primaryAccountInfo)
+                .then(
+                        (intent) -> {
+                            var action = TrustedVaultUserActionTriggerForUMA.PASSWORD_MANAGER_ERROR_MESSAGE;
+                            var proxyIntent =
+                                    SyncTrustedVaultProxyActivity.createKeyRetrievalProxyIntent(
+                                                    intent, action);
+                            IntentUtils.safeStartActivity(activity, proxyIntent);
                         });
     }
 }

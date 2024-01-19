@@ -49,7 +49,10 @@ enum class TrustedVaultUserActionTriggerForUMA {
   // TODO(crbug.com/1083973): record this bucket bucket on Android once
   // corresponding UI added.
   kNewTabPageInfobar,
-  kMaxValue = kNewTabPageInfobar
+  // Used on Android only. This dialog is shown when GMSCore returned
+  // kKeyRetrievalRequired error when obtaining passwords.
+  kPasswordManagerErrorMessage,
+  kMaxValue = kPasswordManagerErrorMessage
 };
 
 // Returns whether |type| is being uploaded to Google. This is useful for

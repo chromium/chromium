@@ -238,3 +238,26 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   delegate()->DismissPasswordManagerErrorMessage(
       messages::DismissReason::UNKNOWN);
 }
+
+// Tests that the key retrieval flow starts when the user clicks the action
+// button and that the metrics are recorded correctly.
+TEST_F(PasswordManagerErrorMessageDelegateTest,
+       StartTrustedVaultKeyRetrievalFlow) {
+  base::HistogramTester histogram_tester;
+
+  DisplayMessageAndExpectEnqueued(
+      password_manager::ErrorMessageFlowType::kSaveFlow,
+      password_manager::PasswordStoreBackendErrorType::kKeyRetrievalRequired);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(web_contents()));
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
+
+  // The message needs to be dismissed manually in tests. In production code
+  // this happens automatically, but on the java side.
+  DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
+  histogram_tester.ExpectUniqueSample(kErrorMessageDismissalReasonHistogramName,
+                                      messages::DismissReason::PRIMARY_ACTION,
+                                      1);
+}
