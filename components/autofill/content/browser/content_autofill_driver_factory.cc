@@ -190,22 +190,12 @@ void ContentAutofillDriverFactory::DidStartNavigation(
 
 void ContentAutofillDriverFactory::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted()) {
+  if (!navigation_handle->HasCommitted() ||
+      navigation_handle->IsSameDocument()) {
     return;
   }
   auto* driver = DriverForFrame(navigation_handle->GetRenderFrameHost());
   if (!driver) {
-    return;
-  }
-  if (!navigation_handle->IsInPrerenderedMainFrame() &&
-      (navigation_handle->IsInMainFrame() ||
-       navigation_handle->HasSubframeNavigationEntryCommitted())) {
-    if (IsTouchToFillCreditCardSupported()) {
-      client_->HideTouchToFillCreditCard();
-    }
-  }
-
-  if (navigation_handle->IsSameDocument()) {
     return;
   }
 
