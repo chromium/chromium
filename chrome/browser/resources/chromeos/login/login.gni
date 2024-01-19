@@ -195,7 +195,7 @@ foreach(f, login_screens_html_files) {
 }
 
 osauth_screens_js_files = [
-  "screens/osauth/apply_online_password.js",
+  "screens/osauth/apply_online_password.ts",
   "screens/osauth/cryptohome_recovery.ts",
   "screens/osauth/cryptohome_recovery_setup.ts",
   "screens/osauth/factor_setup_success.ts",

@@ -11,7 +11,6 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args
   deps = [
-    ":apply_online_password",
     ":enter_old_password",
     ":fingerprint_setup",
     ":gaia_password_changed",
@@ -21,16 +20,6 @@ js_type_check("closure_compile") {
   ]
 }
 
-js_library("apply_online_password") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/apply_online_password.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_loading_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-}
 
 js_library("fingerprint_setup") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/fingerprint_setup.js" ]
