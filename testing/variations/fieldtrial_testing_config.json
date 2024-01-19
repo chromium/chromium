@@ -63,6 +63,25 @@
             ]
         }
     ],
+    "AccessibilitySerializationSizeMetrics": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilitySerializationSizeMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilitySnapshotStressTests": [
         {
             "platforms": [
