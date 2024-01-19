@@ -6955,7 +6955,12 @@ ChromeContentBrowserClient::GetAsyncCheckTracker(
       !safe_browsing_service_->ui_manager()) {
     return nullptr;
   }
-  if (!is_enterprise_lookup_enabled && !is_consumer_lookup_enabled &&
+  if (is_enterprise_lookup_enabled) {
+    // No async checks for enterprise real-time checks. URL filtering rules
+    // need to be applied before the navigation is completed.
+    return nullptr;
+  }
+  if (!is_consumer_lookup_enabled &&
       hash_realtime_selection ==
           safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone) {
     return nullptr;

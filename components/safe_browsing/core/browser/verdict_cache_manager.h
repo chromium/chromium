@@ -134,6 +134,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
 
  private:
   friend class ::SafeBrowsingServiceTest;
+  friend class SafeBrowsingBlockingPageAsyncChecksTest;
   friend class SafeBrowsingBlockingPageRealTimeUrlCheckTest;
   friend class SafeBrowsingBlockingPageHashRealTimeCheckTest;
   friend class VerdictCacheManagerTest;
@@ -197,6 +198,12 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   // unsafe using the command line flag "mark_as_real_time_phishing". This
   // applies to URL real-time lookups.
   void CacheArtificialUnsafeRealTimeUrlVerdictFromSwitch();
+
+  // This adds a cached verdict for a URL that has artificially been marked as
+  // safe or unsafe (depending on |is_unsafe|). This applies to URL real-time
+  // lookups.
+  void CacheArtificialRealTimeUrlVerdict(const std::string& url_string,
+                                         bool is_unsafe);
 
   // This adds a cached verdict for a URL that has artificially been marked as
   // unsafe using the command line flag "mark_as_phish_guard_phishing". This

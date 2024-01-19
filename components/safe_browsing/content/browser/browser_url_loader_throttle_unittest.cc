@@ -219,7 +219,9 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
   void CheckUrl(const GURL& url,
                 const std::string& method,
                 NativeCheckUrlCallback callback) override {
-    ASSERT_GT(callback_infos_.size(), check_url_called_cnt_);
+    ASSERT_GT(callback_infos_.size(), check_url_called_cnt_)
+        << "Unexpected call to |CheckUrl|. Make sure to call |AddCallbackInfo| "
+           "in advance if this call is expected.";
     CallbackInfo& callback_info = callback_infos_[check_url_called_cnt_++];
     if (callback_info.should_delay_callback) {
       callback_info.callback = std::move(callback);

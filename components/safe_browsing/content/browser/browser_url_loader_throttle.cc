@@ -221,9 +221,6 @@ void BrowserURLLoaderThrottle::WillStartRequest(
   bool can_urt_check_subresource_url =
       url_lookup_service_ && url_lookup_service_->CanCheckSubresourceURL();
 
-  // TODO(crbug.com/1501194): Add more checks (e.g. enterprise checks) to
-  // ensure this URL loader is eligible for async check, or re-evaluate the
-  // CHECK(can_check_db).
   if (async_check_tracker_ && navigation_id_.has_value() &&
       // Once |kSafeBrowsingSkipSubresources| is deprecated, the |kDocument|
       // check is no longer needed.
