@@ -213,19 +213,19 @@ found in the LICENSE file.
 
                 <ProgressBar
                     android:id="@+id/verification_progress_bar"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="@dimen/autofill_dialog_progress_bar_size"
+                    android:layout_height="@dimen/autofill_dialog_progress_bar_size"
                     android:layout_marginBottom="8dp"
                     android:layout_marginTop="16dp"
                     android:visibility="gone" />
 
                 <ImageView
                     android:id="@+id/verification_success"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/autofill_dialog_progress_bar_size"
+                    android:layout_height="@dimen/autofill_dialog_progress_bar_size"
                     android:layout_marginBottom="8dp"
                     android:layout_marginTop="16dp"
-                    android:src="@drawable/verify_checkmark"
+                    android:src="@drawable/checkmark_blue"
                     android:visibility="gone"
                     android:importantForAccessibility="no" />
 

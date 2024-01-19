@@ -32,8 +32,8 @@ found in the LICENSE file.
             android:id="@+id/progress_bar_layout">
             <ProgressBar
                 android:id="@+id/progress_bar"
-                android:layout_width="@dimen/progress_bar_size"
-                android:layout_height="@dimen/progress_bar_size"
+                android:layout_width="@dimen/autofill_dialog_progress_bar_size"
+                android:layout_height="@dimen/autofill_dialog_progress_bar_size"
                 android:indeterminate="true"/>
             <ImageView
                 android:id="@+id/confirmation_icon"
