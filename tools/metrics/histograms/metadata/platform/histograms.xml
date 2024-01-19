@@ -1231,6 +1231,8 @@ chromium-metrics-reviews@google.com.
         summary="PinWeaverManager::ResetCredential"/>
     <variant name=".PinWeaverManager.StartBiometricsAuth"
         summary="PinWeaverManager::StartBiometricsAuth"/>
+    <variant name=".PinWeaverManager.StateIsReady"
+        summary="PinWeaverManager::StateIsReady"/>
     <variant name=".Random" summary="Random"/>
     <variant name=".Random.RandomBlob" summary="Random::RandomBlob"/>
     <variant name=".Random.RandomSecureBlob"
