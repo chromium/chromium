@@ -35,7 +35,7 @@
       [[computeOnOffText_(prefs.ash.user.camera_allowed.value)]]
     </div>
     <div id="onOffSubtext" class="secondary">
-      [[computeOnOffSubtext_(prefs.ash.user.camera_allowed.value)]]
+      [[cameraAccessStateText_]]
     </div>
   </div>
   <div id="cameraToggleWrapper">
@@ -45,8 +45,7 @@
         disabled="[[shouldDisableCameraToggle_]]"
         on-click="onCameraToggleClick_"
         aria-label="$i18n{cameraToggleTitle}"
-        aria-description="[[computeOnOffSubtext_(
-          prefs.ash.user.camera_allowed.value)]]">
+        aria-description="[[cameraAccessStateText_]]">
     </cr-toggle>
   </div>
 </div>
