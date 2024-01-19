@@ -49,11 +49,6 @@ export class CertificateDeleteConfirmationDialogElement extends
   model: CertificateSubnode;
   certificateType: CertificateType;
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.$.dialog.showModal();
-  }
-
   private getTitleText_(): string {
     const getString = (localizedMessageId: string) =>
         loadTimeData.getStringF(localizedMessageId, this.model.name);

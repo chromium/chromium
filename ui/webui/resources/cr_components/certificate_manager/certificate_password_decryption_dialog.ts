@@ -50,11 +50,6 @@ export class CertificatePasswordDecryptionDialogElement extends
 
   private password_: string;
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.$.dialog.showModal();
-  }
-
   private onCancelClick_() {
     this.$.dialog.close();
   }
