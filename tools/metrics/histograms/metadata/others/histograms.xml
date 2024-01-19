@@ -7689,6 +7689,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OSCrypt.DPAPIProvider.Status" enum="OSCryptDPAPIKeyStatus"
+    expires_after="2024-06-30">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The result of the DPAPI OSCrypt Async Key Provider reading the OSCrypt Sync
+    DPAPI key from pref store when being initialized. This is recorded once
+    during browser startup if the DPAPI Key Provider is enabled, on Windows
+    only.
+  </summary>
+</histogram>
+
 <histogram name="OSCrypt.Linux.DecryptedWithEmptyKey" enum="Boolean"
     expires_after="2024-05-19">
   <owner>cfroussios@chromium.org</owner>

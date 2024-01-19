@@ -31741,6 +31741,16 @@ Called by update_net_error_codes.py.-->
              OriginAgentCluster-by-default)"/>
 </enum>
 
+<enum name="OSCryptDPAPIKeyStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Key Not Found"/>
+  <int value="2" label="Key Decode Failure"/>
+  <int value="3" label="Key Too Short"/>
+  <int value="4" label="Invalid Key Header"/>
+  <int value="5" label="DPAPI Decryption Failure"/>
+  <int value="6" label="Invalid Key Length"/>
+</enum>
+
 <enum name="OsSetting">
   <int value="0" label="Configure Ethernet"/>
   <int value="1" label="Ethernet: Automatically Configure IP Address"/>

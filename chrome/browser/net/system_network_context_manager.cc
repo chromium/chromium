@@ -103,6 +103,7 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_WIN)
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -788,7 +789,19 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   // The OSCrypt keys are process bound, so if network service is out of
   // process, send it the required key.
   if (content::IsOutOfProcessNetworkService()) {
+#if BUILDFLAG(IS_WIN)
+    // On Windows, if OSCrypt async is enabled, and DPAPI key provider is also
+    // enabled, then OSCrypt manages the encryption key, and there is no need to
+    // send the key separately to OSCrypt sync.
+    if (!base::FeatureList::IsEnabled(
+            features::kUseOsCryptAsyncForCookieEncryption) ||
+        !base::FeatureList::IsEnabled(
+            features::kEnableDPAPIEncryptionProvider)) {
+      network_service->SetEncryptionKey(OSCrypt::GetRawEncryptionKey());
+    }
+#else
     network_service->SetEncryptionKey(OSCrypt::GetRawEncryptionKey());
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   // Configure SCT Auditing in the NetworkService.

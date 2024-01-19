@@ -146,6 +146,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
+#include "chrome/browser/browser_features.h"
+#include "components/os_crypt/async/browser/dpapi_key_provider.h"
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/chrome_browser_main_mac.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_stats_mac.h"
@@ -1287,13 +1289,26 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
     breadcrumbs::DeleteBreadcrumbFiles(user_data_dir);
   }
 
-  // For now, initialize OSCryptAsync with no providers. This delegates all
+  // OSCryptAsync provider configuration. If empty, this delegates all
   // encryption operations to OSCrypt.
-  // TODO(crbug.com/1373092): Add providers behind features, as support for them
-  // is added.
-  os_crypt_async_ = std::make_unique<os_crypt_async::OSCryptAsync>(
-      std::vector<
-          std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>());
+  std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
+      providers;
+
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/1373092): For Windows, continue to add providers behind
+  // features, as support for them is added.
+  if (base::FeatureList::IsEnabled(features::kEnableDPAPIEncryptionProvider)) {
+    // The DPAPI key provider requires OSCrypt::Init to have already been called
+    // to initialize the key storage. This happens in
+    // ChromeBrowserMainPartsWin::PreCreateMainMessageLoop.
+    providers.emplace_back(std::make_pair(
+        /*precedence=*/10u,
+        std::make_unique<os_crypt_async::DPAPIKeyProvider>(local_state())));
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  os_crypt_async_ =
+      std::make_unique<os_crypt_async::OSCryptAsync>(std::move(providers));
 
   // Trigger async initialization of OSCrypt key providers.
   std::ignore = os_crypt_async_->GetInstance(base::DoNothing());

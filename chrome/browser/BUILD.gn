@@ -6048,6 +6048,7 @@ static_library("browser") {
       "//chrome/updater/app/server/win:updater_legacy_idl",
       "//components/crash/core/app",
       "//components/crash/core/app:crash_export_thunk_include",
+      "//components/os_crypt/async/browser:dpapi_key_provider",
       "//sandbox/win:sandbox",
       "//services/proxy_resolver_win/public/mojom",
       "//third_party/crashpad/crashpad/client",

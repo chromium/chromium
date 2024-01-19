@@ -248,6 +248,13 @@ BASE_FEATURE(kNoPreReadMainDll,
 BASE_FEATURE(kUseOsCryptAsyncForCookieEncryption,
              "UseOsCryptAsyncForCookieEncryption",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When this feature is enabled, the DPAPI encryption provider will be
+// registered and enabled for encryption/decryption. This provider is
+// forwards/backwards compatible with OSCrypt sync.
+BASE_FEATURE(kEnableDPAPIEncryptionProvider,
+             "EnableDPAPIEncryptionProvider",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Enables showing the email of the flex org admin that setup CBCM in the
