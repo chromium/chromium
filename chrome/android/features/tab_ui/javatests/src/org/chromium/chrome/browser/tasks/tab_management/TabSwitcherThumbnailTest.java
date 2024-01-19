@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
@@ -125,9 +125,9 @@ public class TabSwitcherThumbnailTest {
         for (int i = tabCounts - 1; i >= 0; i--) {
             onViewWaiting(
                             allOf(
-                                    withParent(
+                                    isDescendantOfA(
                                             withId(
-                                                    TabUiTestHelper.getTabSwitcherParentId(
+                                                    TabUiTestHelper.getTabSwitcherAncestorId(
                                                             mActivityTestRule.getActivity()))),
                                     withId(R.id.tab_list_recycler_view)))
                     .perform(scrollToPosition(i))

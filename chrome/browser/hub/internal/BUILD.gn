@@ -10,7 +10,8 @@ android_library("java") {
     ":*",
     "//chrome/android:*",
 
-    # For access to resource IDs and view names for Hub public transit framework code.
+    # For access to resource IDs and view names for test code.
+    "//chrome/android/features/tab_ui:test_support_javalib",
     "//chrome/test/android:chrome_java_transit",
   ]
   sources = [

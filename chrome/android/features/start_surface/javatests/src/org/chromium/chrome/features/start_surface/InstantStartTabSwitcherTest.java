@@ -14,7 +14,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -176,9 +175,9 @@ public class InstantStartTabSwitcherTest {
 
         onViewWaiting(
                 allOf(
-                        withParent(
+                        isDescendantOfA(
                                 withId(
-                                        TabUiTestHelper.getTabSwitcherParentId(
+                                        TabUiTestHelper.getTabSwitcherAncestorId(
                                                 mActivityTestRule.getActivity()))),
                         withId(org.chromium.chrome.test.R.id.tab_list_recycler_view)));
         Assert.assertFalse(cta.findViewById(org.chromium.chrome.test.R.id.url_bar).isFocused());
@@ -206,12 +205,12 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.clickTabSwitcherButton(cta);
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
 
-        int tabSwitcherParentViewId = TabUiTestHelper.getTabSwitcherParentId(cta);
+        int tabSwitcherAncestorId = TabUiTestHelper.getTabSwitcherAncestorId(cta);
         // Make sure the grid tab switcher is scrolled down to show the selected tab.
         onView(
                         allOf(
                                 withId(org.chromium.chrome.test.R.id.tab_list_recycler_view),
-                                withParent(withId(tabSwitcherParentViewId))))
+                                isDescendantOfA(withId(tabSwitcherAncestorId))))
                 .check(
                         (v, noMatchException) -> {
                             if (noMatchException != null) throw noMatchException;
@@ -234,12 +233,12 @@ public class InstantStartTabSwitcherTest {
         onView(
                         allOf(
                                 withId(org.chromium.chrome.test.R.id.tab_list_recycler_view),
-                                withParent(withId(tabSwitcherParentViewId))))
+                                isDescendantOfA(withId(tabSwitcherAncestorId))))
                 .perform(swipeUp());
         onView(
                         allOf(
                                 withTagValue(is(SHADOW_VIEW_TAG)),
-                                isDescendantOfA(withId(tabSwitcherParentViewId))))
+                                isDescendantOfA(withId(tabSwitcherAncestorId))))
                 .check(matches(isDisplayed()));
     }
 

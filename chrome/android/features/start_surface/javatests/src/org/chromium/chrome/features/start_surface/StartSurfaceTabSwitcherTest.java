@@ -189,7 +189,8 @@ public class StartSurfaceTabSwitcherTest {
 
         onViewWaiting(
                         allOf(
-                                withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
+                                isDescendantOfA(
+                                        withId(TabUiTestHelper.getTabSwitcherAncestorId(cta))),
                                 withId(R.id.tab_list_recycler_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
@@ -363,16 +364,18 @@ public class StartSurfaceTabSwitcherTest {
         }
         // Enter the Tab switcher.
         TabUiTestHelper.enterTabSwitcher(cta);
-        int parentViewId =
+        int ancestorViewId =
                 TabUiTestHelper.getIsStartSurfaceRefactorEnabledFromUIThread(cta)
-                        ? R.id.compositor_view_holder
+                        ? TabUiTestHelper.getTabSwitcherAncestorId(cta)
                         : R.id.secondary_tasks_surface_view;
         // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
         ViewUtils.isEventuallyVisible(
-                allOf(withParent(withId(parentViewId)), withId(R.id.tab_list_recycler_view)));
+                allOf(
+                        isDescendantOfA(withId(ancestorViewId)),
+                        withId(R.id.tab_list_recycler_view)));
 
         RecyclerView recyclerView =
-                cta.findViewById(parentViewId).findViewById(R.id.tab_list_recycler_view);
+                cta.findViewById(ancestorViewId).findViewById(R.id.tab_list_recycler_view);
         CriteriaHelper.pollUiThread(() -> 2 == recyclerView.getChildCount());
         // Verifies that the tabs are shown in MRU order: the first card in the Tab switcher is the
         // last created Tab by tapping the MV tile; the second card is the Tab created or restored

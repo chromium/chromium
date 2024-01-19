@@ -6,9 +6,9 @@ package org.chromium.chrome.features.start_surface;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
@@ -277,7 +277,8 @@ public class StartSurfaceBackButtonTest {
         ViewUtils.isEventuallyVisible(withId(R.id.tab_list_recycler_view));
         onView(
                         allOf(
-                                withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
+                                isDescendantOfA(
+                                        withId(TabUiTestHelper.getTabSwitcherAncestorId(cta))),
                                 withId(R.id.tab_list_recycler_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);

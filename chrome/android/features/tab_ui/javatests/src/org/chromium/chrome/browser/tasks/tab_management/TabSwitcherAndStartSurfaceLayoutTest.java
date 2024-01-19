@@ -14,6 +14,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -2068,9 +2069,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         onView(
                         allOf(
                                 withId(R.id.empty_state_container),
-                                withParent(
+                                isDescendantOfA(
                                         withId(
-                                                TabUiTestHelper.getTabSwitcherParentId(
+                                                TabUiTestHelper.getTabSwitcherAncestorId(
                                                         appContext)))))
                 .check(matches(isDisplayed()));
     }
@@ -2108,9 +2109,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         onView(
                         allOf(
                                 withId(R.id.empty_state_container),
-                                withParent(
+                                isDescendantOfA(
                                         withId(
-                                                TabUiTestHelper.getTabSwitcherParentId(
+                                                TabUiTestHelper.getTabSwitcherAncestorId(
                                                         appContext)))))
                 .check(matches(not(isDisplayed())));
 
@@ -2130,9 +2131,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         onView(
                         allOf(
                                 withId(R.id.empty_state_container),
-                                withParent(
+                                isDescendantOfA(
                                         withId(
-                                                TabUiTestHelper.getTabSwitcherParentId(
+                                                TabUiTestHelper.getTabSwitcherAncestorId(
                                                         appContext)))))
                 .check(matches(isDisplayed()));
     }
@@ -2385,9 +2386,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     private Matcher<View> tabSwitcherViewMatcher() {
         return allOf(
-                withParent(
+                isDescendantOfA(
                         withId(
-                                TabUiTestHelper.getTabSwitcherParentId(
+                                TabUiTestHelper.getTabSwitcherAncestorId(
                                         mActivityTestRule.getActivity()))),
                 withId(R.id.tab_list_recycler_view));
     }

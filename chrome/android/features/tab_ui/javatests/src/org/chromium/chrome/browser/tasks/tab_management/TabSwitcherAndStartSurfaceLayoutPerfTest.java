@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -675,9 +675,9 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
             Thread.sleep(mWaitingTime);
             Espresso.onView(
                             allOf(
-                                    withParent(
+                                    isDescendantOfA(
                                             withId(
-                                                    TabUiTestHelper.getTabSwitcherParentId(
+                                                    TabUiTestHelper.getTabSwitcherAncestorId(
                                                             mActivityTestRule.getActivity()))),
                                     withId(R.id.tab_list_recycler_view)))
                     .perform(

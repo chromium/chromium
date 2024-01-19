@@ -49,7 +49,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.c
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.finishActivity;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getSwipeToDismissAction;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getTabSwitcherParentId;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getTabSwitcherAncestorId;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.leaveTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.prepareTabsWithThumbnail;
@@ -116,6 +116,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -1200,7 +1201,7 @@ public class TabGridDialogTest {
         prepareTabsWithThumbnail(sActivityTestRule, 3, 0, "about:blank");
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 3);
-        waitForThumbnailsToFetch((RecyclerView) cta.findViewById(R.id.tab_list_recycler_view));
+        waitForThumbnailsToFetch(getRecyclerView(cta));
         verifyAllTabsHaveThumbnail(cta.getCurrentTabModel());
 
         // Create a tab group.
@@ -1224,7 +1225,7 @@ public class TabGridDialogTest {
         prepareTabsWithThumbnail(sActivityTestRule, 3, 0, "about:blank");
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 3);
-        waitForThumbnailsToFetch((RecyclerView) cta.findViewById(R.id.tab_list_recycler_view));
+        waitForThumbnailsToFetch(getRecyclerView(cta));
         verifyAllTabsHaveThumbnail(cta.getCurrentTabModel());
 
         // Rotate to landscape mode and create a tab group.
@@ -1248,7 +1249,7 @@ public class TabGridDialogTest {
         prepareTabsWithThumbnail(sActivityTestRule, 5, 0, "about:blank");
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 5);
-        waitForThumbnailsToFetch((RecyclerView) cta.findViewById(R.id.tab_list_recycler_view));
+        waitForThumbnailsToFetch(getRecyclerView(cta));
         verifyAllTabsHaveThumbnail(cta.getCurrentTabModel());
 
         // Create a tab group.
@@ -1530,9 +1531,9 @@ public class TabGridDialogTest {
         enterTabSwitcher(cta);
         onView(
                         allOf(
-                                withParent(
+                                isDescendantOfA(
                                         withId(
-                                                getTabSwitcherParentId(
+                                                getTabSwitcherAncestorId(
                                                         sActivityTestRule.getActivity()))),
                                 withId(R.id.tab_list_recycler_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
@@ -1826,9 +1827,9 @@ public class TabGridDialogTest {
     private void verifyFirstCardTitle(String title) {
         onView(
                         allOf(
-                                withParent(
+                                isDescendantOfA(
                                         withId(
-                                                TabUiTestHelper.getTabSwitcherParentId(
+                                                TabUiTestHelper.getTabSwitcherAncestorId(
                                                         sActivityTestRule.getActivity()))),
                                 withId(R.id.tab_list_recycler_view)))
                 .check(
@@ -1919,14 +1920,20 @@ public class TabGridDialogTest {
 
     private void verifyGlobalUndoBarAndClick() {
         // Verify that the dialog undo bar is showing and the default undo bar is hidden.
-        int expectedParent =
-                isTablet(sActivityTestRule.getActivity())
-                        ? R.id.tab_switcher_view_holder
-                        : R.id.bottom_container;
+        int expectedAncestor = 0;
+        if (HubFieldTrial.isHubEnabled()) {
+            expectedAncestor =
+                    TabUiTestHelper.getTabSwitcherAncestorId(sActivityTestRule.getActivity());
+        } else {
+            expectedAncestor =
+                    isTablet(sActivityTestRule.getActivity())
+                            ? R.id.tab_switcher_view_holder
+                            : R.id.bottom_container;
+        }
         onViewWaiting(
                 allOf(
                         withId(R.id.snackbar),
-                        isDescendantOfA(withId(expectedParent)),
+                        isDescendantOfA(withId(expectedAncestor)),
                         isDisplayed()));
         onView(
                         allOf(
@@ -1936,7 +1943,7 @@ public class TabGridDialogTest {
         onView(
                         allOf(
                                 withId(R.id.snackbar_button),
-                                isDescendantOfA(withId(expectedParent)),
+                                isDescendantOfA(withId(expectedAncestor)),
                                 isDisplayed()))
                 .perform(click());
     }
@@ -1986,6 +1993,11 @@ public class TabGridDialogTest {
                     boolean isFocused = titleTextView.isFocused();
                     return (!shouldFocus ^ isFocused) && (!shouldFocus ^ keyboardVisible);
                 });
+    }
+
+    private RecyclerView getRecyclerView(ChromeTabbedActivity cta) {
+        ViewGroup group = (ViewGroup) cta.findViewById(getTabSwitcherAncestorId(cta));
+        return (RecyclerView) group.findViewById(R.id.tab_list_recycler_view);
     }
 
     private void enterTabListEditor(ChromeTabbedActivity cta) {
