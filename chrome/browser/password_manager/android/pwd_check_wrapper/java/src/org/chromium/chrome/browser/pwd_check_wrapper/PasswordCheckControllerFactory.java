@@ -7,15 +7,18 @@ package org.chromium.chrome.browser.pwd_check_wrapper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.SyncService;
 
 public class PasswordCheckControllerFactory {
     public PasswordCheckController create(
             SyncService syncService,
+            PrefService prefService,
             PasswordStoreBridge passwordStoreBridge,
             SettingsLauncher settingsLauncher) {
         if (PasswordManagerHelper.canUseUpm()) {
-            return new GmsCorePasswordCheckController(syncService, passwordStoreBridge);
+            return new GmsCorePasswordCheckController(
+                    syncService, prefService, passwordStoreBridge);
         }
         return new ChromeNativePasswordCheckController(settingsLauncher);
     }

@@ -96,16 +96,34 @@ public class PasswordStoreBridge {
                 .editPassword(mNativePasswordStoreBridge, credential, newPassword);
     }
 
-    /** Returns the count of stored credentials. */
-    public int getPasswordStoreCredentialsCount() {
+    /**
+     * @return Returns the count of stored credentials for both account and local stores combined.
+     */
+    public int getPasswordStoreCredentialsCountForAllStores() {
         return PasswordStoreBridgeJni.get()
-                .getPasswordStoreCredentialsCount(mNativePasswordStoreBridge);
+                .getPasswordStoreCredentialsCountForAllStores(mNativePasswordStoreBridge);
+    }
+
+    /**
+     * @return Returns the count of stored credentials in the account storage.
+     */
+    public int getPasswordStoreCredentialsCountForAccountStore() {
+        return PasswordStoreBridgeJni.get()
+                .getPasswordStoreCredentialsCountForAccountStore(mNativePasswordStoreBridge);
+    }
+
+    /**
+     * @return Returns the count of stored credentials in the local storage.
+     */
+    public int getPasswordStoreCredentialsCountForProfileStore() {
+        return PasswordStoreBridgeJni.get()
+                .getPasswordStoreCredentialsCountForProfileStore(mNativePasswordStoreBridge);
     }
 
     /** Returns the list of credentials stored in the database. */
     public PasswordStoreCredential[] getAllCredentials() {
         PasswordStoreCredential[] credentials =
-                new PasswordStoreCredential[getPasswordStoreCredentialsCount()];
+                new PasswordStoreCredential[getPasswordStoreCredentialsCountForAllStores()];
         PasswordStoreBridgeJni.get().getAllCredentials(mNativePasswordStoreBridge, credentials);
         return credentials;
     }
@@ -159,7 +177,11 @@ public class PasswordStoreBridge {
                 PasswordStoreCredential credential,
                 String newPassword);
 
-        int getPasswordStoreCredentialsCount(long nativePasswordStoreBridge);
+        int getPasswordStoreCredentialsCountForAllStores(long nativePasswordStoreBridge);
+
+        int getPasswordStoreCredentialsCountForAccountStore(long nativePasswordStoreBridge);
+
+        int getPasswordStoreCredentialsCountForProfileStore(long nativePasswordStoreBridge);
 
         void getAllCredentials(
                 long nativePasswordStoreBridge, PasswordStoreCredential[] credentials);

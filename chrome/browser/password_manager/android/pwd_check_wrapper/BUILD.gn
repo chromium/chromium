@@ -22,6 +22,7 @@ android_library("java") {
     "//chrome/browser/password_manager/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/password_manager/core/browser:password_manager_java_enums",
+    "//components/prefs/android:java",
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -41,6 +42,7 @@ android_library("test_support_java") {
     ":java",
     "//chrome/browser/password_manager/android:java",
     "//components/browser_ui/settings/android:java",
+    "//components/prefs/android:java",
     "//components/sync/android:sync_java",
   ]
 }

@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsi
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
@@ -181,6 +182,7 @@ class SafetyCheckMediator {
             SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
             SyncService syncService,
+            PrefService prefService,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         this(
                 safetyCheckModel,
@@ -189,6 +191,7 @@ class SafetyCheckMediator {
                 settingsLauncher,
                 signinLauncher,
                 syncService,
+                prefService,
                 new Handler(),
                 new PasswordStoreBridge(),
                 new PasswordCheckControllerFactory());
@@ -203,6 +206,7 @@ class SafetyCheckMediator {
             SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
             SyncService syncService,
+            PrefService prefService,
             PasswordStoreBridge passwordStoreBridge,
             PasswordCheckControllerFactory passwordCheckControllerFactory,
             Handler handler,
@@ -214,6 +218,7 @@ class SafetyCheckMediator {
                 settingsLauncher,
                 signinLauncher,
                 syncService,
+                prefService,
                 handler,
                 passwordStoreBridge,
                 passwordCheckControllerFactory);
@@ -227,6 +232,7 @@ class SafetyCheckMediator {
             SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
             @Nullable SyncService syncService,
+            PrefService prefService,
             Handler handler,
             PasswordStoreBridge passwordStoreBridge,
             PasswordCheckControllerFactory passwordCheckControllerFactory) {
@@ -240,7 +246,7 @@ class SafetyCheckMediator {
         mPreferenceManager = ChromeSharedPreferences.getInstance();
         mPasswordCheckController =
                 passwordCheckControllerFactory.create(
-                        syncService, passwordStoreBridge, settingsLauncher);
+                        syncService, prefService, passwordStoreBridge, settingsLauncher);
         // Set the listener for clicking the updates element.
         mSafetyCheckModel.set(
                 SafetyCheckProperties.UPDATES_CLICK_LISTENER,

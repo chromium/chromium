@@ -5,10 +5,13 @@
 #include "chrome/browser/password_manager/android/password_store_bridge.h"
 
 #include <jni.h>
+#include <memory>
+#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreBridge_jni.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreCredential_jni.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
@@ -16,6 +19,8 @@
 
 namespace {
 using password_manager::PasswordForm;
+using Store = password_manager::PasswordForm::Store;
+using base::ranges::count_if;
 
 PasswordForm ConvertJavaObjectToPasswordForm(
     JNIEnv* env,
@@ -87,9 +92,28 @@ bool PasswordStoreBridge::EditPassword(
          password_manager::SavedPasswordsPresenter::EditResult::kSuccess;
 }
 
-jint PasswordStoreBridge::GetPasswordStoreCredentialsCount(JNIEnv* env) const {
+jint PasswordStoreBridge::GetPasswordStoreCredentialsCountForAllStores(
+    JNIEnv* env) const {
   return static_cast<int>(
       saved_passwords_presenter_.GetSavedPasswords().size());
+}
+
+jint PasswordStoreBridge::GetPasswordStoreCredentialsCountForAccountStore(
+    JNIEnv* env) const {
+  auto in_account_store = [](const auto& credential) {
+    return credential.stored_in.contains(Store::kAccountStore);
+  };
+  return count_if(saved_passwords_presenter_.GetSavedPasswords(),
+                  in_account_store);
+}
+
+jint PasswordStoreBridge::GetPasswordStoreCredentialsCountForProfileStore(
+    JNIEnv* env) const {
+  auto in_account_store = [](const auto& credential) {
+    return credential.stored_in.contains(Store::kProfileStore);
+  };
+  return count_if(saved_passwords_presenter_.GetSavedPasswords(),
+                  in_account_store);
 }
 
 void PasswordStoreBridge::GetAllCredentials(

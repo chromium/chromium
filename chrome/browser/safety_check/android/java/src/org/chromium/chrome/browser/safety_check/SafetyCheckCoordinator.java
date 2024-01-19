@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -42,14 +43,16 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
             SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            @Nullable SyncService syncService) {
+            @Nullable SyncService syncService,
+            PrefService prefService) {
         new SafetyCheckCoordinator(
                 settingsFragment,
                 updatesClient,
                 settingsLauncher,
                 signinLauncher,
                 modalDialogManagerSupplier,
-                syncService);
+                syncService,
+                prefService);
     }
 
     private SafetyCheckCoordinator(
@@ -58,7 +61,8 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
             SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            @Nullable SyncService syncService) {
+            @Nullable SyncService syncService,
+            PrefService prefService) {
         mSettingsFragment = settingsFragment;
         mUpdatesClient = updatesClient;
         // Create the model and the mediator once the view is created.
@@ -98,6 +102,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
                                                     settingsLauncher,
                                                     signinLauncher,
                                                     syncService,
+                                                    prefService,
                                                     modalDialogManagerSupplier);
                                 }
                             }

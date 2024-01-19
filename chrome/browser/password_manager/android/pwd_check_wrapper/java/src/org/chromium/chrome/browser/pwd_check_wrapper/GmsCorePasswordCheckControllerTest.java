@@ -70,7 +70,9 @@ public class GmsCorePasswordCheckControllerTest {
         configureMockSyncServiceToSyncPasswords();
         configurePasswordManagerBackendSupport();
         setFakePasswordCheckupClientHelper();
-        mController = new GmsCorePasswordCheckController(mSyncService, mPasswordStoreBridge);
+        mController =
+                new GmsCorePasswordCheckController(
+                        mSyncService, mPrefService, mPasswordStoreBridge);
     }
 
     private void configurePasswordManagerBackendSupport() {
@@ -78,6 +80,8 @@ public class GmsCorePasswordCheckControllerTest {
                 PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
         when(mPasswordManagerUtilBridgeNativeMock.canUseUPMBackend(true, mPrefService))
                 .thenReturn(true);
+        when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
+                .thenReturn(false);
 
         FakePasswordManagerBackendSupportHelper helper =
                 new FakePasswordManagerBackendSupportHelper();
@@ -116,14 +120,18 @@ public class GmsCorePasswordCheckControllerTest {
     public void passwordCheckResultIsCompleteNoBreachedCredentials()
             throws ExecutionException, InterruptedException {
         // Set fake to return 0 breached credentials.
+        final int totalPasswords = 10;
+        when(mPasswordStoreBridge.getPasswordStoreCredentialsCountForProfileStore())
+                .thenReturn(totalPasswords);
         mPasswordCheckupClientHelper.setBreachedCredentialsCount(0);
-        mController.onSavedPasswordsChanged(10);
+        mController.onSavedPasswordsChanged(totalPasswords);
 
         PasswordCheckResult passwordCheckResult =
-                mController.checkPasswords(PasswordStorageType.LOCAL_STORAGE).get();
+                mController.checkPasswords(PasswordStorageType.ACCOUNT_STORAGE).get();
 
         Assert.assertEquals(OptionalInt.of(0), passwordCheckResult.getBreachedCount());
-        Assert.assertEquals(OptionalInt.of(10), passwordCheckResult.getTotalPasswordsCount());
+        Assert.assertEquals(
+                OptionalInt.of(totalPasswords), passwordCheckResult.getTotalPasswordsCount());
         Assert.assertEquals(null, passwordCheckResult.getError());
     }
 
@@ -135,6 +143,7 @@ public class GmsCorePasswordCheckControllerTest {
     public void passwordCheckResultIsCompleteNoCredentials()
             throws ExecutionException, InterruptedException {
         // Set fake to return 0 breached credentials.
+        when(mPasswordStoreBridge.getPasswordStoreCredentialsCountForProfileStore()).thenReturn(0);
         mController.onSavedPasswordsChanged(0);
         mPasswordCheckupClientHelper.setBreachedCredentialsCount(0);
 
@@ -172,7 +181,11 @@ public class GmsCorePasswordCheckControllerTest {
 
     @Test
     public void passwordCheckForBothStores() throws ExecutionException, InterruptedException {
+        when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
+                .thenReturn(true);
         // Set fake to return 0 breached credentials.
+        when(mPasswordStoreBridge.getPasswordStoreCredentialsCountForAccountStore()).thenReturn(10);
+        when(mPasswordStoreBridge.getPasswordStoreCredentialsCountForProfileStore()).thenReturn(0);
         mPasswordCheckupClientHelper.setBreachedCredentialsCount(0);
         mController.onSavedPasswordsChanged(10);
 
@@ -182,6 +195,9 @@ public class GmsCorePasswordCheckControllerTest {
                 mController.checkPasswords(PasswordStorageType.ACCOUNT_STORAGE).get();
 
         Assert.assertEquals(OptionalInt.of(0), passwordCheckResultLocal.getBreachedCount());
+        Assert.assertEquals(OptionalInt.of(0), passwordCheckResultLocal.getTotalPasswordsCount());
         Assert.assertEquals(OptionalInt.of(0), passwordCheckResultAccount.getBreachedCount());
+        Assert.assertEquals(
+                OptionalInt.of(10), passwordCheckResultAccount.getTotalPasswordsCount());
     }
 }
