@@ -558,9 +558,35 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   }
 }
 
+class PersistedPermissionsFileSystemAccessBrowserTest
+    : public FileSystemAccessBrowserTest {
+ public:
+  PersistedPermissionsFileSystemAccessBrowserTest() {
+    // Enable Persisted Permissions.
+    // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
+    // flag after FSA Persistent Permissions feature launch.
+    feature_list_.InitAndEnableFeature(
+        features::kFileSystemAccessPersistentPermissions);
+  }
+
+  void SetUpOnMainThread() override {
+    FileSystemAccessBrowserTest::SetUpOnMainThread();
+  }
+
+  ~PersistedPermissionsFileSystemAccessBrowserTest() override = default;
+
+  PersistedPermissionsFileSystemAccessBrowserTest(
+      const PersistedPermissionsFileSystemAccessBrowserTest&) = delete;
+  PersistedPermissionsFileSystemAccessBrowserTest& operator=(
+      const PersistedPermissionsFileSystemAccessBrowserTest&) = delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests that permissions are revoked after all top-level frames have navigated
 // away to a different origin.
-IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
                        RevokePermissionAfterNavigation) {
   const base::FilePath test_file = CreateTestFile("");
   ui::SelectFileDialog::SetFactory(
@@ -710,27 +736,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
             content::EvalJs(third_party_iframe,
                             "self.entry.queryPermission({mode: 'readwrite'})"));
 
-  // Even after triggering the timer in the permission context.
-  FileSystemAccessPermissionContextFactory::GetForProfile(profile)
-      ->TriggerTimersForTesting();
-  EXPECT_EQ("granted",
-            content::EvalJs(third_party_iframe,
-                            "self.entry.queryPermission({mode: 'readwrite'})"));
-
   // Now navigate away from b.com in third window as well.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       third_window, https_server.GetURL("a.com", "/title1.html")));
 
-  // Permission should still be granted in iframe.
-  EXPECT_EQ("granted",
-            content::EvalJs(third_party_iframe,
-                            "self.entry.queryPermission({mode: 'readwrite'})"));
-
-  // But after triggering the timer in the permission context ...
-  FileSystemAccessPermissionContextFactory::GetForProfile(profile)
-      ->TriggerTimersForTesting();
-
-  // ... permission should have been revoked.
+  // Permission should have been revoked.
   EXPECT_EQ("prompt",
             content::EvalJs(third_party_iframe,
                             "self.entry.queryPermission({mode: 'readwrite'})"));
@@ -741,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
 
 // Tests that permissions are revoked after all top-level frames have been
 // closed.
-IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
                        RevokePermissionAfterClosingTab) {
   const base::FilePath test_file = CreateTestFile("");
   ui::SelectFileDialog::SetFactory(
@@ -753,8 +763,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
   content::SetupCrossSiteRedirector(&https_server);
   ASSERT_TRUE(https_server.Start());
-
-  Profile* profile = browser()->profile();
 
   // Create two separate windows:
 
@@ -867,16 +875,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   ASSERT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
             third_party_web_contents);
 
-  // Permission should still be granted in iframe.
-  EXPECT_EQ("granted",
-            content::EvalJs(third_party_iframe,
-                            "self.entry.queryPermission({mode: 'readwrite'})"));
-
-  // But after triggering the timer in the permission context ...
-  FileSystemAccessPermissionContextFactory::GetForProfile(profile)
-      ->TriggerTimersForTesting();
-
-  // ... permission should have been revoked.
+  // Permission should have been revoked.
   EXPECT_EQ("prompt",
             content::EvalJs(third_party_iframe,
                             "self.entry.queryPermission({mode: 'readwrite'})"));
@@ -884,32 +883,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
             content::EvalJs(third_party_iframe,
                             "self.entry.queryPermission({mode: 'read'})"));
 }
-
-class PersistedPermissionsFileSystemAccessBrowserTest
-    : public FileSystemAccessBrowserTest {
- public:
-  PersistedPermissionsFileSystemAccessBrowserTest() {
-    // Enable Persisted Permissions.
-    // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
-    // flag after FSA Persistent Permissions feature launch.
-    feature_list_.InitAndEnableFeature(
-        features::kFileSystemAccessPersistentPermissions);
-  }
-
-  void SetUpOnMainThread() override {
-    FileSystemAccessBrowserTest::SetUpOnMainThread();
-  }
-
-  ~PersistedPermissionsFileSystemAccessBrowserTest() override = default;
-
-  PersistedPermissionsFileSystemAccessBrowserTest(
-      const PersistedPermissionsFileSystemAccessBrowserTest&) = delete;
-  PersistedPermissionsFileSystemAccessBrowserTest& operator=(
-      const PersistedPermissionsFileSystemAccessBrowserTest&) = delete;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
 
 IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
                        UsageIndicatorVisibleWithPersistedPermissionsEnabled) {
