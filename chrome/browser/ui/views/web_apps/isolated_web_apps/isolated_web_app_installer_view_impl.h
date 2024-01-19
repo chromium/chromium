@@ -64,10 +64,13 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
     return AddChildView(std::make_unique<T>(std::forward<Args>(args)...));
   }
 
-  void ShowDialog(int title,
-                  const ui::DialogModelLabel& subtitle,
-                  const ui::ImageModel& icon,
-                  std::optional<int> ok_label);
+  void ShowChildDialog(int title,
+                       const ui::DialogModelLabel& subtitle,
+                       const ui::ImageModel& icon,
+                       std::optional<int> ok_label);
+
+  void OnChildDialogAccepted();
+  void OnChildDialogCanceled();
 
   void ShowChildView(views::View* view);
 
@@ -78,6 +81,8 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
   raw_ptr<ShowMetadataView> show_metadata_view_;
   raw_ptr<InstallView> install_view_;
   raw_ptr<InstallSuccessView> install_success_view_;
+
+  bool dialog_visible_;
 };
 
 }  // namespace web_app

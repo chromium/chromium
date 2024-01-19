@@ -415,7 +415,8 @@ IsolatedWebAppInstallerViewImpl::IsolatedWebAppInstallerViewImpl(
       get_metadata_view_(MakeAndAddChildView<GetMetadataView>()),
       show_metadata_view_(MakeAndAddChildView<ShowMetadataView>(delegate)),
       install_view_(MakeAndAddChildView<InstallView>()),
-      install_success_view_(MakeAndAddChildView<InstallSuccessView>()) {
+      install_success_view_(MakeAndAddChildView<InstallSuccessView>()),
+      dialog_visible_(false) {
   SetUseDefaultFillLayout(true);
   ShowChildView(nullptr);
 }
@@ -476,7 +477,7 @@ void IsolatedWebAppInstallerViewImpl::ShowDialog(
   absl::visit(
       base::Overloaded{
           [this](const IsolatedWebAppInstallerModel::BundleInvalidDialog&) {
-            ShowDialog(
+            ShowChildDialog(
                 IDS_IWA_INSTALLER_VERIFICATION_ERROR_TITLE,
                 ui::DialogModelLabel(
                     IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE),
@@ -497,7 +498,7 @@ void IsolatedWebAppInstallerViewImpl::ShowDialog(
                     ui::DialogModelLabel::CreatePlainText(
                         base::UTF8ToUTF16(installed_version)),
                 });
-            ShowDialog(
+            ShowChildDialog(
                 IDS_IWA_INSTALLER_ALREADY_INSTALLED_TITLE, subtitle,
                 CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
                                            ui::kColorAlertMediumSeverityIcon),
@@ -515,7 +516,7 @@ void IsolatedWebAppInstallerViewImpl::ShowDialog(
                     ui::DialogModelLabel::CreatePlainText(
                         base::UTF8ToUTF16(installed_version)),
                 });
-            ShowDialog(
+            ShowChildDialog(
                 IDS_IWA_INSTALLER_BUNDLE_OUTDATED_TITLE, subtitle,
                 CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
                                            ui::kColorAlertMediumSeverityIcon),
@@ -528,14 +529,14 @@ void IsolatedWebAppInstallerViewImpl::ShowDialog(
                 ui::DialogModelLabel::CreateLink(
                     IDS_IWA_INSTALLER_CONFIRM_LEARN_MORE,
                     confirm_installation_dialog.learn_more_callback));
-            ShowDialog(
+            ShowChildDialog(
                 IDS_IWA_INSTALLER_CONFIRM_TITLE, subtitle,
                 CreateImageModelFromVector(kSecurityIcon, ui::kColorAccent),
                 IDS_IWA_INSTALLER_CONFIRM_CONTINUE);
           },
           [this](
               const IsolatedWebAppInstallerModel::InstallationFailedDialog&) {
-            ShowDialog(
+            ShowChildDialog(
                 IDS_IWA_INSTALLER_INSTALL_FAILED_TITLE,
                 ui::DialogModelLabel(IDS_IWA_INSTALLER_INSTALL_FAILED_SUBTITLE),
                 CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
@@ -554,23 +555,27 @@ gfx::Size IsolatedWebAppInstallerViewImpl::GetMaximumSize() const {
   return gfx::Size(width, GetHeightForWidth(width));
 }
 
-void IsolatedWebAppInstallerViewImpl::ShowDialog(
+void IsolatedWebAppInstallerViewImpl::ShowChildDialog(
     int title,
     const ui::DialogModelLabel& subtitle,
     const ui::ImageModel& icon_model,
     std::optional<int> ok_label) {
+  CHECK(!dialog_visible_);
+  dialog_visible_ = true;
+
   ui::DialogModel::Builder dialog_model_builder;
   dialog_model_builder
       .SetInternalName(IsolatedWebAppInstallerView::kNestedDialogWidgetName)
       .SetTitle(l10n_util::GetStringUTF16(title))
       .AddParagraph(ui::DialogModelLabel(subtitle).set_is_secondary())
       .DisableCloseOnDeactivate()
-      .AddCancelButton(base::BindOnce(&Delegate::OnChildDialogCanceled,
-                                      base::Unretained(delegate_)));
+      .AddCancelButton(base::BindOnce(
+          &IsolatedWebAppInstallerViewImpl::OnChildDialogCanceled,
+          base::Unretained(this)));
   if (ok_label.has_value()) {
     dialog_model_builder.AddOkButton(
-        base::BindOnce(&Delegate::OnChildDialogAccepted,
-                       base::Unretained(delegate_)),
+        base::BindOnce(&IsolatedWebAppInstallerViewImpl::OnChildDialogAccepted,
+                       base::Unretained(this)),
         ui::DialogModel::Button::Params().SetLabel(
             l10n_util::GetStringUTF16(ok_label.value())));
   }
@@ -604,6 +609,16 @@ void IsolatedWebAppInstallerViewImpl::ShowDialog(
       base::Unretained(bubble.get()), std::move(header)));
 
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
+}
+
+void IsolatedWebAppInstallerViewImpl::OnChildDialogAccepted() {
+  dialog_visible_ = false;
+  delegate_->OnChildDialogAccepted();
+}
+
+void IsolatedWebAppInstallerViewImpl::OnChildDialogCanceled() {
+  dialog_visible_ = false;
+  delegate_->OnChildDialogCanceled();
 }
 
 void IsolatedWebAppInstallerViewImpl::ShowChildView(views::View* view) {

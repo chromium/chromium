@@ -245,14 +245,13 @@ class IsolatedWebAppInstallerViewUiPixelTest
     controller.Start(future.GetCallback(), base::DoNothing());
     ASSERT_TRUE(future.Wait());
 
-    model.SetStep(GetParam().step);
     model.SetSignedWebBundleMetadata(CreateTestMetadata());
+    model.SetStep(GetParam().step);
 
     controller.Show();
 
     if (GetParam().dialog.has_value()) {
       model.SetDialog(GetParam().dialog);
-      controller.OnModelChanged();
     }
   }
 

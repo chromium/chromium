@@ -43,10 +43,22 @@ IsolatedWebAppInstallerModel::IsolatedWebAppInstallerModel(
     const base::FilePath& bundle_path)
     : bundle_path_(bundle_path), step_(Step::kDisabled) {}
 
+void IsolatedWebAppInstallerModel::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void IsolatedWebAppInstallerModel::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 IsolatedWebAppInstallerModel::~IsolatedWebAppInstallerModel() = default;
 
 void IsolatedWebAppInstallerModel::SetStep(Step step) {
   step_ = step;
+
+  for (Observer& observer : observers_) {
+    observer.OnStepChanged();
+  }
 }
 
 void IsolatedWebAppInstallerModel::SetSignedWebBundleMetadata(
@@ -56,6 +68,10 @@ void IsolatedWebAppInstallerModel::SetSignedWebBundleMetadata(
 
 void IsolatedWebAppInstallerModel::SetDialog(std::optional<Dialog> dialog) {
   dialog_ = dialog;
+
+  for (Observer& observer : observers_) {
+    observer.OnChildDialogChanged();
+  }
 }
 
 }  // namespace web_app

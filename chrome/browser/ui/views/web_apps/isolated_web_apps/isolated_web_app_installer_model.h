@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/observer_list.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -18,6 +19,12 @@ namespace web_app {
 
 class IsolatedWebAppInstallerModel {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnStepChanged() = 0;
+    virtual void OnChildDialogChanged() = 0;
+  };
+
   enum class Step {
     kDisabled,
     kGetMetadata,
@@ -63,6 +70,9 @@ class IsolatedWebAppInstallerModel {
   explicit IsolatedWebAppInstallerModel(const base::FilePath& bundle_path);
   ~IsolatedWebAppInstallerModel();
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   const base::FilePath& bundle_path() { return bundle_path_; }
 
   void SetStep(Step step);
@@ -77,6 +87,7 @@ class IsolatedWebAppInstallerModel {
   const Dialog& dialog() { return dialog_.value(); }
 
  private:
+  base::ObserverList<Observer> observers_;
   base::FilePath bundle_path_;
   Step step_;
   std::optional<SignedWebBundleMetadata> bundle_metadata_;

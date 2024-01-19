@@ -108,7 +108,6 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
     LOG(ERROR) << "Isolated Web App bundle installability check failed: "
                << invalid.error;
     model_->SetDialog(IsolatedWebAppInstallerModel::BundleInvalidDialog{});
-    controller_->OnModelChanged();
   }
 
   void operator()(const InstallabilityChecker::BundleInstallable& installable) {
@@ -124,7 +123,6 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
     }
     model_->SetSignedWebBundleMetadata(installable.metadata);
     model_->SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
-    controller_->OnModelChanged();
   }
 
   void operator()(const InstallabilityChecker::BundleUpdatable& updatable) {
@@ -142,7 +140,6 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
           outdated.metadata.app_name(), outdated.metadata.version(),
           outdated.installed_version});
     }
-    controller_->OnModelChanged();
   }
 
   void operator()(const InstallabilityChecker::ProfileShutdown&) {
@@ -170,10 +167,13 @@ IsolatedWebAppInstallerViewController::IsolatedWebAppInstallerViewController(
   CHECK(model_);
   CHECK(web_app_provider_);
   CHECK(pref_observer_);
+  model_->AddObserver(this);
 }
 
 IsolatedWebAppInstallerViewController::
-    ~IsolatedWebAppInstallerViewController() = default;
+    ~IsolatedWebAppInstallerViewController() {
+  model_->RemoveObserver(this);
+}
 
 void IsolatedWebAppInstallerViewController::Start(
     base::OnceClosure initialized_callback,
@@ -269,7 +269,8 @@ void IsolatedWebAppInstallerViewController::Show() {
       CreateDialogDelegate(std::move(view));
   dialog_delegate_ = dialog_delegate.get();
 
-  OnModelChanged();
+  OnStepChanged();
+  OnChildDialogChanged();
 
   views::Widget* widget =
       views::DialogDelegate::CreateDialogWidget(std::move(dialog_delegate),
@@ -309,7 +310,6 @@ bool IsolatedWebAppInstallerViewController::OnAccept() {
           base::BindRepeating(&IsolatedWebAppInstallerViewController::
                                   OnShowMetadataLearnMoreClicked,
                               base::Unretained(this))});
-      OnModelChanged();
       return false;
     }
 
@@ -384,7 +384,6 @@ void IsolatedWebAppInstallerViewController::OnPrefChanged(bool enabled) {
       installability_checker_.reset();
     }
   }
-  OnModelChanged();
   if (!is_initialized_) {
     is_initialized_ = true;
     std::move(initialized_callback_).Run();
@@ -418,7 +417,6 @@ void IsolatedWebAppInstallerViewController::OnInstallComplete(
   } else {
     model_->SetDialog(IsolatedWebAppInstallerModel::InstallationFailedDialog{});
   }
-  OnModelChanged();
 }
 
 void IsolatedWebAppInstallerViewController::OnShowMetadataLearnMoreClicked() {
@@ -450,11 +448,10 @@ void IsolatedWebAppInstallerViewController::OnChildDialogCanceled() {
 }
 
 void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
+  model_->SetDialog(std::nullopt);
   switch (model_->step()) {
     case IsolatedWebAppInstallerModel::Step::kShowMetadata: {
       model_->SetStep(IsolatedWebAppInstallerModel::Step::kInstall);
-      model_->SetDialog(std::nullopt);
-      OnModelChanged();
 
       callback_delayer_ = std::make_unique<CallbackDelayer>(
           kInstallationMinimumDelay, kProgressBarPausePercentage,
@@ -475,7 +472,6 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
     case IsolatedWebAppInstallerModel::Step::kInstall:
       // A child dialog on the install screen means the installation failed.
       // Accepting the dialog corresponds to the Retry button.
-      model_->SetDialog(std::nullopt);
       installability_checker_.reset();
       pref_observer_->Reset();
       Start(base::DoNothing(), std::move(completion_callback_));
@@ -486,7 +482,7 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
   }
 }
 
-void IsolatedWebAppInstallerViewController::OnModelChanged() {
+void IsolatedWebAppInstallerViewController::OnStepChanged() {
   if (!view_) {
     return;
   }
@@ -526,7 +522,9 @@ void IsolatedWebAppInstallerViewController::OnModelChanged() {
       view_->ShowInstallSuccessScreen(model_->bundle_metadata());
       break;
   }
+}
 
+void IsolatedWebAppInstallerViewController::OnChildDialogChanged() {
   if (model_->has_dialog()) {
     view_->ShowDialog(model_->dialog());
   }

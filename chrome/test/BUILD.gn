@@ -9932,6 +9932,7 @@ if (!is_fuchsia) {
 
     if (toolkit_views) {
       deps += [
+        "//chrome/browser/ui:test_support",
         "//chrome/browser/ui/actions:actions",
         "//chrome/browser/ui/actions:actions_headers",
         "//chrome/browser/ui/tabs:tab_enums",
