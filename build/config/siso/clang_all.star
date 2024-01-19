@@ -17,6 +17,11 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": ["*.h"],
         },
+        # vendor provided headers for libc++.
+        "buildtools/third_party/libc++:headers": {
+            "type": "glob",
+            "includes": ["__*"],
+        },
 
         # toolchain root
         # :headers for compiling
@@ -36,8 +41,9 @@ __input_deps = {
     # third_party/libc++/src/include:headers,
     # but scandeps doesn't scan `__config` file, which uses
     # `#include <__config_site>`
+    # also need `__assertion_handler`. b/321171148
     "third_party/libc++/src/include": [
-        "buildtools/third_party/libc++/__config_site",
+        "buildtools/third_party/libc++:headers",
     ],
 }
 
