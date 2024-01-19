@@ -2446,6 +2446,19 @@ if (is_ios) {
   }
 }
 
+if (fuzztest_supported && !is_cronet_build) {
+  test("net_fuzztests") {
+    sources = [ "cert/x509_certificate_fuzztest.cc" ]
+
+    enable_fuzztest = true
+
+    deps = [
+      ":net",
+      "//third_party/fuzztest:fuzztest_gtest_main",
+    ]
+  }
+}
+
 test("net_unittests") {
   sources = [
     "base/address_family_unittest.cc",
