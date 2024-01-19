@@ -3,6 +3,8 @@
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 virtual/force-eager/external/wpt/measure-memory/redirect.client.https.window.html [ Timeout ]
+crbug.com/626703 virtual/force-eager/external/wpt/measure-memory/redirect.server.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-masking/mask-image/mask-opacity-1e.html [ Failure ]
 crbug.com/626703 external/wpt/png/apng/acTL-plays-two.html [ Timeout ]
 crbug.com/626703 external/wpt/screen-capture/getdisplaymedia-capture-controller.https.window.html [ Crash ]

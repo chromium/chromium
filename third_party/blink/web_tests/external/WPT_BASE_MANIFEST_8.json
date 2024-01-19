@@ -7871,6 +7871,13 @@
      }
     },
     "crashtests": {
+     "color-mix-crashtest.html": [
+      "91d29464f50d12985e791d889abfc482a188f767",
+      [
+       null,
+       {}
+      ]
+     ],
      "get-computed-timing-crash.html": [
       "b666eea91f67d1f26cbc88f1f26d4008ceb76af6",
       [
@@ -142379,132 +142386,6 @@
         }
        ]
       ],
-      "custom-highlight-dynamic-container-metrics-001.html": [
-       "e18b286021b7fd11e0f5115309975bed341befb0",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-dynamic-container-metrics-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-dynamic-container-metrics-002.html": [
-       "1a0cbe87a557517125c18dba3cacf41705ff5071",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-container-metrics-002-ref.html",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             60
-            ],
-            [
-             0,
-             25
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
-      "custom-highlight-dynamic-container-metrics-003.html": [
-       "38246a15affcaed2b1317a43b9c363fbd2cc6717",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-container-metrics-003-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-dynamic-container-metrics-004.html": [
-       "fbdbea32efcbb742083298e05794a0afa931736d",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-container-metrics-003-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-dynamic-font-metrics-001.html": [
-       "4bddbc02a1da53cc441ddad5d6131cbdde5737b5",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-font-metrics-001-ref.html",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             80
-            ],
-            [
-             0,
-             4
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
-      "custom-highlight-dynamic-logical-metrics-001.html": [
-       "ff52aed6ab174fa36d6cffaf92ba7aff05901ca5",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-logical-metrics-002-ref.html",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             30
-            ],
-            [
-             0,
-             10
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
       "custom-highlight-font-metrics-001.html": [
        "755409c6b18d1585e3ba10896c3e7ee5537a05ea",
        [
@@ -269111,7 +268992,7 @@
         ]
        ],
        "2d.path.stroke.prune.closePath.line.html": [
-        "f5a494448ef50e7a12c61e4b275df5996619fd7d",
+        "5a020cce1718e18cc75df8b04c96cea137ec7d16",
         [
          null,
          [
@@ -269124,7 +269005,7 @@
         ]
        ],
        "2d.path.stroke.prune.closePath.line.w.html": [
-        "458302062ca5554b146eadc9629747ad3309dcac",
+        "860ad7036c904b4fb7c21030daa2aa52cf8a3599",
         [
          null,
          [
@@ -308524,7 +308405,7 @@
      ],
      "parsing": {
       "color-computed-relative-color-expected.txt": [
-       "b6fc9425a83eb0730c87c0451ab27fce72225929",
+       "c327893dfef8df83988033eddee97adb332e8fbd",
        []
       ],
       "color-valid-relative-color-expected.txt": [
@@ -322981,10 +322862,6 @@
        "98ccfa5b11c7dcb8c83beca3f863742792bb30af",
        []
       ],
-      "custom-highlight-dynamic-container-metrics-001-ref.html": [
-       "84c6aeb2146548360305bbfec0fd80423988e3fe",
-       []
-      ],
       "custom-highlight-font-metrics-001-ref.html": [
        "76b7317caabe5bedf10a98bef5cade11a4f6458e",
        []
@@ -323122,10 +322999,6 @@
       "resources": {
        "iframe-code.html": [
         "a4a1829be229acb4c0cf75cbb0e2885060741d3f",
-        []
-       ],
-       "iframe-container.html": [
-        "c89680e28c920683c23583dee63d8793557c4a80",
         []
        ],
        "run-after-layout-and-paint.js": [
@@ -347425,7 +347298,7 @@
       []
      ],
      "color-testcommon.js": [
-      "44ca0bbb33c9e9571415c14180372ca0b96780a6",
+      "18ab4420f67946664380f4cabeb830d56ba74210",
       []
      ],
      "computed-testcommon.js": [
@@ -348239,7 +348112,7 @@
       []
      ],
      "testharness-api.md": [
-      "56dc4a4417a21d322c859e543b4d509e45921e96",
+      "19b96b550b2f7fefe648bab121f90dcc714396ed",
       []
      ],
      "testharness-tutorial.md": [
@@ -348247,7 +348120,7 @@
       []
      ],
      "testharness.md": [
-      "799926acba09db30f836bda9cef831d2da5f7609",
+      "e426e37f22b7afe3fda3a37755f46fb651356b5b",
       []
      ],
      "tools.md": [
@@ -355371,6 +355244,10 @@
        "a5c9c9715aa1013450b9cb60958a55c605b27701",
        []
       ],
+      "incrementer.wasm": [
+       "47afcdef2a2812acccecd0f203d30d3023593f3d",
+       []
+      ],
       "redirect-to-trusted-signals.py": [
        "7da27cd6872f9119c8647be939aecc4452526e50",
        []
@@ -355388,7 +355265,11 @@
        []
       ],
       "subordinate-frame.sub.html": [
-       "e696ac0983d7811dd2bffa8b4ded2f0d353941ee",
+       "f5b1ef995956fbf5fa7359b4d23338ad0185d826",
+       []
+      ],
+      "subordinate-frame.sub.html.headers": [
+       "3e3bda1ec0676be2f9632fcd0cac9ea3391da4da",
        []
       ],
       "trusted-bidding-signals.py": [
@@ -355397,6 +355278,10 @@
       ],
       "trusted-scoring-signals.py": [
        "fc6ec79096c4708b347e0cfc277fa248bf8ba9c3",
+       []
+      ],
+      "wasm-helper.py": [
+       "a945b4cd5fef0b163c19e302d8fceefc64ca9ffe",
        []
       ],
       "worklet-helpers.js": [
@@ -362135,7 +362020,7 @@
         []
        ],
        "path-objects.yaml": [
-        "4c305a06ace72bd1de95648d507c86bd4f1f2610",
+        "755d6fb8d54dcee228ed21d4ea1f40ce70eaaa8b",
         []
        ],
        "pixel-manipulation.yaml": [
@@ -367104,7 +366989,7 @@
        ]
       },
       "structured-cloning-error-stack-optional.sub.window-expected.txt": [
-       "3be195d7f1c1ebb2feabdadfae076634ace02982",
+       "3cc0dba1f7478daed848ab92f759b210b43f743d",
        []
       ]
      },
@@ -377797,7 +377682,7 @@
     ]
    },
    "lint.ignore": [
-    "15442c0cac38843cc0c4fe610b8a6c657204a27b",
+    "e9f91d80f0d61cd30709d9b6c7a7429a57755ca7",
     []
    ],
    "loading": {
@@ -385390,7 +385275,7 @@
      []
     ],
     "testharness.js": [
-     "bc7fb8961b9f46ae77033ddfa6b88c9fb465ac5a",
+     "1a6a4bb3412cfb09e17e5a16d8fd23a1eb7b6e74",
      []
     ],
     "testharness.js.headers": [
@@ -440947,6 +440832,13 @@
        {}
       ]
      ],
+     "animate-with-color-mix.html": [
+      "0b6d9bb4ab3ae911e7291e1da5e2259c0afbd0fc",
+      [
+       null,
+       {}
+      ]
+     ],
      "animation-base-response-001.html": [
       "c6731e179823584577f42a649f6f3665611a522a",
       [
@@ -443869,7 +443761,7 @@
        ]
       ],
       "color-computed-relative-color.html": [
-       "3cf1507e8b7fa81fbc8e6d1c58b7a3a6e5f572df",
+       "aa2e48723ebb57f9f3859946ed80d4f3ec031ae5",
        [
         null,
         {}
@@ -466193,6 +466085,13 @@
       ]
      ],
      "animations": {
+      "animate-with-color-mix.html": [
+       "3e630a7a2b1e190e3529de8b98ce239ecbda3f89",
+       [
+        null,
+        {}
+       ]
+      ],
       "change-duration-during-transition.html": [
        "cf03f2e1207988fbdb8df6e884422b43f9acc012",
        [
@@ -479756,6 +479655,13 @@
         {
          "testdriver": true
         }
+       ]
+      ],
+      "scrollend-fires-to-text-input.html": [
+       "edc75d9121776e1be660112e1257402ddd1ab5d4",
+       [
+        null,
+        {}
        ]
       ],
       "scrollend-with-snap-on-fractional-offset.html": [
@@ -519180,7 +519086,7 @@
       ]
      ],
      "interest-group-passed-to-generate-bid.https.window.js": [
-      "9f17ab06c13dad1365f75499a892484aeffcd602",
+      "3db4479a63dd2f2ca9516ec4e3e352f9bf97011b",
       [
        "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?1-5",
        {
@@ -519239,7 +519145,15 @@
          ],
          [
           "variant",
-          "?41-last"
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-last"
          ]
         ],
         "timeout": "long"
@@ -519303,7 +519217,15 @@
          ],
          [
           "variant",
-          "?41-last"
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-last"
          ]
         ],
         "timeout": "long"
@@ -519367,7 +519289,15 @@
          ],
          [
           "variant",
-          "?41-last"
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-last"
          ]
         ],
         "timeout": "long"
@@ -519431,7 +519361,15 @@
          ],
          [
           "variant",
-          "?41-last"
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-last"
          ]
         ],
         "timeout": "long"
@@ -519495,7 +519433,15 @@
          ],
          [
           "variant",
-          "?41-last"
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-last"
          ]
         ],
         "timeout": "long"
@@ -519559,7 +519505,15 @@
          ],
          [
           "variant",
-          "?41-last"
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-last"
          ]
         ],
         "timeout": "long"
@@ -519623,14 +519577,22 @@
          ],
          [
           "variant",
-          "?41-last"
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-last"
          ]
         ],
         "timeout": "long"
        }
       ],
       [
-       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?41-last",
+       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?41-45",
        {
         "script_metadata": [
          [
@@ -519687,7 +519649,159 @@
          ],
          [
           "variant",
-          "?41-last"
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?46-50",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?51-last",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-last"
          ]
         ],
         "timeout": "long"
@@ -519751,7 +519865,15 @@
          ],
          [
           "variant",
-          "?41-last"
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-last"
          ]
         ],
         "timeout": "long"
@@ -520648,7 +520770,7 @@
       ]
      ],
      "no-winner.https.window.js": [
-      "f252aece5bff52572395a64255f945f0030a6c72",
+      "6e02139c810c4eec7b4e0e721ede858cde56b1c0",
       [
        "fledge/tentative/no-winner.https.window.html?1-5",
        {
@@ -520703,7 +520825,15 @@
          ],
          [
           "variant",
-          "?36-last"
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-last"
          ]
         ],
         "timeout": "long"
@@ -520763,7 +520893,15 @@
          ],
          [
           "variant",
-          "?36-last"
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-last"
          ]
         ],
         "timeout": "long"
@@ -520823,7 +520961,15 @@
          ],
          [
           "variant",
-          "?36-last"
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-last"
          ]
         ],
         "timeout": "long"
@@ -520883,7 +521029,15 @@
          ],
          [
           "variant",
-          "?36-last"
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-last"
          ]
         ],
         "timeout": "long"
@@ -520943,7 +521097,15 @@
          ],
          [
           "variant",
-          "?36-last"
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-last"
          ]
         ],
         "timeout": "long"
@@ -521003,14 +521165,22 @@
          ],
          [
           "variant",
-          "?36-last"
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-last"
          ]
         ],
         "timeout": "long"
        }
       ],
       [
-       "fledge/tentative/no-winner.https.window.html?36-last",
+       "fledge/tentative/no-winner.https.window.html?36-40",
        {
         "script_metadata": [
          [
@@ -521063,7 +521233,151 @@
          ],
          [
           "variant",
-          "?36-last"
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/no-winner.https.window.html?41-45",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/no-winner.https.window.html?46-last",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-last"
          ]
         ],
         "timeout": "long"
@@ -521123,7 +521437,15 @@
          ],
          [
           "variant",
-          "?36-last"
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-last"
          ]
         ],
         "timeout": "long"

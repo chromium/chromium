@@ -171,11 +171,12 @@ are:
   [ShadowRealm](https://github.com/tc39/proposal-shadowrealm) context hosted in
   an ordinary Window context; to be run at <code><var>x</var>.any.shadowrealm.html</code>
 
-To check if your test is run from a window or worker you can use the following two methods that will
+To check what scope your test is run from, you can use the following methods that will
 be made available by the framework:
 
     self.GLOBAL.isWindow()
     self.GLOBAL.isWorker()
+    self.GLOBAL.isShadowRealm()
 
 Although [the global `done()` function must be explicitly invoked for most
 dedicated worker tests and shared worker
