@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -77,7 +78,7 @@ namespace views::examples {
 base::LazyInstance<base::TestDiscardableMemoryAllocator>::DestructorAtExit
     g_discardable_memory_allocator = LAZY_INSTANCE_INITIALIZER;
 
-ExamplesExitCode ExamplesMainProc(bool under_test) {
+ExamplesExitCode ExamplesMainProc(bool under_test, ExampleVector examples) {
 #if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer;
 #endif
@@ -195,7 +196,12 @@ ExamplesExitCode ExamplesMainProc(bool under_test) {
     base::test::ScopedDisableRunLoopTimeout disable_timeout;
 #endif
 
-    views::examples::ShowExamplesWindow(run_loop.QuitClosure());
+    if (examples.empty()) {
+      views::examples::ShowExamplesWindow(run_loop.QuitClosure());
+    } else {
+      views::examples::ShowExamplesWindow(run_loop.QuitClosure(),
+                                          std::move(examples));
+    }
 
     run_loop.Run();
 
