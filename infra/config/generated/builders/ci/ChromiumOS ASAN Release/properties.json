@@ -28,7 +28,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium_asan",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "chromeos"
               },
               "legacy_gclient_config": {
                 "apply_configs": [

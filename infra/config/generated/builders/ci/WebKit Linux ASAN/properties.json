@@ -23,7 +23,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium_clang",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "config": "chromium"

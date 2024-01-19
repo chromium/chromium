@@ -56,6 +56,7 @@ ci.gpu.linux_builder(
             config = "android",
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
             config = "main_builder_mb",
@@ -97,6 +98,7 @@ ci.thin_tester(
             config = "android",
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
             config = "main_builder_mb",
@@ -129,6 +131,7 @@ ci.gpu.linux_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.FUCHSIA,
         ),
         build_gs_bucket = "chromium-angle-archive",
     ),

@@ -1592,6 +1592,7 @@
       'linux-cfm-rel': {
         'mixins': [
           'linux-jammy',
+          'x86-64',
         ],
         'test_suites': {
           'gtest_tests': 'linux_cfm_gtests',
@@ -1599,6 +1600,7 @@
       },
       'linux-chromeos-dbg': {
         'mixins': [
+          'x86-64',
           'linux-jammy',
         ],
         'test_suites': {
@@ -1608,6 +1610,7 @@
       },
       'linux-chromeos-rel': {
         'mixins': [
+          'x86-64',
           'isolate_profile_data',
           'linux-jammy',
         ],
@@ -1629,6 +1632,7 @@
         'mixins': [
           'isolate_profile_data',
           'linux-jammy',
+          'x86-64',
         ],
         'additional_compile_targets': [
           'chrome',
@@ -5007,6 +5011,7 @@
       },
       'Linux Chromium OS ASan LSan Tests (1)': {
         'mixins': [
+          'x86-64',
           'linux-jammy',
         ],
         'test_suites': {
@@ -5120,6 +5125,7 @@
       },
       'linux-lacros-asan-lsan-rel': {
         'mixins': [
+          'x86-64',
           'isolate_profile_data',
           'linux-jammy',
         ],
