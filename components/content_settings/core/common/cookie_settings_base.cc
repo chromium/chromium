@@ -371,13 +371,6 @@ CookieSettingsBase::DecideAccess(const GURL& url,
   if (IsThirdPartyCookiesAllowedScheme(first_party_url.scheme())) {
     return AllowAllCookies{ThirdPartyCookieAllowMechanism::kNone};
   }
-  if (ShouldConsider3pcdMetadataGrantsSettings(overrides) &&
-      IsAllowed(GetContentSetting(url, first_party_url,
-                                  ContentSettingsType::TPCD_METADATA_GRANTS,
-                                  /*info=*/nullptr))) {
-    return AllowAllCookies{
-        ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadata};
-  }
   if (ShouldConsider3pcdTrialSettings(overrides) &&
       GetContentSetting(url, first_party_url, ContentSettingsType::TPCD_TRIAL,
                         /*info=*/nullptr) == CONTENT_SETTING_ALLOW) {
@@ -419,6 +412,16 @@ CookieSettingsBase::DecideAccess(const GURL& url,
       return AllowAllCookies{
           ThirdPartyCookieAllowMechanism::kAllowByStorageAccess};
     }
+  }
+
+  // Sets the 3PCD Metadata Grants last, to prioritize grants from other
+  // mitigations and access protocols.
+  if (ShouldConsider3pcdMetadataGrantsSettings(overrides) &&
+      IsAllowed(GetContentSetting(url, first_party_url,
+                                  ContentSettingsType::TPCD_METADATA_GRANTS,
+                                  /*info=*/nullptr))) {
+    return AllowAllCookies{
+        ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadata};
   }
 
   return AllowPartitionedCookies{};
