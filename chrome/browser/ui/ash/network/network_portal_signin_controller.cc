@@ -129,7 +129,7 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
     // If no portal or proxy signin is required, do not attempt to show the
     // signin page.
     NET_LOG(EVENT) << "Show signin mode from: " << source << ": Network '"
-                   << default_network->guid()
+                   << NetworkId(default_network)
                    << "' is in a non portal state: " << portal_state;
     return;
   }
