@@ -52,6 +52,8 @@ class TestWaylandClientThread : public base::Thread,
 
   base::MessagePumpLibevent::FdWatchController controller_;
   std::unique_ptr<TestClient> client_;
+
+  bool stopped_ = false;
 };
 
 }  // namespace exo::wayland::test
