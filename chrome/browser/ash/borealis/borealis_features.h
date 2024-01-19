@@ -17,7 +17,7 @@ class Profile;
 
 namespace borealis {
 
-class AsyncHardwareChecker;
+class AsyncAllowChecker;
 
 class BorealisFeatures {
  public:
@@ -50,14 +50,18 @@ class BorealisFeatures {
  private:
   // Allowedness failures should be from most-unable-to-fix to most fixable.
   // Hence we divide the synchronous checks into pre- and post- hardware.
-  AllowStatus PreHardwareChecks();
-  AllowStatus PostHardwareChecks();
+  //
+  // TODO(b/218403711): There's no "token" anymore, remove it.
+  AllowStatus PreTokenHardwareChecks();
+  AllowStatus PostTokenHardwareChecks();
 
-  void OnHardwareChecked(base::OnceCallback<void(AllowStatus)> callback,
-                         base::expected<AllowStatus*, bool> hardware_status);
+  void OnTokenHardwareChecked(
+      base::OnceCallback<void(AllowStatus)> callback,
+      base::expected<AllowStatus*, bool> token_hardware_status);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
-  std::unique_ptr<AsyncHardwareChecker> async_checker_;
+  std::unique_ptr<AsyncAllowChecker> async_checker_;
+  // TODO(b/218403711): remove this.
   base::WeakPtrFactory<BorealisFeatures> weak_factory_{this};
 };
 
