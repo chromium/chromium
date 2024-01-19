@@ -14,7 +14,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/manta/manta_status.h"
-#include "components/manta/proto/manta.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace wallpaper_handlers {
@@ -25,8 +24,7 @@ std::vector<ash::SeaPenImage> MakeFakeImageResults() {
   std::vector<ash::SeaPenImage> image_results;
   for (uint32_t i = 1; i < 5; i++) {
     image_results.emplace_back(base::StringPrintf("fake_sea_pen_image_%d", i),
-                               i,
-                               manta::proto::ImageResolution::RESOLUTION_1024);
+                               i);
   }
   return image_results;
 }
@@ -50,7 +48,7 @@ MockSeaPenFetcher::MockSeaPenFetcher() {
              const ash::personalization_app::mojom::SeaPenQueryPtr& query,
              OnFetchWallpaperComplete callback) {
             std::move(callback).Run(
-                ash::SeaPenImage(image.jpg_bytes, image.id, image.resolution));
+                ash::SeaPenImage(image.jpg_bytes, image.id));
           });
 }
 

@@ -26,6 +26,7 @@
 #include "components/manta/proto/manta.pb.h"
 #include "components/manta/snapper_provider.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
+#include "ui/gfx/geometry/size.h"
 
 // Uncomment below to enable a fake API for local debugging purposes.
 // #define FAKE_SEA_PEN_FETCHER_FOR_DEBUG
@@ -50,11 +51,15 @@ namespace wallpaper_handlers {
 
 namespace {
 
+// Double the maximum size that thumbnails are displayed at in SeaPen UI.
+constexpr gfx::Size kDesiredThumbnailSize = {880, 440};
+
 #if defined(FAKE_SEA_PEN_FETCHER_FOR_DEBUG)
 
 std::string MakeFakeJpgData() {
   SkBitmap bitmap;
-  bitmap.allocN32Pixels(512, 512);
+  bitmap.allocN32Pixels(kDesiredThumbnailSize.width(),
+                        kDesiredThumbnailSize.height());
   bitmap.eraseColor(SkColorSetARGB(base::RandInt(0, 255), base::RandInt(0, 255),
                                    base::RandInt(0, 255),
                                    base::RandInt(0, 255)));
@@ -153,18 +158,15 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
           .Run(std::nullopt, manta::MantaStatusCode::kOk);
     }
     pending_fetch_thumbnails_callback_ = std::move(callback);
-    auto target_resolution = manta::proto::ImageResolution::RESOLUTION_1024;
     auto request = CreateMantaRequest(query, std::nullopt,
-                                      /*num_output=*/8, target_resolution);
+                                      /*num_outputs=*/8, kDesiredThumbnailSize);
     snapper_provider_->Call(
         request, base::BindOnce(&SeaPenFetcherImpl::OnFetchThumbnailsDone,
-                                weak_ptr_factory_.GetWeakPtr(), query.Clone(),
-                                target_resolution));
+                                weak_ptr_factory_.GetWeakPtr(), query.Clone()));
   }
 
   void OnFetchThumbnailsDone(
       const ash::personalization_app::mojom::SeaPenQueryPtr& query,
-      manta::proto::ImageResolution resolution,
       std::unique_ptr<manta::proto::Response> response,
       manta::MantaStatus status) {
     DCHECK(pending_fetch_thumbnails_callback_);
@@ -182,7 +184,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       }
       images.emplace_back(
           std::move(*data.mutable_image()->mutable_serialized_bytes()),
-          data.generation_seed(), resolution);
+          data.generation_seed());
     }
     std::move(pending_fetch_thumbnails_callback_)
         .Run(std::move(images), status.status_code);
@@ -207,18 +209,15 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       std::move(pending_fetch_wallpaper_callback_).Run(std::nullopt);
     }
     pending_fetch_wallpaper_callback_ = std::move(callback);
-    // TODO(b/300129219): Add higher resolution when supported
-    auto target_resolution = manta::proto::ImageResolution::RESOLUTION_1024;
 
     snapper_provider_->Call(
-        CreateMantaRequest(query, thumbnail.id, /*num_output=*/1,
-                           target_resolution),
+        CreateMantaRequest(query, thumbnail.id, /*num_outputs=*/1,
+                           GetLargestDisplaySizeLandscape()),
         base::BindOnce(&SeaPenFetcherImpl::OnFetchWallpaperDone,
-                       weak_ptr_factory_.GetWeakPtr(), target_resolution));
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void OnFetchWallpaperDone(manta::proto::ImageResolution resolution,
-                            std::unique_ptr<manta::proto::Response> response,
+  void OnFetchWallpaperDone(std::unique_ptr<manta::proto::Response> response,
                             manta::MantaStatus status) {
     DCHECK(pending_fetch_wallpaper_callback_);
     if (status.status_code != manta::MantaStatusCode::kOk || !response) {
@@ -233,7 +232,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       }
       images.emplace_back(
           std::move(*data.mutable_image()->mutable_serialized_bytes()),
-          data.generation_seed(), resolution);
+          data.generation_seed());
     }
     if (images.empty()) {
       LOG(WARNING) << "Got empty images";

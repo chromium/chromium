@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 
-#include <sstream>
 #include <string>
 
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/logging.h"
+#include "components/manta/proto/manta.pb.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace wallpaper_handlers {
 
@@ -1305,6 +1309,31 @@ bool IsValidTemplateQuery(
 }  // namespace
 // End of generated code.
 
+gfx::Size GetLargestDisplaySizeLandscape() {
+  // Screen should be non-null if the user is selecting SeaPen thumbnails.
+  CHECK(display::Screen::HasScreen());
+
+  gfx::Size largest_size;
+  uint64_t largest_area = 0u;
+  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+    DVLOG(2) << display.ToString();
+    auto next_area = display.GetSizeInPixel().Area64();
+    if (next_area > largest_area) {
+      largest_size = display.GetSizeInPixel();
+      largest_area = next_area;
+    }
+  }
+  DCHECK_GT(largest_area, 0u);
+
+  if (largest_size.height() > largest_size.width()) {
+    // Always landscape orientation.
+    largest_size.Transpose();
+  }
+
+  DVLOG(2) << "largest_size=" << largest_size.ToString();
+  return largest_size;
+}
+
 bool IsValidOutput(manta::proto::OutputData output,
                    const std::string_view source) {
   if (!output.has_generation_seed()) {
@@ -1321,18 +1350,30 @@ bool IsValidOutput(manta::proto::OutputData output,
 manta::proto::Request CreateMantaRequest(
     const ash::personalization_app::mojom::SeaPenQueryPtr& query,
     std::optional<uint32_t> generation_seed,
-    int num_output,
-    manta::proto::ImageResolution target_resolution) {
+    int num_outputs,
+    const gfx::Size& size) {
+  DVLOG(2) << __func__ << " generation_seed=" << generation_seed.value_or(0)
+           << " num_outputs=" << num_outputs
+           << " image_dimensions=" << size.ToString();
+
   manta::proto::Request request;
   request.set_feature_name(manta::proto::FeatureName::CHROMEOS_WALLPAPER);
-  manta::proto::RequestConfig& request_config =
-      *request.mutable_request_config();
-  if (generation_seed) {
-    request_config.set_generation_seed(*generation_seed);
+
+  {
+    manta::proto::RequestConfig& request_config =
+        *request.mutable_request_config();
+    if (generation_seed) {
+      request_config.set_generation_seed(*generation_seed);
+    }
+
+    manta::proto::ImageDimensions& image_dimensions =
+        *request_config.mutable_image_dimensions();
+    image_dimensions.set_width(size.width());
+    image_dimensions.set_height(size.height());
+
+    request_config.set_num_outputs(num_outputs);
   }
-  request_config.set_num_outputs(num_output);
-  request_config.set_image_resolution(target_resolution);
-  request_config.set_aspect_ratio(manta::proto::AspectRatio::ASPECT_RATIO_16_9);
+
   manta::proto::InputData& input_data = *request.add_input_data();
   if (query->is_text_query()) {
     input_data.set_text(query->get_text_query());

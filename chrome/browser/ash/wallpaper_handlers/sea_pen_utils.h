@@ -10,11 +10,17 @@
 
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "components/manta/proto/manta.pb.h"
+#include "ui/gfx/geometry/size.h"
 
 inline constexpr std::string_view kTemplateIdTag =
     "chromeos_wallpaper_template_id";
 
 namespace wallpaper_handlers {
+
+// Returns the size in pixels of the largest display by area. If the display is
+// in portrait mode (taller than wide) the display size is transposed to always
+// be landscape (wider than tall).
+gfx::Size GetLargestDisplaySizeLandscape();
 
 // Helper function to validate the Manta API output data.
 bool IsValidOutput(manta::proto::OutputData output,
@@ -24,8 +30,8 @@ bool IsValidOutput(manta::proto::OutputData output,
 manta::proto::Request CreateMantaRequest(
     const ash::personalization_app::mojom::SeaPenQueryPtr& query,
     std::optional<uint32_t> generation_seed,
-    int num_output,
-    manta::proto::ImageResolution target_resolution);
+    int num_outputs,
+    const gfx::Size& size);
 
 }  // namespace wallpaper_handlers
 

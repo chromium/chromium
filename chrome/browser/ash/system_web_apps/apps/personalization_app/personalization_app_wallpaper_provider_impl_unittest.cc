@@ -380,8 +380,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SendsSeaPenWallpaper) {
   SetWallpaperObserver();
 
   test_wallpaper_controller()->SetSeaPenWallpaper(
-      GetTestAccountId(),
-      {/*jpg_bytes=*/std::string(), /*id=*/111, manta::proto::RESOLUTION_64},
+      GetTestAccountId(), {/*jpg_bytes=*/std::string(), /*id=*/111},
       /*query_info=*/"test query", base::DoNothing());
 
   ash::personalization_app::mojom::CurrentWallpaper* current =

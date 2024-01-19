@@ -7,16 +7,10 @@
 #include <string>
 #include <utility>
 
-#include "components/manta/proto/manta.pb.h"
-
 namespace ash {
 
-SeaPenImage::SeaPenImage(std::string jpg_bytes_in,
-                         uint32_t id_in,
-                         manta::proto::ImageResolution resolution_in)
-    : jpg_bytes(std::move(jpg_bytes_in)),
-      id(id_in),
-      resolution(resolution_in) {}
+SeaPenImage::SeaPenImage(std::string jpg_bytes_in, uint32_t id_in)
+    : jpg_bytes(std::move(jpg_bytes_in)), id(id_in) {}
 
 SeaPenImage::SeaPenImage(SeaPenImage&&) = default;
 SeaPenImage& SeaPenImage::operator=(SeaPenImage&&) = default;

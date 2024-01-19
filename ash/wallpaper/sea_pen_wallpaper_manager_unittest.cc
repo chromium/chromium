@@ -87,10 +87,8 @@ TEST_F(SeaPenWallpaperManagerTest, DecodesImageAndReturnsId) {
   const base::FilePath file_path = CreateFilePath("111.jpg");
   ASSERT_FALSE(base::PathExists(file_path));
   sea_pen_wallpaper_manager().DecodeAndSaveSeaPenImage(
-      {CreateJpgBytes(), /*id=*/111,
-       manta::proto::ImageResolution::RESOLUTION_64},
-      GetTempFileDirectory(), /*query_info=*/"test query",
-      decode_sea_pen_image_future.GetCallback());
+      {CreateJpgBytes(), /*id=*/111}, GetTempFileDirectory(),
+      /*query_info=*/"test query", decode_sea_pen_image_future.GetCallback());
 
   // Use `AreBitmapsClose` because JPG encoding/decoding can alter the color
   // slightly.
@@ -120,10 +118,8 @@ TEST_F(SeaPenWallpaperManagerTest, StoresOnlyTenLatestImages) {
 
   // Decode and save the 11th sea pen image in the temp directory.
   sea_pen_wallpaper_manager().DecodeAndSaveSeaPenImage(
-      {CreateJpgBytes(), /*id=*/11,
-       manta::proto::ImageResolution::RESOLUTION_64},
-      GetTempFileDirectory(), /*query_info=*/"test query",
-      decode_sea_pen_image_future.GetCallback());
+      {CreateJpgBytes(), /*id=*/11}, GetTempFileDirectory(),
+      /*query_info=*/"test query", decode_sea_pen_image_future.GetCallback());
 
   // Use `AreBitmapsClose` because JPG encoding/decoding can alter the color
   // slightly.
