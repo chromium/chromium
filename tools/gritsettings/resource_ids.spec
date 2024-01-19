@@ -788,7 +788,7 @@
     "includes": [5720],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/common/resources/resources.grd": {
-    "META": {"sizes": {"includes": [800]}},
+    "META": {"sizes": {"includes": [1000]}},
     "includes": [5760],
   },
   "ash/webui/help_app_ui/resources/help_app_resources.grd": {

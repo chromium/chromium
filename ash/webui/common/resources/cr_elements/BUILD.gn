@@ -26,15 +26,20 @@ build_webui("build") {
     "cr_search_field/cr_search_field.ts",
     "cr_searchable_drop_down/cr_searchable_drop_down.ts",
     "cr_slider/cr_slider.ts",
+    "cr_tabs/cr_tabs.ts",
+    "cr_textarea/cr_textarea.ts",
     "cr_toast/cr_toast.ts",
     "cr_toast/cr_toast_manager.ts",
+    "cr_toggle/cr_toggle.ts",
     "cr_toolbar/cr_toolbar.ts",
     "cr_toolbar/cr_toolbar_search_field.ts",
     "cr_toolbar/cr_toolbar_selection_overlay.ts",
+    "cr_view_manager/cr_view_manager.ts",
   ]
 
   non_web_component_files = [
     "cr_container_shadow_mixin.ts",
+    "cr_lazy_render/cr_lazy_render.ts",
     "focus_row_mixin.ts",
     "i18n_mixin.ts",
     "cr_radio_button/cr_radio_button_mixin.ts",
