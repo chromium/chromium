@@ -63,7 +63,7 @@ build_webui("build") {
     "wrapup_finalize_page.ts",
     "wrapup_repair_complete_page.ts",
     "wrapup_restock_page.ts",
-    "wrapup_wait_for_manual_wp_enable_page.js",
+    "wrapup_wait_for_manual_wp_enable_page.ts",
   ]
 
   non_web_component_files = [
