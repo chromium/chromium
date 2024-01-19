@@ -106,6 +106,9 @@ UITableView* SuggestionsTableView() {
   return tableView;
 }
 
+// The initial four characters in the response body are redundant.
+const NSInteger kRemoteSuggestionServiceResponseBodyJsonStartingIndex = 4;
+
 }  // namespace
 
 @interface PopupDebugInfoViewController () <UITextFieldDelegate,
@@ -322,7 +325,9 @@ UITableView* SuggestionsTableView() {
         base::apple::ObjCCastStrict<OmniboxRemoteSuggestionEvent>(
             _events[indexOfFoundEventElement]);
 
-    event.responseBody = responseBody;
+    event.responseBody = [responseBody
+        substringFromIndex:
+            kRemoteSuggestionServiceResponseBodyJsonStartingIndex];
     event.responseCode = code;
     NSIndexPath* indexPath =
         [NSIndexPath indexPathForRow:indexOfFoundEventElement inSection:0];
