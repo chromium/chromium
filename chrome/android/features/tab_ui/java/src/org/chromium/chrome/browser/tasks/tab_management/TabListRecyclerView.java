@@ -710,7 +710,6 @@ class TabListRecyclerView extends RecyclerView
         if (position == -1) {
             return actions;
         }
-        assert getLayoutManager() instanceof GridLayoutManager;
         GridLayoutManager layoutManager = (GridLayoutManager) getLayoutManager();
         int spanCount = layoutManager.getSpanCount();
         Context context = getContext();
@@ -766,7 +765,6 @@ class TabListRecyclerView extends RecyclerView
     @Override
     public Pair<Integer, Integer> getPositionsOfReorderAction(View view, int action) {
         int currentPosition = getChildAdapterPosition(view);
-        assert getLayoutManager() instanceof GridLayoutManager;
         GridLayoutManager layoutManager = (GridLayoutManager) getLayoutManager();
         int spanCount = layoutManager.getSpanCount();
         int targetPosition = -1;
