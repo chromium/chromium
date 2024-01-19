@@ -232,7 +232,9 @@ void ArcScreenCaptureSession::SetOutputBuffer(
       // texture via the raster interface. Hence, it needs RASTER usage as well
       // as GLES2_WRITE usage for the case where raster is going over GLES2. The
       // latter can be removed once OOP-R has shipped.
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+          gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+          gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
       "ArcScreenCapture", std::move(handle));
   CHECK(client_shared_image);
   ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
