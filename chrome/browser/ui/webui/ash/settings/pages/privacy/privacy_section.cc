@@ -542,6 +542,16 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_BLOCKED_TEXT},
       {"privacyHubSensorNameWithBlockedSuffix",
        IDS_OS_SETTINGS_PRIVACY_HUB_SENSOR_NAME_WITH_BLOCKED_SUFFIX},
+      {"privacyHubCameraAppPermissionRowAriaLabel",
+       IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_APP_PERMISSION_ROW_ARIA_LABEL},
+      {"privacyHubLocationAppPermissionRowAriaLabel",
+       IDS_OS_SETTINGS_PRIVACY_HUB_LOCATION_APP_PERMISSION_ROW_ARIA_LABEL},
+      {"privacyHubMicrophoneAppPermissionRowAriaLabel",
+       IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_APP_PERMISSION_ROW_ARIA_LABEL},
+      {"privacyHubAppPermissionRowAriaDescription",
+       IDS_OS_SETTINGS_PRIVACY_HUB_APP_PERMISSION_ROW_ARIA_DESCRIPTION},
+      {"privacyHubAppPermissionRowAndroidSettingsLinkAriaDescription",
+       IDS_OS_SETTINGS_PRIVACY_HUB_APP_PERMISSION_ROW_ANDROID_SETTINGS_LINK_ARIA_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

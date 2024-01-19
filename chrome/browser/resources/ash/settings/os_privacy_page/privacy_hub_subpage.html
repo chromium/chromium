@@ -45,14 +45,17 @@
           start-icon="app-management:camera"
           label="$i18n{cameraToggleTitle}"
           sub-label="[[cameraSubLabel_]]"
-          on-click="onCameraSubpageLinkClick_">
+          on-click="onCameraSubpageLinkClick_"
+          role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
       <div class="separator"></div>
       <cr-toggle
           id="cameraToggle"
           class="margin-matches-padding"
           checked="{{prefs.ash.user.camera_allowed.value}}"
-          disabled="[[shouldDisableCameraToggle_]]">
+          disabled="[[shouldDisableCameraToggle_]]"
+          aria-label="$i18n{cameraToggleTitle}"
+          aria-description="[[cameraSubLabel_]]">
       </cr-toggle>
     </div>
   </template>
@@ -100,7 +103,8 @@
           start-icon="app-management:microphone"
           label="$i18n{microphoneToggleTitle}"
           sub-label="$i18n{microphoneToggleSubtext}"
-          on-click="onMicrophoneSubpageLinkClick_">
+          on-click="onMicrophoneSubpageLinkClick_"
+          role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
       <div class="separator"></div>
       <div id="microphoneToggleWrapper">
@@ -108,7 +112,9 @@
             id="microphoneToggle"
             class="margin-matches-padding"
             checked="{{prefs.ash.user.microphone_allowed.value}}"
-            disabled="[[shouldDisableMicrophoneToggle_]]">
+            disabled="[[shouldDisableMicrophoneToggle_]]"
+            aria-label="$i18n{microphoneToggleTitle}"
+            aria-description="$i18n{microphoneToggleSubtext}">
         </cr-toggle>
       </div>
       <paper-tooltip

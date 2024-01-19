@@ -93,11 +93,23 @@ export class SettingsPrivacyHubAppPermissionRow extends
         computed: 'computeShouldDisableToggle_(isPermissionManaged_, ' +
             'shouldRedirectToAndroidSettings_)',
       },
+
+      ariaDescription_: {
+        type: String,
+        computed: 'computeAriaDescription_(permissionText_)',
+      },
+
+      androidSettingsLinkAriaDescription_: {
+        type: String,
+        computed: 'computeAndroidSettingsLinkAriaDescription_(permissionText_)',
+      },
     };
   }
 
   app: App;
   permissionType: PermissionTypeIndex;
+  private androidSettingsLinkAriaDescription_: string;
+  private ariaDescription_: string;
   private checked_: boolean;
   private isPermissionManaged_: boolean;
   private mojoInterfaceProvider_: AppPermissionsHandlerInterface;
@@ -188,6 +200,33 @@ export class SettingsPrivacyHubAppPermissionRow extends
 
   private computeShouldDisableToggle_(): boolean {
     return this.isPermissionManaged_ || this.shouldRedirectToAndroidSettings_;
+  }
+
+  private getAriaLabel_(): string {
+    switch (PermissionType[this.permissionType]) {
+      case PermissionType.kCamera:
+        return this.i18n(
+            'privacyHubCameraAppPermissionRowAriaLabel', this.app.name);
+      case PermissionType.kLocation:
+        return this.i18n(
+            'privacyHubLocationAppPermissionRowAriaLabel', this.app.name);
+      case PermissionType.kMicrophone:
+        return this.i18n(
+            'privacyHubMicrophoneAppPermissionRowAriaLabel', this.app.name);
+      default:
+        return '';
+    }
+  }
+
+  private computeAriaDescription_(): string {
+    return this.i18n(
+        'privacyHubAppPermissionRowAriaDescription', this.permissionText_);
+  }
+
+  private computeAndroidSettingsLinkAriaDescription_(): string {
+    return this.i18n(
+        'privacyHubAppPermissionRowAndroidSettingsLinkAriaDescription',
+        this.permissionText_);
   }
 }
 

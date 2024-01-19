@@ -43,7 +43,10 @@
         id="microphoneToggle"
         checked="{{prefs.ash.user.microphone_allowed.value}}"
         disabled="[[shouldDisableMicrophoneToggle_]]"
-        on-click="onMicrophoneToggleClick_">
+        on-click="onMicrophoneToggleClick_"
+        aria-label="$i18n{microphoneToggleTitle}"
+        aria-description="[[computeOnOffSubtext_(
+          prefs.ash.user.microphone_allowed.value)]]">
     </cr-toggle>
   </div>
   <paper-tooltip

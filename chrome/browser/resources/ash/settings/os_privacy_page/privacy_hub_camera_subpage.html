@@ -43,7 +43,10 @@
         id="cameraToggle"
         checked="{{prefs.ash.user.camera_allowed.value}}"
         disabled="[[shouldDisableCameraToggle_]]"
-        on-click="onCameraToggleClick_">
+        on-click="onCameraToggleClick_"
+        aria-label="$i18n{cameraToggleTitle}"
+        aria-description="[[computeOnOffSubtext_(
+          prefs.ash.user.camera_allowed.value)]]">
     </cr-toggle>
   </div>
 </div>

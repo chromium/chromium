@@ -6450,6 +6450,21 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SENSOR_NAME_WITH_BLOCKED_SUFFIX" desc="The text displayed in the rows of the sensor (camera or microphone) list when the sensor access is blocked.">
     <ph name="SENSOR_NAME">$1<ex>Front Camera</ex></ph> (blocked)
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_APP_PERMISSION_ROW_ARIA_LABEL" desc="ARIA (accessibility) label describing the action button (toggle button or external link button or managed icon) in the app permission rows of the privacy hub camera subpage.">
+    <ph name="APP_NAME">$1<ex>Google Meet</ex></ph> camera permission
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_LOCATION_APP_PERMISSION_ROW_ARIA_LABEL" desc="ARIA (accessibility) label describing the action button (toggle button or external link button or managed icon) in the app permission rows of the privacy hub location subpage.">
+    <ph name="APP_NAME">$1<ex>Google Meet</ex></ph> location permission
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_APP_PERMISSION_ROW_ARIA_LABEL" desc="ARIA (accessibility) label describing the action button (toggle button or external link button or managed icon) in the app permission rows of the privacy hub microphone subpage.">
+    <ph name="APP_NAME">$1<ex>Google Meet</ex></ph> microphone permission
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_APP_PERMISSION_ROW_ARIA_DESCRIPTION" desc="ARIA (accessibility) description describing the action buttons (toggle button or managed icon) in the app permission rows of the privacy hub subpages.">
+    Permission is <ph name="PERMISSION_STATE">$1<ex>Ask every time</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_APP_PERMISSION_ROW_ANDROID_SETTINGS_LINK_ARIA_DESCRIPTION" desc="ARIA (accessibility) description describing the android settings link in the app permission rows of the privacy hub subpages.">
+    Opens in new tab, Permission is <ph name="PERMISSION_STATE">$1<ex>Ask every time</ex></ph>
+  </message>
 
   <!-- On Startup (OS settings) -->
   <message name="IDS_OS_SETTINGS_ON_STARTUP_SETTINGS_CARD_TITLE" desc="The title of the settings card that allows the user to configure the restore apps and pages options on startup.">
