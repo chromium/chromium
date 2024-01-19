@@ -28,6 +28,128 @@ chromium-metrics-reviews@google.com.
   <variant name="Counterfactual" summary="prevented counterfactually"/>
 </variants>
 
+<variants name="ExperimentArm">
+  <variant name="Counterfactual" summary="counterfactual"/>
+  <variant name="WithDropToPin" summary="with drop-to-pin"/>
+  <variant name="WithoutDropToPin" summary="without drop-to-pin"/>
+</variants>
+
+<histogram name="Ash.HoldingSpaceWallpaperNudge.{Arm}.Duration" units="ms"
+    expires_after="2024-06-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records the duration the Holding Space wallpaper nudge was shown after the
+    nudge closes.
+  </summary>
+  <token key="Arm" variants="ExperimentArm"/>
+</histogram>
+
+<histogram name="Ash.HoldingSpaceWallpaperNudge.{Arm}.Eligible" enum="Boolean"
+    expires_after="2024-06-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records whether a user was deemed eligible to see the Holding Space
+    wallpaper nudge at first session start.
+  </summary>
+  <token key="Arm" variants="ExperimentArm"/>
+</histogram>
+
+<histogram name="Ash.HoldingSpaceWallpaperNudge.{Arm}.IneligibleReason"
+    enum="HoldingSpaceWallpaperNudgeIneligibleReason"
+    expires_after="2024-06-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records the reason a user was deemed ineligible to see the Holding Space
+    wallpaper nudge at first session start.
+  </summary>
+  <token key="Arm" variants="ExperimentArm"/>
+</histogram>
+
+<histogram name="Ash.HoldingSpaceWallpaperNudge.{Arm}.Interaction.Count"
+    enum="HoldingSpaceWallpaperNudgeInteraction" expires_after="2024-06-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Recorded each time the user performed the given interaction.
+  </summary>
+  <token key="Arm" variants="ExperimentArm"/>
+</histogram>
+
+<histogram
+    name="Ash.HoldingSpaceWallpaperNudge.{Arm}.Interaction.FirstTime.{Interaction}"
+    units="seconds" expires_after="2024-06-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records how long after the start of the first eligible session the user
+    first {Interaction}.
+  </summary>
+  <token key="Arm" variants="ExperimentArm"/>
+  <token key="Interaction">
+    <variant name="DraggedFileOverWallpaper"
+        summary="dragged a file over the wallpper"/>
+    <variant name="DroppedFileOnHoldingSpace"
+        summary="dropped a file on the holding space tray"/>
+    <variant name="DroppedFileOnWallpaper"
+        summary="dropped a file on the wallpaper"/>
+    <variant name="OpenedHoldingSpace" summary="opened holding space"/>
+    <variant name="PinnedFileFromAnySource"
+        summary="pinned a file from any source"/>
+    <variant name="PinnedFileFromContextMenu"
+        summary="pinned a file from the context menu on a holding space chip"/>
+    <variant name="PinnedFileFromFilesApp"
+        summary="pinned a file from the Files app"/>
+    <variant name="PinnedFileFromHoldingSpaceDrop"
+        summary="pinned a file by dropping it on holding space"/>
+    <variant name="PinnedFileFromPinButton"
+        summary="pinned a file by clicking the pin button on a holding space
+                 chip"/>
+    <variant name="PinnedFileFromWallpaperDrop"
+        summary="pinned a file by dropping it on the wallpaper"/>
+    <variant name="UsedOtherItem"
+        summary="used a non-pinned item in holding space"/>
+    <variant name="UsedPinnedItem"
+        summary="used a pinned item in holding space"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.HoldingSpaceWallpaperNudge.{Arm}.Shown" units="count"
+    expires_after="2024-06-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records the number of times the Holding Space wallpaper nudge was shown so
+    far, each time it is shown.
+  </summary>
+  <token key="Arm" variants="ExperimentArm"/>
+</histogram>
+
+<histogram name="Ash.HoldingSpaceWallpaperNudge.{Arm}.ShownBeforeFirstPin"
+    units="count" expires_after="2024-06-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records the number of times the Holding Space wallpaper nudge was shown
+    before the user pinned a file to the holding space for the first time.
+  </summary>
+  <token key="Arm" variants="ExperimentArm"/>
+</histogram>
+
+<histogram name="Ash.HoldingSpaceWallpaperNudge.{Arm}.SuppressedReason"
+    enum="HoldingSpaceWallpaperNudgeSuppressedReason"
+    expires_after="2024-06-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records the reason the Holding Space wallpaper nudge was suppressed when it
+    could have been shown.
+  </summary>
+  <token key="Arm" variants="ExperimentArm"/>
+</histogram>
+
 <histogram name="Ash.WelcomeTour.Aborted.Reason"
     enum="WelcomeTourAbortedReason" expires_after="2024-06-01">
   <owner>angusmclean@google.com</owner>

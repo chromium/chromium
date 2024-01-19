@@ -26,6 +26,14 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="HoldingSpaceWallpaperNudgeIneligibleReason">
+  <int value="0" label="kManagedAccount"/>
+  <int value="1" label="kUserNewnessNotAvailable"/>
+  <int value="2" label="kUserNotNewCrossDevice"/>
+  <int value="3" label="kUserNotNewLocally"/>
+  <int value="4" label="kUserTypeNotRegular"/>
+</enum>
+
 <enum name="HoldingSpaceWallpaperNudgeInteraction">
   <int value="0" label="kDroppedFileOnHoldingSpace"/>
   <int value="1" label="kDroppedFileOnWallpaper"/>
@@ -39,6 +47,14 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="kPinnedFileFromWallpaperDrop"/>
   <int value="10" label="kUsedOtherItem"/>
   <int value="11" label="kUsedPinnedItem"/>
+</enum>
+
+<enum name="HoldingSpaceWallpaperNudgeSuppressedReason">
+  <int value="0" label="kCountLimitReached"/>
+  <int value="1" label="kNotPrimaryAccount"/>
+  <int value="2" label="kTimePeriod"/>
+  <int value="3" label="kUserHasPinned"/>
+  <int value="4" label="kUserNotEligible"/>
 </enum>
 
 <enum name="WelcomeTourAbortedReason">
