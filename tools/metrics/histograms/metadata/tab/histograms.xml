@@ -966,8 +966,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.CountAtResume" units="tabs" expires_after="2024-05-19">
-<!-- This histogram was expired between 2022-11-02 and M111 -->
-
   <owner>marq@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -975,10 +973,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.CountAtResume2" units="tabs" expires_after="2024-05-19">
+  <owner>marq@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    [iOS] The number of tabs opened when the app comes out of the background.
+    With a wider range than Tabs.CountAtResume (100 -&gt; 1M)
+  </summary>
+</histogram>
+
 <histogram name="Tabs.CountAtStartup" units="tabs" expires_after="2024-05-19">
   <owner>marq@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>[Android and iOS] The number of tabs opened at cold launch.</summary>
+</histogram>
+
+<histogram name="Tabs.CountAtStartup2" units="tabs" expires_after="2024-05-19">
+  <owner>marq@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <summary>
+    [iOS] The number of tabs opened at cold launch. With a wider range than
+    Tabs.CountAtStartup (100 -&gt; 1M)
+  </summary>
 </histogram>
 
 <histogram name="Tabs.DroppedDuplicatesCountOn{Occasion}" units="tabs"
