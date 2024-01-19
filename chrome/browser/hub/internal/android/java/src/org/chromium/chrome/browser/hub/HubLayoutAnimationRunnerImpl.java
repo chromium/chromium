@@ -120,9 +120,16 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
         assert mAnimationState == AnimationState.WAITING_FOR_ANIMATOR;
 
         mAnimatorProvider.supplyAnimatorNow();
-        assert mAnimatorProvider.getAnimatorSupplier().hasValue()
+
+        SyncOneshotSupplier<HubLayoutAnimator> animatorSupplier =
+                mAnimatorProvider.getAnimatorSupplier();
+        assert animatorSupplier.hasValue()
                 : "HubAnimatorProvider#supplyAnimatorNow() failed to provide an animation for "
                         + getAnimationType();
+
+        // Don't rely on the observable supplier here as we might post when the value is set. Call
+        // the onAnimatorReady method directly (repeat calls will be dropped).
+        onAnimatorReady(animatorSupplier.get());
     }
 
     private void postOnAnimatorReady(@NonNull HubLayoutAnimator animator) {

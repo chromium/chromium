@@ -367,8 +367,9 @@ public class HubLayout extends Layout implements HubLayoutController {
         super.onTabCreated(
                 time, tabId, tabIndex, sourceTabId, newIsIncognito, background, originX, originY);
 
-        // Background tab creation does not trigger a Hub layout transition.
-        if (background) return;
+        // Background tab creation or creation while hiding does not trigger a Hub layout
+        // transition.
+        if (background || isStartingToHide()) return;
 
         // Tablet Hub doesn't handle new tab animations.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {

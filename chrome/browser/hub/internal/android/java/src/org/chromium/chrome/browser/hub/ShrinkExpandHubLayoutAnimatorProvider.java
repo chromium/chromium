@@ -143,7 +143,7 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
     }
 
     private void onAnimationDataAvailable(ShrinkExpandAnimationData animationData) {
-        if (mShrinkExpandImageView == null) return;
+        if (mShrinkExpandImageView == null || mAnimatorSupplier.hasValue()) return;
 
         // Preserve the bitmap because it might have been supplied before the animation data.
         mShrinkExpandImageView.resetKeepingBitmap(animationData.getInitialRect());
@@ -161,7 +161,7 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
     }
 
     private void maybeSupplyAnimation() {
-        if (mShrinkExpandImageView == null) return;
+        if (mShrinkExpandImageView == null || mAnimatorSupplier.hasValue()) return;
 
         boolean bitmapSatisfied =
                 mBitmapCallback == null || mShrinkExpandImageView.getBitmap() != null;
@@ -199,6 +199,9 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
     }
 
     private void supplyAnimator() {
+        // A fallback animation has already triggered.
+        if (mAnimatorSupplier.hasValue()) return;
+
         assert mAnimationDataSupplier.hasValue();
 
         View toolbarView = mHubContainerView.findViewById(R.id.hub_toolbar);
