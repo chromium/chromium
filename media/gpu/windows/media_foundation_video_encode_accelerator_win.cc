@@ -170,6 +170,16 @@ eAVEncH265VProfile GetHEVCProfile(VideoCodecProfile profile) {
   }
 }
 
+// Get distance from current frame to next temporal base layer frame.
+uint32_t GetDistanceToNextTemporalBaseLayer(uint32_t frame_number,
+                                            uint32_t temporal_layer_count) {
+  DCHECK(temporal_layer_count >= 1 && temporal_layer_count <= 3);
+  uint32_t pattern_count = 1 << (temporal_layer_count - 1);
+  return (frame_number % pattern_count == 0)
+             ? 0
+             : pattern_count - (frame_number % pattern_count);
+}
+
 MediaFoundationVideoEncodeAccelerator::DriverVendor GetDriverVendor(
     IMFActivate* encoder) {
   using DriverVendor = MediaFoundationVideoEncodeAccelerator::DriverVendor;
@@ -813,7 +823,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   }
   input_since_keyframe_count_ = 0;
   // Init bitream parser in the case temporal scalability encoding.
-  if (IsTemporaScalabilityCoding()) {
+  if (IsTemporalScalabilityCoding()) {
     parser_ = std::make_unique<BitstreamParserHelper>(codec_);
   }
 
@@ -971,6 +981,23 @@ void MediaFoundationVideoEncodeAccelerator::Encode(
     EncodeOptions discard_options(/*force_keyframe=*/false);
     EncodeInternal(frame, discard_options, /*discard_output=*/true);
   }
+
+  if (codec_ == VideoCodec::kVP9 && vendor_ == DriverVendor::kIntel &&
+      IsTemporalScalabilityCoding() && options.key_frame) {
+    // Currently, Intel drivers only allow apps to request keyframe on base
+    // layer(T0) when encoding at L1T2/L1T3, any keyframe requests on T1/T2
+    // layer will be ignored by driver and not return a keyframe. For VP9, we
+    // expect when keyframe is requested, encoder will reset the temporal layer
+    // state and produce a keyframe, to work around this issue, MFVEA will add
+    // input and internally discard output until driver transition to T0 layer.
+    uint32_t distance_to_base_layer = GetDistanceToNextTemporalBaseLayer(
+        input_since_keyframe_count_, num_temporal_layers_);
+    for (uint32_t i = 0; i < distance_to_base_layer; ++i) {
+      EncodeOptions discard_options(/*force_keyframe=*/false);
+      EncodeInternal(frame, discard_options, /*discard_output=*/true);
+    }
+  }
+
   EncodeInternal(std::move(frame), options, /*discard_output=*/false);
   last_frame_was_keyframe_request_ = options.key_frame;
 }
@@ -2144,7 +2171,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   }
 
   int temporal_id = 0;
-  if (IsTemporaScalabilityCoding()) {
+  if (IsTemporalScalabilityCoding()) {
     DCHECK(parser_);
     BitstreamParserHelper::BitstreamMetadata bits_md;
     MediaBufferScopedPointer scoped_buffer(output_buffer.Get());

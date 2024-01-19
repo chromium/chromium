@@ -180,7 +180,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Assign TemporalID by state machine(based on SVC Spec).
   int AssignTemporalIdBySvcSpec(uint32_t frame_id);
 
-  bool IsTemporaScalabilityCoding() const { return num_temporal_layers_ > 1; }
+  bool IsTemporalScalabilityCoding() const { return num_temporal_layers_ > 1; }
 
   // Checks for and copies encoded output.
   void ProcessOutput();
