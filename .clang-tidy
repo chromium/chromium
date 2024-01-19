@@ -13,6 +13,7 @@
                     bugprone-unique-ptr-array-mismatch,
                     bugprone-unused-raii,
                     bugprone-use-after-move,
+                    bugprone-virtual-near-miss,
                     google-build-explicit-make-pair,
                     google-default-arguments,
                     google-explicit-constructor,
