@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model_factory.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

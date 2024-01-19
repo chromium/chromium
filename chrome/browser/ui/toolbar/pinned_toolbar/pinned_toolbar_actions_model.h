@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOOLBAR_PINNED_TOOLBAR_ACTIONS_MODEL_H_
-#define CHROME_BROWSER_UI_TOOLBAR_PINNED_TOOLBAR_ACTIONS_MODEL_H_
+#ifndef CHROME_BROWSER_UI_TOOLBAR_PINNED_TOOLBAR_PINNED_TOOLBAR_ACTIONS_MODEL_H_
+#define CHROME_BROWSER_UI_TOOLBAR_PINNED_TOOLBAR_PINNED_TOOLBAR_ACTIONS_MODEL_H_
 
 #include <string>
+
 #include "base/observer_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -125,4 +126,4 @@ class PinnedToolbarActionsModel : public KeyedService {
   std::vector<actions::ActionId> pinned_action_ids_;
 };
 
-#endif  // CHROME_BROWSER_UI_TOOLBAR_PINNED_TOOLBAR_ACTIONS_MODEL_H_
+#endif  // CHROME_BROWSER_UI_TOOLBAR_PINNED_TOOLBAR_PINNED_TOOLBAR_ACTIONS_MODEL_H_
