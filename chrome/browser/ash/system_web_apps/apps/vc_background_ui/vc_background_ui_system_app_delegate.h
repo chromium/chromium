@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace web_app {
@@ -24,6 +25,7 @@ class VcBackgroundUISystemAppDelegate : public SystemWebAppDelegate {
   // SystemWebAppDelegate:
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   gfx::Size GetMinimumWindowSize() const override;
+  gfx::Rect GetDefaultBounds(Browser* browser) const override;
   bool IsAppEnabled() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldShowInSearchAndShelf() const override;
