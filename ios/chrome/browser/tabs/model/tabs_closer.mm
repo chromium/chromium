@@ -203,6 +203,14 @@ int TabsCloser::CloseTabs() {
 
   state_ = std::make_unique<UndoStorage>(browser_);
   state_->CloseTabs(start, count);
+
+  // Force a session save to avoid having to wait for the timeout.
+  // This is mostly useful when user has a large number of tabs (see
+  // bug https://crbug.com/1510953 for details).
+  SessionRestorationServiceFactory::GetForBrowserState(
+      browser_->GetBrowserState())
+      ->SaveSessions();
+
   return state_->count();
 }
 
