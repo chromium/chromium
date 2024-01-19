@@ -288,6 +288,8 @@ class ChromeFileSystemAccessPermissionContext
 
   content::BrowserContext* profile() const { return profile_; }
 
+  void TriggerTimersForTesting();
+
   void SetOriginHasExtendedPermissionForTesting(const url::Origin& origin);
 
   scoped_refptr<content::FileSystemAccessPermissionGrant>

@@ -2243,6 +2243,17 @@ void ChromeFileSystemAccessPermissionContext::NavigatedAwayFromOrigin(
   }
 }
 
+void ChromeFileSystemAccessPermissionContext::TriggerTimersForTesting() {
+  for (const auto& it : active_permissions_map_) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (it.second.cleanup_timer) {
+      auto task = it.second.cleanup_timer->user_task();
+      it.second.cleanup_timer->Stop();
+      task.Run();
+    }
+  }
+}
+
 void ChromeFileSystemAccessPermissionContext::MaybeCleanupPermissions(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
