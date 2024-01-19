@@ -5,8 +5,9 @@
 #ifndef UI_EVENTS_ASH_KEYBOARD_DEVICE_ID_EVENT_REWRITER_H_
 #define UI_EVENTS_ASH_KEYBOARD_DEVICE_ID_EVENT_REWRITER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_rewriter.h"
 
@@ -46,7 +47,7 @@ class KeyboardDeviceIdEventRewriter : public EventRewriter {
  private:
   // Returns the fixed-up keyboard device id.
   // The returned id should be used in the later event rewriting stages.
-  absl::optional<int> GetKeyboardDeviceIdInternal(const Event& event) const;
+  std::optional<int> GetKeyboardDeviceIdInternal(const Event& event) const;
 
   const raw_ptr<KeyboardCapability> keyboard_capability_;
   int last_keyboard_device_id_ = ED_UNKNOWN_DEVICE;
