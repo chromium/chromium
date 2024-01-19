@@ -337,8 +337,11 @@ def GenerateVersionCodes(version_values, arch, is_next_build):
   Thus, this method is responsible for the final two digits of versionCode.
   """
 
-  build_number = int(version_values['BUILD'])
-  patch_number = int(version_values['PATCH'])
+  # setting build_number to 6288 to allow this release to remain when a newer
+  # beta release is promoted. Adding 400 to the patch number so this does not
+  # conflict with future builds.
+  build_number = 6288
+  patch_number = int(version_values['PATCH']) + 400
   base_version_code = (build_number * 1000 + patch_number) * 100
 
   if is_next_build:
