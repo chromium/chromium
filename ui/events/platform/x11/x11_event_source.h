@@ -15,6 +15,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/events_export.h"
 #include "ui/events/platform/platform_event_source.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 
@@ -73,13 +74,15 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   // current event does not have a timestamp.
   x11::Time GetTimestamp();
 
-  // Returns the root pointer location only if there is an event being
-  // dispatched that contains that information.
-  absl::optional<gfx::Point> GetRootCursorLocationFromCurrentEvent() const;
-
   // Explicitly asks the X11 server for the current timestamp, and updates
   // |last_seen_server_time_| with this value.
   x11::Time GetCurrentServerTime();
+
+  // The cursor location of the most recently processed input event, or nullopt
+  // if no input events have been processed yet.
+  const absl::optional<gfx::Point>& last_cursor_location() const {
+    return last_cursor_location_;
+  }
 
  private:
   // x11::EventObserver:
@@ -92,6 +95,8 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
 
   // The connection to the X11 server used to receive the events.
   raw_ptr<x11::Connection> connection_;
+
+  absl::optional<gfx::Point> last_cursor_location_;
 
   // State necessary for UpdateLastSeenServerTime
   bool dummy_initialized_;
