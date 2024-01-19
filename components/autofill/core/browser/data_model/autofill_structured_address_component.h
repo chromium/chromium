@@ -350,44 +350,6 @@ class AddressComponent {
   // Returns true if all values of all descendent nodes are empty.
   bool AllDescendantsAreEmpty() const;
 
-#ifdef UNIT_TEST
-  // Initiates the formatting of the values from the subcomponents.
-  void FormatValueFromSubcomponentsForTesting() {
-    FormatValueFromSubcomponents();
-  }
-
-  // Returns the best format string for testing.
-  std::u16string GetFormatStringForTesting() const { return GetFormatString(); }
-
-  // Returns the parse expressions by relevance for testing.
-  std::vector<const re2::RE2*>
-  GetParseRegularExpressionsByRelevanceForTesting() {
-    return GetParseRegularExpressionsByRelevance();
-  }
-
-  // Returns a reference to the root node of the tree for testing.
-  AddressComponent& GetRootNodeForTesting() { return GetRootNode(); }
-
-  // Returns a vector containing the |storage_types_| of all direct
-  // subcomponents.
-  std::vector<FieldType> GetSubcomponentTypesForTesting() const {
-    return GetSubcomponentTypes();
-  }
-
-  // Sets the merge mode for testing purposes.
-  void SetMergeModeForTesting(int merge_mode) { merge_mode_ = merge_mode; }
-
-  // Returns the value used for comparison for testing purposes.
-  std::u16string GetValueForComparisonForTesting(
-      const AddressComponent& other) const {
-    return GetValueForComparison(other);
-  }
-
-  AddressComponent* GetNodeForTypeForTesting(FieldType field_type) {
-    return GetNodeForType(field_type);
-  }
-#endif
-
  protected:
   // Returns the verification score of this component and its substructure.
   // Each observed node contributes to the validation score by 1.
@@ -515,6 +477,8 @@ class AddressComponent {
                         FieldTypeSet* supported_types) const;
 
  private:
+  friend class AddressComponentTestApi;
+
   // Unsets the node and all of its children.
   void UnsetAddressComponentAndItsSubcomponents();
 
@@ -525,10 +489,10 @@ class AddressComponent {
   // nodes that are empty (e.g. a new leaf or internal node got recently
   // introduced). Gap filling addresses all those cases.
   // The overall strategy is: For every empty node, try building its value by
-  // parsing its parent. If that's not possible (e.g. info can't be parsed), use
-  // formatting rules to build a value from its children. Note that this process
-  // respects non-empty nodes and the information growth invariant (i.e child
-  // information is always contained on their ancestors).
+  // parsing its parent. If that's not possible (e.g. info can't be parsed),
+  // use formatting rules to build a value from its children. Note that this
+  // process respects non-empty nodes and the information growth invariant (i.e
+  // child information is always contained on their ancestors).
   void FillTreeGaps();
 
   // Determines a value from the subcomponents by using the
@@ -560,7 +524,8 @@ class AddressComponent {
   // subcomponents only. The value assigned to each subcomponent is compatible
   // with the information growth invariant (i.e child information is always
   // contained on their ancestors). If parsing is not successful, the function
-  // does not perform any modifications. Returns true if parsing was successful.
+  // does not perform any modifications. Returns true if parsing was
+  // successful.
   bool ParseValueAndAssignSubcomponentsRespectingSetValues(
       const std::u16string& value,
       const re2::RE2* parse_expression);

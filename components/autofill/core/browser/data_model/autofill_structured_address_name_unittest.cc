@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -887,8 +888,8 @@ TEST_F(AutofillStructuredName, MigrationFromLegacyStructure_WithoutFullName) {
 TEST_F(AutofillStructuredName, MergeSubsetLastname) {
   NameFull name;
   NameFull subset_name;
-  name.SetMergeModeForTesting(kRecursivelyMergeSingleTokenSubset |
-                              kRecursivelyMergeTokenEquivalentValues);
+  test_api(&name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
+                               kRecursivelyMergeTokenEquivalentValues);
 
   AddressComponentTestValues name_values = {
       {.type = NAME_FIRST,
@@ -947,8 +948,8 @@ TEST_F(AutofillStructuredName, MergeSubsetLastname) {
 TEST_F(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
   NameFull name;
   NameFull subset_name;
-  name.SetMergeModeForTesting(kRecursivelyMergeSingleTokenSubset |
-                              kRecursivelyMergeTokenEquivalentValues);
+  test_api(&name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
+                               kRecursivelyMergeTokenEquivalentValues);
 
   AddressComponentTestValues name_values = {
       {.type = NAME_FULL,
@@ -998,8 +999,8 @@ TEST_F(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
   // After normalization, the two names should have a single-token-superset
   // relation.
   SortedTokenComparisonResult token_comparison_result =
-      CompareSortedTokens(name.GetValueForComparisonForTesting(subset_name),
-                          subset_name.GetValueForComparisonForTesting(name));
+      CompareSortedTokens(test_api(&name).GetValueForComparison(subset_name),
+                          test_api(&subset_name).GetValueForComparison(name));
   EXPECT_TRUE(token_comparison_result.IsSingleTokenSuperset());
 
   // Without normalization, the two names should be considered distinct.
@@ -1018,8 +1019,8 @@ TEST_F(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
 TEST_F(AutofillStructuredName, MergeSubsetLastname2) {
   NameFullWithPrefix name;
   NameFullWithPrefix subset_name;
-  name.SetMergeModeForTesting(kRecursivelyMergeSingleTokenSubset |
-                              kRecursivelyMergeTokenEquivalentValues);
+  test_api(&name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
+                               kRecursivelyMergeTokenEquivalentValues);
 
   AddressComponentTestValues name_values = {
       {.type = NAME_FIRST,

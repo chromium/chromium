@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -31,10 +32,10 @@ class ConvergeToExtremeLengthAddressMetricsTest
 
     old_address_ = i18n_model_definition::CreateAddressComponentModel();
     new_address_ = i18n_model_definition::CreateAddressComponentModel();
-    old_street_ =
-        old_address_->GetNodeForTypeForTesting(ADDRESS_HOME_STREET_ADDRESS);
-    new_street_ =
-        new_address_->GetNodeForTypeForTesting(ADDRESS_HOME_STREET_ADDRESS);
+    old_street_ = test_api(old_address_.get())
+                      .GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
+    new_street_ = test_api(new_address_.get())
+                      .GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
   }
   void TearDown() override { TearDownHelper(); }
 

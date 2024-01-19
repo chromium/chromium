@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -702,9 +703,9 @@ TEST_F(AutofillStructuredAddress, TestGetCommonCountry) {
   std::unique_ptr<AddressComponent> address2 =
       i18n_model_definition::CreateAddressComponentModel();
   AddressComponent* country1 =
-      address1->GetNodeForTypeForTesting(ADDRESS_HOME_COUNTRY);
+      test_api(address1.get()).GetNodeForType(ADDRESS_HOME_COUNTRY);
   AddressComponent* country2 =
-      address2->GetNodeForTypeForTesting(ADDRESS_HOME_COUNTRY);
+      test_api(address2.get()).GetNodeForType(ADDRESS_HOME_COUNTRY);
 
   // No countries set.
   EXPECT_EQ(country1->GetCommonCountry(*country2), u"");
@@ -731,11 +732,11 @@ TEST_F(AutofillStructuredAddress, TestGetValueForComparisonForType) {
   std::unique_ptr<AddressComponent> address =
       i18n_model_definition::CreateAddressComponentModel();
   AddressComponent* country_code =
-      address->GetNodeForTypeForTesting(ADDRESS_HOME_COUNTRY);
+      test_api(address.get()).GetNodeForType(ADDRESS_HOME_COUNTRY);
   country_code->SetValue(u"US", VerificationStatus::kObserved);
 
   AddressComponent* street_address =
-      address->GetNodeForTypeForTesting(ADDRESS_HOME_STREET_ADDRESS);
+      test_api(address.get()).GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
   EXPECT_TRUE(street_address->SetValueForType(ADDRESS_HOME_STREET_ADDRESS,
                                               u"Main Street\nOther Street",
                                               VerificationStatus::kObserved));
@@ -804,10 +805,10 @@ class HasNewerStreetAddressPrecedenceInMergingTest
 TEST_P(HasNewerStreetAddressPrecedenceInMergingTest,
        HasNewerStreetAddressPrecedenceInMergingTestCase) {
   HasNewerStreetAddressPrecedenceInMergingTestCase test_case = GetParam();
-  auto* old_street =
-      root_old_node_->GetNodeForTypeForTesting(ADDRESS_HOME_STREET_ADDRESS);
-  auto* new_street =
-      root_new_node_->GetNodeForTypeForTesting(ADDRESS_HOME_STREET_ADDRESS);
+  auto* old_street = test_api(root_old_node_.get())
+                         .GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
+  auto* new_street = test_api(root_new_node_.get())
+                         .GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
   old_street->SetValue(test_case.old_street_address_name,
                        test_case.old_street_address_status);
   new_street->SetValue(test_case.new_street_address_name,

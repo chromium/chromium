@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/autofill_i18n_formatting_expressions.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_parsing_expressions.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_format_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -68,7 +69,7 @@ TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnsNonEmptyModel) {
       EXPECT_FALSE(field_type_set.contains_any(
           {NO_SERVER_DATA, UNKNOWN_TYPE, EMPTY_TYPE}));
 
-      EXPECT_EQ(model->GetRootNodeForTesting().GetStorageType(),
+      EXPECT_EQ(test_api(model.get()).GetRootNode().GetStorageType(),
                 ADDRESS_HOME_ADDRESS);
     }
 }
@@ -86,10 +87,10 @@ TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnedModelIsTree) {
     // Test that all field types in the country rules are accessible through the
     // root (i.e. the tree is connected).
     for (const auto& [node_type, children_types] : tree_def) {
-      EXPECT_TRUE(root->GetNodeForTypeForTesting(node_type));
+      EXPECT_TRUE(test_api(root.get()).GetNodeForType(node_type));
 
       for (FieldType child_type : children_types) {
-        EXPECT_TRUE(root->GetNodeForTypeForTesting(child_type));
+        EXPECT_TRUE(test_api(root.get()).GetNodeForType(child_type));
       }
     }
   }
@@ -213,7 +214,7 @@ TEST_F(AutofillI18nApiTest, IsTypeEnabledForCountry) {
         EXPECT_FALSE(IsTypeEnabledForCountry(field_type, address_country_code));
       } else {
         bool is_contained =
-            address->GetNodeForTypeForTesting(field_type) != nullptr;
+            test_api(address.get()).GetNodeForType(field_type) != nullptr;
         EXPECT_EQ(is_contained,
                   IsTypeEnabledForCountry(field_type, address_country_code));
       }
