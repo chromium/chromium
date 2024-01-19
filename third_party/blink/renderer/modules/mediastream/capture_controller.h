@@ -31,12 +31,12 @@ class MODULES_EXPORT CaptureController final : public EventTarget,
   // https://w3c.github.io/mediacapture-screen-share/#dom-capturecontroller-setfocusbehavior
   void setFocusBehavior(V8CaptureStartFocusBehavior, ExceptionState&);
 
-  // IDL interface, APIs related to Captured Surface Control
-  // TODO(crbug.com/1466247): Link to spec.
+  // Captured Surface Control IDL interface - scrolling
   ScriptPromise sendWheel(ScriptState* script_state,
                           CapturedWheelAction* action);
-  int getMinZoomLevel();
-  int getMaxZoomLevel();
+
+  // Captured Surface Control IDL interface - zooming
+  static Vector<int> getSupportedZoomLevels();
   ScriptPromise getZoomLevel(ScriptState* script_state);
   ScriptPromise setZoomLevel(ScriptState* script_state, int zoom_level);
 

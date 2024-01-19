@@ -177,6 +177,28 @@ bool AllowedStreamTypeCombination(
   return false;
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+bool IsValidZoomLevel(int zoom_level) {
+  if (blink::kPresetZoomFactors.size() == 0u) {
+    return false;
+  }
+
+  if (zoom_level ==
+      static_cast<int>(std::ceil(100 * blink::kPresetZoomFactors[0]))) {
+    return true;
+  }
+
+  for (size_t i = 1; i < blink::kPresetZoomFactors.size(); ++i) {
+    if (zoom_level ==
+        static_cast<int>(std::floor(100 * blink::kPresetZoomFactors[i]))) {
+      return true;
+    }
+  }
+
+  return false;
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 }  // namespace
 
 int MediaStreamDispatcherHost::next_requester_id_ = 0;
@@ -727,10 +749,7 @@ void MediaStreamDispatcherHost::SetZoomLevel(
     return;
   }
 
-  if (zoom_level <
-          static_cast<int>(std::ceil(100 * blink::kMinimumPageZoomFactor)) ||
-      static_cast<int>(std::floor(100 * blink::kMaximumPageZoomFactor)) <
-          zoom_level) {
+  if (!IsValidZoomLevel(zoom_level)) {
     ReceivedBadMessage(render_frame_host_id_.child_id,
                        bad_message::MSDH_SET_ZOOM_LEVEL_INVALID_LEVEL);
     std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);

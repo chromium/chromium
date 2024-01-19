@@ -206,18 +206,29 @@ ScriptPromise CaptureController::sendWheel(ScriptState* script_state,
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-int CaptureController::getMinZoomLevel() {
-  // We expect `100 * kMinimumPageZoomFactor` to be an integer. But if it's not,
-  // over-reporting the minimum is preferable, as it would mean the application
-  // still asks to set zoom levels which aren't below the minimum.
-  return static_cast<int>(std::ceil(100 * kMinimumPageZoomFactor));
-}
+Vector<int> CaptureController::getSupportedZoomLevels() {
+  const wtf_size_t kSize = static_cast<wtf_size_t>(kPresetZoomFactors.size());
+  // If later developers modify `kPresetZoomFactors` to include many more
+  // entries than original intended, they should consider modifying this
+  // Web-exposed API to either:
+  // * Allow the Web application provide the max levels it wishes to receive.
+  // * Do some UA-determined trimming.
+  CHECK_LE(kSize, 100u) << "Excessive zoom levels.";
+  CHECK_EQ(kMinimumPageZoomFactor, kPresetZoomFactors.front());
+  CHECK_EQ(kMaximumPageZoomFactor, kPresetZoomFactors.back());
 
-int CaptureController::getMaxZoomLevel() {
-  // We expect `100 * kMaximumPageZoomFactor` to be an integer. But if it's not,
-  // under-reporting the maximum is preferable, as it would mean the application
-  // still asks to set zoom levels which aren't above the maximum.
-  return static_cast<int>(std::floor(100 * kMaximumPageZoomFactor));
+  Vector<int> result(kSize);
+  if (kSize == 0) {
+    return result;
+  }
+
+  result[0] = static_cast<int>(std::ceil(100 * kPresetZoomFactors[0]));
+  for (wtf_size_t i = 1; i < kSize; ++i) {
+    result[i] = static_cast<int>(std::floor(100 * kPresetZoomFactors[i]));
+    CHECK_LT(result[i - 1], result[i]) << "Must be monotonically increasing.";
+  }
+
+  return result;
 }
 
 ScriptPromise CaptureController::getZoomLevel(ScriptState* script_state) {
@@ -278,7 +289,7 @@ ScriptPromise CaptureController::setZoomLevel(ScriptState* script_state,
     return promise;
   }
 
-  if (zoom_level < getMinZoomLevel() || getMaxZoomLevel() < zoom_level) {
+  if (!getSupportedZoomLevels().Contains(zoom_level)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError, "Invalid zoom_level."));
     return promise;
