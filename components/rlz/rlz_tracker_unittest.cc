@@ -108,6 +108,12 @@ class TestRLZTrackerDelegate : public RLZTrackerDelegate {
     on_homepage_search_callback_ = std::move(callback);
   }
 
+  void RunHomepageSearchCallback() override {
+    if (!on_homepage_search_callback_.is_null()) {
+      std::move(on_homepage_search_callback_).Run();
+    }
+  }
+
   // A speculative fix for https://crbug.com/907379.
   bool ShouldUpdateExistingAccessPointRlz() override { return false; }
 
@@ -1061,5 +1067,22 @@ TEST_F(RlzLibTest, DoNotRecordEventUnlessShouldSendRlzPingKeyIsTrue) {
   ExpectEventRecorded(OmniboxFirstSearch(), false);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_IOS)
+TEST_F(RlzLibTest, RecordChromeHomePageSearch) {
+  TestRLZTracker::InitRlzDelayed(true, false, kDelay, true, true, false);
+  EXPECT_TRUE(TestRLZTracker::ShouldRecordChromeHomePageSearch());
+
+  TestRLZTracker::RecordChromeHomePageSearch();
+  EXPECT_FALSE(TestRLZTracker::ShouldRecordChromeHomePageSearch());
+  ExpectEventRecorded(kHomepageFirstSearch, true);
+}
+
+TEST_F(RlzLibTest, ShouldNotRecordChromeHomePageSearch) {
+  SetMainBrand("GGLS");
+  TestRLZTracker::InitRlzDelayed(true, false, kDelay, true, true, false);
+  EXPECT_FALSE(TestRLZTracker::ShouldRecordChromeHomePageSearch());
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace rlz

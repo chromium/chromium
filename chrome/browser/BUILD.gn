@@ -7642,6 +7642,8 @@ static_library("browser") {
     sources += [
       "rlz/chrome_rlz_tracker_delegate.cc",
       "rlz/chrome_rlz_tracker_delegate.h",
+      "rlz/chrome_rlz_tracker_web_contents_observer.cc",
+      "rlz/chrome_rlz_tracker_web_contents_observer.h",
     ]
 
     public_deps += [

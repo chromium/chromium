@@ -28,13 +28,6 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_details.h"
-#include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/common/content_switches.h"
 #include "rlz/buildflags/buildflags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -114,7 +107,6 @@ bool ChromeRLZTrackerDelegate::IsGoogleInStartpages(Profile* profile) {
 }
 
 void ChromeRLZTrackerDelegate::Cleanup() {
-  registrar_.RemoveAll();
   on_omnibox_search_callback_.Reset();
   on_homepage_search_callback_.Reset();
 }
@@ -196,69 +188,17 @@ void ChromeRLZTrackerDelegate::SetOmniboxSearchCallback(
 void ChromeRLZTrackerDelegate::SetHomepageSearchCallback(
     base::OnceClosure callback) {
   DCHECK(!callback.is_null());
-  registrar_.Add(this, content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-                 content::NotificationService::AllSources());
   on_homepage_search_callback_ = std::move(callback);
+}
+
+void ChromeRLZTrackerDelegate::RunHomepageSearchCallback() {
+  if (!on_homepage_search_callback_.is_null()) {
+    std::move(on_homepage_search_callback_).Run();
+  }
 }
 
 bool ChromeRLZTrackerDelegate::ShouldUpdateExistingAccessPointRlz() {
   return true;
-}
-
-void ChromeRLZTrackerDelegate::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  base::OnceClosure callback_to_run;
-  switch (type) {
-    case content::NOTIFICATION_NAV_ENTRY_COMMITTED: {
-      // Firstly check if it is a Google search.
-      content::LoadCommittedDetails* load_details =
-          content::Details<content::LoadCommittedDetails>(details).ptr();
-      if (load_details == nullptr)
-        break;
-
-      content::NavigationEntry* entry = load_details->entry;
-      if (entry == nullptr)
-        break;
-
-      if (google_util::IsGoogleSearchUrl(entry->GetURL())) {
-        // If it is a Google search, check if it originates from HOMEPAGE by
-        // getting the previous NavigationEntry.
-        content::NavigationController* controller =
-            content::Source<content::NavigationController>(source).ptr();
-        if (controller == nullptr)
-          break;
-
-        int entry_index = controller->GetLastCommittedEntryIndex();
-        if (entry_index < 1)
-          break;
-
-        content::NavigationEntry* previous_entry =
-            controller->GetEntryAtIndex(entry_index - 1);
-
-        if (previous_entry == nullptr)
-          break;
-
-        // Make sure it is a Google web page originated from HOMEPAGE.
-        if (google_util::IsGoogleHomePageUrl(previous_entry->GetURL()) &&
-            ((previous_entry->GetTransitionType() &
-              ui::PAGE_TRANSITION_HOME_PAGE) != 0)) {
-          registrar_.Remove(this, content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-                            content::NotificationService::AllSources());
-          callback_to_run = std::move(on_homepage_search_callback_);
-        }
-      }
-      break;
-    }
-
-    default:
-      NOTREACHED();
-      break;
-  }
-
-  if (!callback_to_run.is_null())
-    std::move(callback_to_run).Run();
 }
 
 void ChromeRLZTrackerDelegate::OnURLOpenedFromOmnibox(OmniboxLog* log) {

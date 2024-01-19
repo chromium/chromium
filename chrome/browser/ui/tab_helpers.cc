@@ -161,6 +161,7 @@
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "rlz/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -291,6 +292,10 @@
 #include "components/compose/core/browser/compose_features.h"
 #endif
 
+#if BUILDFLAG(ENABLE_RLZ)
+#include "chrome/browser/rlz/chrome_rlz_tracker_web_contents_observer.h"
+#endif
+
 using content::WebContents;
 
 namespace {
@@ -361,6 +366,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ChromePasswordManagerClient::CreateForWebContents(web_contents);
   ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
   CreateSubresourceFilterWebContentsHelper(web_contents);
+#if BUILDFLAG(ENABLE_RLZ)
+  ChromeRLZTrackerWebContentsObserver::CreateForWebContentsIfNeeded(
+      web_contents);
+#endif
   ChromeTranslateClient::CreateForWebContents(web_contents);
   client_hints::ClientHintsWebContentsObserver::CreateForWebContents(
       web_contents);

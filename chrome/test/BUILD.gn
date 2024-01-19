@@ -9875,8 +9875,14 @@ if (!is_fuchsia) {
       deps += [ "//chrome/common/notifications:unit_tests" ]
     }
     if (enable_rlz) {
-      sources += [ "../browser/rlz/chrome_rlz_tracker_delegate_unittest.cc" ]
-      deps += [ "//rlz:test_support" ]
+      sources += [
+        "../browser/rlz/chrome_rlz_tracker_delegate_unittest.cc",
+        "../browser/rlz/chrome_rlz_tracker_web_contents_observer_unittest.cc",
+      ]
+      deps += [
+        "//components/rlz:test_support",
+        "//rlz:test_support",
+      ]
     }
     if (!is_android && !is_chromeos) {
       sources += [

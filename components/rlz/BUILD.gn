@@ -41,6 +41,19 @@ static_library("rlz") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_rlz_tracker_delegate.cc",
+    "mock_rlz_tracker_delegate.h",
+  ]
+  public_deps = [ "//testing/gmock" ]
+  deps = [
+    ":rlz",
+    "//services/network/public/cpp:cpp",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "rlz_tracker_unittest.cc" ]

@@ -4,47 +4,35 @@
 
 #include "chrome/browser/rlz/chrome_rlz_tracker_delegate.h"
 
-#include <memory>
-
-#include "base/test/task_environment.h"
-#include "content/public/browser/navigation_details.h"
-#include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
-#include "content/public/browser/notification_types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using content::NavigationEntry;
-using content::LoadCommittedDetails;
 
 class ChromeRLZTrackerDelegateTest : public testing::Test {
  public:
-  ChromeRLZTrackerDelegateTest() : delegate_(new ChromeRLZTrackerDelegate) {}
+  ChromeRLZTrackerDelegateTest()
+      : delegate_(std::make_unique<ChromeRLZTrackerDelegate>()) {}
   ~ChromeRLZTrackerDelegateTest() override {}
 
-  void SendNotification(int type,
-                        const content::NotificationSource& source,
-                        const content::NotificationDetails& details) {
-    content::NotificationObserver* observer = delegate_.get();
-    observer->Observe(type, source, details);
-  }
+  ChromeRLZTrackerDelegate* delegate() { return delegate_.get(); }
+
+  MOCK_METHOD0(TestCallback, void(void));
 
  private:
-  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ChromeRLZTrackerDelegate> delegate_;
 };
 
-TEST_F(ChromeRLZTrackerDelegateTest, ObserveHandlesBadArgs) {
-  std::unique_ptr<content::LoadCommittedDetails> details(
-      new content::LoadCommittedDetails());
-  std::unique_ptr<content::NavigationEntry> entry(
-      content::NavigationEntry::Create());
-  details->entry = entry.get();
-  details->entry->SetTransitionType(ui::PAGE_TRANSITION_LINK);
-  SendNotification(content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-                   content::NotificationService::AllSources(),
-                   content::Details<NavigationEntry>(nullptr));
-  SendNotification(content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-                   content::NotificationService::AllSources(),
-                   content::Details<LoadCommittedDetails>(details.get()));
+TEST_F(ChromeRLZTrackerDelegateTest, HomepageSearchCallback) {
+  // The callback is not run if it is not set.
+  EXPECT_CALL(*this, TestCallback()).Times(0);
+  delegate()->RunHomepageSearchCallback();
+
+  // Sets the callback and runs it.
+  delegate()->SetHomepageSearchCallback(base::BindOnce(
+      &ChromeRLZTrackerDelegateTest::TestCallback, base::Unretained(this)));
+  EXPECT_CALL(*this, TestCallback());
+  delegate()->RunHomepageSearchCallback();
+
+  // The callback should be cleared and will not run again.
+  EXPECT_CALL(*this, TestCallback()).Times(0);
+  delegate()->RunHomepageSearchCallback();
 }
