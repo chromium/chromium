@@ -28,11 +28,6 @@
                 "optional": true,
                 "type": "array",
                 "items": { "type": "string" }
-              },
-              "interact": {
-                "description": "Whether the extension is allowed interactive access (true) or read-only access (false; default) to the automation tree.",
-                "optional": true,
-                "type": "boolean"
               }
             }
           }

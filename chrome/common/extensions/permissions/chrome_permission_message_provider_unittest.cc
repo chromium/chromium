@@ -241,22 +241,6 @@ TEST_F(ChromePermissionMessageProviderUnittest, PowerfulPermissions) {
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_FULL_ACCESS),
         messages[1].message());
   }
-  {
-    scoped_refptr<Extension> extension = ManifestTest::LoadAndExpectSuccess(
-        "automation_all_hosts_interact_true.json");
-    ASSERT_TRUE(extension.get());
-    ManifestPermissionSet manifest_permissions = extension->permissions_data()
-                                                     ->active_permissions()
-                                                     .manifest_permissions()
-                                                     .Clone();
-    APIPermissionSet permissions;
-    permissions.insert(APIPermissionID::kTab);
-    PermissionMessages messages = GetManagementUIPermissionIDs(
-        permissions, manifest_permissions, Manifest::TYPE_EXTENSION);
-    ASSERT_EQ(1U, messages.size());
-    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_ALL_HOSTS),
-              messages.front().message());
-  }
 }
 
 // Checks that granted hosts that may cause API permission messages are

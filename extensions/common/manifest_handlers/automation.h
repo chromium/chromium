@@ -24,7 +24,6 @@ class AutomationManifestPermission;
 
 namespace automation_errors {
 extern const char kErrorInvalidMatchPattern[];
-extern const char kErrorDesktopTrueInteractFalse[];
 extern const char kErrorDesktopTrueMatchesSpecified[];
 extern const char kErrorURLMalformed[];
 extern const char kErrorInvalidMatch[];
@@ -54,13 +53,9 @@ struct AutomationInfo : public Extension::ManifestData {
   // tree from.
   const URLPatternSet matches;
 
-  // Whether the extension is allowed interactive access (true) or read-only
-  // access (false) to the automation tree.
-  const bool interact;
-
  private:
   AutomationInfo();
-  AutomationInfo(bool desktop, const URLPatternSet& matches, bool interact);
+  AutomationInfo(bool desktop, const URLPatternSet& matches);
 
   static std::unique_ptr<api::extensions_manifest_types::Automation>
   AsManifestType(const AutomationInfo& info);

@@ -64,24 +64,6 @@ TEST_F(AutomationManifestTest, AsBooleanTrue) {
   ASSERT_TRUE(info);
 
   EXPECT_FALSE(info->desktop);
-  EXPECT_FALSE(info->interact);
-  EXPECT_TRUE(info->matches.is_empty());
-}
-
-TEST_F(AutomationManifestTest, InteractTrue) {
-  scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("automation_interact_true.json");
-  ASSERT_TRUE(extension.get());
-
-  EXPECT_TRUE(VerifyOnePermissionMessage(
-      extension->permissions_data(),
-      "Read and change your data on www.google.com"));
-
-  const AutomationInfo* info = AutomationInfo::Get(extension.get());
-  ASSERT_TRUE(info);
-
-  EXPECT_FALSE(info->desktop);
-  EXPECT_TRUE(info->interact);
   EXPECT_TRUE(info->matches.is_empty());
 }
 
@@ -102,7 +84,6 @@ TEST_F(AutomationManifestTest, Matches) {
   ASSERT_TRUE(info);
 
   EXPECT_FALSE(info->desktop);
-  EXPECT_FALSE(info->interact);
   EXPECT_FALSE(info->matches.is_empty());
 
   EXPECT_TRUE(info->matches.MatchesURL(GURL("http://www.google.com/")));
@@ -128,7 +109,6 @@ TEST_F(AutomationManifestTest, MatchesAndPermissions) {
   ASSERT_TRUE(info);
 
   EXPECT_FALSE(info->desktop);
-  EXPECT_FALSE(info->interact);
   EXPECT_FALSE(info->matches.is_empty());
 
   EXPECT_TRUE(info->matches.MatchesURL(GURL("http://www.twitter.com/")));
@@ -147,7 +127,6 @@ TEST_F(AutomationManifestTest, EmptyMatches) {
   ASSERT_TRUE(info);
 
   EXPECT_FALSE(info->desktop);
-  EXPECT_FALSE(info->interact);
   EXPECT_TRUE(info->matches.is_empty());
 }
 
@@ -172,7 +151,6 @@ TEST_F(AutomationManifestTest, NoValidMatches) {
   ASSERT_TRUE(info);
 
   EXPECT_FALSE(info->desktop);
-  EXPECT_FALSE(info->interact);
   EXPECT_TRUE(info->matches.is_empty());
 }
 
@@ -189,7 +167,6 @@ TEST_F(AutomationManifestTest, DesktopFalse) {
   ASSERT_TRUE(info);
 
   EXPECT_FALSE(info->desktop);
-  EXPECT_FALSE(info->interact);
   EXPECT_TRUE(info->matches.is_empty());
 }
 
@@ -206,44 +183,9 @@ TEST_F(AutomationManifestTest, DesktopTrue) {
   ASSERT_TRUE(info);
 
   EXPECT_TRUE(info->desktop);
-  EXPECT_TRUE(info->interact);
   EXPECT_TRUE(info->matches.is_empty());
 }
 
-TEST_F(AutomationManifestTest, Desktop_InteractTrue) {
-  scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("automation_desktop_interact_true.json");
-  ASSERT_TRUE(extension.get());
-
-  EXPECT_TRUE(VerifyOnePermissionMessage(
-      extension->permissions_data(),
-      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_FULL_ACCESS)));
-
-  const AutomationInfo* info = AutomationInfo::Get(extension.get());
-  ASSERT_TRUE(info);
-
-  EXPECT_TRUE(info->desktop);
-  EXPECT_TRUE(info->interact);
-  EXPECT_TRUE(info->matches.is_empty());
-}
-
-TEST_F(AutomationManifestTest, Desktop_InteractFalse) {
-  scoped_refptr<Extension> extension =
-      LoadAndExpectWarning("automation_desktop_interact_false.json",
-                           automation_errors::kErrorDesktopTrueInteractFalse);
-  ASSERT_TRUE(extension.get());
-
-  EXPECT_TRUE(VerifyOnePermissionMessage(
-      extension->permissions_data(),
-      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_FULL_ACCESS)));
-
-  const AutomationInfo* info = AutomationInfo::Get(extension.get());
-  ASSERT_TRUE(info);
-
-  EXPECT_TRUE(info->desktop);
-  EXPECT_TRUE(info->interact);
-  EXPECT_TRUE(info->matches.is_empty());
-}
 
 TEST_F(AutomationManifestTest, Desktop_MatchesSpecified) {
   scoped_refptr<Extension> extension = LoadAndExpectWarning(
@@ -259,44 +201,6 @@ TEST_F(AutomationManifestTest, Desktop_MatchesSpecified) {
   ASSERT_TRUE(info);
 
   EXPECT_TRUE(info->desktop);
-  EXPECT_TRUE(info->interact);
   EXPECT_TRUE(info->matches.is_empty());
-}
-
-TEST_F(AutomationManifestTest, AllHostsInteractFalse) {
-  scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("automation_all_hosts_interact_false.json");
-  ASSERT_TRUE(extension.get());
-
-  EXPECT_TRUE(VerifyOnePermissionMessage(
-      extension->permissions_data(),
-      l10n_util::GetStringUTF16(
-          IDS_EXTENSION_PROMPT_WARNING_ALL_HOSTS_READ_ONLY)));
-
-  const AutomationInfo* info = AutomationInfo::Get(extension.get());
-  ASSERT_TRUE(info);
-
-  EXPECT_FALSE(info->desktop);
-  EXPECT_FALSE(info->interact);
-  EXPECT_FALSE(info->matches.is_empty());
-  EXPECT_TRUE(info->matches.MatchesAllURLs());
-}
-
-TEST_F(AutomationManifestTest, AllHostsInteractTrue) {
-  scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("automation_all_hosts_interact_true.json");
-  ASSERT_TRUE(extension.get());
-
-  EXPECT_TRUE(VerifyOnePermissionMessage(
-      extension->permissions_data(),
-      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_ALL_HOSTS)));
-
-  const AutomationInfo* info = AutomationInfo::Get(extension.get());
-  ASSERT_TRUE(info);
-
-  EXPECT_FALSE(info->desktop);
-  EXPECT_TRUE(info->interact);
-  EXPECT_FALSE(info->matches.is_empty());
-  EXPECT_TRUE(info->matches.MatchesAllURLs());
 }
 }  // namespace extensions
