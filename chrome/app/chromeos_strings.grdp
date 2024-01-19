@@ -7063,6 +7063,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OFFICE_FALLBACK_OPEN_WITH_OFFLINE_EDITOR" desc="Label for the button that uses the offline editor fallback to open the office file.">
     Open in offline editor
   </message>
+
   <message name="IDS_OFFICE_FALLBACK_TITLE_OFFLINE" desc="Title for a dialog that appears when an office file is unable to be opened due to the system being offline.">
     Can't open <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph> when offline
   </message>
@@ -7070,6 +7071,15 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     The application <ph name="APPLICATION_NAME">$1<ex>Google Docs</ex></ph> isn’t available offline.
   </message>
   <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_OFFLINE" desc="Office Fallback dialog instructions for the choices (and buttons) the user has available to open the office file when the system is offline.">
+    Check your internet connection and choose "Try again", or choose "Open in offline editor" to use limited view and editing options.
+  </message>
+  <message name="IDS_OFFICE_FALLBACK_TITLE_METERED" desc="Title for a dialog that appears when an office file is unable to be uploaded to Google Drive due to the system being on a metered network (network where bandwidth usage incurs cost to the user).">
+    Can't open <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph> while on a metered connection
+  </message>
+  <message name="IDS_OFFICE_FALLBACK_REASON_METERED" desc="Explanation for a dialog that appears when an office file is unable to be uploaded to Google Drive due to the system being on a metered network (network where bandwidth usage incurs cost to the user).">
+    Can't upload files while on a metered connection.
+  </message>
+  <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_METERED" desc="Office Fallback dialog instructions for the choices (and buttons) the user has available to open the office file when the system is on a metered network (network where bandwidth usage incurs cost to the user).">
     Check your internet connection and choose "Try again", or choose "Open in offline editor" to use limited view and editing options.
   </message>
   <message name="IDS_OFFICE_FALLBACK_TITLE_DRIVE_UNAVAILABLE" desc="Title for a dialog that appears when an office file is unable to be opened due to Google Drive not being available.">

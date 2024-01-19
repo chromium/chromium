@@ -26,6 +26,7 @@ const int kWidth = 512;
 // inspector tool.
 const int kOfflineHeight = 264;
 const int kDriveUnavailableHeight = 244;
+const int kMeteredHeight = 264;
 
 // Return the task title id for the task represented by the `action_id`.
 int GetTaskTitleId(const std::string& action_id) {
@@ -70,12 +71,17 @@ void GetDialogTextIdsAndSize(
     case ash::office_fallback::FallbackReason::kNoDriveService:
     case ash::office_fallback::FallbackReason::kDriveAuthenticationNotReady:
     case ash::office_fallback::FallbackReason::kDriveFsInterfaceError:
-    case ash::office_fallback::FallbackReason::kMeteredConnection:
       title_id = IDS_OFFICE_FALLBACK_TITLE_DRIVE_UNAVAILABLE;
       reason_message_id = IDS_OFFICE_FALLBACK_REASON_DRIVE_UNAVAILABLE;
       instructions_message_id =
           IDS_OFFICE_FALLBACK_INSTRUCTIONS_DRIVE_UNAVAILABLE;
       height = kDriveUnavailableHeight;
+      break;
+    case ash::office_fallback::FallbackReason::kMeteredConnection:
+      title_id = IDS_OFFICE_FALLBACK_TITLE_METERED;
+      reason_message_id = IDS_OFFICE_FALLBACK_REASON_METERED;
+      instructions_message_id = IDS_OFFICE_FALLBACK_INSTRUCTIONS_METERED;
+      height = kMeteredHeight;
       break;
   }
 }
@@ -134,7 +140,10 @@ bool OfficeFallbackDialog::Show(
   // IDS_OFFICE_FALLBACK_TITLE_WEB_DRIVE_UNAVAILABLE.
   const std::string title_text = l10n_util::GetStringFUTF8(title_id, file_name);
   const std::string reason_message =
-      l10n_util::GetStringFUTF8(reason_message_id, task_title);
+      fallback_reason ==
+              ash::office_fallback::FallbackReason::kMeteredConnection
+          ? l10n_util::GetStringUTF8(reason_message_id)
+          : l10n_util::GetStringFUTF8(reason_message_id, task_title);
   const std::string instructions_message =
       l10n_util::GetStringUTF8(instructions_message_id);
 
