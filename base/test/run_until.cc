@@ -6,8 +6,8 @@
 
 #include <functional>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/task/current_thread.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_future.h"
@@ -15,23 +15,22 @@
 
 namespace base::test {
 
-namespace {
-
 void TestPredicateOrRegisterOnNextIdleCallback(
     base::FunctionRef<bool(void)> condition,
+    CallbackListSubscription* on_idle_callback_subscription,
     OnceClosure ready_callback) {
   if (condition()) {
     // Invoke `ready_callback` if `condition` evaluates to true.
     std::move(ready_callback).Run();
   } else {
     // Otherwise try again the next time the thread is idle.
-    CurrentThread::Get().RegisterOnNextIdleCallback(
-        BindOnce(TestPredicateOrRegisterOnNextIdleCallback, condition,
-                 std::move(ready_callback)));
+    *on_idle_callback_subscription =
+        CurrentThread::Get().RegisterOnNextIdleCallback(
+            {},
+            BindOnce(TestPredicateOrRegisterOnNextIdleCallback, condition,
+                     on_idle_callback_subscription, std::move(ready_callback)));
   }
 }
-
-}  // namespace
 
 bool RunUntil(base::FunctionRef<bool(void)> condition) {
   CHECK(!subtle::ScopedTimeClockOverrides::overrides_active())
@@ -43,9 +42,12 @@ bool RunUntil(base::FunctionRef<bool(void)> condition) {
 
   test::TestFuture<void> ready_signal;
 
-  CurrentThread::Get().RegisterOnNextIdleCallback(
-      BindOnce(TestPredicateOrRegisterOnNextIdleCallback, condition,
-               ready_signal.GetCallback()));
+  CallbackListSubscription on_idle_callback_subscription;
+  on_idle_callback_subscription =
+      CurrentThread::Get().RegisterOnNextIdleCallback(
+          {},
+          BindOnce(TestPredicateOrRegisterOnNextIdleCallback, condition,
+                   &on_idle_callback_subscription, ready_signal.GetCallback()));
 
   return ready_signal.Wait();
 }
