@@ -736,4 +736,19 @@ TEST_F(DevicePolicyDecoderTest, DeviceLoginScreenTouchVirtualKeyboardPolicy) {
                                base::Value(true));
 }
 
+TEST_F(DevicePolicyDecoderTest, DeviceExtendedAutoUpdateEnabled) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kDeviceExtendedAutoUpdateEnabled);
+
+  base::Value deviceextendedautoupdateenabled(true);
+  device_policy.mutable_deviceextendedautoupdateenabled()->set_value(
+      deviceextendedautoupdateenabled.GetBool());
+
+  DecodeDevicePolicyTestHelper(device_policy,
+                               key::kDeviceExtendedAutoUpdateEnabled,
+                               std::move(deviceextendedautoupdateenabled));
+}
+
 }  // namespace policy

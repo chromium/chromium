@@ -2061,4 +2061,5 @@ message ChromeDeviceSettingsProto {
   optional BooleanPolicyProto DeviceHardwareVideoDecodingEnabled = 1185;
   optional BooleanPolicyProto DeviceLoginScreenTouchVirtualKeyboardEnabled =
       1194;
+  optional BooleanPolicyProto DeviceExtendedAutoUpdateEnabled = 1195;
 }

@@ -1,0 +1,40 @@
+owners:
+- artyomchen@chromium.org
+- chromeos-commercial-remote-management@google.com
+
+caption: Enable/disable Extended Automatic Updates
+
+desc: |-
+  If the policy is true, devices will opt in to Extended Automatic Updates.
+
+  If the policy is set to false or unset, devices will stop receiving updates
+  after Auto Update Expiration.
+
+  Extended Automatic Updates and Auto Updates are documented at
+  https://support.google.com/chrome/a?p=auto-update-policy.
+
+future_on:
+- chrome_os
+
+device_only: true
+
+features:
+  dynamic_refresh: true
+  per_profile: false
+
+type: main
+
+schema:
+  type: boolean
+
+items:
+- caption: Opt in to Extended Automatic Updates
+  value: true
+- caption: Do not opt in to Extended Automatic Updates
+  value: false
+
+default: false
+
+example_value: true
+
+tags: []

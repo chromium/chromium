@@ -1193,6 +1193,7 @@ policies:
   1192: CADistrustedCertificates
   1193: CAHintCertificates
   1194: DeviceLoginScreenTouchVirtualKeyboardEnabled
+  1195: DeviceExtendedAutoUpdateEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess
