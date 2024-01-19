@@ -12,8 +12,8 @@
 
 namespace omnibox_feature_configs {
 
-constexpr auto enabled_by_default_desktop_ios =
-#if BUILDFLAG(IS_ANDROID)
+constexpr auto enabled_by_default_desktop_only =
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     base::FEATURE_DISABLED_BY_DEFAULT;
 #else
     base::FEATURE_ENABLED_BY_DEFAULT;
@@ -24,7 +24,7 @@ constexpr auto enabled_by_default_desktop_ios =
 // static
 BASE_FEATURE(CalcProvider::kCalcProvider,
              "OmniboxCalcProvider",
-             enabled_by_default_desktop_ios);
+             enabled_by_default_desktop_only);
 CalcProvider::CalcProvider() {
   enabled = base::FeatureList::IsEnabled(kCalcProvider);
   score =
