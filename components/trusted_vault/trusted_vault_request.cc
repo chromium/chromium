@@ -94,6 +94,8 @@ std::string GetHttpMethodString(TrustedVaultRequest::HttpMethod http_method) {
       return "GET";
     case TrustedVaultRequest::HttpMethod::kPost:
       return "POST";
+    case TrustedVaultRequest::HttpMethod::kPatch:
+      return "PATCH";
   }
   NOTREACHED();
   return std::string();
@@ -136,6 +138,7 @@ TrustedVaultRequest::TrustedVaultRequest(
       backoff_entry_(&kRetryPolicy) {
   DCHECK(url_loader_factory_);
   DCHECK(http_method == HttpMethod::kPost ||
+         http_method == HttpMethod::kPatch ||
          !serialized_request_proto.has_value());
   DCHECK(access_token_fetcher_);
 }

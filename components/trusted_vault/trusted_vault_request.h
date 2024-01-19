@@ -53,16 +53,16 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
     kOtherError
   };
 
-  enum class HttpMethod { kGet, kPost };
+  enum class HttpMethod { kGet, kPost, kPatch };
 
   using CompletionCallback =
       base::OnceCallback<void(HttpStatus status,
                               const std::string& response_body)>;
 
   // |callback| will be run upon completion and it's allowed to delete this
-  // object upon |callback| call. For GET requests, |serialized_request_proto|
-  // must be null. For |POST| requests, it can be either way (optional payload).
-  // |url_loader_factory| must not be null.
+  // object upon |callback| call. For |GET| requests, |serialized_request_proto|
+  // must be null. For |POST| and |PATCH| requests, it can be either way
+  // (optional payload). |url_loader_factory| must not be null.
   // |max_retry_duration| specifies for how long the request can be retried in
   // case of transient errors. There will be no retries when it is set to zero.
   TrustedVaultRequest(

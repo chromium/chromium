@@ -18,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/trusted_vault/test/fake_trusted_vault_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -60,28 +61,6 @@ signin::AccessTokenInfo MakeAccessTokenInfo(const std::string& access_token) {
       /*expiration_time_param=*/base::Time::Now() + base::Hours(1),
       /*id_token=*/std::string());
 }
-
-class FakeTrustedVaultAccessTokenFetcher
-    : public TrustedVaultAccessTokenFetcher {
- public:
-  explicit FakeTrustedVaultAccessTokenFetcher(
-      const AccessTokenInfoOrError& access_token_info_or_error)
-      : access_token_info_or_error_(access_token_info_or_error) {}
-  ~FakeTrustedVaultAccessTokenFetcher() override = default;
-
-  void FetchAccessToken(const CoreAccountId& account_id,
-                        TokenCallback callback) override {
-    std::move(callback).Run(access_token_info_or_error_);
-  }
-
-  std::unique_ptr<TrustedVaultAccessTokenFetcher> Clone() override {
-    NOTIMPLEMENTED();
-    return nullptr;
-  }
-
- private:
-  const AccessTokenInfoOrError access_token_info_or_error_;
-};
 
 class TrustedVaultRequestTest : public testing::Test {
  public:
@@ -216,6 +195,31 @@ TEST_F(TrustedVaultRequestTest,
 
   const network::ResourceRequest& resource_request = pending_request->request;
   EXPECT_THAT(resource_request.method, Eq("POST"));
+  EXPECT_THAT(resource_request.url,
+              Eq(GURL(kRequestUrlWithAlternateOutputProto)));
+  EXPECT_THAT(network::GetUploadData(resource_request), IsEmpty());
+
+  // |completion_callback| should be called after receiving response.
+  EXPECT_CALL(
+      completion_callback,
+      Run(TrustedVaultRequest::HttpStatus::kSuccess, Eq(kResponseBody)));
+  EXPECT_TRUE(RespondToHttpRequest(net::OK, net::HTTP_OK, kResponseBody));
+}
+
+TEST_F(TrustedVaultRequestTest,
+       ShouldSendPatchRequestWithoutPayloadAndHandleSuccess) {
+  base::MockCallback<TrustedVaultRequest::CompletionCallback>
+      completion_callback;
+  std::unique_ptr<TrustedVaultRequest> request = StartNewRequestWithAccessToken(
+      kAccessToken, TrustedVaultRequest::HttpMethod::kPatch,
+      /*request_body=*/absl::nullopt, completion_callback.Get());
+
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      GetPendingRequest();
+  EXPECT_THAT(pending_request, Pointee(HasValidAccessToken()));
+
+  const network::ResourceRequest& resource_request = pending_request->request;
+  EXPECT_THAT(resource_request.method, Eq("PATCH"));
   EXPECT_THAT(resource_request.url,
               Eq(GURL(kRequestUrlWithAlternateOutputProto)));
   EXPECT_THAT(network::GetUploadData(resource_request), IsEmpty());

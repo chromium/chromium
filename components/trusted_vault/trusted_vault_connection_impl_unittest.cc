@@ -21,6 +21,7 @@
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
+#include "components/trusted_vault/test/fake_trusted_vault_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_crypto.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
@@ -126,28 +127,6 @@ signin::AccessTokenInfo MakeAccessTokenInfo(const std::string& access_token) {
       /*expiration_time_param=*/base::Time::Now() + base::Hours(1),
       /*id_token=*/std::string());
 }
-
-class FakeTrustedVaultAccessTokenFetcher
-    : public TrustedVaultAccessTokenFetcher {
- public:
-  explicit FakeTrustedVaultAccessTokenFetcher(
-      const AccessTokenInfoOrError& access_token_info_or_error)
-      : access_token_info_or_error_(access_token_info_or_error) {}
-  ~FakeTrustedVaultAccessTokenFetcher() override = default;
-
-  void FetchAccessToken(const CoreAccountId& account_id,
-                        TokenCallback callback) override {
-    std::move(callback).Run(access_token_info_or_error_);
-  }
-
-  std::unique_ptr<TrustedVaultAccessTokenFetcher> Clone() override {
-    return std::make_unique<FakeTrustedVaultAccessTokenFetcher>(
-        access_token_info_or_error_);
-  }
-
- private:
-  const AccessTokenInfoOrError access_token_info_or_error_;
-};
 
 // TODO(crbug.com/1113598): revisit this tests suite and determine what actually
 // should be tested on the Connection level and what should be done on lower
