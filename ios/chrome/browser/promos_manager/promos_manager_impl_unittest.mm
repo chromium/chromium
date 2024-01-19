@@ -34,12 +34,6 @@ using PromoContext = PromosManagerImpl::PromoContext;
 
 namespace {
 
-// The number of days since the Unix epoch; one day, in this context, runs
-// from UTC midnight to UTC midnight.
-int TodaysDay() {
-  return (base::Time::Now() - base::Time::UnixEpoch()).InDays();
-}
-
 const base::TimeDelta kTimeDelta1Day = base::Days(1);
 const base::TimeDelta kTimeDelta1Hour = base::Hours(1);
 
@@ -75,9 +69,6 @@ class PromosManagerImplTest : public PlatformTest {
 
   // Create pref registry for tests.
   void CreatePrefs();
-
-  // Set promo specific impression limits.
-  void SetPromoLimits();
 
   base::SimpleTestClock test_clock_;
 
@@ -136,41 +127,6 @@ void PromosManagerImplTest::CreatePrefs() {
       prefs::kIosPromosManagerSingleDisplayActivePromos);
   local_state_->registry()->RegisterDictionaryPref(
       prefs::kIosPromosManagerSingleDisplayPendingPromos);
-}
-
-// Set promo specific limits.
-void PromosManagerImplTest::SetPromoLimits() {
-  ImpressionLimit* oncePerYear = [[ImpressionLimit alloc] initWithLimit:1
-                                                             forNumDays:365];
-  ImpressionLimit* twicePerYear = [[ImpressionLimit alloc] initWithLimit:2
-                                                              forNumDays:365];
-  NSArray<ImpressionLimit*>* defaultBrowserLimits = @[
-    twicePerYear,
-  ];
-
-  NSArray<ImpressionLimit*>* credentialProviderLimits = @[
-    oncePerYear,
-  ];
-
-  NSArray<ImpressionLimit*>* appStoreRatingLimits = @[
-    oncePerYear,
-  ];
-
-  NSArray<ImpressionLimit*>* testLimits = @[
-    oncePerYear,
-  ];
-
-  PromoConfigsSet promoImpressionLimits;
-  promoImpressionLimits.emplace(promos_manager::Promo::DefaultBrowser, nullptr,
-                                defaultBrowserLimits);
-  promoImpressionLimits.emplace(
-      promos_manager::Promo::CredentialProviderExtension, nullptr,
-      credentialProviderLimits);
-  promoImpressionLimits.emplace(promos_manager::Promo::AppStoreRating, nullptr,
-                                appStoreRatingLimits);
-  promoImpressionLimits.emplace(promos_manager::Promo::Test, nullptr,
-                                testLimits);
-  promos_manager_->InitializePromoConfigs(std::move(promoImpressionLimits));
 }
 
 // Tests the initializer correctly creates a PromosManagerImpl* with the
@@ -241,250 +197,55 @@ TEST_F(PromosManagerImplTest, CreatesImpressionLimits) {
   EXPECT_EQ(impressionLimits[1].numDays, 31);
 }
 
-// Tests PromosManager::ImpressionCounts() correctly returns a counts list from
-// an impression counts map.
-TEST_F(PromosManagerImplTest, ReturnsImpressionCounts) {
-  std::map<promos_manager::Promo, int> promo_impression_counts = {
-      {promos_manager::Promo::Test, 3},
-      {promos_manager::Promo::AppStoreRating, 1},
-      {promos_manager::Promo::CredentialProviderExtension, 6},
-      {promos_manager::Promo::DefaultBrowser, 5},
-  };
-
-  std::vector<int> counts = {3, 5, 1, 6};
-
-  EXPECT_EQ(promos_manager_->ImpressionCounts(promo_impression_counts), counts);
-}
-
-// Tests PromosManager::ImpressionCounts() correctly returns an empty counts
-// list for an empty impression counts map.
-TEST_F(PromosManagerImplTest, ReturnsEmptyImpressionCounts) {
-  std::map<promos_manager::Promo, int> promo_impression_counts;
-  std::vector<int> counts;
-
-  EXPECT_EQ(promos_manager_->ImpressionCounts(promo_impression_counts), counts);
-}
-
-// Tests PromosManager::TotalImpressionCount() correctly adds the counts of
-// different promos from an impression counts map.
-TEST_F(PromosManagerImplTest, ReturnsTotalImpressionCount) {
-  std::map<promos_manager::Promo, int> promo_impression_counts = {
-      {promos_manager::Promo::Test, 3},
-      {promos_manager::Promo::AppStoreRating, 1},
-      {promos_manager::Promo::CredentialProviderExtension, 6},
-      {promos_manager::Promo::DefaultBrowser, 5},
-
-  };
-
-  EXPECT_EQ(promos_manager_->TotalImpressionCount(promo_impression_counts), 15);
-}
-
-// Tests PromosManager::TotalImpressionCount() returns zero for an empty
-// impression counts map.
-TEST_F(PromosManagerImplTest, ReturnsZeroForTotalImpressionCount) {
-  std::map<promos_manager::Promo, int> promo_impression_counts;
-
-  EXPECT_EQ(promos_manager_->TotalImpressionCount(promo_impression_counts), 0);
-}
-
-// Tests PromosManager::AnyImpressionLimitTriggered() correctly detects an
-// impression limit is triggered.
-TEST_F(PromosManagerImplTest, DetectsSingleImpressionLimitTriggered) {
-  ImpressionLimit* thricePerWeek = [[ImpressionLimit alloc] initWithLimit:3
-                                                               forNumDays:7];
-  NSArray<ImpressionLimit*>* limits = @[
-    thricePerWeek,
-  ];
-
-  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(3, 1, limits), true);
-  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(4, 5, limits), true);
-  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(4, 6, limits), true);
-  // This is technically the 8th day, so it's the start of a new week, and
-  // doesn't hit the limit.
-  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(3, 7, limits), false);
-}
-
-// Tests PromosManager::AnyImpressionLimitTriggered() correctly detects an
-// impression limit is triggered over multiple impression limits.
-TEST_F(PromosManagerImplTest, DetectsOneOfMultipleImpressionLimitsTriggered) {
-  ImpressionLimit* onceEveryTwoDays = [[ImpressionLimit alloc] initWithLimit:1
-                                                                  forNumDays:2];
-  ImpressionLimit* thricePerWeek = [[ImpressionLimit alloc] initWithLimit:3
-                                                               forNumDays:7];
-  NSArray<ImpressionLimit*>* limits = @[
-    thricePerWeek,
-    onceEveryTwoDays,
-  ];
-
-  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(1, 1, limits), true);
-  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(1, 2, limits), false);
-  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(2, 2, limits), false);
-  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(2, 4, limits), false);
-}
-
-// Tests PromosManager::AnyImpressionLimitTriggered() correctly detects no
-// impression limits are triggered.
-TEST_F(PromosManagerImplTest, DetectsNoImpressionLimitTriggered) {
-  ImpressionLimit* onceEveryTwoDays = [[ImpressionLimit alloc] initWithLimit:1
-                                                                  forNumDays:2];
-  ImpressionLimit* thricePerWeek = [[ImpressionLimit alloc] initWithLimit:3
-                                                               forNumDays:7];
-  NSArray<ImpressionLimit*>* limits = @[ onceEveryTwoDays, thricePerWeek ];
-
-  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(1, 1, nil), false);
-  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(0, 3, limits), false);
-  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(1, 5, limits), false);
-  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(2, 5, limits), false);
-}
-
 // Tests PromosManager::CanShowPromo() correctly allows a promo to be shown
 // because it hasn't met any impression limits.
 TEST_F(PromosManagerImplTest, DecidesCanShowPromo) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kPromosManagerUsesFET);
 
   CreatePromosManager();
 
-  const std::vector<promos_manager::Impression> zeroImpressions = {};
-  EXPECT_EQ(promos_manager_->CanShowPromo(promos_manager::Promo::Test,
-                                          zeroImpressions),
-            true);
+  PromoConfigsSet promoConfigs;
+  promoConfigs.emplace(promos_manager::Promo::Test, &kTestFeatureOne);
+  promos_manager_->InitializePromoConfigs(std::move(promoConfigs));
+
+  EXPECT_CALL(mock_tracker_, ShouldTriggerHelpUI(testing::Ref(kTestFeatureOne)))
+      .WillRepeatedly(testing::Return(true));
+
+  EXPECT_EQ(promos_manager_->CanShowPromo(promos_manager::Promo::Test), true);
 }
 
 // Tests PromosManager::CanShowPromo() correctly allows/denies promos based on
 // promo specific limits.
-TEST_F(PromosManagerImplTest, CanShowPromo_TestPromoSpecifLimits) {
+TEST_F(PromosManagerImplTest, CanShowPromo_TestPromoSpecificLimits) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kPromosManagerUsesFET);
 
   CreatePromosManager();
-  SetPromoLimits();
 
-  int today = TodaysDay();
+  PromoConfigsSet promoConfigs;
+  promoConfigs.emplace(promos_manager::Promo::Test, &kTestFeatureOne);
+  promoConfigs.emplace(promos_manager::Promo::AppStoreRating, &kTestFeatureTwo);
+  promoConfigs.emplace(promos_manager::Promo::CredentialProviderExtension,
+                       &kTestFeatureThree);
+  promos_manager_->InitializePromoConfigs(std::move(promoConfigs));
 
-  const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today - 40,
-                                 false),
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 50, false),
-      promos_manager::Impression(promos_manager::Promo::AppStoreRating,
-                                 today - 60, false),
-      promos_manager::Impression(
-          promos_manager::Promo::CredentialProviderExtension, today - 70,
-          false),
-  };
+  // Mock the FET tracker to disallow Test and AppStoreRating due to impression
+  // counting rules, and allow CredentialProviderExtension.
+  EXPECT_CALL(mock_tracker_, ShouldTriggerHelpUI(testing::Ref(kTestFeatureOne)))
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(mock_tracker_, ShouldTriggerHelpUI(testing::Ref(kTestFeatureTwo)))
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(mock_tracker_,
+              ShouldTriggerHelpUI(testing::Ref(kTestFeatureThree)))
+      .WillRepeatedly(testing::Return(true));
 
-  // False because triggers no more than 1 impression per 365 days.
+  EXPECT_EQ(promos_manager_->CanShowPromo(promos_manager::Promo::Test), false);
   EXPECT_EQ(
-      promos_manager_->CanShowPromo(promos_manager::Promo::Test, impressions),
-      false);
-  EXPECT_EQ(promos_manager_->CanShowPromo(promos_manager::Promo::AppStoreRating,
-                                          impressions),
-            false);
-  EXPECT_EQ(
-      promos_manager_->CanShowPromo(
-          promos_manager::Promo::CredentialProviderExtension, impressions),
+      promos_manager_->CanShowPromo(promos_manager::Promo::AppStoreRating),
       false);
 
-  // True because `DefaultBrowser` can be shown more than 1 time per 365 days.
-  EXPECT_EQ(promos_manager_->CanShowPromo(promos_manager::Promo::DefaultBrowser,
-                                          impressions),
+  EXPECT_EQ(promos_manager_->CanShowPromo(
+                promos_manager::Promo::CredentialProviderExtension),
             true);
-}
-
-// Tests PromosManager::CanShowPromo() correctly allows/denies promos based on
-// global per promo impression limits.
-TEST_F(PromosManagerImplTest, CanShowPromo_TestGlobalPerPromoImpressionLimits) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kPromosManagerUsesFET);
-
-  CreatePromosManager();
-  SetPromoLimits();
-
-  int today = TodaysDay();
-
-  const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 29, false),
-  };
-
-  // True because this promo is requested first time and global impression
-  // limits(3 promo a week, 1 promo every 2 days) are not triggered.
-  EXPECT_EQ(promos_manager_->CanShowPromo(promos_manager::Promo::AppStoreRating,
-                                          impressions),
-            true);
-  // False because global per promo limits are triggered (given promo is
-  // displayed 1 in 30 days)
-  EXPECT_EQ(promos_manager_->CanShowPromo(promos_manager::Promo::DefaultBrowser,
-                                          impressions),
-            false);
-}
-
-// Tests PromosManager::CanShowPromo() correctly allows/denies promos based on
-// global impression limits.
-TEST_F(PromosManagerImplTest, CanShowPromo_TestGlobalImpressionLimits) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kPromosManagerUsesFET);
-
-  CreatePromosManager();
-  SetPromoLimits();
-
-  int today = TodaysDay();
-  {
-    const std::vector<promos_manager::Impression> impressions = {
-        promos_manager::Impression(promos_manager::Promo::Test, today - 1,
-                                   false),
-    };
-
-    // False because only 1 promo per 2 days is allowed.
-    EXPECT_EQ(promos_manager_->CanShowPromo(
-                  promos_manager::Promo::AppStoreRating, impressions),
-              false);
-  }
-
-  {
-    const std::vector<promos_manager::Impression> impressions = {
-        promos_manager::Impression(promos_manager::Promo::Test, today - 2,
-                                   false),
-    };
-
-    // True because 1 promo per 2 days limit is not triggered.
-    EXPECT_EQ(promos_manager_->CanShowPromo(
-                  promos_manager::Promo::AppStoreRating, impressions),
-              true);
-  }
-
-  {
-    const std::vector<promos_manager::Impression> impressions = {
-        promos_manager::Impression(promos_manager::Promo::Test, today - 2,
-                                   false),
-        promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                   today - 4, false),
-        promos_manager::Impression(
-            promos_manager::Promo::CredentialProviderExtension, today - 6,
-            false),
-    };
-
-    // False because cannot show more than 3 promos in 7 days
-    EXPECT_EQ(promos_manager_->CanShowPromo(
-                  promos_manager::Promo::AppStoreRating, impressions),
-              false);
-  }
-
-  {
-    const std::vector<promos_manager::Impression> impressions = {
-        promos_manager::Impression(promos_manager::Promo::Test, today - 2,
-                                   false),
-        promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                   today - 4, false),
-    };
-
-    // True because 1 promo per 2 days and 3 promo a week limits are not
-    // triggered.
-    EXPECT_EQ(promos_manager_->CanShowPromo(
-                  promos_manager::Promo::AppStoreRating, impressions),
-              true);
-  }
 }
 
 // Tests PromosManager::SortPromos() correctly returns a list of active
@@ -568,24 +329,10 @@ TEST_F(PromosManagerImplTest, ReturnsSortPromosWithOnlyOnePromoActive) {
       {promos_manager::Promo::Test, kPromoContextForActive},
   };
 
-  int today = TodaysDay();
-
-  const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today, false),
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7, false),
-      promos_manager::Impression(promos_manager::Promo::AppStoreRating,
-                                 today - 14, false),
-      promos_manager::Impression(
-          promos_manager::Promo::CredentialProviderExtension, today - 180,
-          false),
-  };
-
   const std::vector<promos_manager::Promo> expected = {
       promos_manager::Promo::Test,
   };
 
-  promos_manager_->impression_history_ = impressions;
   EXPECT_EQ(promos_manager_->SortPromos(active_promos), expected);
 }
 
@@ -595,22 +342,8 @@ TEST_F(PromosManagerImplTest,
   CreatePromosManager();
   const std::map<promos_manager::Promo, PromoContext> active_promos;
 
-  int today = TodaysDay();
-
-  const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today, false),
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7, false),
-      promos_manager::Impression(promos_manager::Promo::AppStoreRating,
-                                 today - 14, false),
-      promos_manager::Impression(
-          promos_manager::Promo::CredentialProviderExtension, today - 180,
-          false),
-  };
-
   const std::vector<promos_manager::Promo> expected;
 
-  promos_manager_->impression_history_ = impressions;
   EXPECT_EQ(promos_manager_->SortPromos(active_promos), expected);
 }
 
@@ -621,10 +354,8 @@ TEST_F(PromosManagerImplTest,
   CreatePromosManager();
   const std::map<promos_manager::Promo, PromoContext> active_promos;
 
-  const std::vector<promos_manager::Impression> impressions;
   const std::vector<promos_manager::Promo> expected;
 
-  promos_manager_->impression_history_ = impressions;
   EXPECT_EQ(promos_manager_->SortPromos(active_promos), expected);
 }
 
@@ -680,20 +411,6 @@ TEST_F(PromosManagerImplTest, SortsPromosPreferCertainTypes) {
       {promos_manager::Promo::PostRestoreSignInAlert, PromoContext{false}},
   };
 
-  int today = TodaysDay();
-
-  const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(
-          promos_manager::Promo::PostRestoreSignInFullscreen, today - 1, false),
-      promos_manager::Impression(promos_manager::Promo::PostRestoreSignInAlert,
-                                 today - 2, false),
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7, false),
-
-      promos_manager::Impression(promos_manager::Promo::Test, today - 8, false),
-  };
-
-  promos_manager_->impression_history_ = impressions;
   std::vector<promos_manager::Promo> sorted =
       promos_manager_->SortPromos(active_promos);
   EXPECT_EQ(sorted.size(), (size_t)4);
@@ -715,17 +432,6 @@ TEST_F(PromosManagerImplTest, SortsPromosPreferPendingToNonPending) {
       {promos_manager::Promo::AppStoreRating, PromoContext{true}},
   };
 
-  int today = TodaysDay();
-
-  const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today - 1, false),
-      promos_manager::Impression(promos_manager::Promo::AppStoreRating,
-                                 today - 2, false),
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7, false),
-  };
-
-  promos_manager_->impression_history_ = impressions;
   std::vector<promos_manager::Promo> sorted =
       promos_manager_->SortPromos(active_promos);
   EXPECT_EQ(sorted.size(), (size_t)3);
@@ -734,92 +440,6 @@ TEST_F(PromosManagerImplTest, SortsPromosPreferPendingToNonPending) {
               sorted[0] == promos_manager::Promo::AppStoreRating);
   // The one without pending state is at the end.
   EXPECT_EQ(sorted[2], promos_manager::Promo::DefaultBrowser);
-}
-
-// Tests PromosManager::ImpressionHistory() correctly ingests impression history
-// (base::Value::List) and returns corresponding
-// std::vector<promos_manager::Impression>.
-TEST_F(PromosManagerImplTest, ReturnsImpressionHistory) {
-  int today = TodaysDay();
-
-  base::Value::Dict first_impression;
-  first_impression.Set(
-      promos_manager::kImpressionPromoKey,
-      promos_manager::NameForPromo(promos_manager::Promo::DefaultBrowser));
-  first_impression.Set(promos_manager::kImpressionDayKey, today);
-
-  base::Value::Dict second_impression;
-  second_impression.Set(
-      promos_manager::kImpressionPromoKey,
-      promos_manager::NameForPromo(promos_manager::Promo::AppStoreRating));
-  second_impression.Set(promos_manager::kImpressionDayKey, today - 7);
-
-  base::Value::List impressions;
-  impressions.Append(first_impression.Clone());
-  impressions.Append(second_impression.Clone());
-
-  std::vector<promos_manager::Impression> expected = {
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser, today,
-                                 false),
-      promos_manager::Impression(promos_manager::Promo::AppStoreRating,
-                                 today - 7, false),
-  };
-
-  std::vector<promos_manager::Impression> result =
-      promos_manager_->ImpressionHistory(impressions);
-
-  EXPECT_EQ(expected.size(), result.size());
-  EXPECT_EQ(expected[0].promo, result[0].promo);
-  EXPECT_EQ(expected[0].day, result[0].day);
-  EXPECT_EQ(expected[1].promo, result[1].promo);
-  EXPECT_EQ(expected[1].day, result[1].day);
-}
-
-// Tests PromosManager::ImpressionHistory() correctly ingests empty impression
-// history (base::Value::List) and returns empty
-// std::vector<promos_manager::Impression>.
-TEST_F(PromosManagerImplTest, ReturnsBlankImpressionHistoryForBlankPrefs) {
-  base::Value::List impressions;
-
-  std::vector<promos_manager::Impression> result =
-      promos_manager_->ImpressionHistory(impressions);
-
-  EXPECT_TRUE(result.empty());
-}
-
-// Tests PromosManager::ImpressionHistory() correctly ingests impression history
-// with malformed data (base::Value::List) and returns corresponding
-// std::vector<promos_manager::Impression> without malformed entries.
-TEST_F(PromosManagerImplTest,
-       ReturnsImpressionHistoryBySkippingMalformedEntries) {
-  int today = TodaysDay();
-
-  base::Value::Dict first_impression;
-  first_impression.Set(
-      promos_manager::kImpressionPromoKey,
-      promos_manager::NameForPromo(promos_manager::Promo::DefaultBrowser));
-  first_impression.Set(promos_manager::kImpressionDayKey, today);
-
-  base::Value::Dict second_impression;
-  second_impression.Set("foobar", promos_manager::NameForPromo(
-                                      promos_manager::Promo::AppStoreRating));
-  second_impression.Set(promos_manager::kImpressionDayKey, today - 7);
-
-  base::Value::List impressions;
-  impressions.Append(first_impression.Clone());
-  impressions.Append(second_impression.Clone());
-
-  std::vector<promos_manager::Impression> expected = {
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser, today,
-                                 false),
-  };
-
-  std::vector<promos_manager::Impression> result =
-      promos_manager_->ImpressionHistory(impressions);
-
-  EXPECT_EQ(expected.size(), result.size());
-  EXPECT_EQ(expected[0].promo, result[0].promo);
-  EXPECT_EQ(expected[0].day, result[0].day);
 }
 
 // Tests PromosManager::ActivePromos() correctly ingests active promos
@@ -1329,84 +949,6 @@ TEST_F(PromosManagerImplTest,
             test_clock_.Now() + kTimeDelta1Day * 2);
 }
 
-// Tests PromosManager::InitializePromoImpressionLimits() correctly registers
-// promo-specific impression limits.
-TEST_F(PromosManagerImplTest, RegistersPromoSpecificImpressionLimits) {
-  CreatePromosManager();
-
-  ImpressionLimit* onceEveryTwoDays = [[ImpressionLimit alloc] initWithLimit:1
-                                                                  forNumDays:2];
-  ImpressionLimit* thricePerWeek = [[ImpressionLimit alloc] initWithLimit:3
-                                                               forNumDays:7];
-  NSArray<ImpressionLimit*>* defaultBrowserLimits = @[
-    onceEveryTwoDays,
-  ];
-
-  NSArray<ImpressionLimit*>* credentialProviderLimits = @[
-    thricePerWeek,
-  ];
-
-  PromoConfigsSet promoImpressionLimits;
-  promoImpressionLimits.emplace(promos_manager::Promo::DefaultBrowser, nullptr,
-                                defaultBrowserLimits);
-  promoImpressionLimits.emplace(
-      promos_manager::Promo::CredentialProviderExtension, nullptr,
-      credentialProviderLimits);
-  promos_manager_->InitializePromoConfigs(std::move(promoImpressionLimits));
-
-  EXPECT_EQ(promos_manager_->PromoImpressionLimits(
-                promos_manager::Promo::DefaultBrowser),
-            defaultBrowserLimits);
-  EXPECT_EQ(promos_manager_->PromoImpressionLimits(
-                promos_manager::Promo::CredentialProviderExtension),
-            credentialProviderLimits);
-}
-
-// Tests PromosManager::RecordImpression() correctly records a new impression.
-TEST_F(PromosManagerImplTest, RecordsImpression) {
-  CreatePromosManager();
-  promos_manager_->RecordImpression(promos_manager::Promo::DefaultBrowser);
-
-  EXPECT_EQ(local_state_->GetList(prefs::kIosPromosManagerImpressions).size(),
-            (size_t)1);
-
-  promos_manager_->RecordImpression(
-      promos_manager::Promo::CredentialProviderExtension);
-
-  const auto& impression_history =
-      local_state_->GetList(prefs::kIosPromosManagerImpressions);
-  const base::Value::Dict& first_impression = impression_history[0].GetDict();
-  const base::Value::Dict& second_impression = impression_history[1].GetDict();
-
-  EXPECT_EQ(impression_history.size(), (size_t)2);
-  EXPECT_EQ(*first_impression.FindString(promos_manager::kImpressionPromoKey),
-            "promos_manager::Promo::DefaultBrowser");
-  EXPECT_TRUE(
-      first_impression.FindInt(promos_manager::kImpressionDayKey).has_value());
-  EXPECT_EQ(first_impression.FindInt(promos_manager::kImpressionDayKey).value(),
-            TodaysDay());
-  EXPECT_EQ(*second_impression.FindString(promos_manager::kImpressionPromoKey),
-            "promos_manager::Promo::CredentialProviderExtension");
-  EXPECT_TRUE(
-      second_impression.FindInt(promos_manager::kImpressionDayKey).has_value());
-  EXPECT_EQ(
-      second_impression.FindInt(promos_manager::kImpressionDayKey).value(),
-      TodaysDay());
-}
-
-// Tests PromosManager::RecordImpression() correctly records a new impression
-// and immediately updates impression_history_ to reflect the new state
-TEST_F(PromosManagerImplTest, RecordsImpressionAndImmediatelyUpdateVariables) {
-  CreatePromosManager();
-
-  promos_manager_->RecordImpression(promos_manager::Promo::DefaultBrowser);
-  EXPECT_EQ(promos_manager_->impression_history_.size(), (size_t)1);
-
-  promos_manager_->RecordImpression(
-      promos_manager::Promo::CredentialProviderExtension);
-  EXPECT_EQ(promos_manager_->impression_history_.size(), (size_t)2);
-}
-
 // Tests PromosManager::DeregisterPromo() deregisters a promo, all the entries
 // with the same promo type in the Pref/in-memory variables will be removed,
 // regardless of the context of being single/continuous or active/pending.
@@ -1596,7 +1138,6 @@ TEST_F(PromosManagerImplTest,
 // and takes precedence over other active promos.
 TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kPromosManagerUsesFET);
 
   CreatePromosManager();
 
@@ -1610,12 +1151,24 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
        test_clock_.Now() + kTimeDelta1Day * 2},
   };
 
+  PromoConfigsSet promoConfigs;
+  promoConfigs.emplace(promos_manager::Promo::Test, &kTestFeatureOne);
+  promoConfigs.emplace(promos_manager::Promo::CredentialProviderExtension,
+                       &kTestFeatureTwo);
+  promoConfigs.emplace(promos_manager::Promo::AppStoreRating,
+                       &kTestFeatureThree);
+  promos_manager_->InitializePromoConfigs(std::move(promoConfigs));
+
+  // Mock the FET tracker to allow all promos.
+  EXPECT_CALL(mock_tracker_, ShouldTriggerHelpUI(testing::_))
+      .WillRepeatedly(testing::Return(true));
+
   // Advance to so that the CredentialProviderExtension becomes active.
   test_clock_.Advance(kTimeDelta1Day + kTimeDelta1Hour);
 
   std::optional<promos_manager::Promo> promo =
       promos_manager_->NextPromoForDisplay();
-  EXPECT_TRUE(promo.has_value());
+  ASSERT_TRUE(promo.has_value());
   EXPECT_EQ(promo.value(), promos_manager::Promo::CredentialProviderExtension);
 }
 
@@ -1625,7 +1178,6 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
 TEST_F(PromosManagerImplTest,
        NextPromoForDisplayReturnsActivePromoOfPrioritizedType) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kPromosManagerUsesFET);
 
   CreatePromosManager();
 
@@ -1637,13 +1189,24 @@ TEST_F(PromosManagerImplTest,
        test_clock_.Now() + kTimeDelta1Day},
   };
 
+  PromoConfigsSet promoConfigs;
+  promoConfigs.emplace(promos_manager::Promo::PostRestoreSignInFullscreen,
+                       &kTestFeatureOne);
+  promoConfigs.emplace(promos_manager::Promo::CredentialProviderExtension,
+                       &kTestFeatureTwo);
+  promos_manager_->InitializePromoConfigs(std::move(promoConfigs));
+
+  // Mock the FET tracker to allow all promos.
+  EXPECT_CALL(mock_tracker_, ShouldTriggerHelpUI(testing::_))
+      .WillRepeatedly(testing::Return(true));
+
   // Advance to so that the CredentialProviderExtension becomes active.
   test_clock_.Advance(kTimeDelta1Day + kTimeDelta1Hour);
 
   std::optional<promos_manager::Promo> promo =
       promos_manager_->NextPromoForDisplay();
 
-  EXPECT_TRUE(promo.has_value());
+  ASSERT_TRUE(promo.has_value());
   EXPECT_EQ(promo.value(), promos_manager::Promo::PostRestoreSignInFullscreen);
 }
 
@@ -1661,36 +1224,6 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsEmpty) {
 
   // Advance to so that the none of the pending promo can become active.
   test_clock_.Advance(kTimeDelta1Hour);
-
-  std::optional<promos_manager::Promo> promo =
-      promos_manager_->NextPromoForDisplay();
-
-  EXPECT_FALSE(promo.has_value());
-}
-
-// Tests `NextPromoForDisplay` returns empty when non of the promos can pass the
-// onceEveryTwoDays impression limit check.
-TEST_F(PromosManagerImplTest,
-       NextPromoForDisplayReturnsEmptyAfterImpressionCheck) {
-  CreatePromosManager();
-
-  promos_manager_->single_display_active_promos_ = {
-      promos_manager::Promo::AppStoreRating};
-  promos_manager_->single_display_pending_promos_ = {
-      {promos_manager::Promo::Test, test_clock_.Now() + kTimeDelta1Hour},
-      {promos_manager::Promo::CredentialProviderExtension,
-       test_clock_.Now() + kTimeDelta1Hour},
-  };
-
-  int today = TodaysDay();
-  const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today, false),
-  };
-  promos_manager_->impression_history_ = impressions;
-
-  // Advance the time so that all pending promos can become active, but will
-  // fall into the two-day window since the last impression.
-  test_clock_.Advance(kTimeDelta1Day);
 
   std::optional<promos_manager::Promo> promo =
       promos_manager_->NextPromoForDisplay();

@@ -1188,9 +1188,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSuggestServerCardInsteadOfLocalCard)},
-    {"promos-manager-uses-fet", flag_descriptions::kPromosManagerUsesFETName,
-     flag_descriptions::kPromosManagerUsesFETDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kPromosManagerUsesFET)},
     {"shopping-collection",
      commerce::flag_descriptions::kShoppingCollectionName,
      commerce::flag_descriptions::kShoppingCollectionDescription,

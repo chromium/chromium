@@ -17,7 +17,8 @@ namespace feature_engagement {
 namespace {
 
 // Returns a config for a standard promo. This includes a rule for "only show
-// this feature once every month."
+// this feature once every month." Promos here can be unit tested in
+// `PromosManagerFeatureEngagementTest`.
 absl::optional<FeatureConfig> GetStandardPromoConfig(
     const base::Feature* feature) {
   absl::optional<FeatureConfig> config;
@@ -149,7 +150,6 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
     config->trigger = EventConfig("docking_promo_trigger", Comparator(EQUAL, 0),
                                   feature_engagement::kMaxStoragePeriod,
                                   feature_engagement::kMaxStoragePeriod);
-    return config;
   }
 
   // All standard promos can only be shown once per month.

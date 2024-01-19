@@ -15,7 +15,6 @@ const char kImpressionPromoKey[] = "promo";
 const char kImpressionDayKey[] = "day";
 const char kImpressionFeatureEngagementMigrationCompletedKey[] =
     "feature_engagement_migration_completed";
-const int kNumDaysImpressionHistoryStored = 365;
 
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.

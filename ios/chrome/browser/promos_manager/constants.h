@@ -22,9 +22,8 @@ extern const char kImpressionDayKey[];
 // (base::Value).
 extern const char kImpressionFeatureEngagementMigrationCompletedKey[];
 
-// The max number of days for impression history to be stored & maintained.
-extern const int kNumDaysImpressionHistoryStored;
-
+// When a new promo is added, if it's a standard promo, consider adding it to
+// `PromosManagerFeatureEngagementTest`.
 // LINT.IfChange
 enum class Promo {
   Test = 0,            // Test promo used for testing purposes (e.g. unit tests)

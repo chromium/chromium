@@ -6784,11 +6784,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "promos-manager-uses-fet",
-    "owners": ["rkgibson@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "protected-audience-debug-token",
     "owners": [
       "behamilton@google.com",

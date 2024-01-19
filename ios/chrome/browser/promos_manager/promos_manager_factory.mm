@@ -45,9 +45,7 @@ std::unique_ptr<KeyedService> PromosManagerFactory::BuildServiceInstanceFor(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   PromosManagerEventExporter* event_exporter =
-      ShouldPromosManagerUseFET()
-          ? PromosManagerEventExporterFactory::GetForBrowserState(browser_state)
-          : nullptr;
+      PromosManagerEventExporterFactory::GetForBrowserState(browser_state);
   auto promos_manager = std::make_unique<PromosManagerImpl>(
       GetApplicationContext()->GetLocalState(),
       base::DefaultClock::GetInstance(),

@@ -156,24 +156,20 @@
 // Display a promo if one is available, with special behavior if this is the
 // first time this coordinator has shown a promo.
 - (void)displayPromoIfAvailable:(BOOL)isFirstShownPromo {
-  if (ShouldPromosManagerUseFET()) {
-    // Wait to present a promo until the feature engagement tracker database
-    // is fully initialized.
-    __weak __typeof(self) weakSelf = self;
-    void (^onInitializedBlock)(bool) = ^(bool successfullyLoaded) {
-      if (!successfullyLoaded) {
-        return;
-      }
-      [weakSelf displayPromoCallback:isFirstShownPromo];
-    };
+  // Wait to present a promo until the feature engagement tracker database
+  // is fully initialized.
+  __weak __typeof(self) weakSelf = self;
+  void (^onInitializedBlock)(bool) = ^(bool successfullyLoaded) {
+    if (!successfullyLoaded) {
+      return;
+    }
+    [weakSelf displayPromoCallback:isFirstShownPromo];
+  };
 
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-    tracker->AddOnInitializedCallback(base::BindOnce(onInitializedBlock));
-  } else {
-    [self displayPromoCallback:isFirstShownPromo];
-  }
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  tracker->AddOnInitializedCallback(base::BindOnce(onInitializedBlock));
 }
 
 - (void)displayPromoCallback:(BOOL)isFirstShownPromo {
@@ -191,8 +187,7 @@
 }
 
 - (void)promoWasDismissed {
-  if (ShouldPromosManagerUseFET() && _currentPromoData.has_value() &&
-      !_currentPromoData.value().was_forced) {
+  if (_currentPromoData.has_value() && !_currentPromoData.value().was_forced) {
     PromoConfigsSet configs = [self promoImpressionLimits];
     auto it = configs.find(_currentPromoData.value().promo);
     if (it == configs.end() || !it->feature_engagement_feature) {

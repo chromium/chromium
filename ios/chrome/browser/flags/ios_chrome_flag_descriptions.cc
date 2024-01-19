@@ -283,9 +283,7 @@ const char kDefaultBrowserPromoForceShowPromoName[] =
 const char kDefaultBrowserPromoForceShowPromoDescription[] =
     "When enabled, the user will be able to chose which default browser promo "
     "will skip the triggering criteria. For this flag to effectively force a "
-    "default browser promo, either enable kPromosManagerUsesFET and "
-    "IPH_iOSPromoDefaultBrowser, or disable kPromosManagerUsesFET and enable "
-    "Force Promo (Default Browser) in the system settings experimental flags.";
+    "default browser promo, enable IPH_iOSPromoDefaultBrowser.";
 
 const char kDefaultBrowserTriggerCriteriaExperimentName[] =
     "Show default browser promo trigger criteria experiment";
@@ -824,11 +822,6 @@ const char kPrivacyGuideIosName[] = "Privacy Guide on iOS";
 const char kPrivacyGuideIosDescription[] =
     "Shows a new subpage in Settings that helps the user to review various "
     "privacy settings.";
-
-const char kPromosManagerUsesFETName[] = "Promos Manager using FET";
-const char kPromosManagerUsesFETDescription[] =
-    "Migrates the Promos Manager to use the Feature Engagement Tracker as its "
-    "impression tracking system";
 
 const char kIdleTimeoutPoliciesName[] =
     "IdleTimeout and IdleTimeoutActions Policies";
