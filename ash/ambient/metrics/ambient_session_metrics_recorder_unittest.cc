@@ -5,6 +5,7 @@
 #include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/ambient/ambient_ui_settings.h"
@@ -16,7 +17,7 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -45,7 +46,7 @@ class AmbientSessionMetricsRecorderTest
     AmbientUiModel::Get()->SetUiVisibility(AmbientUiVisibility::kShouldShow);
   }
 
-  std::string GetMetricNameForTheme(base::StringPiece prefix) {
+  std::string GetMetricNameForTheme(std::string_view prefix) {
     return base::StrCat({prefix, GetParam().ToString()});
   }
 

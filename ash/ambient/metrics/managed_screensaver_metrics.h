@@ -6,10 +6,11 @@
 #define ASH_AMBIENT_METRICS_MANAGED_SCREENSAVER_METRICS_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
 #include "ash/ash_export.h"
-#include "base/strings/string_piece.h"
+
 #include "base/timer/elapsed_timer.h"
 
 namespace ash {
@@ -26,7 +27,7 @@ constexpr char kManagedScreensaverImageDownloadResultUMA[] =
     "ImageDownloadResult";
 
 ASH_EXPORT std::string GetManagedScreensaverHistogram(
-    const base::StringPiece& histogram_suffix);
+    std::string_view histogram_suffix);
 
 ASH_EXPORT void RecordManagedScreensaverEnabled(bool enabled);
 

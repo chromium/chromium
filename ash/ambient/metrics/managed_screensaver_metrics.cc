@@ -4,6 +4,8 @@
 
 #include "ash/ambient/metrics/managed_screensaver_metrics.h"
 
+#include <string_view>
+
 #include "ash/ambient/managed/screensaver_image_downloader.h"
 #include "ash/ambient/metrics/ambient_metrics.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,7 +22,7 @@ namespace {
 // header.
 constexpr int kManagedScreensaverEngagemenTimeHistogramBuckets = 144;
 constexpr int kManagedScreensaverStartupTimeHistogramBuckets = 144;
-constexpr base::StringPiece kManagedScreensaverHistogramPrefix =
+constexpr std::string_view kManagedScreensaverHistogramPrefix =
     "Enterprise.ManagedScreensaver.";
 
 // This limit is specified in the policy definition for the policies
@@ -29,8 +31,7 @@ constexpr size_t kMaxUrlsToProcessFromPolicy = 25u;
 
 }  // namespace
 
-std::string GetManagedScreensaverHistogram(
-    const base::StringPiece& histogram_suffix) {
+std::string GetManagedScreensaverHistogram(std::string_view histogram_suffix) {
   return base::StrCat({kManagedScreensaverHistogramPrefix, histogram_suffix});
 }
 

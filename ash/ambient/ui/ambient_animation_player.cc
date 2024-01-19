@@ -15,7 +15,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
+
 #include "base/time/time.h"
 #include "cc/paint/skottie_marker.h"
 #include "cc/paint/skottie_wrapper.h"

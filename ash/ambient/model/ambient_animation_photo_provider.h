@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/ambient/model/ambient_backend_model.h"
@@ -62,7 +63,7 @@ class ASH_EXPORT AmbientAnimationPhotoProvider
   ~AmbientAnimationPhotoProvider() override;
 
   scoped_refptr<ImageAsset> LoadImageAsset(
-      base::StringPiece resource_id,
+      std::string_view resource_id,
       const base::FilePath& resource_path,
       const std::optional<gfx::Size>& size) override;
 

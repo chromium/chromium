@@ -4,6 +4,8 @@
 
 #include "ash/ambient/ui/ambient_video_view.h"
 
+#include <string_view>
+
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/ui/ambient_slideshow_peripheral_ui.h"
@@ -17,7 +19,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
+
 #include "base/time/time.h"
 #include "net/base/url_util.h"
 #include "ui/views/layout/fill_layout.h"
@@ -28,7 +30,7 @@ namespace ash {
 
 namespace {
 
-constexpr base::StringPiece kAmbientVideoFileQueryParam = "video_file";
+constexpr std::string_view kAmbientVideoFileQueryParam = "video_file";
 
 // Apply the same jitter interval to the peripheral elements as the slideshow
 // theme does (which applies jitter each time the photo switches).
@@ -41,7 +43,7 @@ GURL BuildFileUrl(const base::FilePath& file_path) {
 
 }  // namespace
 
-AmbientVideoView::AmbientVideoView(base::StringPiece video_file,
+AmbientVideoView::AmbientVideoView(std::string_view video_file,
                                    const base::FilePath& html_path,
                                    AmbientVideo video,
                                    AmbientViewDelegate* view_delegate)

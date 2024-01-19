@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -128,7 +129,7 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
   }
 
   scoped_refptr<ImageAsset> LoadAsset(
-      base::StringPiece asset_id,
+      std::string_view asset_id,
       std::optional<gfx::Size> size = std::nullopt) {
     scoped_refptr<ImageAsset> asset = provider_.LoadImageAsset(
         asset_id, base::FilePath("dummy-resource-path/dummy-resource-name"),

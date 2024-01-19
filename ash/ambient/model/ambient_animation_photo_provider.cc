@@ -59,6 +59,7 @@
 #include <iterator>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -203,7 +204,7 @@ class DynamicImageProvider {
 class AmbientAnimationPhotoProvider::StaticImageAssetImpl
     : public cc::SkottieFrameDataProvider::ImageAsset {
  public:
-  StaticImageAssetImpl(base::StringPiece asset_id,
+  StaticImageAssetImpl(std::string_view asset_id,
                        const AmbientAnimationStaticResources& static_resources)
       : image_(static_resources.GetStaticImageAsset(asset_id)) {
     DCHECK(!IsCustomizableLottieId(asset_id));
@@ -242,7 +243,7 @@ class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
     : public cc::SkottieFrameDataProvider::ImageAsset {
  public:
   DynamicImageAssetImpl(
-      base::StringPiece asset_id,
+      std::string_view asset_id,
       std::optional<gfx::Size> size,
       const base::WeakPtr<AmbientAnimationPhotoProvider>& provider)
       : asset_id_(asset_id), size_(std::move(size)), provider_(provider) {
@@ -384,7 +385,7 @@ AmbientAnimationPhotoProvider::~AmbientAnimationPhotoProvider() = default;
 
 scoped_refptr<cc::SkottieFrameDataProvider::ImageAsset>
 AmbientAnimationPhotoProvider::LoadImageAsset(
-    base::StringPiece asset_id,
+    std::string_view asset_id,
     const base::FilePath& resource_path,
     const std::optional<gfx::Size>& size) {
   // Note in practice, all of the image assets are loaded one time by Skottie

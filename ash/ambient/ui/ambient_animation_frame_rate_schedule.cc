@@ -15,7 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
+
 #include "base/time/time.h"
 #include "cc/paint/skottie_marker.h"
 #include "third_party/re2/src/re2/re2.h"

@@ -4,6 +4,7 @@
 
 #include "ash/ambient/ambient_video_ui_launcher.h"
 
+#include <string_view>
 #include <utility>
 
 #include "ash/ambient/ambient_controller.h"
@@ -17,13 +18,13 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
+
 #include "components/prefs/pref_service.h"
 
 namespace ash {
 namespace {
 
-base::StringPiece GetVideoFile(AmbientVideo video) {
+std::string_view GetVideoFile(AmbientVideo video) {
   switch (video) {
     case AmbientVideo::kNewMexico:
       return kTimeOfDayNewMexicoVideo;
