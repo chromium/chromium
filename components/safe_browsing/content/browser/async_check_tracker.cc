@@ -80,11 +80,11 @@ void AsyncCheckTracker::PendingCheckerCompleted(
     CHECK(!result.proceed);
     show_interstitial_after_finish_navigation_ = true;
   }
-  if (!result.proceed) {
-    // No need to keep the checker around if proceed is false. However, we
-    // cannot delete the checker if proceed is true, because
-    // PendingCheckerCompleted may be called multiple times during server
-    // redirects.
+  if (!result.proceed || result.all_checks_completed) {
+    // No need to keep the checker around if proceed is false. We
+    // cannot delete the checker if all_checks_completed is false and
+    // proceed is true, because PendingCheckerCompleted may be called multiple
+    // times during server redirects.
     MaybeDeleteChecker(navigation_id);
   }
 }

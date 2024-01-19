@@ -27,12 +27,14 @@ UrlCheckerOnSB::OnCompleteCheckResult::OnCompleteCheckResult(
     bool proceed,
     bool showed_interstitial,
     bool has_post_commit_interstitial_skipped,
-    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check)
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
+    bool all_checks_completed)
     : proceed(proceed),
       showed_interstitial(showed_interstitial),
       has_post_commit_interstitial_skipped(
           has_post_commit_interstitial_skipped),
-      performed_check(performed_check) {}
+      performed_check(performed_check),
+      all_checks_completed(all_checks_completed) {}
 
 UrlCheckerOnSB::StartParams::StartParams(
     net::HttpRequestHeaders headers,
@@ -127,6 +129,7 @@ void UrlCheckerOnSB::CheckUrl(const GURL& url, const std::string& method) {
           ? content::BrowserThread::UI
           : content::BrowserThread::IO);
   DCHECK(url_checker_);
+  pending_checks_++;
   url_checker_->CheckUrl(url, method,
                          base::BindOnce(&UrlCheckerOnSB::OnCheckUrlResult,
                                         base::Unretained(this)));
@@ -153,6 +156,7 @@ void UrlCheckerOnSB::OnCheckUrlResult(
     bool showed_interstitial,
     bool has_post_commit_interstitial_skipped,
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
+  pending_checks_--;
   OnCompleteCheck(proceed, showed_interstitial,
                   has_post_commit_interstitial_skipped, performed_check);
 }
@@ -162,9 +166,10 @@ void UrlCheckerOnSB::OnCompleteCheck(
     bool showed_interstitial,
     bool has_post_commit_interstitial_skipped,
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
+  bool all_checks_completed = pending_checks_ == 0;
   OnCompleteCheckResult result(proceed, showed_interstitial,
                                has_post_commit_interstitial_skipped,
-                               performed_check);
+                               performed_check, all_checks_completed);
   if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
     complete_callback_.Run(result);
   } else {

@@ -90,7 +90,8 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness,
 
   void CallPendingCheckerCompleted(int64_t navigation_id,
                                    bool proceed,
-                                   bool has_post_commit_interstitial_skipped) {
+                                   bool has_post_commit_interstitial_skipped,
+                                   bool all_checks_completed) {
     if (!proceed) {
       // This mocks how BaseUIManager caches unsafe resource if
       // load_post_commit_error_page is false.
@@ -102,7 +103,8 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness,
     UrlCheckerOnSB::OnCompleteCheckResult result(
         proceed, /*showed_interstitial=*/true,
         has_post_commit_interstitial_skipped,
-        SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck);
+        SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck,
+        all_checks_completed);
     tracker_->PendingCheckerCompleted(navigation_id, result);
   }
 
@@ -141,7 +143,8 @@ TEST_P(AsyncCheckTrackerTest,
   // is scheduled to be deleted on the SB thread. Mock this scenario by not
   // calling CallTransferUrlChecker.
   CallPendingCheckerCompleted(handle.GetNavigationId(), /*proceed=*/false,
-                              /*has_post_commit_interstitial_skipped=*/true);
+                              /*has_post_commit_interstitial_skipped=*/true,
+                              /*all_checks_completed=*/true);
   CallDidFinishNavigation(handle, /*has_committed=*/true);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 0);
 }
@@ -159,7 +162,8 @@ TEST_P(AsyncCheckTrackerTest,
   content::MockNavigationHandle handle(url_, main_rfh());
   CallTransferUrlChecker(handle.GetNavigationId());
   CallPendingCheckerCompleted(handle.GetNavigationId(), /*proceed=*/true,
-                              /*has_post_commit_interstitial_skipped=*/false);
+                              /*has_post_commit_interstitial_skipped=*/false,
+                              /*all_checks_completed=*/true);
   CallDidFinishNavigation(handle, /*has_committed=*/true);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 0);
 }
@@ -169,7 +173,8 @@ TEST_P(AsyncCheckTrackerTest,
   content::MockNavigationHandle handle(url_, main_rfh());
   CallTransferUrlChecker(handle.GetNavigationId());
   CallPendingCheckerCompleted(handle.GetNavigationId(), /*proceed=*/false,
-                              /*has_post_commit_interstitial_skipped=*/false);
+                              /*has_post_commit_interstitial_skipped=*/false,
+                              /*all_checks_completed=*/true);
   CallDidFinishNavigation(handle, /*has_committed=*/true);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 0);
 }
@@ -179,7 +184,8 @@ TEST_P(AsyncCheckTrackerTest,
   content::MockNavigationHandle handle(url_, main_rfh());
   CallTransferUrlChecker(handle.GetNavigationId());
   CallPendingCheckerCompleted(handle.GetNavigationId(), /*proceed=*/false,
-                              /*has_post_commit_interstitial_skipped=*/true);
+                              /*has_post_commit_interstitial_skipped=*/true,
+                              /*all_checks_completed=*/true);
   CallDidFinishNavigation(handle, /*has_committed=*/false);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 0);
 }
@@ -188,7 +194,8 @@ TEST_P(AsyncCheckTrackerTest, DisplayBlockingPageCalled) {
   content::MockNavigationHandle handle(url_, main_rfh());
   CallTransferUrlChecker(handle.GetNavigationId());
   CallPendingCheckerCompleted(handle.GetNavigationId(), /*proceed=*/false,
-                              /*has_post_commit_interstitial_skipped=*/true);
+                              /*has_post_commit_interstitial_skipped=*/true,
+                              /*all_checks_completed=*/true);
   CallDidFinishNavigation(handle, /*has_committed=*/true);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 1);
   UnsafeResource resource = ui_manager_->GetDisplayedResource();
@@ -262,25 +269,28 @@ TEST_P(AsyncCheckTrackerTest,
   EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 1u);
 
   CallPendingCheckerCompleted(handle_3.GetNavigationId(), /*proceed=*/false,
-                              /*has_post_commit_interstitial_skipped=*/true);
+                              /*has_post_commit_interstitial_skipped=*/true,
+                              /*all_checks_completed=*/true);
   // The remaining checker is deleted because proceed is false.
   EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 0u);
 }
 
 TEST_P(AsyncCheckTrackerTest,
-       PendingCheckersManagement_CheckerNotDeletedIfProceedTrue) {
+       PendingCheckersManagement_CheckerNotDeletedIfAllChecksCompletedFalse) {
   CallTransferUrlChecker(/*navigation_id=*/1);
   EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 1u);
 
   CallPendingCheckerCompleted(/*navigation_id=*/1, /*proceed=*/true,
-                              /*has_post_commit_interstitial_skipped=*/false);
-  // If proceed is true, the checker should be kept alive to receive upcoming
-  // result from the checker. This scenario can happen if there are server
-  // redirects.
+                              /*has_post_commit_interstitial_skipped=*/false,
+                              /*all_checks_completed=*/false);
+  // If all_checks_completed is false, the checker should be kept alive to
+  // receive upcoming result from the checker. This scenario can happen if there
+  // are server redirects.
   EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 1u);
 
-  CallPendingCheckerCompleted(/*navigation_id=*/1, /*proceed=*/false,
-                              /*has_post_commit_interstitial_skipped=*/false);
+  CallPendingCheckerCompleted(/*navigation_id=*/1, /*proceed=*/true,
+                              /*has_post_commit_interstitial_skipped=*/false,
+                              /*all_checks_completed=*/true);
   EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 0u);
 }
 

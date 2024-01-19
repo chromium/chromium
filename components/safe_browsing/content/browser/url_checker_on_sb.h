@@ -59,11 +59,13 @@ class UrlCheckerOnSB final {
         bool proceed,
         bool showed_interstitial,
         bool has_post_commit_interstitial_skipped,
-        SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
+        SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
+        bool all_checks_completed);
     bool proceed;
     bool showed_interstitial;
     bool has_post_commit_interstitial_skipped;
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check;
+    bool all_checks_completed;
   };
 
   using OnCompleteCheckCallback =
@@ -147,6 +149,7 @@ class UrlCheckerOnSB final {
   bool can_urt_check_subresource_url_ = false;
   bool can_check_db_ = true;
   bool can_check_high_confidence_allowlist_ = true;
+  size_t pending_checks_ = 0;
   std::string url_lookup_service_metric_suffix_;
   GURL last_committed_url_;
   base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_;
