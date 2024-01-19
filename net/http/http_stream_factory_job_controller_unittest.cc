@@ -561,8 +561,10 @@ TEST_P(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsAsync) {
 
 TEST_P(HttpStreamFactoryJobControllerTest, NoSupportedProxies) {
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
-          "QUIC myproxy.org:443", TRAFFIC_ANNOTATION_FOR_TESTS);
+      ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
+          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                             "myproxy.org", 443)},
+          TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.enable_quic = false;
   HttpRequestInfo request_info;
   request_info.method = "GET";
@@ -1772,8 +1774,11 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
 // Tests that ERR_MSG_TOO_BIG is retryable for QUIC proxy.
 TEST_F(JobControllerReconsiderProxyAfterErrorTest, ReconsiderErrMsgTooBig) {
   std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
-          "QUIC badproxy:99; DIRECT", TRAFFIC_ANNOTATION_FOR_TESTS);
+      ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
+          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                             "badproxy", 99),
+           ProxyChain::Direct()},
+          TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Before starting the test, verify that there are no proxies marked as bad.
   ASSERT_TRUE(proxy_resolution_service->proxy_retry_info().empty());

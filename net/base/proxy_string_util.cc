@@ -37,8 +37,6 @@ ProxyServer::Scheme GetSchemeFromPacTypeInternal(std::string_view type) {
     return ProxyServer::SCHEME_SOCKS5;
   if (base::EqualsCaseInsensitiveASCII(type, "https"))
     return ProxyServer::SCHEME_HTTPS;
-  if (base::EqualsCaseInsensitiveASCII(type, "quic"))
-    return ProxyServer::SCHEME_QUIC;
 
   return ProxyServer::SCHEME_INVALID;
 }

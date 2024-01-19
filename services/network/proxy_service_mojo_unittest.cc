@@ -55,7 +55,7 @@ const char kDnsResolvePacScript[] =
     "function FindProxyForURL(url, host) {\n"
     "  if (dnsResolveEx('example.com') != '1.2.3.4')\n"
     "    return 'DIRECT';\n"
-    "  return 'QUIC bar:4321';\n"
+    "  return 'HTTPS bar:4321';\n"
     "}";
 const char kThrowingPacScript[] =
     "function FindProxyForURL(url, host) {\n"
@@ -189,7 +189,7 @@ TEST_F(ProxyServiceMojoTest, DnsResolution) {
   fetcher_->NotifyFetchCompletion(net::OK, kDnsResolvePacScript);
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
-  EXPECT_EQ("QUIC bar:4321", info.ToDebugString());
+  EXPECT_EQ("HTTPS bar:4321", info.ToDebugString());
   EXPECT_EQ(1u, mock_host_resolver_.num_resolve());
   DeleteService();
 }

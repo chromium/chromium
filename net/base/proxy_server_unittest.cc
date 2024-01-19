@@ -186,7 +186,8 @@ TEST(ProxyServerTest, ComparatorAndEquality) {
 TEST(ProxyServerTest, Properties) {
   // HTTP proxy.
   {
-    auto proxy = PacResultElementToProxyServer("PROXY foo");
+    auto proxy = ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTP,
+                                                    "foo", std::nullopt);
     ASSERT_TRUE(proxy.is_valid());
     EXPECT_TRUE(proxy.is_http());
     EXPECT_FALSE(proxy.is_https());
@@ -196,7 +197,8 @@ TEST(ProxyServerTest, Properties) {
 
   // HTTPS proxy.
   {
-    auto proxy = PacResultElementToProxyServer("HTTPS foo");
+    auto proxy = ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS,
+                                                    "foo", std::nullopt);
     ASSERT_TRUE(proxy.is_valid());
     EXPECT_FALSE(proxy.is_http());
     EXPECT_TRUE(proxy.is_https());
@@ -206,7 +208,8 @@ TEST(ProxyServerTest, Properties) {
 
   // QUIC proxy.
   {
-    auto proxy = PacResultElementToProxyServer("QUIC foo");
+    auto proxy = ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                                    "foo", std::nullopt);
     ASSERT_TRUE(proxy.is_valid());
     EXPECT_FALSE(proxy.is_http());
     EXPECT_FALSE(proxy.is_https());
@@ -216,7 +219,8 @@ TEST(ProxyServerTest, Properties) {
 
   // SOCKS5 proxy.
   {
-    auto proxy = PacResultElementToProxyServer("SOCKS5 foo");
+    auto proxy = ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_SOCKS5,
+                                                    "foo", std::nullopt);
     ASSERT_TRUE(proxy.is_valid());
     EXPECT_FALSE(proxy.is_http());
     EXPECT_FALSE(proxy.is_https());
