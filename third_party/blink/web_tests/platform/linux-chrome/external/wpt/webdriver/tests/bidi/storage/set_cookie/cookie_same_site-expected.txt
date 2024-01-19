@@ -1,0 +1,10 @@
+This is a wdspec test.
+[FAIL] test_cookie_secure[strict]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected number, received null in "cookie"/"expiry".)
+[FAIL] test_cookie_secure[lax]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected number, received null in "cookie"/"expiry".)
+[FAIL] test_cookie_secure[none]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected number, received null in "cookie"/"expiry".)
+[FAIL] test_cookie_secure[None]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+Harness: the test ran to completion.

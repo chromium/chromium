@@ -1,0 +1,26 @@
+This is a wdspec test.
+[FAIL] test_cookie_name_invalid_value[ cookieName]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+[FAIL] test_cookie_name_invalid_value[cookie=name]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+[FAIL] test_cookie_name_invalid_value[cookie\\tname]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+[FAIL] test_cookie_name_invalid_value[cookie\\nname]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+[FAIL] test_cookie_name_invalid_value[cookie\\x01name]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+[FAIL] test_cookie_name_invalid_value[cookie\\x0fname]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+[FAIL] test_cookie_name_invalid_value[cookie;name]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+[FAIL] test_cookie_path_invalid_value[no_leading_forward_slash]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+[FAIL] test_cookie_value_string_invalid_value[value\\twith\\ttab]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+[FAIL] test_cookie_value_string_invalid_value[value\\nwith\\nnewline]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+[FAIL] test_cookie_value_string_invalid_value[value;with;semicolon]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+[FAIL] test_partition_context_unknown
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+Harness: the test ran to completion.

@@ -197031,7 +197031,7 @@
        ]
       ],
       "text-spacing-trim-start-001.html": [
-       "3d481df1da2f6bcf7c56abbfc05c0f218f1d48d4",
+       "f007245277b7c26bcc92ac5a70664b42b914a5fc",
        [
         "css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=chws,htb",
         [
@@ -260545,6 +260545,19 @@
        [
         [
          "/css/selectors/focus-within-shadow-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-display-none-checked.html": [
+      "96b1f8bd0489658bdf5183c4772f780a25dc0bb9",
+      [
+       null,
+       [
+        [
+         "/css/selectors/has-display-none-checked-ref.html",
          "=="
         ]
        ],
@@ -335001,7 +335014,7 @@
        []
       ],
       "text-spacing-trim-start-001-ref.html": [
-       "aef81fbbc0d3d0be562bd2cd4388c4be16bbf128",
+       "60a255160f2753157b7b46c79ec6d71c8d15f444",
        []
       ],
       "text-spacing-trim-start-002-ref.html": [
@@ -346741,6 +346754,10 @@
      ],
      "focus-within-shadow-001-ref.html": [
       "6ab36318796dfebc78b62b258e261282fc6c9b98",
+      []
+     ],
+     "has-display-none-checked-ref.html": [
+      "6e855f52caf235d3c8aa714aecb0818279b46809",
       []
      ],
      "has-style-sharing-001-ref.html": [
@@ -388834,6 +388851,10 @@
         []
        ],
        "resources": {
+        "direct.html": [
+         "e98d70207afaead718c0c358a8aba0bbbc14da5b",
+         []
+        ],
         "direct.txt": [
          "f3d9861c137b2ddfdeff1690c544f57328df7447",
          []
@@ -388857,7 +388878,7 @@
          ]
         },
         "router-rules.js": [
-         "f8fe403298604c0b4bfc09202fa75053447d6081",
+         "3ecd2025b39f54c78e84ae6838ec0272ff609c2d",
          []
         ],
         "simple-test-for-condition-main-resource.html": [
@@ -388873,7 +388894,7 @@
          []
         ],
         "static-router-sw.js": [
-         "1e02dbb56ded1924ba121c1719dd6084ffcba728",
+         "055c07113c5ecbb695a8c71cebb18a364e755121",
          []
         ],
         "test-helpers.sub.js": [
@@ -396224,7 +396245,7 @@
       },
       "storage": {
        "__init__.py": [
-        "5db6e84f42f6111594cb067ee832c5f92db3091a",
+        "763e0054f1d5983b4dd0dff79ef37bc18be062e1",
         []
        ],
        "conftest.py": [
@@ -566593,7 +566614,7 @@
         ]
        ],
        "preserves-pitch.html": [
-        "d0f4d77a32b23f97e5ef00aaee4bc691683ea79b",
+        "ba76f51d47192f3248fe1f618e85f85ccc7cb0bf",
         [
          null,
          {
@@ -626604,7 +626625,7 @@
      "tentative": {
       "static-router": {
        "static-router-main-resource.https.html": [
-        "1673b97ca7b61e4c1c193ca548c92706868a56ff",
+        "30bbf60e83f849390a04a7795fd04184ed121ccd",
         [
          null,
          {}
@@ -627029,14 +627050,14 @@
       ]
      ],
      "declarative-shadow-dom-attachment.html": [
-      "6fb2a8a5ecc30f5277068fcb62d5bca4d9ab07cd",
+      "aec9a276f931f016ad39b285fa78e02ed0c55df0",
       [
        null,
        {}
       ]
      ],
      "declarative-shadow-dom-basic.html": [
-      "20ca34f6f3e2594f80b304c9a8339d4f751dafa7",
+      "8799978804a53b40d01a178707735b9d56d3ea36",
       [
        null,
        {}
@@ -627044,6 +627065,13 @@
      ],
      "declarative-shadow-dom-opt-in.html": [
       "670e5fd0901c3254ef2913f6325da484e1195905",
+      [
+       null,
+       {}
+      ]
+     ],
+     "declarative-shadow-dom-repeats.html": [
+      "3da9cff360c64d73116cbe554a8243f8ef2ddbb6",
       [
        null,
        {}
@@ -706904,29 +706932,78 @@
       },
       "storage": {
        "set_cookie": {
-        "cookie_path.py": [
-         "a1aaaa3fbc0760879fa747689a83311b172839a9",
+        "cookie_domain.py": [
+         "ef09fb3f7b2221bb4fce85aacc6bc5dc30184483",
          [
           null,
           {}
          ]
         ],
-        "cookie_path_invalid.py": [
-         "2eb164cad70d6cff727808fb8d53c2b6e6570dcd",
+        "cookie_expiry.py": [
+         "79f02d31060e93cc8a5887fcd83b46a8a32a0113",
+         [
+          null,
+          {}
+         ]
+        ],
+        "cookie_http_only.py": [
+         "f5e1bf9a3d18242bfc773455a4b964b1db8a53da",
+         [
+          null,
+          {}
+         ]
+        ],
+        "cookie_name.py": [
+         "f2d967534a21a19c6138c9ec8b8fb9394cd87f84",
+         [
+          null,
+          {}
+         ]
+        ],
+        "cookie_path.py": [
+         "2395b032a69e19b598e0379d6bfa8342b468656c",
+         [
+          null,
+          {}
+         ]
+        ],
+        "cookie_same_site.py": [
+         "05f4790a80e81fde20ee5f330f816413f335231e",
+         [
+          null,
+          {}
+         ]
+        ],
+        "cookie_secure.py": [
+         "6da5991c11d986e5aa6e3018b4b08186080fe171",
+         [
+          null,
+          {}
+         ]
+        ],
+        "cookie_value.py": [
+         "5ecd83545731b08753f9e58536517129562f8800",
+         [
+          null,
+          {}
+         ]
+        ],
+        "invalid.py": [
+         "9c3e5cbe1dd1e65cd4c77da7ab8d0ac57119b50e",
          [
           null,
           {}
          ]
         ],
         "page_protocols.py": [
-         "8dbddb3eb2d99cc38e4dfa511412abfae25dd1f2",
+         "c021c2fc26e89532cc6acdc6b6ff96b61a3fde10",
          [
           null,
           {}
          ]
         ],
         "partition.py": [
-         "c754d0f288848ecdc29cc8090ee46f5f917870ce",
+         "b7a4a052ca0b3dff8ec3521262ddd3d48d810d69",
          [
           null,
           {}
