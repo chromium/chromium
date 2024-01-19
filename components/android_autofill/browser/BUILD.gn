@@ -161,6 +161,7 @@ source_set("test_support") {
   testonly = true
   sources = [
     "autofill_provider_android_test_api.h",
+    "form_data_android_test_api.h",
     "mock_form_data_android_bridge.cc",
     "mock_form_data_android_bridge.h",
     "mock_form_field_data_android_bridge.cc",

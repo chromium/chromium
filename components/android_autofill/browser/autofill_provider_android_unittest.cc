@@ -20,6 +20,7 @@
 #include "components/android_autofill/browser/autofill_provider_android_bridge.h"
 #include "components/android_autofill/browser/autofill_provider_android_test_api.h"
 #include "components/android_autofill/browser/form_data_android.h"
+#include "components/android_autofill/browser/form_data_android_test_api.h"
 #include "components/android_autofill/browser/mock_form_field_data_android_bridge.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
@@ -43,6 +44,7 @@ namespace {
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AtLeast;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::InSequence;
@@ -74,6 +76,17 @@ auto EqualsFormData(const FormData& expected) {
         return FormData::DeepEqual(expected, actual.form());
       },
       true);
+}
+
+auto EqualsFormDataWithFields(const FormData& form, auto fields_matcher) {
+  return AllOf(
+      EqualsFormData(form),
+      ResultOf(
+          [](FormDataAndroid& form_android)
+              -> const std::vector<std::unique_ptr<FormFieldDataAndroid>>& {
+            return test_api(form_android).fields();
+          },
+          fields_matcher));
 }
 
 // Creates a matcher that compares the results of a `FormDataAndroid`'s `form()`
@@ -704,6 +717,39 @@ TEST_F(AutofillProviderAndroidTest, SendPrefillRequest) {
 
   // Upon receiving server predictions a prefill request should be sent.
   EXPECT_CALL(provider_bridge(), SendPrefillRequest(EqualsFormData(form)));
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      form.global_id());
+}
+
+// Tests the predictions from `password_manager::FormDataParser` are used to
+// overwrite all type predictions of the respective `FormDataAndroidField`s.
+TEST_F(AutofillProviderAndroidTest,
+       UsePasswordManagerOverridesInPrefillRequest) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SdkVersion::SDK_VERSION_U) {
+    GTEST_SKIP();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAndroidAutofillPrefillRequestsForLoginForms,
+       features::kAndroidAutofillSignatureForPrefillRequestSimilarityCheck},
+      /*disabled_features=*/{});
+
+  FormData form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
+  ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
+
+  auto has_field_type = [](FieldType field_type) {
+    return Pointee(Property(&FormFieldDataAndroid::field_types,
+                            Eq(AutofillType(field_type))));
+  };
+  EXPECT_CALL(provider_bridge(),
+              SendPrefillRequest(EqualsFormDataWithFields(
+                  form, ElementsAre(has_field_type(FieldType::USERNAME),
+                                    has_field_type(FieldType::PASSWORD)))));
   android_autofill_manager().SimulatePropagateAutofillPredictions(
       form.global_id());
 }

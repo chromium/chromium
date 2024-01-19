@@ -110,6 +110,8 @@ class FormDataAndroid {
   SessionId session_id() const { return session_id_; }
 
  private:
+  friend class FormDataAndroidTestApi;
+
   // Returns whether the fields of `this` are similar to the fields of `form`.
   // Returns `false` if the number of fields differs.
   bool SimilarFieldsAs(const FormData& form) const;

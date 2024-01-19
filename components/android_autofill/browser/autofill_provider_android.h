@@ -16,7 +16,11 @@
 
 namespace content {
 class WebContents;
-}
+}  // namespace content
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 namespace autofill {
 
@@ -218,6 +222,34 @@ class AutofillProviderAndroid : public AutofillProvider,
   void MaybeSendPrefillRequest(const AndroidAutofillManager& manager,
                                FormGlobalId form_id);
 
+  // Stores field ids for fields detected by `password_manager::FormDataParser`
+  // as username or password fields. Currently used only for prefill requests.
+  struct PasswordParserOverrides {
+    bool operator==(const PasswordParserOverrides&) const = default;
+
+    // Returns the `PasswordParserOverrides` obtained from matching the
+    // `FieldRendererId`s of username and password fields in `pw_form` to the
+    // `FieldGlobalId`s in `form_structure`. Returns `std::nullopt` if no unique
+    // matching could be found. A unique matching may not exist if the form is
+    // spread across multiple iframes. In practice, this should be extremely
+    // rare for password forms.
+    static std::optional<PasswordParserOverrides> FromLoginForm(
+        const password_manager::PasswordForm& pw_form,
+        const FormStructure& form_structure);
+
+    // Creates a map as expected by `FormDataAndroid::UpdateFieldTypes`.
+    base::flat_map<FieldGlobalId, AutofillType> ToFieldTypeMap() const;
+
+    std::optional<FieldGlobalId> username_field_id;
+    std::optional<FieldGlobalId> password_field_id;
+  };
+
+  // In some cases we get two AskForValuesToFill events within short time frame
+  // so we set timer to set the `was_bottom_sheet_just_shown_` to false after it
+  // gets accessed.
+  // TODO(crbug.com/1490581): Remove once a fix is landed on the renderer side.
+  void SetBottomSheetShownOff();
+
   // This is used by the keyboard suppressor. We update it with the result of
   // the platform method call `showAutofillDialog`. Since we are not notified
   // when the bottom sheet is dismissed, we set a timer to set it to `false`
@@ -226,14 +258,20 @@ class AutofillProviderAndroid : public AutofillProvider,
   // can currently happen (crbug.com/1490581).
   bool was_bottom_sheet_just_shown_ = false;
 
-  // In some cases we get two AskForValuesToFill events within short time frame
-  // so we set timer to set the `was_bottom_sheet_just_shown_` to false after it
-  // gets accessed.
-  // TODO(crbug.com/1490581): Remove once a fix is landed on the renderer side.
-  void SetBottomSheetShownOff();
-
   // Sets `was_bottom_sheet_just_shown` to false after a timeout.
   base::OneShotTimer was_shown_bottom_sheet_timer_;
+
+  // Helper struct that contains cache data used in prefill requests.
+  struct CachedData {
+    CachedData();
+    CachedData(CachedData&&);
+    CachedData& operator=(CachedData&&);
+    ~CachedData();
+
+    std::unique_ptr<FormDataAndroid> cached_form;
+    PasswordParserOverrides password_parser_overrides;
+  };
+  std::optional<CachedData> cached_data_;
 
   // The form for which a prefill request has been sent.
   std::unique_ptr<FormDataAndroid> cached_form_;
