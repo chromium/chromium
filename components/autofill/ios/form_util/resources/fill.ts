@@ -9,6 +9,7 @@ import {registerChildFrame} from '//components/autofill/ios/form_util/resources/
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {inferLabelFromNext} from '//components/autofill/ios/form_util/resources/fill_element_inference.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
+import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 // This file provides methods used to fill forms in JavaScript.
@@ -22,49 +23,6 @@ declare global {
     __gCrWeb: any;
   }
 }
-
-declare interface AutofillFormFieldData {
-  name: string;
-  value: string;
-  unique_renderer_id: string;
-  form_control_type: string;
-  autocomplete_attribute: string;
-  max_length: number;
-  is_autofilled: boolean;
-  is_user_edited: boolean;
-  is_checkable: boolean;
-  is_focusable: boolean;
-  should_autocomplete: boolean;
-  role: number;
-  placeholder_attribute: string;
-  aria_label: string;
-  aria_description: string;
-  option_contents: string[];
-  option_values: string[];
-  label?: string;
-  identifier?: string;
-  name_attribute?: string;
-  id_attribute?: string;
-}
-
-declare interface AutofillFormData {
-  name: string;
-  unique_renderer_id: string;
-  origin: string;
-  action: string;
-  fields: AutofillFormFieldData[];
-  frame_id: string;
-  child_frames?: FrameTokenWithPredecessor[];
-  name_attribute?: string;
-  id_attribute?: string;
-  is_form_tag: boolean;
-}
-
-declare interface FrameTokenWithPredecessor {
-  token: string;
-  predecessor: number;
-}
-
 
 /**
  * Extracts fields from |controlElements| with |extractMask| to |formFields|.
@@ -90,56 +48,57 @@ declare interface FrameTokenWithPredecessor {
  */
 function extractFieldsFromControlElements(
     controlElements: fillConstants.FormControlElement[],
-    iframeElements: HTMLIFrameElement[],
-    extractMask:number, formFields: AutofillFormFieldData[],
-    childFrames: FrameTokenWithPredecessor[], fieldsExtracted: boolean[],
-    elementArray: Array<AutofillFormFieldData|null>): boolean {
-    for (const _i of iframeElements) {
-      childFrames.push({  token: '', predecessor: -1 });
+    iframeElements: HTMLIFrameElement[], extractMask: number,
+    formFields: fillUtil.AutofillFormFieldData[],
+    childFrames: fillUtil.FrameTokenWithPredecessor[],
+    fieldsExtracted: boolean[],
+    elementArray: Array<fillUtil.AutofillFormFieldData|null>): boolean {
+  for (const _i of iframeElements) {
+    childFrames.push({token: '', predecessor: -1});
+  }
+
+  if (!elementArray) {
+    elementArray =
+        new Array<fillUtil.AutofillFormFieldData|null>(controlElements.length);
+  }
+
+  for (let i = 0; i < controlElements.length; ++i) {
+    fieldsExtracted[i] = false;
+    elementArray[i] = null;
+
+    const controlElement = controlElements[i];
+    if (!gCrWeb.fill.isAutofillableElement(controlElement)) {
+      continue;
+    }
+    try {
+      gCrWeb.fill.setUniqueIDIfNeeded(controlElements[i]);
+    } catch (e) {
     }
 
-    if (!elementArray) {
-      elementArray =
-        new Array<AutofillFormFieldData|null>(controlElements.length);
+    // Create a new AutofillFormFieldData, fill it out and map it to the
+    // field's name.
+    const formField = new gCrWeb['common'].JSONSafeObject();
+    gCrWeb.fill.webFormControlElementToFormField(
+        controlElement, extractMask, formField);
+    formFields.push(formField);
+    elementArray[i] = formField;
+    fieldsExtracted[i] = true;
+
+    // TODO(crbug.com/1440471): This loop should also track which control
+    // element appears immediately before the frame, so its index can be
+    // set as the frame predecessor.
+
+    // To avoid overly expensive computation, we impose a maximum number of
+    // allowable fields.
+    if (formFields.length > fillConstants.MAX_EXTRACTABLE_FIELDS) {
+      childFrames.length = 0;
+      formFields.length = 0;
+      return false;
     }
+  }
 
-    for (let i = 0; i < controlElements.length; ++i) {
-      fieldsExtracted[i] = false;
-      elementArray[i] = null;
-
-      const controlElement = controlElements[i];
-      if (!gCrWeb.fill.isAutofillableElement(controlElement)) {
-        continue;
-      }
-      try {
-        gCrWeb.fill.setUniqueIDIfNeeded(controlElements[i]);
-      } catch (e) {
-      }
-
-      // Create a new AutofillFormFieldData, fill it out and map it to the
-      // field's name.
-      const formField = new gCrWeb['common'].JSONSafeObject();
-      gCrWeb.fill.webFormControlElementToFormField(
-          controlElement, extractMask, formField);
-      formFields.push(formField);
-      elementArray[i] = formField;
-      fieldsExtracted[i] = true;
-
-      // TODO(crbug.com/1440471): This loop should also track which control
-      // element appears immediately before the frame, so its index can be
-      // set as the frame predecessor.
-
-      // To avoid overly expensive computation, we impose a maximum number of
-      // allowable fields.
-      if (formFields.length > fillConstants.MAX_EXTRACTABLE_FIELDS) {
-        childFrames.length = 0;
-        formFields.length = 0;
-        return false;
-      }
-    }
-
-    return formFields.length > 0;
-    }
+  return formFields.length > 0;
+}
 
 /**
  * Check if the node is visible.
@@ -193,11 +152,11 @@ function matchLabelsAndFields(
     labels: HTMLCollectionOf<HTMLLabelElement>,
     formElement: HTMLFormElement|null,
     controlElements: fillConstants.FormControlElement[],
-    elementArray: AutofillFormFieldData[]) {
+    elementArray: fillUtil.AutofillFormFieldData[]) {
   for (let index = 0; index < labels.length; ++index) {
     const label = labels[index]!;
     const fieldElement = label!.control as fillConstants.FormControlElement;
-    let fieldData: AutofillFormFieldData|null = null;
+    let fieldData: fillUtil.AutofillFormFieldData|null = null;
     if (!fieldElement) {
       // Sometimes site authors will incorrectly specify the corresponding
       // field element's name rather than its id, so we compensate here.
@@ -297,16 +256,17 @@ function formOrFieldsetsToFormData(
     formControlElement: fillConstants.FormControlElement|null,
     fieldsets: Element[], controlElements: fillConstants.FormControlElement[],
     iframeElements: HTMLIFrameElement[], extractMask: number,
-    form: AutofillFormData, _field?: AutofillFormFieldData): boolean {
+    form: fillUtil.AutofillFormData,
+    _field?: fillUtil.AutofillFormFieldData): boolean {
   // This should be a map from a control element to the AutofillFormFieldData.
   // However, without Map support, it's just an Array of AutofillFormFieldData.
-  const elementArray: AutofillFormFieldData[] = [];
+  const elementArray: fillUtil.AutofillFormFieldData[] = [];
 
   // The extracted FormFields.
-  const formFields: AutofillFormFieldData[] = [];
+  const formFields: fillUtil.AutofillFormFieldData[] = [];
 
   // The extracted child frames.
-  const childFrames: FrameTokenWithPredecessor[] = [];
+  const childFrames: fillUtil.FrameTokenWithPredecessor[] = [];
 
   // A vector of booleans that indicate whether each element in
   // |controlElements| meets the requirements and thus will be in the resulting
@@ -425,10 +385,10 @@ function formOrFieldsetsToFormData(
  *     form.
  */
 gCrWeb.fill.webFormElementToFormData = function(
-    frame:Window, formElement:HTMLFormElement,
-    formControlElement:fillConstants.FormControlElement,
-    extractMask: number, form: AutofillFormData,
-    field?:AutofillFormFieldData): boolean {
+    frame: Window, formElement: HTMLFormElement,
+    formControlElement: fillConstants.FormControlElement, extractMask: number,
+    form: fillUtil.AutofillFormData,
+    field?: fillUtil.AutofillFormFieldData): boolean {
   if (!frame) {
     return false;
   }
@@ -484,7 +444,7 @@ gCrWeb.fill.webFormElementToFormData = function(
  */
 gCrWeb.fill.webFormControlElementToFormField = function(
     element: fillConstants.FormControlElement, extractMask: number,
-    field: AutofillFormFieldData) {
+    field: fillUtil.AutofillFormFieldData) {
   if (!field || !element) {
     return;
   }
@@ -689,10 +649,9 @@ gCrWeb.fill.getUnownedAutofillableFormFieldElements = function(
  */
 gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
     frame: Window, fieldsets: Element[],
-    controlElements: fillConstants.FormControlElement[],
-    extractMask: number,
+    controlElements: fillConstants.FormControlElement[], extractMask: number,
     restrictUnownedFieldsToFormlessCheckout: boolean,
-    form: AutofillFormData): boolean {
+    form: fillUtil.AutofillFormData): boolean {
   if (!frame) {
     return false;
   }
