@@ -14,6 +14,10 @@ source_set("core") {
   ]
 
   sources = [
+    "ec_private_key.cc",
+    "ec_private_key.h",
+    "ec_private_key_factory.cc",
+    "ec_private_key_factory.h",
     "private_key.cc",
     "private_key_factory.cc",
   ]
@@ -58,7 +62,11 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "private_key_factory_unittest.cc" ]
+  sources = [
+    "ec_private_key_factory_unittest.cc",
+    "ec_private_key_unittest.cc",
+    "private_key_factory_unittest.cc",
+  ]
 
   deps = [
     ":core",
