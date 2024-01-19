@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Repeated declarative shadow roots keep only the first
+  assert_equals: expected "Open" but got "Closed"
+[FAIL] Calling attachShadow() on declarative shadow root must match type
+  assert_throws_dom: Mismatched shadow root type should throw function "() => {\n    open1.attachShadow({mode: "closed"});\n  }" did not throw
+[FAIL] Calling attachShadow() on declarative shadow root must match all parameters
+  assert_throws_dom: Mismatched shadow root type should throw function "() => {\n    open2.attachShadow({mode: "closed", delegatesFocus: true, slotAssignment: "named"});\n  }" did not throw
+Harness: the test ran to completion.
+

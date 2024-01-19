@@ -5380,7 +5380,7 @@ bool Element::CanAttachShadowRoot() const {
          tag_name == html_names::kSelectlistTag;
 }
 
-const char* Element::ErrorMessageForAttachShadow() const {
+const char* Element::ErrorMessageForAttachShadow(bool for_declarative) const {
   // https://dom.spec.whatwg.org/#concept-attach-a-shadow-root
   // 1. If shadow host’s namespace is not the HTML namespace, then throw a
   // "NotSupportedError" DOMException.
@@ -5413,11 +5413,21 @@ const char* Element::ErrorMessageForAttachShadow() const {
     }
   }
 
-  // 4. If shadow host has a non-null shadow root whose "is declarative shadow
-  // root" property is false, then throw an "NotSupportedError" DOMException.
-  if (GetShadowRoot() && !GetShadowRoot()->IsDeclarativeShadowRoot()) {
-    return "Shadow root cannot be created on a host "
-           "which already hosts a shadow tree.";
+  if (!GetShadowRoot()) {
+    return nullptr;
+  }
+  // If shadow host has a non-null shadow root and "for declarative" is set,
+  // then throw a "NotSupportedError" DOMException.
+  if (for_declarative &&
+      RuntimeEnabledFeatures::ShadowRootAttachmentNewBehaviorEnabled()) {
+    return "A second declarative shadow root cannot be created on a host.";
+  }
+  // If shadow host has a non-null shadow root, "for declarative" is unset,
+  // and shadow root's "is declarative shadow root" property is false, then
+  // throw a "NotSupportedError" DOMException.
+  if (!GetShadowRoot()->IsDeclarativeShadowRoot()) {
+    return "Shadow root cannot be created on a host which already hosts a "
+           "shadow tree.";
   }
   return nullptr;
 }
@@ -5445,10 +5455,29 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
   CustomElementRegistry* registry = shadow_root_init_dict->hasRegistry()
                                         ? shadow_root_init_dict->registry()
                                         : nullptr;
-  if (const char* error_message = ErrorMessageForAttachShadow()) {
+  if (const char* error_message =
+          ErrorMessageForAttachShadow(/*for_declarative*/ false)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       error_message);
     return nullptr;
+  }
+
+  // If there's already a declarative shadow root, verify that the parameters
+  // are all the same.
+  if (RuntimeEnabledFeatures::ShadowRootAttachmentNewBehaviorEnabled()) {
+    if (auto* existing_shadow = GetShadowRoot()) {
+      CHECK(existing_shadow->IsDeclarativeShadowRoot());
+      if (existing_shadow->GetType() != type ||
+          existing_shadow->delegatesFocus() !=
+              (focus_delegation == FocusDelegation::kDelegateFocus) ||
+          existing_shadow->GetSlotAssignmentMode() != slot_assignment) {
+        exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                          "Parameters used for attachShadow() "
+                                          "don't match existing declarative "
+                                          "shadow root");
+        return nullptr;
+      }
+    }
   }
 
   ShadowRoot& shadow_root = AttachShadowRootInternal(type, focus_delegation,
@@ -5471,7 +5500,8 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
   // host element, mode equal to declarative shadow mode, and delegates focus
   // equal to declarative shadow delegates focus. If an exception was thrown by
   // attach a shadow root, catch it, and ignore the exception.
-  if (const char* error_message = ErrorMessageForAttachShadow()) {
+  if (const char* error_message =
+          ErrorMessageForAttachShadow(/*for_declarative*/ true)) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kError, error_message));
