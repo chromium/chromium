@@ -138,7 +138,7 @@ void SoftNavigationHeuristics::ResetHeuristic() {
 }
 
 void SoftNavigationHeuristics::InteractionCallbackCalled(
-    ScriptState* script_state,
+    const scheduler::TaskAttributionInfo& task,
     EventScopeType type,
     bool is_new_interaction) {
   // Set task ID to the current one.
@@ -150,14 +150,6 @@ void SoftNavigationHeuristics::InteractionCallbackCalled(
     return;
   }
 
-  CHECK(script_state);
-  scheduler::TaskAttributionInfo* task = tracker->RunningTask(script_state);
-  if (!task) {
-    // This can happen in test scenarios that trigger input events outside of
-    // their regular flow.
-    return;
-  }
-
   if (!last_interaction_task_id_.value()) {
     // Here we have an interaction event that was supposed to be preceded by a
     // "new interaction" event, only that such an event didn't have a callback.
@@ -165,10 +157,10 @@ void SoftNavigationHeuristics::InteractionCallbackCalled(
     // event. We also define the current task as the last interaction task.
     PerInteractionData* data = MakeGarbageCollected<PerInteractionData>();
     data->user_interaction_timestamp = pending_interaction_timestamp_;
-    interaction_task_id_to_interaction_data_.insert(task->Id().value(), data);
-    last_interaction_task_id_ = task->Id();
+    interaction_task_id_to_interaction_data_.insert(task.Id().value(), data);
+    last_interaction_task_id_ = task.Id();
   } else {
-    task_id_to_interaction_task_id_.insert(task->Id().value(),
+    task_id_to_interaction_task_id_.insert(task.Id().value(),
                                            last_interaction_task_id_.value());
   }
 
@@ -566,7 +558,7 @@ void SoftNavigationHeuristics::OnCreateTaskScope(
 
   // Create a user initiated interaction
   CHECK(current_event_parameters_);
-  InteractionCallbackCalled(script_state, current_event_parameters_->type,
+  InteractionCallbackCalled(task, current_event_parameters_->type,
                             current_event_parameters_->is_new_interaction);
   if (current_event_parameters_->type ==
       SoftNavigationHeuristics::EventScopeType::kNavigate) {

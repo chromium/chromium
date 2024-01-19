@@ -62,7 +62,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   void Trace(Visitor*) const override;
 
   // The class's API.
-  void InteractionCallbackCalled(ScriptState*,
+  void InteractionCallbackCalled(const scheduler::TaskAttributionInfo& task,
                                  EventScopeType,
                                  bool is_new_interaction);
   void UserInitiatedInteraction();
