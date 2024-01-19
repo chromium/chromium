@@ -37,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -75,6 +76,7 @@ public class RestoreTabsMediatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private BottomSheetContent mBottomSheetContent;
+    @Mock private BooleanCachedFieldTrialParameter mParam;
 
     private PropertyModel mModel = RestoreTabsProperties.createDefaultModel();
     private RestoreTabsMediator mMediator = new RestoreTabsMediator();
@@ -197,6 +199,8 @@ public class RestoreTabsMediatorUnitTest {
         List<ForeignSession> sessions = new ArrayList<>();
         sessions.add(session);
 
+        when(mDelegate.getSkipFeatureEngagementParam()).thenReturn(mParam);
+        when(mParam.getValue()).thenReturn(false);
         mMediator.showHomeScreen(mForeignSessionHelper, sessions, mDelegate);
         delegate.onAllTabsChosen();
         verify(mDelegate).getGTSTabListModelSize();
@@ -415,6 +419,8 @@ public class RestoreTabsMediatorUnitTest {
         List<ForeignSession> sessions = new ArrayList<>();
         sessions.add(session);
 
+        when(mDelegate.getSkipFeatureEngagementParam()).thenReturn(mParam);
+        when(mParam.getValue()).thenReturn(false);
         mMediator.showHomeScreen(mForeignSessionHelper, sessions, mDelegate);
         delegate.onSelectedTabsChosen();
         verify(mDelegate).getGTSTabListModelSize();

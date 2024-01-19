@@ -7131,6 +7131,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "restore-tabs-on-fre",
+    "owners": [ "bjfong@google.com", "ckitagawa@chromium.org", "fredmello@chromium.org" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "restrict-gamepad-access",
     "owners": [ "//device/gamepad/OWNERS", "jameshollyer@chromium.org" ],
     "expiry_milestone": 96
@@ -7916,6 +7921,11 @@
     "name": "throttle-ambient-animations",
     "owners": [ "esum@chromium.org", "assistive-eng@google.com" ],
     "expiry_milestone": 114
+  },
+  {
+    "name": "thumbnail-placeholder",
+    "owners": [ "ckitagawa@chromium.org", "fredmello@chromium.org" ],
+    "expiry_milestone": 123
   },
   {
     "name": "tiled-display-support",

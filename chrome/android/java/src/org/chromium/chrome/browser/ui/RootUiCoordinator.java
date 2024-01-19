@@ -1559,7 +1559,8 @@ public class RootUiCoordinator
                             hideAppMenu();
                             // Attempt to show the promo sheet for the restore tabs feature.
                             // Do not attempt to show the promo if in incognito mode.
-                            if (!mTabModelSelectorSupplier.get().isIncognitoSelected()) {
+                            if (RestoreTabsFeatureHelper.RESTORE_TABS_PROMO.isEnabled()
+                                    && !mTabModelSelectorSupplier.get().isIncognitoSelected()) {
                                 // TODO(1458646): Add support for triggering in incognito mode.
                                 attemptToShowRestoreTabsPromo();
                             }

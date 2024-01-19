@@ -46,9 +46,11 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
@@ -70,6 +72,7 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+@EnableFeatures(ChromeFeatureList.RESTORE_TABS_ON_FRE)
 @DoNotBatch(reason = "Tests startup behaviors that trigger per-session")
 public class RestoreTabsTest {
     private static final String RESTORE_TABS_FEATURE = FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE;
@@ -91,6 +94,7 @@ public class RestoreTabsTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
+        RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.setForTesting(true);
         TrackerFactory.setTrackerForTests(mMockTracker);
 
         mForeignSessionHelperJniSpy = Mockito.spy(ForeignSessionHelperJni.get());
@@ -106,6 +110,7 @@ public class RestoreTabsTest {
 
     @After
     public void tearDown() {
+        RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.setForTesting(false);
         TrackerFactory.setTrackerForTests(null);
     }
 
@@ -116,6 +121,9 @@ public class RestoreTabsTest {
             sdk_is_less_than = Build.VERSION_CODES.O,
             message = "Flaky only on test-n-phone, crbug.com/1469008")
     public void testRestoreTabsPromo_triggerBottomSheetView() {
+        // Test using triggerHelpUI methods instead of skip_feature_engagement param
+        RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.setForTesting(false);
+
         // Setup mock data
         ForeignSessionTab tab = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0);
         List<ForeignSessionTab> tabs = new ArrayList<>();
@@ -153,6 +161,7 @@ public class RestoreTabsTest {
 
         pressBack();
         verify(mMockTracker, times(1)).dismissed(eq(RESTORE_TABS_FEATURE));
+        RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.setForTesting(true);
     }
 
     @Test
