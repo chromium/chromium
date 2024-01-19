@@ -85,7 +85,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_prefs.h"
 #include "chrome/browser/ui/tabs/organization/prefs.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
-#include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"

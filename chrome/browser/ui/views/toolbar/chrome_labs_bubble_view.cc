@@ -14,7 +14,7 @@
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"

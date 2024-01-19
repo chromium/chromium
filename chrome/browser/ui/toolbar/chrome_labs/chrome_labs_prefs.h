@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_PREFS_H_
-#define CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_PREFS_H_
+#ifndef CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_CHROME_LABS_PREFS_H_
+#define CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_CHROME_LABS_PREFS_H_
 
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
@@ -34,4 +34,4 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 }  // namespace chrome_labs_prefs
 
-#endif  // CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_PREFS_H_
+#endif  // CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_CHROME_LABS_PREFS_H_

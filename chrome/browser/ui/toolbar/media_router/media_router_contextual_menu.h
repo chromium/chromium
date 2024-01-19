@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_CONTEXTUAL_MENU_H_
-#define CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_CONTEXTUAL_MENU_H_
+#ifndef CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_MEDIA_ROUTER_CONTEXTUAL_MENU_H_
+#define CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_MEDIA_ROUTER_CONTEXTUAL_MENU_H_
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -83,4 +83,4 @@ class MediaRouterContextualMenu : public ui::SimpleMenuModel::Delegate {
   const bool shown_by_policy_;
 };
 
-#endif  // CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_CONTEXTUAL_MENU_H_
+#endif  // CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_MEDIA_ROUTER_CONTEXTUAL_MENU_H_

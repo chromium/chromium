@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_ACTION_CONTROLLER_H_
-#define CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_ACTION_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_MEDIA_ROUTER_ACTION_CONTROLLER_H_
+#define CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_MEDIA_ROUTER_ACTION_CONTROLLER_H_
 
 #include <vector>
 
@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/toolbar/media_router_contextual_menu.h"
+#include "chrome/browser/ui/toolbar/media_router/media_router_contextual_menu.h"
 #include "components/media_router/browser/issues_observer.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -134,4 +134,4 @@ class MediaRouterActionController : public media_router::IssuesObserver,
   base::WeakPtrFactory<MediaRouterActionController> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_ACTION_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_MEDIA_ROUTER_ACTION_CONTROLLER_H_

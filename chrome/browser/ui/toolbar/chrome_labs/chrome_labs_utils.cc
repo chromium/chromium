@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/toolbar/chrome_labs_utils.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
@@ -13,7 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/channel_info.h"
 #include "components/flags_ui/feature_entry.h"

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_UTILS_H_
-#define CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_UTILS_H_
+#ifndef CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_CHROME_LABS_UTILS_H_
+#define CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_CHROME_LABS_UTILS_H_
 
-#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 
 class Profile;
 
@@ -30,4 +30,4 @@ bool AreNewChromeLabsExperimentsAvailable(const ChromeLabsModel* model,
 // pre-stable channels will have Chrome Labs enabled by default.
 bool IsChromeLabsEnabled();
 
-#endif  //  CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_UTILS_H_
+#endif  //  CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_CHROME_LABS_UTILS_H_

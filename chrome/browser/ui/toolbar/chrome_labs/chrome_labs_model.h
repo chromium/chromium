@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_MODEL_H_
-#define CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_MODEL_H_
+#ifndef CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_CHROME_LABS_MODEL_H_
+#define CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_CHROME_LABS_MODEL_H_
 
 #include <string>
 #include <vector>
@@ -60,4 +60,4 @@ class ScopedChromeLabsModelDataForTesting {
   void SetModelDataForTesting(const std::vector<LabInfo>& test_feature_info);
 };
 
-#endif  // CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_MODEL_H_
+#endif  // CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_CHROME_LABS_MODEL_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/toolbar/mock_media_router_action_controller.h"
+#include "chrome/browser/ui/toolbar/media_router/mock_media_router_action_controller.h"
 
 #include "components/media_router/browser/media_router_factory.h"
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/toolbar/media_router_contextual_menu.h"
+#include "chrome/browser/ui/toolbar/media_router/media_router_contextual_menu.h"
 
 #include <memory>
 #include <string>
@@ -16,7 +16,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/browser/ui/toolbar/media_router_action_controller.h"
+#include "chrome/browser/ui/toolbar/media_router/media_router_action_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"

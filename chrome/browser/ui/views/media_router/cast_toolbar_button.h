@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_CAST_TOOLBAR_BUTTON_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/toolbar/media_router_action_controller.h"
-#include "chrome/browser/ui/toolbar/media_router_contextual_menu.h"
+#include "chrome/browser/ui/toolbar/media_router/media_router_action_controller.h"
+#include "chrome/browser/ui/toolbar/media_router/media_router_contextual_menu.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "components/media_router/browser/issues_observer.h"
 #include "components/media_router/browser/mirroring_media_controller_host.h"

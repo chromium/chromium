@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
-#include "chrome/browser/ui/toolbar/media_router_action_controller.h"
+#include "chrome/browser/ui/toolbar/media_router/media_router_action_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/media_router/browser/test/mock_media_router.h"
