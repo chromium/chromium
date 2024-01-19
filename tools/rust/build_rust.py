@@ -85,6 +85,12 @@ EXCLUDED_TESTS_MAC = [
     # model which we don't use, so suppress it for now.
     os.path.join('tests', 'ui', 'thread-local', 'thread-local-issue-37508.rs'),
 ]
+EXCLUDED_TESTS_MAC_ARM64 = [
+    # https://crbug.com/1519640 This fails on Mac/ARM64. We didn't even run it
+    # until recently, so ignore it for now.
+    os.path.join('test', 'ui', 'extern',
+                 'issue-64655-extern-rust-must-allow-unwind.rs'),
+]
 
 CLANG_SCRIPTS_DIR = os.path.join(CHROMIUM_DIR, 'tools', 'clang', 'scripts')
 
@@ -480,6 +486,10 @@ def GetTestArgs():
             args.append(excluded)
     if sys.platform == 'darwin':
         for excluded in EXCLUDED_TESTS_MAC:
+            args.append('--exclude')
+            args.append(excluded)
+    if sys.platform == 'darwin' and platform.machine() == 'arm64':
+        for excluded in EXCLUDED_TESTS_MAC_ARM64:
             args.append('--exclude')
             args.append(excluded)
     return args
