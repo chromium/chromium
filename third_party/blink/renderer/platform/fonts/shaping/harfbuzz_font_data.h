@@ -39,15 +39,12 @@ struct HarfBuzzFontData final {
       HarfBuzzFace::VerticalLayoutCallbacks vertical_layout) {
     float ascent = 0;
     float descent = 0;
-    unsigned dummy_ascent_inflation = 0;
-    unsigned dummy_descent_inflation = 0;
 
     font_ = platform_data.CreateSkFont();
 
     if (UNLIKELY(vertical_layout == HarfBuzzFace::kPrepareForVerticalLayout)) {
-      FontMetrics::AscentDescentWithHacks(
-          ascent, descent, dummy_ascent_inflation, dummy_descent_inflation,
-          platform_data, font_);
+      FontMetrics::AscentDescentWithHacks(ascent, descent, platform_data,
+                                          font_);
       ascent_fallback_ = ascent;
       // Simulate the rounding that FontMetrics does so far for returning the
       // integer Height()

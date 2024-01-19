@@ -47,8 +47,6 @@ static const size_t kMaxVDMXTableSize = 1024 * 1024;  // 1 MB
 void FontMetrics::AscentDescentWithHacks(
     float& ascent,
     float& descent,
-    unsigned& visual_overflow_inflation_for_ascent,
-    unsigned& visual_overflow_inflation_for_descent,
     const FontPlatformData& platform_data,
     const SkFont& font,
     bool subpixel_ascent_descent,
@@ -112,26 +110,19 @@ void FontMetrics::AscentDescentWithHacks(
     ascent = SkScalarRoundToScalar(-metrics.fAscent);
     descent = SkScalarRoundToScalar(metrics.fDescent);
 
-    if (ascent < -metrics.fAscent)
-      visual_overflow_inflation_for_ascent = 1;
-    if (descent < metrics.fDescent) {
-      visual_overflow_inflation_for_descent = 1;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_FUCHSIA)
-      // When subpixel positioning is enabled, if the descent is rounded down,
-      // the descent part of the glyph may be truncated when displayed in a
-      // 'overflow: hidden' container.  To avoid that, borrow 1 unit from the
-      // ascent when possible.
-      if (platform_data.GetFontRenderStyle().use_subpixel_positioning &&
-          ascent >= 1) {
-        ++descent;
-        --ascent;
-        // We should inflate overflow 1 more pixel for ascent instead.
-        visual_overflow_inflation_for_descent = 0;
-        ++(visual_overflow_inflation_for_ascent);
-      }
-#endif
+    // When subpixel positioning is enabled, if the descent is rounded down,
+    // the descent part of the glyph may be truncated when displayed in a
+    // 'overflow: hidden' container.  To avoid that, borrow 1 unit from the
+    // ascent when possible.
+    if (descent < metrics.fDescent &&
+        platform_data.GetFontRenderStyle().use_subpixel_positioning &&
+        ascent >= 1) {
+      ++descent;
+      --ascent;
     }
+#endif
   }
 
 #if BUILDFLAG(IS_MAC)

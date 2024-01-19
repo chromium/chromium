@@ -170,13 +170,6 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
 
   CustomFontData* GetCustomFontData() const { return custom_font_data_.get(); }
 
-  unsigned VisualOverflowInflationForAscent() const {
-    return visual_overflow_inflation_for_ascent_;
-  }
-  unsigned VisualOverflowInflationForDescent() const {
-    return visual_overflow_inflation_for_descent_;
-  }
-
  private:
   SimpleFontData(
       const FontPlatformData&,
@@ -236,12 +229,6 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
     HanKerning::FontData data;
   };
   mutable HanKerningCacheEntry han_kerning_cache_[2];
-
-  // These are set to non-zero when ascent or descent is rounded or shifted
-  // to be smaller than the actual ascent or descent. When calculating visual
-  // overflows, we should add the inflations.
-  unsigned visual_overflow_inflation_for_ascent_ = 0;
-  unsigned visual_overflow_inflation_for_descent_ = 0;
 
   mutable FontHeight normalized_typo_ascent_descent_;
 

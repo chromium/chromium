@@ -197,8 +197,6 @@ class FontMetrics {
   static void AscentDescentWithHacks(
       float& ascent,
       float& descent,
-      unsigned& visual_overflow_inflation_for_ascent,
-      unsigned& visual_overflow_inflation_for_descent,
       const FontPlatformData&,
       const SkFont&,
       bool subpixel_ascent_descent = false,

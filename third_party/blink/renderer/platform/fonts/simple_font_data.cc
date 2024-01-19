@@ -126,10 +126,8 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
   float descent;
 
   FontMetrics::AscentDescentWithHacks(
-      ascent, descent, visual_overflow_inflation_for_ascent_,
-      visual_overflow_inflation_for_descent_, platform_data_, font_,
-      subpixel_ascent_descent, metrics_override.ascent_override,
-      metrics_override.descent_override);
+      ascent, descent, platform_data_, font_, subpixel_ascent_descent,
+      metrics_override.ascent_override, metrics_override.descent_override);
 
   font_metrics_.SetAscent(ascent);
   font_metrics_.SetDescent(descent);
