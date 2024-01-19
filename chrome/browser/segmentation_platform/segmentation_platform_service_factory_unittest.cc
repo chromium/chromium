@@ -107,7 +107,8 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
          {features::kContextualPageActionShareModel, {}},
          {features::kSegmentationPlatformTimeDelaySampling,
           {{"SamplingRate", "1"}}},
-         {features::kSegmentationPlatformTabResumptionRanker, {}}},
+         {features::kSegmentationPlatformTabResumptionRanker, {}},
+         {features::kSegmentationPlatformAndroidHomeModuleRanker, {}}},
         {});
 
     // Creating profile and initialising segmentation service.
@@ -555,6 +556,19 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestFeedUserModel) {
       /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
       /*expected_labels=*/
       std::vector<std::string>(1, kLegacyNegativeLabel));
+}
+
+TEST_F(SegmentationPlatformServiceFactoryTest, TestAndroidHomeModuleRanker) {
+  InitServiceAndCacheResults(
+      segmentation_platform::kAndroidHomeModuleRankerKey);
+  PredictionOptions prediction_options;
+
+  std::vector<std::string> result = {kPriceChange, kSingleTab};
+  ExpectGetClassificationResult(
+      segmentation_platform::kAndroidHomeModuleRankerKey, prediction_options,
+      nullptr,
+      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      /*expected_labels=*/result);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -4,6 +4,8 @@
 
 static_library("default_model") {
   sources = [
+    "android_home_module_ranker.cc",
+    "android_home_module_ranker.h",
     "contextual_page_actions_model.cc",
     "contextual_page_actions_model.h",
     "cross_device_user_segment.cc",
@@ -69,6 +71,7 @@ source_set("unit_tests") {
   # IMPORTANT NOTE: When adding new tests, also remember to update the list of
   # tests in //components/segmentation_platform/components_unittests.filter
   sources = [
+    "android_home_module_ranker_unittest.cc",
     "contextual_page_actions_model_unittest.cc",
     "cross_device_user_segment_unittest.cc",
     "database_api_clients_unittest.cc",

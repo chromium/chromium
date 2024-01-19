@@ -40,6 +40,7 @@
 #include "chrome/browser/segmentation_platform/default_model/chrome_start_model_android_v2.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/segmentation_platform/embedder/default_model/android_home_module_ranker.h"
 #include "components/segmentation_platform/embedder/default_model/contextual_page_actions_model.h"
 #include "components/segmentation_platform/embedder/default_model/device_tier_segment.h"
 #include "components/segmentation_platform/embedder/default_model/intentional_user_model.h"
@@ -163,6 +164,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(DeviceTierSegment::GetConfig());
   configs.emplace_back(TabletProductivityUserModel::GetConfig());
   configs.emplace_back(MostVisitedTilesUser::GetConfig());
+  configs.emplace_back(AndroidHomeModuleRanker::GetConfig());
 #endif
   configs.emplace_back(LowUserEngagementModel::GetConfig());
   configs.emplace_back(SearchUserModel::GetConfig());
