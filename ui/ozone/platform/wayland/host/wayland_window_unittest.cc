@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include <cursor-shape-v1-client-protocol.h>
 #include <cursor-shapes-unstable-v1-client-protocol.h>
 #include <linux/input.h>
 #include <wayland-server-core.h>
@@ -51,6 +52,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
@@ -145,6 +147,16 @@ wl::ScopedWlArray InitializeWlArrayWithActivatedState() {
 wl::ScopedWlArray MakeStateArray(const std::vector<int32_t> states) {
   return wl::ScopedWlArray(states);
 }
+
+class MockCursorShape : public WaylandCursorShape {
+ public:
+  MockCursorShape() : WaylandCursorShape(nullptr, nullptr) {}
+  MockCursorShape(const MockCursorShape&) = delete;
+  MockCursorShape& operator=(const MockCursorShape&) = delete;
+  ~MockCursorShape() override = default;
+
+  MOCK_METHOD(void, SetCursorShape, (uint32_t), (override));
+};
 
 class MockZcrCursorShapes : public WaylandZcrCursorShapes {
  public:
@@ -262,6 +274,14 @@ class WaylandWindowTest : public WaylandTest {
     hit_tests->push_back(static_cast<int>(HTTOP));
     hit_tests->push_back(static_cast<int>(HTTOPLEFT));
     hit_tests->push_back(static_cast<int>(HTTOPRIGHT));
+  }
+
+  MockCursorShape* InstallMockCursorShape() {
+    auto zcr_cursor_shapes = std::make_unique<MockCursorShape>();
+    MockCursorShape* mock_cursor_shapes = zcr_cursor_shapes.get();
+    WaylandConnectionTestApi test_api(connection_.get());
+    test_api.SetCursorShape(std::move(zcr_cursor_shapes));
+    return mock_cursor_shapes;
   }
 
   MockZcrCursorShapes* InstallMockZcrCursorShapes() {
@@ -1690,6 +1710,62 @@ TEST_P(WaylandWindowTest, CanDispatchMouseEventFocus) {
   SetPointerFocusedWindow(window_.get());
   Event::DispatcherApi(&test_mouse_event_).set_target(window_.get());
   EXPECT_TRUE(window_->CanDispatchEvent(&test_mouse_event_));
+}
+
+TEST_P(WaylandWindowTest, SetCursorUsesCursorShapeForCommonTypes) {
+  SetPointerFocusedWindow(window_.get());
+  MockCursorShape* mock_cursor_shape = InstallMockCursorShape();
+
+  // Verify some commonly-used cursors.
+  EXPECT_CALL(*mock_cursor_shape,
+              SetCursorShape(WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DEFAULT));
+  auto pointer_cursor = AsPlatformCursor(
+      base::MakeRefCounted<BitmapCursor>(mojom::CursorType::kPointer));
+  window_->SetCursor(pointer_cursor.get());
+
+  EXPECT_CALL(*mock_cursor_shape,
+              SetCursorShape(WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_POINTER));
+  auto hand_cursor = AsPlatformCursor(
+      base::MakeRefCounted<BitmapCursor>(mojom::CursorType::kHand));
+  window_->SetCursor(hand_cursor.get());
+
+  EXPECT_CALL(*mock_cursor_shape,
+              SetCursorShape(WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_TEXT));
+  auto ibeam_cursor = AsPlatformCursor(
+      base::MakeRefCounted<BitmapCursor>(mojom::CursorType::kIBeam));
+  window_->SetCursor(ibeam_cursor.get());
+}
+
+TEST_P(WaylandWindowTest, SetCursorCallsCursorShapeOncePerCursor) {
+  SetPointerFocusedWindow(window_.get());
+  MockCursorShape* mock_cursor_shape = InstallMockCursorShape();
+  auto hand_cursor = AsPlatformCursor(
+      base::MakeRefCounted<BitmapCursor>(mojom::CursorType::kHand));
+  // Setting the same cursor twice on the client only calls the server once.
+  EXPECT_CALL(*mock_cursor_shape, SetCursorShape(_)).Times(1);
+  window_->SetCursor(hand_cursor.get());
+  window_->SetCursor(hand_cursor.get());
+}
+
+TEST_P(WaylandWindowTest, SetCursorDoesNotUseCursorShapeForNoneCursor) {
+  SetPointerFocusedWindow(window_.get());
+  MockCursorShape* mock_cursor_shape = InstallMockCursorShape();
+  EXPECT_CALL(*mock_cursor_shape, SetCursorShape(_)).Times(0);
+  auto none_cursor = AsPlatformCursor(
+      base::MakeRefCounted<BitmapCursor>(mojom::CursorType::kNone));
+  window_->SetCursor(none_cursor.get());
+}
+
+TEST_P(WaylandWindowTest, SetCursorDoesNotUseCursorShapeForCustomCursors) {
+  SetPointerFocusedWindow(window_.get());
+  MockCursorShape* mock_cursor_shape = InstallMockCursorShape();
+
+  // Custom cursors require bitmaps, so they do not use server-side cursors.
+  EXPECT_CALL(*mock_cursor_shape, SetCursorShape(_)).Times(0);
+  auto custom_cursor = AsPlatformCursor(
+      base::MakeRefCounted<BitmapCursor>(mojom::CursorType::kCustom, SkBitmap(),
+                                         gfx::Point(), kDefaultCursorScale));
+  window_->SetCursor(custom_cursor.get());
 }
 
 TEST_P(WaylandWindowTest, SetCursorUsesZcrCursorShapesForCommonTypes) {

@@ -15,6 +15,10 @@ wayland_protocol("content_type_protocol") {
   sources = [ "unstable/content-type/content-type-v1.xml" ]
 }
 
+wayland_protocol("cursor_shape_protocol") {
+  sources = [ "src/staging/cursor-shape/cursor-shape-v1.xml" ]
+}
+
 wayland_protocol("cursor_shapes_protocol") {
   sources = [ "unstable/cursor-shapes/cursor-shapes-unstable-v1.xml" ]
 }

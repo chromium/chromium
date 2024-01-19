@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 
 namespace ui {
@@ -21,6 +22,10 @@ class WaylandConnectionTestApi {
   WaylandConnectionTestApi(const WaylandConnectionTestApi&) = delete;
   WaylandConnectionTestApi& operator=(const WaylandConnectionTestApi&) = delete;
   ~WaylandConnectionTestApi() = default;
+
+  void SetCursorShape(std::unique_ptr<WaylandCursorShape> obj) {
+    impl_->cursor_shape_ = std::move(obj);
+  }
 
   void SetZcrCursorShapes(std::unique_ptr<WaylandZcrCursorShapes> obj) {
     impl_->zcr_cursor_shapes_ = std::move(obj);

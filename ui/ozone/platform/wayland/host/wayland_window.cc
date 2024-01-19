@@ -41,6 +41,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_frame_manager.h"
@@ -1110,7 +1111,9 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
         base::IsValueInRangeForNumericType<int>(
             cursor->cursor_image_scale_factor()));
 
-  absl::optional<int32_t> shape =
+  absl::optional<uint32_t> shape =
+      WaylandCursorShape::ShapeFromType(cursor->type());
+  absl::optional<int32_t> zcr_shape =
       WaylandZcrCursorShapes::ShapeFromType(cursor->type());
 
   // Round cursor scale factor to ceil as wl_surface.set_buffer_scale accepts
@@ -1118,20 +1121,25 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
   if (cursor->type() == CursorType::kNone) {  // Hide the cursor.
     connection_->SetCursorBitmap(
         {}, gfx::Point(), std::ceil(cursor->cursor_image_scale_factor()));
+  } else if (connection_->wayland_cursor_shape() && shape.has_value()) {
+    // Prefer Wayland server-side cursor support, as the compositor knows better
+    // how to draw the cursor.
+    connection_->wayland_cursor_shape()->SetCursorShape(shape.value());
   } else if (cursor->platform_data()) {  // Check for theme-provided cursor.
     connection_->SetPlatformCursor(
         reinterpret_cast<wl_cursor*>(cursor->platform_data()),
         std::ceil(cursor->cursor_image_scale_factor()));
   } else if (connection_->zcr_cursor_shapes() &&
-             shape.has_value()) {  // Check for Wayland server-side cursor
-                                   // support (e.g. exo for lacros).
+             zcr_shape.has_value()) {  // Check for Exo server-side cursor
+                                       // support.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Lacros should not load image assets for default cursors. See
     // `BitmapCursorFactory::GetDefaultCursor()`.
     DCHECK(cursor->bitmaps().empty());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    connection_->zcr_cursor_shapes()->SetCursorShape(shape.value());
-  } else {  // Use client-side bitmap cursors as fallback.
+    connection_->zcr_cursor_shapes()->SetCursorShape(zcr_shape.value());
+  } else if (!cursor->bitmaps()
+                  .empty()) {  // Use client-side bitmap cursors as fallback.
     // Translate physical pixels to DIPs.
     gfx::Point hotspot_in_dips = gfx::ScaleToRoundedPoint(
         cursor->hotspot(), 1.0f / cursor->cursor_image_scale_factor());

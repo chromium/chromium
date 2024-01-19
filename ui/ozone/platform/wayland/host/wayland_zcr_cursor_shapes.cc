@@ -168,8 +168,6 @@ absl::optional<int32_t> WaylandZcrCursorShapes::ShapeFromType(CursorType type) {
       return ZCR_CURSOR_SHAPES_V1_CURSOR_SHAPE_TYPE_DND_COPY;
     case CursorType::kDndLink:
       return ZCR_CURSOR_SHAPES_V1_CURSOR_SHAPE_TYPE_DND_LINK;
-      // NOTE: If you add a new cursor shape, please also update
-      // UseDefaultCursorForType() in bitmap_cursor_factory_ozone.cc.
   }
 }
 
