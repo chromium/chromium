@@ -1,6 +1,9 @@
 Need tests for (likely not a complete list):
 
-* Test biddingLogicURL passed to generateBid.
+* Test how InterestGroup values affected by k-anon checks are passed to generateBid.
+  * adSizes, sizeGroups, ads, and adComponents all need such tests.
+  * adSizes and sizeGroups currently have no tests, since they are incorectly
+      currently not passed to generateBid at all.
 * Test empty ads array:
    Maybe simplest to test its numBids is empty?  Hard to test a script isn't run.
 * directFromSellerSignals.

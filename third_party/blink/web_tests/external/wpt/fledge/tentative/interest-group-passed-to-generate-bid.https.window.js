@@ -18,7 +18,8 @@
 // META: variant=?61-65
 // META: variant=?66-70
 // META: variant=?71-75
-// META: variant=?76-last
+// META: variant=?76-80
+// META: variant=?81-85
 
 "use strict;"
 
@@ -26,8 +27,8 @@
 // and are normalized if necessary. This test does not check the behaviors of the
 // fields.
 
-// Modifies "ads". Replaces "REPLACE_WITH_UUID" in all "renderURL" or "renderUrl"
-// fields of objects in "ads" array with "uuid". Generated ad URLs have embedded
+// Modifies "ads". Replaces "REPLACE_WITH_UUID" in all "renderURL" fields of
+// objects in "ads" array with "uuid". Generated ad URLs have embedded
 // UUIDs to prevent InterestGroups unexpectedly left over from one test from
 // messing up another test, but these tests need ad URLs before the UUID is
 // generated. To get around that, "REPLACE_WITH_UUID" is used in place of UUIDs
@@ -35,10 +36,7 @@
 function updateAdRenderURLs(ads, uuid) {
   for (let i = 0; i < ads.length; ++i) {
     let ad = ads[i];
-    if (ad.renderURL)
-      ad.renderURL = ad.renderURL.replace('REPLACE_WITH_UUID', uuid);
-    if (ad.renderUrl)
-      ad.renderUrl = ad.renderUrl.replace('REPLACE_WITH_UUID', uuid);
+    ad.renderURL = ad.renderURL.replace('REPLACE_WITH_UUID', uuid);
   }
 }
 
@@ -87,23 +85,23 @@ const makeTest = ({
     if (interestGroupOverrides.owner)
       origin = new URL(interestGroupOverrides.owner).origin;
 
-      interestGroupOverrides.biddingLogicURL =
-      createBiddingScriptURL(
-          { origin: origin,
-            generateBid:
-                `// Delete deprecated "renderUrl" fields from ads and adComponents, if
-                 // present.
-                 for (let field in interestGroup) {
-                   if (field == "ads" || field == "adComponents") {
-                     for (let i = 0; i < interestGroup[field].length; ++i) {
-                       let ad = interestGroup[field][i];
-                       delete ad.renderUrl;
-                     }
-                   }
-                 }
-                 if (!${comparison})
-                   throw "Unexpected value: " + JSON.stringify(interestGroup["${fieldName}"]);`
-          });
+    interestGroupOverrides.biddingLogicURL =
+        createBiddingScriptURL(
+            { origin: origin,
+              generateBid:
+                  `// Delete deprecated "renderUrl" fields from ads and adComponents, if
+                  // present.
+                  for (let field in interestGroup) {
+                    if (field === "ads" || field === "adComponents") {
+                      for (let i = 0; i < interestGroup[field].length; ++i) {
+                        let ad = interestGroup[field][i];
+                        delete ad.renderUrl;
+                      }
+                    }
+                  }
+                  if (!${comparison})
+                    throw "Unexpected value: " + JSON.stringify(interestGroup["${fieldName}"]);`
+            });
     if (origin !== location.origin) {
       await joinCrossOriginInterestGroup(test, uuid, origin, interestGroupOverrides);
     } else {
@@ -158,6 +156,48 @@ makeTest({
   fieldValue: '\uFFFD,\uFFFD',
   interestGroupOverrides: {name: '\uD800,\uDBF0'}
 });
+
+// Since "biddingLogicURL" contains the script itself inline, can't include the entire URL
+// in the script for an equality check. Instead, replace the "generateBid" query parameter
+// in the URL with an empty value before comparing it. This doesn't just delete the entire
+// query parameter to make sure that's correctly passed in.
+subsetTest(promise_test,async test => {
+  const uuid = generateUuid(test);
+
+  let biddingScriptBaseURL = createBiddingScriptURL({origin: OTHER_ORIGIN1, generateBid: ''});
+  let biddingLogicURL = createBiddingScriptURL(
+      { origin: OTHER_ORIGIN1,
+        generateBid:
+          `let biddingScriptBaseURL =
+            interestGroup.biddingLogicURL.replace(/generateBid=[^&]*/, "generateBid=");
+          if (biddingScriptBaseURL !== "${biddingScriptBaseURL}")
+            throw "Wrong bidding script URL: " + interestGroup.biddingLogicURL`
+      });
+
+  await joinCrossOriginInterestGroup(test, uuid, OTHER_ORIGIN1,
+                                     { biddingLogicURL: biddingLogicURL });
+
+  await runBasicFledgeTestExpectingWinner(test, uuid, {interestGroupBuyers: [OTHER_ORIGIN1]});
+}, 'InterestGroup.biddingLogicURL.');
+
+// Much like above test, but use a relative URL that points to bidding script.
+subsetTest(promise_test,async test => {
+  const uuid = generateUuid(test);
+
+  let biddingScriptBaseURL = createBiddingScriptURL({generateBid: ''});
+  let biddingLogicURL = createBiddingScriptURL(
+      { generateBid:
+          `let biddingScriptBaseURL =
+            interestGroup.biddingLogicURL.replace(/generateBid=[^&]*/, "generateBid=");
+          if (biddingScriptBaseURL !== "${biddingScriptBaseURL}")
+            throw "Wrong bidding script URL: " + interestGroup.biddingLogicURL`
+      });
+  biddingLogicURL = biddingLogicURL.replace(BASE_URL, 'foo/../');
+
+  await joinInterestGroup(test, uuid, { biddingLogicURL: biddingLogicURL });
+
+  await runBasicFledgeTestExpectingWinner(test, uuid);
+}, 'InterestGroup.biddingLogicURL with relative URL.');
 
 makeTest({
   name: 'InterestGroup.lifetimeMs should not be passed in.',
@@ -651,6 +691,40 @@ makeTest({
   name: 'InterestGroup.adComponents with multiple ads.',
   fieldName: 'adComponents',
   fieldValue: [{renderURL: AD1_URL, metadata: 1}, {renderURL: AD2_URL, metadata: [2]}]
+});
+
+makeTest({
+  name: 'InterestGroup.auctionServerRequestFlags is undefined',
+  fieldName: 'auctionServerRequestFlags',
+  fieldValue: undefined
+});
+
+makeTest({
+  name: 'InterestGroup.auctionServerRequestFlags is "omit-ads".',
+  fieldName: 'auctionServerRequestFlags',
+  fieldValue: undefined,
+  interestGroupOverrides: {auctionServerRequestFlags: ['omit-ads']}
+});
+
+makeTest({
+  name: 'InterestGroup.auctionServerRequestFlags is "include-full-ads".',
+  fieldName: 'auctionServerRequestFlags',
+  fieldValue: undefined,
+  interestGroupOverrides: {auctionServerRequestFlags: ['include-full-ads']}
+});
+
+makeTest({
+  name: 'InterestGroup.auctionServerRequestFlags has multiple values.',
+  fieldName: 'auctionServerRequestFlags',
+  fieldValue: undefined,
+  interestGroupOverrides: {auctionServerRequestFlags: ['omit-ads', 'include-full-ads']}
+});
+
+makeTest({
+  name: 'InterestGroup.auctionServerRequestFlags.',
+  fieldName: 'auctionServerRequestFlags',
+  fieldValue: undefined,
+  interestGroupOverrides: {auctionServerRequestFlags: ['noval value']}
 });
 
 // This should probably be an error. This WPT test serves to encourage there to be a
