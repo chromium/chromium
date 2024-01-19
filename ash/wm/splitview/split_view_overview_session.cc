@@ -177,7 +177,6 @@ void SplitViewOverviewSession::OnResizeLoopEnded(aura::Window* window) {
   // When `FasterSplitScreenOrSnapGroup` is disabled, end overview if the
   // divider position is outside the fixed positions.
   const int work_area_length = GetDividerPositionUpperLimit(root_window);
-
   const int window_length =
       GetWindowLength(window, IsLayoutHorizontal(root_window));
   if (window_length < work_area_length * chromeos::kOneThirdSnapRatio ||
