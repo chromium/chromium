@@ -436,6 +436,12 @@ const base::FeatureParam<std::string> kBrowsingTopicsPrioritizedTopicsList{
     &kBrowsingTopicsParameters, "prioritized_topics_list",
     "57,86,126,149,172,180,196,207,239,254,263,272,289,299,332"};
 
+// When enabled, every mainframe same-doc navigation will increment the
+// `viz::LocalSurfaceId` from the impl thread.
+BASE_FEATURE(kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
+             "IncrementLocalSurfaceIdForMainframeSameDocNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Suppresses console errors for CORS problems which report an associated
 // inspector issue anyway.
 BASE_FEATURE(kCORSErrorsIssueOnly,

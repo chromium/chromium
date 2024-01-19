@@ -698,6 +698,9 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   bool IsScrollGestureActive() const;
 
+  // Request a new `viz::LocalSurfaceId` on the compositor thread.
+  void RequestNewLocalSurfaceId();
+
  protected:
   // WidgetBaseClient overrides:
   void ScheduleAnimation() override;

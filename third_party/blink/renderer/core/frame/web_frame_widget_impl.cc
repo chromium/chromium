@@ -1350,6 +1350,10 @@ bool WebFrameWidgetImpl::IsScrollGestureActive() const {
   return is_scroll_gesture_active_;
 }
 
+void WebFrameWidgetImpl::RequestNewLocalSurfaceId() {
+  LayerTreeHost()->RequestNewLocalSurfaceId();
+}
+
 WebInputMethodController*
 WebFrameWidgetImpl::GetActiveWebInputMethodController() const {
   WebLocalFrameImpl* local_frame =
