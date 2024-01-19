@@ -46,6 +46,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/aura/env.h"
+#include "ui/aura/env_observer.h"
+#include "ui/aura/test/find_window.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -67,12 +71,21 @@ namespace {
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Contains;
+using ::testing::Each;
 using ::testing::Eq;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Not;
+using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::WithArg;
+
+// MockEnvObserver -------------------------------------------------------------
+
+class MockEnvObserver : public aura::EnvObserver {
+ public:
+  MOCK_METHOD(void, OnWindowInitialized, (aura::Window*), (override));
+};
 
 // MockNotificationDisplayServiceObserver --------------------------------------
 
@@ -106,6 +119,8 @@ int GetCommandTextId(CommandType command_type) {
       return IDS_ASH_DOWNLOAD_COMMAND_TEXT_RESUME;
     case CommandType::kShowInBrowser:
       NOTREACHED_NORETURN();
+    case CommandType::kShowInFolder:
+      return IDS_ASH_DOWNLOAD_COMMAND_TEXT_SHOW_IN_FOLDER;
   }
 }
 
@@ -726,6 +741,66 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   test::Click(*resume_button_iter, ui::EF_NONE);
   run_loop->Run();
   Mock::VerifyAndClearExpectations(&service_observer());
+}
+
+// Verifies that the show-in-folder button works as expected.
+IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, ShowInFolder) {
+  WaitForTestSystemAppInstall();
+
+  // Add a pausable download. Cache the notification ID.
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  std::string notification_id;
+  EXPECT_CALL(service_observer(), OnNotificationDisplayed)
+      .WillOnce(WithArg<0>(
+          [&notification_id](const message_center::Notification& notification) {
+            notification_id = notification.id();
+          }));
+  crosapi::mojom::DownloadStatusPtr download =
+      CreateInProgressDownloadStatus(profile,
+                                     /*received_bytes=*/0,
+                                     /*target_bytes=*/1024);
+  Update(download->Clone());
+  Mock::VerifyAndClearExpectations(&service_observer());
+
+  // An in-progress notification should not have a show-in-folder button.
+  AshNotificationView* popup_view = GetPopupView(profile, notification_id);
+  ASSERT_TRUE(popup_view);
+  const std::u16string button_text =
+      l10n_util::GetStringUTF16(GetCommandTextId(CommandType::kShowInFolder));
+  EXPECT_THAT(popup_view->GetActionButtonsForTest(),
+              Each(Pointee(Property(&views::LabelButton::GetText,
+                                    Not(Eq(button_text))))));
+
+  // Complete the download. Check the existence of the associated notification.
+  download->state = crosapi::mojom::DownloadState::kComplete;
+  Update(download->Clone());
+  EXPECT_THAT(GetDisplayedNotificationIds(), Contains(notification_id));
+
+  // Set up an observer to wait until the Files app opens.
+  NiceMock<MockEnvObserver> mock_env_observer;
+  base::ScopedObservation<aura::Env, MockEnvObserver> env_observation{
+      &mock_env_observer};
+  base::RunLoop run_loop;
+  ON_CALL(mock_env_observer, OnWindowInitialized)
+      .WillByDefault([&run_loop](aura::Window* window) {
+        if (aura::test::FindWindowWithTitle(aura::Env::GetInstance(),
+                                            u"Files")) {
+          run_loop.Quit();
+        }
+      });
+
+  // Find the show-in-folder button.
+  popup_view = GetPopupView(profile, notification_id);
+  ASSERT_TRUE(popup_view);
+  const auto action_buttons = popup_view->GetActionButtonsForTest();
+  auto show_in_folder_button_iter = base::ranges::find(
+      action_buttons, button_text, &views::LabelButton::GetText);
+  ASSERT_NE(show_in_folder_button_iter, action_buttons.end());
+
+  // Click the show-in-folder button and wait until the Files app opens.
+  env_observation.Observe(aura::Env::GetInstance());
+  test::Click(*show_in_folder_button_iter, ui::EF_NONE);
+  run_loop.Run();
 }
 
 }  // namespace ash::download_status

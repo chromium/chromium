@@ -17,6 +17,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/crosapi/download_status_updater_ash.h"
+#include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ui/ash/download_status/display_client.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/browser/ui/ash/download_status/holding_space_display_client.h"
@@ -123,14 +124,29 @@ std::optional<std::u16string> GetText(
   return file_path.get().BaseName().LossyDisplayName();
 }
 
+// Opens the download file specified by `file_path` in the folder under the file
+// system associated with `profile`.
+void ShowInFolder(Profile* profile, const base::FilePath& file_path) {
+  if (file_path.empty()) {
+    LOG(ERROR) << "Tried to open an empty file path in folder.";
+    return;
+  }
+
+  file_manager::util::ShowItemInFolder(profile, file_path,
+                                       /*callback=*/base::DoNothing());
+}
+
 }  // namespace
 
 DisplayManager::DisplayManager(
     Profile* profile,
     crosapi::DownloadStatusUpdaterAsh* download_status_updater)
-    : download_status_updater_(download_status_updater) {
+    : profile_(profile), download_status_updater_(download_status_updater) {
   CHECK(features::IsSysUiDownloadsIntegrationV2Enabled());
   CHECK(download_status_updater_);
+
+  CHECK(profile_);
+  profile_observation_.Observe(profile_);
 
   clients_.push_back(std::make_unique<HoldingSpaceDisplayClient>(profile));
   clients_.push_back(std::make_unique<NotificationDisplayClient>(profile));
@@ -165,7 +181,11 @@ void DisplayManager::Update(
   }
 }
 
-// TODO(http://b/307347158): Fill `display_metadata`.
+void DisplayManager::OnProfileWillBeDestroyed(Profile* profile) {
+  profile_observation_.Reset();
+  profile_ = nullptr;
+}
+
 DisplayMetadata DisplayManager::CalculateDisplayMetadata(
     const crosapi::mojom::DownloadStatus& download_status) {
   CHECK(CanDisplay(download_status));
@@ -177,32 +197,47 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
     command_infos.emplace_back(
         base::BindRepeating(&DisplayManager::PerformCommand,
                             weak_ptr_factory_.GetWeakPtr(),
-                            download_status.guid, CommandType::kCancel),
+                            CommandType::kCancel, download_status.guid),
         &kCancelIcon, IDS_ASH_DOWNLOAD_COMMAND_TEXT_CANCEL,
         CommandType::kCancel);
   }
   if (download_status.pausable.value_or(false)) {
     command_infos.emplace_back(
         base::BindRepeating(&DisplayManager::PerformCommand,
-                            weak_ptr_factory_.GetWeakPtr(),
-                            download_status.guid, CommandType::kPause),
+                            weak_ptr_factory_.GetWeakPtr(), CommandType::kPause,
+                            download_status.guid),
         &kPauseIcon, IDS_ASH_DOWNLOAD_COMMAND_TEXT_PAUSE, CommandType::kPause);
   }
   if (download_status.resumable.value_or(false)) {
     command_infos.emplace_back(
         base::BindRepeating(&DisplayManager::PerformCommand,
                             weak_ptr_factory_.GetWeakPtr(),
-                            download_status.guid, CommandType::kResume),
+                            CommandType::kResume, download_status.guid),
         &kResumeIcon, IDS_ASH_DOWNLOAD_COMMAND_TEXT_RESUME,
         CommandType::kResume);
   }
-  if (download_status.state == crosapi::mojom::DownloadState::kInProgress) {
-    // NOTE: `kShowInBrowser` is not shown so doesn't require an icon/text_id.
-    command_infos.emplace_back(
-        base::BindRepeating(&DisplayManager::PerformCommand,
-                            weak_ptr_factory_.GetWeakPtr(),
-                            download_status.guid, CommandType::kShowInBrowser),
-        /*icon=*/nullptr, /*text_id=*/-1, CommandType::kShowInBrowser);
+  switch (download_status.state) {
+    case crosapi::mojom::DownloadState::kComplete:
+      // NOTE: The `kShowInFolder` button does not have an icon.
+      command_infos.emplace_back(
+          base::BindRepeating(
+              &DisplayManager::PerformCommand, weak_ptr_factory_.GetWeakPtr(),
+              CommandType::kShowInFolder, *download_status.full_path),
+          /*icon=*/nullptr, IDS_ASH_DOWNLOAD_COMMAND_TEXT_SHOW_IN_FOLDER,
+          CommandType::kShowInFolder);
+      break;
+    case crosapi::mojom::DownloadState::kInProgress:
+      // NOTE: `kShowInBrowser` is not shown so doesn't require an icon/text_id.
+      command_infos.emplace_back(
+          base::BindRepeating(
+              &DisplayManager::PerformCommand, weak_ptr_factory_.GetWeakPtr(),
+              CommandType::kShowInBrowser, download_status.guid),
+          /*icon=*/nullptr, /*text_id=*/-1, CommandType::kShowInBrowser);
+      break;
+    case crosapi::mojom::DownloadState::kCancelled:
+    case crosapi::mojom::DownloadState::kInterrupted:
+    case crosapi::mojom::DownloadState::kUnknown:
+      break;
   }
   display_metadata.command_infos = std::move(command_infos);
 
@@ -215,21 +250,29 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
   return display_metadata;
 }
 
-void DisplayManager::PerformCommand(const std::string& guid,
-                                    CommandType command) {
+void DisplayManager::PerformCommand(
+    CommandType command,
+    const std::variant</*guid=*/std::string, base::FilePath>& param) {
   switch (command) {
     case CommandType::kCancel:
-      download_status_updater_->Cancel(guid, /*callback=*/base::DoNothing());
+      download_status_updater_->Cancel(/*guid=*/std::get<std::string>(param),
+                                       /*callback=*/base::DoNothing());
       break;
     case CommandType::kPause:
-      download_status_updater_->Pause(guid, /*callback=*/base::DoNothing());
+      download_status_updater_->Pause(/*guid=*/std::get<std::string>(param),
+                                      /*callback=*/base::DoNothing());
       break;
     case CommandType::kResume:
-      download_status_updater_->Resume(guid, /*callback=*/base::DoNothing());
+      download_status_updater_->Resume(/*guid=*/std::get<std::string>(param),
+                                       /*callback=*/base::DoNothing());
       break;
     case CommandType::kShowInBrowser:
-      download_status_updater_->ShowInBrowser(guid,
-                                              /*callback=*/base::DoNothing());
+      download_status_updater_->ShowInBrowser(
+          /*guid=*/std::get<std::string>(param),
+          /*callback=*/base::DoNothing());
+      break;
+    case CommandType::kShowInFolder:
+      ShowInFolder(profile_, std::get<base::FilePath>(param));
       break;
   }
 }

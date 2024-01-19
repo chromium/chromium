@@ -227,6 +227,7 @@ void NotificationDisplayClient::AddOrUpdate(
       case CommandType::kCancel:
       case CommandType::kPause:
       case CommandType::kResume:
+      case CommandType::kShowInFolder:
         button_click_callbacks.push_back(command_info.command_callback);
         buttons.emplace_back(l10n_util::GetStringUTF16(command_info.text_id));
         break;

@@ -8,10 +8,12 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
+#include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -37,6 +39,8 @@ HoldingSpaceCommandId ConvertCommandTypeToId(CommandType type) {
       return HoldingSpaceCommandId::kPauseItem;
     case CommandType::kResume:
       return HoldingSpaceCommandId::kResumeItem;
+    case CommandType::kShowInFolder:
+      return HoldingSpaceCommandId::kShowInFolder;
   }
 }
 
@@ -86,14 +90,17 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
     return;
   }
 
-  // Generate commands from `display_metadata`.
+  // Generate in-progress commands from `display_metadata`.
   std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands;
   for (const auto& command_info : display_metadata.command_infos) {
-    in_progress_commands.emplace_back(
-        ConvertCommandTypeToId(command_info.type), command_info.text_id,
-        command_info.icon,
-        base::IgnoreArgs<const HoldingSpaceItem*, HoldingSpaceCommandId>(
-            command_info.command_callback));
+    if (const HoldingSpaceCommandId id =
+            ConvertCommandTypeToId(command_info.type);
+        holding_space_util::IsInProgressCommand(id)) {
+      in_progress_commands.emplace_back(
+          id, command_info.text_id, command_info.icon,
+          base::IgnoreArgs<const HoldingSpaceItem*, HoldingSpaceCommandId>(
+              command_info.command_callback));
+    }
   }
 
   // Specify the backing file.
