@@ -38,6 +38,7 @@ import android.view.ViewGroup;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -756,12 +757,23 @@ public class TabUiTestHelper {
         assertTrue(isIncognito != cta.getTabModelSelector().isIncognitoSelected());
         assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
 
-        onView(
-                        withContentDescription(
-                                isIncognito
-                                        ? R.string.accessibility_tab_switcher_incognito_stack
-                                        : R.string.accessibility_tab_switcher_standard_stack))
-                .perform(click());
+        @StringRes
+        int contentDescription =
+                isIncognito
+                        ? R.string.accessibility_tab_switcher_incognito_stack
+                        : R.string.accessibility_tab_switcher_standard_stack;
+        if (HubFieldTrial.isHubEnabled()) {
+            onView(
+                            allOf(
+                                    isDescendantOfA(
+                                            withId(
+                                                    org.chromium.chrome.browser.hub.R.id
+                                                            .hub_toolbar)),
+                                    withContentDescription(contentDescription)))
+                    .perform(click());
+        } else {
+            onView(withContentDescription(contentDescription)).perform(click());
+        }
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -769,7 +781,13 @@ public class TabUiTestHelper {
                             cta.getTabModelSelector().isIncognitoSelected(), is(isIncognito));
                 });
         // Wait for tab list recyclerView to finish animation after tab model switch.
-        RecyclerView recyclerView = cta.findViewById(R.id.tab_list_recycler_view);
+        RecyclerView recyclerView;
+        if (HubFieldTrial.isHubEnabled()) {
+            ViewGroup viewGroup = cta.findViewById(getTabSwitcherAncestorId(cta));
+            recyclerView = viewGroup.findViewById(R.id.tab_list_recycler_view);
+        } else {
+            recyclerView = cta.findViewById(R.id.tab_list_recycler_view);
+        }
         waitForStableRecyclerView(recyclerView);
     }
 
