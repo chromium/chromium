@@ -5,26 +5,44 @@
 #ifndef COMPONENTS_NTP_TILES_PREF_NAMES_H_
 #define COMPONENTS_NTP_TILES_PREF_NAMES_H_
 
-namespace ntp_tiles {
-namespace prefs {
+namespace ntp_tiles::prefs {
 
-extern const char kNumPersonalTiles[];
+// The number of personal tiles we had previously. Used to figure out
+// whether we need popular sites.
+inline constexpr char kNumPersonalTiles[] = "ntp.num_personal_suggestions";
 
-extern const char kPopularSitesOverrideURL[];
-extern const char kPopularSitesOverrideDirectory[];
-extern const char kPopularSitesOverrideCountry[];
-extern const char kPopularSitesOverrideVersion[];
+// If set, overrides the URL for popular sites, including the individual
+// overrides for country and version below.
+inline constexpr char kPopularSitesOverrideURL[] = "popular_sites.override_url";
 
-extern const char kPopularSitesLastDownloadPref[];
-extern const char kPopularSitesURLPref[];
-extern const char kPopularSitesJsonPref[];
-extern const char kPopularSitesVersionPref[];
+// If set, this will override the URL path directory for popular sites.
+inline constexpr char kPopularSitesOverrideDirectory[] =
+    "popular_sites.override_directory";
 
-extern const char kCustomLinksList[];
-extern const char kCustomLinksInitialized[];
-extern const char kCustomLinksForPreinstalledAppsRemoved[];
+// If set, this will override the country detection for popular sites.
+inline constexpr char kPopularSitesOverrideCountry[] =
+    "popular_sites.override_country";
 
-}  // namespace prefs
-}  // namespace ntp_tiles
+// If set, this will override the default file version for popular sites.
+inline constexpr char kPopularSitesOverrideVersion[] =
+    "popular_sites.override_version";
+
+// Prefs used to cache suggested sites and store caching meta data.
+inline constexpr char kPopularSitesLastDownloadPref[] =
+    "popular_sites_last_download";
+inline constexpr char kPopularSitesURLPref[] = "popular_sites_url";
+inline constexpr char kPopularSitesJsonPref[] = "suggested_sites_json";
+inline constexpr char kPopularSitesVersionPref[] = "suggested_sites_version";
+
+// Prefs used to cache custom links.
+inline constexpr char kCustomLinksList[] = "custom_links.list";
+inline constexpr char kCustomLinksInitialized[] = "custom_links.initialized";
+
+// Pref used to verify whether custom links have been removed
+// for preinstalled default chrome apps
+inline constexpr char kCustomLinksForPreinstalledAppsRemoved[] =
+    "custom_links.preinstalledremoved";
+
+}  // namespace ntp_tiles::prefs
 
 #endif  // COMPONENTS_NTP_TILES_PREF_NAMES_H_

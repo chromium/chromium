@@ -28,7 +28,6 @@ static_library("search_engines") {
     "search_engine_choice/search_engine_choice_service.h",
     "search_engine_choice_utils.cc",
     "search_engine_choice_utils.h",
-    "search_engines_pref_names.cc",
     "search_engines_pref_names.h",
     "search_engines_switches.cc",
     "search_engines_switches.h",
