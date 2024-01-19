@@ -163,7 +163,8 @@ void AutomationManagerAura::ExtensionListenerAdded() {
   Reset(true /* reset serializer */);
 }
 
-void AutomationManagerAura::HandleEvent(ax::mojom::Event event_type) {
+void AutomationManagerAura::HandleEvent(ax::mojom::Event event_type,
+                                        bool from_user) {
   if (!enabled_)
     return;
 
@@ -172,7 +173,8 @@ void AutomationManagerAura::HandleEvent(ax::mojom::Event event_type) {
   if (!obj)
     return;
 
-  PostEvent(obj->GetUniqueId(), event_type);
+  PostEvent(obj->GetUniqueId(), event_type, /*action_request_id=*/-1,
+            /*from_user=*/from_user);
 }
 
 void AutomationManagerAura::HandleAlert(const std::string& text) {
@@ -262,9 +264,10 @@ void AutomationManagerAura::Reset(bool reset_serializer) {
 
 void AutomationManagerAura::PostEvent(int id,
                                       ax::mojom::Event event_type,
-                                      int action_request_id) {
-  pending_events_.push_back(
-      {id, event_type, action_request_id, currently_performing_action_});
+                                      int action_request_id,
+                                      bool from_user) {
+  pending_events_.push_back({id, event_type, action_request_id,
+                             currently_performing_action_, from_user});
 
   if (processing_posted_)
     return;
@@ -319,6 +322,8 @@ void AutomationManagerAura::SendPendingEvents() {
       if (event_copy.currently_performing_action != ax::mojom::Action::kNone) {
         event.event_from = ax::mojom::EventFrom::kAction;
         event.event_from_action = event_copy.currently_performing_action;
+      } else if (event_copy.from_user) {
+        event.event_from = ax::mojom::EventFrom::kUser;
       }
       event.action_request_id = event_copy.action_request_id;
       events.push_back(std::move(event));

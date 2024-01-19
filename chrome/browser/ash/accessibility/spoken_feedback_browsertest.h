@@ -52,6 +52,7 @@ class LoggedInSpokenFeedbackTest : public AccessibilityFeatureBrowserTest {
   void SendStickyKeyCommand();
 
   void SendMouseMoveTo(const gfx::Point& location);
+  void SetMouseSourceDeviceId(int id);
 
   bool PerformAcceleratorAction(AcceleratorAction action);
 
