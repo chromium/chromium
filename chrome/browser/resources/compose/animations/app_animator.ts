@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {isMac} from '//resources/js/platform.js';
+
 import {Animator, EMPHASIZED_DECELERATE, STANDARD_EASING} from './animator.js';
 
 export class ComposeAppAnimator extends Animator {
@@ -83,7 +85,7 @@ export class ComposeAppAnimator extends Animator {
             {height: `${bodyHeight}px`},
             {height: `var(--compose-loading-body-and-footer-height)`},
           ],
-          {duration: 250, easing: STANDARD_EASING}),
+          {duration: 250, easing: STANDARD_EASING}, !isMac),
 
       // Fade out the edit form.
       this.fadeOutAndHide('#editContainer', 'flex', {duration: 250}),
@@ -111,7 +113,7 @@ export class ComposeAppAnimator extends Animator {
             {height: `${loadingHeight}px`},
             {height: `${resultsHeight}px`},
           ],
-          {duration: 400, easing: STANDARD_EASING}),
+          {duration: 400, easing: STANDARD_EASING}, !isMac),
 
       this.slideIn('#resultOptions', -32, {duration: 400}),
       this.fadeIn('#resultOptions', {delay: 200, duration: 200}),
@@ -160,7 +162,7 @@ export class ComposeAppAnimator extends Animator {
             {height: `${bodyHeight}px`},
             {height: 'var(--compose-loading-body-and-footer-height)'},
           ],
-          {duration: 250, easing: STANDARD_EASING}),
+          {duration: 250, easing: STANDARD_EASING}, !isMac),
       this.animate(
           '#resultContainer',
           [
@@ -175,7 +177,7 @@ export class ComposeAppAnimator extends Animator {
               alignItems: 'flex-end',
             },
           ],
-          {duration: 250, easing: STANDARD_EASING}),
+          {duration: 250, easing: STANDARD_EASING}, !isMac),
     ].flat();
   }
 
