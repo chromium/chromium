@@ -52,6 +52,13 @@ export async function selectSeaPenWallpaper(
   const {success} = await provider.selectSeaPenThumbnail(thumbnail.id);
   store.dispatch(
       seaPenAction.endSelectSeaPenThumbnailAction(thumbnail, success));
+  if (store.data.loading.setImage === 0) {
+    // If the user has not already clicked on another thumbnail, treat this
+    // thumbnail as set.
+    // TODO(b/321252838) improve this with an async observer for VC Background.
+    store.dispatch(seaPenAction.setSelectedRecentSeaPenImageAction(
+        success ? `${thumbnail.id}.jpg` : null));
+  }
   // Re-fetches the recent Sea Pen image if setting sea pen wallpaper
   // successfully, which means the file has been downloaded successfully.
   if (success) {

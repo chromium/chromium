@@ -63,7 +63,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
         value: null,
       },
 
-      currentSelected_: Object,
+      currentSelected_: String,
 
       pendingSelected_: Object,
     };
@@ -189,9 +189,22 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
       return false;
     }
 
-    return (isNonEmptyFilePath(pendingSelected) &&
-            image.path === pendingSelected.path) ||
-        (!pendingSelected && image.path === currentSelected);
+    if (isNonEmptyFilePath(pendingSelected)) {
+      // User just clicked on a recent image.
+      return image.path === pendingSelected.path;
+    }
+
+    if (pendingSelected !== null) {
+      // User just clicked on a new thumbnail that will be saved as a recent
+      // image soon.
+      return false;
+    }
+
+    if (!currentSelected) {
+      return false;
+    }
+
+    return image.path.endsWith(currentSelected);
   }
 
   private onRecentImageSelected_(event: WallpaperGridItemSelectedEvent&

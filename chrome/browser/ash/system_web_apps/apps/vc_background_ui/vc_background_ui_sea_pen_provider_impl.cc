@@ -102,7 +102,7 @@ void VcBackgroundUISeaPenProviderImpl::OnFetchWallpaperDoneInternal(
     const std::string& query_info,
     base::OnceCallback<void(bool success)> callback) {
   GetCameraEffectsController()->SetBackgroundImageFromContent(
-      std::string(sea_pen_image.jpg_bytes), query_info, std::move(callback));
+      sea_pen_image, query_info, std::move(callback));
 }
 
 }  // namespace ash::vc_background_ui

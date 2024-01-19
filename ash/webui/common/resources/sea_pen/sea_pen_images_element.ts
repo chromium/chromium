@@ -169,11 +169,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
 
     // No pending image in progress. Currently selected image matches the
     // thumbnail id.
-    if (pendingSelected === null && currentSelected?.endsWith(fileName)) {
-      return true;
-    }
-
-    return false;
+    return pendingSelected === null && !!currentSelected?.endsWith(fileName);
   }
 
   private isThumbnailLoading_(

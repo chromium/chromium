@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -26,6 +27,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -54,7 +56,7 @@ constexpr char kCameraBackgroundOriginalDir[] =
 
 constexpr char kMetadataSuffix[] = ".metadata";
 
-constexpr char kSupportedImages[] = FILE_PATH_LITERAL("*.jpeg");
+constexpr char kSupportedImages[] = FILE_PATH_LITERAL("*.jpg");
 
 constexpr unsigned int k3M = 3 * 1024 * 1024;
 
@@ -165,11 +167,6 @@ CameraEffectsController::BackgroundBlurState MapBackgroundBlurPrefValueToState(
   return CameraEffectsController::BackgroundBlurState::kOff;
 }
 
-base::FilePath HashAsFileName(const std::string& jpeg_bytes) {
-  return base::FilePath(
-      base::StrCat({base::NumberToString(base::Hash(jpeg_bytes)), ".jpeg"}));
-}
-
 inline base::FilePath GetMetadataFilePath(const base::FilePath& filepath) {
   return filepath.AddExtensionASCII(kMetadataSuffix);
 }
@@ -193,16 +190,17 @@ bool RemoveBackgroundImageOnWorker(const base::FilePath& filepath) {
 // Returns basename if succeeds, empty path otherwise.
 base::FilePath WriteImageToBackgroundDir(
     const base::FilePath& camera_background_img_dir,
-    std::string&& jpeg_bytes,
+    SeaPenImage&& sea_pen_image,
     const std::string& metadata) {
-  const base::FilePath basename = HashAsFileName(jpeg_bytes);
+  const auto basename =
+      base::FilePath(base::NumberToString(sea_pen_image.id) + ".jpg");
   const base::FilePath background_image_filepath =
       camera_background_img_dir.Append(basename);
   const base::FilePath background_metadata_filepath =
       GetMetadataFilePath(background_image_filepath);
 
   if (base::CreateDirectory(camera_background_img_dir) &&
-      base::WriteFile(background_image_filepath, jpeg_bytes) &&
+      base::WriteFile(background_image_filepath, sea_pen_image.jpg_bytes) &&
       base::WriteFile(background_metadata_filepath, metadata)) {
     return basename;
   }
@@ -452,21 +450,24 @@ void CameraEffectsController::SetBackgroundImage(
 }
 
 void CameraEffectsController::SetBackgroundImageFromContent(
-    std::string&& jpeg_bytes,
+    const SeaPenImage& sea_pen_image,
     const std::string& metadata,
     base::OnceCallback<void(bool)> callback) {
   CHECK(!camera_background_img_dir_.empty())
       << "SetBackgroundImageFromContent should not be called when "
          "camera_background_img_dir_ is not set.";
 
-  CHECK_LT(jpeg_bytes.size(), k3M)
+  CHECK(!sea_pen_image.jpg_bytes.empty());
+  CHECK_LT(sea_pen_image.jpg_bytes.size(), k3M)
       << "Can't use an image that is larger than 30M as a background";
 
   // Write images to disk;
+  // TODO(b/321122378) remove unnecessary copy of SeaPenImage.
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&WriteImageToBackgroundDir, camera_background_img_dir_,
-                     std::move(jpeg_bytes), metadata),
+                     SeaPenImage(sea_pen_image.jpg_bytes, sea_pen_image.id),
+                     metadata),
       base::BindOnce(
           &CameraEffectsController::OnSaveBackgroundImageFileComplete,
           weak_factory_.GetWeakPtr(), std::move(callback)));

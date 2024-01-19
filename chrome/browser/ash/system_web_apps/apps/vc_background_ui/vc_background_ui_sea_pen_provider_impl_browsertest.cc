@@ -32,8 +32,8 @@ namespace ash::vc_background_ui {
 namespace {
 
 constexpr const base::FilePath::CharType* kExistingFileImage[] = {
-    FILE_PATH_LITERAL("a.jpeg"),
-    FILE_PATH_LITERAL("b.jpeg"),
+    FILE_PATH_LITERAL("a.jpg"),
+    FILE_PATH_LITERAL("b.jpg"),
 };
 
 // Create fake Jpg image bytes.

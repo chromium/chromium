@@ -5,11 +5,13 @@
 #ifndef ASH_SYSTEM_CAMERA_CAMERA_EFFECTS_CONTROLLER_H_
 #define ASH_SYSTEM_CAMERA_CAMERA_EFFECTS_CONTROLLER_H_
 
+#include <string>
 #include <utility>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/system/camera/autozoom_observer.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 #include "base/memory/weak_ptr.h"
@@ -110,7 +112,7 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
 
   // Saves the `jpeg_bytes` as an image file with `metadata` and apply that as
   // camera background.
-  void SetBackgroundImageFromContent(std::string&& jpeg_bytes,
+  void SetBackgroundImageFromContent(const SeaPenImage& sea_pen_image,
                                      const std::string& metadata,
                                      base::OnceCallback<void(bool)> callback);
 
