@@ -14,6 +14,8 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
+import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -40,18 +42,24 @@ public class BookmarkTestRule implements TestRule {
     }
 
     /** Shows the bookmark manager on screen. */
-    public void showBookmarkManager(ChromeActivity chromeActivity) {
+    public BookmarkManagerCoordinator showBookmarkManager(ChromeActivity chromeActivity) {
+        BookmarkManagerCoordinator coordinator;
         // BookmarkActivity is only opened on phone, it is a native page on tablet.
         if (chromeActivity.isTablet()) {
             showBookmarkManagerInternal(chromeActivity);
+            coordinator =
+                    ((BookmarkPage) chromeActivity.getActivityTab().getNativePage())
+                            .getManagerForTesting();
         } else {
             mBookmarkActivity =
                     ActivityTestUtils.waitForActivity(
                             InstrumentationRegistry.getInstrumentation(),
                             BookmarkActivity.class,
                             () -> showBookmarkManagerInternal(chromeActivity));
+            coordinator = mBookmarkActivity.getManagerForTesting();
         }
         BookmarkTestUtil.waitForBookmarkModelLoaded();
+        return coordinator;
     }
 
     /** Returns the bookmark activity. */
