@@ -177,7 +177,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
-#include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
+#include "chrome/browser/metrics/structured/chrome_structured_metrics_delegate.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1040,7 +1040,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
 
   // Needs to be initialized after crosapi_manager_.
-  metrics::structured::ChromeStructuredMetricsRecorder::Get()->Initialize();
+  metrics::structured::ChromeStructuredMetricsDelegate::Get()->Initialize();
 
   multi_capture_notifications_ = std::make_unique<MultiCaptureNotifications>();
 

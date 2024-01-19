@@ -55,7 +55,7 @@
 #include "chrome/browser/lacros/web_page_info_lacros.h"
 #include "chrome/browser/lacros/webauthn_request_registrar_lacros.h"
 #include "chrome/browser/memory/oom_kills_monitor.h"
-#include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
+#include "chrome/browser/metrics/structured/chrome_structured_metrics_delegate.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/quick_answers/read_write_cards_manager_impl.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
@@ -262,7 +262,7 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   webauthn_request_registrar_lacros_ =
       std::make_unique<WebAuthnRequestRegistrarLacros>();
 
-  metrics::structured::ChromeStructuredMetricsRecorder::Get()->Initialize();
+  metrics::structured::ChromeStructuredMetricsDelegate::Get()->Initialize();
 
   if (g_browser_process != nullptr &&
       g_browser_process->local_state() != nullptr) {

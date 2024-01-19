@@ -5,10 +5,8 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos)
-
-if (is_chromeos_ash) {
-  source_set("structured") {
+source_set("structured") {
+  if (is_chromeos_ash) {
     sources = [
       "ash_event_storage.cc",
       "ash_event_storage.h",

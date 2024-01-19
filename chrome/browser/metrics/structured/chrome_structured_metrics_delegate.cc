@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
+#include "chrome/browser/metrics/structured/chrome_structured_metrics_delegate.h"
 
 #include <stdint.h>
 
@@ -31,7 +31,6 @@
 namespace metrics::structured {
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Platforms for which the StructuredMetricsClient will be initialized for.
 enum class StructuredMetricsPlatform {
   kUninitialized = 0,
@@ -39,17 +38,36 @@ enum class StructuredMetricsPlatform {
   kLacrosChrome = 2,
 };
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Logs initialization of Structured Metrics as a record.
-void LogInitializationInStructuredMetrics(StructuredMetricsPlatform platform) {
+void LogInitializationInChromeOSStructuredMetrics(
+    StructuredMetricsPlatform platform) {
   events::v2::structured_metrics::Initialization()
       .SetPlatform(static_cast<int64_t>(platform))
       .Record();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+class DefaultDelegate : public RecordingDelegate {
+ public:
+  DefaultDelegate() = default;
+
+  DefaultDelegate(const DefaultDelegate&) = delete;
+  DefaultDelegate& operator=(const DefaultDelegate&) = delete;
+
+  ~DefaultDelegate() override = default;
+
+  // RecordingDelegate:
+  void RecordEvent(Event&& event) override {
+    Recorder::GetInstance()->RecordEvent(std::move(event));
+  }
+
+  bool IsReadyToRecord() const override { return true; }
+};
+
 }  // namespace
 
-ChromeStructuredMetricsRecorder::ChromeStructuredMetricsRecorder() {
+ChromeStructuredMetricsDelegate::ChromeStructuredMetricsDelegate() {
 // TODO(jongahn): Make a static factory class and pass it into ctor.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   delegate_ = std::make_unique<AshStructuredMetricsDelegate>();
@@ -57,26 +75,21 @@ ChromeStructuredMetricsRecorder::ChromeStructuredMetricsRecorder() {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   delegate_ = std::make_unique<LacrosStructuredMetricsDelegate>();
   StructuredMetricsClient::Get()->SetDelegate(this);
+#else
+  delegate_ = std::make_unique<DefaultDelegate>();
+  StructuredMetricsClient::Get()->SetDelegate(this);
 #endif
 }
 
-ChromeStructuredMetricsRecorder::~ChromeStructuredMetricsRecorder() = default;
+ChromeStructuredMetricsDelegate::~ChromeStructuredMetricsDelegate() = default;
 
 // static
-ChromeStructuredMetricsRecorder* ChromeStructuredMetricsRecorder::Get() {
-  static base::NoDestructor<ChromeStructuredMetricsRecorder> chrome_recorder;
+ChromeStructuredMetricsDelegate* ChromeStructuredMetricsDelegate::Get() {
+  static base::NoDestructor<ChromeStructuredMetricsDelegate> chrome_recorder;
   return chrome_recorder.get();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// static
-void ChromeStructuredMetricsRecorder::RegisterLocalStatePrefs(
-    PrefRegistrySimple* registry) {
-  cros_event::CrOSEventsProcessor::RegisterLocalStatePrefs(registry);
-}
-#endif
-
-void ChromeStructuredMetricsRecorder::Initialize() {
+void ChromeStructuredMetricsDelegate::Initialize() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* ash_recorder =
       static_cast<AshStructuredMetricsDelegate*>(delegate_.get());
@@ -101,8 +114,8 @@ void ChromeStructuredMetricsRecorder::Initialize() {
   Recorder::GetInstance()->AddEventsProcessor(
       std::make_unique<MetadataProcessorAsh>());
 
-  LogInitializationInStructuredMetrics(StructuredMetricsPlatform::kAshChrome);
-
+  LogInitializationInChromeOSStructuredMetrics(
+      StructuredMetricsPlatform::kAshChrome);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* lacros_recorder =
       static_cast<LacrosStructuredMetricsDelegate*>(delegate_.get());
@@ -110,17 +123,21 @@ void ChromeStructuredMetricsRecorder::Initialize() {
   // Ensure that the sequence is the ui thread.
   DCHECK(base::CurrentUIThread::IsSet());
   lacros_recorder->SetSequence(base::SequencedTaskRunner::GetCurrentDefault());
-  LogInitializationInStructuredMetrics(
+  LogInitializationInChromeOSStructuredMetrics(
       StructuredMetricsPlatform::kLacrosChrome);
 #endif
+  // Windows, Mac, and Linux do not have initialization events due to DMA
+  // concerns.
+
+  is_initialized_ = true;
 }
 
-void ChromeStructuredMetricsRecorder::RecordEvent(Event&& event) {
+void ChromeStructuredMetricsDelegate::RecordEvent(Event&& event) {
   DCHECK(IsReadyToRecord());
   delegate_->RecordEvent(std::move(event));
 }
 
-bool ChromeStructuredMetricsRecorder::IsReadyToRecord() const {
+bool ChromeStructuredMetricsDelegate::IsReadyToRecord() const {
   return delegate_->IsReadyToRecord();
 }
 

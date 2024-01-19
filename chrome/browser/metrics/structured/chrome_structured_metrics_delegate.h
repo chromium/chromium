@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_STRUCTURED_CHROME_STRUCTURED_METRICS_RECORDER_H_
-#define CHROME_BROWSER_METRICS_STRUCTURED_CHROME_STRUCTURED_METRICS_RECORDER_H_
+#ifndef CHROME_BROWSER_METRICS_STRUCTURED_CHROME_STRUCTURED_METRICS_DELEGATE_H_
+#define CHROME_BROWSER_METRICS_STRUCTURED_CHROME_STRUCTURED_METRICS_DELEGATE_H_
 
 #include <memory>
 
@@ -28,25 +28,15 @@ using RecordingDelegate = StructuredMetricsClient::RecordingDelegate;
 // This class delegates to a Recorder that will be created on ctor.
 // |Initialize()| should be called ASAP. When |Initialize()| should be called is
 // platform specific.
-// TODO(andrewbregger): change name to ChromeStructuredMetricsDelegate to
-// align with the other delegates.
-class ChromeStructuredMetricsRecorder : public RecordingDelegate {
+class ChromeStructuredMetricsDelegate : public RecordingDelegate {
  public:
   // Pointer to singleton.
-  static ChromeStructuredMetricsRecorder* Get();
+  static ChromeStructuredMetricsDelegate* Get();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Registers prefs.
-  //
-  // TODO(crbug/1350322): Once reset counter is available to use from platform2,
-  // remove this and use the more relaible reset counter.
-  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
-#endif
-
-  ChromeStructuredMetricsRecorder(
-      const ChromeStructuredMetricsRecorder& recorder) = delete;
-  ChromeStructuredMetricsRecorder& operator=(
-      const ChromeStructuredMetricsRecorder& recorder) = delete;
+  ChromeStructuredMetricsDelegate(
+      const ChromeStructuredMetricsDelegate& recorder) = delete;
+  ChromeStructuredMetricsDelegate& operator=(
+      const ChromeStructuredMetricsDelegate& recorder) = delete;
 
   // Initializes the recorder. If this is called more than once, this operation
   // will no-op. This must be called before any recording is done or the record
@@ -63,10 +53,10 @@ class ChromeStructuredMetricsRecorder : public RecordingDelegate {
   bool IsReadyToRecord() const override;
 
  private:
-  ChromeStructuredMetricsRecorder();
-  ~ChromeStructuredMetricsRecorder() override;
+  ChromeStructuredMetricsDelegate();
+  ~ChromeStructuredMetricsDelegate() override;
 
-  friend class base::NoDestructor<ChromeStructuredMetricsRecorder>;
+  friend class base::NoDestructor<ChromeStructuredMetricsDelegate>;
   friend class LacrosStructuredMetricsDelegateTest;
 
   std::unique_ptr<RecordingDelegate> delegate_;
@@ -75,4 +65,4 @@ class ChromeStructuredMetricsRecorder : public RecordingDelegate {
 
 }  // namespace metrics::structured
 
-#endif  // CHROME_BROWSER_METRICS_STRUCTURED_CHROME_STRUCTURED_METRICS_RECORDER_H_
+#endif  // CHROME_BROWSER_METRICS_STRUCTURED_CHROME_STRUCTURED_METRICS_DELEGATE_H_

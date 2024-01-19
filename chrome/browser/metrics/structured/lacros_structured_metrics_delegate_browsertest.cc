@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
-#include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
+#include "chrome/browser/metrics/structured/chrome_structured_metrics_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/structured_events.h"
@@ -71,7 +71,7 @@ class LacrosStructuredMetricsDelegateTest : public InProcessBrowserTest {
   TestObserver* InitTestObserver() {
     observer_ = std::make_unique<TestObserver>();
     recorder_ = static_cast<LacrosStructuredMetricsDelegate*>(
-        ChromeStructuredMetricsRecorder::Get()->delegate_.get());
+        ChromeStructuredMetricsDelegate::Get()->delegate_.get());
     recorder_->AddObserver(observer_.get());
     return observer_.get();
   }
