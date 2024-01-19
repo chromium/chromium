@@ -4644,10 +4644,6 @@ static_library("browser") {
 
       # TODO(crbug.com/1402145): Remove circular dependencies.
       "//chrome/browser/web_applications/app_service",
-
-      # Needs //chrome/browser/content_settings, but its sources are in
-      # //chrome/browser instead.
-      "//chrome/browser/smart_card",
     ]
     if (!is_android && !is_chromeos) {
       sources += [

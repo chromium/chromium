@@ -45,7 +45,6 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBlockButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowButtonElementId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowOnceButtonElementId);
   PermissionPromptBubbleBaseView(
       Browser* browser,
       base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
