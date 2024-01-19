@@ -34,6 +34,7 @@
 #include "components/feature_engagement/internal/stats.h"
 #include "components/feature_engagement/internal/test/test_time_provider.h"
 #include "components/feature_engagement/internal/time_provider.h"
+#include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
@@ -55,6 +56,9 @@ BASE_FEATURE(kTrackerTestFeatureBaz,
 BASE_FEATURE(kTrackerTestFeatureQux,
              "test_qux",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTrackerTestFeatureEvent,
+             "test_event",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTrackerTestFeatureSnooze,
              "test_snooze",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -66,7 +70,8 @@ void RegisterFeatureConfig(EditableConfiguration* configuration,
                            const base::Feature& feature,
                            bool valid,
                            bool tracking_only,
-                           bool snooze_params) {
+                           bool snooze_params,
+                           const char* additional_event_name = nullptr) {
   FeatureConfig config;
   config.valid = valid;
   config.used.name = feature.name + std::string("_used");
@@ -77,6 +82,15 @@ void RegisterFeatureConfig(EditableConfiguration* configuration,
   if (snooze_params) {
     config.snooze_params.snooze_interval = 7u;
     config.snooze_params.max_limit = 3u;
+  }
+  if (additional_event_name) {
+    EventConfig event_config;
+    event_config.name = additional_event_name;
+    event_config.comparator.type = GREATER_THAN_OR_EQUAL;
+    event_config.comparator.value = 2U;
+    event_config.window = 7U;
+    event_config.storage = 7U;
+    config.event_configs.emplace(std::move(event_config));
   }
   configuration->SetConfiguration(&feature, config);
 }
@@ -273,6 +287,9 @@ class TrackerImplTest : public ::testing::Test {
     RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureQux,
                           false /* is_valid */, false /* tracking_only */,
                           false /* snooze_params */);
+    RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureEvent,
+                          /*valid=*/true, /*tracking_only=*/false,
+                          /*snooze_params=*/false, "test_event_event");
     RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureSnooze,
                           true /* is_valid */, false /* tracking_only */,
                           true /* snooze_params */);
@@ -1217,6 +1234,33 @@ TEST_F(TrackerImplTest, TestNotifyUsedEvent) {
                    "InProductHelp.NotifyUsedEvent.test_bar"));
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "InProductHelp.NotifyEvent.test_bar"));
+
+  Event event = event_store_->GetEvent("test_foo_used");
+  EXPECT_EQ(1, event.events_size());
+}
+
+TEST_F(TrackerImplTest, TestClearEventData) {
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  base::RunLoop().RunUntilIdle();
+  base::UserActionTester user_action_tester;
+
+  tracker_->NotifyUsedEvent(kTrackerTestFeatureFoo);
+  tracker_->NotifyUsedEvent(kTrackerTestFeatureBaz);
+  tracker_->ClearEventData(kTrackerTestFeatureFoo);
+
+  // Test clearing used events.
+  Event event = event_store_->GetEvent("test_foo_used");
+  EXPECT_EQ(0, event.events_size());
+  event = event_store_->GetEvent("test_baz_used");
+  EXPECT_EQ(1, event.events_size());
+
+  // Test clearing other events.
+  tracker_->NotifyEvent("test_event_event");
+  EXPECT_EQ(1, event_store_->GetEvent("test_event_event").events_size());
+  tracker_->ClearEventData(kTrackerTestFeatureEvent);
+  EXPECT_EQ(0, event_store_->GetEvent("test_event_event").events_size());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

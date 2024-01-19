@@ -56,6 +56,9 @@ class EventModel {
   virtual void IncrementEvent(const std::string& event_name,
                               uint32_t current_day) = 0;
 
+  // Removes data associated with `event_name`.
+  virtual void ClearEvent(const std::string& event_name) = 0;
+
   // Increments the snooze count for the day.
   // Updates the last_snooze_time_us.
   virtual void IncrementSnooze(const std::string& event_name,

@@ -279,6 +279,10 @@ auto FormatDemoPageData(const char* key,
   return FeaturePromoDemoPageData::New(key, strvalue);
 }
 
+auto FormatDemoPageData(const char* key, bool value) {
+  return FeaturePromoDemoPageData::New(key, value ? "yes" : "no");
+}
+
 auto GetPromoData(
     const user_education::FeaturePromoSpecification& spec,
     const user_education::FeaturePromoStorageService* storage_service,
@@ -307,17 +311,27 @@ auto GetPromoData(
           result.emplace_back(FormatDemoPageData("Last snooze time",
                                                  promo_data->last_snooze_time));
         }
-        result.emplace_back(FormatDemoPageData(
-            "Dismissed?", promo_data->is_dismissed ? "yes" : "no"));
+        result.emplace_back(
+            FormatDemoPageData("Dismissed?", promo_data->is_dismissed));
         result.emplace_back(FormatDemoPageData("Last dismissed by",
                                                promo_data->last_dismissed_by,
                                                /*is_constant=*/true));
       }
     }
   }
-  result.emplace_back(FormatDemoPageData(
-      "Blocked by Feature Engagement?",
-      tracker->WouldTriggerHelpUI(*spec.feature()) ? "no" : "yes"));
+  const bool is_enabled = base::FeatureList::IsEnabled(*spec.feature());
+  result.emplace_back(FormatDemoPageData("Feature enabled?", is_enabled));
+  for (const auto& [config, count] : tracker->ListEvents(*spec.feature())) {
+    std::ostringstream oss;
+    oss << "Required condition: " << config.name << config.comparator
+        << " Actual:";
+    result.emplace_back(FormatDemoPageData(oss.str().c_str(), count));
+  }
+  if (is_enabled) {
+    result.emplace_back(
+        FormatDemoPageData("Feature Engagement Tracker OK?",
+                           tracker->WouldTriggerHelpUI(*spec.feature())));
+  }
   return result;
 }
 
@@ -493,14 +507,19 @@ void UserEducationInternalsPageHandlerImpl::ClearFeaturePromoData(
     return;
   }
 
+  auto* const tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
+  if (!tracker || !tracker->IsInitialized()) {
+    std::move(callback).Run(std::string("Feature Engagement not ready."));
+  }
+
   auto* const storage_service = GetStorageService(profile_);
   if (!storage_service) {
     std::move(callback).Run(std::string("No storage service."));
     return;
   }
 
-  // TODO(dfried): Clear FE tracker data.
-
+  tracker->ClearEventData(*feature);
   storage_service->Reset(*feature);
   std::move(callback).Run(std::string());
 }

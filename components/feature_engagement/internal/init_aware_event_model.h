@@ -36,6 +36,7 @@ class InitAwareEventModel : public EventModel {
                          uint32_t window_size) const override;
   void IncrementEvent(const std::string& event_name,
                       uint32_t current_day) override;
+  void ClearEvent(const std::string& event_name) override;
   void IncrementSnooze(const std::string& event_name,
                        uint32_t current_day,
                        base::Time current_time) override;

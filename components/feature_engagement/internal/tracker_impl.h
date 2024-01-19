@@ -50,6 +50,8 @@ class TrackerImpl : public Tracker {
   void NotifyEvent(const std::string& event) override;
 #if !BUILDFLAG(IS_ANDROID)
   void NotifyUsedEvent(const base::Feature& feature) override;
+  void ClearEventData(const base::Feature& feature) override;
+  EventList ListEvents(const base::Feature& feature) const override;
 #endif
   bool ShouldTriggerHelpUI(const base::Feature& feature) override;
   TriggerDetails ShouldTriggerHelpUIWithSnooze(

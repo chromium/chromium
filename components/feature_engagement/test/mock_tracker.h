@@ -33,6 +33,8 @@ class MockTracker : public Tracker {
   MOCK_METHOD1(NotifyEvent, void(const std::string& event));
 #if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD1(NotifyUsedEvent, void(const base::Feature& feature));
+  MOCK_METHOD1(ClearEventData, void(const base::Feature& feature));
+  MOCK_CONST_METHOD1(ListEvents, EventList(const base::Feature& feature));
 #endif
   MOCK_METHOD1(ShouldTriggerHelpUI, bool(const base::Feature& feature));
   MOCK_METHOD1(ShouldTriggerHelpUIWithSnooze,
