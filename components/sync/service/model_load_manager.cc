@@ -288,11 +288,13 @@ void ModelLoadManager::LoadModelsForType(DataTypeController* dtc) {
     return;
   }
 
-  CHECK_EQ(dtc->state(), DataTypeController::NOT_RUNNING);
   CHECK(!loaded_types_.Has(dtc->type()));
-  dtc->LoadModels(*configure_context_,
-                  base::BindRepeating(&ModelLoadManager::ModelLoadCallback,
-                                      weak_ptr_factory_.GetWeakPtr()));
+  // TODO(crbug.com/1519487): Investigate the CHECK failure.
+  if (dtc->state() == DataTypeController::NOT_RUNNING) {
+    dtc->LoadModels(*configure_context_,
+                    base::BindRepeating(&ModelLoadManager::ModelLoadCallback,
+                                        weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 }  // namespace syncer
