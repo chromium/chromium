@@ -13,7 +13,6 @@
 #include "base/values.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
-#include "third_party/webrtc/api/candidate.h"
 #include "third_party/webrtc/rtc_base/byte_order.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
 
@@ -55,58 +54,6 @@ net::IPAddress RtcIPAddressToNetIPAddress(const rtc::IPAddress& ip_address) {
   net::IPEndPoint ip_endpoint;
   webrtc::SocketAddressToIPEndPoint(socket_address, &ip_endpoint);
   return ip_endpoint.address();
-}
-
-std::string SerializeP2PCandidate(const cricket::Candidate& candidate) {
-  // TODO(sergeyu): Use SDP to format candidates?
-  base::Value::Dict value;
-  value.Set("ip", candidate.address().ipaddr().ToString());
-  value.Set("port", candidate.address().port());
-  value.Set("type", candidate.type());
-  value.Set("protocol", candidate.protocol());
-  value.Set("username", candidate.username());
-  value.Set("password", candidate.password());
-  value.Set("preference", candidate.preference());
-  value.Set("generation", static_cast<int>(candidate.generation()));
-
-  std::string result;
-  base::JSONWriter::Write(value, &result);
-  return result;
-}
-
-bool DeserializeP2PCandidate(const std::string& candidate_str,
-                             cricket::Candidate* candidate) {
-  absl::optional<base::Value> value(
-      base::JSONReader::Read(candidate_str, base::JSON_ALLOW_TRAILING_COMMAS));
-  if (!value || !value->is_dict()) {
-    return false;
-  }
-
-  base::Value::Dict& dic_value = value->GetDict();
-
-  std::string* ip = dic_value.FindString("ip");
-  absl::optional<int> port = dic_value.FindInt("port");
-  std::string* type = dic_value.FindString("type");
-  std::string* protocol = dic_value.FindString("protocol");
-  std::string* username = dic_value.FindString("username");
-  std::string* password = dic_value.FindString("password");
-  absl::optional<double> preference = dic_value.FindDouble("preference");
-  absl::optional<int> generation = dic_value.FindInt("generation");
-
-  if (!ip || !port || !type || !protocol || !username || !password ||
-      !preference || !generation) {
-    return false;
-  }
-
-  candidate->set_address(rtc::SocketAddress(std::move(*ip), *port));
-  candidate->set_type(std::move(*type));
-  candidate->set_protocol(std::move(*protocol));
-  candidate->set_username(std::move(*username));
-  candidate->set_password(std::move(*password));
-  candidate->set_preference(static_cast<float>(*preference));
-  candidate->set_generation(*generation);
-
-  return true;
 }
 
 }  // namespace webrtc
