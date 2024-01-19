@@ -170,6 +170,12 @@ class MockAccessibilityPrivate {
     /** @private {?chrome.accessibilityPrivate.ScreenPoint} */
     this.latestCursorPosition_ = null;
 
+    /** @private {?Function<!chrome.accessibilityPrivate.ScreenPoint>} */
+    this.cursorPositionCallback_ = null;
+
+    /** @private {!Array<chrome.accessibilityPrivate.ScreenRect>} */
+    this.displayBounds_ = [{left: 0, top: 0, width: 1200, height: 800}];
+
     /** @private {!Array<chrome.accessibilityPrivate.SyntheticMouseEvent> */
     this.syntheticMouseEvents_ = [];
 
@@ -343,6 +349,10 @@ class MockAccessibilityPrivate {
   /** @param {!chrome.accessibilityPrivate.ScreenPoint} point */
   setCursorPosition(point) {
     this.latestCursorPosition_ = point;
+    if (this.cursorPositionCallback_) {
+      this.cursorPositionCallback_(point);
+      this.cursorPositionCallback_ = null;
+    }
   }
 
   /** @param {!chrome.accessibilityPrivate.SyntheticMouseEvent} event */
@@ -510,7 +520,7 @@ class MockAccessibilityPrivate {
 
   /** @return {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
   getDisplayBounds(callback) {
-    callback([{left: 0, top: 0, width: 1200, height: 800}]);
+    callback(this.displayBounds_);
   }
 
   /**
@@ -532,6 +542,18 @@ class MockAccessibilityPrivate {
 
   clearCursorPosition() {
     this.latestCursorPosition_ = null;
+  }
+
+  /** @return {!Promise} */
+  waitForNextCursorPosition() {
+    return new Promise(resolve => {
+      this.cursorPositionCallback_ = resolve;
+    });
+  }
+
+  /** @param {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
+  setDisplayBounds(bounds) {
+    this.displayBounds_ = bounds;
   }
 
   /**
