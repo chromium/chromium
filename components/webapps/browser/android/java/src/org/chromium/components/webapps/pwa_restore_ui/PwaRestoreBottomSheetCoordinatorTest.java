@@ -41,11 +41,16 @@ import org.chromium.ui.shadows.ShadowColorUtils;
 public class PwaRestoreBottomSheetCoordinatorTest {
     Activity mActivity;
 
+    // Each entry in this list should have a corresponding entry in
+    // mLastUsedList below.
     private final String[][] mDefaultAppList =
             new String[][] {
                 {"appId1", "App 1"},
                 {"appId2", "App 2"},
+                {"appId3", "App 3"},
             };
+    // How long ago (in days) since the apps in the mDefaultAppList were used.
+    private final int[] mLastUsedList = new int[] {1, 1, 35};
 
     @Mock private BottomSheetController mBottomSheetControllerMock;
 
@@ -66,6 +71,7 @@ public class PwaRestoreBottomSheetCoordinatorTest {
         PwaRestoreBottomSheetCoordinator coordinator =
                 new PwaRestoreBottomSheetCoordinator(
                         mDefaultAppList,
+                        mLastUsedList,
                         mActivity,
                         mBottomSheetControllerMock,
                         /* backArrowId= */ 0);
@@ -114,6 +120,7 @@ public class PwaRestoreBottomSheetCoordinatorTest {
         PwaRestoreBottomSheetCoordinator coordinator =
                 new PwaRestoreBottomSheetCoordinator(
                         mDefaultAppList,
+                        mLastUsedList,
                         mActivity,
                         mBottomSheetControllerMock,
                         /* backArrowId= */ 0);

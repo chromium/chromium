@@ -43,6 +43,7 @@ void JNI_PwaRestoreBottomSheetTestUtils_WaitForWebApkDatabaseInitialization(
 void JNI_PwaRestoreBottomSheetTestUtils_SetAppListForRestoring(
     JNIEnv* env,
     const JavaParamRef<jobjectArray>& apps,
+    const JavaParamRef<jintArray>& last_used_in_days,
     const JavaParamRef<jobject>& j_profile_android) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile_android);
   DCHECK(profile);
@@ -53,9 +54,13 @@ void JNI_PwaRestoreBottomSheetTestUtils_SetAppListForRestoring(
   std::vector<std::vector<std::string>> app_vector;
   base::android::Java2dStringArrayTo2dStringVector(env, apps, &app_vector);
 
+  std::vector<int> last_used_in_days_vector;
+  base::android::JavaIntArrayToIntVector(env, last_used_in_days,
+                                         &last_used_in_days_vector);
+
   webapk::WebApkSyncService* service =
       webapk::WebApkSyncService::GetForProfile(profile);
-  service->MergeSyncDataForTesting(app_vector);
+  service->MergeSyncDataForTesting(app_vector, last_used_in_days_vector);
 }
 
 }  // namespace webapps

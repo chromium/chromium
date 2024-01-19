@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.util.Pair;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -113,14 +114,25 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
     }
 
     protected void setAppList(
-            List<PwaRestoreProperties.AppInfo> appList, String recentAppLabel, String oldAppLabel) {
+            Pair<List<PwaRestoreProperties.AppInfo>, List<PwaRestoreProperties.AppInfo>> appLists,
+            String recentAppLabel,
+            String oldAppLabel) {
         LinearLayout scrollViewContent = getContentView().findViewById(R.id.scroll_view_content);
         scrollViewContent.removeAllViews();
+        prepareAppList(appLists.first, recentAppLabel, scrollViewContent);
+        if (appLists.second.size() > 0) {
+            prepareAppList(appLists.second, oldAppLabel, scrollViewContent);
+        }
+    }
 
+    private void prepareAppList(
+            List<PwaRestoreProperties.AppInfo> appList,
+            String labelContent,
+            LinearLayout scrollViewContent) {
         // Set the heading for the app list.
         View label =
                 LayoutInflater.from(mContext).inflate(R.layout.pwa_restore_list_item_label, null);
-        ((TextView) label.findViewById(R.id.label_text)).setText(recentAppLabel);
+        ((TextView) label.findViewById(R.id.label_text)).setText(labelContent);
         scrollViewContent.addView(label);
 
         int item = 0;

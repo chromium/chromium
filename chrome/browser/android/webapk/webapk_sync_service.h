@@ -24,8 +24,8 @@ class WebApkSyncService : public KeyedService {
 
   void RegisterDoneInitializingCallback(
       base::OnceCallback<void(bool)> init_done_callback);
-  void MergeSyncDataForTesting(
-      std::vector<std::vector<std::string>> app_vector);
+  void MergeSyncDataForTesting(std::vector<std::vector<std::string>> app_vector,
+                               std::vector<int> last_used_days_vector);
 
  private:
   std::unique_ptr<AbstractWebApkDatabaseFactory> database_factory_;

@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "chrome/browser/android/webapk/webapk_database.h"
 #include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_registrar.h"
@@ -49,9 +50,11 @@ class HandleWebApkDatabaseRequest {
   void ReturnResultsAndDie(bool success) {
     ScopedJavaLocalRef<jobjectArray> jresults =
         base::android::ToJavaArrayOfStringArray(env_, results_);
+    ScopedJavaLocalRef<jintArray> jresults_lastUsed =
+        base::android::ToJavaIntArray(env_, last_used_in_days_);
     webapps::Java_PwaRestorePromoUtils_onRestorableAppsAvailable(
-        env_, success, jresults, window_android_->GetJavaObject(),
-        arrow_resource_id_);
+        env_, success, jresults, jresults_lastUsed,
+        window_android_->GetJavaObject(), arrow_resource_id_);
     delete this;
   }
 
@@ -60,6 +63,11 @@ class HandleWebApkDatabaseRequest {
     // The registry is a map of webapps::AppId -> std::unique_ptr<WebApkProto>.
     for (auto const& [appId, proto] : registry) {
       results_.push_back({appId, proto->sync_data().name()});
+
+      base::Time timestamp =
+          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+              proto->sync_data().last_used_time_windows_epoch_micros()));
+      last_used_in_days_.push_back((base::Time::Now() - timestamp).InDays());
     }
 
     ReturnResultsAndDie(true);
@@ -77,6 +85,7 @@ class HandleWebApkDatabaseRequest {
   std::unique_ptr<webapk::WebApkDatabase> web_apk_database_;
 
   std::vector<std::vector<std::string>> results_;
+  std::vector<int> last_used_in_days_;
 };
 
 }  // namespace

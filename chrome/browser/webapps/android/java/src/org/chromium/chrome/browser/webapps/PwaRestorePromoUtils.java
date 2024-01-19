@@ -147,9 +147,9 @@ public class PwaRestorePromoUtils {
     private static void onRestorableAppsAvailable(
             boolean success,
             @NonNull String[][] appList,
+            @NonNull int[] lastUsedInDays,
             WindowAndroid windowAndroid,
             int arrowResourceId) {
-
         BottomSheetController controller = BottomSheetControllerProvider.from(windowAndroid);
         if (controller == null) {
             success = false;
@@ -157,7 +157,7 @@ public class PwaRestorePromoUtils {
             Activity activity = windowAndroid.getActivity().get();
             PwaRestoreBottomSheetCoordinator pwaRestoreBottomSheetCoordinator =
                     new PwaRestoreBottomSheetCoordinator(
-                            appList, activity, controller, arrowResourceId);
+                            appList, lastUsedInDays, activity, controller, arrowResourceId);
             if (pwaRestoreBottomSheetCoordinator == null
                     || !pwaRestoreBottomSheetCoordinator.show()) {
                 success = false;

@@ -28,8 +28,10 @@ void WebApkSyncService::RegisterDoneInitializingCallback(
 }
 
 void WebApkSyncService::MergeSyncDataForTesting(
-    std::vector<std::vector<std::string>> app_vector) {
-  sync_bridge_->MergeSyncDataForTesting(std::move(app_vector));  // IN-TEST
+    std::vector<std::vector<std::string>> app_vector,
+    std::vector<int> last_used_days_vector) {
+  sync_bridge_->MergeSyncDataForTesting(
+      std::move(app_vector), std::move(last_used_days_vector));  // IN-TEST
 }
 
 }  // namespace webapk
