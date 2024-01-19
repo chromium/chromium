@@ -260,6 +260,24 @@ void DelayedOverwriteDisplayVersions(const base::FilePath& setup_exe,
   }
 }
 
+// Signals `event` if it is valid and then closes it.
+void SignalAndCloseEvent(base::win::ScopedHandle event) {
+  if (event.IsValid() && !::SetEvent(event.Get())) {
+    // Failure to signal the event likely means that the handle is invalid.
+    // Clear the ScopedHandle to prevent a crash upon close and proceed with the
+    // operation. The parent process will wait for 30s in this case (see
+    // DelayedOverwriteDisplayVersions) and will then continue on its merry way.
+    if (auto error = ::GetLastError(); error != ERROR_INVALID_HANDLE) {
+      // It is highly unexpected that this would fail for any other reason. Send
+      // diagnostics for analysis just in case.
+      // TODO(grt): Check for data and remove this in June 2024.
+      base::debug::Alias(&error);
+      base::debug::DumpWithoutCrashing();
+    }
+    (void)event.release();
+  }
+}
+
 // Waits for msiexec to release its mutex and then overwrites DisplayVersion in
 // the Windows registry.
 LONG OverwriteDisplayVersionsAfterMsiexec(base::win::ScopedHandle startup_event,
@@ -278,24 +296,7 @@ LONG OverwriteDisplayVersionsAfterMsiexec(base::win::ScopedHandle startup_event,
         ::SetPriorityClass(::GetCurrentProcess(), REALTIME_PRIORITY_CLASS) != 0;
 
     // Notify the parent process that this one is ready to go.
-    if (startup_event.IsValid()) {
-      if (!::SetEvent(startup_event.Get())) {
-        // Failure to signal the event likely means that the handle is invalid.
-        // Clear the ScopedHandle to prevent a crash upon close and proceed with
-        // the operation. The parent process will wait for 30s in this case (see
-        // DelayedOverwriteDisplayVersions) and will then continue on its merry
-        // way.
-        if (auto error = ::GetLastError(); error != ERROR_INVALID_HANDLE) {
-          // It is highly unexpected that this would fail for any other reason.
-          // Send diagnostics for analysis just in case.
-          // TODO(grt): Check for data and remove this in March 2024.
-          base::debug::Alias(&error);
-          base::debug::DumpWithoutCrashing();
-        }
-        (void)startup_event.release();
-      }
-      startup_event.Close();
-    }
+    SignalAndCloseEvent(std::move(startup_event));
 
     const auto wait_result = ::WaitForSingleObject(msi_handle.Get(), INFINITE);
     if (wait_result == WAIT_FAILED) {
@@ -319,10 +320,7 @@ LONG OverwriteDisplayVersionsAfterMsiexec(base::win::ScopedHandle startup_event,
                    "open the MSI mutex";
 
     // Notify the parent process that this one is ready to go.
-    if (startup_event.IsValid()) {
-      ::SetEvent(startup_event.Get());
-      startup_event.Close();
-    }
+    SignalAndCloseEvent(std::move(startup_event));
   }
 
   auto result = OverwriteDisplayVersions(product, value);
