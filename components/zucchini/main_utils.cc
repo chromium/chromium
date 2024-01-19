@@ -26,7 +26,9 @@
 #include "components/zucchini/zucchini_commands.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <windows.h>  // This include must come first.
+// clang-format off
+#include <windows.h> // Must be in front of other Windows header files.
+// clang-format on
 
 #include <psapi.h>
 #endif
