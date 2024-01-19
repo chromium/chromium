@@ -354,13 +354,13 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
     const ui::Accelerator& accelerator) const {
   // Avoid remapping if [Search] is part of the original accelerator.
   if (accelerator.IsCmdDown()) {
-    return {};
+    return std::nullopt;
   }
 
   // Only attempt to alias if the provided accelerator is for an F-Key.
   if (accelerator.key_code() < ui::VKEY_F1 ||
       accelerator.key_code() > ui::VKEY_F24) {
-    return {};
+    return std::nullopt;
   }
 
   // Attempt to get the corresponding `ui::TopRowActionKey` for the given F-Key.
@@ -368,14 +368,14 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
       Shell::Get()->keyboard_capability()->GetCorrespondingActionKeyForFKey(
           keyboard, accelerator.key_code());
   if (!action_key) {
-    return {};
+    return std::nullopt;
   }
 
   // Convert the `ui::TopRowActionKey` to the corresponding `ui::KeyboardCode`
   std::optional<ui::KeyboardCode> action_vkey =
       ui::KeyboardCapability::ConvertToKeyboardCode(*action_key);
   if (!action_vkey) {
-    return {};
+    return std::nullopt;
   }
 
   const bool top_row_are_fkeys = AreTopRowFKeys(keyboard);
@@ -438,7 +438,7 @@ AcceleratorAliasConverter::CreateExtendedFKeysAliases(
       break;
   }
   if (avoid_remapping) {
-    return {};
+    return std::nullopt;
   }
 
   ui::KeyboardCode key_code;
@@ -463,21 +463,21 @@ std::optional<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
     const ui::Accelerator& accelerator) const {
   // Avoid remapping if [Search] is part of the original accelerator.
   if (accelerator.IsCmdDown()) {
-    return {};
+    return std::nullopt;
   }
 
   // If the accelerator is not an action key, do no aliasing.
   std::optional<ui::TopRowActionKey> action_key =
       ui::KeyboardCapability::ConvertToTopRowActionKey(accelerator.key_code());
   if (!action_key) {
-    return {};
+    return std::nullopt;
   }
 
   std::optional<ui::KeyboardCode> function_key =
       Shell::Get()->keyboard_capability()->GetCorrespondingFunctionKey(
           keyboard, *action_key);
   if (!function_key.has_value()) {
-    return {};
+    return std::nullopt;
   }
 
   const bool top_row_are_fkeys = AreTopRowFKeys(keyboard);
