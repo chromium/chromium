@@ -557,7 +557,11 @@ void DeskMiniView::OnThemeChanged() {
 }
 
 void DeskMiniView::OnContentChanged() {
-  DCHECK(desk_preview_);
+  // Bail out if the desk preview has not been set yet.
+  if (!desk_preview_) {
+    return;
+  }
+
   desk_preview_->RecreateDeskContentsMirrorLayers();
 }
 
