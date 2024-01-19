@@ -41,6 +41,8 @@ namespace ash::test {
 
 namespace {
 
+using ash::media_app_ui::mojom::PageMetadataPtr;
+
 // Gap or padding between pages.
 constexpr uint64_t kTestPageGap = 2;
 // Width of a test page.
@@ -48,15 +50,36 @@ constexpr uint64_t kTestPageWidth = 3;
 // Height of a test page.
 constexpr uint64_t kTestPageHeight = 8;
 
-std::vector<gfx::RectF> CreateFakePageBounds(const uint64_t num_pages) {
-  uint64_t x = 0, y = 0;
-  std::vector<gfx::RectF> fake_page_locations;
-  for (uint64_t i = 0; i < num_pages; ++i) {
-    gfx::RectF page_location(x, y + kTestPageGap * i + kTestPageHeight * i,
-                             kTestPageWidth, kTestPageHeight);
-    fake_page_locations.push_back(page_location);
+// Use letters to generate fake IDs for fake page metadata. If more than 26
+// pages are needed, more characters can be added.
+constexpr std::string_view kTestPageIds = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+// Create fake page metadata with pages of the same size positioned 10 units
+// spaced apart.
+std::vector<PageMetadataPtr> CreateFakePageMetadata(const uint64_t num_pages) {
+  if (num_pages > kTestPageIds.size()) {
+    LOG(ERROR) << "Can't make more than " << kTestPageIds.size() << " pages.";
   }
-  return fake_page_locations;
+  uint64_t x = 0, y = 0;
+  std::vector<PageMetadataPtr> fake_page_metadata;
+  for (uint64_t i = 0; i < num_pages; ++i) {
+    PageMetadataPtr page = ash::media_app_ui::mojom::PageMetadata::New();
+    page->id = std::format("Page{}", kTestPageIds[i]);
+    page->rect = gfx::RectF(x, y + kTestPageGap * i + kTestPageHeight * i,
+                            kTestPageWidth, kTestPageHeight);
+    fake_page_metadata.push_back(std::move(page));
+  }
+  return fake_page_metadata;
+}
+
+std::vector<PageMetadataPtr> ClonePageMetadataPtrs(
+    const std::vector<PageMetadataPtr>& metadata) {
+  std::vector<PageMetadataPtr> fake_page_metadata;
+  for (const auto& page : metadata) {
+    auto cloned_page = mojo::Clone(page);
+    fake_page_metadata.push_back(std::move(cloned_page));
+  }
+  return fake_page_metadata;
 }
 
 class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
@@ -116,22 +139,24 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
 }  // namespace
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, DocumentUpdated) {
-  handler_->DocumentUpdated(
-      /*page_locations=*/CreateFakePageBounds(3),
-      /*dirty_pages=*/{0u, 1u, 2u});
-  WaitForOcringPages(3u);
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
+  const size_t kTestNumPages = 3;
+  auto fake_metadata = CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
 
-  ASSERT_EQ(3u, fake_media_app_.PageIndicesWithBitmap().size());
-  for (size_t i = 0; i < fake_media_app_.PageIndicesWithBitmap().size(); ++i) {
-    EXPECT_EQ(static_cast<uint64_t>(i),
-              fake_media_app_.PageIndicesWithBitmap()[i]);
-  }
+  ASSERT_EQ(kTestNumPages, fake_media_app_.PageIdsWithBitmap().size());
+  // Make sure the OCR service went through all the pages provided in the
+  // earlier call to PageMetadataUpdated(), since on first load all pages are
+  // dirty.
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
+  EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[2]);
 
-  const std::vector<std::unique_ptr<ui::AXTreeManager>>& pages =
+  const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>& pages =
       handler_->GetPagesForTesting();
   ASSERT_EQ(3u, pages.size());
-  for (const std::unique_ptr<ui::AXTreeManager>& page : pages) {
+  for (auto const& [_, page] : pages) {
     ASSERT_NE(nullptr, page.get());
     ASSERT_NE(nullptr, page->ax_tree());
   }
@@ -139,58 +164,49 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, DocumentUpdated) {
   // Remove the tree data, because its tree ID would change every time the test
   // is run, and because it is unimportant for our test purposes.
   ui::AXTreeData tree_data;
-  for (const std::unique_ptr<ui::AXTreeManager>& page : pages) {
+  for (auto const& [_, page] : pages) {
     page->ax_tree()->UpdateDataForTesting(tree_data);
   }
+
   EXPECT_EQ("AXTree\nid=-2 staticText name=Testing (0, 0)-(3, 8)\n",
-            pages[0]->ax_tree()->ToString());
+            pages.at(fake_metadata[0]->id)->ax_tree()->ToString());
   EXPECT_EQ("AXTree\nid=-3 staticText name=Testing (0, 10)-(3, 8)\n",
-            pages[1]->ax_tree()->ToString());
+            pages.at(fake_metadata[1]->id)->ax_tree()->ToString());
   EXPECT_EQ("AXTree\nid=-4 staticText name=Testing (0, 20)-(3, 8)\n",
-            pages[2]->ax_tree()->ToString());
+            pages.at(fake_metadata[2]->id)->ax_tree()->ToString());
 
-  // Relocate or resize all pages, OCR the second page again, and add an
-  // additional page to the end. This scenario could happen if the second page
-  // was rotated.
-  handler_->DocumentUpdated(
-      /*page_locations=*/
-      {
-          gfx::RectF(/*x=*/-3, /*y=*/0, /*width=*/kTestPageWidth,
-                     /*height=*/kTestPageHeight),
-          gfx::RectF(/*x=*/-3, /*y=*/10,
-                     /*width=*/kTestPageHeight,
-                     /*height=*/kTestPageWidth),
-          gfx::RectF(/*x=*/-3, /*y=*/15,
-                     /*width=*/kTestPageWidth,
-                     /*height=*/kTestPageHeight),
-          gfx::RectF(/*x=*/-3, /*y=*/25,
-                     /*width=*/kTestPageWidth,
-                     /*height=*/kTestPageHeight),
-      },
-      /*dirty_pages=*/{1u, 3u});
-  WaitForOcringPages(2u);
+  // Relocate all the pages 3 units to the left and resize the second page. This
+  // is similar to a scenario that might happen if the second page was rotated.
+  fake_metadata[0]->rect =
+      gfx::RectF(/*x=*/-3, /*y=*/0,
+                 /*width=*/kTestPageWidth, /*height=*/kTestPageHeight);
+  fake_metadata[1]->rect =
+      gfx::RectF(/*x=*/-3, /*y=*/10,
+                 /*width=*/kTestPageHeight, /*height=*/kTestPageWidth);
+  fake_metadata[2]->rect =
+      gfx::RectF(/*x=*/-3, /*y=*/15,
+                 /*width=*/kTestPageWidth, /*height=*/kTestPageHeight);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
 
-  ASSERT_EQ(5u, fake_media_app_.PageIndicesWithBitmap().size());
-  EXPECT_EQ(1u, fake_media_app_.PageIndicesWithBitmap()[3]);
-  EXPECT_EQ(3u, fake_media_app_.PageIndicesWithBitmap()[4]);
+  // Subsequent calls to PageMetadataUpdated() should not cause any page to be
+  // marked as dirty.
+  ASSERT_EQ(3u, fake_media_app_.PageIdsWithBitmap().size());
 
-  const std::vector<std::unique_ptr<ui::AXTreeManager>>& pages2 =
-      handler_->GetPagesForTesting();
-  ASSERT_EQ(4u, pages2.size());
-  for (const std::unique_ptr<ui::AXTreeManager>& page : pages2) {
+  const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>&
+      pages2 = handler_->GetPagesForTesting();
+  ASSERT_EQ(3u, pages2.size());
+  for (auto const& [_, page] : pages2) {
     ASSERT_NE(nullptr, page.get());
     ASSERT_NE(nullptr, page->ax_tree());
     page->ax_tree()->UpdateDataForTesting(tree_data);
   }
 
   EXPECT_EQ("AXTree\nid=-2 staticText name=Testing (-3, 0)-(3, 8)\n",
-            pages2[0]->ax_tree()->ToString());
-  EXPECT_EQ("AXTree\nid=-5 staticText name=Testing (-3, 10)-(8, 3)\n",
-            pages2[1]->ax_tree()->ToString());
+            pages2.at(fake_metadata[0]->id)->ax_tree()->ToString());
+  EXPECT_EQ("AXTree\nid=-3 staticText name=Testing (-3, 10)-(8, 3)\n",
+            pages2.at(fake_metadata[1]->id)->ax_tree()->ToString());
   EXPECT_EQ("AXTree\nid=-4 staticText name=Testing (-3, 15)-(3, 8)\n",
-            pages2[2]->ax_tree()->ToString());
-  EXPECT_EQ("AXTree\nid=-6 staticText name=Testing (-3, 25)-(3, 8)\n",
-            pages2[3]->ax_tree()->ToString());
+            pages2.at(fake_metadata[2]->id)->ax_tree()->ToString());
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

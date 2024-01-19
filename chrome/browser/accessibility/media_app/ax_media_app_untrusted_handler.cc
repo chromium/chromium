@@ -28,22 +28,32 @@
 #include "ui/gfx/geometry/rect_f.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/screen_ai/screen_ai_service_router.h"
-#include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/accessibility/ax_node.h"
-#include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/ax_tree.h"
-#include "ui/accessibility/ax_tree_id.h"
-#include "ui/gfx/geometry/rect_f.h"
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-
 namespace ash {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 using screen_ai::ScreenAIInstallState;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+namespace {
+
+// The maximum number of pages supported by the OCR service. This maximum is
+// used both to validate the number of pages (untrusted data) coming from the
+// MediaApp and manage resources (caps the number of pages stored at a time).
+const size_t kMaxPages = 10000;
+
+bool ReportIfNonExistentPageId(
+    const std::string& context,
+    const std::string& page_id,
+    const std::map<const std::string, AXMediaAppPageMetadata>& metadata) {
+  if (!metadata.contains(page_id)) {
+    mojo::ReportBadMessage(
+        std::format("{} called with previously non-existent page ID", context));
+    return true;
+  }
+  return false;
+}
+
+}  // namespace
 
 AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
     content::BrowserContext& context,
@@ -184,31 +194,69 @@ void AXMediaAppUntrustedHandler::OnAXModeAdded(ui::AXMode mode) {
         accessibility_state_utils::IsScreenReaderEnabled());
   }
 }
+void AXMediaAppUntrustedHandler::PageMetadataUpdated(
+    const std::vector<ash::media_app_ui::mojom::PageMetadataPtr>
+        page_metadata) {
+  if (page_metadata.empty()) {
+    mojo::ReportBadMessage("SetPageMetadata() called with no page metadata");
+    return;
+  }
 
-void AXMediaAppUntrustedHandler::DocumentUpdated(
-    const std::vector<gfx::RectF>& page_locations,
-    const std::vector<uint64_t>& dirty_pages) {
-  // `page_locations` should contain the new locations of all pages, whilst
-  // `dirty_pages` only the indices of all the pages that need to be OCRed.
-  CHECK_GE(page_locations.size(), dirty_pages.size());
-  page_locations_ = page_locations;
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (dirty_pages.empty()) {
-    for (size_t i = 0; i < page_locations_.size(); ++i) {
-      UpdatePageLocation(static_cast<uint64_t>(i), page_locations_[i]);
-    }
-  } else {
-    size_t page_locations_size = page_locations.size();
-    pages_.resize(page_locations_size);
-    for (uint64_t dirty_page_index : dirty_pages) {
-      if (dirty_page_index >= static_cast<uint64_t>(page_locations_size)) {
-        continue;
+  const size_t num_pages = std::min(page_metadata.size(), kMaxPages);
+  // If page_metadata_ is empty, this is the first load of the PDF.
+  const bool is_first_load = page_metadata_.empty();
+
+  if (is_first_load) {
+    for (size_t i = 0; i < num_pages; ++i) {
+      AXMediaAppPageMetadata data;
+      // The page IDs will never change, so this should be the only place that
+      // updates them.
+      data.id = page_metadata[i]->id;
+      if (page_metadata_.contains(data.id)) {
+        mojo::ReportBadMessage(
+            "SetPageMetadata() called with pages with duplicate page IDs");
+        return;
       }
-      dirty_page_indices_.push(dirty_page_index);
+      page_metadata_[data.id] = data;
+      dirty_page_ids_.push(data.id);
     }
+    // Only one page goes through OCR at a time, so start the process here.
     OcrNextDirtyPageIfAny();
   }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+  // Update all page numbers and rects.
+  std::set<const std::string> page_id_updated;
+  for (size_t i = 0; i < page_metadata.size(); ++i) {
+    const std::string& page_id = page_metadata[i]->id;
+    if (ReportIfNonExistentPageId("SetPageMetadata()", page_id,
+                                  page_metadata_)) {
+      return;
+    }
+    page_metadata_[page_id].page_num = i + 1;  // 1-indexed.
+    page_metadata_[page_id].rect = page_metadata[i]->rect;
+
+    // Page location can only be set after the corresponding |pages_|
+    // AXTreeManager entry has been created, so don't update it for first load.
+    if (!is_first_load) {
+      page_id_updated.insert(page_id);
+      UpdatePageLocation(page_id, page_metadata[i]->rect);
+    }
+  }
+
+  // Skip all further processing that applies to only updates (not first load).
+  if (is_first_load) {
+    return;
+  }
+  // If a page was missing from `page_metadata` (its location was not updated),
+  // then that means it got deleted. Set its page number to 0.
+  for (auto const& [page_id, _] : page_metadata_) {
+    if (!page_id_updated.contains(page_id)) {
+      // Since `pages_` and `page_metadata_` are both populated from untrusted
+      // code, mitigate potential issues by never mutating the size of these two
+      // containers. So when a page is 'deleted' by the user, keep it in memory.
+      page_metadata_[page_id].page_num = 0;
+    }
+  }
 }
 
 void AXMediaAppUntrustedHandler::ViewportUpdated(const gfx::RectF& viewport_box,
@@ -216,67 +264,79 @@ void AXMediaAppUntrustedHandler::ViewportUpdated(const gfx::RectF& viewport_box,
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void AXMediaAppUntrustedHandler::UpdatePageLocation(
-    uint64_t page_index,
+    const std::string& page_id,
     const gfx::RectF& page_location) {
-  CHECK_LT(page_index, static_cast<uint64_t>(pages_.size()));
-  ui::AXTreeManager* tree_manager = pages_[page_index].get();
-  if (!tree_manager) {
+  if (ReportIfNonExistentPageId("UpdatePageLocation()", page_id,
+                                page_metadata_)) {
     return;
   }
-  ui::AXTree* tree = tree_manager->ax_tree();
-  CHECK(tree->root());
+  if (!pages_.contains(page_id)) {
+    return;
+  }
+  ui::AXTree* tree = pages_[page_id]->ax_tree();
+  if (!tree->root()) {
+    return;
+  }
   ui::AXNodeData root_data = tree->root()->data();
   root_data.relative_bounds.bounds = page_location;
   ui::AXTreeUpdate location_update;
   location_update.root_id = tree->root()->id();
   location_update.nodes = {root_data};
-  CHECK(tree->Unserialize(location_update)) << tree->error();
+  if (!tree->Unserialize(location_update)) {
+    mojo::ReportBadMessage(tree->error());
+    return;
+  }
 }
 
 void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
   if (!IsOcrServiceEnabled()) {
     return;
   }
-  if (dirty_page_indices_.empty()) {
-    for (size_t i = 0; i < page_locations_.size(); ++i) {
-      UpdatePageLocation(static_cast<uint64_t>(i), page_locations_[i]);
-    }
+  if (dirty_page_ids_.empty()) {
     return;
   }
-  uint64_t dirty_page_index = dirty_page_indices_.front();
-  dirty_page_indices_.pop();
-  SkBitmap page_bitmap = media_app_->RequestBitmap(dirty_page_index);
+  auto dirty_page_id = dirty_page_ids_.front();
+  dirty_page_ids_.pop();
+  SkBitmap page_bitmap = media_app_->RequestBitmap(dirty_page_id);
   screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
       page_bitmap,
       base::BindOnce(&AXMediaAppUntrustedHandler::OnPageOcred,
-                     weak_ptr_factory_.GetWeakPtr(), dirty_page_index));
+                     weak_ptr_factory_.GetWeakPtr(), dirty_page_id));
 }
 
-void AXMediaAppUntrustedHandler::OnPageOcred(uint64_t dirty_page_index,
-                                    const ui::AXTreeUpdate& tree_update) {
+void AXMediaAppUntrustedHandler::OnPageOcred(
+    const std::string& dirty_page_id,
+    const ui::AXTreeUpdate& tree_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The tree update that comes from the OCR Service is only a list of nodes,
   // and it's missing valid tree data.
   //
-  // TODO(nektar): Investigate if we can fix this in the OCR Service.
-  CHECK(!tree_update.has_tree_data);
-  CHECK_EQ(ui::AXTreeIDUnknown(), tree_update.tree_data.tree_id);
-  CHECK_NE(ui::kInvalidAXNodeID, tree_update.root_id);
+  // TODO(b/289012145): Investigate if we can fix this in the OCR Service.
+  if (tree_update.has_tree_data ||
+      ui::kInvalidAXNodeID == tree_update.root_id) {
+    mojo::ReportBadMessage("OnPageOcred() bad tree update from Screen AI.");
+    return;
+  }
   ui::AXTreeUpdate complete_tree_update;
   complete_tree_update.has_tree_data = true;
   complete_tree_update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
   complete_tree_update.tree_data.title = "OCR results";
   complete_tree_update.root_id = tree_update.root_id;
   complete_tree_update.nodes = tree_update.nodes;
-  CHECK_LT(dirty_page_index, static_cast<uint64_t>(pages_.size()));
-  if (!pages_[dirty_page_index]) {
-    pages_[dirty_page_index] = std::make_unique<ui::AXTreeManager>(
+  if (ReportIfNonExistentPageId("OnPageOcred()", dirty_page_id,
+                                page_metadata_)) {
+    return;
+  }
+  if (!pages_.contains(dirty_page_id)) {
+    pages_[dirty_page_id] = std::make_unique<ui::AXTreeManager>(
         std::make_unique<ui::AXTree>(complete_tree_update));
+    UpdatePageLocation(dirty_page_id, page_metadata_[dirty_page_id].rect);
   } else {
-    CHECK(pages_[dirty_page_index]->ax_tree());
-    CHECK(
-        pages_[dirty_page_index]->ax_tree()->Unserialize(complete_tree_update))
-        << pages_[dirty_page_index]->ax_tree()->error();
+    if (!pages_[dirty_page_id]->ax_tree() ||
+        !pages_[dirty_page_id]->ax_tree()->Unserialize(complete_tree_update)) {
+      mojo::ReportBadMessage(pages_[dirty_page_id]->ax_tree()->error());
+      return;
+    }
   }
   // TODO(nektar): Attach the page to the tree for the main PDF document.
   OcrNextDirtyPageIfAny();

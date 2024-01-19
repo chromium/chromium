@@ -175,6 +175,15 @@ declare class Rect {
 }
 
 /**
+ * The page metadata using Closure. This should be deleted on migrating to the
+ * geometry RectF in the MediaApp code.
+ */
+declare class PageMetadataWithClosureRect {
+  id: string;
+  rect: Rect;
+}
+
+/**
  * The delegate which exposes open source privileged WebUi functions to
  * MediaApp.
  */
@@ -237,6 +246,10 @@ declare interface ClientApiDelegate {
    */
   maybeTriggerPdfHats?: () => void;
   /**
+   * Alert the OCR service that the PDF's page metadata has changed.
+   */
+  pageMetadataUpdated(pageMetadata: PageMetadataWithClosureRect[]): void;
+  /**
    * Called whenever the viewport changes, e.g. due to scrolling, zooming,
    * resizing the window, or opening and closing toolbars/panels.
    * @param viewportBox The new bounding box of the viewport.
@@ -244,7 +257,7 @@ declare interface ClientApiDelegate {
    *     and pinch zoom) and ink units. Larger numbers indicate the document
    *     is more zoomed in.
    */
-  viewportUpdated: (viewportBox: Rect, scaleFactor: number) => void;
+  viewportUpdated(viewportBox: Rect, scaleFactor: number): void;
 }
 
 /**
