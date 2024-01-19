@@ -484,6 +484,10 @@ int ShelfView::GetShelfShortcutHostBadgeContainerSize() const {
          ShelfConfig::Get()->GetShelfShortcutHostBadgeBorderSize() * 2;
 }
 
+int ShelfView::GetShelfShortcutTeardropCornerRadiusSize() const {
+  return ShelfConfig::Get()->GetShelfShortcutTeardropCornerRadiusSize();
+}
+
 int ShelfView::GetShelfItemRippleSize() const {
   return GetButtonSize() +
          2 * ShelfConfig::Get()->scrollable_shelf_ripple_padding();

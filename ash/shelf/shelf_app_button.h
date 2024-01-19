@@ -68,11 +68,9 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   ~ShelfAppButton() override;
 
-  // Updates the icon image to display for this entry.
-  void UpdateIconImage();
-
-  // Updates the badge icon image to display for this entry.
-  void UpdateBadgeIconImage();
+  // Updates the icon image and maybe host badge icon image to display for this
+  // entry.
+  void UpdateMainAndMaybeHostBadgeIconImage();
 
   // Retrieve the image to show proxy operations.
   gfx::ImageSkia GetImage() const;
@@ -89,10 +87,10 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // `icon_scale`. Returns an empty image if the app does not have a badge icon.
   gfx::ImageSkia GetBadgeIconImage(float icon_scale) const;
 
-  // Sets the `icon_image_model_` for this entry. If |is_placeholder_icon| is
-  // true, the |main_image| will be ignored and this entry will be assigned a
-  // placeholder vector icon. This method also SetHostBadgeImage() depending on
-  // `has_host_badge` and then calls into UpdateIconImage().
+  // Sets the `icon_image_model_`, and maybe `host_badge_image_` depending on
+  // `has_host_badge` for this entry. If |is_placeholder_icon| is true, the
+  // |main_image| will be ignored and this entry will be assigned a placeholder
+  // vector icon.
   void SetMainAndMaybeHostBadgeImage(const gfx::ImageSkia& main_image,
                                      bool is_placeholder_icon,
                                      const gfx::ImageSkia& host_badge_image);
@@ -113,13 +111,6 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // and with the provided icon scale.
   gfx::Rect GetIdealIconBounds(const gfx::Size& button_size,
                                float icon_scale) const;
-
-  // Returns the ideal host badge icon bounds within the shelf button cntents
-  // view. The badge icon bounds are calculated for assuming the provided
-  // `main_app_icon_bounds`, and `icon_scale`.
-  gfx::Rect GetIdealHostBadgeContainerBounds(
-      const gfx::Rect& main_app_icon_bounds,
-      float icon_scale);
 
   views::InkDrop* GetInkDropForTesting();
 
@@ -275,10 +266,6 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   // The icon part of a button can be animated independently of the rest.
   raw_ptr<views::ImageView> icon_view_ = nullptr;
-
-  // The host badge icon part of a button, can be animated independently of the
-  // rest.
-  raw_ptr<views::ImageView> host_badge_icon_view_ = nullptr;
 
   // The ShelfView showing this ShelfAppButton. Owned by RootWindowController.
   const raw_ptr<ShelfView> shelf_view_;

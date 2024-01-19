@@ -299,6 +299,9 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Returns the size of a shelf button shortcut host badge icon border.
   int GetShelfShortcutHostBadgeContainerSize() const;
 
+  // Returns the size of a shelf button shortcut bottom right corner radius.
+  int GetShelfShortcutTeardropCornerRadiusSize() const;
+
   // Returns the size of the shelf item ripple ring.
   int GetShelfItemRippleSize() const;
 
