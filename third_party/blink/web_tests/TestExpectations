@@ -4752,9 +4752,6 @@ crbug.com/1066891 external/wpt/bluetooth/requestLEScan/sandboxed_iframe.https.wi
 crbug.com/1066891 virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/requestDevice/sandboxed_iframe.https.window.html [ Failure Pass Timeout ]
 crbug.com/1066891 virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/requestLEScan/sandboxed_iframe.https.window.html [ Failure Pass Timeout ]
 
-# Depends on understanding why RAF generation is prolonged for OOPSIFs
-crbug.com/1515794 fast/dom/raf-throttling-out-of-view-cross-origin-page.html [ Failure Pass ]
-
 # Sheriff 2021-07-13
 
 # A number of http/tests/inspector-protocol/network tests are flaky.

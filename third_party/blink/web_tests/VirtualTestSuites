@@ -670,6 +670,11 @@
   "Skip below.  Note that by default Site Isolation isolates *sites* rather",
   "than *origin* and therefore avoids problems related to document.domain",
   "compatibility.",
+  "TODO(crbug.com/1515794): fast/dom/raf-throttling-out-of-view-cross-origin-page.html",
+  "  fails when run with IsolateSandboxedIframes enabled as it needs to be same-process",
+  "  to run reliably. We should investigate whether it's possible to rewrite the",
+  "  test to run reliably with process-isolation for sandboxed iframes",
+  "  enabled, If not, it can continue to run in this virtual test suite.",
   {
     "prefix": "not-site-per-process",
     "platforms": ["Linux", "Mac", "Win"],
@@ -698,7 +703,8 @@
       "external/wpt/navigation-api/navigate-event/cross-window/submit-samedocument-crossorigin-sameorigindomain.sub.html",
       "external/wpt/longtask-timing/longtask-in-childiframe-crossorigin.html",
       "external/wpt/longtask-timing/longtask-in-sibling-iframe-crossorigin.html",
-      "http/tests/security/drag-drop-same-unique-origin.html"
+      "http/tests/security/drag-drop-same-unique-origin.html",
+      "fast/dom/raf-throttling-out-of-view-cross-origin-page.html"
     ],
     "exclusive_tests": "ALL",
     "args": ["--disable-site-isolation-trials",
