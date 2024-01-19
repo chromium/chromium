@@ -8359,13 +8359,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMacAddressRandomizationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kMacAddressRandomization)},
 
-    {"oobe-jelly", flag_descriptions::kOobeJellyName,
-     flag_descriptions::kOobeJellyDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kOobeJelly)},
-    {"oobe-jelly-modal", flag_descriptions::kOobeJellyModalName,
-     flag_descriptions::kOobeJellyModalDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kOobeJellyModal)},
-
     {"smds-support", flag_descriptions::kSmdsSupportName,
      flag_descriptions::kSmdsSupportDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSmdsSupport)},

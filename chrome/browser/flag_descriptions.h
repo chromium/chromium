@@ -4178,12 +4178,6 @@ extern const char kLauncherManateeForKeyboardShortcutsDescription[];
 extern const char kMacAddressRandomizationName[];
 extern const char kMacAddressRandomizationDescription[];
 
-extern const char kOobeJellyName[];
-extern const char kOobeJellyDescription[];
-
-extern const char kOobeJellyModalName[];
-extern const char kOobeJellyModalDescription[];
-
 extern const char kSmdsSupportName[];
 extern const char kSmdsSupportDescription[];
 

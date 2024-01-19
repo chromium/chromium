@@ -6211,16 +6211,6 @@
     "expiry_milestone": 117
   },
   {
-    "name": "oobe-jelly",
-    "owners": [ "ziegltrum@google.com", "cros-oobe@google.com" ],
-    "expiry_milestone": 123
-  },
-  {
-    "name": "oobe-jelly-modal",
-    "owners": [ "ziegltrum@google.com", "cros-oobe@google.com" ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "open-download-dialog",
     "owners": [ "qinmin@chromium.org", "dtrainor@chromium.org" ],
     "expiry_milestone": 125

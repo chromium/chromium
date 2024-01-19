@@ -7271,14 +7271,6 @@ const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "
     "networks.";
 
-const char kOobeJellyName[] = "Jelly design for OOBE";
-const char kOobeJellyDescription[] =
-    "Feature to enable the Jelly design in out of box experience.";
-
-const char kOobeJellyModalName[] = "Jelly modal feature for OOBE";
-const char kOobeJellyModalDescription[] =
-    "Feature to enable the Jelly modal feature in out of box experience.";
-
 const char kSmdsSupportName[] = "SM-DS Support";
 const char kSmdsSupportDescription[] =
     "Feature to enable the consumer and enterprise support for provisioning "
