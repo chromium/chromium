@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/values_test_util.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "test_wallpaper_controller.h"
@@ -233,7 +234,19 @@ void TestWallpaperController::SetSeaPenWallpaperFromFile(
   ++sea_pen_wallpaper_count_;
   wallpaper_info_ = ash::WallpaperInfo();
   wallpaper_info_->type = ash::WallpaperType::kSeaPen;
+  wallpaper_info_->user_file_path = sea_pen_file_path.value();
   std::move(callback).Run(/*success=*/true);
+}
+
+void TestWallpaperController::GetSeaPenMetadata(
+    const AccountId& account_id,
+    const base::FilePath& sea_pen_file_path,
+    GetSeaPenMetadataCallback callback) {
+  std::move(callback).Run(base::test::ParseJsonDict(
+      R"({"creation_time":"13349580387513653",
+      "user_visible_query_text":"test template query",
+      "user_visible_query_template":"test template title",
+      "options":{"4":"55","5":"64"},"template_id":"2"})"));
 }
 
 void TestWallpaperController::DeleteRecentSeaPenImage(

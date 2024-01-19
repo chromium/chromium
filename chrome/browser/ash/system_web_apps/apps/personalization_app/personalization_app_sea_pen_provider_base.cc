@@ -12,6 +12,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/image_util.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/functional/bind.h"
@@ -49,33 +50,35 @@ constexpr int kSeaPenImageThumbnailSizeDip = 512;
  * @return query information in string format
  */
 std::string SeaPenQueryToJsonString(const mojom::SeaPenQueryPtr& query) {
-  std::string query_info;
   base::Value::Dict query_dict = base::Value::Dict();
-  query_dict.Set("creation_time", base::TimeToValue(base::Time::Now()));
+  query_dict.Set(wallpaper_constants::kSeaPenCreationTimeKey,
+                 base::TimeToValue(base::Time::Now()));
 
   switch (query->which()) {
     case mojom::SeaPenQuery::Tag::kTextQuery:
-      query_dict.Set("freeform_query", query->get_text_query());
+      query_dict.Set(wallpaper_constants::kSeaPenFreeformQueryKey,
+                     query->get_text_query());
       break;
     case mojom::SeaPenQuery::Tag::kTemplateQuery:
-      query_dict.Set("template_id", base::NumberToString(static_cast<int32_t>(
-                                        query->get_template_query()->id)));
+      query_dict.Set(wallpaper_constants::kSeaPenTemplateIdKey,
+                     base::NumberToString(static_cast<int32_t>(
+                         query->get_template_query()->id)));
       base::Value::Dict options_dict = base::Value::Dict();
       for (const auto& [chip, option] : query->get_template_query()->options) {
         options_dict.Set(base::NumberToString(static_cast<int32_t>(chip)),
                          base::NumberToString(static_cast<int32_t>(option)));
       }
-      query_dict.Set("options", std::move(options_dict));
-      query_dict.Set("user_visible_query_text",
+      query_dict.Set(wallpaper_constants::kSeaPenTemplateOptionsKey,
+                     std::move(options_dict));
+      query_dict.Set(wallpaper_constants::kSeaPenUserVisibleQueryTextKey,
                      query->get_template_query()->user_visible_query->text);
       query_dict.Set(
-          "user_visible_query_template",
+          wallpaper_constants::kSeaPenUserVisibleQueryTemplateKey,
           query->get_template_query()->user_visible_query->template_title);
       break;
   }
 
-  base::JSONWriter::Write(query_dict, &query_info);
-  return query_info;
+  return base::WriteJson(query_dict).value_or("");
 }
 
 // Constructs the xmp metadata string from the string query information.

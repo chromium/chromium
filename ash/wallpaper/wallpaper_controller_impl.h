@@ -306,6 +306,10 @@ class ASH_EXPORT WallpaperControllerImpl
                                   const base::FilePath& file_path,
                                   SetWallpaperCallback callback) override;
 
+  void GetSeaPenMetadata(const AccountId& account_id,
+                         const base::FilePath& file_path,
+                         GetSeaPenMetadataCallback callback) override;
+
   void DeleteRecentSeaPenImage(
       const AccountId& account_id,
       const base::FilePath& file_path,

@@ -69,6 +69,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -1151,6 +1152,20 @@ void WallpaperControllerImpl::SetSeaPenWallpaperFromFile(
       base::BindOnce(&WallpaperControllerImpl::OnSeaPenWallpaperDecoded,
                      set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
                      file_path, std::move(callback)));
+}
+
+void WallpaperControllerImpl::GetSeaPenMetadata(
+    const AccountId& account_id,
+    const base::FilePath& file_path,
+    GetSeaPenMetadataCallback callback) {
+  if (!GetUserSeaPenWallpaperDir(account_id).IsParent(file_path)) {
+    LOG(WARNING) << "Called " << __func__
+                 << " on invalid file path: " << file_path;
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  wallpaper_file_manager_->GetSeaPenMetadata(file_path, std::move(callback));
 }
 
 void WallpaperControllerImpl::DeleteRecentSeaPenImage(

@@ -5,16 +5,23 @@
 #ifndef ASH_WALLPAPER_WALLPAPER_FILE_MANAGER_H_
 #define ASH_WALLPAPER_WALLPAPER_FILE_MANAGER_H_
 
+#include <optional>
+#include <string>
+
 #include "ash/ash_export.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resolution.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -83,6 +90,13 @@ class ASH_EXPORT WallpaperFileManager {
                            const std::string& image_metadata = "",
                            SaveWallpaperCallback callback = base::DoNothing(),
                            const std::string& wallpaper_files_id = "");
+
+  // Extracts the data between <dc::description> tags of the XMP metadata from
+  // the image at `file_path`. Calls `callback` with the data if it is
+  // successfully read and parsed as a JSON dictionary.
+  void GetSeaPenMetadata(
+      const base::FilePath& file_path,
+      WallpaperController::GetSeaPenMetadataCallback callback);
 
   using RemoveImageFromDiskCallback = base::OnceCallback<void(bool success)>;
   void RemoveImageFromDisk(RemoveImageFromDiskCallback callback,

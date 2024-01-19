@@ -56,6 +56,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
@@ -71,6 +72,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -856,6 +858,30 @@ class WallpaperControllerTestBase : public AshTestBase {
     EXPECT_EQ(1, observer.wallpaper_changed_count());
     histogram_tester().ExpectUniqueSample("Ash.Wallpaper.SeaPen.Result2",
                                           SetWallpaperResult::kSuccess, 1);
+  }
+
+  base::FilePath WriteSeaPenWallpaperMetadata(
+      const std::string& file_name,
+      const base::Value::Dict& metadata) {
+    base::FilePath sea_pen_dir =
+        online_wallpaper_dir_.GetPath().Append("sea_pen").Append(
+            kAccountId1.GetAccountIdKey());
+    base::CreateDirectory(sea_pen_dir);
+    base::FilePath file_path = sea_pen_dir.Append(file_name);
+    const char test_xmp_data[] = R"(
+            <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XMP Core 6.0.0">
+               <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                  <rdf:Description rdf:about="" xmlns:dc="http://purl.org/dc/elements/1.1/">
+                     <dc:description>%s</dc:description>
+                  </rdf:Description>
+               </rdf:RDF>
+            </x:xmpmeta>
+            ... more image data ...)";
+    CHECK(base::WriteFile(
+        file_path,
+        base::StringPrintf(test_xmp_data,
+                           base::WriteJson(metadata).value_or("").c_str())));
+    return file_path;
   }
 
   TestWallpaperImageDownloader* test_wallpaper_image_downloader() {
@@ -2448,6 +2474,57 @@ TEST_P(WallpaperControllerTest, DeleteRecentSeaPenImage) {
 
   EXPECT_TRUE(delete_sea_pen_image_future.Get());
   EXPECT_FALSE(base::PathExists(file_path));
+}
+
+TEST_P(WallpaperControllerTest, GetSeaPenMetadata) {
+  SimulateUserLogin(kAccountId1);
+
+  const base::Value::Dict metadata = base::test::ParseJsonDict(
+      R"({"creation_time":"13349580290544213",
+      "user_visible_query_text":"test template query",
+      "user_visible_query_template":"test template title",
+      "options":{"4":"55","5":"64"},
+      "template_id":"2"})");
+  const auto file_path = WriteSeaPenWallpaperMetadata("111.jpg", metadata);
+
+  {
+    base::test::TestFuture<std::optional<base::Value::Dict>>
+        get_sea_pen_metadata_future;
+    controller_->GetSeaPenMetadata(kAccountId1, file_path,
+                                   get_sea_pen_metadata_future.GetCallback());
+
+    EXPECT_EQ(metadata, get_sea_pen_metadata_future.Get());
+  }
+
+  {
+    base::test::TestFuture<std::optional<base::Value::Dict>>
+        get_sea_pen_metadata_future;
+    // Now try an invalid path with known good metadata.
+    const auto invalid_file_path =
+        WriteSeaPenWallpaperMetadata("../111.jpg", metadata);
+    controller_->GetSeaPenMetadata(kAccountId1, invalid_file_path,
+                                   get_sea_pen_metadata_future.GetCallback());
+    EXPECT_FALSE(get_sea_pen_metadata_future.Get().has_value());
+  }
+}
+
+TEST_P(WallpaperControllerTest, GetSeaPenMetadataInvalidJson) {
+  SimulateUserLogin(kAccountId1);
+
+  // Missing a required `template_id` key.
+  const base::Value::Dict metadata = base::test::ParseJsonDict(
+      R"({"creation_time":"13349580290544213",
+      "user_visible_query_text":"test template query",
+      "user_visible_query_template":"test template title",
+      "options":{"4":"55","5":"64"}})");
+  const auto file_path = WriteSeaPenWallpaperMetadata("8888.jpg", metadata);
+
+  base::test::TestFuture<std::optional<base::Value::Dict>>
+      get_sea_pen_metadata_future;
+  controller_->GetSeaPenMetadata(kAccountId1, file_path,
+                                 get_sea_pen_metadata_future.GetCallback());
+
+  EXPECT_FALSE(get_sea_pen_metadata_future.Take().has_value());
 }
 
 TEST_P(WallpaperControllerTest, IgnoreWallpaperRequestInKioskMode) {

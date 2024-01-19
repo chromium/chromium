@@ -17,6 +17,7 @@
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
@@ -137,6 +138,15 @@ class TestWallpaperObserver
     return current_wallpaper_.get();
   }
 
+  ash::personalization_app::mojom::CurrentAttribution* current_attribution() {
+    if (!wallpaper_observer_receiver_.is_bound()) {
+      return nullptr;
+    }
+
+    wallpaper_observer_receiver_.FlushForTesting();
+    return current_attribution_.get();
+  }
+
  private:
   mojo::Receiver<ash::personalization_app::mojom::WallpaperObserver>
       wallpaper_observer_receiver_{this};
@@ -241,6 +251,11 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
   ash::personalization_app::mojom::CurrentWallpaper* current_wallpaper() {
     wallpaper_provider_remote_.FlushForTesting();
     return test_wallpaper_observer_.current_wallpaper();
+  }
+
+  ash::personalization_app::mojom::CurrentAttribution* current_attribution() {
+    wallpaper_provider_remote_.FlushForTesting();
+    return test_wallpaper_observer_.current_attribution();
   }
 
  private:
@@ -398,11 +413,18 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest,
       GetTestAccountId(), base::FilePath("/sea_pen/111.jpg"),
       base::DoNothing());
 
-  ash::personalization_app::mojom::CurrentWallpaper* current =
+  ash::personalization_app::mojom::CurrentWallpaper* wallpaper =
       current_wallpaper();
-  EXPECT_EQ(ash::WallpaperType::kSeaPen, current->type);
-  EXPECT_EQ(std::string(), current->description_content);
-  EXPECT_EQ(std::string(), current->description_title);
+  EXPECT_EQ(ash::WallpaperType::kSeaPen, wallpaper->type);
+  EXPECT_EQ(std::string(), wallpaper->description_content);
+  EXPECT_EQ(std::string(), wallpaper->description_title);
+
+  ash::personalization_app::mojom::CurrentAttribution* current_attr =
+      current_attribution();
+  EXPECT_EQ("/sea_pen/111.jpg", current_attr->key);
+  std::vector<std::string> expected_attr{"test template query",
+                                         "test template title"};
+  EXPECT_EQ(expected_attr, current_attr->attribution);
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplTest, SetCurrentWallpaperLayout) {

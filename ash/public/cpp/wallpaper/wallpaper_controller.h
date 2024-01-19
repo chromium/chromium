@@ -20,6 +20,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/user_manager/user_type.h"
 
 class AccountId;
@@ -44,6 +45,9 @@ class ASH_PUBLIC_EXPORT WallpaperController {
 
   using DeleteRecentSeaPenImageCallback =
       base::OnceCallback<void(bool success)>;
+
+  using GetSeaPenMetadataCallback =
+      base::OnceCallback<void(std::optional<base::Value::Dict> metadata)>;
 
   using DailyGooglePhotosIdCache = base::HashingLRUCacheSet<uint32_t>;
 
@@ -261,6 +265,13 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   virtual void SetSeaPenWallpaperFromFile(const AccountId& account_id,
                                           const base::FilePath& file_path,
                                           SetWallpaperCallback callback) = 0;
+
+  // Extracts SeaPen metadata from a image `file_path`. Calls `callback` with
+  // the extracted data. Will run `callback`with std::nullopt if the
+  // `file_path`does not exist or reading metadata fails.
+  virtual void GetSeaPenMetadata(const AccountId& account_id,
+                                 const base::FilePath& file_path,
+                                 GetSeaPenMetadataCallback callback) = 0;
 
   // Removes the selected Sea Pen image from Sea Pen directory.
   virtual void DeleteRecentSeaPenImage(
