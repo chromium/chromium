@@ -85,7 +85,8 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
   // ObjectBackedNativeHandler overrides:
   void Invalidate() override;
 
-  // Returns whether this extension has the "desktop" permission set.
+  // Returns whether this extension has the "interact" permission set (either
+  // explicitly or implicitly after manifest parsing).
   void IsInteractPermitted(
       const v8::FunctionCallbackInfo<v8::Value>& args) const;
 

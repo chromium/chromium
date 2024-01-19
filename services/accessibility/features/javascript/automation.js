@@ -1434,9 +1434,8 @@ class AutomationNode {
 
     // Check permissions.
     if (!IsInteractPermitted()) {
-      throw new Error(
-          actionType + ' requires {"desktop": true} in the ' +
-          '"automation" manifest key.');
+      throw new Error(actionType + ' requires {"desktop": true} or' +
+          ' {"interact": true} in the "automation" manifest key.');
     }
 
     let requestID = -1;
