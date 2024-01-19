@@ -57,6 +57,8 @@ static_library("ui") {
     "autofill/autofill_popup_view_delegate.h",
     "autofill/chrome_autofill_client.cc",
     "autofill/chrome_autofill_client.h",
+    "autofill/next_idle_time_ticks.cc",
+    "autofill/next_idle_time_ticks.h",
     "autofill/payments/autofill_dialog_models.cc",
     "autofill/payments/autofill_dialog_models.h",
     "autofill/payments/autofill_progress_dialog_controller.h",

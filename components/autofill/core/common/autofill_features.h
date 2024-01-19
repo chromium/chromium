@@ -148,6 +148,8 @@ BASE_DECLARE_FEATURE(kAutofillPopupDoesNotOverlapWithContextMenu);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillPopupExtensionCursorSuppression);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillPopupImprovedTimingChecks);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillPopupMultiWindowCursorSuppression);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillPopupUseLatencyInformationForAcceptThreshold);

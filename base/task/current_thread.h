@@ -23,6 +23,10 @@
 #include "base/task/task_observer.h"
 #include "build/build_config.h"
 
+namespace autofill {
+class NextIdleTimeTicks;
+}
+
 namespace content {
 class BrowserMainLoop;
 }
@@ -147,7 +151,8 @@ class BASE_EXPORT CurrentThread {
    private:
     RegisterOnNextIdleCallbackPasskey() {}
 
-    friend class content::BrowserMainLoop;
+    friend autofill::NextIdleTimeTicks;
+    friend content::BrowserMainLoop;
     friend bool test::RunUntil(FunctionRef<bool(void)>);
     friend void test::TestPredicateOrRegisterOnNextIdleCallback(
         base::FunctionRef<bool(void)>,

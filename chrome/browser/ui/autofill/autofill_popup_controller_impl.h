@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -158,7 +159,7 @@ class AutofillPopupControllerImpl
 
   void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) {
     view_ = std::move(view);
-    time_view_shown_ = base::TimeTicks::Now();
+    time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicks();
   }
 
   int GetLineCountForTesting() const { return GetLineCount(); }
@@ -258,7 +259,7 @@ class AutofillPopupControllerImpl
   // The time the view was shown the last time. It is used to safeguard against
   // accepting suggestions too quickly after a the popup view was shown (see the
   // `show_threshold` parameter of `AcceptSuggestion`).
-  base::TimeTicks time_view_shown_;
+  NextIdleTimeTicks time_view_shown_;
 
   // An override to suppress minimum show thresholds. It should only be set
   // during tests that cannot mock time (e.g. the autofill interactive

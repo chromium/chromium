@@ -25,6 +25,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
+#include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -232,7 +233,7 @@ void AutofillPopupControllerImpl::Show(
     // event when suggestions changed.
     FireControlsChangedEvent(true);
   }
-  time_view_shown_ = base::TimeTicks::Now();
+  time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicks();
 
   if (IsRootPopup()) {
     // We may already be observing from a previous `Show` call.
@@ -371,9 +372,11 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index,
                                                    base::TimeTicks event_time) {
   // Ignore clicks immediately after the popup was shown. This is to prevent
   // users accidentally accepting suggestions (crbug.com/1279268).
-  CHECK(!time_view_shown_.is_null());
+  if (time_view_shown_.value().is_null()) {
+    return;
+  }
   CHECK(!event_time.is_null());
-  const base::TimeDelta time_elapsed = event_time - time_view_shown_;
+  const base::TimeDelta time_elapsed = event_time - time_view_shown_.value();
   if ((time_elapsed < kIgnoreEarlyClicksOnPopupDuration) &&
       !disable_threshold_for_testing_) {
     base::UmaHistogramCustomTimes(

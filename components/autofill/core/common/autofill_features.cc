@@ -462,6 +462,15 @@ BASE_FEATURE(kAutofillPopupExtensionCursorSuppression,
              "AutofillPopupExtensionCursorSuppression",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If the feature is enabled, then the time when the Autofill popup is
+// considered to have been shown is measured only once the UI thread has become
+// idle. The intent behind this is to avoid situations in which the OS message
+// queue has a backlog and input event timestamps become inaccurate (i.e. event
+// timestamps indicate that events are more recent than they should be).
+BASE_FEATURE(kAutofillPopupImprovedTimingChecks,
+             "AutofillPopupImprovedTimingChecks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If the feature is enabled, custom cursors exceeding the (24 dips) dimension
 // limit are disallowed for all active tabs in all active windows.
 BASE_FEATURE(kAutofillPopupMultiWindowCursorSuppression,
