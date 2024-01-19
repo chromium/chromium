@@ -84,6 +84,8 @@ class CORE_EXPORT CSSParserImpl {
     kNoRules,
     // https://drafts.csswg.org/css-nesting/#nested-group-rules
     kNestedGroupRules,
+    // https://www.w3.org/TR/css-page-3/#syntax-page-selector
+    kPageMarginRules,
   };
 
   // Represents the start and end offsets of a CSSParserTokenRange.
@@ -209,6 +211,8 @@ class CORE_EXPORT CSSParserImpl {
                                       CSSNestingType,
                                       StyleRule* parent_rule_for_nesting);
 
+  StyleRulePageMargin* ConsumePageMarginRule(CSSAtRuleID rule_id,
+                                             CSSParserTokenStream& stream);
   static StyleRuleCharset* ConsumeCharsetRule(CSSParserTokenStream&);
   StyleRuleImport* ConsumeImportRule(const AtomicString& prelude_uri,
                                      CSSParserTokenStream&);
@@ -276,6 +280,7 @@ class CORE_EXPORT CSSParserImpl {
   // If id is absl::nullopt, we're parsing a qualified style rule;
   // otherwise, we're parsing an at-rule.
   StyleRuleBase* ConsumeNestedRule(absl::optional<CSSAtRuleID> id,
+                                   StyleRule::RuleType parent_rule_type,
                                    CSSParserTokenStream& stream,
                                    CSSNestingType,
                                    StyleRule* parent_rule_for_nesting);

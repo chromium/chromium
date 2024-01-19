@@ -51,6 +51,11 @@ bool IsPropertyAllowedInRule(const CSSProperty& property,
   switch (rule_type) {
     case StyleRule::kStyle:
       return true;
+    case StyleRule::kPage:
+      // TODO(sesse): Limit the allowed properties here.
+      // https://www.w3.org/TR/css-page-3/#page-property-list
+      // https://www.w3.org/TR/css-page-3/#margin-property-list
+      return true;
     case StyleRule::kKeyframe:
       return property.IsValidForKeyframe();
     case StyleRule::kTry:

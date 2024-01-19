@@ -721,7 +721,9 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
         id != CSSAtRuleID::kCSSAtRuleLayer &&      // [css-cascade-5]
         id != CSSAtRuleID::kCSSAtRuleScope &&      // [css-cascade-6]
         id != CSSAtRuleID::kCSSAtRuleStartingStyle &&
-        id != CSSAtRuleID::kCSSAtRuleViewTransition) {
+        id != CSSAtRuleID::kCSSAtRuleViewTransition &&
+        (id < CSSAtRuleID::kCSSAtRuleTopLeftCorner ||
+         id > CSSAtRuleID::kCSSAtRuleRightBottom)) {
       ConsumeErroneousAtRule(stream, id);
       return nullptr;
     }
@@ -775,6 +777,15 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
     } else {
       return nullptr;
     }
+  } else if (allowed_rules == kPageMarginRules) {
+    if (id < CSSAtRuleID::kCSSAtRuleTopLeftCorner ||
+        id > CSSAtRuleID::kCSSAtRuleRightBottom ||
+        !RuntimeEnabledFeatures::PageMarginBoxesEnabled()) {
+      ConsumeErroneousAtRule(stream, id);
+      return nullptr;
+    }
+
+    return ConsumePageMarginRule(id, stream);
   } else {
     DCHECK_LE(allowed_rules, kRegularRules);
 
@@ -825,6 +836,22 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
       case CSSAtRuleID::kCSSAtRuleSwash:
       case CSSAtRuleID::kCSSAtRuleOrnaments:
       case CSSAtRuleID::kCSSAtRuleAnnotation:
+      case CSSAtRuleID::kCSSAtRuleTopLeftCorner:
+      case CSSAtRuleID::kCSSAtRuleTopLeft:
+      case CSSAtRuleID::kCSSAtRuleTopCenter:
+      case CSSAtRuleID::kCSSAtRuleTopRight:
+      case CSSAtRuleID::kCSSAtRuleTopRightCorner:
+      case CSSAtRuleID::kCSSAtRuleBottomLeftCorner:
+      case CSSAtRuleID::kCSSAtRuleBottomLeft:
+      case CSSAtRuleID::kCSSAtRuleBottomCenter:
+      case CSSAtRuleID::kCSSAtRuleBottomRight:
+      case CSSAtRuleID::kCSSAtRuleBottomRightCorner:
+      case CSSAtRuleID::kCSSAtRuleLeftTop:
+      case CSSAtRuleID::kCSSAtRuleLeftMiddle:
+      case CSSAtRuleID::kCSSAtRuleLeftBottom:
+      case CSSAtRuleID::kCSSAtRuleRightTop:
+      case CSSAtRuleID::kCSSAtRuleRightMiddle:
+      case CSSAtRuleID::kCSSAtRuleRightBottom:
         ConsumeErroneousAtRule(stream, id);
         return nullptr;  // Parse error, unrecognised or not-allowed at-rule
     }
@@ -906,6 +933,26 @@ static AtomicString ConsumeStringOrURI(CSSParserTokenRange& range) {
   }
   DCHECK_EQ(uri.GetType(), kStringToken);
   return uri.Value().ToAtomicString();
+}
+
+StyleRulePageMargin* CSSParserImpl::ConsumePageMarginRule(
+    CSSAtRuleID rule_id,
+    CSSParserTokenStream& stream) {
+  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream)) {
+    return nullptr;
+  }
+  CSSParserTokenStream::BlockGuard guard(stream);
+
+  if (!prelude.AtEnd()) {
+    return nullptr;  // Parse error; page margin at-rule should be empty
+  }
+
+  ConsumeDeclarationList(stream, StyleRule::kPage, CSSNestingType::kNone,
+                         /*parent_rule_for_nesting=*/nullptr,
+                         /*child_rules=*/nullptr);
+  return MakeGarbageCollected<StyleRulePageMargin>(
+      rule_id, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
 }
 
 StyleRuleCharset* CSSParserImpl::ConsumeCharsetRule(
@@ -1478,6 +1525,7 @@ StyleRuleFontFeatureValues* CSSParserImpl::ConsumeFontFeatureValuesRule(
   return feature_values_rule;
 }
 
+// Parse an @page rule, with contents.
 StyleRulePage* CSSParserImpl::ConsumePageRule(CSSParserTokenStream& stream) {
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
@@ -1498,13 +1546,14 @@ StyleRulePage* CSSParserImpl::ConsumePageRule(CSSParserTokenStream& stream) {
     observer_->EndRuleHeader(prelude_offset_end);
   }
 
-  ConsumeDeclarationList(stream, StyleRule::kStyle, CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*child_rules=*/nullptr);
+  HeapVector<Member<StyleRuleBase>, 4> child_rules;
+  ConsumeDeclarationList(stream, StyleRule::kPage, CSSNestingType::kNone,
+                         /*parent_rule_for_nesting=*/nullptr, &child_rules);
 
   return MakeGarbageCollected<StyleRulePage>(
       selector_list,
-      CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
+      CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()),
+      child_rules);
 }
 
 StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
@@ -2153,7 +2202,7 @@ void CSSParserImpl::ConsumeDeclarationList(
 
   bool is_observer_rule_type =
       rule_type == StyleRule::kStyle || rule_type == StyleRule::kProperty ||
-      rule_type == StyleRule::kContainer ||
+      rule_type == StyleRule::kPage || rule_type == StyleRule::kContainer ||
       rule_type == StyleRule::kCounterStyle ||
       rule_type == StyleRule::kFontPaletteValues ||
       rule_type == StyleRule::kKeyframe || rule_type == StyleRule::kScope ||
@@ -2190,8 +2239,8 @@ void CSSParserImpl::ConsumeDeclarationList(
         CSSParserToken name_token = stream.ConsumeIncludingWhitespace();
         const StringView name = name_token.Value();
         const CSSAtRuleID id = CssAtRuleID(name);
-        StyleRuleBase* child = ConsumeNestedRule(id, stream, nesting_type,
-                                                 parent_rule_for_nesting);
+        StyleRuleBase* child = ConsumeNestedRule(
+            id, rule_type, stream, nesting_type, parent_rule_for_nesting);
         if (child && child_rules) {
           child_rules->push_back(child);
         }
@@ -2219,8 +2268,8 @@ void CSSParserImpl::ConsumeDeclarationList(
           // Recover from an error when CSSNestingIdent is not enabled.
           // When CSSNestingIdent is enabled, we would instead normally Restore
           // the stream and retry as a nested style rule, but as an optimization
-          // we avoid this restart if we ended on a kSemicolonToken, as this situation
-          // can't produce a valid rule.
+          // we avoid this restart if we ended on a kSemicolonToken, as this
+          // situation can't produce a valid rule.
           stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
           if (!stream.AtEnd()) {
             stream.UncheckedConsume();  // kSemicolonToken
@@ -2233,8 +2282,9 @@ void CSSParserImpl::ConsumeDeclarationList(
       }
       default:
         if (parent_rule_for_nesting != nullptr) {  // [1] (see function comment)
-          StyleRuleBase* child = ConsumeNestedRule(
-              absl::nullopt, stream, nesting_type, parent_rule_for_nesting);
+          StyleRuleBase* child =
+              ConsumeNestedRule(absl::nullopt, rule_type, stream, nesting_type,
+                                parent_rule_for_nesting);
           if (child) {
             if (child_rules) {
               child_rules->push_back(child);
@@ -2317,6 +2367,7 @@ void CSSParserImpl::ConsumeRuleListOrNestedDeclarationList(
 
 StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
     absl::optional<CSSAtRuleID> id,
+    StyleRule::RuleType parent_rule_type,
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting) {
@@ -2334,11 +2385,14 @@ StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
     child = ConsumeStyleRule(stream, nesting_type, parent_rule_for_nesting,
                              /* semicolon_aborts_nested_selector */ true);
   } else {
-    child = ConsumeAtRuleContents(*id, stream, kNestedGroupRules, nesting_type,
-                                  parent_rule_for_nesting);
+    child = ConsumeAtRuleContents(*id, stream,
+                                  parent_rule_type == StyleRule::kPage
+                                      ? kPageMarginRules
+                                      : kNestedGroupRules,
+                                  nesting_type, parent_rule_for_nesting);
   }
   parsed_properties_ = std::move(outer_parsed_properties);
-  if (child) {
+  if (child && parent_rule_type != StyleRule::kPage) {
     context_->Count(WebFeature::kCSSNesting);
   }
   return child;
