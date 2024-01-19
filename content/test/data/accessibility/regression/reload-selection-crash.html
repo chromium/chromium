@@ -1,0 +1,65 @@
+<!--
+@WAIT-FOR:Done
+
+This is a regression test for errors that occurs when dumping the tree during
+reload. See notes in the test to fail more reliably when testing locally.
+-->
+<html>
+<head>
+<style>
+#fuzz1 {
+ -webkit-shape-outside: url(x);
+}
+</style>
+<script>
+
+function boom() {
+  setTimeout(() => {
+    let iteration = Number.parseInt(document.location.hash.substring(1));
+    if (isNaN(iteration))
+      iteration = 0;
+
+    iteration = iteration + 1;
+    location.hash = iteration;
+    if (iteration > 3) {
+      document.body.innerHTML = "Done";
+      // remove hash
+      history.pushState("", document.title, window.location.pathname
+			+ window.location.search);
+      return;
+    }
+    location.reload(true);
+  }, 10);
+  requestAnimationFrame(() => { setTimeout(() => {
+    var div = document.getElementById("fuzz24");
+
+    // Increase the DOM elements added to 10000 to fail more reliable.
+    for (let i = 0; i < 1000; i++) {
+      let p = document.createElement("p");
+      p.innerText = "aaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAAa";
+      div.appendChild(p);
+    }
+  }); });
+}
+
+</script>
+</head>
+<body onload=boom()>
+<marquee id="fuzz2">
+<hr id="fuzz4" >
+</hr>
+</marquee>
+<data id="fuzz6"  alt="AAAA"  >
+<time id="fuzz1" >
+<label id="fuzz11" ></label>
+<style id="fuzz12" ></style>
+<hr id="fuzz16"  >
+<hr id="fuzz17"  >
+<dl id="fuzz18"  >
+</dl>
+</hr>
+<div id="fuzz24" style="columns: 0px">
+</div>
+</hr>
+</body>
+</html>

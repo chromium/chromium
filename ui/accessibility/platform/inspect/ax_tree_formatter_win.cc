@@ -94,8 +94,16 @@ Microsoft::WRL::ComPtr<IAccessible> GetIAObject(AXPlatformNodeDelegate* node,
                                                 LONG& root_x,
                                                 LONG& root_y) {
   DCHECK(node);
-  AXTreeManager* root_manager = node->GetTreeManager()->GetRootManager();
-  DCHECK(root_manager);
+  // If dumping when the page or iframe is reloading, the
+  // tree manager may have been removed.
+  AXTreeManager* manager = node->GetTreeManager();
+  if (!manager) {
+    return nullptr;
+  }
+  AXTreeManager* root_manager = manager->GetRootManager();
+  if (!root_manager) {
+    return nullptr;
+  }
 
   base::win::ScopedVariant variant_self(CHILDID_SELF);
   LONG root_width, root_height;
@@ -115,8 +123,10 @@ base::Value::Dict AXTreeFormatterWin::BuildNode(
   LONG root_x = 0, root_y = 0;
   Microsoft::WRL::ComPtr<IAccessible> node_ia =
       GetIAObject(node, root_x, root_y);
-
   base::Value::Dict dict;
+  if (!node_ia) {
+    return dict;
+  }
   AddProperties(node_ia, &dict, root_x, root_y);
   return dict;
 }
@@ -126,8 +136,10 @@ base::Value::Dict AXTreeFormatterWin::BuildTree(
   LONG root_x = 0, root_y = 0;
   Microsoft::WRL::ComPtr<IAccessible> start_ia =
       GetIAObject(start, root_x, root_y);
-
   base::Value::Dict dict;
+  if (!start_ia) {
+    return dict;
+  }
   RecursiveBuildTree(start_ia, &dict, root_x, root_y);
   return dict;
 }

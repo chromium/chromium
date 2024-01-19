@@ -5465,6 +5465,8 @@ data/accessibility/regression/progress-with-background-exposes-values.html
 data/accessibility/regression/reentrant-add-children.html
 data/accessibility/regression/relation-points-to-invalid-nodes-crash-expected-blink.txt
 data/accessibility/regression/relation-points-to-invalid-nodes-crash.html
+data/accessibility/regression/reload-selection-crash-expected-blink.txt
+data/accessibility/regression/reload-selection-crash.html
 data/accessibility/regression/remove-aria-owner-expected-auralinux.txt
 data/accessibility/regression/remove-aria-owner-expected-blink.txt
 data/accessibility/regression/remove-aria-owner.html
