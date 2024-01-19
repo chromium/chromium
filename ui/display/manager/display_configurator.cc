@@ -91,21 +91,6 @@ const int DisplayConfigurator::kSetDisplayPowerForceProbe = 1 << 0;
 const int DisplayConfigurator::kSetDisplayPowerOnlyIfSingleInternalDisplay =
     1 << 1;
 
-bool DisplayConfigurator::TestApi::TriggerConfigureTimeout() {
-  if (configurator_->configure_timer_.IsRunning()) {
-    configurator_->configure_timer_.FireNow();
-    return true;
-  } else {
-    return false;
-  }
-}
-
-base::TimeDelta DisplayConfigurator::TestApi::GetConfigureDelay() const {
-  return configurator_->configure_timer_.IsRunning()
-             ? configurator_->configure_timer_.GetCurrentDelay()
-             : base::TimeDelta();
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // DisplayConfigurator::DisplayLayoutManagerImpl implementation
 
@@ -400,6 +385,10 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
     for (DisplayConfigureRequest& request : *requests) {
       if (request.display->type() != DISPLAY_CONNECTION_TYPE_INTERNAL)
         continue;
+
+      if (request.mode == nullptr) {
+        continue;
+      }
 
       std::vector<const DisplayMode*> modes =
           GetSeamlessRefreshRateModes(*request.display, *request.mode);
@@ -1250,6 +1239,29 @@ bool DisplayConfigurator::ShouldConfigureVrr() const {
   }
 
   return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// DisplayConfigurator::TestApi implementation
+
+bool DisplayConfigurator::TestApi::TriggerConfigureTimeout() {
+  if (configurator_->configure_timer_.IsRunning()) {
+    configurator_->configure_timer_.FireNow();
+    return true;
+  } else {
+    return false;
+  }
+}
+
+base::TimeDelta DisplayConfigurator::TestApi::GetConfigureDelay() const {
+  return configurator_->configure_timer_.IsRunning()
+             ? configurator_->configure_timer_.GetCurrentDelay()
+             : base::TimeDelta();
+}
+
+DisplayLayoutManager* DisplayConfigurator::TestApi::GetDisplayLayoutManager()
+    const {
+  return configurator_->layout_manager_.get();
 }
 
 }  // namespace display
