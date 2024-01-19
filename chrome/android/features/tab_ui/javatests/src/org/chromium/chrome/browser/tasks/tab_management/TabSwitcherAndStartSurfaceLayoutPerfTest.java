@@ -92,6 +92,7 @@ import java.util.concurrent.TimeoutException;
     Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
 })
 @EnableFeatures({ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION})
+@DisableFeatures({ChromeFeatureList.ANDROID_HUB})
 public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     private static final String TAG = "SSLayoutPerfTest";
     private static final String BASE_PARAMS =

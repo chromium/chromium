@@ -191,8 +191,9 @@ public class InstantStartTabSwitcherTest {
         INSTANT_START_TEST_BASE_PARAMS,
         FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH
     })
-    // TODO(https://crbug.com/1500080): Fix this test with "start surface refactor" enabled.
-    @DisableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
+    // TODO(https://crbug.com/1500080): Fix this test with "start surface refactor" enabled. Hub
+    // is disabled because it requires "start surface refactor" to be enabled.
+    @DisableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR, ChromeFeatureList.ANDROID_HUB})
     public void testScrollToSelectedTab() throws Exception {
         StartSurfaceTestUtils.createTabStatesAndMetadataFile(
                 new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, null, 5);
