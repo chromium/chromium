@@ -15,6 +15,7 @@
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/pepper/pepper_device_enumeration_host_helper.h"
 #include "content/renderer/pepper/ppb_buffer_impl.h"
+#include "media/base/video_frame_converter.h"
 #include "media/capture/video_capture_types.h"
 #include "ppapi/c/dev/ppp_video_capture_dev.h"
 #include "ppapi/host/host_message_context.h"
@@ -119,6 +120,8 @@ class PepperVideoCaptureHost : public ppapi::host::ResourceHost {
   ppapi::host::ReplyMessageContext open_reply_context_;
 
   PepperDeviceEnumerationHostHelper enumeration_helper_;
+
+  media::VideoFrameConverter frame_converter_;
 };
 
 }  // namespace content

@@ -530,10 +530,8 @@ VideoTrackRecorderImpl::Encoder::MaybeProvideEncodableFrame(
         is_opaque ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
         visible_rect.size(), visible_rect, visible_rect.size(),
         video_frame->timestamp());
-
     if (!frame ||
-        !media::ConvertAndScaleFrame(*video_frame, *frame, resize_buffer_)
-             .is_ok()) {
+        !frame_converter_.ConvertAndScale(*video_frame, *frame).is_ok()) {
       // Send black frames (yuv = {0, 127, 127}).
       DLOG(ERROR) << "Can't convert RGB to I420";
       frame = media::VideoFrame::CreateColorFrame(

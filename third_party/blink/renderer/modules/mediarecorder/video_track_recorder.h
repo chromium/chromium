@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/video_encoder.h"
+#include "media/base/video_frame_converter.h"
 #include "media/base/video_frame_pool.h"
 #include "media/muxers/webm_muxer.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
@@ -248,11 +249,12 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     std::unique_ptr<WebGraphicsContext3DProvider> encoder_thread_context_;
     KeyFrameRequestProcessor key_frame_processor_;
     bool awaiting_first_frame_ = true;
-    std::vector<uint8_t> resize_buffer_
-        ALLOW_DISCOURAGED_TYPE("Avoids conversion when passed to media:: code");
     std::unique_ptr<media::VideoEncoderMetricsProvider> metrics_provider_;
 
     media::VideoFramePool frame_pool_;
+
+    // Handle frame format conversions.
+    media::VideoFrameConverter frame_converter_;
   };
 
   // Class to encapsulate the enumeration of CodecIds/VideoCodecProfiles

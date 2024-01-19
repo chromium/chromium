@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "media/base/video_frame_converter.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -115,7 +116,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoCaptureClient
   // these structures are used to convert them to I420 on the CPU.
   // https://crbug.com/1206325
   std::unique_ptr<media::VideoFramePool> nv12_to_i420_pool_;
-  std::vector<uint8_t> nv12_to_i420_tmp_buf_;
+  media::VideoFrameConverter frame_converter_;
 
   // Indicates whether we're in the middle of switching video capture host.
   bool switching_video_capture_host_ = false;
