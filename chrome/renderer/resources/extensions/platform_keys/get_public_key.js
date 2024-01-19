@@ -7,8 +7,8 @@ var internalAPI = getInternalApi('platformKeysInternal');
 var normalizeAlgorithm =
     requireNative('platform_keys_natives').NormalizeAlgorithm;
 
-// Returns the normalized parameters of |importParams|.
-// Any unknown parameters will be ignored.
+// Returns the normalized parameters of |importParams|. Any unknown parameters
+// will be ignored.
 function normalizeImportParams(importParams) {
   if (!importParams.name || typeof importParams.name !== 'string') {
     throw $Error.self('Algorithm: name: Missing or not a String');

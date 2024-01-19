@@ -14,7 +14,7 @@ var normalizeAlgorithm =
     requireNative('platform_keys_natives').NormalizeAlgorithm;
 
 // This error is thrown by the internal and public API's token functions and
-// must be rethrown by this custom binding. Keep this in sync with the C++ part
+// must be re-thrown by this custom binding. Keep this in sync with the C++ part
 // of this API.
 var errorInvalidToken = 'The token is not valid.';
 
@@ -22,10 +22,6 @@ var errorInvalidToken = 'The token is not valid.';
 // TODO(pneubeck): These should be DOMExceptions.
 function CreateNotSupportedError() {
   return new Error('The algorithm is not supported');
-}
-
-function CreateInvalidAccessError() {
-  return new Error('The requested operation is not valid for the provided key');
 }
 
 function CreateDataError() {
@@ -156,7 +152,7 @@ utils.expose(SubtleCrypto, EnterpriseSubtleCryptoImpl, {
   superclass: subtleCryptoModule.SubtleCrypto,
   functions: [
     'generateKey',
-    // 'sign', 'exportKey' are exposed by the base class
+    // 'sign', 'exportKey' are exposed by the base class.
   ],
 });
 

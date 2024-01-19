@@ -773,8 +773,8 @@ var testSuites = {
       // Without permissions, non-interactive select calls return no certs.
       testSelectAllReturnsNoCerts,
 
+      // Grant permission for client_1 by interactively selecting it.
       testInteractiveSelectClient1,
-      // Now the permission for client_1 is granted.
 
       // Verify that signing with client_1 is possible and with client_2 still
       // fails.
@@ -803,7 +803,7 @@ var testSuites = {
 
   corporateKeyWithoutPermissionTests: function() {
     var tests = [
-      // Directly trying to sign must fail
+      // Directly trying to sign must fail.
       testSignClient1Fails,
 
       // Interactively selecting must not show any cert to the user.
@@ -833,7 +833,7 @@ var testSuites = {
   },
 
   policyDoesGrantAccessToNonCorporateKey: function() {
-    // The permission from policy must not affect usage of non-corproate keys.
+    // The permission from policy must not affect usage of non-corporate keys.
     var tests = [
       // Attempts to sign must fail.
       testSignClient1Fails,
