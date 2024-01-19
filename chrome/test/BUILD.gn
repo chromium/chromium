@@ -8494,6 +8494,7 @@ if (!is_fuchsia) {
         "../browser/performance_manager/policies/working_set_trimmer_policy_arcvm_unittest.cc",
         "../browser/performance_manager/policies/working_set_trimmer_policy_chromeos_unittest.cc",
         "../browser/push_notification/push_notification_service_desktop_impl_unittest.cc",
+        "../browser/push_notification/server_client/push_notification_desktop_api_call_flow_impl_unittest.cc",
         "../browser/resource_coordinator/tab_manager_delegate_chromeos_unittest.cc",
         "../browser/sharesheet/share_action/share_action_unittest.cc",
         "../browser/speech/cros_speech_recognition_service_factory_unittest.cc",
