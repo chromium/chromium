@@ -58,6 +58,11 @@ export class TabOrganizationResultsElement extends PolymerElement {
 
       isLastOrganization: Boolean,
 
+      organizationId: {
+        type: Number,
+        observer: 'onOrganizationIdChange_',
+      },
+
       lastFocusedIndex_: {
         type: Number,
         value: 0,
@@ -74,6 +79,11 @@ export class TabOrganizationResultsElement extends PolymerElement {
         value: () => [],
         computed: 'computeTabDatas_(tabs.*)',
       },
+
+      feedbackSelectedOption_: {
+        type: String,
+        value: CrFeedbackOption.UNSPECIFIED,
+      },
     };
   }
 
@@ -81,10 +91,12 @@ export class TabOrganizationResultsElement extends PolymerElement {
   name: string;
   availableHeight: number;
   isLastOrganization: boolean;
+  organizationId: number;
 
   private lastFocusedIndex_: number;
   private showRefresh_: boolean;
   private tabDatas_: TabData[];
+  private feedbackSelectedOption_: CrFeedbackOption;
 
   static get template() {
     return getTemplate();
@@ -127,6 +139,10 @@ export class TabOrganizationResultsElement extends PolymerElement {
         MINIMUM_SCROLLABLE_MAX_HEIGHT,
         (this.availableHeight - NON_SCROLLABLE_VERTICAL_SPACING));
     this.$.scrollable.style.maxHeight = maxHeight + 'px';
+  }
+
+  private onOrganizationIdChange_() {
+    this.feedbackSelectedOption_ = CrFeedbackOption.UNSPECIFIED;
   }
 
   private getInputAriaLabel_() {
@@ -255,6 +271,7 @@ export class TabOrganizationResultsElement extends PolymerElement {
 
   private onFeedbackSelectedOptionChanged_(
       event: CustomEvent<{value: CrFeedbackOption}>) {
+    this.feedbackSelectedOption_ = event.detail.value;
     this.dispatchEvent(new CustomEvent('feedback', {
       bubbles: true,
       composed: true,

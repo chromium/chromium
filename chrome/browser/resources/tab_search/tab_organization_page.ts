@@ -50,6 +50,7 @@ export class TabOrganizationPageElement extends PolymerElement {
       error_: Object,
       availableHeight_: Number,
       isLastOrganization_: Boolean,
+      organizationId_: Number,
 
       tabOrganizationStateEnum_: {
         type: Object,
