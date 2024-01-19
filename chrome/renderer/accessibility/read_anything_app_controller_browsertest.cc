@@ -2957,3 +2957,88 @@ TEST_F(ReadAnythingAppControllerTest, GetPreviousText_EmptyTree) {
   EXPECT_EQ(GetNextTextStartIndex(0), -1);
   EXPECT_EQ(GetNextTextEndIndex(0), -1);
 }
+
+TEST_F(ReadAnythingAppControllerTest, GetPreviousText_BeforeNextTextCalled) {
+  std::u16string sentence1 = u"This is a sentence. ";
+  std::u16string sentence2 = u"This is another sentence. ";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // If GetNextText hasn't been called, GetPreviousText should return
+  // nothing.
+  std::vector<ui::AXNodeID> previous_node_ids = GetPreviousText();
+  EXPECT_EQ((int)previous_node_ids.size(), 0);
+
+  // GetNextTextStartIndex and GetNextTextEndIndex should return -1  on an
+  // invalid id.
+  EXPECT_EQ(GetNextTextStartIndex(0), -1);
+  EXPECT_EQ(GetNextTextEndIndex(0), -1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetPreviousText_SentenceSplitAcrossMultipleNodes) {
+  std::u16string sentence1 = u"The wind is howling like this ";
+  std::u16string sentence2 = u"swirling storm ";
+  std::u16string sentence3 = u"inside.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  GetNextText();
+  std::vector<ui::AXNodeID> previous_node_ids = GetPreviousText();
+
+  // The first segment was returned correctly.
+  EXPECT_EQ(previous_node_ids[0], static_text1.id);
+  EXPECT_EQ(GetNextTextStartIndex(previous_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(previous_node_ids[0]), (int)sentence1.length());
+
+  // The second segment was returned correctly.
+  EXPECT_EQ(previous_node_ids[1], static_text2.id);
+  EXPECT_EQ(GetNextTextStartIndex(previous_node_ids[1]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(previous_node_ids[1]), (int)sentence2.length());
+
+  // The third segment was returned correctly.
+  EXPECT_EQ(previous_node_ids[2], static_text3.id);
+  EXPECT_EQ(GetNextTextStartIndex(previous_node_ids[2]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(previous_node_ids[2]), (int)sentence3.length());
+
+  // Nodes are empty at the end of the new tree.
+  std::vector<ui::AXNodeID> next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
