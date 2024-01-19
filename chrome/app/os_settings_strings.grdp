@@ -5740,7 +5740,7 @@ Press an assigned switch or key to remove assignment.
     Use your IP address to determine location (default)
   </message>
   <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_GEOLOCATION_WARNING_TEXT" translateable="false" desc="Displays the text notifying users that the system geolocation permission is required for the Automatic Time Zone Detection. Displaying the current status of Automatic Time Zone Detection with inline link to resolve the breakage.">
-    Time Zone is currently set to (UTC+/-X:XX). Location access is needed to automatically update the time zone. <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
+    Time Zone is currently set to <ph name="TIME_ZONE_ENTRY">$1<ex>(UTC+4:00) Georgia Standard Time (Tbilisi)</ex></ph>. Location access is needed to automatically update the time zone. <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT" desc="Display name for the automatic time zone detection mode which enables time zone detection sending unprecise location to Google servers.">
     Use your IP address to determine location

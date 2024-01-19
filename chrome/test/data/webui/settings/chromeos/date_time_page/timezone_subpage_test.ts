@@ -5,12 +5,13 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsRadioGroupElement, TimezoneSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, GeolocationAccessLevel, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('<timezone-subpage>', function() {
   let timezoneSubpage: TimezoneSubpageElement;
@@ -21,7 +22,19 @@ suite('<timezone-subpage>', function() {
 
     await CrSettingsPrefs.initialized;
     timezoneSubpage = document.createElement('timezone-subpage');
-    timezoneSubpage.prefs = prefElement.prefs;
+    timezoneSubpage.prefs = {
+      ...prefElement.prefs,
+      ash: {
+        user: {
+          geolocation_access_level: {
+            key: 'ash.user.geolocation_access_level',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: GeolocationAccessLevel.ALLOWED,
+          },
+        },
+      },
+    };
+
     document.body.appendChild(timezoneSubpage);
   });
 
@@ -88,4 +101,30 @@ suite('<timezone-subpage>', function() {
         deepLinkElement, getDeepActiveElement(),
         'Auto set time zone toggle should be focused for settingId=1001.');
   });
+
+  test(
+      'automatic timezone shows geolocation warning when location is disabled',
+      async () => {
+        const timezoneRadioGroup =
+            timezoneSubpage.shadowRoot!
+                .querySelector<SettingsRadioGroupElement>(
+                    '#timeZoneRadioGroup');
+        assert(timezoneRadioGroup);
+
+        // Enable automatic timezone.
+        timezoneSubpage.setPrefValue(
+            'generated.resolve_timezone_by_geolocation_on_off', true);
+
+
+        // Geolocation is allowed by default, the warning text should be hidden.
+        assertFalse(isVisible(
+            timezoneSubpage.shadowRoot!.querySelector('#warningText')));
+
+        // Disable geolocation permission and check warning is shown.
+        timezoneSubpage.setPrefValue(
+            'ash.user.geolocation_access_level',
+            GeolocationAccessLevel.DISALLOWED);
+        flush();
+        assertTrue(!!timezoneSubpage.shadowRoot!.querySelector('#warningText'));
+      });
 });
