@@ -29,13 +29,11 @@ namespace report::device_metrics {
 // Provide the methods for calculating churn analysis metadata.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ActiveStatus {
  public:
+  static constexpr int kInceptionYear = 2000;
   static constexpr int kMonthCountBitSize = 10;
   static constexpr int kActiveMonthsBitSize = 18;
   static constexpr int kActiveStatusBitSize =
       kMonthCountBitSize + kActiveMonthsBitSize;
-  static constexpr int kInceptionYear = 2000;
-  static constexpr int kNumberOfDaysInWeek = 7;
-  static constexpr int kMonthsInYear = 12;
 
   // Calculate monthly and yearly churn for the 3 observation windows by
   // checking active status at bits 1-3 (monthly) and bits 13-15 (yearly).
@@ -45,10 +43,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ActiveStatus {
   // Track number of months from inception date in first 10 bits active status.
   static constexpr char kActiveStatusInceptionDate[] =
       "2000-01-01 00:00:00 GMT";
-
-  // Default value for devices that are missing the activate date.
-  static constexpr char kActivateDateKeyNotFound[] =
-      "ACTIVATE_DATE_KEY_NOT_FOUND";
 
   ActiveStatus() = delete;
   explicit ActiveStatus(PrefService* local_state);
@@ -89,20 +83,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ActiveStatus {
 
   // Return |kActiveStatusInceptionDate| as a GMT timestamp.
   std::optional<base::Time> GetInceptionMonthTimestamp() const;
-
-  // Return timestamp representing the first GMT monday of the year in |ts|.
-  base::Time GetFirstMondayFromNewYear(base::Time ts) const;
-
-  // The ActivateDate is formatted: YYYY-WW and is generated based on GMT date.
-  // Return the first day of the ISO8601 week.
-  std::optional<base::Time> Iso8601DateWeekAsTime(
-      int activate_year,
-      int activate_week_of_year) const;
-
-  // Get 1st day of the GMT based first active week, which uses ISO8601 date
-  // (week) format. Field relies on ActivateDate VPD field, which is set
-  // after OOBE is completed on the device for the first time.
-  std::optional<base::Time> GetFirstActiveWeek() const;
 
   // Return the int representation of the known months since inception, based
   // on the active status value in local state pref.

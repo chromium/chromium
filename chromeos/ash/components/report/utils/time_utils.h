@@ -15,6 +15,18 @@ class Clock;
 
 namespace ash::report::utils {
 
+// day_of_week index for Monday in the base::Time::Exploded object.
+static constexpr int kMondayDayOfWeekIndex = 1;
+static constexpr int kThursdayDayOfWeekIndex = 4;
+
+// Default value for devices that are missing the activate date.
+static constexpr char kActivateDateKeyNotFound[] =
+    "ACTIVATE_DATE_KEY_NOT_FOUND";
+
+// Shared constants across reporting.
+static constexpr int kNumberOfDaysInWeek = 7;
+static constexpr int kMonthsInYear = 12;
+
 // Converts the GMT time of the provided |clock| object to Pacific Time (PT)
 // and returns a `base::Time` object.
 // Conversion takes into account daylight saving time adjustments.
@@ -42,6 +54,20 @@ std::string TimeToYYYYMMDDString(base::Time ts);
 // Convert the base::Time object to a string in YYYYMM format.
 // Note: Date is based on UTC timezone, although we adjust ts to PST.
 std::string TimeToYYYYMMString(base::Time ts);
+
+// Get 1st day of the GMT based first active week, similar to ISO8601 date
+// (week) format. Field relies on ActivateDate VPD field, which is set after
+// ash-chrome is restarted following the completion of OOBE for the first time.
+std::optional<base::Time> GetFirstActiveWeek();
+
+// Calculates the date of the first Monday similar to ISO calendar for a
+// given year.
+std::optional<base::Time> FirstMondayOfISONewYear(int iso_year);
+
+// The ActivateDate is formatted: YYYY-WW and is generated based on GMT date.
+// Return the first day of the ISO8601 week as a timestamp.
+std::optional<base::Time> Iso8601DateWeekAsTime(int activate_year,
+                                                int activate_week_of_year);
 
 }  // namespace ash::report::utils
 

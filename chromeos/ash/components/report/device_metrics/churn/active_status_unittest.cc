@@ -47,7 +47,7 @@ class ActiveStatusTest : public testing::Test {
   }
 
   std::optional<base::Time> GetFirstActiveWeekForTest() {
-    return active_status_->GetFirstActiveWeek();
+    return utils::GetFirstActiveWeek();
   }
 
   base::test::TaskEnvironment task_environment_{
