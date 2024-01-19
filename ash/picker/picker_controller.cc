@@ -4,16 +4,18 @@
 
 #include "ash/picker/picker_controller.h"
 
+#include <string>
 #include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
 #include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/picker_asset_fetcher.h"
+#include "ash/picker/picker_asset_fetcher_impl.h"
 #include "ash/picker/picker_insert_media_request.h"
 #include "ash/picker/views/picker_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
-#include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -61,6 +63,8 @@ PickerFeatureKeyType MatchPickerFeatureKeyHash() {
 
 PickerController::PickerController()
     : should_paint_(MatchPickerFeatureKeyHash() == PickerFeatureKeyType::kDev) {
+  asset_fetcher_ = std::make_unique<PickerAssetFetcherImpl>(base::BindRepeating(
+      &PickerController::DownloadGifToString, weak_ptr_factory_.GetWeakPtr()));
   if (auto* manager = ash::input_method::InputMethodManager::Get()) {
     observation_.Observe(manager->GetImeKeyboard());
   }
@@ -102,13 +106,6 @@ void PickerController::ToggleWidget(
 std::unique_ptr<AshWebView> PickerController::CreateWebView(
     const AshWebView::InitParams& params) {
   return client_->CreateWebView(params);
-}
-
-void PickerController::LoadAndDecodeGif(const GURL& url,
-                                        DecodeGifCallback callback) {
-  client_->DownloadGifToString(
-      url,
-      base::BindOnce(&image_util::DecodeAnimationData, std::move(callback)));
 }
 
 void PickerController::GetResultsForCategory(PickerCategory category,
@@ -163,9 +160,24 @@ bool PickerController::ShouldPaint() {
   return should_paint_;
 }
 
+PickerAssetFetcher* PickerController::GetAssetFetcher() {
+  return asset_fetcher_.get();
+}
+
 void PickerController::OnCapsLockChanged(bool enabled) {
   // TODO: b/319301963 - Remove this behaviour once the experiment is over.
   ToggleWidget();
+}
+
+void PickerController::DownloadGifToString(
+    const GURL& url,
+    base::OnceCallback<void(const std::string&)> callback) {
+  if (!client_) {
+    // TODO: b/316936723 - Add better handling of errors.
+    std::move(callback).Run(std::string());
+    return;
+  }
+  client_->DownloadGifToString(url, std::move(callback));
 }
 
 }  // namespace ash

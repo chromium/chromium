@@ -9,11 +9,13 @@
 #include "ash/picker/model/picker_search_results.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
+class PickerAssetFetcher;
 class PickerItemView;
 class PickerSearchResult;
 class PickerSectionView;
@@ -26,7 +28,10 @@ class ASH_EXPORT PickerSearchResultsView : public views::View {
   using SelectSearchResultCallback =
       base::OnceCallback<void(const PickerSearchResult& result)>;
 
-  explicit PickerSearchResultsView(SelectSearchResultCallback callback);
+  // `asset_fetcher` must remain valid for the lifetime of this class.
+  explicit PickerSearchResultsView(
+      SelectSearchResultCallback select_search_result_callback,
+      PickerAssetFetcher* asset_fetcher);
   PickerSearchResultsView(const PickerSearchResultsView&) = delete;
   PickerSearchResultsView& operator=(const PickerSearchResultsView&) = delete;
   ~PickerSearchResultsView() override;
@@ -51,6 +56,9 @@ class ASH_EXPORT PickerSearchResultsView : public views::View {
 
   SelectSearchResultCallback select_search_result_callback_;
   PickerSearchResults search_results_;
+
+  // `asset_fetcher` outlives `this`.
+  raw_ptr<PickerAssetFetcher> asset_fetcher_ = nullptr;
 
   // The views for each section of results.
   std::vector<raw_ptr<PickerSectionView>> section_views_;

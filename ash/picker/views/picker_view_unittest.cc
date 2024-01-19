@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_category_view.h"
@@ -64,8 +65,6 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     return ash_web_view_factory_.Create(params);
   }
 
-  void LoadAndDecodeGif(const GURL& url, DecodeGifCallback callback) override {}
-
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override {
     callback.Run(PickerSearchResults());
@@ -83,6 +82,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
 
   bool ShouldPaint() override { return true; }
 
+  PickerAssetFetcher* GetAssetFetcher() override { return &asset_fetcher_; }
+
   std::optional<PickerSearchResult> last_inserted_result() const {
     return last_inserted_result_;
   }
@@ -90,6 +91,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
  private:
   TestAshWebViewFactory ash_web_view_factory_;
   FakeSearchFunction search_function_;
+  MockPickerAssetFetcher asset_fetcher_;
   std::optional<PickerSearchResult> last_inserted_result_;
 };
 

@@ -10,13 +10,17 @@
 #include <variant>
 
 #include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/picker_asset_fetcher.h"
+#include "ash/picker/views/picker_gif_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_manager.h"
 
@@ -29,8 +33,10 @@ const gfx::VectorIcon& kPlaceholderIcon = vector_icons::kGoogleColorIcon;
 }  // namespace
 
 PickerSearchResultsView::PickerSearchResultsView(
-    SelectSearchResultCallback callback)
-    : select_search_result_callback_(std::move(callback)) {
+    SelectSearchResultCallback select_search_result_callback,
+    PickerAssetFetcher* asset_fetcher)
+    : select_search_result_callback_(std::move(select_search_result_callback)),
+      asset_fetcher_(asset_fetcher) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 }
@@ -73,11 +79,17 @@ std::unique_ptr<PickerItemView> PickerSearchResultsView::CreateItemView(
             return item_view;
           },
           [&, this](const PickerSearchResult::GifData& data) {
-            // TODO: b/316936418 - Display the GIF using views.
             auto item_view = std::make_unique<PickerItemView>(
                 base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
                                base::Unretained(this), result));
-            item_view->SetText(u"<gif>");
+            // TODO: b/316936418 - Get gif dimensions to determine size.
+            constexpr gfx::Size kPlaceholderGifSize(200, 200);
+            // `base::Unretained` is safe here because `this` owns the item
+            // views and `asset_fetcher_` outlives `this`.
+            item_view->SetImageContents(std::make_unique<PickerGifView>(
+                base::BindRepeating(&PickerAssetFetcher::FetchGifFromUrl,
+                                    base::Unretained(asset_fetcher_), data.url),
+                kPlaceholderGifSize));
             return item_view;
           },
       },

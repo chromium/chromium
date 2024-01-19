@@ -18,7 +18,8 @@ class Label;
 
 namespace ash {
 
-// View for a Picker list item. Can have text and an icon.
+// View for a Picker list item. Can have text, an icon, and/or image contents.
+// TODO: b/316935667 - Work out what can be in an item and how to lay it out.
 class ASH_EXPORT PickerItemView : public views::Button {
   METADATA_HEADER(PickerItemView, views::Button)
 
@@ -30,10 +31,12 @@ class ASH_EXPORT PickerItemView : public views::Button {
 
   void SetText(const std::u16string& text);
   void SetIcon(const gfx::VectorIcon& icon);
+  void SetImageContents(std::unique_ptr<views::ImageView> image_contents);
 
  private:
   raw_ptr<views::Label> text_label_ = nullptr;
   raw_ptr<views::ImageView> icon_view_ = nullptr;
+  raw_ptr<views::ImageView> image_contents_ = nullptr;
 };
 
 }  // namespace ash

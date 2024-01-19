@@ -85,10 +85,13 @@ PickerView::PickerView(PickerViewDelegate* delegate,
       std::make_unique<PickerZeroStateView>(base::BindRepeating(
           &PickerView::SelectCategory, base::Unretained(this))));
   category_view_ = contents_view_->AddPage(std::make_unique<PickerCategoryView>(
-      base::BindOnce(&PickerView::SelectSearchResult, base::Unretained(this))));
-  search_results_view_ = contents_view_->AddPage(
-      std::make_unique<PickerSearchResultsView>(base::BindOnce(
-          &PickerView::SelectSearchResult, base::Unretained(this))));
+      base::BindOnce(&PickerView::SelectSearchResult, base::Unretained(this)),
+      delegate_->GetAssetFetcher()));
+  search_results_view_ =
+      contents_view_->AddPage(std::make_unique<PickerSearchResultsView>(
+          base::BindOnce(&PickerView::SelectSearchResult,
+                         base::Unretained(this)),
+          delegate_->GetAssetFetcher()));
   contents_view_->SetActivePage(zero_state_view_);
 
   user_education_view_ =

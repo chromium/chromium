@@ -72,6 +72,17 @@ void PickerItemView::SetIcon(const gfx::VectorIcon& icon) {
       ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kIconSizeDip));
 }
 
+void PickerItemView::SetImageContents(
+    std::unique_ptr<views::ImageView> image_contents) {
+  if (image_contents_ != nullptr) {
+    RemoveChildViewT(image_contents_);
+  }
+  image_contents_ = AddChildView(std::move(image_contents));
+  image_contents_->SetCanProcessEventsWithinSubtree(false);
+  // TODO: b/316936418 - Get accessible name for image contents.
+  SetAccessibleName(u"image contents");
+}
+
 BEGIN_METADATA(PickerItemView)
 END_METADATA
 

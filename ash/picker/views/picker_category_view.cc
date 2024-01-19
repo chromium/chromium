@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/views/picker_search_results_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
@@ -16,12 +17,14 @@
 namespace ash {
 
 PickerCategoryView::PickerCategoryView(
-    PickerSearchResultsView::SelectSearchResultCallback callback) {
+    PickerSearchResultsView::SelectSearchResultCallback
+        select_search_result_callback,
+    PickerAssetFetcher* asset_fetcher) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
-  search_results_view_ = AddChildView(
-      std::make_unique<PickerSearchResultsView>(std::move(callback)));
+  search_results_view_ = AddChildView(std::make_unique<PickerSearchResultsView>(
+      std::move(select_search_result_callback), asset_fetcher));
 }
 
 PickerCategoryView::~PickerCategoryView() = default;
