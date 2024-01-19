@@ -4,7 +4,7 @@
     package="org.chromium.trichromelibrary"
     platformBuildVersionCode="34"
     platformBuildVersionName="14"
-    android:versionCode="OFFSET=33"
+    android:versionCode="OFFSET=32"
     android:versionName="#.#.#.#">
   <uses-feature android:glEsVersion="0x00020000"/>
   <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
@@ -16,6 +16,6 @@
       android:icon="@drawable/icon_webview"
       android:label="Trichrome Library"
       android:multiArch="true">
-    <static-library android:name="$PACKAGE" android:version="OFFSET=33"/>
+    <static-library android:name="$PACKAGE" android:version="OFFSET=32"/>
   </application>
 </manifest>

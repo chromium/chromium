@@ -3052,17 +3052,14 @@ if (current_toolchain == default_toolchain) {
     extra_args = _bundle_smoke_test_extra_args
   }
 
-  _verify_32bit_static_initializers =
-      defined(expected_static_initializer_32bit_count) &&
-      !skip_secondary_abi_for_cq
-  _verify_64bit_static_initializers =
-      defined(expected_static_initializer_64bit_count) &&
-      android_64bit_target_cpu
-  if (_verify_32bit_static_initializers || _verify_64bit_static_initializers) {
+  if (defined(expected_static_initializer_32bit_count)) {
     # Old name alias to be removed after migration is done.
     group("monochrome_static_initializers") {
       deps = [ ":check_chrome_static_initializers" ]
     }
+    _verify_32bit_static_initializers =
+        !android_64bit_target_cpu || !skip_secondary_abi_for_cq
+    _verify_64bit_static_initializers = android_64bit_target_cpu
     group("check_chrome_static_initializers") {
       deps = []
       if (_verify_32bit_static_initializers) {
