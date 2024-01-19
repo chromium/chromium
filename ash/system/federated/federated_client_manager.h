@@ -57,6 +57,12 @@ class ASH_EXPORT FederatedClientManager {
   // If the Federated Service is not available, this method is effectively a
   // no-op.
   void ReportExample(const std::string& client_name, ExamplePtr example);
+  // Same as ReportExample above, except FederatedClientManager will use the
+  // inputs to construct an ExamplePtr (see .cc for exact schema). This is
+  // expected to be useful mainly for PHH cases.
+  void ReportSingleString(const std::string& client_name,
+                          const std::string& example_feature_name,
+                          const std::string& example_str);
 
   // ***** Methods for Federated Strings Service clients *****
 
@@ -70,11 +76,22 @@ class ASH_EXPORT FederatedClientManager {
   void ReportStringViaStringsService(const std::string& client_name,
                                      const std::string& client_string);
 
+  // Returns a count of examples which were sent to the Federated Service.
+  // "Success" here means "successfully processed by FederatedClientManager, and
+  // forwarded to CrOS Federated Service".
+  //
+  // It has no knowledge of how results are received CrOS-side (whether in prod,
+  // or mocked for test).
+  int get_num_successful_reports_for_test() const {
+    return successful_reports_for_test_;
+  }
+
  private:
   void TryToBindFederatedServiceIfNecessary();
   void ReportExampleToFederatedService(const std::string& client_name,
                                        ExamplePtr example);
 
+  int successful_reports_for_test_ = 0;
   bool initialized_ = false;
   static inline bool use_fake_controller_for_testing_ = false;
   mojo::Remote<chromeos::federated::mojom::FederatedService> federated_service_;

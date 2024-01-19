@@ -20,12 +20,12 @@ namespace {
 using chromeos::federated::mojom::Example;
 using chromeos::federated::mojom::Features;
 
-// TODO use a word other than "query".
-ExamplePtr CreateStringsServiceExamplePtr(const std::string& query) {
+ExamplePtr CreateSingleStringExamplePtr(const std::string& example_feature_name,
+                                        const std::string& example_str) {
   ExamplePtr example = Example::New();
   example->features = Features::New();
   auto& feature_map = example->features->feature;
-  feature_map["query"] = CreateStringList({query});
+  feature_map[example_feature_name] = CreateStringList({example_str});
   return example;
 }
 
@@ -62,11 +62,16 @@ bool FederatedClientManager::IsFederatedServiceAvailable() {
 void FederatedClientManager::ReportExample(
     const std::string& client_name,
     chromeos::federated::mojom::ExamplePtr example) {
-  if (!ash::features::IsFederatedStringsServiceEnabled()) {
-    return;
-  }
-
   ReportExampleToFederatedService(client_name, std::move(example));
+}
+
+void FederatedClientManager::ReportSingleString(
+    const std::string& client_name,
+    const std::string& example_feature_name,
+    const std::string& example_str) {
+  ExamplePtr example =
+      CreateSingleStringExamplePtr(example_feature_name, example_str);
+  ReportExample(client_name, std::move(example));
 }
 
 bool FederatedClientManager::IsFederatedStringsServiceAvailable() {
@@ -81,9 +86,10 @@ void FederatedClientManager::ReportStringViaStringsService(
     return;
   }
 
-  // std::move for example??
+  // TODO(b/289140140): Use a less generic word than "query".
   ReportExampleToFederatedService(
-      client_name, CreateStringsServiceExamplePtr(client_string));
+      client_name, CreateSingleStringExamplePtr(
+                       /*example_feature_name*/ "query", client_string));
 }
 
 void FederatedClientManager::TryToBindFederatedServiceIfNecessary() {
@@ -109,6 +115,7 @@ void FederatedClientManager::ReportExampleToFederatedService(
   } else {
     // Federated service available and connected.
     federated_service_->ReportExample(client_name, std::move(example));
+    ++successful_reports_for_test_;
     // TODO(b/289140140): UMA metrics.
   }
 }

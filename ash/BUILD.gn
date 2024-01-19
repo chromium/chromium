@@ -3979,6 +3979,7 @@ test("ash_unittests") {
     "//chromeos/ash/components/dbus/device_management",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+    "//chromeos/ash/components/dbus/federated:federated",
     "//chromeos/ash/components/dbus/fwupd",
     "//chromeos/ash/components/dbus/hammerd",
     "//chromeos/ash/components/dbus/hermes",
