@@ -128,20 +128,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   Document* GetPopupDocumentIfShowing() const { return popup_document_.Get(); }
 
   AXObject* FocusedObject();
-
-  // This stores the last time a serialization was ACK'ed after being sent to
-  // the browser, so that serializations can be skipped if the time since the
-  // last serialization is less than GetDeferredEventsDelay(). Setting to
-  // "beginning of time" causes the upcoming serialization to occur at the next
-  // available opportunity.  Batching is used to reduce the number of
-  // serializations, in order to provide overall faster content updates while
-  // using less CPU, because nodes that change multiple times in a short time
-  // period only need to be serialized once, e.g. during page loads or
-  // animations.
-  static constexpr base::Time kSerializeAtNextOpportunity =
-      base::Time::UnixEpoch();
-  base::Time last_serialization_timestamp_ = kSerializeAtNextOpportunity;
-
   const ui::AXMode& GetAXMode() override;
   void SetAXMode(const ui::AXMode&) override;
 
@@ -1070,6 +1056,21 @@ class MODULES_EXPORT AXObjectCacheImpl
   // This will flip to true when we initiate the process of sending AX data to
   // the browser, and will flip back to false once we receive back an ACK.
   bool serialization_in_flight_ = false;
+
+  // This stores the last time a serialization was ACK'ed after being sent to
+  // the browser, so that serializations can be skipped if the time since the
+  // last serialization is less than GetDeferredEventsDelay(). Setting to
+  // "beginning of time" causes the upcoming serialization to occur at the next
+  // available opportunity.  Batching is used to reduce the number of
+  // serializations, in order to provide overall faster content updates while
+  // using less CPU, because nodes that change multiple times in a short time
+  // period only need to be serialized once, e.g. during page loads or
+  // animations.
+  base::Time last_serialization_timestamp_ = base::Time::UnixEpoch();
+
+  // If true, will not attempt to batch and will serialize at the next
+  // opportunity.
+  bool serialize_immediately_ = false;
 
   // This flips to true if a request for an immediate update was not honored
   // because serialization_in_flight_ was true. It flips back to false once

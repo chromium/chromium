@@ -3163,24 +3163,32 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     return;
   }
 
-  const auto& now = base::Time::Now();
-  const auto& delay_between_serializations =
-      base::Milliseconds(GetDeferredEventsDelay());
-  const auto& elapsed_since_last_serialization =
-      now - last_serialization_timestamp_;
-  const auto& delay_until_next_serialization =
-      delay_between_serializations - elapsed_since_last_serialization;
-  if (delay_until_next_serialization.is_positive()) {
-    if (!weak_factory_for_serialization_pipeline_.HasWeakPtrs()) {
-      document.GetTaskRunner(blink::TaskType::kInternalDefault)
-          ->PostDelayedTask(
-              FROM_HERE,
-              WTF::BindOnce(
-                  &AXObjectCacheImpl::ScheduleAXUpdate,
-                  weak_factory_for_serialization_pipeline_.GetWeakPtr()),
-              delay_until_next_serialization);
+  // Something occurred which requires an immediate serialization.
+  if (serialize_immediately_) {
+    force = true;
+    serialize_immediately_ = false;
+  }
+
+  if (!force) {
+    const auto& now = base::Time::Now();
+    const auto& delay_between_serializations =
+        base::Milliseconds(GetDeferredEventsDelay());
+    const auto& elapsed_since_last_serialization =
+        now - last_serialization_timestamp_;
+    const auto& delay_until_next_serialization =
+        delay_between_serializations - elapsed_since_last_serialization;
+    if (delay_until_next_serialization.is_positive()) {
+      if (!weak_factory_for_serialization_pipeline_.HasWeakPtrs()) {
+        document.GetTaskRunner(blink::TaskType::kInternalDefault)
+            ->PostDelayedTask(
+                FROM_HERE,
+                WTF::BindOnce(
+                    &AXObjectCacheImpl::ScheduleAXUpdate,
+                    weak_factory_for_serialization_pipeline_.GetWeakPtr()),
+                delay_until_next_serialization);
+      }
+      return;  // No serialization needed yet.
     }
-    return;  // No serialization needed yet.
   }
 
   weak_factory_for_serialization_pipeline_.InvalidateWeakPtrs();
@@ -4433,7 +4441,7 @@ WebLocalFrameClient* AXObjectCacheImpl::GetWebLocalFrameClient() const {
 
 bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
     const ui::AXEvent& event) const {
-  if (last_serialization_timestamp_ == kSerializeAtNextOpportunity) {
+  if (serialize_immediately_) {
     return true;  // Already scheduled for immediate mode.
   }
 
@@ -4574,13 +4582,13 @@ void AXObjectCacheImpl::OnSerializationReceived() {
 }
 
 void AXObjectCacheImpl::ScheduleImmediateSerialization() {
-  // This makes sure that we'll serialize at the next available opportunity.
-  last_serialization_timestamp_ = kSerializeAtNextOpportunity;
-
   if (IsSerializationInFlight()) {
+    // Wait until current serialization message has been received.
     serialize_immediately_after_current_serialization_ = true;
-    return;  // Wait until current serialization message has been received.
+    return;
   }
+
+  serialize_immediately_ = true;
 
   // Call ScheduleAXUpdate() to ensure lifecycle does not get stalled.
   // Will call AXReadyCallback() at the next available opportunity.
