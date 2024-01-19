@@ -383,7 +383,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.hasContent_ = false;
     if (this.isReadAloudEnabled_) {
       this.synth.cancel();
-      this.onSpeechStopped();
+      this.onSpeechFinished();
     }
   }
 
@@ -546,7 +546,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.synth.cancel();
     this.resetPreviousHighlight();
     if (!this.playNextMessage()) {
-      this.onSpeechStopped();
+      this.onSpeechFinished();
     }
   }
 
@@ -600,46 +600,28 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // getNextText returns a list of triples of AXNodeIds and start / end text
     // indices, represented as a double array.
     const nextTextIds: number[] = chrome.readingMode.getNextText(maxTextLength);
-    return this.playCurrentMessage(nextTextIds);
+    return this.playTextOf(nextTextIds);
   }
 
   playPreviousMessage(): boolean {
     const maxTextLength = this.maxSpeechLength;
     const previousTextIds: number[] =
         chrome.readingMode.getPreviousText(maxTextLength);
-    return this.playCurrentMessage(previousTextIds);
+    return this.playTextOf(previousTextIds);
   }
 
+  // Play text of these axNodeIds. When finished, call playNextMessage()
+  // to read the following text.
   // TODO (crbug.com/1474951): Investigate using AXRange.GetText to get text
   // between start node / end nodes and their offsets.
-  playCurrentMessage(nextTextIds: number[]): boolean {
-    if (nextTextIds.length === 0) {
-      return false;
-    }
-    let utterance: string = '';
-    for (let i = 0; i < nextTextIds.length; i++) {
-      assert(nextTextIds[i]);
-      const nodeId = nextTextIds[i];
-      const startIndex = chrome.readingMode.getNextTextStartIndex(nodeId);
-      const endIndex = chrome.readingMode.getNextTextEndIndex(nodeId);
-      const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
-      if (!element || startIndex < 0 || endIndex < 0) {
-        continue;
-      }
-      const content = chrome.readingMode.getTextContent(nodeId).substring(
-          startIndex, endIndex);
-      if (content) {
-        // Add all of the text from the current nodes into a single utterance.
-        utterance += ' ' + content;
-      }
-    }
-
+  private playTextOf(axNodeIds: number[]): boolean {
+    const utteranceText = this.extractTextOf(axNodeIds);
     // Return if the utterance is empty or null.
-    if (!utterance) {
+    if (!utteranceText) {
       return false;
     }
 
-    const message = new SpeechSynthesisUtterance(utterance);
+    const message = new SpeechSynthesisUtterance(utteranceText);
 
     message.onerror = (error) => {
       // TODO(crbug.com/1474951): Add more sophisticated error handling.
@@ -658,15 +640,36 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
       // Continue speaking with the next block of text.
       if (!this.playNextMessage()) {
-        this.onSpeechStopped();
+        this.onSpeechFinished();
       }
     };
 
     // TODO(crbug.com/1474951): Add word callbacks for word highlighting.
 
-    this.highlightNodes(nextTextIds);
+    this.highlightNodes(axNodeIds);
     this.speakMessage(message);
     return true;
+  }
+
+  private extractTextOf(axNodeIds: number[]): string {
+    let utteranceText: string = '';
+    for (let i = 0; i < axNodeIds.length; i++) {
+      assert(axNodeIds[i]);
+      const nodeId = axNodeIds[i];
+      const startIndex = chrome.readingMode.getNextTextStartIndex(nodeId);
+      const endIndex = chrome.readingMode.getNextTextEndIndex(nodeId);
+      const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
+      if (!element || startIndex < 0 || endIndex < 0) {
+        continue;
+      }
+      const content = chrome.readingMode.getTextContent(nodeId).substring(
+          startIndex, endIndex);
+      if (content) {
+        // Add all of the text from the current nodes into a single utterance.
+        utteranceText += ' ' + content;
+      }
+    }
+    return utteranceText;
   }
 
   // TODO(crbug.com/1474951): Handle previous highlighting.
@@ -781,7 +784,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return parentOfHighlight;
   }
 
-  private onSpeechStopped() {
+  private onSpeechFinished() {
     this.speechStarted = false;
     this.previousHighlight_ = [];
     this.$.toolbar.updateUiForPausing();
