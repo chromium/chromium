@@ -9,9 +9,8 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
@@ -66,16 +65,14 @@ class ResourceAttrMemoryMeasurementProviderBrowserTest
   // Calls MemoryMeasurementProvider::RequestMemorySummary, waits for its result
   // callback to fire, and returns the result map passed to the callback.
   QueryResultMap WaitForMemorySummary() {
-    QueryResultMap return_results;
+    base::test::TestFuture<QueryResultMap> results_future;
+    base::OnceCallback<void(QueryResultMap)> results_callback =
+        results_future.GetSequenceBoundCallback();
     RunInGraph([&](base::OnceClosure quit_closure) {
       memory_provider_->RequestMemorySummary(
-          base::BindOnce(
-              base::BindLambdaForTesting([&](QueryResultMap results) {
-                return_results = std::move(results);
-              }))
-              .Then(std::move(quit_closure)));
+          std::move(results_callback).Then(std::move(quit_closure)));
     });
-    return return_results;
+    return results_future.Take();
   }
 
  private:
