@@ -13,7 +13,9 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/strong_alias.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
@@ -90,6 +92,13 @@ class FormDataAndroid {
 
   // Updates the field types from the `form`.
   void UpdateFieldTypes(const FormStructure& form);
+
+  // Updates the field types. Note that this method sets *all* types (computed
+  // type, server type, heuristic type) to a single type. This is intended to be
+  // used for password forms in which the `password_manager::FormDataParser`
+  // predictions overrule Autofill's predictions.
+  void UpdateFieldTypes(
+      const base::flat_map<FieldGlobalId, AutofillType>& types);
 
   // Updates the visibility (focusability in Autofill terms) of the fields and
   // returns the indices of the fields that were changed. Assumes that the forms
