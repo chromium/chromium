@@ -95,7 +95,7 @@ async function runCommand(command, args) {
       reject(message);
     });
 
-    commandProcess.on('exit', (code) => {
+    commandProcess.on('close', (code) => {
       if (code === 0) {
         resolve(output);
       } else {
