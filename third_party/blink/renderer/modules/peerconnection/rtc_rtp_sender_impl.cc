@@ -298,6 +298,8 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
       new_parameters.encodings[i].scalability_mode = encoding.scalability_mode;
       new_parameters.encodings[i].adaptive_ptime = encoding.adaptive_ptime;
       new_parameters.encodings[i].codec = encoding.codec;
+      new_parameters.encodings[i].request_key_frame =
+          encoding.request_key_frame;
     }
 
     PostCrossThreadTask(

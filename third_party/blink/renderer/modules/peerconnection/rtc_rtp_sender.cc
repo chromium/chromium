@@ -18,6 +18,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoding_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_insertable_streams.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtcp_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_capabilities.h"
@@ -59,6 +60,16 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
+
+namespace features {
+
+// Killswitch for requesting key frames via setParameterOptions.
+// TODO(crbug.com/1354101): remove after rollout.
+BASE_FEATURE(kWebRtcRequestKeyFrameViaSetParameterOptions,
+             "WebRtcRequestKeyFrameViaSetParameterOptions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace features
 
 namespace {
 
@@ -804,7 +815,8 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
 
 ScriptPromise RTCRtpSender::setParameters(
     ScriptState* script_state,
-    const RTCRtpSendParameters* parameters) {
+    const RTCRtpSendParameters* parameters,
+    const RTCSetParameterOptions* options) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
@@ -835,6 +847,22 @@ ScriptPromise RTCRtpSender::setParameters(
   absl::optional<webrtc::DegradationPreference> degradation_preference;
   std::tie(encodings, degradation_preference) =
       ToRtpParameters(pc_->GetExecutionContext(), parameters, kind_);
+
+  // If present, encode options must match the number of encodings.
+  if (base::FeatureList::IsEnabled(
+          features::kWebRtcRequestKeyFrameViaSetParameterOptions)) {
+    const auto& encoding_options = options->encodingOptions();
+    if (!encoding_options.empty()) {
+      if (encoding_options.size() != encodings.size()) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kInvalidModificationError,
+            "encodingOptions size must match number of encodings."));
+      }
+      for (wtf_size_t i = 0; i < encoding_options.size(); i++) {
+        encodings[i].request_key_frame = encoding_options[i]->keyFrame();
+      }
+    }
+  }
 
   auto* request = MakeGarbageCollected<SetParametersRequest>(resolver, this);
   sender_->SetParameters(std::move(encodings), degradation_preference, request);
