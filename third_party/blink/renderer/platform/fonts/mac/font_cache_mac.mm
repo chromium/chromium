@@ -216,6 +216,7 @@ std::unique_ptr<FontPlatformData> GetAlternateFontPlatformData(
           CTFontCopyCharacterSet(substitute_font.get()));
       if ((!ct_font || best_variation_font_traits != substitute_font_traits ||
            best_variation_font_weight != substitute_font_weight) &&
+          char_set &&
           CFCharacterSetIsLongCharacterMember(char_set.get(), character)) {
         substitute_font = best_variation;
         substitute_font_traits = CTFontGetSymbolicTraits(substitute_font.get());
