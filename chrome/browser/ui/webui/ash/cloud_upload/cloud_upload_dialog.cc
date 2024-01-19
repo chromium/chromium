@@ -311,13 +311,6 @@ void OpenAndroidOneDriveUrls(
   }
 }
 
-bool PathIsOnDriveFS(Profile* profile, const base::FilePath& file_path) {
-  drive::DriveIntegrationService* integration_service =
-      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
-  base::FilePath relative_path;
-  return integration_service->GetRelativeDrivePath(file_path, &relative_path);
-}
-
 bool HasFileWithExtensionFromSet(
     const std::vector<storage::FileSystemURL>& file_urls,
     const std::set<std::string>& extensions) {
