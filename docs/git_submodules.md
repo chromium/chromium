@@ -148,12 +148,25 @@ are updating v8, the command would be `gclient setdep -r src/v8@<hash>.
 
 ## Workflows with submodules
 
-### Submodules during 'git status' and 'git commit'
-Submodules that show up under `Changes not staged for commit` when you run
-`git status` can be hidden with `git -c diff.ignoreSubmodules=all status`
+### Submodules during 'git status', 'git commit', and 'git add'
 
-You can also `git commit -a` your changes while excluding all submodules with
+For `git status`, submodules that show up under `Changes not staged for commit`
+can be hidden with `git -c diff.ignoreSubmodules=all status`
+
+For `git commit -a` you can exclude all submodules with
 `git -c diff.ignoreSubmodules=all commit -a`.
+
+`git add` does NOT support `diff.ignoreSubmodules`. Submodules that were
+hidden from you with `git -c diff.ignoreSubmodules=all status` would still
+be staged with `git add .|--all|-A` and therefore committed with
+`git -c diff.ignoreSubmodules=all commit`.
+
+Instead you can run `git add ':(exclude,attr:builtin_objectmode=160000)'` which
+will stage all changes except for submodules.
+
+(git assigns `160000` as the objectmode submodules. You can read more about
+[`builtin_objectmode`](https://kernel.googlesource.com/pub/scm/git/git/+/refs/heads/next/Documentation/gitattributes.txt#110)
+and magic [pathspecs](https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec))
 
 To make these commands shorter, you can create git aliases for them by adding
 the following to your src/.git/commit file:
@@ -163,15 +176,10 @@ the following to your src/.git/commit file:
         s = -c diff.ignoreSubmodules=all status
         c = -c diff.ignoreSubmodules=all commit -a
         d = -c diff.ignoreSubmodules=all difftool --dir-diff
+        a = add ':(exclude,attr:builtin_objectmode=160000)'
 ```
-With the above, you can execute these commands by running `git s` and `git c`
-
-NOTE: `diff.ignoreSubmodules` is not supported with `git add`. If you are hiding
-subodules from your view with something like `git s`, running
-`git add .|--all|-A` will still stage any submodules you do not see for commit.
-Then running `git c` will still include these submodules in your commit.
-
-We recommend you use the pre-commit git hook detailed below.
+With the above, you can execute these commands by running `git s`, `git c`, etc.
+Or you may also use the pre-commit git hook detailed below.
 
 ### Submodules during a 'git rebase-update'
 While resolving merge conflicts during a `git rebase-update` you may see
