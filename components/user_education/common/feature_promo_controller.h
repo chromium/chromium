@@ -43,6 +43,7 @@ namespace user_education {
 
 class HelpBubbleFactoryRegistry;
 class FeaturePromoStorageService;
+class ProductMessagingController;
 class TutorialService;
 
 // Describes the status of a feature promo.
@@ -206,7 +207,8 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       HelpBubbleFactoryRegistry* help_bubble_registry,
       FeaturePromoStorageService* storage_service,
       FeaturePromoSessionPolicy* session_policy,
-      TutorialService* tutorial_service);
+      TutorialService* tutorial_service,
+      ProductMessagingController* messaging_controller);
   ~FeaturePromoControllerCommon() override;
 
   // Only for security or privacy critical promos. Immediately shows a
@@ -487,6 +489,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   const raw_ptr<FeaturePromoStorageService> storage_service_;
   const raw_ptr<FeaturePromoSessionPolicy> session_policy_;
   const raw_ptr<TutorialService> tutorial_service_;
+  const raw_ptr<ProductMessagingController> messaging_controller_;
 
   // Tracks pending startup promos that have not been canceled.
   std::map<const base::Feature*, StartupPromoCallback> startup_promos_;

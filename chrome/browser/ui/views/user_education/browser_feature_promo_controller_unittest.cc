@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -42,6 +43,7 @@
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/tutorial.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "components/user_education/common/tutorial_service.h"
@@ -751,6 +753,35 @@ TEST_F(BrowserFeaturePromoControllerTest,
       controller_->DismissNonCriticalBubbleInRegion(overlapping_region);
   EXPECT_FALSE(result);
   EXPECT_TRUE(bubble->is_open());
+}
+
+TEST_F(BrowserFeaturePromoControllerTest, RequiredNoticeBlocksPromo) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTutorialIPHFeature)))
+      .Times(0);
+
+  auto& product_messaging_controller =
+      UserEducationServiceFactory::GetForBrowserContext(profile())
+          ->product_messaging_controller();
+
+  DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(kRequiredNotice);
+
+  // Because the queued notice is posted, the callback does not actually get
+  // called until a message loop runs.
+  base::RunLoop run_loop;
+  product_messaging_controller.QueueRequiredNotice(
+      kRequiredNotice,
+      base::BindOnce(
+          [](base::OnceClosure closure,
+             user_education::RequiredNoticePriorityHandle handle) {
+            std::move(closure).Run();
+          },
+          run_loop.QuitClosure()));
+
+  EXPECT_EQ(user_education::FeaturePromoResult::kBlockedByPromo,
+            controller_->MaybeShowPromo(kTutorialIPHFeature));
+
+  // Run the loop, clearing the notice.
+  run_loop.Run();
 }
 
 TEST_F(BrowserFeaturePromoControllerTest, SnoozeServiceBlocksPromo) {

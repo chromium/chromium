@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(ProductMessagingControllerUiTest, NoticeBlocksIPH) {
   RunTestSequence(
       ObserveState(kFeatureEngagementInitializedState, browser()),
       WaitForState(kFeatureEngagementInitializedState, true), QueueNotice(),
-      CheckShowPromo(user_education::FeaturePromoResult::kBlockedByUi),
+      CheckShowPromo(user_education::FeaturePromoResult::kBlockedByPromo),
       FlushEvents(), EnsureHandle(), ReleaseHandle(),
       CheckShowPromo(user_education::FeaturePromoResult::Success()));
 }

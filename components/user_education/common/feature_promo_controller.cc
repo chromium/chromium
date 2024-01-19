@@ -24,6 +24,7 @@
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/tutorial.h"
 #include "components/user_education/common/tutorial_service.h"
 #include "ui/accessibility/ax_mode.h"
@@ -56,7 +57,8 @@ FeaturePromoControllerCommon::FeaturePromoControllerCommon(
     HelpBubbleFactoryRegistry* help_bubble_registry,
     FeaturePromoStorageService* storage_service,
     FeaturePromoSessionPolicy* session_policy,
-    TutorialService* tutorial_service)
+    TutorialService* tutorial_service,
+    ProductMessagingController* messaging_controller)
     : in_iph_demo_mode_(
           base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode)),
       registry_(registry),
@@ -64,7 +66,8 @@ FeaturePromoControllerCommon::FeaturePromoControllerCommon(
       bubble_factory_registry_(help_bubble_registry),
       storage_service_(storage_service),
       session_policy_(session_policy),
-      tutorial_service_(tutorial_service) {
+      tutorial_service_(tutorial_service),
+      messaging_controller_(messaging_controller) {
   DCHECK(feature_engagement_tracker_);
   DCHECK(bubble_factory_registry_);
   DCHECK(storage_service_);
@@ -479,6 +482,11 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
     current_promo = last_promo_info_;
   } else if (bubble_factory_registry_->is_any_bubble_showing()) {
     current_promo = FeaturePromoSessionPolicy::PromoInfo();
+  }
+
+  // Promos are blocked if some other critical user messaging is queued.
+  if (messaging_controller_->has_pending_notices()) {
+    return FeaturePromoResult::kBlockedByPromo;
   }
 
   // Defer to the session policy to determine if the promo can show.
