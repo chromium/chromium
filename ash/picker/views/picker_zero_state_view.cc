@@ -6,12 +6,14 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -26,6 +28,9 @@ namespace {
 const std::u16string kPlaceholderCategorySectionTitle =
     u"Placeholder Categories";
 
+// TODO: b/316935667 - Get a relevant icon for each category.
+const gfx::VectorIcon& kPlaceholderIcon = kImeMenuEmoticonIcon;
+
 }  // namespace
 
 PickerZeroStateView::PickerZeroStateView(
@@ -37,11 +42,13 @@ PickerZeroStateView::PickerZeroStateView(
   auto* section_view = AddChildView(
       std::make_unique<PickerSectionView>(kPlaceholderCategorySectionTitle));
   for (auto category : PickerModel().GetAvailableCategories()) {
-    section_view->AddItemView(std::make_unique<PickerItemView>(
-        base::BindRepeating(select_category_callback, category),
-        GetStringForPickerCategory(category)));
-    section_views_.push_back(section_view);
+    auto item_view = std::make_unique<PickerItemView>(
+        base::BindRepeating(select_category_callback, category));
+    item_view->SetText(GetStringForPickerCategory(category));
+    item_view->SetIcon(kPlaceholderIcon);
+    section_view->AddItemView(std::move(item_view));
   }
+  section_views_.push_back(section_view);
 }
 
 PickerZeroStateView::~PickerZeroStateView() = default;

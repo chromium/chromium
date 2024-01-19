@@ -6,18 +6,27 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 #include <variant>
 
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_manager.h"
 
 namespace ash {
+namespace {
+
+// TODO: b/316935667 - Get a relevant icon for each search result.
+const gfx::VectorIcon& kPlaceholderIcon = vector_icons::kGoogleColorIcon;
+
+}  // namespace
 
 PickerSearchResultsView::PickerSearchResultsView(
     SelectSearchResultCallback callback)
@@ -56,17 +65,20 @@ std::unique_ptr<PickerItemView> PickerSearchResultsView::CreateItemView(
   return std::visit(
       base::Overloaded{
           [&, this](const PickerSearchResult::TextData& data) {
-            return std::make_unique<PickerItemView>(
+            auto item_view = std::make_unique<PickerItemView>(
                 base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
-                               base::Unretained(this), result),
-                data.text);
+                               base::Unretained(this), result));
+            item_view->SetText(data.text);
+            item_view->SetIcon(kPlaceholderIcon);
+            return item_view;
           },
           [&, this](const PickerSearchResult::GifData& data) {
             // TODO: b/316936418 - Display the GIF using views.
-            return std::make_unique<PickerItemView>(
+            auto item_view = std::make_unique<PickerItemView>(
                 base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
-                               base::Unretained(this), result),
-                u"<gif>");
+                               base::Unretained(this), result));
+            item_view->SetText(u"<gif>");
+            return item_view;
           },
       },
       result.data());
