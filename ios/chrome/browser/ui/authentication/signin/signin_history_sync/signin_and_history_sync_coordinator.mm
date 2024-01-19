@@ -66,9 +66,7 @@ enum class SignInHistorySyncStep {
 }
 
 - (void)dealloc {
-  // TODO(crbug.com/1478088): Turn into CHECK.
-  DUMP_WILL_BE_CHECK(!_childCoordinator)
-      << base::SysNSStringToUTF8([self description]);
+  DCHECK(!_childCoordinator) << base::SysNSStringToUTF8([self description]);
 }
 
 - (void)start {
