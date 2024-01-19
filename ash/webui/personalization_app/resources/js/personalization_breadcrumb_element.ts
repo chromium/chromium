@@ -97,6 +97,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         type: Array,
         computed:
             'computeBreadcrumbs_(path, collections_, collectionId, albums_, albumsShared_, googlePhotosAlbumId, seaPenTemplates_, seaPenTemplateId, topicSource)',
+        observer: 'onBreadcrumbsChanged_',
       },
 
       collections_: {
@@ -147,6 +148,23 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
     this.watch(
         'albumsShared_', state => state.wallpaper.googlePhotos.albumsShared);
     this.updateFromStore();
+  }
+
+  private onBreadcrumbsChanged_() {
+    requestAnimationFrame(() => {
+      // Note that only 1 breadcrumb is focusable at any given time. When
+      // breadcrumbs change, the previously selected breadcrumb might not be in
+      // DOM anymore. To allow keyboard users to focus the breadcrumbs again, we
+      // add the first breadcrumb back to tab order.
+      const allBreadcrumbs = this.$.selector.items as HTMLElement[];
+      const hasFocusableBreadcrumb =
+          allBreadcrumbs.some(el => el.getAttribute('tabindex') === '0');
+
+      if (!hasFocusableBreadcrumb && allBreadcrumbs.length > 0) {
+        this.$.selector.selectIndex(0);
+        allBreadcrumbs[0].setAttribute('tabindex', '0');
+      }
+    });
   }
 
   /** Handle keyboard navigation. */

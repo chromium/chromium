@@ -9,7 +9,7 @@ import 'chrome://personalization/strings.m.js';
 import {GooglePhotosAlbum, Paths, PersonalizationBreadcrumbElement, PersonalizationRouterElement, TopicSource} from 'chrome://personalization/js/personalization_app.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
@@ -546,5 +546,65 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertFalse(
         !!breadcrumbElement.shadowRoot!.querySelector('cr-action-menu')?.open,
         'the action menu should be closed');
+  });
+
+  function pressLeftKey(el: HTMLElement) {
+    el.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'left',
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  test('resets tabindex if the focusable breadcrumb is removed', async () => {
+    loadTimeData.overrideValues({isSeaPenEnabled: true});
+    breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
+      'path': Paths.SEA_PEN_RESULTS,
+      'seaPenTemplateId': SeaPenTemplateId.kFlower.toString(),
+    });
+
+    await waitAfterNextRender(breadcrumbElement);
+
+    // Get all 4 breadcrumbs.
+    let allBreadcrumbs =
+        Array.from(breadcrumbElement.shadowRoot!.querySelectorAll(
+            '.selectable')) as HTMLElement[];
+    assertEquals(4, allBreadcrumbs.length);
+
+    // Check initial tab indices.
+    assertEquals('0', allBreadcrumbs[0]!.getAttribute('tabindex'));
+    assertNotEquals('0', allBreadcrumbs[1]!.getAttribute('tabindex'));
+    assertNotEquals('0', allBreadcrumbs[2]!.getAttribute('tabindex'));
+    assertNotEquals('0', allBreadcrumbs[3]!.getAttribute('tabindex'));
+
+    // Press 'left' to select the sea pen template breadcrumb.
+    const homeBreadcrumb = allBreadcrumbs[0]!;
+    homeBreadcrumb.focus();
+
+    pressLeftKey(homeBreadcrumb);
+
+    assertNotEquals('0', allBreadcrumbs[0]!.getAttribute('tabindex'));
+    assertNotEquals('0', allBreadcrumbs[1]!.getAttribute('tabindex'));
+    assertNotEquals('0', allBreadcrumbs[2]!.getAttribute('tabindex'));
+    assertEquals('0', allBreadcrumbs[3]!.getAttribute('tabindex'));
+
+    assertEquals(allBreadcrumbs[3], breadcrumbElement.$.selector.selectedItem);
+
+    // Go to SeaPenCollection path to remove the sea pen template
+    // breadcrumb.
+    breadcrumbElement.path = Paths.SEA_PEN_COLLECTION;
+    await waitAfterNextRender(breadcrumbElement);
+
+    // There should now be 3 breadcrumbs.
+    allBreadcrumbs = Array.from(breadcrumbElement.shadowRoot!.querySelectorAll(
+                         '.selectable')) as HTMLElement[];
+    assertEquals(3, allBreadcrumbs.length);
+
+    // And tabindex for first breadcrumb should be 0.
+    assertEquals('0', allBreadcrumbs[0]!.getAttribute('tabindex'));
+    assertNotEquals('0', allBreadcrumbs[1]!.getAttribute('tabindex'));
+    assertNotEquals('0', allBreadcrumbs[2]!.getAttribute('tabindex'));
+
+    assertEquals(allBreadcrumbs[0], breadcrumbElement.$.selector.selectedItem);
   });
 });
