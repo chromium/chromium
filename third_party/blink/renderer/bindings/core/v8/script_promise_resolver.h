@@ -7,6 +7,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -65,6 +66,18 @@ class CORE_EXPORT ScriptPromiseResolver
   ~ScriptPromiseResolver() override;
 
   void Dispose();
+
+  // Anything that can be passed to ToV8Traits can be passed to this function.
+  template <typename IDLType, typename BlinkType>
+  void Resolve(BlinkType value) {
+    ResolveOrReject<IDLType>(value, kResolving);
+  }
+
+  // Anything that can be passed to ToV8Traits can be passed to this function.
+  template <typename IDLType, typename BlinkType>
+  void Reject(BlinkType value) {
+    ResolveOrReject<IDLType>(value, kRejecting);
+  }
 
   // Anything that can be passed to toV8 can be passed to this function.
   template <typename T>
@@ -171,6 +184,51 @@ class CORE_EXPORT ScriptPromiseResolver
     kRejecting,
     kDetached,
   };
+
+  template <typename IDLType, typename BlinkType>
+  void ResolveOrReject(BlinkType value, ResolutionState new_state) {
+    if (state_ != kPending || !GetScriptState()->ContextIsValid() ||
+        !GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
+      return;
+    }
+    DCHECK(new_state == kResolving || new_state == kRejecting);
+    state_ = new_state;
+
+    ScriptState::Scope scope(script_state_.Get());
+
+    // Calling ToV8 in a ScriptForbiddenScope will trigger a CHECK and
+    // cause a crash. ToV8 just invokes a constructor for wrapper creation,
+    // which is safe (no author script can be run). Adding AllowUserAgentScript
+    // directly inside createWrapper could cause a perf impact (calling
+    // isMainThread() every time a wrapper is created is expensive). Ideally,
+    // resolveOrReject shouldn't be called inside a ScriptForbiddenScope.
+    {
+      ScriptForbiddenScope::AllowUserAgentScript allow_script;
+      v8::Isolate* isolate = script_state_->GetIsolate();
+      v8::MicrotasksScope microtasks_scope(
+          isolate, ToMicrotaskQueue(script_state_.Get()),
+          v8::MicrotasksScope::kDoNotRunMicrotasks);
+      value_.Reset(
+          isolate,
+          ToV8Traits<IDLType>::ToV8(script_state_, value).ToLocalChecked());
+    }
+
+    if (GetExecutionContext()->IsContextPaused()) {
+      ScheduleResolveOrReject();
+      return;
+    }
+    // TODO(esprehn): This is a hack, instead we should CHECK that
+    // script is allowed, and v8 should be running the entry hooks below and
+    // crashing if script is forbidden. We should then audit all users of
+    // ScriptPromiseResolver and the related specs and switch to an async
+    // resolve.
+    // See: http://crbug.com/663476
+    if (ScriptForbiddenScope::IsScriptForbidden()) {
+      ScheduleResolveOrReject();
+      return;
+    }
+    ResolveOrRejectImmediately();
+  }
 
   template <typename T>
   void ResolveOrReject(T value, ResolutionState new_state) {

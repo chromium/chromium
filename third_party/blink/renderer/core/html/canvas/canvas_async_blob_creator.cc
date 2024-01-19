@@ -455,7 +455,7 @@ void CanvasAsyncBlobCreator::CreateBlobAndReturnResult(
   } else {
     context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
         ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&ScriptPromiseResolver::Resolve<Blob*>,
+                   WTF::BindOnce(&ScriptPromiseResolver::Resolve<Blob, Blob*>,
                                  WrapPersistent(script_promise_resolver_.Get()),
                                  WrapPersistent(result_blob)));
   }
@@ -534,11 +534,12 @@ void CanvasAsyncBlobCreator::CreateNullAndReturnResult() {
     context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
         ->PostTask(
             FROM_HERE,
-            WTF::BindOnce(&ScriptPromiseResolver::Reject<DOMException*>,
-                          WrapPersistent(script_promise_resolver_.Get()),
-                          WrapPersistent(MakeGarbageCollected<DOMException>(
-                              DOMExceptionCode::kEncodingError,
-                              "Encoding of the source image has failed."))));
+            WTF::BindOnce(
+                &ScriptPromiseResolver::Reject<DOMException, DOMException*>,
+                WrapPersistent(script_promise_resolver_.Get()),
+                WrapPersistent(MakeGarbageCollected<DOMException>(
+                    DOMExceptionCode::kEncodingError,
+                    "Encoding of the source image has failed."))));
   }
   TraceCanvasContent(nullptr);
   // Avoid unwanted retention, see dispose().
