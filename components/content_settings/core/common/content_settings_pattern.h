@@ -204,6 +204,13 @@ class ContentSettingsPattern {
   static ContentSettingsPattern ToHostOnlyPattern(
       const ContentSettingsPattern& pattern);
 
+  // Expose an comparator to sort domains by precedence. Highest precedence
+  // first.
+  struct CompareDomains {
+    bool operator()(const std::string_view& domain_a,
+                    const std::string_view& domain_b) const;
+  };
+
   // Constructs an empty pattern. Empty patterns are invalid patterns. Invalid
   // patterns match nothing.
   ContentSettingsPattern();

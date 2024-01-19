@@ -8,7 +8,9 @@
 #include <memory>
 #include <string>
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -130,6 +132,92 @@ const ContentSettingPatternSource* FindContentSetting(
   return entry == settings.get().end() ? nullptr : &*entry;
 }
 
+HostIndexedContentSettings::Iterator::Iterator(
+    const HostIndexedContentSettings& index,
+    bool begin)
+    : index_(index) {
+  index_->iterating_++;
+  if (begin) {
+    SetStage(Stage::kPrimaryHost);
+  } else {
+    SetStage(Stage::kWildcard);
+    current_iterator_ = current_end_;
+  }
+}
+
+HostIndexedContentSettings::Iterator::~Iterator() {
+  DCHECK_GT(index_->iterating_, 0);
+  index_->iterating_--;
+}
+
+HostIndexedContentSettings::Iterator&
+HostIndexedContentSettings::Iterator::operator++() {
+  ++current_iterator_;
+  if (current_iterator_ == current_end_) {
+    // If we reach the end of a host bucket, continue with the next host bucket
+    // if available.
+    if (next_map_iterator_ != next_map_end_) {
+      current_iterator_ = next_map_iterator_->second.begin();
+      current_end_ = next_map_iterator_->second.end();
+      ++next_map_iterator_;
+      return *this;
+    }
+    // Otherwise continue iterating over the next index structure.
+    switch (stage_) {
+      case Stage::kPrimaryHost:
+        SetStage(Stage::kSecondaryHost);
+        break;
+      case Stage::kSecondaryHost:
+        SetStage(Stage::kWildcard);
+        break;
+      case Stage::kWildcard:
+        // We have reached the end.
+        break;
+      case Stage::kInvalid:
+        NOTREACHED();
+    }
+  }
+  return *this;
+}
+
+void HostIndexedContentSettings::Iterator::SetStage(Stage stage) {
+  auto set_map = [this](const HostToContentSettings& map) {
+    next_map_iterator_ = map.begin();
+    next_map_end_ = map.end();
+    current_iterator_ = next_map_iterator_->second.begin();
+    current_end_ = next_map_iterator_->second.end();
+    ++next_map_iterator_;
+  };
+
+  switch (stage) {
+    case Stage::kPrimaryHost:
+      if (!index_->primary_host_indexed_.empty()) {
+        stage_ = Stage::kPrimaryHost;
+        set_map(index_->primary_host_indexed_);
+        break;
+      }
+      // Fall through to the next index structure if the requested one is empty.
+      ABSL_FALLTHROUGH_INTENDED;
+    case Stage::kSecondaryHost:
+      if (!index_->secondary_host_indexed_.empty()) {
+        stage_ = Stage::kSecondaryHost;
+        set_map(index_->secondary_host_indexed_);
+        break;
+      }
+      // Fall through to the next index structure if the requested one is empty.
+      ABSL_FALLTHROUGH_INTENDED;
+    case Stage::kWildcard:
+      stage_ = Stage::kWildcard;
+      next_map_iterator_ = {};
+      next_map_end_ = {};
+      current_iterator_ = index_->wildcard_settings_.begin();
+      current_end_ = index_->wildcard_settings_.end();
+      break;
+    case Stage::kInvalid:
+      NOTREACHED();
+  }
+}
+
 HostIndexedContentSettings::HostIndexedContentSettings() = default;
 
 HostIndexedContentSettings::HostIndexedContentSettings(
@@ -146,6 +234,13 @@ HostIndexedContentSettings::HostIndexedContentSettings(
 }
 
 HostIndexedContentSettings::~HostIndexedContentSettings() = default;
+
+HostIndexedContentSettings::Iterator HostIndexedContentSettings::begin() const {
+  return Iterator(*this, true);
+}
+HostIndexedContentSettings::Iterator HostIndexedContentSettings::end() const {
+  return Iterator(*this, false);
+}
 
 const RuleEntry* HostIndexedContentSettings::Find(
     const GURL& primary_url,
@@ -169,6 +264,7 @@ bool HostIndexedContentSettings::SetValue(
     const ContentSettingsPattern& secondary_pattern,
     base::Value value,
     const RuleMetaData& metadata) {
+  DCHECK_EQ(iterating_, 0);
   const std::string& primary_host = primary_pattern.GetHost();
   if (!primary_host.empty()) {
     return InsertValue(primary_host_indexed_[primary_host], primary_pattern,
@@ -187,6 +283,7 @@ bool HostIndexedContentSettings::DeleteValue(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern) {
   const std::string& primary_host = primary_pattern.GetHost();
+  DCHECK_EQ(iterating_, 0);
   if (!primary_host.empty()) {
     return EraseValue(primary_host_indexed_, primary_host, primary_pattern,
                       secondary_pattern);
@@ -202,6 +299,7 @@ bool HostIndexedContentSettings::DeleteValue(
 }
 
 void HostIndexedContentSettings::Clear() {
+  DCHECK_EQ(iterating_, 0);
   primary_host_indexed_.clear();
   secondary_host_indexed_.clear();
   wildcard_settings_.clear();
