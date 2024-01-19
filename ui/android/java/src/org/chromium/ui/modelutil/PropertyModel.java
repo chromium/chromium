@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -412,6 +413,49 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         }
 
         return ObjectsCompat.equals(mData.get(key), otherModel.mData.get(key));
+    }
+
+    /**
+     * Returns the int value from the item model based on the key. Otherwise returns the passed in
+     * default value.
+     *
+     * @param model The model for the list menu item.
+     * @param key The key of the property to retrieve.
+     * @param defaultValue The default value if the the property is not found.
+     * @return The value from the model or the default if the value is not found.
+     */
+    public static int getFromModelOrDefault(
+            @NonNull PropertyModel model,
+            @NonNull PropertyModel.ReadableIntPropertyKey key,
+            int defaultValue) {
+        // We need to check first because PropertyModel#get throws an exception if a key
+        // is not present in the Map.
+        if (model.containsKey(key)) {
+            return model.get(key);
+        }
+        return defaultValue;
+    }
+
+    /**
+     * Returns the value from the item model based on the key. Otherwise returns the passed in
+     * default value.
+     *
+     * @param model The model for the list menu item.
+     * @param key The key of the property to retrieve.
+     * @param defaultValue The default value if the the property is not found.
+     * @return The value from the model or the default if the value is not found.
+     */
+    @Nullable
+    public static <T> T getFromModelOrDefault(
+            @NonNull PropertyModel model,
+            @NonNull PropertyModel.ReadableObjectPropertyKey<T> key,
+            @Nullable T defaultValue) {
+        // We need to check first because PropertyModel#get throws an exception if a key
+        // is not present in the Map.
+        if (model.containsKey(key)) {
+            return model.get(key);
+        }
+        return defaultValue;
     }
 
     /** Allows constructing a new {@link PropertyModel} with read-only properties. */

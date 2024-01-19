@@ -83,44 +83,26 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
 
     @Override
     public int getGroupId(PropertyModel itemModel) {
-        // We need to check first because PropertyModel#get throws an exception if a key
-        // is not present in the Map.
-        if (itemModel.containsKey(ListMenuItemProperties.GROUP_ID)) {
-            return itemModel.get(ListMenuItemProperties.GROUP_ID);
-        }
-        return 0;
+        return PropertyModel.getFromModelOrDefault(itemModel, ListMenuItemProperties.GROUP_ID, 0);
     }
 
     @Override
     public int getItemId(PropertyModel itemModel) {
-        // We need to check first because PropertyModel#get throws an exception if a key
-        // is not present in the Map.
-        if (itemModel.containsKey(ListMenuItemProperties.MENU_ITEM_ID)) {
-            return itemModel.get(ListMenuItemProperties.MENU_ITEM_ID);
-        }
-        return 0;
+        return PropertyModel.getFromModelOrDefault(
+                itemModel, ListMenuItemProperties.MENU_ITEM_ID, 0);
     }
 
     @Nullable
     @Override
     public Intent getItemIntent(PropertyModel itemModel) {
-        // We need to check first because PropertyModel#get throws an exception if a key
-        // is not present in the Map.
-        if (itemModel.containsKey(ListMenuItemProperties.INTENT)) {
-            return itemModel.get(ListMenuItemProperties.INTENT);
-        }
-        return null;
+        return PropertyModel.getFromModelOrDefault(itemModel, ListMenuItemProperties.INTENT, null);
     }
 
     @Nullable
     @Override
     public View.OnClickListener getClickListener(PropertyModel itemModel) {
-        // We need to check first because PropertyModel#get throws an exception if a key
-        // is not present in the Map.
-        if (itemModel.containsKey(ListMenuItemProperties.CLICK_LISTENER)) {
-            return itemModel.get(ListMenuItemProperties.CLICK_LISTENER);
-        }
-        return null;
+        return PropertyModel.getFromModelOrDefault(
+                itemModel, ListMenuItemProperties.CLICK_LISTENER, null);
     }
 
     @Override

@@ -266,6 +266,6 @@ class DropdownPopupWindowImpl
      */
     private int measureContentWidth() {
         assert mAdapter != null : "Set the adapter before showing the popup.";
-        return UiUtils.computeMaxWidthOfListAdapterItems(mAdapter, null);
+        return UiUtils.computeListAdapterContentDimensions(mAdapter, null)[0];
     }
 }

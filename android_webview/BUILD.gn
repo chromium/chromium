@@ -601,6 +601,7 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/AwRenderProcess.java",
     "java/src/org/chromium/android_webview/AwRenderProcessGoneDetail.java",
     "java/src/org/chromium/android_webview/AwScrollOffsetManager.java",
+    "java/src/org/chromium/android_webview/AwSelectionDropdownMenuDelegate.java",
     "java/src/org/chromium/android_webview/AwServiceWorkerClient.java",
     "java/src/org/chromium/android_webview/AwServiceWorkerController.java",
     "java/src/org/chromium/android_webview/AwServiceWorkerSettings.java",
