@@ -191,7 +191,7 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
                               SharedImageBacking* backing,
                               MemoryTypeTracker* tracker,
                               wgpu::Device device,
-                              gfx::ScopedIOSurface io_surface,
+                              wgpu::SharedTextureMemory shared_texture_memory,
                               const gfx::Size& io_surface_size,
                               wgpu::TextureFormat wgpu_format,
                               std::vector<wgpu::TextureFormat> view_formats);
@@ -202,7 +202,6 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
 
  private:
   const wgpu::Device device_;
-  gfx::ScopedIOSurface io_surface_;
   wgpu::SharedTextureMemory shared_texture_memory_;
   const gfx::Size io_surface_size_;
   const wgpu::TextureFormat wgpu_format_;
@@ -336,6 +335,20 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   const uint32_t io_surface_format_;
   const size_t io_surface_num_planes_;
   const gfx::GenericSharedMemoryId io_surface_id_;
+
+#if BUILDFLAG(USE_DAWN)
+  // Per-Device SharedTextureMemory instances used to vend WebGPU textures for
+  // the underlying IOSurface. The cache is keyed by raw pointers to the Device
+  // as there is currently no better option. To ensure that we don't incorrectly
+  // use a SharedTextureMemory instance for a lost Device that then gets aliased
+  // by a newly-created Device, we drop all SharedTextureMemory instances whose
+  // corresponding Device has been lost at the beginning of each ProduceDawn()
+  // call before this cache is indexed by the passed-in Device.
+  // TODO(crbug.com/1493854): Dawn should expose a unique ID per-Device, which
+  // this cache should use as keys rather than raw pointers.
+  base::flat_map<WGPUDevice, wgpu::SharedTextureMemory>
+      shared_texture_memory_cache_;
+#endif
 
   const GLenum gl_target_;
   const bool framebuffer_attachment_angle_;
