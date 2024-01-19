@@ -6,6 +6,7 @@
 #define ASH_COMPONENTS_ARC_NET_PASSPOINT_DIALOG_VIEW_H_
 
 #include <memory>
+#include <string_view>
 
 #include "ash/components/arc/mojom/net.mojom.h"
 #include "base/functional/callback_forward.h"
@@ -70,10 +71,9 @@ class PasspointDialogView : public views::BoxLayoutView {
 
   std::unique_ptr<views::View> MakeBaseLabelView(bool is_expiring);
   std::unique_ptr<views::View> MakeSubscriptionLabelView(
-      base::StringPiece friendly_name);
-  std::unique_ptr<views::View> MakeContentsView(
-      bool is_expiring,
-      base::StringPiece friendly_name);
+      std::string_view friendly_name);
+  std::unique_ptr<views::View> MakeContentsView(bool is_expiring,
+                                                std::string_view friendly_name);
   std::unique_ptr<views::View> MakeButtonsView();
 
   void OnLearnMoreClicked();

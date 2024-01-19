@@ -4,6 +4,8 @@
 
 #include "ash/components/arc/session/serial_number_util.h"
 
+#include <string_view>
+
 #include "ash/components/arc/arc_prefs.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -18,7 +20,7 @@ namespace {
 constexpr const size_t kArcSaltFileSize = 16;
 
 // Returns true if the hex-encoded salt in Local State is valid.
-bool IsValidHexSalt(base::StringPiece hex_salt) {
+bool IsValidHexSalt(std::string_view hex_salt) {
   std::string salt;
   if (!base::HexStringToString(hex_salt, &salt)) {
     LOG(WARNING) << "Not a hex string: " << hex_salt;
@@ -33,8 +35,8 @@ bool IsValidHexSalt(base::StringPiece hex_salt) {
 
 }  // namespace
 
-std::string GenerateFakeSerialNumber(base::StringPiece chromeos_user,
-                                     base::StringPiece salt) {
+std::string GenerateFakeSerialNumber(std::string_view chromeos_user,
+                                     std::string_view salt) {
   constexpr size_t kMaxHardwareIdLen = 20;
   std::string input(chromeos_user);
   input.append(salt.begin(), salt.end());
@@ -44,8 +46,8 @@ std::string GenerateFakeSerialNumber(base::StringPiece chromeos_user,
 }
 
 std::string GetOrCreateSerialNumber(PrefService* local_state,
-                                    base::StringPiece chromeos_user,
-                                    base::StringPiece arc_salt_on_disk) {
+                                    std::string_view chromeos_user,
+                                    std::string_view arc_salt_on_disk) {
   DCHECK(local_state);
   DCHECK(!chromeos_user.empty());
 

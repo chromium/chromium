@@ -4,6 +4,8 @@
 
 #include "ash/components/arc/net/always_on_vpn_manager.h"
 
+#include <string_view>
+
 #include "ash/components/arc/arc_prefs.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -95,7 +97,7 @@ TEST_F(AlwaysOnVpnManagerTest, SetPackageWhileLockdownTrue) {
   EXPECT_EQ(kVpnPackage, GetAlwaysOnPackageName());
 
   pref_service()->Set(arc::prefs::kAlwaysOnVpnPackage,
-                      base::Value(base::StringPiece()));
+                      base::Value(std::string_view()));
 
   EXPECT_EQ(std::string(), GetAlwaysOnPackageName());
 }
