@@ -791,8 +791,7 @@ class BrowserView : public BrowserWindow,
   std::vector<views::NativeViewHost*> GetNativeViewHostsForTopControlsSlide()
       const;
 
-  // Create and open the tab search bubble.
-  void CreateTabSearchBubble(const int tab_index = -1) override;
+  void CreateTabSearchBubble(int tab_index = -1) override;
   // Closes the tab search bubble if open for the given browser instance.
   void CloseTabSearchBubble() override;
 
