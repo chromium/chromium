@@ -309,13 +309,11 @@ TEST_F(NetworkPortalDetectorImplTest, Online2Offline) {
 
   CompleteURLFetch(net::OK, 204, nullptr);
   EXPECT_EQ(State::STATE_IDLE, state());
-
   EXPECT_EQ(status(), NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
 
   // WiFi is turned off.
   SetDisconnected(kStubWireless1);
   EXPECT_EQ(State::STATE_IDLE, state());
-
   EXPECT_EQ(status(), NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
 }
 
@@ -590,7 +588,6 @@ TEST_F(NetworkPortalDetectorImplTest, MultipleRetries) {
   // Connect with a proxy to trigger Chrome portal detection.
   SetConnectedWithProxy(kStubWireless1);
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
-
   CompleteURLFetch(net::OK, 200, retry_response.c_str());
   EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
   EXPECT_EQ(1, captive_portal_detector_run_count());
@@ -618,14 +615,30 @@ TEST_F(NetworkPortalDetectorImplTest, MultipleRetries) {
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
 
   CompleteURLFetch(net::OK, 204, nullptr);
+  EXPECT_TRUE(
+      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204,
+                       kStubWireless1));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Network.NetworkPortalDetectorRunCount"),
+      ElementsAre(base::Bucket(4, 1)));
+
+  // PortalState will change to online, triggering a new StartAttempt call.
+  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
+  EXPECT_EQ(0, captive_portal_detector_run_count());
+  EXPECT_EQ(base::Seconds(retry_delay), next_attempt_delay());
+
+  // To run CaptivePortalDetector::DetectCaptivePortal().
+  base::RunLoop().RunUntilIdle();
+
+  // Online result will end portal detection.
+  CompleteURLFetch(net::OK, 204, nullptr);
+
+  // To run CaptivePortalDetector::DetectCaptivePortal().
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(State::STATE_IDLE, state());
   EXPECT_TRUE(
       CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204,
                        kStubWireless1));
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Network.NetworkPortalDetectorRunCount"),
-      ElementsAre(base::Bucket(4, 1)));
 }
 
 TEST_F(NetworkPortalDetectorImplTest, ProxyAuthRequired) {

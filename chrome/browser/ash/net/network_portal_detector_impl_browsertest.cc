@@ -96,13 +96,15 @@ class NetworkPortalDetectorImplBrowserTest
 
   ~NetworkPortalDetectorImplBrowserTest() override = default;
 
+  // Tests that the Shill state sets the expected NetworkState::PortalState
+  // and generates the expected notification. Note: This does not run any
+  // Chrome portal detection, that is covered by unit tests.
   void TestPortalStateAndNotification(
       const char* shill_state,
       NetworkState::PortalState portal_state,
       const std::u16string& expected_title,
       const std::u16string& expected_message,
-      const std::u16string& expected_button_title,
-      NetworkPortalDetector::CaptivePortalStatus portal_detector_status) {
+      const std::u16string& expected_button_title) {
     LoginUser(test_account_id_);
     base::RunLoop().RunUntilIdle();
 
@@ -139,8 +141,6 @@ class NetworkPortalDetectorImplBrowserTest
     } else {
       EXPECT_EQ(GetNotificationButtonTitle(), expected_button_title);
     }
-    EXPECT_EQ(portal_detector_status,
-              network_portal_detector::GetInstance()->GetCaptivePortalStatus());
 
     // Explicitly close the notification.
     display_service_->RemoveNotification(NotificationHandler::Type::TRANSIENT,
@@ -211,8 +211,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
           IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI),
       l10n_util::GetStringFUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_MESSAGE,
                                  u"wifi"),
-      l10n_util::GetStringUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON),
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
+      l10n_util::GetStringUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON));
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
@@ -224,12 +223,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
       l10n_util::GetStringFUTF16(
           IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_MESSAGE, u"wifi"),
       l10n_util::GetStringUTF16(
-          IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_BUTTON),
-      // CaptivePortalStatus is online here because setting the
-      // CaptivePortalResult from ChromeNetworkPortalDetector will default
-      // to ONLINE from DetectionCompleted(). This results in the
-      // NetworkStateHandler using the shill state.
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+          IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_BUTTON));
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,

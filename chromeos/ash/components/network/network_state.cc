@@ -460,6 +460,7 @@ void NetworkState::SetConnectionState(const std::string& connection_state) {
       connection_state_ == shill::kStateOnline) {
     shill_portal_state_ = PortalState::kOnline;
   }
+  chrome_portal_state_ = PortalState::kUnknown;
 }
 
 bool NetworkState::IsManagedByPolicy() const {

@@ -168,11 +168,15 @@ void NetworkPortalDetectorImpl::PortalStateChanged(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!default_network || !default_network->IsConnectedState()) {
-    NET_LOG(EVENT)
-        << "No connected default network, stopping portal detection.";
-    default_network_id_ = std::string();
-    StopDetection();
-    DetectionCompleted(nullptr, CAPTIVE_PORTAL_STATUS_OFFLINE);
+    NET_LOG(EVENT) << "No connected default network: "
+                   << NetworkId(default_network)
+                   << ", stopping portal detection.";
+    if ((!default_network && !default_network_id_.empty()) ||
+        (default_network && default_network->guid() != default_network_id_)) {
+      default_network_id_ = std::string();
+      StopDetection();
+      default_portal_status_ = CAPTIVE_PORTAL_STATUS_OFFLINE;
+    }
     return;
   }
 
@@ -194,25 +198,27 @@ void NetworkPortalDetectorImpl::PortalStateChanged(
     case NetworkState::PortalState::kOnline:
       // If a proxy is configured, use captive_portal_detector_ to detect a
       // proxy auth required (407) response.
-      if (has_proxy)
+      if (has_proxy) {
         ScheduleAttempt();
-      else
-        DetectionCompleted(default_network, CAPTIVE_PORTAL_STATUS_ONLINE);
+      } else {
+        default_portal_status_ = CAPTIVE_PORTAL_STATUS_ONLINE;
+      }
       return;
     case NetworkState::PortalState::kPortalSuspected:
       // Shill result was inconclusive.
       ScheduleAttempt();
       return;
     case NetworkState::PortalState::kPortal:
-      DetectionCompleted(default_network, CAPTIVE_PORTAL_STATUS_PORTAL);
+      default_portal_status_ = CAPTIVE_PORTAL_STATUS_PORTAL;
       return;
     case NetworkState::PortalState::kNoInternet:
       // If a proxy is configured it may be interfering with Shill portal
       // detection
-      if (has_proxy)
+      if (has_proxy) {
         ScheduleAttempt();
-      else
-        DetectionCompleted(default_network, CAPTIVE_PORTAL_STATUS_ONLINE);
+      } else {
+        default_portal_status_ = CAPTIVE_PORTAL_STATUS_OFFLINE;
+      }
       return;
     case NetworkState::PortalState::kProxyAuthRequired:
       // This may happen if a global proxy is applied. Run Chrome detection
