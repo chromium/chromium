@@ -3503,8 +3503,26 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PRIVACY_GUIDE_LETS_GO_BUTTON" desc="Text for the 'Let's go' button on the Welcome step of the Privacy Guide.">
         Let's go
       </message>
+      <message name="IDS_IOS_PRIVACY_GUIDE_NEXT_BUTTON" desc="Text for the 'Next' button that appears in a few steps of the Privacy Guide.">
+        Next
+      </message>
+      <message name="IDS_IOS_PRIVACY_GUIDE_THINGS_TO_CONSIDER_HEADER" desc="Header for the Privacy Guide Things To Consider section.">
+        Things To Consider
+      </message>
       <message name="IDS_IOS_PRIVACY_GUIDE_TITLE" desc="Title for the Privacy Guide settings menu row.">
         Privacy Guide
+      </message>
+      <message name="IDS_IOS_PRIVACY_GUIDE_URL_USAGE_BROWSER_FASTER" desc="Bullet point for the 'Make Searches and Browsing' better switch 'When on' section.">
+        You'll browse faster because content is proactively loaded based on your current webpage visit
+      </message>
+      <message name="IDS_IOS_PRIVACY_GUIDE_URL_USAGE_IMPROVED_SUGGESTIONS" desc="Bullet point for the 'Make Searches and Browsing' better switch 'When on' section.">
+        You'll get improved suggestions in the address bar
+      </message>
+      <message name="IDS_IOS_PRIVACY_GUIDE_URL_USAGE_PREDICT_SITES" desc="Bullet point for the 'Make Searches and Browsing' better switch 'Things to consider' section.">
+        URLs you visit are sent to Google to predict what sites you might visit next
+      </message>
+      <message name="IDS_IOS_PRIVACY_GUIDE_URL_USAGE_USAGE_REPORT" desc="Bullet point for the 'Make Searches and Browsing' better switch 'Things to consider' section.">
+        If you also share Chrome usage reports, those reports include the URLs you visit
       </message>
       <message name="IDS_IOS_PRIVACY_GUIDE_WELCOME_SUBTITLE" desc="Subtitle for the Privacy Guide Welcome step.">
         Take a guided tour of key privacy and security controls. For more options, go to individual settings.
@@ -3512,8 +3530,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PRIVACY_GUIDE_WELCOME_TITLE" desc="Title for the Privacy Guide Welcome step.">
         A Guide Of Your Privacy Choices
       </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_NEXT_BUTTON" desc="Text for the 'Next' button that appears in a few steps of the Privacy Guide.">
-        Next
+      <message name="IDS_IOS_PRIVACY_GUIDE_WHEN_ON_HEADER" desc="Header for the Privacy Guide When On section.">
+        When On
       </message>
       <message name="IDS_IOS_PRIVACY_POLICY" desc="The label to access the privacy policy, displayed in the application settings, with no product name. [Length: 30em] [iOS only]">
         Google Privacy Policy

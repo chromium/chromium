@@ -200,6 +200,8 @@ extern NSString* const kCircleCircleFillSymbol;
 extern NSString* const kLockSymbol;
 extern NSString* const kRulerSymbol;
 extern NSString* const kLaptopAndIphoneSymbol;
+extern NSString* const kBoltSymbol;
+extern NSString* const kLightBulbSymbol;
 extern NSString* const kNewTabGroupActionSymbol;
 extern NSString* const kRemoveTabFromGroupActionSymbol;
 extern NSString* const kMoveTabToGroupActionSymbol;
