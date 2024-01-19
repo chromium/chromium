@@ -78,10 +78,14 @@ public class ReadAloudController
     private final Map<String, Boolean> mTimepointsSupportedMap = new HashMap<>();
     private final HashSet<String> mPendingRequests = new HashSet<>();
     private final TabModel mTabModel;
+    private final TabModel mIncognitoTabModel;
     @Nullable private Player mPlayerCoordinator;
     private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
 
     private TabModelTabObserver mTabObserver;
+    private TabModelTabObserver mIncognitoTabObserver;
+
+    private boolean mPausedForIncognito;
 
     private final BottomSheetController mBottomSheetController;
     private final BrowserControlsSizer mBrowserControlsSizer;
@@ -263,6 +267,7 @@ public class ReadAloudController
             Activity activity,
             ObservableSupplier<Profile> profileSupplier,
             TabModel tabModel,
+            TabModel incognitoTabModel,
             BottomSheetController bottomSheetController,
             BrowserControlsSizer browserControlsSizer,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
@@ -272,6 +277,7 @@ public class ReadAloudController
         mProfileSupplier = profileSupplier;
         new OneShotCallback<Profile>(mProfileSupplier, this::onProfileAvailable);
         mTabModel = tabModel;
+        mIncognitoTabModel = incognitoTabModel;
         mBottomSheetController = bottomSheetController;
         mCurrentLanguageVoices = new ObservableSupplierImpl<>();
         mSelectedVoiceId = new ObservableSupplierImpl<>();
@@ -321,6 +327,13 @@ public class ReadAloudController
                                         "onTabSelected called for "
                                                 + tab.getUrl().getPossiblyInvalidSpec());
                                 maybeCheckReadability(tab.getUrl());
+
+                                if (mPausedForIncognito) {
+                                    mPausedForIncognito = false;
+                                    if (mPlayback != null) {
+                                        mPlayerCoordinator.restorePlayers();
+                                    }
+                                }
                             }
                         }
 
@@ -329,6 +342,24 @@ public class ReadAloudController
                             maybeStopPlayback(tab);
                         }
                     };
+
+            mIncognitoTabObserver =
+                    new TabModelTabObserver(mIncognitoTabModel) {
+                        @Override
+                        protected void onTabSelected(Tab tab) {
+                            super.onTabSelected(tab);
+                            if (tab == null || !tab.isIncognito()) {
+                                return;
+                            }
+
+                            if (mPlayback != null && !mPausedForIncognito) {
+                                mPlayback.pause();
+                                mPlayerCoordinator.hidePlayers();
+                                mPausedForIncognito = true;
+                            }
+                        }
+                    };
+
             InsetObserver insetObserver =
                     InsetObserverSupplier.getValueOrNullFrom(mActivityWindowAndroid);
             if (insetObserver != null) {
@@ -525,6 +556,7 @@ public class ReadAloudController
         mCurrentlyPlayingTab = null;
         mGlobalRenderFrameId = null;
         mCurrentPlaybackData = null;
+        mPausedForIncognito = false;
     }
 
     /** Cleanup: unregister listeners. */
@@ -919,6 +951,10 @@ public class ReadAloudController
 
     public TabModelTabObserver getTabModelTabObserverforTests() {
         return mTabObserver;
+    }
+
+    public TabModelTabObserver getIncognitoTabModelTabObserverforTests() {
+        return mIncognitoTabObserver;
     }
 
     public TranslationObserver getTranslationObserverForTest() {

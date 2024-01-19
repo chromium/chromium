@@ -49,7 +49,6 @@ class PlayerMediator implements InteractionHandler {
                 @Override
                 public void onPlaybackDataChanged(PlaybackData data) {
                     if (!isHiddenAndPlaying()) {
-                        setPlaybackState(data.state());
                         mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
                         mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());
                         float percent =
@@ -61,6 +60,7 @@ class PlayerMediator implements InteractionHandler {
                     }
 
                     if (data.state() != mLastState) {
+                        setPlaybackState(data.state());
                         if (data.state() == PlaybackListener.State.PLAYING) {
                             mLastStartTimeMillis = mClock.currentTimeMillis();
                         } else {

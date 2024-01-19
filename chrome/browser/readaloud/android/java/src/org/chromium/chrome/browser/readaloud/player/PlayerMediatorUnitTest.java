@@ -606,7 +606,9 @@ public class PlayerMediatorUnitTest {
 
         assertEquals(0.0f, (float) mModel.get(PlayerProperties.PROGRESS), /* delta= */ 1e-8f);
 
-        assertEquals(UNKNOWN, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
+        // Playback state is the exception: if it changes while hidden, UI should show
+        // the new state when it is restored.
+        assertEquals(PLAYING, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
     }
 
     private void resetPlayback() {

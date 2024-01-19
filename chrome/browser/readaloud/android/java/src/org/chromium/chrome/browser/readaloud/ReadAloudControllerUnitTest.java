@@ -63,7 +63,9 @@ import org.chromium.chrome.browser.search_engines.SearchEngineType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.translate.FakeTranslateBridgeJni;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.modules.readaloud.Playback;
@@ -202,6 +204,7 @@ public class ReadAloudControllerUnitTest {
                         mActivity,
                         mProfileSupplier,
                         mTabModelSelector.getModel(false),
+                        mTabModelSelector.getModel(true),
                         mBottomSheetController,
                         mBrowserControlsSizer,
                         mLayoutManagerSupplier,
@@ -1462,6 +1465,45 @@ public class ReadAloudControllerUnitTest {
         mController.maybeHidePlayer();
 
         verify(mPlayerCoordinator).hidePlayers();
+    }
+
+    @Test
+    public void testPauseAndHideOnIncognitoTabSelected() {
+        requestAndStartPlayback();
+
+        Tab tab = mTabModelSelector.addMockIncognitoTab();
+        TabModelUtils.selectTabById(
+                mTabModelSelector,
+                tab.getId(),
+                TabSelectionType.FROM_NEW,
+                /* skipLoadingTab= */ true);
+
+        verify(mPlayback).pause();
+        verify(mPlayerCoordinator).hidePlayers();
+    }
+
+    @Test
+    public void testRestorePlayerOnReturnFromIncognitoTab() {
+        requestAndStartPlayback();
+        reset(mPlayback);
+
+        Tab tab = mTabModelSelector.addMockIncognitoTab();
+        TabModelUtils.selectTabById(
+                mTabModelSelector,
+                tab.getId(),
+                TabSelectionType.FROM_NEW,
+                /* skipLoadingTab= */ true);
+
+        verify(mPlayback).pause();
+        verify(mPlayerCoordinator).hidePlayers();
+
+        TabModelUtils.selectTabById(
+                mTabModelSelector,
+                mTab.getId(),
+                TabSelectionType.FROM_USER,
+                /* skipLoadingTab= */ true);
+        verify(mPlayback, never()).play();
+        verify(mPlayerCoordinator).restorePlayers();
     }
 
     private void requestAndStartPlayback() {

@@ -892,11 +892,13 @@ public class RootUiCoordinator
                 mActivity, Profile.getLastUsedRegularProfile());
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
+            TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
             ReadAloudController controller =
                     new ReadAloudController(
                             mActivity,
                             mProfileSupplier,
-                            mTabModelSelectorSupplier.get().getModel(false),
+                            tabModelSelector.getModel(/* incognito= */ false),
+                            tabModelSelector.getModel(/* incognito= */ true),
                             getBottomSheetController(),
                             mBrowserControlsManager,
                             mLayoutManagerSupplier,

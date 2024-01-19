@@ -134,7 +134,7 @@ public interface Player {
     default void hideMiniPlayer() {}
 
     /**
-     * Hide players, unsubscribe from updates. State updates will resume after {@link
+     * Hide players, unsubscribe from progress updates. Updates will resume after {@link
      * #restoreMiniPlayer() restoreMiniPlayer} or {@link #restorePlayers() restorePlayers} is
      * called.
      */
