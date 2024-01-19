@@ -31,6 +31,7 @@ chromium-metrics-reviews@google.com.
 <variants name="ModelExecutionFeature">
   <variant name="Compose" summary="Compose"/>
   <variant name="TabOrganization" summary="Tab Organization"/>
+  <variant name="Test" summary="Test"/>
   <variant name="Unknown" summary="Unknown"/>
   <variant name="WallpaperSearch" summary="Wallpaper search"/>
 </variants>

@@ -18,6 +18,11 @@ namespace optimization_guide {
 
 namespace {
 
+bool ShouldCheckSettingForFeature(proto::ModelExecutionFeature feature) {
+  return feature != proto::MODEL_EXECUTION_FEATURE_UNSPECIFIED &&
+         feature != proto::MODEL_EXECUTION_FEATURE_TEST;
+}
+
 enum class SettingsVisibilityResult {
   kUnknown = 0,
   // Not visible because user is not signed-in.
@@ -222,17 +227,14 @@ prefs::FeatureOptInState ModelExecutionFeaturesController::GetPrefState(
     proto::ModelExecutionFeature feature) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  switch (feature) {
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
-      NOTREACHED();
-      return prefs::FeatureOptInState::kNotInitialized;
-    default:
-      return static_cast<prefs::FeatureOptInState>(
-          browser_context_profile_service_->GetInteger(
-              prefs::GetSettingEnabledPrefName(feature)));
+  if (!ShouldCheckSettingForFeature(feature)) {
+    NOTREACHED();
+    return prefs::FeatureOptInState::kNotInitialized;
   }
-  NOTREACHED();
-  return prefs::FeatureOptInState::kNotInitialized;
+
+  return static_cast<prefs::FeatureOptInState>(
+      browser_context_profile_service_->GetInteger(
+          prefs::GetSettingEnabledPrefName(feature)));
 }
 
 ModelExecutionFeaturesController::UserValidityResult
@@ -386,10 +388,10 @@ void ModelExecutionFeaturesController::InitializeFeatureSettings() {
   features_enabled_at_startup_.clear();
   for (int i = 0; i < proto::ModelExecutionFeature_ARRAYSIZE; ++i) {
     proto::ModelExecutionFeature feature = proto::ModelExecutionFeature(i);
-    if (feature ==
-        proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED) {
+    if (!ShouldCheckSettingForFeature(feature)) {
       continue;
     }
+
     bool is_enabled =
         GetPrefState(feature) == prefs::FeatureOptInState::kEnabled;
     base::UmaHistogramBoolean(
@@ -451,16 +453,14 @@ void ModelExecutionFeaturesController::ResetInvalidFeaturePrefs() {
        i <= proto::ModelExecutionFeature_MAX; ++i) {
     proto::ModelExecutionFeature feature =
         static_cast<proto::ModelExecutionFeature>(i);
-    switch (feature) {
-      case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
-        continue;
-      default:
-        if (GetCurrentUserValidityResult(feature) !=
-            ModelExecutionFeaturesController::UserValidityResult::kValid) {
-          browser_context_profile_service_->SetInteger(
-              optimization_guide::prefs::GetSettingEnabledPrefName(feature),
-              static_cast<int>(prefs::FeatureOptInState::kNotInitialized));
-        }
+    if (!ShouldCheckSettingForFeature(feature)) {
+      continue;
+    }
+    if (GetCurrentUserValidityResult(feature) !=
+        ModelExecutionFeaturesController::UserValidityResult::kValid) {
+      browser_context_profile_service_->SetInteger(
+          optimization_guide::prefs::GetSettingEnabledPrefName(feature),
+          static_cast<int>(prefs::FeatureOptInState::kNotInitialized));
     }
   }
 }
@@ -480,8 +480,7 @@ void ModelExecutionFeaturesController::OnMainToggleSettingStatePrefChanged() {
        i <= proto::ModelExecutionFeature_MAX; ++i) {
     proto::ModelExecutionFeature feature =
         static_cast<proto::ModelExecutionFeature>(i);
-    if (feature ==
-        proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED) {
+    if (!ShouldCheckSettingForFeature(feature)) {
       continue;
     }
 
@@ -515,8 +514,7 @@ void ModelExecutionFeaturesController::InitializePrefListener() {
        i <= proto::ModelExecutionFeature_MAX; ++i) {
     proto::ModelExecutionFeature feature =
         static_cast<proto::ModelExecutionFeature>(i);
-    if (feature ==
-        proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED) {
+    if (!ShouldCheckSettingForFeature(feature)) {
       continue;
     }
 

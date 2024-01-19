@@ -85,6 +85,8 @@ std::string_view GetStringNameForModelExecutionFeature(
       return "TabOrganization";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
       return "Compose";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
+      return "Test";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in

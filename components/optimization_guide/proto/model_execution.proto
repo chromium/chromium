@@ -54,6 +54,10 @@ enum ModelExecutionFeature {
   MODEL_EXECUTION_FEATURE_COMPOSE = 1;
   MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION = 2;
   MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH = 3;
+  // This test feature cannot be used for launch but can be used for
+  // prototyping. Please reach out to optimization_guide OWNERS when looking to
+  // use this enum or want to go beyond prototyping.
+  MODEL_EXECUTION_FEATURE_TEST = 4;
 }
 
 message OnDeviceModelExecutionConfig {
