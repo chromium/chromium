@@ -6,7 +6,7 @@ desc: |-
 
   If this policy contains a value of '<ph name="ORGANIZATIONS_NAME">organizations</ph>', work or school accounts can be used to sign-in.
 
-  If this policy contains a value of '<ph name="CONSUMER_NAME">consumer</ph>', personal <ph name="MICROSOFT_NAME">Microsoft</ph> accounts can be used to sign-in.
+  If this policy contains a value of '<ph name="CONSUMERS_NAME">consumers</ph>', personal <ph name="MICROSOFT_NAME">Microsoft</ph> accounts can be used to sign-in.
 
   If this policy contains domain names or tenant IDs, accounts from these domain names or tenant IDs (see https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints) can be used to sign-in.
 
