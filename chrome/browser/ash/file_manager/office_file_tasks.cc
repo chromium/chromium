@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/pref_names.h"
@@ -145,6 +147,14 @@ DriveConnectionStatusToFallbackReason(
   }
 }
 
+bool AnyFileNeedsUploadToDrive(
+    Profile* profile,
+    const std::vector<storage::FileSystemURL>& file_urls) {
+  return !base::ranges::all_of(file_urls, [profile](const auto& url) {
+    return ash::cloud_upload::PathIsOnDriveFS(profile, url.path());
+  });
+}
+
 }  // namespace
 
 void RegisterOfficeProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -195,12 +205,14 @@ bool ExecuteWebDriveOfficeTask(
 
   const drive::util::ConnectionStatus drive_connection_status =
       drive::util::GetDriveConnectionStatus(profile);
-  const std::optional<ash::office_fallback::FallbackReason>
-      opt_fallback_reason =
-          DriveConnectionStatusToFallbackReason(drive_connection_status);
-  if (opt_fallback_reason) {
+  const std::optional<ash::office_fallback::FallbackReason> fallback_reason =
+      DriveConnectionStatusToFallbackReason(drive_connection_status);
+  if (fallback_reason &&
+      (fallback_reason !=
+           ash::office_fallback::FallbackReason::kMeteredConnection ||
+       AnyFileNeedsUploadToDrive(profile, file_urls))) {
     return GetUserFallbackChoice(profile, task, file_urls,
-                                 opt_fallback_reason.value(),
+                                 fallback_reason.value(),
                                  std::move(cloud_open_metrics));
   }
 
