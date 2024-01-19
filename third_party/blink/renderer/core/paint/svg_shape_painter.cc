@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
@@ -36,13 +37,6 @@ static absl::optional<AffineTransform> SetupNonScalingStrokeContext(
   state_saver.Save();
   state_saver.Context().ConcatCTM(non_scaling_stroke_transform.Inverse());
   return non_scaling_stroke_transform;
-}
-
-static SkPathFillType FillRuleFromStyle(const PaintInfo& paint_info,
-                                        const ComputedStyle& style) {
-  return WebCoreWindRuleToSkFillType(paint_info.IsRenderingClipPathAsMaskImage()
-                                         ? style.ClipRule()
-                                         : style.FillRule());
 }
 
 void SVGShapePainter::Paint(const PaintInfo& paint_info) {
@@ -69,72 +63,82 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
             paint_info.context, layout_svg_shape_, paint_info.phase)) {
       SVGDrawingRecorder recorder(paint_info.context, layout_svg_shape_,
                                   paint_info.phase);
-      const ComputedStyle& style = layout_svg_shape_.StyleRef();
-
-      bool should_anti_alias =
-          style.ShapeRendering() != EShapeRendering::kCrispedges &&
-          style.ShapeRendering() != EShapeRendering::kOptimizespeed;
-
-      const PaintOrderArray paint_order(style.PaintOrder());
-      for (unsigned i = 0; i < 3; i++) {
-        switch (paint_order[i]) {
-          case PT_FILL: {
-            cc::PaintFlags fill_flags;
-            if (!SVGObjectPainter(layout_svg_shape_)
-                     .PreparePaint(paint_info.GetPaintFlags(), style,
-                                   kApplyToFillMode, fill_flags)) {
-              break;
-            }
-            fill_flags.setAntiAlias(should_anti_alias);
-            FillShape(paint_info.context, fill_flags,
-                      FillRuleFromStyle(paint_info, style));
-            break;
-          }
-          case PT_STROKE:
-            if (style.HasVisibleStroke()) {
-              GraphicsContextStateSaver state_saver(paint_info.context, false);
-              absl::optional<AffineTransform> non_scaling_transform;
-
-              if (layout_svg_shape_.HasNonScalingStroke()) {
-                // Non-scaling stroke needs to reset the transform back to the
-                // host transform.
-                non_scaling_transform = SetupNonScalingStrokeContext(
-                    layout_svg_shape_, state_saver);
-                if (!non_scaling_transform)
-                  return;
-              }
-
-              cc::PaintFlags stroke_flags;
-              if (!SVGObjectPainter(layout_svg_shape_)
-                       .PreparePaint(
-                           paint_info.GetPaintFlags(), style,
-                           kApplyToStrokeMode, stroke_flags,
-                           base::OptionalToPtr(non_scaling_transform))) {
-                break;
-              }
-              stroke_flags.setAntiAlias(should_anti_alias);
-
-              StrokeData stroke_data;
-              SVGLayoutSupport::ApplyStrokeStyleToStrokeData(
-                  stroke_data, style, layout_svg_shape_,
-                  layout_svg_shape_.DashScaleFactor());
-              stroke_data.SetupPaint(&stroke_flags);
-
-              StrokeShape(paint_info.context, stroke_flags);
-            }
-            break;
-          case PT_MARKERS:
-            PaintMarkers(paint_info);
-            break;
-          default:
-            NOTREACHED();
-            break;
-        }
-      }
+      PaintShape(paint_info);
     }
   }
 
   SVGModelObjectPainter(layout_svg_shape_).PaintOutline(paint_info);
+}
+
+void SVGShapePainter::PaintShape(const PaintInfo& paint_info) {
+  const ComputedStyle& style = layout_svg_shape_.StyleRef();
+  const bool should_anti_alias =
+      style.ShapeRendering() != EShapeRendering::kCrispedges &&
+      style.ShapeRendering() != EShapeRendering::kOptimizespeed;
+
+  if (paint_info.IsRenderingClipPathAsMaskImage()) {
+    cc::PaintFlags clip_flags;
+    clip_flags.setColor(SK_ColorBLACK);
+    clip_flags.setAntiAlias(should_anti_alias);
+    FillShape(paint_info.context, clip_flags, style.ClipRule());
+    return;
+  }
+
+  const PaintOrderArray paint_order(style.PaintOrder());
+  for (unsigned i = 0; i < 3; i++) {
+    switch (paint_order[i]) {
+      case PT_FILL: {
+        cc::PaintFlags fill_flags;
+        if (!SVGObjectPainter(layout_svg_shape_)
+                 .PreparePaint(paint_info.GetPaintFlags(), style,
+                               kApplyToFillMode, fill_flags)) {
+          break;
+        }
+        fill_flags.setAntiAlias(should_anti_alias);
+        FillShape(paint_info.context, fill_flags, style.FillRule());
+        break;
+      }
+      case PT_STROKE:
+        if (style.HasVisibleStroke()) {
+          GraphicsContextStateSaver state_saver(paint_info.context, false);
+          absl::optional<AffineTransform> non_scaling_transform;
+
+          if (layout_svg_shape_.HasNonScalingStroke()) {
+            // Non-scaling stroke needs to reset the transform back to the
+            // host transform.
+            non_scaling_transform =
+                SetupNonScalingStrokeContext(layout_svg_shape_, state_saver);
+            if (!non_scaling_transform) {
+              return;
+            }
+          }
+
+          cc::PaintFlags stroke_flags;
+          if (!SVGObjectPainter(layout_svg_shape_)
+                   .PreparePaint(paint_info.GetPaintFlags(), style,
+                                 kApplyToStrokeMode, stroke_flags,
+                                 base::OptionalToPtr(non_scaling_transform))) {
+            break;
+          }
+          stroke_flags.setAntiAlias(should_anti_alias);
+
+          StrokeData stroke_data;
+          SVGLayoutSupport::ApplyStrokeStyleToStrokeData(
+              stroke_data, style, layout_svg_shape_,
+              layout_svg_shape_.DashScaleFactor());
+          stroke_data.SetupPaint(&stroke_flags);
+
+          StrokeShape(paint_info.context, stroke_flags);
+        }
+        break;
+      case PT_MARKERS:
+        PaintMarkers(paint_info);
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
 }
 
 class PathWithTemporaryWindingRule {
@@ -157,7 +161,8 @@ class PathWithTemporaryWindingRule {
 
 void SVGShapePainter::FillShape(GraphicsContext& context,
                                 const cc::PaintFlags& flags,
-                                SkPathFillType fill_type) {
+                                WindRule wind_rule) {
+  const SkPathFillType sk_fill_type = WebCoreWindRuleToSkFillType(wind_rule);
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
       layout_svg_shape_.StyleRef(), DarkModeFilter::ElementRole::kSVG));
   switch (layout_svg_shape_.GetGeometryType()) {
@@ -175,7 +180,7 @@ void SVGShapePainter::FillShape(GraphicsContext& context,
     default: {
       DCHECK(layout_svg_shape_.HasPath());
       PathWithTemporaryWindingRule path_with_winding(
-          layout_svg_shape_.GetPath(), fill_type);
+          layout_svg_shape_.GetPath(), sk_fill_type);
       context.DrawPath(path_with_winding.GetSkPath(), flags, auto_dark_mode);
     }
   }
