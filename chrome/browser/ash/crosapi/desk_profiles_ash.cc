@@ -73,8 +73,8 @@ void DeskProfilesAsh::OnProfileRemoved(uint64_t profile_id) {
   }
 }
 
-std::vector<ash::LacrosProfileSummary> DeskProfilesAsh::GetProfilesSnapshot()
-    const {
+const std::vector<ash::LacrosProfileSummary>&
+DeskProfilesAsh::GetProfilesSnapshot() const {
   return profiles_;
 }
 

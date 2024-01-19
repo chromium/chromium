@@ -53,7 +53,8 @@ class ASH_PUBLIC_EXPORT DeskProfilesDelegate {
   virtual ~DeskProfilesDelegate() = default;
 
   // Returns a snapshot of the current profiles.
-  virtual std::vector<LacrosProfileSummary> GetProfilesSnapshot() const = 0;
+  virtual const std::vector<LacrosProfileSummary>& GetProfilesSnapshot()
+      const = 0;
 
   // Returns the snapshot of profile by giving profile id.
   virtual const LacrosProfileSummary* GetProfilesSnapshotByProfileId(

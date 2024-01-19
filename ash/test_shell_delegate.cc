@@ -14,6 +14,8 @@
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/clipboard/test_support/test_clipboard_history_controller_delegate_impl.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
+#include "ash/public/cpp/desk_profiles_delegate.h"
+#include "ash/public/cpp/test/test_desk_profiles_delegate.h"
 #include "ash/public/cpp/test/test_nearby_share_delegate.h"
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
@@ -120,6 +122,13 @@ bool TestShellDelegate::ShouldWaitForTouchPressAck(gfx::NativeWindow window) {
 
 int TestShellDelegate::GetBrowserWebUITabStripHeight() {
   return 0;
+}
+
+DeskProfilesDelegate* TestShellDelegate::GetDeskProfilesDelegate() {
+  if (!test_desk_profiles_delegate_) {
+    test_desk_profiles_delegate_ = std::make_unique<TestDeskProfilesDelegate>();
+  }
+  return test_desk_profiles_delegate_.get();
 }
 
 void TestShellDelegate::BindMultiDeviceSetup(
