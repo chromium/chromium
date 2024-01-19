@@ -373,6 +373,10 @@
   self.webContentAreaShowingOverlay = NO;
 }
 
+- (void)overlayPresenterDestroyed:(OverlayPresenter*)presenter {
+  self.webContentAreaOverlayPresenter = nullptr;
+}
+
 #pragma mark - Private
 
 /// Returns a menu for the `navigationItems`.

@@ -1681,6 +1681,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   self.webContentAreaShowingOverlay = NO;
 }
 
+- (void)overlayPresenterDestroyed:(OverlayPresenter*)presenter {
+  self.webContentAreaOverlayPresenter = nullptr;
+}
+
 #pragma mark - OverflowMenuDestinationProvider
 
 - (OverflowMenuDestination*)destinationForDestinationType:
