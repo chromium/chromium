@@ -19,10 +19,8 @@
 
 import {spawn} from 'child_process';
 import {writeFile} from 'fs/promises';
-import {join} from 'path';
 
 import {packageDirectorySync} from 'pkg-dir';
-import * as prettier from 'prettier';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 
@@ -110,18 +108,6 @@ async function runCommand(command, args) {
 async function runCddlConv(file, options) {
   const cddlConv = await runCommand('cddlconv', options);
   let output = `${FILE_HEADER}${cddlConv}`;
-  const config = await prettier.resolveConfig(
-    join(ROOT_DIR, '.prettierrc.cjs')
-  );
-  // # Format twice because the first format doesn't get everything.
-  output = await prettier.format(output, {
-    parser: 'typescript',
-    ...config,
-  });
-  output = await prettier.format(output, {
-    parser: 'typescript',
-    ...config,
-  });
   await writeFile(file, output, 'utf8');
 }
 
