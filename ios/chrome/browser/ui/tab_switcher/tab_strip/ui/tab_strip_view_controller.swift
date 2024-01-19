@@ -25,10 +25,10 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   // The New tab button.
   private let newTabButton: TabStripNewTabButton = TabStripNewTabButton(frame: .zero)
 
-  // Separator views that encapsulate the collection view. They are visible
+  // Decoration views that encapsulate the collection view. They are visible
   // when the collection view can be scrolled.
-  private let leadingSeparatorView: TabStripSeparatorView = TabStripSeparatorView(frame: .zero)
-  private let trailingSeparatorView: TabStripSeparatorView = TabStripSeparatorView(frame: .zero)
+  private let leadingSeparatorView: TabStripDecorationView = TabStripDecorationView(frame: .zero)
+  private let trailingSeparatorView: TabStripDecorationView = TabStripDecorationView(frame: .zero)
 
   // Lastest dragged item. This property is set when the item
   // is long pressed which does not always result in a drag action.
@@ -82,7 +82,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     view.addSubview(collectionView)
 
     // Mirror the layer.
-    trailingSeparatorView.layer.transform = CATransform3DMakeScale(-1, 1, 1)
+    trailingSeparatorView.transform = CGAffineTransformMakeScale(-1, 1)
     view.addSubview(leadingSeparatorView)
     view.addSubview(trailingSeparatorView)
 

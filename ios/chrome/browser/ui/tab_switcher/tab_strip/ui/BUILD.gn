@@ -22,6 +22,7 @@ swift_source_set("swift") {
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
   ]
 }
 

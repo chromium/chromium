@@ -12,9 +12,9 @@ class TabStripLayout: UICollectionViewFlowLayout {
   /// IndexPath of the selected item.
   public var selectedIndexPath: IndexPath?
 
-  /// Separator views for the collection view.
-  public var leadingSeparatorView: TabStripSeparatorView?
-  public var trailingSeparatorView: TabStripSeparatorView?
+  /// Decoration views for the collection view.
+  public var leadingSeparatorView: TabStripDecorationView?
+  public var trailingSeparatorView: TabStripDecorationView?
 
   /// Dynamic size of a tab.
   private var tabCellSize: CGSize = .zero
