@@ -23,7 +23,6 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
@@ -48,7 +47,6 @@
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -256,16 +254,15 @@ std::unique_ptr<TestingProfile> CreateTestingProfile() {
       base::BindRepeating(
           &password_manager::BuildPasswordStore<content::BrowserContext,
                                                 TestPasswordStore>));
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
-    builder.AddTestingFactory(
-        AccountPasswordStoreFactory::GetInstance(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStoreWithArgs<
-                content::BrowserContext, password_manager::TestPasswordStore,
-                password_manager::IsAccountStore>,
-            password_manager::IsAccountStore(true)));
-  }
+  // SetTestingFactory() can be called always, GetForProfile() will still return
+  // null if account storage is disabled.
+  builder.AddTestingFactory(
+      AccountPasswordStoreFactory::GetInstance(),
+      base::BindRepeating(
+          &password_manager::BuildPasswordStoreWithArgs<
+              content::BrowserContext, password_manager::TestPasswordStore,
+              password_manager::IsAccountStore>,
+          password_manager::IsAccountStore(true)));
   builder.AddTestingFactory(
       SyncServiceFactory::GetInstance(),
       base::BindRepeating(

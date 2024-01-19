@@ -251,8 +251,7 @@ class CredentialManagerImplTest : public testing::Test,
     mock_match_helper_ = owning_mock_match_helper.get();
     store_->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
 
-    if (base::FeatureList::IsEnabled(
-            features::kEnablePasswordsAccountStorage)) {
+    if (GetParam()) {
       account_store_ = new TestPasswordStore(IsAccountStore(true));
       account_store_->Init(/*prefs=*/nullptr,
                            /*affiliated_match_helper=*/nullptr);

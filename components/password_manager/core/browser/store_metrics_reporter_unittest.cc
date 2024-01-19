@@ -1094,9 +1094,9 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_MismatchedDuplicates) {
 // StoreMetricsReporter directly.
 TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
   // This test is only relevant when the passwords accounts store is enabled.
-  if (!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
-    return;
-  }
+  base::test::ScopedFeatureList feature_list{
+      features::kEnablePasswordsAccountStorage};
+
   auto profile_store =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   auto account_store =

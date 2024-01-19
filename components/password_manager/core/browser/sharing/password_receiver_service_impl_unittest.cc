@@ -31,6 +31,7 @@ namespace {
 
 using testing::AllOf;
 using testing::Bool;
+using testing::Combine;
 using testing::ElementsAre;
 using testing::Field;
 using testing::IsEmpty;
@@ -132,19 +133,23 @@ PasswordFormToModernIncomingSharingInvitation(const PasswordForm& form) {
 
 }  // namespace
 
-// Test param decides whether the test should use the legacy invitation proto
-// format that represent one credential, or the modern format that represents a
-// group of credentials.
-class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
+// See GetUseLegacyInvitationTestParam() and GetEnableAccountStoreTestParam()
+// for the meaning of the parameters.
+class PasswordReceiverServiceImplTest
+    : public testing::TestWithParam<std::tuple<bool, bool>> {
  public:
   PasswordReceiverServiceImplTest() {
     profile_password_store_ = base::MakeRefCounted<TestPasswordStore>();
     profile_password_store_->Init(/*prefs=*/nullptr,
                                   /*affiliated_match_helper=*/nullptr);
 
-    account_password_store_ = base::MakeRefCounted<TestPasswordStore>();
-    account_password_store_->Init(/*prefs=*/nullptr,
-                                  /*affiliated_match_helper=*/nullptr);
+    feature_list_.InitWithFeatureState(features::kEnablePasswordsAccountStorage,
+                                       GetEnableAccountStoreTestParam());
+    if (GetEnableAccountStoreTestParam()) {
+      account_password_store_ = base::MakeRefCounted<TestPasswordStore>();
+      account_password_store_->Init(/*prefs=*/nullptr,
+                                    /*affiliated_match_helper=*/nullptr);
+    }
 
     password_receiver_service_ = std::make_unique<PasswordReceiverServiceImpl>(
         &pref_service_,
@@ -170,7 +175,9 @@ class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
   }
 
   void TearDown() override {
-    account_password_store_->ShutdownOnUIThread();
+    if (account_password_store_) {
+      account_password_store_->ShutdownOnUIThread();
+    }
     profile_password_store_->ShutdownOnUIThread();
     testing::Test::TearDown();
   }
@@ -185,14 +192,16 @@ class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
 
   sync_pb::IncomingPasswordSharingInvitationSpecifics
   CreateIncomingSharingInvitation() {
-    return GetParam() ? CreateModernIncomingSharingInvitation()
-                      : CreateLegacyIncomingSharingInvitation();
+    return GetUseLegacyInvitationTestParam()
+               ? CreateModernIncomingSharingInvitation()
+               : CreateLegacyIncomingSharingInvitation();
   }
 
   sync_pb::IncomingPasswordSharingInvitationSpecifics
   PasswordFormToIncomingSharingInvitation(const PasswordForm& form) {
-    return GetParam() ? PasswordFormToModernIncomingSharingInvitation(form)
-                      : PasswordFormToLegacyIncomingSharingInvitation(form);
+    return GetUseLegacyInvitationTestParam()
+               ? PasswordFormToModernIncomingSharingInvitation(form)
+               : PasswordFormToLegacyIncomingSharingInvitation(form);
   }
 
   // Returns the origin of the credentials shared in the invitation. If the
@@ -200,7 +209,7 @@ class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
   // first one.
   std::string GetInvitationOrigin(
       const sync_pb::IncomingPasswordSharingInvitationSpecifics& invitation) {
-    if (GetParam()) {
+    if (GetUseLegacyInvitationTestParam()) {
       CHECK(
           invitation.client_only_unencrypted_data().has_password_group_data());
       return invitation.client_only_unencrypted_data()
@@ -217,7 +226,7 @@ class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
   void SetPasswordValueInInvitation(
       const std::u16string& password_value,
       sync_pb::IncomingPasswordSharingInvitationSpecifics& invitation) {
-    if (GetParam()) {
+    if (GetUseLegacyInvitationTestParam()) {
       invitation.mutable_client_only_unencrypted_data()
           ->mutable_password_group_data()
           ->set_password_value(base::UTF16ToUTF8(password_value));
@@ -243,10 +252,19 @@ class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
   TestingPrefServiceSimple& pref_service() { return pref_service_; }
   syncer::TestSyncService& sync_service() { return sync_service_; }
 
+  // Whether the test should use the legacy invitation proto format that
+  // represents one credential, or the modern format that represents a group of
+  // credentials.
+  bool GetUseLegacyInvitationTestParam() { return std::get<0>(GetParam()); }
+
+  // Whether the test should enable the account-scoped PasswordStore.
+  bool GetEnableAccountStoreTestParam() { return std::get<1>(GetParam()); }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple pref_service_;
   syncer::TestSyncService sync_service_;
   scoped_refptr<TestPasswordStore> profile_password_store_;
@@ -256,6 +274,10 @@ class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
 
 TEST_P(PasswordReceiverServiceImplTest,
        ShouldAcceptIncomingInvitationWhenStoreIsEmpty) {
+  if (!GetEnableAccountStoreTestParam()) {
+    return;
+  }
+
   base::HistogramTester histogram_tester;
   sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
       CreateIncomingSharingInvitation();
@@ -349,8 +371,7 @@ TEST_P(PasswordReceiverServiceImplTest,
 TEST_P(
     PasswordReceiverServiceImplTest,
     ShouldAcceptIncomingInvitationInAccountStoreForOptedInAccountStoreUsers) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
+  if (!GetEnableAccountStoreTestParam()) {
     return;
   }
 
@@ -380,8 +401,7 @@ TEST_P(
 TEST_P(PasswordReceiverServiceImplTest,
        ShouldNotAcceptIncomingInvitationForNonOptedInAccountStoreUsers) {
   base::HistogramTester histogram_tester;
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
+  if (!GetEnableAccountStoreTestParam()) {
     return;
   }
 
@@ -621,7 +641,7 @@ TEST_P(PasswordReceiverServiceImplTest,
 
 TEST_P(PasswordReceiverServiceImplTest, ShouldAddAllCredentialsInInvitation) {
   // This test is relevant only for the modern invitation proto format.
-  if (!GetParam()) {
+  if (!GetUseLegacyInvitationTestParam()) {
     return;
   }
   base::HistogramTester histogram_tester;
@@ -689,6 +709,8 @@ TEST_P(PasswordReceiverServiceImplTest, ShouldIgnoreInvalidPasswordForm) {
       1);
 }
 
-INSTANTIATE_TEST_SUITE_P(, PasswordReceiverServiceImplTest, Bool());
+INSTANTIATE_TEST_SUITE_P(,
+                         PasswordReceiverServiceImplTest,
+                         Combine(Bool(), Bool()));
 
 }  // namespace password_manager
