@@ -5,7 +5,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/strings/sys_string_conversions.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "url/gurl.h"

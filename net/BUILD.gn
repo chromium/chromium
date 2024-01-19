@@ -1195,8 +1195,9 @@ component("net") {
 
   if (is_apple) {
     sources += [
+      "base/apple/url_conversions.h",
+      "base/apple/url_conversions.mm",
       "base/mac/url_conversions.h",
-      "base/mac/url_conversions.mm",
       "base/network_change_notifier_apple.h",
       "base/network_change_notifier_apple.mm",
       "base/network_config_watcher_apple.cc",
@@ -2961,7 +2962,7 @@ test("net_unittests") {
   }
 
   if (is_apple) {
-    sources += [ "base/mac/url_conversions_unittest.mm" ]
+    sources += [ "base/apple/url_conversions_unittest.mm" ]
   }
 
   if (is_mac) {
