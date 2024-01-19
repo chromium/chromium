@@ -9,12 +9,12 @@ import './shimless_rma_shared.css.js';
 import './base_page.js';
 import './icons.html.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
-import {enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
+import {ShimlessRmaServiceInterface} from './shimless_rma.mojom-webui.js';
+import {executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 import {getTemplate} from './wrapup_restock_page.html.js';
 
 /**
@@ -24,17 +24,11 @@ import {getTemplate} from './wrapup_restock_page.html.js';
  * the repair if the board is being used to repair another device.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const WrapupRestockPageBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const WrapupRestockPageBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class WrapupRestockPage extends WrapupRestockPageBase {
   static get is() {
-    return 'wrapup-restock-page';
+    return 'wrapup-restock-page' as const;
   }
 
   static get template() {
@@ -44,36 +38,41 @@ export class WrapupRestockPage extends WrapupRestockPageBase {
   static get properties() {
     return {
       /**
-       * Set by shimless_rma.js.
-       * @type {boolean}
+       * Set by shimless_rma.ts.
        */
       allButtonsDisabled: Boolean,
     };
   }
 
+  allButtonsDisabled: boolean;
+  private shimlessRmaService: ShimlessRmaServiceInterface =
+      getShimlessRmaService();
+
   constructor() {
     super();
-    /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService = getShimlessRmaService();
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     focusPageTitle(this);
   }
 
-  /** @protected */
-  onShutdownButtonClicked() {
+  protected onShutdownButtonClicked(): void {
     executeThenTransitionState(
         this, () => this.shimlessRmaService.shutdownForRestock());
   }
 
-  /** @protected */
-  onRestockContinueButtonClicked() {
+  protected onRestockContinueButtonClicked(): void {
     executeThenTransitionState(
         this, () => this.shimlessRmaService.continueFinalizationAfterRestock());
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [WrapupRestockPage.is]: WrapupRestockPage;
   }
 }
 
