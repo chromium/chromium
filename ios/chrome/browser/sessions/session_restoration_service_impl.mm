@@ -620,15 +620,19 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
       const std::string& identifier = info.identifier();
 
       for (const auto web_state_id : detached_web_states) {
-        OrphanInfo orphan_info{.session_id = identifier};
         auto iter = metadata_map.find(web_state_id);
-        if (iter != metadata_map.end()) {
-          orphan_info.metadata = std::move(iter->second);
-          metadata_map.erase(iter);
-        }
+        DCHECK(iter != metadata_map.end());
 
+        OrphanInfo orphan_info{
+            .session_id = identifier,
+            .metadata = std::move(iter->second),
+        };
+
+        DCHECK(!base::Contains(orphaned_map, web_state_id));
         orphaned_map.insert(
             std::make_pair(web_state_id, std::move(orphan_info)));
+
+        metadata_map.erase(iter);
       }
     }
   }
