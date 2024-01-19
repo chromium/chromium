@@ -279,12 +279,16 @@ class PlayerMediator implements InteractionHandler {
 
     @Override
     public void onShouldHideMiniPlayer() {
+        if (mPlayback != null) {
         mCoordinator.hideMiniPlayer();
+        }
     }
 
     @Override
     public void onShouldRestoreMiniPlayer() {
+        if (mPlayback != null) {
         mCoordinator.restoreMiniPlayer();
+        }
     }
 
     private void maybeSeekRelative(long nanos) {

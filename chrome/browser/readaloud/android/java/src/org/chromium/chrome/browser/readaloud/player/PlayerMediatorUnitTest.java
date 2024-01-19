@@ -541,9 +541,29 @@ public class PlayerMediatorUnitTest {
     }
 
     @Test
-    public void testCloseExpandedPlayer() {
+    public void testShouldRestoreMiniPlayer_null() {
+        mMediator.onShouldRestoreMiniPlayer();
+        verify(mPlayerCoordinator, never()).restoreMiniPlayer();
+    }
+
+    @Test
+    public void testShouldRestoreMiniPlayer() {
+        mMediator.setPlayback(mPlayback);
         mMediator.onShouldRestoreMiniPlayer();
         verify(mPlayerCoordinator).restoreMiniPlayer();
+    }
+
+    @Test
+    public void testShouldHideMiniPlayer_null() {
+        mMediator.onShouldHideMiniPlayer();
+        verify(mPlayerCoordinator, never()).hideMiniPlayer();
+    }
+
+    @Test
+    public void testShouldHideMiniPlayer() {
+        mMediator.setPlayback(mPlayback);
+        mMediator.onShouldHideMiniPlayer();
+        verify(mPlayerCoordinator).hideMiniPlayer();
     }
 
     @Test
