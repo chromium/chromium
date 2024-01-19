@@ -56,7 +56,7 @@ using DecidePolicyForDownloadHandler = void (^)(NewDownloadPolicy);
 }
 
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
-     didAddDownloadToSaveToDrive:(web::DownloadTask*)download {
+            wantsToStartDownload:(web::DownloadTask*)download {
 }
 
 @end

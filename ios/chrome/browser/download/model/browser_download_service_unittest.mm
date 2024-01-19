@@ -60,6 +60,36 @@ class StubTabHelper : public TabHelper {
   DownloadTasks tasks_;
 };
 
+// Substitutes DownloadManagerTabHelper for testing. This is necessary since the
+// method used to add a task to the tab helper has a different name.
+template <>
+class StubTabHelper<DownloadManagerTabHelper>
+    : public DownloadManagerTabHelper {
+ public:
+  // Overrides the method from web::WebStateUserData<TabHelper>.
+  template <typename... Args>
+  static void CreateForWebState(web::WebState* web_state, Args&&... args) {
+    web_state->SetUserData(DownloadManagerTabHelper::UserDataKey(),
+                           base::WrapUnique(new StubTabHelper(
+                               web_state, std::forward<Args>(args)...)));
+  }
+
+  // Adds the given task to tasks() lists.
+  void SetCurrentDownload(std::unique_ptr<web::DownloadTask> task) override {
+    tasks_.push_back(std::move(task));
+  }
+
+  // Tasks added via Download() call.
+  using DownloadTasks = std::vector<std::unique_ptr<web::DownloadTask>>;
+  const DownloadTasks& tasks() const { return tasks_; }
+
+  StubTabHelper(web::WebState* web_state)
+      : DownloadManagerTabHelper(web_state) {}
+
+ private:
+  DownloadTasks tasks_;
+};
+
 }  // namespace
 
 // Test fixture for testing BrowserDownloadService class.

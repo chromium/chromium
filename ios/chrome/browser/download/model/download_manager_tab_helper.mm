@@ -34,7 +34,7 @@ DownloadManagerTabHelper::~DownloadManagerTabHelper() {
 
 #pragma mark - Public methods
 
-void DownloadManagerTabHelper::Download(
+void DownloadManagerTabHelper::SetCurrentDownload(
     std::unique_ptr<web::DownloadTask> task) {
   // If downloads are persistent, they cannot be lost once completed.
   if (!task_ || (task_->GetState() == web::DownloadTask::State::kComplete &&
@@ -66,11 +66,9 @@ void DownloadManagerTabHelper::SetDelegate(
   delegate_ = delegate;
 }
 
-void DownloadManagerTabHelper::OnDownloadAddedToSaveToDrive(
-    web::DownloadTask* task) {
+void DownloadManagerTabHelper::StartDownload(web::DownloadTask* task) {
   DCHECK_EQ(task, task_.get());
-  [delegate_ downloadManagerTabHelper:this
-          didAddDownloadToSaveToDrive:task_.get()];
+  [delegate_ downloadManagerTabHelper:this wantsToStartDownload:task_.get()];
 }
 
 #pragma mark - web::WebStateObserver

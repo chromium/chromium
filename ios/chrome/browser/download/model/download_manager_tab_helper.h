@@ -32,8 +32,8 @@ class DownloadManagerTabHelper
 
   ~DownloadManagerTabHelper() override;
 
-  // Asynchronously downloads a file using the given `task`.
-  virtual void Download(std::unique_ptr<web::DownloadTask> task);
+  // Set the current download task for this tab.
+  virtual void SetCurrentDownload(std::unique_ptr<web::DownloadTask> task);
 
   // Returns `true` after Download() was called, `false` after the task was
   // cancelled.
@@ -42,8 +42,8 @@ class DownloadManagerTabHelper
   // Sets the delegate. The tab helper will no-op if the delegate is nil.
   void SetDelegate(id<DownloadManagerTabHelperDelegate> delegate);
 
-  // Starts the current download task and remember to save it to Drive.
-  virtual void OnDownloadAddedToSaveToDrive(web::DownloadTask* task);
+  // Starts the current download task. Asserts that `task == task_`.
+  virtual void StartDownload(web::DownloadTask* task);
 
  protected:
   // Allow subclassing from DownloadManagerTabHelper for testing purposes.

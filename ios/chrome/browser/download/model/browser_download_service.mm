@@ -93,7 +93,7 @@ void BrowserDownloadService::OnDownloadCreated(
         DownloadManagerTabHelper::FromWebState(web_state);
     // TODO(crbug.com/1300151): Investigate why tab_helper is sometimes nil.
     if (tab_helper)
-      tab_helper->Download(std::move(task));
+      tab_helper->SetCurrentDownload(std::move(task));
   }
 }
 

@@ -64,7 +64,7 @@
   DownloadManagerTabHelper* downloadManagerTabHelper =
       DownloadManagerTabHelper::FromWebState(_webState);
   driveTabHelper->AddDownloadToSaveToDrive(_downloadTask, identity);
-  downloadManagerTabHelper->OnDownloadAddedToSaveToDrive(_downloadTask);
+  downloadManagerTabHelper->StartDownload(_downloadTask);
 }
 
 #pragma mark - CRWDownloadTaskObserver

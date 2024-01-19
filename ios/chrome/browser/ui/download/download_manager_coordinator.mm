@@ -230,8 +230,10 @@
 }
 
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
-     didAddDownloadToSaveToDrive:(web::DownloadTask*)download {
+            wantsToStartDownload:(web::DownloadTask*)download {
   DCHECK_EQ(_downloadTask, download);
+  // TODO(crbug.com/1495353): Only record this action if there is a Drive upload
+  // task associated with `download`.
   base::RecordAction(
       base::UserMetricsAction("IOSDownloadStartDownloadToDrive"));
   _mediator.StartDownloading();

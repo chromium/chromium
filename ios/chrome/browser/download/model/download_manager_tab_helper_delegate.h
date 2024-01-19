@@ -47,7 +47,7 @@ typedef NS_ENUM(NSInteger, NewDownloadPolicy) {
 // uploaded once the download has completed. This should lead the delegate to
 // start the download task.
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
-     didAddDownloadToSaveToDrive:(web::DownloadTask*)download;
+            wantsToStartDownload:(web::DownloadTask*)download;
 
 @end
 

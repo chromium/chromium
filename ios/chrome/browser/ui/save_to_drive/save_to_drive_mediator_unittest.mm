@@ -25,7 +25,7 @@ const char kTestMimeType[] = "text/html";
 
 #pragma mark - FakeDownloadManagerTabHelper
 
-// Fake `DownloadManagerTabHelper` to override `OnDownloadAddedToSaveToDrive()`.
+// Fake `DownloadManagerTabHelper` to override `StartDownload()`.
 class FakeDownloadManagerTabHelper final : public DownloadManagerTabHelper {
  public:
   explicit FakeDownloadManagerTabHelper(web::WebState* web_state)
@@ -37,11 +37,11 @@ class FakeDownloadManagerTabHelper final : public DownloadManagerTabHelper {
         std::make_unique<FakeDownloadManagerTabHelper>(web_state));
   }
 
-  void OnDownloadAddedToSaveToDrive(web::DownloadTask* task) override {
-    download_task_added_to_save_to_drive_ = task;
+  void StartDownload(web::DownloadTask* task) override {
+    download_task_started_ = task;
   }
 
-  raw_ptr<web::DownloadTask> download_task_added_to_save_to_drive_ = nullptr;
+  raw_ptr<web::DownloadTask> download_task_started_ = nullptr;
 };
 
 #pragma mark - FakeSaveToDriveCommandsHandler
@@ -148,12 +148,11 @@ TEST_F(SaveToDriveMediatorTest, AddsDownloadToSaveToDrive) {
   id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
   FakeDownloadManagerTabHelper* download_helper = GetDownloadManagerTabHelper();
   DriveTabHelper* drive_helper = GetDriveTabHelper();
-  EXPECT_EQ(nullptr, download_helper->download_task_added_to_save_to_drive_);
+  EXPECT_EQ(nullptr, download_helper->download_task_started_);
   EXPECT_EQ(nullptr,
             drive_helper->GetUploadTaskForDownload(download_task_.get()));
   [mediator_ startDownloadAndSaveToDriveWithIdentity:identity];
-  EXPECT_EQ(download_task_.get(),
-            download_helper->download_task_added_to_save_to_drive_);
+  EXPECT_EQ(download_task_.get(), download_helper->download_task_started_);
   UploadTask* upload_task =
       drive_helper->GetUploadTaskForDownload(download_task_.get());
   EXPECT_NE(nullptr, upload_task);
