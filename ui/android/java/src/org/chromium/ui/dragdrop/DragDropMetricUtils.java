@@ -57,6 +57,31 @@ public class DragDropMetricUtils {
     }
 
     /**
+     * Enum used by Android.DragDrop.Tab.FromStrip.Result, which records the tab drag and drop
+     * results, including successful drops and failed drops with varies reasons. These values are
+     * persisted to logs. Entries should not be renumbered and numeric values should never be
+     * reused.
+     */
+    @IntDef({
+        DragDropTabResult.SUCCESS,
+        DragDropTabResult.IGNORED_TOOLBAR,
+        DragDropTabResult.IGNORED_DIFF_MODEL_NOT_SUPPORTED,
+        DragDropTabResult.IGNORED_TAB_SWITCHER,
+        DragDropTabResult.IGNORED_SAME_INSTANCE,
+        DragDropTabResult.ERROR_TAB_NOT_FOUND,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DragDropTabResult {
+        int SUCCESS = 0;
+        int IGNORED_TOOLBAR = 1;
+        int IGNORED_DIFF_MODEL_NOT_SUPPORTED = 2;
+        int IGNORED_TAB_SWITCHER = 3;
+        int IGNORED_SAME_INSTANCE = 4;
+        int ERROR_TAB_NOT_FOUND = 5;
+        int NUM_ENTRIES = 6;
+    }
+
+    /**
      * Record enumerated histogram Android.DragDrop.Tab.Type.
      *
      * @param dragDropType An enum indicating the drag source and drop target.
@@ -64,5 +89,16 @@ public class DragDropMetricUtils {
     public static void recordTabDragDropType(@DragDropType int dragDropType) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.DragDrop.Tab.Type", dragDropType, DragDropType.NUM_ENTRIES);
+    }
+
+    /**
+     * Record enumerated histogram Android.DragDrop.Tab.FromStrip.Result.
+     *
+     * @param result An enum indicating the tab drag and drop results, including successful drops
+     *     and failed drops with varies reasons.
+     */
+    public static void recordTabDragDropResult(@DragDropTabResult int result) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.DragDrop.Tab.FromStrip.Result", result, DragDropTabResult.NUM_ENTRIES);
     }
 }

@@ -21,6 +21,7 @@ import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropTabResult;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 
 /**
@@ -74,15 +75,22 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                         || mLayoutStateProviderSupplier
                                 .get()
                                 .isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+                    DragDropMetricUtils.recordTabDragDropResult(
+                            DragDropTabResult.IGNORED_TAB_SWITCHER);
                     return false;
                 }
 
                 DragDropGlobalState globalState = DragDropGlobalState.getState(dragEvent);
                 Tab draggedTab = getTabFromGlobalState(globalState);
-                if (globalState == null
-                        || draggedTab == null
-                        || globalState.isDragSourceInstance(
-                                mMultiInstanceManager.getCurrentInstanceId())) {
+                if (globalState == null || draggedTab == null) {
+                    DragDropMetricUtils.recordTabDragDropResult(
+                            DragDropTabResult.ERROR_TAB_NOT_FOUND);
+                    return false;
+                }
+                if (globalState.isDragSourceInstance(
+                        mMultiInstanceManager.getCurrentInstanceId())) {
+                    DragDropMetricUtils.recordTabDragDropResult(
+                            DragDropTabResult.IGNORED_SAME_INSTANCE);
                     return false;
                 }
 

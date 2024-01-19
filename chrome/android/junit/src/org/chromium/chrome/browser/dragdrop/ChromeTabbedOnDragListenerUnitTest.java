@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropTabResult;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 
 import java.lang.ref.WeakReference;
@@ -124,7 +125,12 @@ public class ChromeTabbedOnDragListenerUnitTest {
     @Test
     public void testOnDrag_ActionDrop_TabSwitcher() {
         HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder().expectNoRecords("Android.DragDrop.Tab.Type").build();
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.DragDrop.Tab.FromStrip.Result",
+                                DragDropTabResult.IGNORED_TAB_SWITCHER)
+                        .expectNoRecords("Android.DragDrop.Tab.Type")
+                        .build();
         // Call drag start to set states.
         assertTrue(
                 "Drag started should return true.",
@@ -138,14 +144,18 @@ public class ChromeTabbedOnDragListenerUnitTest {
                 "Action drop should return false",
                 mChromeTabbedOnDragListener.onDrag(
                         mCompositorViewHolder, mockDragEvent(DragEvent.ACTION_DROP, false)));
-        // Verify metric is not recorded.
         histogramExpectation.assertExpected();
     }
 
     @Test
     public void testOnDrag_ActionDrop_SameInstance() {
         HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder().expectNoRecords("Android.DragDrop.Tab.Type").build();
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.DragDrop.Tab.FromStrip.Result",
+                                DragDropTabResult.IGNORED_SAME_INSTANCE)
+                        .expectNoRecords("Android.DragDrop.Tab.Type")
+                        .build();
         // Call drag start to set states.
         assertTrue(
                 "Drag started should return true.",
@@ -159,7 +169,6 @@ public class ChromeTabbedOnDragListenerUnitTest {
                 "Action drop should return false",
                 mChromeTabbedOnDragListener.onDrag(
                         mCompositorViewHolder, mockDragEvent(DragEvent.ACTION_DROP, false)));
-        // Verify metric is not recorded.
         histogramExpectation.assertExpected();
     }
 
@@ -183,7 +192,6 @@ public class ChromeTabbedOnDragListenerUnitTest {
                 "Action drop should return true",
                 mChromeTabbedOnDragListener.onDrag(
                         mCompositorViewHolder, mockDragEvent(DragEvent.ACTION_DROP, false)));
-        // Verify metric is recorded.
         histogramExpectation.assertExpected();
     }
 

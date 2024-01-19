@@ -930,6 +930,20 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="START_STICKY"/>
 </enum>
 
+<enum name="DragDropTabResult">
+  <summary>
+    SUCCESS is recorded during ACTION_DRAG_ENDED. The rest enums are all for
+    failed drops, which are recorded in ACTION_DROP. Also see
+    Android.DragDrop.Tab.FromStrip.Result
+  </summary>
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="IGNORED_TOOLBAR"/>
+  <int value="2" label="IGNORED_DIFF_MODEL_NOT_SUPPORTED"/>
+  <int value="3" label="IGNORED_TAB_SWITCHER"/>
+  <int value="4" label="IGNORED_SAME_INSTANCE"/>
+  <int value="5" label="ERROR_TAB_NOT_FOUND"/>
+</enum>
+
 <enum name="DragDropType">
   <summary>See Android.DragDrop.Tab.Type</summary>
   <int value="0" label="TAB_STRIP_TO_TAB_STRIP"/>

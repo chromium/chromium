@@ -1210,6 +1210,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DragDrop.Tab.FromStrip.Result"
+    enum="DragDropTabResult" expires_after="2024-04-28">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the tab drag and drop results, including successful drops and failed
+    drops with varies reasons. For failed drops, it is recorded during
+    ACTION_DROP. For successful drops, it is recored during ACTION_DRAG_ENDED.
+    Note that the successful drops count can be recorded more often than
+    Android.DragDrop.Tab.Type, such as reorder within strip or tabs being
+    consumed as text by EditText in native pages.
+  </summary>
+</histogram>
+
 <histogram name="Android.DragDrop.Tab.Type" enum="DragDropType"
     expires_after="2024-04-28">
   <owner>shuyng@google.com</owner>

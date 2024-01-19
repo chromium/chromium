@@ -47,6 +47,7 @@ import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropGlobalState.TrackerToken;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropTabResult;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.widget.Toast;
 
@@ -236,10 +237,12 @@ public class TabDragSource implements View.OnDragListener {
                 }
                 break;
             case DragEvent.ACTION_DROP:
-                res =
-                        didOccurInTabStrip(dragEvent.getY())
-                                ? onDrop(dragEvent.getX(), dragEvent)
-                                : false;
+                if (didOccurInTabStrip(dragEvent.getY())) {
+                    res = onDrop(dragEvent.getX(), dragEvent);
+                } else {
+                    DragDropMetricUtils.recordTabDragDropResult(DragDropTabResult.IGNORED_TOOLBAR);
+                    res = false;
+                }
                 break;
         }
         mLastAction = dragEvent.getAction();
@@ -318,6 +321,8 @@ public class TabDragSource implements View.OnDragListener {
         if (!tabDraggedBelongToCurrentModel
                 && TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD.getValue()) {
             // Disallow dropping into another model when param enabled.
+            DragDropMetricUtils.recordTabDragDropResult(
+                    DragDropTabResult.IGNORED_DIFF_MODEL_NOT_SUPPORTED);
             return false;
         }
         if (!tabDraggedBelongToCurrentModel) {
@@ -366,6 +371,10 @@ public class TabDragSource implements View.OnDragListener {
         if (sDragTrackerToken != null) {
             DragDropGlobalState.clear(sDragTrackerToken);
             sDragTrackerToken = null;
+        }
+        // Only record for source strip to avoid duplicate.
+        if (dropHandled) {
+            DragDropMetricUtils.recordTabDragDropResult(DragDropTabResult.SUCCESS);
         }
         return true;
     }
