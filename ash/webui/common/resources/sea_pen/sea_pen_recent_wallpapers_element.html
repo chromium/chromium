@@ -88,6 +88,10 @@
   .dropdown-item > iron-icon {
     margin-inline-end: 8px;
   }
+
+  .more-like-this-option {
+    display: none;
+  }
 </style>
 <template is="dom-if" if="[[shouldShowRecentlyUsedWallpapers_(recentImages_)]]">
   <h2 class="wallpaper-collections-heading">[[i18n('seaPenRecentWallpapersHeading')]]</h2>
