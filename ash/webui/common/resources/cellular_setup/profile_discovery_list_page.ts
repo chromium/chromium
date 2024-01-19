@@ -13,25 +13,18 @@ import '//resources/cr_components/localized_link/localized_link.js';
 import './base_page.js';
 import './profile_discovery_list_item.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ESimProfileProperties} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getTemplate} from './profile_discovery_list_page.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ProfileDiscoveryListPageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const ProfileDiscoveryListPageElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
-class ProfileDiscoveryListPageElement extends
+export class ProfileDiscoveryListPageElement extends
     ProfileDiscoveryListPageElementBase {
   static get is() {
-    return 'profile-discovery-list-page';
+    return 'profile-discovery-list-page' as const;
   }
 
   static get template() {
@@ -40,37 +33,24 @@ class ProfileDiscoveryListPageElement extends
 
   static get properties() {
     return {
-      /**
-       * @type {Array<!ESimProfileProperties>}
-       * @private
-       */
       pendingProfileProperties: Array,
 
-      /**
-       * @type {?ESimProfileProperties}
-       * @private
-       */
       selectedProfileProperties: {
         type: Object,
         notify: true,
       },
-
     };
   }
 
-  /**
-   * @param {ESimProfileProperties} profileProperties
-   * @private
-   */
-  isProfilePropertiesSelected_(profileProperties) {
+  pendingProfileProperties: ESimProfileProperties[];
+  selectedProfileProperties: ESimProfileProperties|null;
+
+  private isProfilePropertiesSelected_(profileProperties:
+                                           ESimProfileProperties): boolean {
     return this.selectedProfileProperties === profileProperties;
   }
 
-  /**
-   * @param {Event} e
-   * @private
-   */
-  enterManuallyClicked_(e) {
+  private enterManuallyClicked_(e: CustomEvent): void {
     e.detail.event.preventDefault();
     e.stopPropagation();
     this.selectedProfileProperties = null;

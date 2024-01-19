@@ -8,25 +8,19 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 
-import {assert, assertNotReached} from '//resources/ash/common/assert.js';
-import {focusWithoutInk} from '//resources/ash/common/focus_without_ink_js.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 
 import {getTemplate} from './button_bar.html.js';
-import {Button, ButtonBarState, ButtonState, CellularSetupPageName} from './cellular_types.js';
+import {Button, ButtonBarState, ButtonState} from './cellular_types.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ButtonBarElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const ButtonBarElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class ButtonBarElement extends ButtonBarElementBase {
   static get is() {
-    return 'button-bar';
+    return 'button-bar' as const;
   }
 
   static get template() {
@@ -37,16 +31,12 @@ export class ButtonBarElement extends ButtonBarElementBase {
     return {
       /**
        * Sets the states of all buttons
-       * @type {!ButtonBarState}
        */
       buttonState: {
         type: Object,
         value: {},
       },
 
-      /**
-       * @type {!Button}
-       */
       Button: {
         type: Object,
         value: Button,
@@ -59,28 +49,21 @@ export class ButtonBarElement extends ButtonBarElementBase {
     };
   }
 
-  /**
-   * @param {!Button} buttonName
-   * @return {boolean}
-   * @private
-   */
-  isButtonHidden_(buttonName) {
+  buttonState: ButtonBarState;
+  forwardButtonLabel: string|undefined;
+
+  private isButtonHidden_(buttonName: Button): boolean {
     const state = this.getButtonBarState_(buttonName);
     return state === ButtonState.HIDDEN;
   }
 
-  /**
-   * @param {!Button} buttonName
-   * @return {boolean}
-   * @private
-   */
-  isButtonDisabled_(buttonName) {
+  private isButtonDisabled_(buttonName: Button): boolean {
     const state = this.getButtonBarState_(buttonName);
     return state === ButtonState.DISABLED;
   }
 
-  focusDefaultButton() {
-    const buttons = this.shadowRoot.querySelectorAll('cr-button');
+  focusDefaultButton(): void {
+    const buttons = this.shadowRoot!.querySelectorAll('cr-button');
     // Focus the first non-disabled, non-hidden button from the end.
     for (let i = buttons.length - 1; i >= 0; i--) {
       const button = buttons.item(i);
@@ -91,36 +74,28 @@ export class ButtonBarElement extends ButtonBarElementBase {
     }
   }
 
-  /** @private */
-  onBackwardButtonClicked_() {
+  private onBackwardButtonClicked_(): void {
     this.dispatchEvent(new CustomEvent('backward-nav-requested', {
       bubbles: true,
       composed: true,
     }));
   }
 
-  /** @private */
-  onCancelButtonClicked_() {
+  private onCancelButtonClicked_(): void {
     this.dispatchEvent(new CustomEvent('cancel-requested', {
       bubbles: true,
       composed: true,
     }));
   }
 
-  /** @private */
-  onForwardButtonClicked_() {
+  private onForwardButtonClicked_(): void {
     this.dispatchEvent(new CustomEvent('forward-nav-requested', {
       bubbles: true,
       composed: true,
     }));
   }
 
-  /**
-   * @param {!Button} button
-   * @returns {!ButtonState|undefined}
-   * @private
-   */
-  getButtonBarState_(button) {
+  private getButtonBarState_(button: Button): ButtonState|undefined {
     assert(this.buttonState);
     switch (button) {
       case Button.BACKWARD:
@@ -131,8 +106,13 @@ export class ButtonBarElement extends ButtonBarElementBase {
         return this.buttonState.forward;
       default:
         assertNotReached();
-        return ButtonState.ENABLED;
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [ButtonBarElement.is]: ButtonBarElement;
   }
 }
 

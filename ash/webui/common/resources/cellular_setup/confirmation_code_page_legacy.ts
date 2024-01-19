@@ -12,26 +12,19 @@ import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './base_page.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {ESimProfileProperties, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getTemplate} from './confirmation_code_page_legacy.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ConfirmationCodePageLegacyElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const ConfirmationCodePageLegacyElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
-class ConfirmationCodePageLegacyElement extends
+export class ConfirmationCodePageLegacyElement extends
     ConfirmationCodePageLegacyElementBase {
   static get is() {
-    return 'confirmation-code-page-legacy';
+    return 'confirmation-code-page-legacy' as const;
   }
 
   static get template() {
@@ -40,9 +33,6 @@ class ConfirmationCodePageLegacyElement extends
 
   static get properties() {
     return {
-      /**
-       * @type {?ESimProfileRemote}
-       */
       profile: {
         type: Object,
         observer: 'onProfileChanged_',
@@ -64,43 +54,35 @@ class ConfirmationCodePageLegacyElement extends
         value: false,
       },
 
-      /**
-       * @type {?ESimProfileProperties}
-       * @private
-       */
       profileProperties_: {
         type: Object,
         value: null,
       },
 
-      /**
-       * @type {boolean}
-       * @private
-       */
       isDarkModeActive_: {
         type: Boolean,
         value: false,
       },
-
     };
   }
 
-  /** @private */
-  onProfileChanged_() {
+  profile?: ESimProfileRemote|null;
+  confirmationCode: string;
+  showError: boolean;
+  showBusy: boolean;
+  private profileProperties_?: ESimProfileProperties|null;
+  private isDarkModeActive_: boolean;
+
+  private async onProfileChanged_(): Promise<void> {
     if (!this.profile) {
       this.profileProperties_ = null;
       return;
     }
-    this.profile.getProperties().then(response => {
-      this.profileProperties_ = response.properties;
-    });
+    const response = await this.profile.getProperties();
+    this.profileProperties_ = response.properties;
   }
 
-  /**
-   * @param {KeyboardEvent} e
-   * @private
-   */
-  onKeyDown_(e) {
+  private onKeyDown_(e: KeyboardEvent): void {
     if (e.key === 'Enter') {
       this.dispatchEvent(new CustomEvent('forward-navigation-requested', {
         bubbles: true,
@@ -110,30 +92,18 @@ class ConfirmationCodePageLegacyElement extends
     e.stopPropagation();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowProfileDetails_() {
+  private shouldShowProfileDetails_(): boolean {
     return !!this.profile;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getProfileName_() {
+  private getProfileName_(): string {
     if (!this.profileProperties_) {
       return '';
     }
     return mojoString16ToString(this.profileProperties_.name);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getProfileImage_() {
+  private getProfileImage_(): string {
     return this.isDarkModeActive_ ?
         'chrome://resources/ash/common/cellular_setup/default_esim_profile_dark.svg' :
         'chrome://resources/ash/common/cellular_setup/default_esim_profile.svg';

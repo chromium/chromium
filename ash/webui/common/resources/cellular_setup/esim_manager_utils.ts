@@ -2,34 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ESimProfileProperties, ESimProfileRemote, EuiccRemote, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getESimManagerRemote} from './mojo_interface_provider.js';
 
 /**
  * Fetches the EUICC's eSIM profiles with status 'Pending'.
- * @param {!EuiccRemote} euicc
- * @return {!Promise<!Array<!ESimProfileRemote>>}
  */
-export function getPendingESimProfiles(euicc) {
-  return euicc.getProfileList().then(response => {
-    return filterByProfileProperties_(response.profiles, properties => {
-      return properties.state === ProfileState.kPending;
-    });
+export async function getPendingESimProfiles(euicc: EuiccRemote):
+    Promise<ESimProfileRemote[]> {
+  const response = await euicc.getProfileList();
+
+  return filterByProfileProperties(response.profiles, properties => {
+    return properties.state === ProfileState.kPending;
   });
 }
 
 /**
  * Fetches the EUICC's eSIM profiles with status not 'Pending'.
- * @param {!EuiccRemote} euicc
- * @return {!Promise<!Array<!ESimProfileRemote>>}
  */
-export function getNonPendingESimProfiles(euicc) {
-  return euicc.getProfileList().then(response => {
-    return filterByProfileProperties_(response.profiles, properties => {
-      return properties.state !== ProfileState.kPending;
-    });
+export async function getNonPendingESimProfiles(euicc: EuiccRemote):
+    Promise<ESimProfileRemote[]> {
+  const response = await euicc.getProfileList();
+
+  return filterByProfileProperties(response.profiles, properties => {
+    return properties.state !== ProfileState.kPending;
   });
 }
 
@@ -37,47 +35,40 @@ export function getNonPendingESimProfiles(euicc) {
  * Filters each profile in profiles by callback, which is given the profile's
  * properties as an argument and returns true or false. Does not guarantee
  * that profiles retains the same order.
- * @private
- * @param {!Array<!ESimProfileRemote>} profiles
- * @param {function(ESimProfileProperties)}
- *     callback
- * @return {!Promise<Array<!ESimProfileRemote>>}
  */
-function filterByProfileProperties_(profiles, callback) {
-  const profilePromises = profiles.map(profile => {
-    return profile.getProperties().then(response => {
-      if (!callback(response.properties)) {
-        return null;
-      }
-      return profile;
-    });
-  });
-  return Promise.all(profilePromises).then(profiles => {
-    return profiles.filter(profile => {
-      return profile !== null;
-    });
-  });
+async function filterByProfileProperties(
+    profiles: ESimProfileRemote[],
+    callback: (properties: ESimProfileProperties) => boolean):
+        Promise<ESimProfileRemote[]> {
+  const filteredProfiles: ESimProfileRemote[] = [];
+
+  for (const profile of profiles) {
+    const response = await profile.getProperties();
+
+    if (callback(response.properties)) {
+      filteredProfiles.push(profile);
+    }
+  }
+  return filteredProfiles;
 }
 
-/**
- * @return {!Promise<number>}
- */
-export function getNumESimProfiles() {
-  return getEuicc()
-      .then(euicc => {
-        return euicc.getProfileList();
-      })
-      .then(response => {
-        return response.profiles.length;
-      });
+export async function getNumESimProfiles(): Promise<number> {
+  const euicc = await getEuicc();
+  if (!euicc) {
+    return 0;
+  }
+  const response = await euicc.getProfileList();
+  if (!response || !response.profiles) {
+    return 0;
+  }
+  return response.profiles.length;
 }
 
 /**
  * Returns the Euicc that should be used for eSim operations or null
  * if there is none available.
- * @return {!Promise<?EuiccRemote>}
  */
-export async function getEuicc() {
+export async function getEuicc(): Promise<EuiccRemote|null> {
   const eSimManagerRemote = getESimManagerRemote();
   const response = await eSimManagerRemote.getAvailableEuiccs();
   if (!response || !response.euiccs) {
@@ -99,14 +90,13 @@ export async function getEuicc() {
 }
 
 /**
- * @param {string} iccid
- * @return {!Promise<?{
- *       profileRemote: ESimProfileRemote,
- *       profileProperties: ESimProfileProperties
- *     }>} Returns a eSIM profile remote and profile properties for given
- *         |iccid|.
+ * Returns a eSIM profile remote and profile properties for given
+ * |iccid|.
  */
-async function getESimProfileDetails(iccid) {
+async function getESimProfileDetails(iccid: string):
+    Promise<{profileRemote: ESimProfileRemote,
+             profileProperties: ESimProfileProperties,
+            }|null> {
   if (!iccid) {
     return null;
   }
@@ -135,10 +125,9 @@ async function getESimProfileDetails(iccid) {
 /**
  * Returns the eSIM profile with iccid in the first EUICC or null if none
  * is found.
- * @param {string} iccid
- * @return {!Promise<?ESimProfileRemote>}
  */
-export async function getESimProfile(iccid) {
+export async function getESimProfile(iccid: string):
+    Promise<ESimProfileRemote|null> {
   const details = await getESimProfileDetails(iccid);
   if (!details) {
     return null;
@@ -149,10 +138,9 @@ export async function getESimProfile(iccid) {
 /**
  * Returns properties for eSIM profile with iccid in the first EUICC or null
  * if none is found.
- * @param {string} iccid
- * @return {!Promise<?ESimProfileProperties>}
  */
-export async function getESimProfileProperties(iccid) {
+export async function getESimProfileProperties(iccid: string):
+    Promise<ESimProfileProperties|null> {
   const details = await getESimProfileDetails(iccid);
   if (!details) {
     return null;

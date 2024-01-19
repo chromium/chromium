@@ -10,26 +10,24 @@ import './button_bar.js';
 import './psim_flow_ui.js';
 import './esim_flow_ui.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ButtonBarElement} from './button_bar.js';
 import {getTemplate} from './cellular_setup.html.js';
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {ButtonBarState, CellularSetupPageName} from './cellular_types.js';
 import {EsimFlowUiElement} from './esim_flow_ui.js';
 import {PsimFlowUiElement} from './psim_flow_ui.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const CellularSetupElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+export interface CellularSetupElement {
+  $: {
+    buttonBar: ButtonBarElement,
+  };
+}
 
-/** @polymer */
-class CellularSetupElement extends CellularSetupElementBase {
+export class CellularSetupElement extends PolymerElement {
   static get is() {
-    return 'cellular-setup';
+    return 'cellular-setup' as const;
   }
 
   static get template() {
@@ -38,7 +36,6 @@ class CellularSetupElement extends CellularSetupElementBase {
 
   static get properties() {
     return {
-      /** @type {!CellularSetupDelegate} */
       delegate: Object,
 
       /**
@@ -63,13 +60,11 @@ class CellularSetupElement extends CellularSetupElementBase {
 
       /**
        * Name of the currently displayed sub-page.
-       * @private {!CellularSetupPageName|null}
        */
       currentPageName: String,
 
       /**
        * Current user selected setup flow page name.
-       * @private {!CellularSetupPageName|null}
        */
       selectedFlow_: {
         type: String,
@@ -78,7 +73,6 @@ class CellularSetupElement extends CellularSetupElementBase {
 
       /**
        * Button bar button state.
-       * @private {!ButtonBarState}
        */
       buttonState_: {
         type: Object,
@@ -87,8 +81,6 @@ class CellularSetupElement extends CellularSetupElementBase {
 
       /**
        * DOM Element corresponding to the visible page.
-       *
-       * @private {!PsimFlowUiElement|!EsimFlowUiElement}
        */
       currentPage_: {
         type: Object,
@@ -97,17 +89,23 @@ class CellularSetupElement extends CellularSetupElementBase {
 
       /**
        * Text for the button_bar's 'Forward' button.
-       * @private {string}
        */
       forwardButtonLabel_: {
         type: String,
       },
-
     };
   }
 
-  /** @override */
-  connectedCallback() {
+  delegate: CellularSetupDelegate;
+  flowPsimBanner: string;
+  flowHeader: string;
+  currentPageName: CellularSetupPageName|null;
+  private selectedFlow_: CellularSetupPageName|null;
+  private buttonState_: ButtonBarState;
+  private currentPage_: PsimFlowUiElement|EsimFlowUiElement;
+  private forwardButtonLabel_: string;
+
+  override connectedCallback() {
     super.connectedCallback();
 
     // By default eSIM flow is selected.
@@ -116,8 +114,7 @@ class CellularSetupElement extends CellularSetupElementBase {
     }
   }
 
-  /** override */
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener(
@@ -128,54 +125,41 @@ class CellularSetupElement extends CellularSetupElementBase {
     this.addEventListener('focus-default-button', this.onFocusDefaultButton_);
   }
 
-  /** @private */
-  onPageChange_() {
+  private onPageChange_(): void {
     if (this.currentPage_) {
       this.flowPsimBanner = '';
       this.currentPage_.initSubflow();
     }
   }
 
-  /** @private */
-  onBackwardNavRequested_() {
+  private onBackwardNavRequested_(): void {
     this.currentPage_.navigateBackward();
   }
 
-  onCancelRequested_() {
+  private onCancelRequested_(): void {
     this.dispatchEvent(new CustomEvent('exit-cellular-setup', {
       bubbles: true,
       composed: true,
     }));
   }
 
-  /** @private */
-  onRetryRequested_() {
+  private onRetryRequested_(): void {
     // TODO(crbug.com/1093185): Add try again logic.
   }
 
-  /** @private */
-  onForwardNavRequested_() {
+  private onForwardNavRequested_(): void {
     this.currentPage_.navigateForward();
   }
 
-  /** @private */
-  onFocusDefaultButton_() {
+  private onFocusDefaultButton_(): void {
     this.$.buttonBar.focusDefaultButton();
   }
 
-  /**
-   * @param {string} currentPage
-   * @private
-   */
-  shouldShowPsimFlow_(currentPage) {
+  private shouldShowPsimFlow_(currentPage: string): boolean {
     return currentPage === CellularSetupPageName.PSIM_FLOW_UI;
   }
 
-  /**
-   * @param {string} currentPage
-   * @private
-   */
-  shouldShowEsimFlow_(currentPage) {
+  private shouldShowEsimFlow_(currentPage: string): boolean {
     return currentPage === CellularSetupPageName.ESIM_FLOW_UI;
   }
 }

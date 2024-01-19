@@ -24,23 +24,6 @@ web_component_files = [
   "navigation_view_panel.js",
   "page_toolbar.js",
 
-  "cellular_setup/activation_code_page.js",
-  "cellular_setup/activation_verification_page.js",
-  "cellular_setup/base_page.js",
-  "cellular_setup/button_bar.js",
-  "cellular_setup/cellular_setup.js",
-  "cellular_setup/confirmation_code_page_legacy.js",
-  "cellular_setup/confirmation_code_page.js",
-  "cellular_setup/esim_flow_ui.js",
-  "cellular_setup/final_page.js",
-  "cellular_setup/profile_discovery_consent_page.js",
-  "cellular_setup/profile_discovery_list_item_legacy.js",
-  "cellular_setup/profile_discovery_list_item.js",
-  "cellular_setup/profile_discovery_list_page_legacy.js",
-  "cellular_setup/profile_discovery_list_page.js",
-  "cellular_setup/provisioning_page.js",
-  "cellular_setup/psim_flow_ui.js",
-  "cellular_setup/setup_loading_page.js",
   "multidevice_setup/button_bar.js",
   "multidevice_setup/multidevice_setup.js",
   "multidevice_setup/password_page.js",
@@ -82,13 +65,6 @@ non_web_component_files = [
   "cr.js",
   "cr.m.js",
   "cr_deprecated.js",
-  "cellular_setup/cellular_types.js",
-  "cellular_setup/cellular_setup_delegate.js",
-  "cellular_setup/esim_manager_listener_behavior.js",
-  "cellular_setup/esim_manager_utils.js",
-  "cellular_setup/mojo_interface_provider.js",
-  "cellular_setup/subflow_behavior.js",
-  "cellular_setup/webview_post_util.js",
   "cr_container_shadow_behavior.js",
   "cr_picture/png.js",
   "cr_picture/webcam_utils.js",
@@ -142,6 +118,25 @@ web_component_files_ts = [
   "bluetooth/bluetooth_pairing_request_code_page.ts",
   "bluetooth/bluetooth_pairing_ui.ts",
   "bluetooth/bluetooth_spinner_page.ts",
+
+  "cellular_setup/activation_code_page.ts",
+  "cellular_setup/activation_verification_page.ts",
+  "cellular_setup/base_page.ts",
+  "cellular_setup/button_bar.ts",
+  "cellular_setup/cellular_setup.ts",
+  "cellular_setup/confirmation_code_page_legacy.ts",
+  "cellular_setup/confirmation_code_page.ts",
+  "cellular_setup/esim_flow_ui.ts",
+  "cellular_setup/final_page.ts",
+  "cellular_setup/profile_discovery_consent_page.ts",
+  "cellular_setup/profile_discovery_list_item_legacy.ts",
+  "cellular_setup/profile_discovery_list_item.ts",
+  "cellular_setup/profile_discovery_list_page_legacy.ts",
+  "cellular_setup/profile_discovery_list_page.ts",
+  "cellular_setup/provisioning_page.ts",
+  "cellular_setup/psim_flow_ui.ts",
+  "cellular_setup/setup_loading_page.ts",
+
   "personalization/wallpaper_grid_item_element.ts",
   "quick_unlock/fingerprint_progress.ts",
   "quick_unlock/pin_keyboard.ts",
@@ -164,6 +159,13 @@ non_web_component_files_ts = [
   "bluetooth/bluetooth_types.ts",
   "bluetooth/bluetooth_utils.ts",
   "bluetooth/cros_bluetooth_config.ts",
+  "cellular_setup/cellular_types.ts",
+  "cellular_setup/cellular_setup_delegate.ts",
+  "cellular_setup/esim_manager_listener_mixin.ts",
+  "cellular_setup/esim_manager_utils.ts",
+  "cellular_setup/mojo_interface_provider.ts",
+  "cellular_setup/subflow_mixin.ts",
+  "cellular_setup/webview_post_util.ts",
   "connectivity/mojo_connectivity_provider.ts",
   "hotspot/cros_hotspot_config.ts",
   "hotspot/fake_hotspot_config.ts",
@@ -279,7 +281,7 @@ preprocess_if_expr("preprocess_ts") {
 }
 
 ts_library("build_ts") {
-  tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
+  tsconfig_base = "tsconfig_base.json"
   root_dir = preprocessed_dir
   out_dir = preprocessed_dir
   in_files = non_web_component_files_ts + web_component_files_ts + mojo_files_ts
@@ -294,10 +296,16 @@ ts_library("build_ts") {
     "//ui/webui/resources/mojo:build_ts",
   ]
   definitions = [
-    "//tools/typescript/definitions/quick_unlock_private.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
-    "//tools/typescript/definitions/settings_private.d.ts",
+    "//tools/typescript/definitions/context_menus.d.ts",
+    "//tools/typescript/definitions/extension_types.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+    "//tools/typescript/definitions/quick_unlock_private.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+    "//tools/typescript/definitions/webview_tag.d.ts",
+    "//tools/typescript/definitions/web_request.d.ts",
   ]
   extra_deps = [
     ":generate_definitions",
@@ -313,6 +321,14 @@ ts_library("build_ts") {
     "//chromeos/services/network_config/public/mojom:network_types_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+
+  # TODO(b/314832310): Delete the path_mappings argument and change the imports
+  # to relative imports once ash/webui/common/resources/network migrated to TS.
+  path_mappings =
+      [ "chrome://resources/ash/common/network/*|" +
+        rebase_path(
+            "$root_gen_dir/ash/webui/common/resources/preprocessed/network/*",
+            target_gen_dir) ]
 }
 
 generate_grd("build_html_css_wrapper_files_grdp") {
@@ -444,19 +460,23 @@ generate_definitions_js_files = [
   "bluetooth/bluetooth_device_battery_info.html.js",
   "bluetooth/bluetooth_spinner_page.html.js",
   "cellular_setup/activation_code_page.html.js",
-  "cellular_setup/activation_code_page.js",
-  "cellular_setup/cellular_setup_delegate.js",
+  "cellular_setup/activation_verification_page.html.js",
+  "cellular_setup/base_page.html.js",
+  "cellular_setup/button_bar.html.js",
   "cellular_setup/cellular_setup_icons.html.js",
-  "cellular_setup/cellular_types.js",
-  "cellular_setup/confirmation_code_page.html.js",
-  "cellular_setup/confirmation_code_page.js",
+  "cellular_setup/cellular_setup.html.js",
   "cellular_setup/confirmation_code_page_legacy.html.js",
-  "cellular_setup/confirmation_code_page_legacy.js",
-  "cellular_setup/esim_manager_listener_behavior.js",
-  "cellular_setup/esim_manager_utils.js",
+  "cellular_setup/confirmation_code_page.html.js",
+  "cellular_setup/esim_flow_ui.html.js",
   "cellular_setup/final_page.html.js",
-  "cellular_setup/final_page.js",
-  "cellular_setup/mojo_interface_provider.js",
+  "cellular_setup/profile_discovery_consent_page.html.js",
+  "cellular_setup/profile_discovery_list_item_legacy.html.js",
+  "cellular_setup/profile_discovery_list_item.html.js",
+  "cellular_setup/profile_discovery_list_page_legacy.html.js",
+  "cellular_setup/profile_discovery_list_page.html.js",
+  "cellular_setup/provisioning_page.html.js",
+  "cellular_setup/psim_flow_ui.html.js",
+  "cellular_setup/setup_loading_page.html.js",
   "cr_deprecated.js",
   "cr_picture/png.js",
   "cr_picture/webcam_utils.js",
@@ -554,16 +574,6 @@ checked_in_dts_files = [
   "navigation_selector.d.ts",
   "web_ui_listener_behavior.d.ts",
 
-  "cellular_setup/base_page.d.ts",
-  "cellular_setup/button_bar.d.ts",
-  "cellular_setup/cellular_setup.d.ts",
-  "cellular_setup/esim_flow_ui.d.ts",
-  "cellular_setup/profile_discovery_consent_page.d.ts",
-  "cellular_setup/profile_discovery_list_page_legacy.d.ts",
-  "cellular_setup/profile_discovery_list_page.d.ts",
-  "cellular_setup/provisioning_page.d.ts",
-  "cellular_setup/psim_flow_ui.d.ts",
-  "cellular_setup/setup_loading_page.d.ts",
   "smb_shares/add_smb_share_dialog.d.ts",
   "smb_shares/smb_browser_proxy.d.ts",
 
@@ -606,7 +616,6 @@ copy("copy_checked_in_dts_files") {
 group("closure_compile") {
   deps = [
     ":closure_compile_local",
-    "cellular_setup:closure_compile_module",
     "cr_picture:closure_compile_module",
     "multidevice_setup:closure_compile_module",
     "network:closure_compile_module",

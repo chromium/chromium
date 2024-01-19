@@ -12,25 +12,19 @@ import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './base_page.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {ESimProfileProperties} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getTemplate} from './confirmation_code_page.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ConfirmationCodePageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const ConfirmationCodePageElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
-class ConfirmationCodePageElement extends ConfirmationCodePageElementBase {
+export class ConfirmationCodePageElement extends
+    ConfirmationCodePageElementBase {
   static get is() {
-    return 'confirmation-code-page';
+    return 'confirmation-code-page' as const;
   }
 
   static get template() {
@@ -39,9 +33,6 @@ class ConfirmationCodePageElement extends ConfirmationCodePageElementBase {
 
   static get properties() {
     return {
-      /**
-       * @type {?ESimProfileProperties}
-       */
       profileProperties: Object,
 
       confirmationCode: {
@@ -53,11 +44,11 @@ class ConfirmationCodePageElement extends ConfirmationCodePageElementBase {
     };
   }
 
-  /**
-   * @param {KeyboardEvent} e
-   * @private
-   */
-  onKeyDown_(e) {
+  profileProperties?: ESimProfileProperties;
+  confirmationCode: string;
+  showError: boolean;
+
+  private onKeyDown_(e: KeyboardEvent): void {
     if (e.key === 'Enter') {
       this.dispatchEvent(new CustomEvent('forward-navigation-requested', {
         bubbles: true,
@@ -67,11 +58,7 @@ class ConfirmationCodePageElement extends ConfirmationCodePageElementBase {
     e.stopPropagation();
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getProfileName_() {
+  private getProfileName_(): string {
     if (!this.profileProperties) {
       return '';
     }

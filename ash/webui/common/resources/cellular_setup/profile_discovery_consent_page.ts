@@ -14,24 +14,17 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './base_page.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './profile_discovery_consent_page.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ProfileDiscoveryConsentPageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const ProfileDiscoveryConsentPageElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
-class ProfileDiscoveryConsentPageElement extends
+export class ProfileDiscoveryConsentPageElement extends
     ProfileDiscoveryConsentPageElementBase {
   static get is() {
-    return 'profile-discovery-consent-page';
+    return 'profile-discovery-consent-page' as const;
   }
 
   static get template() {
@@ -44,22 +37,22 @@ class ProfileDiscoveryConsentPageElement extends
         type: Boolean,
         notify: true,
       },
-
     };
   }
 
-  shouldSkipDiscoveryClicked_(e) {
+  shouldSkipDiscovery: boolean;
+
+  private shouldSkipDiscoveryClicked_(e: CustomEvent): void {
     // A place holder href with the value "#" is used to have a compliant link.
     // This prevents the browser from navigating the window to "#"
     e.detail.event.preventDefault();
     e.stopPropagation();
     this.shouldSkipDiscovery = true;
     this.dispatchEvent(new CustomEvent('forward-navigation-requested', {
-      bubbles: true,
-      composed: true,
+      bubbles: true, composed: true,
     }));
   }
 }
 
-customElements.define(
-    ProfileDiscoveryConsentPageElement.is, ProfileDiscoveryConsentPageElement);
+customElements.define(ProfileDiscoveryConsentPageElement.is,
+    ProfileDiscoveryConsentPageElement);

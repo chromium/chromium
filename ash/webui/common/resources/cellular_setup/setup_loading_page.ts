@@ -12,23 +12,13 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './setup_loading_page.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const SetupLoadingPageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
-
-/** @polymer */
-export class SetupLoadingPageElement extends SetupLoadingPageElementBase {
+export class SetupLoadingPageElement extends PolymerElement {
   static get is() {
-    return 'setup-loading-page';
+    return 'setup-loading-page' as const;
   }
 
   static get template() {
@@ -47,10 +37,9 @@ export class SetupLoadingPageElement extends SetupLoadingPageElementBase {
 
       /**
        * Title for page if needed.
-       * @type {?string}
        */
       loadingTitle: {
-        type: Object,
+        type: String,
         value: '',
       },
 
@@ -63,6 +52,10 @@ export class SetupLoadingPageElement extends SetupLoadingPageElementBase {
       },
     };
   }
+
+  loadingMessage: string;
+  loadingTitle: string|null;
+  isSimDetectError: boolean;
 }
 
 customElements.define(SetupLoadingPageElement.is, SetupLoadingPageElement);

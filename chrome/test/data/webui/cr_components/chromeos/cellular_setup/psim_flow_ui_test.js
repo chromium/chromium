@@ -239,7 +239,9 @@ suite('CrComponentsPsimFlowUiTest', function() {
   test('Portal error metric logged', () => {
     const provisioningPage =
         pSimPage.shadowRoot.querySelector('#provisioningPage');
-    provisioningPage.fire('carrier-portal-result', false);
+    provisioningPage.dispatchEvent(new CustomEvent(
+        'carrier-portal-result',
+        {bubbles: true, composed: true, detail: false}));
 
     endFlowAndVerifyResult(PSimSetupFlowResult.CANCELLED_PORTAL_ERROR);
   });

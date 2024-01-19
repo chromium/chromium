@@ -13,27 +13,26 @@ import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import {assert} from '//resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CellularMetadata} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {getTemplate} from './provisioning_page.html.js';
 import {postDeviceDataToWebview} from './webview_post_util.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ProvisioningPageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const ProvisioningPageElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
+export interface ProvisioningPageElement {
+  $: {
+    portalContainer: HTMLDivElement,
+  };
+}
+
 export class ProvisioningPageElement extends ProvisioningPageElementBase {
   static get is() {
-    return 'provisioning-page';
+    return 'provisioning-page' as const;
   }
 
   static get template() {
@@ -42,12 +41,10 @@ export class ProvisioningPageElement extends ProvisioningPageElementBase {
 
   static get properties() {
     return {
-      /** @type {!CellularSetupDelegate} */
       delegate: Object,
 
       /**
        * Whether error state should be shown.
-       * @type {boolean}
        */
       showError: {
         type: Boolean,
@@ -58,7 +55,6 @@ export class ProvisioningPageElement extends ProvisioningPageElementBase {
       /**
        * Metadata used to open carrier provisioning portal. Expected to start as
        * null, then change to a valid object.
-       * @type {?CellularMetadata}
        */
       cellularMetadata: {
         type: Object,
@@ -68,7 +64,6 @@ export class ProvisioningPageElement extends ProvisioningPageElementBase {
 
       /**
        * Whether the carrier portal has completed being loaded.
-       * @private {boolean}
        */
       hasCarrierPortalLoaded_: {
         type: Boolean,
@@ -77,21 +72,21 @@ export class ProvisioningPageElement extends ProvisioningPageElementBase {
 
       /**
        * The last carrier name provided via |cellularMetadata|.
-       * @private {string}
        */
       carrierName_: {
         type: String,
         value: '',
       },
-
     };
   }
 
-  /**
-   * @return {?string}
-   * @private
-   */
-  getPageTitle_() {
+  delegate: CellularSetupDelegate;
+  showError: boolean;
+  cellularMetadata: CellularMetadata|null;
+  private hasCarrierPortalLoaded_: boolean;
+  private carrierName_: string;
+
+  private getPageTitle_(): string|null {
     if (!this.delegate.shouldShowPageTitle()) {
       return null;
     }
@@ -104,43 +99,26 @@ export class ProvisioningPageElement extends ProvisioningPageElementBase {
     return this.i18n('provisioningPageLoadingTitle', this.carrierName_);
   }
 
-  /**
-   * @return {?string}
-   * @private
-   */
-  getPageMessage_() {
+  private getPageMessage_(): string|null {
     if (this.showError) {
       return this.i18n('provisioningPageErrorMessage', this.carrierName_);
     }
     return null;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowSpinner_() {
+  private shouldShowSpinner_(): boolean {
     return !this.showError && !this.hasCarrierPortalLoaded_;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowPortal_() {
+  private shouldShowPortal_(): boolean {
     return !this.showError && this.hasCarrierPortalLoaded_;
   }
 
-  /**
-   * @return {?WebView}
-   * @private
-   */
-  getPortalWebview() {
-    return /** @type {?WebView} */ (this.shadowRoot.querySelector('webview'));
+  private getPortalWebview(): chrome.webviewTag.WebView|null {
+    return this.shadowRoot!.querySelector('webview');
   }
 
-  /** @private */
-  onCellularMetadataChanged_() {
+  private onCellularMetadataChanged_(): void {
     // Once |cellularMetadata| has been set, load the carrier provisioning page.
     if (this.cellularMetadata) {
       this.carrierName_ = this.cellularMetadata.carrier;
@@ -153,13 +131,12 @@ export class ProvisioningPageElement extends ProvisioningPageElementBase {
     this.resetPage_();
   }
 
-  /** @private */
-  loadPortal_() {
+  private loadPortal_(): void {
     assert(!!this.cellularMetadata);
     assert(!this.getPortalWebview());
 
     const portalWebview =
-        /** @type {!WebView} */ (document.createElement('webview'));
+        (document.createElement('webview')) as chrome.webviewTag.WebView;
     this.$.portalContainer.appendChild(portalWebview);
 
     portalWebview.addEventListener(
@@ -182,8 +159,7 @@ export class ProvisioningPageElement extends ProvisioningPageElementBase {
     portalWebview.src = this.cellularMetadata.paymentUrl.url;
   }
 
-  /** @private */
-  resetPage_() {
+  private resetPage_(): void {
     this.hasCarrierPortalLoaded_ = false;
 
     // Remove the portal from the DOM if it exists.
@@ -193,13 +169,11 @@ export class ProvisioningPageElement extends ProvisioningPageElementBase {
     }
   }
 
-  /** @private */
-  onPortalLoadAbort_(event) {
+  private onPortalLoadAbort_(): void {
     this.showError = true;
   }
 
-  /** @private */
-  onPortalLoadStop_() {
+  private onPortalLoadStop_(): void {
     if (this.hasCarrierPortalLoaded_) {
       return;
     }
@@ -210,38 +184,41 @@ export class ProvisioningPageElement extends ProvisioningPageElementBase {
 
     // When the portal loads, it expects to receive a message from this frame
     // alerting it that loading has completed successfully.
-    this.getPortalWebview().contentWindow.postMessage(
-        {msg: 'loadedInWebview'}, this.cellularMetadata.paymentUrl.url);
+    const portalWebview = this.getPortalWebview();
+    assert(!!portalWebview);
+    const contentWindow = portalWebview.contentWindow;
+    assert(!!contentWindow);
+    contentWindow.postMessage(
+        {msg: 'loadedInWebview'}, this.cellularMetadata!.paymentUrl?.url);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onMessageReceived_(event) {
-    const messageType = /** @type {string} */ (event.data.type);
-    const status = /** @type {string} */ (event.data.status);
+  private onMessageReceived_(event: MessageEvent) {
+    const messageType = (event.data.type) as string;
+    const status = (event.data.status) as string;
 
     // The <webview> requested information about this device. Reply by posting a
     // message back to it.
     if (messageType === 'requestDeviceInfoMsg') {
-      this.getPortalWebview().contentWindow.postMessage(
+      const portalWebview = this.getPortalWebview();
+      assert(!!portalWebview);
+      const contentWindow = portalWebview.contentWindow;
+      assert(!!contentWindow);
+      contentWindow.postMessage(
           {
-            carrier: this.cellularMetadata.carrier,
-            MEID: this.cellularMetadata.meid,
-            IMEI: this.cellularMetadata.imei,
-            MDN: this.cellularMetadata.mdn,
+            carrier: this.cellularMetadata!.carrier,
+            MEID: this.cellularMetadata!.meid,
+            IMEI: this.cellularMetadata!.imei,
+            MDN: this.cellularMetadata!.mdn,
           },
-          this.cellularMetadata.paymentUrl.url);
+          this.cellularMetadata!.paymentUrl?.url);
       return;
     }
 
     // The <webview> provided an update on the status of the activation attempt.
     if (messageType === 'reportTransactionStatusMsg') {
       const success = status === 'ok';
-      this.dispatchEvent(new CustomEvent(
-          'on-carrier-portal-result',
-          {bubbles: true, composed: true, detail: success}));
+      this.dispatchEvent(new CustomEvent('on-carrier-portal-result', {
+          bubbles: true, composed: true, detail: success}));
       return;
     }
   }

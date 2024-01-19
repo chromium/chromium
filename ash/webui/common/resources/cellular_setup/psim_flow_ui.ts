@@ -7,67 +7,65 @@ import './provisioning_page.js';
 import './final_page.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
-import {assert, assertNotReached} from '//resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ActivationDelegateInterface, ActivationDelegateReceiver, ActivationResult, CarrierPortalHandlerRemote, CarrierPortalStatus, CellularMetadata, CellularSetup_StartActivation_ResponseParams, CellularSetupRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+
+import {ActivationDelegateReceiver, ActivationResult, CarrierPortalHandlerRemote, CarrierPortalStatus, CellularMetadata, CellularSetupRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {ButtonState} from './cellular_types.js';
 import {FinalPageElement} from './final_page.js';
 import {getCellularSetupRemote} from './mojo_interface_provider.js';
-import {ProvisioningPageElement} from './provisioning_page.js';
 import {getTemplate} from './psim_flow_ui.html.js';
+import {SubflowMixin} from './subflow_mixin.js';
 import {SetupLoadingPageElement} from './setup_loading_page.js';
-import {SubflowBehavior} from './subflow_behavior.js';
+import {ProvisioningPageElement} from './provisioning_page.js';
 
-/** @enum {string} */
-export const PSimPageName = {
-  SIM_DETECT: 'simDetectPage',
-  PROVISIONING: 'provisioningPage',
-  FINAL: 'finalPage',
-};
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export enum PSimPageName {
+  SIM_DETECT = 'simDetectPage',
+  PROVISIONING = 'provisioningPage',
+  FINAL = 'finalPage',
+}
 
-/** @enum {string} */
-export const PSimUIState = {
-  IDLE: 'idle',
-  STARTING_ACTIVATION: 'starting-activation',
-  WAITING_FOR_ACTIVATION_TO_START: 'waiting-for-activation-to-start',
-  TIMEOUT_START_ACTIVATION: 'timeout-start-activation',
-  FINAL_TIMEOUT_START_ACTIVATION: 'final-timeout-start-activation',
-  WAITING_FOR_PORTAL_TO_LOAD: 'waiting-for-portal-to-load',
-  TIMEOUT_PORTAL_LOAD: 'timeout-portal-load',
-  WAITING_FOR_USER_PAYMENT: 'waiting-for-user-payment',
-  WAITING_FOR_ACTIVATION_TO_FINISH: 'waiting-for-activation-to-finish',
-  TIMEOUT_FINISH_ACTIVATION: 'timeout-finish-activation',
-  ACTIVATION_SUCCESS: 'activation-success',
-  ALREADY_ACTIVATED: 'already-activated',
-  ACTIVATION_FAILURE: 'activation-failure',
-};
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export enum PSimUIState {
+  IDLE = 'idle',
+  STARTING_ACTIVATION = 'starting-activation',
+  WAITING_FOR_ACTIVATION_TO_START = 'waiting-for-activation-to-start',
+  TIMEOUT_START_ACTIVATION = 'timeout-start-activation',
+  FINAL_TIMEOUT_START_ACTIVATION = 'final-timeout-start-activation',
+  WAITING_FOR_PORTAL_TO_LOAD = 'waiting-for-portal-to-load',
+  TIMEOUT_PORTAL_LOAD = 'timeout-portal-load',
+  WAITING_FOR_USER_PAYMENT = 'waiting-for-user-payment',
+  WAITING_FOR_ACTIVATION_TO_FINISH = 'waiting-for-activation-to-finish',
+  TIMEOUT_FINISH_ACTIVATION = 'timeout-finish-activation',
+  ACTIVATION_SUCCESS = 'activation-success',
+  ALREADY_ACTIVATED = 'already-activated',
+  ACTIVATION_FAILURE = 'activation-failure',
+}
 
-/**
- * The reason that caused the user to exit the PSim Setup flow.
- * These values are persisted to logs. Entries should not be renumbered
- * and numeric values should never be reused.
- * @enum {number}
- */
-export const PSimSetupFlowResult = {
-  SUCCESS: 0,
-  CANCELLED: 1,
-  CANCELLED_NO_SIM: 2,
-  CANCELLED_COLD_SIM_DEFER: 3,
-  CANCELLED_CARRIER_PORTAL: 4,
-  CANCELLED_PORTAL_ERROR: 5,
-  CARRIER_PORTAL_TIMEOUT: 6,
-  NETWORK_ERROR: 7,
-};
+// The reason that caused the user to exit the PSim Setup flow.
+// These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export enum PSimSetupFlowResult {
+  SUCCESS = 0,
+  CANCELLED = 1,
+  CANCELLED_NO_SIM = 2,
+  CANCELLED_COLD_SIM_DEFER = 3,
+  CANCELLED_CARRIER_PORTAL = 4,
+  CANCELLED_PORTAL_ERROR = 5,
+  CARRIER_PORTAL_TIMEOUT = 6,
+  NETWORK_ERROR = 7,
+}
 
 /**
- * @param {!PSimUIState} state
- * @return {?number} The time delta, in ms, for the timeout corresponding to
- *     |state|. If no timeout is applicable for this state, null is returned.
+ * The time delta, in ms, for the timeout corresponding to |state|. If no
+ * timeout is applicable for this state, null is returned.
  */
-function getTimeoutMsForPSimUIState(state) {
+function getTimeoutMsForPSimUIState(state: PSimUIState): number|null {
   // In some cases, starting activation may require power-cycling the device's
   // modem, a process that can take several seconds.
   if (state === PSimUIState.STARTING_ACTIVATION) {
@@ -90,7 +88,6 @@ function getTimeoutMsForPSimUIState(state) {
 
 /**
  * The maximum tries allowed to detect the SIM.
- * @private {number}
  */
 const MAX_START_ACTIVATION_ATTEMPTS = 3;
 
@@ -109,19 +106,11 @@ export const FAILED_PSIM_SETUP_DURATION_METRIC_NAME =
  * contains navigation buttons and sub-pages corresponding to each step of the
  * flow.
  */
+const PsimFlowUiElementBase = SubflowMixin(I18nMixin(PolymerElement));
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const PsimFlowUiElementBase =
-    mixinBehaviors([I18nBehavior, SubflowBehavior], PolymerElement);
-
-/** @polymer */
 export class PsimFlowUiElement extends PsimFlowUiElementBase {
   static get is() {
-    return 'psim-flow-ui';
+    return 'psim-flow-ui' as const;
   }
 
   static get template() {
@@ -130,13 +119,11 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
 
   static get properties() {
     return {
-      /** @type {!CellularSetupDelegate} */
       delegate: Object,
 
       /**
        * Carrier name; used in dialog title to show the current carrier
        * name being setup
-       * @type {string}
        */
       nameOfCarrierPendingSetup: {
         type: String,
@@ -150,10 +137,6 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
         notify: true,
       },
 
-      /**
-       * @type {!PSimUIState}
-       * @private
-       */
       state_: {
         type: String,
         value: PSimUIState.IDLE,
@@ -162,8 +145,6 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
 
       /**
        * Element name of the current selected sub-page.
-       * @type {!PSimPageName}
-       * @private
        */
       selectedPSimPageName_: {
         type: String,
@@ -173,21 +154,17 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
 
       /**
        * DOM Element for the current selected sub-page.
-       * @private {!SetupLoadingPageElement|!ProvisioningPageElement|
-       *           !FinalPageElement}
        */
       selectedPage_: Object,
 
       /**
        * Whether error state should be shown for the current page.
-       * @private {boolean}
        */
       showError_: {type: Boolean, value: false},
 
       /**
        * Cellular metadata received via the onActivationStarted() callback. If
        * that callback has not occurred, this field is null.
-       * @private {?CellularMetadata}
        */
       cellularMetadata_: {
         type: Object,
@@ -196,72 +173,75 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
 
       /**
        * The current number of tries to detect the SIM.
-       * @private {number}
        */
       startActivationAttempts_: {
         type: Number,
         value: 0,
       },
-
     };
   }
 
-  /** @override */
+  delegate: CellularSetupDelegate;
+  nameOfCarrierPendingSetup: string;
+  forwardButtonLabel: string;
+  private state_: PSimUIState;
+  private selectedPSimPageName_: PSimPageName;
+  private selectedPage_:
+      SetupLoadingPageElement|ProvisioningPageElement|FinalPageElement;
+  private showError_: boolean;
+  private cellularMetadata_: CellularMetadata|null;
+  private startActivationAttempts_: number;
+
+  /**
+   * Provides an interface to the CellularSetup Mojo service.
+   */
+  private cellularSetupRemote_: CellularSetupRemote|null = null;
+
+  /**
+   * Delegate responsible for routing activation started/finished events.
+   */
+  private activationDelegateReceiver_: ActivationDelegateReceiver|null = null;
+
+  /**
+   * The timeout ID corresponding to a timeout for the current state. If no
+   * timeout is active, this value is null.
+   */
+  private currentTimeoutId_: number|null = null;
+
+  /**
+   * Handler used to communicate state updates back to the CellularSetup
+   * service.
+   */
+  private carrierPortalHandler_: CarrierPortalHandlerRemote|null = null;
+
+  /**
+   * Whether there was a carrier portal error.
+   */
+  private didCarrierPortalResultFail_: boolean = false;
+
+  /**
+   * The function used to initiate a timer. Can be overwritten in tests.
+   */
+  private setTimeoutFunction_: Function = setTimeout.bind(window);
+
+  /**
+   * The time at which the PSim flow is attached.
+   */
+  private timeOnAttached_: Date|null = null;
+
   constructor() {
     super();
 
-    /**
-     * Provides an interface to the CellularSetup Mojo service.
-     * @private {?CellularSetupRemote}
-     */
     this.cellularSetupRemote_ = getCellularSetupRemote();
-
-    /**
-     * Delegate responsible for routing activation started/finished events.
-     * @private {?ActivationDelegateReceiver}
-     */
-    this.activationDelegateReceiver_ = null;
-
-    /**
-     * The timeout ID corresponding to a timeout for the current state. If no
-     * timeout is active, this value is null.
-     * @private {?number}
-     */
-    this.currentTimeoutId_ = null;
-
-    /**
-     * Handler used to communicate state updates back to the CellularSetup
-     * service.
-     * @private {?CarrierPortalHandlerRemote}
-     */
-    this.carrierPortalHandler_ = null;
-
-    /**
-     * Whether there was a carrier portal error.
-     * @private {boolean}
-     */
-    this.didCarrierPortalResultFail_ = false;
-
-    /**
-     * The function used to initiate a timer. Can be overwritten in tests.
-     * @private {function(Function, number)}
-     */
-    this.setTimeoutFunction_ = setTimeout.bind(window);
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
-    /**
-     * The time at which the PSim flow is attached.
-     * @private {?Date}
-     */
     this.timeOnAttached_ = new Date();
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     let resultCode = null;
@@ -306,7 +286,7 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
         PSIM_SETUP_RESULT_METRIC_NAME, resultCode,
         Object.keys(PSimSetupFlowResult).length);
 
-    const elapsedTimeMs = new Date() - this.timeOnAttached_;
+    const elapsedTimeMs = Date.now() - this.timeOnAttached_!.getTime();
     if (resultCode === PSimSetupFlowResult.SUCCESS) {
       chrome.metricsPrivate.recordLongTime(
           SUCCESSFUL_PSIM_SETUP_DURATION_METRIC_NAME, elapsedTimeMs);
@@ -319,24 +299,22 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
 
   /**
    * Overrides ActivationDelegateInterface.
-   * @param {!CellularMetadata} metadata
-   * @private
    */
-  onActivationStarted(metadata) {
+  onActivationStarted(metadata: CellularMetadata): void {
     this.clearTimer_();
     this.cellularMetadata_ = metadata;
     this.state_ = PSimUIState.WAITING_FOR_PORTAL_TO_LOAD;
   }
 
-  initSubflow() {
+  override initSubflow(): void {
     this.state_ = PSimUIState.STARTING_ACTIVATION;
     this.startActivationAttempts_ = 0;
     this.updateButtonBarState_();
     this.dispatchEvent(new CustomEvent(
-        'focus-default-button', {bubbles: true, composed: true}));
+      'focus-default-button', {bubbles: true, composed: true}));
   }
 
-  navigateForward() {
+  override navigateForward(): void {
     switch (this.state_) {
       case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
       case PSimUIState.TIMEOUT_PORTAL_LOAD:
@@ -348,6 +326,7 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
       case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
       case PSimUIState.FINAL_TIMEOUT_START_ACTIVATION:
       case PSimUIState.ALREADY_ACTIVATED:
+      case PSimUIState.ACTIVATION_FAILURE:
         this.dispatchEvent(new CustomEvent(
             'exit-cellular-setup', {bubbles: true, composed: true}));
         break;
@@ -356,21 +335,17 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
         break;
       default:
         assertNotReached();
-        break;
     }
   }
 
   /**
    * Sets the function used to initiate a timer.
-   * @param {function(Function, number)}
-   *     timerFunction
    */
-  setTimerFunctionForTest(timerFunction) {
+  setTimerFunctionForTest(timerFunction: Function): void {
     this.setTimeoutFunction_ = timerFunction;
   }
 
-  /** @private */
-  updateButtonBarState_() {
+  private updateButtonBarState_(): void {
     let buttonState;
     switch (this.state_) {
       case PSimUIState.IDLE:
@@ -429,10 +404,8 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
 
   /**
    * Overrides ActivationDelegateInterface.
-   * @param {!ActivationResult} result
-   * @private
    */
-  onActivationFinished(result) {
+  onActivationFinished(result: ActivationResult): void {
     this.closeActivationConnection_();
 
     switch (result) {
@@ -450,8 +423,7 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
     }
   }
 
-  /** @private */
-  getCarrierText() {
+  private getCarrierText(): string {
     if (this.selectedPSimPageName_ === PSimPageName.PROVISIONING &&
         this.cellularMetadata_) {
       return this.cellularMetadata_.carrier;
@@ -459,8 +431,7 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
     return '';
   }
 
-  /** @private */
-  updateShowError_() {
+  private updateShowError_(): void {
     switch (this.state_) {
       case PSimUIState.TIMEOUT_PORTAL_LOAD:
       case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
@@ -473,8 +444,7 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
     }
   }
 
-  /** @private */
-  updateSelectedPage_() {
+  private updateSelectedPage_(): void {
     switch (this.state_) {
       case PSimUIState.IDLE:
       case PSimUIState.STARTING_ACTIVATION:
@@ -500,8 +470,8 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
     }
   }
 
-  /** @private */
-  handlePSimUIStateChange_() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  private handlePSimUIStateChange_(): void {
     this.updateShowError_();
     this.updateSelectedPage_();
 
@@ -523,8 +493,7 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
     this.updateButtonBarState_();
   }
 
-  /** @private */
-  onTimeout_() {
+  private onTimeout_(): void {
     // The activation attempt failed, so close the connection to the service.
     this.closeActivationConnection_();
 
@@ -549,29 +518,21 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
     }
   }
 
-  /** @private */
-  startActivation_() {
+  private startActivation_() {
     assert(!this.activationDelegateReceiver_);
     this.activationDelegateReceiver_ = new ActivationDelegateReceiver(
-        /**
-         * @type {!ActivationDelegateInterface}
-         */
         (this));
 
-    this.cellularSetupRemote_
+    this.cellularSetupRemote_!
         .startActivation(
             this.activationDelegateReceiver_.$.bindNewPipeAndPassRemote())
         .then(
-            /**
-             * @param {!CellularSetup_StartActivation_ResponseParams} params
-             */
             (params) => {
               this.carrierPortalHandler_ = params.observer;
             });
   }
 
-  /** @private */
-  closeActivationConnection_() {
+  private closeActivationConnection_(): void {
     assert(!!this.activationDelegateReceiver_);
     this.activationDelegateReceiver_.$.close();
     this.activationDelegateReceiver_ = null;
@@ -579,34 +540,27 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
     this.cellularMetadata_ = null;
   }
 
-  /** @private */
-  clearTimer_() {
+  private clearTimer_(): void {
     if (this.currentTimeoutId_) {
       clearTimeout(this.currentTimeoutId_);
     }
     this.currentTimeoutId_ = null;
   }
 
-  /** @private */
-  onCarrierPortalLoaded_() {
+  private onCarrierPortalLoaded_(): void {
     this.state_ = PSimUIState.WAITING_FOR_USER_PAYMENT;
-    this.carrierPortalHandler_.onCarrierPortalStatusChange(
+    this.carrierPortalHandler_!.onCarrierPortalStatusChange(
         CarrierPortalStatus.kPortalLoadedWithoutPaidUser);
   }
 
-  /**
-   * @param {!CustomEvent<boolean>} event
-   * @private
-   */
-  onCarrierPortalResult_(event) {
+  private onCarrierPortalResult_(event: CustomEvent<boolean>): void {
     const success = event.detail;
     this.didCarrierPortalResultFail_ = !success;
     this.state_ = success ? PSimUIState.ACTIVATION_SUCCESS :
                             PSimUIState.ACTIVATION_FAILURE;
   }
 
-  /** @return {string} */
-  getLoadingMessage_() {
+  private getLoadingMessage_(): string {
     if (this.state_ === PSimUIState.TIMEOUT_START_ACTIVATION) {
       return this.i18n('simDetectPageErrorMessage');
     } else if (this.state_ === PSimUIState.FINAL_TIMEOUT_START_ACTIVATION) {
@@ -615,14 +569,12 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
     return this.i18n('establishNetworkConnectionMessage');
   }
 
-  /** @return {boolean} */
-  isSimDetectError_() {
+  private isSimDetectError_(): boolean {
     return this.state_ === PSimUIState.TIMEOUT_START_ACTIVATION ||
         this.state_ === PSimUIState.FINAL_TIMEOUT_START_ACTIVATION;
   }
 
-  /** @return {string} */
-  getLoadingTitle_() {
+  private getLoadingTitle_(): string {
     if (this.delegate.shouldShowPageTitle() && this.isSimDetectError_()) {
       return this.i18n('simDetectPageErrorTitle');
     }

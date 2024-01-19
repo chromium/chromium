@@ -8,6 +8,17 @@
  *  New UI: cr_components/chromeos/cellular_setup/cellular_setup.html
  */
 
+declare global {
+  interface HTMLElementEventMap {
+    'loadcommit': CommitEvent;
+  }
+}
+
+interface CommitEvent extends Event {
+  isTopLevel: boolean;
+  url: string;
+}
+
 /**
  * The script executed in the webview that is expected to be initialized
  * using POST request. The script parses the POST data (which is provided as
@@ -67,15 +78,11 @@ const WEBVIEW_REDIRECT_HTML = '<html><body>' +
 /**
  * Handles load commit event in the webview.
  * It runs <code>WEBVIEW_REDIRECT_SCRIPT</code> in the webview.
- * @param {!WebView} webview The target webview element.
- * @param {string} paymentUrl URL to load.
- * @param {string} postData Data to pass.
- * @param {string} webviewSrc The intended webview URL - commit events that
- *     do not match this URL will be ignored.
- * @param {!Object} commitEvent The loadcommit event.
  */
 function initializeWebviewRedirectForm(
-    webview, paymentUrl, postData, webviewSrc, commitEvent) {
+    webview: chrome.webviewTag.WebView, paymentUrl: string, postData: string,
+    webviewSrc: string,
+    commitEvent: CommitEvent): void {
   if (!commitEvent.isTopLevel || commitEvent.url !== webviewSrc) {
     return;
   }
@@ -91,16 +98,16 @@ function initializeWebviewRedirectForm(
 /**
  * Initialized webview using a POST request described in by
  * <code>paymentUrl</code> and <code>postData</code>.
- * @param {!WebView} webview The webview to be initialized.
- * @param {string} paymentUrl URL to load.
- * @param {string} postData Data to pass.
  */
-export function postDeviceDataToWebview(webview, paymentUrl, postData) {
+export function postDeviceDataToWebview(webview: chrome.webviewTag.WebView,
+    paymentUrl: string, postData: string): void {
   const webviewSrc = 'data:text/html;charset=utf-8,' +
       encodeURIComponent(WEBVIEW_REDIRECT_HTML);
   webview.addEventListener(
       'loadcommit',
-      initializeWebviewRedirectForm.bind(
-          this, webview, paymentUrl, postData, webviewSrc));
+      (commitEvent: CommitEvent) => {
+        initializeWebviewRedirectForm(webview, paymentUrl, postData,
+            webviewSrc, commitEvent);
+      });
   webview.src = webviewSrc;
 }

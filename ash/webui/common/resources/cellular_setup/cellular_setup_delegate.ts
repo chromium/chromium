@@ -5,16 +5,15 @@
 /**
  * Interface which provides alternate UI behaviors for the Cellular Setup
  * flows.
- * @interface
  */
-export class CellularSetupDelegate {
+export interface CellularSetupDelegate {
   /**
-   * @return {boolean} true if base page title text should be visible.
+   * Return true if base page title text should be visible.
    */
-  shouldShowPageTitle() {}
+  shouldShowPageTitle(): boolean;
 
   /**
-   * @return {boolean} true if cancel button should be visible.
+   * Return true if cancel button should be visible.
    */
-  shouldShowCancelButton() {}
+  shouldShowCancelButton(): boolean;
 }

@@ -13,13 +13,13 @@ import './profile_discovery_list_page.js';
 import './confirmation_code_page_legacy.js';
 import './confirmation_code_page.js';
 
-import {assert, assertNotReached} from '//resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {hasActiveCellularNetwork} from '//resources/ash/common/network/cellular_utils.js';
-import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
-import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from '//resources/ash/common/network/network_listener_behavior.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {hasActiveCellularNetwork} from 'chrome://resources/ash/common/network/cellular_utils.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {NetworkListenerBehavior} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ESimManagerRemote, ESimOperationResult, ESimProfileProperties, ESimProfileRemote, EuiccRemote, ProfileInstallMethod, ProfileInstallResult, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
@@ -29,52 +29,50 @@ import {ButtonBarState, ButtonState} from './cellular_types.js';
 import {getTemplate} from './esim_flow_ui.html.js';
 import {getEuicc, getPendingESimProfiles} from './esim_manager_utils.js';
 import {getESimManagerRemote} from './mojo_interface_provider.js';
-import {SubflowBehavior} from './subflow_behavior.js';
+import {SubflowMixin} from './subflow_mixin.js';
 
-/** @enum {string} */
-export const ESimPageName = {
-  PROFILE_LOADING: 'profileLoadingPage',
-  PROFILE_DISCOVERY_CONSENT: 'profileDiscoveryConsentPage',
-  PROFILE_DISCOVERY: 'profileDiscoveryPage',
-  PROFILE_DISCOVERY_LEGACY: 'profileDiscoveryPageLegacy',
-  ACTIVATION_CODE: 'activationCodePage',
-  CONFIRMATION_CODE: 'confirmationCodePage',
-  CONFIRMATION_CODE_LEGACY: 'confirmationCodePageLegacy',
-  PROFILE_INSTALLING: 'profileInstallingPage',
-  FINAL: 'finalPage',
-};
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export enum ESimPageName {
+  PROFILE_LOADING = 'profileLoadingPage',
+  PROFILE_DISCOVERY_CONSENT = 'profileDiscoveryConsentPage',
+  PROFILE_DISCOVERY = 'profileDiscoveryPage',
+  PROFILE_DISCOVERY_LEGACY = 'profileDiscoveryPageLegacy',
+  ACTIVATION_CODE = 'activationCodePage',
+  CONFIRMATION_CODE = 'confirmationCodePage',
+  CONFIRMATION_CODE_LEGACY = 'confirmationCodePageLegacy',
+  PROFILE_INSTALLING = 'profileInstallingPage',
+  FINAL = 'finalPage',
+}
 
-/** @enum {string} */
-export const ESimUiState = {
-  PROFILE_SEARCH: 'profile-search',
-  PROFILE_SEARCH_CONSENT: 'profile-search-consent',
-  ACTIVATION_CODE_ENTRY: 'activation-code-entry',
-  ACTIVATION_CODE_ENTRY_READY: 'activation-code-entry-ready',
-  ACTIVATION_CODE_ENTRY_INSTALLING: 'activation-code-entry-installing',
-  CONFIRMATION_CODE_ENTRY: 'confirmation-code-entry',
-  CONFIRMATION_CODE_ENTRY_READY: 'confirmation-code-entry-ready',
-  CONFIRMATION_CODE_ENTRY_INSTALLING: 'confirmation-code-entry-installing',
-  PROFILE_SELECTION: 'profile-selection',
-  PROFILE_SELECTION_INSTALLING: 'profile-selection-installing',
-  SETUP_FINISH: 'setup-finish',
-};
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export enum ESimUiState {
+  PROFILE_SEARCH = 'profile-search',
+  PROFILE_SEARCH_CONSENT = 'profile-search-consent',
+  ACTIVATION_CODE_ENTRY = 'activation-code-entry',
+  ACTIVATION_CODE_ENTRY_READY = 'activation-code-entry-ready',
+  ACTIVATION_CODE_ENTRY_INSTALLING = 'activation-code-entry-installing',
+  CONFIRMATION_CODE_ENTRY = 'confirmation-code-entry',
+  CONFIRMATION_CODE_ENTRY_READY = 'confirmation-code-entry-ready',
+  CONFIRMATION_CODE_ENTRY_INSTALLING = 'confirmation-code-entry-installing',
+  PROFILE_SELECTION = 'profile-selection',
+  PROFILE_SELECTION_INSTALLING = 'profile-selection-installing',
+  SETUP_FINISH = 'setup-finish',
+}
 
-/**
- * The reason that caused the user to exit the ESim Setup flow.
- * These values are persisted to logs. Entries should not be renumbered
- * and numeric values should never be reused.
- * @enum {number}
- */
-export const ESimSetupFlowResult = {
-  SUCCESS: 0,
-  INSTALL_FAIL: 1,
-  CANCELLED_NEEDS_CONFIRMATION_CODE: 2,
-  CANCELLED_INVALID_ACTIVATION_CODE: 3,
-  ERROR_FETCHING_PROFILES: 4,
-  CANCELLED_WITHOUT_ERROR: 5,
-  CANCELLED_NO_PROFILES: 6,
-  NO_NETWORK: 7,
-};
+// The reason that caused the user to exit the ESim Setup flow.
+// These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export enum ESimSetupFlowResult {
+  SUCCESS = 0,
+  INSTALL_FAIL = 1,
+  CANCELLED_NEEDS_CONFIRMATION_CODE = 2,
+  CANCELLED_INVALID_ACTIVATION_CODE = 3,
+  ERROR_FETCHING_PROFILES = 4,
+  CANCELLED_WITHOUT_ERROR = 5,
+  CANCELLED_NO_PROFILES = 6,
+  NO_NETWORK = 7,
+}
 
 export const ESIM_SETUP_RESULT_METRIC_NAME =
     'Network.Cellular.ESim.SetupFlowResult';
@@ -85,24 +83,24 @@ export const SUCCESSFUL_ESIM_SETUP_DURATION_METRIC_NAME =
 export const FAILED_ESIM_SETUP_DURATION_METRIC_NAME =
     'Network.Cellular.ESim.CellularSetup.Failure.Duration';
 
+declare global {
+  interface HTMLElementEventMap {
+    'activation-code-updated':
+        CustomEvent<{activationCode: string|null}>;
+  }
+}
+
 /**
  * Root element for the eSIM cellular setup flow. This element interacts with
  * the CellularSetup service to carry out the esim activation flow.
  */
+const EsimFlowUiElementBase =
+    mixinBehaviors([NetworkListenerBehavior],
+        SubflowMixin(I18nMixin(PolymerElement)));
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {NetworkListenerBehaviorInterface}
- */
-const EsimFlowUiElementBase = mixinBehaviors(
-    [I18nBehavior, NetworkListenerBehavior, SubflowBehavior], PolymerElement);
-
-/** @polymer */
 export class EsimFlowUiElement extends EsimFlowUiElementBase {
   static get is() {
-    return 'esim-flow-ui';
+    return 'esim-flow-ui' as const;
   }
 
   static get template() {
@@ -111,7 +109,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
 
   static get properties() {
     return {
-      /** @type {!CellularSetupDelegate} */
       delegate: Object,
 
       /**
@@ -129,10 +126,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         notify: true,
       },
 
-      /**
-       * @type {!ESimUiState}
-       * @private
-       */
       state_: {
         type: String,
         value: function() {
@@ -148,14 +141,11 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       /**
        * Element name of the current selected sub-page.
        * This is set in updateSelectedPage_ on initialization.
-       * @type {?ESimPageName}
-       * @private
        */
       selectedESimPageName_: String,
 
       /**
        * Whether the user has consented to a scan for profiles.
-       * @type {boolean}
        */
       hasConsentedForDiscovery_: {
         type: Boolean,
@@ -164,7 +154,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
 
       /**
        * Whether the user is setting up the eSIM profile manually.
-       * @type {boolean}
        */
       shouldSkipDiscovery_: {
         type: Boolean,
@@ -173,7 +162,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
 
       /**
        * Whether error state should be shown for the current page.
-       * @private {boolean}
        */
       showError_: {
         type: Boolean,
@@ -182,15 +170,11 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
 
       /**
        * Profiles fetched that have status kPending.
-       * @type {!Array<!ESimProfileRemote>}
-       * @private
        */
       pendingProfiles_: Array,
 
       /**
        * Profile selected to be installed.
-       * @type {?ESimProfileRemote}
-       * @private
        */
       selectedProfile_: {
         type: Object,
@@ -199,41 +183,33 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
 
       /**
        * Profile properties fetched from the latest SM-DS scan.
-       * @type {!Array<!ESimProfileProperties>}
-       * @private
        */
       pendingProfileProperties_: Array,
 
       /**
        * Profile properties selected to be installed.
-       * @type {?ESimProfileProperties}
-       * @private
        */
       selectedProfileProperties_: {
         type: Object,
         observer: 'onSelectedProfilePropertiesChanged_',
       },
 
-      /** @private */
       activationCode_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       confirmationCode_: {
         type: String,
         value: '',
         observer: 'onConfirmationCodeUpdated_',
       },
 
-      /** @private */
       hasHadActiveCellularNetwork_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       isActivationCodeFromQrCode_: Boolean,
 
       /**
@@ -250,29 +226,45 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     };
   }
 
-  /** @override */
+  delegate: CellularSetupDelegate;
+  header: string;
+  forwardButtonLabel: string;
+  private state_: string;
+  private selectedESimPageName_: string;
+  private hasConsentedForDiscovery_: boolean;
+  private shouldSkipDiscovery_: boolean;
+  private showError_: boolean;
+  private pendingProfiles_: ESimProfileRemote[];
+  private selectedProfile_: ESimProfileRemote|null;
+  private pendingProfileProperties_: ESimProfileProperties[];
+  private selectedProfileProperties_: ESimProfileProperties|null;
+  private activationCode_: string;
+  private confirmationCode_: string;
+  private hasHadActiveCellularNetwork_: boolean;
+  private isActivationCodeFromQrCode_: boolean;
+  private smdsSupportEnabled_: boolean;
+
+  /**
+   * Provides an interface to the ESimManager Mojo service.
+   */
+  private eSimManagerRemote_: ESimManagerRemote;
+  private euicc_: EuiccRemote|null = null;
+  private lastProfileInstallResult_: ProfileInstallResult|null = null;
+  private hasFailedFetchingProfiles_: boolean = false;
+
+  /**
+   * If there are no active network connections of any type.
+   */
+  private isOffline_: boolean = false;
+
+  /**
+   * The time at which the ESim flow is attached.
+   */
+  private timeOnAttached_: Date|null = null;
+
   constructor() {
     super();
 
-    /** @private {?EuiccRemote} */
-    this.euicc_ = null;
-
-    /** @private {boolean} */
-    this.hasFailedFetchingProfiles_ = false;
-
-    /** @private {?ProfileInstallResult} */
-    this.lastProfileInstallResult_ = null;
-
-    /**
-     * If there are no active network connections of any type.
-     * @private {boolean}
-     */
-    this.isOffline_ = false;
-
-    /**
-     * Provides an interface to the ESimManager Mojo service.
-     * @private {?ESimManagerRemote}
-     */
     this.eSimManagerRemote_ = getESimManagerRemote();
     const networkConfig =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
@@ -282,24 +274,18 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       limit: NO_LIMIT,
       networkType: NetworkType.kAll,
     };
-    networkConfig.getNetworkStateList(filter).then(response => {
+    networkConfig.getNetworkStateList(filter).then((response) => {
       this.onActiveNetworksChanged(response.result);
     });
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
-    /**
-     * The time at which the ESim flow is attached.
-     * @private {?Date}
-     */
     this.timeOnAttached_ = new Date();
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     let resultCode = null;
@@ -340,7 +326,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         ESIM_SETUP_RESULT_METRIC_NAME, resultCode,
         Object.keys(ESimSetupFlowResult).length);
 
-    const elapsedTimeMs = new Date() - this.timeOnAttached_;
+    const elapsedTimeMs = new Date().getTime() - this.timeOnAttached_!.getTime();
     if (resultCode === ESimSetupFlowResult.SUCCESS) {
       chrome.metricsPrivate.recordLongTime(
           SUCCESSFUL_ESIM_SETUP_DURATION_METRIC_NAME, elapsedTimeMs);
@@ -351,29 +337,27 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         FAILED_ESIM_SETUP_DURATION_METRIC_NAME, elapsedTimeMs);
   }
 
-  /** override */
-  ready() {
+  override ready() {
     super.ready();
 
-    this.addEventListener('activation-code-updated', (event) => {
-      this.onActivationCodeUpdated_(event);
-    });
-    this.addEventListener(
-        'forward-navigation-requested', this.onForwardNavigationRequested_);
+    this.addEventListener('activation-code-updated',
+        (event: CustomEvent<{activationCode: string|null}>) => {
+          this.onActivationCodeUpdated_(event);
+        });
+    this.addEventListener('forward-navigation-requested',
+        this.onForwardNavigationRequested_);
   }
 
   /**
    * NetworkListenerBehavior override
    * Used to determine if there is an online network connection.
-   * @param {!Array<NetworkStateProperties>}
-   *     activeNetworks
    */
-  onActiveNetworksChanged(activeNetworks) {
+  onActiveNetworksChanged(activeNetworks: NetworkStateProperties[]): void {
     this.isOffline_ = !activeNetworks.some(
         (network) => network.connectionState === ConnectionStateType.kOnline);
   }
 
-  initSubflow() {
+  override initSubflow(): void {
     if (!this.smdsSupportEnabled_) {
       this.fetchProfiles_();
     } else {
@@ -382,8 +366,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     this.onNetworkStateListChanged();
   }
 
-  /** @private */
-  async fetchProfiles_() {
+  private async fetchProfiles_(): Promise<void> {
     await this.getEuicc_();
     if (!this.euicc_) {
       return;
@@ -401,8 +384,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     }
   }
 
-  /** @private */
-  async getEuicc_() {
+  private async getEuicc_(): Promise<void> {
     const euicc = await getEuicc();
     if (!euicc) {
       this.hasFailedFetchingProfiles_ = true;
@@ -414,10 +396,8 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     this.euicc_ = euicc;
   }
 
-  /**
-   * @private
-   */
-  async getAvailableProfileProperties_() {
+  private async getAvailableProfileProperties_(): Promise<void> {
+    assert(this.euicc_);
     const requestAvailableProfilesResponse =
         await this.euicc_.requestAvailableProfiles();
     if (requestAvailableProfilesResponse.result ===
@@ -429,16 +409,14 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       this.pendingProfileProperties_ = [];
     }
     this.pendingProfileProperties_ =
-        requestAvailableProfilesResponse.profiles.filter(properties => {
+        requestAvailableProfilesResponse.profiles.filter((properties) => {
           return properties.state === ProfileState.kPending &&
               properties.activationCode;
         });
   }
 
-  /**
-   * @private
-   */
-  async getPendingProfiles_() {
+  private async getPendingProfiles_(): Promise<void> {
+    assert(this.euicc_);
     const requestPendingProfilesResponse =
         await this.euicc_.requestPendingProfiles();
     if (requestPendingProfilesResponse.result ===
@@ -452,11 +430,8 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     this.pendingProfiles_ = await getPendingESimProfiles(this.euicc_);
   }
 
-  /**
-   * @private
-   * @param {{result: ProfileInstallResult}} response
-   */
-  handleProfileInstallResponse_(response) {
+  private handleProfileInstallResponse_(
+      response: {result: ProfileInstallResult}): void {
     this.lastProfileInstallResult_ = response.result;
     if (response.result === ProfileInstallResult.kErrorNeedsConfirmationCode) {
       this.state_ = ESimUiState.CONFIRMATION_CODE_ENTRY;
@@ -480,8 +455,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     }
   }
 
-  /** @private */
-  onStateChanged_(newState, oldState) {
+  private onStateChanged_(newState: ESimUiState, oldState: ESimUiState): void {
     this.updateButtonBarState_();
     this.updateSelectedPage_();
     if (this.hasConsentedForDiscovery_ &&
@@ -491,8 +465,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     this.initializePageState_(newState, oldState);
   }
 
-  /** @private */
-  updateSelectedPage_() {
+  private updateSelectedPage_(): void {
     const oldSelectedESimPageName = this.selectedESimPageName_;
     switch (this.state_) {
       case ESimUiState.PROFILE_SEARCH:
@@ -542,26 +515,18 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         break;
       default:
         assertNotReached();
-        break;
     }
     // If there is a page change, fire focus event.
     if (oldSelectedESimPageName !== this.selectedESimPageName_) {
       this.dispatchEvent(new CustomEvent('focus-default-button', {
-        bubbles: true,
-        composed: true,
+        bubbles: true, composed: true,
       }));
     }
   }
 
-  /**
-   * @param {boolean} enableForwardBtn
-   * @param {!ButtonState} cancelButtonStateIfEnabled
-   * @param {boolean} isInstalling
-   * @return {!ButtonBarState}
-   * @private
-   */
-  generateButtonStateForActivationPage_(
-      enableForwardBtn, cancelButtonStateIfEnabled, isInstalling) {
+  private generateButtonStateForActivationPage_(
+      enableForwardBtn: boolean, cancelButtonStateIfEnabled: ButtonState,
+      isInstalling: boolean): ButtonBarState {
     this.forwardButtonLabel = this.i18n('next');
     let backBtnState = ButtonState.HIDDEN;
     if (this.profilesFound_() && !this.smdsSupportEnabled_) {
@@ -574,17 +539,12 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     };
   }
 
-  /**
-   * @param {boolean} enableForwardBtn
-   * @param {!ButtonState} cancelButtonStateIfEnabled
-   * @param {boolean} isInstalling
-   * @return {!ButtonBarState}
-   * @private
-   */
-  generateButtonStateForConfirmationPage_(
-      enableForwardBtn, cancelButtonStateIfEnabled, isInstalling) {
+  private generateButtonStateForConfirmationPage_(
+      enableForwardBtn: boolean, cancelButtonStateIfEnabled: ButtonState,
+      isInstalling: boolean): ButtonBarState {
     this.forwardButtonLabel = this.i18n('confirm');
-    let backBtnState = isInstalling ? ButtonState.DISABLED : ButtonState.ENABLED;
+    let backBtnState = isInstalling ?
+        ButtonState.DISABLED : ButtonState.ENABLED;
     if (this.smdsSupportEnabled_) {
       backBtnState = ButtonState.HIDDEN;
     }
@@ -595,8 +555,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     };
   }
 
-  /** @private */
-  updateButtonBarState_() {
+  private updateButtonBarState_(): void {
     let buttonState;
     const cancelButtonStateIfEnabled = this.delegate.shouldShowCancelButton() ?
         ButtonState.ENABLED :
@@ -676,13 +635,11 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         break;
       default:
         assertNotReached();
-        break;
     }
     this.set('buttonState', buttonState);
   }
 
-  /** @private */
-  updateForwardButtonLabel_() {
+  private updateForwardButtonLabel_(): void {
     if (this.smdsSupportEnabled_) {
       this.forwardButtonLabel = this.selectedProfileProperties_ ?
           this.i18n('next') :
@@ -694,8 +651,8 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     }
   }
 
-  /** @private */
-  initializePageState_(newState, oldState) {
+  private initializePageState_(newState: ESimUiState,
+      oldState: ESimUiState): void {
     if (newState === ESimUiState.CONFIRMATION_CODE_ENTRY &&
         oldState !== ESimUiState.CONFIRMATION_CODE_ENTRY_READY) {
       this.confirmationCode_ = '';
@@ -706,8 +663,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     }
   }
 
-  /** @private */
-  onActivationCodeUpdated_(event) {
+  private onActivationCodeUpdated_(event: CustomEvent<{activationCode: string|null}>): void {
     // initializePageState_() may cause this observer to fire and update the
     // buttonState when we're not on the activation code page. Check we're on
     // the activation code page before proceeding.
@@ -720,8 +676,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         ESimUiState.ACTIVATION_CODE_ENTRY;
   }
 
-  /** @private */
-  onSelectedProfileChanged_() {
+  private onSelectedProfileChanged_(): void {
     // initializePageState_() may cause this observer to fire and update the
     // buttonState when we're not on the profile selection page. Check we're
     // on the profile selection page before proceeding.
@@ -734,8 +689,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     this.updateForwardButtonLabel_();
   }
 
-  /** @private */
-  onSelectedProfilePropertiesChanged_() {
+  private onSelectedProfilePropertiesChanged_(): void {
     // initializePageState_() may cause this observer to fire and update the
     // buttonState when we're not on the profile selection page. Check we're
     // on the profile selection page before proceeding.
@@ -748,8 +702,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     this.updateForwardButtonLabel_();
   }
 
-  /** @private */
-  onConfirmationCodeUpdated_() {
+  private onConfirmationCodeUpdated_(): void {
     // initializePageState_() may cause this observer to fire and update the
     // buttonState when we're not on the confirmation code page. Check we're
     // on the confirmation code page before proceeding.
@@ -762,8 +715,8 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         ESimUiState.CONFIRMATION_CODE_ENTRY;
   }
 
-  /** SubflowBehavior override */
-  navigateForward() {
+  /** SubflowMixin override */
+  override navigateForward(): void {
     this.showError_ = false;
     switch (this.state_) {
       case ESimUiState.PROFILE_SEARCH_CONSENT:
@@ -778,6 +731,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         this.state_ = ESimUiState.PROFILE_SEARCH;
         break;
       case ESimUiState.ACTIVATION_CODE_ENTRY_READY:
+        assert(this.euicc_);
         // Assume installing the profile doesn't require a confirmation
         // code.
         const confirmationCode = '';
@@ -791,6 +745,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       case ESimUiState.PROFILE_SELECTION:
         if (this.smdsSupportEnabled_) {
           if (this.selectedProfileProperties_) {
+            assert(this.euicc_);
             this.state_ = ESimUiState.PROFILE_SELECTION_INSTALLING;
             // Assume installing the profile doesn't require a confirmation
             // code.
@@ -818,9 +773,10 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       case ESimUiState.CONFIRMATION_CODE_ENTRY_READY:
         this.state_ = ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING;
         if (this.smdsSupportEnabled_) {
+          assert(this.euicc_);
           const fromQrCode = this.selectedProfileProperties_ ? true : false;
           const activationCode = fromQrCode ?
-              this.selectedProfileProperties_.activationCode :
+              this.selectedProfileProperties_!.activationCode :
               this.activationCode_;
           this.euicc_
               .installProfileFromActivationCode(
@@ -832,6 +788,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
             this.selectedProfile_.installProfile(this.confirmationCode_)
                 .then(this.handleProfileInstallResponse_.bind(this));
           } else {
+            assert(this.euicc_);
             this.euicc_
                 .installProfileFromActivationCode(
                     this.activationCode_, this.confirmationCode_,
@@ -842,18 +799,16 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         break;
       case ESimUiState.SETUP_FINISH:
         this.dispatchEvent(new CustomEvent('exit-cellular-setup', {
-          bubbles: true,
-          composed: true,
+          bubbles: true, composed: true,
         }));
         break;
       default:
         assertNotReached();
-        break;
     }
   }
 
-  /** SubflowBehavior override */
-  navigateBackward() {
+  /** SubflowMixin override */
+  override navigateBackward(): void {
     if (this.profilesFound_() &&
         (this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY ||
          this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY_READY)) {
@@ -877,8 +832,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     assertNotReached();
   }
 
-  /** @private */
-  onForwardNavigationRequested_() {
+  private onForwardNavigationRequested_(): void {
     if (this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY_READY ||
         this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY_READY ||
         this.state_ === ESimUiState.PROFILE_SEARCH_CONSENT ||
@@ -888,26 +842,23 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
   }
 
   /** NetworkListenerBehavior override */
-  onNetworkStateListChanged() {
-    hasActiveCellularNetwork().then((hasActive) => {
-      // If hasHadActiveCellularNetwork_ has been set to true, don't set to
-      // false again as we should show the cellular disconnect warning for the
-      // duration of the flow's lifecycle.
-      if (hasActive) {
-        this.hasHadActiveCellularNetwork_ = hasActive;
-      }
-    });
+  async onNetworkStateListChanged(): Promise<void> {
+    const hasActive = await hasActiveCellularNetwork();
+    // If hasHadActiveCellularNetwork_ has been set to true, don't set to
+    // false again as we should show the cellular disconnect warning for the
+    // duration of the flow's lifecycle.
+    if (hasActive) {
+      this.hasHadActiveCellularNetwork_ = hasActive;
+    }
   }
 
-  /** @private */
-  shouldShowSubpageBusy_() {
+  private shouldShowSubpageBusy_(): boolean {
     return this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY_INSTALLING ||
         this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING ||
         this.state_ === ESimUiState.PROFILE_SELECTION_INSTALLING;
   }
 
-  /** @private */
-  getLoadingMessage_() {
+  private getLoadingMessage_(): string {
     if (this.smdsSupportEnabled_) {
       return this.i18n('profileLoadingPageMessage');
     }
@@ -917,11 +868,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         this.i18n('eSimProfileDetectMessage');
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeHeader_() {
+  private computeHeader_(): string {
     if (this.selectedESimPageName_ === ESimPageName.FINAL && !this.showError_) {
       return this.i18n('eSimFinalPageSuccessHeader');
     }
@@ -946,11 +893,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     return '';
   }
 
-  /**
-   * @return {ProfileInstallMethod}
-   * @private
-   */
-  computeProfileInstallMethod_() {
+  private computeProfileInstallMethod_(): ProfileInstallMethod {
     if (this.isActivationCodeFromQrCode_) {
       return this.hasConsentedForDiscovery_ ?
           ProfileInstallMethod.kViaQrCodeAfterSmds :
@@ -963,10 +906,8 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
 
   /**
    * Returns true if profiles have been received and none were found.
-   * @return {boolean}
-   * @private
    */
-  noProfilesFound_() {
+  private noProfilesFound_(): boolean {
     if (this.smdsSupportEnabled_) {
       return this.hasConsentedForDiscovery_ &&
           !!this.pendingProfileProperties_ &&
@@ -976,8 +917,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     }
   }
 
-  /** @private*/
-  profilesFound_() {
+  private profilesFound_(): boolean {
     if (this.smdsSupportEnabled_) {
       return this.hasConsentedForDiscovery_ &&
           !!this.pendingProfileProperties_ &&

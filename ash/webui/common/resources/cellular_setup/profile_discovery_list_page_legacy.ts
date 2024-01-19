@@ -12,25 +12,18 @@ import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import './base_page.js';
 import './profile_discovery_list_item_legacy.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getTemplate} from './profile_discovery_list_page_legacy.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ProfileDiscoveryListPageLegacyElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const ProfileDiscoveryListPageLegacyElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
-class ProfileDiscoveryListPageLegacyElement extends
+export class ProfileDiscoveryListPageLegacyElement extends
     ProfileDiscoveryListPageLegacyElementBase {
   static get is() {
-    return 'profile-discovery-list-page-legacy';
+    return 'profile-discovery-list-page-legacy' as const;
   }
 
   static get template() {
@@ -39,16 +32,8 @@ class ProfileDiscoveryListPageLegacyElement extends
 
   static get properties() {
     return {
-      /**
-       * @type {Array<!ESimProfileRemote>}
-       * @private
-       */
       pendingProfiles: Array,
 
-      /**
-       * @type {?ESimProfileRemote}
-       * @private
-       */
       selectedProfile: {
         type: Object,
         notify: true,
@@ -62,15 +47,14 @@ class ProfileDiscoveryListPageLegacyElement extends
         type: Boolean,
         value: false,
       },
-
     };
   }
 
-  /**
-   * @param {ESimProfileRemote} profile
-   * @private
-   */
-  isProfileSelected_(profile) {
+  pendingProfiles: ESimProfileRemote[];
+  selectedProfile: ESimProfileRemote|null;
+  showBusy: boolean;
+
+  private isProfileSelected_(profile: ESimProfileRemote): boolean {
     return this.selectedProfile === profile;
   }
 }

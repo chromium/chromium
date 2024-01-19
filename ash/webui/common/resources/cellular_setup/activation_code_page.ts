@@ -13,71 +13,65 @@ import '//resources/cr_elements/cr_input/cr_input.js';
 import './base_page.js';
 import './cellular_setup_icons.html.js';
 
-import {focusWithoutInk} from '//resources/ash/common/focus_without_ink_js.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
-import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrosNetworkConfig, CrosNetworkConfigInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrosNetworkConfigInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {getTemplate} from './activation_code_page.html.js';
 
-/**
- * @type {!number}
- * @private
- */
 const QR_CODE_DETECTION_INTERVAL_MS = 1000;
 
-/** @enum {number} */
-const PageState = {
-  MANUAL_ENTRY: 1,
-  SCANNING_USER_FACING: 2,
-  SCANNING_ENVIRONMENT_FACING: 3,
-  SWITCHING_CAM_USER_TO_ENVIRONMENT: 4,
-  SWITCHING_CAM_ENVIRONMENT_TO_USER: 5,
-  SCANNING_SUCCESS: 6,
-  SCANNING_FAILURE: 7,
-  MANUAL_ENTRY_INSTALL_FAILURE: 8,
-  SCANNING_INSTALL_FAILURE: 9,
-};
+enum PageState {
+  MANUAL_ENTRY = 1,
+  SCANNING_USER_FACING = 2,
+  SCANNING_ENVIRONMENT_FACING = 3,
+  SWITCHING_CAM_USER_TO_ENVIRONMENT = 4,
+  SWITCHING_CAM_ENVIRONMENT_TO_USER = 5,
+  SCANNING_SUCCESS = 6,
+  SCANNING_FAILURE = 7,
+  MANUAL_ENTRY_INSTALL_FAILURE = 8,
+  SCANNING_INSTALL_FAILURE = 9,
+}
 
-/** @enum {number} */
-const UiElement = {
-  START_SCANNING: 1,
-  VIDEO: 2,
-  SWITCH_CAMERA: 3,
-  SCAN_FINISH: 4,
-  SCAN_SUCCESS: 5,
-  SCAN_FAILURE: 6,
-  CODE_DETECTED: 7,
-  SCAN_INSTALL_FAILURE: 8,
-};
+enum UiElement {
+  START_SCANNING = 1,
+  VIDEO = 2,
+  SWITCH_CAMERA = 3,
+  SCAN_FINISH = 4,
+  SCAN_SUCCESS = 5,
+  SCAN_FAILURE = 6,
+  CODE_DETECTED = 7,
+  SCAN_INSTALL_FAILURE = 8,
+}
 
 /**
  * barcode format used by |BarcodeDetector|
- * @private {string}
  */
 const QR_CODE_FORMAT = 'qr_code';
 
 /**
  * The prefix for valid activation codes.
- * @private {string}
  */
 const ACTIVATION_CODE_PREFIX = 'LPA:1$';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ActivationCodePageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+export interface ActivationCodePageElement {
+  $: {
+    activationCode: CrInputElement,
+  };
+}
 
-/** @polymer */
-class ActivationCodePageElement extends ActivationCodePageElementBase {
+const ActivationCodePageElementBase = I18nMixin(PolymerElement);
+
+export class ActivationCodePageElement extends ActivationCodePageElementBase {
   static get is() {
-    return 'activation-code-page';
+    return 'activation-code-page' as const;
   }
 
   static get template() {
@@ -129,25 +123,18 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
        * Enum used as an ID for specific UI elements.
        * A UiElement is passed between html and JS for
        * certain UI elements to determine their state.
-       *
-       * @type {!UiElement}
        */
       UiElement: {
         type: Object,
         value: UiElement,
       },
 
-      /**
-       * @type {!PageState}
-       * @private
-       */
       state_: {
         type: Object,
         value: PageState,
         observer: 'onStateChanged_',
       },
 
-      /** @private */
       cameraCount_: {
         type: Number,
         value: 0,
@@ -157,7 +144,6 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
       /**
        *  TODO(crbug.com/1093185): add type |BarcodeDetector| when externs
        *  becomes available
-       *  @private {?Object}
        */
       qrCodeDetector_: {
         type: Object,
@@ -177,7 +163,6 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
        * A11y string used to announce the current status of qr code camera
        * detection. Used when device web cam is turned on and ready to scan,
        * and also used after scan has been completed.
-       * @private
        */
       qrCodeCameraA11yString_: {
         type: String,
@@ -204,7 +189,6 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
        * Indicates whether or not |activationCode| matches the correct
        * activation code format. If there is a partial match (i.e. the code is
        * incomplete but matches the format so far), this will be false.
-       * @private
        */
       isActivationCodeInvalidFormat_: {
         type: Boolean,
@@ -213,52 +197,43 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
     };
   }
 
-  /** @override */
+  activationCode: string;
+  showError: boolean;
+  isFromQrCode: boolean;
+  showBusy: boolean;
+  showNoProfilesFound: boolean;
+  private state_: PageState;
+  private cameraCount_: number;
+  private qrCodeDetector_: BarcodeDetector|null = null;
+  private expanded_: boolean;
+  private qrCodeCameraA11yString_: string;
+  private isDeviceCarrierLocked_: boolean;
+  private isCellularCarrierLockEnabled_: boolean;
+  private isActivationCodeInvalidFormat_: boolean;
+  private networkConfig_: CrosNetworkConfigInterface|null = null;
+  private mediaDevices_: MediaDevices|null = null;
+  private stream_: MediaStream|null = null;
+  private qrCodeDetectorTimer_: number|null = null;
+
+  /**
+   * The function used to initiate a repeating timer. Can be overwritten in
+   * tests.
+   */
+  private setIntervalFunction_: (callback: Function, interval: number)
+      => number = setInterval.bind(window);
+  private barcodeDetectorClass_ = BarcodeDetector;
+  private imageCaptureClass_ = ImageCapture;
+
   constructor() {
     super();
 
-    /**
-     * @type {MediaDevices}
-     * @private
-     */
-    this.mediaDevices_ = null;
-
-    /**
-     * @type {?MediaStream}
-     * @private
-     */
-    this.stream_ = null;
-
-    /**
-     * @type {?number}
-     * @private
-     */
-    this.qrCodeDetectorTimer_ = null;
-
-    /**
-     * The function used to initiate a repeating timer. Can be overwritten in
-     * tests.
-     * @private {function(Function, number)}
-     */
-    this.setIntervalFunction_ = setInterval.bind(window);
-
-    /**
-     *  TODO(crbug.com/1093185): add type |BarcodeDetector| when externs
-     *  becomes available
-     *  @suppress {undefinedVars|missingProperties}
-     *  @private
-     */
-    this.barcodeDetectorClass_ = BarcodeDetector;
-
-    /** @private {typeof ImageCapture} */
-    this.imageCaptureClass_ = ImageCapture;
     if (!this.isCellularCarrierLockEnabled_) {
       return;
     }
 
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
-    this.networkConfig_.getDeviceStateList().then(response => {
+    this.networkConfig_!.getDeviceStateList().then(response => {
       const devices = response.result;
       const deviceState =
           devices.find(device => device.type == NetworkType.kCellular) || null;
@@ -268,8 +243,7 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
     });
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     this.setMediaDevices(navigator.mediaDevices);
@@ -277,25 +251,23 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
     this.state_ = PageState.MANUAL_ENTRY;
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.stopStream_(this.stream_);
     if (this.qrCodeDetectorTimer_) {
       this.clearQrCodeDetectorTimer_();
     }
-    this.mediaDevices_.removeEventListener(
+    this.mediaDevices_!.removeEventListener(
         'devicechange', this.updateCameraCount_.bind(this));
   }
 
   /**
    * Function used to play the video. Can be overwritten by
    * setFakesForTesting().
-   * @private
    */
-  playVideo_() {
-    const videoElement = this.shadowRoot.querySelector('#video');
+  private playVideo_(): void {
+    const videoElement = this.shadowRoot!.querySelector<HTMLVideoElement>('#video');
     if (videoElement) {
       videoElement.play();
     }
@@ -303,38 +275,26 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
 
   /**
    * Function used to stop a stream. Can be overwritten by setFakesForTesting().
-   * @param {MediaStream} stream
-   * @private
    */
-  stopStream_(stream) {
+  private stopStream_(stream: MediaStream|null): void {
     if (stream) {
       stream.getTracks()[0].stop();
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isScanningAvailable_() {
+  private isScanningAvailable_(): boolean {
     return this.cameraCount_ > 0 && !!this.qrCodeDetector_;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowCarrierLockWarning_() {
+  private shouldShowCarrierLockWarning_(): boolean {
     return this.isCellularCarrierLockEnabled_ && this.isDeviceCarrierLocked_;
   }
 
   /**
    * TODO(crbug.com/1093185): Remove suppression when shape_detection extern
    * definitions become available.
-   * @suppress {undefinedVars|missingProperties}
-   * @private
    */
-  async initBarcodeDetector_() {
+  private async initBarcodeDetector_(): Promise<void> {
     const formats = await this.barcodeDetectorClass_.getSupportedFormats();
 
     if (!formats || formats.length === 0) {
@@ -342,35 +302,27 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
       return;
     }
 
-    const qrCodeFormat = formats.find(format => format === QR_CODE_FORMAT);
+    const qrCodeFormat = formats.find(
+        (format: BarcodeFormat) => format === QR_CODE_FORMAT);
     if (qrCodeFormat) {
       this.qrCodeDetector_ =
           new this.barcodeDetectorClass_({formats: [QR_CODE_FORMAT]});
     }
   }
 
-  /**
-   * @param {MediaDevices} mediaDevices
-   */
-  setMediaDevices(mediaDevices) {
+  setMediaDevices(mediaDevices: MediaDevices): void {
     this.mediaDevices_ = mediaDevices;
     this.updateCameraCount_();
     this.mediaDevices_.addEventListener(
         'devicechange', this.updateCameraCount_.bind(this));
   }
 
-  /**
-   * TODO(crbug.com/1093185): Add barcodeDetectorClass type when BarcodeDetector
-   * externs become available.
-   * @param barcodeDetectorClass
-   * @param {typeof ImageCapture} imageCaptureClass
-   * @param {function(Function, number)} setIntervalFunction
-   * @param {function()} playVideoFunction
-   * @param {function(MediaStream)} stopStreamFunction
-   */
   async setFakesForTesting(
-      barcodeDetectorClass, imageCaptureClass, setIntervalFunction,
-      playVideoFunction, stopStreamFunction) {
+      barcodeDetectorClass: typeof BarcodeDetector,
+      imageCaptureClass: typeof ImageCapture,
+      setIntervalFunction: (callback: Function, interval: number) => number,
+      playVideoFunction: () => void,
+      stopStreamFunction: (stream: MediaStream) => void): Promise<void> {
     this.barcodeDetectorClass_ = barcodeDetectorClass;
     await this.initBarcodeDetector_();
     this.imageCaptureClass_ = imageCaptureClass;
@@ -379,23 +331,15 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
     this.stopStream_ = stopStreamFunction;
   }
 
-  /**
-   * @returns {?number}
-   */
-  getQrCodeDetectorTimerForTest() {
+  getQrCodeDetectorTimerForTest(): number|null {
     return this.qrCodeDetectorTimer_;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeActivationCodeClass_() {
+  private computeActivationCodeClass_(): string {
     return this.isScanningAvailable_() ? 'relative' : 'center width-92';
   }
 
-  /** @private */
-  updateCameraCount_() {
+  private updateCameraCount_(): void {
     if (!this.mediaDevices_ || !this.mediaDevices_.enumerateDevices) {
       this.cameraCount_ = 0;
       return;
@@ -406,13 +350,12 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
           this.cameraCount_ =
               devices.filter(device => device.kind === 'videoinput').length;
         })
-        .catch(e => {
+        .catch(() => {
           this.cameraCount_ = 0;
         });
   }
 
-  /** @private */
-  onHasCameraCountChanged_() {
+  private onHasCameraCountChanged_(): void {
     // If the user was using an environment-facing camera and it was removed,
     // restart scanning with the user-facing camera.
     if ((this.state_ === PageState.SCANNING_ENVIRONMENT_FACING) &&
@@ -422,8 +365,7 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
     }
   }
 
-  /** private */
-  startScanning_() {
+  private startScanning_(): void {
     const oldStream = this.stream_;
     if (this.qrCodeDetectorTimer_) {
       this.clearQrCodeDetectorTimer_();
@@ -431,7 +373,7 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
 
     const useUserFacingCamera =
         this.state_ !== PageState.SWITCHING_CAM_USER_TO_ENVIRONMENT;
-    this.mediaDevices_
+    this.mediaDevices_!
         .getUserMedia({
           video: {
             height: 130,
@@ -443,9 +385,9 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
         .then(stream => {
           this.stream_ = stream;
           if (this.stream_) {
-            const video = this.shadowRoot.querySelector('#video');
-            if (video) {
-              video.srcObject = stream;
+            const videoElement = this.shadowRoot!.querySelector('#video') as HTMLVideoElement | null;
+            if (videoElement) {
+              videoElement.srcObject = stream;
               this.playVideo_();
             }
           }
@@ -460,7 +402,7 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
             this.detectQrCode_();
           }
         })
-        .catch(e => {
+        .catch(() => {
           this.state_ = PageState.SCANNING_FAILURE;
         });
   }
@@ -469,18 +411,20 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
    * Continuously checks stream if it contains a QR code. If a QR code is
    * detected, activationCode is set to the QR code's value and the detection
    * stops.
-   * @private
    */
-  async detectQrCode_() {
+  private async detectQrCode_(): Promise<void> {
     try {
       this.qrCodeDetectorTimer_ = this.setIntervalFunction_(
           (async () => {
+            assert(!!this.stream_);
             const capturer =
                 new this.imageCaptureClass_(this.stream_.getVideoTracks()[0]);
             const frame = await capturer.grabFrame();
             const activationCode = await this.detectActivationCode_(frame);
             if (activationCode) {
-              this.clearQrCodeDetectorTimer_();
+              if (this.qrCodeDetectorTimer_) {
+                this.clearQrCodeDetectorTimer_();
+              }
               this.activationCode = activationCode;
               this.stopStream_(this.stream_);
 
@@ -500,14 +444,11 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
   }
 
   /**
-   * @param {ImageBitmap} frame
-   * @return {!Promise<string|null>}
    * TODO(crbug.com/1093185): Remove suppression when shape_detection extern
    * definitions become available.
-   * @suppress {undefinedVars|missingProperties}
-   * @private
    */
-  async detectActivationCode_(frame) {
+  private async detectActivationCode_(frame: ImageBitmap):
+      Promise<string|null> {
     if (!this.qrCodeDetector_) {
       return null;
     }
@@ -519,12 +460,9 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
     return null;
   }
 
-  /** @private */
-  onActivationCodeChanged_() {
+  private onActivationCodeChanged_(): void {
     const event = new CustomEvent('activation-code-updated', {
-      bubbles: true,
-      composed: true,
-      detail: {
+      bubbles: true, composed: true, detail: {
         activationCode: this.validateActivationCode_(this.activationCode) ?
             this.activationCode :
             null,
@@ -534,8 +472,8 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
     this.dispatchEvent(event);
   }
 
-  /** @private */
-  clearQrCodeDetectorTimer_() {
+  private clearQrCodeDetectorTimer_(): void {
+    assert(!!this.qrCodeDetectorTimer_);
     clearTimeout(this.qrCodeDetectorTimer_);
     this.qrCodeDetectorTimer_ = null;
   }
@@ -543,12 +481,10 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
   /**
    * Checks if |activationCode| matches or partially matches the correct format.
    * Sets |isActivationCodeInvalidFormat_| to true if the format is incorrect.
-   * @param {string} activationCode
-   * @return {boolean} Returns true if |activationCode| is valid and ready to be
-   *     submitted for installation.
-   * @private
+   * Returns true if |activationCode| is valid and ready to be submitted for
+   * installation.
    */
-  validateActivationCode_(activationCode) {
+  private validateActivationCode_(activationCode: string): boolean {
     if (activationCode.length <= ACTIVATION_CODE_PREFIX.length) {
       // If the currently entered activation code is shorter than
       // |ACTIVATION_CODE_PREFIX|, check if the code matches the format thus
@@ -575,8 +511,7 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
     return true;
   }
 
-  /** @private */
-  onSwitchCameraButtonPressed_() {
+  private onSwitchCameraButtonPressed_(): void {
     if (this.state_ === PageState.SCANNING_USER_FACING) {
       this.state_ = PageState.SWITCHING_CAM_USER_TO_ENVIRONMENT;
     } else if (this.state_ === PageState.SCANNING_ENVIRONMENT_FACING) {
@@ -585,8 +520,7 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
     this.startScanning_();
   }
 
-  /** @private */
-  onShowErrorChanged_() {
+  private onShowErrorChanged_(): void {
     if (this.showError) {
       if (this.state_ === PageState.MANUAL_ENTRY) {
         this.state_ = PageState.MANUAL_ENTRY_INSTALL_FAILURE;
@@ -599,8 +533,7 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
     }
   }
 
-  /** @private */
-  onStateChanged_() {
+  private onStateChanged_(): void {
     this.qrCodeCameraA11yString_ = '';
     if (this.state_ !== PageState.MANUAL_ENTRY_INSTALL_FAILURE &&
         this.state_ !== PageState.SCANNING_INSTALL_FAILURE) {
@@ -612,7 +545,9 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
       // Clear |qrCodeDetectorTimer_| before closing video stream, prevents
       // image capturer from going into an inactive state and throwing errors
       // when |grabFrame()| is called.
-      this.clearQrCodeDetectorTimer_();
+      if (this.qrCodeDetectorTimer_) {
+        this.clearQrCodeDetectorTimer_();
+      }
 
       // Wait for the video element to be hidden by isUiElementHidden() before
       // stopping the stream or the user will see a flash.
@@ -641,11 +576,7 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
     this.expanded_ = false;
   }
 
-  /**
-   * @param {KeyboardEvent} e
-   * @private
-   */
-  onKeyDown_(e) {
+  private onKeyDown_(e: KeyboardEvent): void {
     if (e.key === 'Enter') {
       this.dispatchEvent(new CustomEvent('forward-navigation-requested', {
         bubbles: true,
@@ -664,13 +595,7 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
     e.stopPropagation();
   }
 
-  /**
-   * @param {UiElement} uiElement
-   * @param {PageState} state
-   * @param {number} cameraCount
-   * @private
-   */
-  isUiElementHidden_(uiElement, state, cameraCount) {
+  private isUiElementHidden_(uiElement: UiElement, state: PageState): boolean {
     switch (uiElement) {
       case UiElement.START_SCANNING:
         return state !== PageState.MANUAL_ENTRY &&
@@ -698,13 +623,8 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
     }
   }
 
-  /**
-   * @param {UiElement} uiElement
-   * @param {PageState} state
-   * @param {boolean} showBusy
-   * @private
-   */
-  isUiElementDisabled_(uiElement, state, showBusy) {
+  private isUiElementDisabled_(uiElement: UiElement, state: PageState,
+      showBusy: boolean): boolean {
     if (showBusy) {
       return true;
     }
@@ -717,11 +637,7 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
     }
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getDescription_() {
+  private getDescription_(): string {
     if (!this.isScanningAvailable_()) {
       if (this.showNoProfilesFound) {
         return this.i18n('enterActivationCodeNoProfilesFound');
@@ -734,24 +650,14 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
     return this.i18n('scanQRCode');
   }
 
-  /**
-   * @param {PageState} state
-   * @return {boolean}
-   * @private
-   */
-  shouldActivationCodeInputBeInvalid_(state) {
+  private shouldActivationCodeInputBeInvalid_(state: PageState): boolean {
     if (this.isActivationCodeInvalidFormat_) {
       return true;
     }
     return state === PageState.MANUAL_ENTRY_INSTALL_FAILURE;
   }
 
-  /**
-   * @param {boolean} showBusy
-   * @return {string}
-   * @private
-   */
-  getInputSubtitle_(showBusy) {
+  private getInputSubtitle_(showBusy: boolean): string {
     if (showBusy) {
       return this.i18n('scanQrCodeLoading');
     }
@@ -761,11 +667,7 @@ class ActivationCodePageElement extends ActivationCodePageElementBase {
     return loadTimeData.getString('scanQrCodeInputSubtitle');
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getInputErrorMessage_() {
+  private getInputErrorMessage_(): string {
     // Because this string contains '<' and '>' characters, we cannot use i18n
     // methods.
     return loadTimeData.getString('scanQrCodeInputError');

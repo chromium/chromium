@@ -9,23 +9,17 @@
  */
 import './base_page.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {getTemplate} from './final_page.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const FinalPageElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const FinalPageElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class FinalPageElement extends FinalPageElementBase {
   static get is() {
-    return 'final-page';
+    return 'final-page' as const;
   }
 
   static get template() {
@@ -34,30 +28,25 @@ export class FinalPageElement extends FinalPageElementBase {
 
   static get properties() {
     return {
-      /** @type {!CellularSetupDelegate} */
       delegate: Object,
 
       /**
        * Whether error state should be shown.
-       * @type {boolean}
        */
       showError: Boolean,
 
-      /** @type {string} */
       message: String,
 
-      /** @type {string} */
       errorMessage: String,
-
     };
   }
 
-  /**
-   * @param {boolean} showError
-   * @return {?string}
-   * @private
-   */
-  getTitle_(showError) {
+  delegate: CellularSetupDelegate;
+  showError: boolean;
+  message: string;
+  errorMessage: string;
+
+  private getTitle_(showError: boolean): string|null {
     if (this.delegate.shouldShowPageTitle()) {
       return showError ? this.i18n('finalPageErrorTitle') :
                          this.i18n('finalPageTitle');
@@ -65,30 +54,15 @@ export class FinalPageElement extends FinalPageElementBase {
     return null;
   }
 
-  /**
-   * @param {boolean} showError
-   * @return {string}
-   * @private
-   */
-  getMessage_(showError) {
+  private getMessage_(showError: boolean): string {
     return showError ? this.errorMessage : this.message;
   }
 
-  /**
-   * @param {boolean} showError
-   * @return {string}
-   * @private
-   */
-  getPageBodyClass_(showError) {
+  private getPageBodyClass_(showError: boolean): string {
     return showError ? 'error' : '';
   }
 
-  /**
-   * @param {boolean} showError
-   * @return {string}
-   * @private
-   */
-  getJellyIllustrationName_(showError) {
+  private getJellyIllustrationName_(showError: boolean): string {
     return showError ? 'cellular-setup-illo:error' :
                        'cellular-setup-illo:final-page-success';
   }

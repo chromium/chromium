@@ -5,22 +5,17 @@
 import {CellularSetup, CellularSetupRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 import {ESimManager, ESimManagerObserverInterface, ESimManagerObserverReceiver, ESimManagerObserverRemote, ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
-let cellularRemote = null;
-let eSimManagerRemote = null;
-let isTesting = false;
+let cellularRemote: CellularSetupRemote|null = null;
+let eSimManagerRemote: ESimManagerRemote|null = null;
+let isTesting: boolean = false;
 
-/**
- * @param {?CellularSetupRemote} testCellularRemote A test cellular remote
- */
-export function setCellularSetupRemoteForTesting(testCellularRemote) {
+export function setCellularSetupRemoteForTesting(
+    testCellularRemote: CellularSetupRemote|null): void {
   cellularRemote = testCellularRemote;
   isTesting = true;
 }
 
-/**
- * @returns {!CellularSetupRemote}
- */
-export function getCellularSetupRemote() {
+export function getCellularSetupRemote(): CellularSetupRemote {
   if (cellularRemote) {
     return cellularRemote;
   }
@@ -29,18 +24,13 @@ export function getCellularSetupRemote() {
   return cellularRemote;
 }
 
-/**
- * @param {?ESimManagerRemote} testESimManagerRemote A test eSimManager remote
- */
-export function setESimManagerRemoteForTesting(testESimManagerRemote) {
+export function setESimManagerRemoteForTesting(
+    testESimManagerRemote: ESimManagerRemote|null): void {
   eSimManagerRemote = testESimManagerRemote;
   isTesting = true;
 }
 
-/**
- * @returns {!ESimManagerRemote}
- */
-export function getESimManagerRemote() {
+export function getESimManagerRemote(): ESimManagerRemote {
   if (eSimManagerRemote) {
     return eSimManagerRemote;
   }
@@ -50,15 +40,10 @@ export function getESimManagerRemote() {
   return eSimManagerRemote;
 }
 
-/**
- * @param {!ESimManagerObserverInterface} observer
- * @returns {?ESimManagerObserverReceiver}
- */
-export function observeESimManager(observer) {
+export function observeESimManager(observer: ESimManagerObserverInterface):
+    ESimManagerObserverReceiver|null {
   if (isTesting) {
-    getESimManagerRemote().addObserver(
-        /** @type {!ESimManagerObserverRemote} */
-        (observer));
+    getESimManagerRemote().addObserver(observer as ESimManagerObserverRemote);
     return null;
   }
 

@@ -15,26 +15,15 @@ import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './cellular_setup_icons.html.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {ESimProfileProperties, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getTemplate} from './profile_discovery_list_item_legacy.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ProfileDiscoveryListItemLegacyElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
-
-/** @polymer */
-class ProfileDiscoveryListItemLegacyElement extends
-    ProfileDiscoveryListItemLegacyElementBase {
+export class ProfileDiscoveryListItemLegacyElement extends PolymerElement {
   static get is() {
-    return 'profile-discovery-list-item-legacy';
+    return 'profile-discovery-list-item-legacy' as const;
   }
 
   static get template() {
@@ -43,7 +32,6 @@ class ProfileDiscoveryListItemLegacyElement extends
 
   static get properties() {
     return {
-      /** @type {?ESimProfileRemote} */
       profile: {
         type: Object,
         value: null,
@@ -57,20 +45,12 @@ class ProfileDiscoveryListItemLegacyElement extends
 
       showLoadingIndicator: Boolean,
 
-      /**
-       * @type {?ESimProfileProperties}
-       * @private
-       */
       profileProperties_: {
         type: Object,
         value: null,
         notify: true,
       },
 
-      /**
-       * @type {boolean}
-       * @private
-       */
       isDarkModeActive_: {
         type: Boolean,
         value: false,
@@ -79,19 +59,22 @@ class ProfileDiscoveryListItemLegacyElement extends
     };
   }
 
-  /** @private */
-  onProfileChanged_() {
+  profile: ESimProfileRemote|null;
+  selected: boolean;
+  showLoadingIndicator: boolean;
+  private profileProperties_: ESimProfileProperties|null;
+  private isDarkModeActive_: boolean;
+
+  private async onProfileChanged_(): Promise<void> {
     if (!this.profile) {
       this.profileProperties_ = null;
       return;
     }
-    this.profile.getProperties().then(response => {
-      this.profileProperties_ = response.properties;
-    });
+    const response = await this.profile.getProperties();
+    this.profileProperties_ = response.properties;
   }
 
-  /** @private */
-  getProfileName_() {
+  private getProfileName_(): string {
     if (!this.profileProperties_) {
       return '';
     }

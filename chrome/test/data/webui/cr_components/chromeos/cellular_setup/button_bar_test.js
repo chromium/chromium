@@ -5,10 +5,20 @@
 import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/cellular_setup/button_bar.js';
 
-import {ButtonBarState, ButtonState} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
+import {ButtonState} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertTrue} from '../../../chromeos/chai_assert.js';
+
+/**
+ * @typedef {{
+ *   backward: (!ButtonState|undefined),
+ *   cancel: (!ButtonState|undefined),
+ *   forward: (!ButtonState|undefined),
+ * }}
+ * Remove typedef once this test is migrated to TS.
+ */
+let ButtonBarState;
 
 suite('CellularSetupButtonBarTest', function() {
   /** @type {!ButtonBarElement} */
