@@ -26,6 +26,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "extensions/buildflags/buildflags.h"
@@ -151,7 +152,7 @@ class ChromeDownloadManagerDelegate
   bool IsFromExternalApp(download::DownloadItem* item) override;
 #else
   void AttachExtraInfo(download::DownloadItem* item) override;
-#endif  // BUILDFLAG(IS_ANRDOID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Opens a download using the platform handler. DownloadItem::OpenDownload,
   // which ends up being handled by OpenDownload(), will open a download in the
@@ -303,7 +304,8 @@ class ChromeDownloadManagerDelegate
   void OnDownloadTargetDetermined(
       uint32_t download_id,
       content::DownloadTargetCallback callback,
-      std::unique_ptr<DownloadTargetInfo> target_info);
+      DownloadTargetInfo target_info,
+      safe_browsing::DownloadFileType::DangerLevel danger_level);
 
   void MaybeSendDangerousDownloadOpenedReport(download::DownloadItem* download,
                                               bool show_download_in_folder);

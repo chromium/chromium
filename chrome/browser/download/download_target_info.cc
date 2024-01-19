@@ -4,13 +4,13 @@
 
 #include "chrome/browser/download/download_target_info.h"
 
-#include "components/safe_browsing/content/common/file_type_policies.h"
+DownloadTargetInfo::DownloadTargetInfo() = default;
+DownloadTargetInfo::~DownloadTargetInfo() = default;
 
-DownloadTargetInfo::DownloadTargetInfo()
-    : target_disposition(download::DownloadItem::TARGET_DISPOSITION_OVERWRITE),
-      danger_type(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS),
-      danger_level(safe_browsing::DownloadFileType::NOT_DANGEROUS),
-      is_filetype_handled_safely(false),
-      result(download::DOWNLOAD_INTERRUPT_REASON_NONE) {}
-
-DownloadTargetInfo::~DownloadTargetInfo() {}
+DownloadTargetInfo::DownloadTargetInfo(const DownloadTargetInfo& other) =
+    default;
+DownloadTargetInfo& DownloadTargetInfo::operator=(
+    const DownloadTargetInfo& other) = default;
+DownloadTargetInfo::DownloadTargetInfo(DownloadTargetInfo&& other) = default;
+DownloadTargetInfo& DownloadTargetInfo::operator=(DownloadTargetInfo&& other) =
+    default;

@@ -323,19 +323,18 @@ void OnDownloadDialogClosed(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void OnCheckExistingDownloadPathDone(
-    std::unique_ptr<DownloadTargetInfo> target_info,
-    content::DownloadTargetCallback callback,
-    bool file_exists) {
+void OnCheckExistingDownloadPathDone(DownloadTargetInfo target_info,
+                                     content::DownloadTargetCallback callback,
+                                     bool file_exists) {
   if (file_exists) {
-    target_info->result = download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED;
+    target_info.result = download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED;
   }
 
   std::move(callback).Run(
-      target_info->target_path, target_info->target_disposition,
-      target_info->danger_type, target_info->insecure_download_status,
-      target_info->intermediate_path, target_info->display_name,
-      target_info->mime_type, target_info->result);
+      target_info.target_path, target_info.target_disposition,
+      target_info.danger_type, target_info.insecure_download_status,
+      target_info.intermediate_path, target_info.display_name,
+      target_info.mime_type, target_info.result);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -343,26 +342,26 @@ void OnCheckExistingDownloadPathDone(
 // this infobar's entire life occurs prior to download start.
 void HandleInsecureDownloadInfoBarResult(
     download::DownloadItem* download_item,
-    std::unique_ptr<DownloadTargetInfo> target_info,
+    DownloadTargetInfo target_info,
     content::DownloadTargetCallback callback,
     bool should_download) {
   // If the download should be blocked, we can call the callback directly.
   if (!should_download) {
-    std::move(callback).Run(target_info->target_path,
-                            target_info->target_disposition,
+    std::move(callback).Run(target_info.target_path,
+                            target_info.target_disposition,
                             download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
                             DownloadItem::InsecureDownloadStatus::SILENT_BLOCK,
-                            target_info->intermediate_path,
-                            target_info->display_name, target_info->mime_type,
+                            target_info.intermediate_path,
+                            target_info.display_name, target_info.mime_type,
                             download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
     return;
   }
-  target_info->insecure_download_status =
+  target_info.insecure_download_status =
       download::DownloadItem::InsecureDownloadStatus::VALIDATED;
 
   // Otherwise, proceed as normal and check for a separate reservation with the
   // same target path. If such a reservation exists, cancel this reservation.
-  const base::FilePath target_path = target_info->target_path;
+  const base::FilePath target_path = target_info.target_path;
   DownloadPathReservationTracker::CheckDownloadPathForExistingDownload(
       target_path, download_item,
       base::BindOnce(&OnCheckExistingDownloadPathDone, std::move(target_info),
@@ -1608,25 +1607,26 @@ void ChromeDownloadManagerDelegate::OnInstallerDone(
 void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
     uint32_t download_id,
     content::DownloadTargetCallback callback,
-    std::unique_ptr<DownloadTargetInfo> target_info) {
+    DownloadTargetInfo target_info,
+    safe_browsing::DownloadFileType::DangerLevel danger_level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DownloadItem* item = download_manager_->GetDownload(download_id);
   if (item) {
     DownloadItemModel model(item);
     model.DetermineAndSetShouldPreferOpeningInBrowser(
-        target_info->target_path, target_info->is_filetype_handled_safely);
-    model.SetDangerLevel(target_info->danger_level);
+        target_info.target_path, target_info.is_filetype_handled_safely);
+    model.SetDangerLevel(danger_level);
   }
-  if (ShouldBlockFile(item, target_info->danger_type)) {
+  if (ShouldBlockFile(item, target_info.danger_type)) {
     MaybeReportDangerousDownloadBlocked(
         download_prefs_->download_restriction(), "DANGEROUS_FILE_TYPE",
-        target_info->target_path.AsUTF8Unsafe(), item);
-    target_info->result = download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED;
+        target_info.target_path.AsUTF8Unsafe(), item);
+    target_info.result = download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED;
     // A dangerous type would take precedence over the blocking of the file.
-    target_info->danger_type = download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
+    target_info.danger_type = download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
   }
 
-  base::FilePath target_path = target_info->target_path;
+  base::FilePath target_path = target_info.target_path;
 
 #if BUILDFLAG(IS_ANDROID)
   // Present an insecure download infobar when needed, and wait to initiate
@@ -1634,8 +1634,8 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
   // On Desktop, this is handled using the unsafe-download warnings that are
   // shown in parallel with the download. Those warnings don't exist for
   // Android, so for simplicity we prompt before starting the download instead.
-  auto ids = target_info->insecure_download_status;
-  if (target_info->result == download::DOWNLOAD_INTERRUPT_REASON_NONE &&
+  auto ids = target_info.insecure_download_status;
+  if (target_info.result == download::DOWNLOAD_INTERRUPT_REASON_NONE &&
       (ids == download::DownloadItem::InsecureDownloadStatus::BLOCK ||
        ids == download::DownloadItem::InsecureDownloadStatus::WARN)) {
     auto* web_contents = content::DownloadItemUtils::GetWebContents(item);

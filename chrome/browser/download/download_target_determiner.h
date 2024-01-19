@@ -51,13 +51,43 @@ class DownloadPrefs;
 // instance of DownloadTargetDeterminer.
 class DownloadTargetDeterminer : public download::DownloadItem::Observer {
  public:
-  using CompletionCallback =
-      base::OnceCallback<void(std::unique_ptr<DownloadTargetInfo>)>;
+  // A callback to convey the information of the target once determined.
+  //
+  // |target_info| contains information about the paths, as well as other
+  // information about the target.
+  //
+  // |target_info.danger_type| is set to MAYBE_DANGEROUS_CONTENT if the file
+  // type is handled by SafeBrowsing. However, if the SafeBrowsing service is
+  // unable to verify whether the file is safe or not, we are on our own. The
+  // value of |danger_level| indicates whether the download should be considered
+  // dangerous if SafeBrowsing returns an unknown verdict.
+  //
+  // Note that some downloads (e.g. "Save link as" on a link to a binary) would
+  // not be considered 'Dangerous' even if SafeBrowsing came back with an
+  // unknown verdict. So we can't always show a warning when SafeBrowsing fails.
+  //
+  // The value of |danger_level| should be interpreted as follows:
+  //
+  //   NOT_DANGEROUS : Unless flagged by SafeBrowsing, the file should be
+  //       considered safe.
+  //
+  //   ALLOW_ON_USER_GESTURE : If SafeBrowsing claims the file is safe, then the
+  //       file is safe. An UNKOWN verdict results in the file being marked as
+  //       DANGEROUS_FILE.
+  //
+  //   DANGEROUS : This type of file shouldn't be allowed to download without
+  //       any user action. Hence, if SafeBrowsing marks the file as SAFE, or
+  //       UNKNOWN, the file will still be considered a DANGEROUS_FILE. However,
+  //       SafeBrowsing may flag the file as being malicious, in which case the
+  //       malicious classification should take precedence.
+  using CompletionCallback = base::OnceCallback<void(
+      DownloadTargetInfo target_info,
+      safe_browsing::DownloadFileType::DangerLevel danger_level)>;
 
   DownloadTargetDeterminer(const DownloadTargetDeterminer&) = delete;
   DownloadTargetDeterminer& operator=(const DownloadTargetDeterminer&) = delete;
 
-  // Start the process of determing the target of |download|.
+  // Start the process of determining the target of |download|.
   //
   // |initial_virtual_path| if non-empty, defines the initial virtual path for
   //   the target determination process. If one isn't specified, one will be

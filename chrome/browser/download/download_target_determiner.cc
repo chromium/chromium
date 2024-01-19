@@ -1108,31 +1108,30 @@ void DownloadTargetDeterminer::ScheduleCallbackAndDeleteSelf(
             << " Danger type:" << danger_type_
             << " Danger level:" << danger_level_
             << " Result:" << static_cast<int>(result);
-  std::unique_ptr<DownloadTargetInfo> target_info(new DownloadTargetInfo);
+  DownloadTargetInfo target_info;
 
-  target_info->target_path = local_path_;
-  target_info->result = result;
-  target_info->target_disposition =
+  target_info.target_path = local_path_;
+  target_info.result = result;
+  target_info.target_disposition =
       (HasPromptedForPath() ||
                confirmation_reason_ != DownloadConfirmationReason::NONE
            ? DownloadItem::TARGET_DISPOSITION_PROMPT
            : DownloadItem::TARGET_DISPOSITION_OVERWRITE);
-  target_info->danger_type = danger_type_;
-  target_info->danger_level = danger_level_;
-  target_info->intermediate_path = intermediate_path_;
-  target_info->mime_type = mime_type_;
-  target_info->is_filetype_handled_safely = is_filetype_handled_safely_;
-  target_info->insecure_download_status = insecure_download_status_;
+  target_info.danger_type = danger_type_;
+  target_info.intermediate_path = intermediate_path_;
+  target_info.mime_type = mime_type_;
+  target_info.is_filetype_handled_safely = is_filetype_handled_safely_;
+  target_info.insecure_download_status = insecure_download_status_;
 #if BUILDFLAG(IS_ANDROID)
   // If |virtual_path_| is content URI, there is no need to prompt the user.
   if (local_path_.IsContentUri() && !virtual_path_.IsContentUri()) {
-    target_info->display_name = virtual_path_.BaseName();
+    target_info.display_name = virtual_path_.BaseName();
   }
 #endif
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(completion_callback_), std::move(target_info)));
+      FROM_HERE, base::BindOnce(std::move(completion_callback_),
+                                std::move(target_info), danger_level_));
   delete this;
 }
 
