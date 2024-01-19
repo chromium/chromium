@@ -2229,9 +2229,8 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
     // Existing behavior: origin text should be created with start URL when the
     // out-of-scope bar is shown. Behavior with scope_extensions: origin text
     // should be created with the URL of the page.
-    origin_text_waiter.WaitForOriginTextAnimation(
-        IsScopeExtensionsEnabled() ? out_of_scope_host_ : in_scope_host_,
-        https_server()->port());
+    origin_text_waiter.WaitForOriginTextAnimation(in_scope_host_,
+                                                  https_server()->port());
     EXPECT_TRUE(
         helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
     ExpectLastCommittedUrl(nav_url);
