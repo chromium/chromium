@@ -84,6 +84,9 @@ class AsyncCheckTracker
   // is keyed by `excluded_navigation_id`.
   void DeletePendingCheckers(absl::optional<int64_t> excluded_navigation_id);
 
+  // Displays an interstitial on `resource`.
+  void DisplayBlockingPage(security_interstitials::UnsafeResource resource);
+
   // Used to display a warning.
   scoped_refptr<BaseUIManager> ui_manager_;
 

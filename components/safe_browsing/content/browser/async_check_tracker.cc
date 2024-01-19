@@ -138,6 +138,16 @@ void AsyncCheckTracker::DidFinishNavigation(content::NavigationHandle* handle) {
   // The callback has already been run when BaseUIManager attempts to
   // trigger post commit error page, so there is no need to run again.
   resource.callback = base::DoNothing();
+  // Post a task instead of calling DisplayBlockingPage directly, because
+  // SecurityInterstitialTabHelper also listens to DidFinishNavigation. We
+  // need to ensure that the tab helper has updated its state before calling
+  // DisplayBlockingPage.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&AsyncCheckTracker::DisplayBlockingPage,
+                                GetWeakPtr(), std::move(resource)));
+}
+
+void AsyncCheckTracker::DisplayBlockingPage(UnsafeResource resource) {
   // Calling DisplayBlockingPage instead of StartDisplayingBlockingPage,
   // because when we decide that post commit error page should be
   // displayed, we already go through the checks in

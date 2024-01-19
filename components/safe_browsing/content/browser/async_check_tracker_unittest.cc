@@ -86,6 +86,7 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness,
                                bool has_committed) {
     handle.set_has_committed(has_committed);
     tracker_->DidFinishNavigation(&handle);
+    task_environment()->RunUntilIdle();
   }
 
   void CallPendingCheckerCompleted(int64_t navigation_id,
