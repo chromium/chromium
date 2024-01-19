@@ -19384,10 +19384,27 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="ManagerFill.Assistance" enum="PasswordManagerFillingAssistance">
     <summary>
-      Records for each successful submission the degree to which the user has
-      been assisted by the password manager.
+      Records for each successful submission of a password form, the degree to
+      which the user has been assisted by the password manager.
 
       This is replicated as PasswordManager.FillingAssistance in UMA.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ManagerFill.AssistanceForSingleUsername"
+      enum="SingleUsernameFillingAssistance">
+    <summary>
+      Records for each successful submission of a single username form, the
+      degree to which the user has been assisted by the password manager.
+
+      This is replicated as PasswordManager.FillingAssistanceForSingleUsername
+      in UMA.
     </summary>
     <aggregation>
       <history>
