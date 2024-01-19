@@ -8092,10 +8092,9 @@ ChromeContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
 }
 
 void ChromeContentBrowserClient::MaybePrewarmHttpDiskCache(
-    content::WebContents& web_contents,
+    content::BrowserContext& browser_context,
     const GURL& navigation_url) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents.GetBrowserContext());
+  Profile* profile = Profile::FromBrowserContext(&browser_context);
   CHECK(profile);
 
   // `loading_predictor` can be nullptr if the profile `IsOffTheRecord`.

@@ -1665,7 +1665,7 @@ ContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
 }
 
 void ContentBrowserClient::MaybePrewarmHttpDiskCache(
-    WebContents& web_contents,
+    BrowserContext& browser_context,
     const GURL& navigation_url) {}
 
 }  // namespace content

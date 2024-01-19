@@ -2766,7 +2766,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Prewarms the HTTP disk cache entries for the given URL and the
   // subresources if possible.
-  virtual void MaybePrewarmHttpDiskCache(WebContents& web_contents,
+  virtual void MaybePrewarmHttpDiskCache(BrowserContext& browser_context,
                                          const GURL& navigation_url);
 };
 

@@ -1090,6 +1090,22 @@ GetRenderFrameHostForBackForwardCacheRestore(FrameTreeNode* frame_tree_node,
   return restored_rfh->GetSafeRef();
 }
 
+void MaybePrewarmHttpDiskCache(BrowserContext& browser_context,
+                               const GURL& url) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kHttpDiskCachePrewarming) ||
+      !blink::features::kHttpDiskCachePrewarmingTriggerOnNavigation.Get()) {
+    return;
+  }
+
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  GetContentClient()->browser()->MaybePrewarmHttpDiskCache(browser_context,
+                                                           url);
+}
+
 // Returns true in cases where an attempted download will end up replacing the
 // current document anyway, due to showing an error page.
 bool IsFailedDownload(bool is_download,
@@ -1932,6 +1948,10 @@ NavigationRequest::NavigationRequest(
           1, common_params_->url, true,
           GetIsolationInfo().network_anonymization_key());
     }
+  }
+
+  if (NeedsUrlLoader() && IsInOutermostMainFrame()) {
+    MaybePrewarmHttpDiskCache(*controller->GetBrowserContext(), GetURL());
   }
 
   // Checking OriginCanAccessServiceWorkers() is needed before calling

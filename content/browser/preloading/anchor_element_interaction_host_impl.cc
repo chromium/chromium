@@ -19,7 +19,6 @@ bool IsOutermostMainFrame(const RenderFrameHost& render_frame_host) {
 }
 
 void MaybePrewarmHttpDiskCache(const GURL& url,
-                               ContentClient* content_client,
                                RenderFrameHost& render_frame_host) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kHttpDiskCachePrewarming) ||
@@ -36,8 +35,8 @@ void MaybePrewarmHttpDiskCache(const GURL& url,
     return;
   }
 
-  content_client->browser()->MaybePrewarmHttpDiskCache(
-      *content::WebContents::FromRenderFrameHost(&render_frame_host), url);
+  GetContentClient()->browser()->MaybePrewarmHttpDiskCache(
+      *render_frame_host.GetBrowserContext(), url);
 }
 
 }  // namespace
@@ -61,7 +60,7 @@ void AnchorElementInteractionHostImpl::OnPointerDown(const GURL& url) {
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
   preloading_decider->OnPointerDown(url);
-  MaybePrewarmHttpDiskCache(url, GetContentClient(), render_frame_host());
+  MaybePrewarmHttpDiskCache(url, render_frame_host());
 }
 
 void AnchorElementInteractionHostImpl::OnPointerHover(
@@ -70,7 +69,7 @@ void AnchorElementInteractionHostImpl::OnPointerHover(
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
   preloading_decider->OnPointerHover(url, std::move(mouse_data));
-  MaybePrewarmHttpDiskCache(url, GetContentClient(), render_frame_host());
+  MaybePrewarmHttpDiskCache(url, render_frame_host());
 }
 
 }  // namespace content
