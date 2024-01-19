@@ -328,8 +328,4 @@ BASE_FEATURE(kOmniboxTriggerForNoStatePrefetch,
              "OmniboxTriggerForNoStatePrefetch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPayloadTestComponent,
-             "PayloadTestComponent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace features
