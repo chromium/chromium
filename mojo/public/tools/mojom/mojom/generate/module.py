@@ -1463,22 +1463,6 @@ def IsInterfaceKind(kind):
   return isinstance(kind, Interface)
 
 
-# TODO(rsesek): Remove these and their plumbing in the generator templates.
-def IsAssociatedInterfaceKind(kind):
-  # pylint: disable=unused-argument
-  return False
-
-
-def IsInterfaceRequestKind(kind):
-  # pylint: disable=unused-argument
-  return False
-
-
-def IsAssociatedInterfaceRequestKind(kind):
-  # pylint: disable=unused-argument
-  return False
-
-
 def IsPendingRemoteKind(kind):
   return isinstance(kind, PendingRemote)
 

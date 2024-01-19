@@ -339,8 +339,7 @@ class Generator(generator.Generator):
         return "Map<%s, %s>" % (recurse_nullable(
             kind.key_kind), recurse_nullable(kind.value_kind))
 
-      if (mojom.IsAssociatedKind(kind) or mojom.IsInterfaceRequestKind(kind)
-          or mojom.IsPendingRemoteKind(kind)
+      if (mojom.IsAssociatedKind(kind) or mojom.IsPendingRemoteKind(kind)
           or mojom.IsPendingReceiverKind(kind)
           or mojom.IsPendingAssociatedRemoteKind(kind)
           or mojom.IsPendingAssociatedReceiverKind(kind)):
@@ -368,16 +367,13 @@ class Generator(generator.Generator):
         return name
       if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
         return name + "Remote"
-      if mojom.IsInterfaceRequestKind(kind) or mojom.IsPendingReceiverKind(
-          kind):
+      if mojom.IsPendingReceiverKind(kind):
         return name + "PendingReceiver"
       # TODO(calamity): Support associated interfaces properly.
-      if (mojom.IsAssociatedInterfaceKind(kind)
-          or mojom.IsPendingAssociatedRemoteKind(kind)):
+      if mojom.IsPendingAssociatedRemoteKind(kind):
         return "object"
       # TODO(calamity): Support associated interface requests properly.
-      if (mojom.IsAssociatedInterfaceRequestKind(kind)
-          or mojom.IsPendingAssociatedReceiverKind(kind)):
+      if mojom.IsPendingAssociatedReceiverKind(kind):
         return "object"
 
       raise Exception("Type is not supported yet.")
@@ -433,7 +429,6 @@ class Generator(generator.Generator):
         if (not imported_remote
             and (mojom.IsInterfaceKind(referenced_kind.kind)
                  or mojom.IsPendingRemoteKind(referenced_kind.kind)
-                 or mojom.IsAssociatedInterfaceKind(referenced_kind.kind)
                  or mojom.IsPendingAssociatedRemoteKind(referenced_kind.kind))
             and referenced_kind.kind.kind == kind):
           imported_remote = True
@@ -441,8 +436,6 @@ class Generator(generator.Generator):
           continue
         if (not imported_receiver
             and (mojom.IsPendingReceiverKind(referenced_kind.kind)
-                 or mojom.IsInterfaceRequestKind(referenced_kind.kind)
-                 or mojom.IsAssociatedInterfaceRequestKind(referenced_kind.kind)
                  or mojom.IsPendingAssociatedReceiverKind(referenced_kind.kind))
             and referenced_kind.kind.kind == kind):
           imported_receiver = True
@@ -463,8 +456,7 @@ class Generator(generator.Generator):
             get_spec(kind.key_kind), get_spec(kind.value_kind),
             "true" if mojom.IsNullableKind(kind.value_kind) else "false")
 
-      if (mojom.IsAssociatedKind(kind) or mojom.IsInterfaceRequestKind(kind)
-          or mojom.IsPendingRemoteKind(kind)
+      if (mojom.IsAssociatedKind(kind) or mojom.IsPendingRemoteKind(kind)
           or mojom.IsPendingReceiverKind(kind)
           or mojom.IsPendingAssociatedRemoteKind(kind)
           or mojom.IsPendingAssociatedReceiverKind(kind)):
@@ -488,15 +480,12 @@ class Generator(generator.Generator):
         return "%sSpec.$" % name
       if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
         return "mojo.internal.InterfaceProxy(%sRemote)" % name
-      if mojom.IsInterfaceRequestKind(kind) or mojom.IsPendingReceiverKind(
-          kind):
+      if mojom.IsPendingReceiverKind(kind):
         return "mojo.internal.InterfaceRequest(%sPendingReceiver)" % name
-      if (mojom.IsAssociatedInterfaceKind(kind)
-          or mojom.IsPendingAssociatedRemoteKind(kind)):
+      if mojom.IsPendingAssociatedRemoteKind(kind):
         # TODO(rockot): Implement associated interfaces.
         return "mojo.internal.AssociatedInterfaceProxy(%sRemote)" % (name)
-      if (mojom.IsAssociatedInterfaceRequestKind(kind)
-          or mojom.IsPendingAssociatedReceiverKind(kind)):
+      if mojom.IsPendingAssociatedReceiverKind(kind):
         return "mojo.internal.AssociatedInterfaceRequest(%sPendingReceiver)" % (
             name)
 
