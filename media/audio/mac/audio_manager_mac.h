@@ -235,9 +235,6 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   // sample rate has changed, otherwise does nothing.
   void HandleDeviceChanges();
 
-  // Returns true if any active input stream is using the specified |device_id|.
-  bool AudioDeviceIsUsedForInput(AudioDeviceID device_id);
-
   // Helper function to check if the volume control is available on specific
   // channel of a device.
   static bool IsVolumeSettableOnChannel(AudioDeviceID device_id, int channel);
