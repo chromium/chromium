@@ -33,7 +33,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
   override init() {
     super.init()
     scrollDirection = .horizontal
-    minimumInteritemSpacing = TabStripConstants.TabItem.horizontalSpacing
+    minimumLineSpacing = TabStripConstants.TabItem.horizontalSpacing
     sectionInset = UIEdgeInsets(
       top: TabStripConstants.CollectionView.topInset,
       left: TabStripConstants.CollectionView.horizontalInset,
@@ -176,41 +176,46 @@ class TabStripLayout: UICollectionViewFlowLayout {
       let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell
     else { return layoutAttributes }
 
-    // Update cell separators.
-    cell.leadingSeparatorHidden = true
-    // Hide the trailing separator if the next cell is selected.
+    let leftBounds: CGFloat = contentOffset.x + sectionInset.left
+    let rightBounds: CGFloat = collectionViewSizeWidth + contentOffset.x - sectionInset.right
+    let isRTL: Bool = collectionView.effectiveUserInterfaceLayoutDirection == .rightToLeft
+    let isScrollable: Bool = collectionView.contentSize.width > collectionView.frame.width
+
+    // If the cell is out of bounds, hide it and early return.
+    if leftBounds > frame.maxX || rightBounds < frame.minX {
+      layoutAttributes.isHidden = true
+      return layoutAttributes
+    }
+
+    /// Hide the `trailingSeparator`if the next cell is selected.
     let isNextCellSelected = (indexPath.item + 1) == selectedIndexPath?.item
     cell.trailingSeparatorHidden = isNextCellSelected
+    /// Hide the `leadingSeparator` if the previous cell is selected or the
+    /// collection view is not scrollable.
+    let isPreviousCellSelected = (indexPath.item - 1) == selectedIndexPath?.item
+    cell.leadingSeparatorHidden = isPreviousCellSelected || !isScrollable
 
     // Recalculate the cell width and origin when it intersects with the left
     // collection view's bounds. The cell should collapse within the collection
     // view's bounds until its width reaches 0.
-    let leftBounds: CGFloat = contentOffset.x + sectionInset.left
-    if frame.minX < leftBounds && leftBounds < frame.maxX {
+    if frame.minX < leftBounds {
       frame.origin.x = max(leftBounds, frame.origin.x)
       let offsetLeft: CGFloat = abs(frame.origin.x - layoutAttributes.frame.origin.x)
       frame.size.width = min(frame.width - offsetLeft, frame.width)
     }
 
-    let rightBounds: CGFloat = collectionViewSizeWidth + contentOffset.x - sectionInset.right
-
     // Recalculate the cell width when it intersects with the left collection
     // view's bounds. The cell should collapse within the collection view's
     // bounds until its width reaches 0.
-    if frame.minX < rightBounds && rightBounds < frame.maxX {
+    if frame.minX < rightBounds {
       frame.size.width = min(rightBounds - frame.origin.x, frame.size.width)
     }
 
-    cell.leadingSeparatorGradientViewHidden = true
-    cell.trailingSeparatorGradientViewHidden = true
-
-    /// Show the `leadingSeparator` and the approriaite `separatorGradientView`
-    /// before the cell intersects with the collection view's bounds.
-    if collectionView.contentSize.width > collectionView.frame.width {
-      let isRTL: Bool = collectionView.effectiveUserInterfaceLayoutDirection == .rightToLeft
+    /// Show the approriaite `separatorGradientView` before the cell intersects
+    /// with the collection view's bounds.
+    if isScrollable {
       if (frame.minX - TabStripConstants.TabItem.leadingSeparatorMinInset) <= leftBounds {
         if !isRTL {
-          cell.leadingSeparatorHidden = false
           cell.trailingSeparatorGradientViewHidden = false
         } else {
           cell.leadingSeparatorGradientViewHidden = false
@@ -228,7 +233,6 @@ class TabStripLayout: UICollectionViewFlowLayout {
           cell.trailingSeparatorGradientViewHidden =
             (frame.minX + TabStripConstants.TabItem.leadingSeparatorMinInset) >= rightBounds
         } else {
-          cell.leadingSeparatorHidden = false
           cell.trailingSeparatorGradientViewHidden = false
         }
       }

@@ -31,17 +31,16 @@ const CGFloat kCollapsedWidthThreshold = 150;
 const CGFloat kSeparatorWidth = 2;
 const CGFloat kSeparatorCornerRadius = 1;
 const CGFloat kSeparatorHeight = 18;
-const CGFloat kSeparatorHorizontalInset = 3;
+const CGFloat kSeparatorHorizontalInset = 2;
+const CGFloat kSeparatorGradientWidth = 8;
 
 // Content view constants.
 const CGFloat kFaviconLeadingMargin = 10;
 const CGFloat kCloseButtonMargin = 10;
-const CGFloat kTitleInset = 10.0;
-const CGFloat kFontSize = 14.0;
-const CGFloat kFaviconSize = 16.0;
-
-// Width of gradient views.
-const CGFloat kGradientWidth = 16.0f;
+const CGFloat kTitleInset = 10;
+const CGFloat kFontSize = 14;
+const CGFloat kFaviconSize = 16;
+const CGFloat kTitleGradientWidth = 16;
 
 // Z-Index of the selected cell.
 const NSInteger kSelectedZIndex = 10;
@@ -426,7 +425,8 @@ UIImage* DefaultFavicon() {
       constraintEqualToAnchor:_titleContainer.trailingAnchor];
   [NSLayoutConstraint activateConstraints:@[
     _titleGradientViewTrailingConstraint,
-    [_titleGradientView.widthAnchor constraintEqualToConstant:kGradientWidth],
+    [_titleGradientView.widthAnchor
+        constraintEqualToConstant:kTitleGradientWidth],
     [_titleGradientView.heightAnchor
         constraintEqualToAnchor:_titleContainer.heightAnchor],
     [_titleGradientView.centerYAnchor
@@ -496,7 +496,7 @@ UIImage* DefaultFavicon() {
     [_leadingSeparatorGradientView.leadingAnchor
         constraintEqualToAnchor:_leadingSeparatorView.trailingAnchor],
     [_leadingSeparatorGradientView.widthAnchor
-        constraintEqualToConstant:kGradientWidth],
+        constraintEqualToConstant:kSeparatorGradientWidth],
     [_leadingSeparatorGradientView.heightAnchor
         constraintEqualToAnchor:contentView.heightAnchor],
     [_leadingSeparatorGradientView.centerYAnchor
@@ -508,7 +508,7 @@ UIImage* DefaultFavicon() {
     [_trailingSeparatorGradientView.trailingAnchor
         constraintEqualToAnchor:_trailingSeparatorView.leadingAnchor],
     [_trailingSeparatorGradientView.widthAnchor
-        constraintEqualToConstant:kGradientWidth],
+        constraintEqualToConstant:kSeparatorGradientWidth],
     [_trailingSeparatorGradientView.heightAnchor
         constraintEqualToAnchor:contentView.heightAnchor],
     [_trailingSeparatorGradientView.centerYAnchor

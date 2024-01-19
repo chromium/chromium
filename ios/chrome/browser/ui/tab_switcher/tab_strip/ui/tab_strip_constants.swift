@@ -12,7 +12,7 @@ struct TabStripConstants {
     static let tabStripCellReuseIdentifier = "tabStripCellReuseIdentifier"
     static let tabStripCellPrefixIdentifier = "tabStripCellPrefixIdentifier"
     static let topInset: CGFloat = 4
-    static let horizontalInset: CGFloat = 14
+    static let horizontalInset: CGFloat = 16
   }
 
   /// Tab item constants.
@@ -22,6 +22,7 @@ struct TabStripConstants {
     static let maxWidth: CGFloat = 233
     static let horizontalSpacing: CGFloat = 6
     static let leadingSeparatorMinInset: CGFloat = 8
+    static let horizontalInset: CGFloat = 4
   }
 
   /// New tab button constants.
@@ -44,8 +45,7 @@ struct TabStripConstants {
     static let smallSeparatorHeight: CGFloat = 12
     static let reuglarSeparatorHeight: CGFloat = 18
     static let horizontalInset: CGFloat = 4
-    static let leadingInset: CGFloat = 3
-    static let trailingInset: CGFloat = 6
+    static let leadingInset: CGFloat = 6
   }
 
 }

@@ -39,7 +39,7 @@ class TabStripDecorationView: UIView {
         equalTo: smallSeparator.trailingAnchor,
         constant: TabStripConstants.SeparatorView.horizontalInset),
       regularSeparator.trailingAnchor.constraint(
-        equalTo: self.trailingAnchor, constant: -TabStripConstants.SeparatorView.trailingInset),
+        equalTo: self.trailingAnchor),
       regularSeparator.widthAnchor.constraint(
         equalToConstant: TabStripConstants.SeparatorView.separatorWidth),
       regularSeparator.heightAnchor.constraint(

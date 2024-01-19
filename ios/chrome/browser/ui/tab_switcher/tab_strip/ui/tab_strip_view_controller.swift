@@ -115,7 +115,6 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
       trailingSeparatorView.bottomAnchor.constraint(
         equalTo: collectionView.bottomAnchor),
     ])
-
   }
 
   // MARK: - TabStripConsumer
