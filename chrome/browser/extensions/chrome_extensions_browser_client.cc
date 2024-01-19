@@ -63,6 +63,7 @@
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_loader_factory.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/channel_info.h"
@@ -368,6 +369,14 @@ void ChromeExtensionsBrowserClient::GetEarlyExtensionPrefsObservers(
 ProcessManagerDelegate*
 ChromeExtensionsBrowserClient::GetProcessManagerDelegate() const {
   return process_manager_delegate_.get();
+}
+
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+ChromeExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
+    int frame_tree_node_id,
+    content::BrowserContext* browser_context) {
+  return web_app::IsolatedWebAppURLLoaderFactory::Create(frame_tree_node_id,
+                                                         browser_context);
 }
 
 std::unique_ptr<ExtensionHostDelegate>

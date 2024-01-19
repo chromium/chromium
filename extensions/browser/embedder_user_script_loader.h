@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_WEB_UI_USER_SCRIPT_LOADER_H_
-#define EXTENSIONS_BROWSER_WEB_UI_USER_SCRIPT_LOADER_H_
+#ifndef EXTENSIONS_BROWSER_EMBEDDER_USER_SCRIPT_LOADER_H_
+#define EXTENSIONS_BROWSER_EMBEDDER_USER_SCRIPT_LOADER_H_
 
 #include <stddef.h>
 
@@ -11,26 +11,24 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "extensions/browser/url_fetcher.h"
 #include "extensions/browser/user_script_loader.h"
-#include "extensions/common/mojom/host_id.mojom-forward.h"
-
-class GURL;
-class WebUIURLFetcher;
+#include "extensions/common/mojom/host_id.mojom.h"
 
 namespace content {
 class BrowserContext;
 }
 
-// UserScriptLoader for WebUI.
-class WebUIUserScriptLoader : public extensions::UserScriptLoader {
+// UserScriptLoader for embedders, such as WebUI and Controlled Frame.
+class EmbedderUserScriptLoader : public extensions::UserScriptLoader {
  public:
-  WebUIUserScriptLoader(content::BrowserContext* browser_context,
-                        const GURL& url);
+  EmbedderUserScriptLoader(content::BrowserContext* browser_context,
+                           const extensions::mojom::HostID& host_id);
 
-  WebUIUserScriptLoader(const WebUIUserScriptLoader&) = delete;
-  WebUIUserScriptLoader& operator=(const WebUIUserScriptLoader&) = delete;
+  EmbedderUserScriptLoader(const EmbedderUserScriptLoader&) = delete;
+  EmbedderUserScriptLoader& operator=(const EmbedderUserScriptLoader&) = delete;
 
-  ~WebUIUserScriptLoader() override;
+  ~EmbedderUserScriptLoader() override;
 
  private:
   struct UserScriptRenderInfo;
@@ -46,23 +44,23 @@ class WebUIUserScriptLoader : public extensions::UserScriptLoader {
                    LoadScriptsCallback callback) override;
 
   // Called at the end of each fetch, tracking whether all fetches are done.
-  void OnSingleWebUIURLFetchComplete(
+  void OnSingleEmbedderURLFetchComplete(
       extensions::UserScript::Content* script_file,
       bool success,
       std::unique_ptr<std::string> data);
 
   // Called when the loads of the user scripts are done.
-  void OnWebUIURLFetchComplete();
+  void OnEmbedderURLFetchComplete();
 
   // Creates WebUiURLFetchers for the given `contents`.
-  void CreateWebUIURLFetchers(
+  void CreateEmbedderURLFetchers(
       const extensions::UserScript::ContentList& contents,
       int render_process_id,
       int render_frame_id);
 
-  // Caches the render info of script from WebUI when AddScripts is called.
+  // Caches the render info of script from embedders when AddScripts is called.
   // When starting to load the script, we look up this map to retrieve the
-  // render info. It is used for the script from WebUI only, since the fetch
+  // render info. It is used for the script from embedders only, since the fetch
   // of script content requires the info of associated render.
   UserScriptRenderInfoMap script_render_info_map_;
 
@@ -74,7 +72,9 @@ class WebUIUserScriptLoader : public extensions::UserScriptLoader {
 
   LoadScriptsCallback scripts_loaded_callback_;
 
-  std::vector<std::unique_ptr<WebUIURLFetcher>> fetchers_;
+  std::vector<std::unique_ptr<extensions::URLFetcher>> fetchers_;
+
+  base::WeakPtrFactory<EmbedderUserScriptLoader> weak_ptr_factory_{this};
 };
 
-#endif  // EXTENSIONS_BROWSER_WEB_UI_USER_SCRIPT_LOADER_H_
+#endif  // EXTENSIONS_BROWSER_EMBEDDER_USER_SCRIPT_LOADER_H_

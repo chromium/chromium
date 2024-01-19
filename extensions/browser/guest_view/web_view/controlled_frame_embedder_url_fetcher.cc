@@ -1,12 +1,14 @@
-// Copyright 2015 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/guest_view/web_view/web_ui/web_ui_url_fetcher.h"
+#include "extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_ui_url_loader_factory.h"
+#include "content/public/browser/storage_partition.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -16,19 +18,20 @@
 
 namespace extensions {
 
-WebUIURLFetcher::WebUIURLFetcher(int render_process_id,
-                                 int render_frame_id,
-                                 const GURL& url,
-                                 WebUILoadFileCallback callback)
+ControlledFrameEmbedderURLFetcher::ControlledFrameEmbedderURLFetcher(
+    int render_process_id,
+    int render_frame_id,
+    const GURL& url,
+    ControlledFrameEmbedderLoadFileCallback callback)
     : render_process_id_(render_process_id),
       render_frame_id_(render_frame_id),
       url_(url),
       callback_(std::move(callback)) {}
 
-WebUIURLFetcher::~WebUIURLFetcher() {
-}
+ControlledFrameEmbedderURLFetcher::~ControlledFrameEmbedderURLFetcher() =
+    default;
 
-void WebUIURLFetcher::Start() {
+void ControlledFrameEmbedderURLFetcher::Start() {
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
   if (!render_frame_host) {
@@ -36,18 +39,22 @@ void WebUIURLFetcher::Start() {
     return;
   }
 
+  // Get ExtensionBrowserClient instance
   mojo::Remote<network::mojom::URLLoaderFactory> factory(
-      content::CreateWebUIURLLoaderFactory(render_frame_host, url_.scheme(),
-                                           {}));
+      extensions::ExtensionsBrowserClient::Get()
+          ->GetControlledFrameEmbedderURLLoader(
+              render_frame_host->GetFrameTreeNodeId(),
+              render_frame_host->GetBrowserContext()));
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("webui_content_scripts_download", R"(
+      net::DefineNetworkTrafficAnnotation(
+          "controlled_frame_content_scripts_download", R"(
         semantics {
-          sender: "WebView"
+          sender: "Controlled Frame"
           description:
-            "When a WebView is embedded within a WebUI, it needs to fetch the "
-            "embedder's content scripts from Chromium's network stack for its "
-            "content scripts injection API."
+            "When a Controlled Frame is embedded within an embedder, it needs "
+            "to fetch the embedder's content scripts from Chromium's network "
+            "stack for its content scripts injection API."
           trigger: "The content script injection API is called."
           data: "URL of the script file to be downloaded."
           destination: LOCAL
@@ -65,15 +72,17 @@ void WebUIURLFetcher::Start() {
   fetcher_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                               traffic_annotation);
   fetcher_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      factory.get(), base::BindOnce(&WebUIURLFetcher::OnURLLoaderComplete,
-                                    weak_ptr_factory_.GetWeakPtr()));
+      factory.get(),
+      base::BindOnce(&ControlledFrameEmbedderURLFetcher::OnURLLoaderComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void WebUIURLFetcher::OnURLLoaderComplete(
+void ControlledFrameEmbedderURLFetcher::OnURLLoaderComplete(
     std::unique_ptr<std::string> response_body) {
   int response_code = 0;
-  if (fetcher_->ResponseInfo() && fetcher_->ResponseInfo()->headers)
+  if (fetcher_->ResponseInfo() && fetcher_->ResponseInfo()->headers) {
     response_code = fetcher_->ResponseInfo()->headers->response_code();
+  }
 
   fetcher_.reset();
   std::unique_ptr<std::string> data;

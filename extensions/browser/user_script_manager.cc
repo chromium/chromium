@@ -41,11 +41,9 @@ UserScriptLoader* UserScriptManager::GetUserScriptLoaderByID(
   switch (host_id.type) {
     case mojom::HostID::HostType::kExtensions:
       return GetUserScriptLoaderForExtension(host_id.id);
-    // TODO(cmp): Investigate improvements to load files for Controlled Frame.
-    //            crbug.com/1511295, b/316171914
     case mojom::HostID::HostType::kControlledFrameEmbedder:
     case mojom::HostID::HostType::kWebUi:
-      return GetUserScriptLoaderForWebUI(GURL(host_id.id));
+      return GetUserScriptLoaderForEmbedder(host_id);
   }
 }
 
@@ -62,11 +60,22 @@ ExtensionUserScriptLoader* UserScriptManager::GetUserScriptLoaderForExtension(
              : it->second.get();
 }
 
-WebUIUserScriptLoader* UserScriptManager::GetUserScriptLoaderForWebUI(
-    const GURL& url) {
-  auto it = webui_script_loaders_.find(url);
-  return (it == webui_script_loaders_.end()) ? CreateWebUIUserScriptLoader(url)
-                                             : it->second.get();
+EmbedderUserScriptLoader* UserScriptManager::GetUserScriptLoaderForEmbedder(
+    const mojom::HostID& host_id) {
+  auto it = embedder_script_loaders_.find(host_id);
+  if (it != embedder_script_loaders_.end()) {
+    return it->second.get();
+  }
+
+  switch (host_id.type) {
+    case mojom::HostID::HostType::kControlledFrameEmbedder:
+    case mojom::HostID::HostType::kWebUi:
+      return CreateEmbedderUserScriptLoader(host_id);
+    case mojom::HostID::HostType::kExtensions:
+      break;
+  }
+  NOTREACHED();
+  return nullptr;
 }
 
 void UserScriptManager::SetUserScriptSourceEnabledForExtensions(
@@ -146,14 +155,14 @@ ExtensionUserScriptLoader* UserScriptManager::CreateExtensionUserScriptLoader(
   return loader;
 }
 
-WebUIUserScriptLoader* UserScriptManager::CreateWebUIUserScriptLoader(
-    const GURL& url) {
-  CHECK(!base::Contains(webui_script_loaders_, url));
-  // Inserts a new WebUIUserScriptLoader and returns a ptr to it.
-  WebUIUserScriptLoader* loader =
-      webui_script_loaders_
-          .emplace(url, std::make_unique<WebUIUserScriptLoader>(
-                            browser_context_, url))
+EmbedderUserScriptLoader* UserScriptManager::CreateEmbedderUserScriptLoader(
+    const mojom::HostID& host_id) {
+  CHECK(!base::Contains(embedder_script_loaders_, host_id));
+  // Inserts a new EmbedderUserScriptLoader and returns a ptr to it.
+  EmbedderUserScriptLoader* loader =
+      embedder_script_loaders_
+          .emplace(host_id, std::make_unique<EmbedderUserScriptLoader>(
+                                browser_context_, host_id))
           .first->second.get();
 
   return loader;

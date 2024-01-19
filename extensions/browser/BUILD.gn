@@ -29,6 +29,12 @@ group("browser") {
   ]
 }
 
+source_set("url_fetcher") {
+  visibility = [ "./*" ]
+
+  sources = [ "url_fetcher.h" ]
+}
+
 # A group of helpers to instantiate the set of all browser context keyed service
 # factories, including both the API methods and core system services.
 source_set("browser_context_keyed_service_factories") {
@@ -289,6 +295,8 @@ source_set("browser_sources") {
     "crx_file_info.h",
     "deferred_start_render_host.h",
     "disable_reason.h",
+    "embedder_user_script_loader.cc",
+    "embedder_user_script_loader.h",
     "error_map.cc",
     "error_map.h",
     "event_listener_map.cc",
@@ -437,6 +445,8 @@ source_set("browser_sources") {
 
     # TODO(crbug.com/730220): Ideally web_view should be a separate target on
     # which the extension system depends.
+    "guest_view/web_view/controlled_frame_embedder_url_fetcher.cc",
+    "guest_view/web_view/controlled_frame_embedder_url_fetcher.h",
     "guest_view/web_view/javascript_dialog_helper.cc",
     "guest_view/web_view/javascript_dialog_helper.h",
     "guest_view/web_view/web_view_constants.cc",
@@ -557,6 +567,7 @@ source_set("browser_sources") {
     "uninstall_reason.h",
     "unloaded_extension_reason.h",
     "update_observer.h",
+    "url_fetcher.h",
     "url_loader_factory_manager.cc",
     "url_loader_factory_manager.h",
     "url_request_util.cc",
@@ -575,8 +586,6 @@ source_set("browser_sources") {
     "warning_service_factory.h",
     "warning_set.cc",
     "warning_set.h",
-    "web_ui_user_script_loader.cc",
-    "web_ui_user_script_loader.h",
     "zipfile_installer.cc",
     "zipfile_installer.h",
   ]

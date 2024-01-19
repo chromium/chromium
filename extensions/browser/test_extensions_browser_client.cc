@@ -196,6 +196,13 @@ ProcessManagerDelegate* TestExtensionsBrowserClient::GetProcessManagerDelegate()
   return process_manager_delegate_;
 }
 
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+TestExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
+    int frame_tree_node_id,
+    content::BrowserContext* browser_context) {
+  return mojo::PendingRemote<network::mojom::URLLoaderFactory>();
+}
+
 std::unique_ptr<ExtensionHostDelegate>
 TestExtensionsBrowserClient::CreateExtensionHostDelegate() {
   return nullptr;
