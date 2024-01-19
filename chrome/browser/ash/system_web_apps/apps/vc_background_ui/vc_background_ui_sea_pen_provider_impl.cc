@@ -52,7 +52,8 @@ VcBackgroundUISeaPenProviderImpl::VcBackgroundUISeaPenProviderImpl(
         wallpaper_fetcher_delegate)
     : PersonalizationAppSeaPenProviderBase(
           web_ui,
-          std::move(wallpaper_fetcher_delegate)) {}
+          std::move(wallpaper_fetcher_delegate),
+          manta::proto::FeatureName::CHROMEOS_VC_BACKGROUNDS) {}
 
 VcBackgroundUISeaPenProviderImpl::~VcBackgroundUISeaPenProviderImpl() = default;
 

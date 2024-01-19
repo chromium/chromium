@@ -31,7 +31,8 @@ manta::proto::Request CreateMantaRequest(
     const ash::personalization_app::mojom::SeaPenQueryPtr& query,
     std::optional<uint32_t> generation_seed,
     int num_outputs,
-    const gfx::Size& size);
+    const gfx::Size& size,
+    manta::proto::FeatureName feature_name);
 
 }  // namespace wallpaper_handlers
 

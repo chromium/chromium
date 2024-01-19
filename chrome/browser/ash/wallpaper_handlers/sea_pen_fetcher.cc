@@ -135,6 +135,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
   ~SeaPenFetcherImpl() override = default;
 
   void FetchThumbnails(
+      manta::proto::FeatureName feature_name,
       const ash::personalization_app::mojom::SeaPenQueryPtr& query,
       OnFetchThumbnailsComplete callback) override {
     if (!snapper_provider_) {
@@ -159,7 +160,8 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
     }
     pending_fetch_thumbnails_callback_ = std::move(callback);
     auto request = CreateMantaRequest(query, std::nullopt,
-                                      /*num_outputs=*/8, kDesiredThumbnailSize);
+                                      /*num_outputs=*/8, kDesiredThumbnailSize,
+                                      feature_name);
     snapper_provider_->Call(
         request, base::BindOnce(&SeaPenFetcherImpl::OnFetchThumbnailsDone,
                                 weak_ptr_factory_.GetWeakPtr(), query.Clone()));
@@ -191,6 +193,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
   }
 
   void FetchWallpaper(
+      manta::proto::FeatureName feature_name,
       const ash::SeaPenImage& thumbnail,
       const ash::personalization_app::mojom::SeaPenQueryPtr& query,
       OnFetchWallpaperComplete callback) override {
@@ -212,7 +215,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
 
     snapper_provider_->Call(
         CreateMantaRequest(query, thumbnail.id, /*num_outputs=*/1,
-                           GetLargestDisplaySizeLandscape()),
+                           GetLargestDisplaySizeLandscape(), feature_name),
         base::BindOnce(&SeaPenFetcherImpl::OnFetchWallpaperDone,
                        weak_ptr_factory_.GetWeakPtr()));
   }

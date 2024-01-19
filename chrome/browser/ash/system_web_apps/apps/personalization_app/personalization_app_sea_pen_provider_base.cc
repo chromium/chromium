@@ -99,8 +99,10 @@ std::string QueryInfoToXmpString(const std::string& query_info) {
 PersonalizationAppSeaPenProviderBase::PersonalizationAppSeaPenProviderBase(
     content::WebUI* web_ui,
     std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
-        wallpaper_fetcher_delegate)
-    : profile_(Profile::FromWebUI(web_ui)),
+        wallpaper_fetcher_delegate,
+    manta::proto::FeatureName feature_name)
+    : feature_name_(feature_name),
+      profile_(Profile::FromWebUI(web_ui)),
       wallpaper_fetcher_delegate_(std::move(wallpaper_fetcher_delegate)) {}
 
 PersonalizationAppSeaPenProviderBase::~PersonalizationAppSeaPenProviderBase() =
@@ -130,9 +132,10 @@ void PersonalizationAppSeaPenProviderBase::SearchWallpaper(
   auto* sea_pen_fetcher = GetOrCreateSeaPenFetcher();
   CHECK(sea_pen_fetcher);
   sea_pen_fetcher->FetchThumbnails(
-      query, base::BindOnce(
-                 &PersonalizationAppSeaPenProviderBase::OnFetchThumbnailsDone,
-                 weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      feature_name_, query,
+      base::BindOnce(
+          &PersonalizationAppSeaPenProviderBase::OnFetchThumbnailsDone,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void PersonalizationAppSeaPenProviderBase::SelectSeaPenThumbnail(
@@ -151,7 +154,7 @@ void PersonalizationAppSeaPenProviderBase::SelectSeaPenThumbnail(
   // should not be null when a thumbnail is selected.
   CHECK(last_query_);
   sea_pen_fetcher->FetchWallpaper(
-      it->second, last_query_,
+      feature_name_, it->second, last_query_,
       base::BindOnce(
           &PersonalizationAppSeaPenProviderBase::OnFetchWallpaperDone,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

@@ -191,13 +191,29 @@ export class SeaPenImagesElement extends WithSeaPenStore {
       case SeaPenTemplateId.kCharacters:
         return 'Characters';
       case SeaPenTemplateId.kTerrain:
-        return 'Terrain';
+        return 'Landscape';
       case SeaPenTemplateId.kCurious:
         return 'Curious';
       case SeaPenTemplateId.kDreamscapes:
         return 'Dreamscapes';
       case SeaPenTemplateId.kTranslucent:
         return 'Translucent';
+
+      case SeaPenTemplateId.kVcBackgroundSimple:
+        return 'Simple';
+      case SeaPenTemplateId.kVcBackgroundOffice:
+        return 'Stylish Office';
+      case SeaPenTemplateId.kVcBackgroundTerrainVc:
+        return 'Terrain';
+      case SeaPenTemplateId.kVcBackgroundCafe:
+        return 'Cafe';
+      case SeaPenTemplateId.kVcBackgroundArt:
+        return 'Classic Art';
+      case SeaPenTemplateId.kVcBackgroundCharacters:
+        return 'Characters';
+      case SeaPenTemplateId.kVcBackgroundDreamscapesVc:
+        return 'Dreamscapes';
+
       case 'Query':
         return 'Query';
     }

@@ -399,6 +399,11 @@ generate_grd("build_grd") {
     "sea_pen/sea_pen_images/sea_pen_terrain.jpg",
     "sea_pen/sea_pen_images/sea_pen_tile.jpg",
     "sea_pen/sea_pen_images/sea_pen_translucent.jpg",
+    "sea_pen/sea_pen_images/sea_pen_dreamscapes_vc.jpg",
+    "sea_pen/sea_pen_images/sea_pen_cafe.jpg",
+    "sea_pen/sea_pen_images/sea_pen_office.jpg",
+    "sea_pen/sea_pen_images/sea_pen_simple.jpg",
+    "sea_pen/sea_pen_images/sea_pen_terrain_vc.jpg",
     "quick_unlock/fingerprint_enrollment.json",
     "quick_unlock/fingerprint_check.json",
   ]

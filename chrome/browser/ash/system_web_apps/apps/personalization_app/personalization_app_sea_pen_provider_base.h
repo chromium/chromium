@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/manta/manta_status.h"
+#include "components/manta/proto/manta.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -46,7 +47,8 @@ class PersonalizationAppSeaPenProviderBase
   PersonalizationAppSeaPenProviderBase(
       content::WebUI* web_ui,
       std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
-          wallpaper_fetcher_delegate);
+          wallpaper_fetcher_delegate,
+      manta::proto::FeatureName feature_name);
 
   ~PersonalizationAppSeaPenProviderBase() override;
 
@@ -87,6 +89,8 @@ class PersonalizationAppSeaPenProviderBase
       const SeaPenImage& sea_pen_image,
       const std::string& query_info,
       base::OnceCallback<void(bool success)> callback) = 0;
+
+  manta::proto::FeatureName feature_name_;
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   const raw_ptr<Profile> profile_;

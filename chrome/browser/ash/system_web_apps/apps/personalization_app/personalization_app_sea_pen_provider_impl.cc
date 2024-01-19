@@ -30,7 +30,8 @@ PersonalizationAppSeaPenProviderImpl::PersonalizationAppSeaPenProviderImpl(
         wallpaper_fetcher_delegate)
     : PersonalizationAppSeaPenProviderBase(
           web_ui,
-          std::move(wallpaper_fetcher_delegate)) {}
+          std::move(wallpaper_fetcher_delegate),
+          manta::proto::FeatureName::CHROMEOS_WALLPAPER) {}
 
 PersonalizationAppSeaPenProviderImpl::~PersonalizationAppSeaPenProviderImpl() =
     default;

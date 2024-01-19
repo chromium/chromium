@@ -34,7 +34,8 @@ std::vector<ash::SeaPenImage> MakeFakeImageResults() {
 MockSeaPenFetcher::MockSeaPenFetcher() {
   ON_CALL(*this, FetchThumbnails)
       .WillByDefault(
-          [](const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+          [](manta::proto::FeatureName feature_name,
+             const ash::personalization_app::mojom::SeaPenQueryPtr& query,
              OnFetchThumbnailsComplete callback) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
@@ -44,7 +45,8 @@ MockSeaPenFetcher::MockSeaPenFetcher() {
 
   ON_CALL(*this, FetchWallpaper)
       .WillByDefault(
-          [](const ash::SeaPenImage& image,
+          [](manta::proto::FeatureName feature_name,
+             const ash::SeaPenImage& image,
              const ash::personalization_app::mojom::SeaPenQueryPtr& query,
              OnFetchWallpaperComplete callback) {
             std::move(callback).Run(

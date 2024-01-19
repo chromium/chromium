@@ -89,8 +89,8 @@ suite('VcBackgroundUITest', () => {
         'Expected template text is shown for Classic art');
 
     assertEquals(
-        'chrome://vc-background/?seaPenTemplateId=2', window.location.href,
-        'Classic art template id is added to url');
+        'chrome://vc-background/?seaPenTemplateId=104', window.location.href,
+        'VC Background Classic art template id is added to url');
 
     // Breadcrumbs have not changed yet.
     assertArrayEquals(
@@ -120,7 +120,7 @@ suite('VcBackgroundUITest', () => {
     await waitAfterNextRender(seaPenTemplateQuery);
 
     assertEquals(
-        'chrome://vc-background/results?seaPenTemplateId=2',
+        'chrome://vc-background/results?seaPenTemplateId=104',
         window.location.href,
         'App is on /results and Classic art template id is added to url');
 
@@ -133,7 +133,7 @@ suite('VcBackgroundUITest', () => {
   test('allows changing templates via breadcrumbs dropdown menu', async () => {
     // Navigate directly to a results page with template in breadcrumbs.
     const seaPenRouter = getSeaPenRouter();
-    seaPenRouter.goToRoute(SeaPenPaths.RESULTS, {seaPenTemplateId: '2'});
+    seaPenRouter.goToRoute(SeaPenPaths.RESULTS, {seaPenTemplateId: '104'});
     await waitAfterNextRender(seaPenRouter);
 
     const breadcrumbElement = getVcBackgroundBreadcrumbs();
@@ -161,20 +161,22 @@ suite('VcBackgroundUITest', () => {
     const allMenuItems = dropdownMenu.querySelectorAll('button');
     assertEquals(allMenuItems.length, getSeaPenTemplates().length);
 
-    // Click on the 'Minerals' template.
-    allMenuItems[1]!.click();
+    // Click on the 'Office' template.
+    const officeTitle = 'Stylish office';
+    Array.from(allMenuItems)
+        .find(el => el.textContent?.trim() === officeTitle)!.click();
 
     await waitAfterNextRender(breadcrumbElement);
 
     // We should be redirected to the new template page.
     assertEquals(
-        'chrome://vc-background/results?seaPenTemplateId=1',
+        'chrome://vc-background/results?seaPenTemplateId=101',
         window.location.href,
-        'App is on /results and Minerals template id is added to url');
+        'App is on /results and Office template id is added to url');
 
-    // Breadcrumbs should now show 'Minerals'.
+    // Breadcrumbs should now show 'Stylish office'.
     assertArrayEquals(
         getVcBackgroundBreadcrumbsText(),
-        [getVcBackgroundBreadcrumbs().i18n('seaPenLabel'), 'Minerals']);
+        [getVcBackgroundBreadcrumbs().i18n('seaPenLabel'), officeTitle]);
   });
 });
