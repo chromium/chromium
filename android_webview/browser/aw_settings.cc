@@ -242,35 +242,32 @@ void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
           blink::UserAgentMetadata();
     }
 
-    if (base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint)) {
-      // Generate user-agent client hints in the following three cases:
-      // 1. If user provide the user-agent metadata overrides, we use the
-      // override data to populate the user-agent client hints.
-      // 2. Otherwise, if override user-agent contains default user-agent, we
-      // use system default user-agent metadata to populate the user-agent
-      // client hints.
-      // 3. Finally, if the above two cases don't match, we only populate system
-      // default low-entropy client hints.
-      if (ua_metadata_overridden) {
-        ScopedJavaLocalRef<jobject> java_ua_metadata =
-            Java_AwSettings_getUserAgentMetadataLocked(env, obj);
-        override_ua_with_metadata.ua_metadata_override =
-            FromJavaAwUserAgentMetadata(env, java_ua_metadata);
-        LogUserAgentMetadataAvailableType(
-            UserAgentMetadataAvailableType::kUserOverrides);
-      } else if (base::Contains(ua_string_override, ua_default)) {
-        override_ua_with_metadata.ua_metadata_override =
-            AwClientHintsControllerDelegate::
-                GetUserAgentMetadataOverrideBrand();
-        LogUserAgentMetadataAvailableType(
-            UserAgentMetadataAvailableType::kSystemDefault);
-      } else {
-        override_ua_with_metadata.ua_metadata_override =
-            AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
-                /*only_low_entropy_ch=*/true);
-        LogUserAgentMetadataAvailableType(
-            UserAgentMetadataAvailableType::kSystemDefaultLowEntropyOnly);
-      }
+    // Generate user-agent client hints in the following three cases:
+    // 1. If user provide the user-agent metadata overrides, we use the
+    // override data to populate the user-agent client hints.
+    // 2. Otherwise, if override user-agent contains default user-agent, we
+    // use system default user-agent metadata to populate the user-agent
+    // client hints.
+    // 3. Finally, if the above two cases don't match, we only populate system
+    // default low-entropy client hints.
+    if (ua_metadata_overridden) {
+      ScopedJavaLocalRef<jobject> java_ua_metadata =
+          Java_AwSettings_getUserAgentMetadataLocked(env, obj);
+      override_ua_with_metadata.ua_metadata_override =
+          FromJavaAwUserAgentMetadata(env, java_ua_metadata);
+      LogUserAgentMetadataAvailableType(
+          UserAgentMetadataAvailableType::kUserOverrides);
+    } else if (base::Contains(ua_string_override, ua_default)) {
+      override_ua_with_metadata.ua_metadata_override =
+          AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand();
+      LogUserAgentMetadataAvailableType(
+          UserAgentMetadataAvailableType::kSystemDefault);
+    } else {
+      override_ua_with_metadata.ua_metadata_override =
+          AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
+              /*only_low_entropy_ch=*/true);
+      LogUserAgentMetadataAvailableType(
+          UserAgentMetadataAvailableType::kSystemDefaultLowEntropyOnly);
     }
 
     // Set overridden user-agent and default client hints metadata if applied.

@@ -116,7 +116,7 @@ constexpr unsigned expected_requested_third_party_client_hints_number = 24u;
 constexpr unsigned expected_pre_merge_third_party_client_hints_number = 16u;
 
 constexpr char kDefaultFeatures[] =
-    "UserAgentClientHint,CriticalClientHint,AcceptCHFrame,"
+    "CriticalClientHint,AcceptCHFrame,"
     "ClientHintsFormFactor,ClientHintsPrefersReducedTransparency,"
     "UseNewAlpsCodepointHttp2";
 
@@ -3338,7 +3338,7 @@ class ClientHintsWebHoldbackBrowserTest : public ClientHintsBrowserTest {
 
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitFromCommandLine(
-        "UserAgentClientHint,ClientHintsFormFactor,"
+        "ClientHintsFormFactor,"
         "ClientHintsPrefersReducedTransparency",
         "");
     feature_list->RegisterFieldTrialOverride(
@@ -3446,7 +3446,7 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     // Don't include ClientHintsDPR in the enabled features; we will verify that
     // sec-ch-dpr is not included.
     feature_list->InitFromCommandLine(
-        "UserAgentClientHint,CriticalClientHint,AcceptCHFrame",
+        "CriticalClientHint,AcceptCHFrame",
         "ClientHintsDPR,UseNewAlpsCodepointHttp2");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
 
@@ -4036,7 +4036,7 @@ class ClientHintsBrowserTestWithEmulatedMedia
  public:
   ClientHintsBrowserTestWithEmulatedMedia()
       : ClientHintsBrowserTestWithEmulatedMedia(
-            "UserAgentClientHint,AcceptCHFrame,"
+            "AcceptCHFrame,"
             "ClientHintsPrefersReducedTransparency,",
             "UseNewAlpsCodepointHttp2") {}
 

@@ -3949,10 +3949,6 @@
       public: true,
     },
     {
-      name: "UserAgentClientHint",
-      status: "stable",
-    },
-    {
       // https://chromestatus.com/feature/5132477781245952
       name: "UserValidUserInvalid",
       status: "stable",

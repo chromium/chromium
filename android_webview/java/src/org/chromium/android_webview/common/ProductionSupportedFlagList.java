@@ -145,9 +145,6 @@ public final class ProductionSupportedFlagList {
                 AwSwitches.WEBVIEW_ENABLE_APP_RECOVERY,
                 "Enables WebView to check for app recovery mitigations."),
         Flag.baseFeature(
-                BlinkFeatures.USER_AGENT_CLIENT_HINT,
-                "Enables user-agent client hints in WebView."),
-        Flag.baseFeature(
                 "DefaultPassthroughCommandDecoder", "Use the passthrough GLES2 command decoder."),
         Flag.baseFeature(
                 GpuFeatures.WEBVIEW_SURFACE_CONTROL,

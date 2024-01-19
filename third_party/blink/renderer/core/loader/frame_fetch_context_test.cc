@@ -580,7 +580,6 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest,
  public:
   FrameFetchContextHintsTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        blink::features::kUserAgentClientHint,
         blink::features::kClientHintsPrefersReducedTransparency,
     };
     std::vector<base::test::FeatureRef> disabled_features = {};

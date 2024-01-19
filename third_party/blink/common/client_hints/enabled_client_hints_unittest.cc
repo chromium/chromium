@@ -24,7 +24,7 @@ class EnabledClientHintsTest : public testing::Test {
     // The UserAgentClientHint feature is enabled, and the
     // ClientHintsSaveData feature is disabled.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kUserAgentClientHint},
+        /*enabled_features=*/{},
         /*disabled_features=*/{blink::features::kClientHintsSaveData});
   }
 
