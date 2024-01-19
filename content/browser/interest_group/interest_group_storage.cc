@@ -34,6 +34,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "content/browser/interest_group/interest_group_ad.pb.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
@@ -4062,6 +4063,12 @@ base::FilePath DBPath(const base::FilePath& base) {
   return base.Append(kDatabasePath);
 }
 
+sql::DatabaseOptions GetDatabaseOptions() {
+  return sql::DatabaseOptions{
+      .wal_mode = base::FeatureList::IsEnabled(
+          features::kFledgeEnableWALForInterestGroupStorage)};
+}
+
 }  // namespace
 
 constexpr base::TimeDelta InterestGroupStorage::kHistoryLength;
@@ -4082,7 +4089,7 @@ InterestGroupStorage::InterestGroupStorage(const base::FilePath& path)
           blink::features::kInterestGroupStorageMaxStoragePerOwner.Get()),
       max_ops_before_maintenance_(
           blink::features::kInterestGroupStorageMaxOpsBeforeMaintenance.Get()),
-      db_(std::make_unique<sql::Database>(sql::DatabaseOptions{})),
+      db_(std::make_unique<sql::Database>(GetDatabaseOptions())),
       db_maintenance_timer_(FROM_HERE,
                             kIdlePeriod,
                             this,
@@ -4118,7 +4125,7 @@ bool InterestGroupStorage::EnsureDBInitialized() {
 bool InterestGroupStorage::InitializeDB() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{});
+  db_ = std::make_unique<sql::Database>(GetDatabaseOptions());
   db_->set_error_callback(base::BindRepeating(
       &InterestGroupStorage::DatabaseErrorCallback, base::Unretained(this)));
   db_->set_histogram_tag("InterestGroups");
