@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
+#include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 
 class GURL;
@@ -33,7 +34,6 @@ class NoStatePrefetchContents;
 
 namespace safe_browsing {
 
-class BaseBlockingPage;
 class PingManager;
 
 struct HitReport;
@@ -142,6 +142,14 @@ class SafeBrowsingUIManager : public BaseUIManager {
   // |resource| is the unsafe resource for which the warning is displayed.
   void StartDisplayingBlockingPage(const UnsafeResource& resource);
 
+  // Creates a blocking page, used for both pre commit and post commit warnings.
+  // Override is using a different blocking page.
+  security_interstitials::SecurityInterstitialPage* CreateBlockingPage(
+      content::WebContents* contents,
+      const GURL& blocked_url,
+      const UnsafeResource& unsafe_resource,
+      bool forward_extension_event) override;
+
   // Called to stop or shutdown operations on the UI thread. This may be called
   // multiple times during the life of the UIManager. Should be called
   // on UI thread. If shutdown is true, the manager is disabled permanently.
@@ -211,9 +219,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
       const std::string& threat_type,
       safe_browsing::RTLookupResponse rt_lookup_response);
 #endif
-  SafeBrowsingBlockingPageFactory* blocking_page_factory() {
-    return blocking_page_factory_.get();
-  }
 
   const std::string app_locale() const override;
   history::HistoryService* history_service(
@@ -251,13 +256,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
 
   static GURL GetMainFrameAllowlistUrlForResourceForTesting(
       const safe_browsing::SafeBrowsingUIManager::UnsafeResource& resource);
-
-  // Creates a blocking page, used for interstitials triggered by subresources.
-  // Override is using a different blocking page.
-  BaseBlockingPage* CreateBlockingPageForSubresource(
-      content::WebContents* contents,
-      const GURL& blocked_url,
-      const UnsafeResource& unsafe_resource) override;
 
   std::unique_ptr<Delegate> delegate_;
 

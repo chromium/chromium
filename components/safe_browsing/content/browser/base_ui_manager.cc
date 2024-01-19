@@ -15,6 +15,7 @@
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
 #include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_context.h"
@@ -353,11 +354,10 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
 
     // In some cases the interstitial must be loaded here since there will be
     // no navigation to intercept in the throttle.
-    // TODO(crbug.com/1501194): With async Safe Browsing check, this code path
-    // may be triggered for top-document warning. Update the below function and
-    // consolidate it with SafeBrowsingNavigationThrottle::WillFailRequest.
-    std::unique_ptr<BaseBlockingPage> blocking_page = base::WrapUnique(
-        CreateBlockingPageForSubresource(web_contents, unsafe_url, resource));
+    std::unique_ptr<security_interstitials::SecurityInterstitialPage>
+        blocking_page = base::WrapUnique(
+            CreateBlockingPage(web_contents, unsafe_url, resource,
+                               /*forward_extension_event=*/true));
     base::WeakPtr<content::NavigationHandle> error_page_navigation_handle =
         web_contents->GetController().LoadPostCommitErrorPage(
             web_contents->GetPrimaryMainFrame(), unsafe_url,
@@ -380,10 +380,11 @@ void BaseUIManager::CreateAndSendHitReport(const UnsafeResource& resource) {}
 void BaseUIManager::CreateAndSendClientSafeBrowsingWarningShownReport(
     const UnsafeResource& resource) {}
 
-BaseBlockingPage* BaseUIManager::CreateBlockingPageForSubresource(
-    content::WebContents* contents,
-    const GURL& blocked_url,
-    const UnsafeResource& unsafe_resource) {
+security_interstitials::SecurityInterstitialPage*
+BaseUIManager::CreateBlockingPage(content::WebContents* contents,
+                                  const GURL& blocked_url,
+                                  const UnsafeResource& unsafe_resource,
+                                  bool forward_extension_event) {
   // TODO(carlosil): This can be removed once all implementations of SB use
   // committed interstitials. In the meantime, there is no create method for the
   // non-committed implementations, and this code won't be called if committed

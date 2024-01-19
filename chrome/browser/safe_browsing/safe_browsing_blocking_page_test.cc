@@ -3574,10 +3574,10 @@ class SafeBrowsingBlockingPageIDNTest
     resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
 
     auto* ui_manager = sb_service->ui_manager().get();
-    return ui_manager->blocking_page_factory()->CreateSafeBrowsingPage(
-        ui_manager, contents,
+    return ui_manager->CreateBlockingPage(
+        contents,
         is_subresource ? GURL("http://mainframe.example.com/") : request_url,
-        {resource}, true);
+        {resource}, /*forward_extension_event=*/false);
   }
 };
 

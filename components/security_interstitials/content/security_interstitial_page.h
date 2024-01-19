@@ -13,6 +13,7 @@
 #include "url/gurl.h"
 
 namespace content {
+class NavigationHandle;
 class WebContents;
 }
 
@@ -53,6 +54,12 @@ class SecurityInterstitialPage {
 
   // Invoked when the user interacts with the interstitial.
   virtual void CommandReceived(const std::string& command) {}
+
+  // If `this` was created for a post commit error page,
+  // `error_page_navigation_handle` is the navigation created for this blocking
+  // page.
+  virtual void CreatedPostCommitErrorPageNavigation(
+      content::NavigationHandle* error_page_navigation_handle) {}
 
   // Return the interstitial type for testing.
   virtual TypeID GetTypeForTesting();

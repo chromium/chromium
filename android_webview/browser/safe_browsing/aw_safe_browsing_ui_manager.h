@@ -9,6 +9,7 @@
 #include <string>
 
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
+#include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -74,10 +75,11 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
   ~AwSafeBrowsingUIManager() override;
 
  private:
-  safe_browsing::BaseBlockingPage* CreateBlockingPageForSubresource(
+  security_interstitials::SecurityInterstitialPage* CreateBlockingPage(
       content::WebContents* contents,
       const GURL& blocked_url,
-      const UnsafeResource& unsafe_resource) override;
+      const UnsafeResource& unsafe_resource,
+      bool forward_extension_event) override;
 
   // Called on the UI thread to create a URLLoaderFactory interface ptr for
   // the SB thread.

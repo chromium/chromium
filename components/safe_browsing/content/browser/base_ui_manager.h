@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/navigation_handle.h"
 
@@ -31,12 +32,12 @@ namespace safe_browsing {
 
 typedef unsigned ThreatSeverity;
 
-class BaseBlockingPage;
-
 // Construction needs to happen on the main thread.
 class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
  public:
   typedef security_interstitials::UnsafeResource UnsafeResource;
+  typedef security_interstitials::SecurityInterstitialPage
+      SecurityInterstitialPage;
 
   BaseUIManager();
 
@@ -51,6 +52,16 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   // -For subresources this will cancel the load, then call
   // LoadPostCommitErrorPage, which will show the interstitial.
   virtual void DisplayBlockingPage(const UnsafeResource& resource);
+
+  // Creates a blocking page, used for both pre commit and post commit warnings.
+  // Also forwards an interstitial shown extension event to embedder if
+  // |forward_extension_event| is true. Should be overridden with a blocking
+  // page implementation.
+  virtual SecurityInterstitialPage* CreateBlockingPage(
+      content::WebContents* contents,
+      const GURL& blocked_url,
+      const UnsafeResource& unsafe_resource,
+      bool forward_extension_event);
 
   // This is a no-op in the base class, but should be overridden to send threat
   // details. Called on the UI thread by the ThreatDetails with the report.
@@ -181,13 +192,6 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
 
  private:
   friend class base::RefCountedThreadSafe<BaseUIManager>;
-
-  // Creates a blocking page, used for interstitials triggered by subresources.
-  // Should be overridden with a blocking page implementation.
-  virtual BaseBlockingPage* CreateBlockingPageForSubresource(
-      content::WebContents* contents,
-      const GURL& blocked_url,
-      const UnsafeResource& unsafe_resource);
 
   // Stores unsafe resources so they can be fetched from a navigation throttle
   // in the committed interstitials flow. Implemented as a pair vector since

@@ -17,10 +17,6 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "url/gurl.h"
 
-namespace content {
-class NavigationHandle;
-}
-
 namespace security_interstitials {
 class SettingsPageHelper;
 }
@@ -74,12 +70,6 @@ class BaseBlockingPage
       PrefService* pref_service,
       std::unique_ptr<security_interstitials::SettingsPageHelper>
           settings_page_helper);
-
-  // If `this` was created for a post commit error page,
-  // `error_page_navigation_handle` is the navigation created for this blocking
-  // page.
-  virtual void CreatedPostCommitErrorPageNavigation(
-      content::NavigationHandle* error_page_navigation_handle) {}
 
   BaseSafeBrowsingErrorUI* sb_error_ui() const;
 
