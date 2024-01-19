@@ -37,8 +37,6 @@ import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
-import org.chromium.chrome.browser.dragdrop.DragDropGlobalState;
-import org.chromium.chrome.browser.dragdrop.DragDropGlobalState.TrackerToken;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -47,6 +45,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
+import org.chromium.ui.dragdrop.DragDropGlobalState;
+import org.chromium.ui.dragdrop.DragDropGlobalState.TrackerToken;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.widget.Toast;
@@ -306,9 +306,7 @@ public class TabDragSource implements View.OnDragListener {
 
         if (isDragSource()) return true;
 
-        var globalState = DragDropGlobalState.getState(dropEvent);
-        assert globalState != null;
-        Tab tabBeingDragged = globalState.getData().mTab;
+        Tab tabBeingDragged = getTabFromGlobalState(dropEvent);
         if (tabBeingDragged == null) {
             return false;
         }
@@ -358,8 +356,7 @@ public class TabDragSource implements View.OnDragListener {
 
         // If tab was dragged and dropped out of source toolbar but the drop was not handled,
         // move to a new window.
-        DragDropGlobalState globalState = getGlobalState();
-        Tab tabBeingDragged = globalState.getData().mTab;
+        Tab tabBeingDragged = getTabFromGlobalState(null);
         if (TabUiFeatureUtilities.isTabDragAsWindowEnabled()
                 && didExitToolbar
                 && !dropHandled
@@ -406,22 +403,27 @@ public class TabDragSource implements View.OnDragListener {
         builder.update(show);
     }
 
-    private DragDropGlobalState getGlobalState() {
-        return DragDropGlobalState.getState(sDragTrackerToken);
+    private Tab getTabFromGlobalState(@Nullable DragEvent dragEvent) {
+        DragDropGlobalState globalState =
+                dragEvent != null
+                        ? DragDropGlobalState.getState(dragEvent)
+                        : DragDropGlobalState.getState(sDragTrackerToken);
+        // We should only attempt to access this while we know there's an active drag.
+        assert globalState != null : "Attempting to access dragged tab with invalid drag state.";
+        assert globalState.getData() instanceof ChromeDropDataAndroid
+                : "Attempting to access dragged tab with wrong data type";
+        return ((ChromeDropDataAndroid) globalState.getData()).mTab;
     }
 
     private boolean isDragSource() {
-        DragDropGlobalState globalState = getGlobalState();
+        DragDropGlobalState globalState = DragDropGlobalState.getState(sDragTrackerToken);
         // May attempt to check source on drag end.
         if (globalState == null) return false;
         return globalState.isDragSourceInstance(mMultiInstanceManager.getCurrentInstanceId());
     }
 
     private boolean isDraggedTabIncognito() {
-        DragDropGlobalState globalState = getGlobalState();
-        // We should only attempt to access this while we know there's an active drag.
-        assert globalState != null : "Attempting to access dragged tab with invalid drag state.";
-        return globalState.getData().mTab.isIncognito();
+        return getTabFromGlobalState(null).isIncognito();
     }
 
     private int getTabIdFromClipData(ClipData.Item item) {

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabbed_mode;
 
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -133,6 +134,7 @@ import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerFacto
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.BooleanSupplier;
@@ -172,6 +174,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private Callback<Integer> mOnTabStripHeightChangedCallback;
     private MultiInstanceManager mMultiInstanceManager;
     private int mStatusIndicatorHeight;
+    private TouchEventObserver mDragDropTouchObserver;
 
     /**
      * A common {@link CallbackController} used for being notified when {@link TabSwitcher} or
@@ -463,6 +466,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mDesktopSiteSettingsIPHController = null;
         }
 
+        if (mCompositorViewHolderSupplier.get() != null && mDragDropTouchObserver != null) {
+            mCompositorViewHolderSupplier.get().removeTouchEventObserver(mDragDropTouchObserver);
+            mDragDropTouchObserver = null;
+        }
+
         super.onDestroy();
     }
 
@@ -585,6 +593,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mLayoutStateProviderOneShotSupplier);
 
             mCompositorViewHolderSupplier.get().setOnDragListener(chromeTabbedOnDragListener);
+
+            // Disable touch event while drag is in progress.
+            // TODO(crbug.com/1519687): Move onTouchEventObserver to CoordinatorLayoutForPointer.
+            mDragDropTouchObserver =
+                    new TouchEventObserver() {
+                        @Override
+                        public boolean onInterceptTouchEvent(MotionEvent e) {
+                            return DragDropGlobalState.hasValue();
+                        }
+                    };
+            mCompositorViewHolderSupplier.get().addTouchEventObserver(mDragDropTouchObserver);
         }
 
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {

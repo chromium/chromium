@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.dragdrop;
+package org.chromium.ui.dragdrop;
 
 import android.os.SystemClock;
 import android.view.DragEvent;
 import android.view.View.DragShadowBuilder;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 
@@ -51,13 +49,13 @@ public class DragDropGlobalState {
      * {@link TrackerToken} to retrieve and modify the state.
      *
      * @param dragSourceInstanceId Instance Id from the source window
-     * @param dropData {@link ChromeDropDataAndroid} used to start this drag and drop.
+     * @param dropData {@link DropDataAndroid} used to start this drag and drop.
      * @param dragShadowBuilder {@link DragShadowBuilder} used for starting the drag and drop.
      * @return Token used to retrieve and clear the global state.
      */
     public static TrackerToken store(
             int dragSourceInstanceId,
-            @NonNull ChromeDropDataAndroid dropData,
+            @NonNull DropDataAndroid dropData,
             @Nullable DragShadowBuilder dragShadowBuilder) {
         if (sGlobalStateHolder != null) {
             Log.w(
@@ -115,9 +113,9 @@ public class DragDropGlobalState {
     }
 
     private final int mDragSourceInstanceId;
-    private final @NonNull ChromeDropDataAndroid mDropData;
+    private final @NonNull DropDataAndroid mDropData;
 
-    DragDropGlobalState(int dragSourceInstanceId, @NonNull ChromeDropDataAndroid dropData) {
+    DragDropGlobalState(int dragSourceInstanceId, @NonNull DropDataAndroid dropData) {
         mDragSourceInstanceId = dragSourceInstanceId;
         mDropData = dropData;
     }
@@ -127,8 +125,8 @@ public class DragDropGlobalState {
         return mDragSourceInstanceId == instanceId;
     }
 
-    /** Return the {@link ChromeDropDataAndroid} held by the global state. */
-    public @NonNull ChromeDropDataAndroid getData() {
+    /** Return the {@link DropDataAndroid} held by the global state. */
+    public @NonNull DropDataAndroid getData() {
         return mDropData;
     }
 

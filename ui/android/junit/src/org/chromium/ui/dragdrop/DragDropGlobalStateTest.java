@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.dragdrop;
+package org.chromium.ui.dragdrop;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -14,34 +14,31 @@ import static org.mockito.Mockito.when;
 
 import android.view.DragEvent;
 import android.view.View.DragShadowBuilder;
-
+import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowSystemClock;
 
-import org.chromium.chrome.browser.dragdrop.DragDropGlobalState.TrackerToken;
-import org.chromium.chrome.browser.tab.Tab;
-
-import java.util.concurrent.TimeUnit;
+import org.chromium.ui.dragdrop.DragDropGlobalState.TrackerToken;
 
 @RunWith(org.chromium.base.test.BaseRobolectricTestRunner.class)
 public final class DragDropGlobalStateTest {
     private static final int INSTANCE_ID = 1;
+    private static final int INVALID_INSTANCE_ID = -1;
+    private final String mText = "text";
     @Rule public MockitoRule mMockitoProcessorRule = MockitoJUnit.rule();
-    @Mock private Tab mTab;
-    private ChromeDropDataAndroid mDropData;
+    private DropDataAndroid mDropData;
     private TrackerToken mToken;
 
     @Before
     public void setup() {
-        mDropData = new ChromeDropDataAndroid.Builder().withTab(mTab).build();
+        mDropData = DropDataAndroid.create(mText, null, null, null, null);
     }
 
     @Test
@@ -53,7 +50,7 @@ public final class DragDropGlobalStateTest {
         DragDropGlobalState instance = DragDropGlobalState.getState(mToken);
         assertNotNull("Instance get should not be null", instance);
         assertTrue("SourceInstanceId should match.", instance.isDragSourceInstance(INSTANCE_ID));
-        assertEquals("Tab being dragged should match.", mTab, instance.getData().mTab);
+        assertEquals("Text being dragged should match.", mText, mDropData.text);
 
         // Assert release token.
         DragDropGlobalState.clear(mToken);
@@ -72,7 +69,7 @@ public final class DragDropGlobalStateTest {
         DragDropGlobalState instance = DragDropGlobalState.getState(dropEvent);
         assertNotNull("Instance get should not be null", instance);
         assertTrue("SourceInstanceId should match.", instance.isDragSourceInstance(INSTANCE_ID));
-        assertEquals("Tab being dragged should match.", mTab, instance.getData().mTab);
+        assertEquals("Text being dragged should match.", mText, mDropData.text);
         assertTrue("Instance should still exists.", DragDropGlobalState.hasValue());
 
         // Assert release token - no-op.
@@ -82,7 +79,7 @@ public final class DragDropGlobalStateTest {
 
     @Test
     public void clearWithInvalidToken() {
-        mToken = new DragDropGlobalState.TrackerToken();
+        mToken = DragDropGlobalState.store(INVALID_INSTANCE_ID, null, null);
 
         ShadowSystemClock.advanceBy(100, TimeUnit.SECONDS);
         TrackerToken newToken = DragDropGlobalState.store(INSTANCE_ID, mDropData, null);

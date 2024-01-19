@@ -8,6 +8,8 @@ import android.view.DragEvent;
 import android.view.View;
 import android.view.View.OnDragListener;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -17,6 +19,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 
@@ -75,8 +78,9 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                 }
 
                 DragDropGlobalState globalState = DragDropGlobalState.getState(dragEvent);
+                Tab draggedTab = getTabFromGlobalState(globalState);
                 if (globalState == null
-                        || !globalState.getData().hasTab()
+                        || draggedTab == null
                         || globalState.isDragSourceInstance(
                                 mMultiInstanceManager.getCurrentInstanceId())) {
                     return false;
@@ -87,7 +91,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                 Tab currentTab = mTabModelSelector.getCurrentTab();
                 mMultiInstanceManager.moveTabToWindow(
                         mWindowAndroid.getActivity().get(),
-                        globalState.getData().mTab,
+                        draggedTab,
                         TabModelUtils.getTabIndexById(
                                         mTabModelSelector.getModel(currentTab.isIncognito()),
                                         currentTab.getId())
@@ -96,5 +100,15 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                 return true;
         }
         return false;
+    }
+
+    private Tab getTabFromGlobalState(@NonNull DragDropGlobalState globalState) {
+        // We should only attempt to access this while we know there's an active drag.
+        assert globalState != null : "Attempting to access dragged tab with invalid drag state.";
+        if (globalState.getData() instanceof ChromeDropDataAndroid) {
+            return ((ChromeDropDataAndroid) globalState.getData()).mTab;
+        } else {
+            return null;
+        }
     }
 }

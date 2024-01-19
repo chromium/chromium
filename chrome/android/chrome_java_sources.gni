@@ -603,7 +603,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/dragdrop/ChromeDragAndDropBrowserDelegate.java",
   "java/src/org/chromium/chrome/browser/dragdrop/ChromeDropDataAndroid.java",
   "java/src/org/chromium/chrome/browser/dragdrop/ChromeTabbedOnDragListener.java",
-  "java/src/org/chromium/chrome/browser/dragdrop/DragDropGlobalState.java",
   "java/src/org/chromium/chrome/browser/dragdrop/toolbar/TargetViewBinder.java",
   "java/src/org/chromium/chrome/browser/dragdrop/toolbar/TargetViewDragListener.java",
   "java/src/org/chromium/chrome/browser/dragdrop/toolbar/TargetViewProperties.java",

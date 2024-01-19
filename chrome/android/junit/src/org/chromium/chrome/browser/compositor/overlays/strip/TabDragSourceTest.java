@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabDragSource.TabDragShadowBuilder;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
-import org.chromium.chrome.browser.dragdrop.DragDropGlobalState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
@@ -79,6 +78,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
+import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DropDataAndroid;
 
@@ -217,7 +217,7 @@ public class TabDragSourceTest {
         assertEquals(
                 "Global state tabBeingDragged not set.",
                 mTabBeingDragged,
-                DragDropGlobalState.getForTesting().getData().mTab);
+                ((ChromeDropDataAndroid) DragDropGlobalState.getForTesting().getData()).mTab);
         assertNull("Shadow view should be null.", mSourceInstance.getShadowViewForTesting());
     }
 
@@ -241,7 +241,7 @@ public class TabDragSourceTest {
         assertEquals(
                 "Global state tabBeingDragged not set.",
                 mTabBeingDragged,
-                DragDropGlobalState.getForTesting().getData().mTab);
+                ((ChromeDropDataAndroid) DragDropGlobalState.getForTesting().getData()).mTab);
         assertNotNull(
                 "Shadow view is unexpectedly null.", mSourceInstance.getShadowViewForTesting());
     }
