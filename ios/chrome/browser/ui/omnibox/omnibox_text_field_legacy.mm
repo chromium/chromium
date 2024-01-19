@@ -116,6 +116,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     self.textAlignment = NSTextAlignmentNatural;
     self.keyboardType = UIKeyboardTypeWebSearch;
     self.smartQuotesType = UITextSmartQuotesTypeNo;
+    // Prevent the text from overlapping the clear text button.
+    // (crbug.com/1403031)
+    self.textInputView.clipsToBounds = YES;
 
     // Disable drag on iPhone because there's nowhere to drag to
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
