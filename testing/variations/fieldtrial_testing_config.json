@@ -7068,6 +7068,22 @@
             ]
         }
     ],
+    "ExternalHDR10": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableExternalDisplayHDR10Mode"
+                    ]
+                }
+            ]
+        }
+    ],
     "FLEDGEBiddingAndAuctionServer": [
         {
             "platforms": [
