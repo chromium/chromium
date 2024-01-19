@@ -45,13 +45,14 @@ void OnDeviceInternalsUI::LoadModel(
   // Warm the service while assets load in the background.
   std::ignore = GetService();
 
+  // This WebUI currently provides no way to dynamically configure the expected
+  // output dimension of the TS model. Since the model is in flux and its output
+  // dimension can change, it would be easy to accidentally load an incompatible
+  // model and crash the service. Hence we omit TS model assets for now.
   on_device_model::ModelAssetPaths model_paths;
   model_paths.sp_model = model_path.Append(optimization_guide::kSpModelFile);
   model_paths.model = model_path.Append(optimization_guide::kModelFile);
   model_paths.weights = model_path.Append(optimization_guide::kWeightsFile);
-  model_paths.ts_data = model_path.Append(optimization_guide::kTsDataFile);
-  model_paths.ts_sp_model =
-      model_path.Append(optimization_guide::kTsSpModelFile);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&on_device_model::LoadModelAssets, model_paths),
