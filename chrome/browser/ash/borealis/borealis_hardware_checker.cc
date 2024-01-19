@@ -1,25 +1,38 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/borealis/borealis_features_util.h"
+#include "chrome/browser/ash/borealis/borealis_hardware_checker.h"
 
-#include "base/base64.h"
+#include "ash/constants/ash_features.h"
 #include "base/cpu.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/scoped_blocking_call.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
-#include "crypto/sha2.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace borealis {
 
 namespace {
+
+constexpr uint64_t kGibi = 1024ull * 1024 * 1024;
+
+// Regex used for CPU checks on intel processors, this means "any i{3,5,7}
+// processor". e.g.:
+//  - Valid:   11th Gen Intel(R) Core(TM) i5-1145G7 @ 2.60GHz
+//  - Valid:   Intel(R) Core(TM) 5 ...
+//  - Invalid: Intel(R) Pentium(R) Gold 7505
+constexpr char kIntelCpuRegex[] = "((i[357]-)|(Core.* [357]))";
+
+// As above, for AMD processors, e.g. "AMD Ryzen 3 5125C with Radeon Graphics".
+constexpr char kAmdCpuRegex[] = "Ryzen [357]";
+
+std::string* g_cpu_brand_for_test_ = nullptr;
 
 // Returns the Board's name according to /etc/lsb-release. Strips any variant
 // except the "-borealis" variant.
@@ -85,73 +98,79 @@ std::string GetModelName() {
   return base::ToLowerASCII(hardware_class);
 }
 
-std::string RemoveNonBorealisSuffix(const std::string& board) {
-  if (board.ends_with("-borealis")) {
-    return board;
+bool IsBoard(const std::string& board) {
+  return GetBoardName() == board;
+}
+
+bool BoardIn(base::flat_set<std::string> boards) {
+  return boards.contains(GetBoardName());
+}
+
+bool ModelIn(base::flat_set<std::string> models) {
+  return models.contains(GetModelName());
+}
+
+bool CpuRegexMatches(const std::string& cpu_regex) {
+  return RE2::PartialMatch(
+      g_cpu_brand_for_test_ ? *g_cpu_brand_for_test_
+                            : base::CPU::GetInstanceNoAllocation().cpu_brand(),
+      cpu_regex);
+}
+
+bool HasMemory(uint64_t mem_bytes) {
+  return base::SysInfo::AmountOfPhysicalMemory() >= mem_bytes;
+}
+
+bool HasSufficientHardware(const std::string& cpu_regex) {
+  return HasMemory(7 * kGibi) && CpuRegexMatches(cpu_regex);
+}
+
+bool InTargetSegment() {
+  return base::FeatureList::IsEnabled(
+      ash::features::kFeatureManagementBorealis);
+}
+
+bool Check() {
+  if (IsBoard("volteer")) {
+    bool valid_model =
+        ModelIn({"delbin", "voxel", "volta", "lindar", "elemi", "volet",
+                 "drobit", "lillipup", "delbing", "eldrid", "chronicler"});
+    return HasSufficientHardware(kIntelCpuRegex) && valid_model;
+  } else if (BoardIn({"brya", "adlrvp", "brask"})) {
+    return HasSufficientHardware(kIntelCpuRegex);
+  } else if (BoardIn({"guybrush", "majolica"})) {
+    return HasSufficientHardware(kAmdCpuRegex);
+  } else if (BoardIn({"aurora"})) {
+    return true;
+  } else if (BoardIn({"myst"})) {
+    return true;
+  } else if (IsBoard("nissa")) {
+    return HasSufficientHardware(kIntelCpuRegex) && InTargetSegment();
+  } else if (IsBoard("skyrim")) {
+    return HasSufficientHardware(kAmdCpuRegex) && InTargetSegment();
+  } else if (IsBoard("rex")) {
+    // TODO(307825451): .* allows any CPU, add the correct cpu regex once we
+    // know what that is.
+    return HasSufficientHardware(".*");
   }
-  size_t last_hyphen_pos = board.rfind('-');
-  if (last_hyphen_pos == std::string::npos) {
-    return board;
-  }
-  return board.substr(0, last_hyphen_pos);
+  return false;
 }
 
 }  // namespace
 
-TokenHardwareChecker::Data::Data(std::string board,
-                                 std::string model,
-                                 std::string cpu,
-                                 uint64_t memory)
-    : board(std::move(board)),
-      model(std::move(model)),
-      cpu(std::move(cpu)),
-      memory(memory) {}
-
-TokenHardwareChecker::Data::Data(const Data& other) = default;
-
-TokenHardwareChecker::Data::~Data() = default;
-
-void TokenHardwareChecker::GetData(base::OnceCallback<void(Data)> callback) {
+void HasSufficientHardware(base::OnceCallback<void(bool)> callback) {
   ash::system::StatisticsProvider::GetInstance()
       ->ScheduleOnMachineStatisticsLoaded(base::BindOnce(
-          [](base::OnceCallback<void(Data)> callback) {
+          [](base::OnceCallback<void(bool)> callback) {
             base::ThreadPool::PostTaskAndReplyWithResult(
-                FROM_HERE, base::MayBlock(), base::BindOnce([]() -> Data {
-                  return Data(GetBoardName(), GetModelName(),
-                              base::CPU::GetInstanceNoAllocation().cpu_brand(),
-                              base::SysInfo::AmountOfPhysicalMemory());
-                }),
+                FROM_HERE, base::MayBlock(), base::BindOnce(&Check),
                 std::move(callback));
           },
           std::move(callback)));
 }
 
-TokenHardwareChecker::TokenHardwareChecker(
-    TokenHardwareChecker::Data token_hardware)
-    : token_hardware_(std::move(token_hardware)) {}
-
-bool TokenHardwareChecker::IsBoard(const std::string& board) const {
-  return RemoveNonBorealisSuffix(token_hardware_.board) == board;
-}
-
-bool TokenHardwareChecker::BoardIn(base::flat_set<std::string> boards) const {
-  return boards.contains(RemoveNonBorealisSuffix(token_hardware_.board));
-}
-
-bool TokenHardwareChecker::IsModel(const std::string& model) const {
-  return token_hardware_.model == model;
-}
-
-bool TokenHardwareChecker::ModelIn(base::flat_set<std::string> models) const {
-  return models.contains(token_hardware_.model);
-}
-
-bool TokenHardwareChecker::CpuRegexMatches(const std::string& cpu_regex) const {
-  return RE2::PartialMatch(token_hardware_.cpu, cpu_regex);
-}
-
-bool TokenHardwareChecker::HasMemory(uint64_t mem_bytes) const {
-  return token_hardware_.memory >= mem_bytes;
+void SetCpuForTesting(std::string* cpu_brand) {
+  g_cpu_brand_for_test_ = cpu_brand;
 }
 
 }  // namespace borealis

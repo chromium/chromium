@@ -11,10 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/borealis/borealis_features_util.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/borealis/testing/features.h"
@@ -23,7 +21,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -99,59 +96,6 @@ TEST_F(BorealisFeaturesTest, EnablednessDependsOnInstallation) {
   profile_.GetPrefs()->SetBoolean(prefs::kBorealisInstalledOnDevice, true);
 
   EXPECT_TRUE(BorealisFeatures(&profile_).IsEnabled());
-}
-
-TEST(BorealisFeaturesUtilTest, TokenHardwareCheckerWorks) {
-  TokenHardwareChecker::Data d{"board", "model", "cpu", 42};
-  TokenHardwareChecker checker(std::move(d));
-
-  EXPECT_FALSE(checker.IsBoard("notboard"));
-  EXPECT_TRUE(checker.IsBoard("board"));
-  EXPECT_FALSE(checker.BoardIn(base::flat_set<std::string>{}));
-  EXPECT_TRUE(
-      checker.BoardIn(base::flat_set<std::string>{"board", "notboard"}));
-
-  EXPECT_FALSE(checker.IsModel("notmodel"));
-  EXPECT_TRUE(checker.IsModel("model"));
-  EXPECT_FALSE(checker.ModelIn(base::flat_set<std::string>{}));
-  EXPECT_TRUE(
-      checker.ModelIn(base::flat_set<std::string>{"notmodel", "model"}));
-
-  EXPECT_FALSE(checker.CpuRegexMatches("xyz"));
-  EXPECT_FALSE(checker.CpuRegexMatches("[A-Z]"));
-  EXPECT_TRUE(checker.CpuRegexMatches("cpu"));
-  EXPECT_TRUE(checker.CpuRegexMatches("pu"));
-  EXPECT_TRUE(checker.CpuRegexMatches("c.u"));
-  EXPECT_TRUE(checker.CpuRegexMatches("cp"));
-  EXPECT_TRUE(checker.CpuRegexMatches("^[a-z]*$"));
-
-  EXPECT_TRUE(checker.HasMemory(0));
-  EXPECT_TRUE(checker.HasMemory(41));
-  EXPECT_TRUE(checker.HasMemory(42));
-  EXPECT_FALSE(checker.HasMemory(43));
-  EXPECT_FALSE(checker.HasMemory(std::numeric_limits<uint64_t>::max()));
-}
-
-TEST(BorealisFeaturesUtilTest, DataCanBeBuilt) {
-  content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedChromeOSVersionInfo version(
-      "CHROMEOS_RELEASE_BOARD=board\n", base::Time());
-  ash::system::FakeStatisticsProvider fsp;
-  fsp.SetMachineStatistic(ash::system::kCustomizationIdKey, "model");
-  ash::system::StatisticsProvider::SetTestProvider(&fsp);
-
-  base::RunLoop loop;
-  TokenHardwareChecker::GetData(
-      base::BindLambdaForTesting([&loop](TokenHardwareChecker::Data data) {
-        EXPECT_EQ(data.board, "board");
-        EXPECT_EQ(data.model, "model");
-        // Faking CPU and RAM are not supported, so just assert they have some
-        // trivial values.
-        EXPECT_NE(data.cpu, "");
-        EXPECT_GT(data.memory, 0u);
-        loop.Quit();
-      }));
-  loop.Run();
 }
 
 // These are meta-tests that just makes sure our feature helper does what it
