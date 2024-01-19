@@ -40,6 +40,18 @@ class KeyboardShortcutProvider : public SearchProvider {
   void OnManateeShortcutsResponseCallback(
       std::vector<std::vector<double>>& reply);
 
+  // Callback function for comparing the obtained query embedding with
+  // Keyboard Shortcut embeddings to find the most relevant results.
+  void OnManateeQueryResponseCallback(std::vector<std::vector<double>>& reply);
+
+  // Registers |OnManateeQueryResponseCallback| function to |manatee_cache_|
+  // and makes request to model with query.
+  void InitializeManateeCacheForQuery(const std::string query);
+
+  // Extracts descriptions from KeyboardShortcutData items to send to model
+  // in a batch request.
+  void InitializeManateeCacheForShortcuts();
+
   // Set |shortcut_data_| to a smaller list for testing purposes.
   void set_shortcut_data_for_test(
       std::vector<KeyboardShortcutData> test_shortcut_data) {
@@ -58,6 +70,8 @@ class KeyboardShortcutProvider : public SearchProvider {
   void OnSearchComplete(ShortcutDataAndScores);
   void OnShortcutsSearchComplete(
       std::vector<ash::shortcut_customization::mojom::SearchResultPtr>);
+
+  std::u16string query_;
 
   const raw_ptr<Profile> profile_;
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -24,9 +25,11 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_data.h"
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_result.h"
+#include "chrome/browser/ash/app_list/search/manatee/manatee_cache.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/types.h"
+#include "chrome/browser/ash/app_list/search/util/manatee.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "content/public/browser/storage_partition.h"
@@ -43,6 +46,7 @@ constexpr double kResultRelevanceThreshold = 0.79;
 // The threshold is used to filter the results from the search handler of the
 // new shortcuts app.
 constexpr double kRelevanceScoreThreshold = 0.52;
+constexpr double kResultRelevanceManateeThreshold = 0.75;
 
 std::vector<std::pair<KeyboardShortcutData, double>> Search(
     const std::vector<KeyboardShortcutData>& shortcut_data,
@@ -95,19 +99,7 @@ KeyboardShortcutProvider::~KeyboardShortcutProvider() = default;
 
 void KeyboardShortcutProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (search_features::isLauncherManateeForKeyboardShortcutsEnabled() &&
-      !is_embeddings_set_) {
-    std::vector<std::string> descriptions;
-    for (const auto& shortcut : shortcut_data_) {
-      descriptions.push_back(base::UTF16ToUTF8(shortcut.description()));
-    }
-
-    manatee_cache_->RegisterCallback(base::BindOnce(
-        &KeyboardShortcutProvider::OnManateeShortcutsResponseCallback,
-        base::Unretained(this)));
-    manatee_cache_->UrlLoader(descriptions);
-  }
+  query_ = query;
 
   // Cancel all previous searches.
   weak_factory_.InvalidateWeakPtrs();
@@ -125,12 +117,45 @@ void KeyboardShortcutProvider::Start(const std::u16string& query) {
         base::BindOnce(&KeyboardShortcutProvider::OnShortcutsSearchComplete,
                        weak_factory_.GetWeakPtr()));
   } else {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-        base::BindOnce(&Search, shortcut_data_, query),
-        base::BindOnce(&KeyboardShortcutProvider::OnSearchComplete,
-                       weak_factory_.GetWeakPtr()));
+    if (search_features::isLauncherManateeForKeyboardShortcutsEnabled()) {
+      if (!is_embeddings_set_) {
+        InitializeManateeCacheForShortcuts();
+
+        base::ThreadPool::PostTaskAndReplyWithResult(
+            FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+            base::BindOnce(&Search, shortcut_data_, query),
+            base::BindOnce(&KeyboardShortcutProvider::OnSearchComplete,
+                           weak_factory_.GetWeakPtr()));
+      } else {
+        InitializeManateeCacheForQuery(base::UTF16ToUTF8(query));
+      }
+    } else {
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+          base::BindOnce(&Search, shortcut_data_, query),
+          base::BindOnce(&KeyboardShortcutProvider::OnSearchComplete,
+                         weak_factory_.GetWeakPtr()));
+    }
   }
+}
+
+void KeyboardShortcutProvider::InitializeManateeCacheForQuery(
+    const std::string query) {
+  manatee_cache_->RegisterCallback(
+      base::BindOnce(&KeyboardShortcutProvider::OnManateeQueryResponseCallback,
+                     weak_factory_.GetWeakPtr()));
+  manatee_cache_->UrlLoader({query});
+}
+
+void KeyboardShortcutProvider::InitializeManateeCacheForShortcuts() {
+  std::vector<std::string> descriptions;
+  for (const auto& shortcut : shortcut_data_) {
+    descriptions.push_back(base::UTF16ToUTF8(shortcut.description()));
+  }
+  manatee_cache_->RegisterCallback(base::BindOnce(
+      &KeyboardShortcutProvider::OnManateeShortcutsResponseCallback,
+      base::Unretained(this)));
+  manatee_cache_->UrlLoader(descriptions);
 }
 
 void KeyboardShortcutProvider::StopQuery() {
@@ -151,6 +176,29 @@ void KeyboardShortcutProvider::OnManateeShortcutsResponseCallback(
     shortcut_data_[i].SetEmbedding(reply[i]);
   }
   is_embeddings_set_ = true;
+}
+
+void KeyboardShortcutProvider::OnManateeQueryResponseCallback(
+    std::vector<std::vector<double>>& reply) {
+  if (reply.size() != 1) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+        base::BindOnce(&Search, shortcut_data_, query_),
+        base::BindOnce(&KeyboardShortcutProvider::OnSearchComplete,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    ShortcutDataAndScores candidates;
+    for (const auto& data_item : shortcut_data_) {
+      std::optional<double> similarity_score =
+          (GetEmbeddingSimilarity(data_item.embedding(), reply[0]));
+      if (similarity_score.has_value() &&
+          similarity_score.value() > kResultRelevanceManateeThreshold) {
+        candidates.push_back(
+            std::make_pair(data_item, similarity_score.value()));
+      }
+    }
+    OnSearchComplete(candidates);
+  }
 }
 
 void KeyboardShortcutProvider::ProcessShortcutList() {
@@ -201,7 +249,6 @@ void KeyboardShortcutProvider::OnShortcutsSearchComplete(
       break;
     }
   }
-
   SwapResults(&results);
 }
 

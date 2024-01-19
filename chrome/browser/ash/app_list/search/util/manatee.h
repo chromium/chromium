@@ -12,10 +12,11 @@ namespace app_list {
 
 // Returns cosine similarity between two vectors. It requires that both
 // vectors be the same size, and returns std::nullopt if not. Values can
-// range between [-1, 1] where a higher value indicates a greater
+// range between [0, 1] where a higher value indicates a greater
 // similarity.
-std::optional<double> GetWordSimilarity(const std::vector<double>& vector1,
-                                        const std::vector<double>& vector2);
+std::optional<double> GetEmbeddingSimilarity(
+    const std::vector<double>& vector1,
+    const std::vector<double>& vector2);
 
 }  // namespace app_list
 
