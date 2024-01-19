@@ -1,2 +1,4 @@
 nyquist@chromium.org
 twellington@chromium.org
+
+per-file family_info_feedback_source.*=file://chrome/browser/android/supervised_user/OWNERS
