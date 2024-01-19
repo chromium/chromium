@@ -5,6 +5,7 @@
 #include "ash/clipboard/clipboard_history_util.h"
 
 #include <array>
+#include <string_view>
 
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
@@ -131,7 +132,7 @@ bool ContainsFileSystemData(const ui::ClipboardData& data) {
 }
 
 void GetSplitFileSystemData(const ui::ClipboardData& data,
-                            std::vector<base::StringPiece16>* source_list,
+                            std::vector<std::u16string_view>* source_list,
                             std::u16string* sources) {
   DCHECK(sources);
   DCHECK(sources->empty());
@@ -151,7 +152,7 @@ void GetSplitFileSystemData(const ui::ClipboardData& data,
 
 size_t GetCountOfCopiedFiles(const ui::ClipboardData& data) {
   std::u16string sources;
-  std::vector<base::StringPiece16> source_list;
+  std::vector<std::u16string_view> source_list;
   GetSplitFileSystemData(data, &source_list, &sources);
 
   if (sources.empty()) {
