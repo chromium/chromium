@@ -50,7 +50,8 @@ def install(out_dir):
   # Propagate PATH to avoid issues with missing tools http://crbug/1217979
   env = {
       'BUILDTYPE': out_dir[4:],
-      'PATH': os.environ.get('PATH', '')
+      'PATH': os.environ.get('PATH', ''),
+      'HOME': os.environ.get('HOME', '')
   }
   return run(cmd + ['CronetTestInstrumentation.apk'], env=env) or \
       run(cmd + ['ChromiumNetTestSupport.apk'], env=env)
