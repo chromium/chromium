@@ -112,7 +112,8 @@ ASH_EXPORT const base::Value::List* GetLoginScreenButtonRemappingList(
 // in order to save the mojom object to the prefs as a dict.
 ASH_EXPORT base::Value::Dict ConvertButtonRemappingToDict(
     const mojom::ButtonRemapping& remapping,
-    mojom::CustomizationRestriction customization_restriction);
+    mojom::CustomizationRestriction customization_restriction,
+    bool redact_button_names = false);
 ASH_EXPORT mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
     const base::Value::Dict& dict,
     mojom::CustomizationRestriction customization_restriction);
@@ -121,7 +122,8 @@ ASH_EXPORT mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
 // to a list of dicts to be stored in prefs.
 ASH_EXPORT base::Value::List ConvertButtonRemappingArrayToList(
     const std::vector<mojom::ButtonRemappingPtr>& remappings,
-    mojom::CustomizationRestriction customization_restriction);
+    mojom::CustomizationRestriction customization_restriction,
+    bool redact_button_names = false);
 
 // This helper function converts a list of dicts to
 // a button remapping object array. The dicts will be stored in prefs.

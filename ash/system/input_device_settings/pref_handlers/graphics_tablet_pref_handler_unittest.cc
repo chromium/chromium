@@ -224,7 +224,7 @@ TEST_F(GraphicsTabletPrefHandlerTest, UpdateLoginScreenGraphicsTabletSettings) {
   ASSERT_EQ(1u, updated_tablet_button_remapping_list->size());
   const auto& tablet_button_remapping =
       (*updated_tablet_button_remapping_list)[0].GetDict();
-  EXPECT_EQ(button_remapping1.name,
+  EXPECT_EQ("REDACTED",
             *tablet_button_remapping.FindString(prefs::kButtonRemappingName));
   EXPECT_EQ(
       static_cast<int>(button_remapping1.button->get_customizable_button()),

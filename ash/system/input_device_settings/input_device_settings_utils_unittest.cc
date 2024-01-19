@@ -659,4 +659,14 @@ TEST_F(ButtonRemappingConversionTest, ConvertListToButtonRemappingArray) {
             remapping3->remapping_action->get_accelerator_action());
 }
 
+TEST_F(ButtonRemappingConversionTest, RedactButtonNames) {
+  auto button_remapping_dict = ConvertButtonRemappingToDict(
+      button_remapping1, mojom::CustomizationRestriction::kAllowCustomizations,
+      /*redact_button_names=*/true);
+  auto button_remapping = ConvertDictToButtonRemapping(
+      button_remapping_dict,
+      mojom::CustomizationRestriction::kAllowCustomizations);
+  EXPECT_EQ("REDACTED", button_remapping->name);
+}
+
 }  // namespace ash

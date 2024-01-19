@@ -28,6 +28,8 @@ namespace ash {
 
 namespace {
 
+const char kRedactedButtonName[] = "REDACTED";
+
 std::string HexEncode(uint16_t v) {
   // Load the bytes into the bytes array in reverse order as hex number should
   // be read from left to right.
@@ -274,14 +276,16 @@ bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device) {
 
 base::Value::Dict ConvertButtonRemappingToDict(
     const mojom::ButtonRemapping& remapping,
-    mojom::CustomizationRestriction customization_restriction) {
+    mojom::CustomizationRestriction customization_restriction,
+    bool redact_button_names) {
   base::Value::Dict dict;
 
   if (RestrictionBlocksRemapping(remapping, customization_restriction)) {
     return dict;
   }
 
-  dict.Set(prefs::kButtonRemappingName, remapping.name);
+  dict.Set(prefs::kButtonRemappingName,
+           redact_button_names ? kRedactedButtonName : remapping.name);
   if (remapping.button->is_customizable_button()) {
     dict.Set(prefs::kButtonRemappingCustomizableButton,
              static_cast<int>(remapping.button->get_customizable_button()));
@@ -323,11 +327,12 @@ base::Value::Dict ConvertButtonRemappingToDict(
 
 base::Value::List ConvertButtonRemappingArrayToList(
     const std::vector<mojom::ButtonRemappingPtr>& remappings,
-    mojom::CustomizationRestriction customization_restriction) {
+    mojom::CustomizationRestriction customization_restriction,
+    bool redact_button_names) {
   base::Value::List list;
   for (const auto& remapping : remappings) {
-    base::Value::Dict dict =
-        ConvertButtonRemappingToDict(*remapping, customization_restriction);
+    base::Value::Dict dict = ConvertButtonRemappingToDict(
+        *remapping, customization_restriction, redact_button_names);
     // Remove empty dicts.
     if (dict.empty()) {
       continue;
