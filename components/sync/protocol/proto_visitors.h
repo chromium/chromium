@@ -204,7 +204,6 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT(use_count);
   VISIT(use_date);
   VISIT(profile_label);
-  VISIT_REP(name_honorific);
   VISIT_REP(name_first);
   VISIT_REP(name_middle);
   VISIT_REP(name_last_first);
@@ -212,9 +211,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT_REP(name_last_second);
   VISIT_REP(name_last);
   VISIT_REP(name_full);
-  VISIT_REP(name_full_with_honorific);
 
-  VISIT_REP(name_honorific_status);
   VISIT_REP(name_first_status);
   VISIT_REP(name_middle_status);
   VISIT_REP(name_last_first_status);
@@ -222,7 +219,6 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT_REP(name_last_second_status);
   VISIT_REP(name_last_status);
   VISIT_REP(name_full_status);
-  VISIT_REP(name_full_with_honorific_status);
 
   VISIT_REP(email_address);
   VISIT(company_name);
@@ -346,7 +342,6 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(profile_label);
   VISIT(initial_creator_id);
   VISIT(last_modifier_id);
-  VISIT(name_honorific);
   VISIT(name_first);
   VISIT(name_middle);
   VISIT(name_last);
@@ -354,7 +349,6 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(name_last_conjunction);
   VISIT(name_last_second);
   VISIT(name_full);
-  VISIT(name_full_with_honorific);
   VISIT(email_address);
   VISIT(company_name);
   VISIT(address_city);

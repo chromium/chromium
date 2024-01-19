@@ -105,7 +105,6 @@ message ContactInfoSpecifics {
   optional int32 last_modifier_id = 40;
 
   // Contact info name fields.
-  optional StringToken name_honorific = 6;
   optional StringToken name_first = 7;
   optional StringToken name_middle = 8;
   optional StringToken name_last = 9;
@@ -119,9 +118,9 @@ message ContactInfoSpecifics {
   optional StringToken name_last_conjunction = 11;
   optional StringToken name_last_second = 12;
   optional StringToken name_full = 13;
-  // This value contains the combination of the full name and the honorific
-  // prefix.
-  optional StringToken name_full_with_honorific = 14;
+
+  reserved 14;
+  reserved "name_full_with_honorific";
 
   // Contact info additional fields.
   optional StringToken email_address = 15;
@@ -209,4 +208,7 @@ message ContactInfoSpecifics {
   optional IntegerToken birthdate_day = 34;
   optional IntegerToken birthdate_month = 35;  // Between 1 and 12.
   optional IntegerToken birthdate_year = 36;   // 4 digits.
+  // Removed in M122.
+  reserved 6;
+  reserved "name_honorific";
 }
