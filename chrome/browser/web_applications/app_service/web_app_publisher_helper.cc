@@ -765,8 +765,13 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   }
 #endif
 
-  app->window_mode = ConvertDisplayModeToWindowMode(
-      registrar().GetAppEffectiveDisplayMode(web_app->app_id()));
+  // For the window mode setting in app service, with shortstand enabled, this
+  // field is no longer needed. However we want to keep populating the value
+  // with shortstand disabled so that we can use it to show a user education
+  // nudge when the display mode is changed by shortstand.
+  app->window_mode =
+      ConvertDisplayModeToWindowMode(registrar().GetAppEffectiveDisplayMode(
+          web_app->app_id(), /*ignore_shortstand = */ true));
 
   const auto login_mode = registrar().GetAppRunOnOsLoginMode(web_app->app_id());
   app->run_on_os_login = apps::RunOnOsLogin(
@@ -1438,8 +1443,12 @@ void WebAppPublisherHelper::OnWebAppUserDisplayModeChanged(
   if (apps::AppServiceProxyFactory::GetForProfile(profile_)
           ->AppRegistryCache()
           .IsAppInstalled(app_id)) {
-    PublishWindowModeUpdate(app_id,
-                            registrar().GetAppEffectiveDisplayMode(app_id));
+    // For the window mode setting in app service, with shortstand enabled, this
+    // field is no longer needed. However we want to keep populating the value
+    // with shortstand disabled so that we can use it to show a user education
+    // nudge when the display mode is changed by shortstand.
+    PublishWindowModeUpdate(app_id, registrar().GetAppEffectiveDisplayMode(
+                                        app_id, /*ignore_shortstand = */ true));
   } else {
     const WebApp* web_app = GetWebApp(app_id);
     if (web_app) {

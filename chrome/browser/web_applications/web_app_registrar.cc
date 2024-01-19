@@ -554,7 +554,8 @@ bool WebAppRegistrar::IsSystemApp(const webapps::AppId& app_id) const {
 }
 
 DisplayMode WebAppRegistrar::GetAppEffectiveDisplayMode(
-    const webapps::AppId& app_id) const {
+    const webapps::AppId& app_id,
+    bool ignore_shortstand) const {
   if (!IsLocallyInstalled(app_id))
     return DisplayMode::kBrowser;
 
@@ -569,7 +570,8 @@ DisplayMode WebAppRegistrar::GetAppEffectiveDisplayMode(
   std::vector<DisplayMode> display_mode_overrides =
       GetAppDisplayModeOverride(app_id);
   return ResolveEffectiveDisplayMode(app_display_mode, display_mode_overrides,
-                                     *user_display_mode, IsIsolated(app_id));
+                                     *user_display_mode, IsIsolated(app_id),
+                                     IsShortcutApp(app_id), ignore_shortstand);
 }
 
 DisplayMode WebAppRegistrar::GetEffectiveDisplayModeFromManifest(
