@@ -246,6 +246,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       LogPrivateAggregationRequestsCallback
           log_private_aggregation_requests_callback,
       std::unique_ptr<blink::AuctionConfig> auction_config,
+      const std::string& devtools_auction_id,
       const url::Origin& main_frame_origin,
       const url::Origin& frame_origin,
       network::mojom::ClientSecurityStatePtr client_security_state,
@@ -480,6 +481,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // SellerWinningBidInfo, it points to an AuctionConfig contained within it.
   const std::unique_ptr<blink::AuctionConfig> auction_config_;
 
+  const std::optional<std::string> devtools_auction_id_;
   const url::Origin main_frame_origin_;
   const url::Origin frame_origin_;
   const network::mojom::ClientSecurityStatePtr client_security_state_;

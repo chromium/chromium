@@ -830,12 +830,13 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     scoped_refptr<StorageInterestGroups> interest_groups;
     base::RunLoop run_loop;
     manager_->GetInterestGroupsForOwner(
-        owner, base::BindLambdaForTesting(
-                   [&run_loop, &interest_groups](
-                       scoped_refptr<StorageInterestGroups> groups) {
-                     interest_groups = std::move(groups);
-                     run_loop.Quit();
-                   }));
+        /*devtools_auction_id=*/std::nullopt, owner,
+        base::BindLambdaForTesting(
+            [&run_loop,
+             &interest_groups](scoped_refptr<StorageInterestGroups> groups) {
+              interest_groups = std::move(groups);
+              run_loop.Quit();
+            }));
     run_loop.Run();
     return interest_groups;
   }

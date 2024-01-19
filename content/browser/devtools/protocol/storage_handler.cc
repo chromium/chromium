@@ -450,6 +450,12 @@ StorageHandler::~StorageHandler() {
   DCHECK(!indexed_db_observer_);
 }
 
+// static
+std::vector<StorageHandler*> StorageHandler::ForAgentHost(
+    DevToolsAgentHostImpl* host) {
+  return host->HandlersByName<StorageHandler>(Storage::Metainfo::domainName);
+}
+
 void StorageHandler::Wire(UberDispatcher* dispatcher) {
   frontend_ = std::make_unique<Storage::Frontend>(dispatcher->channel());
   Storage::Dispatcher::wire(dispatcher, this);
@@ -1016,10 +1022,14 @@ void StorageHandler::ClearTrustTokens(
 }
 
 void StorageHandler::OnInterestGroupAccessed(
-    const base::Time& access_time,
+    base::optional_ref<const std::string> auction_id,
+    base::Time access_time,
     InterestGroupManagerImpl::InterestGroupObserver::AccessType type,
     const url::Origin& owner_origin,
-    const std::string& name) {
+    const std::string& name,
+    base::optional_ref<const url::Origin> component_seller_origin,
+    std::optional<double> bid,
+    base::optional_ref<const std::string> bid_currency) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   using AccessType =
       InterestGroupManagerImpl::InterestGroupObserver::AccessType;
@@ -1052,9 +1062,22 @@ void StorageHandler::OnInterestGroupAccessed(
     case AccessType::kClear:
       type_enum = Storage::InterestGroupAccessTypeEnum::Clear;
       break;
+    case AccessType::kTopLevelBid:
+      type_enum = Storage::InterestGroupAccessTypeEnum::TopLevelBid;
+      break;
+    case AccessType::kTopLevelAdditionalBid:
+      type_enum = Storage::InterestGroupAccessTypeEnum::TopLevelAdditionalBid;
+      break;
   };
-  frontend_->InterestGroupAccessed(access_time.InSecondsFSinceUnixEpoch(),
-                                   type_enum, owner_origin.Serialize(), name);
+  frontend_->InterestGroupAccessed(
+      access_time.InSecondsFSinceUnixEpoch(), type_enum,
+      owner_origin.Serialize(), name,
+      component_seller_origin.has_value()
+          ? Maybe<String>(component_seller_origin->Serialize())
+          : Maybe<String>(),
+      bid.has_value() ? Maybe<double>(*bid) : Maybe<double>(),
+      bid_currency.has_value() ? Maybe<String>(*bid_currency) : Maybe<String>(),
+      auction_id.has_value() ? Maybe<String>(*auction_id) : Maybe<String>());
 }
 
 namespace {
@@ -1185,6 +1208,11 @@ Response StorageHandler::SetInterestGroupTracking(bool enable) {
     // Removal doesn't care if we are not registered.
     manager->RemoveInterestGroupObserver(this);
   }
+  return Response::Success();
+}
+
+Response StorageHandler::SetInterestGroupAuctionTracking(bool enable) {
+  interest_group_auction_tracking_enabled_ = enable;
   return Response::Success();
 }
 
@@ -2133,6 +2161,31 @@ Response StorageHandler::SetAttributionReportingTracking(bool enable) {
     attribution_observation_.Reset();
   }
   return Response::Success();
+}
+
+void StorageHandler::NotifyInterestGroupAuctionEventOccurred(
+    base::Time event_time,
+    content::InterestGroupAuctionEventType type,
+    const std::string& unique_auction_id,
+    base::optional_ref<const std::string> parent_auction_id,
+    const base::Value::Dict& auction_config) {
+  if (!interest_group_auction_tracking_enabled_) {
+    return;
+  }
+  std::string type_enum;
+  switch (type) {
+    case content::InterestGroupAuctionEventType::kStarted:
+      type_enum = Storage::InterestGroupAuctionEventTypeEnum::Started;
+      break;
+    case content::InterestGroupAuctionEventType::kConfigResolved:
+      type_enum = Storage::InterestGroupAuctionEventTypeEnum::ConfigResolved;
+      break;
+  };
+  frontend_->InterestGroupAuctionEventOccurred(
+      event_time.InSecondsFSinceUnixEpoch(), type_enum, unique_auction_id,
+      parent_auction_id.has_value() ? Maybe<String>(*parent_auction_id)
+                                    : Maybe<String>(),
+      std::make_unique<base::Value::Dict>(auction_config.Clone()));
 }
 
 }  // namespace protocol

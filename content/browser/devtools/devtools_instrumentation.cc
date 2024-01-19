@@ -29,6 +29,7 @@
 #include "content/browser/devtools/protocol/page_handler.h"
 #include "content/browser/devtools/protocol/preload_handler.h"
 #include "content/browser/devtools/protocol/security_handler.h"
+#include "content/browser/devtools/protocol/storage_handler.h"
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/protocol/tracing_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
@@ -1524,6 +1525,36 @@ void OnAuctionWorkletNetworkRequestComplete(
                    &protocol::NetworkHandler::LoadingComplete, request_id,
                    /*resource_type=*/protocol::Network::ResourceTypeEnum::Other,
                    status);
+}
+
+bool NeedInterestGroupAuctionEvents(int frame_tree_node_id) {
+  FrameTreeNode* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (!ftn) {
+    return false;
+  }
+  DevToolsAgentHostImpl* agent_host = RenderFrameDevToolsAgentHost::GetFor(ftn);
+  if (!agent_host) {
+    return false;
+  }
+  for (auto* storage : protocol::StorageHandler::ForAgentHost(agent_host)) {
+    if (storage->interest_group_auction_tracking_enabled()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void OnInterestGroupAuctionEventOccurred(
+    int frame_tree_node_id,
+    base::Time event_time,
+    InterestGroupAuctionEventType type,
+    const std::string& unique_auction_id,
+    base::optional_ref<const std::string> parent_auction_id,
+    const base::Value::Dict& auction_config) {
+  DispatchToAgents(
+      frame_tree_node_id,
+      &protocol::StorageHandler::NotifyInterestGroupAuctionEventOccurred,
+      event_time, type, unique_auction_id, parent_auction_id, auction_config);
 }
 
 void OnNavigationRequestWillBeSent(

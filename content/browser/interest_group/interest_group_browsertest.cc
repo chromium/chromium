@@ -1129,7 +1129,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     scoped_refptr<StorageInterestGroups> result;
     base::RunLoop run_loop;
     manager_->GetInterestGroupsForOwner(
-        owner,
+        /*devtools_auction_id=*/std::nullopt, owner,
         base::BindLambdaForTesting(
             [&result, &run_loop](scoped_refptr<StorageInterestGroups> groups) {
               result = std::move(groups);
@@ -2393,10 +2393,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       /*joining_url=*/embedded_https_test_server().GetURL("b.test", "/echo"));
 
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kJoin, test_origin_a, kName1},
-       {TestInterestGroupObserver::kJoin, test_origin_a, kName2},
-       {TestInterestGroupObserver::kJoin, test_origin_a, kName3},
-       {TestInterestGroupObserver::kJoin, test_origin_a, kName4}});
+      {{"global", TestInterestGroupObserver::kJoin, test_origin_a, kName1},
+       {"global", TestInterestGroupObserver::kJoin, test_origin_a, kName2},
+       {"global", TestInterestGroupObserver::kJoin, test_origin_a, kName3},
+       {"global", TestInterestGroupObserver::kJoin, test_origin_a, kName4}});
 
   EXPECT_EQ(kSuccess, ClearOriginJoinedInterestGroups(
                           test_origin_a, /*groups_to_keep=*/{{kName2}}));
@@ -2404,8 +2404,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // kName2 and kName4 should not be cleared. Don't check exact order, as
   // there's no guarantee about the order groups will be listed in.
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kClear, test_origin_a, kName1},
-       {TestInterestGroupObserver::kClear, test_origin_a, kName3}});
+      {{"global", TestInterestGroupObserver::kClear, test_origin_a, kName1},
+       {"global", TestInterestGroupObserver::kClear, test_origin_a, kName3}});
 }
 
 // Can't join or leave interest groups from http://localhost, even though it's
@@ -3199,7 +3199,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 })())",
                                               test_origin, url)));
   WaitForAccessObserved({
-      {TestInterestGroupObserver::kJoin, test_origin, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
   });
   auto storage_groups = GetInterestGroupsForOwner(test_origin);
   ASSERT_EQ(storage_groups->size(), 1u);
@@ -3253,7 +3253,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinInterestGroupLifetimeMs) {
 })())",
                                               test_origin)));
   WaitForAccessObserved({
-      {TestInterestGroupObserver::kJoin, test_origin, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
   });
   auto storage_groups = GetInterestGroupsForOwner(test_origin);
   ASSERT_EQ(storage_groups->size(), 1u);
@@ -3286,7 +3286,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 })())",
                                               test_origin)));
   WaitForAccessObserved({
-      {TestInterestGroupObserver::kJoin, test_origin, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
   });
   auto storage_groups = GetInterestGroupsForOwner(test_origin);
   ASSERT_EQ(storage_groups->size(), 1u);
@@ -3745,7 +3745,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 })())",
                                               origin)));
   WaitForAccessObserved({
-      {TestInterestGroupObserver::kJoin, origin, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, origin, "cars"},
   });
   scoped_refptr<StorageInterestGroups> groups =
       GetInterestGroupsForOwner(origin);
@@ -4690,7 +4690,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                                             ? kAdditionalBidKeySloppyBase64
                                             : kAdditionalBidKeyBase64)));
     WaitForAccessObserved({
-        {TestInterestGroupObserver::kJoin, origin, "cars"},
+        {"global", TestInterestGroupObserver::kJoin, origin, "cars"},
     });
     scoped_refptr<StorageInterestGroups> groups =
         GetInterestGroupsForOwner(origin);
@@ -7871,7 +7871,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                               embedded_https_test_server().GetURL(
                                   "/interest_group/decision_logic.js")));
   WaitForAccessObserved({
-      {TestInterestGroupObserver::kJoin, test_origin_a, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin_a, "cars"},
   });
 }
 
@@ -7940,11 +7940,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       embedded_https_test_server().GetURL(
           "/interest_group/bidding_logic_stop_bidding_after_win.js")));
   WaitForAccessObserved({
-      {TestInterestGroupObserver::kJoin, disabled_origin, "candy"},
-      {TestInterestGroupObserver::kJoin, test_origin, "cars"},
-      {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-      {TestInterestGroupObserver::kBid, test_origin, "cars"},
-      {TestInterestGroupObserver::kWin, test_origin, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, disabled_origin, "candy"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+      {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+      {"1", TestInterestGroupObserver::kWin, test_origin, "cars"},
   });
 }
 
@@ -8494,10 +8494,10 @@ IN_PROC_BROWSER_TEST_F(
               "a.test", "/interest_group/decision_logic.js")),
       ad_url);
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
-       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-       {TestInterestGroupObserver::kBid, test_origin, "cars"},
-       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+      {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+       {"1", TestInterestGroupObserver::kWin, test_origin, "cars"}});
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionCancel) {
@@ -9406,10 +9406,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
 
   // InterestGroupAccessObserver should see the join and auction.
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
-       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-       {TestInterestGroupObserver::kBid, test_origin, "cars"},
-       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+      {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+       {"1", TestInterestGroupObserver::kWin, test_origin, "cars"}});
 
   // Leaving the winning interest group should succeed. Do it by calling
   // Javascript directly instead of loading a page that does this
@@ -9420,7 +9420,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
 
   // The leave should be observed.
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kLeave, test_origin, "cars"}});
+      {{"global", TestInterestGroupObserver::kLeave, test_origin, "cars"}});
   EXPECT_TRUE(GetAllInterestGroups().empty());
 }
 
@@ -9463,10 +9463,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
 
   // InterestGroupAccessObserver should see the join and auction.
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
-       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-       {TestInterestGroupObserver::kBid, test_origin, "cars"},
-       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+      {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+       {"1", TestInterestGroupObserver::kWin, test_origin, "cars"}});
 
   // Leaving the winning interest group should fail. Do it by calling Javascript
   // directly instead of loading a page that does this to avoid races with
@@ -9529,10 +9529,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
 
   // InterestGroupAccessObserver should see the join and auction.
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
-       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-       {TestInterestGroupObserver::kBid, test_origin, "cars"},
-       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+      {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+       {"1", TestInterestGroupObserver::kWin, test_origin, "cars"}});
 
   // Leaving the winning interest group from the nested iframe should succeed.
   // Do it by calling Javascript directly instead of loading a page that does
@@ -9544,7 +9544,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
 
   // The leave should be observed.
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kLeave, test_origin, "cars"}});
+      {{"global", TestInterestGroupObserver::kLeave, test_origin, "cars"}});
   EXPECT_TRUE(GetAllInterestGroups().empty());
 }
 
@@ -9597,10 +9597,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
 
   // InterestGroupAccessObserver should see the join and auction.
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
-       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-       {TestInterestGroupObserver::kBid, test_origin, "cars"},
-       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+      {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+       {"1", TestInterestGroupObserver::kWin, test_origin, "cars"}});
 
   // Leaving the winning interest group from the nested iframe should fail.
   // Do it by calling Javascript directly instead of loading a page that does
@@ -9705,13 +9705,13 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
 
   // InterestGroupAccessObserver should see the join and auction.
   WaitForAccessObserved({
-      {TestInterestGroupObserver::kJoin, test_origin, "cars"},
-      {TestInterestGroupObserver::kJoin, test_origin, "trucks"},
-      {TestInterestGroupObserver::kLoaded, test_origin, "trucks"},
-      {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-      {TestInterestGroupObserver::kBid, test_origin, "cars"},
-      {TestInterestGroupObserver::kBid, test_origin, "trucks"},
-      {TestInterestGroupObserver::kWin, test_origin, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "trucks"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin, "trucks"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+      {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 2.0},
+      {"1", TestInterestGroupObserver::kBid, test_origin, "trucks", 1.0},
+      {"1", TestInterestGroupObserver::kWin, test_origin, "cars"},
   });
 
   // Try to leave the winning interest group, which should fail, since the ad is
@@ -9742,10 +9742,10 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
   // attempt, as updating the data is potentially racy with the navigation
   // committing, so the leave event could appear out of order.
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kLoaded, test_origin, "trucks"},
-       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-       {TestInterestGroupObserver::kBid, test_origin, "trucks"},
-       {TestInterestGroupObserver::kWin, test_origin, "trucks"}});
+      {{"2", TestInterestGroupObserver::kLoaded, test_origin, "trucks"},
+       {"2", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {"2", TestInterestGroupObserver::kBid, test_origin, "trucks", 1.0},
+       {"2", TestInterestGroupObserver::kWin, test_origin, "trucks"}});
 
   // Try to leave the winning interest group, which should succeed this time. Do
   // it by calling Javascript directly instead of loading a page that does this
@@ -9753,7 +9753,7 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
   EXPECT_EQ(nullptr, EvalJs(GetFencedFrameRenderFrameHost(rfh2),
                             "navigator.leaveAdInterestGroup()"));
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kLeave, test_origin, "trucks"}});
+      {{"global", TestInterestGroupObserver::kLeave, test_origin, "trucks"}});
 
   // Only the "truck" interest group should have been left.
   auto groups = GetAllInterestGroups();
@@ -9764,8 +9764,6 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
 // Runs ad auction with fenced frames enabled. The auction should succeed and
 // be loaded in a fenced frame. The displayed ad leaves the interest group
 // from a nested iframe.
-//
-// TODO(crbug.com/1320438): Re-enable the test.
 IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                        RunAdAuctionWithWinnerNestedLeaveGroup) {
   URLLoaderMonitor url_loader_monitor;
@@ -9816,10 +9814,10 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
 
   // InterestGroupAccessObserver should see the join and auction.
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
-       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-       {TestInterestGroupObserver::kBid, test_origin, "cars"},
-       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+      {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+       {"1", TestInterestGroupObserver::kWin, test_origin, "cars"}});
 
   // Leave the interest group and wait to observe the event. Do this after the
   // above WaitForAccessObserved() call, as leaving is racy with recording the
@@ -9829,7 +9827,7 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
                                 ->current_frame_host(),
                             "navigator.leaveAdInterestGroup()"));
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kLeave, test_origin, "cars"}});
+      {{"global", TestInterestGroupObserver::kLeave, test_origin, "cars"}});
 
   // The ad should have left the interest group when the page was shown.
   EXPECT_EQ(0u, GetAllInterestGroups().size());
@@ -9940,7 +9938,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
 
   // InterestGroupAccessObserver should see the join.
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kJoin, test_origin, "cars"}});
+      {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"}});
 
   // The ad should not have left the interest group when the page was shown.
   EXPECT_EQ(1u, GetAllInterestGroups().size());
@@ -10030,10 +10028,10 @@ function reportResult(
                   seller_signals_url, bidder_origin));
 
   WaitForAccessObserved({
-      {TestInterestGroupObserver::kJoin, bidder_origin, "cars"},
-      {TestInterestGroupObserver::kLoaded, bidder_origin, "cars"},
-      {TestInterestGroupObserver::kBid, bidder_origin, "cars"},
-      {TestInterestGroupObserver::kWin, bidder_origin, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, bidder_origin, "cars"},
+      {"1", TestInterestGroupObserver::kLoaded, bidder_origin, "cars"},
+      {"1", TestInterestGroupObserver::kBid, bidder_origin, "cars", 1.0},
+      {"1", TestInterestGroupObserver::kWin, bidder_origin, "cars"},
   });
 
   // Reporting urls should be fetched after an auction succeeded.
@@ -10091,10 +10089,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
 
   WaitForAccessObserved({
-      {TestInterestGroupObserver::kJoin, test_origin, "cars"},
-      {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-      {TestInterestGroupObserver::kBid, test_origin, "cars"},
-      {TestInterestGroupObserver::kWin, test_origin, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+      {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+      {"1", TestInterestGroupObserver::kWin, test_origin, "cars"},
   });
 
   // Wait for the component to load.
@@ -10382,14 +10380,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionAllGroupsLimited) {
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad1_url);
 
   WaitForAccessObserved({
-      {TestInterestGroupObserver::kJoin, test_origin, "cars"},
-      {TestInterestGroupObserver::kJoin, test_origin, "bikes"},
-      {TestInterestGroupObserver::kJoin, test_origin, "shoes"},
-      {TestInterestGroupObserver::kLoaded, test_origin, "shoes"},
-      {TestInterestGroupObserver::kLoaded, test_origin, "bikes"},
-      {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-      {TestInterestGroupObserver::kBid, test_origin, "cars"},
-      {TestInterestGroupObserver::kWin, test_origin, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "bikes"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "shoes"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin, "shoes"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin, "bikes"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+      {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+      {"1", TestInterestGroupObserver::kWin, test_origin, "cars"},
   });
 }
 
@@ -10495,22 +10493,22 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionOneGroupLimited) {
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad1_url);
 
   WaitForAccessObserved({
-      {TestInterestGroupObserver::kJoin, test_origin, "cars"},
-      {TestInterestGroupObserver::kJoin, test_origin, "bikes"},
-      {TestInterestGroupObserver::kJoin, test_origin, "shoes"},
-      {TestInterestGroupObserver::kJoin, test_origin2, "cars"},
-      {TestInterestGroupObserver::kJoin, test_origin2, "bikes"},
-      {TestInterestGroupObserver::kJoin, test_origin2, "shoes"},
-      {TestInterestGroupObserver::kLoaded, test_origin, "shoes"},
-      {TestInterestGroupObserver::kLoaded, test_origin, "bikes"},
-      {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-      {TestInterestGroupObserver::kLoaded, test_origin2, "shoes"},
-      {TestInterestGroupObserver::kLoaded, test_origin2, "bikes"},
-      {TestInterestGroupObserver::kLoaded, test_origin2, "cars"},
-      {TestInterestGroupObserver::kBid, test_origin, "cars"},
-      {TestInterestGroupObserver::kBid, test_origin2, "bikes"},
-      {TestInterestGroupObserver::kBid, test_origin2, "cars"},
-      {TestInterestGroupObserver::kWin, test_origin, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "bikes"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "shoes"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin2, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin2, "bikes"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin2, "shoes"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin, "shoes"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin, "bikes"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin2, "shoes"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin2, "bikes"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin2, "cars"},
+      {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 2.0},
+      {"1", TestInterestGroupObserver::kBid, test_origin2, "bikes", 1.0},
+      {"1", TestInterestGroupObserver::kBid, test_origin2, "cars", 1.0},
+      {"1", TestInterestGroupObserver::kWin, test_origin, "cars"},
   });
 }
 
@@ -10617,23 +10615,23 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad1_url);
 
   WaitForAccessObserved({
-      {TestInterestGroupObserver::kJoin, test_origin, "cars"},
-      {TestInterestGroupObserver::kJoin, test_origin, "bikes"},
-      {TestInterestGroupObserver::kJoin, test_origin, "shoes"},
-      {TestInterestGroupObserver::kJoin, test_origin2, "cars"},
-      {TestInterestGroupObserver::kJoin, test_origin2, "bikes"},
-      {TestInterestGroupObserver::kJoin, test_origin2, "shoes"},
-      {TestInterestGroupObserver::kLoaded, test_origin, "shoes"},
-      {TestInterestGroupObserver::kLoaded, test_origin, "bikes"},
-      {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-      {TestInterestGroupObserver::kLoaded, test_origin2, "shoes"},
-      {TestInterestGroupObserver::kLoaded, test_origin2, "bikes"},
-      {TestInterestGroupObserver::kLoaded, test_origin2, "cars"},
-      {TestInterestGroupObserver::kBid, test_origin, "cars"},
-      {TestInterestGroupObserver::kBid, test_origin2, "bikes"},
-      {TestInterestGroupObserver::kBid, test_origin2, "cars"},
-      {TestInterestGroupObserver::kBid, test_origin2, "shoes"},
-      {TestInterestGroupObserver::kWin, test_origin, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "bikes"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "shoes"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin2, "cars"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin2, "bikes"},
+      {"global", TestInterestGroupObserver::kJoin, test_origin2, "shoes"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin, "shoes"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin, "bikes"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin2, "shoes"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin2, "bikes"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin2, "cars"},
+      {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 2.0},
+      {"1", TestInterestGroupObserver::kBid, test_origin2, "bikes", 1.0},
+      {"1", TestInterestGroupObserver::kBid, test_origin2, "cars", 1.0},
+      {"1", TestInterestGroupObserver::kBid, test_origin2, "shoes", 1.0},
+      {"1", TestInterestGroupObserver::kWin, test_origin, "cars"},
   });
 }
 
@@ -10782,19 +10780,20 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad1_url);
   // Wait for interest groups to be updated. Interest groups are updated
   // during/after commit, so this test is potentially racy without this.
-  WaitForAccessObserved({{TestInterestGroupObserver::kLoaded, origin2, "shoes"},
-                         {TestInterestGroupObserver::kLoaded, origin, "cars"},
-                         {TestInterestGroupObserver::kBid, origin, "cars"},
-                         {TestInterestGroupObserver::kBid, origin2, "shoes"},
-                         {TestInterestGroupObserver::kWin, origin, "cars"}});
+  WaitForAccessObserved(
+      {{"1", TestInterestGroupObserver::kLoaded, origin2, "shoes"},
+       {"1", TestInterestGroupObserver::kLoaded, origin, "cars"},
+       {"1", TestInterestGroupObserver::kBid, origin, "cars", 2.0},
+       {"1", TestInterestGroupObserver::kBid, origin2, "shoes", 1.0},
+       {"1", TestInterestGroupObserver::kWin, origin, "cars"}});
 
   // `prev_wins` of `test_url`'s interest group cars is updated in storage.
   storage_interest_groups = GetInterestGroupsForOwner(origin);
   storage_interest_groups2 = GetInterestGroupsForOwner(origin2);
   // Remove the above two loads from the observer.
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kLoaded, origin, "cars"},
-       {TestInterestGroupObserver::kLoaded, origin2, "shoes"}});
+      {{"global", TestInterestGroupObserver::kLoaded, origin, "cars"},
+       {"global", TestInterestGroupObserver::kLoaded, origin2, "shoes"}});
   EXPECT_EQ(storage_interest_groups->GetInterestGroups()[0]
                 ->bidding_browser_signals->prev_wins.size(),
             1u);
@@ -10817,18 +10816,19 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   // Run auction again. Interest group shoes of owner `test_url2` wins.
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad2_url);
   // Need to wait again.
-  WaitForAccessObserved({{TestInterestGroupObserver::kLoaded, origin2, "shoes"},
-                         {TestInterestGroupObserver::kLoaded, origin, "cars"},
-                         {TestInterestGroupObserver::kBid, origin2, "shoes"},
-                         {TestInterestGroupObserver::kWin, origin2, "shoes"}});
+  WaitForAccessObserved(
+      {{"2", TestInterestGroupObserver::kLoaded, origin2, "shoes"},
+       {"2", TestInterestGroupObserver::kLoaded, origin, "cars"},
+       {"2", TestInterestGroupObserver::kBid, origin2, "shoes", 1.0},
+       {"2", TestInterestGroupObserver::kWin, origin2, "shoes"}});
 
   // `test_url2`'s interest group shoes has one `prev_wins` in storage.
   storage_interest_groups = GetInterestGroupsForOwner(origin);
   storage_interest_groups2 = GetInterestGroupsForOwner(origin2);
   // Remove the above two loads from the observer.
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kLoaded, origin, "cars"},
-       {TestInterestGroupObserver::kLoaded, origin2, "shoes"}});
+      {{"global", TestInterestGroupObserver::kLoaded, origin, "cars"},
+       {"global", TestInterestGroupObserver::kLoaded, origin2, "shoes"}});
   EXPECT_EQ(storage_interest_groups->GetInterestGroups()[0]
                 ->bidding_browser_signals->prev_wins.size(),
             1u);
@@ -10860,9 +10860,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad2_url);
   // Need to wait again.
   WaitForAccessObserved({
-      {TestInterestGroupObserver::kLoaded, origin2, "shoes"},
-      {TestInterestGroupObserver::kBid, origin2, "shoes"},
-      {TestInterestGroupObserver::kWin, origin2, "shoes"},
+      {"3", TestInterestGroupObserver::kLoaded, origin2, "shoes"},
+      {"3", TestInterestGroupObserver::kBid, origin2, "shoes", 1.0},
+      {"3", TestInterestGroupObserver::kWin, origin2, "shoes"},
   });
 
   // `test_url2`'s interest group shoes has two `prev_wins` in storage.
@@ -11557,6 +11557,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ComponentAuction) {
+  AttachInterestGroupObserver();
   GURL test_url =
       embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
@@ -11597,6 +11598,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ComponentAuction) {
       embedded_https_test_server().GetURL("a.test",
                                           "/interest_group/decision_logic.js"));
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+
+  WaitForAccessObserved({
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+      {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+      {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+      {"2", TestInterestGroupObserver::kTopLevelBid, test_origin, "cars", 1.0,
+       /*bid_currency=*/absl::nullopt, test_origin},
+      {"2", TestInterestGroupObserver::kWin, test_origin, "cars",
+       /*bid=*/absl::nullopt, /*bid_currency=*/absl::nullopt, test_origin},
+  });
 }
 
 // Test the case of a component argument in the case a bidder refuses to
@@ -11742,6 +11753,8 @@ class InterestGroupWorkletValidationBrowserTest
 // the expected values.
 IN_PROC_BROWSER_TEST_P(InterestGroupWorkletValidationBrowserTest,
                        ValidateWorkletParameters) {
+  AttachInterestGroupObserver();
+
   // Use different hostnames for each participant, since
   // `trusted_bidding_signals` only checks the hostname of certain parameters.
   constexpr char kBidderHost[] = "a.test";
@@ -11928,6 +11941,18 @@ IN_PROC_BROWSER_TEST_P(InterestGroupWorkletValidationBrowserTest,
       embedded_https_test_server().GetURL(kSellerHost, "/echo?report_seller"));
   WaitForUrl(
       embedded_https_test_server().GetURL(kSellerHost, "/echo?report_bidder"));
+
+  WaitForAccessObserved({
+      {"global", TestInterestGroupObserver::kJoin, second_bidder_origin,
+       "boats"},
+      {"global", TestInterestGroupObserver::kJoin, bidder_origin, "cars"},
+      {"1", TestInterestGroupObserver::kLoaded, second_bidder_origin, "boats"},
+      {"1", TestInterestGroupObserver::kLoaded, bidder_origin, "cars"},
+      {"1", TestInterestGroupObserver::kBid, second_bidder_origin, "boats",
+       1.0},
+      {"1", TestInterestGroupObserver::kBid, bidder_origin, "cars", 2.0, "USD"},
+      {"1", TestInterestGroupObserver::kWin, bidder_origin, "cars"},
+  });
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -12113,6 +12138,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
       EXPECT_EQ(kSuccess, LeaveInterestGroupAndVerify(/*owner=*/bidder_origin,
                                                       /*name=*/"cars"));
     }
+
+    AttachInterestGroupObserver();
 
     ASSERT_EQ(kSuccess,
               JoinInterestGroupAndVerify(
@@ -12360,6 +12387,18 @@ IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
         kComponentSellerHost, "/echo?report_component_seller"));
     WaitForUrl(embedded_https_test_server().GetURL(kBidderHost,
                                                    "/echo?report_bidder"));
+
+    WaitForAccessObserved({
+        {"global", TestInterestGroupObserver::kJoin, bidder_origin, "cars"},
+        {"1", TestInterestGroupObserver::kLoaded, bidder_origin, "cars"},
+        {"1", TestInterestGroupObserver::kBid, bidder_origin, "cars", 2.0,
+         "USD"},
+        {"2", TestInterestGroupObserver::kTopLevelBid, bidder_origin, "cars",
+         42.0, "CAD", component_seller_origin},
+        {"2", TestInterestGroupObserver::kWin, bidder_origin, "cars",
+         /*bid=*/absl::nullopt, /*bid_currency=*/absl::nullopt,
+         component_seller_origin},
+    });
   }
 }
 
@@ -16469,19 +16508,19 @@ IN_PROC_BROWSER_TEST_P(LeaveAdInterestGroupFromAdComponentBrowserTest,
   if (IsLeaveAdInterestGroupFromAdComponentEnabled()) {
     // InterestGroupAccessObserver should see the join, auction and the leave.
     WaitForAccessObserved(
-        {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
-         {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-         {TestInterestGroupObserver::kBid, test_origin, "cars"},
-         {TestInterestGroupObserver::kWin, test_origin, "cars"},
-         {TestInterestGroupObserver::kLeave, test_origin, "cars"}});
+        {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+         {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+         {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+         {"1", TestInterestGroupObserver::kWin, test_origin, "cars"},
+         {"global", TestInterestGroupObserver::kLeave, test_origin, "cars"}});
   } else {
     // InterestGroupAccessObserver should see the join and auction, but not the
     // leave.
     WaitForAccessObserved(
-        {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
-         {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-         {TestInterestGroupObserver::kBid, test_origin, "cars"},
-         {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+        {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+         {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+         {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+         {"1", TestInterestGroupObserver::kWin, test_origin, "cars"}});
   }
 
   // The state of the interest groups depends on the feature toggle.
@@ -16506,10 +16545,10 @@ IN_PROC_BROWSER_TEST_P(LeaveAdInterestGroupFromAdComponentBrowserTest,
   // implicit leave since it was blocked due to cross origin to the interest
   // group owner.
   WaitForAccessObserved(
-      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
-       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-       {TestInterestGroupObserver::kBid, test_origin, "cars"},
-       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+      {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+       {"1", TestInterestGroupObserver::kWin, test_origin, "cars"}});
 
   // The ad should not leave the interest group.
   EXPECT_EQ(1u, GetAllInterestGroups().size());
@@ -18335,18 +18374,19 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         auction_config, should_win ? additional_bid_ad_url : ad_url);
     WaitForUrl(embedded_https_test_server().GetURL("a.test",
                                                    "/echoall?report_seller"));
+
     if (should_win) {
       WaitForUrl(embedded_https_test_server().GetURL(
           "a.test", "/echoall?report_bidder_additional"));
       EXPECT_FALSE(HasServerSeenUrl(embedded_https_test_server().GetURL(
           "a.test", "/echoall?report_bidder")));
       WaitForAccessObserved({
-          {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-          {TestInterestGroupObserver::kBid, test_origin, "cars"},
-          {TestInterestGroupObserver::kAdditionalBid, additional_bid_origin,
-           "campaign123"},
-          {TestInterestGroupObserver::kAdditionalBidWin, additional_bid_origin,
-           "campaign123"},
+          {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+          {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+          {"1", TestInterestGroupObserver::kAdditionalBid,
+           additional_bid_origin, "campaign123", 1.99},
+          {"1", TestInterestGroupObserver::kAdditionalBidWin,
+           additional_bid_origin, "campaign123"},
       });
     } else {
       WaitForUrl(embedded_https_test_server().GetURL("a.test",
@@ -18354,11 +18394,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       EXPECT_FALSE(HasServerSeenUrl(embedded_https_test_server().GetURL(
           "a.test", "/echoall?report_bidder_additional")));
       WaitForAccessObserved(
-          {{TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-           {TestInterestGroupObserver::kBid, test_origin, "cars"},
-           {TestInterestGroupObserver::kAdditionalBid, additional_bid_origin,
-            "campaign123"},
-           {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+          {{"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+           {"1", TestInterestGroupObserver::kBid, test_origin, "cars", 1.0},
+           {"1", TestInterestGroupObserver::kAdditionalBid,
+            additional_bid_origin, "campaign123", 0.1},
+           {"1", TestInterestGroupObserver::kWin, test_origin, "cars"}});
     }
   }
 }
@@ -18417,9 +18457,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForUrl(embedded_https_test_server().GetURL(
       "a.test", "/echoall?report_bidder_additional"));
   WaitForAccessObserved({
-      {TestInterestGroupObserver::kAdditionalBid, additional_bid_origin,
-       "campaign123"},
-      {TestInterestGroupObserver::kAdditionalBidWin, additional_bid_origin,
+      {"1", TestInterestGroupObserver::kAdditionalBid, additional_bid_origin,
+       "campaign123", 2.0},
+      {"1", TestInterestGroupObserver::kAdditionalBidWin, additional_bid_origin,
        "campaign123"},
   });
 }
@@ -20162,6 +20202,7 @@ IN_PROC_BROWSER_TEST_F(
 // so it does bid and win.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        AdditionalBidOnComponentAuctionWithNoNegativeIGDoesBid) {
+  AttachInterestGroupObserver();
   URLLoaderMonitor url_loader_monitor;
 
   constexpr char kTestOrigin[] = "a.test";
@@ -20235,6 +20276,19 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       kTestOrigin, "/echoall?report_bidder_additional"));
   EXPECT_FALSE(HasServerSeenUrl(embedded_https_test_server().GetURL(
       kTestOrigin, "/echoall?report_bidder")));
+  url::Origin bid_origin = url::Origin::Create(test_url);
+  WaitForAccessObserved(
+      {{"global", TestInterestGroupObserver::kJoin, bid_origin, "cars"},
+       {"1", TestInterestGroupObserver::kLoaded, bid_origin, "cars"},
+       {"1", TestInterestGroupObserver::kAdditionalBid, bid_origin,
+        "campaign123", 1.99},
+       {"1", TestInterestGroupObserver::kBid, bid_origin, "cars", 1.0},
+       {"2", TestInterestGroupObserver::kTopLevelAdditionalBid, bid_origin,
+        "campaign123", 1.99, /*bid_currency=*/std::nullopt,
+        /*component_seller_origin=*/bid_origin},
+       {"2", TestInterestGroupObserver::kAdditionalBidWin, bid_origin,
+        "campaign123", /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt,
+        /*component_seller_origin=*/bid_origin}});
 }
 
 // Test to make sure that Promises configuration fields that are checked early
@@ -20314,11 +20368,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, NotificationOrder) {
 
   // Expect events to be in order.
   WaitForAccessObservedInOrder(
-      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
-       {TestInterestGroupObserver::kJoin, test_origin, "golf carts"},
-       {TestInterestGroupObserver::kClear, test_origin, "golf carts"},
-       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-       {TestInterestGroupObserver::kLeave, test_origin, "cars"}});
+      {{"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {"global", TestInterestGroupObserver::kJoin, test_origin, "golf carts"},
+       {"global", TestInterestGroupObserver::kClear, test_origin, "golf carts"},
+       {"1", TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {"global", TestInterestGroupObserver::kLeave, test_origin, "cars"}});
 }
 
 // Make sure we don't crash when cross-frame promise resolution tries to notify

@@ -39,10 +39,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/token.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/additional_bid_result.h"
 #include "content/browser/interest_group/additional_bids_util.h"
@@ -2128,7 +2130,8 @@ InterestGroupAuction::InterestGroupAuction(
     base::RepeatingCallback<
         void(const PrivateAggregationRequests& private_aggregation_requests)>
         maybe_log_private_aggregation_web_features_callback)
-    : trace_id_(base::trace_event::GetNextGlobalTraceId()),
+    : devtools_auction_id_(base::Token::CreateRandom().ToString()),
+      trace_id_(base::trace_event::GetNextGlobalTraceId()),
       kanon_mode_(kanon_mode),
       auction_worklet_manager_(auction_worklet_manager),
       auction_nonce_manager_(auction_nonce_manager),
@@ -2150,6 +2153,17 @@ InterestGroupAuction::InterestGroupAuction(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("fledge", "auction", *trace_id_,
                                     "decision_logic_url",
                                     config_->decision_logic_url);
+  int frame_tree_node_id = auction_worklet_manager_->GetFrameTreeNodeID();
+  if (devtools_instrumentation::NeedInterestGroupAuctionEvents(
+          frame_tree_node_id)) {
+    devtools_instrumentation::OnInterestGroupAuctionEventOccurred(
+        frame_tree_node_id, auction_start_time_,
+        InterestGroupAuctionEventType::kStarted, devtools_auction_id_,
+        parent_ ? base::optional_ref<const std::string>(
+                      parent->devtools_auction_id_)
+                : base::optional_ref<const std::string>(),
+        config_->SerializeForDevtools());
+  }
 
   uint32_t child_pos = 0;
   for (const auto& component_auction_config :
@@ -2296,8 +2310,9 @@ void InterestGroupAuction::StartLoadInterestGroupsPhase(
         continue;
       }
       interest_group_manager_->GetInterestGroupsForOwner(
-          buyer, base::BindOnce(&InterestGroupAuction::OnInterestGroupRead,
-                                weak_ptr_factory_.GetWeakPtr()));
+          devtools_auction_id_, buyer,
+          base::BindOnce(&InterestGroupAuction::OnInterestGroupRead,
+                         weak_ptr_factory_.GetWeakPtr()));
       ++num_pending_loads_;
     }
   }
@@ -2717,10 +2732,10 @@ InterestGroupAuction::CreateReporter(
       interest_group_manager_, auction_worklet_manager_, browser_context,
       private_aggregation_manager,
       maybe_log_private_aggregation_web_features_callback_,
-      std::move(auction_config), main_frame_origin, frame_origin,
-      std::move(client_security_state), std::move(url_loader_factory),
-      kanon_mode_, bid_is_kanon, std::move(winning_bid_info),
-      std::move(top_level_seller_winning_bid_info),
+      std::move(auction_config), devtools_auction_id_, main_frame_origin,
+      frame_origin, std::move(client_security_state),
+      std::move(url_loader_factory), kanon_mode_, bid_is_kanon,
+      std::move(winning_bid_info), std::move(top_level_seller_winning_bid_info),
       std::move(component_seller_winning_bid_info),
       std::move(interest_groups_that_bid), std::move(debug_win_report_urls),
       std::move(debug_loss_report_urls), GetKAnonKeysToJoin(),
@@ -2744,6 +2759,18 @@ void InterestGroupAuction::NotifyConfigPromisesResolved() {
   config_promises_resolved_ = true;
 
   auction_metrics_recorder_->OnConfigPromisesResolved();
+
+  int frame_tree_node_id = auction_worklet_manager_->GetFrameTreeNodeID();
+  if (devtools_instrumentation::NeedInterestGroupAuctionEvents(
+          frame_tree_node_id)) {
+    devtools_instrumentation::OnInterestGroupAuctionEventOccurred(
+        frame_tree_node_id, base::Time::Now(),
+        InterestGroupAuctionEventType::kConfigResolved, devtools_auction_id_,
+        parent_ ? base::optional_ref<const std::string>(
+                      parent_->devtools_auction_id_)
+                : base::optional_ref<const std::string>(),
+        config_->SerializeForDevtools());
+  }
 
   // If we haven't started the bidding and scoring phase, we will just handle
   // this information at its start; setting `config_promises_resolved_` is
@@ -2925,9 +2952,14 @@ void InterestGroupAuction::GetInterestGroupsThatBidAndReportBidCounts(
                            saved_response_->bidding_groups.end());
     for (const auto& ig_bid : interest_groups) {
       interest_group_manager_->NotifyInterestGroupAccessed(
+          devtools_auction_id_,
           InterestGroupManagerImpl::InterestGroupObserver::
               InterestGroupObserver::kBid,
-          ig_bid.owner, ig_bid.name);
+          ig_bid.owner, ig_bid.name,
+          /*component_seller_origin=*/std::nullopt,
+          // Don't know individual bid values of a server-side auction, just
+          // that the IGs participated.
+          /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt);
     }
     return;
   }
@@ -4148,18 +4180,32 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
 
   any_bid_made_ = true;
 
-  // TODO(https://crbug.com/1516642): Report component auctions participating
-  // in top-level auction, as well as k-anon re-runs.
-  if (component_auctions_.empty() &&
-      IsBidRoleUsedForWinner(kanon_mode_, bid->bid_role)) {
+  // TODO(https://crbug.com/1516642): Report k-anon re-runs.
+  if (IsBidRoleUsedForWinner(kanon_mode_, bid->bid_role)) {
+    InterestGroupManagerImpl::InterestGroupObserver::AccessType event_type =
+        InterestGroupManagerImpl::InterestGroupObserver::kBid;
+    if (!component_auctions_.empty()) {
+      event_type =
+          bid->bid_state->additional_bid_buyer
+              ? InterestGroupManagerImpl::InterestGroupObserver::
+                    kTopLevelAdditionalBid
+              : InterestGroupManagerImpl::InterestGroupObserver::kTopLevelBid;
+    } else if (bid->bid_state->additional_bid_buyer) {
+      event_type =
+          InterestGroupManagerImpl::InterestGroupObserver::kAdditionalBid;
+    }
+
     interest_group_manager_->NotifyInterestGroupAccessed(
-        bid->bid_state->additional_bid_buyer
-            ? InterestGroupManagerImpl::InterestGroupObserver::
-                  InterestGroupObserver::kAdditionalBid
-            : InterestGroupManagerImpl::InterestGroupObserver::
-                  InterestGroupObserver::kBid,
+        devtools_auction_id_, event_type,
         bid->bid_state->bidder->interest_group.owner,
-        bid->bid_state->bidder->interest_group.name);
+        bid->bid_state->bidder->interest_group.name,
+        component_auctions_.empty() ? base::optional_ref<const url::Origin>()
+                                    : base::optional_ref<const url::Origin>(
+                                          bid->auction->config_->seller),
+        bid->bid,
+        bid->bid_currency
+            ? base::optional_ref(bid->bid_currency->currency_code())
+            : base::optional_ref<const std::string>());
   }
 
   // If seller worklet hasn't been received yet, or configuration is still

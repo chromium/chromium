@@ -12,8 +12,10 @@
 #include <optional>
 #include <vector>
 
+#include "base/values.h"
 #include "content/browser/devtools/devtools_device_request_prompt_info.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
+#include "content/browser/interest_group/devtools_enums.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
@@ -228,6 +230,16 @@ void OnAuctionWorkletNetworkRequestComplete(
     int frame_tree_node_id,
     const std::string& request_id,
     const network::URLLoaderCompletionStatus& status);
+
+bool NeedInterestGroupAuctionEvents(int frame_tree_node_id);
+
+void OnInterestGroupAuctionEventOccurred(
+    int frame_tree_node_id,
+    base::Time event_time,
+    content::InterestGroupAuctionEventType type,
+    const std::string& unique_auction_id,
+    base::optional_ref<const std::string> parent_auction_id,
+    const base::Value::Dict& auction_config);
 
 bool ShouldBypassCSP(const NavigationRequest& nav_request);
 

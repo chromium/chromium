@@ -163,6 +163,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
     std::unique_ptr<blink::AuctionConfig> auction_config,
+    const std::string& devtools_auction_id,
     const url::Origin& main_frame_origin,
     const url::Origin& frame_origin,
     network::mojom::ClientSecurityStatePtr client_security_state,
@@ -186,6 +187,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
       log_private_aggregation_requests_callback_(
           std::move(log_private_aggregation_requests_callback)),
       auction_config_(std::move(auction_config)),
+      devtools_auction_id_(devtools_auction_id),
       main_frame_origin_(main_frame_origin),
       frame_origin_(frame_origin),
       client_security_state_(std::move(client_security_state)),
@@ -1004,18 +1006,23 @@ void InterestGroupAuctionReporter::OnNavigateToWinningAd(
 
   const blink::InterestGroup& winning_group =
       winning_bid_info_.storage_interest_group->interest_group;
-  if (!winning_bid_info_.provided_as_additional_bid) {
+  InterestGroupManagerImpl::InterestGroupObserver::AccessType win_type =
+      InterestGroupManagerImpl::InterestGroupObserver::kWin;
+  if (winning_bid_info_.provided_as_additional_bid) {
+    win_type =
+        InterestGroupManagerImpl::InterestGroupObserver::kAdditionalBidWin;
+  } else {
     interest_group_manager_->RecordInterestGroupWin(
         blink::InterestGroupKey(winning_group.owner, winning_group.name),
         winning_bid_info_.ad_metadata);
-    interest_group_manager_->NotifyInterestGroupAccessed(
-        InterestGroupManagerImpl::InterestGroupObserver::kWin,
-        winning_group.owner, winning_group.name);
-  } else {
-    interest_group_manager_->NotifyInterestGroupAccessed(
-        InterestGroupManagerImpl::InterestGroupObserver::kAdditionalBidWin,
-        winning_group.owner, winning_group.name);
   }
+  interest_group_manager_->NotifyInterestGroupAccessed(
+      devtools_auction_id_, win_type, winning_group.owner, winning_group.name,
+      component_seller_winning_bid_info_.has_value()
+          ? base::optional_ref<const url::Origin>(
+                component_seller_winning_bid_info_->auction_config->seller)
+          : base::optional_ref<const url::Origin>(),
+      /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt);
 
   interest_group_manager_->RegisterAdKeysAsJoined(
       std::move(k_anon_keys_to_join_));

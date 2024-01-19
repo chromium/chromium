@@ -206,9 +206,10 @@ class RemoveInterestGroupTester {
     static_cast<InterestGroupManagerImpl*>(
         storage_partition_->GetInterestGroupManager())
         ->GetInterestGroupsForOwner(
-            origin, base::BindOnce(
-                        &RemoveInterestGroupTester::GetInterestGroupsCallback,
-                        base::Unretained(this), loop.QuitClosure()));
+            /*devtools_auction_id=*/std::nullopt, origin,
+            base::BindOnce(
+                &RemoveInterestGroupTester::GetInterestGroupsCallback,
+                base::Unretained(this), loop.QuitClosure()));
     loop.Run();
     return get_interest_group_success_;
   }
