@@ -8,6 +8,7 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 
 namespace gpu {
@@ -56,9 +57,9 @@ std::vector<uint8_t> RepackPixelDataWithStride(const gfx::Size& size,
   DCHECK_LT(dst_stride, src_stride);
 
   std::vector<uint8_t> dst_data(dst_stride * size.height());
-  for (int y = 0; y < size.height(); ++y) {
-    memcpy(&dst_data[y * dst_stride], &src_data[y * src_stride], dst_stride);
-  }
+  libyuv::CopyPlane(src_data, src_stride, dst_data.data(), dst_stride,
+                    src_pixmap.info().minRowBytes(), size.height());
+
   return dst_data;
 }
 
@@ -71,9 +72,8 @@ void UnpackPixelDataWithStride(const gfx::Size& size,
 
   DCHECK_GT(dst_stride, src_stride);
 
-  for (int y = 0; y < size.height(); ++y) {
-    memcpy(&dst_data[y * dst_stride], &src_data[y * src_stride], src_stride);
-  }
+  libyuv::CopyPlane(src_data.data(), src_stride, dst_data, dst_stride,
+                    dst_pixmap.info().minRowBytes(), size.height());
 }
 
 void SwizzleRedAndBlue(const SkPixmap& pixmap) {
