@@ -30,8 +30,6 @@ class PrivateKeyFactory {
       base::flat_map<PrivateKeySource,
                      std::unique_ptr<PrivateKeyFactory>,
                      EnumClassCompare>;
-  // using PrivateKeyFactoriesMap = base::flat_map<PrivateKeySource,
-  // std::unique_ptr<PrivateKeyFactory>>;
   using PrivateKeyCallback =
       base::OnceCallback<void(scoped_refptr<PrivateKey>)>;
 

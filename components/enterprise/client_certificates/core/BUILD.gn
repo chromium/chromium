@@ -25,6 +25,19 @@ source_set("core") {
   ]
 
   deps = []
+
+  friend = [ ":unit_tests" ]
+
+  if (is_win) {
+    sources += [
+      "unexportable_private_key.cc",
+      "unexportable_private_key.h",
+      "unexportable_private_key_factory.cc",
+      "unexportable_private_key_factory.h",
+    ]
+
+    deps += [ "//crypto" ]
+  }
 }
 
 source_set("test_support") {
@@ -55,4 +68,16 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_win) {
+    sources += [
+      "unexportable_private_key_factory_unittest.cc",
+      "unexportable_private_key_unittest.cc",
+    ]
+
+    deps += [
+      "//crypto",
+      "//crypto:test_support",
+    ]
+  }
 }
