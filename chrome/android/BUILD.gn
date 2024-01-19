@@ -2934,6 +2934,8 @@ if (current_toolchain == default_toolchain) {
     deps = [
       "//base:base_java",
       "//base:base_java_test_support",
+      "//chrome/browser/hub/internal:java",
+      "//chrome/browser/hub/internal:java_resources",
       "//chrome/test/android:chrome_java_test_pagecontroller",
       "//content/public/test/android:content_java_test_support",
       "//net/android:net_java_test_support",
