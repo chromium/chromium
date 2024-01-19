@@ -395,12 +395,11 @@ class DesktopNativeWidgetAuraWithNoDelegateTest
   }
 
   void TearDown() override {
-    desktop_native_widget_->CloseNow();
+    desktop_native_widget_.ExtractAsDangling()->CloseNow();
     ViewsTestBase::TearDown();
   }
 
-  raw_ptr<TestDesktopNativeWidgetAura, AcrossTasksDanglingUntriaged>
-      desktop_native_widget_;
+  raw_ptr<TestDesktopNativeWidgetAura> desktop_native_widget_ = nullptr;
 };
 
 TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, GetHitTestMaskTest) {
@@ -578,7 +577,11 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
       owned_window_->parent()->RemoveObserver(this);
       owner_destroyed_ = true;
       owned_window_destroyed_ = true;
+      delete owned_window_.ExtractAsDangling();
+      return;
     }
+    // `owned_window_` is not reset to nullptr here because it is required in
+    // `OnWindowDestroying()` and will be reset there.
     delete owned_window_;
   }
 
@@ -591,8 +594,10 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
     window->RemoveObserver(this);
     if (window == owned_window_) {
       owned_window_destroyed_ = true;
+      owned_window_ = nullptr;
     } else if (window == top_level_widget_->GetNativeView()) {
       owner_destroyed_ = true;
+      top_level_widget_ = nullptr;
     } else {
       ADD_FAILURE() << "Unexpected window destroyed callback: " << window;
     }
@@ -606,9 +611,8 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
 
  private:
   views::Widget widget_;
-  raw_ptr<views::Widget, AcrossTasksDanglingUntriaged> top_level_widget_ =
-      nullptr;
-  raw_ptr<aura::Window, AcrossTasksDanglingUntriaged> owned_window_ = nullptr;
+  raw_ptr<views::Widget> top_level_widget_ = nullptr;
+  raw_ptr<aura::Window> owned_window_ = nullptr;
   bool owner_destroyed_ = false;
   bool owned_window_destroyed_ = false;
   aura::test::TestWindowDelegate child_window_delegate_;
