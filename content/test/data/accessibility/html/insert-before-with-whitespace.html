@@ -1,0 +1,20 @@
+<!--
+@BLINK-ALLOW:next*
+@BLINK-ALLOW:prev*
+@EXECUTE-AND-WAIT-FOR:moveLastChild()
+-->
+<ol>
+  <li id="li1">this is the first item</li>
+  <li id="li2">this is the second item (for now)</li>
+  <li id="li3"><p role="presentation"><span class=a1>Hello</span><span class=a2><span class=a3 contenteditable="false"> <br role="presentation"></span></span><span class=b1>world this</span><span class=b2><span class=b3 contenteditable="false"> <br role="presentation"></span></span><span class=c1>is just like docs, and your kitchen sink</span>
+  </li>
+</ol>
+<script>
+  function moveLastChild() {
+    var li3 = document.querySelector("#li3");
+    var li2 = document.querySelector("#li2");
+    li2.parentNode.insertBefore(li3, li2);
+    document.title = 'done';
+    return 'done';
+  }
+</script>

@@ -1844,10 +1844,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunFormControlsTest(FILE_PATH_LITERAL("contenteditable-descendants.html"));
 }
 
-// TODO(https://crbug.com/1367886): Flaky on asan builder on multiple platforms.
-// This is not fixed by rebuilding the subtree when parsing is complete.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_ASAN(AccessibilityContenteditableDocsLi)) {
+                       AccessibilityContenteditableDocsLi) {
+  RunHtmlTest(FILE_PATH_LITERAL("contenteditable-docs-li.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityContenteditableDocsLi) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-docs-li.html"));
 }
 
@@ -2508,6 +2511,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputSearch) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInsertBefore) {
   RunHtmlTest(FILE_PATH_LITERAL("insert-before.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityInsertBeforeWithWhitespace) {
+  RunHtmlTest(FILE_PATH_LITERAL("insert-before-with-whitespace.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityInsertBeforeWithWhitespace) {
+  RunHtmlTest(FILE_PATH_LITERAL("insert-before-with-whitespace.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,

@@ -4042,6 +4042,8 @@ data/accessibility/html/ins-expected-uia-win.txt
 data/accessibility/html/ins-expected-win.txt
 data/accessibility/html/ins.html
 data/accessibility/html/insert-before-expected-blink.txt
+data/accessibility/html/insert-before-with-whitespace-expected-blink.txt
+data/accessibility/html/insert-before-with-whitespace.html
 data/accessibility/html/insert-before.html
 data/accessibility/html/interactive-controls-with-labels-expected-android-assist-data.txt
 data/accessibility/html/interactive-controls-with-labels-expected-android-external.txt
