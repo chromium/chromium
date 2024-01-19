@@ -283,13 +283,6 @@ BASE_FEATURE(kAutofillEnableLabelPrecedenceForTurkishAddresses,
              "AutofillEnableLabelPrecedenceForTurkishAddresses",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether honorific prefix is shown and editable in Autofill Settings
-// on Android, iOS and Desktop.
-// TODO(crbug.com/1141460): Remove once launched.
-BASE_FEATURE(kAutofillEnableSupportForHonorificPrefixes,
-             "AutofillEnableSupportForHonorificPrefixes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Some countries like BR and MX have address forms with only a zip code.
 // If this feature is enabled, those fields may be classified as zip code fields
 // for users who are located in BR/MX, even though our typical policy is to

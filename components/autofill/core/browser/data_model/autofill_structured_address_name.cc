@@ -123,16 +123,6 @@ NameFull::NameFull(const NameFull& other) : NameFull() {
   this->CopyFrom(other);
 }
 
-NameHonorificPrefix::NameHonorificPrefix()
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForHonorificPrefixes,
-          NAME_HONORIFIC_PREFIX,
-          {},
-          MergeMode::kUseBetterOrNewerForSameValue | MergeMode::kReplaceEmpty |
-              MergeMode::kUseBetterOrMostRecentIfDifferent) {}
-
-NameHonorificPrefix::~NameHonorificPrefix() = default;
-
 void NameFull::MigrateLegacyStructure() {
   // Only if the name was imported from a legacy structure, the component has no
   if (GetVerificationStatus() != VerificationStatus::kNoStatus)
@@ -229,49 +219,5 @@ std::u16string NameFull::GetFormatString() const {
 }
 
 NameFull::~NameFull() = default;
-
-NameFullWithPrefix::NameFullWithPrefix()
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForHonorificPrefixes,
-          NAME_FULL_WITH_HONORIFIC_PREFIX,
-          {},
-          MergeMode::kMergeChildrenAndReformatIfNeeded) {
-  RegisterChildNode(std::make_unique<NameHonorificPrefix>());
-  RegisterChildNode(std::make_unique<NameFull>());
-}
-
-NameFullWithPrefix::NameFullWithPrefix(const NameFullWithPrefix& other)
-    : NameFullWithPrefix() {
-  // The purpose of the copy operator is to copy the values and verification
-  // statuses of all nodes in |other| to |this|. This exact functionality is
-  // already implemented as a recursive operation in the base class.
-  this->CopyFrom(other);
-}
-
-NameFullWithPrefix::~NameFullWithPrefix() = default;
-
-std::vector<const re2::RE2*>
-NameFullWithPrefix::GetParseRegularExpressionsByRelevance() const {
-  auto* pattern_provider = StructuredAddressesRegExProvider::Instance();
-  return {pattern_provider->GetRegEx(RegEx::kParsePrefixedName)};
-}
-
-void NameFullWithPrefix::MigrateLegacyStructure() {
-  // If a verification status is set, the structure is already migrated.
-  if (GetVerificationStatus() != VerificationStatus::kNoStatus) {
-    return;
-  }
-
-  // If it is not migrated, continue with migrating the full name.
-  GetNodeForType(NAME_FULL)->MigrateLegacyStructure();
-
-  // Check if the tree is already in a completed state.
-  // If yes, build the root node from the subcomponents.
-  // Otherwise, this step is not necessary and will be taken care of in a later
-  // stage of the import process.
-  if (MaximumNumberOfAssignedAddressComponentsOnNodeToLeafPaths() > 1) {
-    FormatValueFromSubcomponents();
-  }
-}
 
 }  // namespace autofill

@@ -24,19 +24,7 @@
 
 namespace autofill {
 
-namespace {
-
-// Factory for the structured tree to be used in NameInfo.
-std::unique_ptr<AddressComponent> CreateStructuredNameTree() {
-  if (HonorificPrefixEnabled()) {
-    return std::make_unique<NameFullWithPrefix>();
-  }
-  return std::make_unique<NameFull>();
-}
-
-}  // namespace
-
-NameInfo::NameInfo() : name_(CreateStructuredNameTree()) {}
+NameInfo::NameInfo() : name_(std::make_unique<NameFull>()) {}
 
 NameInfo::NameInfo(const NameInfo& info) : NameInfo() {
   *this = info;
@@ -79,18 +67,12 @@ bool NameInfo::operator==(const NameInfo& other) const {
 
 std::u16string NameInfo::GetRawInfo(FieldType type) const {
   DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfFieldType(type));
-
-  // TODO(crbug.com/1141460): Remove once honorific prefixes are launched.
-  if (type == NAME_FULL_WITH_HONORIFIC_PREFIX && !HonorificPrefixEnabled()) {
+  // TODO(b/320307442) Remove when NAME_FULL_WITH_HONORIFIC_PREFIX is
+  // deprecated.
+  if (type == NAME_FULL_WITH_HONORIFIC_PREFIX) {
     type = NAME_FULL;
   }
-    // Without the second generation of the structured name tree, honorific
-    // prefixes and the name including the prefix are unsupported types.
-  if (type == NAME_HONORIFIC_PREFIX && !HonorificPrefixEnabled()) {
-    return std::u16string();
-  }
-
-    return name_->GetValueForType(type);
+  return name_->GetValueForType(type);
 }
 
 void NameInfo::SetRawInfoWithVerificationStatus(FieldType type,

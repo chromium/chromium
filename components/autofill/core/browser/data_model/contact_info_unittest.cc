@@ -50,81 +50,17 @@ TEST_P(SetFullNameTest, SetFullName) {
             name.GetInfo(AutofillType(NAME_FULL), "en-US"));
 }
 
-TEST(NameInfoTest, GetMatchingTypesWithPrefix) {
-  base::test::ScopedFeatureList structured_name_feature;
-  structured_name_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForHonorificPrefixes);
-
-  NameInfo name;
-  test::FormGroupValues name_values = {
-      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
-       .value = "Mr. Pablo Diego Ruiz y Picasso",
-       .verification_status = VerificationStatus::kObserved}};
-  test::SetFormGroupValues(name, name_values);
-  name.FinalizeAfterImport();
-
-  test::FormGroupValues expectation = {
-      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
-       .value = "Mr. Pablo Diego Ruiz y Picasso",
-       .verification_status = VerificationStatus::kObserved},
-      {.type = NAME_HONORIFIC_PREFIX,
-       .value = "Mr.",
-       .verification_status = VerificationStatus::kParsed},
-      {.type = NAME_FIRST,
-       .value = "Pablo Diego",
-       .verification_status = VerificationStatus::kParsed},
-      {.type = NAME_MIDDLE,
-       .value = "",
-       .verification_status = VerificationStatus::kParsed},
-      {.type = NAME_LAST,
-       .value = "Ruiz y Picasso",
-       .verification_status = VerificationStatus::kParsed},
-      {.type = NAME_LAST_FIRST,
-       .value = "Ruiz",
-       .verification_status = VerificationStatus::kParsed},
-      {.type = NAME_LAST_SECOND,
-       .value = "Picasso",
-       .verification_status = VerificationStatus::kParsed},
-      {.type = NAME_LAST_CONJUNCTION,
-       .value = "y",
-       .verification_status = VerificationStatus::kParsed}};
-
-  test::VerifyFormGroupValues(name, expectation);
-
-  FieldTypeSet matching_types;
-  name.GetMatchingTypes(u"Ruiz", "US", &matching_types);
-  EXPECT_EQ(matching_types, FieldTypeSet({NAME_LAST_FIRST}));
-
-  name.GetMatchingTypes(u"Mr.", "US", &matching_types);
-  EXPECT_EQ(matching_types,
-            FieldTypeSet({NAME_LAST_FIRST, NAME_HONORIFIC_PREFIX}));
-
-  // Verify that a field filled with |NAME_FULL_WITH_HONORIFIC_PREFIX| creates a
-  // |NAME_FULL| vote.
-  name.GetMatchingTypes(u"Mr. Pablo Diego Ruiz y Picasso", "US",
-                        &matching_types);
-  EXPECT_EQ(matching_types,
-            FieldTypeSet({NAME_FULL, NAME_LAST_FIRST, NAME_HONORIFIC_PREFIX}));
-}
-
 TEST(NameInfoTest, GetMatchingTypes) {
-  base::test::ScopedFeatureList structured_name_feature;
-  structured_name_feature.InitAndDisableFeature(
-      features::kAutofillEnableSupportForHonorificPrefixes);
-
   NameInfo name;
 
   test::FormGroupValues name_values = {
       {.type = NAME_FULL,
-       .value = "Mr. Pablo Diego Ruiz y Picasso",
+       .value = "Pablo Diego Ruiz y Picasso",
        .verification_status = VerificationStatus::kObserved}};
   test::SetFormGroupValues(name, name_values);
   name.FinalizeAfterImport();
 
   test::FormGroupValues expectation = {
-      {.type = NAME_HONORIFIC_PREFIX,
-       .value = "",
-       .verification_status = VerificationStatus::kNoStatus},
       {.type = NAME_FIRST,
        .value = "Pablo Diego",
        .verification_status = VerificationStatus::kParsed},

@@ -85,7 +85,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableManualFallbackForVirtualCards,
     &autofill::features::kAutofillEnableNewCardArtAndNetworkImages,
     &autofill::features::kAutofillEnableCardArtServerSideStretching,
-    &autofill::features::kAutofillEnableSupportForHonorificPrefixes,
     &autofill::features::kAutofillEnableUpdateVirtualCardEnrollment,
     &autofill::features::kAutofillEnableVirtualCardMetadata,
     &autofill::features::kAutofillEnableCardArtImage,

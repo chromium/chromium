@@ -132,55 +132,5 @@ class NameFull : public AddressComponent {
   std::u16string GetFormatString() const override;
 };
 
-// Atomic component that represents a honorific prefix.
-// Without the second generation of the structured name tree, honorific
-// prefixes and the name including the prefix are unsupported types.
-class NameHonorificPrefix : public FeatureGuardedAddressComponent {
- public:
-  NameHonorificPrefix();
-  ~NameHonorificPrefix() override;
-};
-
-// Compound that represent a full name and a honorific prefix.
-//
-//             +-----------------------+
-//             | NAME_FULL_WITH_PREFIX |
-//             +-----------------------+
-//                   /            \
-//                  /              \
-//                 /                \
-//                /                  \
-//   +-------------------+      +------------+
-//   | HONORIFIC_PREFIX  |      | NAME_FULL  |
-//   +-------------------+      +------------+
-//                             /       |      \
-//                            /        |       \
-//                           /         |        \
-//             +------------+  +-------------+   +-----------+
-//             | NAME_FIRST |  | NAME_MIDDLE |   | NAME_LAST |
-//             +------------+  +-------------+   +-----------+
-//                                              /      |      \
-//                                             /       |       \
-//                                            /        |        \
-//                                           /         |         \
-//                                   +--------+ +--------------+ +---------+
-//                                   | _FIRST | | _CONJUNCTION | | _SECOND |
-//                                   +--------+ +--------------+ +---------+
-//
-// Without the second generation of the structured name tree, honorific
-// prefixes and the name including the prefix are unsupported types.
-class NameFullWithPrefix : public FeatureGuardedAddressComponent {
- public:
-  NameFullWithPrefix();
-  NameFullWithPrefix(const NameFullWithPrefix& other);
-  ~NameFullWithPrefix() override;
-
-  void MigrateLegacyStructure() override;
-
- protected:
-  std::vector<const re2::RE2*> GetParseRegularExpressionsByRelevance()
-      const override;
-};
-
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_STRUCTURED_ADDRESS_NAME_H_

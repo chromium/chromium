@@ -63,11 +63,6 @@ bool SortedTokenComparisonResult::TokensMatch() const {
   return status == SortedTokenComparisonStatus::kMatch;
 }
 
-bool HonorificPrefixEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableSupportForHonorificPrefixes);
-}
-
 Re2RegExCache::Re2RegExCache() = default;
 
 // static

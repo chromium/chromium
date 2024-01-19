@@ -141,18 +141,11 @@ class TestCompoundNameCustomAffixedFormatAddressComponent
   }
 };
 
-class TestAtomicTitleAddressComponent : public AddressComponent {
- public:
-  TestAtomicTitleAddressComponent()
-      : AddressComponent(NAME_HONORIFIC_PREFIX, {}, MergeMode::kDefault) {}
-};
-
 // Creates a fictional compound component with sub- and sub subcomponents.
 class TestCompoundNameWithTitleAddressComponent : public AddressComponent {
  public:
   TestCompoundNameWithTitleAddressComponent()
       : AddressComponent(CREDIT_CARD_NAME_FULL, {}, MergeMode::kDefault) {
-    RegisterChildNode(std::make_unique<TestAtomicTitleAddressComponent>());
     RegisterChildNode(std::make_unique<TestCompoundNameAddressComponent>());
   }
 };
@@ -1097,12 +1090,10 @@ TEST(AutofillStructuredAddressAddressComponent, TreeCompletion_BottomToTop) {
 // a node with both subcomponents and a parent is set.
 TEST(AutofillStructuredAddressAddressComponent, TreeCompletion_ToTopAndBottom) {
   // Define Some values.
-  std::u16string title = u"Dr.";
   std::u16string first_name = u"Winston";
   std::u16string middle_name = u"O'Brien";
   std::u16string last_name = u"Smith";
   std::u16string full_name = u"Winston O'Brien Smith";
-  std::u16string full_name_with_title = u"Dr. Winston O'Brien Smith";
 
   // Create a compound component.
   TestCompoundNameWithTitleAddressComponent compound_component;
@@ -1110,9 +1101,6 @@ TEST(AutofillStructuredAddressAddressComponent, TreeCompletion_ToTopAndBottom) {
   // Set the value of the root node.
   compound_component.SetValueForType(NAME_FULL, full_name,
                                      VerificationStatus::kUserVerified);
-  compound_component.SetValueForType(NAME_HONORIFIC_PREFIX, title,
-                                     VerificationStatus::kUserVerified);
-
   // Verify that the are subcomponents empty.
   // CREDIT_CARD_NAME_FULL is a fictive type containing a title and a full name.
   EXPECT_EQ(compound_component.GetValueForType(CREDIT_CARD_NAME_FULL),
@@ -1127,7 +1115,7 @@ TEST(AutofillStructuredAddressAddressComponent, TreeCompletion_ToTopAndBottom) {
   // Verify that the values for the subcomponents have been successfully parsed
   // and the parent node was probably formatted.
   EXPECT_EQ(compound_component.GetValueForType(CREDIT_CARD_NAME_FULL),
-            full_name_with_title);
+            full_name);
   EXPECT_EQ(compound_component.GetValueForType(NAME_FIRST), first_name);
   EXPECT_EQ(compound_component.GetValueForType(NAME_MIDDLE), middle_name);
   EXPECT_EQ(compound_component.GetValueForType(NAME_LAST), last_name);
@@ -1137,12 +1125,10 @@ TEST(AutofillStructuredAddressAddressComponent, TreeCompletion_ToTopAndBottom) {
 TEST(AutofillStructuredAddressAddressComponent,
      TestSettingsValuesWithInvalidation) {
   // Define Some values.
-  std::u16string title = u"Dr.";
   std::u16string first_name = u"Winston";
   std::u16string middle_name = u"O'Brien";
   std::u16string last_name = u"Smith";
   std::u16string full_name = u"Winston O'Brien Smith";
-  std::u16string full_name_with_title = u"Dr. Winston O'Brien Smith";
 
   // Create a compound component.
   TestCompoundNameWithTitleAddressComponent compound_component;
@@ -1150,9 +1136,6 @@ TEST(AutofillStructuredAddressAddressComponent,
   // Set the value of the root node.
   compound_component.SetValueForType(NAME_FULL, full_name,
                                      VerificationStatus::kUserVerified);
-  compound_component.SetValueForType(NAME_HONORIFIC_PREFIX, title,
-                                     VerificationStatus::kUserVerified);
-
   // Verify that the are subcomponents empty.
   // CREDIT_CARD_NAME_FULL is a fictive type containing a title and a full name.
   EXPECT_EQ(compound_component.GetValueForType(CREDIT_CARD_NAME_FULL),
@@ -1167,7 +1150,7 @@ TEST(AutofillStructuredAddressAddressComponent,
   // Verify that the values for the subcomponents have been successfully parsed
   // and the parent node was probably formatted.
   EXPECT_EQ(compound_component.GetValueForType(CREDIT_CARD_NAME_FULL),
-            full_name_with_title);
+            full_name);
   EXPECT_EQ(compound_component.GetValueForType(NAME_FIRST), first_name);
   EXPECT_EQ(compound_component.GetValueForType(NAME_MIDDLE), middle_name);
   EXPECT_EQ(compound_component.GetValueForType(NAME_LAST), last_name);
@@ -1176,7 +1159,7 @@ TEST(AutofillStructuredAddressAddressComponent,
   compound_component.SetValueForTypeAndResetSubstructure(
       NAME_FULL, u"Oh' Brian", VerificationStatus::kObserved);
   EXPECT_EQ(compound_component.GetValueForType(CREDIT_CARD_NAME_FULL),
-            full_name_with_title);
+            full_name);
   EXPECT_EQ(compound_component.GetValueForType(NAME_FIRST), std::u16string());
   EXPECT_EQ(compound_component.GetValueForType(NAME_MIDDLE), std::u16string());
   EXPECT_EQ(compound_component.GetValueForType(NAME_LAST), std::u16string());
@@ -1186,20 +1169,16 @@ TEST(AutofillStructuredAddressAddressComponent,
 TEST(AutofillStructuredAddressAddressComponent,
      TestUnsettingAValueAndItsSubcomponents) {
   // Define Some values.
-  std::u16string title = u"Dr.";
   std::u16string first_name = u"Winston";
   std::u16string middle_name = u"O'Brien";
   std::u16string last_name = u"Smith";
   std::u16string full_name = u"Winston O'Brien Smith";
-  std::u16string full_name_with_title = u"Dr. Winston O'Brien Smith";
 
   // Create a compound component.
   TestCompoundNameWithTitleAddressComponent compound_component;
 
   // Set the value of the root node.
   compound_component.SetValueForType(NAME_FULL, full_name,
-                                     VerificationStatus::kUserVerified);
-  compound_component.SetValueForType(NAME_HONORIFIC_PREFIX, title,
                                      VerificationStatus::kUserVerified);
 
   // Verify that the are subcomponents empty.
@@ -1216,7 +1195,7 @@ TEST(AutofillStructuredAddressAddressComponent,
   // Verify that the values for the subcomponents have been successfully parsed
   // and the parent node was probably formatted.
   EXPECT_EQ(compound_component.GetValueForType(CREDIT_CARD_NAME_FULL),
-            full_name_with_title);
+            full_name);
   EXPECT_EQ(compound_component.GetValueForType(NAME_FIRST), first_name);
   EXPECT_EQ(compound_component.GetValueForType(NAME_MIDDLE), middle_name);
   EXPECT_EQ(compound_component.GetValueForType(NAME_LAST), last_name);
@@ -1224,7 +1203,7 @@ TEST(AutofillStructuredAddressAddressComponent,
   // Change the value of FULL_NAME and invalidate all child and ancestor nodes.
   compound_component.UnsetValueForTypeIfSupported(NAME_FULL);
   EXPECT_EQ(compound_component.GetValueForType(CREDIT_CARD_NAME_FULL),
-            full_name_with_title);
+            full_name);
   EXPECT_EQ(compound_component.GetValueForType(NAME_FIRST), std::u16string());
   EXPECT_EQ(compound_component.GetValueForType(NAME_MIDDLE), std::u16string());
   EXPECT_EQ(compound_component.GetValueForType(NAME_LAST), std::u16string());
@@ -1806,17 +1785,11 @@ TEST(AutofillStructuredAddressAddressComponent,
 }
 
 TEST(AutofillStructuredAddressAddressComponent, TestFillTreeGaps) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForHonorificPrefixes);
-  NameFullWithPrefix name;
+  NameFull name;
 
   AddressComponentTestValues name_filled_values = {
       {.type = NAME_FULL,
        .value = "Pablo Diego Ruiz y Picasso",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_HONORIFIC_PREFIX,
-       .value = "Mr",
        .status = VerificationStatus::kObserved},
       {.type = NAME_LAST_FIRST,
        .value = "Ruiz",
@@ -1829,14 +1802,8 @@ TEST(AutofillStructuredAddressAddressComponent, TestFillTreeGaps) {
        .status = VerificationStatus::kObserved}};
 
   AddressComponentTestValues expectation = {
-      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
-       .value = "Mr Pablo Diego Ruiz y Picasso",
-       .status = VerificationStatus::kFormatted},
       {.type = NAME_FULL,
        .value = "Pablo Diego Ruiz y Picasso",
-       .status = VerificationStatus::kObserved},
-      {.type = NAME_HONORIFIC_PREFIX,
-       .value = "Mr",
        .status = VerificationStatus::kObserved},
       {.type = NAME_FIRST,
        .value = "Pablo Diego",
@@ -1902,29 +1869,20 @@ TEST(AutofillStructuredAddressAddressComponent,
 }
 
 TEST(AutofillStructuredAddressAddressComponent, TestFillTreeGapsParsing) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForHonorificPrefixes);
-  NameFullWithPrefix name;
+  NameFull name;
 
   AddressComponentTestValues name_filled_values = {
-      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
-       .value = "Mr Pablo Diego Ruiz y Picasso",
+      {.type = NAME_FULL,
+       .value = "Pablo Diego Ruiz y Picasso",
        .status = VerificationStatus::kObserved},
       {.type = NAME_LAST,
        .value = "Ruiz y Picasso",
        .status = VerificationStatus::kObserved}};
 
   AddressComponentTestValues expectation = {
-      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
-       .value = "Mr Pablo Diego Ruiz y Picasso",
-       .status = VerificationStatus::kObserved},
       {.type = NAME_FULL,
        .value = "Pablo Diego Ruiz y Picasso",
-       .status = VerificationStatus::kParsed},
-      {.type = NAME_HONORIFIC_PREFIX,
-       .value = "Mr",
-       .status = VerificationStatus::kParsed},
+       .status = VerificationStatus::kObserved},
       {.type = NAME_FIRST,
        .value = "Pablo Diego",
        .status = VerificationStatus::kParsed},

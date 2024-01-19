@@ -97,8 +97,6 @@ BASE_DECLARE_FEATURE(kAutofillEnableLabelPrecedenceForTurkishAddresses);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSupportForParsingWithSharedLabels);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableSupportForHonorificPrefixes);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableZipOnlyAddressForms);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSupportForPhoneNumberTrunkTypes);
