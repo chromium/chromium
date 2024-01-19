@@ -25,7 +25,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_util.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -59,12 +58,8 @@ struct RecentAppInfo {
   RecentAppInfo& operator=(RecentAppInfo&) = default;
   ~RecentAppInfo() = default;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION AppListItem* item;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION SearchResult* result;
+  raw_ptr<AppListItem> item;
+  raw_ptr<SearchResult> result;
 };
 
 // Returns a list of recent apps by filtering zero-state suggestion data.

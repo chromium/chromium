@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "net/filter/mock_source_stream.h"
@@ -78,9 +77,7 @@ struct I18nTestParam {
   const int buffer_size;
   const int read_size;
   const net::MockSourceStream::Mode mode;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION const I18nTest* test;
+  raw_ptr<const I18nTest> test;
 };
 
 }  // namespace

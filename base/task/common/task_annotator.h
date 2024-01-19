@@ -174,7 +174,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] TaskAnnotator::LongTaskTracker {
 
   // For tracking task duration.
   //
-  // Not a raw_ptr<...> for performance reasons: based on analysis of sampling
+  // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
   // profiler data (TaskAnnotator::LongTaskTracker::~LongTaskTracker).
   RAW_PTR_EXCLUSION const TickClock* tick_clock_;  // Not owned.
   TimeTicks task_start_time_;
@@ -192,8 +192,8 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] TaskAnnotator::LongTaskTracker {
   // known. Note that this will not compile in the Native client.
   uint32_t (*ipc_method_info_)();
   bool is_response_ = false;
-  // Not a raw_ptr/raw_ref<...> for performance reasons: based on analysis of
-  // sampling profiler data (TaskAnnotator::LongTaskTracker::~LongTaskTracker).
+  // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
+  // profiler data (TaskAnnotator::LongTaskTracker::~LongTaskTracker).
   [[maybe_unused]] RAW_PTR_EXCLUSION PendingTask& pending_task_;
   [[maybe_unused]] RAW_PTR_EXCLUSION TaskAnnotator* task_annotator_;
 };

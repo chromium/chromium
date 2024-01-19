@@ -53,7 +53,7 @@ class CC_EXPORT LatencyUkmReporter {
   // pointer is initialized, there should be no trackers yet. Moreover, the
   // LayerTreeHostImpl::ukm_manager_ lives as long as the LayerTreeHostImpl, so
   // this pointer should never be null as long as LayerTreeHostImpl is alive.
-  raw_ptr<UkmManager> ukm_manager_ = nullptr;
+  raw_ptr<UkmManager, DanglingUntriaged> ukm_manager_ = nullptr;
 
   std::unique_ptr<SamplingController> compositor_latency_sampling_controller_;
   std::unique_ptr<SamplingController> event_latency_sampling_controller_;

@@ -6,7 +6,7 @@
 #define ASH_LOGIN_UI_FAKE_SMART_LOCK_AUTH_FACTOR_MODEL_H_
 
 #include "ash/login/ui/smart_lock_auth_factor_model.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -37,9 +37,8 @@ class FakeSmartLockAuthFactorModelFactory
   FakeSmartLockAuthFactorModel* GetLastCreatedModel();
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION FakeSmartLockAuthFactorModel* last_created_model_ = nullptr;
+  raw_ptr<FakeSmartLockAuthFactorModel, DanglingUntriaged> last_created_model_ =
+      nullptr;
 };
 
 }  // namespace ash

@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/views_export.h"
@@ -28,9 +28,7 @@ class VIEWS_EXPORT ViewModelBase {
   struct Entry {
     Entry() = default;
 
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #constexpr-ctor-field-initializer
-    RAW_PTR_EXCLUSION View* view = nullptr;
+    raw_ptr<View> view = nullptr;
     gfx::Rect ideal_bounds;
   };
   using Entries = std::vector<Entry>;

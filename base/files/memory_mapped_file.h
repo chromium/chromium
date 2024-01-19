@@ -149,8 +149,8 @@ class BASE_EXPORT MemoryMappedFile {
 
   File file_;
 
-  // `data_` is never allocated by PartitionAlloc, so there is no benefit to
-  // using a raw_ptr.
+  // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always mmap'ed), so
+  // there is no benefit to using a raw_ptr, only cost.
   RAW_PTR_EXCLUSION uint8_t* data_ = nullptr;
   size_t length_ = 0;
 

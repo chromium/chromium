@@ -214,9 +214,9 @@ class CC_EXPORT PictureLayerTilingSet {
       ~AutoClear() { *state_to_clear_ = StateSinceLastTilePriorityUpdate(); }
 
      private:
-      // Not a raw_ptr<...> for performance reasons: on-stack pointer +
-      // based on analysis of sampling profiler data
-      // (cc::PictureLayerTilingSet::UpdateTilePriorities -> creates AutoClear
+      // RAW_PTR_EXCLUSION: Performance reasons: on-stack pointer + based on
+      // analysis of sampling profiler data
+      // (PictureLayerTilingSet::UpdateTilePriorities -> creates AutoClear
       // on stack).
       RAW_PTR_EXCLUSION StateSinceLastTilePriorityUpdate* state_to_clear_;
     };

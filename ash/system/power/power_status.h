@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -110,15 +110,11 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
 
     // The badge (lightning bolt, exclamation mark, etc) that should be drawn
     // on top of the battery icon.
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION const gfx::VectorIcon* icon_badge;
+    raw_ptr<const gfx::VectorIcon> icon_badge;
 
     // The outline for the badge, need to draw this to satisfy contrast
     // requirements.
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION const gfx::VectorIcon* badge_outline;
+    raw_ptr<const gfx::VectorIcon> badge_outline;
 
     // When true and |charge_percent| is very low, special colors will be used
     // to alert the user.

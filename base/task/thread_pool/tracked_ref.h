@@ -10,7 +10,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/template_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -120,12 +119,8 @@ class TrackedRef {
     factory_->live_tracked_refs_.Increment();
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION T* ptr_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION TrackedRefFactory<T>* factory_;
+  raw_ptr<T> ptr_;
+  raw_ptr<TrackedRefFactory<T>> factory_;
 };
 
 // TrackedRefFactory<T> should be the last member of T.

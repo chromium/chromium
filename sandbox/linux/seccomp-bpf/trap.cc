@@ -30,8 +30,7 @@
 namespace {
 
 struct arch_sigsys {
-  // This is not raw_ptr because it is a pointer to a code address given to us
-  // by the kernel.
+  // RAW_PTR_EXCLUSION: Points to a code address given to us by the kernel.
   RAW_PTR_EXCLUSION void* ip;
   int nr;
   unsigned int arch;

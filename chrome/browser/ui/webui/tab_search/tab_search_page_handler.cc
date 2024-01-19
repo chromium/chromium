@@ -233,7 +233,7 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
   // TabSearchPageHandler object, causing it to be immediately destroyed. Ensure
   // that no further actions are performed following the call to
   // CloseWebContentsAt(). See (https://crbug.com/1175507).
-  auto* tab_strip_model = optional_details->tab_strip_model;
+  auto* tab_strip_model = optional_details->tab_strip_model.get();
   const int tab_index = optional_details->index;
   tab_strip_model->CloseWebContentsAt(
       tab_index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);

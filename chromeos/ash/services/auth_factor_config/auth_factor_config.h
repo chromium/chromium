@@ -9,6 +9,7 @@
 
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/services/auth_factor_config/chrome_browser_delegates.h"
@@ -33,19 +34,19 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
     // Injects a callback that gets invoked after knowledge factor
     // is added.
     void SetAddKnowledgeFactorCallback(base::OnceClosure callback) {
-      auth_factor_config_.SetAddKnowledgeFactorCallbackForTesting(
+      auth_factor_config_->SetAddKnowledgeFactorCallbackForTesting(
           std::move(callback));
     }
 
     // Instructs AuthFactorConfig not to inform
     // UserDirectoryIntegrityManager about added factors.
     void SetSkipUserIntegrityNotification(bool skip_notification) {
-      auth_factor_config_.SetSkipUserIntegrityNotificationForTesting(
+      auth_factor_config_->SetSkipUserIntegrityNotificationForTesting(
           skip_notification);
     }
 
    private:
-    AuthFactorConfig& auth_factor_config_;
+    const raw_ref<AuthFactorConfig> auth_factor_config_;
   };
 
   using AuthFactorSet = base::EnumSet<mojom::AuthFactor,

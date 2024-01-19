@@ -3250,7 +3250,7 @@ AppListItemView* AppsGridView::GetViewDisplayedAtSlotOnCurrentPage(
 
   const auto& entries = view_model_.entries();
   const auto iter = base::ranges::find_if(entries, [&](const auto& entry) {
-    return entry.view->bounds() == tile_rect && entry.view != drag_view_;
+    return entry.view->bounds() == tile_rect && entry.view.get() != drag_view_;
   });
   return iter == entries.end() ? nullptr
                                : static_cast<AppListItemView*>(iter->view);

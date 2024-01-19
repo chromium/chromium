@@ -988,12 +988,14 @@ URLIndexPrivateData::HistoryItemFactorGreater::~HistoryItemFactorGreater() =
 bool URLIndexPrivateData::HistoryItemFactorGreater::operator()(
     const HistoryID h1,
     const HistoryID h2) {
-  auto entry1(history_info_map_.find(h1));
-  if (entry1 == history_info_map_.end())
+  auto entry1(history_info_map_->find(h1));
+  if (entry1 == history_info_map_->end()) {
     return false;
-  auto entry2(history_info_map_.find(h2));
-  if (entry2 == history_info_map_.end())
+  }
+  auto entry2(history_info_map_->find(h2));
+  if (entry2 == history_info_map_->end()) {
     return true;
+  }
   const history::URLRow& r1(entry1->second.url_row);
   const history::URLRow& r2(entry2->second.url_row);
   // First cut: typed count, visit count, recency.

@@ -139,16 +139,17 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
   // Send auto-generated AXEventGenerator events.
   for (const auto& targeted_event : event_generator_) {
     if (ShouldIgnoreGeneratedEventForAutomation(
-            targeted_event.event_params.event))
+            targeted_event.event_params->event)) {
       continue;
+    }
     AXEvent generated_event;
     generated_event.id = targeted_event.node_id;
-    generated_event.event_from = targeted_event.event_params.event_from;
+    generated_event.event_from = targeted_event.event_params->event_from;
     generated_event.event_from_action =
-        targeted_event.event_params.event_from_action;
-    generated_event.event_intents = targeted_event.event_params.event_intents;
+        targeted_event.event_params->event_from_action;
+    generated_event.event_intents = targeted_event.event_params->event_intents;
     owner_->SendAutomationEvent(tree_id, mouse_location, generated_event,
-                                targeted_event.event_params.event);
+                                targeted_event.event_params->event);
   }
   event_generator_.ClearEvents();
 
