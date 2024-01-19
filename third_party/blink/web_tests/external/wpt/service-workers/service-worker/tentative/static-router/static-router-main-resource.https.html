@@ -37,37 +37,36 @@ function iframeTest(url, ruleKey, callback, name) {
   }, name);
 }
 
-function get_fetched_urls(worker) {
-  return new Promise(function(resolve) {
+const get_fetched_urls = async worker => {
+  const promise = new Promise(function(resolve) {
       var channel = new MessageChannel();
       channel.port1.onmessage = function(msg) { resolve(msg); };
       worker.postMessage({port: channel.port2}, [channel.port2]);
     });
+  const message = await promise;
+
+  return message.data;
 }
 
 iframeTest(REGISTERED_ROUTE, ROUTER_RULE_KEY, async (t, iwin, worker) => {
-  const fetched_urls = await get_fetched_urls(worker);
-  const {requests} = fetched_urls.data;
+  const {requests} = await get_fetched_urls(worker);
   assert_equals(requests.length, 0);
   assert_equals(iwin.document.body.innerText, "Network\n");
 }, 'Main resource load matched with the condition');
 
 iframeTest(REGISTERED_ROUTE, ROUTER_RULE_KEY_IGNORE_CASE, async (t, iwin, worker) => {
-  const fetched_urls = await get_fetched_urls(worker);
-  const {requests} = fetched_urls.data;
+  const {requests} = await get_fetched_urls(worker);
   assert_equals(requests.length, 0);
   assert_equals(iwin.document.body.innerText, "Network\n");
 }, 'Main resource load matched with the ignore case condition');
 
 iframeTest(REGISTERED_ROUTE, ROUTER_RULE_KEY_RESPECT_CASE, async (t, iwin, worker) => {
-  const fetched_urls = await get_fetched_urls(worker);
-  const {requests} = fetched_urls.data;
+  const {requests} = await get_fetched_urls(worker);
   assert_equals(requests.length, 1);
 }, 'Main resource load matched without the ignore case condition');
 
 iframeTest(NON_REGISTERED_ROUTE, ROUTER_RULE_KEY, async (t, iwin, worker) => {
-  const fetched_urls = await get_fetched_urls(worker);
-  const {requests} = fetched_urls.data;
+  const {requests} = await get_fetched_urls(worker);
   assert_equals(requests.length, 1);
   assert_equals(
     requests[0].url,
