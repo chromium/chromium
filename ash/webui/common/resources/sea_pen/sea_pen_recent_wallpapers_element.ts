@@ -269,8 +269,8 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   }
 
   private shouldShowWallpaperInfoDialog_(
-      i: number, currentShowWallpaperInfoDialog: number|null): boolean {
-    return currentShowWallpaperInfoDialog === i;
+      _i: number, _currentShowWallpaperInfoDialog: number|null): boolean {
+    return false;
   }
 
   private onCloseDialog_() {
