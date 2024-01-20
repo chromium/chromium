@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -332,6 +333,16 @@ CGFloat const kSpacingAfterTitle = 4;
 - (void)confirmationAlertSecondaryAction {
   // "Use Keyboard" button, which dismisses the bottom sheet.
   [self dismiss];
+}
+
+#pragma mark - ConfirmationAlertViewController
+
+- (void)customizeSubtitle:(UITextView*)subtitle {
+  if (_subtitle) {
+    subtitle.attributedText =
+        PutBoldPartInString(_subtitle, UIFontTextStyleBody);
+    subtitle.textAlignment = NSTextAlignmentCenter;
+  }
 }
 
 #pragma mark - Private

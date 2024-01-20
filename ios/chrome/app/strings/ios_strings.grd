@@ -3247,7 +3247,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         You have received passwords for <ph name="WEBSITE">$1<ex>amazon.com</ex></ph>
       </message>
       <message name="IDS_IOS_PASSWORD_SHARING_NOTIFICATION_SINGLE_PASSWORD_SUBTITLE" desc="Subtitle text in the password sign-in bottom sheet that informs the user about the full name of a family member that shared a password with them on this site. [iOS only]">
-        <ph name="FULL_NAME">$1<ex>John Doe</ex></ph> has shared a password with you for <ph name="WEBSITE">$2<ex>amazon.com</ex></ph>
+        <ph name="BEGIN_BOLD">BEGIN_BOLD</ph><ph name="FULL_NAME">$1<ex>John Doe</ex></ph><ph name="END_BOLD">END_BOLD</ph> has shared a password with you for <ph name="WEBSITE">$2<ex>amazon.com</ex></ph>
       </message>
       <message name="IDS_IOS_PASSWORD_SHARING_NOTIFICATION_TITLE" desc="Title text in the password sign-in bottom sheet informing the user that they have received some new passwords via the password sharing feature. [iOS only]">
         {count, plural,
