@@ -146,6 +146,8 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
                         + returnedIndex
                         + " new activity: "
                         + activity
+                        + " new activity task id: "
+                        + activity.getTaskId()
                         + " activity at requested index: "
                         + activityAtRequestedIndex;
         if (activityAtRequestedIndex != null) {
@@ -177,11 +179,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
                             activityAtRequestedIndex.getSystemService(Context.ACTIVITY_SERVICE);
             for (AppTask task : activityManager.getAppTasks()) {
                 ActivityManager.RecentTaskInfo info = AndroidTaskUtils.getTaskInfoFromTask(task);
-                if (info != null) {
-                    message += info.taskId + " - " + info.baseActivity + "; ";
-                } else {
-                    message += "null ";
-                }
+                message += info + ";\n";
             }
 
             message += "]";

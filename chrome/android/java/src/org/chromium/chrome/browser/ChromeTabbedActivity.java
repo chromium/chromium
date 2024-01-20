@@ -578,6 +578,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         @LaunchIntentDispatcher.Action
         int action = maybeDispatchExplicitMainViewIntent(intent, DispatchedBy.ON_CREATE);
         if (action != LaunchIntentDispatcher.Action.CONTINUE) {
+            Log.i(TAG_MULTI_INSTANCE, "Dispatched explicit .Main (CTA) VIEW intent to CCT.");
             return action;
         }
         return super.maybeDispatchLaunchIntent(intent, savedInstanceState);
@@ -2698,7 +2699,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         + "\nIntent component: "
                         + (intent.getComponent() == null
                                 ? "N/A"
-                                : intent.getComponent().getClassName());
+                                : intent.getComponent().getClassName())
+                        + "\nIntent hash: "
+                        + System.identityHashCode(intent);
         Log.i(TAG_MULTI_INSTANCE, logMessage);
         // Only crash-report if a valid window ID is allocated to launch the intent.
         if (windowId == INVALID_WINDOW_ID) return;
