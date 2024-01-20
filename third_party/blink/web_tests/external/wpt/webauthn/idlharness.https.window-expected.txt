@@ -1,10 +1,8 @@
 This is a testharness.js-based test.
-Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] PublicKeyCredential interface: operation isPasskeyPlatformAuthenticatorAvailable()
-  assert_own_property: interface object missing static operation expected property "isPasskeyPlatformAuthenticatorAvailable" missing
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] PublicKeyCredential interface: operation getClientCapabilities()
+  assert_own_property: interface object missing static operation expected property "getClientCapabilities" missing
 [FAIL] PublicKeyCredential interface: operation parseRequestOptionsFromJSON(PublicKeyCredentialRequestOptionsJSON)
   assert_own_property: interface object missing static operation expected property "parseRequestOptionsFromJSON" missing
-[FAIL] AuthenticatorAssertionResponse interface: attribute attestationObject
-  assert_true: The prototype object must have a property "attestationObject" expected true got false
 Harness: the test ran to completion.
 

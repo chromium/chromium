@@ -1754,6 +1754,13 @@
         {}
        ]
       ],
+      "display-ruby-text-crash.html": [
+       "85ccd459af78d92c2f67aeae221a2ea48aa4c019",
+       [
+        null,
+        {}
+       ]
+      ],
       "hidden-execcommand-crash.html": [
        "67e297e6520b49325dd6091ca474c0151af5e0ea",
        [
@@ -107345,6 +107352,32 @@
        {}
       ]
      ],
+     "contain-layout-dynamic-004.html": [
+      "d3c9eb686066eb4681975aca26d9e5962456ee01",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/contain-layout-dynamic-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "contain-layout-dynamic-005.html": [
+      "a430ae5181ba9c97e5f8620c763a9e332acff17f",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/contain-layout-dynamic-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "contain-layout-flexbox-001.html": [
       "2b206edb57f46f3baa9dcfbcc24591b852cf8697",
       [
@@ -108359,6 +108392,32 @@
        [
         [
          "/css/css-contain/contain-paint-dynamic-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "contain-paint-dynamic-004.html": [
+      "8e286db8b107ad09bc9a846528c28d3a30d62de8",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/contain-paint-dynamic-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "contain-paint-dynamic-005.html": [
+      "bedac635cec58218f53cd6137d23ca583d3fd0e9",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/contain-paint-dynamic-005-ref.html",
          "=="
         ]
        ],
@@ -142379,6 +142438,132 @@
             [
              0,
              25
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "custom-highlight-dynamic-container-metrics-001.html": [
+       "2c28f7d132a68e3c76b255220ade6bc8312c5bd8",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-dynamic-container-metrics-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "custom-highlight-dynamic-container-metrics-002.html": [
+       "1a0cbe87a557517125c18dba3cacf41705ff5071",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-container-metrics-002-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             60
+            ],
+            [
+             0,
+             25
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "custom-highlight-dynamic-container-metrics-003.html": [
+       "38246a15affcaed2b1317a43b9c363fbd2cc6717",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-container-metrics-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "custom-highlight-dynamic-container-metrics-004.html": [
+       "fbdbea32efcbb742083298e05794a0afa931736d",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-container-metrics-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "custom-highlight-dynamic-font-metrics-001.html": [
+       "4bddbc02a1da53cc441ddad5d6131cbdde5737b5",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-font-metrics-001-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             80
+            ],
+            [
+             0,
+             4
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "custom-highlight-dynamic-logical-metrics-001.html": [
+       "ff52aed6ab174fa36d6cffaf92ba7aff05901ca5",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-logical-metrics-002-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             30
+            ],
+            [
+             0,
+             10
             ]
            ]
           ]
@@ -297185,7 +297370,7 @@
       ]
      },
      "fedcm-helper.sub.js": [
-      "38cc26604ba328bab8562c7975f96ec1d5809ab0",
+      "765b3cc48a90198c8bd053eab039cd0e1f5ba768",
       []
      ],
      "fedcm-iframe-level2.html": [
@@ -308898,6 +309083,14 @@
       "6ee9f4fb8f2111609c7573f199ab7958cfd9eb5a",
       []
      ],
+     "contain-layout-dynamic-004-ref.html": [
+      "40923d836ca0ad31a97de0776ccfe2f5e1051041",
+      []
+     ],
+     "contain-layout-dynamic-005-ref.html": [
+      "3c2e6cf2e41098c7915dd0cd66a5271d5312aa44",
+      []
+     ],
      "contain-layout-formatting-context-margin-001-ref.html": [
       "5a6d653862417ff7c1a6817434da2b2025a347ad",
       []
@@ -308968,6 +309161,14 @@
      ],
      "contain-paint-dynamic-003-ref.html": [
       "b30f32d9c3d4a1ab037e6ca5cea92c958f340637",
+      []
+     ],
+     "contain-paint-dynamic-004-ref.html": [
+      "02f3d94ee937b7429584f28826827c4b6b722dd6",
+      []
+     ],
+     "contain-paint-dynamic-005-ref.html": [
+      "1d1ce904fc646925985c64dccd2509f42e1c1fbd",
       []
      ],
      "contain-paint-formatting-context-float-001-ref.html": [
@@ -322875,6 +323076,10 @@
        "98ccfa5b11c7dcb8c83beca3f863742792bb30af",
        []
       ],
+      "custom-highlight-dynamic-container-metrics-001-ref.html": [
+       "8c9732f1ddb934edcc3833adc69cf61f11bbedd2",
+       []
+      ],
       "custom-highlight-font-metrics-001-ref.html": [
        "76b7317caabe5bedf10a98bef5cade11a4f6458e",
        []
@@ -323012,6 +323217,10 @@
       "resources": {
        "iframe-code.html": [
         "a4a1829be229acb4c0cf75cbb0e2885060741d3f",
+        []
+       ],
+       "iframe-container.html": [
+        "c89680e28c920683c23583dee63d8793557c4a80",
         []
        ],
        "run-after-layout-and-paint.js": [
@@ -327830,7 +328039,7 @@
      ],
      "parsing": {
       "margin-rules-001-expected.txt": [
-       "4c2e729165b140449f86d915939aeeb4e813ea12",
+       "f71e7ad97690b9c2274422f1847362a2d92d03bf",
        []
       ],
       "page-orientation-invalid.tentative-expected.txt": [
@@ -352934,14 +353143,6 @@
       "6247f6d63211cd39dffca9fc507aefcdee586eba",
       []
      ],
-     "resize-lock-inner-input.html": [
-      "5513f89d393ceb3efb2055e4ceec0976be6f799f",
-      []
-     ],
-     "resize-lock-inner-input.html.headers": [
-      "1b63235b7cdffe9ebb43bfac3a01d5220e1519fb",
-      []
-     ],
      "resize-lock-inner.html": [
       "fbaf436330f5e6fe466110d4e0b0795f95b9a618",
       []
@@ -355225,7 +355426,7 @@
    "fledge": {
     "tentative": {
      "TODO": [
-      "8a416f17e5717c8a10a4af7a61c1cba5adc75ff8",
+      "0f68a7c91464941de18e9dabfb8c6ec3cf29930f",
       []
      ],
      "kanon-status-below-threshold.https.window-expected.txt": [
@@ -355254,7 +355455,7 @@
        []
       ],
       "fledge-util.sub.js": [
-       "e9513ecb855b52b104ebf0acead6e7274445d651",
+       "69573d499832b1c7f61c8caae9b2c3bf8d839f02",
        []
       ],
       "fledge_http_server_util.py": [
@@ -376562,7 +376763,7 @@
      []
     ],
     "fenced-frame.idl": [
-     "0eed6a6b4ba46e0eb30b26cc78a4b9cc65fc544d",
+     "2107655aa92e09258028f22754cd51ce90312352",
      []
     ],
     "fetch.idl": [
@@ -376634,7 +376835,7 @@
      []
     ],
     "html.idl": [
-     "434d0cc0ab1d0456583190224605912275cf2634",
+     "9193a7487eefb7b4eef7fb7119aa1b8743f5a12e",
      []
     ],
     "idle-detection.idl": [
@@ -376702,7 +376903,7 @@
      []
     ],
     "longtasks.idl": [
-     "71ab2ddc67ccda6f18e56fa65c83cc74203bae9a",
+     "13d4940c1c0aa5268310f799f2b4c17226147c45",
      []
     ],
     "magnetometer.idl": [
@@ -376802,7 +377003,7 @@
      []
     ],
     "paint-timing.idl": [
-     "052b74ef6c26dee833ac0980c79efc198a3f4d98",
+     "396f461e94c56e9ea36a0e7c71cb548e80e7971e",
      []
     ],
     "parakeet.tentative.idl": [
@@ -377026,11 +377227,11 @@
      []
     ],
     "trust-token-api.idl": [
-     "fb7f15b4b74a8c10ef510c4f087ee465f64b477c",
+     "9b74290da724b62fb91b3f5532b689cf70a10045",
      []
     ],
     "trusted-types.idl": [
-     "23562381294e59493880857584f6ac9200254ee2",
+     "6723994aae621f8d69022993c250a94649182dff",
      []
     ],
     "turtledove.idl": [
@@ -377126,7 +377327,7 @@
      []
     ],
     "webauthn.idl": [
-     "e56d61314af4a03ca1a98c3a822c33e8d6722fab",
+     "cf1a2fbdc48d36ba9d03bb446617eebd624e5e67",
      []
     ],
     "webcodecs-aac-codec-registration.idl": [
@@ -378002,7 +378203,7 @@
      []
     ],
     "idlharness.window-expected.txt": [
-     "dc7bfc412d4cac6f623d1260f09662cbcf7cd891",
+     "db85b36f9dcc831238f52dac204840a402061749",
      []
     ],
     "resources": {
@@ -395554,7 +395755,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "71ec1cdcc8742221eb47f5cce38ad0abecef27e3",
+     "ab1fb8597ca5f807f4c612948bd99d0648fb3830",
      []
     ],
     "remote-desktop-client-override.tentative.https-expected.txt": [
@@ -396940,6 +397141,10 @@
        []
       ]
      },
+     "global-mutable-prototype.any.shadowrealm-expected.txt": [
+      "f1c2a17f287945caa185475f439de706f11d56b7",
+      []
+     ],
      "global-object-implicit-this-value.any.serviceworker-expected.txt": [
       "f2bd10ae6ee5767c4a7311fba2596ddf0d954d51",
       []
@@ -437740,7 +437945,7 @@
      ]
     ],
     "fedcm-endpoint-redirects.https.html": [
-     "224868c906cbc26abab6b98f74f11c24dd9a2204",
+     "cff5036f393231d4e7b275ddb495f4408589378d",
      [
       null,
       {
@@ -437775,7 +437980,7 @@
       ]
      ],
      "cross-origin-status.https.html": [
-      "09a4aa31c6b2ba0680ec6b14d0e661dd93abb69b",
+      "f32e18d40eda749d24d1a48e7f16d2ab33c262ce",
       [
        null,
        {
@@ -456151,7 +456356,7 @@
      ],
      "parsing": {
       "margin-rules-001.html": [
-       "b73d1bc56fcd7ec66ed5944f4be79eaa63491d19",
+       "c4270fe606aa575b32b03c0645f634367de99af7",
        [
         null,
         {}
@@ -476019,7 +476224,7 @@
        ]
       ],
       "has-sibling-insertion-removal.html": [
-       "3c05a0f495a6d30a99165a59c1018563be029581",
+       "0655b230524ddb5e43bd0e3390ba887e0e55708f",
        [
         null,
         {}
@@ -502211,7 +502416,7 @@
      ]
     ],
     "resize-lock-input.https.html": [
-     "9cee650f1a85fb04d4f730adbce3df7527da8c98",
+     "c72075ac250440df3616c48c6bc85dd3d0ad5f51",
      [
       null,
       {
@@ -519107,7 +519312,7 @@
       ]
      ],
      "interest-group-passed-to-generate-bid.https.window.js": [
-      "3db4479a63dd2f2ca9516ec4e3e352f9bf97011b",
+      "2fb346bbe3ba14f0f7577de0111aba270cc87955",
       [
        "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?1-5",
        {
@@ -519174,7 +519379,31 @@
          ],
          [
           "variant",
-          "?51-last"
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
          ]
         ],
         "timeout": "long"
@@ -519246,7 +519475,31 @@
          ],
          [
           "variant",
-          "?51-last"
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
          ]
         ],
         "timeout": "long"
@@ -519318,7 +519571,31 @@
          ],
          [
           "variant",
-          "?51-last"
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
          ]
         ],
         "timeout": "long"
@@ -519390,7 +519667,31 @@
          ],
          [
           "variant",
-          "?51-last"
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
          ]
         ],
         "timeout": "long"
@@ -519462,7 +519763,31 @@
          ],
          [
           "variant",
-          "?51-last"
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
          ]
         ],
         "timeout": "long"
@@ -519534,7 +519859,31 @@
          ],
          [
           "variant",
-          "?51-last"
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
          ]
         ],
         "timeout": "long"
@@ -519606,7 +519955,31 @@
          ],
          [
           "variant",
-          "?51-last"
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
          ]
         ],
         "timeout": "long"
@@ -519678,7 +520051,31 @@
          ],
          [
           "variant",
-          "?51-last"
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
          ]
         ],
         "timeout": "long"
@@ -519750,14 +520147,38 @@
          ],
          [
           "variant",
-          "?51-last"
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
          ]
         ],
         "timeout": "long"
        }
       ],
       [
-       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?51-last",
+       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?51-55",
        {
         "script_metadata": [
          [
@@ -519822,7 +520243,127 @@
          ],
          [
           "variant",
-          "?51-last"
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?56-60",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
          ]
         ],
         "timeout": "long"
@@ -519894,7 +520435,511 @@
          ],
          [
           "variant",
-          "?51-last"
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?61-65",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?66-70",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?71-75",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?76-80",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?81-85",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-80"
+         ],
+         [
+          "variant",
+          "?81-85"
          ]
         ],
         "timeout": "long"
@@ -520025,7 +521070,7 @@
       ]
      ],
      "join-leave-ad-interest-group.https.window.js": [
-      "1bb3b8e17a202be7f15788ef9d64bb083fec9792",
+      "b5dfe025bf275dbf8de24348147a3b6164ab5b2f",
       [
        "fledge/tentative/join-leave-ad-interest-group.https.window.html?1-10",
        {
@@ -621349,6 +622394,13 @@
        {}
       ]
      ],
+     "fieldset-source.html": [
+      "d75f30e664e325f4e43277b4036da0cbb157a990",
+      [
+       null,
+       {}
+      ]
+     ],
      "get-keyframes-with-timeline-offset.html": [
       "02f910d04e3316feaaa3512101d12bc9dcfa40f5",
       [
@@ -662044,6 +663096,24 @@
        }
       ]
      ],
+     "global-mutable-prototype.any.js": [
+      "eba96e9adf4647e1beb89358f6f15a03610ebfb6",
+      [
+       "webidl/ecmascript-binding/global-mutable-prototype.any.shadowrealm.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "shadowrealm"
+         ],
+         [
+          "title",
+          "Mutability of the global prototype chain"
+         ]
+        ]
+       }
+      ]
+     ],
      "global-object-implicit-this-value-cross-realm.html": [
       "b9939b801cbd803dbb456425fba948d74e816ad7",
       [
@@ -668094,6 +669164,15 @@
     ],
     "RTCRtpSender-replaceTrack.https.html": [
      "34f8573755824ea5e9882fcae0bc8a958a278974",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "RTCRtpSender-setParameters-keyFrame.html": [
+     "c78dfa141c137c4672e4ca6bed6082f4f4914fed",
      [
       null,
       {
