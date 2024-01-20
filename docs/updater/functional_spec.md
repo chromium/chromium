@@ -1118,6 +1118,9 @@ millisecond of each second).
 
 Background updates can be disabled entirely through policy.
 
+Users can trigger an immediate run of the periodic tasks by calling the
+RunPeriodicTasks RPC, even for a system updater.
+
 #### Windows Scheduling of Updates
 The update wake task is scheduled using the OS task scheduler.
 
