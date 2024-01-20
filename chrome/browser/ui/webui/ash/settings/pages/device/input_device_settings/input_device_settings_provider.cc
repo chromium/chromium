@@ -55,6 +55,10 @@ constexpr ActionChoice kMouseButtonOptions[] = {
      AcceleratorAction::kToggleFullscreenMagnifier},
     {IDS_SETTINGS_DICTATION_ON_OFF_OPTION_LABEL,
      AcceleratorAction::kEnableOrToggleDictation},
+    {IDS_SETTINGS_LEFT_CLICK_OPTION_LABEL,
+     ::ash::mojom::StaticShortcutAction::kLeftClick},
+    {IDS_SETTINGS_RIGHT_CLICK_OPTION_LABEL,
+     ::ash::mojom::StaticShortcutAction::kRightClick},
     {IDS_SETTINGS_MIDDLE_CLICK_OPTION_LABEL,
      ::ash::mojom::StaticShortcutAction::kMiddleClick},
 };
