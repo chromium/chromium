@@ -29,6 +29,7 @@ TEST(ParseVP9CodecId, NewStyleVP9CodecIDs) {
     EXPECT_EQ(VP9PROFILE_PROFILE0, result->profile);
     EXPECT_EQ(10u, result->level);
     EXPECT_EQ(VideoColorSpace::TransferID::BT709, result->color_space.transfer);
+    EXPECT_EQ(YuvSubsampling::k420, result->subsampling);
   }
 
   // Verify profile's 1, 2, and 3 parse correctly.
@@ -81,12 +82,82 @@ TEST(ParseVP9CodecId, NewStyleVP9CodecIDs) {
   EXPECT_FALSE(ParseNewStyleVp9CodecID("vp09.02.10.13"));
 
   // Verify chroma subsampling values.
-  EXPECT_TRUE(ParseNewStyleVp9CodecID("vp09.02.10.10.00"));
-  EXPECT_TRUE(ParseNewStyleVp9CodecID("vp09.02.10.10.01"));
-  EXPECT_TRUE(ParseNewStyleVp9CodecID("vp09.02.10.10.02"));
-  EXPECT_TRUE(ParseNewStyleVp9CodecID("vp09.02.10.10.03"));
+  {
+    auto result = ParseNewStyleVp9CodecID("vp09.02.10.10.00");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(YuvSubsampling::k420, result->subsampling);
+  }
+  {
+    auto result = ParseNewStyleVp9CodecID("vp09.02.10.10.01");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(YuvSubsampling::k420, result->subsampling);
+  }
+  {
+    auto result = ParseNewStyleVp9CodecID("vp09.01.10.10");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(YuvSubsampling::k422, result->subsampling);
+  }
+  {
+    auto result = ParseNewStyleVp9CodecID("vp09.03.10.10");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(YuvSubsampling::k422, result->subsampling);
+  }
+  {
+    auto result = ParseNewStyleVp9CodecID("vp09.01.10.10.02");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(YuvSubsampling::k422, result->subsampling);
+  }
+  {
+    auto result = ParseNewStyleVp9CodecID("vp09.03.10.10.02");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(YuvSubsampling::k422, result->subsampling);
+  }
+  {
+    auto result = ParseNewStyleVp9CodecID("vp09.01.10.10.03");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(YuvSubsampling::k444, result->subsampling);
+  }
+  {
+    auto result = ParseNewStyleVp9CodecID("vp09.03.10.10.03");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(YuvSubsampling::k444, result->subsampling);
+  }
+
   // Values 4 - 7 are reserved.
   EXPECT_FALSE(ParseNewStyleVp9CodecID("vp09.02.10.10.04"));
+
+  // Test invalid profile + sampling combinations. These are invalid but due to
+  // in the wild usage will just return the default subsampling value.
+  {
+    auto result = ParseNewStyleVp9CodecID("vp09.00.10.10.02");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(YuvSubsampling::k420, result->subsampling);
+  }
+  {
+    auto result = ParseNewStyleVp9CodecID("vp09.00.10.10.02");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(YuvSubsampling::k420, result->subsampling);
+  }
+  {
+    auto result = ParseNewStyleVp9CodecID("vp09.02.10.10.02");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(YuvSubsampling::k420, result->subsampling);
+  }
+  {
+    auto result = ParseNewStyleVp9CodecID("vp09.02.10.10.02");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(YuvSubsampling::k420, result->subsampling);
+  }
+  {
+    auto result = ParseNewStyleVp9CodecID("vp09.02.10.10.03");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(YuvSubsampling::k420, result->subsampling);
+  }
+  {
+    auto result = ParseNewStyleVp9CodecID("vp09.02.10.10.03");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(YuvSubsampling::k420, result->subsampling);
+  }
 
   // Verify a few color profiles.
   // BT709
@@ -142,6 +213,7 @@ TEST(ParseAv1CodecId, VerifyRequiredValues) {
     EXPECT_EQ(AV1PROFILE_PROFILE_MAIN, result->profile);
     EXPECT_EQ(4u, result->level);
     EXPECT_EQ(VideoColorSpace::TransferID::BT709, result->color_space.transfer);
+    EXPECT_EQ(YuvSubsampling::k420, result->subsampling);
   }
 
   // Verify high and pro profiles parse correctly.
@@ -235,19 +307,55 @@ TEST(ParseAv1CodecId, VerifyOptionalMonochrome) {
   for (int i = 0; i <= 9; ++i) {
     const std::string codec_string = base::StringPrintf("av01.0.00M.08.%d", i);
     SCOPED_TRACE(codec_string);
-    EXPECT_EQ(i < 2, !!ParseAv1CodecId(codec_string));
+    if (i < 2) {
+      auto result = ParseAv1CodecId(codec_string);
+      ASSERT_TRUE(result);
+      EXPECT_EQ(result->subsampling,
+                i == 0 ? YuvSubsampling::k420 : YuvSubsampling::k400);
+    } else {
+      EXPECT_FALSE(ParseAv1CodecId(codec_string));
+    }
   }
 }
 
 TEST(ParseAv1CodecId, VerifyOptionalSubsampling) {
   // chroma subsampling values are {0,1}{0,1}{0,3} with the last value always
   // zero if either of the first two values are zero.
-  EXPECT_TRUE(ParseAv1CodecId("av01.0.00M.10.0.000"));
-  EXPECT_TRUE(ParseAv1CodecId("av01.0.00M.10.0.100"));
-  EXPECT_TRUE(ParseAv1CodecId("av01.0.00M.10.0.010"));
-  EXPECT_TRUE(ParseAv1CodecId("av01.0.00M.10.0.111"));
-  EXPECT_TRUE(ParseAv1CodecId("av01.0.00M.10.0.112"));
-  EXPECT_TRUE(ParseAv1CodecId("av01.0.00M.10.0.113"));
+  {
+    auto result = ParseAv1CodecId("av01.1.00M.10.0.000");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->subsampling, YuvSubsampling::k444);
+  }
+  {
+    auto result = ParseAv1CodecId("av01.2.00M.10.0.000");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->subsampling, YuvSubsampling::k444);
+  }
+  {
+    auto result = ParseAv1CodecId("av01.2.00M.10.0.100");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->subsampling, YuvSubsampling::k422);
+  }
+  {
+    auto result = ParseAv1CodecId("av01.0.00M.10.0.010");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->subsampling, YuvSubsampling::k420);
+  }
+  {
+    auto result = ParseAv1CodecId("av01.0.00M.10.0.111");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->subsampling, YuvSubsampling::k420);
+  }
+  {
+    auto result = ParseAv1CodecId("av01.0.00M.10.0.112");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->subsampling, YuvSubsampling::k420);
+  }
+  {
+    auto result = ParseAv1CodecId("av01.0.00M.10.0.113");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->subsampling, YuvSubsampling::k420);
+  }
 
   // Invalid cases.
   EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.101"));
@@ -257,10 +365,40 @@ TEST(ParseAv1CodecId, VerifyOptionalSubsampling) {
   EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.012"));
   EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.013"));
 
+  // These are invalid but due to in the wild usage will just return the
+  // default subsampling value.
+  {
+    auto result = ParseAv1CodecId("av01.0.00M.10.0.100");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->subsampling, YuvSubsampling::k420);
+  }
+  {
+    auto result = ParseAv1CodecId("av01.1.00M.10.0.100");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->subsampling, YuvSubsampling::k420);
+  }
+  {
+    auto result = ParseAv1CodecId("av01.0.00M.10.0.000");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->subsampling, YuvSubsampling::k420);
+  }
+
   // The last-value may be non-zero if the first two values are non-zero.
-  EXPECT_TRUE(ParseAv1CodecId("av01.0.00M.10.0.110"));
-  EXPECT_TRUE(ParseAv1CodecId("av01.0.00M.10.0.100"));
-  EXPECT_TRUE(ParseAv1CodecId("av01.0.00M.10.0.010"));
+  {
+    auto result = ParseAv1CodecId("av01.0.00M.10.0.110");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->subsampling, YuvSubsampling::k420);
+  }
+  {
+    auto result = ParseAv1CodecId("av01.2.00M.10.0.100");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->subsampling, YuvSubsampling::k422);
+  }
+  {
+    auto result = ParseAv1CodecId("av01.0.00M.10.0.010");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->subsampling, YuvSubsampling::k420);
+  }
 
   for (int i = 2; i <= 9; ++i) {
     for (int j = 2; j <= 9; ++j) {
@@ -286,30 +424,30 @@ TEST(ParseAv1CodecId, VerifyOptionalColorProperties) {
 
   // BT709
   {
-    auto result = ParseAv1CodecId("av01.0.00M.10.0.000.01");
+    auto result = ParseAv1CodecId("av01.0.00M.10.0.110.01");
     ASSERT_TRUE(result);
     EXPECT_EQ(VideoColorSpace::PrimaryID::BT709, result->color_space.primaries);
   }
   // BT2020
   {
-    auto result = ParseAv1CodecId("av01.0.00M.10.0.000.09");
+    auto result = ParseAv1CodecId("av01.0.00M.10.0.110.09");
     ASSERT_TRUE(result);
     EXPECT_EQ(VideoColorSpace::PrimaryID::BT2020,
               result->color_space.primaries);
   }
   // 0 is invalid.
-  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.000.00"));
+  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.110.00"));
   // 23 - 255 are reserved.
-  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.000.23"));
+  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.110.23"));
 
   // Leading zeros must be provided.
-  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.000.01.1"));
+  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.110.01.1"));
   // Negative values are not allowed.
-  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.000.01.-1"));
+  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.110.01.-1"));
 
   // Verify a few common EOTFs parse correctly.
   for (int eotf : {1, 4, 6, 14, 15, 13, 16}) {
-    auto codec_string = base::StringPrintf("av01.0.00M.10.0.000.01.%02d", eotf);
+    auto codec_string = base::StringPrintf("av01.0.00M.10.0.110.01.%02d", eotf);
     auto result = ParseAv1CodecId(codec_string);
     ASSERT_TRUE(result) << "eotf=" << eotf;
     EXPECT_EQ(static_cast<VideoColorSpace::TransferID>(eotf),
@@ -317,52 +455,52 @@ TEST(ParseAv1CodecId, VerifyOptionalColorProperties) {
   }
 
   // Verify 0 and 3 are reserved EOTF values.
-  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.000.01.00"));
-  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.000.01.03"));
+  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.110.01.00"));
+  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.110.01.03"));
 
   // Leading zeros must be provided.
-  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.000.01.01.1"));
+  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.110.01.01.1"));
   // Negative values are not allowed.
-  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.000.01.01.-1"));
+  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.110.01.01.-1"));
 
   // Verify a few matrix coefficients.
   {
-    auto result = ParseAv1CodecId("av01.0.00M.10.0.000.01.01.00");
+    auto result = ParseAv1CodecId("av01.0.00M.10.0.110.01.01.00");
     ASSERT_TRUE(result);
     EXPECT_EQ(VideoColorSpace::MatrixID::RGB, result->color_space.matrix);
   }
   {
-    auto result = ParseAv1CodecId("av01.0.00M.10.0.000.01.01.01");
+    auto result = ParseAv1CodecId("av01.0.00M.10.0.110.01.01.01");
     ASSERT_TRUE(result);
     EXPECT_EQ(VideoColorSpace::MatrixID::BT709, result->color_space.matrix);
   }
   {
-    auto result = ParseAv1CodecId("av01.0.00M.10.0.000.01.01.10");
+    auto result = ParseAv1CodecId("av01.0.00M.10.0.110.01.01.10");
     ASSERT_TRUE(result);
     EXPECT_EQ(VideoColorSpace::MatrixID::BT2020_CL, result->color_space.matrix);
   }
 
   // Values 12 - 255 reserved. Though 12 at least is a valid value we should
   // support in the future. https://crbug.com/854290
-  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.000.01.01.12"));
+  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.110.01.01.12"));
 
   // Leading zeros are not allowed.
-  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.000.01.01.00.00"));
+  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.110.01.01.00.00"));
   // Negative values are not allowed.
-  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.000.01.01.00.-1"));
+  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.110.01.01.00.-1"));
 
   // Verify full range flag (boolean 0 or 1).
   {
-    auto result = ParseAv1CodecId("av01.0.00M.10.0.000.01.01.00.0");
+    auto result = ParseAv1CodecId("av01.0.00M.10.0.110.01.01.00.0");
     ASSERT_TRUE(result);
     EXPECT_EQ(gfx::ColorSpace::RangeID::LIMITED, result->color_space.range);
   }
   {
-    auto result = ParseAv1CodecId("av01.0.00M.10.0.000.01.01.00.1");
+    auto result = ParseAv1CodecId("av01.0.00M.10.0.110.01.01.00.1");
     ASSERT_TRUE(result);
     EXPECT_EQ(gfx::ColorSpace::RangeID::FULL, result->color_space.range);
   }
-  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.000.01.01.00.2"));
+  EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.110.01.01.00.2"));
 }
 
 TEST(ParseHEVCCodecIdTest, InvalidHEVCCodecIds) {

@@ -33,6 +33,7 @@ absl::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
   VideoType result = {
       .codec = VideoCodec::kVP9,
       .color_space = VideoColorSpace::REC709(),
+      .subsampling = YuvSubsampling::k420,
   };
 
   std::vector<std::string> fields = base::SplitString(
@@ -112,14 +113,39 @@ absl::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
     return absl::nullopt;
   }
 
+  // 4:2:0 isn't supported in profiles 1, 3.
+  if (profile_idc == 1 || profile_idc == 3) {
+    result.subsampling = YuvSubsampling::k422;
+  }
+
   if (values.size() < 4) {
     return result;
   }
   const int chroma_subsampling = values[3];
-  if (chroma_subsampling > 3) {
-    DVLOG(3) << __func__ << " Invalid chroma subsampling ("
-             << chroma_subsampling << ")";
-    return absl::nullopt;
+  switch (chroma_subsampling) {
+    case 0:
+    case 1:
+      result.subsampling = YuvSubsampling::k420;
+      break;
+    case 2:
+      result.subsampling = YuvSubsampling::k422;
+      break;
+    case 3:
+      result.subsampling = YuvSubsampling::k444;
+      break;
+    default:
+      DVLOG(3) << __func__ << " Invalid chroma subsampling ("
+               << chroma_subsampling << ")";
+      return absl::nullopt;
+  }
+
+  if (result.subsampling != YuvSubsampling::k420 && profile_idc != 1 &&
+      profile_idc != 3) {
+    DVLOG(3) << __func__
+             << " 4:2:2 and 4:4:4 are only supported in profile 1, 3";
+
+    // Ideally this would be an error, but even Netflix broke when we tried...
+    result.subsampling = YuvSubsampling::k420;
   }
 
   if (values.size() < 5) {
@@ -219,6 +245,7 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   VideoType result = {
       .codec = VideoCodec::kAV1,
       .color_space = VideoColorSpace::REC709(),
+      .subsampling = YuvSubsampling::k420,
   };
 
   if (fields[0] != "av01") {
@@ -302,6 +329,9 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   }
 
   if (values.size() <= 5) {
+    if (monochrome == 1) {
+      result.subsampling = YuvSubsampling::k400;
+    }
     return result;
   }
 
@@ -329,6 +359,24 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
        chroma_sample_position != '0')) {
     DVLOG(3) << __func__ << " Invalid chroma subsampling (" << fields[5] << ")";
     return absl::nullopt;
+  }
+
+  if (subsampling_x == '0' && subsampling_y == '0' && monochrome == 0) {
+    if (result.profile == AV1PROFILE_PROFILE_MAIN) {
+      DVLOG(3) << __func__ << "4:4:4 isn't supported in main profile.";
+    } else {
+      result.subsampling = YuvSubsampling::k444;
+    }
+  } else if (subsampling_x == '1' && subsampling_y == '0' && monochrome == 0) {
+    if (result.profile != AV1PROFILE_PROFILE_PRO) {
+      DVLOG(3) << __func__ << "4:2:2 is only supported in pro profile.";
+    } else {
+      result.subsampling = YuvSubsampling::k422;
+    }
+  } else if (subsampling_x == '1' && subsampling_y == '1' && monochrome == 0) {
+    result.subsampling = YuvSubsampling::k420;
+  } else if (subsampling_x == '1' && subsampling_y == '1' && monochrome == 1) {
+    result.subsampling = YuvSubsampling::k400;
   }
 
   if (values.size() <= 6) {
