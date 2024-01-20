@@ -162,6 +162,68 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
   resource_request->method = "POST";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("model_quality_logging",
+                                          R"(
+        semantics {
+          sender: "Optimization Guide Model Quality Logger"
+          description:
+            "Sends logging data about machine learning model requests, "
+            "responses and user interaction with the feature using the "
+            "machine learning model. Google may use this data to improve "
+            "Google products, including the machine learning models "
+            "themselves, or to develop new models."
+          trigger:
+            "Sent after the feature using the machine learning model "
+            "is no longer using the model response, and the user is "
+            "done interacting with the feature."
+          data: "The machine learning model request, response and "
+            "usage statistics, feedback data and device information "
+            "(platform, chrome version, etc.)."
+          internal {
+            contacts {
+              email: "chrome-intelligence-core@google.com"
+            }
+          }
+          user_data {
+            type: SENSITIVE_URL
+            type: WEB_CONTENT
+            type: USER_AGENT
+            type: USER_CONTENT
+            type: HW_OS_INFO
+          }
+          last_reviewed: "2024-01-12"
+          destination: GOOGLE_OWNED_SERVICE
+        }
+         policy {
+          cookies_allowed: NO
+          setting:
+            "Users can disable this by signing out of Chrome or by "
+            "disabling each feature using a machine learning model."
+          chrome_policy {
+            CreateThemesSettings {
+              CreateThemesSettings: 1
+            }
+            TabOrganizerSettings {
+              TabOrganizerSettings: 1
+            }
+            HelpMeWriteSettings {
+              HelpMeWriteSettings: 1
+            }
+          }
+          chrome_policy {
+            CreateThemesSettings {
+              CreateThemesSettings: 2
+            }
+            TabOrganizerSettings {
+              TabOrganizerSettings: 2
+            }
+            HelpMeWriteSettings {
+              HelpMeWriteSettings: 2
+            }
+          }
+        })");
+
   // Holds the currently active url request.
   std::unique_ptr<network::SimpleURLLoader> active_url_loader;
   active_url_loader = variations::CreateSimpleURLLoaderWithVariationsHeader(
@@ -169,9 +231,7 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
       // This is always InIncognito::kNo as model quality logs upload is not
       // enabled on incognito sessions and is rechecked before each upload.
       variations::InIncognito::kNo, variations::SignedIn::kNo,
-      // TODO(crbug/1485313): Update the traffic annotations with more details
-      // about the features.
-      MISSING_TRAFFIC_ANNOTATION);
+      traffic_annotation);
 
   active_url_loader->AttachStringForUpload(serialized_logs,
                                            "application/x-protobuf");
