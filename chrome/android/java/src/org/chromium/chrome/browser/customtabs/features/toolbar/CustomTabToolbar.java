@@ -158,6 +158,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     private final Handler mTaskHandler = new Handler();
 
+    // The resource ID of the most recently set security icon. Used for testing since
+    // VectorDrawables can't be straightforwardly tested for equality..
+    private int mSecurityIconResourceForTesting;
+
     /** Whether to use the toolbar as handle to resize the Window height. */
     public interface HandleStrategy {
         /**
@@ -1019,7 +1023,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     /** Custom tab-specific implementation of the LocationBar interface. */
     @VisibleForTesting
-    class CustomTabLocationBar
+    public class CustomTabLocationBar
             implements LocationBar,
                     UrlBar.UrlBarDelegate,
                     LocationBarDataProvider.Observer,
@@ -1448,11 +1452,17 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 ImageViewCompat.setImageTintList(mSecurityButton, colorStateList);
             }
             mAnimDelegate.updateSecurityButton(securityIconResource);
+            mSecurityIconResourceForTesting = securityIconResource;
 
             int contentDescriptionId =
                     mLocationBarDataProvider.getSecurityIconContentDescriptionResourceId();
             String contentDescription = getContext().getString(contentDescriptionId);
             mSecurityButton.setContentDescription(contentDescription);
+        }
+
+        @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+        public int getSecurityIconResourceForTesting() {
+            return mSecurityIconResourceForTesting;
         }
 
         private void animateCookieControlsIcon() {
