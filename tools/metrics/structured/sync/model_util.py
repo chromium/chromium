@@ -14,11 +14,14 @@ Functions use the concept of 'compound' and 'text' XML nodes.
 
 import collections
 import re
+from typing import List, Set
+import xml.etree.ElementTree as ET
+
 
 BOOLEAN_REGEX = r"(?i)(true|false|)$"
 
 
-def error(elem, msg):
+def error(elem: ET.Element, msg: str) -> None:
   """Raise a nicely formatted error with some context."""
   name = elem.attrib.get("name", None)
   name = name + " " if name else ""
@@ -26,7 +29,7 @@ def error(elem, msg):
   raise ValueError(msg)
 
 
-def get_attr(elem, tag, regex=None):
+def get_attr(elem: ET.Element, tag: str, regex: str = None) -> str:
   """Get an attribute.
 
     Error if it is missing, optionally error if it doesn't match the provided
@@ -56,7 +59,7 @@ def get_attr(elem, tag, regex=None):
   return attr
 
 
-def get_optional_attr(elem, tag, regex=None):
+def get_optional_attr(elem: ET.Element, tag: str, regex: str = None) -> str:
   """Get an attribute.
 
     Returns None if it doesn't exist.
@@ -85,7 +88,10 @@ def get_optional_attr(elem, tag, regex=None):
   return attr
 
 
-def get_compound_children(elem, tag, allow_missing_children=False):
+def get_compound_children(
+    elem: ET.Element,
+    tag: str,
+    allow_missing_children: bool = False) -> List[ET.Element]:
   """Get all child nodes of `elem` with tag `tag`.
 
     Error if none exist, or a child is not a compound node.
@@ -113,7 +119,7 @@ def get_compound_children(elem, tag, allow_missing_children=False):
   return children
 
 
-def get_compound_child(elem, tag):
+def get_compound_child(elem: ET.Element, tag: str) -> ET.Element:
   """Get the child of `elem` with tag `tag`.
 
     Error if there isn't exactly one matching child, or it isn't compound.
@@ -134,7 +140,7 @@ def get_compound_child(elem, tag):
   return children[0]
 
 
-def get_text_children(elem, tag, regex=None):
+def get_text_children(elem: ET.Element, tag: str, regex: str = None) -> str:
   """Get the text of all child nodes of `elem` with tag `tag`.
 
     Error if none exist, or a child is not a text node. Optionally ensure the
@@ -173,7 +179,7 @@ def get_text_children(elem, tag, regex=None):
   return result
 
 
-def get_text_child(elem, tag, regex=None):
+def get_text_child(elem: ET.Element, tag: str, regex: str = None) -> ET.Element:
   """Get the text of the child of `elem` with tag `tag`.
 
     Error if there isn't exactly one matching child, or it isn't a text node.
@@ -196,7 +202,9 @@ def get_text_child(elem, tag, regex=None):
   return result[0]
 
 
-def check_attributes(elem, expected_attrs, optional_attrs=None):
+def check_attributes(elem: ET.Element,
+                     expected_attrs: Set[str],
+                     optional_attrs: Set[str] = None) -> None:
   """Ensure `elem` has no attributes except those in `expected_attrs`.
 
     Args:
@@ -219,7 +227,7 @@ def check_attributes(elem, expected_attrs, optional_attrs=None):
     error(elem, "has unexpected attributes: " + attrs)
 
 
-def check_children(elem, expected_children):
+def check_children(elem: ET.Element, expected_children: Set[str]) -> None:
   """Ensure all children in `expected_children` are in `elem`.
 
     Args:
@@ -239,7 +247,7 @@ def check_children(elem, expected_children):
     error(elem, "is missing nodes: " + children)
 
 
-def get_boolean_attr(elem, attr_name):
+def get_boolean_attr(elem: ET.Element, attr_name: str) -> bool:
   """Get the Boolean value of the specified attribute 'attr_name'.
 
     Args:
@@ -255,7 +263,7 @@ def get_boolean_attr(elem, attr_name):
   return False
 
 
-def check_child_names_unique(elem, tag):
+def check_child_names_unique(elem: ET.Element, tag: str) -> None:
   """Ensure uniqueness of the 'name' of all children of `elem` with `tag`.
 
     Args:

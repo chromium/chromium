@@ -28,7 +28,7 @@ DEFAULT_PROJECT_SCOPE = "device"
 EVENT_SEQUENCE_PROJECT_NAME = "CrOSEvents"
 
 
-def wrap(text, indent):
+def wrap(text: str, indent: str) -> str:
   wrapper = tw.TextWrapper(width=80,
                            initial_indent=indent,
                            subsequent_indent=indent)
@@ -85,7 +85,7 @@ class Model:
   KEY_REGEX = r"^[0-9]+$"
   MAX_REGEX = r"^[0-9]+$"
 
-  def __init__(self, xml_string):
+  def __init__(self, xml_string: str):
     elem = ET.fromstring(xml_string)
     util.check_attributes(elem, set())
     util.check_children(elem, {"project"})
@@ -127,7 +127,7 @@ class Project:
     Calling str(project) will return a canonically formatted XML string.
     """
 
-  def __init__(self, elem):
+  def __init__(self, elem: ET.Element):
     util.check_attributes(elem, {"name"}, {"cros_events"})
     util.check_children(elem, {"id", "summary", "owner", "event"})
     util.check_child_names_unique(elem, "event")
@@ -194,7 +194,7 @@ class Event:
     Calling str(event) will return a canonically formatted XML string.
     """
 
-  def __init__(self, elem, project):
+  def __init__(self, elem: ET.Element, project: Project):
     util.check_attributes(elem, {"name"}, {"force_record"})
 
     if project.is_event_sequence_project:
@@ -244,7 +244,7 @@ class Metric:
     Calling str(metric) will return a canonically formatted XML string.
     """
 
-  def __init__(self, elem, project):
+  def __init__(self, elem: ET.Element, project: Project):
     util.check_attributes(elem, {"name", "type"}, {"max"})
     util.check_children(elem, {"summary"})
 
@@ -264,7 +264,7 @@ class Metric:
           f" but {project.name} has id type '{project.id}'",
       )
 
-  def is_array(self):
+  def is_array(self) -> bool:
     return "array" in self.type
 
   def __repr__(self):
