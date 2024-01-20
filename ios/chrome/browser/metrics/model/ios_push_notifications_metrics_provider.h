@@ -7,9 +7,14 @@
 
 #include "components/metrics/metrics_provider.h"
 
+namespace signin {
+class IdentityManager;
+}
+
 class IOSPushNotificationsMetricsProvider : public metrics::MetricsProvider {
  public:
-  explicit IOSPushNotificationsMetricsProvider();
+  explicit IOSPushNotificationsMetricsProvider(
+      signin::IdentityManager* identity_manager);
   IOSPushNotificationsMetricsProvider(
       const IOSPushNotificationsMetricsProvider&) = delete;
   IOSPushNotificationsMetricsProvider& operator=(
@@ -20,6 +25,9 @@ class IOSPushNotificationsMetricsProvider : public metrics::MetricsProvider {
   // metrics::MetricsProvider
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
+
+ private:
+  signin::IdentityManager* identity_manager_;
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_IOS_PUSH_NOTIFICATIONS_METRICS_PROVIDER_H_

@@ -32,3 +32,9 @@ TEST_F(IOSPushNotificationsMetricsProviderTest, ProvideCurrentSessionData) {
   histogram_tester_->ExpectBucketCount(
       kNotifAuthorizationStatusByProviderHistogram, 2, 1);
 }
+
+TEST_F(IOSPushNotificationsMetricsProviderTest, TestContentClientPermission) {
+  base::UmaHistogramBoolean(kNotifClientStatusByProviderHistogram, true);
+  histogram_tester_->ExpectBucketCount(kNotifClientStatusByProviderHistogram, 1,
+                                       1);
+}

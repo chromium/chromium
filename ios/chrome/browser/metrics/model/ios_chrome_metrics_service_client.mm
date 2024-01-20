@@ -81,6 +81,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/model/tab_parenting_global_observer.h"
@@ -369,7 +370,8 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
           browser_state->GetPrefs()));
 
   metrics_service_->RegisterMetricsProvider(
-      std::make_unique<IOSPushNotificationsMetricsProvider>());
+      std::make_unique<IOSPushNotificationsMetricsProvider>(
+          IdentityManagerFactory::GetForBrowserState(browser_state)));
 }
 
 void IOSChromeMetricsServiceClient::RegisterUKMProviders() {

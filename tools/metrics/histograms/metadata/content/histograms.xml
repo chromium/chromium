@@ -77,6 +77,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentNotifications.ClientStatus.Enabled.ByProvider"
+    enum="Boolean" expires_after="2024-06-20">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <summary>The status of the push notifications client for Content.</summary>
+</histogram>
+
 <histogram name="ContentNotifications.Promo.Prompt.Action"
     enum="ContentNotificationPromptAction" expires_after="2024-06-20">
   <owner>tinazwang@chromium.org</owner>
