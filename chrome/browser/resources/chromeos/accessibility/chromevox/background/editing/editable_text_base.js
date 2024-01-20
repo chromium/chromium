@@ -334,15 +334,11 @@ export class ChromeVoxEditableTextBase {
       return;
     }
 
-    const value = prev.value;
-    const len = value.length;
-    const newLen = evt.value.length;
-
     // First, see if there's a selection at the end that might have been
     // added by autocomplete. If so, replace the event information with it.
     const origEvt = evt;
     let autocompleteSuffix = '';
-    if (evt.start < evt.end && evt.end === newLen) {
+    if (evt.start < evt.end && evt.end === evt.value.length) {
       autocompleteSuffix = evt.value.slice(evt.start);
       evt = new TextChangeEvent(
           evt.value.slice(0, evt.start), evt.start, evt.start,
@@ -351,17 +347,17 @@ export class ChromeVoxEditableTextBase {
 
     // Precompute the length of prefix and suffix of values.
     const commonPrefixLen =
-        StringUtil.longestCommonPrefixLength(evt.value, value);
+        StringUtil.longestCommonPrefixLength(evt.value, prev.value);
     const commonSuffixLen =
-        StringUtil.longestCommonSuffixLength(evt.value, value);
+        StringUtil.longestCommonSuffixLength(evt.value, prev.value);
 
     // Now see if the previous selection (if any) was deleted
     // and any new text was inserted at that character position.
     // This would handle pasting and entering text by typing, both from
     // a cursor and from a selection.
     let prefixLen = prev.start;
-    let suffixLen = len - prev.end;
-    if (newLen >= prefixLen + suffixLen + (evt.end - evt.start) &&
+    let suffixLen = prev.value.length - prev.end;
+    if (evt.value.length >= prefixLen + suffixLen + (evt.end - evt.start) &&
         commonPrefixLen >= prefixLen && commonSuffixLen >= suffixLen) {
       this.describeTextChangedHelper(
           prev, origEvt, prefixLen, suffixLen, autocompleteSuffix, personality);
@@ -373,7 +369,7 @@ export class ChromeVoxEditableTextBase {
     // handles backspace, forward-delete, and similar shortcuts that delete
     // a word or line.
     prefixLen = evt.start;
-    suffixLen = newLen - evt.end;
+    suffixLen = evt.value.length - evt.end;
     if (prev.start === prev.end && evt.start === evt.end &&
         commonPrefixLen >= prefixLen && commonSuffixLen >= suffixLen) {
       // Forward deletions causes reading of the character immediately to the
@@ -397,27 +393,29 @@ export class ChromeVoxEditableTextBase {
     // Try to do a diff between the new and the old text. If it is a one
     // character insertion/deletion at the start or at the end, just speak that
     // character.
-    if ((evt.value.length === (value.length + 1)) ||
-        ((evt.value.length + 1) === value.length)) {
+    if ((evt.value.length === (prev.value.length + 1)) ||
+        ((evt.value.length + 1) === prev.value.length)) {
       // The user added text either to the beginning or the end.
-      if (evt.value.length > value.length) {
-        if (commonPrefixLen === value.length) {
+      if (evt.value.length > prev.value.length) {
+        if (commonPrefixLen === prev.value.length) {
           this.speak(
               evt.value[evt.value.length - 1], evt.triggeredByUser,
               personality);
           return;
-        } else if (commonSuffixLen === value.length) {
+        } else if (commonSuffixLen === prev.value.length) {
           this.speak(evt.value[0], evt.triggeredByUser, personality);
           return;
         }
       }
       // The user deleted text either from the beginning or the end.
-      if (evt.value.length < value.length) {
+      if (evt.value.length < prev.value.length) {
         if (commonPrefixLen === evt.value.length) {
-          this.speak(value[value.length - 1], evt.triggeredByUser, personality);
+          this.speak(
+              prev.value[prev.value.length - 1], evt.triggeredByUser,
+              personality);
           return;
         } else if (commonSuffixLen === evt.value.length) {
-          this.speak(value[0], evt.triggeredByUser, personality);
+          this.speak(prev.value[0], evt.triggeredByUser, personality);
           return;
         }
       }
@@ -435,7 +433,7 @@ export class ChromeVoxEditableTextBase {
     }
 
     // If the text is short, just speak the whole thing.
-    if (newLen <= this.maxShortPhraseLen) {
+    if (evt.value.length <= this.maxShortPhraseLen) {
       this.describeTextChangedHelper(prev, evt, 0, 0, '', personality);
       return;
     }
@@ -443,23 +441,27 @@ export class ChromeVoxEditableTextBase {
     // Otherwise, look for the common prefix and suffix, but back up so
     // that we can speak complete words, to be minimally confusing.
     prefixLen = commonPrefixLen;
-    while (prefixLen < len && prefixLen < newLen &&
-           value[prefixLen] === evt.value[prefixLen]) {
+    while (prefixLen < prev.value.length && prefixLen < evt.value.length &&
+           prev.value[prefixLen] === evt.value[prefixLen]) {
       prefixLen++;
     }
-    while (prefixLen > 0 && !StringUtil.isWordBreakChar(value[prefixLen - 1])) {
+    while (prefixLen > 0 &&
+           !StringUtil.isWordBreakChar(prev.value[prefixLen - 1])) {
       prefixLen--;
     }
 
     // For suffix, commonSuffixLen is not used because suffix here won't overlap
     // with prefix, and also we need to consider |autocompleteSuffix|.
     suffixLen = 0;
-    while (suffixLen < (len - prefixLen) && suffixLen < (newLen - prefixLen) &&
-           value[len - suffixLen - 1] === evt.value[newLen - suffixLen - 1]) {
+    while (suffixLen < (prev.value.length - prefixLen) &&
+           suffixLen < (evt.value.length - prefixLen) &&
+           prev.value[prev.value.length - suffixLen - 1] ===
+               evt.value[evt.value.length - suffixLen - 1]) {
       suffixLen++;
     }
     while (suffixLen > 0 &&
-           !StringUtil.isWordBreakChar(value[len - suffixLen])) {
+           !StringUtil.isWordBreakChar(
+               prev.value[prev.value.length - suffixLen])) {
       suffixLen--;
     }
 
