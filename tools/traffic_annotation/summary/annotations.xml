@@ -449,4 +449,7 @@ Refer to README.md for content description and update process.
  <item id="search_engine_adapter" added_in_milestone="121" content_hash_code="07bed22d" os_list="android" file_path="chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapter.java" />
  <item id="customize_chrome_page_handler_image" added_in_milestone="122" content_hash_code="00acf0a5" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.cc" />
  <item id="model_quality_logging" added_in_milestone="121" content_hash_code="0282aed0" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.cc" />
+ <item id="wallpaper_create_themes_model_execution" added_in_milestone="121" content_hash_code="01b58bbb" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
+ <item id="tab_organizer_model_execution" added_in_milestone="121" content_hash_code="06b6c6d3" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
+ <item id="help_me_write_model_execution" added_in_milestone="121" content_hash_code="069a7ee5" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
 </annotations>
