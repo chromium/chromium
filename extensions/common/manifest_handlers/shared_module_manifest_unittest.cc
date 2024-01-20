@@ -64,6 +64,23 @@ TEST_F(SharedModuleManifestTest, ExportAllowlistAll) {
       << manifest.name();
 }
 
+TEST_F(SharedModuleManifestTest, ExportAllowlistEmpty) {
+  scoped_refptr<Extension> extension =
+      LoadAndExpectWarnings("shared_module_export_allowlist_empty.json",
+                            {"Unrecognized manifest key 'export'.",
+                             manifest_errors::kInvalidExportAllowlistEmpty});
+
+  EXPECT_TRUE(
+      SharedModuleInfo::IsExportAllowedByAllowlist(extension.get(), kImportId1))
+      << extension.get()->name();
+  EXPECT_TRUE(
+      SharedModuleInfo::IsExportAllowedByAllowlist(extension.get(), kImportId2))
+      << extension.get()->name();
+  EXPECT_TRUE(
+      SharedModuleInfo::IsExportAllowedByAllowlist(extension.get(), kNoImport))
+      << extension.get()->name();
+}
+
 TEST_F(SharedModuleManifestTest, ExportParseErrors) {
   Testcase testcases[] = {
       Testcase("shared_module_export_and_import.json",

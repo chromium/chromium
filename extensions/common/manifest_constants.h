@@ -378,6 +378,8 @@ inline constexpr char kInvalidExcludeMatches[] =
     "Invalid value for 'content_scripts[*].exclude_matches'.";
 inline constexpr char kInvalidExportPermissions[] =
     "Permissions are not allowed for extensions that export resources.";
+inline constexpr char kInvalidExportAllowlistEmpty[] =
+    "Empty 'export.allowlist' implies any extension can import this module.";
 inline constexpr char kInvalidExportAllowlistString[] =
     "Invalid value for 'export.allowlist[*]'.";
 inline constexpr char kInvalidExtensionOriginPopup[] =

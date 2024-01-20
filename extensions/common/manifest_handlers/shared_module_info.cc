@@ -35,6 +35,7 @@ namespace errors = manifest_errors;
 namespace {
 
 const char kSharedModule[] = "shared_module";
+const char kAllowlist[] = "allowlist";
 
 using ManifestKeys = api::shared_module::ManifestKeys;
 
@@ -129,6 +130,8 @@ SharedModuleHandler::SharedModuleHandler() = default;
 SharedModuleHandler::~SharedModuleHandler() = default;
 
 bool SharedModuleHandler::Parse(Extension* extension, std::u16string* error) {
+  CHECK(extension);
+  CHECK(error);
   ManifestKeys manifest_keys;
   if (!ManifestKeys::ParseFromDictionary(
           extension->manifest()->available_values(), manifest_keys, *error)) {
@@ -144,6 +147,17 @@ bool SharedModuleHandler::Parse(Extension* extension, std::u16string* error) {
   if (has_import && has_export) {
     *error = errors::kInvalidImportAndExport;
     return false;
+  }
+
+  // An empty allowlist results in any extension being able to import modules
+  // from this extension. Since the developer included the "allowlist" key,
+  // it implies they wanted to restrict it. Let them know that the empty
+  // list was probably a mistake.
+  if (has_export && manifest_keys.export_->allowlist &&
+      manifest_keys.export_->allowlist->empty()) {
+    extension->AddInstallWarning(
+        extensions::InstallWarning(errors::kInvalidExportAllowlistEmpty,
+                                   ManifestKeys::kExport, kAllowlist));
   }
 
   if (has_export && manifest_keys.export_->allowlist) {
