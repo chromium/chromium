@@ -1037,14 +1037,25 @@ bool SwapChainPresenter::AdjustTargetToFullScreenSizeIfNeededF(
   visual_transform->PostTranslate(-mapped_rect.OffsetFromOrigin());
 
 #if DCHECK_IS_ON()
-  //  Verify if the new transform matrix transforms the swap chain to the
-  //  monitor rect.
+  // Verify if the new transform matrix transforms the swap chain to the
+  // monitor rect.
   gfx::RectF new_rect = visual_transform->MapRect(unmapped_rect);
   if (params.clip_rect.has_value()) {
     new_rect.Intersect(*visual_clip_rect);
   }
 
-  DCHECK_EQ(new_rect, gfx::RectF(monitor_size))
+  // https://crbug.com/1517344: "DCHECK_EQ(new_rect, gfx::RectF(monitor_size))"
+  // sometimes failed in the field. But here we collect possible crashes in
+  // general.
+  base::debug::Alias(&visual_transform);
+  base::debug::Alias(&new_rect);
+
+  // Here we use 0.01f as the check tolerance for floating-point numbers, since
+  // eventually the size adjustment for overlay will be rounded to be integral.
+  constexpr float kTolerance = 0.01f;
+  bool sufficiently_equal = new_rect.ApproximatelyEqual(
+      gfx::RectF(monitor_size), kTolerance, kTolerance);
+  DCHECK(sufficiently_equal)
       << ", params.quad_rect: " << params.quad_rect.ToString()
       << ", params.content_rect: " << params.content_rect.ToString()
       << ", clipped_onscreen_rect: " << clipped_onscreen_rect.ToString()
@@ -1512,6 +1523,7 @@ void SwapChainPresenter::AdjustTargetForFullScreenLetterboxingF(
     base::debug::Alias(&new_visual_transform);
     // https://crbug.com/1366493: "DCHECK_EQ(result_rect.x(), 0);" sometimes
     // failed in the field. But here we collect possible crashes in general.
+    // https://crbug.com/1517344 might also be triggered similarly.
     static auto* new_swap_chain_rect_key = base::debug::AllocateCrashKeyString(
         "new-swap-chain-rect", base::debug::CrashKeySize::Size256);
     base::debug::ScopedCrashKeyString scoped_crash_key_1(
@@ -1525,14 +1537,20 @@ void SwapChainPresenter::AdjustTargetForFullScreenLetterboxingF(
     base::debug::ScopedCrashKeyString scoped_crash_key_3(
         result_rect_key, result_rect.ToString());
 
+    // Here we use 0.01f as the check tolerance for floating-point numbers,
+    // since eventually the size adjustment for overlay will be rounded to be
+    // integral.
+    constexpr float kTolerance = 0.01f;
     if (is_onscreen_rect_x_near_0) {
-      DCHECK_EQ(result_rect.x(), 0);
-      DCHECK_EQ(result_rect.width(), monitor_size.width());
+      DCHECK_LE(std::abs(result_rect.x()), kTolerance);
+      DCHECK_LE(std::abs(result_rect.width() - monitor_size.width()),
+                kTolerance);
     }
 
     if (is_onscreen_rect_y_near_0) {
-      DCHECK_EQ(result_rect.y(), 0);
-      DCHECK_EQ(result_rect.height(), monitor_size.height());
+      DCHECK_LE(std::abs(result_rect.y()), kTolerance);
+      DCHECK_LE(std::abs(result_rect.height() - monitor_size.height()),
+                kTolerance);
     }
   }
 #endif
