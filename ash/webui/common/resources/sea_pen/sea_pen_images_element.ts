@@ -178,6 +178,8 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     return !!thumbnail && thumbnail === pendingSelected;
   }
 
+  // Get the name of the template for metrics. Must match histograms.xml
+  // SeaPenTemplateName.
   private getTemplateNameFromId_(templateId: SeaPenTemplateId|Query): string {
     switch (templateId) {
       case SeaPenTemplateId.kFlower:
@@ -200,19 +202,19 @@ export class SeaPenImagesElement extends WithSeaPenStore {
         return 'Translucent';
 
       case SeaPenTemplateId.kVcBackgroundSimple:
-        return 'Simple';
+        return 'VcBackgroundSimple';
       case SeaPenTemplateId.kVcBackgroundOffice:
-        return 'Stylish Office';
+        return 'VcBackgroundOffice';
       case SeaPenTemplateId.kVcBackgroundTerrainVc:
-        return 'Terrain';
+        return 'VcBackgroundTerrain';
       case SeaPenTemplateId.kVcBackgroundCafe:
-        return 'Cafe';
+        return 'VcBackgroundCafe';
       case SeaPenTemplateId.kVcBackgroundArt:
-        return 'Classic Art';
-      case SeaPenTemplateId.kVcBackgroundCharacters:
-        return 'Characters';
+        return 'VcBackgroundArt';
       case SeaPenTemplateId.kVcBackgroundDreamscapesVc:
-        return 'Dreamscapes';
+        return 'VcBackgroundDreamscapes';
+      case SeaPenTemplateId.kVcBackgroundCharacters:
+        return 'VcBackgroundCharacters';
 
       case 'Query':
         return 'Query';

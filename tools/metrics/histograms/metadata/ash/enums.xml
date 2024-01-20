@@ -1652,6 +1652,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="6" label="kDreamscapes"/>
   <int value="7" label="kTranslucent"/>
   <int value="8" label="kScifi"/>
+  <int value="100" label="kVcBackgroundSimple"/>
+  <int value="101" label="kVcBackgroundOffice"/>
+  <int value="102" label="kVcBackgroundTerrainVc"/>
+  <int value="103" label="kVcBackgroundCafe"/>
+  <int value="104" label="kVcBackgroundArt"/>
+  <int value="105" label="kVcBackgroundDreamscapesVc"/>
+  <int value="106" label="kVcBackgroundCharacters"/>
 </enum>
 
 <enum name="SetWallpaperResult">

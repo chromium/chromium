@@ -264,6 +264,16 @@ chromium-metrics-reviews@google.com.
   <variant name="Scifi" summary="Template Scifi"/>
   <variant name="Terrain" summary="Template Terrain"/>
   <variant name="Translucent" summary="Template Translucent"/>
+  <variant name="VcBackgroundArt" summary="VC Background Template Art"/>
+  <variant name="VcBackgroundCafe" summary="VC Background Template Cafe"/>
+  <variant name="VcBackgroundCharacters"
+      summary="VC Background Template Characters"/>
+  <variant name="VcBackgroundDreamscapes"
+      summary="VC Background Template Dreamscapes"/>
+  <variant name="VcBackgroundOffice"
+      summary="VC Background Template Stylish Office"/>
+  <variant name="VcBackgroundSimple" summary="VC Background Template Simple"/>
+  <variant name="VcBackgroundTerrain" summary="VC Background Template Terrain"/>
 </variants>
 
 <variants name="SnapActionSource">

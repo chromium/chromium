@@ -34,10 +34,6 @@ export function logSeaPenTemplateFeedback(
 }
 
 export function logGenerateSeaPenWallpaper(seaPenTemplateId: SeaPenTemplateId) {
-  // TODO(b:321157226): Set up UMA logging for VC background.
-  if (window.location.origin !== 'chrome://personalization') {
-    return;
-  }
   chrome.metricsPrivate.recordEnumerationValue(
       `Ash.SeaPen.CreateButton`, seaPenTemplateId,
       SeaPenTemplateId.MAX_VALUE + 1);

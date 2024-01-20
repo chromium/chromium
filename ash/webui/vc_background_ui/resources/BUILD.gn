@@ -21,6 +21,8 @@ build_webui("build") {
 
   ts_composite = true
 
+  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
     "//third_party/polymer/v3_0:library",
