@@ -3639,9 +3639,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillContentEditables",
-                        "Compose",
-                        "ComposeNudge"
+                        "Compose"
                     ]
                 }
             ]
