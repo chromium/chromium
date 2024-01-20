@@ -828,6 +828,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 // reference.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kMemoryCacheStrongReferenceResourceSizeThresholdParam;
+// Whether the ResourceFetcher should store strong references too.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kResourceFetcherStoresStrongReferences);
 // Exclude images from the saved strong references for resources.
 // See https://crbug.com/1409349.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
@@ -840,10 +843,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // See https://crbug.com/1409349.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kMemoryCacheStrongReferenceFilterCrossOriginScripts);
-// Save only one unloaded page's resources in the memory cache.
-// See https://crbug.com/1409349.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kMemoryCacheStrongReferenceSingleUnload);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMixedContentAutoupgrade);
 

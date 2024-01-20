@@ -347,6 +347,10 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   base::TimeTicks LoadResponseEnd() const { return load_response_end_; }
 
+  base::TimeTicks MemoryCacheLastAccessed() const {
+    return memory_cache_last_accessed_;
+  }
+
   void SetEncodedDataLength(int64_t value) {
     response_.SetEncodedDataLength(value);
   }
@@ -499,6 +503,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
  private:
   friend class ResourceLoader;
+  friend class MemoryCache;
+  FRIEND_TEST_ALL_PREFIXES(MemoryCacheStrongReferenceTest, ResourceTimeout);
 
   void RevalidationSucceeded(const ResourceResponse&);
   void RevalidationFailed();
@@ -513,12 +519,17 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   void CheckResourceIntegrity();
   void TriggerNotificationForFinishObservers(base::SingleThreadTaskRunner*);
 
+  // Only call this from the MemoryCache. Calling it from anything else will
+  // upset the MemoryCache's LRU.
+  void UpdateMemoryCacheLastAccessedTime();
+
   ResourceType type_;
   ResourceStatus status_;
 
   absl::optional<ResourceError> error_;
 
   base::TimeTicks load_response_end_;
+  base::TimeTicks memory_cache_last_accessed_;
 
   size_t encoded_size_;
   size_t decoded_size_;

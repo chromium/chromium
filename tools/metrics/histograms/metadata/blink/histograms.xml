@@ -3058,7 +3058,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy.Preload.{ResourceType}"
-    enum="RevalidationPolicy" expires_after="2023-10-01">
+    enum="RevalidationPolicy" expires_after="2024-07-31">
   <owner>hiroshige@chromium.org</owner>
   <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
@@ -3066,15 +3066,16 @@ chromium-metrics-reviews@google.com.
     RevalidationPolicy used for preloading requests for each resource type
     ({ResourceType}). https://crbug.com/579496 https://crbug.com/1376866
 
-    Warning: this histogram was expired from 2021-04-21 to 2022-12-09; data may
-    be missing. This histogram's {ResourceType} was broken until 2023-03-09;
-    data before the date may not be stored.
+    Warning: this histogram was expired from 2021-04-21 to 2022-12-09; and
+    2023-10-01 to 2024-01-17; data may be missing. This histogram's
+    {ResourceType} was broken until 2023-03-09; data before the date may not be
+    stored.
   </summary>
   <token key="ResourceType" variants="ResourceType"/>
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy.{ResourceType}"
-    enum="RevalidationPolicy" expires_after="2023-10-01">
+    enum="RevalidationPolicy" expires_after="2024-07-31">
   <owner>hiroshige@chromium.org</owner>
   <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
@@ -3082,9 +3083,10 @@ chromium-metrics-reviews@google.com.
     RevalidationPolicy used for non-preloading requests for each resource type.
     https://crbug.com/579496 https://crbug.com/1376866
 
-    Warning: this histogram was expired from 2021-04-21 to 2022-12-09; data may
-    be missing. This histogram's {ResourceType} was broken until 2023-03-09;
-    data before the date may not be stored.
+    Warning: this histogram was expired from 2021-04-21 to 2022-12-09; and
+    2023-10-01 to 2024-01-17; data may be missing. This histogram's
+    {ResourceType} was broken until 2023-03-09; data before the date may not be
+    stored.
   </summary>
   <token key="ResourceType" variants="ResourceType"/>
 </histogram>

@@ -11042,14 +11042,13 @@
             ],
             "experiments": [
                 {
-                    "name": "AllResourceTypesAllPages_20230426",
+                    "name": "FilterImageAllPages_20240115",
                     "enable_features": [
-                        "MemoryCacheStrongReference"
+                        "MemoryCacheStrongReference",
+                        "MemoryCacheStrongReferenceFilterImages"
                     ],
                     "disable_features": [
-                        "MemoryCacheStrongReferenceFilterImages",
-                        "MemoryCacheStrongReferenceFilterScripts",
-                        "MemoryCacheStrongReferenceSingleUnload"
+                        "MemoryCacheStrongReferenceFilterScripts"
                     ]
                 }
             ]

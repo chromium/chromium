@@ -56,8 +56,10 @@ class CacheAwareFontResourceTest : public FontResourceTest {
 class FontResourceStrongReferenceTest : public FontResourceTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kMemoryCacheStrongReference);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kMemoryCacheStrongReference,
+         features::kResourceFetcherStoresStrongReferences},
+        {});
     FontResourceTest::SetUp();
   }
 
