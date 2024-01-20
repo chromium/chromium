@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/webui/compose/compose_ui.h"
 #include "components/compose/core/browser/compose_dialog_controller.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/zoom/zoom_controller.h"
+#include "components/zoom/zoom_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/widget/widget.h"
@@ -25,7 +27,8 @@ class RectF;
 // Controls how Compose dialogs are shown and hidden, and animations related to
 // both actions.
 class ChromeComposeDialogController : public compose::ComposeDialogController,
-                                      views::WidgetObserver {
+                                      views::WidgetObserver,
+                                      zoom::ZoomObserver {
  public:
   explicit ChromeComposeDialogController(content::WebContents* contents);
   ~ChromeComposeDialogController() override;
@@ -54,6 +57,16 @@ class ChromeComposeDialogController : public compose::ComposeDialogController,
   // The destroying event occurs immediately before the widget is destroyed.
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  // zoom::ZoomObserver implementation.
+  // Notification that the zoom percentage has changed.
+  void OnZoomChanged(
+      const zoom::ZoomController::ZoomChangedEventData& data) override;
+
+  // zoom::ZoomObserver implementation.
+  // Fired when the ZoomController is destructed.
+  void OnZoomControllerDestroyed(
+      zoom::ZoomController* zoom_controller) override;
+
  private:
   friend class ChromeComposeDialogControllerTest;
 
@@ -63,6 +76,10 @@ class ChromeComposeDialogController : public compose::ComposeDialogController,
   // Observer for the parent widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
+
+  // Observer for the zoom controller.
+  base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>
+      zoom_observation_{this};
 
   base::WeakPtrFactory<ChromeComposeDialogController> weak_ptr_factory_{this};
 };

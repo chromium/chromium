@@ -84,12 +84,12 @@ void ChromeComposeDialogController::ShowComposeDialog(
       bubble_->set_close_on_deactivate(false);
 
       // Observe parent widget for resize and repositioning events.
-      // `widget_observation` must not be observing anything so reset it here
-      // before observing.
-      widget_observation_.Reset();
       if (bubble_->GetWidget() && bubble_->GetWidget()->parent()) {
         widget_observation_.Observe(bubble_->GetWidget()->parent());
       }
+
+      zoom_observation_.Observe(
+          zoom::ZoomController::FromWebContents(web_contents_.get()));
     }
   }
 }
@@ -112,6 +112,7 @@ void ChromeComposeDialogController::ShowUI() {
 void ChromeComposeDialogController::Close() {
   // This will no-op if there is no observation.
   widget_observation_.Reset();
+  zoom_observation_.Reset();
   auto* wrapper = GetBubbleWrapper();
   if (wrapper) {
     wrapper->CloseUI();
@@ -137,6 +138,23 @@ void ChromeComposeDialogController::OnWidgetBoundsChanged(
 void ChromeComposeDialogController::OnWidgetDestroying(views::Widget* widget) {
   // This will no-op if there is no observation.
   widget_observation_.Reset();
+}
+
+void ChromeComposeDialogController::OnZoomChanged(
+    const zoom::ZoomController::ZoomChangedEventData& data) {
+  if (base::FeatureList::IsEnabled(
+          compose::features::kEnableComposeSavedStateNotification) &&
+      IsDialogShowing()) {
+    // Zooming should close the compose dialog since it does not yet change
+    // position to follow the associated HTML element.
+    Close();
+  }
+}
+
+void ChromeComposeDialogController::OnZoomControllerDestroyed(
+    zoom::ZoomController* zoom_controller) {
+  // This will no-op if there is no observation.
+  zoom_observation_.Reset();
 }
 
 ChromeComposeDialogController::ChromeComposeDialogController(
