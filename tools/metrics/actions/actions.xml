@@ -10912,6 +10912,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glanceables_Classroom_UserAction">
+  <owner>amitrokhin@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User performed an actoin in the classroom glanceables. This aggregates all
+    user actions that the user can perform in the classroom glanceable.
+  </description>
+</action>
+
 <action name="Glanceables_Tasks_ActiveTaskListChanged">
   <owner>yulunwu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -10924,7 +10934,20 @@ should be able to be added at any place in this file.
   <owner>yulunwu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <description>
-    The add task button is shown for an empty tasks list.
+    The add task button is shown for an empty tasks list - used in the first
+    version of the glanceables UI (used for trusted tester program), where the
+    add task button was shown only for an empty task list.
+  </description>
+</action>
+
+<action name="Glanceables_Tasks_AddTaskStarted">
+  <owner>amitrokhin@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User clicked on the button to add a new task. Not recorded for Trusted
+    Tester Glanceables UI, which has its own add task button, but with different
+    semantics.
   </description>
 </action>
 
@@ -10932,7 +10955,8 @@ should be able to be added at any place in this file.
   <owner>wcwang@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <description>
-    User clicked on the add new task button on the tasks glanceable.
+    User clicked on the add new task button on the tasks glanceable. Recoreded
+    for Trusted Tester Glanceables UI only.
   </description>
 </action>
 
@@ -10961,6 +10985,26 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glanceables_Tasks_ModifyTaskStarted">
+  <owner>amitrokhin@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User clicked on the task title, and entered UI to modify the task title.
+  </description>
+</action>
+
+<action name="Glanceables_Tasks_NewUserNavigatedToTasks">
+  <owner>amitrokhin@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User that has a single empty task lists in Google Tasks performed an action
+    in tasks time management glanceables UI that opened tasks web UI in another
+    window.
+  </description>
+</action>
+
 <action name="Glanceables_Tasks_TaskMarkedAsCompleted">
   <owner>yulunwu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -10974,6 +11018,16 @@ should be able to be added at any place in this file.
   <owner>chromeos-launcher@google.com</owner>
   <description>
     User marks a task in the tasks glanceable as incomplete.
+  </description>
+</action>
+
+<action name="Glanceables_Tasks_UserAction">
+  <owner>amitrokhin@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User performed an action in the tasks glanceables. This aggregates all user
+    actions that the user can perform intaskss glanceable.
   </description>
 </action>
 

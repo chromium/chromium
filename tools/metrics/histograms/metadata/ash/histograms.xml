@@ -3584,6 +3584,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Glanceables.TimeManagement.FeatureStatus"
+    enum="TimeManagementGlanceablesFeatureStatus" expires_after="2024-08-31">
+  <owner>amitrokhin@google.com</owner>
+  <owner>tbarzic@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Whether time management glanceables are enabled, and the reason they are
+    enabled. Recorded when the feature state gets evaluated - either when an
+    eligible user profile gets created, or glanceables policy changes.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Glanceables.TimeManagement.LoginToShowTime" units="ms"
     expires_after="2024-08-31">
   <owner>anasalazar@google.com</owner>
@@ -3592,6 +3604,68 @@ chromium-metrics-reviews@google.com.
     The amount of time that the user spent between login and opening the
     glanceables time management bubble. The time is measured from the moment the
     user logs in and the time the glanceables bubble is created.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Glanceables.TimeManagement.Tasks.AddedTasks.{Emptiness}"
+    units="int" expires_after="2024-08-31">
+  <owner>amitrokhin@google.com</owner>
+  <owner>tbarzic@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Records the number of times the user created a task in the in-line task
+    creation UI while a task list was selected in the tasks time management
+    glanceable bubble. The histogram is recorded when the time management
+    glanceables bubble gets closed, or the user changes the selected task list.
+    The count of added tasks is reset at the same time. The histogram is
+    recorded separately depending on whether the selected task list was
+    initially empty.
+  </summary>
+  <token key="Emptiness">
+    <variant name="InEmptyList"/>
+    <variant name="InNonEmptyList"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.Glanceables.TimeManagement.Tasks.AddedTasksForFirstUsage"
+    units="int" expires_after="2024-08-31">
+  <owner>amitrokhin@google.com</owner>
+  <owner>tbarzic@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Records the number of times the user created a task in the in-line task
+    creation UI while a task list was selected in the tasks time management
+    glanceable bubble. The histogram is recorded only if the user is considered
+    a potentially new tasks user (they have a single empty task list in Google
+    Tasks). It's recorded when the glanceables bubble gets closed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Glanceables.TimeManagement.Tasks.AddTaskResult"
+    enum="ModifyGlanceablesTaskResult" expires_after="2024-08-31">
+  <owner>amitrokhin@google.com</owner>
+  <owner>tbarzic@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The result of use interaction with the tasks glanceables UI to add a new
+    task. When the user clicks &quot;Add new task&quot; button, the tasks
+    glanceables UI displays a textfield to enter a new task title. This metric
+    records whether the user entered the task title, initiating an API call to
+    create a task, or whether they dismissed it while it was empty.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Glanceables.TimeManagement.Tasks.ModifyTaskResult"
+    enum="ModifyGlanceablesTaskResult" expires_after="2024-08-31">
+  <owner>amitrokhin@google.com</owner>
+  <owner>tbarzic@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The result of use interaction with the tasks glanceables UI to modify a
+    task. When the user clicks on a task title, the tasks glanceables UI
+    displays a textfield that lets the user update the task title. This metric
+    records whether the user changed the task title, initiating an API call to
+    modify the task, or whether they dismissed it with no changes.
   </summary>
 </histogram>
 

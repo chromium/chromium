@@ -93,16 +93,6 @@ class AddNewTaskButton : public views::LabelButton {
 BEGIN_METADATA(AddNewTaskButton)
 END_METADATA
 
-// Handles press behavior for icons that are used to open Google Tasks in the
-// browser.
-void ActionButtonPressed(TasksLaunchSource source) {
-  RecordTasksLaunchSource(source);
-  NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(kTasksManagementPage),
-      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      NewWindowDelegate::Disposition::kNewForegroundTab);
-}
-
 }  // namespace
 
 GlanceablesTasksViewBase::GlanceablesTasksViewBase()
@@ -178,7 +168,8 @@ GlanceablesTasksView::GlanceablesTasksView(
 
   auto* const header_icon =
       tasks_header_view_->AddChildView(std::make_unique<IconButton>(
-          base::BindRepeating(&ActionButtonPressed,
+          base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
+                              base::Unretained(this),
                               TasksLaunchSource::kHeaderButton),
           IconButton::Type::kSmall, &kGlanceablesTasksIcon,
           IDS_GLANCEABLES_TASKS_HEADER_ICON_ACCESSIBLE_NAME));
@@ -208,7 +199,8 @@ GlanceablesTasksView::GlanceablesTasksView(
       list_view->AddChildView(std::make_unique<GlanceablesListFooterView>(
           l10n_util::GetStringUTF16(
               IDS_GLANCEABLES_TASKS_SEE_ALL_BUTTON_ACCESSIBLE_NAME),
-          base::BindRepeating(&ActionButtonPressed,
+          base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
+                              base::Unretained(this),
                               TasksLaunchSource::kFooterButton)));
   list_footer_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleListFooter));
@@ -221,6 +213,8 @@ GlanceablesTasksView::GlanceablesTasksView(
 GlanceablesTasksView::~GlanceablesTasksView() {
   if (first_task_list_shown_) {
     RecordTasksListChangeCount(tasks_list_change_count_);
+    RecordNumberOfAddedTasks(added_tasks_, task_list_initially_empty_,
+                             user_with_no_tasks_);
   }
 }
 
@@ -243,6 +237,9 @@ void GlanceablesTasksView::AddNewTaskButtonPressed() {
       /*index=*/0);
   pending_new_task->UpdateTaskTitleViewForState(
       GlanceablesTaskViewV2::TaskTitleViewState::kEdit);
+
+  RecordUserStartedAddingTask();
+
   PreferredSizeChanged();
 }
 
@@ -255,7 +252,8 @@ std::unique_ptr<GlanceablesTaskViewV2> GlanceablesTasksView::CreateTaskView(
                           base::Unretained(this), task_list_id),
       base::BindRepeating(&GlanceablesTasksView::SaveTask,
                           base::Unretained(this), task_list_id),
-      base::BindRepeating(&ActionButtonPressed,
+      base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
+                          base::Unretained(this),
                           TasksLaunchSource::kEditInGoogleTasksButton));
 }
 
@@ -296,6 +294,10 @@ void GlanceablesTasksView::UpdateTasksList(
     base::UmaHistogramCounts100(
         "Ash.Glanceables.TimeManagement.TasksCountInDefaultTaskList",
         tasks->item_count());
+  } else {
+    RecordNumberOfAddedTasks(added_tasks_, task_list_initially_empty_,
+                             user_with_no_tasks_);
+    added_tasks_ = 0;
   }
 
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
@@ -303,6 +305,8 @@ void GlanceablesTasksView::UpdateTasksList(
   task_items_container_view_->RemoveAllChildViews();
 
   size_t num_tasks_shown = 0;
+  user_with_no_tasks_ =
+      tasks->item_count() == 0 && tasks_combobox_model_->GetItemCount() == 1;
 
   for (const auto& task : *tasks) {
     if (task->completed) {
@@ -315,6 +319,7 @@ void GlanceablesTasksView::UpdateTasksList(
       ++num_tasks_shown;
     }
   }
+  task_list_initially_empty_ = num_tasks_shown == 0;
   list_footer_view_->SetVisible(tasks->item_count() >= kMaximumTasks);
 
   task_items_container_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
@@ -364,6 +369,17 @@ void GlanceablesTasksView::MarkTaskAsCompleted(const std::string& task_list_id,
       task_list_id, task_id, completed);
 }
 
+void GlanceablesTasksView::ActionButtonPressed(TasksLaunchSource source) {
+  if (user_with_no_tasks_) {
+    RecordUserWithNoTasksRedictedToTasksUI();
+  }
+  RecordTasksLaunchSource(source);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kTasksManagementPage),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
 void GlanceablesTasksView::SaveTask(
     const std::string& task_list_id,
     base::WeakPtr<GlanceablesTaskViewV2> view,
@@ -375,9 +391,13 @@ void GlanceablesTasksView::SaveTask(
     // this task has a non-empty title, otherwise just delete the `view` from
     // the scrollable container.
     if (title.empty() && view) {
+      RecordTaskAdditionResult(TaskModificationResult::kCancelled);
       task_items_container_view_->RemoveChildViewT(view.get());
       return;
     }
+
+    ++added_tasks_;
+    RecordTaskAdditionResult(TaskModificationResult::kCommitted);
   }
 
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/true);

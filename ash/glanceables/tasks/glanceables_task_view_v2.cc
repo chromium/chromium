@@ -469,6 +469,8 @@ void GlanceablesTaskViewV2::CheckButtonPressed() {
 }
 
 void GlanceablesTaskViewV2::TaskTitleButtonPressed() {
+  RecordUserModifyingTask();
+
   // TODO(b/301253574): notify siblings to switch to `kView`.
   UpdateTaskTitleViewForState(TaskTitleViewState::kEdit);
 }
@@ -482,6 +484,11 @@ void GlanceablesTaskViewV2::OnFinishedEditing(const std::u16string& title) {
   UpdateTaskTitleViewForState(TaskTitleViewState::kView);
 
   if (task_id_.empty() || task_title_ != old_title) {
+    // Note: result for task addition flow will be recorded in the parent view,
+    // which initialized add task flow.
+    if (!task_id_.empty()) {
+      RecordTaskModificationResult(TaskModificationResult::kCommitted);
+    }
     save_callback_.Run(weak_ptr_factory_.GetWeakPtr(), task_id_,
                        base::UTF16ToUTF8(task_title_),
                        base::BindOnce(&GlanceablesTaskViewV2::OnSaved,
@@ -489,6 +496,12 @@ void GlanceablesTaskViewV2::OnFinishedEditing(const std::u16string& title) {
     // TODO(b/301253574): introduce "disabled" state for this view to prevent
     // editing / marking as complete while the task is not fully created yet and
     // race conditions while editing the same task.
+  } else {
+    // Note: result for task addition flow will be recorded in the parent view,
+    // which initialized add task flow.
+    if (!task_id_.empty()) {
+      RecordTaskModificationResult(TaskModificationResult::kCancelled);
+    }
   }
 }
 

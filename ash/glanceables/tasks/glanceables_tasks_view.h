@@ -92,6 +92,10 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
                            const std::string& task_id,
                            bool completed);
 
+  // Handles press behavior for icons that are used to open Google Tasks in the
+  // browser.
+  void ActionButtonPressed(TasksLaunchSource source);
+
   // Saves the task (either creates or updates the existing one).
   // `view`     - individual task view which triggered this request.
   // `callback` - done callback passed from an individual task view.
@@ -134,6 +138,18 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   // Records the time when the bubble was about to request a task list. Used for
   // metrics.
   base::TimeTicks tasks_requested_time_;
+
+  // Number of tasks added by the user for the currently selected task list.
+  // Task is considered "added" if task creation was requested via tasks API.
+  // The count is reset when the selected task list changes.
+  int added_tasks_ = 0;
+
+  // Whether the current task list was empty when it got selected.
+  bool task_list_initially_empty_ = false;
+
+  // Whether the user had a single task list with no tasks when the current task
+  // list was selected.
+  bool user_with_no_tasks_ = false;
 
   base::ScopedObservation<views::View, views::ViewObserver>
       combobox_view_observation_{this};

@@ -1132,6 +1132,11 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="IME tray"/>
 </enum>
 
+<enum name="ModifyGlanceablesTaskResult">
+  <int value="0" label="Change committed"/>
+  <int value="1" label="No change"/>
+</enum>
+
 <enum name="MoveMigratorResumeStep">
   <int value="0" label="Start"/>
   <int value="1" label="MoveSplitItems"/>
@@ -1792,6 +1797,14 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="0" label="Remained on the home screen"/>
   <int value="1" label="Transitioned to overview"/>
   <int value="2" label="Went back on the home screen"/>
+</enum>
+
+<enum name="TimeManagementGlanceablesFeatureStatus">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="Enabled - trusted tester"/>
+  <int value="2" label="Enabled - GlanceablesV2 flag"/>
+  <int value="3" label="Enabled with pref bypass switch"/>
+  <int value="4" label="Enabled - full launch"/>
 </enum>
 
 <enum name="ToastCatalogName">
