@@ -31,6 +31,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/backend/print_backend.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/printing_context.h"
 #include "printing/printing_features.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -1155,7 +1156,7 @@ void PrintBackendServiceManager::OnRemoteDisconnected(
       GetRemoteSavedUpdatePrintSettingsCallbacks(sandboxed), remote_id,
       mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
   RunSavedCallbacks(GetRemoteSavedStartPrintingCallbacks(sandboxed), remote_id,
-                    mojom::ResultCode::kFailed);
+                    mojom::ResultCode::kFailed, PrintingContext::kNoPrintJobId);
 #if BUILDFLAG(IS_WIN)
   RunSavedCallbacks(GetRemoteSavedRenderPrintedPageCallbacks(sandboxed),
                     remote_id, mojom::ResultCode::kFailed);
@@ -1417,11 +1418,12 @@ void PrintBackendServiceManager::OnDidUpdatePrintSettings(
 
 void PrintBackendServiceManager::OnDidStartPrinting(
     const CallbackContext& context,
-    mojom::ResultCode result) {
+    mojom::ResultCode result,
+    int job_id) {
   LogCallbackFromRemote("StartPrinting", context);
   ServiceCallbackDone(
       GetRemoteSavedStartPrintingCallbacks(context.is_sandboxed),
-      context.remote_id, context.saved_callback_id, result);
+      context.remote_id, context.saved_callback_id, result, job_id);
 }
 
 #if BUILDFLAG(IS_WIN)

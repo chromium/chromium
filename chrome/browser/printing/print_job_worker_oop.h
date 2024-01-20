@@ -68,7 +68,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
 
   // Local callback wrappers for Print Backend Service mojom call.  Virtual to
   // support testing.
-  virtual void OnDidStartPrinting(mojom::ResultCode result);
+  virtual void OnDidStartPrinting(mojom::ResultCode result, int job_id);
 #if BUILDFLAG(IS_WIN)
   virtual void OnDidRenderPrintedPage(uint32_t page_index,
                                       mojom::ResultCode result);

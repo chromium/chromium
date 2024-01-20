@@ -428,10 +428,10 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
   ~TestPrintJobWorkerOop() override = default;
 
  private:
-  void OnDidStartPrinting(mojom::ResultCode result) override {
+  void OnDidStartPrinting(mojom::ResultCode result, int job_id) override {
     DVLOG(1) << "Observed: start printing of document";
     callbacks_->error_check_callback.Run(result);
-    PrintJobWorkerOop::OnDidStartPrinting(result);
+    PrintJobWorkerOop::OnDidStartPrinting(result, job_id);
     callbacks_->did_start_printing_callback.Run(result);
   }
 
@@ -1515,10 +1515,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
 #endif
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
-  // TODO(crbug.com/1518019):  Update to `kJobId` once ID is propagated back
-  // from the PrintBackend service.
-  EXPECT_THAT(document_done_job_id(),
-              testing::Optional(PrintingContext::kNoPrintJobId));
+  EXPECT_THAT(document_done_job_id(), testing::Optional(kJobId));
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 1);
 
@@ -1593,10 +1590,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
 #endif
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
-  // TODO(crbug.com/1518019):  Update to `kJobId` once ID is propagated back
-  // from the PrintBackend service.
-  EXPECT_THAT(document_done_job_id(),
-              testing::Optional(PrintingContext::kNoPrintJobId));
+  EXPECT_THAT(document_done_job_id(), testing::Optional(kJobId));
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
@@ -1819,10 +1813,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
 #endif
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
-  // TODO(crbug.com/1518019):  Update to `kJobId` once ID is propagated back
-  // from the PrintBackend service.
-  EXPECT_THAT(document_done_job_id(),
-              testing::Optional(PrintingContext::kNoPrintJobId));
+  EXPECT_THAT(document_done_job_id(), testing::Optional(kJobId));
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
@@ -2114,10 +2105,6 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
 #endif
     EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
-    // TODO(crbug.com/1518019):  Update to `kJobId` once ID is propagated back
-    // from the PrintBackend service.
-    EXPECT_THAT(document_done_job_id(),
-                testing::Optional(PrintingContext::kNoPrintJobId));
     EXPECT_EQ(*test::MakeUserModifiedPrintSettings("printer1"),
               *document_print_settings());
   } else {
@@ -2126,10 +2113,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     EXPECT_EQ(did_print_document_count(), 1);
 #endif
     EXPECT_TRUE(!in_process_last_error_result_code().has_value());
-    EXPECT_THAT(document_done_job_id(), testing::Optional(kJobId));
     EXPECT_EQ(*test::MakeUserModifiedPrintSettings("printer1"),
               *document_print_settings());
   }
+  EXPECT_THAT(document_done_job_id(), testing::Optional(kJobId));
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
@@ -2415,10 +2402,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
 #endif
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
-  // TODO(crbug.com/1518019):  Update to `kJobId` once ID is propagated back
-  // from the PrintBackend service.
-  EXPECT_THAT(document_done_job_id(),
-              testing::Optional(PrintingContext::kNoPrintJobId));
+  EXPECT_THAT(document_done_job_id(), testing::Optional(kJobId));
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(did_print_document_count(), 1);
   EXPECT_EQ(print_job_destruction_count(), 1);
@@ -2825,14 +2809,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest, OpenPdfInPreview) {
     EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
     EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
     EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
-    // TODO(crbug.com/1518019):  Update to `kJobId` once ID is propagated back
-    // from the PrintBackend service.
-    EXPECT_THAT(document_done_job_id(),
-                testing::Optional(PrintingContext::kNoPrintJobId));
   } else {
     EXPECT_FALSE(in_process_last_error_result_code().has_value());
-    EXPECT_THAT(document_done_job_id(), testing::Optional(kJobId));
   }
+  EXPECT_THAT(document_done_job_id(), testing::Optional(kJobId));
   EXPECT_TRUE(destination_is_preview());
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 1);

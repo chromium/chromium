@@ -91,6 +91,11 @@ class UnsandboxedPrintBackendHostImpl
 
 class PrintBackendServiceImpl : public mojom::PrintBackendService {
  public:
+  struct StartPrintingResult {
+    mojom::ResultCode result;
+    int job_id;
+  };
+
   explicit PrintBackendServiceImpl(
       mojo::PendingReceiver<mojom::PrintBackendService> receiver);
   PrintBackendServiceImpl(const PrintBackendServiceImpl&) = delete;
@@ -230,7 +235,7 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
       mojom::ResultCode result);
 #endif
   void OnDidStartPrintingReadyDocument(DocumentHelper& document_helper,
-                                       mojom::ResultCode result);
+                                       StartPrintingResult printing_result);
   void OnDidDocumentDone(
       DocumentHelper& document_helper,
       mojom::PrintBackendService::DocumentDoneCallback callback,

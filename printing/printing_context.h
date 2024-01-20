@@ -208,6 +208,13 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
 
   int job_id() const { return job_id_; }
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  // Override the job ID for this context.  Can only be called to update the
+  // value for a `PrintingContext` in the browser process with a value that was
+  // determined by a PrintBackend service.
+  void SetJobId(int job_id);
+#endif
+
  protected:
   PrintingContext(Delegate* delegate, ProcessBehavior process_behavior);
 

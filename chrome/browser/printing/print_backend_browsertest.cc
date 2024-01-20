@@ -231,13 +231,15 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     // Safe to use base::Unretained(this) since waiting locally on the callback
     // forces a shorter lifetime than `this`.
     mojom::ResultCode result;
+    int job_id;
     GetPrintBackendService()->StartPrinting(
         context_id, kTestDocumentCookie, u"document name",
 #if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
         /*settings=*/std::nullopt,
 #endif
-        base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
-                       base::Unretained(this), std::ref(result)));
+        base::BindOnce(&PrintBackendBrowserTest::CaptureStartPrintingResult,
+                       base::Unretained(this), std::ref(result),
+                       std::ref(job_id)));
     WaitUntilCallbackReceived();
     return result;
   }
@@ -360,6 +362,15 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
       mojom::PrintSettingsResultPtr& capture_print_settings,
       mojom::PrintSettingsResultPtr print_settings) {
     capture_print_settings = std::move(print_settings);
+    CheckForQuit();
+  }
+
+  void CaptureStartPrintingResult(mojom::ResultCode& capture_result,
+                                  int& capture_job_id,
+                                  mojom::ResultCode result,
+                                  int job_id) {
+    capture_result = result;
+    capture_job_id = job_id;
     CheckForQuit();
   }
 

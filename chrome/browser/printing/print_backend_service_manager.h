@@ -315,7 +315,7 @@ class PrintBackendServiceManager {
   using RemoteSavedUpdatePrintSettingsCallbacks =
       RemoteSavedStructCallbacks<mojom::PrintSettingsResult>;
   using RemoteSavedStartPrintingCallbacks =
-      RemoteSavedCallbacks<mojom::ResultCode>;
+      RemoteSavedCallbacks<mojom::ResultCode, int /*job_id*/>;
 #if BUILDFLAG(IS_WIN)
   using RemoteSavedRenderPrintedPageCallbacks =
       RemoteSavedCallbacks<mojom::ResultCode>;
@@ -566,7 +566,8 @@ class PrintBackendServiceManager {
   void OnDidUpdatePrintSettings(const CallbackContext& context,
                                 mojom::PrintSettingsResultPtr printer_caps);
   void OnDidStartPrinting(const CallbackContext& context,
-                          mojom::ResultCode result);
+                          mojom::ResultCode result,
+                          int job_id);
 #if BUILDFLAG(IS_WIN)
   void OnDidRenderPrintedPage(const CallbackContext& context,
                               mojom::ResultCode result);

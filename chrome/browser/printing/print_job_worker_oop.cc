@@ -124,7 +124,8 @@ void PrintJobWorkerOop::CleanupAfterContentAnalysisDenial() {
 }
 #endif
 
-void PrintJobWorkerOop::OnDidStartPrinting(mojom::ResultCode result) {
+void PrintJobWorkerOop::OnDidStartPrinting(mojom::ResultCode result,
+                                           int job_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR) << "Error initiating printing via service for document "
@@ -133,6 +134,10 @@ void PrintJobWorkerOop::OnDidStartPrinting(mojom::ResultCode result) {
       NotifyFailure(result);
     return;
   }
+
+  // Retain the job ID that was set in the service.
+  printing_context()->SetJobId(job_id);
+
   VLOG(1) << "Printing initiated with service for document "
           << document_oop_->cookie();
   task_runner()->PostTask(FROM_HERE,

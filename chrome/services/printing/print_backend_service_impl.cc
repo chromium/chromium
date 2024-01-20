@@ -176,7 +176,7 @@ class DocumentContainer {
   ~DocumentContainer() = default;
 
   // Helper functions that runs on a task runner.
-  mojom::ResultCode StartPrintingReadyDocument();
+  PrintBackendServiceImpl::StartPrintingResult StartPrintingReadyDocument();
 #if BUILDFLAG(IS_WIN)
   mojom::ResultCode DoRenderPrintedPage(
       uint32_t page_index,
@@ -203,20 +203,24 @@ class DocumentContainer {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-mojom::ResultCode DocumentContainer::StartPrintingReadyDocument() {
+PrintBackendServiceImpl::StartPrintingResult
+DocumentContainer::StartPrintingReadyDocument() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DVLOG(1) << "Start printing for document " << document_->cookie();
 
-  mojom::ResultCode result = context_->NewDocument(document_->name());
-  if (result != mojom::ResultCode::kSuccess) {
+  PrintBackendServiceImpl::StartPrintingResult printing_result;
+  printing_result.result = context_->NewDocument(document_->name());
+  if (printing_result.result != mojom::ResultCode::kSuccess) {
     DLOG(ERROR) << "Failure initializing new document " << document_->cookie()
-                << ", error: " << result;
+                << ", error: " << printing_result.result;
     context_->Cancel();
-    return result;
+    printing_result.job_id = PrintingContext::kNoPrintJobId;
+    return printing_result;
   }
+  printing_result.job_id = context_->job_id();
 
-  return mojom::ResultCode::kSuccess;
+  return printing_result;
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -730,7 +734,8 @@ void PrintBackendServiceImpl::StartPrinting(
       // off on issuing the callback.
       // TODO(crbug.com/809738)  Place this in a queue of waiting jobs.
       DLOG(ERROR) << "Need queue for print jobs awaiting a connection";
-      std::move(callback).Run(mojom::ResultCode::kFailed);
+      std::move(callback).Run(mojom::ResultCode::kFailed,
+                              PrintingContext::kNoPrintJobId);
       return;
     }
   }
@@ -875,9 +880,10 @@ void PrintBackendServiceImpl::OnDidAskUserForSettings(
 
 void PrintBackendServiceImpl::OnDidStartPrintingReadyDocument(
     DocumentHelper& document_helper,
-    mojom::ResultCode result) {
+    StartPrintingResult printing_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  document_helper.TakeStartPrintingCallback().Run(result);
+  document_helper.TakeStartPrintingCallback().Run(printing_result.result,
+                                                  printing_result.job_id);
 }
 
 void PrintBackendServiceImpl::OnDidDocumentDone(

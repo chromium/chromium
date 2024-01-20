@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/check.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "printing/buildflags/buildflags.h"
@@ -85,6 +85,15 @@ std::unique_ptr<PrintSettings> PrintingContext::TakeAndResetSettings() {
   settings_ = std::make_unique<PrintSettings>();
   return result;
 }
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+void PrintingContext::SetJobId(int job_id) {
+  // Should only use this method to update the browser `PrintingContext` with
+  // the value provided by the PrintBackend service.
+  CHECK_EQ(process_behavior_, ProcessBehavior::kOopEnabledSkipSystemCalls);
+  job_id_ = job_id;
+}
+#endif
 
 mojom::ResultCode PrintingContext::OnError() {
   mojom::ResultCode result = abort_printing_ ? mojom::ResultCode::kCanceled
