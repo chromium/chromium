@@ -4201,13 +4201,6 @@ void NavigationControllerImpl::NotifyNavigationEntryCommitted(
 
   delegate_->NotifyNavigationStateChangedFromController(INVALIDATE_TYPE_ALL);
   delegate_->NotifyNavigationEntryCommitted(*details);
-
-  // TODO(avi): Remove. http://crbug.com/170921
-  NotificationDetails notification_details =
-      Details<LoadCommittedDetails>(details);
-  NotificationService::current()->Notify(NOTIFICATION_NAV_ENTRY_COMMITTED,
-                                         Source<NavigationController>(this),
-                                         notification_details);
 }
 
 // static

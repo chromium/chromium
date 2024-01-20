@@ -19,20 +19,6 @@
 namespace content {
 
 enum NotificationType {
-  NOTIFICATION_CONTENT_START = 0,
-
-  // NavigationController ----------------------------------------------------
-
-  // A new non-pending navigation entry has been created. This will
-  // correspond to one NavigationController entry being created (in the case
-  // of new navigations) or renavigated to (for back/forward navigations).
-  //
-  // The source will be the navigation controller doing the commit. The
-  // details will be NavigationController::LoadCommittedDetails.
-  // DEPRECATED: Use WebContentsObserver::NavigationEntryCommitted()
-  // TODO(https://crbug.com/1174760): Remove.
-  NOTIFICATION_NAV_ENTRY_COMMITTED = NOTIFICATION_CONTENT_START,
-
   // WebContents ---------------------------------------------------------------
 
   // Indicates a RenderWidgetHost has been hidden or restored. The source is
@@ -43,9 +29,6 @@ enum NotificationType {
   // Use RenderWidgetHostObserver::RenderWidgetHostVisibilityChanged()
   // TODO(https://crbug.com/1174771): Remove.
   NOTIFICATION_RENDER_WIDGET_VISIBILITY_CHANGED,
-
-  // Custom notifications used by the embedder should start from here.
-  NOTIFICATION_CONTENT_END,
 };
 
 }  // namespace content
