@@ -86,6 +86,10 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
 #endif
   };
 
+  // Value returned by `job_id()` when there is no active print job or the
+  // platform/test does not expose an underlying job ID for extra management.
+  static constexpr int kNoPrintJobId = 0;
+
   PrintingContext(const PrintingContext&) = delete;
   PrintingContext& operator=(const PrintingContext&) = delete;
   virtual ~PrintingContext();
@@ -231,8 +235,11 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   // Did the user cancel the print job.
   volatile bool abort_printing_;
 
-  // The job id for the current job. The value is 0 if no jobs are active.
-  int job_id_;
+  // The job id for the current job used by the underlying platform.
+  // The value is `kNoPrintJobId` if no jobs are active or if the platform
+  // or test does not require passing such an ID for extra print job
+  // management.
+  int job_id_ = kNoPrintJobId;
 
  private:
   const ProcessBehavior process_behavior_;
