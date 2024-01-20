@@ -79,26 +79,6 @@
       'ToTWinOfficial64': 'clang_tot_win_official_full_symbols_static',
     },
 
-    'chromium.dev': {
-      # This should be the same as 'android-pie-arm64-rel'.
-      'android-pie-arm64-rel-dev':  'android_release_bot_minimal_symbols_arm64_webview_monochrome_reclient',
-
-      # These should be the same as 'Linux Builder'.
-      'linux-local-ssd-rel-dev': 'gpu_tests_release_bot_do_typecheck_reclient',
-      'linux-rel-dev': 'gpu_tests_release_bot_do_typecheck_reclient',
-      'linux-rel-jammy-dev': 'gpu_tests_release_bot_do_typecheck_reclient',
-      'linux-remote-ssd-rel-dev': 'gpu_tests_release_bot_do_typecheck_reclient',
-
-      # This should be the same as 'Mac Builder'.
-      'mac-arm-rel-dev': 'gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
-      'mac-rel-dev': 'gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
-
-      # This should be the same as 'Win x64 Builder'.
-      'win-local-ssd-rel-dev': 'gpu_tests_release_bot_minimal_symbols_reclient',
-      'win-rel-dev': 'gpu_tests_release_bot_minimal_symbols_reclient',
-      'win11-rel-dev': 'gpu_tests_release_bot_minimal_symbols_reclient',
-    },
-
     'chromium.devtools-frontend': {
       'DevTools Linux (chromium)': 'release_trybot_blink_do_typecheck',
     },
@@ -389,11 +369,6 @@
 
     'android_debug_bot_reclient_fastbuild': [
       'android', 'debug_bot_reclient', 'android_fastbuild',
-    ],
-
-    'android_release_bot_minimal_symbols_arm64_webview_monochrome_reclient': [
-      'android', 'release_bot_reclient', 'minimal_symbols', 'arm64',
-      'strip_debug_info', 'webview_monochrome',
     ],
 
     'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_reclient': [
@@ -695,18 +670,6 @@
 
     'gpu_tests_debug_bot_x86_no_symbols_reclient': [
       'gpu_tests', 'debug_bot_reclient', 'x86', 'no_symbols'
-    ],
-
-    'gpu_tests_release_bot_do_typecheck_reclient': [
-      'gpu_tests', 'release_bot_reclient', 'devtools_do_typecheck',
-    ],
-
-    'gpu_tests_release_bot_minimal_symbols_no_nacl_reclient': [
-      'gpu_tests', 'release_bot_reclient', 'minimal_symbols', 'disable_nacl',
-    ],
-
-    'gpu_tests_release_bot_minimal_symbols_reclient': [
-      'gpu_tests', 'release_bot_reclient', 'minimal_symbols',
     ],
 
     'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_reclient': [
@@ -1244,10 +1207,6 @@
       'gn_args': 'devtools_skip_typecheck=false',
     },
 
-    'disable_nacl': {
-      'gn_args': 'enable_nacl=false',
-    },
-
     'disable_widevine_signing': {
       'gn_args': 'enable_widevine_cdm_host_verification = false'
     },
@@ -1528,11 +1487,6 @@
 
     'volteer': {
       'args_file': '//build/args/chromeos/volteer.gni',
-    },
-
-    # For Android N-P, only userdebug/eng
-    'webview_monochrome': {
-      'gn_args': 'system_webview_package_name="com.google.android.apps.chrome"',
     },
 
     # Mainly used by builders that use android emulator.

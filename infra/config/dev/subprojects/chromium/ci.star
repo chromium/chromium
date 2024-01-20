@@ -4,6 +4,7 @@
 
 load("//lib/builders.star", "builder", "cpu", "defaults", "os", "reclient")
 load("//lib/builder_config.star", "builder_config")
+load("//lib/gn_args.star", "gn_args")
 
 luci.bucket(
     name = "ci",
@@ -117,6 +118,17 @@ ci_builder(
             config = "main_builder_mb",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "arm64",
+            "strip_debug_info",
+            "webview_monochrome",
+        ],
+    ),
 )
 
 # TODO(crbug.com/1412588): Delete this builder when bionic image rolls are
@@ -132,6 +144,14 @@ ci_builder(
             build_config = builder_config.build_config.RELEASE,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "devtools_do_typecheck",
+        ],
+    ),
     os = os.LINUX_BIONIC,
 )
 
@@ -145,6 +165,14 @@ ci_builder(
             build_config = builder_config.build_config.RELEASE,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "devtools_do_typecheck",
+        ],
+    ),
 )
 
 ci_builder(
@@ -157,6 +185,14 @@ ci_builder(
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "devtools_do_typecheck",
+        ],
     ),
     builderless = False,
     ssd = True,
@@ -173,6 +209,14 @@ ci_builder(
             build_config = builder_config.build_config.RELEASE,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "devtools_do_typecheck",
+        ],
+    ),
     builderless = False,
     ssd = True,
 )
@@ -187,6 +231,15 @@ ci_builder(
             build_config = builder_config.build_config.RELEASE,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "disable_nacl",
+        ],
+    ),
     os = os.MAC_DEFAULT,
 )
 
@@ -199,6 +252,15 @@ ci_builder(
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "disable_nacl",
+        ],
     ),
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
@@ -215,6 +277,14 @@ ci_builder(
             build_config = builder_config.build_config.RELEASE,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
     builderless = False,
     os = os.WINDOWS_10,
     ssd = 1,
@@ -230,6 +300,14 @@ ci_builder(
             build_config = builder_config.build_config.RELEASE,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
     os = os.WINDOWS_10,
     ssd = 0,
 )
@@ -243,6 +321,14 @@ ci_builder(
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
     ),
     os = os.WINDOWS_11,
 )

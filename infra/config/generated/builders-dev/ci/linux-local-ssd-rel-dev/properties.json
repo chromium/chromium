@@ -4,6 +4,9 @@
   },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders-dev/ci/linux-local-ssd-rel-dev/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
