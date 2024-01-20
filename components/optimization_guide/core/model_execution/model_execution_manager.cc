@@ -110,7 +110,8 @@ ModelExecutionManager::ModelExecutionManager(
       model_provider_(model_provider),
       on_device_model_service_controller_(
           std::move(on_device_model_service_controller)) {
-  if (model_provider_ && features::ShouldDownloadTextSafetyClassifierModel()) {
+  if (model_provider_ && on_device_model_service_controller_ &&
+      features::ShouldDownloadTextSafetyClassifierModel()) {
     model_provider_->AddObserverForOptimizationTargetModel(
         proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY,
         /*model_metadata=*/absl::nullopt, this);
