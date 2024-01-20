@@ -479,6 +479,9 @@ bool IsContentPushNotificationsPromoEnabled();
 // YES when the Content Push Notifications Setup List is enabled.
 bool IsContentPushNotificationsSetUpListEnabled();
 
+// YES when the Content Provisional Push Notifications are enabled.
+bool IsContentPushNotificationsProvisionalEnabled();
+
 // Returns true when the IOSLargeFakebox feature is enabled.
 bool IsIOSLargeFakeboxEnabled();
 

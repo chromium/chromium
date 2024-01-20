@@ -600,6 +600,11 @@ bool IsContentPushNotificationsSetUpListEnabled() {
           NotificationsExperimentTypeSetUpListsEnabled);
 }
 
+bool IsContentPushNotificationsProvisionalEnabled() {
+  return (ContentNotificationsExperimentTypeEnabled() ==
+          NotificationsExperimentTypeProvisional);
+}
+
 bool IsIOSLargeFakeboxEnabled() {
   return base::FeatureList::IsEnabled(kIOSLargeFakebox);
 }

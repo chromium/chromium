@@ -271,12 +271,16 @@ const FeatureEntry::FeatureParam kContentPushNotificationsEnabledPromo[] = {
     {kContentPushNotificationsExperimentType, "1"}};
 const FeatureEntry::FeatureParam kContentPushNotificationsEnabledSetupLists[] =
     {{kContentPushNotificationsExperimentType, "2"}};
+const FeatureEntry::FeatureParam kContentPushNotificationsEnabledProvisional[] =
+    {{kContentPushNotificationsExperimentType, "3"}};
 
 const FeatureEntry::FeatureVariation kContentPushNotificationsVariations[] = {
     {"Promo", kContentPushNotificationsEnabledPromo,
      std::size(kContentPushNotificationsEnabledPromo), nullptr},
     {"Set up list", kContentPushNotificationsEnabledSetupLists,
-     std::size(kContentPushNotificationsEnabledSetupLists), nullptr}};
+     std::size(kContentPushNotificationsEnabledSetupLists), nullptr},
+    {"Provisional Notification", kContentPushNotificationsEnabledProvisional,
+     std::size(kContentPushNotificationsEnabledProvisional), nullptr}};
 
 const FeatureEntry::FeatureParam kFeedHeaderSettingDisabledStickyHeader[] = {
     {kDisableStickyHeaderForFollowingFeed, "true"}};
