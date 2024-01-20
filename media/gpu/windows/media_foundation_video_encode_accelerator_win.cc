@@ -426,12 +426,17 @@ VideoRateControlWrapper::RateControlConfig CreateRateControllerConfig(
 
 class MediaFoundationVideoEncodeAccelerator::BitstreamParserHelper {
  public:
+  // Describe a slot of reference frame buffer.
+  struct ReferenceBufferSlot {
+    uint32_t frame_id;
+    int temporal_id;
+  };
   // Metadata parsed from encoding bitstream buffer.
   struct BitstreamMetadata {
     int temporal_id = 0;
-    // The differences between the picture id of this frame and picture ids
-    // of reference frames, Currently, only be filled for VP9 non key frames.
-    std::vector<uint8_t> vp9_p_diffs;
+    // A list of referenced frames info for this frame. Currently, only be
+    // filled for VP9 encoding.
+    std::vector<ReferenceBufferSlot> ref_frame_list;
   };
 
   BitstreamParserHelper() = delete;
@@ -474,11 +479,6 @@ class MediaFoundationVideoEncodeAccelerator::BitstreamParserHelper {
   }
 
  private:
-  // Describe a slot of reference frame buffer.
-  struct ReferenceBufferSlot {
-    uint32_t frame_id;
-    int temporal_id;
-  };
 
   bool ParseH264(const uint8_t* stream, off_t size, BitstreamMetadata& md) {
     h264_->SetStream(stream, size);
@@ -562,8 +562,7 @@ class MediaFoundationVideoEncodeAccelerator::BitstreamParserHelper {
             DLOG(ERROR) << "Check reference structure failed.";
             return false;
           }
-          uint32_t ref_frame_id = vp9_ref_buffer_[idx].frame_id;
-          md.vp9_p_diffs.push_back(frame_id - ref_frame_id);
+          md.ref_frame_list.push_back(vp9_ref_buffer_[idx]);
         }
         reference_frame_flags.set(idx, true);
       }
@@ -822,6 +821,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     }
   }
   input_since_keyframe_count_ = 0;
+  zero_layer_counter_ = 0;
   // Init bitream parser in the case temporal scalability encoding.
   if (IsTemporalScalabilityCoding()) {
     parser_ = std::make_unique<BitstreamParserHelper>(codec_);
@@ -1682,7 +1682,8 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     }
   } else {
     // Reset the frame count when keyframe is requested.
-    if (input.options.key_frame) {
+    if (input.options.key_frame ||
+        (input_since_keyframe_count_ % kDefaultGOPLength) == 0) {
       input_since_keyframe_count_ = 0;
     }
     // Prepare input sample if it hasn't been done yet.
@@ -2197,9 +2198,45 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
         vp9.end_active_spatial_layer_index =
             1 /*vp9.spatial_layer_resolutions.size()*/;
       } else {
+        // For VP9 L1T2/L1T3 encoding on Intel drivers, a T1 frame may ref the
+        // previous T1 frame which leads to not all T0 frame can be a sync point
+        // to go up for higher temporal layers. We need to pick out the T0 frame
+        // based on deterministic pattern and mark it as up-switch.
+        // See https://crbug.com/1358750 for more details.
+        if (vendor_ == DriverVendor::kIntel) {
+          DCHECK(num_temporal_layers_ >= 2 && num_temporal_layers_ <= 3);
+          uint32_t multiplier = num_temporal_layers_ == 3 ? 2 : 4;
+          bool is_single_ref = zero_layer_counter_ % multiplier == 0;
+          vp9.temporal_up_switch = true;
+          if (temporal_id == 0) {
+            zero_layer_counter_++;
+            if (!is_single_ref) {
+              // If |is_single_ref| is false, the subsequent T1 frame will ref
+              // the previous T1 frame, so the current frame can not mark as
+              // up-switch.
+              vp9.temporal_up_switch = false;
+            }
+          } else if (is_single_ref) {
+            // If |is_single_ref| is true, the T1/T2 layer only allowed to ref
+            // the frames with lower temporal layer id, add check to guarantee
+            // the ref dependency follow the deterministic pattern on Intel
+            // drivers.
+            for (const auto ref : bits_md.ref_frame_list) {
+              if (ref.temporal_id >= temporal_id) {
+                NotifyErrorStatus(
+                    {EncoderStatus::Codes::kEncoderHardwareDriverError,
+                     "VP9 referenced frames check failed "});
+                return;
+              }
+            }
+          }
+        }
+        // Fill the encoding metadata for VP9 non key frames.
         vp9.inter_pic_predicted = true;
         vp9.temporal_idx = temporal_id;
-        vp9.p_diffs = bits_md.vp9_p_diffs;
+        for (const auto ref : bits_md.ref_frame_list) {
+          vp9.p_diffs.push_back(metadata.frame_id - ref.frame_id);
+        }
       }
     }
   }

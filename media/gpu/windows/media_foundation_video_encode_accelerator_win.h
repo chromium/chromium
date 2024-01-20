@@ -232,6 +232,10 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // according to the corresponding layer pattern. Reset for every key frame.
   uint32_t input_since_keyframe_count_ = 0;
 
+  // Each time we get a non-keyframe with temporal layer index equals to 0,
+  // zero_layer_counter_ increases.
+  uint32_t zero_layer_counter_ = 0;
+
   // Encoder state. Encode tasks will only run in kEncoding state.
   State state_ = kUninitialized;
 
