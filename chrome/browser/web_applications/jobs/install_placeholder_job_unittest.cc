@@ -188,8 +188,10 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
       {icon_url, net::HttpStatusCode::HTTP_OK}};
   EXPECT_CALL(
       *data_retriever,
-      GetIcons(testing::_, testing::ElementsAre(icon_url), skip_page_favicons,
-               fail_all_if_any_fail, base::test::IsNotNullCallback()))
+      GetIcons(testing::_,
+               testing::ElementsAre(std::make_tuple(icon_url, gfx::Size())),
+               skip_page_favicons, fail_all_if_any_fail,
+               base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<4>(
           IconsDownloadedResult::kCompleted, std::move(icons), http_result));
 

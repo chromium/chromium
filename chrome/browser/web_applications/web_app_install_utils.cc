@@ -782,24 +782,26 @@ WebAppInstallInfo CreateWebAppInfoFromManifest(
 
 namespace {
 
-std::vector<GURL> GetAppIconUrls(const WebAppInstallInfo& web_app_info) {
-  std::vector<GURL> urls;
+std::vector<IconUrlsWithSizes> GetAppIconUrls(
+    const WebAppInstallInfo& web_app_info) {
+  std::vector<IconUrlsWithSizes> urls;
 
   for (const apps::IconInfo& info : web_app_info.manifest_icons) {
-    urls.push_back(info.url);
+    urls.emplace_back(info.url, gfx::Size());
   }
 
   return urls;
 }
 
-std::vector<GURL> GetShortcutIcons(const WebAppInstallInfo& web_app_info) {
-  std::vector<GURL> urls;
+std::vector<IconUrlsWithSizes> GetShortcutIcons(
+    const WebAppInstallInfo& web_app_info) {
+  std::vector<IconUrlsWithSizes> urls;
   for (const WebAppShortcutsMenuItemInfo& shortcut :
        web_app_info.shortcuts_menu_item_infos) {
     for (IconPurpose purpose : kIconPurposes) {
       for (const WebAppShortcutsMenuItemInfo::Icon& icon :
            shortcut.GetShortcutIconInfosForPurpose(purpose)) {
-        urls.push_back(icon.url);
+        urls.emplace_back(icon.url, gfx::Size());
       }
     }
   }
@@ -807,20 +809,22 @@ std::vector<GURL> GetShortcutIcons(const WebAppInstallInfo& web_app_info) {
   return urls;
 }
 
-std::vector<GURL> GetFileHandlingIcons(const WebAppInstallInfo& web_app_info) {
-  std::vector<GURL> urls;
+std::vector<IconUrlsWithSizes> GetFileHandlingIcons(
+    const WebAppInstallInfo& web_app_info) {
+  std::vector<IconUrlsWithSizes> urls;
 
   for (const apps::FileHandler& file_handler : web_app_info.file_handlers) {
     for (const apps::IconInfo& icon : file_handler.downloaded_icons) {
-      urls.push_back(icon.url);
+      urls.emplace_back(icon.url, gfx::Size());
     }
   }
 
   return urls;
 }
 
-std::vector<GURL> GetHomeTabIcons(const WebAppInstallInfo& web_app_info) {
-  std::vector<GURL> urls;
+std::vector<IconUrlsWithSizes> GetHomeTabIcons(
+    const WebAppInstallInfo& web_app_info) {
+  std::vector<IconUrlsWithSizes> urls;
 
   if (!HomeTabIconsExistInTabStrip(&web_app_info)) {
     return urls;
@@ -830,25 +834,27 @@ std::vector<GURL> GetHomeTabIcons(const WebAppInstallInfo& web_app_info) {
       web_app_info.tab_strip.value().home_tab);
 
   for (const auto& icon : home_tab.icons) {
-    urls.push_back(icon.src);
+    urls.emplace_back(icon.src, gfx::Size());
   }
 
   return urls;
 }
 
-base::flat_set<GURL> RemoveDuplicates(std::vector<GURL> from_urls) {
-  return base::flat_set<GURL>{from_urls};
+IconUrlSizeSet RemoveDuplicates(std::vector<IconUrlsWithSizes> from_urls) {
+  return IconUrlSizeSet{from_urls};
 }
 
-void RemoveInvalidUrls(std::vector<GURL>& urls) {
-  base::EraseIf(urls, [](const GURL& url) { return !url.is_valid(); });
+void RemoveInvalidUrls(std::vector<IconUrlsWithSizes>& urls) {
+  base::EraseIf(urls, [](const std::tuple<GURL, gfx::Size>& url) {
+    return !get<GURL>(url).is_valid();
+  });
 }
 
 }  // namespace
 
-base::flat_set<GURL> GetValidIconUrlsToDownload(
+IconUrlSizeSet GetValidIconUrlsToDownload(
     const WebAppInstallInfo& web_app_info) {
-  std::vector<GURL> icon_urls;
+  std::vector<IconUrlsWithSizes> icon_urls;
 
   base::Extend(icon_urls, GetAppIconUrls(web_app_info));
   base::Extend(icon_urls, GetShortcutIcons(web_app_info));

@@ -14,6 +14,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/prerender_test_util.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace web_app {
 namespace {
@@ -78,7 +80,7 @@ TEST_F(WebAppIconDownloaderTest, SimpleDownload) {
       test_future;
   WebAppIconDownloader downloader;
 
-  downloader.Start(web_contents(), std::vector<GURL>(),
+  downloader.Start(web_contents(), std::vector<IconUrlsWithSizes>(),
                    test_future.GetCallback());
   const std::vector<gfx::Size> sizes{gfx::Size(32, 32)};
   web_contents_tester()->TestDidDownloadImage(
@@ -111,7 +113,7 @@ TEST_F(WebAppIconDownloaderTest, NoHTTPStatusCode) {
   favicon_urls.push_back(mojo::Clone(favicon_url));
   web_contents_tester()->TestSetFaviconURL(mojo::Clone(favicon_urls));
 
-  downloader.Start(web_contents(), std::vector<GURL>(),
+  downloader.Start(web_contents(), std::vector<IconUrlsWithSizes>(),
                    test_future.GetCallback());
 
   std::vector<gfx::Size> sizes = {gfx::Size(0, 0)};
@@ -135,11 +137,11 @@ TEST_F(WebAppIconDownloaderTest, DownloadMultipleUrls) {
   const GURL favicon_url_1("http://www.google.com/favicon.ico");
   const GURL favicon_url_2("http://www.google.com/favicon2.ico");
 
-  std::vector<GURL> extra_urls;
+  std::vector<IconUrlsWithSizes> extra_urls;
   // This should get downloaded.
-  extra_urls.push_back(favicon_url_2);
+  extra_urls.emplace_back(favicon_url_2, gfx::Size());
   // This is duplicated in the favicon urls and should only be downloaded once.
-  extra_urls.push_back(empty_favicon);
+  extra_urls.emplace_back(empty_favicon, gfx::Size());
 
   base::test::TestFuture<IconsDownloadedResult, IconsMap,
                          DownloadedIconsHttpResults>
@@ -205,8 +207,8 @@ TEST_F(WebAppIconDownloaderTest, SkipPageFavicons) {
   const GURL favicon_url_1("http://www.google.com/favicon.ico");
   const GURL favicon_url_2("http://www.google.com/favicon2.ico");
 
-  std::vector<GURL> extra_urls;
-  extra_urls.push_back(favicon_url_1);
+  std::vector<IconUrlsWithSizes> extra_urls;
+  extra_urls.emplace_back(favicon_url_1, gfx::Size());
 
   // This favicon URL should be ignored.
   std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
@@ -265,7 +267,7 @@ TEST_F(WebAppIconDownloaderTest, ShuttingDown) {
       /*is_default_icon=*/false));
   web_contents_tester()->TestSetFaviconURL(mojo::Clone(favicon_urls));
 
-  downloader.Start(web_contents(), std::vector<GURL>(),
+  downloader.Start(web_contents(), std::vector<IconUrlsWithSizes>(),
                    test_future.GetCallback());
 
   static_cast<content::WebContentsObserver&>(downloader).WebContentsDestroyed();
@@ -290,7 +292,7 @@ TEST_F(WebAppIconDownloaderTest, PageNavigates) {
       /*is_default_icon=*/false));
   web_contents_tester()->TestSetFaviconURL(mojo::Clone(favicon_urls));
 
-  downloader.Start(web_contents(), std::vector<GURL>(),
+  downloader.Start(web_contents(), std::vector<IconUrlsWithSizes>(),
                    test_future.GetCallback());
 
   content::NavigationSimulator::CreateRendererInitiated(
@@ -311,8 +313,10 @@ TEST_F(WebAppIconDownloaderTest, PageNavigatesAfterDownload) {
                          DownloadedIconsHttpResults>
       test_future;
   WebAppIconDownloader downloader;
-  downloader.Start(web_contents(), std::vector<GURL>{url},
-                   test_future.GetCallback(), {.skip_page_favicons = true});
+  downloader.Start(
+      web_contents(),
+      std::vector<IconUrlsWithSizes>{std::make_tuple(url, gfx::Size())},
+      test_future.GetCallback(), {.skip_page_favicons = true});
 
   std::vector<gfx::Size> sizes = {gfx::Size(32, 32)};
   web_contents_tester()->TestDidDownloadImage(
@@ -349,7 +353,7 @@ TEST_F(WebAppIconDownloaderTest, PageNavigatesSameDocument) {
 
   web_contents_tester()->TestUpdateFaviconURL(mojo::Clone(favicon_urls));
 
-  downloader.Start(web_contents(), std::vector<GURL>(),
+  downloader.Start(web_contents(), std::vector<IconUrlsWithSizes>(),
                    test_future.GetCallback());
 
   content::NavigationSimulator::CreateRendererInitiated(
@@ -389,7 +393,7 @@ TEST_F(WebAppIconDownloaderTest, HungAllIconsFail) {
       test_future;
   WebAppIconDownloader downloader;
 
-  downloader.Start(web_contents(), std::vector<GURL>(),
+  downloader.Start(web_contents(), std::vector<IconUrlsWithSizes>(),
                    test_future.GetCallback());
 
   task_runner->FastForwardBy(
@@ -428,7 +432,7 @@ TEST_F(WebAppIconDownloaderTest, HungFailAllOption) {
 
   // Even if one download succeeds, since the `fail_all_if_any_fail` option is
   // on, it should totally fail.
-  downloader.Start(web_contents(), std::vector<GURL>(),
+  downloader.Start(web_contents(), std::vector<IconUrlsWithSizes>(),
                    test_future.GetCallback(), {.fail_all_if_any_fail = true});
   const std::vector<gfx::Size> sizes{gfx::Size(32, 32)};
   web_contents_tester()->TestDidDownloadImage(
@@ -473,7 +477,7 @@ TEST_F(WebAppIconDownloaderTest, HungIconSuccess) {
 
   // Even though one icon hangs, the other does not, so we can partially
   // succeed.
-  downloader.Start(web_contents(), std::vector<GURL>(),
+  downloader.Start(web_contents(), std::vector<IconUrlsWithSizes>(),
                    test_future.GetCallback());
 
   const std::vector<gfx::Size> sizes{gfx::Size(32, 32)};
@@ -525,7 +529,7 @@ TEST_F(WebAppIconDownloaderPrerenderTest, PrerenderedPageNavigates) {
       std::vector<gfx::Size>(), /*is_default_icon=*/false));
 
   web_contents_tester()->TestUpdateFaviconURL(mojo::Clone(favicon_urls));
-  downloader.Start(web_contents(), std::vector<GURL>(),
+  downloader.Start(web_contents(), std::vector<IconUrlsWithSizes>(),
                    test_future.GetCallback());
 
   // Start a prerender and navigate the test page.

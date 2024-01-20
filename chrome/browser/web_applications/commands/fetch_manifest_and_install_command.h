@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -91,13 +92,13 @@ class FetchManifestAndInstallCommand
   // should be stopped and an intent to the Play Store should be made, or
   // synchronously calls OnDidCheckForIntentToPlayStore() implicitly failing the
   // check if it cannot be made.
-  void CheckForPlayStoreIntentOrGetIcons(base::flat_set<GURL> icon_urls,
+  void CheckForPlayStoreIntentOrGetIcons(IconUrlSizeSet icon_urls,
                                          bool skip_page_favicons,
                                          std::unique_ptr<AppLock> app_lock);
 
   // Called when the asynchronous check for whether an intent to the Play Store
   // should be made returns.
-  void OnDidCheckForIntentToPlayStore(base::flat_set<GURL> icon_urls,
+  void OnDidCheckForIntentToPlayStore(IconUrlSizeSet icon_urls,
                                       bool skip_page_favicons,
                                       const std::string& intent,
                                       bool should_intent_to_store);
@@ -107,7 +108,7 @@ class FetchManifestAndInstallCommand
   // should be made returns (Lacros adapter that calls
   // |OnDidCheckForIntentToPlayStore| based on |result|).
   void OnDidCheckForIntentToPlayStoreLacros(
-      base::flat_set<GURL> icon_urls,
+      IconUrlSizeSet icon_urls,
       bool skip_page_favicons,
       const std::string& intent,
       crosapi::mojom::IsInstallableResult result);

@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
@@ -115,14 +116,16 @@ class FakeWebContentsManager::FakeWebAppIconDownloader
   ~FakeWebAppIconDownloader() override = default;
 
   void Start(content::WebContents* web_contents,
-             const base::flat_set<GURL>& extra_icon_urls,
+             const IconUrlSizeSet& extra_icon_urls,
              WebAppIconDownloaderCallback callback,
              IconDownloaderOptions options) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(manager_);
     IconsMap icons_map;
     DownloadedIconsHttpResults per_icon_results;
-    for (const GURL& icon_url : extra_icon_urls) {
+    for (const std::tuple<GURL, gfx::Size>& icon_url_with_size :
+         extra_icon_urls) {
+      GURL icon_url = get<GURL>(icon_url_with_size);
       auto icons_it = manager_->icon_state_.find(icon_url);
       if (icons_it == manager_->icon_state_.end()) {
         DLOG(WARNING) << "No icon state at url: " << icon_url.spec();
@@ -285,7 +288,7 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
   }
 
   void GetIcons(content::WebContents* web_contents,
-                const base::flat_set<GURL>& extra_favicon_urls,
+                const IconUrlSizeSet& extra_favicon_urls,
                 bool skip_page_favicons,
                 bool fail_all_if_any_fail,
                 GetIconsCallback callback) override {

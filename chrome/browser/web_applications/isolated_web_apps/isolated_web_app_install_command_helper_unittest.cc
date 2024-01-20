@@ -54,6 +54,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
@@ -737,10 +738,11 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
 
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever(kSomeTestApplicationUrl);
-  EXPECT_CALL(*fake_data_retriever,
-              GetIcons(_, UnorderedElementsAre(img_url),
-                       /*skip_page_favicons=*/true,
-                       /*fail_all_if_any_fail=*/true, IsNotNullCallback()))
+  EXPECT_CALL(
+      *fake_data_retriever,
+      GetIcons(_, UnorderedElementsAre(std::make_tuple(img_url, gfx::Size())),
+               /*skip_page_favicons=*/true,
+               /*fail_all_if_any_fail=*/true, IsNotNullCallback()))
       .WillOnce(RunOnceCallback<4>(IconsDownloadedResult::kCompleted,
                                    std::move(icons), http_result));
   auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(

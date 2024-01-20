@@ -1656,14 +1656,15 @@ TEST(WebAppInstallUtils, DuplicateIconDownloadURLs) {
     web_app_info.file_handlers.push_back(file_handler);
   }
 
-  base::flat_set<GURL> download_urls = GetValidIconUrlsToDownload(web_app_info);
+  IconUrlSizeSet download_urls = GetValidIconUrlsToDownload(web_app_info);
 
   const size_t download_urls_size = 8;
   EXPECT_EQ(download_urls_size, download_urls.size());
   for (size_t i = 0; i < download_urls_size; i++) {
     std::string url_str = "http://www.chromium.org/image/icon" +
                           base::NumberToString(i + 1) + ".png";
-    EXPECT_EQ(1u, download_urls.count(GURL(url_str)));
+    EXPECT_EQ(1u,
+              download_urls.count(std::make_tuple(GURL(url_str), gfx::Size())));
   }
 }
 

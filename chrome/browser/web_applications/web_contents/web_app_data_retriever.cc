@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -180,7 +181,7 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
 }
 
 void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
-                                   const base::flat_set<GURL>& extra_icon_urls,
+                                   const IconUrlSizeSet& extra_icon_urls,
                                    bool skip_page_favicons,
                                    bool fail_all_if_any_fail,
                                    GetIconsCallback callback) {

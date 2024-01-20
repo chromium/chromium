@@ -358,7 +358,7 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
         *web_app_info_);
   }
 
-  base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
+  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
 
   opt_manifest_ = std::move(opt_manifest);
 
@@ -376,7 +376,7 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
 }
 
 void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons(
-    base::flat_set<GURL> icon_urls,
+    IconUrlSizeSet icon_urls,
     bool skip_page_favicons,
     std::unique_ptr<AppLock> app_lock) {
   app_lock_ = std::move(app_lock);
@@ -435,7 +435,7 @@ void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons(
 }
 
 void FetchManifestAndInstallCommand::OnDidCheckForIntentToPlayStore(
-    base::flat_set<GURL> icon_urls,
+    IconUrlSizeSet icon_urls,
     bool skip_page_favicons,
     const std::string& intent,
     bool should_intent_to_store) {
@@ -482,7 +482,7 @@ void FetchManifestAndInstallCommand::OnDidCheckForIntentToPlayStore(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void FetchManifestAndInstallCommand::OnDidCheckForIntentToPlayStoreLacros(
-    base::flat_set<GURL> icon_urls,
+    IconUrlSizeSet icon_urls,
     bool skip_page_favicons,
     const std::string& intent,
     crosapi::mojom::IsInstallableResult result) {

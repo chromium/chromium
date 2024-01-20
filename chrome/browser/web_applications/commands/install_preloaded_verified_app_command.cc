@@ -147,17 +147,19 @@ void InstallPreloadedVerifiedAppCommand::OnManifestParsed(
 
   UpdateWebAppInfoFromManifest(*manifest, manifest_url_, web_app_info_.get());
 
-  base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
-  base::EraseIf(icon_urls, [](const GURL& url) {
-    for (const auto& allowed_host : kHostAllowlist) {
-      if (url.DomainIs(allowed_host)) {
-        // Found a match, don't erase this url!
-        return false;
-      }
-    }
-    // No matches, erase this url!
-    return true;
-  });
+  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
+  base::EraseIf(icon_urls,
+                [](const std::tuple<GURL, gfx::Size>& url_with_size) {
+                  for (const auto& allowed_host : kHostAllowlist) {
+                    const GURL url(get<GURL>(url_with_size));
+                    if (url.DomainIs(allowed_host)) {
+                      // Found a match, don't erase this url!
+                      return false;
+                    }
+                  }
+                  // No matches, erase this url!
+                  return true;
+                });
 
   if (icon_urls.empty()) {
     // Abort if there are no icons to download, so we can distinguish this case

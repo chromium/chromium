@@ -508,7 +508,7 @@ void IsolatedWebAppInstallCommandHelper::RetrieveIconsAndPopulateInstallInfo(
     content::WebContents& web_contents,
     base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
         callback) {
-  base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(install_info);
+  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(install_info);
   data_retriever_->GetIcons(
       &web_contents, std::move(icon_urls),
       /*skip_page_favicons=*/true,

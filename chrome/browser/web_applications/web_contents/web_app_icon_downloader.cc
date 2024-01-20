@@ -4,6 +4,10 @@
 
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
 
+#include <string>
+#include <tuple>
+#include <vector>
+
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -15,6 +19,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -46,10 +51,11 @@ bool WebContentsShuttingDown(content::WebContents* web_contents) {
 WebAppIconDownloader::WebAppIconDownloader() = default;
 WebAppIconDownloader::~WebAppIconDownloader() = default;
 
-void WebAppIconDownloader::Start(content::WebContents* web_contents,
-                                 const base::flat_set<GURL>& extra_icon_urls,
-                                 WebAppIconDownloaderCallback callback,
-                                 IconDownloaderOptions options) {
+void WebAppIconDownloader::Start(
+    content::WebContents* web_contents,
+    const IconUrlSizeSet& extra_icon_urls_with_sizes,
+    WebAppIconDownloaderCallback callback,
+    IconDownloaderOptions options) {
   // Cannot call start more than once.
   CHECK_EQ(pending_requests(), 0ul);
   CHECK(web_contents);
@@ -86,17 +92,18 @@ void WebAppIconDownloader::Start(content::WebContents* web_contents,
   const auto& favicon_urls = GetFaviconURLsFromWebContents();
 
   if (!options_.skip_page_favicons && !favicon_urls.empty()) {
-    std::vector<GURL> combined_icon_urls(extra_icon_urls.begin(),
-                                         extra_icon_urls.end());
-    combined_icon_urls.reserve(combined_icon_urls.size() + favicon_urls.size());
+    std::vector<IconUrlsWithSizes> combined_icon_infos(
+        extra_icon_urls_with_sizes.begin(), extra_icon_urls_with_sizes.end());
+    combined_icon_infos.reserve(combined_icon_infos.size() +
+                                favicon_urls.size());
     for (const auto& favicon_url : favicon_urls) {
       if (favicon_url->icon_type != blink::mojom::FaviconIconType::kInvalid) {
-        combined_icon_urls.push_back(favicon_url->icon_url);
+        combined_icon_infos.emplace_back(favicon_url->icon_url, gfx::Size());
       }
     }
-    FetchIcons(base::flat_set<GURL>(combined_icon_urls));
+    FetchIcons(IconUrlSizeSet(combined_icon_infos));
   } else {
-    FetchIcons(extra_icon_urls);
+    FetchIcons(extra_icon_urls_with_sizes);
   }
 }
 
@@ -104,7 +111,8 @@ bool WebAppIconDownloader::IsRunning() {
   return !callback_.is_null();
 }
 
-int WebAppIconDownloader::DownloadImage(const GURL& url) {
+int WebAppIconDownloader::DownloadImage(const GURL& url,
+                                        const gfx::Size& preferred_size) {
   if (web_contents()->GetBrowserContext()->ShutdownStarted()) {
     // Reports http status code for the failure.
     CancelDownloads(IconsDownloadedResult::kPrimaryPageChanged,
@@ -116,10 +124,10 @@ int WebAppIconDownloader::DownloadImage(const GURL& url) {
     // download.
     return web_contents()->DownloadImage(
         url,
-        true,         // is_favicon
-        gfx::Size(),  // no preferred size
-        0,            // no max size
-        false,        // normal cache policy
+        true,  // is_favicon
+        preferred_size,
+        0,      // no max size
+        false,  // normal cache policy
         base::BindOnce(&WebAppIconDownloader::DidDownloadFavicon,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -130,7 +138,8 @@ WebAppIconDownloader::GetFaviconURLsFromWebContents() {
   return web_contents()->GetFaviconURLs();
 }
 
-void WebAppIconDownloader::FetchIcons(const base::flat_set<GURL>& urls) {
+void WebAppIconDownloader::FetchIcons(
+    const IconUrlSizeSet& urls_to_download_with_size) {
   CHECK_EQ(pending_requests(), 0ul);
   CHECK(!populating_pending_requests_);
 
@@ -139,10 +148,13 @@ void WebAppIconDownloader::FetchIcons(const base::flat_set<GURL>& urls) {
   populating_pending_requests_ = true;
   // Download icons; put their download ids into |in_progress_requests_| and
   // their urls into |processed_urls_|.
-  for (const GURL& url : urls) {
+  for (const auto& url_data : urls_to_download_with_size) {
     // Only start the download if the url hasn't been processed before.
-    if (processed_urls_.insert(url).second) {
-      in_progress_requests_.insert(std::make_pair(DownloadImage(url), url));
+    if (processed_urls_.insert(url_data).second) {
+      const GURL url = get<GURL>(url_data);
+      in_progress_requests_.insert(std::make_pair(
+          DownloadImage(get<GURL>(url_data), get<gfx::Size>(url_data)),
+          url_data));
     }
   }
   populating_pending_requests_ = false;
@@ -187,6 +199,8 @@ void WebAppIconDownloader::DidDownloadFavicon(
     return;
   }
 
+  // TODO(b/319669415 : Support adding onto existing bitmaps array instead of
+  // overwriting. Helpful for downloading multiple bitmaps from the same URL.
   icons_map_[image_url] = bitmaps;
 
   MaybeCompleteCallback();
@@ -265,7 +279,8 @@ void WebAppIconDownloader::OnTimeout() {
   }
 
   // Populate results for the the hanging requests.
-  for (const auto& [_, icon_url] : in_progress_requests_) {
+  for (const auto& [_, icon_url_with_sizes] : in_progress_requests_) {
+    const GURL& icon_url = get<GURL>(icon_url_with_sizes);
     icons_http_results_[icon_url] = net::HttpStatusCode::HTTP_REQUEST_TIMEOUT;
   }
   base::UmaHistogramEnumeration(

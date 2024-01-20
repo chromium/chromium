@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/geometry/size.h"
 
 class Profile;
 
@@ -101,7 +102,8 @@ void InstallPlaceholderJob::FetchCustomIcon(const GURL& url, int retries_left) {
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
 
   data_retriever_->GetIcons(
-      web_contents_.get(), {url}, /*skip_page_favicons=*/true,
+      web_contents_.get(), {std::make_tuple(url, gfx::Size())},
+      /*skip_page_favicons=*/true,
       /*fail_all_if_any_fail=*/false,
       base::BindOnce(&InstallPlaceholderJob::OnCustomIconFetched,
                      weak_factory_.GetWeakPtr(), url, retries_left));

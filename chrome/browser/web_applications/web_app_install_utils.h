@@ -33,6 +33,10 @@ enum class WebappInstallSource;
 enum class WebappUninstallSource;
 }  // namespace webapps
 
+namespace gfx {
+class Size;
+}  // namespace gfx
+
 namespace web_app {
 
 class WebApp;
@@ -44,6 +48,22 @@ enum class ForInstallableSite {
   kNo,
   kUnknown,
 };
+
+// An empty gfx::Size() (where width & height are both 0) signifies no preferred
+// download size.
+using IconUrlsWithSizes = std::tuple<GURL, gfx::Size>;
+
+struct IconUrlsWithSizesComparator {
+  constexpr bool operator()(const IconUrlsWithSizes& lhs,
+                            const IconUrlsWithSizes& rhs) const {
+    return (get<GURL>(lhs) < get<GURL>(rhs)) ||
+           (get<gfx::Size>(lhs).width() < get<gfx::Size>(rhs).width()) ||
+           (get<gfx::Size>(lhs).height() < get<gfx::Size>(rhs).height());
+  }
+};
+
+using IconUrlSizeSet =
+    base::flat_set<IconUrlsWithSizes, IconUrlsWithSizesComparator>;
 
 // Converts from the manifest type to the Chrome type.
 apps::FileHandlers CreateFileHandlersFromManifest(
@@ -63,8 +83,9 @@ WebAppInstallInfo CreateWebAppInfoFromManifest(
     const blink::mojom::Manifest& manifest,
     const GURL& manifest_url);
 
-// Form a list of icons to download: Remove icons with invalid urls.
-base::flat_set<GURL> GetValidIconUrlsToDownload(
+// Form a list of icons and their sizes to download: Remove icons with invalid
+// urls.
+IconUrlSizeSet GetValidIconUrlsToDownload(
     const WebAppInstallInfo& web_app_info);
 
 // Populate non-product icons in WebAppInstallInfo using the IconsMap. This

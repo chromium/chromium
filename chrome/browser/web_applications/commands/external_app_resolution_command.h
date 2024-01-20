@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -95,7 +96,7 @@ class ExternalAppResolutionCommand
                                     const GURL& manifest_url,
                                     bool valid_manifest_for_web_app,
                                     webapps::InstallableStatusCode error_code);
-  void OnPreparedForIconRetrieving(base::flat_set<GURL> icon_urls,
+  void OnPreparedForIconRetrieving(IconUrlSizeSet icon_urls,
                                    bool skip_page_favicons,
                                    WebAppUrlLoaderResult result);
   void OnIconsRetrievedUpgradeLockDescription(

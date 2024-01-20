@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -200,8 +201,7 @@ void ManifestUpdateCheckCommand::DownloadNewIconBitmaps(
   }
 
   CHECK(new_install_info_);
-  base::flat_set<GURL> icon_urls =
-      GetValidIconUrlsToDownload(*new_install_info_);
+  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*new_install_info_);
 
   IconDownloaderOptions options = {.skip_page_favicons = true,
                                    .fail_all_if_any_fail = true};

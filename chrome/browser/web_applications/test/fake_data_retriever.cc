@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_params.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -46,7 +47,7 @@ void FakeDataRetriever::CheckInstallabilityAndRetrieveManifest(
 }
 
 void FakeDataRetriever::GetIcons(content::WebContents* web_contents,
-                                 const base::flat_set<GURL>& icon_urls,
+                                 const IconUrlSizeSet& icon_urls,
                                  bool skip_page_favicons,
                                  bool fail_all_if_any_fail,
                                  GetIconsCallback callback) {

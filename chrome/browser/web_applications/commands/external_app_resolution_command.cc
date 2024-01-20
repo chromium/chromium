@@ -286,7 +286,7 @@ void ExternalAppResolutionCommand::OnDidPerformInstallableCheck(
   // If the manifest specified icons, don't use the page icons.
   const bool skip_page_favicons = opt_manifest && !opt_manifest->icons.empty();
 
-  base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
+  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
 
   if (!web_contents_->GetVisibleURL().EqualsIgnoringRef(
           GURL(url::kAboutBlankURL))) {
@@ -308,7 +308,7 @@ void ExternalAppResolutionCommand::OnDidPerformInstallableCheck(
 }
 
 void ExternalAppResolutionCommand::OnPreparedForIconRetrieving(
-    base::flat_set<GURL> icon_urls,
+    IconUrlSizeSet icon_urls,
     bool skip_page_favicons,
     WebAppUrlLoaderResult result) {
   data_retriever_->GetIcons(

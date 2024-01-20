@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/webapps/browser/installable/fake_installable_manager.h"
@@ -337,7 +338,7 @@ TEST_F(WebAppDataRetrieverTest, GetIcons_WebContentsDestroyed) {
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
   retriever.GetIcons(web_contents(),
-                     /*extra_favicon_urls=*/base::flat_set<GURL>(),
+                     /*extra_favicon_urls=*/IconUrlSizeSet(),
                      skip_page_favicons, fail_all_if_any_fail,
                      base::BindLambdaForTesting(
                          [&](IconsDownloadedResult result, IconsMap icons_map,

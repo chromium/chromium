@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_CONTENTS_WEB_APP_ICON_DOWNLOADER_H_
 
 #include <map>
-#include <set>
+#include <tuple>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -51,10 +51,11 @@ class WebAppIconDownloader : public content::WebContentsObserver {
   WebAppIconDownloader& operator=(const WebAppIconDownloader&) = delete;
   ~WebAppIconDownloader() override;
 
-  // |extra_icon_urls| allows callers to provide icon urls that aren't
-  // provided by the renderer (e.g touch icons on non-android environments).
+  // |extra_icon_urls_with_sizes| allows callers to provide icon urls that
+  // aren't provided by the renderer (e.g touch icons on non-android
+  // environments).
   virtual void Start(content::WebContents* web_contents,
-                     const base::flat_set<GURL>& extra_icon_urls,
+                     const IconUrlSizeSet& extra_icon_urls_with_sizes,
                      WebAppIconDownloaderCallback callback,
                      IconDownloaderOptions options = IconDownloaderOptions());
 
@@ -76,15 +77,15 @@ class WebAppIconDownloader : public content::WebContentsObserver {
   bool IsRunning();
 
   // Initiates a download of the image at |url| and returns the download id.
-  int DownloadImage(const GURL& url);
+  int DownloadImage(const GURL& url, const gfx::Size& preferred_size);
 
   // Queries WebContents for the page's current favicon URLs.
   const std::vector<blink::mojom::FaviconURLPtr>&
   GetFaviconURLsFromWebContents();
 
-  // Fetches icons for the given urls.
+  // Fetches icons for the given urls with sizes.
   // |callback_| is run when all downloads complete.
-  void FetchIcons(const base::flat_set<GURL>& urls);
+  void FetchIcons(const IconUrlSizeSet& urls_to_download_with_size);
 
   // Icon download callback.
   void DidDownloadFavicon(int id,
@@ -119,11 +120,11 @@ class WebAppIconDownloader : public content::WebContentsObserver {
 
   // Request ids of in-progress requests.
   bool populating_pending_requests_ = false;
-  std::map<int, GURL> in_progress_requests_;
+  std::map<int, IconUrlsWithSizes> in_progress_requests_;
 
   // Urls for which a download has already been initiated. Used to prevent
   // duplicate downloads of the same url.
-  std::set<GURL> processed_urls_;
+  IconUrlSizeSet processed_urls_;
 
   // Timer used for the timeout result.
   base::OneShotTimer timer_;

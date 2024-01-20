@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
@@ -192,7 +193,7 @@ void FetchInstallInfoFromInstallUrlCommand::OnManifestRetrieved(
 
   // If the manifest specified icons, don't use the page icons.
   const bool skip_page_favicons = opt_manifest && !opt_manifest->icons.empty();
-  base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*web_app_info);
+  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*web_app_info);
 
   data_retriever_->GetIcons(
       &lock_->shared_web_contents(), std::move(icon_urls), skip_page_favicons,
