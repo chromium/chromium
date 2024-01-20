@@ -167,8 +167,6 @@ void StructuredMetricsRecorder::OnEventRecord(const Event& event) {
   }
 
   RecordEvent(event);
-
-  test_callback_on_record_.Run();
 }
 
 bool StructuredMetricsRecorder::HasState(State state) const {
@@ -250,6 +248,8 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
 
   // Add new event to storage.
   event_storage_->AddEvent(std::move(event_proto));
+
+  test_callback_on_record_.Run();
 }
 
 void StructuredMetricsRecorder::InitializeEventProto(

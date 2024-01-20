@@ -16,6 +16,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/metrics/log_decoder.h"
@@ -54,10 +55,6 @@ constexpr uint64_t kEventEightHash = UINT64_C(16290206418240617738);
 structured::StructuredMetricsService* GetSMService() {
   return g_browser_process->GetMetricsServicesManager()
       ->GetStructuredMetricsService();
-}
-
-MetricsServiceClient* GetMetricsServiceClient() {
-  return GetSMService()->GetMetricsServiceClient();
 }
 
 }  // namespace
@@ -112,20 +109,10 @@ class StructuredMetricsServiceTestBase : public MixinBasedInProcessBrowserTest {
 class TestStructuredMetricsService : public StructuredMetricsServiceTestBase {
  public:
   TestStructuredMetricsService() {
-    feature_list_.InitAndEnableFeature(
-        metrics::structured::kEnabledStructuredMetricsService);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class TestStructuredMetricsServiceDisabled
-    : public StructuredMetricsServiceTestBase {
- public:
-  TestStructuredMetricsServiceDisabled() {
-    feature_list_.InitAndDisableFeature(
-        metrics::structured::kEnabledStructuredMetricsService);
+    feature_list_.InitWithFeatures(
+        {metrics::structured::kEnabledStructuredMetricsService,
+         ::features::kChromeStructuredMetrics},
+        {});
   }
 
  private:
@@ -259,6 +246,7 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   EXPECT_EQ(sm_service->recorder()->event_storage()->RecordedEventsCount(), 0);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, SystemProfilePopulated) {
   auto* sm_service = GetSMService();
 
@@ -294,8 +282,22 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, SystemProfilePopulated) {
   // Verify that the SystemProfile has been set appropriately.
   const SystemProfileProto& system_profile = uma_proto->system_profile();
   EXPECT_EQ(system_profile.app_version(),
-            GetMetricsServiceClient()->GetVersionString());
+            GetSMService()->GetMetricsServiceClient()->GetVersionString());
 }
+#endif  //  BUILDFLAG(IS_CHROMEOS_ASH)
+
+class TestStructuredMetricsServiceDisabled
+    : public StructuredMetricsServiceTestBase {
+ public:
+  TestStructuredMetricsServiceDisabled() {
+    feature_list_.InitWithFeatures(
+        {::features::kChromeStructuredMetrics},
+        {metrics::structured::kEnabledStructuredMetricsService});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(TestStructuredMetricsServiceDisabled,
                        ValidStateWhenDisabled) {

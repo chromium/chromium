@@ -218,6 +218,9 @@ class ChromeMetricsServiceClient
   void ResetClientStateWhenMsbbOrAppConsentIsRevoked(
       ukm::UkmConsentState previous_consent_state);
 
+  // Creates the Structured Metrics Service based on the platform.
+  void CreateStructuredMetricsService();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Chrome's privacy budget identifiability study state.

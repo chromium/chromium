@@ -4760,7 +4760,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/metrics/structured/ash_structured_metrics_delegate_browsertest.cc",
         "../browser/metrics/structured/metadata_processor_ash_browsertest.cc",
         "../browser/metrics/structured/structured_metrics_key_events_observer_browsertest.cc",
-        "../browser/metrics/structured_metrics_service_chromeos_browsertest.cc",
         "../browser/metrics/usertype_by_devicetype_metrics_provider_browsertest.cc",
         "../browser/notifications/chrome_ash_message_center_client_browsertest.cc",
         "../browser/notifications/notification_platform_bridge_chromeos_browsertest.cc",
@@ -5423,6 +5422,11 @@ if (!is_android && !is_fuchsia) {
         "//components/feed/core/v2:test_helpers",
         "//components/feed/mojom:mojo_bindings",
       ]
+    }
+
+    if (!is_chromeos_lacros) {
+      sources +=
+          [ "../browser/metrics/structured_metrics_service_browsertest.cc" ]
     }
 
     if (is_win || is_mac || is_linux) {

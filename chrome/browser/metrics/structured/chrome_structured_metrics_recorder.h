@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_METRICS_STRUCTURED_CHROME_STRUCTURED_METRICS_RECORDER_H_
 
 #include "components/metrics/structured/structured_metrics_recorder.h"
-#include "components/prefs/pref_service.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace metrics::structured {
 

@@ -284,6 +284,11 @@ BASE_FEATURE(kDesktopTaskManagerEndProcessDisabledForExtension,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Controls the enablement of structured metrics on Windows, Linux, and Mac.
+BASE_FEATURE(kChromeStructuredMetrics,
+             "ChromeStructuredMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When installing default installed PWAs, we wait for service workers
 // to cache resources.
 BASE_FEATURE(kDesktopPWAsCacheDuringDefaultInstall,
