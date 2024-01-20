@@ -119,7 +119,8 @@ ModelExecutionManager::ModelExecutionManager(
 }
 
 ModelExecutionManager::~ModelExecutionManager() {
-  if (model_provider_ && features::ShouldDownloadTextSafetyClassifierModel()) {
+  if (model_provider_ && on_device_model_service_controller_ &&
+      features::ShouldDownloadTextSafetyClassifierModel()) {
     model_provider_->RemoveObserverForOptimizationTargetModel(
         proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY, this);
   }
