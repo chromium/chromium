@@ -15,6 +15,7 @@ specific_include_rules = {
     "+ios/chrome/browser/follow/model/follow_browser_agent.h",
     "+ios/chrome/browser/infobars/model/overlays/browser_agent/infobar_overlay_browser_agent_util.h",
     "+ios/chrome/browser/intents/user_activity_browser_agent.h",
+    "+ios/chrome/browser/iph_for_new_chrome_user/model",
     "+ios/chrome/browser/lens/model/lens_browser_agent.h",
     "+ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h",
     "+ios/chrome/browser/policy/model/policy_watcher_browser_agent.h",

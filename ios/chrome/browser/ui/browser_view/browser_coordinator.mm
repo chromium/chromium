@@ -939,9 +939,7 @@ enum class ToolbarKind {
   _bubblePresenter = [[BubblePresenter alloc]
       initWithDeviceSwitcherResultDispatcher:deviceSwitcherResultDispatcher
                       hostContentSettingsMap:settingsMap
-                             loadingNotifier:_urlLoadingNotifierBrowserAgent
                                  prefService:browserState->GetPrefs()
-                                  sceneState:self.browser->GetSceneState()
                      tabStripCommandsHandler:tabStripCommandsHandler
                                      tracker:engagementTracker
                                 webStateList:self.browser->GetWebStateList()];

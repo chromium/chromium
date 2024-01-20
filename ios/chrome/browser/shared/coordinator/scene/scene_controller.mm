@@ -97,6 +97,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
@@ -848,6 +849,9 @@ void InjectNTP(Browser* browser) {
       [applicationHandler openURLInNewTab:command];
       [self finishActivatingBrowserDismissingTabSwitcher];
     }
+
+    [HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
+                        HelpCommands) presentTabGridToolbarItemBubble];
   }
 
   [self recordWindowCreationForSceneState:self.sceneState];

@@ -26,6 +26,7 @@ source_set("model") {
     "//ios/chrome/browser/follow/model:browser_agent",
     "//ios/chrome/browser/infobars/model/overlays/browser_agent:browser_agent_util",
     "//ios/chrome/browser/intents:user_activity_browser_agent",
+    "//ios/chrome/browser/iph_for_new_chrome_user/model",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/metrics/model:metrics_browser_agent",

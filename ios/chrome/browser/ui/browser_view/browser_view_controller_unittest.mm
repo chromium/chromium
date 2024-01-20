@@ -226,17 +226,13 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     HostContentSettingsMap* settings_map =
         ios::HostContentSettingsMapFactory::GetForBrowserState(
             chrome_browser_state_.get());
-    UrlLoadingNotifierBrowserAgent* url_loading_notifier =
-        UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get());
 
     bubble_presenter_ = [[BubblePresenter alloc]
         initWithDeviceSwitcherResultDispatcher:nullptr
                         hostContentSettingsMap:(HostContentSettingsMap*)
                                                    settings_map
-                               loadingNotifier:url_loading_notifier
                                    prefService:chrome_browser_state_.get()
                                                    ->GetPrefs()
-                                    sceneState:scene_state_
                        tabStripCommandsHandler:nil
                                        tracker:(feature_engagement::Tracker*)
                                                    tracker
@@ -303,6 +299,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     id mockReauthHandler = OCMProtocolMock(@protocol(IncognitoReauthCommands));
     bvc_.reauthHandler = mockReauthHandler;
 
+    UrlLoadingNotifierBrowserAgent* url_loading_notifier =
+        UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get());
     tab_events_mediator_ = [[TabEventsMediator alloc]
         initWithWebStateList:browser_.get()->GetWebStateList()
               ntpCoordinator:NTPCoordinator_

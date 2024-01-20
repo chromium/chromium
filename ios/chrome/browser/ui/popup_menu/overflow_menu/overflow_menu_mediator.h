@@ -44,6 +44,7 @@ class PrefService;
 class PromosManager;
 class ReadingListBrowserAgent;
 class ReadingListModel;
+class TabBasedIPHBrowserAgent;
 @protocol TextZoomCommands;
 class WebNavigationBrowserAgent;
 class WebStateList;
@@ -129,8 +130,8 @@ class WebStateList;
 // The AuthenticationService to get sign-in info.
 @property(nonatomic, assign) AuthenticationService* authenticationService;
 
-// The help handler to present in-product help bubbles.
-@property(nonatomic, weak) id<HelpCommands> helpHandler;
+// The TabBasedIPHBrowserAgent to handle tab based in-product help bubbles.
+@property(nonatomic, assign) TabBasedIPHBrowserAgent* tabBasedIPHBrowserAgent;
 
 // Disconnect the mediator.
 - (void)disconnect;

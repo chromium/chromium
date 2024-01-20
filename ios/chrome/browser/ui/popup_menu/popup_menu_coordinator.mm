@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/follow/model/follow_action_state.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
+#import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
@@ -37,7 +38,6 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
-#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
@@ -331,8 +331,8 @@ using base::UserMetricsAction;
       mediator.authenticationService =
           AuthenticationServiceFactory::GetForBrowserState(
               self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
-      mediator.helpHandler = HandlerForProtocol(
-          self.browser->GetCommandDispatcher(), HelpCommands);
+      mediator.tabBasedIPHBrowserAgent =
+          TabBasedIPHBrowserAgent::FromBrowser(self.browser);
 
       self.contentBlockerMediator.consumer = mediator;
 

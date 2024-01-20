@@ -17,7 +17,6 @@ class PrefService;
 @class SceneState;
 @protocol TabStripCommands;
 @protocol ToolbarCommands;
-class UrlLoadingNotifierBrowserAgent;
 class WebStateList;
 
 namespace feature_engagement {
@@ -40,10 +39,7 @@ class DeviceSwitcherResultDispatcher;
         (segmentation_platform::DeviceSwitcherResultDispatcher*)
             deviceSwitcherResultDispatcher
                     hostContentSettingsMap:(HostContentSettingsMap*)settingsMap
-                           loadingNotifier:(UrlLoadingNotifierBrowserAgent*)
-                                               urlLoadingNotifier
                                prefService:(PrefService*)prefService
-                                sceneState:(SceneState*)sceneState
                    tabStripCommandsHandler:
                        (id<TabStripCommands>)tabStripCommandsHandler
                                    tracker:(feature_engagement::Tracker*)
