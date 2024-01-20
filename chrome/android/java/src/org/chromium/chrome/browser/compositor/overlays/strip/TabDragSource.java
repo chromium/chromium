@@ -15,6 +15,7 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.DragEvent;
 import android.view.View;
@@ -51,6 +52,8 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropTabResult;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.widget.Toast;
 
+import java.util.Locale;
+
 /**
  * Manages initiating tab drag and drop and handles the events that are received during drag and
  * drop process. The tab drag and drop is initiated from the active instance of {@link
@@ -58,6 +61,7 @@ import org.chromium.ui.widget.Toast;
  */
 public class TabDragSource implements View.OnDragListener {
     private static final String TAG = "TabDragSource";
+    private static final String SAMSUNG_LOWER_CASE = "samsung";
     private final WindowAndroid mWindowAndroid;
     private MultiInstanceManager mMultiInstanceManager;
     private DragAndDropDelegate mDragAndDropDelegate;
@@ -84,6 +88,7 @@ public class TabDragSource implements View.OnDragListener {
     private float mLastXDp;
     private int mLastAction;
     private boolean mHoveringInStrip;
+    private boolean mIsDeviceSamsung;
 
     /**
      * Prepares the toolbar view to listen to the drag events and data drop after the drag is
@@ -122,6 +127,8 @@ public class TabDragSource implements View.OnDragListener {
         if (TabUiFeatureUtilities.isTabDragAsWindowEnabled()) {
             mAppIcon = context.getPackageManager().getApplicationIcon(context.getApplicationInfo());
         }
+
+        mIsDeviceSamsung = Build.MANUFACTURER.toLowerCase(Locale.US).equals(SAMSUNG_LOWER_CASE);
     }
 
     /**
@@ -148,6 +155,17 @@ public class TabDragSource implements View.OnDragListener {
         if (MultiWindowUtils.getInstance().hasAtMostOneTabWithHomepageEnabled(mTabModelSelector)) {
             return false;
         }
+
+        // Do not allow drag when we are in non-split screen mode on non-Samsung device since we
+        // don't support tab drag to open new instances of Chrome given OS/OEM limitations (the drag
+        // won't actually create a new instance on any OEM besides Samsung).
+        // @TODO(crbug.com/1520080): Make this configurable via Finch in case we find more OEMs
+        // where this works.
+        if (!MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity())
+                && !mIsDeviceSamsung) {
+            return false;
+        }
+
         if (sDragTrackerToken != null) {
             Log.w(TAG, "Attempting to start drag before clearing state from prior drag");
         }
@@ -167,6 +185,10 @@ public class TabDragSource implements View.OnDragListener {
             sDragTrackerToken = null;
         }
         return res;
+    }
+
+    void setIsDeviceSamsungForTesting(boolean isDeviceSamSung) {
+        mIsDeviceSamsung = isDeviceSamSung;
     }
 
     @VisibleForTesting

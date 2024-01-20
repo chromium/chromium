@@ -157,6 +157,7 @@ public class TabDragSourceTest {
         when(mWeakReferenceContext.get()).thenReturn(mContext);
 
         when(mMultiWindowUtils.hasAtMostOneTabWithHomepageEnabled(any())).thenReturn(false);
+        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(true);
         MultiWindowUtils.setInstanceForTesting(mMultiWindowUtils);
         MultiWindowTestUtils.enableMultiInstance();
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
@@ -195,6 +196,7 @@ public class TabDragSourceTest {
         if (DragDropGlobalState.hasValue()) {
             DragDropGlobalState.clearForTesting();
         }
+        mSourceInstance.setIsDeviceSamsungForTesting(false);
         ShadowToast.reset();
     }
 
@@ -291,6 +293,36 @@ public class TabDragSourceTest {
                 mSourceInstance.startTabDragAction(
                         mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X));
         assertFalse("Global state should not be set", DragDropGlobalState.hasValue());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
+    public void test_startTabDragAction_returnFalseForNonSplitScreenNonSamsung() {
+        // Set params.
+        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
+        mSourceInstance.setIsDeviceSamsungForTesting(false);
+
+        // verify.
+        assertFalse(
+                "Tab drag should not start",
+                mSourceInstance.startTabDragAction(
+                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
+    public void test_startTabDragAction_returnTrueForNonSplitScreenSamsung() {
+        // Set params.
+        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
+        mSourceInstance.setIsDeviceSamsungForTesting(true);
+
+        // Verify.
+        assertTrue(
+                "Tab drag should start",
+                mSourceInstance.startTabDragAction(
+                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X));
     }
 
     @Test
