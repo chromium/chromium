@@ -1722,6 +1722,7 @@ if (!is_android && !is_fuchsia) {
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/metrics:test_support",
+      "//chrome/browser/metrics/structured:test_support",
       "//chrome/browser/notifications/scheduler:factory",
       "//chrome/browser/notifications/scheduler/public",
       "//chrome/browser/notifications/scheduler/test:test_support",
@@ -1855,6 +1856,9 @@ if (!is_android && !is_fuchsia) {
       "//components/metrics:metrics",
       "//components/metrics/demographics",
       "//components/metrics/demographics:test_support",
+      "//components/metrics/structured",
+      "//components/metrics/structured:structured_events",
+      "//components/metrics/structured:test_support",
       "//components/metrics_services_manager",
       "//components/nacl/common:buildflags",
       "//components/navigation_metrics",
@@ -5044,7 +5048,6 @@ if (!is_android && !is_fuchsia) {
         "//chrome/browser/enterprise/connectors/device_trust/common",
         "//chrome/browser/image_decoder",
         "//chrome/browser/media/router:test_support",
-        "//chrome/browser/metrics/structured:test_support",
         "//chrome/browser/nearby_sharing/common",
         "//chrome/browser/policy:onc",
         "//chrome/browser/resources/chromeos/accessibility:browser_tests",
@@ -5170,9 +5173,6 @@ if (!is_android && !is_fuchsia) {
         "//components/global_media_controls:global_media_controls",
         "//components/live_caption:constants",
         "//components/manta",
-        "//components/metrics/structured",
-        "//components/metrics/structured:structured_events",
-        "//components/metrics/structured:test_support",
         "//components/onc",
         "//components/prefs",
         "//components/quirks",
@@ -10262,6 +10262,21 @@ if (!is_fuchsia) {
         "../browser/ui/views/side_panel/lens/lens_side_panel_coordinator_unittest.cc",
       ]
       deps += [ "//chrome/browser/lens/region_search" ]
+    }
+
+    if (is_win || is_linux || is_mac) {
+      sources += [
+        "../browser/metrics/structured/chrome_event_storage_unittest.cc",
+        "../browser/metrics/structured/chrome_structured_metrics_recorder_unittest.cc",
+      ]
+
+      deps += [
+        "//chrome/browser/metrics/structured",
+        "//components/metrics/structured",
+        "//components/metrics/structured:structured_events",
+        "//components/metrics/structured:structured_metrics_validator",
+        "//components/metrics/structured:test_support",
+      ]
     }
 
     if (is_fuchsia) {

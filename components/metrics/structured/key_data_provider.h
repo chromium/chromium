@@ -18,6 +18,8 @@ class FilePath;
 
 namespace metrics::structured {
 
+class ChromeStructuredMetricsRecorder;
+
 // Interface to provide key data to be used for hashing projects.
 //
 // There are two types of keys: device keys and profile keys. Device keys will
@@ -76,6 +78,8 @@ class KeyDataProvider {
   void NotifyKeyReady();
 
  private:
+  friend class ChromeStructuredMetricsRecorder;
+
   base::ObserverList<Observer> observers_;
 };
 

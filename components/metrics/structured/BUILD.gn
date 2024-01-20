@@ -22,6 +22,8 @@ static_library("structured") {
     "key_data_provider.h",
     "key_data_provider_file.cc",
     "key_data_provider_file.h",
+    "key_data_provider_prefs.cc",
+    "key_data_provider_prefs.h",
     "key_util.cc",
     "key_util.h",
     "persistent_proto.cc",
@@ -46,6 +48,7 @@ static_library("structured") {
     ":common",
     ":events",
     ":proto",
+    "//components/metrics/structured/lib:proto",
     "//third_party/metrics_proto",
   ]
 
@@ -54,7 +57,6 @@ static_library("structured") {
     ":structured_metrics_validator",
     "//base",
     "//components/metrics",
-    "//components/metrics/structured/lib:proto",
     "//components/metrics/structured/mojom",
     "//components/prefs",
     "//crypto",
