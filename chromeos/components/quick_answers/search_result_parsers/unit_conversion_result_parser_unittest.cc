@@ -33,6 +33,7 @@ constexpr char kGramName[] = "Gram";
 constexpr double kSourceAmountKilogram = 100.0;
 constexpr double kDestAmountPound = 220.462;
 constexpr double kDestAmountGram = 100000;
+constexpr char kSourceRawTextKilogram[] = "100 kilograms";
 constexpr char kDestRawTextPound[] = "220.462 pounds";
 constexpr char kDestRawTextGram[] = "100000 grams";
 
@@ -40,7 +41,7 @@ Value CreateUnit(double rate_a,
                  const std::string& name,
                  const std::string& category = std::string()) {
   Value::Dict unit;
-  unit.Set(kConversionRateAPath, rate_a);
+  unit.Set(kConversionToSiAPath, rate_a);
   unit.Set(kNamePath, name);
   if (!category.empty())
     unit.Set(kCategoryPath, category);
@@ -74,6 +75,14 @@ class UnitConversionResultParserTest : public testing::Test {
   UnitConversionResultParserTest& operator=(
       const UnitConversionResultParserTest&) = delete;
 
+  void SetCategory(const std::string& category) {
+    result_.SetByDottedPath(kResultCategoryPath, category);
+  }
+
+  void SetSourceText(const std::string& text) {
+    result_.SetByDottedPath(kSourceTextPath, text);
+  }
+
   void SetDestText(const std::string& text) {
     result_.SetByDottedPath(kDestTextPath, text);
   }
@@ -88,6 +97,10 @@ class UnitConversionResultParserTest : public testing::Test {
 
   void AddSourceUnit(Value src_unit) {
     result_.SetByDottedPath(kSourceUnitPath, std::move(src_unit));
+  }
+
+  void AddDestUnit(Value dest_unit) {
+    result_.SetByDottedPath(kDestUnitPath, std::move(dest_unit));
   }
 
   void AddRuleSet(Value rule_set) {
@@ -136,9 +149,12 @@ TEST_F(UnitConversionResultParserTest,
 
 TEST_F(UnitConversionResultParserTest,
        ParseWithNoSourceUnitShouldReturnRawText) {
+  SetCategory(kMassCategory);
   SetDestText(kDestRawTextPound);
+  SetSourceText(kSourceRawTextKilogram);
   SetSourceAmount(kSourceAmountKilogram);
   SetDestAmount(kDestAmountPound);
+  AddDestUnit(CreateUnit(kPoundRateA, kPoundName, kMassCategory));
   AddRuleSet(BuildMassRuleSet());
 
   QuickAnswer quick_answer;
@@ -162,19 +178,21 @@ TEST_F(UnitConversionResultParserTest,
 
   UnitConversionResult* unit_conversion_result =
       structured_result->unit_conversion_result.get();
+  EXPECT_EQ(unit_conversion_result->source_text, kSourceRawTextKilogram);
   EXPECT_EQ(unit_conversion_result->result_text,
             base::UTF16ToASCII(answer->text));
-  EXPECT_EQ(unit_conversion_result->source_amount,
-            GetAmountString(kSourceAmountKilogram));
-  EXPECT_EQ(unit_conversion_result->destination_amount,
-            GetAmountString(kDestAmountPound));
+  EXPECT_EQ(unit_conversion_result->category, kMassCategory);
+  EXPECT_FALSE(unit_conversion_result->standard_unit_conversion_rates);
 }
 
 TEST_F(UnitConversionResultParserTest, ParseWithNoRuleSetShouldReturnRawText) {
+  SetCategory(kMassCategory);
   SetDestText(kDestRawTextPound);
+  SetSourceText(kSourceRawTextKilogram);
   SetSourceAmount(kSourceAmountKilogram);
   SetDestAmount(kDestAmountPound);
   AddSourceUnit(CreateUnit(kKilogramRateA, kKilogramName, kMassCategory));
+  AddDestUnit(CreateUnit(kPoundRateA, kPoundName, kMassCategory));
 
   QuickAnswer quick_answer;
 
@@ -197,20 +215,29 @@ TEST_F(UnitConversionResultParserTest, ParseWithNoRuleSetShouldReturnRawText) {
 
   UnitConversionResult* unit_conversion_result =
       structured_result->unit_conversion_result.get();
+  EXPECT_EQ(unit_conversion_result->source_text, kSourceRawTextKilogram);
   EXPECT_EQ(unit_conversion_result->result_text,
             base::UTF16ToASCII(answer->text));
-  EXPECT_EQ(unit_conversion_result->source_amount,
-            GetAmountString(kSourceAmountKilogram));
-  EXPECT_EQ(unit_conversion_result->destination_amount,
-            GetAmountString(kDestAmountPound));
+  EXPECT_EQ(unit_conversion_result->category, kMassCategory);
+
+  ASSERT_TRUE(structured_result->unit_conversion_result
+                  ->standard_unit_conversion_rates);
+  StandardUnitConversionRates conversion_rates =
+      unit_conversion_result->standard_unit_conversion_rates.value();
+  EXPECT_EQ(conversion_rates.source_to_standard_conversion_rate,
+            kKilogramRateA);
+  EXPECT_EQ(conversion_rates.dest_to_standard_conversion_rate, kPoundRateA);
 }
 
 TEST_F(UnitConversionResultParserTest,
        ParseWithResultWithinPreferredRangeShouldReturnRawText) {
+  SetCategory(kMassCategory);
   SetDestText(kDestRawTextPound);
+  SetSourceText(kSourceRawTextKilogram);
   SetSourceAmount(kSourceAmountKilogram);
   SetDestAmount(kDestAmountPound);
   AddSourceUnit(CreateUnit(kKilogramRateA, kKilogramName, kMassCategory));
+  AddDestUnit(CreateUnit(kPoundRateA, kPoundName, kMassCategory));
   AddRuleSet(BuildMassRuleSet());
 
   QuickAnswer quick_answer;
@@ -234,20 +261,29 @@ TEST_F(UnitConversionResultParserTest,
 
   UnitConversionResult* unit_conversion_result =
       structured_result->unit_conversion_result.get();
+  EXPECT_EQ(unit_conversion_result->source_text, kSourceRawTextKilogram);
   EXPECT_EQ(unit_conversion_result->result_text,
             base::UTF16ToASCII(answer->text));
-  EXPECT_EQ(unit_conversion_result->source_amount,
-            GetAmountString(kSourceAmountKilogram));
-  EXPECT_EQ(unit_conversion_result->destination_amount,
-            GetAmountString(kDestAmountPound));
+  EXPECT_EQ(unit_conversion_result->category, kMassCategory);
+
+  ASSERT_TRUE(structured_result->unit_conversion_result
+                  ->standard_unit_conversion_rates);
+  StandardUnitConversionRates conversion_rates =
+      unit_conversion_result->standard_unit_conversion_rates.value();
+  EXPECT_EQ(conversion_rates.source_to_standard_conversion_rate,
+            kKilogramRateA);
+  EXPECT_EQ(conversion_rates.dest_to_standard_conversion_rate, kPoundRateA);
 }
 
 TEST_F(UnitConversionResultParserTest,
        ParseWithResultOutOfPreferredRangeShouldReturnProperConversionResult) {
+  SetCategory(kMassCategory);
   SetDestText(kDestRawTextGram);
+  SetSourceText(kSourceRawTextKilogram);
   SetSourceAmount(kSourceAmountKilogram);
   SetDestAmount(kDestAmountGram);
   AddSourceUnit(CreateUnit(kKilogramRateA, kKilogramName, kMassCategory));
+  AddDestUnit(CreateUnit(kGramRateA, kGramName, kMassCategory));
   AddRuleSet(BuildMassRuleSet());
 
   QuickAnswer quick_answer;
@@ -276,13 +312,18 @@ TEST_F(UnitConversionResultParserTest,
 
   UnitConversionResult* unit_conversion_result =
       structured_result->unit_conversion_result.get();
+  EXPECT_EQ(unit_conversion_result->source_text, kSourceRawTextKilogram);
   EXPECT_EQ(unit_conversion_result->result_text,
             base::UTF16ToASCII(answer->text));
-  EXPECT_EQ(unit_conversion_result->source_amount,
-            GetAmountString(kSourceAmountKilogram));
-  EXPECT_EQ(unit_conversion_result->destination_amount,
-            GetAmountString(kDestAmountGram));
-  EXPECT_EQ(unit_conversion_result->source_unit, kKilogramName);
+  EXPECT_EQ(unit_conversion_result->category, kMassCategory);
+
+  ASSERT_TRUE(structured_result->unit_conversion_result
+                  ->standard_unit_conversion_rates);
+  StandardUnitConversionRates conversion_rates =
+      unit_conversion_result->standard_unit_conversion_rates.value();
+  EXPECT_EQ(conversion_rates.source_to_standard_conversion_rate,
+            kKilogramRateA);
+  EXPECT_EQ(conversion_rates.dest_to_standard_conversion_rate, kPoundRateA);
 }
 
 }  // namespace quick_answers

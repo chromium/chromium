@@ -37,7 +37,7 @@ Value::Dict CreateUnit(double rate_a,
                        const std::string& name,
                        const std::string& category = std::string()) {
   Value::Dict unit;
-  unit.Set(kConversionRateAPath, rate_a);
+  unit.Set(kConversionToSiAPath, rate_a);
   unit.Set(kNamePath, name);
   if (!category.empty())
     unit.Set(kCategoryPath, category);
@@ -113,7 +113,7 @@ TEST_F(UnitConverterTest, GetPossibleUnitsWithKnownCategoryShouldSuccess) {
   auto* units = converter->GetPossibleUnitsForCategory(kMassCategory);
   EXPECT_EQ(units->size(), 1u);
   auto& unit = (*units)[0].GetDict();
-  EXPECT_EQ(unit.FindDoubleByDottedPath(kConversionRateAPath), kKilogramRateA);
+  EXPECT_EQ(unit.FindDoubleByDottedPath(kConversionToSiAPath), kKilogramRateA);
   EXPECT_EQ(*unit.FindStringByDottedPath(kNamePath), kKilogramName);
 }
 
@@ -154,7 +154,7 @@ TEST_F(UnitConverterTest,
   auto* unit = converter->FindProperDestinationUnit(
       CreateUnit(kKilogramRateA, kKilogramName, kMassCategory),
       kSamplePreferredRange);
-  EXPECT_EQ(unit->FindDoubleByDottedPath(kConversionRateAPath), kPoundRateA);
+  EXPECT_EQ(unit->FindDoubleByDottedPath(kConversionToSiAPath), kPoundRateA);
   EXPECT_EQ(*unit->FindStringByDottedPath(kNamePath), kPoundName);
 }
 
@@ -202,7 +202,7 @@ TEST_F(UnitConverterTest,
   // Should return the unit with closest conversion rate, which is Pound.
   auto* unit = converter->FindProperDestinationUnit(
       CreateUnit(kKilogramRateA, kKilogramName, kMassCategory), 100);
-  EXPECT_EQ(unit->FindDoubleByDottedPath(kConversionRateAPath), kPoundRateA);
+  EXPECT_EQ(unit->FindDoubleByDottedPath(kConversionToSiAPath), kPoundRateA);
   EXPECT_EQ(*unit->FindStringByDottedPath(kNamePath), kPoundName);
 }
 

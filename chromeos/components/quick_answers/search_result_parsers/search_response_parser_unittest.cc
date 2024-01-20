@@ -66,7 +66,8 @@ TEST_F(SearchResponseParserTest, ProcessResponseSuccessFirstResult) {
               "valueAndUnit": {
                 "rawText": "9.055 inches"
               }
-            }
+            },
+            "category": "Length"
           }
         }
       ]
@@ -98,7 +99,8 @@ TEST_F(SearchResponseParserTest, ProcessResponseSuccessMultipleResults) {
               "valueAndUnit": {
                 "rawText": "9.055 inches"
               }
-            }
+            },
+            "category": "Length"
           }
         }
       ]

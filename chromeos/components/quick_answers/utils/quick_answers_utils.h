@@ -35,7 +35,8 @@ std::string UnescapeStringForHTML(const std::string& string);
 // Get the ratio between the two given values (divide the larger value by the
 // smaller one, so the result should be greater or equal to 1), return nullopt
 // if not feasible.
-std::optional<double> GetRatio(const double value1, const double value2);
+std::optional<double> GetRatio(const std::optional<double>& value1,
+                               const std::optional<double>& value2);
 
 }  // namespace quick_answers
 

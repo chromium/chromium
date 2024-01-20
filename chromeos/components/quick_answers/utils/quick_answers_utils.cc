@@ -104,11 +104,18 @@ std::string UnescapeStringForHTML(const std::string& string) {
   return base::UTF16ToUTF8(base::UnescapeForHTML(base::UTF8ToUTF16(string)));
 }
 
-std::optional<double> GetRatio(const double value1, const double value2) {
-  if (value1 == 0 || value2 == 0)
+std::optional<double> GetRatio(const std::optional<double>& value1,
+                               const std::optional<double>& value2) {
+  if (!value1.has_value() || !value2.has_value()) {
     return std::nullopt;
+  }
 
-  return std::max(value1, value2) / std::min(value1, value2);
+  if (value1.value() == 0 || value2.value() == 0) {
+    return std::nullopt;
+  }
+
+  return std::max(value1.value(), value2.value()) /
+         std::min(value1.value(), value2.value());
 }
 
 }  // namespace quick_answers

@@ -10,17 +10,24 @@
 namespace quick_answers {
 
 inline constexpr char kRuleSetPath[] = "unitConversionResult.conversions";
+inline constexpr char kResultCategoryPath[] = "unitConversionResult.category";
+
 inline constexpr char kSourceUnitPath[] = "unitConversionResult.sourceUnit";
 inline constexpr char kSourceAmountPath[] = "unitConversionResult.sourceAmount";
+inline constexpr char kSourceTextPath[] =
+    "unitConversionResult.source.valueAndUnit.rawText";
+inline constexpr char kDestUnitPath[] = "unitConversionResult.destUnit";
 inline constexpr char kDestAmountPath[] = "unitConversionResult.destAmount";
 inline constexpr char kDestTextPath[] =
     "unitConversionResult.destination.valueAndUnit.rawText";
 
 inline constexpr char kCategoryPath[] = "category";
-inline constexpr char kConversionRateAPath[] = "conversionToSiA";
+inline constexpr char kConversionToSiAPath[] = "conversionToSiA";
 inline constexpr char kResultValueTemplate[] = "%.3g";
 inline constexpr char kNamePath[] = "name";
 inline constexpr char kUnitsPath[] = "units";
+
+inline constexpr double kInvalidRateValue = 0;
 
 std::string GetUnitDisplayText(const std::string& name);
 

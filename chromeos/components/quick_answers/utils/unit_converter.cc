@@ -32,12 +32,12 @@ const std::string UnitConverter::Convert(const double src_value,
                                          const base::Value::Dict& dst_unit) {
   // Validate the inputs.
   const auto* src_name = src_unit.FindStringByDottedPath(kNamePath);
-  const auto src_rate_a = src_unit.FindDoubleByDottedPath(kConversionRateAPath);
+  const auto src_rate_a = src_unit.FindDoubleByDottedPath(kConversionToSiAPath);
   if (!src_name || !IsLinearFormula(src_rate_a)) {
     return std::string();
   }
   const auto* dst_name = dst_unit.FindStringByDottedPath(kNamePath);
-  const auto dst_rate_a = dst_unit.FindDoubleByDottedPath(kConversionRateAPath);
+  const auto dst_rate_a = dst_unit.FindDoubleByDottedPath(kConversionToSiAPath);
   if (!dst_name || !IsLinearFormula(dst_rate_a)) {
     return std::string();
   }
@@ -55,7 +55,7 @@ const Value::Dict* UnitConverter::FindProperDestinationUnit(
     const double preferred_range) {
   const auto* src_category = src_unit.FindStringByDottedPath(kCategoryPath);
   const auto* src_name = src_unit.FindStringByDottedPath(kNamePath);
-  const auto src_rate_a = src_unit.FindDoubleByDottedPath(kConversionRateAPath);
+  const auto src_rate_a = src_unit.FindDoubleByDottedPath(kConversionToSiAPath);
   // Make sure the input source unit is valid.
   if (!src_category || !src_name || !IsLinearFormula(src_rate_a))
     return nullptr;
@@ -71,7 +71,7 @@ const Value::Dict* UnitConverter::FindProperDestinationUnit(
   for (const Value& unit_value : *units) {
     const base::Value::Dict& unit = unit_value.GetDict();
     const auto* name = unit.FindStringByDottedPath(kNamePath);
-    const auto rate_a = unit.FindDoubleByDottedPath(kConversionRateAPath);
+    const auto rate_a = unit.FindDoubleByDottedPath(kConversionToSiAPath);
     if (*name == *src_name || !rate_a.has_value() || rate_a.value() == 0)
       continue;
     auto rate = GetRatio(rate_a.value(), src_rate_a.value());
