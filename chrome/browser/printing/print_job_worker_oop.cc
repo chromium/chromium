@@ -311,6 +311,12 @@ void PrintJobWorkerOop::OnDocumentDone() {
   // PrintBackend service.
 }
 
+void PrintJobWorkerOop::FinishDocumentDone(int job_id) {
+  // Helper function to get onto worker thread, since using the protected base
+  // class method directly with `base::BindOnce()` calls is not allowed.
+  PrintJobWorker::FinishDocumentDone(job_id);
+}
+
 void PrintJobWorkerOop::OnCancel() {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&PrintJobWorkerOop::NotifyFailure,
@@ -408,10 +414,6 @@ void PrintJobWorkerOop::NotifyFailure(mojom::ResultCode result) {
   SendCancel(base::BindOnce(&PrintJobWorkerOop::OnDidCancel,
                             ui_weak_factory_.GetWeakPtr(),
                             base::WrapRefCounted(print_job()), result));
-}
-
-void PrintJobWorkerOop::FinishDocumentDone(int job_id) {
-  PrintJobWorker::FinishDocumentDone(job_id);
 }
 
 void PrintJobWorkerOop::SendEstablishPrintingContext() {

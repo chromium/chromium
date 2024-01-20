@@ -53,6 +53,7 @@ class PrintBrowserTest : public InProcessBrowserTest {
 
   void AddPrinter(const std::string& printer_name);
   void SetPrinterNameForSubsequentContexts(const std::string& printer_name);
+  void SetNewDocumentJobId(int job_id);
 
   void PrintAndWaitUntilPreviewIsReady();
   // Returns the Print Preview dialog.

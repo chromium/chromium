@@ -531,6 +531,11 @@ void PrintBrowserTest::SetPrinterNameForSubsequentContexts(
       printer_name);
 }
 
+void PrintBrowserTest::SetNewDocumentJobId(int job_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  test_printing_context_factory_.SetJobIdOnNewDocument(job_id);
+}
+
 void PrintBrowserTest::PrintAndWaitUntilPreviewIsReady() {
   PrintAndWaitUntilPreviewIsReady(PrintParams());
 }

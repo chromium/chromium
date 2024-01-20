@@ -110,7 +110,7 @@ class PrintJobWorker {
   virtual void OnDocumentDone();
 
   // Helper function for document done processing.
-  void FinishDocumentDone(int job_id);
+  virtual void FinishDocumentDone(int job_id);
 
   // Notifies the owning PrintJob that a cancel request has occurred during
   // processing of the job.

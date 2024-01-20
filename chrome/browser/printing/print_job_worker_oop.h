@@ -84,6 +84,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
 #endif
   bool SpoolDocument() override;
   void OnDocumentDone() override;
+  void FinishDocumentDone(int job_id) override;
   void OnCancel() override;
   void OnFailure() override;
 
@@ -97,9 +98,6 @@ class PrintJobWorkerOop : public PrintJobWorker {
 
   // Initiate failure handling, including notification to the user.
   void NotifyFailure(mojom::ResultCode result);
-
-  // Helper function for document done processing, to get onto worker thread.
-  void FinishDocumentDone(int job_id);
 
   // Mojo support to send messages from UI thread.
   void SendEstablishPrintingContext();
