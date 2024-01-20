@@ -13,9 +13,6 @@ import "services/network/public/mojom/request_priority.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-// These values are used for UMA. Entries should not be renumbered. Please keep
-// in sync with "ContentResourceType2" in
-// src/tools/metrics/histograms/enums.xml.
 // DEPRECATED. Consider using network::mojom::RequestDestination instead.
 // TODO(bokan): Consider renaming kMainFrame and kSubFrame to better reflect
 // embedded frame trees like fenced frames (e.g. kMainFrame to
@@ -44,6 +41,7 @@ enum ResourceType {
   kNavigationPreloadMainFrame = 19,
   // a sub-frame service worker navigation preload request.
   kNavigationPreloadSubFrame = 20,
+  kJson = 21,               // a JSON module (import ... with { type: "json" })
 };
 
 // Network related information reported for loads and redirects.

@@ -1857,6 +1857,8 @@ message ClientSafeBrowsingReportRequest {
     DICTIONARY = 25;
     // Speculation rules (Speculation-Rules: "..." header).
     SPECULATION_RULES = 26;
+    // import "..." with { type: "json" }
+    JSON = 27;
   }
 
   // Only populated for interstitial reports (URL_PHISHING, URL_MALWARE,

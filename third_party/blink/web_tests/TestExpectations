@@ -2640,7 +2640,6 @@ crbug.com/626703 external/wpt/css/css-pseudo/slider/slider-thumb-001.html [ Fail
 crbug.com/626703 external/wpt/css/css-pseudo/slider/slider-track-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-pseudo/slider/slider-track-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-pseudo/slider/slider-track-003.html [ Failure ]
-crbug.com/626703 external/wpt/content-security-policy/connect-src/connect-src-json-import-blocked.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/jpegxl/3x3_jpeg_recompression.html [ Failure ]
 crbug.com/626703 external/wpt/jpegxl/3x3_srgb_lossless.html [ Failure ]
 crbug.com/626703 external/wpt/jpegxl/3x3_srgb_lossy.html [ Failure ]
@@ -6723,7 +6722,9 @@ crbug.com/1515743 [ Win ] virtual/popover-hint-disabled/external/wpt/html/semant
 crbug.com/1504244 [ Mac ] virtual/automatic-lazy-frame-loading-ads/http/tests/subresource_filter/frame-lazyload.html [ Failure Pass Timeout ]
 
 # These tests are timing out when the V8 flag --harmony-import-attributes is not provided (it is enabled in the virtual tests).
+crbug.com/v8/13856 external/wpt/content-security-policy/connect-src/connect-src-json-import-blocked.sub.html [ Timeout ]
 crbug.com/v8/13856 external/wpt/content-security-policy/style-src/import-style-blocked.sub.html [ Timeout ]
+crbug.com/v8/13856 virtual/import-attributes-json-css-modules/external/wpt/content-security-policy/connect-src/connect-src-json-import-blocked.sub.html [ Pass ]
 crbug.com/v8/13856 virtual/import-attributes-json-css-modules/external/wpt/content-security-policy/style-src/import-style-blocked.sub.html [ Pass ]
 
 # DevTools roll

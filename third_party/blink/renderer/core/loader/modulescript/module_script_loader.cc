@@ -117,8 +117,11 @@ void SetFetchDestinationFromModuleType(
           network::mojom::RequestDestination::kStyle);
       break;
     case ModuleType::kJSON:
-      // TODO(https://crbug.com/1491336): 'json' destination is not implemented
-      // yet
+      resource_request.SetRequestContext(
+          mojom::blink::RequestContextType::JSON);
+      resource_request.SetRequestDestination(
+          network::mojom::RequestDestination::kJson);
+      break;
     case ModuleType::kJavaScript:
       resource_request.SetRequestContext(module_request.ContextType());
       resource_request.SetRequestDestination(module_request.Destination());

@@ -858,8 +858,8 @@ BASE_FEATURE(kFencedFramesLocalUnpartitionedDataAccess,
              "FencedFramesLocalUnpartitionedDataAccess",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Use "style" destinations for CSS modules.
-// TODO(crbug.com/1491336): Also use this for JSON modules
+// Use "style" and "json" destinations for CSS and JSON modules.
+// https://crbug.com/1491336
 BASE_FEATURE(kFetchDestinationJsonCssModules,
              "kFetchDestinationJsonCssModules",
              base::FEATURE_ENABLED_BY_DEFAULT);

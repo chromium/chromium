@@ -58,6 +58,7 @@ net::RequestPriority GetRequestPriority(
 
     case network::mojom::RequestDestination::kFont:
     case network::mojom::RequestDestination::kScript:
+    case network::mojom::RequestDestination::kJson:
       return net::MEDIUM;
 
     case network::mojom::RequestDestination::kEmpty:

@@ -42,6 +42,8 @@ network::mojom::RequestDestination V8RequestDestinationToMojom(
       return network::mojom::RequestDestination::kIframe;
     case blink::V8RequestDestination::Enum::kImage:
       return network::mojom::RequestDestination::kImage;
+    case blink::V8RequestDestination::Enum::kJson:
+      return network::mojom::RequestDestination::kJson;
     case blink::V8RequestDestination::Enum::kManifest:
       return network::mojom::RequestDestination::kManifest;
     case blink::V8RequestDestination::Enum::kObject:

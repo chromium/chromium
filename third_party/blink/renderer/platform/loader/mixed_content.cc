@@ -70,6 +70,7 @@ MixedContent::ContextTypeFromRequestContext(
     case mojom::RequestContextType::IFRAME:
     case mojom::RequestContextType::IMAGE_SET:
     case mojom::RequestContextType::INTERNAL:
+    case mojom::RequestContextType::JSON:
     case mojom::RequestContextType::LOCATION:
     case mojom::RequestContextType::MANIFEST:
     case mojom::RequestContextType::OBJECT:

@@ -76,6 +76,10 @@ mojom::ResourceType RequestContextToResourceType(
     case mojom::blink::RequestContextType::IMAGE_SET:
       return mojom::ResourceType::kImage;
 
+    // Json
+    case mojom::blink::RequestContextType::JSON:
+      return mojom::ResourceType::kJson;
+
     // Media
     case mojom::blink::RequestContextType::AUDIO:
     case mojom::blink::RequestContextType::VIDEO:

@@ -64,6 +64,7 @@ namespace {
 // Returns true if the given request context is a valid destination for
 // scripts or modules. This includes:
 // - script-like https://fetch.spec.whatwg.org/#request-destination-script-like
+// - json
 // - style
 // These contextes to the destinations that the request performed by
 // https://html.spec.whatwg.org/#fetch-a-single-module-script can have.
@@ -76,6 +77,8 @@ bool IsRequestContextSupported(
     case mojom::blink::RequestContextType::WORKER:
     case mojom::blink::RequestContextType::SERVICE_WORKER:
     case mojom::blink::RequestContextType::SHARED_WORKER:
+    // json
+    case mojom::blink::RequestContextType::JSON:
     // style
     case mojom::blink::RequestContextType::STYLE:
       return true;

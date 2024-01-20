@@ -127,6 +127,8 @@ const char* RequestContextName(mojom::blink::RequestContextType context) {
       return "resource";
     case mojom::blink::RequestContextType::LOCATION:
       return "resource";
+    case mojom::blink::RequestContextType::JSON:
+      return "json";
     case mojom::blink::RequestContextType::MANIFEST:
       return "manifest";
     case mojom::blink::RequestContextType::OBJECT:

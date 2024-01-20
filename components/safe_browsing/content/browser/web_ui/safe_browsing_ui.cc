@@ -1413,6 +1413,8 @@ std::string UrlRequestDestinationToString(
       return "IFRAME";
     case ClientSafeBrowsingReportRequest::IMAGE:
       return "IMAGE";
+    case ClientSafeBrowsingReportRequest::JSON:
+      return "JSON";
     case ClientSafeBrowsingReportRequest::MANIFEST:
       return "MANIFEST";
     case ClientSafeBrowsingReportRequest::OBJECT:

@@ -35,6 +35,8 @@ const char* RequestDestinationToString(
       return "iframe";
     case network::mojom::RequestDestination::kImage:
       return "image";
+    case network::mojom::RequestDestination::kJson:
+      return "json";
     case network::mojom::RequestDestination::kManifest:
       return "manifest";
     case network::mojom::RequestDestination::kObject:
