@@ -15,6 +15,7 @@ export const SELECTOR_MAP = {
       `.menu-item>input[data-facing="environment"]`,
   barcodeChipText: '.barcode-chip-text',
   barcodeChipURL: '#barcode-chip-url',
+  barcodeChipWifi: '#barcode-chip-wifi',
   barcodeCopyTextButton: '#barcode-chip-text-container .barcode-copy-button',
   barcodeCopyURLButton: '#barcode-chip-url-container .barcode-copy-button',
   bitrateMultiplierRangeInput: '#bitrate-slider input[type=range]',

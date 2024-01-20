@@ -344,8 +344,7 @@ function showWifi(wifiConfig: WifiConfig) {
       I18nString.LABEL_BARCODE_WIFI_CHIP, ssidString);
   chip.setAttribute('aria-label', label);
   chip.onclick = () => {
-    // TODO(dorahkim): After is crrev/c/4964660 is landed, connect to the Wi-fi
-    // here.
+    ChromeHelper.getInstance().openWifiDialog(wifiConfig);
   };
 
   chip.focus();
