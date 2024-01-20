@@ -153,7 +153,7 @@
       </template>
     </iron-list>
   </template>
-  <template is="dom-if" if="[[shouldShowImageThumbnails_(thumbnailsLoading_, thumbnails_)]]">
+  <template is="dom-if" if="[[shouldShowImageThumbnails_(thumbnailsLoading_, thumbnails_)]]" restamp>
     <iron-list id="grid"
         items="[[thumbnails_]]"
         grid
