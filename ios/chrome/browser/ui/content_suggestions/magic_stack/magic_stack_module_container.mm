@@ -69,6 +69,7 @@ const CGFloat kSeparatorHeight = 0.5;
   UIImageView* _placeholderImage;
   UIStackView* _titleStackView;
     MagicStackModuleContentsFactory* _magicStackModuleContentsFactory;
+    NSLayoutConstraint* _containerHeightAnchor;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -184,20 +185,9 @@ const CGFloat kSeparatorHeight = 0.5;
           constraintEqualToAnchor:_stackView.trailingAnchor],
     ]];
 
-    // Ensures that the modules conforms to a height of kModuleMaxHeight. For
-    // the MVT when it lives outside of the Magic Stack to stay as close to its
-    // intrinsic size as possible, the constraint is configured to be less than
-    // or equal to.
-    if (_type == ContentSuggestionsModuleType::kMostVisited &&
-        !ShouldPutMostVisitedSitesInMagicStack()) {
-      [NSLayoutConstraint activateConstraints:@[
-        [self.heightAnchor constraintLessThanOrEqualToConstant:kModuleMaxHeight]
-      ]];
-    } else {
-      [NSLayoutConstraint activateConstraints:@[
-        [self.heightAnchor constraintEqualToConstant:kModuleMaxHeight]
-      ]];
-    }
+    _containerHeightAnchor =
+        [self.heightAnchor constraintEqualToConstant:kModuleMaxHeight];
+    [NSLayoutConstraint activateConstraints:@[ _containerHeightAnchor ]];
 
     [self addSubview:_stackView];
     AddSameConstraintsWithInsets(_stackView, self, [self contentMargins]);
@@ -259,6 +249,18 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 - (void)configureWithConfig:(MagicStackModule*)config {
+  // Ensures that the modules conforms to a height of kModuleMaxHeight. For
+  // the MVT when it lives outside of the Magic Stack to stay as close to its
+  // intrinsic size as possible, the constraint is configured to be less than
+  // or equal to.
+  if (config.type == ContentSuggestionsModuleType::kMostVisited &&
+      !ShouldPutMostVisitedSitesInMagicStack()) {
+    _containerHeightAnchor.active = NO;
+    _containerHeightAnchor = [self.heightAnchor
+        constraintLessThanOrEqualToConstant:kModuleMaxHeight];
+    [NSLayoutConstraint activateConstraints:@[ _containerHeightAnchor ]];
+  }
+
   if (config.type == ContentSuggestionsModuleType::kPlaceholder) {
     _isPlaceholder = YES;
     _placeholderImage = [[UIImageView alloc]
