@@ -306,6 +306,8 @@ namespace {
 using aura::Window;
 using views::Widget;
 
+constexpr int kTooltipMaxWidth = 296;
+
 // A Corewm VisibilityController subclass that calls the Ash animation routine
 // so we can pick up our extended animations. See ash/wm/window_animations.h.
 class AshVisibilityController : public ::wm::VisibilityController {
@@ -1591,10 +1593,11 @@ void Shell::Init(
 
   video_detector_ = std::make_unique<VideoDetector>();
 
+  auto tooltip_aura = std::make_unique<views::corewm::TooltipAura>(
+      base::BindRepeating(&StyleUtil::CreateAshStyleTooltipView));
+  tooltip_aura->SetMaxWidth(kTooltipMaxWidth);
   tooltip_controller_ = std::make_unique<views::corewm::TooltipController>(
-      std::make_unique<views::corewm::TooltipAura>(
-          base::BindRepeating(&StyleUtil::CreateAshStyleTooltipView)),
-      activation_client());
+      std::move(tooltip_aura), activation_client());
   AddPreTargetHandler(tooltip_controller_.get());
 
   modality_filter_ = std::make_unique<SystemModalContainerEventFilter>(this);
