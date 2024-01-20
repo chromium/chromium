@@ -10,7 +10,7 @@ namespace heap_profiling {
 
 namespace {
 uint32_t ComputeHash(const std::vector<Address>& addrs) {
-  return base::Hash(addrs.data(), addrs.size() * sizeof(Address));
+  return base::Hash(base::as_byte_span(addrs));
 }
 }  // namespace
 

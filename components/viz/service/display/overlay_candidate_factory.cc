@@ -383,7 +383,13 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
       TrackingIdData track_data{
           quad->rect,
           resource_provider_->GetSurfaceId(resource_id).frame_sink_id()};
-      candidate.tracking_id = base::Hash(&track_data, sizeof(track_data));
+      // Assert that there is no padding - otherwise the bytes-based hash below
+      // may differ for otherwise equal objects.
+      static_assert(sizeof(track_data) ==
+                    sizeof(decltype(track_data.rect)) +
+                        sizeof(decltype(track_data.frame_sink_id)));
+      candidate.tracking_id =
+          base::Hash(base::as_bytes(base::span_from_ref(track_data)));
     }
   }
 

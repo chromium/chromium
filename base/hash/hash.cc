@@ -121,15 +121,15 @@ size_t FastHash(base::span<const uint8_t> data) {
   return Scramble(FastHashImpl(data));
 }
 
-uint32_t Hash(const void* data, size_t length) {
+uint32_t Hash(base::span<const uint8_t> data) {
   // Currently our in-memory hash is the same as the persistent hash. The
   // split between in-memory and persistent hash functions is maintained to
   // allow the in-memory hash function to be updated in the future.
-  return PersistentHash(data, length);
+  return PersistentHash(data);
 }
 
 uint32_t Hash(const std::string& str) {
-  return PersistentHash(as_bytes(make_span(str)));
+  return PersistentHash(as_byte_span(str));
 }
 
 uint32_t PersistentHash(span<const uint8_t> data) {
