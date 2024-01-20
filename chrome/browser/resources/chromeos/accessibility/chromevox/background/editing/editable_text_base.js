@@ -384,7 +384,13 @@ export class ChromeVoxEditableTextBase {
       return;
     }
 
-    // If all else fails, we assume the change was not the result of a normal
+    // See if the change is related to IME's complex operation.
+    if (this.describeTextChangedByIME(
+            prev, evt, commonPrefixLen, commonSuffixLen)) {
+      return;
+    }
+
+    // If all above fails, we assume the change was not the result of a normal
     // user editing operation, so we'll have to speak feedback based only
     // on the changes to the text, not the cursor position / selection.
     // First, restore the event.
@@ -470,7 +476,66 @@ export class ChromeVoxEditableTextBase {
   }
 
   /**
-   * The function called by describeTextChanged after it's figured out
+   * The function is called by describeTextChanged and process if there's
+   * some text changes likely made by IME.
+   * @param {TextChangeEvent} prev The previous text change event.
+   * @param {TextChangeEvent} evt The text change event.
+   * @param {number} commonPrefixLen The number of characters in the common
+   *     prefix of this.value and newValue.
+   * @param {number} commonSuffixLen The number of characters in the common
+   *     suffix of this.value and newValue.
+   * @return {boolean} True if the event was processed.
+   */
+  describeTextChangedByIME(prev, evt, commonPrefixLen, commonSuffixLen) {
+    // This supports typing Echo with IME.
+    // - no selection range before and after.
+    // - suffixes are common after both cursor end.
+    // - prefixes are common at least max(0, "before length - 3").
+    // Then, something changed in composition range. Announce the new
+    // characters.
+    const relaxedPrefixLen = Math.max(
+        prev.start - ChromeVoxEditableTextBase.MAX_CHANGE_CHARS_BY_SINGLE_TYPE,
+        0);
+    let suffixLen = evt.value.length - evt.end;
+    if (prev.start === prev.end && evt.start === evt.end &&
+        prev.value.length - prev.end === suffixLen &&
+        commonPrefixLen >= relaxedPrefixLen && commonPrefixLen < evt.start &&
+        commonSuffixLen >= suffixLen) {
+      if (LocalStorage.get('typingEcho') === TypingEchoState.CHARACTER ||
+          LocalStorage.get('typingEcho') ===
+              TypingEchoState.CHARACTER_AND_WORD) {
+        this.speak(
+            evt.value.substring(commonPrefixLen, evt.start),
+            evt.triggeredByUser);
+      }
+      return true;
+    }
+
+    // The followings happens when a user starts to select candidates.
+    // - no selection range before and after.
+    // - prefixes are common before "new cursor point".
+    // - suffixes are common after "old cursor point".
+    // Then, this suggests that pressing a space or a tab to start composition.
+    // Let's announce the first suggested content.
+    // Note that after announcing this, announcements will be made by candidate
+    // window's selection event instead of ChromeVox's editable.
+    const prefixLen = evt.start;
+    suffixLen = prev.value.length - prev.end;
+    if (prev.start === prev.end && evt.start === evt.end &&
+        evt.start < prev.start && evt.value.length > prefixLen + suffixLen &&
+        commonPrefixLen >= prefixLen && commonSuffixLen >= suffixLen) {
+      this.speak(
+          evt.value.substring(prefixLen, evt.value.length - suffixLen),
+          evt.triggeredByUser,
+          new TtsSpeechProperties({'phoneticCharacters': true}));
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * The function is called by describeTextChanged after it's figured out
    * what text was deleted, what text was inserted, and what additional
    * autocomplete text was added.
    * @param {TextChangeEvent} prev The previous text change event.
@@ -559,3 +624,12 @@ ChromeVoxEditableTextBase.shouldSpeakInsertions = false;
  * @type {number}
  */
 ChromeVoxEditableTextBase.prototype.maxShortPhraseLen = 60;
+
+/**
+ * The maximum number of characters that can be changed by typing a character.
+ * This is not 1, because some IME, especially Japanese, have a complex typing
+ * system.
+ * For example, typing 'u' after 'xts' will be converted into 'っ'
+ * @const {number}
+ */
+ChromeVoxEditableTextBase.MAX_CHANGE_CHARS_BY_SINGLE_TYPE = 3;

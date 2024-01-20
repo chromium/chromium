@@ -747,7 +747,9 @@ export class PrimaryTts extends AbstractTts {
       properties.lang = chrome.i18n.getUILanguage();
     }
 
-    const phoneticText = PhoneticData.forCharacter(text, properties.lang);
+    const phoneticText = text.length === 1 ?
+        PhoneticData.forCharacter(text, properties.lang) :
+        PhoneticData.forText(text, properties.lang);
     if (phoneticText) {
       properties.delay = true;
       this.speak(phoneticText, ttsTypes.QueueMode.QUEUE, properties);

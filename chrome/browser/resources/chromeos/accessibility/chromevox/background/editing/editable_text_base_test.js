@@ -13,9 +13,15 @@ class TestTts {
   constructor() {
     /**
      * The strings that were spoken since the last call to get().
-     * @type {Array<string>}
+     * @private {Array<string>}
      */
-    this.strings = [];
+    this.strings_ = [];
+
+    /**
+     * The last call of speak()'s speech property if any.
+     * @private {TtsSpeechProperties|undefined}
+     */
+    this.lastProperties_;
   }
 
   /**
@@ -24,14 +30,23 @@ class TestTts {
    * @return {Array<string>} The list of strings.
    */
   get() {
-    var result = this.strings;
-    this.strings = [];
+    var result = this.strings_;
+    this.strings_ = [];
     return result;
+  }
+
+  /**
+   * Returns the speech property from the last call of speak()'s if any.
+   * @type {TtsSpeechProperties|undefined}
+   */
+  getLastProperties() {
+    return this.lastProperties_;
   }
 
   /** @override */
   speak(text, queueMode, properties) {
-    this.strings.push(text);
+    this.strings_.push(text);
+    this.lastProperties_ = properties;
   }
 
   /** @override */
@@ -466,6 +481,7 @@ AX_TEST_F(
       obj.changed(new TextChangeEvent('hi t', 4, 4));
       assertEqualStringArrays(['h', 'i', 'hi ', 't'], tts.get());
     });
+
 AX_TEST_F('ChromeVoxEditableTextUnitTest', 'DoesNotSpeakDeleted', function() {
   var tts = new TestTts();
   var obj = new ChromeVoxEditableTextBase('Hello', 0, 0, false, tts);
@@ -476,3 +492,72 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'DoesNotSpeakDeleted', function() {
   // This was once ['text_deleted'], but that is undesirable and mostly noise.
   assertEqualStringArrays([], tts.get());
 });
+
+AX_TEST_F('ChromeVoxEditableTextUnitTest', 'IMETypingEcho', function() {
+  LocalStorage.set('typingEcho', TypingEchoState.CHARACTER);
+  var tts = new TestTts();
+  var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
+  obj.changed(new TextChangeEvent('ｋ', 1, 1));
+  obj.changed(new TextChangeEvent('こ', 1, 1));
+  obj.changed(new TextChangeEvent('こｎ', 2, 2));
+  obj.changed(new TextChangeEvent('こん', 2, 2));
+  obj.changed(new TextChangeEvent('こんｎ', 3, 3));
+  obj.changed(new TextChangeEvent('こんに', 3, 3));
+  obj.changed(new TextChangeEvent('こんにｃ', 4, 4));
+  obj.changed(new TextChangeEvent('こんにｃｈ', 5, 5));
+  obj.changed(new TextChangeEvent('こんにち', 4, 4));
+  obj.changed(new TextChangeEvent('こんにちｈ', 5, 5));
+  obj.changed(new TextChangeEvent('こんにちは', 5, 5));
+  obj.changed(new TextChangeEvent('こんにちは！', 6, 6));
+  assertEqualStringArrays(
+      ['ｋ', 'こ', 'ｎ', 'ん', 'ｎ', 'に', 'ｃ', 'ｈ', 'ち', 'ｈ', 'は', '！'],
+      tts.get());
+});
+
+AX_TEST_F('ChromeVoxEditableTextUnitTest', 'IMETypingEchoLong', function() {
+  LocalStorage.set('typingEcho', TypingEchoState.CHARACTER);
+  var tts = new TestTts();
+  var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
+  obj.changed(new TextChangeEvent('ｘ', 1, 1));
+  obj.changed(new TextChangeEvent('ｘｔ', 2, 2));
+  obj.changed(new TextChangeEvent('ｘｔｓ', 3, 3));
+  obj.changed(new TextChangeEvent('っ', 1, 1));
+  assertEqualStringArrays(['ｘ', 'ｔ', 'ｓ', 'っ'], tts.get());
+});
+
+AX_TEST_F(
+    'ChromeVoxEditableTextUnitTest', 'IMETypingEchoWithSuffix', function() {
+      LocalStorage.set('typingEcho', TypingEchoState.CHARACTER);
+      var tts = new TestTts();
+      var obj = new ChromeVoxEditableTextBase('世界', 0, 0, false, tts);
+      obj.changed(new TextChangeEvent('ｋ世界', 1, 1));
+      obj.changed(new TextChangeEvent('こ世界', 1, 1));
+      obj.changed(new TextChangeEvent('こｎ世界', 2, 2));
+      obj.changed(new TextChangeEvent('こん世界', 2, 2));
+      obj.changed(new TextChangeEvent('こんｎ世界', 3, 3));
+      obj.changed(new TextChangeEvent('こんに世界', 3, 3));
+      obj.changed(new TextChangeEvent('こんにｃ世界', 4, 4));
+      obj.changed(new TextChangeEvent('こんにｃｈ世界', 5, 5));
+      obj.changed(new TextChangeEvent('こんにち世界', 4, 4));
+      obj.changed(new TextChangeEvent('こんにちｈ世界', 5, 5));
+      obj.changed(new TextChangeEvent('こんにちは世界', 5, 5));
+      assertEqualStringArrays(
+          ['ｋ', 'こ', 'ｎ', 'ん', 'ｎ', 'に', 'ｃ', 'ｈ', 'ち', 'ｈ', 'は'],
+          tts.get());
+    });
+
+AX_TEST_F(
+    'ChromeVoxEditableTextUnitTest', 'StartCandidateSelection', function() {
+      var tts = new TestTts();
+      var obj =
+          new ChromeVoxEditableTextBase('「こんにちは世界」', 6, 6, false, tts);
+
+      // Assume that a user is composing "こんにちは".
+      // When a user starts selection from IME conversion candidates, the cursor
+      // position moves to the beginning of the composing region.
+      obj.changed(new TextChangeEvent('「今日は世界」', 1, 1));
+
+      assertEqualStringArrays(['今日は'], tts.get());
+      assertNotNullNorUndefined(tts.getLastProperties());
+      assertTrue(tts.getLastProperties()['phoneticCharacters']);
+    });

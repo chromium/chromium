@@ -138,14 +138,13 @@ export class RichEditableText extends AutomationEditableText {
     const isSameSelection =
         baseLineOnStart && prevStartLine.isSameLineAndSelection(startLine);
 
-    let cur;
-    if (isSameSelection && this.line_) {
+    const cur = new EditableLine(
+        root.selectionStartObject, root.selectionStartOffset,
+        root.selectionEndObject, root.selectionEndOffset, baseLineOnStart);
+
+    if (isSameSelection && this.line_ && this.line_.text === cur.text) {
       // Nothing changed, return.
       return;
-    } else {
-      cur = new EditableLine(
-          root.selectionStartObject, root.selectionStartOffset,
-          root.selectionEndObject, root.selectionEndOffset, baseLineOnStart);
     }
     const prev = this.line_!;
     this.line_ = cur;
