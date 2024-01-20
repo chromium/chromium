@@ -322,11 +322,7 @@ function showText(text: string) {
 
   // TODO(b/172879638): There is a race in ChromeVox which will speak the
   // focused element twice.
-  if (expandable) {
-    expandEl.focus();
-  } else {
-    copyButton.focus();
-  }
+  copyButton.focus();
 }
 
 /**
