@@ -554,6 +554,7 @@ public class ReadAloudControllerUnitTest {
         mController.playTab(mTab);
 
         verify(mPlaybackHooks, never()).createPlayback(mPlaybackArgsCaptor.capture(), any());
+        verify(mPlayerCoordinator).playbackFailed();
     }
 
     @Test

@@ -223,7 +223,11 @@ public class MiniPlayerLayout extends LinearLayout {
 
             case STOPPED:
             case PAUSED:
-                if (mLastPlaybackState != PLAYING && mLastPlaybackState != PAUSED) {
+                // Buffering/unknown and error states have their own views, show back the normal
+                // layout if needed
+                if (mLastPlaybackState != PLAYING
+                        && mLastPlaybackState != PAUSED
+                        && mLastPlaybackState != ERROR) {
                     showOnly(mNormalLayout);
                     mProgressBar.setVisibility(View.VISIBLE);
                 }

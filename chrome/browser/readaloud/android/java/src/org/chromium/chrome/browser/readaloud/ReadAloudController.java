@@ -485,10 +485,15 @@ public class ReadAloudController
             mPlaybackHooks.initVoices();
         }
 
+        // Notify player UI that playback is happening soon and show UI in case there's an error
+        // coming.
+        mPlayerCoordinator.playTabRequested();
+
         String playbackLanguage = getLanguageForNewPlayback(tab);
         var voices = mPlaybackHooks.getVoicesFor(playbackLanguage);
         // TODO: Don't show entrypoints for unsupported languages
         if (voices == null || voices.isEmpty()) {
+            onCreatePlaybackFailed();
             var promise = new Promise<Playback>();
             promise.reject(new Exception("Unsupported language"));
             return promise;
@@ -515,14 +520,16 @@ public class ReadAloudController
                 },
                 exception -> {
                     Log.e(TAG, exception.getMessage());
-                    ReadAloudMetrics.recordIsTabPlaybackCreationSuccessful(false);
-                    mPlayerCoordinator.playbackFailed();
+                    onCreatePlaybackFailed();
                 });
 
-        // Notify player UI that playback is happening soon.
-        mPlayerCoordinator.playTabRequested();
         updateVoiceMenu(playbackLanguage);
         return promise;
+    }
+
+    private void onCreatePlaybackFailed() {
+        ReadAloudMetrics.recordIsTabPlaybackCreationSuccessful(false);
+        mPlayerCoordinator.playbackFailed();
     }
 
     /**
