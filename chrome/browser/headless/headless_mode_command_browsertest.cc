@@ -65,6 +65,8 @@ class HeadlessModeCommandBrowserTest : public HeadlessModeBrowserTest {
   }
 
  protected:
+  virtual std::string GetTargetPage() { return "/hello.html"; }
+
   GURL GetTargetUrl(const std::string& url) {
     return embedded_test_server()->GetURL(url);
   }
@@ -92,6 +94,17 @@ class HeadlessModeCommandBrowserTest : public HeadlessModeBrowserTest {
   bool test_complete_ = false;
   std::optional<HeadlessCommandHandler::Result> result_;
 };
+
+#define HEADLESS_MODE_COMMAND_BROWSER_TEST_WITH_TARGET_URL(                \
+    test_fixture, test_name, target_url)                                   \
+  class HeadlessModeCommandBrowserTest_##test_name : public test_fixture { \
+   public:                                                                 \
+    HeadlessModeCommandBrowserTest_##test_name() = default;                \
+    std::string GetTargetPage() override {                                 \
+      return target_url;                                                   \
+    }                                                                      \
+  };                                                                       \
+  IN_PROC_BROWSER_TEST_F(HeadlessModeCommandBrowserTest_##test_name, test_name)
 
 class HeadlessModeCommandBrowserTestWithTempDir
     : public HeadlessModeCommandBrowserTest {
@@ -131,8 +144,6 @@ class HeadlessModeDumpDomCommandBrowserTest
 
     capture_stdout_.StartCapture();
   }
-
-  virtual std::string GetTargetPage() { return "/hello.html"; }
 
  protected:
   CaptureStdOut capture_stdout_;
@@ -306,6 +317,16 @@ IN_PROC_BROWSER_TEST_P(
                     "<html><head></head><body><divid=\"thediv\">REPLACED</"
                     "div><scriptsrc=\"./script.js\"></script></body></html>"));
   }
+}
+HEADLESS_MODE_COMMAND_BROWSER_TEST_WITH_TARGET_URL(
+    HeadlessModeDumpDomCommandBrowserTest,
+    DumpDomWithBeforeUnloadPreventDefault,
+    "/before_unload_prevent_default.html") {
+  // Make sure that 'beforeunload' that prevents default action does not stall
+  // the command processing. The "Leave site" popup should not appear because
+  // command target was not user activated.
+  EXPECT_THAT(ProcessCommands(),
+              testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 }
 
 // Screenshot command tests -------------------------------------------
