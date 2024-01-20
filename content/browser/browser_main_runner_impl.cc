@@ -179,13 +179,6 @@ void BrowserMainRunnerImpl::Shutdown() {
 #if BUILDFLAG(IS_WIN)
     ole_initializer_.reset(NULL);
 #endif
-#if BUILDFLAG(IS_ANDROID)
-    // Forcefully terminates the RunLoop inside MessagePumpForUI, ensuring
-    // proper shutdown for content_browsertests. Shutdown() is not used by
-    // the actual browser.
-    if (base::RunLoop::IsRunningOnCurrentThread())
-      base::RunLoop::QuitCurrentDeprecated();
-#endif
     main_loop_.reset(nullptr);
 
     notification_service_.reset(nullptr);
