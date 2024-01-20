@@ -948,6 +948,16 @@ StatusBubble* Browser::GetStatusBubbleForTesting() {
   return GetStatusBubble();
 }
 
+void Browser::SetForceShowBookmarkBarFlag(ForceShowBookmarkBarFlag flag) {
+  force_show_bookmark_bar_flags_ |= flag;
+  UpdateBookmarkBarState(BOOKMARK_BAR_STATE_CHANGE_FORCE_SHOW);
+}
+
+void Browser::ClearForceShowBookmarkBarFlag(ForceShowBookmarkBarFlag flag) {
+  force_show_bookmark_bar_flags_ &= ~flag;
+  UpdateBookmarkBarState(BOOKMARK_BAR_STATE_CHANGE_FORCE_SHOW);
+}
+
 void Browser::OnWindowClosing() {
   if (const auto closing_status = HandleBeforeClose();
       closing_status != BrowserClosingStatus::kPermitted) {
@@ -3149,7 +3159,8 @@ void Browser::UpdateBookmarkBarState(BookmarkBarStateChangeReason reason) {
     return;
   }
 
-  bool should_animate = reason == BOOKMARK_BAR_STATE_CHANGE_PREF_CHANGE;
+  bool should_animate = reason == BOOKMARK_BAR_STATE_CHANGE_PREF_CHANGE ||
+                        reason == BOOKMARK_BAR_STATE_CHANGE_FORCE_SHOW;
   window_->BookmarkBarStateChanged(
       should_animate ? BookmarkBar::ANIMATE_STATE_CHANGE
                      : BookmarkBar::DONT_ANIMATE_STATE_CHANGE);
@@ -3163,6 +3174,10 @@ bool Browser::ShouldShowBookmarkBar() const {
       profile_->GetPrefs()->GetBoolean(bookmarks::prefs::kShowBookmarkBar) &&
       !ShouldHideUIForFullscreen())
     return true;
+
+  if (force_show_bookmark_bar_flags_ != ForceShowBookmarkBarFlag::kNone) {
+    return true;
+  }
 
   WebContents* web_contents = tab_strip_model_->GetActiveWebContents();
   if (!web_contents)

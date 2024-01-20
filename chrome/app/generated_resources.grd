@@ -9651,6 +9651,52 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Try using tab groups to organize tasks, for online shopping, and more
       </message>
 
+      <!-- Saved Tab Group Tutorial Strings -->
+      <if expr="use_titlecase">
+        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_ADD_TAB_TO_GROUP" desc="The description of the 'right click and save' step">
+          Right-click a tab and select "Add Tab to New Group"
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_ADD_TAB_TO_GROUP" desc="The description of the 'right click and save' step">
+          Right-click a tab and select "Add tab to new group"
+        </message>
+      </if>
+
+      <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_OPEN_EDITOR" desc="The description of the 'open editor' step">
+        Right-click on the group name
+      </message>
+
+      <if expr="use_titlecase">
+        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_NAME_SAVE_GROUP" desc="The description of the 'name, save and exit' step">
+          Turn on "Save Group"
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_NAME_SAVE_GROUP" desc="The description of the 'name, save and exit' step">
+          Turn on "Save group"
+        </message>
+      </if>
+
+      <if expr="use_titlecase">
+        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_HIDE_GROUP" desc="The description of the 'hide group' step">
+          Select "Hide Group" to remove the group from your tab strip
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_HIDE_GROUP" desc="The description of the 'hide group' step">
+          Select "Hide group" to remove the group from your tab strip
+        </message>
+      </if>
+
+      <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_REOPEN_GROUP" desc="The description of the 'name, save and exit' step">
+        To reopen the group, click on the group name
+      </message>
+
+      <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_SUCCESS_DESCRIPTION" desc="The description of the success step">
+        You can now use saved tab groups across your signed in desktop devices
+      </message>
+
       <!-- Side Panel Tutorial Strings -->
       <message name="IDS_TUTORIAL_SIDE_PANEL_READING_LIST_OPEN_SIDE_PANEL" desc="The description of the 'open side panel' step in side panel reading list tutorial">
         Click the side panel icon to open it
