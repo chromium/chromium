@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <algorithm>
+#include <iomanip>
 #include <ostream>
 #include <string>
 #include <utility>

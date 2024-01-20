@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
 namespace wl {
