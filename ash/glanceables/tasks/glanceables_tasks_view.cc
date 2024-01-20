@@ -49,6 +49,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/wm/core/focus_controller.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -387,6 +388,15 @@ void GlanceablesTasksView::SaveTask(
     const std::string& title,
     api::TasksClient::OnTaskSavedCallback callback) {
   if (task_id.empty()) {
+    // Manually deleting `view` may cause the focus manager try storing the
+    // dangling `view`'s descendants. Let native window handle the view deletion
+    // when it lost active.
+    if (GetWidget() &&
+        GetWidget()->GetNativeWindow() !=
+            Shell::Get()->focus_controller()->GetActiveWindow()) {
+      return;
+    }
+
     // Empty `task_id` means that the task has not yet been created. Verify that
     // this task has a non-empty title, otherwise just delete the `view` from
     // the scrollable container.
@@ -426,6 +436,8 @@ void GlanceablesTasksView::OnTaskSaved(
       // error.
       task_items_container_view_->RemoveChildViewT(view.get());
     }
+  } else if (task->title.empty()) {
+    task_items_container_view_->RemoveChildViewT(view.get());
   }
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
   std::move(callback).Run(task);

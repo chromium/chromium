@@ -370,6 +370,21 @@ TEST_F(GlanceablesTasksViewTest, DoesNotAddTaskWithBlankTitle) {
   EXPECT_EQ(tasks_client()->RunPendingAddTaskCallbacks(), 0u);
 }
 
+TEST_F(GlanceablesTasksViewTest, OpenBrowserWithEmptyNewTaskDoesntCrash) {
+  base::UserActionTester user_actions;
+
+  // Add a task with blank title.
+  GestureTapOn(GetAddNewTaskButton());
+
+  GestureTapOn(GetHeaderIconView());
+  EXPECT_EQ(1, user_actions.GetActionCount(
+                   "Glanceables_Tasks_LaunchTasksApp_HeaderButton"));
+
+  // Simulate that the widget is hidden safely after opening a browser window.
+  view()->GetWidget()->Hide();
+  EXPECT_FALSE(view()->GetWidget()->GetNativeWindow()->IsVisible());
+}
+
 TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterAdding) {
   tasks_client()->set_paused(true);
   tasks_client()->set_run_with_errors(true);

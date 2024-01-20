@@ -14,11 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/wm/public/activation_change_observer.h"
-
-namespace aura {
-class Window;
-}  // namespace aura
 
 namespace views {
 class ImageButton;
@@ -37,7 +32,7 @@ struct Task;
 // |`GlanceablesTaskViewV2`                                        |
 // |                                                               |
 // | +-----------------+ +---------------------------------------+ |
-// | |'button_'        | |'contents_view_'                       | |
+// | |'check_button_'  | |'contents_view_'                       | |
 // | |                 | | +-----------------------------------+ | |
 // | |                 | | |'tasks_title_view_'                | | |
 // | |                 | | +-----------------------------------+ | |
@@ -46,8 +41,7 @@ struct Task;
 // | |                 | | +-----------------------------------+ | |
 // | +-----------------+ +---------------------------------------+ |
 // +---------------------------------------------------------------+
-class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView,
-                                         public wm::ActivationChangeObserver {
+class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView {
  public:
   METADATA_HEADER(GlanceablesTaskViewV2);
 
@@ -70,14 +64,6 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView,
   GlanceablesTaskViewV2& operator=(const GlanceablesTaskViewV2&) = delete;
   ~GlanceablesTaskViewV2() override;
 
-  // wm::ActivationChangeObserver:
-  void OnWindowActivating(wm::ActivationChangeObserver::ActivationReason reason,
-                          aura::Window* gaining_active,
-                          aura::Window* losing_active) override;
-  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override;
-
   const views::ImageButton* GetCheckButtonForTest() const;
   bool GetCompletedForTest() const;
 
@@ -88,7 +74,7 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView,
   class CheckButton;
   class TaskTitleButton;
 
-  // Handles press events on `button_`.
+  // Handles press events on `check_button_`.
   void CheckButtonPressed();
 
   // Handles press events on `task_title_button_`.
@@ -103,17 +89,12 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView,
   void OnSaved(const api::Task* task);
 
   // Owned by views hierarchy.
-  raw_ptr<CheckButton> button_ = nullptr;
+  raw_ptr<CheckButton> check_button_ = nullptr;
   raw_ptr<views::FlexLayoutView> contents_view_ = nullptr;
   raw_ptr<views::FlexLayoutView> tasks_title_view_ = nullptr;
   raw_ptr<TaskTitleButton> task_title_button_ = nullptr;
   raw_ptr<views::FlexLayoutView> tasks_details_view_ = nullptr;
   raw_ptr<views::LabelButton> edit_in_browser_button_ = nullptr;
-
-  // The state of the task title view. Should be switching between view state
-  // and edit state except its initial value.
-  TaskTitleViewState task_title_view_state_ =
-      TaskTitleViewState::kNotInitialized;
 
   // ID for the task represented by this view.
   std::string task_id_;

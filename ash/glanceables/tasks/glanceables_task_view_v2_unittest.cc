@@ -26,6 +26,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
@@ -343,6 +344,61 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, SupportsEditingRightAfterAdding) {
     EXPECT_EQ(task_id, "task-id");
     EXPECT_EQ(title, "New 1");
   }
+}
+
+TEST_F(GlanceablesTaskViewStableLaunchTest,
+       HandlesPressingCheckButtonWhileAdding) {
+  base::test::TestFuture<base::WeakPtr<GlanceablesTaskViewV2>,
+                         const std::string&, const std::string&,
+                         api::TasksClient::OnTaskSavedCallback>
+      future;
+
+  const auto widget = CreateFramelessTestWidget();
+  widget->SetFullscreen(true);
+  auto* const view =
+      widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
+          /*task=*/nullptr, /*mark_as_completed_callback=*/base::DoNothing(),
+          /*save_callback=*/future.GetRepeatingCallback(),
+          /*edit_in_browser_callback=*/base::DoNothing()));
+  ASSERT_TRUE(view);
+
+  view->UpdateTaskTitleViewForState(
+      GlanceablesTaskViewV2::TaskTitleViewState::kEdit);
+  EXPECT_FALSE(view->GetCheckButtonForTest()->GetEnabled());
+  EXPECT_FALSE(view->GetCompletedForTest());
+
+  PressAndReleaseKey(ui::VKEY_N, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_E);
+  PressAndReleaseKey(ui::VKEY_W);
+
+  // Tapping the disabled check button implicitly leads to committing task's
+  // title, but this shouldn't change checked state or cause a crash.
+  LeftClickOn(view->GetCheckButtonForTest());
+  auto [task_view, task_id, title, callback] = future.Take();
+  EXPECT_TRUE(task_id.empty());
+  EXPECT_EQ(title, "New");
+  EXPECT_FALSE(view->GetCheckButtonForTest()->GetEnabled());
+  EXPECT_FALSE(view->GetCompletedForTest());
+
+  const auto* const title_label =
+      views::AsViewClass<views::Label>(view->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+  ASSERT_TRUE(title_label);
+  const auto* const title_button =
+      views::AsViewClass<views::LabelButton>(title_label->parent());
+  ASSERT_TRUE(title_button);
+  EXPECT_FALSE(title_button->GetEnabled());
+
+  // Simulate reply, this should re-enable the checkbox and title buttons.
+  const auto created_task =
+      api::Task("task-id", "New", /*completed=*/false,
+                /*due=*/absl::nullopt,
+                /*has_subtasks=*/false,
+                /*has_email_link=*/false, /*has_notes=*/false,
+                /*updated=*/base::Time::Now());
+  std::move(callback).Run(&created_task);
+  EXPECT_TRUE(view->GetCheckButtonForTest()->GetEnabled());
+  EXPECT_TRUE(title_button->GetEnabled());
 }
 
 }  // namespace ash
