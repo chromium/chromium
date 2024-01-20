@@ -11,7 +11,7 @@
 
 namespace base {
 
-TEST(HashTest, String) {
+TEST(HashTest, DeprecatedHashFromString) {
   std::string str;
   // Empty string (should hash to 0).
   str = "";
@@ -63,7 +63,7 @@ TEST(HashTest, String) {
   EXPECT_EQ(3224633008u, Hash(str));
 }
 
-TEST(HashTest, CString) {
+TEST(HashTest, DeprecatedHashFromCString) {
   const char* str;
   // Empty string (should hash to 0).
   str = "";
@@ -74,13 +74,13 @@ TEST(HashTest, CString) {
   EXPECT_EQ(2794219650u, Hash(str));
 }
 
-TEST(HashTest, Span) {
+TEST(HashTest, PersistentHashFromSpan) {
   // Empty span (should hash to 0).
-  EXPECT_EQ(0u, Hash(base::span<const uint8_t>()));
+  EXPECT_EQ(0u, PersistentHash(base::span<const uint8_t>()));
 
   // Simple test.
   const char* str = "hello world";
-  EXPECT_EQ(2794219650u, Hash(as_byte_span(std::string(str))));
+  EXPECT_EQ(2794219650u, PersistentHash(as_byte_span(std::string(str))));
 }
 
 TEST(HashTest, FastHash) {

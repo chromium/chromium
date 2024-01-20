@@ -388,8 +388,12 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
       static_assert(sizeof(track_data) ==
                     sizeof(decltype(track_data.rect)) +
                         sizeof(decltype(track_data.frame_sink_id)));
-      candidate.tracking_id =
-          base::Hash(base::as_bytes(base::span_from_ref(track_data)));
+      // Intentionally throwing away the high bits (assuming that hash entropy
+      // is uniformly spread across all the bits).
+      size_t original_hash =
+          base::FastHash(base::as_bytes(base::span_from_ref(track_data)));
+      uint32_t narrow_hash = static_cast<uint32_t>(original_hash);
+      candidate.tracking_id = narrow_hash;
     }
   }
 
@@ -571,7 +575,12 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromVideoHoleQuad(
       !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
 
   AssignDamage(quad, candidate);
-  candidate.tracking_id = base::FastHash(quad->overlay_plane_id.AsBytes());
+
+  // Intentionally throwing away the high bits (assuming that hash entropy is
+  // uniformly spread across all the bits).
+  size_t original_hash = base::FastHash(quad->overlay_plane_id.AsBytes());
+  uint32_t narrow_hash = static_cast<uint32_t>(original_hash);
+  candidate.tracking_id = narrow_hash;
 
   return CandidateStatus::kSuccess;
 }
