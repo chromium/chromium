@@ -57,6 +57,9 @@ class MockDownloadBubbleNavigationHandler
     last_opened_page_ = DownloadBubbleContentsView::Page::kSecurity;
   }
   void CloseDialog(views::Widget::ClosedReason) override { was_closed_ = true; }
+  void OnSecurityDialogButtonPress(const DownloadUIModel& model,
+                                   DownloadCommands::Command command) override {
+  }
   void ResizeDialog() override {}
   void OnDialogInteracted() override {}
   std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin>

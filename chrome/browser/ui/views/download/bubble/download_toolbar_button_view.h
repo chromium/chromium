@@ -61,6 +61,10 @@ class DownloadBubbleNavigationHandler {
   // or by focusing (on the partial view).
   virtual void OnDialogInteracted() = 0;
 
+  virtual void OnSecurityDialogButtonPress(
+      const DownloadUIModel& model,
+      DownloadCommands::Command command) = 0;
+
   // Returns a CloseOnDeactivatePin for the download bubble. For the lifetime of
   // the returned pin (if non-null), the download bubble will not close on
   // deactivate. Returns nullptr if the bubble is not open.
@@ -120,6 +124,8 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void OpenSecurityDialog(
       const offline_items_collection::ContentId& content_id) override;
   void CloseDialog(views::Widget::ClosedReason reason) override;
+  void OnSecurityDialogButtonPress(const DownloadUIModel& model,
+                                   DownloadCommands::Command command) override;
   void ResizeDialog() override;
   void OnDialogInteracted() override;
   std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin>
@@ -204,11 +210,11 @@ class DownloadToolbarButtonView : public ToolbarButton,
   DownloadBubbleRowView* ShowPrimaryDialogRow(
       std::optional<offline_items_collection::ContentId> content_id);
 
-  // Helper function to show an IPH promo
-  void ShowIphPromo();
-
   // Callback invoked when the partial view is closed.
   void OnPartialViewClosed();
+
+  // Helper function to show an IPH promo.
+  void ShowIphPromo();
 
   // Called to automatically close the partial view, if such closing has not
   // been deactivated.

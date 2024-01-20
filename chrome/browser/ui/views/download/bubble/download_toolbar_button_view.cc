@@ -602,6 +602,18 @@ void DownloadToolbarButtonView::OnDialogInteracted() {
   DeactivateAutoClose();
 }
 
+void DownloadToolbarButtonView::OnSecurityDialogButtonPress(
+    const DownloadUIModel& model,
+    DownloadCommands::Command command) {
+  if (model.GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT &&
+      command == DownloadCommands::DISCARD) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&DownloadToolbarButtonView::ShowIphPromo,
+                                  weak_factory_.GetWeakPtr()));
+  }
+}
+
 base::WeakPtr<DownloadBubbleNavigationHandler>
 DownloadToolbarButtonView::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();

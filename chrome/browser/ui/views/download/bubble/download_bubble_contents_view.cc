@@ -44,6 +44,7 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
     views::BubbleDialogDelegate* bubble_delegate)
     : info_(std::move(info)),
       bubble_controller_(bubble_controller),
+      navigation_handler_(navigation_handler),
       bubble_delegate_(bubble_delegate) {
   SetProperty(views::kElementIdentifierKey, kToolbarDownloadBubbleElementId);
   CHECK(!info_->row_list_view_info().rows().empty());
@@ -146,6 +147,11 @@ void DownloadBubbleContentsView::ProcessSecuritySubpageButtonPress(
     return;
   }
   if (DownloadUIModel* model = GetDownloadModel(id); model) {
+    // Calling this before because ProcessDownloadButtonPress may cause
+    // the model item to be deleted during its call.
+    if (navigation_handler_) {
+      navigation_handler_->OnSecurityDialogButtonPress(*model, command);
+    }
     bubble_controller_->ProcessDownloadButtonPress(model->GetWeakPtr(), command,
                                                    /*is_main_view=*/false);
   }
