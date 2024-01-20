@@ -2038,6 +2038,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Fonts.FontServiceThread.MatchFamilyNameTime"
+    units="microseconds" expires_after="2024-04-19">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Time spent identifying the best match for a font face to use given a family
+    name and style, including the mojo calls. This is recorded right after the
+    best match is found. This histogram is only logged in platforms with
+    high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Fonts.FontServiceThread.OpenStreamTime"
+    units="microseconds" expires_after="2024-04-19">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Time spent opening a font file, including the mojo calls. This is recorded
+    right after the font file is opened. This histogram is only logged in
+    platforms with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Fonts.VariableFontsRatio"
     enum="WebFontInstantiationResult" expires_after="2024-05-26">
   <owner>drott@chromium.org</owner>
