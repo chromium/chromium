@@ -27,7 +27,9 @@ class ReportControllerInitializer : public DeviceSettingsService::Observer {
                                    // startup delay to be completed.
     kWaitingForOobeCompleted = 2,  // Wait for oobe completed conditions.
     kWaitingForDeviceSettingsTrusted = 3,  // Wait for policies to be trusted.
-    kReportControllerInitialized = 4,      // Nothing left to do.
+    kWaitingForLastPowerwashTime = 4,  // Wait to read last powerwash time if
+                                       // file exists in preserved files.
+    kReportControllerInitialized = 5,  // Nothing left to do.
     kMaxValue = kReportControllerInitialized,
   };
 
@@ -96,6 +98,10 @@ class ReportControllerInitializer : public DeviceSettingsService::Observer {
   // Determines whether the CrosSettings is trusted.
   // If it is trusted, ReportController is initialized.
   void CheckTrustedStatus();
+
+  // Handler after reading last powerwash time file in ThreadPool task.
+  // This is done to avoid blocking the main browser thread.
+  void OnLastPowerwashTimeRead(base::Time last_powerwash_time);
 
   // Store the current state this class is in.
   State state_ = State::kWaitingForOwnership;

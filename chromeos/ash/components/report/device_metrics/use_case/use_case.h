@@ -38,6 +38,7 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT)
     ChromeDeviceMetadataParameters {
   version_info::Channel chrome_channel;
   MarketSegment market_segment;
+  const std::string last_powerwash_week;
 };
 
 // Helper class to group UseCase class parameters.

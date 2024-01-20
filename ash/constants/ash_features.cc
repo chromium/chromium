@@ -2977,6 +2977,12 @@ BASE_FEATURE(kDeviceActiveClientChurnObservationCheckMembership,
              "DeviceActiveClientChurnObservationCheckMembership",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables attaching first active week and last powerwash week to
+// the churn observation check in ping.
+BASE_FEATURE(kDeviceActiveClientChurnObservationNewDeviceMetadata,
+             "DeviceActiveClientChurnObservationNewDeviceMetadata",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables forced reboots when DeviceScheduledReboot policy is set.
 BASE_FEATURE(kDeviceForceScheduledReboot,
              "DeviceForceScheduledReboot",

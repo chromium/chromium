@@ -9,6 +9,8 @@
 #include <unordered_set>
 #include <utility>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -30,6 +32,7 @@
 #include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/report/device_metrics/use_case/real_psm_client_manager.h"
 #include "chromeos/ash/components/report/proto/fresnel_service.pb.h"
+#include "chromeos/ash/components/report/utils/time_utils.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -37,6 +40,10 @@
 namespace ash {
 
 namespace {
+
+// Path to file storing the last powerwash time, persisted over safe powerwash.
+constexpr char kLastPowerwashTimePath[] =
+    "/mnt/stateful_partition/unencrypted/preserve/last_powerwash_time";
 
 // Number of minutes to wait before retrying
 // reading the .oobe_completed file again.
@@ -60,6 +67,10 @@ void RecordStartupDelay(int delay_minutes) {
 // Record whether oobe is completed.
 void RecordIsOobeCompleted(bool is_complete) {
   base::UmaHistogramBoolean("Ash.Report.IsOobeCompleted", is_complete);
+}
+
+void RecordLastPowerwashTimeRead(bool success) {
+  base::UmaHistogramBoolean("Ash.Report.IsLastPowerwashTimeRead", success);
 }
 
 // Record the device trusted status enum when checking policy trusted status.
@@ -170,6 +181,20 @@ report::MarketSegment GetMarketSegment(
   }
 
   return report::MARKET_SEGMENT_UNKNOWN;
+}
+
+// Reads the last powerwash time from preserved files. If the device is new
+// or the last powerwash time file does not exist, it will return UnixEpoch.
+base::Time ReadLastPowerwashTime() {
+  // Retrieve the last modified time of the powerwash time file.
+  base::FilePath last_powerwash_file(kLastPowerwashTimePath);
+  base::File::Info info;
+  if (!base::GetFileInfo(last_powerwash_file, &info)) {
+    LOG(ERROR) << "Failed to get last powerwash file info.";
+    return base::Time::UnixEpoch();
+  }
+
+  return info.last_modified;
 }
 
 }  // namespace
@@ -353,7 +378,38 @@ void ReportControllerInitializer::CheckTrustedStatus() {
     return;
   }
 
-  // OOBE is completed, so we can safely calculate the device market segment.
+  SetState(State::kWaitingForLastPowerwashTime);
+
+  // Retrieve last powerwash time, if file exists.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&ReadLastPowerwashTime),
+      base::BindOnce(&ReportControllerInitializer::OnLastPowerwashTimeRead,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ReportControllerInitializer::OnLastPowerwashTimeRead(
+    base::Time last_powerwash_gmt) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(state_, State::kWaitingForLastPowerwashTime);
+
+  // Default values before handling last powerwash time.
+  // Variable is based off GMT YYYY-WW just like ActivateDate VPD field.
+  std::string last_powerwash_week;
+  // Handle the last powerwash time received after read attempt.
+  if (last_powerwash_gmt.is_null() ||
+      last_powerwash_gmt == base::Time::UnixEpoch()) {
+    RecordLastPowerwashTimeRead(false);
+  } else {
+    last_powerwash_week =
+        report::utils::ConvertTimeToISO8601String(last_powerwash_gmt);
+    RecordLastPowerwashTimeRead(true);
+  }
+
+  // OOBE is completed, so we can safely calculate the device market
+  // segment.
   report::MarketSegment device_market_segment =
       GetMarketSegment(g_browser_process->platform_part()
                            ->browser_policy_connector_ash()
@@ -374,7 +430,8 @@ void ReportControllerInitializer::CheckTrustedStatus() {
   // 3. CrosSettingsProvider::TRUSTED: device policies are loaded and trusted.
   report_controller_ = std::make_unique<report::ReportController>(
       ash::report::device_metrics::ChromeDeviceMetadataParameters{
-          chrome::GetChannel() /* chromeos_channel */, device_market_segment},
+          chrome::GetChannel() /* chromeos_channel */, device_market_segment,
+          last_powerwash_week},
       g_browser_process->local_state(),
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),

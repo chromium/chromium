@@ -136,6 +136,16 @@ bool IsSameYearAndMonth(base::Time ts1, base::Time ts2) {
          (ts1_exploded.month == ts2_exploded.month);
 }
 
+bool IsFirstActiveUnderFourMonthsAgo(base::Time active_ts,
+                                     base::Time first_active_week) {
+  // Simplify calculation to determine whether device was first active
+  // within 4 months in the past. Assume max of 31 days in a month.
+  base::Time starting_point = active_ts - base::Days(4 * 31);
+
+  // Check if first_active_week is after the starting point
+  return first_active_week >= starting_point;
+}
+
 std::string FormatTimestampToMidnightGMTString(base::Time ts) {
   return base::UnlocalizedTimeFormatWithPattern(ts, "yyyy-MM-dd 00:00:00.000 z",
                                                 icu::TimeZone::getGMT());

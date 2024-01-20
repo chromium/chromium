@@ -353,4 +353,30 @@ TEST(TimeUtilsTest, ConvertTimeToISO8601String) {
   }
 }
 
+TEST(TimeUtilsTest, IsFirstActiveUnderFourMonthsAgo) {
+  struct {
+    base::Time::Exploded active_exploded;
+    base::Time::Exploded first_active_exploded;
+    bool expected_result;
+  } kTestCases[] = {
+      // Check when active and first active represent the same time.
+      {{2021, 1, 0, 3, 12, 30, 0, 0}, {2021, 1, 0, 3, 12, 30, 0, 0}, true},
+      // Check boundary case if first active under four months ago.
+      {{2021, 1, 0, 31, 12, 30, 0, 0}, {2020, 10, 0, 1, 12, 30, 0, 0}, true},
+      // Check outside four month boundary is false.
+      {{2021, 1, 0, 31, 12, 30, 0, 0}, {2020, 9, 0, 1, 12, 30, 0, 0}, false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::Time active_ts;
+    base::Time first_active_ts;
+    EXPECT_TRUE(
+        base::Time::FromUTCExploded(test_case.active_exploded, &active_ts));
+    EXPECT_TRUE(base::Time::FromUTCExploded(test_case.first_active_exploded,
+                                            &first_active_ts));
+    EXPECT_EQ(IsFirstActiveUnderFourMonthsAgo(active_ts, first_active_ts),
+              test_case.expected_result);
+  }
+}
+
 }  // namespace ash::report::utils

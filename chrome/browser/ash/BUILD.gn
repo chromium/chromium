@@ -4145,6 +4145,7 @@ source_set("ash") {
     "//chromeos/ash/components/power",
     "//chromeos/ash/components/report",
     "//chromeos/ash/components/report:fresnel_service_proto",
+    "//chromeos/ash/components/report:utils",
     "//chromeos/ash/components/scalable_iph:buildflags",
     "//chromeos/ash/components/scalable_iph:constants",
     "//chromeos/ash/components/scalable_iph:iph_session",

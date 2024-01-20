@@ -196,6 +196,8 @@ BASE_DECLARE_FEATURE(kDeviceActiveClientChurnObservationCheckIn);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDeviceActiveClientChurnObservationCheckMembership);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kDeviceActiveClientChurnObservationNewDeviceMetadata);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDeviceForceScheduledReboot);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta>

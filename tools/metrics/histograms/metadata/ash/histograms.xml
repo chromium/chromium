@@ -5844,6 +5844,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Report.IsLastPowerwashTimeRead" enum="BooleanSuccess"
+    expires_after="2024-10-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Record success when the last powerwash time file is read successfully. This
+    histogram is recorded after browser start up, while checking the
+    preconditions of whether to initialize the ReportController. ChromeOS only.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Report.IsOobeCompleted" enum="BooleanSuccess"
     expires_after="2024-10-01">
   <owner>hirthanan@google.com</owner>
