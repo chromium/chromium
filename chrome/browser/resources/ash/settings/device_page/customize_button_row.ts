@@ -12,7 +12,6 @@ import '../os_settings_icons.html.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -126,11 +125,6 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
     this.observeButtonPresses();
     // Focus dropdown right away as this button was just pressed.
     this.$.remappingActionDropdown!.focus();
-  }
-
-  override focus(): void {
-    assert(this.$.remappingActionDropdown);
-    this.$.remappingActionDropdown.focus();
   }
 
   private observeButtonPresses(): void {

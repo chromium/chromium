@@ -16,7 +16,6 @@ import './customize_button_row.js';
 import './key_combination_input_dialog.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -29,7 +28,6 @@ import {KeyCombinationInputDialogElement} from './key_combination_input_dialog.j
 export interface CustomizeButtonsSubsectionElement {
   $: {
     keyCombinationInputDialog: KeyCombinationInputDialogElement,
-    subsection: HTMLDivElement,
   };
 }
 
@@ -123,14 +121,10 @@ export class CustomizeButtonsSubsectionElement extends
     this.addEventListener(
         'show-key-combination-dialog', this.showKeyCombinationDialog_);
     this.dragAndDropManager.init(this, this.onDrop_.bind(this));
-    this.addEventListener(
-        'key-combination-dialog-close', this.onKeyCombinationDialogClose_);
   }
 
   override disconnectedCallback(): void {
     this.dragAndDropManager.destroy();
-    this.removeEventListener(
-        'key-combination-dialog-close', this.onKeyCombinationDialogClose_);
   }
 
   private showRenamingDialog_(e: ShowRenamingDialogEvent): void {
@@ -249,14 +243,6 @@ export class CustomizeButtonsSubsectionElement extends
           composed: true,
         }));
       };
-
-  private onKeyCombinationDialogClose_(): void {
-    const buttonRows =
-        this.$.subsection.querySelectorAll('customize-button-row');
-
-    assert(!!buttonRows && buttonRows.length > this.selectedButtonIndex_);
-    buttonRows[this.selectedButtonIndex_].focus();
-  }
 }
 
 declare global {
