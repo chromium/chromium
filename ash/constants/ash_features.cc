@@ -1349,12 +1349,12 @@ BASE_FEATURE(kGoogleOneOfferFilesBanner,
 // Enables growth framework.
 BASE_FEATURE(kGrowthFramework,
              "GrowthFramework",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Demo mode customizations with growth campaigns.
 BASE_FEATURE(kGrowthCampaignsInDemoMode,
              "GrowthCampaignsInDemoMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables new on-device recognition for legacy handwriting input.
 // This flag should be OVERRIDDEN for devices which do not have on-device
