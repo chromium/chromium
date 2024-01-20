@@ -1025,9 +1025,17 @@ ExtensionTelemetryService::GetExtensionInfoForReport(
   extension_info->set_id(extension.id());
   extension_info->set_name(extension.name());
   extension_info->set_version(extension.version().GetString());
-  extension_info->set_install_timestamp_msec(
-      extension_prefs_->GetLastUpdateTime(extension.id())
-          .InMillisecondsSinceUnixEpoch());
+  if (extension.location() == ManifestLocation::kCommandLine) {
+    // Set the install timestamp to 0 explicitly for a command-line extension
+    // to indicate that it is not actually installed. This is required
+    // because the extension may still have associated extension prefs
+    // from the last time it was installed (eg. when ESB was disabled).
+    extension_info->set_install_timestamp_msec(0);
+  } else {
+    extension_info->set_install_timestamp_msec(
+        extension_prefs_->GetLastUpdateTime(extension.id())
+            .InMillisecondsSinceUnixEpoch());
+  }
   extension_info->set_is_default_installed(
       extension.was_installed_by_default());
   extension_info->set_is_oem_installed(extension.was_installed_by_oem());
