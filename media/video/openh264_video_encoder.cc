@@ -383,7 +383,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                         "Can't allocate an I420 frame."));
       return;
     }
-    auto status = ConvertAndScaleFrame(*frame, *i420_frame, conversion_buffer_);
+    auto status = frame_converter_.ConvertAndScale(*frame, *i420_frame);
     if (!status.is_ok()) {
       std::move(done_cb).Run(
           EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode)

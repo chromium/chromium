@@ -27,6 +27,7 @@
 #include "media/base/bitrate.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_encoder.h"
+#include "media/base/video_frame_converter.h"
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
@@ -310,8 +311,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Preferred adapter for DXGIDeviceManager.
   const CHROME_LUID luid_;
 
-  // A buffer used as a scratch space for I420 to NV12 conversion
-  std::vector<uint8_t> resize_buffer_;
+  // Used for frame format conversion.
+  VideoFrameConverter frame_converter_;
 
   FlushCallback flush_callback_;
 

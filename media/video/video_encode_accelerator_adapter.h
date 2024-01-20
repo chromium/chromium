@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/video_encoder.h"
+#include "media/base/video_frame_converter.h"
 #include "media/media_buildflags.h"
 #include "media/video/video_encode_accelerator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -182,7 +183,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
 
   VideoPixelFormat format_;
   InputBufferKind input_buffer_preference_ = InputBufferKind::Any;
-  std::vector<uint8_t> resize_buf_;
+  VideoFrameConverter frame_converter_;
 
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoEncodeAccelerator::SupportedRateControlMode supported_rc_modes_ =

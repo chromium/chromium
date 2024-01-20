@@ -19,6 +19,7 @@
 #include "media/base/test_helpers.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_frame_converter.h"
 #include "media/base/video_util.h"
 #include "media/gpu/android/ndk_video_encode_accelerator.h"
 #include "media/video/fake_gpu_memory_buffer.h"
@@ -148,7 +149,7 @@ class NdkVideoEncoderAcceleratorTest
     auto i420_frame = CreateI420Frame(size, color, timestamp);
     auto nv12_frame = VideoFrame::CreateFrame(PIXEL_FORMAT_NV12, size,
                                               gfx::Rect(size), size, timestamp);
-    auto status = ConvertAndScaleFrame(*i420_frame, *nv12_frame, resize_buff_);
+    auto status = frame_converter_.ConvertAndScale(*i420_frame, *nv12_frame);
     EXPECT_TRUE(status.is_ok());
     return nv12_frame;
   }
@@ -233,7 +234,7 @@ class NdkVideoEncoderAcceleratorTest
   absl::optional<EncoderStatus> error_status_;
   size_t input_buffer_size_ = 0;
   int32_t last_buffer_id_ = 0;
-  std::vector<uint8_t> resize_buff_;
+  VideoFrameConverter frame_converter_;
 };
 
 TEST_P(NdkVideoEncoderAcceleratorTest, InitializeAndDestroy) {

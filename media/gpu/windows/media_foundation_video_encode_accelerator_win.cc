@@ -1867,15 +1867,15 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
             end - scoped_buffer.get());
 
   // Set up a VideoFrame with the data pointing into the input buffer.
-  // We need it to ease copying and scaling by reusing ConvertAndScaleFrame()
+  // We need it to ease copying and scaling by reusing ConvertAndScale()
   auto frame_in_buffer = VideoFrame::WrapExternalYuvData(
       kTargetPixelFormat, input_visible_size_, gfx::Rect(input_visible_size_),
       input_visible_size_, dst_y_stride, dst_uv_stride, dst_y, dst_uv,
       frame->timestamp());
 
-  auto status = ConvertAndScaleFrame(*frame, *frame_in_buffer, resize_buffer_);
+  auto status = frame_converter_.ConvertAndScale(*frame, *frame_in_buffer);
   if (!status.is_ok()) {
-    LOG(ERROR) << "ConvertAndScaleFrame failed with error code: "
+    LOG(ERROR) << "ConvertAndScale failed with error code: "
                << static_cast<uint32_t>(status.code());
     return E_FAIL;
   }

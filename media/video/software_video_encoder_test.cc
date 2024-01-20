@@ -150,7 +150,7 @@ class SoftwareVideoEncoderTest
     auto i420_frame = CreateI420Frame(size, color, timestamp);
     auto nv12_frame = VideoFrame::CreateFrame(PIXEL_FORMAT_NV12, size,
                                               gfx::Rect(size), size, timestamp);
-    auto status = ConvertAndScaleFrame(*i420_frame, *nv12_frame, resize_buff_);
+    auto status = frame_converter_.ConvertAndScale(*i420_frame, *nv12_frame);
     EXPECT_TRUE(status.is_ok());
     return nv12_frame;
   }
@@ -335,7 +335,7 @@ class SoftwareVideoEncoderTest
   VideoCodec codec_;
   VideoCodecProfile profile_;
   VideoPixelFormat pixel_format_;
-  std::vector<uint8_t> resize_buff_;
+  VideoFrameConverter frame_converter_;
 
   NullMediaLog media_log_;
   base::test::TaskEnvironment task_environment_;
@@ -870,7 +870,6 @@ TEST_P(H264VideoEncoderTest, ReconfigureWithResize) {
   DecodeAndWaitForStatus(DecoderBuffer::CreateEOSBuffer());
 
   EXPECT_EQ(decoded_frames.size(), frames_to_encode.size());
-  std::vector<uint8_t> conversion_buffer;
   for (auto i = 0u; i < decoded_frames.size(); i++) {
     auto original_frame = frames_to_encode[i];
     auto decoded_frame = decoded_frames[i];
@@ -885,9 +884,8 @@ TEST_P(H264VideoEncoderTest, ReconfigureWithResize) {
       auto i420_frame =
           VideoFrame::CreateFrame(PIXEL_FORMAT_I420, size, gfx::Rect(size),
                                   size, decoded_frame->timestamp());
-      EXPECT_TRUE(
-          ConvertAndScaleFrame(*original_frame, *i420_frame, conversion_buffer)
-              .is_ok());
+      EXPECT_TRUE(frame_converter_.ConvertAndScale(*original_frame, *i420_frame)
+                      .is_ok());
       original_frame = i420_frame;
     }
     EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame),

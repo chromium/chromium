@@ -475,7 +475,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     }
 
     auto convert_status =
-        ConvertAndScaleFrame(*frame, *resized_frame, resize_buf_);
+        frame_converter_.ConvertAndScale(*frame, *resized_frame);
     if (!convert_status.is_ok()) {
       std::move(done_cb).Run(
           EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode)

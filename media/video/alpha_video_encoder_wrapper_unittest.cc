@@ -150,7 +150,6 @@ class AlphaVideoEncoderWrapperTest
  protected:
   VideoCodec codec_;
   VideoCodecProfile profile_;
-  std::vector<uint8_t> resize_buff_;
 
   MockMediaLog media_log_;
   base::test::TaskEnvironment task_environment_;
