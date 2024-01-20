@@ -328,7 +328,7 @@
         Use Orca to create a draft or refine existing work, powered by Google AI
       </message>
       <message name="IDS_EDITOR_MENU_PROMO_CARD_DISMISS_BUTTON" desc="Label on the dismiss button in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
-        Dismiss
+        No thanks
       </message>
       <message name="IDS_EDITOR_MENU_PROMO_CARD_TRY_IT_BUTTON" desc="Label on the try it button in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
         Try it
