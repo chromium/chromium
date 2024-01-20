@@ -149,6 +149,21 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
                         + " activity at requested index: "
                         + activityAtRequestedIndex;
         if (activityAtRequestedIndex != null) {
+            // Start actively listen to activity status once conflict at index is found.
+            ApplicationStatus.registerStateListenerForActivity(
+                    (activityAtIndex, newState) -> {
+                        final int localTaskId = ApplicationStatus.getTaskId(activityAtIndex);
+                        Log.i(
+                                TAG_MULTI_INSTANCE,
+                                "ActivityAtRequestedIndex "
+                                        + activityAtIndex
+                                        + " taskId "
+                                        + localTaskId
+                                        + " newState "
+                                        + newState);
+                    },
+                    activityAtRequestedIndex);
+
             message +=
                     " ApplicationStatus activity state: "
                             + ApplicationStatus.getStateForActivity(activityAtRequestedIndex)
