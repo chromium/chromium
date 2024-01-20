@@ -12,6 +12,7 @@ option java_outer_classname = "ModelQualityMetadataProto";
 package optimization_guide.proto;
 
 import "third_party/metrics_proto/system_profile.proto";
+import "components/optimization_guide/proto/model_execution.proto";
 
 // Contains metadata about a specific feature's AiLoggingData (e.g. training
 // opt-out, etc.).
@@ -31,4 +32,7 @@ message LoggingMetadata {
 // the ModelExecutionService logs on the server.
 message ModelExecutionInfo {
   string server_execution_id = 1;
+
+  // The error code returned by the model execution server, if any.
+  ErrorResponse error_response = 3;
 }

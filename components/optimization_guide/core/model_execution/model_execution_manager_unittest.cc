@@ -207,6 +207,57 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithServerError) {
       "OptimizationGuide.ModelExecution.Result.Compose", false, 1);
 }
 
+TEST_F(ModelExecutionManagerTest,
+       ExecuteModelWithServerErrorAllowedForLogging) {
+  base::HistogramTester histogram_tester;
+
+  proto::ComposeRequest request;
+  request.mutable_generate_params()->set_user_input("a user typed this");
+  base::RunLoop run_loop;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+  auto session = model_execution_manager()->StartSession(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  session->ExecuteModel(
+      request, base::BindRepeating(
+                   [](base::RunLoop* run_loop,
+                      OptimizationGuideModelStreamingExecutionResult result,
+                      std::unique_ptr<ModelQualityLogEntry> log_entry) {
+                     EXPECT_FALSE(result.has_value());
+                     EXPECT_EQ(OptimizationGuideModelExecutionError::
+                                   ModelExecutionError::kUnsupportedLanguage,
+                               result.error().error());
+                     EXPECT_NE(log_entry, nullptr);
+                     // Check that correct error state is recordered.
+                     EXPECT_EQ(
+                         proto::ErrorState::ERROR_STATE_UNSUPPORTED_LANGUAGE,
+                         log_entry->log_ai_data_request()
+                             ->mutable_model_execution_info()
+                             ->mutable_error_response()
+                             ->error_state());
+                     run_loop->Quit();
+                   },
+                   &run_loop));
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+
+  std::string serialized_response;
+  proto::ExecuteResponse execute_response;
+  execute_response.mutable_error_response()->set_error_state(
+      proto::ErrorState::ERROR_STATE_UNSUPPORTED_LANGUAGE);
+  execute_response.SerializeToString(&serialized_response);
+  EXPECT_TRUE(SimulateResponse(serialized_response, net::HTTP_OK));
+
+  run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.ServerError.Compose",
+      OptimizationGuideModelExecutionError::ModelExecutionError::
+          kUnsupportedLanguage,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.Result.Compose", false, 1);
+}
+
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
   base::HistogramTester histogram_tester;
 
