@@ -103,6 +103,7 @@ suite('searchBoxTest', function() {
 
     // Setting the value of the search field searches for the query after a
     // short period of time.
+    searchFieldElement.$.searchInput.focus();
     searchFieldElement.setValue(query);
 
     if (query) {
