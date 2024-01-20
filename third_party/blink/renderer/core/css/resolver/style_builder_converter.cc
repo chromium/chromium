@@ -104,7 +104,7 @@ static Length ConvertGridTrackBreadth(const StyleResolverState& state,
   // Fractional unit.
   auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
   if (primitive_value && primitive_value->IsFlex()) {
-    return Length::Flex(primitive_value->GetDoubleValue());
+    return Length::Flex(primitive_value->GetFloatValue());
   }
 
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);

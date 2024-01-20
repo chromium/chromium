@@ -202,7 +202,7 @@ class PLATFORM_EXPORT Length {
   static Length Percent(NUMBER_TYPE number) {
     return Length(number, kPercent);
   }
-  static Length Flex(double value) { return Length(value, kFlex); }
+  static Length Flex(float value) { return Length(value, kFlex); }
 
   // FIXME: Make this private (if possible) or at least rename it
   // (http://crbug.com/432707).

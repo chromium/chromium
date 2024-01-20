@@ -2131,10 +2131,10 @@ LayoutUnit GridLayoutAlgorithm::ComputeSubgridIntrinsicSize(
 // Helpers for the track sizing algorithm.
 namespace {
 
-using ClampedDouble = base::ClampedNumeric<double>;
+using ClampedFloat = base::ClampedNumeric<float>;
 using SetIterator = GridSizingTrackCollection::SetIterator;
 
-const double kDoubleEpsilon = std::numeric_limits<float>::epsilon();
+const float kFloatEpsilon = std::numeric_limits<float>::epsilon();
 
 SetIterator GetSetIteratorForItem(const GridItemData& grid_item,
                                   GridSizingTrackCollection& track_collection) {
@@ -2344,15 +2344,15 @@ bool AreEqual(T a, T b) {
 }
 
 template <>
-bool AreEqual<double>(double a, double b) {
-  return std::abs(a - b) < kDoubleEpsilon;
+bool AreEqual<float>(float a, float b) {
+  return std::abs(a - b) < kFloatEpsilon;
 }
 
 // Follow the definitions from https://drafts.csswg.org/css-grid-2/#extra-space;
 // notice that this method replaces the notion of "tracks" with "sets".
 template <bool is_equal_distribution>
 void DistributeExtraSpaceToSets(LayoutUnit extra_space,
-                                double flex_factor_sum,
+                                float flex_factor_sum,
                                 GridItemContributionType contribution_type,
                                 GridSetPtrVector* sets_to_grow,
                                 GridSetPtrVector* sets_to_grow_beyond_limit) {
@@ -2398,8 +2398,8 @@ void DistributeExtraSpaceToSets(LayoutUnit extra_space,
       growable_track_count += set->track_count;
   }
 
-  using ShareRatioType = typename std::conditional<is_equal_distribution,
-                                                   wtf_size_t, double>::type;
+  using ShareRatioType =
+      typename std::conditional<is_equal_distribution, wtf_size_t, float>::type;
   DCHECK(is_equal_distribution ||
          !AreEqual<ShareRatioType>(flex_factor_sum, 0));
   ShareRatioType share_ratio_sum =
@@ -2437,7 +2437,7 @@ void DistributeExtraSpaceToSets(LayoutUnit extra_space,
 
     // Only sort for equal distributions; since the growth potential of any
     // flexible set is infinite, they don't require comparing.
-    if (AreEqual<double>(flex_factor_sum, 0)) {
+    if (AreEqual<float>(flex_factor_sum, 0)) {
       DCHECK(is_equal_distribution);
       std::sort(sets_to_grow->begin(), sets_to_grow->end(),
                 CompareSetsByGrowthPotential);
@@ -2595,7 +2595,7 @@ void DistributeExtraSpaceToSetsEqually(
 
 void DistributeExtraSpaceToWeightedSets(
     LayoutUnit extra_space,
-    double flex_factor_sum,
+    float flex_factor_sum,
     GridItemContributionType contribution_type,
     GridSetPtrVector* sets_to_grow) {
   DistributeExtraSpaceToSets</* is_equal_distribution */ false>(
@@ -2631,7 +2631,7 @@ void GridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
     sets_to_grow.Shrink(0);
     sets_to_grow_beyond_limit.Shrink(0);
 
-    ClampedDouble flex_factor_sum = 0;
+    ClampedFloat flex_factor_sum = 0;
     LayoutUnit spanned_tracks_size = track_collection->GutterSize() *
                                      (grid_item.SpanSize(track_direction) - 1);
     for (auto set_iterator =
@@ -2683,7 +2683,7 @@ void GridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
     //   spanned by the item is greater than zero, distributing space to such
     //   tracks according to the ratios of their flexible sizing functions
     //   rather than distributing space equally.
-    if (!is_group_spanning_flex_track || AreEqual<double>(flex_factor_sum, 0)) {
+    if (!is_group_spanning_flex_track || AreEqual<float>(flex_factor_sum, 0)) {
       DistributeExtraSpaceToSetsEqually(
           extra_space, contribution_type, &sets_to_grow,
           sets_to_grow_beyond_limit.empty() ? &sets_to_grow
@@ -2955,15 +2955,15 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
   // https://drafts.csswg.org/css-grid-2/#algo-find-fr-size
   GridSetPtrVector flexible_sets;
   auto FindFrSize = [&](SetIterator set_iterator,
-                        LayoutUnit leftover_space) -> double {
-    ClampedDouble flex_factor_sum = 0;
+                        LayoutUnit leftover_space) -> float {
+    ClampedFloat flex_factor_sum = 0;
     wtf_size_t total_track_count = 0;
     flexible_sets.Shrink(0);
 
     while (!set_iterator.IsAtEnd()) {
       auto& set = set_iterator.CurrentSet();
       if (set.track_size.HasFlexMaxTrackBreadth() &&
-          !AreEqual<double>(set.FlexFactor(), 0)) {
+          !AreEqual<float>(set.FlexFactor(), 0)) {
         flex_factor_sum += set.FlexFactor();
         flexible_sets.push_back(&set);
       } else {
@@ -3030,7 +3030,7 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
       // Any upcoming flexible set will receive a share of free space of at
       // least their base size; return the current hypothetical fr size.
       if (current_set == next_set) {
-        DCHECK(!AreEqual<double>(flex_factor_sum, 0));
+        DCHECK(!AreEqual<float>(flex_factor_sum, 0));
         return leftover_space.RawValue() / flex_factor_sum;
       }
 
@@ -3046,7 +3046,7 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
     return 0;
   };
 
-  double fr_size = 0;
+  float fr_size = 0;
   if (free_space != kIndefiniteSize) {
     // Otherwise, if the free space is a definite length, the used flex fraction
     // is the result of finding the size of an fr using all of the grid tracks
@@ -3065,7 +3065,7 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
          sizing_subtree.GridItems().IncludeSubgriddedItems()) {
       if (grid_item.IsConsideredForSizing(track_direction) &&
           grid_item.IsSpanningFlexibleTrack(track_direction)) {
-        double grid_item_fr_size =
+        float grid_item_fr_size =
             FindFrSize(GetSetIteratorForItem(grid_item, track_collection),
                        ContributionSizeForGridItem(
                            sizing_subtree,
@@ -3085,8 +3085,7 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
         continue;
 
       DCHECK_GT(set.track_count, 0u);
-      double set_flex_factor =
-          base::ClampMax(set.FlexFactor(), set.track_count);
+      float set_flex_factor = base::ClampMax(set.FlexFactor(), set.track_count);
       fr_size = std::max(set.BaseSize().RawValue() / set_flex_factor, fr_size);
     }
   }
@@ -3096,7 +3095,7 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
   // when multiple sets lose the fractional part of the computation we may not
   // distribute the entire free space. We fix this issue by accumulating the
   // leftover fractional part from every flexible set.
-  double leftover_size = 0;
+  float leftover_size = 0;
 
   for (auto set_iterator = track_collection.GetSetIterator();
        !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
@@ -3104,10 +3103,10 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
     if (!set.track_size.HasFlexMaxTrackBreadth())
       continue;
 
-    const ClampedDouble fr_share = fr_size * set.FlexFactor() + leftover_size;
+    const ClampedFloat fr_share = fr_size * set.FlexFactor() + leftover_size;
     // Add an epsilon to round up values very close to the next integer.
     const LayoutUnit expanded_size =
-        LayoutUnit::FromRawValue(fr_share + kDoubleEpsilon);
+        LayoutUnit::FromRawValue(fr_share + kFloatEpsilon);
 
     if (!expanded_size.MightBeSaturated() && expanded_size >= set.BaseSize()) {
       set.IncreaseBaseSize(expanded_size);

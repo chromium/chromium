@@ -409,7 +409,7 @@ GridSet::GridSet(wtf_size_t track_count,
          track_size.GetType() == kMinMaxTrackSizing);
 }
 
-double GridSet::FlexFactor() const {
+float GridSet::FlexFactor() const {
   DCHECK(track_size.HasFlexMaxTrackBreadth());
   return track_size.MaxTrackBreadth().GetFloatValue() * track_count;
 }
