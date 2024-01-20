@@ -282,20 +282,20 @@ class ClientControlledStateTest : public AshTestBase {
     widget->Show();
     widget->Activate();
   }
-  void DragResizeSnappedWindow(int target_x) {
-    ASSERT_TRUE(window_state()->IsSnapped());
+  void DragResizeSnappedWindow(aura::Window* window, int target_x) {
+    ASSERT_TRUE(WindowState::Get(window)->IsSnapped());
 
     ui::test::EventGenerator* const generator = GetEventGenerator();
     const bool in_tablet = display::Screen::GetScreen()->InTabletMode();
     if (in_tablet) {
-      auto* split_view_controller = SplitViewController::Get(window());
+      auto* split_view_controller = SplitViewController::Get(window);
       const gfx::Rect divider_bounds =
           split_view_controller->split_view_divider()->GetDividerBoundsInScreen(
               false);
       generator->set_current_screen_location(divider_bounds.CenterPoint());
     } else {
       generator->set_current_screen_location(
-          window()->GetBoundsInScreen().right_center());
+          window->GetBoundsInScreen().right_center());
     }
     generator->DragMouseTo(gfx::Point(target_x, 0));
   }
@@ -728,7 +728,7 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, SnapMinimizeAndUnminimize) {
 
   const float target_width = 300;
   const float expected_snap_ratio = target_width / 900;
-  DragResizeSnappedWindow(target_width);
+  DragResizeSnappedWindow(window(), target_width);
 
   // Apply pending requests.
   ApplyPendingRequestedBounds();
@@ -814,6 +814,7 @@ TEST_F(ClientControlledStateTest, AutoSnap) {
 // Tests that auto partial-snapping from maximized/minimized via overview/shelf
 // works for ClientControlledState.
 TEST_F(ClientControlledStateTest, AutoPartialSnap) {
+  UpdateDisplay("900x600");
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
 
@@ -864,6 +865,48 @@ TEST_F(ClientControlledStateTest, AutoPartialSnap) {
   state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_TRUE(window_state()->IsMinimized());
   EXPECT_FALSE(window()->IsVisible());
+
+  // Unminimize `window()` by clicking the app icon on the shelf.
+  SimulateUnminimizeViaShelfIcon(widget());
+
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
+  VerifySnappedBounds(window(), chromeos::kTwoThirdSnapRatio);
+  VerifySnappedBounds(non_client_controlled_window.get(),
+                      chromeos::kOneThirdSnapRatio);
+
+  // Minimize `window()`.
+  window_state()->OnWMEvent(&minimize);
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_TRUE(window_state()->IsMinimized());
+  EXPECT_FALSE(window()->IsVisible());
+
+  // Resize `non_client_controlled_window` to 2/3 left.
+  DragResizeSnappedWindow(non_client_controlled_window.get(), 600);
+  VerifySnappedBounds(non_client_controlled_window.get(),
+                      chromeos::kTwoThirdSnapRatio);
+
+  // Click `window()`'s overview item to snap to 1/3 right.
+  ClickOnOverviewItem(window());
+
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
+  VerifySnappedBounds(window(), chromeos::kOneThirdSnapRatio);
+  VerifySnappedBounds(non_client_controlled_window.get(),
+                      chromeos::kTwoThirdSnapRatio);
+
+  // Minimize `window()`.
+  window_state()->OnWMEvent(&minimize);
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_TRUE(window_state()->IsMinimized());
+  EXPECT_FALSE(window()->IsVisible());
+
+  // Resize `non_client_controlled_window` to 1/3 left.
+  DragResizeSnappedWindow(non_client_controlled_window.get(), 300);
+  VerifySnappedBounds(non_client_controlled_window.get(),
+                      chromeos::kOneThirdSnapRatio);
 
   // Unminimize `window()` by clicking the app icon on the shelf.
   SimulateUnminimizeViaShelfIcon(widget());
@@ -1189,7 +1232,7 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, ResizeSnappedWindow) {
 
   // Resize to 1/3 (i.e. make the width 400).
   const float target_width = 400;
-  DragResizeSnappedWindow(target_width);
+  DragResizeSnappedWindow(window(), target_width);
   ApplyPendingRequestedBounds();
   VerifySnappedBounds(window(), target_width / 1200);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
