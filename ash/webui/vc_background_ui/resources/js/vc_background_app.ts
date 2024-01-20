@@ -54,6 +54,10 @@ export class VcBackgroundApp extends VcBackgroundAppBase {
     // Navigates to the top of the subpage.
     window.scrollTo(0, 0);
   }
+
+  private onRefuseSeaPenTermsOfService_() {
+    window.close();
+  }
 }
 
 declare global {

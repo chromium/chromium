@@ -163,3 +163,29 @@ export function openFeedbackDialog(
     metadata: SeaPenFeedbackMetadata, provider: SeaPenProviderInterface) {
   provider.openFeedbackDialog(metadata);
 }
+
+export async function getShouldShowSeaPenTermsOfServiceDialog(
+    provider: SeaPenProviderInterface,
+    store: SeaPenStoreInterface): Promise<void> {
+  const {shouldShowDialog} =
+      await provider.shouldShowSeaPenTermsOfServiceDialog();
+
+  // Dispatch action to set the should show dialog boolean.
+  store.dispatch(seaPenAction.setShouldShowSeaPenTermsOfServiceDialogAction(
+      shouldShowDialog));
+}
+
+export async function acceptSeaPenTermsOfService(
+    provider: SeaPenProviderInterface,
+    store: SeaPenStoreInterface): Promise<void> {
+  if (!store.data.shouldShowSeaPenTermsOfServiceDialog) {
+    // Do nothing if the terms are already accepted;
+    return;
+  }
+
+  await provider.handleSeaPenTermsOfServiceAccepted();
+
+  // Dispatch action to set the should show dialog boolean.
+  store.dispatch(
+      seaPenAction.setShouldShowSeaPenTermsOfServiceDialogAction(false));
+}
