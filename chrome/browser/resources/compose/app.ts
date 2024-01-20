@@ -526,6 +526,15 @@ export class ComposeAppElement extends ComposeAppElementBase {
       return;
     }
 
+    // When pressing tab from the last focusable element on the page, the
+    // browser seems to reset focus onto document.body and cause a temporary
+    // window blur. Do not show the saved state notification in this case
+    // since this allows users to hit tab from the last focusable element
+    // to loop focus back to the first focusable element.
+    if (document.activeElement === document.body) {
+      return;
+    }
+
     // Show Saved State Notification if losing focus from the main app dialog.
     if (this.showMainAppDialog_) {
       this.showMainAppDialog_ = false;
