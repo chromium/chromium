@@ -3923,11 +3923,18 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Account bookmarks strings -->
-      <message name="IDS_LOCAL_BOOKMARKS_SECTION_HEADER">
+      <message name="IDS_LOCAL_BOOKMARKS_SECTION_HEADER" desc="The section header of local top-level bookmark folders.">
         Only on this device
       </message>
-      <message name="IDS_ACCOUNT_BOOKMARKS_SECTION_HEADER">
+      <message name="IDS_ACCOUNT_BOOKMARKS_SECTION_HEADER" desc="The section header of account top-level bookmark folders.">
         In your Google Account
+      </message>
+      <!-- Power bookmarks strings-->
+      <message name="IDS_ACCOUNT_BOOKMARK_SAVE_FLOW_TITLE" desc="The title of the save flow when a user chooses save a bookmarks.">
+        Saved in <ph name="FOLDER_NAME">%1$s<ex>Mobile bookmarks</ex></ph>
+      </message>
+      <message name="IDS_ACCOUNT_BOOKMARK_SAVE_FLOW_SUBTITLE_LOCAL" desc="The subtitle of the save flow when a user saves a bokmark locally.">
+        On this device
       </message>
 
       <!-- Read later strings -->

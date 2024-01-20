@@ -67,6 +67,7 @@ found in the LICENSE file.
           android:focusable="false"
           android:clickable="false" >
         <TextView
+            android:id="@+id/bookmark_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/bookmark_save_flow_title"

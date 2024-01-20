@@ -19,9 +19,10 @@ class ImprovedBookmarkSaveFlowViewBinder {
         } else if (propertyKey == ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON) {
             improvedSaveFlow.setBookmarkDrawable(
                     model.get(ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON));
-        } else if (propertyKey == ImprovedBookmarkSaveFlowProperties.FOLDER_TEXT) {
-            improvedSaveFlow.setFolderText(
-                    model.get(ImprovedBookmarkSaveFlowProperties.FOLDER_TEXT));
+        } else if (propertyKey == ImprovedBookmarkSaveFlowProperties.TITLE) {
+            improvedSaveFlow.setTitle(model.get(ImprovedBookmarkSaveFlowProperties.TITLE));
+        } else if (propertyKey == ImprovedBookmarkSaveFlowProperties.SUBTITLE) {
+            improvedSaveFlow.setSubtitle(model.get(ImprovedBookmarkSaveFlowProperties.SUBTITLE));
         } else if (propertyKey == ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE) {
             improvedSaveFlow.setPriceTrackingUiVisible(
                     model.get(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE));

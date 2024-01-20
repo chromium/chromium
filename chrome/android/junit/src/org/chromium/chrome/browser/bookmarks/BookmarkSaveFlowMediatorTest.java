@@ -30,6 +30,7 @@ import org.chromium.components.commerce.core.IdentifierType;
 import org.chromium.components.commerce.core.ManagementType;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionType;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
@@ -55,6 +56,7 @@ public class BookmarkSaveFlowMediatorTest {
     @Mock private CommerceSubscription mSubscription;
     @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
     @Mock private Profile mProfile;
+    @Mock private IdentityManager mIdentityManager;
 
     @Before
     public void setup() {
@@ -66,7 +68,8 @@ public class BookmarkSaveFlowMediatorTest {
                         mCloseRunnable,
                         mShoppingService,
                         mBookmarkImageFetcher,
-                        mProfile);
+                        mProfile,
+                        mIdentityManager);
         mMediator.setSubscriptionForTesting(mSubscription);
     }
 

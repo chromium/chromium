@@ -32,6 +32,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
@@ -54,6 +55,7 @@ import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
@@ -64,7 +66,10 @@ import java.util.concurrent.ExecutionException;
 /** Tests for the bookmark save flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
+    ChromeFeatureList.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE
+})
 public class BookmarkSaveFlowTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -82,6 +87,7 @@ public class BookmarkSaveFlowTest {
     @Mock private ShoppingService mShoppingService;
     @Mock private PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
     @Mock private UserEducationHelper mUserEducationHelper;
+    @Mock private IdentityManager mIdentityManager;
 
     private BookmarkSaveFlowCoordinator mBookmarkSaveFlowCoordinator;
     private BottomSheetController mBottomSheetController;
@@ -110,7 +116,8 @@ public class BookmarkSaveFlowTest {
                                     mBottomSheetController,
                                     mShoppingService,
                                     mUserEducationHelper,
-                                    Profile.getLastUsedRegularProfile());
+                                    Profile.getLastUsedRegularProfile(),
+                                    mIdentityManager);
                 });
 
         loadBookmarkModel();
@@ -150,6 +157,41 @@ public class BookmarkSaveFlowTest {
                 });
         mRenderTestRule.render(
                 mBookmarkSaveFlowCoordinator.getViewForTesting(), "bookmark_save_flow");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testBookmarkSaveFlow_improvedBookmarks() throws IOException {
+        TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
+                    mBookmarkSaveFlowCoordinator.show(id);
+                    return null;
+                });
+        mRenderTestRule.render(
+                mBookmarkSaveFlowCoordinator.getViewForTesting(), "bookmark_save_flow_improved");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
+        ChromeFeatureList.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE
+    })
+    public void testBookmarkSaveFlow_improvedBookmarks_accountBookmarksEnabled()
+            throws IOException {
+        TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
+                    mBookmarkSaveFlowCoordinator.show(id);
+                    return null;
+                });
+        mRenderTestRule.render(
+                mBookmarkSaveFlowCoordinator.getViewForTesting(),
+                "bookmark_save_flow_improved_account");
     }
 
     @Test
