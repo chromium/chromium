@@ -11,5 +11,12 @@
       { start: "2018-10-01", domain: "google.com"},
     ]
   },
+  "cavalcantii@chromium.org": {
+    affiliations: [
+      { start: "2022-05-03", domain: "intel.com" },
+      { start: "2016-08-15", domain: "arm.com" },
+      { start: "2014-10-08", domain: "adenilson.org" },
+    ]
+  },
 }
 
