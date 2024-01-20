@@ -26,9 +26,12 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/pref_names.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/metrics/metrics_log.h"
+#include "components/metrics/version_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
@@ -628,6 +631,16 @@ void OptimizationGuideKeyedService::UploadModelQualityLogs(
     return;
   }
 
+  // Set system profile proto before uploading.
+  metrics::MetricsLog::RecordCoreSystemProfile(
+      metrics::GetVersionString(),
+      metrics::AsProtobufChannel(chrome::GetChannel()),
+      chrome::IsExtendedStableChannel(),
+      g_browser_process->GetApplicationLocale(), metrics::GetAppPackageName(),
+      log_entry->logging_metadata()->mutable_system_profile());
+
+  CHECK(log_entry->logging_metadata()->has_system_profile())
+      << "System Profile Proto not set\n";
   model_quality_logs_uploader_service_.get()->UploadModelQualityLogs(
       std::move(log_entry));
 }
