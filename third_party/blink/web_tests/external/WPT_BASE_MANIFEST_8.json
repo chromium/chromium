@@ -282160,6 +282160,19 @@
        {}
       ]
      ],
+     "fDAT-inherits-cICP.html": [
+      "14f0e501e7f367b6a896677a9982501d7035c9d3",
+      [
+       null,
+       [
+        [
+         "/png/apng/apng-lime-rectangle-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "fcTL-acTL-ordering.html": [
       "9d9856d9857569e97d0240b3f0bd45f389eb3772",
       [
@@ -377896,7 +377909,7 @@
     ]
    },
    "lint.ignore": [
-    "e9f91d80f0d61cd30709d9b6c7a7429a57755ca7",
+    "2c0bc36c49e64aae61f799514414b938345caa24",
     []
    ],
    "loading": {
@@ -382444,6 +382457,10 @@
       ],
       "038.png": [
        "e95425ac1949c1c6c6a2d6f3cfac4fbd044b6d2e",
+       []
+      ],
+      "062.png": [
+       "e50902adb9fe038676cd5f45eb6ecc9468dbb2b0",
        []
       ],
       "blue-with-hole.png": [
@@ -669509,6 +669526,13 @@
        {
         "testdriver": true
        }
+      ]
+     ],
+     "simplecall_callbacks.https.html": [
+      "f7b0ba7944139b5164be880d3b7e8df9b1c0e7be",
+      [
+       null,
+       {}
       ]
      ]
     },
