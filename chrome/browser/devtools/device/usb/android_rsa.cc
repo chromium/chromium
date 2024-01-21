@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#include <numeric>
 
 #include <limits>
 #include <memory>
@@ -136,7 +137,7 @@ uint64_t BnGuess(uint32_t* a, uint32_t* b, uint64_t from, uint64_t to) {
   if (from + 1 >= to)
     return from;
 
-  uint64_t guess = (from + to) / 2;
+  uint64_t guess = std::midpoint(from, to);
   uint32_t* t = BnMul(b, static_cast<uint32_t>(guess));
   int result = BnCompare(a, t);
   BnFree(t);
