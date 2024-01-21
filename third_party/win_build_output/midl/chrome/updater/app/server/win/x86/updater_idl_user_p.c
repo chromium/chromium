@@ -2225,59 +2225,59 @@ static const updater_idl_user_MIDL_TYPE_FORMAT_STRING updater_idl_user__MIDL_Typ
 /* 50 */	
 			0x2f,		/* FC_IP */
 			0x5a,		/* FC_CONSTANT_IID */
-/* 52 */	NdrFcLong( 0x4321a27b ),	/* 1126277755 */
-/* 56 */	NdrFcShort( 0xddb ),	/* 3547 */
-/* 58 */	NdrFcShort( 0x51d9 ),	/* 20953 */
-/* 60 */	0x9e,		/* 158 */
-			0x23,		/* 35 */
-/* 62 */	0xf0,		/* 240 */
-			0x5e,		/* 94 */
-/* 64 */	0x56,		/* 86 */
-			0xe1,		/* 225 */
-/* 66 */	0x57,		/* 87 */
-			0x5f,		/* 95 */
+/* 52 */	NdrFcLong( 0x46acf70b ),	/* 1185740555 */
+/* 56 */	NdrFcShort( 0xac13 ),	/* -21485 */
+/* 58 */	NdrFcShort( 0x406d ),	/* 16493 */
+/* 60 */	0xb5,		/* 181 */
+			0x3b,		/* 59 */
+/* 62 */	0xb2,		/* 178 */
+			0xc4,		/* 196 */
+/* 64 */	0xbf,		/* 191 */
+			0x9,		/* 9 */
+/* 66 */	0x1f,		/* 31 */
+			0xf6,		/* 246 */
 /* 68 */	
 			0x2f,		/* FC_IP */
 			0x5a,		/* FC_CONSTANT_IID */
-/* 70 */	NdrFcLong( 0xd956a117 ),	/* -648634089 */
-/* 74 */	NdrFcShort( 0xc8dc ),	/* -14116 */
-/* 76 */	NdrFcShort( 0x5e7e ),	/* 24190 */
-/* 78 */	0xb4,		/* 180 */
-			0x39,		/* 57 */
-/* 80 */	0x96,		/* 150 */
-			0x42,		/* 66 */
-/* 82 */	0x81,		/* 129 */
-			0xae,		/* 174 */
-/* 84 */	0x5c,		/* 92 */
-			0xd2,		/* 210 */
+/* 70 */	NdrFcLong( 0x2fcd14af ),	/* 801969327 */
+/* 74 */	NdrFcShort( 0xb645 ),	/* -18875 */
+/* 76 */	NdrFcShort( 0x4351 ),	/* 17233 */
+/* 78 */	0x83,		/* 131 */
+			0x59,		/* 89 */
+/* 80 */	0xe8,		/* 232 */
+			0xa,		/* 10 */
+/* 82 */	0xe,		/* 14 */
+			0x20,		/* 32 */
+/* 84 */	0x2a,		/* 42 */
+			0xb,		/* 11 */
 /* 86 */	
 			0x2f,		/* FC_IP */
 			0x5a,		/* FC_CONSTANT_IID */
-/* 88 */	NdrFcLong( 0xbfe8d555 ),	/* -1075260075 */
-/* 92 */	NdrFcShort( 0x69b7 ),	/* 27063 */
-/* 94 */	NdrFcShort( 0x5621 ),	/* 22049 */
-/* 96 */	0xb1,		/* 177 */
-			0xc9,		/* 201 */
-/* 98 */	0x67,		/* 103 */
-			0xe4,		/* 228 */
-/* 100 */	0x6e,		/* 110 */
-			0xb3,		/* 179 */
-/* 102 */	0x30,		/* 48 */
-			0x10,		/* 16 */
+/* 88 */	NdrFcLong( 0xc3485d9f ),	/* -1018667617 */
+/* 92 */	NdrFcShort( 0xc684 ),	/* -14716 */
+/* 94 */	NdrFcShort( 0x4c43 ),	/* 19523 */
+/* 96 */	0xb8,		/* 184 */
+			0x5b,		/* 91 */
+/* 98 */	0xe3,		/* 227 */
+			0x39,		/* 57 */
+/* 100 */	0xea,		/* 234 */
+			0x39,		/* 57 */
+/* 102 */	0x5c,		/* 92 */
+			0x29,		/* 41 */
 /* 104 */	
 			0x2f,		/* FC_IP */
 			0x5a,		/* FC_CONSTANT_IID */
-/* 106 */	NdrFcLong( 0xedf6229 ),	/* 249520681 */
-/* 110 */	NdrFcShort( 0x1198 ),	/* 4504 */
-/* 112 */	NdrFcShort( 0x5bdf ),	/* 23519 */
-/* 114 */	0x92,		/* 146 */
-			0x97,		/* 151 */
-/* 116 */	0xc6,		/* 198 */
-			0xc4,		/* 196 */
-/* 118 */	0xe4,		/* 228 */
-			0x33,		/* 51 */
-/* 120 */	0xd2,		/* 210 */
-			0xf0,		/* 240 */
+/* 106 */	NdrFcLong( 0x9ad1a645 ),	/* -1697536443 */
+/* 110 */	NdrFcShort( 0x5a4b ),	/* 23115 */
+/* 112 */	NdrFcShort( 0x4d36 ),	/* 19766 */
+/* 114 */	0xbc,		/* 188 */
+			0x21,		/* 33 */
+/* 116 */	0xf0,		/* 240 */
+			0x5,		/* 5 */
+/* 118 */	0x94,		/* 148 */
+			0x82,		/* 130 */
+/* 120 */	0xe6,		/* 230 */
+			0xea,		/* 234 */
 /* 122 */	
 			0x12, 0x0,	/* FC_UP */
 /* 124 */	NdrFcShort( 0x3d2 ),	/* Offset= 978 (1102) */
@@ -2958,17 +2958,17 @@ static const updater_idl_user_MIDL_TYPE_FORMAT_STRING updater_idl_user__MIDL_Typ
 /* 1132 */	
 			0x2f,		/* FC_IP */
 			0x5a,		/* FC_CONSTANT_IID */
-/* 1134 */	NdrFcLong( 0x687f8890 ),	/* 1753188496 */
-/* 1138 */	NdrFcShort( 0x6651 ),	/* 26193 */
-/* 1140 */	NdrFcShort( 0x55a5 ),	/* 21925 */
-/* 1142 */	0x90,		/* 144 */
-			0x13,		/* 19 */
-/* 1144 */	0x4e,		/* 78 */
-			0xab,		/* 171 */
-/* 1146 */	0x42,		/* 66 */
-			0xdd,		/* 221 */
-/* 1148 */	0x54,		/* 84 */
-			0x25,		/* 37 */
+/* 1134 */	NdrFcLong( 0x8bab6f84 ),	/* -1951699068 */
+/* 1138 */	NdrFcShort( 0xad67 ),	/* -21145 */
+/* 1140 */	NdrFcShort( 0x4819 ),	/* 18457 */
+/* 1142 */	0xb8,		/* 184 */
+			0x46,		/* 70 */
+/* 1144 */	0xcc,		/* 204 */
+			0x89,		/* 137 */
+/* 1146 */	0x8,		/* 8 */
+			0x80,		/* 128 */
+/* 1148 */	0xfd,		/* 253 */
+			0x3b,		/* 59 */
 /* 1150 */	
 			0x11, 0x8,	/* FC_RP [simple_pointer] */
 /* 1152 */	
@@ -2977,73 +2977,73 @@ static const updater_idl_user_MIDL_TYPE_FORMAT_STRING updater_idl_user__MIDL_Typ
 /* 1154 */	
 			0x2f,		/* FC_IP */
 			0x5a,		/* FC_CONSTANT_IID */
-/* 1156 */	NdrFcLong( 0x29feaef3 ),	/* 704556787 */
-/* 1160 */	NdrFcShort( 0x81ca ),	/* -32310 */
-/* 1162 */	NdrFcShort( 0x598e ),	/* 22926 */
-/* 1164 */	0x84,		/* 132 */
-			0x37,		/* 55 */
-/* 1166 */	0x1c,		/* 28 */
-			0x30,		/* 48 */
-/* 1168 */	0x62,		/* 98 */
-			0xed,		/* 237 */
-/* 1170 */	0xbe,		/* 190 */
-			0xf0,		/* 240 */
+/* 1156 */	NdrFcLong( 0x7b416cfd ),	/* 2067885309 */
+/* 1160 */	NdrFcShort( 0x4216 ),	/* 16918 */
+/* 1162 */	NdrFcShort( 0x4fd6 ),	/* 20438 */
+/* 1164 */	0xbd,		/* 189 */
+			0x83,		/* 131 */
+/* 1166 */	0x7c,		/* 124 */
+			0x58,		/* 88 */
+/* 1168 */	0x60,		/* 96 */
+			0x54,		/* 84 */
+/* 1170 */	0x67,		/* 103 */
+			0x6e,		/* 110 */
 /* 1172 */	
 			0x2f,		/* FC_IP */
 			0x5a,		/* FC_CONSTANT_IID */
-/* 1174 */	NdrFcLong( 0x8fc6cf83 ),	/* -1882796157 */
-/* 1178 */	NdrFcShort( 0xc4ab ),	/* -15189 */
-/* 1180 */	NdrFcShort( 0x54c5 ),	/* 21701 */
-/* 1182 */	0x89,		/* 137 */
-			0xf6,		/* 246 */
-/* 1184 */	0xac,		/* 172 */
-			0xfc,		/* 252 */
-/* 1186 */	0x3a,		/* 58 */
-			0xf8,		/* 248 */
-/* 1188 */	0xd5,		/* 213 */
-			0x30,		/* 48 */
+/* 1174 */	NdrFcLong( 0xefe903c0 ),	/* -269941824 */
+/* 1178 */	NdrFcShort( 0xe820 ),	/* -6112 */
+/* 1180 */	NdrFcShort( 0x4136 ),	/* 16694 */
+/* 1182 */	0x9f,		/* 159 */
+			0xae,		/* 174 */
+/* 1184 */	0xfd,		/* 253 */
+			0xcd,		/* 205 */
+/* 1186 */	0x7f,		/* 127 */
+			0x25,		/* 37 */
+/* 1188 */	0x63,		/* 99 */
+			0x2,		/* 2 */
 /* 1190 */	
 			0x2f,		/* FC_IP */
 			0x5a,		/* FC_CONSTANT_IID */
-/* 1192 */	NdrFcLong( 0x7b080ea4 ),	/* 2064125604 */
-/* 1196 */	NdrFcShort( 0x6c28 ),	/* 27688 */
-/* 1198 */	NdrFcShort( 0x5353 ),	/* 21331 */
-/* 1200 */	0xbe,		/* 190 */
-			0xb5,		/* 181 */
-/* 1202 */	0x45,		/* 69 */
-			0x3,		/* 3 */
-/* 1204 */	0xae,		/* 174 */
-			0x8e,		/* 142 */
-/* 1206 */	0xd,		/* 13 */
-			0x38,		/* 56 */
+/* 1192 */	NdrFcLong( 0x34adc89d ),	/* 883804317 */
+/* 1196 */	NdrFcShort( 0x552b ),	/* 21803 */
+/* 1198 */	NdrFcShort( 0x4102 ),	/* 16642 */
+/* 1200 */	0x8a,		/* 138 */
+			0xe5,		/* 229 */
+/* 1202 */	0xd6,		/* 214 */
+			0x13,		/* 19 */
+/* 1204 */	0xa6,		/* 166 */
+			0x91,		/* 145 */
+/* 1206 */	0x33,		/* 51 */
+			0x5b,		/* 91 */
 /* 1208 */	
 			0x2f,		/* FC_IP */
 			0x5a,		/* FC_CONSTANT_IID */
-/* 1210 */	NdrFcLong( 0x8696ec8b ),	/* -2036929397 */
-/* 1214 */	NdrFcShort( 0x846b ),	/* -31637 */
-/* 1216 */	NdrFcShort( 0x5b6a ),	/* 23402 */
-/* 1218 */	0x85,		/* 133 */
-			0xd3,		/* 211 */
-/* 1220 */	0x43,		/* 67 */
-			0xc5,		/* 197 */
-/* 1222 */	0xc8,		/* 200 */
-			0xb7,		/* 183 */
-/* 1224 */	0xb3,		/* 179 */
-			0xeb,		/* 235 */
+/* 1210 */	NdrFcLong( 0xb54493a0 ),	/* -1253796960 */
+/* 1214 */	NdrFcShort( 0x65b7 ),	/* 26039 */
+/* 1216 */	NdrFcShort( 0x408c ),	/* 16524 */
+/* 1218 */	0xb6,		/* 182 */
+			0x50,		/* 80 */
+/* 1220 */	0x6,		/* 6 */
+			0x26,		/* 38 */
+/* 1222 */	0x5d,		/* 93 */
+			0x21,		/* 33 */
+/* 1224 */	0x82,		/* 130 */
+			0xac,		/* 172 */
 /* 1226 */	
 			0x2f,		/* FC_IP */
 			0x5a,		/* FC_CONSTANT_IID */
-/* 1228 */	NdrFcLong( 0xb2a5589b ),	/* -1297786725 */
-/* 1232 */	NdrFcShort( 0x4cbd ),	/* 19645 */
-/* 1234 */	NdrFcShort( 0x55b7 ),	/* 21943 */
-/* 1236 */	0xaa,		/* 170 */
-			0x79,		/* 121 */
-/* 1238 */	0xea,		/* 234 */
-			0x4d,		/* 77 */
-/* 1240 */	0xb,		/* 11 */
-			0x3d,		/* 61 */
-/* 1242 */	0x8b,		/* 139 */
-			0x2c,		/* 44 */
+/* 1228 */	NdrFcLong( 0xbcfcf95c ),	/* -1124271780 */
+/* 1232 */	NdrFcShort( 0xde48 ),	/* -8632 */
+/* 1234 */	NdrFcShort( 0x4f42 ),	/* 20290 */
+/* 1236 */	0xb0,		/* 176 */
+			0xe9,		/* 233 */
+/* 1238 */	0xd5,		/* 213 */
+			0xd,		/* 13 */
+/* 1240 */	0xb4,		/* 180 */
+			0x7,		/* 7 */
+/* 1242 */	0xdb,		/* 219 */
+			0x53,		/* 83 */
 
 			0x0
         }
@@ -3081,7 +3081,7 @@ static const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TA
 
 
 /* Object interface: IUpdateState, ver. 0.0,
-   GUID={0x4321A27B,0x0DDB,0x51D9,{0x9E,0x23,0xF0,0x5E,0x56,0xE1,0x57,0x5F}} */
+   GUID={0x46ACF70B,0xAC13,0x406D,{0xB5,0x3B,0xB2,0xC4,0xBF,0x09,0x1F,0xF6}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IUpdateState_FormatStringOffsetTable[] =
@@ -3151,7 +3151,7 @@ const CInterfaceStubVtbl _IUpdateStateStubVtbl =
 
 
 /* Object interface: IUpdateStateUser, ver. 0.0,
-   GUID={0xBFE8D555,0x69B7,0x5621,{0xB1,0xC9,0x67,0xE4,0x6E,0xB3,0x30,0x10}} */
+   GUID={0xC3485D9F,0xC684,0x4C43,{0xB8,0x5B,0xE3,0x39,0xEA,0x39,0x5C,0x29}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IUpdateStateUser_FormatStringOffsetTable[] =
@@ -3221,7 +3221,7 @@ const CInterfaceStubVtbl _IUpdateStateUserStubVtbl =
 
 
 /* Object interface: ICompleteStatus, ver. 0.0,
-   GUID={0xD956A117,0xC8DC,0x5E7E,{0xB4,0x39,0x96,0x42,0x81,0xAE,0x5C,0xD2}} */
+   GUID={0x2FCD14AF,0xB645,0x4351,{0x83,0x59,0xE8,0x0A,0x0E,0x20,0x2A,0x0B}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short ICompleteStatus_FormatStringOffsetTable[] =
@@ -3273,7 +3273,7 @@ const CInterfaceStubVtbl _ICompleteStatusStubVtbl =
 
 
 /* Object interface: ICompleteStatusUser, ver. 0.0,
-   GUID={0x0EDF6229,0x1198,0x5BDF,{0x92,0x97,0xC6,0xC4,0xE4,0x33,0xD2,0xF0}} */
+   GUID={0x9AD1A645,0x5A4B,0x4D36,{0xBC,0x21,0xF0,0x05,0x94,0x82,0xE6,0xEA}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short ICompleteStatusUser_FormatStringOffsetTable[] =
@@ -3325,7 +3325,7 @@ const CInterfaceStubVtbl _ICompleteStatusUserStubVtbl =
 
 
 /* Object interface: IUpdaterObserver, ver. 0.0,
-   GUID={0x29FEAEF3,0x81CA,0x598E,{0x84,0x37,0x1C,0x30,0x62,0xED,0xBE,0xF0}} */
+   GUID={0x7B416CFD,0x4216,0x4FD6,{0xBD,0x83,0x7C,0x58,0x60,0x54,0x67,0x6E}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IUpdaterObserver_FormatStringOffsetTable[] =
@@ -3377,7 +3377,7 @@ const CInterfaceStubVtbl _IUpdaterObserverStubVtbl =
 
 
 /* Object interface: IUpdaterObserverUser, ver. 0.0,
-   GUID={0x8696EC8B,0x846B,0x5B6A,{0x85,0xD3,0x43,0xC5,0xC8,0xB7,0xB3,0xEB}} */
+   GUID={0xB54493A0,0x65B7,0x408C,{0xB6,0x50,0x06,0x26,0x5D,0x21,0x82,0xAC}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IUpdaterObserverUser_FormatStringOffsetTable[] =
@@ -3429,7 +3429,7 @@ const CInterfaceStubVtbl _IUpdaterObserverUserStubVtbl =
 
 
 /* Object interface: IUpdaterCallback, ver. 0.0,
-   GUID={0x687F8890,0x6651,0x55A5,{0x90,0x13,0x4E,0xAB,0x42,0xDD,0x54,0x25}} */
+   GUID={0x8BAB6F84,0xAD67,0x4819,{0xB8,0x46,0xCC,0x89,0x08,0x80,0xFD,0x3B}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IUpdaterCallback_FormatStringOffsetTable[] =
@@ -3479,7 +3479,7 @@ const CInterfaceStubVtbl _IUpdaterCallbackStubVtbl =
 
 
 /* Object interface: IUpdaterCallbackUser, ver. 0.0,
-   GUID={0x7B080EA4,0x6C28,0x5353,{0xBE,0xB5,0x45,0x03,0xAE,0x8E,0x0D,0x38}} */
+   GUID={0x34ADC89D,0x552B,0x4102,{0x8A,0xE5,0xD6,0x13,0xA6,0x91,0x33,0x5B}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IUpdaterCallbackUser_FormatStringOffsetTable[] =
@@ -3533,7 +3533,7 @@ const CInterfaceStubVtbl _IUpdaterCallbackUserStubVtbl =
 
 
 /* Object interface: IUpdaterAppState, ver. 0.0,
-   GUID={0x480212D3,0x86FC,0x513D,{0x8C,0xCA,0x18,0xB2,0x29,0x12,0xAD,0xC5}} */
+   GUID={0xA22AFC54,0x2DEF,0x4578,{0x91,0x87,0xDB,0x3B,0x24,0x38,0x10,0x90}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IUpdaterAppState_FormatStringOffsetTable[] =
@@ -3616,7 +3616,7 @@ CInterfaceStubVtbl _IUpdaterAppStateStubVtbl =
 
 
 /* Object interface: IUpdaterAppStateUser, ver. 0.0,
-   GUID={0xC6F7A4BE,0x43E3,0x5DCF,{0x90,0xD7,0x0F,0x98,0x15,0xBA,0xE1,0xE2}} */
+   GUID={0x028FEB84,0x44BC,0x4A73,{0xA0,0xCD,0x60,0x36,0x78,0x15,0x5C,0xC3}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IUpdaterAppStateUser_FormatStringOffsetTable[] =
@@ -3699,7 +3699,7 @@ CInterfaceStubVtbl _IUpdaterAppStateUserStubVtbl =
 
 
 /* Object interface: IUpdaterAppStatesCallback, ver. 0.0,
-   GUID={0x8FC6CF83,0xC4AB,0x54C5,{0x89,0xF6,0xAC,0xFC,0x3A,0xF8,0xD5,0x30}} */
+   GUID={0xEFE903C0,0xE820,0x4136,{0x9F,0xAE,0xFD,0xCD,0x7F,0x25,0x63,0x02}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IUpdaterAppStatesCallback_FormatStringOffsetTable[] =
@@ -3749,7 +3749,7 @@ const CInterfaceStubVtbl _IUpdaterAppStatesCallbackStubVtbl =
 
 
 /* Object interface: IUpdaterAppStatesCallbackUser, ver. 0.0,
-   GUID={0xB2A5589B,0x4CBD,0x55B7,{0xAA,0x79,0xEA,0x4D,0x0B,0x3D,0x8B,0x2C}} */
+   GUID={0xBCFCF95C,0xDE48,0x4F42,{0xB0,0xE9,0xD5,0x0D,0xB4,0x07,0xDB,0x53}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IUpdaterAppStatesCallbackUser_FormatStringOffsetTable[] =
@@ -3799,7 +3799,7 @@ const CInterfaceStubVtbl _IUpdaterAppStatesCallbackUserStubVtbl =
 
 
 /* Object interface: IUpdater, ver. 0.0,
-   GUID={0xFB4FBB7F,0x5AA0,0x553B,{0xA2,0x95,0x3A,0xC8,0xB8,0xA7,0x69,0x5E}} */
+   GUID={0x63B8FFB1,0x5314,0x48C9,{0x9C,0x57,0x93,0xEC,0x8B,0xC6,0x18,0x4B}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IUpdater_FormatStringOffsetTable[] =
@@ -3869,7 +3869,7 @@ const CInterfaceStubVtbl _IUpdaterStubVtbl =
 
 
 /* Object interface: IUpdaterUser, ver. 0.0,
-   GUID={0x4359A05A,0xE8EB,0x57BA,{0xAC,0x49,0x88,0xA8,0x94,0xEA,0x98,0xD9}} */
+   GUID={0x02AFCB67,0x0899,0x4676,{0x91,0xA9,0x67,0xD9,0x2B,0x3B,0x79,0x18}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IUpdaterUser_FormatStringOffsetTable[] =
@@ -3969,57 +3969,57 @@ static const MIDL_STUB_DESC Object_StubDesc =
 
 const CInterfaceProxyVtbl * const _updater_idl_user_ProxyVtblList[] = 
 {
-    ( CInterfaceProxyVtbl *) &_ICompleteStatusProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_ICompleteStatusUserProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_IUpdateStateUserProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_IUpdaterUserProxyVtbl,
     ( CInterfaceProxyVtbl *) &_IUpdateStateProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_ICompleteStatusUserProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IUpdaterAppStateProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IUpdaterAppStatesCallbackUserProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IUpdaterUserProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IUpdaterCallbackProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IUpdaterAppStateUserProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IUpdaterCallbackUserProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IUpdateStateUserProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IUpdaterObserverUserProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_ICompleteStatusProxyVtbl,
     ( CInterfaceProxyVtbl *) &_IUpdaterProxyVtbl,
     ( CInterfaceProxyVtbl *) &_IUpdaterAppStatesCallbackProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_IUpdaterObserverUserProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_IUpdaterCallbackProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_IUpdaterAppStatesCallbackUserProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_IUpdaterCallbackUserProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_IUpdaterAppStateUserProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_IUpdaterAppStateProxyVtbl,
     ( CInterfaceProxyVtbl *) &_IUpdaterObserverProxyVtbl,
     0
 };
 
 const CInterfaceStubVtbl * const _updater_idl_user_StubVtblList[] = 
 {
-    ( CInterfaceStubVtbl *) &_ICompleteStatusStubVtbl,
-    ( CInterfaceStubVtbl *) &_ICompleteStatusUserStubVtbl,
-    ( CInterfaceStubVtbl *) &_IUpdateStateUserStubVtbl,
-    ( CInterfaceStubVtbl *) &_IUpdaterUserStubVtbl,
     ( CInterfaceStubVtbl *) &_IUpdateStateStubVtbl,
+    ( CInterfaceStubVtbl *) &_ICompleteStatusUserStubVtbl,
+    ( CInterfaceStubVtbl *) &_IUpdaterAppStateStubVtbl,
+    ( CInterfaceStubVtbl *) &_IUpdaterAppStatesCallbackUserStubVtbl,
+    ( CInterfaceStubVtbl *) &_IUpdaterUserStubVtbl,
+    ( CInterfaceStubVtbl *) &_IUpdaterCallbackStubVtbl,
+    ( CInterfaceStubVtbl *) &_IUpdaterAppStateUserStubVtbl,
+    ( CInterfaceStubVtbl *) &_IUpdaterCallbackUserStubVtbl,
+    ( CInterfaceStubVtbl *) &_IUpdateStateUserStubVtbl,
+    ( CInterfaceStubVtbl *) &_IUpdaterObserverUserStubVtbl,
+    ( CInterfaceStubVtbl *) &_ICompleteStatusStubVtbl,
     ( CInterfaceStubVtbl *) &_IUpdaterStubVtbl,
     ( CInterfaceStubVtbl *) &_IUpdaterAppStatesCallbackStubVtbl,
-    ( CInterfaceStubVtbl *) &_IUpdaterObserverUserStubVtbl,
-    ( CInterfaceStubVtbl *) &_IUpdaterCallbackStubVtbl,
-    ( CInterfaceStubVtbl *) &_IUpdaterAppStatesCallbackUserStubVtbl,
-    ( CInterfaceStubVtbl *) &_IUpdaterCallbackUserStubVtbl,
-    ( CInterfaceStubVtbl *) &_IUpdaterAppStateUserStubVtbl,
-    ( CInterfaceStubVtbl *) &_IUpdaterAppStateStubVtbl,
     ( CInterfaceStubVtbl *) &_IUpdaterObserverStubVtbl,
     0
 };
 
 PCInterfaceName const _updater_idl_user_InterfaceNamesList[] = 
 {
-    "ICompleteStatus",
-    "ICompleteStatusUser",
-    "IUpdateStateUser",
-    "IUpdaterUser",
     "IUpdateState",
+    "ICompleteStatusUser",
+    "IUpdaterAppState",
+    "IUpdaterAppStatesCallbackUser",
+    "IUpdaterUser",
+    "IUpdaterCallback",
+    "IUpdaterAppStateUser",
+    "IUpdaterCallbackUser",
+    "IUpdateStateUser",
+    "IUpdaterObserverUser",
+    "ICompleteStatus",
     "IUpdater",
     "IUpdaterAppStatesCallback",
-    "IUpdaterObserverUser",
-    "IUpdaterCallback",
-    "IUpdaterAppStatesCallbackUser",
-    "IUpdaterCallbackUser",
-    "IUpdaterAppStateUser",
-    "IUpdaterAppState",
     "IUpdaterObserver",
     0
 };
@@ -4028,17 +4028,17 @@ const IID *  const _updater_idl_user_BaseIIDList[] =
 {
     0,
     0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    &IID_IDispatch,
     0,
     0,
     0,
     &IID_IDispatch,
-    &IID_IDispatch,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
     0,
     0
 };

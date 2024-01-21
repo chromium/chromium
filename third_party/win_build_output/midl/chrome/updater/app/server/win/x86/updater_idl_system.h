@@ -251,7 +251,7 @@ EXTERN_C const IID IID_IUpdateState;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("4321A27B-0DDB-51D9-9E23-F05E56E1575F")
+    MIDL_INTERFACE("46ACF70B-AC13-406D-B53B-B2C4BF091FF6")
     IUpdateState : public IUnknown
     {
     public:
@@ -445,7 +445,7 @@ EXTERN_C const IID IID_IUpdateStateSystem;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("FDDEDE1D-4382-54AC-8E8B-FC002ACE8F58")
+    MIDL_INTERFACE("EA6FDC05-CDC5-4EA4-AB41-CCBD1040A2B5")
     IUpdateStateSystem : public IUnknown
     {
     public:
@@ -639,7 +639,7 @@ EXTERN_C const IID IID_ICompleteStatus;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("D956A117-C8DC-5E7E-B439-964281AE5CD2")
+    MIDL_INTERFACE("2FCD14AF-B645-4351-8359-E80A0E202A0B")
     ICompleteStatus : public IUnknown
     {
     public:
@@ -734,7 +734,7 @@ EXTERN_C const IID IID_ICompleteStatusSystem;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("A3F45C16-C2DB-5D49-8298-18C3F65F7640")
+    MIDL_INTERFACE("E2BD9A6B-0A19-4C89-AE8B-B7E9E51D9A07")
     ICompleteStatusSystem : public IUnknown
     {
     public:
@@ -829,7 +829,7 @@ EXTERN_C const IID IID_IUpdaterObserver;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("29FEAEF3-81CA-598E-8437-1C3062EDBEF0")
+    MIDL_INTERFACE("7B416CFD-4216-4FD6-BD83-7C586054676E")
     IUpdaterObserver : public IUnknown
     {
     public:
@@ -924,7 +924,7 @@ EXTERN_C const IID IID_IUpdaterObserverSystem;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("07253A14-3971-54B3-A392-868A011907B4")
+    MIDL_INTERFACE("057B500A-4BA2-496A-B1CD-C5DED3CCC61B")
     IUpdaterObserverSystem : public IUnknown
     {
     public:
@@ -1019,7 +1019,7 @@ EXTERN_C const IID IID_IUpdaterCallback;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("687F8890-6651-55A5-9013-4EAB42DD5425")
+    MIDL_INTERFACE("8BAB6F84-AD67-4819-B846-CC890880FD3B")
     IUpdaterCallback : public IUnknown
     {
     public:
@@ -1103,7 +1103,7 @@ EXTERN_C const IID IID_IUpdaterCallbackSystem;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("E68C83A6-74D4-5D33-9709-C923E6128CCD")
+    MIDL_INTERFACE("F0D6763A-0182-4136-B1FA-508E334CFFC1")
     IUpdaterCallbackSystem : public IUnknown
     {
     public:
@@ -1187,7 +1187,7 @@ EXTERN_C const IID IID_IUpdaterAppState;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("480212D3-86FC-513D-8CCA-18B22912ADC5")
+    MIDL_INTERFACE("A22AFC54-2DEF-4578-9187-DB3B24381090")
     IUpdaterAppState : public IDispatch
     {
     public:
@@ -1380,7 +1380,7 @@ EXTERN_C const IID IID_IUpdaterAppStateSystem;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("D72BD6EB-7586-5254-B2AB-CAFF8A168E14")
+    MIDL_INTERFACE("92631531-8044-46F4-B645-CDFBCCC7FA3B")
     IUpdaterAppStateSystem : public IDispatch
     {
     public:
@@ -1573,7 +1573,7 @@ EXTERN_C const IID IID_IUpdaterAppStatesCallback;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("8FC6CF83-C4AB-54C5-89F6-ACFC3AF8D530")
+    MIDL_INTERFACE("EFE903C0-E820-4136-9FAE-FDCD7F256302")
     IUpdaterAppStatesCallback : public IUnknown
     {
     public:
@@ -1657,7 +1657,7 @@ EXTERN_C const IID IID_IUpdaterAppStatesCallbackSystem;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("542EE141-358F-5410-B49C-1DD3E7B5AE79")
+    MIDL_INTERFACE("2CB8867E-495E-459F-B1B6-2DD7FFDBD462")
     IUpdaterAppStatesCallbackSystem : public IUnknown
     {
     public:
@@ -1741,7 +1741,7 @@ EXTERN_C const IID IID_IUpdater;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("FB4FBB7F-5AA0-553B-A295-3AC8B8A7695E")
+    MIDL_INTERFACE("63B8FFB1-5314-48C9-9C57-93EC8BC6184B")
     IUpdater : public IUnknown
     {
     public:
@@ -1989,7 +1989,7 @@ EXTERN_C const IID IID_IUpdaterSystem;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("156F778B-FDF7-5213-B65F-D22733A6C776")
+    MIDL_INTERFACE("FCE335F3-A55C-496E-814F-85971C9FA6F1")
     IUpdaterSystem : public IUnknown
     {
     public:
@@ -2248,7 +2248,7 @@ EXTERN_C const CLSID CLSID_UpdaterUserClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("7066AC5D-7C1A-5CBB-BE27-FDEE86B296C0")
+class DECLSPEC_UUID("158428a4-6014-4978-83ba-9fad0dabe791")
 UpdaterUserClass;
 #endif
 
@@ -2256,7 +2256,7 @@ EXTERN_C const CLSID CLSID_UpdaterSystemClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("3AB14B3B-0999-5922-94D5-41746D546D1D")
+class DECLSPEC_UUID("415FD747-D79E-42D7-93AC-1BA6E5FD4E93")
 UpdaterSystemClass;
 #endif
 #endif /* __UpdaterLib_LIBRARY_DEFINED__ */
