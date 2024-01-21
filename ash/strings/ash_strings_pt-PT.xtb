@@ -622,6 +622,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3577473026931028326">Algo correu mal. Tente novamente.</translation>
 <translation id="3580650856351781466">A transferir ficheiros de voz</translation>
 <translation id="3585296979871889131">Veja as fotos, os conteúdos multimédia, as notificações e as apps recentes do telemóvel</translation>
+<translation id="3590441166907930941">Botão lateral</translation>
 <translation id="3593039967545720377">Aceda ao seu histórico da área de transferência ao premir <ph name="SHORTCUT_KEY_NAME" /> + V para ver a área de transferência. Para começar, copie um item.</translation>
 <translation id="3593646411856133110">Deslize rapidamente para cima sem soltar para ver as apps abertas.</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
@@ -1034,6 +1035,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5163434717504750796">Estado da bateria: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Número de ciclos: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Guardar espaço de trabalho como modelo</translation>
 <translation id="5168181903108465623">Dispositivos de transmissão disponíveis</translation>
+<translation id="5168753792967365150">Editar no Google Tasks</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
 <translation id="5176318573511391780">Gravar ecrã parcial</translation>
 <translation id="5187627942836026988">Veja os detalhes da zona Wi-Fi. A zona Wi-Fi foi bloqueada pelo seu administrador.</translation>
@@ -1303,6 +1305,8 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="6168622430237609329">As suas apps instaladas</translation>
 <translation id="6173151025443907148">Não é possível iniciar a sessão de um segundo utilizador se o Lacros estiver ativado. Em alternativa, use um segundo perfil de navegador no Lacros ou desative o Lacros e tente novamente.</translation>
 <translation id="6179832488876878285">Pode fixar os seus ficheiros importantes aqui. Abra a app Files para começar.</translation>
+<translation id="6180193585172850042">Botão Retroceder</translation>
+<translation id="6180651297859206670">Botão Avançar</translation>
 <translation id="6182592640011875895">Abrir espaço de trabalho</translation>
 <translation id="6185696379715117369">Página para cima</translation>
 <translation id="619335566042889110">Carregar totalmente agora</translation>

@@ -291,6 +291,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2547458583188611426">Sinxronlaşdırma işləmir. Sinxronlaşdırmanı başlatmaq üçün parol ifadəsini daxil edin.</translation>
 <translation id="2551153019974022505">Hesab xətası</translation>
 <translation id="2556092377360758201">Qoruma yoxdur (tövsiyə edilmir)</translation>
+<translation id="2561375093019333908">AÇIN</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> cihazına göndərilir...</translation>
 <translation id="2576499762020411840">Google Hesabında Parolları İstifadə Edin və Yadda Saxlayın</translation>
 <translation id="2577522251608256362">Yaxın yerlər</translation>
@@ -848,6 +849,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5513681519188741830"><ph name="TIME" /> s əvvəl</translation>
 <translation id="5525269841082836315">Parol söz yaradın</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} zəif parol}other{{COUNT} zəif parol}}</translation>
+<translation id="5532545557415295622">Fəaliyyətsiz vaxt limiti dialoqu</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> tapıldı</translation>
 <translation id="5548760955356983418">Handoff bu cihazda asanlıqla veb sayt açıb Mac cihazınızda davam etməyə imkan verir. Cari açıq veb sayt Mac cihazınızda görünəcək.
 
@@ -1288,6 +1290,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7781829728241885113">Dünən</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{1 gün sonra}other{{COUNT} gün sonra}}</translation>
 <translation id="7791543448312431591">Əlavə etmək</translation>
+<translation id="7792549458069452436">TƏTBİQİ ƏLDƏ EDİN</translation>
 <translation id="7807060072011926525">Google tərəfindən təmin edilib</translation>
 <translation id="7812377703891978671"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> seçərək brauzer tarixçəsinə daxil ola bilərsiniz.</translation>
 <translation id="78146569776629510">Endirmələr</translation>

@@ -3521,6 +3521,7 @@
 <translation id="369135240373237088">학교 계정으로 다시 로그인하세요</translation>
 <translation id="3693415264595406141">비밀번호:</translation>
 <translation id="3694027410380121301">이전 탭 선택</translation>
+<translation id="3694122362646626770">웹사이트</translation>
 <translation id="3694590407685276748">텍스트 커서 강조표시</translation>
 <translation id="369489984217678710">비밀번호 및 기타 로그인 데이터</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{보안 확인이 완료되었습니다. 데이터가 업로드됩니다.}=1{보안 확인이 완료되었습니다. 파일이 업로드됩니다.}other{보안 확인이 완료되었습니다. 파일이 업로드됩니다.}}</translation>

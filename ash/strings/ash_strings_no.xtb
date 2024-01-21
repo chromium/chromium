@@ -622,6 +622,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3577473026931028326">Noe gikk galt. Prøv på nytt.</translation>
 <translation id="3580650856351781466">Laster ned talefiler</translation>
 <translation id="3585296979871889131">Se bilder, medier, varsler og apper fra telefonen din</translation>
+<translation id="3590441166907930941">Sideknapp</translation>
 <translation id="3593039967545720377">Åpne utklippstavleloggen ved å trykke på <ph name="SHORTCUT_KEY_NAME" /> + V for å se utklippstavlen. Kopiér et element for å komme i gang.</translation>
 <translation id="3593646411856133110">Sveip opp og hold for å se åpne apper</translation>
 <translation id="3595596368722241419">Batteriet er fullt</translation>
@@ -1034,6 +1035,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5163434717504750796">Batteritilstand <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | Syklusantall <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Lagre skrivebordet som en mal</translation>
 <translation id="5168181903108465623">Cast-enheter er tilgjengelige</translation>
+<translation id="5168753792967365150">Endre i Google Huskeliste</translation>
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="5176318573511391780">Ta opp en del av skjermen</translation>
 <translation id="5187627942836026988">Vis detaljer for wifi-sonen. Administratoren din har blokkert wifi-soner.</translation>
@@ -1303,6 +1305,8 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="6168622430237609329">Installerte apper</translation>
 <translation id="6173151025443907148">Pålogging med en bruker til støttes ikke hvis Lacros er aktivert. Bruk en nettleserprofil til i Lacros i stedet, eller deaktiver Lacros og prøv igjen.</translation>
 <translation id="6179832488876878285">Du kan feste viktige filer her. Åpne Filer-appen for å komme i gang.</translation>
+<translation id="6180193585172850042">Tilbakeknapp</translation>
+<translation id="6180651297859206670">Fremoverknapp</translation>
 <translation id="6182592640011875895">Åpne skrivebordet</translation>
 <translation id="6185696379715117369">Opp én side</translation>
 <translation id="619335566042889110">Lad helt nå</translation>

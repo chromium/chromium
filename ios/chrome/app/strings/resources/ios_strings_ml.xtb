@@ -291,6 +291,7 @@
 <translation id="2547458583188611426">സമന്വയിപ്പിക്കൽ പ്രവർത്തിക്കുന്നില്ല. സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന് നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സ് നൽകുക.</translation>
 <translation id="2551153019974022505">അക്കൗണ്ട് പിശക്</translation>
 <translation id="2556092377360758201">പരിരക്ഷയില്ല (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
+<translation id="2561375093019333908">തുറക്കുക</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് അയയ്‌ക്കുന്നു...</translation>
 <translation id="2576499762020411840">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുകയും അവ ഉപയോഗിക്കുകയും ചെയ്യുക</translation>
 <translation id="2577522251608256362">വിളിപ്പാടരികെയുള്ള സ്ഥലം</translation>
@@ -848,6 +849,7 @@
 <translation id="5513681519188741830"><ph name="TIME" /> മണിക്കൂർ മുമ്പ്</translation>
 <translation id="5525269841082836315">പാസ്‌ഫ്രെയ്‌സ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{ദുർബലമായ {COUNT} പാസ്‌വേഡ്}other{ദുർബലമായ {COUNT} പാസ്‌വേഡുകൾ}}</translation>
+<translation id="5532545557415295622">നിഷ്‌ക്രിയ ടൈംഔട്ട് ഡയലോഗ്</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> എണ്ണം കണ്ടെത്തി</translation>
 <translation id="5548760955356983418">ഈ ഉപകരണത്തിൽ ഒരു വെബ്‌സൈറ്റ് ബ്രൗസ് ചെയ്യാൻ ആരംഭിച്ചതിനുശേഷം Mac-ൽ എളുപ്പത്തിൽ തുടരാൻ 'ഹാൻഡ്ഓഫ്' അനുവദിക്കുന്നു. നിലവിൽ തുറന്ന വെബ്‌സൈറ്റ് നിങ്ങളുടെ Mac-ന്റെ ഡോക്കിൽ ദൃശ്യമാകും.
 
@@ -1288,6 +1290,7 @@
 <translation id="7781829728241885113">ഇന്നലെ</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{ഒരു ദിവസത്തിന് ശേഷം}other{{COUNT} ദിവസത്തിന് ശേഷം}}</translation>
 <translation id="7791543448312431591">ചേര്‍ക്കൂ</translation>
+<translation id="7792549458069452436">ആപ്പ് സ്വന്തമാക്കുക</translation>
 <translation id="7807060072011926525">Google നൽകുന്നത്</translation>
 <translation id="7812377703891978671"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> തിരഞ്ഞെടുക്കുന്നതിലൂടെ നിങ്ങളുടെ എല്ലാ ബ്രൗസിംഗ് ചരിത്രവും ആക്‌സസ് ചെയ്യാൻ കഴിയും.</translation>
 <translation id="78146569776629510">ഡൗൺലോഡുകൾ</translation>

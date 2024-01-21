@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">persiųsti</translation>
 <translation id="1615335640928990664">Duomenų naudojimas nuo <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Vykdyti įkrovimo bandymą</translation>
+<translation id="1626590945318984973">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą nenaudodami funkcijų klavišų ir klavišo „<ph name="META_KEY" />“.</translation>
 <translation id="1639239467298939599">Įkeliama</translation>
 <translation id="1641857168437328880">Dokumentų tiektuvas (vienpusis)</translation>
 <translation id="1643449475550628585">Kasdien keisti ekrano fono vaizdą</translation>
@@ -452,7 +453,9 @@
 <translation id="4394049700291259645">Neleisti</translation>
 <translation id="439429847087949098">Įrenginys „<ph name="DEVICE_NAME" />“ paleidžiamas iš naujo</translation>
 <translation id="4395835743215824109">klaviatūros tinkinimas</translation>
+<translation id="4403262788869804671">Spartusis klavišas be klavišo „<ph name="META_KEY" />“ gali būti nesuderinamas su kai kurių programų sparčiaisiais klavišais. Dar kartą paspauskite šį spartųjį klavišą, jei norite toliau jį naudoti, arba paspauskite naują spartųjį klavišą naudodami klavišą „<ph name="KEY" />“.</translation>
 <translation id="4415951057168511744">Dabartinis pseudoportretas</translation>
+<translation id="4417830657741848074">Administratorius nustatė, kad kai kurios programos būtų paleidžiamos automatiškai. Kai kurių iš šių programų negalima uždaryti.</translation>
 <translation id="4422041425070339732">rodyklė žemyn</translation>
 <translation id="4425149324548788773">Mano Diskas</translation>
 <translation id="4428374560396076622">„<ph name="NETWORK_NAME" />“ išjungta</translation>
@@ -465,6 +468,7 @@
 <translation id="4469288414739283461">„Earth“ srauto ekrano užsklanda</translation>
 <translation id="4479639480957787382">Eternetas</translation>
 <translation id="4483049906298469269">Nepavyko patikrinti ryšio su nenumatytuoju tinklų sietuvu</translation>
+<translation id="4500722292849917410">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą naudodami modifikavimo klavišą („Ctrl“, „Alt“, „Shift“ arba „<ph name="META_KEY" />“).</translation>
 <translation id="4500966230243561393">Sąsajos spalva</translation>
 <translation id="4503223151711056411">Rodyklė kairėn</translation>
 <translation id="4507392511610824664">padidinti šviesumą</translation>
@@ -512,6 +516,7 @@
 <translation id="4832079907277790330">Pasirinkite aplanką Failų programoje...</translation>
 <translation id="4835901797422965222">Nėra jokių aktyvių tinklų</translation>
 <translation id="4839698083503556542">Sukurkite savo filmą</translation>
+<translation id="48409034532829769">Administratorius nustatė automatiškai paleisti programą „<ph name="APP_NAME" />“. Ši programa negali būti uždaryta.</translation>
 <translation id="484462545196658690">Automatiškai</translation>
 <translation id="4847902821209177679">Pasirinkta <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />; jei norite pasirinkti <ph name="TOPIC_SOURCE" /> albumus, paspauskite „Enter“</translation>
 <translation id="484790837831576105">(„Android“) DNS pavadinimų konvertavimas</translation>
@@ -538,6 +543,7 @@
 <translation id="4969079779290789265">Padalyti</translation>
 <translation id="4972592110715526173">keisti režimą</translation>
 <translation id="498186245079027698">Patikrinkite skaitytuvą ir bandykite dar kartą. Įsitikinkite, kad vietinėje sistemoje pakanka vietos nuskaitytiems failams išsaugoti.</translation>
+<translation id="4982627662315910959">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą naudodami „Shift“ ir dar vieną modifikavimo klavišą („Ctrl“, „Alt“ arba „<ph name="META_KEY" />“).</translation>
 <translation id="4985509611418653372">Vykdyti</translation>
 <translation id="4987769320337599931">Užkarda</translation>
 <translation id="4988526792673242964">Psl.</translation>
@@ -844,6 +850,7 @@
 <translation id="7216409898977639127">Mobiliojo ryšio teikėjas</translation>
 <translation id="725133483556299729">El. pašto adreso pasirinkimas</translation>
 <translation id="7271040990581020067">Skaitytuvas šiuo metu naudojamas. Vėliau bandykite dar kartą.</translation>
+<translation id="7271932918253517778">Į spartųjį klavišą su viršutinės eilutės klavišais turi būti įtrauktas klavišas „<ph name="META_KEY" />“.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Pajusk vėjo dvelksmą</translation>
 <translation id="7287310195820267359">Ekrano fonų rinkiniai</translation>

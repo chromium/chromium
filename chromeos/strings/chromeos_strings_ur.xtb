@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">فارورڈ کریں</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> سے ڈیٹا کا استعمال</translation>
 <translation id="1621067168122174824">چارج ٹیسٹ چلائیں</translation>
+<translation id="1626590945318984973">شارٹ کٹ دستیاب نہیں ہے۔ فنکشن اور <ph name="META_KEY" /> کی کلیدیں استعمال کیے بغیر نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="1639239467298939599">لوڈ ہو رہی ہے</translation>
 <translation id="1641857168437328880">دستاویز فیڈر (یک طرفہ)</translation>
 <translation id="1643449475550628585">وال پیپر کی تصویر کو روزانہ تبدیل کریں</translation>
@@ -452,7 +453,9 @@
 <translation id="4394049700291259645">غیر فعال کریں</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ری اسٹارٹ ہو رہا ہے</translation>
 <translation id="4395835743215824109">کی بورڈ کو حسب ضرورت بنانا</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> کی کلید کے بغیر شارٹ کٹ کچھ ایپ کے شارٹ کٹ سے متصادم ہو سکتا ہے۔ اس شارٹ کٹ کا استعمال جاری رکھنے کے لیے اسے دوبارہ دبائیں یا <ph name="KEY" /> کی کلید کا استعمال کرتے ہوئے نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="4415951057168511744">موجودہ اوتار</translation>
+<translation id="4417830657741848074">کے منتظم نے کچھ ایپس کو خودکار طور پر شروع ہونے کے لیے سیٹ اپ کیا ہے۔ ہو سکتا ہے ان میں سے کچھ ایپس بند نہ ہوں۔</translation>
 <translation id="4422041425070339732">نیچے کی طرف تیر کا نشان</translation>
 <translation id="4425149324548788773">میری ڈرائیو</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> آف ہے</translation>
@@ -465,6 +468,7 @@
 <translation id="4469288414739283461">ارتھ فلو اسکرین سیور</translation>
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4483049906298469269">غیر ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
+<translation id="4500722292849917410">‏شارٹ کٹ دستیاب نہیں ہے۔ موڈیفائر کلید (ctrl, alt, shift, یا <ph name="META_KEY" />) کا استعمال کرتے ہوئے ایک نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="4500966230243561393">انٹرفیس کا رنگ</translation>
 <translation id="4503223151711056411">بائیں تیر کا نشان</translation>
 <translation id="4507392511610824664">چمک بڑھائیں</translation>
@@ -512,6 +516,7 @@
 <translation id="4832079907277790330">فائلز ایپ میں فولڈر منتخب کریں...</translation>
 <translation id="4835901797422965222">کوئی فعال نیٹ ورک نہیں</translation>
 <translation id="4839698083503556542">اپنی خود کی مووی بنائیں</translation>
+<translation id="48409034532829769">آپ کے منتظم نے "<ph name="APP_NAME" />" کو خودکار طور پر شروع ہونے کے لیے سیٹ اپ کیا ہے۔ ہو سکتا ہے یہ ایپ بند ہو۔</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="4847902821209177679">‏<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> منتخب کیا گیا، <ph name="TOPIC_SOURCE" /> البمز منتخب کرنے کے لیے Enter دبائیں</translation>
 <translation id="484790837831576105">‏‎(Android) DNS ریزولیوشن</translation>
@@ -538,6 +543,7 @@
 <translation id="4969079779290789265">اسپلٹ</translation>
 <translation id="4972592110715526173">وضع میں تبدیلی</translation>
 <translation id="498186245079027698">اسکینر چیک کریں اور دوبارہ کوشش کریں۔ یقینی بنائیں کہ اسکین کردہ فائلز محفوظ کرنے کے لیے کافی مقامی جگہ ہے۔</translation>
+<translation id="4982627662315910959">‏شارٹ کٹ دستیاب نہیں ہے۔ شفٹ اور 1 مزید موڈیفائر کلید (ctrl, alt یا <ph name="META_KEY" />) کا استعمال کرتے ہوئے ایک نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="4985509611418653372">چلائیں</translation>
 <translation id="4987769320337599931">فائروال</translation>
 <translation id="4988526792673242964">صفحات</translation>
@@ -844,6 +850,7 @@
 <translation id="7216409898977639127">سیلولر فراہم کنندہ</translation>
 <translation id="725133483556299729">ای میل منتخب کریں</translation>
 <translation id="7271040990581020067">اسکینر فی الحال زیر استعمال ہے۔ بعد میں دوبارہ کوشش کریں۔</translation>
+<translation id="7271932918253517778">اوپر والی قطار والے شارٹ کٹ میں <ph name="META_KEY" /> کی کلید شامل کرنے کی ضرورت ہے۔</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ہوا کا جھونکا محسوس کریں</translation>
 <translation id="7287310195820267359">وال پیپر کے مجموعے</translation>

@@ -90,6 +90,7 @@
 <translation id="2583187216237139145">Энэ профайлыг ашиглах үед үүссэн Chromium-н аливаа өгөгдлийг (хавчуурга, түүх, нууц үг болон бусад тохиргоог үүсгэх зэрэг) ажлын профайлын админ хасах боломжтой. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium-г үргэлжлүүлэн ашиглах</translation>
 <translation id="259935314519650377">Татсан суулгагчийг завсрын санах ойд хадгалж чадсангүй. Алдаа: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium илүү хурдан ажилладаг бөгөөд JavaScript-г ашигладаг онцлогууд зориулалтын дагуу ажиллах ёстой (санал болгосон)</translation>
 <translation id="2648074677641340862">Суулгалтын явцад үйлдлийн системийн алдаа гарлаа. Chromium-ыг дахин татаж авна уу.</translation>
 <translation id="2661879430930417727">Хэрэв та төхөөрөмжийг дундаа ашигладаг бол найз нөхөд, гэр бүл тань хөтчөөр тусдаа үзэж, Chromium-г хүссэнээрээ тохируулах боломжтой</translation>
 <translation id="268602741124540128">Chromium-д тавтай морилно уу, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -123,6 +124,7 @@
 <translation id="3185330573522821672">Chromium-н шинэ профайлаа тохируулна уу</translation>
 <translation id="3190315855212034486">Chromium-д гамтал гарлаа. Дахин эхлүүлэх үү?</translation>
 <translation id="3258596308407688501">Chromium нь өөрийн өгөгдлийн сан руу уншуулж бас бичиж чадахгүй байна: <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 нь сайтын гүйцэтгэлийг сайжруулахад ашигладаг Chromium-н JavaScript болон WebAssembly-н систем юм</translation>
 <translation id="3283186697780795848">Chromium <ph name="PRODUCT_VERSION" /> хувилбарыг суулгасан</translation>
 <translation id="3286538390144397061">Одоо дахин эхлүүлнэ үү</translation>
 <translation id="328888136576916638">Google-ийн API түлхүүр байхгүй байна. Chromium-ийн зарим функц идэвхгүй болно.</translation>
@@ -216,6 +218,7 @@
 <translation id="4814736265800133385">Chromium-г бүртгэлгүйгээр ашиглах</translation>
 <translation id="4888717733111232871">MDNS урсгалыг зөвшөөрөхийн тулд Chromium-д зориулсан хөндлөнгийн дүрэм.</translation>
 <translation id="4893347770495441059">&amp;Chromium-г шинэчлэхийн тулд дахин ачаалах</translation>
+<translation id="4942295735032723435">Chromium-н цаашдын шинэчлэлтийг авахын тулд танд macOS 11 эсвэл түүнээс хойших хувилбар хэрэгтэй болно. Энэ компьютер macOS 10.15. хувилбарыг ашиглаж байна.</translation>
 <translation id="4943838377383847465">Chromium нь суурь горимд байна.</translation>
 <translation id="4987820182225656817">Зочид Chromium-ийг ашигласнаар хамгийн сүүлийн үеийн мэдээллийг авна.</translation>
 <translation id="4994636714258228724">Өөрийгөө Chromium руу нэмэх</translation>
@@ -403,6 +406,7 @@
 <translation id="8105840573057009683">Chromium-д энэ сайтад зориулж байршлын зөвшөөрөл шаардлагатай</translation>
 <translation id="8133124826068723441">Синк нь таны домэйнд боломжгүй тул ChromiumOS таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="813913629614996137">Эхлүүлж байна…</translation>
+<translation id="8166782796394721554">Chromium-н JavaScript болон WebAssembly-н системийн нэмэлт хамгаалалтыг асаана уу</translation>
 <translation id="81770708095080097">Энэ файл аюултай тул Chromium блоклосон байна.</translation>
 <translation id="8213374284266571500">Энэ төрлийн файл аюултай тул Chromium энэ файлыг блоклосон</translation>
 <translation id="8248265253516264921">Хэрэв зурагт хэрэгтэй тайлбар байхгүй бол Chromium танд тайлбар өгөхөөр оролдох болно. Тайлбар үүсгэхийн тулд зургийг Google-д илгээнэ. Та үүнийг хүссэн үедээ тохиргоонд унтрааж болно.</translation>

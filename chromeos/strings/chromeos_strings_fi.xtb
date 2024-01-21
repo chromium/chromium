@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">seuraava</translation>
 <translation id="1615335640928990664">Datan käyttö <ph name="FRIENDLY_DATE" /> jälkeen</translation>
 <translation id="1621067168122174824">Suorita lataustesti</translation>
+<translation id="1626590945318984973">Pikanäppäin ei ole käytettävissä. Paina uutta pikanäppäintä ilman toiminto‑ ja <ph name="META_KEY" />-näppäimiä.</translation>
 <translation id="1639239467298939599">Ladataan</translation>
 <translation id="1641857168437328880">Syöttölaite (yksipuolinen)</translation>
 <translation id="1643449475550628585">Vaihda taustakuva päivittäin</translation>
@@ -452,7 +453,9 @@
 <translation id="4394049700291259645">Poista käytöstä</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> käynnistetään uudelleen</translation>
 <translation id="4395835743215824109">näppäimistön yksilöinti</translation>
+<translation id="4403262788869804671">Pikakomento ilman <ph name="META_KEY" />-näppäintä voi olla ristiriidassa toisen sovelluksen pikakomennon kanssa. Jatka pikakomennon käyttöä painamalla sitä uudelleen tai paina uutta pikakomentoa <ph name="KEY" />-näppäimellä.</translation>
 <translation id="4415951057168511744">Nykyinen avatar</translation>
+<translation id="4417830657741848074">Järjestelmänvalvoja on määrittänyt joitakin sovelluksia käynnistymään automaattisesti. Kaikkia sovelluksia ei välttämättä voi sulkea.</translation>
 <translation id="4422041425070339732">nuoli alas</translation>
 <translation id="4425149324548788773">Oma Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ei ole päällä</translation>
@@ -465,6 +468,7 @@
 <translation id="4469288414739283461">Maan kulku ‑näytönsäästäjä</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Muun kuin oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
+<translation id="4500722292849917410">Pikanäppäin ei ole käytettävissä. Käytä uutta pikanäppäintä muokkausnäppäimen avulla (ctrl, alt, vaihto, tai <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Käyttöliittymän väri</translation>
 <translation id="4503223151711056411">Vasen nuoli</translation>
 <translation id="4507392511610824664">lisää kirkkautta</translation>
@@ -512,6 +516,7 @@
 <translation id="4832079907277790330">Valitse kansio Tiedostot-sovelluksesta…</translation>
 <translation id="4835901797422965222">Ei aktiivisia verkkoja</translation>
 <translation id="4839698083503556542">Luo oma elokuva</translation>
+<translation id="48409034532829769">Järjestelmänvalvoja on määrittänyt, että "<ph name="APP_NAME" />" käynnistyy automaattisesti. Tätä sovellusta ei voi sulkea.</translation>
 <translation id="484462545196658690">Automaattinen</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> valittu, valitse albumeita (<ph name="TOPIC_SOURCE" />) painamalla Enter</translation>
 <translation id="484790837831576105">(Android) DNS-selvitys</translation>
@@ -538,6 +543,7 @@
 <translation id="4969079779290789265">Jaa</translation>
 <translation id="4972592110715526173">tilan muutos</translation>
 <translation id="498186245079027698">Tarkista skanneri ja yritä uudelleen. Varmista, että paikallinen tallennustila riittää skannattujen tiedostojen tallentamiseen.</translation>
+<translation id="4982627662315910959">Pikanäppäin ei ole käytettävissä. Käytä uutta pikanäppäintä vaihdon ja yhden muun muokkausnäppäimen avulla (ctrl, alt tai <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Suorita</translation>
 <translation id="4987769320337599931">Palomuuri</translation>
 <translation id="4988526792673242964">Sivut</translation>
@@ -844,6 +850,7 @@
 <translation id="7216409898977639127">Mobiilioperaattori</translation>
 <translation id="725133483556299729">Valitse sähköpostiosoite</translation>
 <translation id="7271040990581020067">Skanneri on tällä hetkellä käytössä. Yritä myöhemmin uudelleen.</translation>
+<translation id="7271932918253517778">Ylärivin pikanäppäimiin täytyy kuulua <ph name="META_KEY" />-näppäin.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Tunne tuulahdus</translation>
 <translation id="7287310195820267359">Taustakuvakokoelmat</translation>

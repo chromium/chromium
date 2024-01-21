@@ -90,6 +90,7 @@
 <translation id="2583187216237139145">Администратор пословног профила може да уклони све податке Chromium-а који се генеришу током коришћења овог профила (попут прављења обележивача, историје, лозинки и других подешавања). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Настави са коришћењем Chromium-а</translation>
 <translation id="259935314519650377">Кеширање преузетог инсталационог програма није успело. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium ради брже и функције које користе JavaScript би требало да раде како је предвиђено (препоручено)</translation>
 <translation id="2648074677641340862">Током инсталације је дошло до грешке у оперативном систему. Преузмите Chromium поново.</translation>
 <translation id="2661879430930417727">Ако делите уређај, пријатељи и породица могу засебно да прегледају и да подесе Chromium баш онако како желе</translation>
 <translation id="268602741124540128">Добро дошли у Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -125,6 +126,7 @@
 <translation id="3258596308407688501">Chromium не може да чита податке из директоријума са подацима нити да их уписује у њега:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 је Chromium алатка за JavaScript и WebAssembly која се користи за побољшање перформанси сајта</translation>
 <translation id="3283186697780795848">Инсталирана је верзија Chromium-а <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Рестартуј одмах</translation>
 <translation id="328888136576916638">Недостају шифре за Google API. Неке функције Chromium-а ће бити онемогућене.</translation>
@@ -218,6 +220,7 @@
 <translation id="4814736265800133385">Користите Chromium без налога</translation>
 <translation id="4888717733111232871">Правило за долазни саобраћај за Chromium да би се омогућио mDNS саобраћај.</translation>
 <translation id="4893347770495441059">Поново покрени да би се &amp;Chromium ажурирао</translation>
+<translation id="4942295735032723435">Да бисте добијали будућа Chromium ажурирања, треба вам macOS 11 или новија верзија. Овај рачунар користи macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium је у позадинском режиму.</translation>
 <translation id="4987820182225656817">Гости могу да користе Chromium а да не остављају никакве трагове.</translation>
 <translation id="4994636714258228724">Додајте себе у Chromium</translation>
@@ -407,6 +410,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8105840573057009683">Chromium-у треба дозвола за локацију за овај сајт</translation>
 <translation id="8133124826068723441">Chromium ОС не може да синхронизује податке јер Синхронизација није доступна за домен.</translation>
 <translation id="813913629614996137">Покреће се…</translation>
+<translation id="8166782796394721554">Укључите додатну заштиту у Chromium алатки за JavaScript и WebAssembly</translation>
 <translation id="81770708095080097">Ова датотека је опасна, па ју је Chromium блокирао.</translation>
 <translation id="8213374284266571500">Chromium је блокирао овај фајл јер је овај тип фајла опасан</translation>
 <translation id="8248265253516264921">Ако слика нема користан опис, Chromium ће пробати да вам га пружи. Слике се шаљу Google-у ради прављења описа. То можете да искључите у подешавањима у сваком тренутку.</translation>

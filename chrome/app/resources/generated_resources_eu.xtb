@@ -3504,6 +3504,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="369135240373237088">Hasi saioa berriro ikastetxeko kontu batekin</translation>
 <translation id="3693415264595406141">Pasahitza:</translation>
 <translation id="3694027410380121301">Hautatu hurrengo fitxa</translation>
+<translation id="3694122362646626770">Webguneak</translation>
 <translation id="3694590407685276748">Nabarmendu testu-kurtsorea</translation>
 <translation id="369489984217678710">Pasahitzak eta saioa hasteko beste datu batzuk</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Egin dira segurtasun-egiaztapenak. Datuak kargatu egingo dira.}=1{Egin dira segurtasun-egiaztapenak. Fitxategia kargatu egingo da.}other{Egin dira segurtasun-egiaztapenak. Fitxategiak kargatu egingo dira.}}</translation>
@@ -4802,7 +4803,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4683947955326903992">% <ph name="PERCENTAGE" /> (lehenetsia)</translation>
 <translation id="4684427112815847243">Sinkronizatu dena</translation>
 <translation id="4685096503970466594">Desaktibatu <ph name="FEATURE_NAME" /></translation>
-<translation id="4687238339694011189">Ziurtatu inprimagailua aktibatuta eta Chromebook-aren sare berera konektatuta dagoela, edo erabili USB kable bat</translation>
+<translation id="4687238339694011189">Ziurtatu inprimagailua piztuta eta Chromebook-aren sare berera konektatuta dagoela, edo erabili USB kable bat</translation>
 <translation id="4687613760714619596">Gailu ezezaguna (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Webguneek iradokitako iragarkiak</translation>
 <translation id="4688036121858134881">Erregistro lokalaren IDa: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>

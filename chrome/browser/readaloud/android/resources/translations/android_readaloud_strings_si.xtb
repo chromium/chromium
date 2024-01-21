@@ -4,9 +4,12 @@
 <translation id="1173075331199604451">හඬ මෙනුව</translation>
 <translation id="1178581264944972037">විරාමය</translation>
 <translation id="1246424317317450637">තද</translation>
+<translation id="1586836055630070874">සංසිඳුවන</translation>
+<translation id="1741047078107369903">උණුසුම්</translation>
 <translation id="1921351128855867012">තත්පර <ph name="NUMBER_OF_SECONDS" />ක් වේගයෙන් ඉදිරියට</translation>
 <translation id="1984328900355667246">පසුධාවනය නොලැබේ</translation>
 <translation id="2224347680315897176">ඒකාකාර</translation>
+<translation id="2611765907167846862">ප්‍රසන්න</translation>
 <translation id="3023502830214299618">අවාසනාවන්ත ලෙස, මෙම පිටුව සඳහා මේ අවස්ථාවේ පසුධාවනය නොලැබේ. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="3807208219231826020">ස්ක්‍රබ් පසුධාවනය</translation>
 <translation id="385051799172605136">ආපසු</translation>
@@ -15,7 +18,9 @@
 <translation id="4431240646217225907">පෙළ ඉස්මතු කර ස්වයං අනුචලනය කරන්න</translation>
 <translation id="4494605076346185630">මැදි තාරතාව</translation>
 <translation id="4710974520964166851">ලිහිල් කිරීම</translation>
+<translation id="4773921449011281499">සාමකාමී</translation>
 <translation id="4872475766448853257">තත්පර <ph name="NUMBER_OF_SECONDS" />ක් ආපසු යන්න</translation>
+<translation id="5026371835667036198">දීප්තිමත්</translation>
 <translation id="5234971936051226002">“මෙම පිටුවට සවන් දෙන්න” වාදකය අවම කෙරිණි.</translation>
 <translation id="5596627076506792578">තවත් විකල්ප</translation>
 <translation id="5694491020339060116">පසුධාවන වේගයේ මෙනුව</translation>
@@ -26,6 +31,8 @@
 <translation id="6831043979455480757">පරිවර්තනය කරන්න</translation>
 <translation id="6846298663435243399">පූර්ණය වෙමින්...</translation>
 <translation id="6889157801232138307">“මෙම පිටුවට සවන් දෙන්න” වාදකය</translation>
+<translation id="7221920857098237570">මෘදු</translation>
+<translation id="7237590978482584900">පවන ඇති</translation>
 <translation id="7282547042039404307">සුමට</translation>
 <translation id="7587250070160020374">Chrome දැන් වාදනය කරයි</translation>
 <translation id="8136852699834914183">මෙම පිටුව සඳහා පසුධාවනය නොමැත.</translation>

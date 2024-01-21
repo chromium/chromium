@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">ముందుకు</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> నుండి డేటా వినియోగం</translation>
 <translation id="1621067168122174824">ఛార్జ్ పరీక్షను రన్ చేయండి</translation>
+<translation id="1626590945318984973">షార్ట్‌కట్ అందుబాటులో లేదు. ఫంక్షన్, <ph name="META_KEY" /> కీలను ఉపయోగించకుండా కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="1639239467298939599">లోడ్ చేస్తోంది</translation>
 <translation id="1641857168437328880">డాక్యుమెంట్ ఫీడర్ (ఒక వైపున)</translation>
 <translation id="1643449475550628585">ప్రతిరోజూ వాల్‌పేపర్ ఇమేజ్‌ను మార్చండి</translation>
@@ -452,7 +453,9 @@
 <translation id="4394049700291259645">నిలిపివేయి</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> రీస్టార్ట్ అవుతోంది</translation>
 <translation id="4395835743215824109">కీబోర్డ్‌ను అనుకూలంగా మార్చవచ్చు</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> కీ లేని షార్ట్‌కట్ కొన్ని యాప్ షార్ట్‌కట్‌కు విరుద్ధంగా ఉండవచ్చు. దీన్ని ఉపయోగించడం కొనసాగించడానికి ఈ షార్ట్‌కట్‌ను మళ్లీ నొక్కండి లేదా <ph name="KEY" /> కీని ఉపయోగించి కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="4415951057168511744">ప్రస్తుత అవతార్</translation>
+<translation id="4417830657741848074">మీ అడ్మినిస్ట్రేటర్ ఆటోమేటిక్‌గా ప్రారంభించడానికి కొన్ని యాప్‌లను సెటప్ చేశారు. ఈ యాప్‌లలో కొన్ని మూసివేయబడకపోవచ్చు.</translation>
 <translation id="4422041425070339732">కింది వైపు బాణం</translation>
 <translation id="4425149324548788773">నా డ్రైవ్‌</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ఆఫ్‌లో ఉంది</translation>
@@ -465,6 +468,7 @@
 <translation id="4469288414739283461">ఎర్త్ ఫ్లో స్క్రీన్ సేవర్</translation>
 <translation id="4479639480957787382">ఈథర్నెట్</translation>
 <translation id="4483049906298469269">డిఫాల్ట్-యేతర నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
+<translation id="4500722292849917410">షార్ట్‌కట్ అందుబాటులో లేదు. మోడిఫయర్ కీని (ctrl, alt, shift, లేదా <ph name="META_KEY" />) ఉపయోగించి కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="4500966230243561393">ఇంటర్‌ఫేస్ రంగు</translation>
 <translation id="4503223151711056411">ఎడమ వైపు బాణం</translation>
 <translation id="4507392511610824664">బ్రైట్‌నెస్‌ను పెంచుతుంది</translation>
@@ -512,6 +516,7 @@
 <translation id="4832079907277790330">Files యాప్‌లో ఫోల్డర్‌ను ఎంచుకోండి...</translation>
 <translation id="4835901797422965222">యాక్టివ్‌గా ఉన్న నెట్‌వర్క్‌లు ఏవీ లేవు</translation>
 <translation id="4839698083503556542">మీ సొంత మూవీ క్రియేషన్</translation>
+<translation id="48409034532829769">మీ అడ్మినిస్ట్రేటర్ ఆటోమేటిక్‌గా ప్రారంభించడానికి "<ph name="APP_NAME" />" యాప్‌ను సెటప్ చేశారు. ఈ యాప్ మూసివేయబడకపోవచ్చు.</translation>
 <translation id="484462545196658690">ఆటో</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ఎంచుకోబడింది, <ph name="TOPIC_SOURCE" /> ఆల్బమ్‌లు ఎంచుకోవడానికి Enter నొక్కండి</translation>
 <translation id="484790837831576105">(Android) DNS రిజల్యూషన్</translation>
@@ -538,6 +543,7 @@
 <translation id="4969079779290789265">స్ప్లిట్ చేయండి</translation>
 <translation id="4972592110715526173">మోడ్‌ను మారుస్తుంది</translation>
 <translation id="498186245079027698">స్కానర్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి. స్కాన్ చేయబడిన ఫైల్స్‌ను సేవ్ చేయడానికి తగినంత స్థానిక స్పేస్ ఉందని నిర్దారించుకోండి.</translation>
+<translation id="4982627662315910959">షార్ట్‌కట్ అందుబాటులో లేదు. shift, ఇంకో 1 మోడిఫయర్ కీని (ctrl, alt, లేదా <ph name="META_KEY" />) ఉపయోగించి కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="4985509611418653372">రన్ చేయి</translation>
 <translation id="4987769320337599931">ఫైర్‌వాల్</translation>
 <translation id="4988526792673242964">పేజీలు</translation>
@@ -844,6 +850,7 @@
 <translation id="7216409898977639127">సెల్యులార్ ప్రదాత</translation>
 <translation id="725133483556299729">ఈమెయిల్‌ను ఎంచుకోండి</translation>
 <translation id="7271040990581020067">స్కానర్ ప్రస్తుతం వినియోగంలో ఉంది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
+<translation id="7271932918253517778">పైన ఉండే అడ్డు వరుసలోని కీలతో షార్ట్‌కట్‌ను క్రియేట్ చేయాలంటే, అందులో <ph name="META_KEY" /> కీ కూడా ఉండాలి.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">చక్కని గాలిని ఆస్వాదించండి</translation>
 <translation id="7287310195820267359">వాల్‌పేపర్ కలెక్షన్‌లు</translation>

@@ -650,6 +650,7 @@ Se non viene configurato, il selettore di emoji verrà attivato per gli utenti n
 <translation id="1534007181698071943">Consenti la disattivazione per impostazione predefinita dei gestori di eventi unload durante il ritiro</translation>
 <translation id="1542491165152947087">Consenti agli utenti di attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci.</translation>
 <translation id="1550295162561011575">L'impostazione di questo criterio consente agli amministratori di configurare l'automazione per il lancio di app sui dispositivi <ph name="PRODUCT_NAME" />. Queste app possono essere lanciate al momento dell'accesso dell'utente oppure insieme da Avvio app.</translation>
+<translation id="1551782388466447648">Attiva la tastiera virtuale touch nella schermata di accesso</translation>
 <translation id="1552418937045050762">Se questa impostazione viene attivata, gli utenti possono scegliere di utilizzare la funzionalità Condivisione nelle vicinanze, che consente di inviare e ricevere file dalle persone nelle vicinanze.
 
       Se viene disattivata, gli utenti non possono attivare la funzionalità.
@@ -836,6 +837,28 @@ Se il criterio viene impostato su False o se non viene configurato, non viene re
 <translation id="1713829924716792485">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti connessi a un host di accesso remoto possono trasferire file dal client all'host e viceversa. Questo criterio non si applica alle connessioni di assistenza remota, che non supportano il trasferimento di file.
 
       Se il criterio viene impostato su Disattivato, il trasferimento di file non è consentito.</translation>
+<translation id="1714498967590789694">L'elemento <ph name="WEBVIEW_TAG_NAME" /> delle app di Chrome consente
+un comportamento che verrà rimosso da
+<ph name="PRODUCT_NAME" />.
+
+Il comportamento precedente consente
+all'evento <ph name="NEWWINDOW_EVENT_NAME" />
+dell'elemento <ph name="WEBVIEW_TAG_NAME" />
+(https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow)
+di aggiungere la nuova finestra a un elemento <ph name="WEBVIEW_TAG_NAME" />
+in una finestra dell'app separata da quella dell'elemento
+<ph name="WEBVIEW_TAG_NAME" /> originario. Con il nuovo comportamento, questa
+aggiunta è ancora consentita, ma il riferimento alla finestra restituito dalla
+chiamata a <ph name="WINDOW_OPEN_NAME" /> nell'elemento
+<ph name="WEBVIEW_TAG_NAME" /> originario non è più valido.
+
+Se il criterio viene attivato, viene utilizzato il comportamento precedente.
+Se il criterio viene disattivato o se non viene configurato, la modifica del comportamento viene applicata
+a mano a mano che viene implementata tramite il processo di rilascio di <ph name="PRODUCT_NAME" />.
+
+Questo criterio è una soluzione alternativa temporanea qualora le aziende
+riscontrino danni a causa di questa modifica. L'ultima versione supportata di questo
+criterio era la versione 121. È stato rimosso nella versione 122.</translation>
 <translation id="1714790754501130659">Il nome utente per l'autenticazione dei servizi di sistema per il proxy web remoto.</translation>
 <translation id="171511968762040550">Se il criterio è impostato su True o se non viene configurato, gli utenti possono aggiungere, rimuovere o modificare i preferiti.
 
@@ -969,6 +992,7 @@ Questo criterio non ha effetto se l'opzione per mantenere i dati di navigazione 
       Se viene attivato il criterio <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />, saranno consentiti anche gli utenti Family Link oltre agli account definiti in questo criterio.</translation>
 <translation id="18186215616223740">Quando si accede a documenti Office gestiti da <ph name="BASIC_EDITOR_NAME" />, forzane il download</translation>
 <translation id="1819272352048746487">Attiva o disattiva diverse funzionalità per la tastiera sullo schermo</translation>
+<translation id="1822163547472114648">Impostazioni per Crea temi con l'IA</translation>
 <translation id="1823974945066396306">Consente di definire l'elenco di utenti autorizzati ad accedere al dispositivo. Le voci sono nel formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, ad esempio <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Per autorizzare utenti arbitrari su un dominio, le voci devono essere nel formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
       Se questo criterio non viene configurato, non ci sono limitazioni in termini di utenti autorizzati ad accedere. Tieni presente che la creazione di nuovi utenti richiede comunque la corretta configurazione del criterio <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" />.
@@ -2132,6 +2156,7 @@ Se il criterio viene disattivato o se non viene configurato, gli utenti possono 
 <translation id="2731627323327011390">Disattiva l'utilizzo dei certificati <ph name="PRODUCT_OS_NAME" /> per le app ARC</translation>
 <translation id="273678600057164019">La risoluzione DNS di sistema verrà eseguita all'interno del processo di rete.</translation>
 <translation id="2737917415184832294">Utilizza HTTPS per i download di aggiornamento</translation>
+<translation id="2739213523971537320">Disattiva la tastiera virtuale touch nella schermata di accesso</translation>
 <translation id="2742843273354638707">Consente di nascondere l'app Chrome Web Store e il link nel piè di pagina nella pagina Nuova scheda e in Avvio applicazioni di <ph name="PRODUCT_OS_NAME" />.
 
       Quando questa norma è impostata su true, le icone sono nascoste.
@@ -2187,6 +2212,7 @@ L'impostazione del valore "command_line" impedirà il caricamento delle estensio
 
       A meno che lo spazio di archiviazione esterno non sia bloccato, se imposti ExternalStorageReadOnly su False o non lo imposti, gli utenti possono creare e modificare i file dei dispositivi di archiviazione esterni fisicamente scrivibili. Puoi bloccare lo spazio di archiviazione esterno impostando ExternalStorageDisable su True.</translation>
 <translation id="2789742777235177478">Limita il tempo per cui un utente autenticato tramite GAIA senza SAML può accedere offline nella schermata di blocco</translation>
+<translation id="2794180170614133361">Attiva la tastiera virtuale touch in base all'euristica di sistema predefinita nella schermata di accesso</translation>
 <translation id="2795923835422513629">Se il criterio viene impostato su 1, i siti web possono mostrare i popup. Se il criterio viene impostato su 2, i popup vengono negati.
 
 Se non viene configurato, si applica il criterio <ph name="BLOCK_POPUPS_POLICY_NAME" />, ma gli utenti possono modificare l'impostazione.</translation>
@@ -4867,6 +4893,16 @@ Se questo criterio viene impostato su true o se non viene configurato, la segnal
 <translation id="5109866581154565900">Questo criterio consente di stabilire se mostrare o meno all'utente la schermata della direzione di scorrimento sul touchpad durante il primo accesso.
       Se viene impostato su false, la schermata della direzione di scorrimento sul touchpad non verrà visualizzata.
       Se viene impostato su true, la schermata della direzione di scorrimento sul touchpad verrà visualizzata.</translation>
+<translation id="5110138546901711282">Consente di controllare la tastiera virtuale touch nella schermata di accesso, fungendo da criterio aggiuntivo rispetto al criterio <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
+
+    Se la tastiera virtuale di accessibilità è attiva, questo criterio non ha effetto.
+
+    In caso contrario, questo criterio avrà il seguente effetto sulla schermata di accesso:
+    Se questo criterio non viene configurato, la tastiera virtuale viene visualizzata in base all'euristica di sistema predefinita, ad esempio se ci sono tastiere collegate.
+    Se questo criterio viene impostato su True, la tastiera virtuale viene sempre visualizzata.
+    Se questo criterio viene impostato su False, la tastiera virtuale non viene mai visualizzata.
+
+    Il layout della tastiera virtuale potrebbe diventare compatto, a seconda del metodo di immissione.</translation>
 <translation id="5117533544648311089">Ti consente di specificare le configurazioni per gli URL di autenticazione in <ph name="WEBVIEW_PRODUCT_NAME" />.
 
       Questi URL di autenticazione vengono trattati in modo speciale da <ph name="WEBVIEW_PRODUCT_NAME" /> in modo che, quando durante l'autenticazione una pagina web in <ph name="WEBVIEW_PRODUCT_NAME" /> indirizza agli URL di autenticazione, venga avviata l'app di autenticazione dei provider di identità corrispondente che può gestire l'URL di autenticazione in questione.
@@ -4899,6 +4935,7 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="5163889437570441600">Consenti la trasmissione di contenuti al dispositivo usando <ph name="PRODUCT_NAME" />.
 
           Se questo criterio viene impostato su false, gli utenti non possono trasmettere contenuti al proprio dispositivo. Se viene impostato su true, gli utenti possono trasmettere contenuti. Se non viene configurato, gli utenti non possono trasmettere contenuti a dispositivi ChromeOS registrati, ma possono trasmetterli a dispositivi non registrati.</translation>
+<translation id="5164141068091580679">Attiva la funzionalità e invia dati per contribuire ad addestrare i modelli di IA</translation>
 <translation id="516520353995300280">La configurazione del criterio consente di disattivare l'applicazione dei requisiti di divulgazione di Certificate Transparency per un elenco di autorità di certificazione precedenti per la creazione di catene di certificati con un hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> specificato. Gli host aziendali possono continuare a utilizzare i certificati che altrimenti non verrebbero ritenuti attendibili, in quanto non resi pubblici in modo appropriato. Per disattivare l'applicazione, l'hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> deve essere presente in un certificato CA riconosciuto come autorità di certificazione precedente. Un'autorità di certificazione precedente viene considerata attendibile pubblicamente da uno o più sistemi operativi supportati da <ph name="PRODUCT_NAME" />, ma non da Android Open Source Project o <ph name="PRODUCT_OS_NAME" />.
 
       Specifica un hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> collegandolo al nome dell'algoritmo di hash, una barra e la codifica Base64 di tale algoritmo di hash applicato al <ph name="SUBJECT_PUBLIC_KEY_INFO" /> con codifica DER del certificato specificato. Il formato della codifica Base64 è nello stesso formato di un'impronta SPKI. L'unico algoritmo di hash riconosciuto è sha256; gli altri vengono ignorati.
@@ -5600,6 +5637,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> viene disattivato.<
           Se il criterio viene attivato o se non viene configurato, la voce del menu contestuale per il tuo provider di ricerca predefinito è disponibile.
 
           Il valore del criterio viene applicato solo se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> viene attivato e non è applicabile in caso contrario.</translation>
+<translation id="5695907219125832836">Attiva la funzionalità ma non invia dati per contribuire ad addestrare i modelli di IA</translation>
 <translation id="5697306356229823047">Segnala utenti dispositivo</translation>
 <translation id="569777361305162263">Disattiva la visualizzazione di contenuti promozionali a scheda intera</translation>
 <translation id="5698923148503075597">Se il criterio viene impostato su Enabled, in caso di conflitto il criterio relativo al cloud prevale sul criterio relativo alla piattaforma.
@@ -6023,6 +6061,7 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
       4: Blocca i file dannosi segnalati dal server di Navigazione sicura, non blocca i tipi di file pericolosi (opzione consigliata).
 
       Nota: tali limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione di menu "Salva link con nome…". Non vengono applicate al download della pagina attualmente visualizzata né al salvataggio in formato PDF tramite le opzioni di stampa. Scopri di più sulla funzionalità Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
+<translation id="6115254134376460539">Disattiva la funzionalità</translation>
 <translation id="6118226055960302400">Ripristina il comportamento permissivo.</translation>
 <translation id="6119207979839638596">Questo criterio è stato rimosso da M75 dopo la rimozione del criterio della versione TLS massima da <ph name="PRODUCT_NAME" />.
 
@@ -6169,21 +6208,6 @@ Dalla versione 114 in poi, questo criterio è facoltativo se viene configurato i
 <translation id="6244210204546589761">Pagine da aprire all'avvio</translation>
 <translation id="624595269193747921">Consente di stabilire se limitare o meno la ricerca della stampante corrispondente a un insieme specifico di stampanti.</translation>
 <translation id="6246290059248303618">Mostra i controlli multimediali per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi sulla rete locale</translation>
-<translation id="6246420783859339814">Questo criterio consente agli amministratori di limitare gli account autorizzati ad accedere a <ph name="MICROSOFT_ONE_DRIVE_NAME" /> quando il criterio <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> è attivato.
-
-Se questo criterio contiene il valore "<ph name="COMMON_NAME" />", per accedere è possibile utilizzare qualsiasi account.
-
-Se questo criterio contiene il valore "<ph name="ORGANIZATIONS_NAME" />", per accedere è possibile utilizzare account di lavoro o della scuola.
-
-Se questo criterio contiene il valore "<ph name="CONSUMER_NAME" />", per accedere è possibile utilizzare account <ph name="MICROSOFT_NAME" /> personali.
-
-Se questo criterio contiene nomi di dominio o ID tenant, per accedere è possibile utilizzare gli account di questi nomi di dominio o ID tenant (vedi la pagina https://learn.microsoft.com/it-it/azure/active-directory/develop/v2-protocols#endpoints).
-
-Se questo criterio non viene configurato o se contiene soltanto un valore vuoto, si comporta come se "<ph name="COMMON_NAME" />" fosse stato specificato per gli utenti normali e "<ph name="ORGANIZATIONS_NAME" />" per gli utenti aziendali.
-
-La modifica delle limitazioni potrebbe comportare la disconnessione degli utenti dal proprio account <ph name="MICROSOFT_ONE_DRIVE_NAME" /> se non ottempera alle nuove limitazioni.
-
-Nota: al momento verrà presa in considerazione solo la prima voce. Le estensioni successive supporteranno più voci.</translation>
 <translation id="6247316685259031374">Questo criterio consente di controllare la sandbox del processo audio.
       Se questo criterio viene attivato, il processo audio verrà eseguito con limitazione tramite sandbox.
       Se il criterio viene disattivato, il processo audio verrà eseguito senza limitazione tramite sandbox e il modulo di elaborazione audio WebRTC verrà eseguito nel processo di rendering.
@@ -6204,6 +6228,7 @@ Nota: al momento verrà presa in considerazione solo la prima voce. Le estension
           Questo criterio non influisce sull'attivazione o meno della tastiera virtuale touch. Ad esempio, la tastiera virtuale touch viene comunque visualizzata sui tablet anche se il criterio viene impostato su False.</translation>
 <translation id="6254498834449523938">Non consentire agli utenti di bypassare l'avviso di Navigazione sicura</translation>
 <translation id="625580680776945310">La modalità ad alta efficienza verrà attivata.</translation>
+<translation id="6258314216623064461">Impostazioni per Aiutami a scrivere</translation>
 <translation id="6258658183356534534">Controlla la funzionalità di aggiornamento User-Agent Client Hints GREASE.</translation>
 <translation id="6261643884958898336">Segnala informazioni di identificazione dei computer</translation>
 <translation id="6264247808139384018">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti che hanno effettuato l'autenticazione con una password possono bloccare lo schermo.
@@ -6894,6 +6919,7 @@ Se il criterio viene impostato su False, il port forwarding nei container Crosti
       Se il criterio è attivato, Risposte rapide è abilitata.
       Se il criterio è disattivato, Risposte rapide è disabilitata.
       Se il criterio non viene impostato, gli utenti possono decidere se attivare o disattivare Risposte rapide.</translation>
+<translation id="670675748066383347">Impostazioni per l'organizzatore di schede</translation>
 <translation id="6712624291905573620">Questo criterio consente di controllare il reporting su cloud di <ph name="PRODUCT_NAME" />, che consente di caricare informazioni sul funzionamento del browser nella <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
 Se il criterio non viene configurato o viene impostato su Disabled, i dati non vengono raccolti o caricati.
@@ -7618,6 +7644,7 @@ Se questo criterio viene disattivato o se non viene configurato, le impostazioni
 <translation id="7298197471363105063">Esegui l'override degli insiemi First-Party.</translation>
 <translation id="7300320787419338290">Le impostazioni F11/F12 utilizzano la scorciatoia che contiene i tasti di modifica Ctrl e Maiusc</translation>
 <translation id="7302043767260300182">Ritardo blocco schermo in caso di utilizzo di CA</translation>
+<translation id="7303655680460311843">Attiva la tastiera virtuale touch nella schermata di accesso</translation>
 <translation id="7303902834678570827">Gli utenti di sessioni Ospite gestite non possono memorizzare le impostazioni di visualizzazione a livello di dispositivo.</translation>
 <translation id="7306926210354955892">La configurazione del criterio consente di specificare l'azione da eseguire quando la directory dei dati ARC dell'utente è stata creata con virtio-fs. A meno che non venga eseguita la migrazione dei dati virtio-fs su virtio-blk, le app per Android potrebbero essere eseguite più lentamente su ARC VM.
 

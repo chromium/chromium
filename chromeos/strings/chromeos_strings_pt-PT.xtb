@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">avançar</translation>
 <translation id="1615335640928990664">Utilização de dados desde <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Executar teste de carregamento</translation>
+<translation id="1626590945318984973">Atalho não disponível. Prima um novo atalho sem usar as teclas de função e <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">A carregar…</translation>
 <translation id="1641857168437328880">Alimentador de documentos (um lado)</translation>
 <translation id="1643449475550628585">Alterar imagem de fundo diariamente</translation>
@@ -452,7 +453,9 @@
 <translation id="4394049700291259645">Desactivar</translation>
 <translation id="439429847087949098">A reiniciar o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">personalização do teclado</translation>
+<translation id="4403262788869804671">O atalho sem tecla de <ph name="META_KEY" /> pode entrar em conflito com o atalho de alguma app. Prima este atalho novamente para continuar a usá-lo ou prima um novo atalho com a tecla de <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Avatar atual</translation>
+<translation id="4417830657741848074">O seu administrador configurou algumas apps para serem iniciadas automaticamente. Algumas destas apps não podem ser fechadas.</translation>
 <translation id="4422041425070339732">seta para baixo</translation>
 <translation id="4425149324548788773">O meu disco</translation>
 <translation id="4428374560396076622">A rede <ph name="NETWORK_NAME" /> está desativada</translation>
@@ -465,6 +468,7 @@
 <translation id="4469288414739283461">Proteção de ecrã Fluxo da Terra</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Falha ao enviar ping ao gateway da rede não predefinida.</translation>
+<translation id="4500722292849917410">Atalho não disponível. Prima um novo atalho através de uma tecla de modificação (Ctrl, Alt, Shift ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Cor da interface</translation>
 <translation id="4503223151711056411">Seta para a esquerda</translation>
 <translation id="4507392511610824664">aumentar o brilho</translation>
@@ -512,6 +516,7 @@
 <translation id="4832079907277790330">Selecionar pasta na app Files…</translation>
 <translation id="4835901797422965222">Sem redes ativas.</translation>
 <translation id="4839698083503556542">Crie o seu próprio filme</translation>
+<translation id="48409034532829769">O seu administrador configurou a app "<ph name="APP_NAME" />" para ser iniciada automaticamente. Esta app não pode ser fechada.</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selecionado. Prima Enter para selecionar álbuns do <ph name="TOPIC_SOURCE" />.</translation>
 <translation id="484790837831576105">(Android) Resolução de DNS</translation>
@@ -538,6 +543,7 @@
 <translation id="4969079779290789265">Dividido</translation>
 <translation id="4972592110715526173">alteração do modo</translation>
 <translation id="498186245079027698">Verifique o scanner e tente novamente. Certifique-se de que existe espaço local suficiente para guardar os ficheiros digitalizados.</translation>
+<translation id="4982627662315910959">Atalho não disponível. Prima um novo atalho através da tecla Shift e mais 1 tecla de modificação (Ctrl, Alt ou <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Executar</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Páginas </translation>
@@ -844,6 +850,7 @@
 <translation id="7216409898977639127">Operador de telemóvel</translation>
 <translation id="725133483556299729">Selecionar email</translation>
 <translation id="7271040990581020067">O leitor está a ser utilizado atualmente. Tente mais tarde.</translation>
+<translation id="7271932918253517778">Os atalhos com teclas de linha superior têm de incluir a tecla de <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Sentir a brisa</translation>
 <translation id="7287310195820267359">Coleções de imagens de fundo</translation>

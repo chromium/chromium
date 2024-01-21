@@ -460,6 +460,7 @@
 <translation id="1828959155404624835">అద్దెకు కార్లు</translation>
 <translation id="1834321415901700177">ఈ సైట్‌లో హానికరమైన ప్రోగ్రామ్‌లు ఉన్నాయి</translation>
 <translation id="1838374766361614909">శోధనను తీసివేయండి</translation>
+<translation id="1839331950812095887">మీ ఆలోచనలకు ఒక వాక్య రూపం తీసుకువచ్చే కొన్ని పదాలు</translation>
 <translation id="1839551713262164453">విధాన విలువల క్రమబద్ధీకరణ ఎర్రర్‌లతో విఫలమైంది</translation>
 <translation id="1842969606798536927">చెల్లింపు</translation>
 <translation id="1846432862466000825">ప్లాస్టిక్ (ఆర్కైవల్)</translation>
@@ -512,6 +513,8 @@
 <translation id="1956486093533522234">మీ పరికరాన్ని కనుగొని, సురక్షితంగా ఉండండి, లేదా ఫ్యాక్టరీ రీసెట్ చేయండి</translation>
 <translation id="1958218078413065209">మీ అత్యధిక స్కోర్ <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />మీరు సందర్శించిన కొన్ని పేజీల URLలను, పరిమితంగా సిస్టమ్ సమాచారాన్ని, కొంత పేజీ కంటెంట్<ph name="END_WHITEPAPER_LINK" />ను Googleకు పంపడం ద్వారా వెబ్‌లో ప్రతి ఒక్కరికీ భద్రతను మెరుగుపరచడంలో సహాయం చేయండి. <ph name="BEGIN_PRIVACY_PAGE_LINK" />గోప్యతా పాలసీ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959445535228047762">మీ టెక్స్ట్, పేజీ కంటెంట్ Googleకు పంపబడ్డాయి, ఈ ఫీచర్‌ను మెరుగుపరచడంలో ఉపయోగించబడవచ్చు.
+  <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> బుక్‌మార్క్‌లు</translation>
 <translation id="196752089528718902">మీరు సాధారణంగా సైట్‌లకు సురక్షితంగానే కనెక్ట్ అవుతారు, కానీ Chrome ఈ సమయంలో సురక్షితమైన కనెక్షన్‌ను ఉపయోగించలేకపోతోంది. అటాకర్ మీ నెట్‌వర్క్ కనెక్షన్‌ను రహస్యంగా గమనించడానికి లేదా మార్చడానికి ట్రై చేస్తూ ఉండవచ్చు. <ph name="BEGIN_LEARN_MORE_LINK" />మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">శ్రేణిగా రూపొందించడంలో ఎర్రర్</translation>
@@ -691,6 +694,7 @@
 <translation id="2293443924986248631">దీన్ని ఆన్‌ చేసి ఉంచితే, ఇంటర్నెట్‌ అంతటా వెబ్‌సైట్‌లు మిమ్మల్ని ట్రాక్ చేయడానికి కుక్కీలను ఉపయోగించలేవు. అయితే దీనివల్ల కొన్ని వెబ్‌సైట్‌లలోని ఫీచర్లు పని చేయకుండా ఆగిపోవచ్చు.</translation>
 <translation id="2295831393422400053">నాకు రాయడం కోసం సహాయం చేయడానికి సెర్చ్‌లు, బ్రౌజింగ్ బెటర్ సెట్టింగ్‌ను ఆన్ చేయండి</translation>
 <translation id="2300306941146563769">అప్‌లోడ్ చేయలేదు</translation>
+<translation id="2301098101308036335">ఏ వెబ్‌సైట్‌లను సందర్శించారు, అలాగే ఎప్పుడు సందర్శించారు.</translation>
 <translation id="230286397113210245">'అజ్ఞాత విండోను తెరవండి' బటన్, ప్రైవేట్‌గా బ్రౌజ్ చేయడం కోసం కొత్త అజ్ఞాత విండోను తెరవడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="2312234273148520048">మసాలాలు &amp; డ్రస్సింగ్</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> కంటే తక్కువ. మీరు తర్వాతిసారి ఉపయోగించినప్పుడు కొన్ని సైట్‌లు మరింత నిదానంగా లోడ్ కావచ్చు.</translation>
@@ -715,6 +719,7 @@
 <translation id="2354430244986887761">Google సురక్షిత బ్రౌజింగ్ ఇటీవల <ph name="SITE" />లో <ph name="BEGIN_LINK" />హానికర యాప్‌లను కనుగొంది<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">దాడికి పాల్పడేవారు ఈ సైట్‌లో మీరు చూస్తున్న చిత్రాలను చూడగలరు, వాటిని ఎడిట్ చేయడం ద్వారా మిమ్మల్ని మోసగించవచ్చు.</translation>
 <translation id="2356070529366658676">అడుగు</translation>
+<translation id="2356926036049612643">V8 ఆప్టిమైజర్</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> మీ పరికరాన్ని మేనేజ్ చేస్తోంది, <ph name="ACCOUNT_MANAGER" /> మీ ఖాతాను మేనేజ్ చేస్తోంది.</translation>
 <translation id="2359629602545592467">అనేకం</translation>
 <translation id="2359808026110333948">కొనసాగించండి</translation>
@@ -1357,6 +1362,7 @@
 <translation id="3655670868607891010">మీరు దీన్ని తరచుగా చూస్తుంటే, ఈ <ph name="HELP_LINK" />ని ప్రయత్నించండి.</translation>
 <translation id="365641980390710834">సాధారణ దుస్తులు</translation>
 <translation id="3658742229777143148">పునర్విమర్శ</translation>
+<translation id="3659521826520353662">ఏ అడ్మినిస్ట్రేటర్-నిర్వచించిన వెబ్‌సైట్‌లను సందర్శించారు, అలాగే ఎప్పుడు సందర్శించారు: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">కీవర్డ్‌లు:</translation>
 <translation id="3665100783276035932">చాలా సైట్‌లు ఊహించిన విధంగానే పని చేస్తాయి</translation>
 <translation id="3667704023705708645">వెంచర్ క్యాపిటల్</translation>
@@ -1447,6 +1453,7 @@
 <translation id="3812398568375898177">ఇది ChromeOSలో Android యాప్‌ల పనితీరును మెరుగుపరిచే ముఖ్యమైన అప్‌డేట్.</translation>
 <translation id="3815434930383843058">8 x 12 అంగుళాలు</translation>
 <translation id="3816482573645936981">విలువ (అధిగమించబడింది)</translation>
+<translation id="382115839591654906"><ph name="CARD_NAME" /> కోసం CVC</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">మీ బ్రౌజర్‌ను <ph name="BROWSER_DOMAIN" /> మేనేజ్ చేస్తోంది, మీ ప్రొఫైల్‌ను <ph name="PROFILE_DOMAIN" /> మేనేజ్ చేస్తోంది</translation>
 <translation id="382518646247711829">మీరు ప్రాక్సీ సర్వర్‌ను ఉపయోగిస్తే...</translation>
@@ -3198,6 +3205,7 @@
 <translation id="7341357280245177602">వాడిన వాహనాలు</translation>
 <translation id="7346048084945669753">అనుబంధితం:</translation>
 <translation id="7346062987309535530">డైనింగ్ సామాగ్రి</translation>
+<translation id="7346081071264046066">"అత్యంత ఉత్సాహంతో ఈ వివాహ ఆహ్వానానికి అవును అని ప్రత్యుత్తరం ఇవ్వండి"</translation>
 <translation id="7352651011704765696">ఏదో తప్పు జరిగింది</translation>
 <translation id="7353601530677266744">ఆదేశ పంక్తి</translation>
 <translation id="7354880545102894991">తక్కువ ధర &amp; చివరి నిమిషంలో అందించే ప్రయాణం డీల్స్</translation>
@@ -4079,6 +4087,7 @@
 <translation id="9038649477754266430">పేజీలను మరింత త్వరగా లోడ్ చేయడానికి సూచన సేవను ఉపయోగించండి</translation>
 <translation id="9039213469156557790">అలాగే, ఈ పేజీలో సురక్షితం కాని ఇతర వనరులు ఉన్నాయి. ఈ వనరులను బదిలీ చేస్తున్నప్పుడు ఇతరులు చూడగలరు మరియు దాడికి పాల్పడేవారు పేజీ ప్రవర్తనను మార్చేలా వీటిని ఎడిట్ చేయగలరు.</translation>
 <translation id="9042617223719777575">లార్జ్ కెపాసిటీ</translation>
+<translation id="9042827002460091668">మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి</translation>
 <translation id="9044359186343685026">Touch IDని ఉపయోగించండి</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9048035366624198823">ఈ చర్యలకు <ph name="POLICY_NAME" /> పాలసీని <ph name="POLICY_VALUE" />‌కు సెట్ చేయాల్సిన అవసరం ఉంది: <ph name="ACTION_LIST" />.</translation>

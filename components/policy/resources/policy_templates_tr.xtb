@@ -6255,21 +6255,6 @@ Bu takviye 8 ile 32 karakter arasında bir dize olmalıdır.
 <translation id="6244210204546589761">Başlangıçta açılacak olan URL'ler</translation>
 <translation id="624595269193747921">Eşleşen yazıcı arama işleminin belirli bir yazıcı grubuyla sınırlı olup olmayacağı.</translation>
 <translation id="6246290059248303618">Yerel ağdaki diğer cihazlar tarafından başlatılan <ph name="PRODUCT_NAME" /> oturumları için medya kontrollerini göster</translation>
-<translation id="6246420783859339814">Bu politika, <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> politikası etkinleştirildiğinde yöneticilerin, <ph name="MICROSOFT_ONE_DRIVE_NAME" /> hizmetinde oturum açmasına izin verilen hesapları kısıtlamasına olanak tanır.
-
-Bu politika "<ph name="COMMON_NAME" />" değerini içeriyorsa oturum açmak için herhangi bir hesap kullanılabilir.
-
-Bu politika "<ph name="ORGANIZATIONS_NAME" />" değerini içeriyorsa oturum açmak için iş veya okul hesapları kullanılabilir.
-
-Bu politika "<ph name="CONSUMER_NAME" />" değerini içeriyorsa oturum açmak için kişisel <ph name="MICROSOFT_NAME" /> hesapları kullanılabilir.
-
-Bu politika alan adları ya da kiracı kimlikleri içeriyorsa oturum açmak için bu alan adlarındaki veya kiracı kimliklerindeki hesaplar (https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints adresine göz atın) kullanılabilir.
-
-Bu politika ayarlanmazsa veya yalnızca boş bir değer içerirse normal kullanıcılar için "<ph name="COMMON_NAME" />", kurumsal kullanıcılar için "<ph name="ORGANIZATIONS_NAME" />" değeri belirtilmiş gibi davranır.
-
-Kısıtlamaların değiştirilmesi, yeni kısıtlamalara uymadığı takdirde kullanıcıların <ph name="MICROSOFT_ONE_DRIVE_NAME" /> hesaplarının oturumunun kapatılmasına neden olabilir.
-
-Not: Şu anda yalnızca ilk giriş dikkate alınır. Gelecekteki uzantılar birden fazla girişi destekleyecektir.</translation>
 <translation id="6247316685259031374">Bu politika, korumalı alana alınan ses işlemini kontrol eder.
       Bu politika etkinleştirilirse ses işlemi korumalı alana alınmış olarak gerçekleştirilir.
       Bu politika devre dışı bırakılırsa ses işlemi korumalı alana alınmadan gerçekleştirilir ve WebRTC ses işleme modülü, oluşturucu işleminde çalışır.

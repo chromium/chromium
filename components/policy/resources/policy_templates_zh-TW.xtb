@@ -6060,19 +6060,6 @@
 <translation id="6244210204546589761">起始時開啟的網址</translation>
 <translation id="624595269193747921">是否僅限在特定一組印表機中搜尋相符的印表機。</translation>
 <translation id="6246290059248303618">顯示由區域網路中其他裝置啟動的 <ph name="PRODUCT_NAME" /> 工作階段媒體控制項</translation>
-<translation id="6246420783859339814">管理員可使用這項政策限制哪些帳戶可在 <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> 政策啟用後登入 <ph name="MICROSOFT_ONE_DRIVE_NAME" />。
-
-如果這項政策的值是「<ph name="COMMON_NAME" />」，就能使用任何帳戶登入。
-
-如果政策的值是「<ph name="ORGANIZATIONS_NAME" />」，可使用公司或學校帳戶登入。
-
-如果政策的值是「<ph name="CONSUMER_NAME" />」，可使用個人 <ph name="MICROSOFT_NAME" /> 帳戶登入。
-
-如果這項政策包含網域名稱或用戶群 ID，可使用這些網域名稱或用戶群 ID (詳參閱 https://learn.microsoft.com/zh-tw/azure/active-directory/develop/v2-protocols#endpoints) 中的帳戶登入。
-
-對一般使用者來說，不設定這項政策或只有空白值在行為上等同於指定「<ph name="COMMON_NAME" />」；對企業版使用者來說，不設定政策等同於指定「<ph name="ORGANIZATIONS_NAME" />」。
-
-限制變更後，使用者可能會因未遵守新限制而登出 <ph name="MICROSOFT_ONE_DRIVE_NAME" /> 帳戶。注意：系統目前只會考慮第一項，日後的擴充功能將可支援多個項目。</translation>
 <translation id="6247316685259031374">這項政策可控管音訊程序的沙箱機制。
       如果啟用這項政策，系統會採用沙箱機制執行音訊程序。
       如果停用這項政策，系統不會採用沙箱機制執行音訊程序，並會在轉譯器程序中執行 WebRTC 音訊處理模組。

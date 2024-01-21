@@ -556,6 +556,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3922310737605261887">Hae kopioitua tekstiä</translation>
 <translation id="3928666092801078803">Yhdistä tiedot</translation>
 <translation id="3929457972718048006">Osoitteet</translation>
+<translation id="3948600256434252210">Voit selata incognito-tilassa pyyhkäisemällä oikealle.</translation>
 <translation id="3955822496205734389">Sinulla on heikkoja salasanoja.</translation>
 <translation id="3959736869653157332">Valikko → Uusi incognito-välilehti</translation>
 <translation id="3962326069546168954">Tallenna</translation>
@@ -661,6 +662,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4539187448429948815">{count,plural, =1{Näppäimistön yläpuolella on saatavilla {count} tallennettu automaattinen täydennysehdotus.}other{Näppäimistön yläpuolella on saatavilla {count} tallennettua automaattista täydennysehdotusta.}}</translation>
 <translation id="4540780316273593836">Jotain meni pieleen</translation>
 <translation id="4550040941166547650">Vain tällä laitteella</translation>
+<translation id="4564893319561643483">Piilota "<ph name="TITLE" />"</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Suljetaanko {COUNT} ei-aktiivinen välilehti?}other{Suljetaanko {COUNT} ei-aktiivista välilehteä?}}</translation>
 <translation id="457386861538956877">Lisää...</translation>
 <translation id="4587589328781138893">Sivustot</translation>
@@ -1260,6 +1262,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7666861622396822790">Voit hallita tätä <ph name="BEGIN_LINK" />sisältöasetuksissa<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">ASENNA</translation>
+<translation id="7673346542062368520">Voit selata incognito-tilassa pyyhkäisemällä vasemmalle.</translation>
 <translation id="7679915578945954324">Sivuston osoitteet kopioitu</translation>
 <translation id="7687508192620387263">Kalenteritiedosto saatavilla</translation>
 <translation id="7701040980221191251">Ei mitään</translation>

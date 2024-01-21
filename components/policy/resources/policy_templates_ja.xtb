@@ -5949,21 +5949,6 @@ https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_clien
 <translation id="6244210204546589761">起動時に開く URL</translation>
 <translation id="624595269193747921">照合するプリンタの検索の対象を特定のプリンタに限定するかどうかを指定します。</translation>
 <translation id="6246290059248303618">ローカル ネットワーク上の他のデバイスによって開始された <ph name="PRODUCT_NAME" /> セッションのメディア コントロールを表示する</translation>
-<translation id="6246420783859339814">このポリシーでは、<ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> ポリシーが有効になっている場合に、<ph name="MICROSOFT_ONE_DRIVE_NAME" /> のログインに使用できるアカウントを制限できます。
-
-このポリシーで「<ph name="COMMON_NAME" />」の値を設定した場合、どのアカウントでもログインできます。
-
-このポリシーで「<ph name="ORGANIZATIONS_NAME" />」の値を設定した場合、仕事用または学校用アカウントを使用してログインできます。
-
-このポリシーで「<ph name="CONSUMER_NAME" />」の値を設定した場合、<ph name="MICROSOFT_NAME" /> の個人用アカウントを使用してログインできます。
-
-このポリシーでドメイン名またはテナント ID を設定した場合、これらのドメイン名またはテナント ID のアカウント（https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints を参照）を使用してログインできます。
-
-このポリシーを未設定のままにするか、空の値のみを設定した場合、通常のユーザーについては「<ph name="COMMON_NAME" />」を指定した場合と同様に動作します。企業ユーザーについては「<ph name="ORGANIZATIONS_NAME" />」を指定した場合と同様に動作します。
-
-制限を変更して、<ph name="MICROSOFT_ONE_DRIVE_NAME" /> のアカウントが新しい制限に合致しない場合は、ユーザーがログアウトされる可能性があります。
-
-注: 現時点では、最初のエントリのみが考慮されます。今後の拡張で、複数のエントリがサポートされる予定です。</translation>
 <translation id="6247316685259031374">このポリシーでは、音声処理のサンドボックス化を管理します。
       このポリシーを有効に設定した場合、音声処理はサンドボックス化されます。
       このポリシーを無効に設定した場合、音声処理はサンドボックス化されず、レンダリング処理では WebRTC 音声処理モジュールが実行されます。

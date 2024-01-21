@@ -557,6 +557,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3922310737605261887">Ieškoti nukopijuoto teksto</translation>
 <translation id="3928666092801078803">Sujungti duomenis</translation>
 <translation id="3929457972718048006">Adresai</translation>
+<translation id="3948600256434252210">Naršydami inkognito režimu galite perbraukti dešinėn.</translation>
 <translation id="3955822496205734389">Turite nesudėtingų slaptažodžių.</translation>
 <translation id="3959736869653157332">Meniu → „Naujas inkognito skirtukas“</translation>
 <translation id="3962326069546168954">Išsaugoti</translation>
@@ -662,6 +663,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4539187448429948815">{count,plural, =1{Virš klaviatūros pasiekiamas {count} išsaugotas automatinio užbaigimo pasiūlymas.}one{Virš klaviatūros pasiekiamas {count} išsaugotas automatinio užbaigimo pasiūlymas.}few{Virš klaviatūros pasiekiami {count} išsaugoti automatinio užbaigimo pasiūlymai.}many{Virš klaviatūros pasiekiama {count} išsaugoto automatinio užbaigimo pasiūlymo.}other{Virš klaviatūros pasiekiama {count} išsaugotų automatinio užbaigimo pasiūlymų.}}</translation>
 <translation id="4540780316273593836">Kažkas nepavyko</translation>
 <translation id="4550040941166547650">Tik šiame įrenginyje</translation>
+<translation id="4564893319561643483">Slėpti „<ph name="TITLE" />“</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Uždaryti {COUNT} neaktyvų skirtuką?}one{Uždaryti {COUNT} neaktyvų skirtuką?}few{Uždaryti {COUNT} neaktyvius skirtukus?}many{Uždaryti {COUNT} neaktyvaus skirtuko?}other{Uždaryti {COUNT} neaktyvių skirtukų?}}</translation>
 <translation id="457386861538956877">Daugiau...</translation>
 <translation id="4587589328781138893">Svetainės</translation>
@@ -1262,6 +1264,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7666861622396822790">Galite tvarkyti tai <ph name="BEGIN_LINK" />turinio nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">ĮDIEGTI</translation>
+<translation id="7673346542062368520">Naršydami inkognito režimu galite perbraukti kairėn.</translation>
 <translation id="7679915578945954324">Svetainių adresai nukopijuoti</translation>
 <translation id="7687508192620387263">Pasiekiamas kalendoriaus failas</translation>
 <translation id="7701040980221191251">Nėra</translation>

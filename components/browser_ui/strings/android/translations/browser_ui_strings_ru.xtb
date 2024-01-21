@@ -330,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Запретить сайтам использовать устройство и данные виртуальной реальности</translation>
 <translation id="6447842834002726250">Файлы сookie</translation>
+<translation id="6452138246455930388">На одной из открытых вкладок появилась скидка. Цена снизилась с <ph name="OLD_PRICE" /> до <ph name="NEW_PRICE" />. Товар: "<ph name="PRODUCT_NAME" />", домен: <ph name="DOMAIN_NAME" />.</translation>
 <translation id="6500423977866688905">Запрашивать мобильную версию, если окно узкое</translation>
 <translation id="6527303717912515753">Поделиться</translation>
 <translation id="652937045869844725">Попробуйте разрешить сторонние файлы cookie. Это снизит вашу защиту, зато функции сайта, скорее всего, будут работать.</translation>

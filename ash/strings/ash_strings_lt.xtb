@@ -622,6 +622,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3577473026931028326">Kažkas ne taip. Bandykite dar kartą.</translation>
 <translation id="3580650856351781466">Atsisiunčiami kalbos failai</translation>
 <translation id="3585296979871889131">Peržiūrėkite naujausias telefono nuotraukas, mediją, pranešimus ir programas</translation>
+<translation id="3590441166907930941">Šoninis mygtukas</translation>
 <translation id="3593039967545720377">Pasiekite iškarpinės istoriją paspaudę <ph name="SHORTCUT_KEY_NAME" /> ir V, kad peržiūrėtumėte iškarpinę. Jei norite pradėti, nukopijuokite elementą.</translation>
 <translation id="3593646411856133110">Perbraukite aukštyn ir laikykite, kad peržiūrėtumėte atidarytas programas</translation>
 <translation id="3595596368722241419">Akumuliatorius įkrautas</translation>
@@ -1034,6 +1035,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="5163434717504750796">Akumuliatoriaus būsena: <ph name="BATTERY_HEALTH_PERCENTAGE" /> proc. | Ciklų skaičius: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Išsaugoti darbalaukį kaip šabloną</translation>
 <translation id="5168181903108465623">Pasiekiami perdavimo įrenginiai</translation>
+<translation id="5168753792967365150">Redaguoti sistemoje „Google Tasks“</translation>
 <translation id="5170568018924773124">Rodyti aplanke</translation>
 <translation id="5176318573511391780">Įrašyti dalinį ekrano vaizdą</translation>
 <translation id="5187627942836026988">Rodyti išsamią viešosios interneto prieigos taško informaciją. Viešosios interneto prieigos tašką užblokavo administratorius.</translation>
@@ -1303,6 +1305,8 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="6168622430237609329">Įdiegtos programos</translation>
 <translation id="6173151025443907148">Prisijungimas prie antrojo naudotojo nepalaikomas, jei įgalinta „Lacros“. Naudokite antrosios naršyklės profilį sistemoje „Lacros“ arba išjunkite „Lacros“ ir bandykite dar kartą.</translation>
 <translation id="6179832488876878285">Čia galite prisegti svarbius failus. Jei norite pradėti, atidarykite Failų programą.</translation>
+<translation id="6180193585172850042">Mygtukas „Atgal“</translation>
+<translation id="6180651297859206670">Mygtukas „Pirmyn“</translation>
 <translation id="6182592640011875895">Atidaryti darbalaukį</translation>
 <translation id="6185696379715117369">Puslapiu aukštyn</translation>
 <translation id="619335566042889110">Visiškai įkrauti dabar</translation>

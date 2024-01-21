@@ -88,6 +88,7 @@
 <translation id="2583187216237139145">Администратор рабочего профиля может удалять любые данные, сохраненные в браузере Chromium при использовании этого профиля (например, добавленные закладки, историю, пароли и настройки). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Продолжить работу в Chromium</translation>
 <translation id="259935314519650377">Не удалось кешировать скачанный установщик. Ошибка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Повысится скорость Chromium и вероятность корректной работы функций, использующих JavaScript (рекомендуется)</translation>
 <translation id="2648074677641340862">В процессе установки произошла ошибка в операционной системе. Скачайте Chromium ещё раз.</translation>
 <translation id="2661879430930417727">Если кроме вас устройством пользуется кто-то ещё, например родные или друзья, они тоже смогут настроить Chromium на свой вкус.</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />, добро пожаловать в Chromium!</translation>
@@ -121,6 +122,7 @@
 <translation id="3185330573522821672">Настройте новый профиль Chromium</translation>
 <translation id="3190315855212034486">Произошел сбой Chromium. Перезапустить?</translation>
 <translation id="3258596308407688501">Chromium не может выполнять операции чтения и записи в своем каталоге: <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 – движок JavaScript и WebAssembly, повышающий производительность сайтов в Chromium</translation>
 <translation id="3283186697780795848">Установлен браузер Chromium версии <ph name="PRODUCT_VERSION" />.</translation>
 <translation id="3286538390144397061">Перезапустить сейчас</translation>
 <translation id="328888136576916638">Отсутствуют ключи API Google. Некоторые функции Chromium могут не работать.</translation>
@@ -214,6 +216,7 @@
 <translation id="4814736265800133385">Работать с Chromium, не входя в аккаунт</translation>
 <translation id="4888717733111232871">Разрешить в Chromium передачу входящего трафика по протоколу mDNS</translation>
 <translation id="4893347770495441059">Перезапустить для обновления &amp;Chromium</translation>
+<translation id="4942295735032723435">На вашем устройстве используется macOS 10.15. Чтобы получать обновления Chromium, установите macOS 11 или более поздней версии.</translation>
 <translation id="4943838377383847465">Chromium работает в фоновом режиме</translation>
 <translation id="4987820182225656817">Используйте Chromium в гостевом режиме, если не хотите сохранять данные о посещенных сайтах.</translation>
 <translation id="4994636714258228724">Добавить пользователя Chromium</translation>
@@ -400,6 +403,7 @@
 <translation id="8105840573057009683">Браузер Chromium запрашивает доступ к данным о местоположении для этого сайта.</translation>
 <translation id="8133124826068723441">Не удалось синхронизировать данные, так как эта функция недоступна для вашего домена.</translation>
 <translation id="813913629614996137">Инициализация...</translation>
+<translation id="8166782796394721554">Включить дополнительную защиту движка JavaScript и WebAssembly в Chromium</translation>
 <translation id="81770708095080097">Chromium заблокировал этот файл как опасный.</translation>
 <translation id="8213374284266571500">Chromium заблокировал файл с опасным расширением.</translation>
 <translation id="8248265253516264921">Если у изображения нет понятного описания, Chromium попытается его найти. Для создания описаний изображения отправляются в Google. Эту функцию можно отключить в настройках в любое время.</translation>

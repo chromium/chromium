@@ -6213,21 +6213,6 @@ ArcEnabled 및 UnaffiliatedArcAllowed 정책에서 적용하는 제한사항과 
 <translation id="6244210204546589761">시작 시 열리는 URL</translation>
 <translation id="624595269193747921">일치하는 프린터 검색을 특정 프린터 집합으로 제한할지를 나타냅니다.</translation>
 <translation id="6246290059248303618">로컬 네트워크에 있는 다른 기기에서 시작한 <ph name="PRODUCT_NAME" /> 세션에 미디어 컨트롤을 표시합니다.</translation>
-<translation id="6246420783859339814">이 정책은 <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> 정책이 사용 설정된 경우 관리자가 <ph name="MICROSOFT_ONE_DRIVE_NAME" />에 로그인할 수 있는 계정을 제한하도록 허용합니다.
-
-정책에 '<ph name="COMMON_NAME" />' 값이 포함된 경우 어느 계정으로든 로그인할 수 있습니다.
-
-정책에 '<ph name="ORGANIZATIONS_NAME" />' 값이 포함된 경우 직장 또는 학교 계정으로 로그인할 수 있습니다.
-
-정책에 '<ph name="CONSUMER_NAME" />' 값이 포함된 경우 개인 <ph name="MICROSOFT_NAME" /> 계정으로 로그인할 수 있습니다.
-
-이 정책에 도메인 이름 또는 테넌트 ID가 포함된 경우 이러한 도메인 이름 또는 테넌트 ID의 계정(https://learn.microsoft.com/ko-kr/azure/active-directory/develop/v2-protocols#Endpoint 참고)으로 로그인할 수 있습니다.
-
-정책을 설정하지 않거나 빈 값만 포함하면 일반 사용자에게 '<ph name="COMMON_NAME" />' 값이 지정된 것처럼 작동하며 기업 사용자에게 '<ph name="ORGANIZATIONS_NAME" />' 값이 지정된 것처럼 작동합니다.
-
-제한사항을 변경하는 경우, 사용자의 <ph name="MICROSOFT_ONE_DRIVE_NAME" /> 계정이 새로운 제한사항을 준수하지 않으면 사용자가 해당 계정에서 로그아웃될 수 있습니다.
-
-참고: 현재는 첫 번째 항목만 고려됩니다. 향후 확장 프로그램에서 여러 항목을 지원할 예정입니다.</translation>
 <translation id="6247316685259031374">이 정책은 오디오 프로세스 샌드박스를 제어합니다.
       정책이 사용 설정되어 있으면 샌드박스 처리된 오디오 프로세스가 실행됩니다.
       사용 중지되면 샌드박스 처리되지 않은 오디오 프로세스가 실행되며 WebRTC 오디오 처리 모듈이 렌더러 프로세스에서 실행됩니다.

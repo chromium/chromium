@@ -6313,21 +6313,6 @@ Từ phiên bản 114 trở lên, bạn không bắt buộc phải đặt chính
 <translation id="6244210204546589761">Các URL sẽ mở khi khởi động</translation>
 <translation id="624595269193747921">Liệu có giới hạn phạm vi tìm kiếm máy in phù hợp ở một nhóm máy in cụ thể hay không.</translation>
 <translation id="6246290059248303618">Hiện bộ điều khiển nội dung nghe nhìn cho các phiên <ph name="PRODUCT_NAME" /> do các thiết bị khác trên mạng cục bộ bắt đầu</translation>
-<translation id="6246420783859339814">Chính sách này cho phép quản trị viên giới hạn việc bạn có thể dùng tài khoản nào để đăng nhập <ph name="MICROSOFT_ONE_DRIVE_NAME" /> khi chính sách <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> bật.
-
-Nếu chính sách này chứa giá trị "<ph name="COMMON_NAME" />", thì bạn có thể dùng tài khoản bất kỳ để đăng nhập.
-
-Nếu chính sách này chứa giá trị "<ph name="ORGANIZATIONS_NAME" />", thì bạn có thể đăng nhập bằng tài khoản do cơ quan hoặc trường học của bạn cung cấp.
-
-Nếu chính sách này chứa giá trị "<ph name="CONSUMER_NAME" />", thì bạn có thể dùng tài khoản <ph name="MICROSOFT_NAME" /> cá nhân để đăng nhập.
-
-Nếu chính sách này chứa tên miền hoặc mã nhận dạng đối tượng thuê, thì bạn có thể dùng tài khoản thuộc các tên miền hoặc mã nhận dạng đối tượng thuê đó (xem https://learn.microsoft.com/vi-vn/azure/active-directory/develop/v2-protocols#endpoints) để đăng nhập.
-
-Nếu không được thiết lập hoặc chỉ chứa một giá trị trống, thì chính sách này sẽ hoạt động giống như bạn đã chỉ định "<ph name="COMMON_NAME" />" cho người dùng thông thường hoặc "<ph name="ORGANIZATIONS_NAME" />" cho người dùng doanh nghiệp.
-
-Khi bạn thay đổi chế độ hạn chế, người dùng có thể bị đăng xuất khỏi tài khoản <ph name="MICROSOFT_ONE_DRIVE_NAME" /> của họ nếu tài khoản đó không tuân thủ chế độ hạn chế mới.
-
-Lưu ý: Hiện tại, hệ thống sẽ chỉ xem xét mục nhập đầu tiên. Các tiện ích sau này sẽ hỗ trợ nhiều mục nhập.</translation>
 <translation id="6247316685259031374">Chính sách này kiểm soát môi trường hộp cát của tiến trình âm thanh.
       Nếu bạn bật chính sách này, tiến trình âm thanh sẽ chạy trong môi trường hộp cát.
       Nếu bạn tắt chính sách này, tiến trình âm thanh sẽ chạy mà không có môi trường hộp cát và mô-đun xử lý âm thanh WebRTC sẽ chạy trong tiến trình kết xuất.

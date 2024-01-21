@@ -88,6 +88,7 @@
 <translation id="2583187216237139145">ఈ ప్రొఫైల్‌ను ఉపయోగిస్తున్నప్పుడు జెనరేట్ అయిన ఏదైనా Chromium డేటాను (బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు, ఇంకా ఇతర సెట్టింగ్‌లు వంటివి క్రియేట్ చేయడం) వర్క్ ప్రొఫైల్ అడ్మినిస్ట్రేటర్ తీసివేయవచ్చు. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromiumని ఉపయోగించడం కొనసాగించండి</translation>
 <translation id="259935314519650377">డౌన్‌లోడ్ చేసిన ఇన్‌స్టాలర్‌ను కాష్ చేయడంలో విఫలమైంది. ఎర్రర్: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium వేగంగా పని చేస్తుంది, JavaScriptను ఉపయోగించే ఫీచర్‌లు డిజైన్ చేసిన విధంగా పని చేస్తాయి (సిఫార్సు చేసినది)</translation>
 <translation id="2648074677641340862">ఇన‌స్ట‌లేష‌న్‌ సమయంలో ఆపరేటింగ్ సిస్టమ్ ఎర్ర‌ర్‌ ఏర్పడింది. దయచేసి Chromiumను మళ్లీ డౌన్‌లోడ్ చేయండి.</translation>
 <translation id="2661879430930417727">మీరు ఒక పరికరాన్ని షేర్ చేస్తే, ఫ్రెండ్స్, ఫ్యామిలీ విడివిడిగా బ్రౌజ్ చేయవచ్చు, Chromiumను వారికి నచ్చిన విధంగా సెటప్ చేసుకోవచ్చు</translation>
 <translation id="268602741124540128">Chromiumకు స్వాగతం, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -121,6 +122,7 @@
 <translation id="3185330573522821672">మీ కొత్త Chromium ప్రొఫైల్‌ను అనుకూలంగా మార్చుకోండి</translation>
 <translation id="3190315855212034486">అయ్యో! Chromium క్రాష్ అయ్యింది. ఇప్పుడే మళ్లీ ప్రారంభించాలా?</translation>
 <translation id="3258596308407688501">Chromium దీని డేటా డైరెక్టరీని చదవలేదు మరియు దీనిలో రాయ‌లేదు: <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 అనేది Chromium JavaScript, WebAssembly ఇంజిన్, సైట్ పనితీరును మెరుగుపరచడానికి వినియోగించబడుతుంది</translation>
 <translation id="3283186697780795848">Chromium వెర్షన్ <ph name="PRODUCT_VERSION" /> ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="3286538390144397061">ఇప్పుడు పునఃప్రారంభించండి</translation>
 <translation id="328888136576916638">Google API కీలు లేవు. Chromium కార్యాచరణలో కొంత భాగం నిలిపివేయబడుతుంది.</translation>
@@ -214,6 +216,7 @@
 <translation id="4814736265800133385">ఖాతా లేకుండా Chromiumను ఉపయోగించండి</translation>
 <translation id="4888717733111232871">mDNS ట్రాఫిక్‌ను అనుమతించడానికి Chromium ఇన్‌బౌండ్ నియమం.</translation>
 <translation id="4893347770495441059">&amp;Chromiumను అప్‌డేట్ చేయడానికి రీ-లాంచ్ చేయండి</translation>
+<translation id="4942295735032723435">భవిష్యత్తులో Chromium అప్‌డేట్‌లను పొందడానికి, మీకు macOS 11 లేదా ఆ తర్వాతి వెర్షన్ అవసరం అవుతుంది. ఈ కంప్యూటర్ macOS 10.15 వెర్షన్‌ను ఉపయోగిస్తోంది.</translation>
 <translation id="4943838377383847465">Chromium నేపథ్య మోడ్‌లో ఉంది.</translation>
 <translation id="4987820182225656817">గెస్ట్‌లు ఎటువంటి హిస్టరీని వదలకుండానే Chromiumను ఉపయోగించవచ్చు.</translation>
 <translation id="4994636714258228724">Chromiumకు మిమ్మల్ని జోడించుకోండి</translation>
@@ -401,6 +404,7 @@
 <translation id="8105840573057009683">ఈ సైట్ కోసం Chromiumకు లొకేషన్ అనుమతి అవసరం</translation>
 <translation id="8133124826068723441">మీ డొమైన్ కోసం సింక్ అందుబాటులో లేనందున, ChromiumOS మీ డేటాను సింక్ చేయలేకపోయింది.</translation>
 <translation id="813913629614996137">ప్రారంభిస్తోంది...</translation>
+<translation id="8166782796394721554">Chromium JavaScript, WebAssembly ఇంజిన్‌లో అదనపు రక్షణను ఆన్ చేయండి</translation>
 <translation id="81770708095080097">ఈ ఫైల్ అపాయకరమైనది, కాబట్టి Chromium దీన్ని బ్లాక్ చేసింది.</translation>
 <translation id="8213374284266571500">ఈ ఫైల్ రకం ప్రమాదకరమైనందున Chromium ఈ ఫైల్‌ను బ్లాక్ చేసింది</translation>
 <translation id="8248265253516264921">చిత్రంలో ఉపయోగకరమైన వివరణ లేకుంటే, మీ కోసం ఒక వివరణను అందించడానికి Chromium ప్రయత్నిస్తుంది. వివరణలను క్రియేట్ చేయడానికి, చిత్రాలు Googleకు పంపబడతాయి. మీరు దీన్ని ఎప్పుడైనా సెట్టింగ్‌లలో ఆఫ్ చేయవచ్చు.</translation>

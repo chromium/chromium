@@ -557,6 +557,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3922310737605261887">Nach kopiertem Text suchen</translation>
 <translation id="3928666092801078803">Daten zusammenführen</translation>
 <translation id="3929457972718048006">Adressen</translation>
+<translation id="3948600256434252210">Wische zum Surfen im Inkognitomodus nach rechts.</translation>
 <translation id="3955822496205734389">Du hast schwache Passwörter.</translation>
 <translation id="3959736869653157332">Menü → Neuer Inkognitotab</translation>
 <translation id="3962326069546168954">Speichern</translation>
@@ -662,6 +663,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4539187448429948815">{count,plural, =1{{count} gespeicherter automatisch vervollständigter Vorschlag oben auf der Tastatur verfügbar.}other{{count} gespeicherte automatisch vervollständigte Vorschläge oben auf der Tastatur verfügbar.}}</translation>
 <translation id="4540780316273593836">Ein Problem ist aufgetreten</translation>
 <translation id="4550040941166547650">Nur auf diesem Gerät</translation>
+<translation id="4564893319561643483">„<ph name="TITLE" />“ ausblenden</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} inaktiven Tab schließen?}other{{COUNT} inaktive Tabs schließen?}}</translation>
 <translation id="457386861538956877">Mehr...</translation>
 <translation id="4587589328781138893">Websites</translation>
@@ -1262,6 +1264,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7666861622396822790">Du kannst dies in den <ph name="BEGIN_LINK" />Inhaltseinstellungen<ph name="END_LINK" /> verwalten.</translation>
 <translation id="7671141431838911305">Installieren</translation>
+<translation id="7673346542062368520">Wische zum Surfen im Inkognitomodus nach links.</translation>
 <translation id="7679915578945954324">Webadressen kopiert</translation>
 <translation id="7687508192620387263">Kalenderdatei verfügbar</translation>
 <translation id="7701040980221191251">Keine</translation>

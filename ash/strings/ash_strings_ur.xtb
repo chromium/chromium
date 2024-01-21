@@ -622,6 +622,7 @@
 <translation id="3577473026931028326">کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="3580650856351781466">اسپیچ فائلز ڈاؤن لوڈ کی جا رہی ہیں</translation>
 <translation id="3585296979871889131">اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور ایپس دیکھیں</translation>
+<translation id="3590441166907930941">سائیڈ بٹن</translation>
 <translation id="3593039967545720377">‏اپنا کلپ بورڈ دیکھنے کیلئے، ‎<ph name="SHORTCUT_KEY_NAME" /> +‎ ‎V دبا کر اپنے کلپ بورڈ کی سرگزشت تک رسائی حاصل کریں۔ شروع کرنے کیلئے ایک آئٹم کاپی کریں۔</translation>
 <translation id="3593646411856133110">کھلی ایپس کو دیکھنے کے لیے سوائپ اپ اور ہولڈ کریں</translation>
 <translation id="3595596368722241419">بیٹری پوری چارج ہے</translation>
@@ -1034,6 +1035,7 @@
 <translation id="5163434717504750796">بیٹری کی صحت <ph name="BATTERY_HEALTH_PERCENTAGE" />% | سائیکل کی تعداد <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">ڈیسک کو بطور تمثیل محفوظ کریں</translation>
 <translation id="5168181903108465623">کاسٹ آلات دستیاب ہیں</translation>
+<translation id="5168753792967365150">‏Google Tasks میں ترمیم کریں</translation>
 <translation id="5170568018924773124">فولڈر میں دکھائیں</translation>
 <translation id="5176318573511391780">جزوی اسکرین کو ریکارڈ کریں</translation>
 <translation id="5187627942836026988">ہاٹ اسپاٹ کی تفصیلات دکھائیں۔ آپ کے منتظم نے ہاٹ اسپاٹ کو مسدود کیا ہوا ہے۔</translation>
@@ -1303,6 +1305,8 @@
 <translation id="6168622430237609329">آپ کی انسٹال کردہ ایپس</translation>
 <translation id="6173151025443907148">‏اگر Lacros فعال ہے تو دوسرے صارف میں سائن ان کرنا تعاون یافتہ نہیں ہے۔ براہ کرم اس کی بجائے Lacros میں دوسری براؤزر پروفائل استعمال کریں یا Lacros کو غیر فعال کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6179832488876878285">آپ اپنی اہم فائلز کو یہاں پن کر سکتے ہیں۔ شروع کرنے کیلئے فائلز ایپ کھولیں۔</translation>
+<translation id="6180193585172850042">'پیچھے جائیں' بٹن</translation>
+<translation id="6180651297859206670">'فارورڈ کریں' بٹن</translation>
 <translation id="6182592640011875895">ڈیسک کھولیں</translation>
 <translation id="6185696379715117369">Page up</translation>
 <translation id="619335566042889110">اب پوری طرح چارج کریں</translation>
