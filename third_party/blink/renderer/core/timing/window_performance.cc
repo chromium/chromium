@@ -206,10 +206,9 @@ WindowPerformance::WindowPerformance(LocalDOMWindow* window)
     window->GetFrame()->GetPerformanceMonitor()->Subscribe(
         PerformanceMonitor::kLongTask, kLongTaskObserverThreshold, this);
   }
-  if (RuntimeEnabledFeatures::VisibilityStateEntryEnabled()) {
-    DCHECK(GetPage());
-    AddVisibilityStateEntry(GetPage()->IsPageVisible(), base::TimeTicks());
-  }
+
+  DCHECK(GetPage());
+  AddVisibilityStateEntry(GetPage()->IsPageVisible(), base::TimeTicks());
 }
 
 void WindowPerformance::EventData::Trace(Visitor* visitor) const {
@@ -841,7 +840,6 @@ void WindowPerformance::AddLayoutShiftEntry(LayoutShift* entry) {
 
 void WindowPerformance::AddVisibilityStateEntry(bool is_visible,
                                                 base::TimeTicks timestamp) {
-  DCHECK(RuntimeEnabledFeatures::VisibilityStateEntryEnabled());
   VisibilityStateEntry* entry = MakeGarbageCollected<VisibilityStateEntry>(
       PageHiddenStateString(!is_visible),
       MonotonicTimeToDOMHighResTimeStamp(timestamp), DomWindow());
@@ -873,9 +871,6 @@ void WindowPerformance::AddSoftNavigationEntry(const AtomicString& name,
 
 void WindowPerformance::PageVisibilityChanged() {
   last_visibility_change_timestamp_ = base::TimeTicks::Now();
-  if (!RuntimeEnabledFeatures::VisibilityStateEntryEnabled())
-    return;
-
   AddVisibilityStateEntry(GetPage()->IsPageVisible(),
                           last_visibility_change_timestamp_);
 }

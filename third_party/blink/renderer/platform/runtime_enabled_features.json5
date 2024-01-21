@@ -3190,16 +3190,6 @@
       base_feature: "none",
     },
     {
-      name: "ResourceTimingInterimResponseTimes",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
-      name: "ResourceTimingResponseStatus",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "ResourceTimingUseCORSForBodySizes",
       status: "test",
       base_feature: "none",
@@ -4015,11 +4005,6 @@
     },
     {
       name: "VisibilityCollapseColumn",
-      base_feature: "none",
-    },
-    {
-      name: "VisibilityStateEntry",
-      status: "stable",
       base_feature: "none",
     },
     {

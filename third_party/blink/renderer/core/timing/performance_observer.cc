@@ -65,7 +65,8 @@ PerformanceEntryType PerformanceObserver::supportedEntryTypeMask(
       PerformanceEntry::kLongTask | PerformanceEntry::kPaint |
       PerformanceEntry::kEvent | PerformanceEntry::kFirstInput |
       PerformanceEntry::kElement | PerformanceEntry::kLayoutShift |
-      PerformanceEntry::kLargestContentfulPaint;
+      PerformanceEntry::kLargestContentfulPaint |
+      PerformanceEntry::kVisibilityState;
 
   auto* execution_context = ExecutionContext::From(script_state);
 
@@ -80,9 +81,6 @@ PerformanceEntryType PerformanceObserver::supportedEntryTypeMask(
   if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
           execution_context)) {
     mask |= PerformanceEntry::kSoftNavigation;
-  }
-  if (RuntimeEnabledFeatures::VisibilityStateEntryEnabled(execution_context)) {
-    mask |= PerformanceEntry::kVisibilityState;
   }
   if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled(
           execution_context)) {
