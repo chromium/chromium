@@ -47,7 +47,7 @@ bool BorealisTokenHardwareChecker::Check() const {
       return true;
     }
     return false;
-  } else if (BoardIn({"brya", "adlrvp", "brask"})) {
+  } else if (BoardIn({"brya", "adlrvp", "brask", "hatch"})) {
     if (HasSufficientHardware(kIntelCpuRegex)) {
       return true;
     }

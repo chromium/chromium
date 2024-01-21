@@ -25,6 +25,20 @@ bool check(std::string board,
 
 }  // namespace
 
+TEST(BorealisHardwareCheckerTest, Hatch) {
+  // Valid case, we don't care about model.
+  EXPECT_TRUE(
+      check("hatch", "fake_model", "Intel(R) Core(TM) i3-10110U CPU", 8));
+
+  // Insufficient ram
+  EXPECT_FALSE(
+      check("hatch", "fake_model", "Intel(R) Core(TM) i3-10110U CPU", 6));
+
+  // Insufficient CPU
+  EXPECT_FALSE(
+      check("hatch", "fake_model", "Intel(R) Celeron(R) CPU 5205U", 8));
+}
+
 TEST(BorealisTokenHardwareCheckerTest, Volteer) {
   // Previous CPU name branding
   EXPECT_TRUE(check("volteer", "lindar",
