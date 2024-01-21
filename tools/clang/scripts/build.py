@@ -19,8 +19,6 @@ this build script on Mac:
 3. sudo xcode-select --switch /Applications/Xcode.app
 """
 
-from __future__ import print_function
-
 import argparse
 import glob
 import io
@@ -163,9 +161,10 @@ def CheckoutGitRepo(name, git_url, commit, dir):
   # Try updating the current repo if it exists and has no local diff.
   if os.path.isdir(dir):
     os.chdir(dir)
-    # git diff-index --quiet returns success when there is no diff.
+    # git diff-index --exit-code returns 0 when there is no diff.
     # Also check that the first commit is reachable.
-    if (RunCommand(['git', 'diff-index', '--quiet', 'HEAD'], fail_hard=False)
+    if (RunCommand(['git', 'diff-index', '--exit-code', 'HEAD'],
+                   fail_hard=False)
         and RunCommand(['git', 'fetch'], fail_hard=False)
         and RunCommand(['git', 'checkout', commit], fail_hard=False)
         and RunCommand(['git', 'clean', '-f'], fail_hard=False)):
