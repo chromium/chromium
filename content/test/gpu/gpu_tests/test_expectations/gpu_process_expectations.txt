@@ -141,8 +141,6 @@ crbug.com/1378476 [ mac mac-arm64 ] GpuProcess_swiftshader_for_webgl [ Skip ]
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-# Broadly flaky unsymbolized crashes on Jacuzzi
-crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] GpuProcess_* [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
