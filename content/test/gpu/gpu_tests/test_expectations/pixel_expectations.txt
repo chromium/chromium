@@ -366,13 +366,6 @@ crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationCle
 
 crbug.com/1517110 [ win10 nvidia-0x2184 renderer-skia-gl ] Pixel_Video_* [ RetryOnFailure ]
 
-# Fails / flaky on Linux AMD RX 5500 XT
-crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFrom2DAlphaCanvas [ RetryOnFailure ]
-crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ RetryOnFailure ]
-crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFrom2DCanvas [ RetryOnFailure ]
-crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFromWebGLAlphaCanvas [ RetryOnFailure ]
-crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
-crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_SVGHuge [ RetryOnFailure ]
 
 # Lacros consistent failures on CrOS devices, skip to save some time
 crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_CanvasDisplaySRGBAccelerated2D [ Skip ]
@@ -424,9 +417,7 @@ crbug.com/1516974 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLTra
 crbug.com/1516977 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLContextRestored [ Failure ]
 
 # Broadly flaky unsymbolized crashes on Jacuzzi
-crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] Pixel_OffscreenCanvas* [ RetryOnFailure ]
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] Pixel_Video* [ RetryOnFailure ]
-crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] Pixel_WebGL* [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
