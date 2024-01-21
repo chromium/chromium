@@ -377,10 +377,6 @@ class CONTENT_EXPORT MediaStreamManager
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SetCapturedSurfaceControllerFactoryForTesting(
       CapturedSurfaceControllerFactoryCallback factory);
-
-  std::unique_ptr<CapturedSurfaceController> MakeCapturedSurfaceController(
-      GlobalRenderFrameHostId capturer_rfh_id,
-      WebContentsMediaCaptureId captured_wc_id) const;
 #endif
 
   // This method is called when all tracks are started.

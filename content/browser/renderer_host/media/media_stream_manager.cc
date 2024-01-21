@@ -915,28 +915,16 @@ class MediaStreamManager::DeviceRequest {
     return captured_wc_id;
   }
 
-  bool HasCapturedSurfaceController() const {
+  CapturedSurfaceController* captured_surface_controller() const {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-    return captured_surface_controller_ != nullptr;
+    return captured_surface_controller_.get();
   }
 
-  CapturedSurfaceController* GetCapturedSurfaceController() {
+  void SetCapturedSurfaceController(
+      std::unique_ptr<CapturedSurfaceController> controller) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-    // If a controller is absent, attempt to produce one.
-    // (Fails if the captured surface is not a tab.)
-    if (!captured_surface_controller_) {
-      const WebContentsMediaCaptureId captured_tab_id = GetCapturedTabId();
-      if (!captured_tab_id.is_null()) {
-        CHECK(media_stream_manager);  // Note - this is the global singleton.
-        captured_surface_controller_ =
-            media_stream_manager->MakeCapturedSurfaceController(
-                requesting_render_frame_host_id, captured_tab_id);
-      }
-    }
-
-    return captured_surface_controller_.get();
+    CHECK(!captured_surface_controller_);
+    captured_surface_controller_ = std::move(controller);
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -2341,7 +2329,7 @@ CapturedSurfaceController* MediaStreamManager::GetCapturedSurfaceController(
   }
 
   CapturedSurfaceController* const controller =
-      request->GetCapturedSurfaceController();
+      request->captured_surface_controller();
   if (!controller) {
     result = blink::mojom::CapturedSurfaceControlResult::kUnknownError;
     return nullptr;
@@ -3010,6 +2998,16 @@ void MediaStreamManager::FinalizeGenerateStreams(const std::string& label,
                                  /*pan_tilt_zoom_allowed=*/false);
     return;
   }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  CHECK(!request->captured_surface_controller());
+  const WebContentsMediaCaptureId captured_tab_id = request->GetCapturedTabId();
+  if (!captured_tab_id.is_null()) {
+    request->SetCapturedSurfaceController(
+        captured_surface_controller_factory_.Run(
+            request->requesting_render_frame_host_id, captured_tab_id));
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // TODO(crbug.com/1300883): Generalize to multiple streams.
   DCHECK_EQ(1u, request->stream_devices_set.stream_devices.size());
@@ -3680,10 +3678,11 @@ void MediaStreamManager::HandleChangeSourceRequestResponse(
                             : MediaStreamType::NO_SERVICE);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (request->HasCapturedSurfaceController()) {
+  if (CapturedSurfaceController* const captured_surface_controller =
+          request->captured_surface_controller()) {
     // Either inform the controller that it's now controlling a new tab,
     // or neutralize it if it's no longer capturing a tab.
-    request->GetCapturedSurfaceController()->UpdateCaptureTarget(
+    captured_surface_controller->UpdateCaptureTarget(
         request->GetCapturedTabId());
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -3993,15 +3992,6 @@ void MediaStreamManager::SetCapturedSurfaceControllerFactoryForTesting(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   captured_surface_controller_factory_ = std::move(factory);
 }
-
-std::unique_ptr<CapturedSurfaceController>
-MediaStreamManager::MakeCapturedSurfaceController(
-    GlobalRenderFrameHostId capturer_rfh_id,
-    WebContentsMediaCaptureId captured_wc_id) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  return captured_surface_controller_factory_.Run(capturer_rfh_id,
-                                                  captured_wc_id);
-}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void MediaStreamManager::SetGenerateStreamsCallbackForTesting(
@@ -4247,7 +4237,7 @@ void MediaStreamManager::SetZoomLevel(
   }
 
   CapturedSurfaceController* const controller =
-      request->GetCapturedSurfaceController();
+      request->captured_surface_controller();
   if (!controller) {
     std::move(callback).Run(
         blink::mojom::CapturedSurfaceControlResult::kUnknownError);

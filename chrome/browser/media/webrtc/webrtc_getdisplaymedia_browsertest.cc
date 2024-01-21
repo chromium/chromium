@@ -1874,10 +1874,10 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
 
   CaptureSessionDetails capture_session =
       MakeCaptureSessionDetails("capture_session");
+  capture_session.SetCapturedSurfaceControllerFactory();
   capture_session.RunGetDisplayMedia();
   capture_session.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
 
-  capture_session.SetCapturedSurfaceControllerFactory();
   capture_session.SendWheel();
 
   // Expect that clicking "share this tab instead" will pipe a notification of
@@ -1896,16 +1896,16 @@ void GetDisplayMediaCapturedSurfaceControlTest::
 
   CaptureSessionDetails capture_session_0 =
       MakeCaptureSessionDetails("capture_session_0");
+  capture_session_0.SetCapturedSurfaceControllerFactory();
   capture_session_0.RunGetDisplayMedia();
   capture_session_0.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
-  capture_session_0.SetCapturedSurfaceControllerFactory();
   capture_session_0.SendWheel();
 
   CaptureSessionDetails capture_session_1 =
       MakeCaptureSessionDetails("capture_session_1");
+  capture_session_1.SetCapturedSurfaceControllerFactory();
   capture_session_1.RunGetDisplayMedia();
   capture_session_1.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
-  capture_session_1.SetCapturedSurfaceControllerFactory();
   capture_session_1.SendWheel();
 
   // Expect that clicking "share this tab instead" will pipe a notification of

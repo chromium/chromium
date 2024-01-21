@@ -420,14 +420,6 @@ class MediaStreamManagerTest : public ::testing::Test
     video_capture_provider_ = video_capture_provider.get();
     media_stream_manager_ = std::make_unique<MediaStreamManager>(
         audio_system_.get(), std::move(video_capture_provider));
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    media_stream_manager_->SetCapturedSurfaceControllerFactoryForTesting(
-        base::BindRepeating(
-            [](GlobalRenderFrameHostId, WebContentsMediaCaptureId) {
-              ADD_FAILURE() << "Unexpected MakeCapturedSurfaceController().";
-              return base::WrapUnique<CapturedSurfaceController>(nullptr);
-            }));
-#endif
     media_observer_ = std::make_unique<MockMediaObserver>();
     browser_content_client_ = std::make_unique<TestBrowserClient>(
         media_observer_.get(), &screen_count_);
