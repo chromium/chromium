@@ -224,6 +224,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/cros_apps/cros_apps_tab_helper.h"
+#include "chrome/browser/chromeos/mahi/mahi_tab_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 #endif
 
@@ -653,6 +654,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   CrosAppsTabHelper::MaybeCreateForWebContents(web_contents);
+  mahi::MahiTabHelper::MaybeCreateForWebContents(web_contents);
   policy::DlpContentTabHelper::MaybeCreateForWebContents(web_contents);
 #endif
 
