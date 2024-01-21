@@ -34,8 +34,10 @@ namespace download {
 namespace {
 
 const char kNow[] = "1 Sep 2020 01:00:00 GMT";
-const DownloadTaskType kResumptionTaskType =
-    DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK;
+const download::DownloadTaskType kUnmeteredDownloadsTaskType =
+    download::DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK;
+const download::DownloadTaskType kAnyNetworkDownloadsTaskType =
+    download::DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_TASK;
 
 base::Time GetNow() {
   base::Time now;
@@ -139,8 +141,16 @@ TEST_F(AutoResumptionHandlerTest, TaskFinishedCalledOnDownloadCompletion) {
   task_runner_->FastForwardUntilNoTasksRemain();
 
   // Complete the download.
-  EXPECT_CALL(*task_manager_, NotifyTaskFinished(kResumptionTaskType, _));
-  EXPECT_CALL(*task_manager_, UnscheduleTask(kResumptionTaskType));
+  EXPECT_CALL(*task_manager_,
+              NotifyTaskFinished(kAnyNetworkDownloadsTaskType, _))
+      .Times(1);
+  EXPECT_CALL(*task_manager_,
+              NotifyTaskFinished(kUnmeteredDownloadsTaskType, _))
+      .Times(1);
+  EXPECT_CALL(*task_manager_, UnscheduleTask(kAnyNetworkDownloadsTaskType))
+      .Times(1);
+  EXPECT_CALL(*task_manager_, UnscheduleTask(kUnmeteredDownloadsTaskType))
+      .Times(1);
   SetDownloadState(item.get(), DownloadItem::COMPLETE, false, false);
   auto_resumption_handler_->OnDownloadUpdated(item.get());
   task_runner_->FastForwardUntilNoTasksRemain();
@@ -158,7 +168,13 @@ TEST_F(AutoResumptionHandlerTest, TaskFinishedCalledOnDownloadRemoved) {
   task_runner_->FastForwardUntilNoTasksRemain();
 
   // Remove the download.
-  EXPECT_CALL(*task_manager_, NotifyTaskFinished(kResumptionTaskType, _));
+
+  EXPECT_CALL(*task_manager_,
+              NotifyTaskFinished(kAnyNetworkDownloadsTaskType, _))
+      .Times(1);
+  EXPECT_CALL(*task_manager_,
+              NotifyTaskFinished(kUnmeteredDownloadsTaskType, _))
+      .Times(1);
   SetDownloadState(item.get(), DownloadItem::COMPLETE, false, false);
   auto_resumption_handler_->OnDownloadRemoved(item.get());
   task_runner_->FastForwardUntilNoTasksRemain();
@@ -180,15 +196,32 @@ TEST_F(AutoResumptionHandlerTest, MultipleDownloads) {
   task_runner_->FastForwardUntilNoTasksRemain();
 
   // Finish item1. The task should still be running.
-  EXPECT_CALL(*task_manager_, UnscheduleTask(kResumptionTaskType)).Times(0);
-  EXPECT_CALL(*task_manager_, NotifyTaskFinished(_, _)).Times(0);
+  EXPECT_CALL(*task_manager_, UnscheduleTask(kUnmeteredDownloadsTaskType))
+      .Times(0);
+  EXPECT_CALL(*task_manager_, UnscheduleTask(kAnyNetworkDownloadsTaskType))
+      .Times(1);
+  EXPECT_CALL(*task_manager_,
+              NotifyTaskFinished(kUnmeteredDownloadsTaskType, _))
+      .Times(0);
+  EXPECT_CALL(*task_manager_,
+              NotifyTaskFinished(kAnyNetworkDownloadsTaskType, _))
+      .Times(1);
   SetDownloadState(item1.get(), DownloadItem::CANCELLED, false, false);
   auto_resumption_handler_->OnDownloadUpdated(item1.get());
   task_runner_->FastForwardUntilNoTasksRemain();
 
   // Finish item2. The task should now complete.
-  EXPECT_CALL(*task_manager_, UnscheduleTask(kResumptionTaskType));
-  EXPECT_CALL(*task_manager_, NotifyTaskFinished(kResumptionTaskType, _));
+  EXPECT_CALL(*task_manager_, UnscheduleTask(kUnmeteredDownloadsTaskType))
+      .Times(1);
+  EXPECT_CALL(*task_manager_, UnscheduleTask(kAnyNetworkDownloadsTaskType))
+      .Times(1);
+  EXPECT_CALL(*task_manager_,
+              NotifyTaskFinished(kUnmeteredDownloadsTaskType, _))
+      .Times(1);
+  EXPECT_CALL(*task_manager_,
+              NotifyTaskFinished(kAnyNetworkDownloadsTaskType, _))
+      .Times(1);
+
   SetDownloadState(item2.get(), DownloadItem::COMPLETE, false, false);
   auto_resumption_handler_->OnDownloadUpdated(item2.get());
   task_runner_->FastForwardUntilNoTasksRemain();
