@@ -460,7 +460,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelFailsIfLevelTooLow) {
   // Avoid false-positives through different error paths terminating in
   // exception with the same code.
   EXPECT_EQ(GetDOMExceptionMessage(v8_scope, promise_tester.Value()),
-            "Invalid zoom_level.");
+            "Only values returned by getSupportedZoomLevels() are valid.");
 }
 
 TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelFailsIfLevelTooHigh) {
@@ -485,7 +485,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelFailsIfLevelTooHigh) {
   // Avoid false-positives through different error paths terminating in
   // exception with the same code.
   EXPECT_EQ(GetDOMExceptionMessage(v8_scope, promise_tester.Value()),
-            "Invalid zoom_level.");
+            "Only values returned by getSupportedZoomLevels() are valid.");
 }
 
 // This test is distinct from SetZoomLevelFailsIfLevelTooLow and
@@ -519,7 +519,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelFailsIfUnsupportedValue) {
   // Avoid false-positives through different error paths terminating in
   // exception with the same code.
   EXPECT_EQ(GetDOMExceptionMessage(v8_scope, promise_tester.Value()),
-            "Invalid zoom_level.");
+            "Only values returned by getSupportedZoomLevels() are valid.");
 }
 
 // Note that the setup differs from that of SetZoomLevelSuccess only in the

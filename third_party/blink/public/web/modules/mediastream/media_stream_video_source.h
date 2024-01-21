@@ -201,8 +201,8 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
 
   // Sets the zoom level for the captured tab.
   //
-  // `zoom_level` is the requested zoom level and must be at least
-  // getMinZoomLevel() and at most getMaxZoomLevel()
+  // `zoom_level` is the requested zoom level and must be among the values
+  // returned by `CaptureController::getSupportedZoomLevels()`.
   //
   // `callback` is used to report the result.
   // `callback.success` reports back success/failure.

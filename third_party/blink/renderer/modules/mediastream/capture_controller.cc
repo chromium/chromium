@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -291,7 +292,8 @@ ScriptPromise CaptureController::setZoomLevel(ScriptState* script_state,
 
   if (!getSupportedZoomLevels().Contains(zoom_level)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "Invalid zoom_level."));
+        DOMExceptionCode::kInvalidStateError,
+        "Only values returned by getSupportedZoomLevels() are valid."));
     return promise;
   }
 
