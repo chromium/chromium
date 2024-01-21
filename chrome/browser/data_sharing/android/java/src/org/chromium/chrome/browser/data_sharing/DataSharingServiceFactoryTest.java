@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.data_sharing.DataSharingNetworkLoader;
 import org.chromium.components.data_sharing.DataSharingService;
 
 import java.util.concurrent.TimeoutException;
@@ -45,6 +46,11 @@ public class DataSharingServiceFactoryTest {
                     @Override
                     public boolean isEmptyService() {
                         return true;
+                    }
+
+                    @Override
+                    public DataSharingNetworkLoader getNetworkLoader() {
+                        return null;
                     }
                 };
 

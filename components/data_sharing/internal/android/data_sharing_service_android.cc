@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
+#include "components/data_sharing/internal/android/data_sharing_network_loader_android.h"
 #include "components/data_sharing/internal/jni_headers/DataSharingServiceImpl_jni.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 
@@ -41,7 +42,9 @@ ScopedJavaLocalRef<jobject> DataSharingService::GetJavaObject(
 
 DataSharingServiceAndroid::DataSharingServiceAndroid(
     DataSharingService* data_sharing_service)
-    : data_sharing_service_(data_sharing_service) {
+    : data_sharing_service_(data_sharing_service),
+      network_loader_(std::make_unique<DataSharingNetworkLoaderAndroid>(
+          data_sharing_service->GetDataSharingNetworkLoader())) {
   DCHECK(data_sharing_service_);
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_DataSharingServiceImpl_create(
@@ -58,6 +61,11 @@ bool DataSharingServiceAndroid::IsEmptyService(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller) {
   return data_sharing_service_->IsEmptyService();
+}
+
+ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetNetworkLoader(
+    JNIEnv* env) {
+  return network_loader_->GetJavaObject();
 }
 
 ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetJavaObject() {

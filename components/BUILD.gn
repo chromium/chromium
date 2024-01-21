@@ -609,6 +609,7 @@ test("components_unittests") {
       "//components/component_updater/android:embedded_component_loader_unittests",
       "//components/crash/android:java",
       "//components/crash/android:unit_tests",
+      "//components/data_sharing/internal:internal_java",
       "//components/download/internal/common:internal_java",
       "//components/embedder_support/android:native_java_unittests_java",
       "//components/embedder_support/android/metrics:test_support_java",

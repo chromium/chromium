@@ -17,6 +17,8 @@ using base::android::ScopedJavaLocalRef;
 
 namespace data_sharing {
 
+class DataSharingNetworkLoaderAndroid;
+
 // Helper class responsible for bridging the DataSharingService between
 // C++ and Java.
 class DataSharingServiceAndroid : public base::SupportsUserData::Data {
@@ -25,6 +27,7 @@ class DataSharingServiceAndroid : public base::SupportsUserData::Data {
   ~DataSharingServiceAndroid() override;
 
   bool IsEmptyService(JNIEnv* env, const JavaParamRef<jobject>& j_caller);
+  ScopedJavaLocalRef<jobject> GetNetworkLoader(JNIEnv* env);
 
   ScopedJavaLocalRef<jobject> GetJavaObject();
 
@@ -35,6 +38,8 @@ class DataSharingServiceAndroid : public base::SupportsUserData::Data {
 
   // Not owned.
   raw_ptr<DataSharingService> data_sharing_service_;
+
+  std::unique_ptr<DataSharingNetworkLoaderAndroid> network_loader_;
 };
 
 }  // namespace data_sharing

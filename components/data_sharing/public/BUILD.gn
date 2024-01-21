@@ -25,8 +25,16 @@ source_set("public") {
 
 if (is_android) {
   android_library("public_java") {
-    sources = [ "android/java/src/org/chromium/components/data_sharing/DataSharingService.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoader.java",
+      "android/java/src/org/chromium/components/data_sharing/DataSharingService.java",
+    ]
 
-    deps = [ "//third_party/jni_zero:jni_zero_java" ]
+    deps = [
+      "//base:base_java",
+      "//net/android:net_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//url:gurl_java",
+    ]
   }
 }

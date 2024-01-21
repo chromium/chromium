@@ -17,4 +17,7 @@ public interface DataSharingService {
      * @return Whether the service implementation is empty.
      */
     boolean isEmptyService();
+
+    /** Returns the network loader for sending out network calls to backend services. */
+    DataSharingNetworkLoader getNetworkLoader();
 }
