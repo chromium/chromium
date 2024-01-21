@@ -1627,13 +1627,14 @@ VISIT_PROTO_FIELDS(const sync_pb::WebAppIconInfo& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::WebAppSpecifics& proto) {
   VISIT(start_url);
   VISIT(name);
-  VISIT_ENUM(user_display_mode);
+  VISIT_ENUM(user_display_mode_non_cros);
   VISIT(theme_color);
   VISIT(scope);
   VISIT_REP(icon_infos);
   VISIT(user_page_ordinal);
   VISIT(user_launch_ordinal);
   VISIT(relative_manifest_id);
+  VISIT_ENUM(user_display_mode_cros);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WifiConfigurationSpecifics::

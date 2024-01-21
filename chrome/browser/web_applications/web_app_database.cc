@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -984,13 +985,32 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
   web_app->SetName(local_data.name());
 
-  if (!sync_data.has_user_display_mode()) {
+  if (!sync_data.has_user_display_mode_cros() &&
+      !sync_data.has_user_display_mode_non_cros()) {
     DLOG(ERROR) << "WebApp proto parse error: no user_display_mode field";
     return nullptr;
   }
-  web_app->SetUserDisplayMode(
-      CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
-          sync_data.user_display_mode()));
+
+  // Store both platform-specific UserDisplayModes from sync_data if available.
+  if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
+    if (sync_data.has_user_display_mode_cros()) {
+      web_app->SetUserDisplayModeCrOS(
+          CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
+              sync_data.user_display_mode_cros()));
+    }
+    if (sync_data.has_user_display_mode_non_cros()) {
+      web_app->SetUserDisplayModeNonCrOS(
+          CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
+              sync_data.user_display_mode_non_cros()));
+    }
+    // Note: migration runs after database opened to ensure the current platform
+    // always has a UserDisplayMode set (see
+    // `EnsureAppsHaveUserDisplayModeForCurrentPlatform`).
+  } else {
+    web_app->SetUserDisplayModeNonCrOS(
+        CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
+            sync_data.user_display_mode_non_cros()));
+  }
 
   // Ordinals used for chrome://apps page.
   syncer::StringOrdinal page_ordinal =

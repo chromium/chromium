@@ -464,7 +464,26 @@ void WebApp::SetDisplayMode(DisplayMode display_mode) {
 }
 
 void WebApp::SetUserDisplayMode(mojom::UserDisplayMode user_display_mode) {
-  user_display_mode_ = user_display_mode;
+  if (!base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
+    user_display_mode_non_cros_ = user_display_mode;
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  user_display_mode_cros_ = user_display_mode;
+#else
+  user_display_mode_non_cros_ = user_display_mode;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+void WebApp::SetUserDisplayModeCrOS(
+    mojom::UserDisplayMode user_display_mode_cros) {
+  user_display_mode_cros_ = user_display_mode_cros;
+}
+
+void WebApp::SetUserDisplayModeNonCrOS(
+    mojom::UserDisplayMode user_display_mode_non_cros) {
+  user_display_mode_non_cros_ = user_display_mode_non_cros;
 }
 
 void WebApp::SetDisplayModeOverride(
@@ -937,7 +956,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.background_color_,
         app.dark_mode_background_color_,
         app.display_mode_,
-        app.user_display_mode_,
+        app.user_display_mode_cros_,
+        app.user_display_mode_non_cros_,
         app.display_mode_override_,
         app.user_page_ordinal_,
         app.user_launch_ordinal_,
@@ -1186,7 +1206,11 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("scope_extensions_validated",
            ConvertDebugValueList(validated_scope_extensions_));
 
-  root.Set("user_display_mode", OptionalToStringValue(user_display_mode_));
+  root.Set("user_display_mode_cros",
+           OptionalToStringValue(user_display_mode_cros_));
+
+  root.Set("user_display_mode_non_cros",
+           OptionalToStringValue(user_display_mode_non_cros_));
 
   root.Set("user_launch_ordinal", user_launch_ordinal_.ToDebugString());
 

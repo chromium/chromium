@@ -83,7 +83,7 @@ OsIntegrationManager::ScopedSuppressForTesting::ScopedSuppressForTesting()
     :
 // Creating OS hooks on ChromeOS doesn't write files to disk, so it's
 // unnecessary to suppress and it provides better crash coverage.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
       scope_(&g_suppress_os_hooks_for_testing_, true)
 #else
       scope_(&g_suppress_os_hooks_for_testing_, false)

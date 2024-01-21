@@ -7,8 +7,12 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -17,13 +21,11 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_type_sync_bridge.h"
-#include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace base {
 class Time;
@@ -34,25 +36,30 @@ class MetadataBatch;
 class MetadataChangeList;
 class ModelError;
 class ModelTypeChangeProcessor;
+class StringOrdinal;
+struct EntityData;
 }  // namespace syncer
 
 namespace sync_pb {
 class WebAppSpecifics;
 }  // namespace sync_pb
 
-namespace syncer {
-struct EntityData;
-}
+namespace webapps {
+enum class UninstallResultCode;
+enum class InstallResultCode;
+}  // namespace webapps
 
 namespace web_app {
 
 class AbstractWebAppDatabaseFactory;
 class AppLock;
 class ScopedRegistryUpdate;
+class WebApp;
 class WebAppCommandManager;
 class WebAppDatabase;
-class WebAppRegistryUpdate;
 class WebAppInstallManager;
+class WebAppRegistryUpdate;
+enum class ApiApprovalState;
 struct RegistryUpdateData;
 
 // These errors cause the sync entity to no longer be parsable, and results in
@@ -259,6 +266,8 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void OnDatabaseOpened(base::OnceClosure callback,
                         Registry registry,
                         std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  // Update apps that don't have a UserDisplayMode set for the current platform.
+  void EnsureAppsHaveUserDisplayModeForCurrentPlatform();
   void OnDataWritten(CommitCallback callback, bool success);
   void OnWebAppUninstallComplete(const webapps::AppId& app,
                                  webapps::UninstallResultCode code);

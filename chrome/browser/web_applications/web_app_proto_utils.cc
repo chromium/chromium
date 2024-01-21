@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_url_pattern.pb.h"
@@ -240,9 +241,28 @@ sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app) {
   }
   sync_proto.set_relative_manifest_id(relative_manifest_id_path);
   sync_proto.set_start_url(app.start_url().spec());
-  sync_proto.set_user_display_mode(
-      ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
-          app.user_display_mode().value_or(mojom::UserDisplayMode::kBrowser)));
+
+  CHECK(app.user_display_mode_cros() || app.user_display_mode_non_cros(),
+        base::NotFatalUntil::M125);
+
+  if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS) ||
+      base::FeatureList::IsEnabled(kSyncOnlySeparateUserDisplayModeForCrOS)) {
+    if (app.user_display_mode_cros()) {
+      sync_proto.set_user_display_mode_cros(
+          ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
+              app.user_display_mode_cros().value()));
+    }
+    if (app.user_display_mode_non_cros()) {
+      sync_proto.set_user_display_mode_non_cros(
+          ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
+              app.user_display_mode_non_cros().value()));
+    }
+  } else {
+    sync_proto.set_user_display_mode_non_cros(
+        ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
+            app.user_display_mode_non_cros().value()));
+  }
+
   sync_proto.set_name(app.sync_fallback_data().name);
   if (app.sync_fallback_data().theme_color.has_value())
     sync_proto.set_theme_color(app.sync_fallback_data().theme_color.value());
@@ -323,25 +343,6 @@ std::optional<WebApp::SyncFallbackData> ParseSyncFallbackDataStruct(
   parsed_sync_fallback_data.icon_infos = std::move(parsed_icon_infos.value());
 
   return parsed_sync_fallback_data;
-}
-
-::sync_pb::WebAppSpecifics::UserDisplayMode ToWebAppSpecificsUserDisplayMode(
-    DisplayMode user_display_mode) {
-  switch (user_display_mode) {
-    case DisplayMode::kBrowser:
-      return ::sync_pb::WebAppSpecifics::BROWSER;
-    case DisplayMode::kTabbed:
-      return ::sync_pb::WebAppSpecifics::TABBED;
-    case DisplayMode::kUndefined:
-    case DisplayMode::kMinimalUi:
-    case DisplayMode::kFullscreen:
-    case DisplayMode::kWindowControlsOverlay:
-    case DisplayMode::kBorderless:
-      NOTREACHED();
-      [[fallthrough]];
-    case DisplayMode::kStandalone:
-      return ::sync_pb::WebAppSpecifics::STANDALONE;
-  }
 }
 
 RunOnOsLoginMode ToRunOnOsLoginMode(WebAppProto::RunOnOsLoginMode mode) {

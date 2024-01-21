@@ -4,29 +4,39 @@
 
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 
+#include <functional>
+#include <map>
 #include <memory>
 #include <optional>
+#include <ostream>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/not_fatal_until.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/features.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_database.h"
-#include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
@@ -38,17 +48,18 @@
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
+#include "components/sync/model/model_error.h"
+#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/model/string_ordinal.h"
+#include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/common/content_features.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/feature_list.h"
-#include "chrome/common/chrome_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
 namespace {
@@ -112,6 +123,20 @@ BASE_FEATURE(kDeleteBadWebAppSyncEntitites,
              "DeleteBadWebAppSyncEntitites",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+namespace {
+// Get the UserDisplayMode for the app on the current platform (may be absent
+// for not-yet-migrated apps loaded from the database). Use
+// `WebApp::user_display_mode` instead for migrated apps.
+absl::optional<mojom::UserDisplayMode> GetCurrentPlatformUserDisplayMode(
+    const WebApp& app) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return app.user_display_mode_cros();
+#else
+  return app.user_display_mode_non_cros();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+}  // namespace
+
 std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app) {
   // The Sync System doesn't allow empty entity_data name.
   DCHECK(!app.untranslated_name().empty());
@@ -130,10 +155,38 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
                         WebApp* app) {
   app->AddSource(WebAppManagement::kSync);
 
-  // Always override user_display mode with a synced value.
-  app->SetUserDisplayMode(
-      CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
-          sync_data.user_display_mode()));
+  // Store both platform-specific UserDisplayModes from sync_data if
+  // available. This ensures the sync data is preserved.
+  if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS) ||
+      base::FeatureList::IsEnabled(kSyncOnlySeparateUserDisplayModeForCrOS)) {
+    if (sync_data.has_user_display_mode_cros()) {
+      app->SetUserDisplayModeCrOS(
+          CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
+              sync_data.user_display_mode_cros()));
+    }
+    if (sync_data.has_user_display_mode_non_cros()) {
+      app->SetUserDisplayModeNonCrOS(
+          CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
+              sync_data.user_display_mode_non_cros()));
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
+    // Ensure the current platform's UserDisplayMode is set.
+    // Conditional to avoid clobbering a valid UDM with an absent one, for the
+    // case of old clients clearing the CrOS UDM value or non-sync-installed
+    // apps.
+    if (!GetCurrentPlatformUserDisplayMode(*app)) {
+      app->SetUserDisplayMode(
+          ResolvePlatformSpecificUserDisplayMode(sync_data));
+    }
+  } else {
+    // Always overwrite the original UserDisplayMode with sync data.
+    app->SetUserDisplayMode(
+        CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
+            sync_data.user_display_mode_non_cros()));
+  }
+
   app->SetUserPageOrdinal(syncer::StringOrdinal(sync_data.user_page_ordinal()));
   app->SetUserLaunchOrdinal(
       syncer::StringOrdinal(sync_data.user_launch_ordinal()));
@@ -195,10 +248,10 @@ void WebAppSyncBridge::SetSubsystems(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void WebAppSyncBridge::Init(base::OnceClosure callback) {
+void WebAppSyncBridge::Init(base::OnceClosure initialized_callback) {
   database_->OpenDatabase(base::BindOnce(&WebAppSyncBridge::OnDatabaseOpened,
                                          weak_ptr_factory_.GetWeakPtr(),
-                                         std::move(callback)));
+                                         std::move(initialized_callback)));
 }
 
 void WebAppSyncBridge::SetAppUserDisplayMode(
@@ -530,7 +583,7 @@ void WebAppSyncBridge::UpdateSync(
 }
 
 void WebAppSyncBridge::OnDatabaseOpened(
-    base::OnceClosure callback,
+    base::OnceClosure initialized_callback,
     Registry registry,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   DCHECK(database_->is_opened());
@@ -539,7 +592,14 @@ void WebAppSyncBridge::OnDatabaseOpened(
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 
   registrar_->InitRegistry(std::move(registry));
-  std::move(callback).Run();
+
+  // Do database migrations to ensure apps are valid before notifying anything
+  // else that the sync bridge is ready.
+  if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
+    EnsureAppsHaveUserDisplayModeForCurrentPlatform();
+  }
+
+  std::move(initialized_callback).Run();
 
   // Already have data stored in web app system and shouldn't expect further
   // callbacks once `IsTrackingMetadata` is true.
@@ -550,6 +610,19 @@ void WebAppSyncBridge::OnDatabaseOpened(
 
   MaybeUninstallAppsPendingUninstall();
   MaybeInstallAppsFromSyncAndPendingInstallation();
+}
+
+void WebAppSyncBridge::EnsureAppsHaveUserDisplayModeForCurrentPlatform() {
+  web_app::ScopedRegistryUpdate update = BeginUpdate();
+  for (const WebApp& app : registrar().GetAppsIncludingStubs()) {
+    if (!GetCurrentPlatformUserDisplayMode(app).has_value()) {
+      // Use the other platform's UDM if set, or standalone.
+      mojom::UserDisplayMode udm = app.user_display_mode_cros().value_or(
+          app.user_display_mode_non_cros().value_or(
+              mojom::UserDisplayMode::kStandalone));
+      update->UpdateApp(app.app_id())->SetUserDisplayMode(udm);
+    }
+  }
 }
 
 void WebAppSyncBridge::OnDataWritten(CommitCallback callback, bool success) {
@@ -661,10 +734,10 @@ ManifestIdParseResult WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
   ApplySyncDataToApp(specifics, web_app.get());
 
   if (existing_web_app) {
-    if (specifics.has_user_display_mode() &&
-        specifics.user_display_mode() !=
-            ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
-                existing_web_app->user_display_mode().value())) {
+    CHECK(existing_web_app->user_display_mode().has_value(),
+          base::NotFatalUntil::M125);
+    CHECK(web_app->user_display_mode().has_value(), base::NotFatalUntil::M125);
+    if (existing_web_app->user_display_mode() != web_app->user_display_mode()) {
       apps_display_mode_changed.push_back(app_id);
     }
     update_local_data->apps_to_update.push_back(std::move(web_app));

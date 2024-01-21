@@ -95,6 +95,7 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url) {
   web_app->SetManifestId(start_url.DeprecatedGetOriginAsURL());
   web_app->AddSource(WebAppManagement::Type::kCommandLine);
   web_app->SetIsLocallyInstalled(true);
+  web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   return web_app;
 }
 

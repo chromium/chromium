@@ -51,9 +51,6 @@ content::proto::ImageResource AppImageResourceToProto(
 std::optional<WebApp::SyncFallbackData> ParseSyncFallbackDataStruct(
     const sync_pb::WebAppSpecifics& sync_proto);
 
-::sync_pb::WebAppSpecifics::UserDisplayMode ToWebAppSpecificsUserDisplayMode(
-    DisplayMode user_display_mode);
-
 RunOnOsLoginMode ToRunOnOsLoginMode(WebAppProto::RunOnOsLoginMode mode);
 
 WebAppProto::RunOnOsLoginMode ToWebAppProtoRunOnOsLoginMode(

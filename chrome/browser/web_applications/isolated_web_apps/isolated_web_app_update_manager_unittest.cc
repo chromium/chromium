@@ -953,6 +953,7 @@ class IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest
     web_app->AddSource(WebAppManagement::Type::kCommandLine);
     web_app->SetIsLocallyInstalled(true);
     web_app->SetIsolationData(isolation_data);
+    web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
     return web_app;
   }
 

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_H_
 
 #include <stdint.h>
-
 #include <iosfwd>
 #include <optional>
 #include <set>
@@ -15,10 +14,12 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/not_fatal_until.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -99,7 +100,27 @@ class WebApp {
   DisplayMode display_mode() const { return display_mode_; }
 
   std::optional<mojom::UserDisplayMode> user_display_mode() const {
-    return user_display_mode_;
+    if (!base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
+      return user_display_mode_non_cros_;
+    }
+
+#if BUILDFLAG(IS_CHROMEOS)
+    CHECK(user_display_mode_cros_.has_value(), base::NotFatalUntil::M125);
+    return user_display_mode_cros_;
+#else
+    CHECK(user_display_mode_non_cros_.has_value(), base::NotFatalUntil::M125);
+    return user_display_mode_non_cros_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+
+  // Exposed for database/sync layer only. Elsewhere use `user_display_mode()`.
+  std::optional<mojom::UserDisplayMode> user_display_mode_cros() const {
+    return user_display_mode_cros_;
+  }
+
+  // Exposed for database/sync layer only. Elsewhere use `user_display_mode()`.
+  std::optional<mojom::UserDisplayMode> user_display_mode_non_cros() const {
+    return user_display_mode_non_cros_;
   }
 
   const std::vector<DisplayMode>& display_mode_override() const {
@@ -458,7 +479,15 @@ class WebApp {
   void SetBackgroundColor(std::optional<SkColor> background_color);
   void SetDarkModeBackgroundColor(std::optional<SkColor> background_color);
   void SetDisplayMode(DisplayMode display_mode);
+  // Sets the UserDisplayMode for the current platform (CrOS or non-CrOS).
   void SetUserDisplayMode(mojom::UserDisplayMode user_display_mode);
+  // Sets the UserDisplayMode for CrOS (required on all platforms to maintain
+  // sync information).
+  void SetUserDisplayModeCrOS(mojom::UserDisplayMode user_display_mode_cros);
+  // Sets the UserDisplayMode for non-CrOS (required on all platforms to
+  // maintain sync information).
+  void SetUserDisplayModeNonCrOS(
+      mojom::UserDisplayMode user_display_mode_non_cros);
   void SetDisplayModeOverride(std::vector<DisplayMode> display_mode_override);
   void SetUserPageOrdinal(syncer::StringOrdinal page_ordinal);
   void SetUserLaunchOrdinal(syncer::StringOrdinal launch_ordinal);
@@ -581,7 +610,8 @@ class WebApp {
   std::optional<SkColor> background_color_;
   std::optional<SkColor> dark_mode_background_color_;
   DisplayMode display_mode_ = DisplayMode::kUndefined;
-  std::optional<mojom::UserDisplayMode> user_display_mode_ = std::nullopt;
+  std::optional<mojom::UserDisplayMode> user_display_mode_cros_;
+  std::optional<mojom::UserDisplayMode> user_display_mode_non_cros_;
   std::vector<DisplayMode> display_mode_override_;
   syncer::StringOrdinal user_page_ordinal_;
   syncer::StringOrdinal user_launch_ordinal_;

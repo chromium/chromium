@@ -391,6 +391,9 @@ void WebAppInstallFinalizer::Start() {
 
 void WebAppInstallFinalizer::Shutdown() {
   started_ = false;
+  // TODO(crbug/1279315): Turn WebAppInstallFinalizer into a command so it can
+  // properly call callbacks on shutdown instead of dropping them on shutdown.
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void WebAppInstallFinalizer::UpdateIsolationDataAndResetPendingUpdateInfo(

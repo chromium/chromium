@@ -665,7 +665,20 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   const mojom::UserDisplayMode user_display_modes[3] = {
       mojom::UserDisplayMode::kBrowser, mojom::UserDisplayMode::kStandalone,
       mojom::UserDisplayMode::kTabbed};
-  app->SetUserDisplayMode(user_display_modes[random.next_uint(3)]);
+  // Explicitly set a UserDisplayMode for each platform (instead of calling
+  // `SetUserDisplayMode` which sets the current platform's value only) so the
+  // test expectations are consistent across platforms.
+  if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
+    if (random.next_bool()) {
+      app->SetUserDisplayModeNonCrOS(user_display_modes[random.next_uint(3)]);
+    }
+    // Must have at least one platform's UserDisplayMode set.
+    if (!app->user_display_mode_non_cros().has_value() || random.next_bool()) {
+      app->SetUserDisplayModeCrOS(user_display_modes[random.next_uint(3)]);
+    }
+  } else {
+    app->SetUserDisplayModeNonCrOS(user_display_modes[random.next_uint(3)]);
+  }
 
   app->SetLastBadgingTime(random.next_time());
 

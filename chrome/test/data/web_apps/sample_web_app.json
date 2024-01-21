@@ -162,7 +162,7 @@
       "launch_type": "kSingleClient",
       "name": "32484220704 file"
    } ],
-   "first_install_time": "1970-01-27 09:52:51.713000 UTC",
+   "first_install_time": "1970-01-02 14:58:07.045000 UTC",
    "generated_icon_fix": {
       "attempt_count": 6,
       "last_attempt_time": "1970-02-16 01:03:53.549000 UTC",
@@ -190,8 +190,8 @@
       },
       "version": "2831420433.2572177745.363425051"
    },
-   "last_badging_time": "1970-02-06 10:58:36.765000 UTC",
-   "last_launch_time": "1970-01-28 05:07:28.623000 UTC",
+   "last_badging_time": "1970-01-28 05:07:28.623000 UTC",
+   "last_launch_time": "1970-01-27 09:52:51.713000 UTC",
    "latest_install_source": "external lock screen",
    "latest_install_time": "1970-01-06 12:19:09.338000 UTC",
    "launch_handler": {
@@ -486,7 +486,8 @@
       "origin": "https://app-17838994132.com",
       "paths": [  ]
    } ],
-   "user_display_mode": "kTabbed",
+   "user_display_mode_cros": "kStandalone",
+   "user_display_mode_non_cros": "kTabbed",
    "user_launch_ordinal": "INVALID[]",
    "user_link_capturing_preference": "1",
    "user_page_ordinal": "INVALID[]",

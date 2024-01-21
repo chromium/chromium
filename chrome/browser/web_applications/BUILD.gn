@@ -71,6 +71,8 @@ source_set("web_applications") {
     "externally_managed_app_manager.h",
     "externally_managed_app_registration_task.cc",
     "externally_managed_app_registration_task.h",
+    "features.cc",
+    "features.h",
     "file_utils_wrapper.cc",
     "file_utils_wrapper.h",
     "generated_icon_fix_manager.cc",
