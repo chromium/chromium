@@ -59,17 +59,23 @@ class WebAppInstaller : public crosapi::WebAppServiceAsh::Observer {
   WebAppInstaller(const WebAppInstaller&) = delete;
   WebAppInstaller& operator=(const WebAppInstaller&) = delete;
 
-  // Attempts to install each of the `requests` and calls `callback` after all
-  // installations have completed. Must only be called if
-  // `request.data.app_type_data` holds `WebAppInstallData`.
-  struct InstallRequest {
-    AppInstallSurface surface;
-    AppInstallData data;
-  };
-  void InstallAllApps(std::vector<InstallRequest> requests,
-                      WebAppInstalledCallback callback);
+  // Must only be called if `data.app_type_data` holds `WebAppInstallData`.
+  void InstallApp(AppInstallSurface surface,
+                  AppInstallData data,
+                  WebAppInstalledCallback callback);
 
  private:
+  struct InstallRequest {
+    InstallRequest(AppInstallSurface surface,
+                   AppInstallData data,
+                   WebAppInstalledCallback callback);
+    InstallRequest(InstallRequest&&);
+    ~InstallRequest();
+    AppInstallSurface surface;
+    AppInstallData data;
+    WebAppInstalledCallback callback;
+  };
+
   // croapi::WebAppServiceAsh::Observer overrides:
   void OnWebAppProviderBridgeConnected() override;
   void OnWebAppServiceAshDestroyed() override;
@@ -77,11 +83,10 @@ class WebAppInstaller : public crosapi::WebAppServiceAsh::Observer {
   // Called when the environment is ready to perform app installation. When
   // lacros is enabled, this means lacros is ready. In ash, this means the
   // WebAppProvider is ready.
-  void InstallAllAppsWhenReady();
+  void InstallPendingRequests();
 
-  void InstallAppImpl(InstallRequest request, WebAppInstalledCallback callback);
+  void InstallAppImpl(InstallRequest request);
   void OnManifestRetrieved(InstallRequest request,
-                           WebAppInstalledCallback callback,
                            std::unique_ptr<network::SimpleURLLoader> url_loader,
                            std::unique_ptr<std::string> response);
   void OnAppInstalled(AppInstallSurface surface,
@@ -89,15 +94,13 @@ class WebAppInstaller : public crosapi::WebAppServiceAsh::Observer {
 
                       const webapps::AppId& app_id,
                       webapps::InstallResultCode code);
-  void OnAllAppInstallationFinished(const std::vector<bool>& results);
 
   base::ScopedObservation<crosapi::WebAppServiceAsh,
                           crosapi::WebAppServiceAsh::Observer>
       web_app_service_observer_{this};
 
   bool lacros_is_connected_;
-  std::optional<std::vector<InstallRequest>> requests_for_installation_;
-  WebAppInstalledCallback installation_complete_callback_;
+  std::vector<InstallRequest> pending_requests_;
 
   raw_ptr<Profile> profile_;
 
