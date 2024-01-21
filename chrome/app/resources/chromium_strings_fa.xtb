@@ -88,6 +88,7 @@
 <translation id="2583187216237139145">‏سرپرست نمایه کاری می‌تواند داده‌های Chromium را که درطول استفاده از این نمایه ایجاد شده‌اند (مثل ایجاد سابقه نشانک‌ها، گذرواژه‌ها، و دیگر تنظیمات) بردارد. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">‏ادامه استفاده از Chromium</translation>
 <translation id="259935314519650377">نصب‌کننده بارگیری‌شده در حافظه نهان ذخیره نشد. خطا: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">‏Chromium سریع‌تر اجرا می‌شود و ویژگی‌هایی که از جاوا اسکریپت استفاده می‌کنند باید طبق طراحی کار کنند (توصیه می‌شود)</translation>
 <translation id="2648074677641340862">‏یک خطای سیستم‌عامل در طول نصب روی داد. لطفاً Chromium را دوباره نصب کنید.</translation>
 <translation id="2661879430930417727">‏اگر از دستگاهی به‌صورت مشترک استفاده می‌کنید، دوستان و اعضای خانواده می‌توانند جداگانه مرور کنند و Chromium را به‌شیوه خودشان تنظیم کنند</translation>
 <translation id="268602741124540128">‏<ph name="ACCOUNT_FIRST_NAME" /> به Chromium خوش آمدید</translation>
@@ -122,6 +123,7 @@
 <translation id="3190315855212034486">‏اوه! Chromium خراب شده است. دوباره راه‌اندازی شود؟</translation>
 <translation id="3258596308407688501">‏Chromium نمی‌تواند مسیر داده‌های خود را بخواند یا در آن بنویسد:
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">‏V8 موتور WebAssembly و جاوا اسکریپت Chromium است که از آن برای بهبود عملکرد سایت استفاده می‌شود</translation>
 <translation id="3283186697780795848">‏Chromium نسخه <ph name="PRODUCT_VERSION" /> نصب شده است</translation>
 <translation id="3286538390144397061">راه‌اندازی مجدد اکنون</translation>
 <translation id="328888136576916638">‏کلیدهای Google API وجود ندارند. برخی از عملکردهای Chromium از کار خواهند افتاد.</translation>
@@ -215,6 +217,7 @@
 <translation id="4814736265800133385">‏استفاده از Chromium بدون حساب</translation>
 <translation id="4888717733111232871">‏قانون ترافیک ورودی برای Chromium جهت اجازه به ترافیک mDNS.</translation>
 <translation id="4893347770495441059">‏راه‌اندازی مجدد برای به‌روزرسانی Chromium</translation>
+<translation id="4942295735032723435">‏برای دریافت به‌روزرسانی‌های بعدی Chromium، باید macOS نسخه ۱۱ یا بالاتر داشته باشید. این رایانه از macOS نسخه ۱۰.۱۵ استفاده می‌کند.</translation>
 <translation id="4943838377383847465">‏Chromium در حالت پس‌زمینه است.</translation>
 <translation id="4987820182225656817">‏مهمان‌ها می توانند از Chromium استفاده کنند بدون این‌که اثری از خود به جا بگذارند.</translation>
 <translation id="4994636714258228724">‏افرودن خودتان به Chromium</translation>
@@ -403,6 +406,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8105840573057009683">‏Chromium برای این سایت به اجازه مکان نیاز دارد</translation>
 <translation id="8133124826068723441">‏ChromiumOS نتوانست داده‌هایتان را همگام‌سازی کند زیرا «همگام‌سازی» برای دامنه شما دردسترس نیست.</translation>
 <translation id="813913629614996137">درحال مقداردهی اولیه…</translation>
+<translation id="8166782796394721554">‏روشن کردن محافظت بیشتر در موتور WebAssembly و جاوا اسکریپت Chromium</translation>
 <translation id="81770708095080097">‏این فایل خطرناک است، بنابراین Chromium آن را مسدود کرده است.</translation>
 <translation id="8213374284266571500">‏Chromium این فایل را مسدود کرد زیرا این نوع فایل خطرناک است</translation>
 <translation id="8248265253516264921">‏اگر تصویری توضیح مفیدی نداشته باشد، Chromium توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود. هروقت خواستید می‌توانید این گزینه را در تنظیمات خاموش کنید.</translation>

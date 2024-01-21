@@ -1109,6 +1109,7 @@
 <translation id="1823768272150895732">قلم</translation>
 <translation id="1823781806707127806">افزودن داده‌های مرور موجود به نمایه تحت‌مدیریت</translation>
 <translation id="18245044880483936">‏داده‌های پشتیبان‌گیری‌شده جزو سهمیه فضای ذخیره‌سازی Drive فرزندتان حساب نمی‌شود.</translation>
+<translation id="1825073796163165618">فعال کردن پیوندها</translation>
 <translation id="1825565032302550710">درگاه باید از ۱۰۲۴ تا ۶۵۵۳۵ نویسه داشته باشد</translation>
 <translation id="182577151972096764">دستورهای پخت اخیراً مشاهده‌شده</translation>
 <translation id="18260074040409954">می‌توانید از گذرواژه‌های ذخیره‌شده در هر دستگاهی استفاده کنید. این گذرواژه‌ها در <ph name="GOOGLE_PASSWORD_MANAGER" /> نشانی ایمیل <ph name="EMAIL" /> ذخیره شده است.</translation>
@@ -1347,6 +1348,7 @@
 <translation id="1997616988432401742">گواهی‌نامه‌های شما</translation>
 <translation id="1999115740519098545">هنگام شروع به کار</translation>
 <translation id="2002109485265116295">بی‌درنگ</translation>
+<translation id="2002160221914907025">هوش مصنوعی آزمایشی</translation>
 <translation id="2003130567827682533">‏برای فعال کردن داده «<ph name="NAME" />»، ابتدا به شبکه Wi-Fi متصل شوید</translation>
 <translation id="2004413981947727241">در هر دستگاهی از گذرواژه‌هایتان استفاده کنید</translation>
 <translation id="2004697686368036666">ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند</translation>
@@ -2006,6 +2008,7 @@
 <translation id="2482878487686419369">اعلان‌ها</translation>
 <translation id="2482895651873876648">برگه به گروه <ph name="GROUP_NAME" /> منتقل شد - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">‏تنظیم موتور جستجو در تنظیمات مرورگر Chrome</translation>
+<translation id="2483698983806594329">فایل تأییدنشده‌ای بارگیری شده است</translation>
 <translation id="2484743711056182585">برداشتن اجازه</translation>
 <translation id="2484909293434545162">اگر سایتی از کوکی استفاده کند، در اینجا نمایش داده خواهد شد</translation>
 <translation id="2484959914739448251">‏برای اینکه داده‌های محصول مرور را از همه دستگاه‌های همگام‌سازی‌شده و حساب Google خود پاک کنید، <ph name="BEGIN_LINK" />گذرعبارت را وارد کنید<ph name="END_LINK" />.</translation>
@@ -2145,6 +2148,7 @@
 <translation id="2589658397149952302">‏فایل‌های Drive هرگز نشان داده نشود</translation>
 <translation id="25899519884572181">خروج از «حالت خواننده»</translation>
 <translation id="2593499352046705383">‏پیش‌از شروع، حتماً از داده‌هایتان پشتیبان‌گیری کنید. نصب <ph name="DEVICE_OS" /> داده‌های دیسک سخت را بازنویسی خواهد کرد. در g.co/flex/InstallGuide، اطلاعات بیشتری دریافت کنید.</translation>
+<translation id="2594832159966169099">‏مدیریت امنیت V8</translation>
 <translation id="2594999711683503743">‏در Google جستجو کنید یا نشانی وب را تایپ کنید</translation>
 <translation id="2597073208962000830">«هم‌رسانی با اطراف» برای پیدا کردن دستگاه‌های اطراف از اسکن دستگاه‌های بلوتوث استفاده می‌کند.</translation>
 <translation id="2598710988533271874">‏Chrome جدید دردسترس است</translation>
@@ -2324,6 +2328,7 @@
 <translation id="2730647855013151888">اضافه کردن همه اطلاعات شخصی</translation>
 <translation id="2730901670247399077">پیشنهادهای اموجی</translation>
 <translation id="273093730430620027">این صفحه به دوربین شما دسترسی دارد.</translation>
+<translation id="2730956943403103181">‏اجازه ندارد از بهینه‌ساز V8 استفاده کند</translation>
 <translation id="2731392572903530958">با&amp;ز کردن مجدد پنجره بسته</translation>
 <translation id="2731700343119398978">لطفاً صبر کنید...</translation>
 <translation id="2731971182069536520">دفعه بعد که دستگاهتان را بازراه‌اندازی می‌کنید، سرپرستتان به‌روزرسانی یک‌باره‌ای انجام می‌دهد که داده‌های محلی شما را حذف خواهد کرد.</translation>
@@ -2727,6 +2732,7 @@
 <translation id="3025174326431589540">{COUNT,plural, =0{گذرواژه‌ای ذخیره نشده است}=1{گذرواژه‌های {COUNT} سایت بررسی شد}one{گذرواژه‌های {COUNT} سایت و برنامه بررسی شد}other{گذرواژه‌های {COUNT} سایت و برنامه بررسی شد}}</translation>
 <translation id="3027296729579831126">روشن کردن «هم‌رسانی با اطراف»</translation>
 <translation id="3027644380269727216">براساس فعالیت شما در سایت. این تنظیم روشن است.</translation>
+<translation id="3028445648481691885">بارگیری لغو شد</translation>
 <translation id="3029276696788198026">گزینه پیش‌بارگذاری وجود ندارد</translation>
 <translation id="3029466929721441205">نمایش ابزارهای قلم در قفسه</translation>
 <translation id="3029808567601324798">زمان قفل کردن</translation>
@@ -2832,6 +2838,7 @@
 <translation id="3119948370277171654">درحال ارسال چه محتوا/نشانی وبی بودید؟</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">ایجاد دایرکتوری داده ناموفق بود</translation>
+<translation id="3122810280993140148">‏زمینه‌های سفارشی را براساس موضوع، حال‌وهوا، سبک بصری، و رنگی که انتخاب می‌کنید ایجاد می‌کند. برای استفاده از این ویژگی، برگه جدیدی باز کنید و روی «سفارشی‌سازی Chrome» کلیک کنید.</translation>
 <translation id="3122883569442693641">جزئیات بیشتر</translation>
 <translation id="3124111068741548686">کنترل‌های کاربر</translation>
 <translation id="3124332159330678621">‏با سفارشی کردن Chrome، ظاهر جدیدی به مرورگرتان بدهید</translation>
@@ -2871,6 +2878,7 @@
 <translation id="3159978855457658359">ویرایش نام دستگاه</translation>
 <translation id="3160928651883997588">‏اولویت‌های VPN</translation>
 <translation id="3161522574479303604">همه زبان‌ها</translation>
+<translation id="3162766632262775911">‏همیشه اجازه دارد از بهینه‌ساز V8 استفاده کند</translation>
 <translation id="3162853326462195145">حساب محل تحصیل</translation>
 <translation id="3162899666601560689">سایت‌ها می‌توانند از کوکی‌ها برای بهبود تجربه مرورتان استفاده کنند، مثلاً برای اینکه شما را درحالت واردشده به سیستم نگه دارند یا موارد موجود در سبد خریدتان را به‌خاطر بسپارند</translation>
 <translation id="3163201441334626963">محصول نامشخص <ph name="PRODUCT_ID" /> از فروشنده <ph name="VENDOR_ID" /></translation>
@@ -3340,6 +3348,7 @@
 <translation id="3547954654003013442">تنظیمات پروکسی</translation>
 <translation id="3548162552723420559">تعدیل رنگ صفحه‌نمایش برای مطابقت با محیط</translation>
 <translation id="354949590254473526">نشانی وب پُرسمان ساناد سفارشی را وارد کنید</translation>
+<translation id="3549827561154008969">بارگیری ازسر گرفته شد</translation>
 <translation id="3550593477037018652">قطع اتصال شبکه تلفن همراه</translation>
 <translation id="3550915441744863158">‏Chrome به صورت خودکار به‌روزرسانی می‌شود تا همیشه تازه‌ترین نسخه را در اختیار داشته باشید.</translation>
 <translation id="3551320343578183772">بستن برگه</translation>
@@ -3489,6 +3498,7 @@
 <translation id="3666196264870170605">‏رونوشت اشکال‌زدایی کنترل‌کننده‌های رابط شبکه Intel Wi-Fi</translation>
 <translation id="3670113805793654926">دستگاه‌های همه فروشنده‌ها</translation>
 <translation id="3670229581627177274">روشن کردن بلوتوث</translation>
+<translation id="3670480940339182416">‏سایت‌ها می‌توانند از بهینه‌ساز V8 استفاده کنند</translation>
 <translation id="3672681487849735243">یک خطای کارخانه شناسایی شده است</translation>
 <translation id="3673097791729989571"><ph name="SAML_DOMAIN" /> ورود به سیستم را میزبانی می‌کند</translation>
 <translation id="3673622964532248901">نمی‌توانید به این دستگاه محتوا ارسال کنید.</translation>
@@ -4945,6 +4955,7 @@
 <translation id="4800839971935185386">مرور به‌روزرسانی‌های نام و نماد</translation>
 <translation id="4801448226354548035">پنهان‌سازی حساب‌ها</translation>
 <translation id="4801512016965057443">اجازه دادن فراگردی داده تلفن همراه</translation>
+<translation id="4803599447809045620">غیرفعال کردن پیوندها</translation>
 <translation id="4804311503028830356">برای کاوش گزینه‌های دیگر، روی علامت برگشت کلیک کنید</translation>
 <translation id="4804818685124855865">قطع اتصال</translation>
 <translation id="4804827417948292437">آووکادو</translation>
@@ -5736,6 +5747,7 @@
 <translation id="5432223177001837288">برای هم‌رسانی صدا، درعوض برگه‌ای را هم‌رسانی کنید</translation>
 <translation id="5432872710261597882">«رأی موافق» بازخوردی با این معنا ارسال می‌کند که شما این مورد را می‌پسندید.</translation>
 <translation id="543338862236136125">ویرایش گذرواژه</translation>
+<translation id="5433865420958136693">درصورت امکان از شتاب گرافیکی استفاده شود</translation>
 <translation id="5434065355175441495">‏PKCS #1 RSA رمزگذاری</translation>
 <translation id="5435274640623994081">فعال کردن گزارش‌گیری از نماد شنیداری</translation>
 <translation id="5435779377906857208">دسترسی <ph name="HOST" /> به مکان شما همیشه مجاز باشد</translation>
@@ -6473,6 +6485,7 @@
 <translation id="6020431688553761150">سرور به شما اجازه نداد به این منبع دسترسی داشته باشید.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> برنامه دیگر پشتیبانی نمی‌شود</translation>
 <translation id="6021969570711251331">درهم‌چینی</translation>
+<translation id="602212068530399867">موتور جستجوی استفاده‌شده در نوار نشانی و راه‌انداز.</translation>
 <translation id="6022526133015258832">بازکردن تمام صفحه</translation>
 <translation id="6022659036123304283">‏Chrome را برای خود اختصاصی کنید</translation>
 <translation id="6023643151125006053">سرپرست دامنه <ph name="SAML_DOMAIN" /> این دستگاه (شماره سریال: <ph name="SERIAL_NUMBER" />) را قفل کرده است.</translation>
@@ -7880,6 +7893,7 @@
 <translation id="7131431455372521159">‏همه دستگاه‌های TrackPoint قطع ارتباط شده است</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />، درانتظار</translation>
 <translation id="7134098520442464001">متن را کوتاهتر کنید</translation>
+<translation id="7134951043985383439">فایل خطرناکی بارگیری شده است</translation>
 <translation id="7135729336746831607">بلوتوث روشن شود؟</translation>
 <translation id="7136694880210472378">پیش‌فرض قرار دادن</translation>
 <translation id="7137771508221868414">با این کار <ph name="TOTAL_USAGE" /> از داده‌هایی که سایت‌ها و برنامه‌های نصب‌شده ذخیره کرده‌اند حذف خواهد شد</translation>
@@ -8047,6 +8061,7 @@
 <translation id="727441411541283857"><ph name="PERCENTAGE" />٪ - <ph name="TIME" /> تا شارژ کامل</translation>
 <translation id="727595954130325265">اکنون بخرید</translation>
 <translation id="7276100255011548441">‏Chrome موضوعات قدیمی‌تر از ۴ هفته را به‌طور خودکار حذف می‌کند. همان‌طور که به مرور ادامه می‌دهید، ممکن است موضوعی دوباره در فهرست ظاهر شود. یا می‌توانید موضوعاتی را که نمی‌خواهید Chrome با سایت‌ها هم‌رسانی کند مسدود کنید. درباره <ph name="BEGIN_LINK" />مدیریت حریم خصوصی آگهی در Chrome<ph name="END_LINK" /> بیشتر بدانید.</translation>
+<translation id="7278164481614262110">ساختن زمینه با هوش مصنوعی</translation>
 <translation id="727952162645687754">خطای بارگیری</translation>
 <translation id="7280649757394340890">تنظیمات صدای نوشتار به گفتار</translation>
 <translation id="7280877790564589615">مجوز درخواست شد</translation>
@@ -8742,6 +8757,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7789963078219276159">پس‌زمینه صفحه شروع به <ph name="CATEGORY" /> تغییر کرد.</translation>
+<translation id="7791429245559955092">‏این برنامه در نمایه Chrome که اکنون استفاده می‌کنید نصب خواهد شد</translation>
 <translation id="7791436592012979144">پیمایش معکوس فعال است</translation>
 <translation id="7791543448312431591">افزودن</translation>
 <translation id="7792012425874949788">هنگام ورود به سیستم خطایی رخ داد</translation>
@@ -9137,6 +9153,7 @@
 <translation id="8089547136368562137">‏با بهترین فناوری‌های Google از آن محافظت می‌شود</translation>
 <translation id="8090234456044969073">خواندن فهرستی از وب‌سایت‌های غالباً بازدید شده شما</translation>
 <translation id="8090513782447872344">هرزمان بخواهید می‌توانید به اینجا برگردید و نگاه دیگری بیندازید</translation>
+<translation id="8090579562279016251">‏عملکرد را کاهش می‌دهد اما V8 را در برابر حملات مقاوم‌تر می‌کند</translation>
 <translation id="8090686009202681725">ساخت زمینه با هوش مصنوعی</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> پاسخ نمی‌دهد</translation>
 <translation id="8094536695728193970">زرد پرتقالی</translation>
@@ -9183,6 +9200,7 @@
 <translation id="8124313775439841391">‏ONC مدیریت شده</translation>
 <translation id="8125651784723647184">سرپرست شما هم‌رسانی گذرواژه را مدیریت می‌کند</translation>
 <translation id="8129265306888404830">‏برای استفاده از نشانی ایمیل سازمانتان (<ph name="EMAIL_DOMAIN" />)، باید از ثبت‌نام شرکتی استفاده کنید. اگر این دستگاه برای استفاده شخصی شما است، با «حساب Google» شخصی خود به سیستم وارد شوید.</translation>
+<translation id="8130476996317833777">‏به سایت‌ها اجازه نمی‌دهد از بهینه‌ساز V8 استفاده کنند</translation>
 <translation id="813082847718468539">مشاهدهٔ اطلاعات سایت</translation>
 <translation id="8131740175452115882">تأیید</translation>
 <translation id="8133297578569873332">‏قابل قبول - FM</translation>
@@ -9566,6 +9584,7 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">سینی موجود نیست</translation>
 <translation id="8424250197845498070">«محافظت پیشرفته» آن را مسدود کرده است</translation>
+<translation id="842501938276307467">ویژگی مبتنی بر هوش مصنوعی آزمایشی را امتحان کنید</translation>
 <translation id="8425213833346101688">تغییر</translation>
 <translation id="8425492902634685834">کوچک کردن در نوار وظیفه</translation>
 <translation id="8425768983279799676">می‌توانید برای باز کردن قفل دستگاه، از پینتان استفاده کنید.</translation>
@@ -9720,6 +9739,7 @@
     <ph name="BEGIN_PARAGRAPH2" />برای استفاده از <ph name="USER_EMAIL" />، ابتدا از سیستم <ph name="DEVICE_TYPE" /> خارج شوید. سپس در پایین صفحه ورود به سیستم، «افزودن شخص» را انتخاب کنید.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">برای جابه‌جایی بین رفتار کلیدهای ردیف بالا، کلید جستجو را نگه‌دارید</translation>
 <translation id="8549316893834449916">‏برای ورود به سیستم در Chromebook از «حساب Google» استفاده خواهید کرد – همان حسابی که برای Gmail،‏ Drive، ‏YouTube، و غیره از آن استفاده می‌کنید.</translation>
+<translation id="8550239873869577759">فایل مشکوکی بارگیری شده است</translation>
 <translation id="8551388862522347954">مجوزها</translation>
 <translation id="8551588720239073785">تنظیمات تاریخ و ساعت</translation>
 <translation id="8551647092888540776"><ph name="FILE_NAMES" /> در حالت آفلاین باز نمی‌شود</translation>
@@ -9775,6 +9795,7 @@
 <translation id="8601206103050338563">‏راستی‌آزمایی سرویس گیرنده TLS WWW</translation>
 <translation id="8602674530529411098">برنامه‌ها (بتا)</translation>
 <translation id="8602851771975208551">‏برنامه‌ای دیگر بر روی رایانه شما یک برنامه را اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.</translation>
+<translation id="8604513817270995005">به شما کمک می‌کند محتوای کوتاهی برای مواردی که در وب است بنویسید، مثل مرورها. محتوای پیشنهادی براساس پیام‌واره‌های شما و محتوای صفحه وب است. برای استفاده از این ویژگی، روی چارگوش نوشتاری کلیک راست کنید.</translation>
 <translation id="8605428685123651449">‏حافظه SQLite</translation>
 <translation id="8607171490667464784">وقتی غیرفعال است و از باتری استفاده می‌کند</translation>
 <translation id="8607828412110648570">‏مطمئن شوید دستگاه بلوتوث درحالت جفت‌سازی و در همین اطراف باشد. فقط با دستگاه‌هایی که به آن‌ها اعتماد دارید جفت شوید. دستگاه‌های جفت‌شده برای همه حساب‌های موجود در این Chromebook قابل‌مشاهده است. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -10287,6 +10308,7 @@
 <translation id="8985191021574400965">‏به Steam ویژه Chromebook خوش آمدید</translation>
 <translation id="8985264973231822211">آخرین فعالیت: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> روز قبل</translation>
 <translation id="8985661493893822002">برای ورود به سیستم در <ph name="DEVICE_TYPE" />، لطفاً به اینترنت وصل شوید.</translation>
+<translation id="8985661571449404298">فایل ناامنی بارگیری شده است</translation>
 <translation id="8986362086234534611">فراموش شود</translation>
 <translation id="8986494364107987395">‏ارسال خودکار آمار کاربرد و گزارش‌های خرابی به Google</translation>
 <translation id="8987305927843254629">هر فرد می‌تواند تجربه‌اش را شخصی‌سازی کند و داده‌ها را خصوصی نگه دارد.</translation>
@@ -10485,6 +10507,7 @@
 <translation id="9116366756388192417">موضوعی را انتخاب کنید</translation>
 <translation id="9116799625073598554">برنامه یادداشت‌برداری</translation>
 <translation id="9117030152748022724">مدیریت برنامه‌ها</translation>
+<translation id="9119587891086680311">این ویژگی‌ها از هوش مصنوعی استفاده می‌کنند، در مراحل اولیه توسعه هستند و همیشه درست کار نمی‌کنند.</translation>
 <translation id="9120362425083889527">نصب کامل نشد. لطفاً دوباره امتحان کنید یا این پنجره را ببندید</translation>
 <translation id="9120693811286642342">‏<ph name="BEGIN_PARAGRAPH1" />برای دریافت بهترین تجربه، <ph name="DEVICE_OS" /> را در دیسک داخلی دستگاه نصب کنید. بعداً هم می‌توانید آن را از صفحه ورود به سیستم نصب کنید.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />اگر آماده نصب نیستید و می‌خواهید اول آن را امتحان کنید، می‌توانید آن را از USB اجرا کنید. با این کار، سیستم‌عامل فعلی و داده‌هایتان حفظ خواهند شد اما ممکن است با محدودیت فضای ذخیره‌سازی و عملکرد مواجه شوید.<ph name="END_PARAGRAPH2" /></translation>

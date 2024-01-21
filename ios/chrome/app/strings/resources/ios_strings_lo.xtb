@@ -557,6 +557,7 @@
 <translation id="3922310737605261887">ຊອກຫາຂໍ້ຄວາມທີ່ສຳເນົາໄວ້</translation>
 <translation id="3928666092801078803">ລວມຂໍ້ມູນຂອງຂ້ອຍເຂົ້າກັນ</translation>
 <translation id="3929457972718048006">ທີ່ຢູ່</translation>
+<translation id="3948600256434252210">ທ່ານສາມາດປັດຂວາເພື່ອທ່ອງເວັບໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
 <translation id="3955822496205734389">ທ່ານມີລະຫັດຜ່ານງ່າຍ.</translation>
 <translation id="3959736869653157332">ເມນູ → ແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="3962326069546168954">ບັນທຶກ</translation>
@@ -662,6 +663,7 @@
 <translation id="4539187448429948815">{count,plural, =1{ການຕື່ມຂໍ້ມູນການແນະນຳອັດຕະໂນມັດທີ່ບັນທຶກໄວ້ {count} ລາຍການພ້ອມໃຫ້ນຳໃຊ້ຢູ່ເທິງແປ້ນພິມຂອງທ່ານ.}other{ການຕື່ມຂໍ້ມູນການແນະນຳອັດຕະໂນມັດທີ່ບັນທຶກໄວ້ {count} ລາຍການພ້ອມໃຫ້ນຳໃຊ້ຢູ່ເທິງແປ້ນພິມຂອງທ່ານ.}}</translation>
 <translation id="4540780316273593836">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ</translation>
 <translation id="4550040941166547650">ສະເພາະຢູ່ອຸປະກອນນີ້</translation>
+<translation id="4564893319561643483">ເຊື່ອງ "<ph name="TITLE" />"</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{ປິດ {COUNT} ແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ບໍ?}other{ປິດ {COUNT} ແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ບໍ?}}</translation>
 <translation id="457386861538956877">ເພີ່ມເຕີມ...</translation>
 <translation id="4587589328781138893">ເວັບໄຊ</translation>
@@ -1262,6 +1264,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7666861622396822790">ທ່ານສາມາດຈັດການສິ່ງນີ້ໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າເນື້ອຫາ<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">​ຕິດ​ຕັ້ງ</translation>
+<translation id="7673346542062368520">ທ່ານສາມາດປັດຊ້າຍເພື່ອທ່ອງເວັບໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
 <translation id="7679915578945954324">ສຳເນົາທີ່ຢູ່ເວັບໄຊແລ້ວ</translation>
 <translation id="7687508192620387263">ມີໄຟລ໌ປະຕິທິນທີ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="7701040980221191251">ບໍ່​ມີ​</translation>

@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">ສົ່ງຕໍ່</translation>
 <translation id="1615335640928990664">ການນຳໃຊ້ອິນເຕີເນັດນັບຕັ້ງແຕ່ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">ເອີ້ນໃຊ້ການທົດສອບການສາກ</translation>
+<translation id="1626590945318984973">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດຄີລັດໃໝ່ໂດຍໃຊ້ຟັງຊັນ ແລະ ປຸ່ມ <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">ກໍາລັງໂຫຼດ</translation>
 <translation id="1641857168437328880">ຕົວປ້ອນເອກະສານ (ດ້ານດຽວ)</translation>
 <translation id="1643449475550628585">ປ່ຽນຮູບພື້ນຫຼັງທຸກມື້</translation>
@@ -452,7 +453,9 @@
 <translation id="4394049700291259645">ປິດ​ໃຊ້ງານ</translation>
 <translation id="439429847087949098">ກຳລັງຣີສະຕາດ <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">ປັບແຕ່ງແປ້ນພິມ</translation>
+<translation id="4403262788869804671">ຄີລັດທີ່ບໍ່ມີປຸ່ມ <ph name="META_KEY" /> ອາດຂັດແຍ່ງກັບທາງລັດຂອງບາງແອັບ. ກົດທາງລັດນີ້ອີກຄັ້ງເພື່ອສືບຕໍ່ໃຊ້ມັນ ຫຼື ກົດທາງລັດໃໝ່ໂດຍໃຊ້ປຸ່ມ <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">ຮູບແທນຕົວປັດຈຸບັນ</translation>
+<translation id="4417830657741848074">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງຄ່າໃຫ້ບາງແອັບເລີ່ມເຮັດວຽກໂດຍອັດຕະໂນມັດ. ບໍ່ສາມາດປິດບາງແອັບໄດ້.</translation>
 <translation id="4422041425070339732">ລູກສອນລົງ</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ປິດຢູ່</translation>
@@ -465,6 +468,7 @@
 <translation id="4469288414739283461">ພາບພັກໜ້າຈໍການເຄື່ອນທີ່ຂອງໂລກ</translation>
 <translation id="4479639480957787382">ອີເທີເນັດ</translation>
 <translation id="4483049906298469269">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
+<translation id="4500722292849917410">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດຄີລັດໃໝ່ໂດຍໃຊ້ປຸ່ມຕົວດັດແປງ (ctrl, alt, shift ຫຼື <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">ສີຂອງສ່ວນຕິດຕໍ່</translation>
 <translation id="4503223151711056411">ລູກສອນຊ້າຍ</translation>
 <translation id="4507392511610824664">ເພີ່ມຄວາມສະຫວ່າງຂຶ້ນ</translation>
@@ -512,6 +516,7 @@
 <translation id="4832079907277790330">ເລືອກໂຟນເດີໃນແອັບ Files...</translation>
 <translation id="4835901797422965222">ບໍ່ມີເຄືອຂ່າຍທີ່ເປີດນຳໃຊ້ຢູ່</translation>
 <translation id="4839698083503556542">ສ້າງໜັງຂອງທ່ານເອງ</translation>
+<translation id="48409034532829769">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງຄ່າໃຫ້ "<ph name="APP_NAME" />" ເລີ່ມເຮັດວຽກໂດຍອັດຕະໂນມັດ. ບໍ່ສາມາດປິດແອັບນີ້ໄດ້.</translation>
 <translation id="484462545196658690">ອັດຕະໂນມັດ</translation>
 <translation id="4847902821209177679">ເລືອກ <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ແລ້ວ, ກະລຸນາກົດ Enter ເພື່ອເລືອກອະລະບໍ້າ <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) DNS resolution</translation>
@@ -538,6 +543,7 @@
 <translation id="4969079779290789265">ແຍກ</translation>
 <translation id="4972592110715526173">ປ່ຽນໂໝດ</translation>
 <translation id="498186245079027698">ກວດເບິ່ງເຄື່ອງສະແກນ ແລ້ວລອງໃໝ່. ກວດໃຫ້ແນ່ໃຈວ່າມີພື້ນທີ່ໃນເຄື່ອງຢ່າງພຽງພໍເພື່ອບັນທຶກໄຟລ໌ທີ່ສະແກນແລ້ວໄວ້.</translation>
+<translation id="4982627662315910959">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດຄີລັດໃໝ່ໂດຍໃຊ້ປຸ່ມ shift ແລະ ປຸ່ມຕົວດັດແປງອີກ 1 ປຸ່ມ (ctrl, alt ຫຼື <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">ເອີ້ນໃຊ້</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">ໜ້າ</translation>
@@ -845,6 +851,7 @@
 <translation id="7216409898977639127">ຜູ້ໃຫ້ບໍລິການມືຖື</translation>
 <translation id="725133483556299729">ເລືອກອີເມວ</translation>
 <translation id="7271040990581020067">ຕອນນີ້ມີຄົນໃຊ້ເຄື່ອງສະແກນຢູ່. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
+<translation id="7271932918253517778">ຄີລັດທີ່ມີປຸ່ມແຖວເທິງສຸດຕ້ອງມີປຸ່ມ <ph name="META_KEY" /> ນຳ.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ສຳຜັດສາຍລົມເຢັນ</translation>
 <translation id="7287310195820267359">ຄໍເລັກຊັນຮູບພື້ນຫຼັງ</translation>

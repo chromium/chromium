@@ -622,6 +622,7 @@
 <translation id="3577473026931028326">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="3580650856351781466">ກຳລັງດາວໂຫຼດໄຟລ໌ການເວົ້າ</translation>
 <translation id="3585296979871889131">ເບິ່ງຮູບພາບຫຼ້າສຸດ, ມີເດຍ, ການແຈ້ງເຕືອນ ແລະ ແອັບຂອງໂທລະສັບທ່ານ</translation>
+<translation id="3590441166907930941">ປຸ່ມດ້ານຂ້າງ</translation>
 <translation id="3593039967545720377">ເຂົ້າເຖິງປະຫວັດຄລິບບອດຂອງທ່ານໂດຍການກົດ <ph name="SHORTCUT_KEY_NAME" /> + V ເພື່ອເບິ່ງຄລິບບອດຂອງທ່ານ. ສຳເນົາລາຍການໃດໜຶ່ງເພື່ອເລີ່ມຕົ້ນ.</translation>
 <translation id="3593646411856133110">ປັດຂຶ້ນຄ້າງໄວ້ເພື່ອເບິ່ງແອັບທີ່ເປີດຢູ່</translation>
 <translation id="3595596368722241419">ແບັດເຕີຣີເຕັມ</translation>
@@ -1034,6 +1035,7 @@
 <translation id="5163434717504750796">ສຸຂະພາບແບັດເຕີຣີ <ph name="BATTERY_HEALTH_PERCENTAGE" />% | ນັບຮອບວຽນ <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">ບັນທຶກໂຕະເປັນແມ່ແບບ</translation>
 <translation id="5168181903108465623">ອຸປະກອນຄາສທ໌ທີ່ມີໃຫ້</translation>
+<translation id="5168753792967365150">ແກ້ໄຂໃນ Google Tasks</translation>
 <translation id="5170568018924773124">ສະ​ແດງ​ຢູ່​ໃນ​ໂຟລ​ເດີ</translation>
 <translation id="5176318573511391780">ບັນທຶກໜ້າຈໍບາງສ່ວນ</translation>
 <translation id="5187627942836026988">ສະແດງລາຍລະອຽດຮັອດສະປອດ. ຮັອດສະປອດຖືກບລັອກໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
@@ -1303,6 +1305,8 @@
 <translation id="6168622430237609329">ແອັບທີ່ທ່ານຕິດຕັ້ງໄວ້</translation>
 <translation id="6173151025443907148">ລະບົບບໍ່ຮອງຮັບການເຂົ້າສູ່ລະບົບຂອງຜູ້ໃຊ້ຄົນທີ 2 ຫາກເປີດການນຳໃຊ້ Lacros. ກະລຸນາໃຊ້ໂປຣໄຟລ໌ໂປຣແກຣມທ່ອງເວັບທີ 2 ໃນ Lacros ແທນ ຫຼື ປິດການນຳໃຊ້ Lacros ແລ້ວລອງໃໝ່.</translation>
 <translation id="6179832488876878285">ທ່ານສາມາດປັກໝຸດໄຟລ໌ສຳຄັນຂອງທ່ານຢູ່ບ່ອນນີ້. ເປີດແອັບໄຟລ໌ເພື່ອເລີ່ມຕົ້ນ.</translation>
+<translation id="6180193585172850042">ປຸ່ມກັບຄືນ</translation>
+<translation id="6180651297859206670">ປຸ່ມໄປໜ້າ</translation>
 <translation id="6182592640011875895">ເປີດໂຕະ</translation>
 <translation id="6185696379715117369">ໜ້າຂຶ້ນ</translation>
 <translation id="619335566042889110">ສາກໃຫ້ເຕັມຕອນນີ້</translation>
