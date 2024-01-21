@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -95,8 +96,9 @@ ServiceWorkerTaskQueue::ServiceWorkerTaskQueue(BrowserContext* browser_context)
     : browser_context_(browser_context) {}
 
 ServiceWorkerTaskQueue::~ServiceWorkerTaskQueue() {
-  for (auto* const service_worker_context : observing_worker_contexts_)
-    service_worker_context->RemoveObserver(this);
+  for (const auto& entry : observing_worker_contexts_) {
+    entry.first->RemoveObserver(this);
+  }
 }
 
 ServiceWorkerTaskQueue::TestObserver::TestObserver() = default;
@@ -355,8 +357,9 @@ void ServiceWorkerTaskQueue::SetObserverForTest(TestObserver* observer) {
   g_test_observer = observer;
 }
 
-bool ServiceWorkerTaskQueue::ShouldEnqueueTask(BrowserContext* context,
-                                               const Extension* extension) {
+bool ServiceWorkerTaskQueue::ShouldEnqueueTask(
+    BrowserContext* context,
+    const Extension* extension) const {
   if (base::FeatureList::IsEnabled(
           extensions_features::
               kExtensionsServiceWorkerOptimizedEventDispatch)) {
@@ -369,8 +372,9 @@ bool ServiceWorkerTaskQueue::ShouldEnqueueTask(BrowserContext* context,
   return true;
 }
 
-bool ServiceWorkerTaskQueue::IsReadyToRunTasks(content::BrowserContext* context,
-                                               const Extension* extension) {
+bool ServiceWorkerTaskQueue::IsReadyToRunTasks(
+    content::BrowserContext* context,
+    const Extension* extension) const {
   CHECK(extension);
   auto activation_token = GetCurrentActivationToken(extension->id());
 
@@ -381,7 +385,7 @@ bool ServiceWorkerTaskQueue::IsReadyToRunTasks(content::BrowserContext* context,
 
   const SequencedContextId context_id(extension->id(), browser_context_,
                                       *activation_token);
-  WorkerState* worker_state = GetWorkerState(context_id);
+  const WorkerState* worker_state = GetWorkerState(context_id);
 
   if (!worker_state || !worker_state->worker_id_) {
     // Assume the worker has not been started (is kRunning). It is likely in
@@ -432,8 +436,9 @@ void ServiceWorkerTaskQueue::AddPendingTask(
   // `context_id`) in progress. Otherwise, assume the presence of pending tasks
   // means we've started the worker and our start worker callback will run the
   // pending tasks for us later.
-  if (needs_start_worker)
+  if (needs_start_worker) {
     RunTasksAfterStartWorker(context_id);
+  }
 }
 
 void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
@@ -600,8 +605,9 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     UMA_HISTOGRAM_BOOLEAN(
         "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated",
         success);
-    if (g_test_observer)
+    if (g_test_observer) {
       g_test_observer->RegistrationMismatchMitigated(success);
+    }
   }
 
   if (!success) {
@@ -642,8 +648,9 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
   }
 
   // TODO(lazyboy): Handle success = false case.
-  if (!success)
+  if (!success) {
     LOG(ERROR) << "Failed to unregister service worker!";
+  }
 }
 
 base::Version ServiceWorkerTaskQueue::RetrieveRegisteredServiceWorkerVersion(
@@ -804,20 +811,24 @@ size_t ServiceWorkerTaskQueue::GetNumPendingTasksForTest(
   auto activation_token =
       GetCurrentActivationToken(lazy_context_id.extension_id());
   if (!activation_token) {
-    return 0u;
+    return 0;
   }
   const SequencedContextId context_id = {lazy_context_id.extension_id(),
                                          lazy_context_id.browser_context(),
                                          *activation_token};
   WorkerState* worker_state = GetWorkerState(context_id);
-  return worker_state ? worker_state->pending_tasks_.size() : 0u;
+  return worker_state ? worker_state->pending_tasks_.size() : 0;
+}
+
+const ServiceWorkerTaskQueue::WorkerState*
+ServiceWorkerTaskQueue::GetWorkerState(
+    const SequencedContextId& context_id) const {
+  return base::FindOrNull(worker_state_map_, context_id);
 }
 
 ServiceWorkerTaskQueue::WorkerState* ServiceWorkerTaskQueue::GetWorkerState(
     const SequencedContextId& context_id) {
-  auto worker_iter = worker_state_map_.find(context_id);
-  return worker_iter == worker_state_map_.end() ? nullptr
-                                                : &worker_iter->second;
+  return base::FindOrNull(worker_state_map_, context_id);
 }
 
 content::ServiceWorkerContext* ServiceWorkerTaskQueue::GetServiceWorkerContext(
@@ -828,27 +839,22 @@ content::ServiceWorkerContext* ServiceWorkerTaskQueue::GetServiceWorkerContext(
 
 void ServiceWorkerTaskQueue::StartObserving(
     content::ServiceWorkerContext* service_worker_context) {
-  if (observing_worker_contexts_.count(service_worker_context) == 0u)
+  if (++observing_worker_contexts_[service_worker_context] == 1) {
     service_worker_context->AddObserver(this);
-  observing_worker_contexts_.insert(service_worker_context);
+  }
 }
 
 void ServiceWorkerTaskQueue::StopObserving(
     content::ServiceWorkerContext* service_worker_context) {
-  auto iter_pair =
-      observing_worker_contexts_.equal_range(service_worker_context);
-  // ServiceWorkerContext not found if the iterators are equal.
-  if (iter_pair.first == iter_pair.second) {
+  auto iter = observing_worker_contexts_.find(service_worker_context);
+  if (iter == observing_worker_contexts_.end()) {
     return;
   }
-  // If the distance is 1, it means there is just one instance of the observing
-  // ServiceWorkerContext remaining so we also remove the
-  // ServiceWorkerContextObserver (this) from the observing
-  // ServiceWorkerContext.
-  if (std::distance(iter_pair.first, iter_pair.second) == 1) {
+  DCHECK(iter->second > 0);
+  if (--iter->second == 0) {
     service_worker_context->RemoveObserver(this);
+    observing_worker_contexts_.erase(iter);
   }
-  observing_worker_contexts_.erase(iter_pair.first);
 }
 
 void ServiceWorkerTaskQueue::DidVerifyRegistration(
@@ -860,8 +866,9 @@ void ServiceWorkerTaskQueue::DidVerifyRegistration(
       "Extensions.ServiceWorkerBackground.RegistrationWhenExpected",
       is_registered);
 
-  if (is_registered)
+  if (is_registered) {
     return;
+  }
 
   // We expected a SW registration (as ExtensionPrefs said so), but there isn't
   // one. Re-register SW script if the extension is still installed (it's
@@ -871,8 +878,9 @@ void ServiceWorkerTaskQueue::DidVerifyRegistration(
   DCHECK(registry);
   const Extension* extension =
       registry->enabled_extensions().GetByID(extension_id);
-  if (!extension)
+  if (!extension) {
     return;
+  }
 
   UMA_HISTOGRAM_ENUMERATION(
       "Extensions.ServiceWorkerBackground.RegistrationMismatchLocation",
@@ -902,8 +910,9 @@ void ServiceWorkerTaskQueue::ActivateIncognitoSplitModeExtensions(
     DCHECK(registry);
     const Extension* extension =
         registry->enabled_extensions().GetByID(activated.first);
-    if (extension && IncognitoInfo::IsSplitMode(extension))
+    if (extension && IncognitoInfo::IsSplitMode(extension)) {
       ActivateExtension(extension);
+    }
   }
 }
 
