@@ -10,9 +10,6 @@ import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
-import static org.chromium.content.browser.input.StylusTestHelper.FALLBACK_TEXT;
-import static org.chromium.content.browser.input.StylusTestHelper.toScreenRectF;
-
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.Build;
@@ -31,6 +28,7 @@ import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
+import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,6 +61,7 @@ public class StylusGestureEndToEndTest {
 
     private InputConnection mWrappedInputConnection;
     private HandwritingGesture mHandwritingGesture;
+    private static final String FALLBACK_TEXT = "this gesture failed";
 
     @Before
     public void setUp() throws Exception {
@@ -373,5 +372,19 @@ public class StylusGestureEndToEndTest {
      */
     private String runJavaScript(String code) throws TimeoutException {
         return JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code);
+    }
+
+    private static RectF toScreenRectF(
+        float left, float top, float right, float bottom, WebContentsImpl webContents) {
+        // Convert from local CSS coordinates to absolute screen coordinates.
+        RenderCoordinatesImpl rc = webContents.getRenderCoordinates();
+        int[] screenLocation = new int[2];
+        webContents.getViewAndroidDelegate().getContainerView().getLocationOnScreen(screenLocation);
+        left = rc.fromLocalCssToPix(left) + screenLocation[0];
+        top = rc.fromLocalCssToPix(top) + rc.getContentOffsetYPix() + screenLocation[1];
+        right = rc.fromLocalCssToPix(right) + screenLocation[0];
+        bottom = rc.fromLocalCssToPix(bottom) + rc.getContentOffsetYPixInt() + screenLocation[1];
+
+        return new RectF(left, top, right, bottom);
     }
 }
