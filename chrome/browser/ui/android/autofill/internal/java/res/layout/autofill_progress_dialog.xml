@@ -37,8 +37,8 @@ found in the LICENSE file.
                 android:indeterminate="true"/>
             <ImageView
                 android:id="@+id/confirmation_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/autofill_dialog_progress_bar_size"
+                android:layout_height="@dimen/autofill_dialog_progress_bar_size"
                 android:src="@drawable/checkmark_blue"
                 android:visibility="gone"
                 tools:ignore="ContentDescription" />
