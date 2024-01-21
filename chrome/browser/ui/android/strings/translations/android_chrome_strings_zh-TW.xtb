@@ -49,7 +49,7 @@
 <translation id="1239792311949352652">快速分享這個頁面。如要編輯這個捷徑，請前往 [設定]。</translation>
 <translation id="1240190568154816272">Chrome 提示</translation>
 <translation id="1240288207750131269">正在載入<ph name="LANG" /></translation>
-<translation id="1240903469550363138">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的姓名、電子郵件地址和個人資料相片提供給這個網站。查看這個網站的《<ph name="BEGIN_LINK1" />隱私權政策<ph name="END_LINK1" />》和《<ph name="BEGIN_LINK2" />服務條款<ph name="END_LINK2" />》。</translation>
+<translation id="1240903469550363138">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的名稱、電子郵件地址和個人資料相片提供給這個網站。詳情請參閱這個網站的《<ph name="BEGIN_LINK1" />隱私權政策<ph name="END_LINK1" />》和《<ph name="BEGIN_LINK2" />服務條款<ph name="END_LINK2" />》。</translation>
 <translation id="124116460088058876">更多語言</translation>
 <translation id="1241792820757384812">密碼將從 <ph name="CHROME_CHANNEL" />的 Google 密碼管理工具中刪除。你可以保留剛剛下載的密碼檔案。</translation>
 <translation id="1242883863226959074">裝置</translation>
@@ -83,7 +83,7 @@
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384704387250346179">使用 Google 智慧鏡頭翻譯圖片內容 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">上次使用時間：<ph name="LAST_UPDATED" /> 天前</translation>
-<translation id="13931502444227376">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的姓名、電子郵件地址和個人資料相片提供給這個網站。請參閱這個網站的《<ph name="BEGIN_LINK1" />服務條款<ph name="END_LINK1" />》。</translation>
+<translation id="13931502444227376">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的名稱、電子郵件地址和個人資料相片提供給這個網站。請參閱這個網站的《<ph name="BEGIN_LINK1" />服務條款<ph name="END_LINK1" />》。</translation>
 <translation id="1397811292916898096">使用 <ph name="PRODUCT_NAME" /> 搜尋</translation>
 <translation id="1407069428457324124">深色主題</translation>
 <translation id="1407135791313364759">全部開啟</translation>
@@ -177,7 +177,7 @@
 <translation id="1974060860693918893">進階</translation>
 <translation id="1984417487208496350">無防護 (不建議)</translation>
 <translation id="1986685561493779662">這個名稱已有人使用</translation>
-<translation id="1995884366040846621">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的姓名、電子郵件地址和個人資料相片提供給這個網站。查看這個網站的《<ph name="BEGIN_LINK1" />隱私權政策<ph name="END_LINK1" />》。</translation>
+<translation id="1995884366040846621">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的名稱、電子郵件地址和個人資料相片提供給這個網站。查看這個網站的《<ph name="BEGIN_LINK1" />隱私權政策<ph name="END_LINK1" />》。</translation>
 <translation id="200114059308480249">要在使用 Google 搜尋時納入前後文嗎？</translation>
 <translation id="2009341475524975924">為評估廣告成效，網站間可分享特定類型的資料，例如廣告的放送時間。</translation>
 <translation id="201060170519281460">設定檔鎖定功能可確保你在車上的資訊安全無虞，包括已同步的密碼和付款等。</translation>
@@ -629,7 +629,7 @@
 <translation id="4452411734226507615">關閉 [<ph name="TAB_TITLE" />] 分頁</translation>
 <translation id="4452548195519783679">已將書籤加入「<ph name="FOLDER_NAME" />」</translation>
 <translation id="4461614516424362539">將另一部裝置連結 QR 圖碼後，該裝置就能將手機做為安全金鑰。如果移除裝置，就必須掃描 QR 圖碼才能再次連結裝置。</translation>
-<translation id="4478161224666880173">你可以使用這個網站上的 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶。如要繼續操作，請登入 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />。</translation>
+<translation id="4478161224666880173">你可以在這個網站上使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶。如要繼續操作，請登入 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />。</translation>
 <translation id="4479972344484327217">正在為 Chrome 安裝 <ph name="MODULE" />…</translation>
 <translation id="4484496141267039529">沒有網路連線，請稍後再試。</translation>
 <translation id="4487967297491345095">Chrome 的應用程式資料會全部遭到永久刪除，包括所有檔案、設定、帳戶、資料庫等等。</translation>
@@ -815,7 +815,7 @@
 <translation id="5368227114232678694">如果想在這部裝置上進行私密瀏覽，請使用無痕模式</translation>
 <translation id="5375577065097716013">使用 Google 智慧鏡頭搜尋圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="539881862970320163">建議使用高強度密碼。鍵盤已隱藏。</translation>
-<translation id="5401851137404501592">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的姓名、電子郵件地址和個人資料相片提供給這個網站。</translation>
+<translation id="5401851137404501592">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的名稱、電子郵件地址和個人資料相片提供給這個網站。</translation>
 <translation id="5409881200985013443">要在「<ph name="CLIENT_NAME" />」上提交 <ph name="ONE_TIME_CODE" /> 嗎？</translation>
 <translation id="5414836363063783498">驗證中…</translation>
 <translation id="5423934151118863508">這裡會顯示您最常造訪的網頁</translation>

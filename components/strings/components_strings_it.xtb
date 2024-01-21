@@ -1167,7 +1167,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3339440062908617027">Corsa e camminata</translation>
 <translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3340978935015468852">impostazioni</translation>
-<translation id="3342018947887487892">In seguito, un sito che visiti può chiedere queste informazioni: gli argomenti degli annunci o gli annunci suggeriti dai siti che hai visitato.</translation>
+<translation id="3342018947887487892">In seguito, un sito che visiti può chiedere queste informazioni: gli argomenti degli annunci o gli annunci suggeriti in base ai siti che hai visitato.</translation>
 <translation id="3342366525167526994">Body art</translation>
 <translation id="334438173029876234">Attrezzature e articoli per skateboard</translation>
 <translation id="3349952286488694786">SRA2</translation>
@@ -4102,7 +4102,7 @@ Ulteriori dettagli:
 <translation id="9157595877708044936">Configurazione in corso...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Il file <ph name="FILE_NAME" /> potrebbe includere contenuti sensibili}other{<ph name="FILE_COUNT" /> file potrebbero includere contenuti sensibili}}</translation>
 <translation id="9164742147345933553">os://flags</translation>
-<translation id="9165305804774426672">I siti che visiti possono anche stabilire i tuoi interessi in base alla tua attività sul sito. Ad esempio, se visiti un sito che vende scarpe da corsa a lunga distanza, il sito potrebbe decidere che ti interessa partecipare a maratone.</translation>
+<translation id="9165305804774426672">I siti che visiti possono anche stabilire i tuoi interessi in base alla tua attività sul sito. Ad esempio, se visiti un sito che vende scarpe da corsa per lunghe distanze, il sito potrebbe decidere che ti interessa partecipare a maratone.</translation>
 <translation id="9166851138617700776">Scopri di più sugli annunci suggeriti dai siti e sulla misurazione degli annunci</translation>
 <translation id="9168814207360376865">Consenti ai siti di controllare se hai metodi di pagamento salvati</translation>
 <translation id="9169664750068251925">Blocca sempre su questo sito</translation>

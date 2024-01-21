@@ -3457,7 +3457,7 @@ Thông tin chi tiết bổ sung:
 <translation id="784404208867107517">Nhật ký sắp xếp theo nhóm</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Không có}=1{1 ứng dụng (<ph name="EXAMPLE_APP_1" />)}=2{2 ứng dụng (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ứng dụng (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="7857116075376571629">Sau đó, trang web mà bạn truy cập có thể đề nghị Chrome cho biết các chủ đề bạn quan tâm để cá nhân hoá quảng cáo mà bạn thấy. Chrome chia sẻ tối đa 3 chủ đề, trong khi vẫn bảo vệ nhật ký duyệt web và danh tính của bạn.</translation>
+<translation id="7857116075376571629">Sau này, các trang web mà bạn truy cập có thể đề nghị Chrome cho biết các chủ đề bạn quan tâm để cá nhân hoá quảng cáo mà bạn thấy. Chrome sẽ chia sẻ tối đa 3 chủ đề, trong khi vẫn bảo vệ nhật ký duyệt web và danh tính của bạn.</translation>
 <translation id="7860345425589240791">Nhập ngày hết hạn mới và CVC trên <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Rời khỏi trang web?</translation>
 <translation id="7865448901209910068">Tốc độ tốt nhất</translation>

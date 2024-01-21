@@ -982,6 +982,7 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
       Jika <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> diaktifkan, selain akun yang ditetapkan dalam kebijakan ini, pengguna Family Link juga akan diizinkan.</translation>
 <translation id="18186215616223740">Saat membuka dokumen Office yang ditangani oleh <ph name="BASIC_EDITOR_NAME" />, otomatis download dokumen tersebut</translation>
 <translation id="1819272352048746487">Mengaktifkan atau menonaktifkan berbagai fitur di keyboard virtual</translation>
+<translation id="1822163547472114648">Setelan untuk Buat Tema dengan AI</translation>
 <translation id="1823974945066396306">Menentukan daftar pengguna yang diizinkan untuk login ke perangkat. Entri memiliki format <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, misalnya <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Untuk mengizinkan sembarang pengguna di suatu domain, gunakan entri berformat <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
       Jika kebijakan ini tidak dikonfigurasi, semua pengguna akan diizinkan untuk login. Perlu diperhatikan bahwa pembuatan pengguna baru tetap mengharuskan kebijakan <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> dikonfigurasi dengan tepat.
@@ -5037,6 +5038,7 @@ Jika kebijakan tidak disetel atau disetel ke nonaktif, cookie dan data dapat dig
 <translation id="5163889437570441600">Mengizinkan konten ditransmisikan ke perangkat menggunakan <ph name="PRODUCT_NAME" />.
 
           Jika kebijakan ini disetel ke Salah (False), pengguna tidak akan dapat mentransmisikan konten ke perangkat mereka. Jika kebijakan ini disetel ke Benar (True), pengguna akan diizinkan untuk mentransmisikan konten. Jika kebijakan ini tidak disetel, pengguna tidak diizinkan untuk mentransmisikan konten ke perangkat ChromeOS terdaftar, tetapi dapat melakukan transmisi ke perangkat yang tidak terdaftar.</translation>
+<translation id="5164141068091580679">Aktifkan fitur dan kirim data untuk membantu melatih model AI</translation>
 <translation id="516520353995300280">Jika kebijakan ditetapkan, penerapan persyaratan pengungkapan Transparansi Sertifikat akan dinonaktifkan untuk daftar Certificate Authority (CA) Lama untuk rantai sertifikat dengan hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> yang ditentukan. Host perusahaan tetap dapat menggunakan sertifikat yang tidak tepercaya (karena tidak diungkapkan secara publik dengan sesuai). Untuk menonaktifkan penerapan, hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> harus muncul di sertifikat CA yang dikenal sebagai CA Lama. CA Lama dipercayai secara publik oleh satu atau beberapa sistem operasi yang didukung oleh <ph name="PRODUCT_NAME" />, tetapi tidak dipercaya oleh Proyek Open Source Android atau <ph name="PRODUCT_OS_NAME" />.
 
       Tentukan hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> dengan menggabungkan nama algoritme hash, garis miring, dan encoding Base64 dari algoritme hash tersebut yang diterapkan ke <ph name="SUBJECT_PUBLIC_KEY_INFO" /> yang dienkode DER dari sertifikat yang ditentukan. Format encoding Base64 cocok dengan Sidik Jari SPKI. Satu-satunya algoritme hash yang dikenali adalah sha256; selain itu diabaikan.
@@ -5738,6 +5740,7 @@ Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan dinonaktifka
           Jika kebijakan ini disetel ke aktif atau tidak disetel, item menu konteks untuk penyedia penelusuran default Anda akan tersedia.
 
           Nilai kebijakan ini hanya akan berlaku jika kebijakan <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> diaktifkan, dan tidak berlaku jika sebaliknya.</translation>
+<translation id="5695907219125832836">Aktifkan fitur, tetapi jangan kirim data untuk membantu melatih model AI</translation>
 <translation id="5697306356229823047">Laporkan pengguna perangkat</translation>
 <translation id="569777361305162263">Jangan izinkan konten promosi ditampilkan dalam tab penuh</translation>
 <translation id="5698923148503075597">Jika kebijakan disetel ke Aktif, kebijakan cloud akan diutamakan jika bertentangan dengan kebijakan platform.
@@ -6171,6 +6174,7 @@ kebijakan ini saat browser berjalan.</translation>
       4: Memblokir file berbahaya yang ditandai oleh server Safe Browsing; tidak memblokir jenis file berbahaya. Direkomendasikan.
 
       Catatan: Batasan ini berlaku untuk download yang dipicu dari konten halaman web, serta dari opsi menu Download link .... Batasan ini tidak berlaku untuk download halaman yang sedang ditampilkan, atau untuk penyimpanan sebagai PDF dari opsi pencetakan. Baca selengkapnya tentang Safe Browsing ( https://developers.google.com/safe-browsing ).</translation>
+<translation id="6115254134376460539">Nonaktifkan fitur</translation>
 <translation id="6118226055960302400">Pulihkan perilaku permisif.</translation>
 <translation id="6119207979839638596">Kebijakan ini dihapus di M75 setelah kebijakan versi TLS maksimum dihapus dari <ph name="PRODUCT_NAME" />.
 
@@ -6327,6 +6331,7 @@ Di versi 114 dan yang lebih baru, kebijakan ini bersifat opsional jika kebijakan
 <translation id="624818583115864448">port 554 (blokir dapat dibatalkan hingga 15/10/2021)</translation>
 <translation id="6254498834449523938">Jangan izinkan pengguna mengabaikan peringatan Safe Browsing</translation>
 <translation id="625580680776945310">Mode Efisiensi Tinggi akan diaktifkan.</translation>
+<translation id="6258314216623064461">Setelan Bantu Menulis</translation>
 <translation id="6258658183356534534">Mengontrol fitur Pembaruan GREASE Petunjuk Klien Agen Pengguna.</translation>
 <translation id="6261643884958898336">Laporkan informasi Identifikasi Mesin</translation>
 <translation id="6264247808139384018">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna yang melakukan autentikasi dengan sandi akan dapat mengunci layar.
@@ -7039,6 +7044,7 @@ Jika kebijakan ini disetel ke Salah (False), penerusan port ke penampung Crostin
       Jika kebijakan ini disetel ke aktif, fitur Jawaban Instan akan diaktifkan.
       Jika kebijakan ini disetel ke nonaktif, fitur Jawaban Instan akan dinonaktifkan.
       Jika kebijakan ini tidak disetel, pengguna dapat memilih apakah akan mengaktifkan atau menonaktifkan fitur Jawaban Instan.</translation>
+<translation id="670675748066383347">Setelan untuk Pengelola Tab</translation>
 <translation id="6712624291905573620">Kebijakan ini mengontrol pelaporan cloud <ph name="PRODUCT_NAME" /> yang mengupload informasi tentang operasi browser ke <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
 Jika kebijakan ini tidak disetel atau disetel ke Nonaktif, tidak ada data yang akan dikumpulkan atau diupload.

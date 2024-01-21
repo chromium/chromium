@@ -962,6 +962,7 @@ Esta política no tendrá efecto si la opción de conservar los datos de navegac
       Si se habilita <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />, los usuarios de Family Link podrán iniciar sesión, además de las cuentas que se definan en esta política.</translation>
 <translation id="18186215616223740">Al acceder a documentos de Office gestionados por <ph name="BASIC_EDITOR_NAME" />, forzar su descarga</translation>
 <translation id="1819272352048746487">Habilitar o inhabilitar distintas funciones en el teclado en pantalla</translation>
+<translation id="1822163547472114648">Ajustes de Crear temas con IA</translation>
 <translation id="1823974945066396306">Define la lista de usuarios a los que se permite iniciar sesión en el dispositivo. Las entradas tienen el formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (por ejemplo, <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />). Para permitir usuarios arbitrarios en un dominio, utiliza entradas similares a <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
       Si no se configura esta política, no se aplicarán restricciones sobre los usuarios que pueden iniciar sesión. Ten en cuenta que sigue siendo necesario configurar adecuadamente la política <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> para crear nuevos usuarios.
@@ -4891,6 +4892,7 @@ Si no se establece esta política o se inhabilita, las cookies y los datos se po
 <translation id="5163889437570441600">Permite que se envíe contenido al dispositivo usando <ph name="PRODUCT_NAME" />.
 
           Si se le asigna el valor False a la política, los usuarios no podrán enviar contenido a su dispositivo. Si se le asigna el valor True, los usuarios podrán enviar contenido. Si no se establece la política, los usuarios no podrán enviar contenido a dispositivos ChromeOS registrados, pero sí podrán enviar contenido a dispositivos no registrados.</translation>
+<translation id="5164141068091580679">Habilitar la función y enviar datos para ayudar a entrenar modelos de IA</translation>
 <translation id="516520353995300280">Si se asigna un valor a esta política, se desactivará la implementación obligatoria de los requisitos de comunicación de transparencia para los certificados de una lista de autoridades de certificación (CA) antiguas con cadenas de certificados que incluyan un hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> especificado. Los hosts empresariales podrán seguir usando certificados que, de lo contrario, no serían de confianza (por no haberse comunicado públicamente de forma correcta). Para desactivar la implementación obligatoria, el hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> debe aparecer en un certificado AC que se reconozca como autoridad de certificación antigua. Esas autoridades de certificación antiguas son consideradas de confianza por uno o más sistemas operativos compatibles con <ph name="PRODUCT_NAME" />, pero no por el Proyecto de Software Libre de Android o <ph name="PRODUCT_OS_NAME" />.
 
       Para especificar un hash <ph name="SUBJECT_PUBLIC_KEY_INFO" />, se vinculan el nombre del algoritmo de hash, una barra y la codificación Base64 de ese algoritmo de hash aplicado al <ph name="SUBJECT_PUBLIC_KEY_INFO" /> en codificación DER del certificado especificado. La codificación Base64 tiene el mismo formato que el de una huella digital SPKI. El único algoritmo de hash reconocido es sha256; los demás se ignorarán.
@@ -5581,6 +5583,7 @@ Si se inhabilita esta política, se desactivará <ph name="PRODUCT_NAME" />.</tr
           Si se habilita esta política o no se establece, la opción de menú contextual de tu proveedor de búsqueda predeterminado estará disponible.
 
           El valor de la política solo se aplica cuando la política <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está habilitada y no es aplicable en caso contrario.</translation>
+<translation id="5695907219125832836">Habilitar la función, pero no enviar datos para ayudar a entrenar modelos de IA</translation>
 <translation id="5697306356229823047">Permite informar sobre usuarios de dispositivos</translation>
 <translation id="569777361305162263">No permitir que se muestre contenido promocional que ocupe toda la pestaña</translation>
 <translation id="5698923148503075597">Si se habilita esta política, la política de nube prevalecerá si entra en conflicto con la política de plataforma.
@@ -6007,6 +6010,7 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
       4: bloquea archivos maliciosos marcados por el servidor de Navegación segura, pero no bloquea los tipos de archivos peligrosos. Recomendado.
 
       Nota: Estas restricciones se aplican a las descargas activadas desde el contenido de las páginas web o mediante la opción Descargar enlace del menú. No se aplican a la opción de descargar de la página que se esté mostrando ni a la opción de guardar como PDF de las opciones de impresión. Consulta más información sobre Navegación segura en https://developers.google.com/safe-browsing.</translation>
+<translation id="6115254134376460539">Inhabilitar la función</translation>
 <translation id="6118226055960302400">Restaura el comportamiento permisivo.</translation>
 <translation id="6119207979839638596">Esta política se retiró en la versión M75 después de que la política de la versión máxima de TLS se retirase de <ph name="PRODUCT_NAME" />.
 
@@ -6162,6 +6166,7 @@ En la versión 114 y posteriores, esta política es opcional si se establece la 
 <translation id="624818583115864448">puerto 554 (puede desbloquearse hasta el 15/10/2021)</translation>
 <translation id="6254498834449523938">No permitir que el usuario omita las advertencias de Navegación segura</translation>
 <translation id="625580680776945310">Se habilitará el modo Alta eficiencia.</translation>
+<translation id="6258314216623064461">Ajustes de Ayúdame a escribir</translation>
 <translation id="6258658183356534534">Controla la función User-Agent Client Hints GREASE Update.</translation>
 <translation id="6261643884958898336">Proporcionar información de identificación de equipos</translation>
 <translation id="6264247808139384018">Si se habilita esta política o no se define, se permitirá que los usuarios que usen la autenticación con contraseña bloqueen la pantalla.
@@ -6836,6 +6841,7 @@ Si se le asigna el valor False, se inhabilitará la redirección de puertos a co
       Si se habilita esta política, se activará la función Respuestas rápidas.
       Si se inhabilita esta política, se desactivará la función Respuestas rápidas.
       Si no se establece esta política, los usuarios podrán decidir si quieren habilitar o inhabilitar la función Respuestas rápidas.</translation>
+<translation id="670675748066383347">Ajustes del Organizador de pestañas</translation>
 <translation id="6712624291905573620">Esta política controla los informes en la nube de <ph name="PRODUCT_NAME" />, que sube información sobre el funcionamiento del navegador a la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
 Si no se establece esta política o se inhabilita, no se recogerá ni se subirá ningún dato.

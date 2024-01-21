@@ -2191,7 +2191,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="264083724974021997">Connect to your phone – dialogue</translation>
 <translation id="2642111877055905627">Football</translation>
 <translation id="2642206811783203764">Always on <ph name="SITE_NAME" /></translation>
-<translation id="2643064289437760082">You can always delete ad-measurement data by deleting your browsing data</translation>
+<translation id="2643064289437760082">You can always delete ads measurement data by deleting your browsing data</translation>
 <translation id="2643698698624765890">Manage your extensions by clicking Extensions in the Window menu.</translation>
 <translation id="2645047101481282803">Your device is managed by <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Casting this tab to <ph name="DEVICE_NAME" /></translation>
@@ -2877,7 +2877,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3183944777708523606">Monitor arrangement</translation>
 <translation id="3184536091884214176">Set up or manage CUPS printers. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{This app is blocked}other{Some apps are blocked}}</translation>
-<translation id="3187472288455401631">Ad measurement</translation>
+<translation id="3187472288455401631">Ads measurement</translation>
 <translation id="3188257591659621405">My files</translation>
 <translation id="3188465121994729530">Moving Average</translation>
 <translation id="3189187154924005138">Large cursor</translation>
@@ -4752,7 +4752,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4665446389743427678">All data stored by <ph name="SITE" /> will be deleted.</translation>
 <translation id="4666472247053585787">View notifications from your phone on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="4666911709726371538">More apps</translation>
-<translation id="4668279686271488041">Ad measurement data is deleted regularly from your device</translation>
+<translation id="4668279686271488041">Ads measurement data is deleted regularly from your device</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Congrats! <ph name="APP_NAME" /> has been successfully installed on your device</translation>
 <translation id="4672759829555593783">Open <ph name="FILE_NAME" /> now</translation>
@@ -7957,7 +7957,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7258192266780953209">Transformations</translation>
 <translation id="7258225044283673131">The application is not responding. Select 'Force close' to close the app.</translation>
 <translation id="7260186537988033909">Kiosk and signage device enrolment complete</translation>
-<translation id="7260367682327802201">Your Android device may include a similar setting. If ad measurement is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across websites that you visit and apps that you use.</translation>
+<translation id="7260367682327802201">Your Android device may include a similar setting. If ads measurement is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across websites that you visit and apps that you use.</translation>
 <translation id="7261612856573623172">System Text-to-Speech voice</translation>
 <translation id="7262004276116528033">This sign-in service is hosted by <ph name="SAML_DOMAIN" /></translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{Permissions removed for 1 site}other{Permissions removed for {NUM_SITES} sites}}</translation>

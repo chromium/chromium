@@ -317,7 +317,7 @@
 <translation id="1236009322878349843">編輯手機</translation>
 <translation id="1239594683407221485">在「檔案」應用程式中探索裝置內容。</translation>
 <translation id="1239841552505950173">啟動應用程式</translation>
-<translation id="1240903469550363138">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的姓名、電子郵件地址和個人資料相片提供給這個網站。查看這個網站的《<ph name="BEGIN_LINK1" />隱私權政策<ph name="END_LINK1" />》和《<ph name="BEGIN_LINK2" />服務條款<ph name="END_LINK2" />》。</translation>
+<translation id="1240903469550363138">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的名稱、電子郵件地址和個人資料相片提供給這個網站。詳情請參閱這個網站的《<ph name="BEGIN_LINK1" />隱私權政策<ph name="END_LINK1" />》和《<ph name="BEGIN_LINK2" />服務條款<ph name="END_LINK2" />》。</translation>
 <translation id="1241066500170667906">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態</translation>
 <translation id="124116460088058876">更多語言</translation>
 <translation id="1241381048229838873">顯示所有書籤</translation>
@@ -2443,7 +2443,7 @@
 <translation id="2835177225987815960">目前的掃描設定將會重設，包含指派的外接切換裝置和自動掃描的速度偏好設定。</translation>
 <translation id="2835547721736623118">語音辨識服務</translation>
 <translation id="2835761321523638096">讀取及變更閱讀清單中的項目</translation>
-<translation id="2836232638504556905">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的姓名、電子郵件地址和個人資料相片提供給這個網站。查看這個網站的《<ph name="BEGIN_LINK" />隱私權政策<ph name="END_LINK" />》。</translation>
+<translation id="2836232638504556905">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的名稱、電子郵件地址和個人資料相片提供給這個網站。詳情請參閱這個網站的《<ph name="BEGIN_LINK" />隱私權政策<ph name="END_LINK" />》。</translation>
 <translation id="2836269494620652131">當機</translation>
 <translation id="283669119850230892">如要使用 <ph name="NETWORK_ID" /> 網路，請先在下方連線至網際網路。</translation>
 <translation id="2838379631617906747">安裝中</translation>
@@ -4403,7 +4403,7 @@
 <translation id="4405224443901389797">移至…</translation>
 <translation id="4405781821077215583">縮小或放大畫面上的項目，包括文字在內</translation>
 <translation id="4406883609789734330">即時字幕</translation>
-<translation id="4407039574263172582">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的姓名、電子郵件地址和個人資料相片提供給這個網站。請參閱這個網站的《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
+<translation id="4407039574263172582">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的名稱、電子郵件地址和個人資料相片提供給這個網站。請參閱這個網站的《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
 <translation id="4408599188496843485">說明(&amp;E)</translation>
 <translation id="4408965460206576430">這個檔案含有惡意軟體或來自可疑網站</translation>
 <translation id="4409271659088619928">你的搜尋引擎是 <ph name="DSE" />。如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
@@ -4491,7 +4491,7 @@
 <translation id="4476590490540813026">運動員</translation>
 <translation id="4476659815936224889">如要掃描這個 QR code，你可以使用手機上的 QR 掃描器或相機應用程式。</translation>
 <translation id="4477015793815781985">必須包含 Ctrl、Alt 或 ⌘ 鍵</translation>
-<translation id="4478161224666880173">你可以使用這個網站上的 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶。如要繼續操作，請登入 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />。</translation>
+<translation id="4478161224666880173">你可以在這個網站上使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶。如要繼續操作，請登入 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />。</translation>
 <translation id="4478664379124702289">另存連結(&amp;K)...</translation>
 <translation id="4479424953165245642">管理 Kiosk 應用程式</translation>
 <translation id="4479639480957787382">乙太網路</translation>
@@ -5621,7 +5621,7 @@
 <translation id="5398572795982417028">參照的網頁超出範圍限制 (<ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="5400836586163650660">灰</translation>
 <translation id="5401426944298678474">取消追蹤網站</translation>
-<translation id="5401851137404501592">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的姓名、電子郵件地址和個人資料相片提供給這個網站。</translation>
+<translation id="5401851137404501592">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的名稱、電子郵件地址和個人資料相片提供給這個網站。</translation>
 <translation id="5402367795255837559">點字</translation>
 <translation id="5402815541704507626">使用行動數據下載更新</translation>
 <translation id="5404740137318486384">按下外接切換裝置或鍵盤按鍵，即可為其指派「<ph name="ACTION" />」。

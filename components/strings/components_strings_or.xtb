@@ -754,7 +754,7 @@
 <translation id="2469153820345007638">1-ରୁ-N ଅର୍ଡର୍</translation>
 <translation id="24699311393038040">କାଗଜ (କୋଟେଡ)</translation>
 <translation id="2470767536994572628">ଆପଣ ଏନୋଟେସନଗୁଡ଼ିକୁ ଏଡିଟ୍ କଲେ, ଏହି ଡକ୍ୟୁମେଣ୍ଟ ସିଙ୍ଗଲ୍ ପୃଷ୍ଠା ଭ୍ୟୁ ଏବଂ ଏହାର ମୂଳ ରୋଟେସନକୁ ଫେରି ଆସିବ</translation>
-<translation id="2479410451996844060">ଅବୈଧ ସନ୍ଧାନ URL.</translation>
+<translation id="2479410451996844060">ଅବୈଧ ସର୍ଚ୍ଚ URL।</translation>
 <translation id="2480300195898055381">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="USER_EMAIL" />ରେ</translation>
 <translation id="2482878487686419369">ବିଜ୍ଞପ୍ତି</translation>
 <translation id="248348093745724435">ମେସିନ୍‌ର ନୀତି</translation>
@@ -919,7 +919,7 @@
 <translation id="2818338148457093657">ବିୟୁଟି ସେବା ଏବଂ ସ୍ପା</translation>
 <translation id="2820957248982571256">ସ୍କାନ୍‌ କରୁଛି...</translation>
 <translation id="2824549017793319782">ଆପଣଙ୍କ ସର୍ଚ୍ଚକୁ ସିଧାସଳଖ ଠିକଣା ବାରରେ ଟାଇପ କରିବା ପାଇଁ ଚୟନ କରନ୍ତୁ</translation>
-<translation id="2824775600643448204">ଠିକଣା ଏବଂ ସନ୍ଧାନ ବାର୍</translation>
+<translation id="2824775600643448204">ଠିକଣା ଏବଂ ସର୍ଚ୍ଚ ବାର</translation>
 <translation id="2826760142808435982">ମୁଖ୍ୟ ଅଦଳ ବଦଳ କୌଶଳ <ph name="CIPHER" />ର ବ୍ୟବହାର କରି ଏବଂ <ph name="KX" />ର ବ୍ୟବହାର କରି ସଂଯୋଗକୁ ଏନ୍‌କ୍ରାଇପ୍ଟ କରାଯାଇଛି ଏବଂ ପ୍ରମାଣିକରଣ କରାଯାଇଛି।</translation>
 <translation id="2835170189407361413">ଫର୍ମ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="2838682941130655229">ଆପଣଙ୍କ ବିଷୟରେ <ph name="EMBEDDED_URL" /> ସେଭ କରିଥିବା ସୂଚନାକୁ ଏହା ବ୍ୟବହାର କରିବା ପାଇଁ ଚାହେଁ</translation>
@@ -1865,7 +1865,7 @@
 <translation id="4736825316280949806">Chromium ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="4736934858538408121">ଭର୍ଚୁଆଲ୍ କାର୍ଡ</translation>
 <translation id="473775607612524610">ଅପ୍‍‍ଡେଟ୍</translation>
-<translation id="4738601419177586157"><ph name="TEXT" /> ସନ୍ଧାନ ପ୍ରସ୍ତାବ</translation>
+<translation id="4738601419177586157"><ph name="TEXT" /> ସର୍ଚ୍ଚ ପ୍ରସ୍ତାବ</translation>
 <translation id="4742407542027196863">ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳିତ କରନ୍ତୁ…</translation>
 <translation id="4743275772928623722">ଆପଣଙ୍କ ସିଷ୍ଟମକୁ ଅପଡେଟ କରାଯାଇଛି କିନ୍ତୁ ଆପଣଙ୍କର କିଛି ଆପ୍ସ ଏବଂ ଫାଇଲକୁ ରିକଭର କରାଯାଇପାରିଲା ନାହିଁ। ଆପଣଙ୍କର ଆପ୍ସକୁ ସ୍ୱତଃ ପୁଣି ଡାଉନଲୋଡ କରାଯିବ।</translation>
 <translation id="4744514002166662487">ପ୍ରେଜେଣ୍ଟେସନ୍ ତିଆରି କରନ୍ତୁ</translation>
@@ -1939,7 +1939,7 @@
 <translation id="4876327226315760474">ଏହାର ଅର୍ଥ ହେଉଛି ସାଇଟ ଫିଚରଗୁଡ଼ିକ ଆଶା କରାଯାଉଥିବା ପରି କାମ କରିବା ଉଚିତ, କିନ୍ତୁ ଆପଣଙ୍କର କମ ବ୍ରାଉଜିଂ ସୁରକ୍ଷା ଥାଇପାରେ।</translation>
 <translation id="4877047577339061095">ହୋମ ଷ୍ଟୋରେଜ ଏବଂ ସେଲଭିଂ</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{କିଛି ନାହିଁ}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
-<translation id="4877422487531841831"><ph name="TEXT" /> ସନ୍ଧାନ କରନ୍ତୁ</translation>
+<translation id="4877422487531841831"><ph name="TEXT" /> ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4877521229462766300">ଏମ୍ବେଡ କରାଯାଇଥିବା ବିଷୟବସ୍ତୁକୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="4879491255372875719">ସ୍ୱଚାଳିତ (ଡିଫଲ୍ଟ)</translation>
 <translation id="4880827082731008257">ସର୍ଚ୍ଚ ଇତିହାସ</translation>

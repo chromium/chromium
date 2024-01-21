@@ -1185,7 +1185,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="7242755609445462077">Stil eklenmiş vurgu <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> cihazının Chrome'da senkronizasyonunun açık olduğundan emin olun</translation>
 <translation id="7252076891734325316">Telefonunuzu bilgisayara yakın bir yere koyun</translation>
-<translation id="7260367682327802201">Android cihazınızda benzer bir ayar olabilir. Chrome'da ve Android cihazınızda reklam ölçümü etkinse bir şirket, ziyaret ettiğiniz web siteleri ve kullandığınız uygulamalardaki reklamların etkinliğini ölçebilir</translation>
+<translation id="7260367682327802201">Android cihazınızda benzer bir ayar olabilir. Chrome'da ve Android cihazınızda reklam ölçümü etkinse bir şirket, ziyaret ettiğiniz web siteleri ve kullandığınız uygulamalardaki reklamların etkinliğini ölçebilir.</translation>
 <translation id="727288900855680735"><ph name="ORIGIN" /> adresine <ph name="ONE_TIME_CODE" /> gönderilsin mi?</translation>
 <translation id="7274013316676448362">Engellenmiş site</translation>
 <translation id="7276100255011548441">Chrome, 4 haftadan daha eski konuları otomatik olarak siler. Siz internette gezindikçe bir konu tekrar listede görünmeye başlayabilir. Dilerseniz Chrome'un sitelerle paylaşmasını istemediğiniz konuları engelleyebilirsiniz. <ph name="BEGIN_LINK" />Chrome'da reklam gizliliğinizi yönetme<ph name="END_LINK" /> hakkında daha fazla bilgi edinin.</translation>

@@ -959,6 +959,7 @@ Questo criterio non ha effetto se l'opzione per mantenere i dati di navigazione 
       Se viene attivato il criterio <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />, saranno consentiti anche gli utenti Family Link oltre agli account definiti in questo criterio.</translation>
 <translation id="18186215616223740">Quando si accede a documenti Office gestiti da <ph name="BASIC_EDITOR_NAME" />, forzane il download</translation>
 <translation id="1819272352048746487">Attiva o disattiva diverse funzionalità per la tastiera sullo schermo</translation>
+<translation id="1822163547472114648">Impostazioni per Crea temi con l'IA</translation>
 <translation id="1823974945066396306">Consente di definire l'elenco di utenti autorizzati ad accedere al dispositivo. Le voci sono nel formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, ad esempio <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Per autorizzare utenti arbitrari su un dominio, le voci devono essere nel formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
       Se questo criterio non viene configurato, non ci sono limitazioni in termini di utenti autorizzati ad accedere. Tieni presente che la creazione di nuovi utenti richiede comunque la corretta configurazione del criterio <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" />.
@@ -4904,6 +4905,7 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="5163889437570441600">Consenti la trasmissione di contenuti al dispositivo usando <ph name="PRODUCT_NAME" />.
 
           Se questo criterio viene impostato su false, gli utenti non possono trasmettere contenuti al proprio dispositivo. Se viene impostato su true, gli utenti possono trasmettere contenuti. Se non viene configurato, gli utenti non possono trasmettere contenuti a dispositivi ChromeOS registrati, ma possono trasmetterli a dispositivi non registrati.</translation>
+<translation id="5164141068091580679">Attiva la funzionalità e invia dati per contribuire ad addestrare i modelli di IA</translation>
 <translation id="516520353995300280">La configurazione del criterio consente di disattivare l'applicazione dei requisiti di divulgazione di Certificate Transparency per un elenco di autorità di certificazione precedenti per la creazione di catene di certificati con un hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> specificato. Gli host aziendali possono continuare a utilizzare i certificati che altrimenti non verrebbero ritenuti attendibili, in quanto non resi pubblici in modo appropriato. Per disattivare l'applicazione, l'hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> deve essere presente in un certificato CA riconosciuto come autorità di certificazione precedente. Un'autorità di certificazione precedente viene considerata attendibile pubblicamente da uno o più sistemi operativi supportati da <ph name="PRODUCT_NAME" />, ma non da Android Open Source Project o <ph name="PRODUCT_OS_NAME" />.
 
       Specifica un hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> collegandolo al nome dell'algoritmo di hash, una barra e la codifica Base64 di tale algoritmo di hash applicato al <ph name="SUBJECT_PUBLIC_KEY_INFO" /> con codifica DER del certificato specificato. Il formato della codifica Base64 è nello stesso formato di un'impronta SPKI. L'unico algoritmo di hash riconosciuto è sha256; gli altri vengono ignorati.
@@ -5592,6 +5594,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> viene disattivato.<
           Se il criterio viene attivato o se non viene configurato, la voce del menu contestuale per il tuo provider di ricerca predefinito è disponibile.
 
           Il valore del criterio viene applicato solo se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> viene attivato e non è applicabile in caso contrario.</translation>
+<translation id="5695907219125832836">Attiva la funzionalità ma non invia dati per contribuire ad addestrare i modelli di IA</translation>
 <translation id="5697306356229823047">Segnala utenti dispositivo</translation>
 <translation id="569777361305162263">Disattiva la visualizzazione di contenuti promozionali a scheda intera</translation>
 <translation id="5698923148503075597">Se il criterio viene impostato su Enabled, in caso di conflitto il criterio relativo al cloud prevale sul criterio relativo alla piattaforma.
@@ -6007,6 +6010,7 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
       4: Blocca i file dannosi segnalati dal server di Navigazione sicura, non blocca i tipi di file pericolosi (opzione consigliata).
 
       Nota: tali limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione di menu "Salva link con nome…". Non vengono applicate al download della pagina attualmente visualizzata né al salvataggio in formato PDF tramite le opzioni di stampa. Scopri di più sulla funzionalità Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
+<translation id="6115254134376460539">Disattiva la funzionalità</translation>
 <translation id="6118226055960302400">Ripristina il comportamento permissivo.</translation>
 <translation id="6119207979839638596">Questo criterio è stato rimosso da M75 dopo la rimozione del criterio della versione TLS massima da <ph name="PRODUCT_NAME" />.
 
@@ -6162,6 +6166,7 @@ Dalla versione 114 in poi, questo criterio è facoltativo se viene configurato i
 <translation id="624818583115864448">porta 554 (può essere sbloccata fino al 15/10/2021)</translation>
 <translation id="6254498834449523938">Non consentire agli utenti di bypassare l'avviso di Navigazione sicura</translation>
 <translation id="625580680776945310">La modalità ad alta efficienza verrà attivata.</translation>
+<translation id="6258314216623064461">Impostazioni per Aiutami a scrivere</translation>
 <translation id="6258658183356534534">Controlla la funzionalità di aggiornamento User-Agent Client Hints GREASE.</translation>
 <translation id="6261643884958898336">Segnala informazioni di identificazione dei computer</translation>
 <translation id="6264247808139384018">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti che hanno effettuato l'autenticazione con una password possono bloccare lo schermo.
@@ -6843,6 +6848,7 @@ Se il criterio viene impostato su False, il port forwarding nei container Crosti
       Se il criterio è attivato, Risposte rapide è abilitata.
       Se il criterio è disattivato, Risposte rapide è disabilitata.
       Se il criterio non viene impostato, gli utenti possono decidere se attivare o disattivare Risposte rapide.</translation>
+<translation id="670675748066383347">Impostazioni per l'organizzatore di schede</translation>
 <translation id="6712624291905573620">Questo criterio consente di controllare il reporting su cloud di <ph name="PRODUCT_NAME" />, che consente di caricare informazioni sul funzionamento del browser nella <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
 Se il criterio non viene configurato o viene impostato su Disabled, i dati non vengono raccolti o caricati.
