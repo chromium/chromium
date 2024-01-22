@@ -488,7 +488,7 @@ TestRunner.Session = class {
   }
 
   /**
-   * @returns {import("devtools-protocol/types/protocol-proxy-api.d.ts").ProtocolProxyApi.ProtocolApi}
+   * @returns {import("devtools-protocol/types/protocol-tests-proxy-api").ProtocolTestsProxyApi.ProtocolApi}
    */
   _setupProtocol() {
     return new Proxy({}, {
