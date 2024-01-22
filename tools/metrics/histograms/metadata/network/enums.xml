@@ -393,6 +393,9 @@ chromium-metrics-reviews@google.com.
   <int value="28" label="rndis_host"/>
   <int value="29" label="atl1c"/>
   <int value="30" label="sky2"/>
+  <int value="31" label="stgmac"/>
+  <int value="32" label="nforce"/>
+  <int value="33" label="r8153"/>
 </enum>
 
 <enum name="FallbackDNSTestResult">
