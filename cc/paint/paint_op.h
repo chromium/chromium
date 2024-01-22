@@ -56,8 +56,12 @@ class CC_PAINT_EXPORT ThreadsafePath : public SkPath {
  public:
   explicit ThreadsafePath(const SkPath& path) : SkPath(path) {
     updateBoundsCache();
+    getGenerationID();
   }
-  ThreadsafePath() { updateBoundsCache(); }
+  ThreadsafePath() {
+    updateBoundsCache();
+    getGenerationID();
+  }
 };
 
 // See PaintOp::Serialize/Deserialize for comments.  Serialize() of derived
