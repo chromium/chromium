@@ -318,7 +318,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                              /*accept_this_tab_capture=*/testing::Bool()));
 
 // TODO(1170479): Real desktop capture is flaky on below platforms.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1520393): enable this flaky test.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ScreenCaptureVideo DISABLED_ScreenCaptureVideo
 #else
 #define MAYBE_ScreenCaptureVideo ScreenCaptureVideo
@@ -392,7 +393,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(1170479): Real desktop capture is flaky on below platforms.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1520393): enable this flaky test.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux debug bots, it's flaky as well.
 #elif ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
