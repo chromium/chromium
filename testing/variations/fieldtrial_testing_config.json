@@ -5563,12 +5563,15 @@
         {
             "platforms": [
                 "android",
-                "android_webview",
-                "chromeos"
+                "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220601",
+                    "name": "Enabled",
+                    "params": {
+                        "BlockListByDevice": "",
+                        "BlockListByModel": ""
+                    },
                     "enable_features": [
                         "DefaultPassthroughCommandDecoder"
                     ]
