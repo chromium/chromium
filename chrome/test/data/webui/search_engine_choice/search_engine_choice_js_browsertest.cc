@@ -28,8 +28,7 @@ class SearchEngineChoiceJsBrowserTest : public WebUIMochaBrowserTest {
               /*force_chrome_build=*/true);
 };
 
-// TODO(crbug.com/1509119) Fix test flakes and re-enable it.
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceJsBrowserTest,
-                       DISABLED_SearchEngineChoiceTest) {
+                       SearchEngineChoiceTest) {
   RunTest("search_engine_choice/search_engine_choice_test.js", "mocha.run()");
 }

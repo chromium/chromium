@@ -356,7 +356,8 @@
       "chrome://welcome/*",
       "chrome://vc-background/*",
       "chrome://app-settings/*",
-      "chrome://compose/*"
+      "chrome://compose/*",
+      "chrome://search-engine-choice/*"
     ]
   }, {
     "channel": "stable",

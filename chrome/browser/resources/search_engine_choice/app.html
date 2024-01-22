@@ -255,7 +255,7 @@
     border-radius: calc(var(--scrollbar-height) /2);
   }
 
-  cr-expand-button {
+  .chevron {
     --cr-expand-button-size: 24px;
     --cr-icon-button-margin-start: 0;
     --cr-section-vertical-padding: 0;
@@ -465,8 +465,10 @@
             <div class="choice-text">
               <div class="choice-title">
                 <span aria-hidden="true">[[item.name]]</span>
-                <cr-expand-button expanded="{{item.showMarketingSnippet}}"
-                    no-hover role="button" aria-label="$i18n{chevronA11yLabel}">
+                <cr-expand-button class="chevron" no-hover role="button"
+                    expanded="{{item.showMarketingSnippet}}"
+                    aria-label="$i18n{chevronA11yLabel}"
+                    on-click="[[onChevronClicked_(item.showMarketingSnippet)]]">
                 </cr-expand-button>
                 <div class="vertical-separator"></div>
               </div>

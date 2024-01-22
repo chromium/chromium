@@ -181,6 +181,12 @@ export class SearchEngineChoiceAppElement extends
     }
   }
 
+  private onChevronClicked_(chevronExpanded: boolean) {
+    if (chevronExpanded) {
+      chrome.metricsPrivate.recordUserAction('ExpandSearchEngineDescription');
+    }
+  }
+
   private onInfoDialogButtonClicked_() {
     this.$.infoDialog.close();
   }

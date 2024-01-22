@@ -9721,6 +9721,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ExpandSearchEngineDescription">
+  <owner>jyammine@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <description>
+    Action indicating that the user expanded the chevron in the search engine
+    choice page to view the search engine description.
+  </description>
+</action>
+
 <action name="ExperimentalAI_IPHPromo_SettingsPageOpened">
   <owner>rajendrant@chromium.org</owner>
   <owner>chrome-intelligence-core@chromium.org</owner>
