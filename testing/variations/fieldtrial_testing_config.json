@@ -209,6 +209,25 @@
             ]
         }
     ],
+    "AllowBFCacheWhenClosedMediaStreamTrack": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20231219",
+                    "enable_features": [
+                        "AllowBFCacheWhenClosedMediaStreamTrack"
+                    ]
+                }
+            ]
+        }
+    ],
     "AllowUndamagedNonrootRenderPassToSkip": [
         {
             "platforms": [
