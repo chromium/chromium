@@ -1319,109 +1319,6 @@ void LockContentsView::OnDeviceEnterpriseInfoChanged() {
 
 void LockContentsView::OnEnterpriseAccountDomainChanged() {}
 
-void LockContentsView::ToggleManagementForUserForDebug(const AccountId& user) {
-  auto replace = [](const LoginUserInfo& user_info) {
-    auto changed = user_info;
-    if (user_info.user_account_manager) {
-      changed.user_account_manager.reset();
-    } else {
-      changed.user_account_manager = "example@example.com";
-    }
-    return changed;
-  };
-
-  LoginBigUserView* big = TryToFindBigUser(user, false /*require_auth_active*/);
-  if (big) {
-    big->UpdateForUser(replace(big->GetCurrentUser()));
-    return;
-  }
-
-  LoginUserView* user_view =
-      users_list_ ? users_list_->GetUserView(user) : nullptr;
-  if (user_view) {
-    user_view->UpdateForUser(replace(user_view->current_user()),
-                             false /*animate*/);
-    return;
-  }
-}
-
-void LockContentsView::SetMultiUserSignInPolicyForUserForDebug(
-    const AccountId& user,
-    user_manager::MultiUserSignInPolicy policy) {
-  auto replace = [policy](const LoginUserInfo& user_info) {
-    auto changed = user_info;
-    changed.multi_user_sign_in_policy = policy;
-    changed.is_multi_user_sign_in_allowed =
-        policy == user_manager::MultiUserSignInPolicy::kUnrestricted;
-    return changed;
-  };
-
-  LoginBigUserView* big = TryToFindBigUser(user, false /*require_auth_active*/);
-  if (big) {
-    big->UpdateForUser(replace(big->GetCurrentUser()));
-  }
-
-  LoginUserView* user_view =
-      users_list_ ? users_list_->GetUserView(user) : nullptr;
-  if (user_view) {
-    user_view->UpdateForUser(replace(user_view->current_user()),
-                             false /*animate*/);
-  }
-
-  LayoutAuth(CurrentBigUserView(), nullptr /*opt_to_hide*/, true /*animate*/);
-}
-
-void LockContentsView::ToggleForceOnlineSignInForUserForDebug(
-    const AccountId& user) {
-  UserState* state = FindStateForUser(user);
-  if (!state) {
-    LOG(ERROR) << "Unable to find user forcing online sign in";
-    return;
-  }
-  state->force_online_sign_in = !state->force_online_sign_in;
-
-  LoginBigUserView* big_user =
-      TryToFindBigUser(user, true /*require_auth_active*/);
-  if (big_user && big_user->auth_user()) {
-    LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
-  }
-}
-
-void LockContentsView::ToggleDisableTpmForUserForDebug(const AccountId& user) {
-  UserState* state = FindStateForUser(user);
-  if (!state) {
-    LOG(ERROR) << "Unable to find user to toggle TPM disabled message";
-    return;
-  }
-  if (state->time_until_tpm_unlock.has_value()) {
-    state->time_until_tpm_unlock = std::nullopt;
-  } else {
-    state->time_until_tpm_unlock = base::Minutes(5);
-  }
-
-  LoginBigUserView* big_user =
-      TryToFindBigUser(user, true /*require_auth_active*/);
-  if (big_user && big_user->auth_user()) {
-    LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
-  }
-}
-
-void LockContentsView::UndoForceOnlineSignInForUserForDebug(
-    const AccountId& user) {
-  UserState* state = FindStateForUser(user);
-  if (!state) {
-    LOG(ERROR) << "Unable to find user forcing online sign in";
-    return;
-  }
-  state->force_online_sign_in = false;
-
-  LoginBigUserView* big_user =
-      TryToFindBigUser(user, true /*require_auth_active*/);
-  if (big_user && big_user->auth_user()) {
-    LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
-  }
-}
-
 void LockContentsView::FocusNextWidget(bool reverse) {
   Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
   // Tell the focus direction to the status area or the shelf so they can focus
@@ -2425,16 +2322,6 @@ void LockContentsView::UpdateKioskDefaultMessageVisibility() {
   }
 
   kiosk_default_message_->SetVisible(!has_kiosk_apps_);
-}
-
-void LockContentsView::SetKioskLicenseModeForTesting(
-    bool is_kiosk_license_mode) {
-  kiosk_license_mode_ = is_kiosk_license_mode;
-
-  // Normally when management device mode is updated, via
-  // OnDeviceEnterpriseInfoChanged, it updates the visibility of Kiosk default
-  // meesage too.
-  UpdateKioskDefaultMessageVisibility();
 }
 
 void LockContentsView::RecordAndResetPasswordAttempts(

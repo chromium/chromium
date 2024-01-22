@@ -3320,18 +3320,19 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   // Show login screen with no user.
   ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
-  LockContentsView* lock_contents_view =
-      LockScreen::TestApi(LockScreen::Get()).contents_view();
-  lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
-  LockContentsViewTestApi test_api(lock_contents_view);
+  LockScreen::TestApi lock_screen_test_api(LockScreen::Get());
+  LockContentsViewTestApi lock_contents_view_test_api(
+      lock_screen_test_api.contents_view());
+  lock_contents_view_test_api.SetKioskLicenseMode(is_kiosk_license_mode);
   SetUserCount(0);
-  SetWidget(CreateWidgetWithContent(lock_contents_view));
+  SetWidget(CreateWidgetWithContent(lock_screen_test_api.contents_view()));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNFakeKioskApps(1);
 
-  EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_FALSE(test_api.kiosk_default_message()->GetVisible());
+  EXPECT_TRUE(lock_contents_view_test_api.kiosk_default_message());
+  EXPECT_FALSE(
+      lock_contents_view_test_api.kiosk_default_message()->GetVisible());
 }
 
 // Checks default message hidden if device is not with kiosk license and has
@@ -3342,17 +3343,17 @@ TEST_F(LockContentsViewWithKioskLicenseTest, ShouldHideKioskDefaultMessage) {
   login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   // Show login screen with no user.
   ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
-  LockContentsView* lock_contents_view =
-      LockScreen::TestApi(LockScreen::Get()).contents_view();
-  lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
-  LockContentsViewTestApi test_api(lock_contents_view);
+  LockScreen::TestApi lock_screen_test_api(LockScreen::Get());
+  LockContentsViewTestApi lock_contents_view_test_api(
+      lock_screen_test_api.contents_view());
+  lock_contents_view_test_api.SetKioskLicenseMode(is_kiosk_license_mode);
   SetUserCount(0);
-  SetWidget(CreateWidgetWithContent(lock_contents_view));
+  SetWidget(CreateWidgetWithContent(lock_screen_test_api.contents_view()));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNFakeKioskApps(0);
 
-  EXPECT_FALSE(test_api.kiosk_default_message());
+  EXPECT_FALSE(lock_contents_view_test_api.kiosk_default_message());
 }
 
 // Checks default message appeared if device is with kiosk license and no
@@ -3364,18 +3365,19 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   // Show login screen with no user.
   ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
-  LockContentsView* lock_contents_view =
-      LockScreen::TestApi(LockScreen::Get()).contents_view();
-  lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
-  LockContentsViewTestApi test_api(lock_contents_view);
+  LockScreen::TestApi lock_screen_test_api(LockScreen::Get());
+  LockContentsViewTestApi lock_contents_view_test_api(
+      lock_screen_test_api.contents_view());
+  lock_contents_view_test_api.SetKioskLicenseMode(is_kiosk_license_mode);
   SetUserCount(0);
-  SetWidget(CreateWidgetWithContent(lock_contents_view));
+  SetWidget(CreateWidgetWithContent(lock_screen_test_api.contents_view()));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNFakeKioskApps(0);
 
-  EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_TRUE(test_api.kiosk_default_message()->GetVisible());
+  EXPECT_TRUE(lock_contents_view_test_api.kiosk_default_message());
+  EXPECT_TRUE(
+      lock_contents_view_test_api.kiosk_default_message()->GetVisible());
 }
 
 // Checks default message appeared if device is with kiosk license, no
@@ -3387,18 +3389,19 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   // Show login screen with one user.
   ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
-  LockContentsView* lock_contents_view =
-      LockScreen::TestApi(LockScreen::Get()).contents_view();
-  lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
-  LockContentsViewTestApi test_api(lock_contents_view);
+  LockScreen::TestApi lock_screen_test_api(LockScreen::Get());
+  LockContentsViewTestApi lock_contents_view_test_api(
+      lock_screen_test_api.contents_view());
+  lock_contents_view_test_api.SetKioskLicenseMode(is_kiosk_license_mode);
   SetUserCount(1);
-  SetWidget(CreateWidgetWithContent(lock_contents_view));
+  SetWidget(CreateWidgetWithContent(lock_screen_test_api.contents_view()));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNFakeKioskApps(0);
 
-  EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_TRUE(test_api.kiosk_default_message()->GetVisible());
+  EXPECT_TRUE(lock_contents_view_test_api.kiosk_default_message());
+  EXPECT_TRUE(
+      lock_contents_view_test_api.kiosk_default_message()->GetVisible());
 }
 
 // Checks default message appeared if device is with kiosk license and no
@@ -3411,23 +3414,25 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   // Show login screen with no user.
   ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
-  LockContentsView* lock_contents_view =
-      LockScreen::TestApi(LockScreen::Get()).contents_view();
-  lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
-  LockContentsViewTestApi test_api(lock_contents_view);
+  LockScreen::TestApi lock_screen_test_api(LockScreen::Get());
+  LockContentsViewTestApi lock_contents_view_test_api(
+      lock_screen_test_api.contents_view());
+  lock_contents_view_test_api.SetKioskLicenseMode(is_kiosk_license_mode);
   SetUserCount(0);
-  SetWidget(CreateWidgetWithContent(lock_contents_view));
+  SetWidget(CreateWidgetWithContent(lock_screen_test_api.contents_view()));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNFakeKioskApps(0);
 
-  EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_TRUE(test_api.kiosk_default_message()->GetVisible());
+  EXPECT_TRUE(lock_contents_view_test_api.kiosk_default_message());
+  EXPECT_TRUE(
+      lock_contents_view_test_api.kiosk_default_message()->GetVisible());
 
   SetNFakeKioskApps(1);
 
-  EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_FALSE(test_api.kiosk_default_message()->GetVisible());
+  EXPECT_TRUE(lock_contents_view_test_api.kiosk_default_message());
+  EXPECT_FALSE(
+      lock_contents_view_test_api.kiosk_default_message()->GetVisible());
 }
 
 // UMA metrics recorded correctly after the successful login attempt.

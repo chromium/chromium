@@ -211,27 +211,6 @@ class ASH_EXPORT LockContentsView
   void OnDeviceEnterpriseInfoChanged() override;
   void OnEnterpriseAccountDomainChanged() override;
 
-  // Called for debugging to make |user| managed and display an icon along with
-  // a note in the menu user view.
-  void ToggleManagementForUserForDebug(const AccountId& user);
-
-  // Called for debugging to make |user| having a multi-user-sign-in policy.
-  void SetMultiUserSignInPolicyForUserForDebug(
-      const AccountId& user,
-      user_manager::MultiUserSignInPolicy policy);
-
-  // Called for debugging to toggle forced online sign-in form |user|.
-  void ToggleForceOnlineSignInForUserForDebug(const AccountId& user);
-
-  // Called for debugging to toggle TPM disabled message for |user|.
-  void ToggleDisableTpmForUserForDebug(const AccountId& user);
-
-  // Called for debugging to remove forced online sign-in form |user|.
-  void UndoForceOnlineSignInForUserForDebug(const AccountId& user);
-
-  // Test API. Set device to have kiosk license.
-  void SetKioskLicenseModeForTesting(bool is_kiosk_license_mode);
-
   // Called by LockScreenMediaControlsView.
   void CreateMediaControlsLayout();
   void HideMediaControlsLayout();

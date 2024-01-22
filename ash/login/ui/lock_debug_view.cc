@@ -430,22 +430,23 @@ class LockDebugView::DebugDataDispatcherTransformer
   // Toggles force online sign-in for the user at |user_index|.
   void ToggleForceOnlineSignInForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
-    lock_debug_view_->lock()->ToggleForceOnlineSignInForUserForDebug(
+    LockContentsViewTestApi lock_test_api(lock_debug_view_->lock());
+    lock_test_api.ToggleForceOnlineSignInForUser(
         debug_users_[user_index].account_id);
   }
 
   // Enables or disables user management for the user at |user_index|.
   void ToggleManagementForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
-    lock_debug_view_->lock()->ToggleManagementForUserForDebug(
-        debug_users_[user_index].account_id);
+    LockContentsViewTestApi lock_test_api(lock_debug_view_->lock());
+    lock_test_api.ToggleManagementForUser(debug_users_[user_index].account_id);
   }
 
   // Toggles TPM disabled message for the user at |user_index|.
   void ToggleDisableTpmForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
-    lock_debug_view_->lock()->ToggleDisableTpmForUserForDebug(
-        debug_users_[user_index].account_id);
+    LockContentsViewTestApi lock_test_api(lock_debug_view_->lock());
+    lock_test_api.ToggleDisableTpmForUser(debug_users_[user_index].account_id);
   }
 
   // Cycles disabled auth message for the user at |user_index|.
@@ -488,9 +489,10 @@ class LockDebugView::DebugDataDispatcherTransformer
     }
 
     debug_dispatcher_.EnableAuthForUser(debug_user->account_id);
-    lock_debug_view_->lock()->SetMultiUserSignInPolicyForUserForDebug(
+    LockContentsViewTestApi lock_test_api(lock_debug_view_->lock());
+    lock_test_api.SetMultiUserSignInPolicyForUser(
         debug_users_[user_index].account_id, multi_user_sign_in_policy);
-    lock_debug_view_->lock()->UndoForceOnlineSignInForUserForDebug(
+    lock_test_api.UndoForceOnlineSignInForUser(
         debug_users_[user_index].account_id);
 
     switch (debug_user->auth_enable_state) {
@@ -508,7 +510,7 @@ class LockDebugView::DebugDataDispatcherTransformer
         break;
       case DebugAuthEnabledState::kMultiUserPolicyPrimaryOnly:
       case DebugAuthEnabledState::kMultiUserPolicyNotAllowed:
-        lock_debug_view_->lock()->SetMultiUserSignInPolicyForUserForDebug(
+        lock_test_api.SetMultiUserSignInPolicyForUser(
             debug_users_[user_index].account_id, multi_user_sign_in_policy);
         break;
       case DebugAuthEnabledState::kForceOnlineSignIn:
