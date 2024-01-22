@@ -4,7 +4,8 @@
 
 import './pdf_viewer_wrapper.js';
 
-import {BrowserApi, createBrowserApi} from './browser_api.js';
+import type {BrowserApi} from './browser_api.js';
+import {createBrowserApi} from './browser_api.js';
 
 /**
  * Stores any pending messages received which should be passed to the

@@ -12,7 +12,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {FittingType} from '../constants.js';
 
-import {ViewerZoomButtonElement} from './viewer-zoom-button.js';
+import type {ViewerZoomButtonElement} from './viewer-zoom-button.js';
 import {getTemplate} from './viewer-zoom-toolbar.html.js';
 
 const FIT_TO_PAGE_BUTTON_STATE = 0;

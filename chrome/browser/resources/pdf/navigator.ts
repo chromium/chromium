@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserApi} from './browser_api.js';
-import {OpenPdfParams, OpenPdfParamsParser} from './open_pdf_params_parser.js';
-import {Viewport} from './viewport.js';
+import type {BrowserApi} from './browser_api.js';
+import type {OpenPdfParams, OpenPdfParamsParser} from './open_pdf_params_parser.js';
+import type {Viewport} from './viewport.js';
 
 // NavigatorDelegate for calling browser-specific functions to do the actual
 // navigating.
