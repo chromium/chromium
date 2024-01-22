@@ -13,7 +13,8 @@ enum PaymentDelegation {
 
 [
     Exposed=Window,
-    RuntimeEnabled=PaymentApp
+    RuntimeEnabled=PaymentApp,
+    SecureContext
 ] interface PaymentManager {
     [SameObject, DeprecateAs=PaymentInstruments, RuntimeEnabled=PaymentInstruments] readonly attribute PaymentInstruments instruments;
     attribute DOMString userHint;
