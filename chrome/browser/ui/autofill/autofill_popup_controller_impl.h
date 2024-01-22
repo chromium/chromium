@@ -208,6 +208,10 @@ class AutofillPopupControllerImpl
 
  private:
   // content::WebContentsObserver:
+  void WebContentsDestroyed() override;
+  void OnWebContentsLostFocus(
+      content::RenderWidgetHost* render_widget_host) override;
+  void PrimaryMainFrameWasResized(bool width_changed) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;

@@ -399,6 +399,15 @@ class AutofillPopupControllerImplTest : public ChromeRenderViewHostTestHarness {
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
+  void TearDown() override {
+    // Wait for the pending deletion of the controllers. Otherwise, the
+    // controllers are destroyed after the WebContents, and each of them
+    // receives a final Hide() call for which we'd need to add explicit
+    // expectations.
+    task_environment()->RunUntilIdle();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
   content::RenderFrameHost* main_frame() {
     return web_contents()->GetPrimaryMainFrame();
   }
@@ -409,8 +418,7 @@ class AutofillPopupControllerImplTest : public ChromeRenderViewHostTestHarness {
 
   NiceMock<MockAutofillDriver>& driver(
       content::RenderFrameHost* rfh = nullptr) {
-    return *autofill_driver_injector_
-        [rfh ? rfh : web_contents()->GetPrimaryMainFrame()];
+    return *autofill_driver_injector_[rfh ? rfh : main_frame()];
   }
 
   BrowserAutofillManagerWithMockDelegate& manager(
@@ -1511,6 +1519,18 @@ TEST_F(AutofillPopupControllerImplTestHidingLogic,
   Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
 }
 
+// Tests that if the popup is shown, destruction of the WebContents hides the
+// popup.
+TEST_F(AutofillPopupControllerImplTestHidingLogic, HideOnWebContentsDestroyed) {
+  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+  EXPECT_CALL(client().popup_controller(manager()),
+              Hide(PopupHidingReason::kRendererEvent));
+  EXPECT_CALL(client().popup_controller(manager()),
+              Hide(PopupHidingReason::kTabGone));
+  DeleteContents();
+}
+
 // Tests that if the popup is shown in the *main frame*, destruction of the
 // *main frame* hides the popup.
 TEST_F(AutofillPopupControllerImplTestHidingLogic,
@@ -1519,6 +1539,11 @@ TEST_F(AutofillPopupControllerImplTestHidingLogic,
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(client().popup_controller(manager()),
               Hide(PopupHidingReason::kRendererEvent));
+  // There seems to be no way to destroy only the main frame in a test. We
+  // therefore let the test fixture's TearDown() destroy the main frame. As a
+  // side-effect, the WebContents will also be destroyed and call Hide().
+  EXPECT_CALL(client().popup_controller(manager()),
+              Hide(PopupHidingReason::kTabGone));
 }
 
 // Tests that if the popup is shown in the *sub frame*, destruction of the
@@ -1529,6 +1554,9 @@ TEST_F(AutofillPopupControllerImplTestHidingLogic,
   test::GenerateTestAutofillPopup(&sub_manager().external_delegate());
   EXPECT_CALL(client().popup_controller(sub_manager()),
               Hide(PopupHidingReason::kRendererEvent));
+  content::RenderFrameHostTester::For(sub_frame())->Detach();
+  // Verify and clear before TearDown() closes the popup.
+  Mock::VerifyAndClearExpectations(&client().popup_controller(sub_manager()));
 }
 
 // Tests that if the popup is shown in the *main frame*, a navigation in the
@@ -1540,6 +1568,8 @@ TEST_F(AutofillPopupControllerImplTestHidingLogic,
   EXPECT_CALL(client().popup_controller(manager()),
               Hide(PopupHidingReason::kNavigation));
   NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
+  // Verify and clear before TearDown() closes the popup.
+  Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
 }
 
 // Tests that if the popup is shown in the *sub frame*, a navigation in the
@@ -1557,10 +1587,17 @@ TEST_F(AutofillPopupControllerImplTestHidingLogic,
                 Hide(PopupHidingReason::kRendererEvent));
   }
   NavigateAndCommitFrame(sub_frame(), GURL("https://bar.com/"));
+  // Verify and clear before TearDown() closes the popup.
+  Mock::VerifyAndClearExpectations(&client().popup_controller(sub_manager()));
 }
 
 // Tests that if the popup is shown in the *sub frame*, a navigation in the
 // *main frame* hides the popup.
+//
+// TODO(crbug.com/1519872): This test only makes little sense: with BFcache, the
+// navigation doesn't destroy the `sub_frame()` and thus we wouldn't hide the
+// popup. What hides the popup in reality is
+// AutofillExternalDelegate::DidEndTextFieldEditing().
 TEST_F(AutofillPopupControllerImplTestHidingLogic,
        HideInSubFrameOnMainFrameNavigation) {
   ShowSuggestions(sub_manager(), {PopupItemId::kAddressEntry});
@@ -1568,6 +1605,9 @@ TEST_F(AutofillPopupControllerImplTestHidingLogic,
   EXPECT_CALL(client().popup_controller(sub_manager()),
               Hide(PopupHidingReason::kRendererEvent));
   NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
+  // The WebContents will also be destroyed and call Hide().
+  EXPECT_CALL(client().popup_controller(sub_manager()),
+              Hide(PopupHidingReason::kTabGone));
 }
 
 }  // namespace autofill

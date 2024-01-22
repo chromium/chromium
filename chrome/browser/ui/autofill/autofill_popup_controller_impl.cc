@@ -100,8 +100,9 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
     return previous;
   }
 
-  if (previous)
+  if (previous) {
     previous->Hide(PopupHidingReason::kViewDestroyed);
+  }
 #if BUILDFLAG(IS_ANDROID)
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
       delegate, web_contents, container_view, element_bounds, text_direction,
@@ -145,6 +146,26 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
 }
 
 AutofillPopupControllerImpl::~AutofillPopupControllerImpl() = default;
+
+void AutofillPopupControllerImpl::WebContentsDestroyed() {
+  Hide(PopupHidingReason::kTabGone);
+}
+
+void AutofillPopupControllerImpl::OnWebContentsLostFocus(
+    content::RenderWidgetHost* render_widget_host) {
+  Hide(PopupHidingReason::kFocusChanged);
+}
+
+void AutofillPopupControllerImpl::PrimaryMainFrameWasResized(
+    bool width_changed) {
+#if BUILDFLAG(IS_ANDROID)
+  // Ignore virtual keyboard showing and hiding a strip of suggestions.
+  if (!width_changed) {
+    return;
+  }
+#endif
+  Hide(PopupHidingReason::kWidgetChanged);
+}
 
 void AutofillPopupControllerImpl::RenderFrameDeleted(
     content::RenderFrameHost* rfh) {
