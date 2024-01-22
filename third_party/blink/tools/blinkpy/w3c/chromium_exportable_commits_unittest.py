@@ -203,7 +203,8 @@ class ChromiumExportableCommitsTest(unittest.TestCase):
     def test_commit_that_has_open_pr_is_exportable(self):
         commit = MockChromiumCommit(MockHost(), change_id='I00decade')
         github = MockWPTGitHub(pull_requests=[
-            PullRequest('PR2', 2, 'body\nChange-Id: I00decade', 'open', []),
+            PullRequest('PR2', 2, 'body\nChange-Id: I00decade', 'open',
+                        'PR_1_', []),
         ])
         self.assertEqual(
             get_commit_export_state(commit,
@@ -214,7 +215,8 @@ class ChromiumExportableCommitsTest(unittest.TestCase):
     def test_commit_that_has_closed_but_not_merged_pr(self):
         commit = MockChromiumCommit(MockHost(), change_id='I00decade')
         github = MockWPTGitHub(pull_requests=[
-            PullRequest('PR2', 2, 'body\nChange-Id: I00decade', 'closed', []),
+            PullRequest('PR2', 2, 'body\nChange-Id: I00decade', 'closed',
+                        'PR_1_', []),
         ])
         # Regardless of verify_merged_pr, abandoned PRs are always exported.
         self.assertEqual(
@@ -228,12 +230,11 @@ class ChromiumExportableCommitsTest(unittest.TestCase):
 
     def test_commit_that_has_merged_pr_and_found_locally(self):
         commit = MockChromiumCommit(MockHost(), change_id='I00decade')
-        github = MockWPTGitHub(
-            pull_requests=[
-                PullRequest('PR2', 2, 'body\nChange-Id: I00decade', 'closed',
-                            []),
-            ],
-            merged_index=0)
+        github = MockWPTGitHub(pull_requests=[
+            PullRequest('PR2', 2, 'body\nChange-Id: I00decade', 'closed',
+                        'PR_1_', []),
+        ],
+                               merged_index=0)
         self.assertEqual(
             get_commit_export_state(
                 commit,
@@ -249,12 +250,11 @@ class ChromiumExportableCommitsTest(unittest.TestCase):
 
     def test_commit_that_has_merged_pr_but_not_found_locally(self):
         commit = MockChromiumCommit(MockHost(), change_id='I00decade')
-        github = MockWPTGitHub(
-            pull_requests=[
-                PullRequest('PR2', 2, 'body\nChange-Id: I00decade', 'closed',
-                            []),
-            ],
-            merged_index=0)
+        github = MockWPTGitHub(pull_requests=[
+            PullRequest('PR2', 2, 'body\nChange-Id: I00decade', 'closed',
+                        'PR_1_', []),
+        ],
+                               merged_index=0)
         # verify_merged_pr should be False by default.
         self.assertEqual(
             get_commit_export_state(commit, MockLocalWPT(), github),

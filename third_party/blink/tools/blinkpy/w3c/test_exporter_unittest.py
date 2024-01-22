@@ -30,9 +30,14 @@ class TestExporterTest(LoggingTestCase):
 
     def test_dry_run_stops_before_creating_pr(self):
         test_exporter = TestExporter(self.host)
+        test_exporter.create_draft_pr = False
         test_exporter.github = MockWPTGitHub(pull_requests=[
-            PullRequest(
-                title='title1', number=1234, body='', state='open', labels=[]),
+            PullRequest(title='title1',
+                        number=1234,
+                        body='',
+                        state='open',
+                        node_id='PR_123_',
+                        labels=[]),
         ])
         test_exporter.gerrit = MockGerritAPI()
         test_exporter.gerrit.exportable_open_cls = [
@@ -78,6 +83,7 @@ class TestExporterTest(LoggingTestCase):
 
     def test_creates_pull_request_for_all_exportable_commits(self):
         test_exporter = TestExporter(self.host)
+        test_exporter.create_draft_pr = False
         test_exporter.github = MockWPTGitHub(
             pull_requests=[], create_pr_fail_index=1)
         test_exporter.gerrit = MockGerritAPI()
@@ -125,6 +131,7 @@ class TestExporterTest(LoggingTestCase):
         # 4. #458478 has an in-flight PR associated with it and should be merged successfully.
         # 5. #458479 has an in-flight PR associated with it but can not be merged.
         test_exporter = TestExporter(self.host)
+        test_exporter.create_draft_pr = False
         test_exporter.github = MockWPTGitHub(
             pull_requests=[
                 PullRequest(
@@ -133,6 +140,7 @@ class TestExporterTest(LoggingTestCase):
                     body=
                     'rutabaga\nCr-Commit-Position: refs/heads/main@{#458475}\nChange-Id: I0005',
                     state='open',
+                    node_id='PR_123_',
                     labels=['do not merge yet']),
                 PullRequest(
                     title='Merged PR',
@@ -140,6 +148,7 @@ class TestExporterTest(LoggingTestCase):
                     body=
                     'rutabaga\nCr-Commit-Position: refs/heads/main@{#458477}\nChange-Id: Idead',
                     state='closed',
+                    node_id='PR_123_',
                     labels=[]),
                 PullRequest(
                     title='Open PR',
@@ -147,6 +156,7 @@ class TestExporterTest(LoggingTestCase):
                     body=
                     'rutabaga\nCr-Commit-Position: refs/heads/main@{#458478}\nChange-Id: I0118',
                     state='open',
+                    node_id='PR_123_',
                     labels=[]  # It's important that this is empty.
                 ),
                 PullRequest(
@@ -155,6 +165,7 @@ class TestExporterTest(LoggingTestCase):
                     body=
                     'rutabaga\nCr-Commit-Position: refs/heads/main@{#458479}\nChange-Id: I0147',
                     state='open',
+                    node_id='PR_123_',
                     labels=[]  # It's important that this is empty.
                 ),
             ],
@@ -211,6 +222,7 @@ class TestExporterTest(LoggingTestCase):
 
     def test_new_gerrit_cl(self):
         test_exporter = TestExporter(self.host)
+        test_exporter.create_draft_pr = False
         test_exporter.github = MockWPTGitHub(pull_requests=[])
         test_exporter.get_exportable_commits = lambda: ([], [])
         test_exporter.gerrit = MockGerritAPI()
@@ -285,13 +297,14 @@ class TestExporterTest(LoggingTestCase):
 
     def test_gerrit_cl_no_update_if_pr_with_same_revision(self):
         test_exporter = TestExporter(self.host)
+        test_exporter.create_draft_pr = False
         test_exporter.github = MockWPTGitHub(pull_requests=[
-            PullRequest(
-                title='title1',
-                number=1234,
-                body='description\nWPT-Export-Revision: 1',
-                state='open',
-                labels=[]),
+            PullRequest(title='title1',
+                        number=1234,
+                        body='description\nWPT-Export-Revision: 1',
+                        state='open',
+                        node_id='PR_123_',
+                        labels=[]),
         ])
         test_exporter.get_exportable_commits = lambda: ([], [])
         test_exporter.gerrit = MockGerritAPI()
@@ -328,13 +341,14 @@ class TestExporterTest(LoggingTestCase):
 
     def test_gerrit_cl_updates_if_cl_has_new_revision(self):
         test_exporter = TestExporter(self.host)
+        test_exporter.create_draft_pr = False
         test_exporter.github = MockWPTGitHub(pull_requests=[
-            PullRequest(
-                title='title1',
-                number=1234,
-                body='description\nWPT-Export-Revision: 1',
-                state='open',
-                labels=[]),
+            PullRequest(title='title1',
+                        number=1234,
+                        body='description\nWPT-Export-Revision: 1',
+                        state='open',
+                        node_id='PR_123_',
+                        labels=[]),
         ])
         test_exporter.get_exportable_commits = lambda: ([], [])
         test_exporter.gerrit = MockGerritAPI()
@@ -376,12 +390,14 @@ class TestExporterTest(LoggingTestCase):
 
     def test_attempts_to_merge_landed_gerrit_cl(self):
         test_exporter = TestExporter(self.host)
+        test_exporter.create_draft_pr = False
         test_exporter.github = MockWPTGitHub(pull_requests=[
             PullRequest(
                 title='title1',
                 number=1234,
                 body='description\nWPT-Export-Revision: 9\nChange-Id: decafbad',
                 state='open',
+                node_id='PR_123_',
                 labels=['do not merge yet']),
         ])
         test_exporter.get_exportable_commits = lambda: ([
@@ -403,12 +419,14 @@ class TestExporterTest(LoggingTestCase):
 
     def test_merges_non_provisional_pr(self):
         test_exporter = TestExporter(self.host)
+        test_exporter.create_draft_pr = False
         test_exporter.github = MockWPTGitHub(pull_requests=[
             PullRequest(
                 title='title1',
                 number=1234,
                 body='description\nWPT-Export-Revision: 9\nChange-Id: decafbad',
                 state='open',
+                node_id='PR_123_',
                 labels=['']),
         ])
         test_exporter.get_exportable_commits = lambda: ([
@@ -429,6 +447,7 @@ class TestExporterTest(LoggingTestCase):
 
     def test_does_not_create_pr_if_cl_review_has_not_started(self):
         test_exporter = TestExporter(self.host)
+        test_exporter.create_draft_pr = False
         test_exporter.github = MockWPTGitHub(pull_requests=[])
         test_exporter.get_exportable_commits = lambda: ([], [])
         test_exporter.gerrit = MockGerritAPI()
@@ -471,6 +490,7 @@ class TestExporterTest(LoggingTestCase):
             raise GerritError('Gerrit API fails.')
 
         test_exporter = TestExporter(self.host)
+        test_exporter.create_draft_pr = False
         test_exporter.github = MockWPTGitHub(pull_requests=[])
         test_exporter.get_exportable_commits = lambda: ([], [])
         test_exporter.gerrit = MockGerritAPI()
@@ -491,6 +511,7 @@ class TestExporterTest(LoggingTestCase):
 
     def test_run_returns_false_on_patch_failure(self):
         test_exporter = TestExporter(self.host)
+        test_exporter.create_draft_pr = False
         test_exporter.github = MockWPTGitHub(pull_requests=[])
         test_exporter.get_exportable_commits = lambda: (
             [], ['There was an error with the rutabaga.'])

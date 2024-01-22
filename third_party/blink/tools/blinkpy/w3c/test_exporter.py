@@ -14,6 +14,7 @@ from blinkpy.w3c.common import (
 from blinkpy.w3c.chromium_exportable_commits import exportable_commits_over_last_n_commits
 from blinkpy.w3c.export_notifier import ExportNotifier
 from blinkpy.w3c.gerrit import GerritAPI, GerritCL, GerritError
+from blinkpy.w3c.graphql import GraphQL
 from blinkpy.w3c.pr_cleanup_tool import PrCleanupTool
 from blinkpy.w3c.wpt_github import MergeError
 
@@ -26,10 +27,13 @@ class TestExporter(object):
         self.project_config = host.project_config
         self.pr_cleaner = PrCleanupTool(self.host)
         self.github = None
+        self.graphql = None
         self.gerrit = None
         self.dry_run = False
         self.local_repo = None
         self.surface_failures_to_gerrit = False
+        self.create_draft_pr = (
+            self.project_config.gerrit_project == 'chromium/src')
 
     def main(self, argv=None):
         """Creates PRs for in-flight CLs and merges changes that land on main.
@@ -65,6 +69,9 @@ class TestExporter(object):
             self.host, credentials['GERRIT_USER'], credentials['GERRIT_TOKEN'])
         self.local_repo = self.local_repo or self.project_config.local_repo_factory(
             host=self.host, gh_token=credentials['GH_TOKEN'])
+
+        if self.create_draft_pr:
+            self.graphql = GraphQL(credentials['GH_TOKEN'])
 
         if not self.dry_run:
             self.pr_cleaner.run(self.github, self.gerrit)
@@ -178,6 +185,9 @@ class TestExporter(object):
             if pull_request.state != 'open':
                 _log.info('Pull request is %s. Skipping.', pull_request.state)
                 return
+
+            if self.create_draft_pr:
+                self.graphql.mark_ready_for_review(pull_request.node_id)
 
             if self.github.provisional_pr_label in pull_request.labels:
                 # If the PR was created from a Gerrit in-flight CL, update the

@@ -30,6 +30,7 @@ class PrCleanupToolTest(LoggingTestCase):
                         number=1234,
                         body='Change-Id: 88',
                         state='open',
+                        node_id='PR_kwDOADc1Vc5jhje_',
                         labels=[]),
         ])
         gerrit = MockGerritAPI()
@@ -66,6 +67,7 @@ class PrCleanupToolTest(LoggingTestCase):
                         number=1234,
                         body='Change-Id: 88',
                         state='open',
+                        node_id='PR_kwDOADc1Vc5jhje_',
                         labels=[]),
         ])
         gerrit = MockGerritAPI()
@@ -98,6 +100,7 @@ class PrCleanupToolTest(LoggingTestCase):
                         number=1234,
                         body='Change-Id: 99',
                         state='open',
+                        node_id='PR_kwDOADc1Vc5jhje_',
                         labels=[]),
         ])
         gerrit = MockGerritAPI()
@@ -138,6 +141,7 @@ class PrCleanupToolTest(LoggingTestCase):
                         number=1234,
                         body='Change-Id: 88',
                         state='open',
+                        node_id='PR_kwDOADc1Vc5jhje_',
                         labels=[]),
         ])
         gerrit = MockGerritAPI(raise_error=True)
