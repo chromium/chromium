@@ -17,6 +17,7 @@
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/accelerators/ash_focus_manager_factory.h"
 #include "ash/accelerators/magnifier_key_scroller.h"
+#include "ash/accelerators/modifier_key_combo_recorder.h"
 #include "ash/accelerators/pre_target_accelerator_handler.h"
 #include "ash/accelerators/shortcut_input_handler.h"
 #include "ash/accelerators/spoken_feedback_toggler.h"
@@ -788,6 +789,7 @@ Shell::~Shell() {
 
   // `shortcut_input_handler_` must be cleaned up before
   // `event_rewriter_controller_`.
+  modifier_key_combo_recorder_.reset();
   shortcut_input_handler_.reset();
   // `AccessibilityEventRewriter` references objects owned by
   // EventRewriterController directly, so it must be reset first to avoid
@@ -1371,6 +1373,10 @@ void Shell::Init(
   keyboard_modifier_metrics_recorder_ =
       std::make_unique<KeyboardModifierMetricsRecorder>();
   event_rewriter_controller_ = std::make_unique<EventRewriterControllerImpl>();
+  if (features::IsPeripheralCustomizationEnabled() ||
+      ::features::IsShortcutCustomizationEnabled()) {
+    modifier_key_combo_recorder_ = std::make_unique<ModifierKeyComboRecorder>();
+  }
 
   env_filter_ = std::make_unique<::wm::CompoundEventFilter>();
   AddPreTargetHandler(env_filter_.get());

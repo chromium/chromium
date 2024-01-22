@@ -8,12 +8,14 @@
 #include <string>
 
 #include "ash/public/cpp/accelerator_keycode_lookup_cache.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_codes_array.h"
@@ -124,6 +126,114 @@ bool IsValidDomCode(ui::DomCode dom_code) {
   return ui::KeycodeConverter::InvalidNativeKeycode() !=
          ui::KeycodeConverter::UsbKeycodeToNativeKeycode(
              static_cast<int32_t>(dom_code));
+}
+
+bool IsAlphaOrPunctuationKey(ui::KeyboardCode key_code) {
+  if (key_code >= ui::VKEY_A && key_code <= ui::VKEY_Z) {
+    return true;
+  }
+
+  static constexpr auto kPunctuationKeys =
+      base::MakeFixedFlatSet<ui::KeyboardCode>({
+          ui::VKEY_OEM_1,
+          ui::VKEY_OEM_PLUS,
+          ui::VKEY_OEM_COMMA,
+          ui::VKEY_OEM_MINUS,
+          ui::VKEY_OEM_PERIOD,
+          ui::VKEY_OEM_2,
+          ui::VKEY_OEM_3,
+          ui::VKEY_OEM_4,
+          ui::VKEY_OEM_5,
+          ui::VKEY_OEM_6,
+          ui::VKEY_OEM_7,
+          ui::VKEY_OEM_8,
+          ui::VKEY_OEM_102,
+          ui::VKEY_OEM_103,
+          ui::VKEY_OEM_104,
+      });
+  return kPunctuationKeys.contains(key_code);
+}
+
+bool IsDigitKey(ui::KeyboardCode key_code) {
+  return key_code >= ui::VKEY_0 && key_code <= ui::VKEY_9;
+}
+
+bool IsSixPackKey(ui::KeyboardCode key_code) {
+  static constexpr auto kSixPackKeys = base::MakeFixedFlatSet<ui::KeyboardCode>(
+      {ui::VKEY_PRIOR, ui::VKEY_NEXT, ui::VKEY_END, ui::VKEY_HOME,
+       ui::VKEY_INSERT, ui::VKEY_DELETE});
+  return kSixPackKeys.contains(key_code);
+}
+
+bool IsNumpadKey(ui::KeyboardCode key_code) {
+  // Numpad keys are all in consecutive order.
+  return key_code >= ui::VKEY_NUMPAD0 && key_code <= ui::VKEY_DIVIDE;
+}
+
+// This includes only the top row keys we know about, it is possible there are
+// other on external keyboards. They would instead be considered misc keys.
+bool IsTopRowKey(ui::KeyboardCode key_code, ui::DomCode dom_code) {
+  static constexpr auto kTopRowKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
+      ui::VKEY_F1,
+      ui::VKEY_F2,
+      ui::VKEY_F3,
+      ui::VKEY_F4,
+      ui::VKEY_F5,
+      ui::VKEY_F6,
+      ui::VKEY_F7,
+      ui::VKEY_F8,
+      ui::VKEY_F9,
+      ui::VKEY_F10,
+      ui::VKEY_F11,
+      ui::VKEY_F12,
+      ui::VKEY_F13,
+      ui::VKEY_F14,
+      ui::VKEY_F15,
+      ui::VKEY_F16,
+      ui::VKEY_F17,
+      ui::VKEY_F18,
+      ui::VKEY_F19,
+      ui::VKEY_F20,
+      ui::VKEY_F21,
+      ui::VKEY_F22,
+      ui::VKEY_F23,
+      ui::VKEY_F24,
+      ui::VKEY_BROWSER_BACK,
+      ui::VKEY_BROWSER_FORWARD,
+      ui::VKEY_BROWSER_REFRESH,
+      ui::VKEY_BROWSER_STOP,
+      ui::VKEY_BROWSER_SEARCH,
+      ui::VKEY_BROWSER_FAVORITES,
+      ui::VKEY_BROWSER_HOME,
+      ui::VKEY_VOLUME_MUTE,
+      ui::VKEY_VOLUME_DOWN,
+      ui::VKEY_VOLUME_UP,
+      ui::VKEY_MEDIA_NEXT_TRACK,
+      ui::VKEY_MEDIA_PREV_TRACK,
+      ui::VKEY_MEDIA_STOP,
+      ui::VKEY_MEDIA_PLAY_PAUSE,
+      ui::VKEY_MEDIA_LAUNCH_MAIL,
+      ui::VKEY_MEDIA_LAUNCH_MEDIA_SELECT,
+      ui::VKEY_MEDIA_LAUNCH_APP1,
+      ui::VKEY_MEDIA_LAUNCH_APP2,
+      ui::VKEY_PLAY,
+      ui::VKEY_ZOOM,
+      ui::VKEY_SNAPSHOT,
+      ui::VKEY_PRIVACY_SCREEN_TOGGLE,
+      ui::VKEY_MICROPHONE_MUTE_TOGGLE,
+      ui::VKEY_BRIGHTNESS_DOWN,
+      ui::VKEY_BRIGHTNESS_UP,
+      ui::VKEY_KBD_BACKLIGHT_TOGGLE,
+      ui::VKEY_KBD_BRIGHTNESS_DOWN,
+      ui::VKEY_KBD_BRIGHTNESS_UP,
+      ui::VKEY_SLEEP,
+  });
+
+  if (dom_code == ui::DomCode::SHOW_ALL_WINDOWS) {
+    return true;
+  }
+
+  return kTopRowKeys.contains(key_code);
 }
 
 }  // namespace
@@ -255,6 +365,81 @@ std::u16string GetKeyDisplay(ui::KeyboardCode key_code,
     }
     return unconverted_string;
   }
+}
+
+AcceleratorKeyInputType GetKeyInputTypeFromKeyEvent(
+    const ui::KeyEvent& key_event) {
+  const ui::KeyboardCode key_code = key_event.key_code();
+  if (IsAlphaOrPunctuationKey(key_code)) {
+    return AcceleratorKeyInputType::kAlpha;
+  }
+
+  if (IsDigitKey(key_code)) {
+    return AcceleratorKeyInputType::kDigit;
+  }
+
+  if (IsTopRowKey(key_code, key_event.code())) {
+    return AcceleratorKeyInputType::kTopRow;
+  }
+
+  if (IsSixPackKey(key_code)) {
+    return AcceleratorKeyInputType::kSixPack;
+  }
+
+  if (IsNumpadKey(key_code)) {
+    return AcceleratorKeyInputType::kNumberPad;
+  }
+
+  switch (key_event.code()) {
+    case ui::DomCode::META_LEFT:
+      return AcceleratorKeyInputType::kMetaLeft;
+    case ui::DomCode::META_RIGHT:
+      return AcceleratorKeyInputType::kMetaRight;
+    case ui::DomCode::CONTROL_LEFT:
+      return AcceleratorKeyInputType::kControlLeft;
+    case ui::DomCode::CONTROL_RIGHT:
+      return AcceleratorKeyInputType::kControlRight;
+    case ui::DomCode::ALT_LEFT:
+      return AcceleratorKeyInputType::kAltLeft;
+    case ui::DomCode::ALT_RIGHT:
+      if (key_event.key_code() == ui::VKEY_ALTGR) {
+        return AcceleratorKeyInputType::kAltGr;
+      }
+      return AcceleratorKeyInputType::kAltRight;
+    case ui::DomCode::SHIFT_LEFT:
+      return AcceleratorKeyInputType::kShiftLeft;
+    case ui::DomCode::SHIFT_RIGHT:
+      return AcceleratorKeyInputType::kShiftRight;
+    default:
+      break;
+  }
+
+  switch (key_code) {
+    case ui::VKEY_ESCAPE:
+      return AcceleratorKeyInputType::kEscape;
+    case ui::VKEY_TAB:
+      return AcceleratorKeyInputType::kTab;
+    case ui::VKEY_CAPITAL:
+      return AcceleratorKeyInputType::kCapsLock;
+    case ui::VKEY_SPACE:
+      return AcceleratorKeyInputType::kSpace;
+    case ui::VKEY_RETURN:
+      return AcceleratorKeyInputType::kEnter;
+    case ui::VKEY_BACK:
+      return AcceleratorKeyInputType::kBackspace;
+    case ui::VKEY_UP:
+      return AcceleratorKeyInputType::kUpArrow;
+    case ui::VKEY_DOWN:
+      return AcceleratorKeyInputType::kDownArrow;
+    case ui::VKEY_RIGHT:
+      return AcceleratorKeyInputType::kRightArrow;
+    case ui::VKEY_LEFT:
+      return AcceleratorKeyInputType::kLeftArrow;
+    default:
+      break;
+  }
+
+  return AcceleratorKeyInputType::kMisc;
 }
 
 }  // namespace ash

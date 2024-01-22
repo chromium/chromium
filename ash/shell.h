@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/accelerators/modifier_key_combo_recorder.h"
 #include "ash/accessibility/accessibility_event_handler_manager.h"
 #include "ash/ash_export.h"
 #include "ash/constants/ash_features.h"
@@ -730,6 +731,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   ShortcutInputHandler* shortcut_input_handler() {
     return shortcut_input_handler_.get();
   }
+  ModifierKeyComboRecorder* modifier_key_combo_recorder() {
+    return modifier_key_combo_recorder_.get();
+  }
   ShutdownControllerImpl* shutdown_controller() {
     return shutdown_controller_.get();
   }
@@ -962,6 +966,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<EventRewriterControllerImpl> event_rewriter_controller_;
   std::unique_ptr<InputDeviceSettingsControllerImpl>
       input_device_settings_controller_;
+  std::unique_ptr<ModifierKeyComboRecorder> modifier_key_combo_recorder_;
   std::unique_ptr<InputDeviceSettingsDispatcher>
       input_device_settings_dispatcher_;
   std::unique_ptr<InputDeviceTracker> input_device_tracker_;

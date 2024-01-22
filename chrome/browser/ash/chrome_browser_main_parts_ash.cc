@@ -1366,9 +1366,13 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   event_rewriter_controller->Initialize(
       event_rewriter_delegate_.get(),
       accessibility_event_rewriter_delegate_.get());
-  // `ShortcutInputHandler` is dependent on `EventRewriterController`'s
-  // initialization.
-  Shell::Get()->shortcut_input_handler()->Initialize();
+  // `ShortcutInputHandler` and `ModifierKeyComboRecorder` are dependent on
+  // `EventRewriterController`'s initialization.
+  if (ash::features::IsPeripheralCustomizationEnabled() ||
+      ::features::IsShortcutCustomizationEnabled()) {
+    Shell::Get()->shortcut_input_handler()->Initialize();
+    Shell::Get()->modifier_key_combo_recorder()->Initialize();
+  }
 
   // Enable the KeyboardDrivenEventRewriter if the OEM manifest flag is on.
   if (system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation()) {

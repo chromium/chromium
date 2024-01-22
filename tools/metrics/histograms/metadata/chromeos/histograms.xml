@@ -1732,6 +1732,25 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Inputs.ModifierKeyCombo.{KeyboardType}" units="hash"
+    expires_after="2024-05-26">
+  <owner>dpad@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records how users use their physical {KeyboardType} keyboards. It groups
+    keys into common categories such as &quot;Alpha&quot; and
+    &quot;Digits&quot;.
+
+    See //ash/accelerators/modifier_key_combo_recorder.cc for info on how to
+    decode the metric.
+  </summary>
+  <token key="KeyboardType">
+    <variant name="CrOSExternal"/>
+    <variant name="External"/>
+    <variant name="Internal"/>
+  </token>
+</histogram>
+
 <histogram
     name="ChromeOS.Inputs.TouchscreenUsage.Temporary.{TimePeriod}.{Mode}"
     units="ms" expires_after="2024-06-02">
