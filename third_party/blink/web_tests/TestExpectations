@@ -6796,3 +6796,6 @@ crbug.com/1467464 http/tests/devtools/profiler/heap-snapshot-summary-sorting-ins
 crbug.com/1467464 http/tests/devtools/profiler/heap-snapshot-summary-sorting.js [ Failure Pass Timeout ]
 crbug.com/1467464 http/tests/devtools/profiler/heap-snapshot-weak-dominator.js [ Failure Pass Timeout ]
 crbug.com/1467464 http/tests/devtools/profiler/heap-snapshot.js [ Failure Pass Timeout ]
+
+# May fail due to test framework issue. Disabling while this is being resolved.
+crbug.com/1367312 [ Win ] fast/dom/timer-throttling-hidden-page.html [ Failure Pass ]
