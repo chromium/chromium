@@ -33,7 +33,8 @@
 @property(nonatomic, assign, readwrite) BOOL didUserSelectARow;
 
 - (instancetype)initWithSearchEngineTableViewController:
-    (SearchEngineChoiceTableViewController*)tableViewController
+                    (SearchEngineChoiceTableViewController*)tableViewController
+                                                 forFRE:(BOOL)isForFRE
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

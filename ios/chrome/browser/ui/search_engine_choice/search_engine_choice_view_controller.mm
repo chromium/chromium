@@ -20,6 +20,7 @@
 #import "ios/chrome/common/ui/util/device_util.h"
 #import "ios/chrome/common/ui/util/sdk_forward_declares.h"
 #import "net/base/mac/url_conversions.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
@@ -81,14 +82,18 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   // Scrollable content containing everything above the primary button.
   UIScrollView* _scrollView;
   UIView* _scrollContentView;
+  // Whether the choice screen is being displayed for the FRE.
+  BOOL _isForFRE;
 }
 
 - (instancetype)initWithSearchEngineTableViewController:
-    (SearchEngineChoiceTableViewController*)tableViewController {
+                    (SearchEngineChoiceTableViewController*)tableViewController
+                                                 forFRE:(BOOL)isForFRE {
   CHECK(tableViewController);
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _searchEngineTableViewController = tableViewController;
+    _isForFRE = isForFRE;
   }
   return self;
 }
@@ -155,8 +160,8 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   _fakeEmptyOmniboxView =
       [[FakeOmniboxView alloc] initWithSearchEngineName:nil faviconImage:nil];
   [_topZoneStackView addArrangedSubview:_fakeEmptyOmniboxView];
-  if (self.traitCollection.verticalSizeClass ==
-      UIUserInterfaceSizeClassCompact) {
+  if ([self shouldHideFakeOmniboxForVerticalSizeClass:self.traitCollection
+                                                          .verticalSizeClass]) {
     _fakeEmptyOmniboxView.hidden = YES;
   }
   _fakeEmptyOmniboxView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -313,8 +318,8 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   _fakeOmniboxView.translatesAutoresizingMaskIntoConstraints = NO;
   [_topZoneStackView addSubview:_fakeOmniboxView];
   AddSameConstraints(_fakeOmniboxView, _fakeEmptyOmniboxView);
-  if (self.traitCollection.verticalSizeClass ==
-      UIUserInterfaceSizeClassCompact) {
+  if ([self shouldHideFakeOmniboxForVerticalSizeClass:self.traitCollection
+                                                          .verticalSizeClass]) {
     // If the vertical size is compact, the new fake omnibox should be added but
     // hidden (just in case the user rotate the device in portrait mode).
     // And the previous fake omnibox should be removed.
@@ -374,6 +379,15 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   }
 }
 
+// Whether the choice screen should hide the fake omnibox illustration.
+- (BOOL)shouldHideFakeOmniboxForVerticalSizeClass:
+    (UIUserInterfaceSizeClass)sizeClass {
+  // Hide the fake omnibox for the FRE on iPads or in landscape mode on iPhones.
+  return sizeClass == UIUserInterfaceSizeClassCompact ||
+         (_isForFRE && (ui::GetDeviceFormFactor() ==
+                        ui::DeviceFormFactor::DEVICE_FORM_FACTOR_TABLET));
+}
+
 #pragma mark - UITextViewDelegate
 
 - (BOOL)textView:(UITextView*)textView
@@ -397,10 +411,14 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
     case UIUserInterfaceSizeClassRegular:
       _logoView.alpha = 1;
       _logoView.hidden = NO;
-      _fakeEmptyOmniboxView.alpha = 1;
-      _fakeEmptyOmniboxView.hidden = NO;
-      _fakeOmniboxView.alpha = 1;
-      _fakeOmniboxView.hidden = NO;
+      // The fake omnibox stays hidden in the FRE for iPads.
+      if (![self shouldHideFakeOmniboxForVerticalSizeClass:
+                     UIUserInterfaceSizeClassRegular]) {
+        _fakeEmptyOmniboxView.alpha = 1;
+        _fakeEmptyOmniboxView.hidden = NO;
+        _fakeOmniboxView.alpha = 1;
+        _fakeOmniboxView.hidden = NO;
+      }
       break;
 
     case UIUserInterfaceSizeClassCompact:

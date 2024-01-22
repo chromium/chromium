@@ -175,9 +175,12 @@ CALayer* CreateOmniboxFieldLayer(BOOL isEmpty) {
     if (_isEmptyFakeOmnibox) {
       _imageView.image = DefaultSymbolWithPointSize(kMagnifyingglassSymbol,
                                                     kMagnifyingGlassSize);
+      [self
+          setAccessibilityIdentifier:kFakeEmptyOmniboxAccessibilityIdentifier];
     } else {
       self.faviconImage = image;
       _imageView.image = image;
+      [self setAccessibilityIdentifier:kFakeOmniboxAccessibilityIdentifier];
     }
   }
   return self;

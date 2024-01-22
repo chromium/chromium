@@ -86,8 +86,8 @@
   _searchEnginesTableViewController.delegate = self;
 
   _viewController = [[SearchEngineChoiceViewController alloc]
-      initWithSearchEngineTableViewController:
-          _searchEnginesTableViewController];
+      initWithSearchEngineTableViewController:_searchEnginesTableViewController
+                                       forFRE:_firstRun];
   _viewController.actionDelegate = self;
 
   _mediator = [[SearchEngineChoiceMediator alloc] init];

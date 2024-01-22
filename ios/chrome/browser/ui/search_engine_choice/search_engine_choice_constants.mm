@@ -12,6 +12,10 @@ const CGFloat kFakeOmniboxFieldLeadingInset = 48.;
 
 NSString* const kSearchEngineChoiceTitleAccessibilityIdentifier =
     @"SearchEngineChoiceTitleAccessibilityIdentifier";
+NSString* const kFakeEmptyOmniboxAccessibilityIdentifier =
+    @"FakeEmptyOmniboxAccessibilityIdentifier";
+NSString* const kFakeOmniboxAccessibilityIdentifier =
+    @"FakeOmniboxAccessibilityIdentifier";
 NSString* const kSnippetSearchEngineIdentifierPrefix =
     @"SnippetSearchEngineIdentifierPrefix_";
 NSString* const kSetAsDefaultSearchEngineIdentifier =

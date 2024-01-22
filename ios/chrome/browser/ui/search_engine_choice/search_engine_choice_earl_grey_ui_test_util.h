@@ -9,6 +9,13 @@
 
 #import "ios/third_party/earl_grey2/src/CommonLib/GREYConstants.h"
 
+// State of the fake omnibox illustration
+typedef NS_ENUM(NSUInteger, FakeOmniboxState) {
+  kHidden,
+  kEmpty,
+  kFull,
+};
+
 // Test methods that perform actions on the search engine choice UI
 @interface SearchEngineChoiceEarlGreyUI : NSObject
 
@@ -26,6 +33,9 @@
 
 // Checks that the default search engine was correctly set.
 + (void)verifyDefaultSearchEngineSetting:(NSString*)searchEngineName;
+
+// Checks the state of the fake omnibox illustration.
++ (void)verifyFakeOmniboxIllustrationState:(FakeOmniboxState)state;
 
 @end
 
