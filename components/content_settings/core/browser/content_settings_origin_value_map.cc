@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
+#include "components/content_settings/core/browser/content_settings_origin_value_map.h"
 
 #include <memory>
 #include <tuple>
@@ -58,7 +58,7 @@ class RuleIteratorImpl : public RuleIterator {
 
 }  // namespace
 
-std::unique_ptr<RuleIterator> OriginIdentifierValueMap::GetRuleIterator(
+std::unique_ptr<RuleIterator> OriginValueMap::GetRuleIterator(
     ContentSettingsType content_type) const NO_THREAD_SAFETY_ANALYSIS {
   // We access |entries_| here, so we need to lock |auto_lock| first. The lock
   // must be passed to the |RuleIteratorImpl| in a locked state, so that nobody
@@ -77,7 +77,7 @@ std::unique_ptr<RuleIterator> OriginIdentifierValueMap::GetRuleIterator(
       std::move(iterating));
 }
 
-std::unique_ptr<Rule> OriginIdentifierValueMap::GetRule(
+std::unique_ptr<Rule> OriginValueMap::GetRule(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type) const {
@@ -103,18 +103,18 @@ std::unique_ptr<Rule> OriginIdentifierValueMap::GetRule(
   return nullptr;
 }
 
-size_t OriginIdentifierValueMap::size() const {
+size_t OriginValueMap::size() const {
   size_t size = 0;
   for (const auto& entry : entries_)
     size += entry.second.size();
   return size;
 }
 
-OriginIdentifierValueMap::OriginIdentifierValueMap() = default;
+OriginValueMap::OriginValueMap() = default;
 
-OriginIdentifierValueMap::~OriginIdentifierValueMap() = default;
+OriginValueMap::~OriginValueMap() = default;
 
-const base::Value* OriginIdentifierValueMap::GetValue(
+const base::Value* OriginValueMap::GetValue(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type) const {
@@ -134,7 +134,7 @@ const base::Value* OriginIdentifierValueMap::GetValue(
   return nullptr;
 }
 
-bool OriginIdentifierValueMap::SetValue(
+bool OriginValueMap::SetValue(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
@@ -156,7 +156,7 @@ bool OriginIdentifierValueMap::SetValue(
   return true;
 }
 
-bool OriginIdentifierValueMap::DeleteValue(
+bool OriginValueMap::DeleteValue(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
@@ -171,12 +171,12 @@ bool OriginIdentifierValueMap::DeleteValue(
   return result;
 }
 
-void OriginIdentifierValueMap::DeleteValues(ContentSettingsType content_type) {
+void OriginValueMap::DeleteValues(ContentSettingsType content_type) {
   CHECK(!iterating_);
   entries_.erase(content_type);
 }
 
-void OriginIdentifierValueMap::clear() {
+void OriginValueMap::clear() {
   CHECK(!iterating_);
   // Delete all owned value objects.
   entries_.clear();

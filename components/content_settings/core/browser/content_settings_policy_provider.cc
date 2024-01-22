@@ -17,7 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
-#include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
+#include "components/content_settings/core/browser/content_settings_origin_value_map.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -200,7 +200,7 @@ constexpr const char* kManagedDefaultPrefs[] = {
 };
 
 void ReportCookiesAllowedForUrlsUsage(
-    content_settings::OriginIdentifierValueMap& value_map) {
+    content_settings::OriginValueMap& value_map) {
   base::AutoLock lock(value_map.GetLock());
 
   bool has_pattern_with_wildcard_primary = false;

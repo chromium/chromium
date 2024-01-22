@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
+#include "components/content_settings/core/browser/content_settings_origin_value_map.h"
 
 #include <memory>
 
@@ -16,8 +16,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-TEST(OriginIdentifierValueMapTest, SetGetValue) {
-  content_settings::OriginIdentifierValueMap map;
+TEST(OriginValueMapTest, SetGetValue) {
+  content_settings::OriginValueMap map;
   base::AutoLock lock(map.GetLock());
 
   EXPECT_EQ(nullptr, map.GetValue(GURL("http://www.google.com"),
@@ -47,8 +47,8 @@ TEST(OriginIdentifierValueMapTest, SetGetValue) {
                                   ContentSettingsType::POPUPS));
 }
 
-TEST(OriginIdentifierValueMapTest, GetRule) {
-  content_settings::OriginIdentifierValueMap map;
+TEST(OriginValueMapTest, GetRule) {
+  content_settings::OriginValueMap map;
   base::AutoLock lock(map.GetLock());
 
   EXPECT_EQ(nullptr, map.GetRule(GURL("http://www.google.com"),
@@ -78,8 +78,8 @@ TEST(OriginIdentifierValueMapTest, GetRule) {
                                  ContentSettingsType::POPUPS));
 }
 
-TEST(OriginIdentifierValueMapTest, SetValueReturnsChanges) {
-  content_settings::OriginIdentifierValueMap map;
+TEST(OriginValueMapTest, SetValueReturnsChanges) {
+  content_settings::OriginValueMap map;
   base::AutoLock lock(map.GetLock());
 
   // Initial call return true.
@@ -107,8 +107,8 @@ TEST(OriginIdentifierValueMapTest, SetValueReturnsChanges) {
                            metadata));
 }
 
-TEST(OriginIdentifierValueMapTest, SetDeleteValue) {
-  content_settings::OriginIdentifierValueMap map;
+TEST(OriginValueMapTest, SetDeleteValue) {
+  content_settings::OriginValueMap map;
   base::AutoLock lock(map.GetLock());
 
   EXPECT_EQ(nullptr, map.GetValue(GURL("http://www.google.com"),
@@ -157,8 +157,8 @@ TEST(OriginIdentifierValueMapTest, SetDeleteValue) {
                                   ContentSettingsType::GEOLOCATION));
 }
 
-TEST(OriginIdentifierValueMapTest, Clear) {
-  content_settings::OriginIdentifierValueMap map;
+TEST(OriginValueMapTest, Clear) {
+  content_settings::OriginValueMap map;
   base::AutoLock lock(map.GetLock());
   EXPECT_TRUE(map.empty());
 
@@ -184,8 +184,8 @@ TEST(OriginIdentifierValueMapTest, Clear) {
                                   ContentSettingsType::GEOLOCATION));
 }
 
-TEST(OriginIdentifierValueMapTest, ListEntryPrecedences) {
-  content_settings::OriginIdentifierValueMap map;
+TEST(OriginValueMapTest, ListEntryPrecedences) {
+  content_settings::OriginValueMap map;
   base::AutoLock lock(map.GetLock());
 
   map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
@@ -213,16 +213,16 @@ TEST(OriginIdentifierValueMapTest, ListEntryPrecedences) {
   }
 }
 
-TEST(OriginIdentifierValueMapTest, IterateEmpty) {
-  content_settings::OriginIdentifierValueMap map;
+TEST(OriginValueMapTest, IterateEmpty) {
+  content_settings::OriginValueMap map;
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
       map.GetRuleIterator(ContentSettingsType::COOKIES));
   EXPECT_FALSE(rule_iterator);
 }
 
-TEST(OriginIdentifierValueMapTest, IterateNonempty) {
+TEST(OriginValueMapTest, IterateNonempty) {
   // Verify the precedence order.
-  content_settings::OriginIdentifierValueMap map;
+  content_settings::OriginValueMap map;
 
   map.GetLock().Acquire();
   ContentSettingsPattern pattern =
@@ -255,9 +255,9 @@ TEST(OriginIdentifierValueMapTest, IterateNonempty) {
   EXPECT_EQ(t1, rule->metadata.last_modified());
 }
 
-TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
+TEST(OriginValueMapTest, UpdateLastModified) {
   // Verify that the last_modified timestamp is updated.
-  content_settings::OriginIdentifierValueMap map;
+  content_settings::OriginValueMap map;
   map.GetLock().Acquire();
   ContentSettingsPattern pattern =
       ContentSettingsPattern::FromString("[*.]google.com");

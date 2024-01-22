@@ -16,7 +16,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/content_settings/core/browser/content_settings_partitioned_origin_identifier_value_map.h"
+#include "components/content_settings/core/browser/content_settings_partitioned_origin_value_map.h"
 #include "components/content_settings/core/browser/content_settings_provider.h"
 #include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -145,9 +145,9 @@ class ContentSettingsPref {
   // notifications from the preferences service that we triggered ourself.
   bool updating_preferences_;
 
-  PartitionedOriginIdentifierValueMap value_map_;
+  PartitionedOriginValueMap value_map_;
 
-  PartitionedOriginIdentifierValueMap off_the_record_value_map_;
+  PartitionedOriginValueMap off_the_record_value_map_;
 
   NotifyObserversCallback notify_callback_;
 

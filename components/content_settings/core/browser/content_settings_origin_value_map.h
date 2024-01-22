@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_ORIGIN_IDENTIFIER_VALUE_MAP_H_
-#define COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_ORIGIN_IDENTIFIER_VALUE_MAP_H_
+#ifndef COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_ORIGIN_VALUE_MAP_H_
+#define COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_ORIGIN_VALUE_MAP_H_
 
 #include <stddef.h>
 
@@ -38,7 +38,7 @@ namespace content_settings {
 // complexity around ensuring the lock is held while iterating,
 // |GetRuleIterator| should only be called while the lock is not held, as the
 // Iterator itself will hold the lock until it's destroyed.
-class OriginIdentifierValueMap {
+class OriginValueMap {
  public:
   typedef std::map<ContentSettingsType, Rules> EntryMap;
 
@@ -70,7 +70,7 @@ class OriginIdentifierValueMap {
   size_t size() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Returns an iterator for reading the rules for |content_type|. It is not
-  // allowed to call functions of |OriginIdentifierValueMap| (also
+  // allowed to call functions of |OriginValueMap| (also
   // |GetRuleIterator|) before the iterator has been destroyed.
   //
   // |lock_| will be acquired and held until the returned RuleIterator is
@@ -85,12 +85,12 @@ class OriginIdentifierValueMap {
                                 ContentSettingsType content_type) const
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  OriginIdentifierValueMap();
+  OriginValueMap();
 
-  OriginIdentifierValueMap(const OriginIdentifierValueMap&) = delete;
-  OriginIdentifierValueMap& operator=(const OriginIdentifierValueMap&) = delete;
+  OriginValueMap(const OriginValueMap&) = delete;
+  OriginValueMap& operator=(const OriginValueMap&) = delete;
 
-  ~OriginIdentifierValueMap();
+  ~OriginValueMap();
 
   // Returns a weak pointer to the value for the given |primary_pattern|,
   // |secondary_pattern|, |content_type| tuple. If
@@ -135,4 +135,4 @@ class OriginIdentifierValueMap {
 
 }  // namespace content_settings
 
-#endif  // COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_ORIGIN_IDENTIFIER_VALUE_MAP_H_
+#endif  // COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_ORIGIN_VALUE_MAP_H_

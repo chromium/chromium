@@ -38,7 +38,7 @@ class SCOPED_LOCKABLE RefCountedAutoLock
 
 // Note that Rules and their iterators must be destroyed before modifying the
 // map that their values come from, as some types of rules hold locks on the map
-// that owns their value. See UnownedRule and OriginIdentifierValueMap.
+// that owns their value. See UnownedRule and OriginValueMap.
 struct Rule {
   Rule(ContentSettingsPattern primary_pattern,
        ContentSettingsPattern secondary_pattern,

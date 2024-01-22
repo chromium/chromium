@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/content_settings/core/browser/content_settings_partitioned_origin_identifier_value_map.h"
+#include "components/content_settings/core/browser/content_settings_partitioned_origin_value_map.h"
 
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
-#include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
+#include "components/content_settings/core/browser/content_settings_origin_value_map.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -19,7 +19,7 @@ namespace content_settings {
 
 namespace {
 
-// This is a wrapper wrapping `OriginIdentifierValueMap`'s `RuleIterator`.
+// This is a wrapper wrapping `OriginValueMap`'s `RuleIterator`.
 // We need this so that we can attach our own lock.
 class RuleIteratorWrapper : public RuleIterator {
  public:
@@ -40,7 +40,7 @@ class RuleIteratorWrapper : public RuleIterator {
 }  // namespace
 
 std::unique_ptr<RuleIterator>
-PartitionedOriginIdentifierValueMap::GetRuleIterator(
+PartitionedOriginValueMap::GetRuleIterator(
     ContentSettingsType content_type,
     const PartitionKey& partition_key) const NO_THREAD_SAFETY_ANALYSIS {
   scoped_refptr<RefCountedAutoLock> auto_lock =
@@ -57,7 +57,7 @@ PartitionedOriginIdentifierValueMap::GetRuleIterator(
                                                auto_lock);
 }
 
-std::unique_ptr<Rule> PartitionedOriginIdentifierValueMap::GetRule(
+std::unique_ptr<Rule> PartitionedOriginValueMap::GetRule(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
@@ -71,7 +71,7 @@ std::unique_ptr<Rule> PartitionedOriginIdentifierValueMap::GetRule(
   return it->second.GetRule(primary_url, secondary_url, content_type);
 }
 
-size_t PartitionedOriginIdentifierValueMap::size() const {
+size_t PartitionedOriginValueMap::size() const {
   size_t size = 0;
   for (const auto& [key, partition] : partitions_) {
     base::AutoLock auto_lock(partition.GetLock());
@@ -80,13 +80,13 @@ size_t PartitionedOriginIdentifierValueMap::size() const {
   return size;
 }
 
-PartitionedOriginIdentifierValueMap::PartitionedOriginIdentifierValueMap() =
+PartitionedOriginValueMap::PartitionedOriginValueMap() =
     default;
 
-PartitionedOriginIdentifierValueMap::~PartitionedOriginIdentifierValueMap() =
+PartitionedOriginValueMap::~PartitionedOriginValueMap() =
     default;
 
-const base::Value* PartitionedOriginIdentifierValueMap::GetValue(
+const base::Value* PartitionedOriginValueMap::GetValue(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
@@ -102,7 +102,7 @@ const base::Value* PartitionedOriginIdentifierValueMap::GetValue(
   return it->second.GetValue(primary_url, secondary_url, content_type);
 }
 
-bool PartitionedOriginIdentifierValueMap::SetValue(
+bool PartitionedOriginValueMap::SetValue(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
@@ -115,7 +115,7 @@ bool PartitionedOriginIdentifierValueMap::SetValue(
                             std::move(value), metadata);
 }
 
-bool PartitionedOriginIdentifierValueMap::DeleteValue(
+bool PartitionedOriginValueMap::DeleteValue(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
@@ -139,7 +139,7 @@ bool PartitionedOriginIdentifierValueMap::DeleteValue(
   return updated;
 }
 
-void PartitionedOriginIdentifierValueMap::DeleteValues(
+void PartitionedOriginValueMap::DeleteValues(
     ContentSettingsType content_type,
     const PartitionKey& partition_key) {
   auto it = partitions_.find(partition_key);
@@ -157,7 +157,7 @@ void PartitionedOriginIdentifierValueMap::DeleteValues(
   }
 }
 
-void PartitionedOriginIdentifierValueMap::clear() {
+void PartitionedOriginValueMap::clear() {
   partitions_.clear();
 }
 

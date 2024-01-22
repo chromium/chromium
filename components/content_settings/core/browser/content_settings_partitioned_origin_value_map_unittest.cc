@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/content_settings/core/browser/content_settings_partitioned_origin_identifier_value_map.h"
+#include "components/content_settings/core/browser/content_settings_partitioned_origin_value_map.h"
 
 #include "base/synchronization/lock.h"
 #include "base/values.h"
@@ -23,8 +23,8 @@ const PartitionKey kKey =
     PartitionKey::CreateForTesting("hello", "world", false);
 }  // namespace
 
-TEST(PartitionedOriginIdentifierValueMap, GetValueAndSetValue) {
-  PartitionedOriginIdentifierValueMap map;
+TEST(PartitionedOriginValueMap, GetValueAndSetValue) {
+  PartitionedOriginValueMap map;
 
   base::AutoLock lock(map.GetLock());
   EXPECT_EQ(map.GetValue(GURL(kUrl), GURL(kUrl), ContentSettingsType::COOKIES,
@@ -57,8 +57,8 @@ TEST(PartitionedOriginIdentifierValueMap, GetValueAndSetValue) {
       << "expecting false for setting the value to the same value";
 }
 
-TEST(PartitionedOriginIdentifierValueMap, GetRuleIterator) {
-  PartitionedOriginIdentifierValueMap map;
+TEST(PartitionedOriginValueMap, GetRuleIterator) {
+  PartitionedOriginValueMap map;
 
   {
     base::AutoLock lock(map.GetLock());
@@ -88,8 +88,8 @@ TEST(PartitionedOriginIdentifierValueMap, GetRuleIterator) {
   map.GetLock().AssertNotHeld();
 }
 
-TEST(PartitionedOriginIdentifierValueMap, GetRule) {
-  PartitionedOriginIdentifierValueMap map;
+TEST(PartitionedOriginValueMap, GetRule) {
+  PartitionedOriginValueMap map;
   base::AutoLock lock(map.GetLock());
 
   map.SetValue(ContentSettingsPattern::FromString(kUrl),
@@ -110,8 +110,8 @@ TEST(PartitionedOriginIdentifierValueMap, GetRule) {
             nullptr);
 }
 
-TEST(PartitionedOriginIdentifierValueMap, DeleteValue) {
-  PartitionedOriginIdentifierValueMap map;
+TEST(PartitionedOriginValueMap, DeleteValue) {
+  PartitionedOriginValueMap map;
 
   base::AutoLock lock(map.GetLock());
   for (auto& key : {PartitionKey::GetDefaultForTesting(), kKey}) {
@@ -149,8 +149,8 @@ TEST(PartitionedOriginIdentifierValueMap, DeleteValue) {
       << "expecting false for deleting a non-exist value";
 }
 
-TEST(PartitionedOriginIdentifierValueMap, DeleteValues) {
-  PartitionedOriginIdentifierValueMap map;
+TEST(PartitionedOriginValueMap, DeleteValues) {
+  PartitionedOriginValueMap map;
 
   {
     base::AutoLock lock(map.GetLock());

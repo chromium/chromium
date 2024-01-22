@@ -12,7 +12,7 @@
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
-#include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
+#include "components/content_settings/core/browser/content_settings_origin_value_map.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -126,7 +126,7 @@ class OneTimePermissionProvider
       const GURL& origin_gurl,
       permissions::OneTimePermissionEvent trigger_event);
 
-  content_settings::OriginIdentifierValueMap value_map_;
+  content_settings::OriginValueMap value_map_;
   raw_ptr<OneTimePermissionsTracker> one_time_permissions_tracker_ = nullptr;
 
   // Unowned
