@@ -888,7 +888,7 @@ BASE_FEATURE(kVideoEncoderFrameDrop,
 // Expiry: When enabled by default for a full release cycle
 BASE_FEATURE(kVideoToolboxAv1Decoding,
              "VideoToolboxAv1Decoding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use the new VideoToolboxVideoDecoder for hardware decoding.
 // Owner: sandersd@chromium.org
