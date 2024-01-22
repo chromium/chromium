@@ -180,7 +180,8 @@ constexpr char kExpectedPDFAXTree[] =
     "      staticText '3'\n"
     "        inlineTextBox '3'\n";
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && !defined(MEMORY_SANITIZER) && \
+    !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER)
 constexpr char kExpectedHelloWorldPDFAXTreeWithOcrResults[] =
     "pdfRoot 'PDF document containing 1 page'\n"
     "  banner\n"
@@ -217,7 +218,8 @@ constexpr char kExpectedBlankPDFAXTreeWithPdfOcr[] =
     "  region 'Page 1'\n"
     "    paragraph\n"
     "      image 'Unlabeled image'\n";
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) && !defined(MEMORY_SANITIZER) &&
+        // !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER)
 
 }  // namespace
 
@@ -1247,7 +1249,10 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionAccessibilityPdfOcrTest);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1516559): Add a dummy library that is built with Chrome for
+// sanitizer tests.
+#if BUILDFLAG(IS_LINUX) && !defined(MEMORY_SANITIZER) && \
+    !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER)
 
 class ScreenAIInstallStateObserver
     : public screen_ai::ScreenAIInstallState::Observer {
@@ -1339,14 +1344,7 @@ class PDFOCRIntegrationTest : public PDFExtensionAccessibilityTest {
   }
 };
 
-// TODO(crbug.com/1516559): Add a fake library for sanitizer tests.
-#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-    defined(THREAD_SANITIZER)
-#define MAYBE_EnsureScreenAIInitializes DISABLED_EnsureScreenAIInitializes
-#else
-#define MAYBE_EnsureScreenAIInitializes EnsureScreenAIInitializes
-#endif
-IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest, MAYBE_EnsureScreenAIInitializes) {
+IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest, EnsureScreenAIInitializes) {
   ScreenAIInstallStateObserver observer;
 
   // Turn on PDF OCR by setting its pref to be true.
@@ -1360,14 +1358,7 @@ IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest, MAYBE_EnsureScreenAIInitializes) {
             screen_ai::ScreenAIInstallState::GetInstance()->get_state());
 }
 
-// TODO(crbug.com/1516559): Add a fake library for sanitizer tests.
-#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-    defined(THREAD_SANITIZER)
-#define MAYBE_HelloWorld DISABLED_HelloWorld
-#else
-#define MAYBE_HelloWorld HelloWorld
-#endif
-IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest, MAYBE_HelloWorld) {
+IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest, HelloWorld) {
   ScreenAIInstallStateObserver observer;
 
   // Turn on PDF OCR by setting its pref to be true.
@@ -1397,15 +1388,7 @@ IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest, MAYBE_HelloWorld) {
                          ax_tree_dump);
 }
 
-// TODO(crbug.com/1516559): Add a fake library for sanitizer tests.
-#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-    defined(THREAD_SANITIZER)
-#define MAYBE_FeatureNotificationWhenOff DISABLED_FeatureNotificationWhenOff
-#else
-#define MAYBE_FeatureNotificationWhenOff FeatureNotificationWhenOff
-#endif
-IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest,
-                       MAYBE_FeatureNotificationWhenOff) {
+IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest, FeatureNotificationWhenOff) {
   ScreenAIInstallStateObserver observer;
 
   // Turn off PDF OCR by setting its pref to be false.
@@ -1435,15 +1418,7 @@ IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest,
                          ax_tree_dump);
 }
 
-// TODO(crbug.com/1516559): Add a fake library for sanitizer tests.
-#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-    defined(THREAD_SANITIZER)
-#define MAYBE_NoOcrResultOnBlankImagePdf DISABLED_NoOcrResultOnBlankImagePdf
-#else
-#define MAYBE_NoOcrResultOnBlankImagePdf NoOcrResultOnBlankImagePdf
-#endif
-IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest,
-                       MAYBE_NoOcrResultOnBlankImagePdf) {
+IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest, NoOcrResultOnBlankImagePdf) {
   ScreenAIInstallStateObserver observer;
 
   // Turn on PDF OCR by setting its pref to be false.
@@ -1474,4 +1449,5 @@ IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest,
   ASSERT_MULTILINE_STREQ(kExpectedBlankPDFAXTreeWithPdfOcr, ax_tree_dump);
 }
 
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) && !defined(MEMORY_SANITIZER) &&
+        // !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER)
