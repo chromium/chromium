@@ -8,6 +8,7 @@
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/grit/component_extension_resources.h"
+#include "net/base/url_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -66,6 +68,8 @@ constexpr float kHaloThickness = 2.0f;
 constexpr size_t kMaxActionCount = 50;
 
 constexpr char kKeyEditNudgeID[] = "kGameControlsKeyEditNudge";
+constexpr char kHelpUrl[] =
+    "https://support.google.com/chromebook/?p=game-controls-help";
 
 }  // namespace
 
@@ -325,8 +329,9 @@ void EditingList::OnDoneButtonPressed() {
 }
 
 void EditingList::OnHelpButtonPressed() {
-  // TODO(b/304852280)： Implement the function for helper button.
-  NOTIMPLEMENTED();
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kHelpUrl), ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void EditingList::UpdateAddButtonState() {
