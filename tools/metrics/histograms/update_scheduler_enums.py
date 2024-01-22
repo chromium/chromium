@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
   source_file = 'third_party/blink/public/common/scheduler/' \
                 'web_scheduler_tracked_feature.h'
-  UpdateHistogramEnum('tools/metrics/histograms/enums.xml',
+  UpdateHistogramEnum('tools/metrics/histograms/metadata/navigation/enums.xml',
                       histogram_enum_name='WebSchedulerTrackedFeature',
                       source_enum_path=source_file,
                       start_marker='^enum class WebSchedulerTrackedFeature {',

@@ -137,19 +137,19 @@ if __name__ == '__main__':
       server_field_types, FIELD_TYPES_PATH, os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/enums.xml',
+      'tools/metrics/histograms/metadata/autofill/enums.xml',
       'AutofilledFieldUserEditingStatusByFieldType',
       GenerateAutofilledFieldUserEditingStatusByFieldType(server_field_types),
       FIELD_TYPES_PATH, os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/enums.xml',
+      'tools/metrics/histograms/metadata/autofill/enums.xml',
       'AutofillPredictionsComparisonResult',
       GenerateAutofillPredictionsComparisonResult(server_field_types),
       FIELD_TYPES_PATH, os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/enums.xml',
+      'tools/metrics/histograms/metadata/autofill/enums.xml',
       'AutofillFieldPredictionQualityByFieldType',
       GenerateAutofillFieldPredictionQualityByFieldType(),
       FIELD_PREDICTION_GROUPS_PATH, os.path.basename(__file__))

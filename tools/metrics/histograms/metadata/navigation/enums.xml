@@ -32,10 +32,1768 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Cross origin frame to mapped URL not opted in"/>
 </enum>
 
+<enum name="AXEventType">
+  <int value="0" label="None"/>
+  <int value="1" label="ActiveDescendantChanged"/>
+  <int value="2" label="Alert"/>
+  <int value="3" label="AriaAttributeChangedDeprecated"/>
+  <int value="4" label="AutocorrectionOccured"/>
+  <int value="5" label="Blur"/>
+  <int value="6" label="CheckedStateChanged"/>
+  <int value="7" label="ChildrenChanged"/>
+  <int value="8" label="Clicked"/>
+  <int value="9" label="ControlsChanged"/>
+  <int value="10" label="DocumentSelectionChanged"/>
+  <int value="11" label="DocumentTitleChanged"/>
+  <int value="12" label="EndOfTest"/>
+  <int value="13" label="ExpandedChanged"/>
+  <int value="14" label="Focus"/>
+  <int value="15" label="FocusAfterMenuClose"/>
+  <int value="16" label="FocusContext"/>
+  <int value="17" label="Hide"/>
+  <int value="18" label="HitTestResult"/>
+  <int value="19" label="Hover"/>
+  <int value="20" label="ImageFrameUpdated"/>
+  <int value="21" label="LayoutComplete"/>
+  <int value="22" label="LiveRegionCreated"/>
+  <int value="23" label="LiveRegionChanged"/>
+  <int value="24" label="LoadComplete"/>
+  <int value="25" label="LoadStart"/>
+  <int value="26" label="LocationChanged"/>
+  <int value="27" label="MediaStartedPlaying"/>
+  <int value="28" label="MediaStoppedPlaying"/>
+  <int value="29" label="MenuEnd"/>
+  <int value="30" label="MenuListValueChanged"/>
+  <int value="31" label="MenuPopupEnd"/>
+  <int value="32" label="MenuPopupStart"/>
+  <int value="33" label="MenuStart"/>
+  <int value="34" label="MouseCanceled"/>
+  <int value="35" label="MouseDragged"/>
+  <int value="36" label="MouseMoved"/>
+  <int value="37" label="MousePressed"/>
+  <int value="38" label="MouseReleased"/>
+  <int value="39" label="RowCollapsed"/>
+  <int value="40" label="RowCountChanged"/>
+  <int value="41" label="RowExpanded"/>
+  <int value="42" label="ScrollPositionChanged"/>
+  <int value="43" label="ScrolledToAnchor"/>
+  <int value="44" label="SelectedChildrenChanged"/>
+  <int value="45" label="Selection"/>
+  <int value="46" label="SelectionAdd"/>
+  <int value="47" label="SelectionRemove"/>
+  <int value="48" label="Show"/>
+  <int value="49" label="StateChanged"/>
+  <int value="50" label="TextChanged"/>
+  <int value="51" label="TextSelectionChanged"/>
+  <int value="52" label="TooltipClosed"/>
+  <int value="53" label="TooltipOpened"/>
+  <int value="54" label="TreeChanged"/>
+  <int value="55" label="ValueChanged"/>
+  <int value="56" label="WindowActivated"/>
+  <int value="57" label="WindowDeactivated"/>
+  <int value="58" label="WindowVisibilityChanged"/>
+</enum>
+
+<enum name="BackForwardCacheEvictedAfterDocumentRestoredReason">
+  <int value="0" label="Restored"/>
+  <int value="1" label="By JavaScript"/>
+</enum>
+
+<enum name="BackForwardCacheHistoryNavigationOutcome">
+  <int value="0" label="Restored"/>
+  <int value="1" label="Not restored"/>
+</enum>
+
+<enum name="BackForwardCacheNotRestoredReason">
+  <int value="0" label="Not main frame (should not be happening)"/>
+  <int value="1" label="Back forward cache disabled"/>
+  <int value="2" label="Related active contents exist"/>
+  <int value="3" label="HTTP status not OK"/>
+  <int value="4" label="Scheme not HTTP or HTTPS"/>
+  <int value="5" label="Loading"/>
+  <int value="6" label="Was granted media access"/>
+  <int value="7" label="Blocklisted features"/>
+  <int value="8" label="Disable for RenderFrameHost called"/>
+  <int value="9" label="Domain not allowed"/>
+  <int value="10" label="HTTP method not GET"/>
+  <int value="11" label="Subframe is navigating"/>
+  <int value="12" label="Timeout"/>
+  <int value="13" label="Cache limit"/>
+  <int value="14" label="JavaScript execution"/>
+  <int value="15" label="Renderer process killed"/>
+  <int value="16" label="Renderer process crashed"/>
+  <int value="17" label="Dialog"/>
+  <int value="18" label="Granted media stream access"/>
+  <int value="19" label="Scheduler tracked feature used"/>
+  <int value="20" label="Conflicting BrowsingInstance"/>
+  <int value="21" label="Cache flushed"/>
+  <int value="22" label="ServiceWorker version activation"/>
+  <int value="23" label="Session restored"/>
+  <int value="24" label="Unknown (should not be happening)"/>
+  <int value="25" label="ServiceWorker postMessage"/>
+  <int value="26" label="ServiceWorker added after entering cache"/>
+  <int value="27" label="RenderFrameHost is reused for same-site navigation"/>
+  <int value="28" label="RenderFrameHost is reused for cross-site navigation"/>
+  <int value="29" label="NavigationEntry is not the most recent one"/>
+  <int value="30" label="ServiceWorker claim"/>
+  <int value="31"
+      label="IsInactiveAndDisallowReactivation() was called when in bfcache"/>
+  <int value="32" label="RenderFrameHost has inner WebContents attached"/>
+  <int value="33"
+      label="Timed out while waiting for page to acknowledge freezing"/>
+  <int value="34"
+      label="BackForwardCache is disabled due to low memory of the device"/>
+  <int value="35"
+      label="BackForwardCache is disabled through command line (may include
+             cases where the embedder disabled it due to, e.g., enterprise
+             policy)"/>
+  <int value="36" label="kFrameTreeNodeStateReset (removed)"/>
+  <int value="37" label="Network request datapipe drained"/>
+  <int value="38" label="Network request redirected"/>
+  <int value="39" label="Network request timed out"/>
+  <int value="40" label="Network request exceeds buffer limit"/>
+  <int value="41" label="Navigation was cancelled while restoring"/>
+  <int value="42" label="Disabled for Prerender"/>
+  <int value="43" label="User-agent override differs"/>
+  <int value="44" label="Network request data pipe drained as data pipe"/>
+  <int value="45" label="Network request data pipe drained as byte consumer"/>
+  <int value="46" label="Foreground cache limit"/>
+  <int value="47" label="Browsing instance not swapped"/>
+  <int value="48" label="Disabled for delegate"/>
+  <int value="49"
+      label="BFCache-Opt-In header not present, or does not include `unload`
+             token, and an experimental config which requires it is active"/>
+  <int value="50"
+      label="Unload handler exists in the main frame, and the current
+             experimental config doesn't permit it to be BFCached."/>
+  <int value="51"
+      label="Unload handler exists in a sub frame, and the current
+             experimental config doesn't permit it to be BFCached."/>
+  <int value="52" label="ServiceWorker is unregistered"/>
+  <int value="53" label="CacheControlNoStore is present"/>
+  <int value="54"
+      label="CacheControlNoStore is present and cookie is modified"/>
+  <int value="55"
+      label="CacheControlNoStore is present and HTTPOnly cookie is modified"/>
+  <int value="56" label="No valid HTTP response header"/>
+  <int value="57" label="Disallow activation navigations for Bug1234857"/>
+  <int value="58" label="Error Document"/>
+  <int value="59" label="Page contains FencedFrames"/>
+  <int value="60" label="Cookie is disabled"/>
+  <int value="61"
+      label="Same-origin HTTP authentication is required from another tab"/>
+  <int value="62" label="Cookie is flushed"/>
+</enum>
+
+<enum name="BackForwardCachePageWithFormStorable">
+  <int value="0" label="PageSeen"/>
+  <int value="1" label="PageStored"/>
+</enum>
+
+<enum name="BackForwardCacheRendererEvictionReason">
+  <int value="0" label="JavaScript"/>
+  <int value="1" label="NetworkRequestDatapipeDrained"/>
+  <int value="2" label="NetworkRequestRedirected"/>
+  <int value="3" label="NetworkRequestTimeout"/>
+  <int value="4" label="NetworkExceedsBufferLimit"/>
+</enum>
+
+<enum name="BooleanHttpBasedOrOtherScheme">
+  <int value="0" label="Non-http/https scheme"/>
+  <int value="1" label="Http(s) scheme"/>
+</enum>
+
+<enum name="EarlyRFHSwapType">
+  <int value="0" label="No early swap"/>
+  <int value="1" label="Early swap for the initial non-live RenderFrameHost"/>
+  <int value="2" label="Early swap for a crashed RenderFrameHost"/>
+  <int value="3" label="Early swap for a navigation transition"/>
+</enum>
+
 <enum name="FencedFrameAutomaticBeaconEventType">
   <int value="0" label="reserved.top_navigation"/>
   <int value="1" label="reserved.top_navigation_start"/>
   <int value="2" label="reserved.top_navigation_commit"/>
+</enum>
+
+<enum name="FencedFrameNavigationState">
+  <int value="0" label="Begin"/>
+  <int value="1" label="Commit"/>
+</enum>
+
+<enum name="HistoryNavType">
+  <int value="0" label="kMainFrame"/>
+  <int value="1" label="kMainFrameAndSubframe"/>
+  <int value="2" label="kSubframe"/>
+</enum>
+
+<enum name="LinkPreviewZoomUsage">
+  <int value="0"
+      label="kOnlyDefaultUsed: A preview was started with default zoom level
+             and not changed."/>
+  <int value="1"
+      label="kNonDefaultUsed: A preview was shown with non default zoom level
+             in some timing in a preview lifecycle."/>
+</enum>
+
+<enum name="MojoInterfaceName">
+  <int value="-1403116593" label="content.mojom.FrameHost"/>
+  <int value="-1370606112" label="blink.mojom.LocalFrameHost"/>
+  <int value="-1324568928" label="blink.mojom.LocalMainFrameHost"/>
+  <int value="-1001040796" label="blink.mojom.ManifestUrlChangeObserver"/>
+  <int value="163955581" label="blink.mojom.PortalHost"/>
+  <int value="374886440" label="content.mojom.Echo"/>
+  <int value="1755985492" label="content.mojom.RenderAccessibilityHost"/>
+</enum>
+
+<enum name="NavigationBrowserMappedUrnUuidInIframeOrFencedFrame">
+  <int value="0" label="Browser mapped urn::uuid is rendered in fenced frame"/>
+  <int value="1" label="Browser mapped urn::uuid is rendered in iframe"/>
+</enum>
+
+<enum name="NavigationCacheEnum">
+  <int value="0" label="Validate cache"/>
+  <int value="1" label="Bypass cache"/>
+  <int value="2" label="Skip cache validation"/>
+  <int value="3" label="Only from cache"/>
+  <int value="4" label="Disable cache"/>
+</enum>
+
+<enum name="NavigationIsGuest">
+  <int value="0" label="Not a guest navigation"/>
+  <int value="1" label="Guest navigation"/>
+</enum>
+
+<enum name="NavigationIsLockedProcess">
+  <int value="0" label="Process is not locked to origin"/>
+  <int value="1" label="Process is locked to origin"/>
+</enum>
+
+<enum name="NavigationIsSameBrowsingInstance">
+  <int value="0" label="Cross BrowsingInstance navigation"/>
+  <int value="1" label="Same BrowsingInstance navigation"/>
+</enum>
+
+<enum name="NavigationIsSameSiteInstance">
+  <int value="0" label="Cross SiteInstance navigation"/>
+  <int value="1" label="Same SiteInstance navigation"/>
+</enum>
+
+<enum name="NavigationNeedsReloadType">
+  <int value="0" label="kRequestedByClient"/>
+  <int value="1" label="kRestoreSession"/>
+  <int value="2" label="kCopyStateFrom"/>
+  <int value="3" label="kCrashedSubframe"/>
+</enum>
+
+<enum name="NavigationRequiresDedicatedProcess">
+  <int value="0" label="Does not require dedicated process"/>
+  <int value="1" label="Requires dedicated process"/>
+</enum>
+
+<enum name="NavigationSuddenTerminationDisabler">
+  <int value="0" label="Subframe-None"/>
+  <int value="1" label="MainFrame-None"/>
+  <int value="2" label="Subframe-Unload"/>
+  <int value="3" label="MainFrame-Unload"/>
+  <int value="8" label="Subframe-NotHttp-None"/>
+  <int value="9" label="MainFrame-NotHttp-None"/>
+  <int value="10" label="Subframe-NotHttp-Unload"/>
+  <int value="11" label="MainFrame-NotHttp-Unload"/>
+  <int value="12" label="InitialEmptyDocument-NotHttp-Subframe-None"/>
+  <int value="13" label="InitialEmptyDocument-NotHttp-MainFrame-None"/>
+  <int value="14" label="InitialEmptyDocument-NotHttp-Subframe-Unload"/>
+  <int value="15" label="InitialEmptyDocument-NotHttp-MainFrame-Unload"/>
+</enum>
+
+<enum name="NavigationSuggestionEvent">
+  <int value="0" label="None"/>
+  <int value="1" label="Infobar shown"/>
+  <int value="2" label="Link clicked on the infobar"/>
+  <int value="3" label="A navigation suggestion is found using top sites list"/>
+  <int value="4"
+      label="A navigation suggestion is found using site engagement"/>
+  <int value="5"
+      label="A navigation suggestion is found using edit distance against a
+             top domain"/>
+  <int value="6"
+      label="A navigation suggestion is found using edit distance against an
+             engaged site"/>
+  <int value="7"
+      label="A navigation suggestion is found using target embedding against
+             a top 500 domain or an engaged site"/>
+  <int value="8"
+      label="A navigation suggestion is found using a skeleton match against
+             a top 500 domain"/>
+  <int value="9"
+      label="A navigation suggestion is found using a skeleton match against
+             a top 5k (but not top 500) domain"/>
+  <int value="10"
+      label="A navigation suggestion is found using target embedding against
+             a top 500 domain or an engaged site, but with confidence high
+             enough only for a Safety Tip."/>
+  <int value="11"
+      label="The hostname failed spoof checks but didn't match a safe
+             hostname. (e.g. whole-script-confusable IDN)"/>
+  <int value="12"
+      label="A navigation suggestion is found using a character swap match
+             against an engaged site."/>
+  <int value="13"
+      label="A navigation suggestion is found using a character swap match
+             against a top 500 domain."/>
+  <int value="14"
+      label="A navigation suggestion is found using a combo squatting match
+             against a popular brand name."/>
+  <int value="15"
+      label="A navigation suggestion is found using a combo squatting match
+             against an engaged site."/>
+</enum>
+
+<enum name="NavigationWasServedFromCache">
+  <int value="0" label="Navigation wasn't served from cache"/>
+  <int value="1" label="Navigation was served from cache"/>
+</enum>
+
+<enum name="OriginAgentClusterEndResult">
+  <int value="0" label="Not requested and not origin-keyed"/>
+  <int value="1" label="Not requested but origin-keyed"/>
+  <int value="2" label="Requested but not origin-keyed"/>
+  <int value="3" label="Requested and origin-keyed"/>
+  <int value="4"
+      label="Explicitly not requested and not origin-keyed (with
+             OriginAgentCluster-by-default)"/>
+  <int value="5"
+      label="Explicitly not requested but origin-keyed (with
+             OriginAgentCluster-by-default)"/>
+  <int value="6"
+      label="Explicitly requested but not origin-keyed (with
+             OriginAgentCluster-by-default)"/>
+  <int value="7"
+      label="Explicitly requested and origin-keyed (with
+             OriginAgentCluster-by-default)"/>
+  <int value="8"
+      label="Not explicitly requested but not origin-keyed (with
+             OriginAgentCluster-by-default)"/>
+  <int value="9"
+      label="Not explicitly requested and origin-keyed (with
+             OriginAgentCluster-by-default)"/>
+</enum>
+
+<enum name="PrerenderActivationHeaderMismatchType">
+  <int value="-2073835455"
+      label="experimentalnon-standard: missing in prerendering request's
+             headers"/>
+  <int value="-2073835454"
+      label="experimentalnon-standard: missing in activation request's
+             headers"/>
+  <int value="-2073835453" label="experimentalnon-standard: value mismatch"/>
+  <int value="-2068972211"
+      label="x-dfe-device-id: missing in prerendering request's headers"/>
+  <int value="-2068972210"
+      label="x-dfe-device-id: missing in activation request's headers"/>
+  <int value="-2068972209" label="x-dfe-device-id: value mismatch"/>
+  <int value="-2025791067"
+      label="proxy_header_key: missing in prerendering request's headers"/>
+  <int value="-2025791066"
+      label="proxy_header_key: missing in activation request's headers"/>
+  <int value="-2025791065" label="proxy_header_key: value mismatch"/>
+  <int value="-2004636143"
+      label="if-none-match: missing in prerendering request's headers"/>
+  <int value="-2004636142"
+      label="if-none-match: missing in activation request's headers"/>
+  <int value="-2004636141" label="if-none-match: value mismatch"/>
+  <int value="-1992909891"
+      label="sec-purpose: missing in prerendering request's headers"/>
+  <int value="-1992909890"
+      label="sec-purpose: missing in activation request's headers"/>
+  <int value="-1992909889" label="sec-purpose: value mismatch"/>
+  <int value="-1992841859"
+      label="accept-post: missing in prerendering request's headers"/>
+  <int value="-1992841858"
+      label="accept-post: missing in activation request's headers"/>
+  <int value="-1992841857" label="accept-post: value mismatch"/>
+  <int value="-1977189379"
+      label="x-content-type-options: missing in prerendering request's
+             headers"/>
+  <int value="-1977189378"
+      label="x-content-type-options: missing in activation request's headers"/>
+  <int value="-1977189377" label="x-content-type-options: value mismatch"/>
+  <int value="-1870067783"
+      label="x-dfe-sdk-version: missing in prerendering request's headers"/>
+  <int value="-1870067782"
+      label="x-dfe-sdk-version: missing in activation request's headers"/>
+  <int value="-1870067781" label="x-dfe-sdk-version: value mismatch"/>
+  <int value="-1838518575"
+      label="sec-ch-prefers-color-scheme: missing in prerendering request's
+             headers"/>
+  <int value="-1838518574"
+      label="sec-ch-prefers-color-scheme: missing in activation request's
+             headers"/>
+  <int value="-1838518573" label="sec-ch-prefers-color-scheme: value mismatch"/>
+  <int value="-1826052403"
+      label="gdata-version: missing in prerendering request's headers"/>
+  <int value="-1826052402"
+      label="gdata-version: missing in activation request's headers"/>
+  <int value="-1826052401" label="gdata-version: value mismatch"/>
+  <int value="-1783234791"
+      label="x-goog-update-interactivity: missing in prerendering request's
+             headers"/>
+  <int value="-1783234790"
+      label="x-goog-update-interactivity: missing in activation request's
+             headers"/>
+  <int value="-1783234789" label="x-goog-update-interactivity: value mismatch"/>
+  <int value="-1765545775"
+      label="content-range: missing in prerendering request's headers"/>
+  <int value="-1765545774"
+      label="content-range: missing in activation request's headers"/>
+  <int value="-1765545773" label="content-range: value mismatch"/>
+  <int value="-1760060567"
+      label="patch: missing in prerendering request's headers"/>
+  <int value="-1760060566"
+      label="patch: missing in activation request's headers"/>
+  <int value="-1760060565" label="patch: value mismatch"/>
+  <int value="-1691986559"
+      label="referrer-policy: missing in prerendering request's headers"/>
+  <int value="-1691986558"
+      label="referrer-policy: missing in activation request's headers"/>
+  <int value="-1691986557" label="referrer-policy: value mismatch"/>
+  <int value="-1674664751"
+      label="server-timing: missing in prerendering request's headers"/>
+  <int value="-1674664750"
+      label="server-timing: missing in activation request's headers"/>
+  <int value="-1674664749" label="server-timing: value mismatch"/>
+  <int value="-1671436167"
+      label="non-standarddeprecated: missing in prerendering request's
+             headers"/>
+  <int value="-1671436166"
+      label="non-standarddeprecated: missing in activation request's headers"/>
+  <int value="-1671436165" label="non-standarddeprecated: value mismatch"/>
+  <int value="-1630572895"
+      label="host: missing in prerendering request's headers"/>
+  <int value="-1630572894"
+      label="host: missing in activation request's headers"/>
+  <int value="-1630572893" label="host: value mismatch"/>
+  <int value="-1622755543"
+      label="sec-fetch-site: missing in prerendering request's headers"/>
+  <int value="-1622755542"
+      label="sec-fetch-site: missing in activation request's headers"/>
+  <int value="-1622755541" label="sec-fetch-site: value mismatch"/>
+  <int value="-1581410379"
+      label="sec-ch-ua-full: missing in prerendering request's headers"/>
+  <int value="-1581410378"
+      label="sec-ch-ua-full: missing in activation request's headers"/>
+  <int value="-1581410377" label="sec-ch-ua-full: value mismatch"/>
+  <int value="-1545345571"
+      label="attribution-reporting-support: missing in prerendering request's
+             headers"/>
+  <int value="-1545345570"
+      label="attribution-reporting-support: missing in activation request's
+             headers"/>
+  <int value="-1545345569"
+      label="attribution-reporting-support: value mismatch"/>
+  <int value="-1541547711"
+      label="rtt: missing in prerendering request's headers"/>
+  <int value="-1541547710"
+      label="rtt: missing in activation request's headers"/>
+  <int value="-1541547709" label="rtt: value mismatch"/>
+  <int value="-1530069027"
+      label="x-goog-update-appid: missing in prerendering request's headers"/>
+  <int value="-1530069026"
+      label="x-goog-update-appid: missing in activation request's headers"/>
+  <int value="-1530069025" label="x-goog-update-appid: value mismatch"/>
+  <int value="-1521624155"
+      label="proxy-authenticate: missing in prerendering request's headers"/>
+  <int value="-1521624154"
+      label="proxy-authenticate: missing in activation request's headers"/>
+  <int value="-1521624153" label="proxy-authenticate: value mismatch"/>
+  <int value="-1516294511"
+      label="sec-websocket-protocol: missing in prerendering request's
+             headers"/>
+  <int value="-1516294510"
+      label="sec-websocket-protocol: missing in activation request's headers"/>
+  <int value="-1516294509" label="sec-websocket-protocol: value mismatch"/>
+  <int value="-1504568211"
+      label="x-dfe-device-config: missing in prerendering request's headers"/>
+  <int value="-1504568210"
+      label="x-dfe-device-config: missing in activation request's headers"/>
+  <int value="-1504568209" label="x-dfe-device-config: value mismatch"/>
+  <int value="-1504265375"
+      label="x-offline-prefetch-testing: missing in prerendering request's
+             headers"/>
+  <int value="-1504265374"
+      label="x-offline-prefetch-testing: missing in activation request's
+             headers"/>
+  <int value="-1504265373" label="x-offline-prefetch-testing: value mismatch"/>
+  <int value="-1463736243"
+      label="link: missing in prerendering request's headers"/>
+  <int value="-1463736242"
+      label="link: missing in activation request's headers"/>
+  <int value="-1463736241" label="link: value mismatch"/>
+  <int value="-1451699731"
+      label="x-device-scale-factor: missing in prerendering request's headers"/>
+  <int value="-1451699730"
+      label="x-device-scale-factor: missing in activation request's headers"/>
+  <int value="-1451699729" label="x-device-scale-factor: value mismatch"/>
+  <int value="-1430742375"
+      label="width: missing in prerendering request's headers"/>
+  <int value="-1430742374"
+      label="width: missing in activation request's headers"/>
+  <int value="-1430742373" label="width: value mismatch"/>
+  <int value="-1424973635"
+      label="content-encoding: missing in prerendering request's headers"/>
+  <int value="-1424973634"
+      label="content-encoding: missing in activation request's headers"/>
+  <int value="-1424973633" label="content-encoding: value mismatch"/>
+  <int value="-1410526311"
+      label="x-goog-resumable: missing in prerendering request's headers"/>
+  <int value="-1410526310"
+      label="x-goog-resumable: missing in activation request's headers"/>
+  <int value="-1410526309" label="x-goog-resumable: value mismatch"/>
+  <int value="-1365438227"
+      label="clear-site-data: missing in prerendering request's headers"/>
+  <int value="-1365438226"
+      label="clear-site-data: missing in activation request's headers"/>
+  <int value="-1365438225" label="clear-site-data: value mismatch"/>
+  <int value="-1338249455"
+      label="dpr: missing in prerendering request's headers"/>
+  <int value="-1338249454"
+      label="dpr: missing in activation request's headers"/>
+  <int value="-1338249453" label="dpr: value mismatch"/>
+  <int value="-1336445759"
+      label="experimental: missing in prerendering request's headers"/>
+  <int value="-1336445758"
+      label="experimental: missing in activation request's headers"/>
+  <int value="-1336445757" label="experimental: value mismatch"/>
+  <int value="-1331729399"
+      label="accept-ranges: missing in prerendering request's headers"/>
+  <int value="-1331729398"
+      label="accept-ranges: missing in activation request's headers"/>
+  <int value="-1331729397" label="accept-ranges: value mismatch"/>
+  <int value="-1313372439"
+      label="early-data: missing in prerendering request's headers"/>
+  <int value="-1313372438"
+      label="early-data: missing in activation request's headers"/>
+  <int value="-1313372437" label="early-data: value mismatch"/>
+  <int value="-1285870579"
+      label="access-control-allow-origin: missing in prerendering request's
+             headers"/>
+  <int value="-1285870578"
+      label="access-control-allow-origin: missing in activation request's
+             headers"/>
+  <int value="-1285870577" label="access-control-allow-origin: value mismatch"/>
+  <int value="-1270435335"
+      label="x-verified-access-challenge-response: missing in prerendering
+             request's headers"/>
+  <int value="-1270435334"
+      label="x-verified-access-challenge-response: missing in activation
+             request's headers"/>
+  <int value="-1270435333"
+      label="x-verified-access-challenge-response: value mismatch"/>
+  <int value="-1269584767"
+      label="x-sharing-platform-type: missing in prerendering request's
+             headers"/>
+  <int value="-1269584766"
+      label="x-sharing-platform-type: missing in activation request's headers"/>
+  <int value="-1269584765" label="x-sharing-platform-type: value mismatch"/>
+  <int value="-1257012171"
+      label="x-verified-access-challenge: missing in prerendering request's
+             headers"/>
+  <int value="-1257012170"
+      label="x-verified-access-challenge: missing in activation request's
+             headers"/>
+  <int value="-1257012169" label="x-verified-access-challenge: value mismatch"/>
+  <int value="-1221376339"
+      label="cookie: missing in prerendering request's headers"/>
+  <int value="-1221376338"
+      label="cookie: missing in activation request's headers"/>
+  <int value="-1221376337" label="cookie: value mismatch"/>
+  <int value="-1197813919"
+      label="upgrade: missing in prerendering request's headers"/>
+  <int value="-1197813918"
+      label="upgrade: missing in activation request's headers"/>
+  <int value="-1197813917" label="upgrade: value mismatch"/>
+  <int value="-1193903587"
+      label="sourcemap: missing in prerendering request's headers"/>
+  <int value="-1193903586"
+      label="sourcemap: missing in activation request's headers"/>
+  <int value="-1193903585" label="sourcemap: value mismatch"/>
+  <int value="-1185008715"
+      label="expect: missing in prerendering request's headers"/>
+  <int value="-1185008714"
+      label="expect: missing in activation request's headers"/>
+  <int value="-1185008713" label="expect: value mismatch"/>
+  <int value="-1182599047"
+      label="content-location: missing in prerendering request's headers"/>
+  <int value="-1182599046"
+      label="content-location: missing in activation request's headers"/>
+  <int value="-1182599045" label="content-location: value mismatch"/>
+  <int value="-1170750651"
+      label="accept-charset: missing in prerendering request's headers"/>
+  <int value="-1170750650"
+      label="accept-charset: missing in activation request's headers"/>
+  <int value="-1170750649" label="accept-charset: value mismatch"/>
+  <int value="-1161867595"
+      label="expect-ct: missing in prerendering request's headers"/>
+  <int value="-1161867594"
+      label="expect-ct: missing in activation request's headers"/>
+  <int value="-1161867593" label="expect-ct: value mismatch"/>
+  <int value="-1130182179"
+      label="urgency: missing in prerendering request's headers"/>
+  <int value="-1130182178"
+      label="urgency: missing in activation request's headers"/>
+  <int value="-1130182177" label="urgency: value mismatch"/>
+  <int value="-1092423959"
+      label="x-forwarded-for: missing in prerendering request's headers"/>
+  <int value="-1092423958"
+      label="x-forwarded-for: missing in activation request's headers"/>
+  <int value="-1092423957" label="x-forwarded-for: value mismatch"/>
+  <int value="-1072630727"
+      label="sec-ch-ua-full-version: missing in prerendering request's
+             headers"/>
+  <int value="-1072630726"
+      label="sec-ch-ua-full-version: missing in activation request's headers"/>
+  <int value="-1072630725" label="sec-ch-ua-full-version: value mismatch"/>
+  <int value="-1037080251"
+      label="access-control-allow-private-network: missing in prerendering
+             request's headers"/>
+  <int value="-1037080250"
+      label="access-control-allow-private-network: missing in activation
+             request's headers"/>
+  <int value="-1037080249"
+      label="access-control-allow-private-network: value mismatch"/>
+  <int value="-1030735823"
+      label="access-control-request-method: missing in prerendering request's
+             headers"/>
+  <int value="-1030735822"
+      label="access-control-request-method: missing in activation request's
+             headers"/>
+  <int value="-1030735821"
+      label="access-control-request-method: value mismatch"/>
+  <int value="-1007212075"
+      label="x-chrome-connected: missing in prerendering request's headers"/>
+  <int value="-1007212074"
+      label="x-chrome-connected: missing in activation request's headers"/>
+  <int value="-1007212073" label="x-chrome-connected: value mismatch"/>
+  <int value="-989345527"
+      label="x-device-trust: missing in prerendering request's headers"/>
+  <int value="-989345526"
+      label="x-device-trust: missing in activation request's headers"/>
+  <int value="-989345525" label="x-device-trust: value mismatch"/>
+  <int value="-943449611"
+      label="www-authenticate: missing in prerendering request's headers"/>
+  <int value="-943449610"
+      label="www-authenticate: missing in activation request's headers"/>
+  <int value="-943449609" label="www-authenticate: value mismatch"/>
+  <int value="-912403931"
+      label="retry-after: missing in prerendering request's headers"/>
+  <int value="-912403930"
+      label="retry-after: missing in activation request's headers"/>
+  <int value="-912403929" label="retry-after: value mismatch"/>
+  <int value="-902630415"
+      label="x-client-version: missing in prerendering request's headers"/>
+  <int value="-902630414"
+      label="x-client-version: missing in activation request's headers"/>
+  <int value="-902630413" label="x-client-version: value mismatch"/>
+  <int value="-867849747"
+      label="ect: missing in prerendering request's headers"/>
+  <int value="-867849746" label="ect: missing in activation request's headers"/>
+  <int value="-867849745" label="ect: value mismatch"/>
+  <int value="-833599063"
+      label="allow: missing in prerendering request's headers"/>
+  <int value="-833599062"
+      label="allow: missing in activation request's headers"/>
+  <int value="-833599061" label="allow: value mismatch"/>
+  <int value="-817757595"
+      label="upgrade-insecure-requests: missing in prerendering request's
+             headers"/>
+  <int value="-817757594"
+      label="upgrade-insecure-requests: missing in activation request's
+             headers"/>
+  <int value="-817757593" label="upgrade-insecure-requests: value mismatch"/>
+  <int value="-811483647"
+      label="accept-ch: missing in prerendering request's headers"/>
+  <int value="-811483646"
+      label="accept-ch: missing in activation request's headers"/>
+  <int value="-811483645" label="accept-ch: value mismatch"/>
+  <int value="-780390623"
+      label="sec-required-csp: missing in prerendering request's headers"/>
+  <int value="-780390622"
+      label="sec-required-csp: missing in activation request's headers"/>
+  <int value="-780390621" label="sec-required-csp: value mismatch"/>
+  <int value="-714391419"
+      label="x-cct-client-data: missing in prerendering request's headers"/>
+  <int value="-714391418"
+      label="x-cct-client-data: missing in activation request's headers"/>
+  <int value="-714391417" label="x-cct-client-data: value mismatch"/>
+  <int value="-702799743"
+      label="accept-ch-lifetime: missing in prerendering request's headers"/>
+  <int value="-702799742"
+      label="accept-ch-lifetime: missing in activation request's headers"/>
+  <int value="-702799741" label="accept-ch-lifetime: value mismatch"/>
+  <int value="-683839575"
+      label="a-im: missing in prerendering request's headers"/>
+  <int value="-683839574"
+      label="a-im: missing in activation request's headers"/>
+  <int value="-683839573" label="a-im: value mismatch"/>
+  <int value="-677307543"
+      label="x-offline-prefetch-operation: missing in prerendering request's
+             headers"/>
+  <int value="-677307542"
+      label="x-offline-prefetch-operation: missing in activation request's
+             headers"/>
+  <int value="-677307541" label="x-offline-prefetch-operation: value mismatch"/>
+  <int value="-675904867"
+      label="get: missing in prerendering request's headers"/>
+  <int value="-675904866" label="get: missing in activation request's headers"/>
+  <int value="-675904865" label="get: value mismatch"/>
+  <int value="-654701459"
+      label="sec-websocket-version: missing in prerendering request's headers"/>
+  <int value="-654701458"
+      label="sec-websocket-version: missing in activation request's headers"/>
+  <int value="-654701457" label="sec-websocket-version: value mismatch"/>
+  <int value="-654146759"
+      label="connect: missing in prerendering request's headers"/>
+  <int value="-654146758"
+      label="connect: missing in activation request's headers"/>
+  <int value="-654146757" label="connect: value mismatch"/>
+  <int value="-646207719"
+      label="viewport-width: missing in prerendering request's headers"/>
+  <int value="-646207718"
+      label="viewport-width: missing in activation request's headers"/>
+  <int value="-646207717" label="viewport-width: value mismatch"/>
+  <int value="-641339835"
+      label="tk: missing in prerendering request's headers"/>
+  <int value="-641339834" label="tk: missing in activation request's headers"/>
+  <int value="-641339833" label="tk: value mismatch"/>
+  <int value="-640018435"
+      label="cross-origin-resource-policy: missing in prerendering request's
+             headers"/>
+  <int value="-640018434"
+      label="cross-origin-resource-policy: missing in activation request's
+             headers"/>
+  <int value="-640018433" label="cross-origin-resource-policy: value mismatch"/>
+  <int value="-634183995"
+      label="track: missing in prerendering request's headers"/>
+  <int value="-634183994"
+      label="track: missing in activation request's headers"/>
+  <int value="-634183993" label="track: value mismatch"/>
+  <int value="-632661011"
+      label="keep-alive: missing in prerendering request's headers"/>
+  <int value="-632661010"
+      label="keep-alive: missing in activation request's headers"/>
+  <int value="-632661009" label="keep-alive: value mismatch"/>
+  <int value="-578377771"
+      label="service-worker: missing in prerendering request's headers"/>
+  <int value="-578377770"
+      label="service-worker: missing in activation request's headers"/>
+  <int value="-578377769" label="service-worker: value mismatch"/>
+  <int value="-566179691"
+      label="x-dfe-chromesky-client-version: missing in prerendering
+             request's headers"/>
+  <int value="-566179690"
+      label="x-dfe-chromesky-client-version: missing in activation request's
+             headers"/>
+  <int value="-566179689"
+      label="x-dfe-chromesky-client-version: value mismatch"/>
+  <int value="-558967071"
+      label="sec-ch-viewport-width: missing in prerendering request's headers"/>
+  <int value="-558967070"
+      label="sec-ch-viewport-width: missing in activation request's headers"/>
+  <int value="-558967069" label="sec-ch-viewport-width: value mismatch"/>
+  <int value="-557424551"
+      label="range: missing in prerendering request's headers"/>
+  <int value="-557424550"
+      label="range: missing in activation request's headers"/>
+  <int value="-557424549" label="range: value mismatch"/>
+  <int value="-549690003"
+      label="verifiedaccess: missing in prerendering request's headers"/>
+  <int value="-549690002"
+      label="verifiedaccess: missing in activation request's headers"/>
+  <int value="-549690001" label="verifiedaccess: value mismatch"/>
+  <int value="-547822371"
+      label="access-control-allow-methods: missing in prerendering request's
+             headers"/>
+  <int value="-547822370"
+      label="access-control-allow-methods: missing in activation request's
+             headers"/>
+  <int value="-547822369" label="access-control-allow-methods: value mismatch"/>
+  <int value="-511888195"
+      label="user-agent: missing in prerendering request's headers"/>
+  <int value="-511888194"
+      label="user-agent: missing in activation request's headers"/>
+  <int value="-511888193" label="user-agent: value mismatch"/>
+  <int value="-493534895"
+      label="sec-ch-device-memory: missing in prerendering request's headers"/>
+  <int value="-493534894"
+      label="sec-ch-device-memory: missing in activation request's headers"/>
+  <int value="-493534893" label="sec-ch-device-memory: value mismatch"/>
+  <int value="-460941135"
+      label="x-response-encoding: missing in prerendering request's headers"/>
+  <int value="-460941134"
+      label="x-response-encoding: missing in activation request's headers"/>
+  <int value="-460941133" label="x-response-encoding: value mismatch"/>
+  <int value="-460093335"
+      label="x-chrome-uma-reportinginfo: missing in prerendering request's
+             headers"/>
+  <int value="-460093334"
+      label="x-chrome-uma-reportinginfo: missing in activation request's
+             headers"/>
+  <int value="-460093333" label="x-chrome-uma-reportinginfo: value mismatch"/>
+  <int value="-425729147"
+      label="x-http-method-override: missing in prerendering request's
+             headers"/>
+  <int value="-425729146"
+      label="x-http-method-override: missing in activation request's headers"/>
+  <int value="-425729145" label="x-http-method-override: value mismatch"/>
+  <int value="-326581511"
+      label="vary: missing in prerendering request's headers"/>
+  <int value="-326581510"
+      label="vary: missing in activation request's headers"/>
+  <int value="-326581509" label="vary: value mismatch"/>
+  <int value="-300986431"
+      label="warning: missing in prerendering request's headers"/>
+  <int value="-300986430"
+      label="warning: missing in activation request's headers"/>
+  <int value="-300986429" label="warning: value mismatch"/>
+  <int value="-270887831"
+      label="access-control-request-private-network: missing in prerendering
+             request's headers"/>
+  <int value="-270887830"
+      label="access-control-request-private-network: missing in activation
+             request's headers"/>
+  <int value="-270887829"
+      label="access-control-request-private-network: value mismatch"/>
+  <int value="-249117363"
+      label="origin: missing in prerendering request's headers"/>
+  <int value="-249117362"
+      label="origin: missing in activation request's headers"/>
+  <int value="-249117361" label="origin: value mismatch"/>
+  <int value="-233266631"
+      label="forwarded: missing in prerendering request's headers"/>
+  <int value="-233266630"
+      label="forwarded: missing in activation request's headers"/>
+  <int value="-233266629" label="forwarded: value mismatch"/>
+  <int value="-211384367"
+      label="sec-ch-ua-arch: missing in prerendering request's headers"/>
+  <int value="-211384366"
+      label="sec-ch-ua-arch: missing in activation request's headers"/>
+  <int value="-211384365" label="sec-ch-ua-arch: value mismatch"/>
+  <int value="-195019039"
+      label="sec-ch-width: missing in prerendering request's headers"/>
+  <int value="-195019038"
+      label="sec-ch-width: missing in activation request's headers"/>
+  <int value="-195019037" label="sec-ch-width: value mismatch"/>
+  <int value="-175246179"
+      label="age: missing in prerendering request's headers"/>
+  <int value="-175246178" label="age: missing in activation request's headers"/>
+  <int value="-175246177" label="age: value mismatch"/>
+  <int value="-150179031"
+      label="search.now.clientinfo-bin: missing in prerendering request's
+             headers"/>
+  <int value="-150179030"
+      label="search.now.clientinfo-bin: missing in activation request's
+             headers"/>
+  <int value="-150179029" label="search.now.clientinfo-bin: value mismatch"/>
+  <int value="-148797547"
+      label="dnt: missing in prerendering request's headers"/>
+  <int value="-148797546" label="dnt: missing in activation request's headers"/>
+  <int value="-148797545" label="dnt: value mismatch"/>
+  <int value="-85998331"
+      label="if-range: missing in prerendering request's headers"/>
+  <int value="-85998330"
+      label="if-range: missing in activation request's headers"/>
+  <int value="-85998329" label="if-range: value mismatch"/>
+  <int value="-16525311"
+      label="set-cookie: missing in prerendering request's headers"/>
+  <int value="-16525310"
+      label="set-cookie: missing in activation request's headers"/>
+  <int value="-16525309" label="set-cookie: value mismatch"/>
+  <int value="30790561"
+      label="x-auto-login: missing in prerendering request's headers"/>
+  <int value="30790562"
+      label="x-auto-login: missing in activation request's headers"/>
+  <int value="30790563" label="x-auto-login: value mismatch"/>
+  <int value="43825401"
+      label="sec-ch-ua-platform-version: missing in prerendering request's
+             headers"/>
+  <int value="43825402"
+      label="sec-ch-ua-platform-version: missing in activation request's
+             headers"/>
+  <int value="43825403" label="sec-ch-ua-platform-version: value mismatch"/>
+  <int value="63896981"
+      label="sec-ch-ua-full-version-list: missing in prerendering request's
+             headers"/>
+  <int value="63896982"
+      label="sec-ch-ua-full-version-list: missing in activation request's
+             headers"/>
+  <int value="63896983" label="sec-ch-ua-full-version-list: value mismatch"/>
+  <int value="71163481"
+      label="digest: missing in prerendering request's headers"/>
+  <int value="71163482"
+      label="digest: missing in activation request's headers"/>
+  <int value="71163483" label="digest: value mismatch"/>
+  <int value="117283177"
+      label="cross-origin-opener-policy: missing in prerendering request's
+             headers"/>
+  <int value="117283178"
+      label="cross-origin-opener-policy: missing in activation request's
+             headers"/>
+  <int value="117283179" label="cross-origin-opener-policy: value mismatch"/>
+  <int value="171452737"
+      label="x-frame-options: missing in prerendering request's headers"/>
+  <int value="171452738"
+      label="x-frame-options: missing in activation request's headers"/>
+  <int value="171452739" label="x-frame-options: value mismatch"/>
+  <int value="182525673"
+      label="downlink: missing in prerendering request's headers"/>
+  <int value="182525674"
+      label="downlink: missing in activation request's headers"/>
+  <int value="182525675" label="downlink: value mismatch"/>
+  <int value="182715993"
+      label="post: missing in prerendering request's headers"/>
+  <int value="182715994" label="post: missing in activation request's headers"/>
+  <int value="182715995" label="post: value mismatch"/>
+  <int value="201239225"
+      label="save-data: missing in prerendering request's headers"/>
+  <int value="201239226"
+      label="save-data: missing in activation request's headers"/>
+  <int value="201239227" label="save-data: value mismatch"/>
+  <int value="216394729"
+      label="content-language: missing in prerendering request's headers"/>
+  <int value="216394730"
+      label="content-language: missing in activation request's headers"/>
+  <int value="216394731" label="content-language: value mismatch"/>
+  <int value="236550549"
+      label="content-security-policy: missing in prerendering request's
+             headers"/>
+  <int value="236550550"
+      label="content-security-policy: missing in activation request's headers"/>
+  <int value="236550551" label="content-security-policy: value mismatch"/>
+  <int value="247465405"
+      label="sec-ch-viewport-height: missing in prerendering request's
+             headers"/>
+  <int value="247465406"
+      label="sec-ch-viewport-height: missing in activation request's headers"/>
+  <int value="247465407" label="sec-ch-viewport-height: value mismatch"/>
+  <int value="249796261"
+      label="large-allocation: missing in prerendering request's headers"/>
+  <int value="249796262"
+      label="large-allocation: missing in activation request's headers"/>
+  <int value="249796263" label="large-allocation: value mismatch"/>
+  <int value="259283433"
+      label="timing-allow-origin: missing in prerendering request's headers"/>
+  <int value="259283434"
+      label="timing-allow-origin: missing in activation request's headers"/>
+  <int value="259283435" label="timing-allow-origin: value mismatch"/>
+  <int value="281064445"
+      label="nel: missing in prerendering request's headers"/>
+  <int value="281064446" label="nel: missing in activation request's headers"/>
+  <int value="281064447" label="nel: value mismatch"/>
+  <int value="281448713"
+      label="ttl: missing in prerendering request's headers"/>
+  <int value="281448714" label="ttl: missing in activation request's headers"/>
+  <int value="281448715" label="ttl: value mismatch"/>
+  <int value="283816417"
+      label="want-digest: missing in prerendering request's headers"/>
+  <int value="283816418"
+      label="want-digest: missing in activation request's headers"/>
+  <int value="283816419" label="want-digest: value mismatch"/>
+  <int value="294645673"
+      label="sec-required-document-policy: missing in prerendering request's
+             headers"/>
+  <int value="294645674"
+      label="sec-required-document-policy: missing in activation request's
+             headers"/>
+  <int value="294645675" label="sec-required-document-policy: value mismatch"/>
+  <int value="308191605"
+      label="x-geo: missing in prerendering request's headers"/>
+  <int value="308191606"
+      label="x-geo: missing in activation request's headers"/>
+  <int value="308191607" label="x-geo: value mismatch"/>
+  <int value="312295641"
+      label="trace: missing in prerendering request's headers"/>
+  <int value="312295642"
+      label="trace: missing in activation request's headers"/>
+  <int value="312295643" label="trace: value mismatch"/>
+  <int value="323012281"
+      label="attribution-reporting-eligible: missing in prerendering
+             request's headers"/>
+  <int value="323012282"
+      label="attribution-reporting-eligible: missing in activation request's
+             headers"/>
+  <int value="323012283"
+      label="attribution-reporting-eligible: value mismatch"/>
+  <int value="351881625"
+      label="content-length: missing in prerendering request's headers"/>
+  <int value="351881626"
+      label="content-length: missing in activation request's headers"/>
+  <int value="351881627" label="content-length: value mismatch"/>
+  <int value="354981693"
+      label="accept-patch: missing in prerendering request's headers"/>
+  <int value="354981694"
+      label="accept-patch: missing in activation request's headers"/>
+  <int value="354981695" label="accept-patch: value mismatch"/>
+  <int value="380408377"
+      label="x-chrome-id-consistency-response: missing in prerendering
+             request's headers"/>
+  <int value="380408378"
+      label="x-chrome-id-consistency-response: missing in activation
+             request's headers"/>
+  <int value="380408379"
+      label="x-chrome-id-consistency-response: value mismatch"/>
+  <int value="405636769"
+      label="access-control-allow-headers: missing in prerendering request's
+             headers"/>
+  <int value="405636770"
+      label="access-control-allow-headers: missing in activation request's
+             headers"/>
+  <int value="405636771" label="access-control-allow-headers: value mismatch"/>
+  <int value="430965433"
+      label="referer: missing in prerendering request's headers"/>
+  <int value="430965434"
+      label="referer: missing in activation request's headers"/>
+  <int value="430965435" label="referer: value mismatch"/>
+  <int value="436976945"
+      label="sec-fetch-dest: missing in prerendering request's headers"/>
+  <int value="436976946"
+      label="sec-fetch-dest: missing in activation request's headers"/>
+  <int value="436976947" label="sec-fetch-dest: value mismatch"/>
+  <int value="476009721"
+      label="connection: missing in prerendering request's headers"/>
+  <int value="476009722"
+      label="connection: missing in activation request's headers"/>
+  <int value="476009723" label="connection: value mismatch"/>
+  <int value="548581841"
+      label="x-chrome-uma-log-hmac-sha256: missing in prerendering request's
+             headers"/>
+  <int value="548581842"
+      label="x-chrome-uma-log-hmac-sha256: missing in activation request's
+             headers"/>
+  <int value="548581843" label="x-chrome-uma-log-hmac-sha256: value mismatch"/>
+  <int value="565656165"
+      label="x-chrome-id-consistency-request: missing in prerendering
+             request's headers"/>
+  <int value="565656166"
+      label="x-chrome-id-consistency-request: missing in activation request's
+             headers"/>
+  <int value="565656167"
+      label="x-chrome-id-consistency-request: value mismatch"/>
+  <int value="571205205"
+      label="x-chrome-manage-accounts: missing in prerendering request's
+             headers"/>
+  <int value="571205206"
+      label="x-chrome-manage-accounts: missing in activation request's
+             headers"/>
+  <int value="571205207" label="x-chrome-manage-accounts: value mismatch"/>
+  <int value="583837969"
+      label="sec-websocket-accept: missing in prerendering request's headers"/>
+  <int value="583837970"
+      label="sec-websocket-accept: missing in activation request's headers"/>
+  <int value="583837971" label="sec-websocket-accept: value mismatch"/>
+  <int value="593210449"
+      label="sec-websocket-key: missing in prerendering request's headers"/>
+  <int value="593210450"
+      label="sec-websocket-key: missing in activation request's headers"/>
+  <int value="593210451" label="sec-websocket-key: value mismatch"/>
+  <int value="605215161"
+      label="if-modified-since: missing in prerendering request's headers"/>
+  <int value="605215162"
+      label="if-modified-since: missing in activation request's headers"/>
+  <int value="605215163" label="if-modified-since: value mismatch"/>
+  <int value="621666333"
+      label="max-forwards: missing in prerendering request's headers"/>
+  <int value="621666334"
+      label="max-forwards: missing in activation request's headers"/>
+  <int value="621666335" label="max-forwards: value mismatch"/>
+  <int value="644601085"
+      label="delete: missing in prerendering request's headers"/>
+  <int value="644601086"
+      label="delete: missing in activation request's headers"/>
+  <int value="644601087" label="delete: value mismatch"/>
+  <int value="647356205"
+      label="strict-transport-security: missing in prerendering request's
+             headers"/>
+  <int value="647356206"
+      label="strict-transport-security: missing in activation request's
+             headers"/>
+  <int value="647356207" label="strict-transport-security: value mismatch"/>
+  <int value="649828633"
+      label="x-goog-encode-response-if-executable: missing in prerendering
+             request's headers"/>
+  <int value="649828634"
+      label="x-goog-encode-response-if-executable: missing in activation
+             request's headers"/>
+  <int value="649828635"
+      label="x-goog-encode-response-if-executable: value mismatch"/>
+  <int value="653450421"
+      label="expires: missing in prerendering request's headers"/>
+  <int value="653450422"
+      label="expires: missing in activation request's headers"/>
+  <int value="653450423" label="expires: value mismatch"/>
+  <int value="667272509"
+      label="if-match: missing in prerendering request's headers"/>
+  <int value="667272510"
+      label="if-match: missing in activation request's headers"/>
+  <int value="667272511" label="if-match: value mismatch"/>
+  <int value="719149617"
+      label="access-control-allow-credentials: missing in prerendering
+             request's headers"/>
+  <int value="719149618"
+      label="access-control-allow-credentials: missing in activation
+             request's headers"/>
+  <int value="719149619"
+      label="access-control-allow-credentials: value mismatch"/>
+  <int value="721018633"
+      label="accept: missing in prerendering request's headers"/>
+  <int value="721018634"
+      label="accept: missing in activation request's headers"/>
+  <int value="721018635" label="accept: value mismatch"/>
+  <int value="762565393"
+      label="proxy-authorization: missing in prerendering request's headers"/>
+  <int value="762565394"
+      label="proxy-authorization: missing in activation request's headers"/>
+  <int value="762565395" label="proxy-authorization: value mismatch"/>
+  <int value="779378165"
+      label="x-googapps-allowed-domains: missing in prerendering request's
+             headers"/>
+  <int value="779378166"
+      label="x-googapps-allowed-domains: missing in activation request's
+             headers"/>
+  <int value="779378167" label="x-googapps-allowed-domains: value mismatch"/>
+  <int value="807401553"
+      label="sec-ch-ua-platform: missing in prerendering request's headers"/>
+  <int value="807401554"
+      label="sec-ch-ua-platform: missing in activation request's headers"/>
+  <int value="807401555" label="sec-ch-ua-platform: value mismatch"/>
+  <int value="808179717"
+      label="content-type: missing in prerendering request's headers"/>
+  <int value="808179718"
+      label="content-type: missing in activation request's headers"/>
+  <int value="808179719" label="content-type: value mismatch"/>
+  <int value="832410449"
+      label="content-security-policy-report-only: missing in prerendering
+             request's headers"/>
+  <int value="832410450"
+      label="content-security-policy-report-only: missing in activation
+             request's headers"/>
+  <int value="832410451"
+      label="content-security-policy-report-only: value mismatch"/>
+  <int value="841150325"
+      label="sec-ch-ua-bitness: missing in prerendering request's headers"/>
+  <int value="841150326"
+      label="sec-ch-ua-bitness: missing in activation request's headers"/>
+  <int value="841150327" label="sec-ch-ua-bitness: value mismatch"/>
+  <int value="845853853"
+      label="x-dns-prefetch-control: missing in prerendering request's
+             headers"/>
+  <int value="845853854"
+      label="x-dns-prefetch-control: missing in activation request's headers"/>
+  <int value="845853855" label="x-dns-prefetch-control: value mismatch"/>
+  <int value="859196957"
+      label="x-forwarded-host: missing in prerendering request's headers"/>
+  <int value="859196958"
+      label="x-forwarded-host: missing in activation request's headers"/>
+  <int value="859196959" label="x-forwarded-host: value mismatch"/>
+  <int value="874098413"
+      label="purpose: missing in prerendering request's headers"/>
+  <int value="874098414"
+      label="purpose: missing in activation request's headers"/>
+  <int value="874098415" label="purpose: value mismatch"/>
+  <int value="890796185"
+      label="x-developer-key: missing in prerendering request's headers"/>
+  <int value="890796186"
+      label="x-developer-key: missing in activation request's headers"/>
+  <int value="890796187" label="x-developer-key: value mismatch"/>
+  <int value="944766757"
+      label="put: missing in prerendering request's headers"/>
+  <int value="944766758" label="put: missing in activation request's headers"/>
+  <int value="944766759" label="put: value mismatch"/>
+  <int value="954516853"
+      label="feature-policy: missing in prerendering request's headers"/>
+  <int value="954516854"
+      label="feature-policy: missing in activation request's headers"/>
+  <int value="954516855" label="feature-policy: value mismatch"/>
+  <int value="961067665"
+      label="sec-ch-prefers-reduced-motion: missing in prerendering request's
+             headers"/>
+  <int value="961067666"
+      label="sec-ch-prefers-reduced-motion: missing in activation request's
+             headers"/>
+  <int value="961067667" label="sec-ch-prefers-reduced-motion: value mismatch"/>
+  <int value="973047217"
+      label="sec-gpc: missing in prerendering request's headers"/>
+  <int value="973047218"
+      label="sec-gpc: missing in activation request's headers"/>
+  <int value="973047219" label="sec-gpc: value mismatch"/>
+  <int value="997226653"
+      label="x-forwarded-proto: missing in prerendering request's headers"/>
+  <int value="997226654"
+      label="x-forwarded-proto: missing in activation request's headers"/>
+  <int value="997226655" label="x-forwarded-proto: value mismatch"/>
+  <int value="999723045"
+      label="access-control-expose-headers: missing in prerendering request's
+             headers"/>
+  <int value="999723046"
+      label="access-control-expose-headers: missing in activation request's
+             headers"/>
+  <int value="999723047" label="access-control-expose-headers: value mismatch"/>
+  <int value="1014640721"
+      label="server: missing in prerendering request's headers"/>
+  <int value="1014640722"
+      label="server: missing in activation request's headers"/>
+  <int value="1014640723" label="server: value mismatch"/>
+  <int value="1019779069"
+      label="access-control-request-headers: missing in prerendering
+             request's headers"/>
+  <int value="1019779070"
+      label="access-control-request-headers: missing in activation request's
+             headers"/>
+  <int value="1019779071"
+      label="access-control-request-headers: value mismatch"/>
+  <int value="1028989521"
+      label="authorization: missing in prerendering request's headers"/>
+  <int value="1028989522"
+      label="authorization: missing in activation request's headers"/>
+  <int value="1028989523" label="authorization: value mismatch"/>
+  <int value="1115262965"
+      label="sec-ch-ua-wow64: missing in prerendering request's headers"/>
+  <int value="1115262966"
+      label="sec-ch-ua-wow64: missing in activation request's headers"/>
+  <int value="1115262967" label="sec-ch-ua-wow64: value mismatch"/>
+  <int value="1119660881"
+      label="content-dpr: missing in prerendering request's headers"/>
+  <int value="1119660882"
+      label="content-dpr: missing in activation request's headers"/>
+  <int value="1119660883" label="content-dpr: value mismatch"/>
+  <int value="1140650309"
+      label="x-additional-discourse-context: missing in prerendering
+             request's headers"/>
+  <int value="1140650310"
+      label="x-additional-discourse-context: missing in activation request's
+             headers"/>
+  <int value="1140650311"
+      label="x-additional-discourse-context: value mismatch"/>
+  <int value="1228291313"
+      label="youtube-restrict: missing in prerendering request's headers"/>
+  <int value="1228291314"
+      label="youtube-restrict: missing in activation request's headers"/>
+  <int value="1228291315" label="youtube-restrict: value mismatch"/>
+  <int value="1293067365"
+      label="device-memory: missing in prerendering request's headers"/>
+  <int value="1293067366"
+      label="device-memory: missing in activation request's headers"/>
+  <int value="1293067367" label="device-memory: value mismatch"/>
+  <int value="1298595377"
+      label="x-goog-api-key: missing in prerendering request's headers"/>
+  <int value="1298595378"
+      label="x-goog-api-key: missing in activation request's headers"/>
+  <int value="1298595379" label="x-goog-api-key: value mismatch"/>
+  <int value="1304559049"
+      label="trailer: missing in prerendering request's headers"/>
+  <int value="1304559050"
+      label="trailer: missing in activation request's headers"/>
+  <int value="1304559051" label="trailer: value mismatch"/>
+  <int value="1313857413"
+      label="sec-ch-partitioned-cookies: missing in prerendering request's
+             headers"/>
+  <int value="1313857414"
+      label="sec-ch-partitioned-cookies: missing in activation request's
+             headers"/>
+  <int value="1313857415" label="sec-ch-partitioned-cookies: value mismatch"/>
+  <int value="1332319909"
+      label="options: missing in prerendering request's headers"/>
+  <int value="1332319910"
+      label="options: missing in activation request's headers"/>
+  <int value="1332319911" label="options: value mismatch"/>
+  <int value="1349923684" label="unexpected: everything matched"/>
+  <int value="1363817413"
+      label="content-disposition: missing in prerendering request's headers"/>
+  <int value="1363817414"
+      label="content-disposition: missing in activation request's headers"/>
+  <int value="1363817415" label="content-disposition: value mismatch"/>
+  <int value="1399527101"
+      label="deprecated: missing in prerendering request's headers"/>
+  <int value="1399527102"
+      label="deprecated: missing in activation request's headers"/>
+  <int value="1399527103" label="deprecated: value mismatch"/>
+  <int value="1402864157"
+      label="chrome-tunnel: missing in prerendering request's headers"/>
+  <int value="1402864158"
+      label="chrome-tunnel: missing in activation request's headers"/>
+  <int value="1402864159" label="chrome-tunnel: value mismatch"/>
+  <int value="1405609417"
+      label="via: missing in prerendering request's headers"/>
+  <int value="1405609418" label="via: missing in activation request's headers"/>
+  <int value="1405609419" label="via: value mismatch"/>
+  <int value="1415739265"
+      label="location: missing in prerendering request's headers"/>
+  <int value="1415739266"
+      label="location: missing in activation request's headers"/>
+  <int value="1415739267" label="location: value mismatch"/>
+  <int value="1438889229"
+      label="x-dfe-device-fingerprint: missing in prerendering request's
+             headers"/>
+  <int value="1438889230"
+      label="x-dfe-device-fingerprint: missing in activation request's
+             headers"/>
+  <int value="1438889231" label="x-dfe-device-fingerprint: value mismatch"/>
+  <int value="1451013625"
+      label="sec-websocket-extensions: missing in prerendering request's
+             headers"/>
+  <int value="1451013626"
+      label="sec-websocket-extensions: missing in activation request's
+             headers"/>
+  <int value="1451013627" label="sec-websocket-extensions: value mismatch"/>
+  <int value="1518066841"
+      label="te: missing in prerendering request's headers"/>
+  <int value="1518066842" label="te: missing in activation request's headers"/>
+  <int value="1518066843" label="te: value mismatch"/>
+  <int value="1520497789"
+      label="x-xss-protection: missing in prerendering request's headers"/>
+  <int value="1520497790"
+      label="x-xss-protection: missing in activation request's headers"/>
+  <int value="1520497791" label="x-xss-protection: value mismatch"/>
+  <int value="1537370277"
+      label="head: missing in prerendering request's headers"/>
+  <int value="1537370278"
+      label="head: missing in activation request's headers"/>
+  <int value="1537370279" label="head: value mismatch"/>
+  <int value="1553326041"
+      label="alt-svc: missing in prerendering request's headers"/>
+  <int value="1553326042"
+      label="alt-svc: missing in activation request's headers"/>
+  <int value="1553326043" label="alt-svc: value mismatch"/>
+  <int value="1599554713"
+      label="cache-control: missing in prerendering request's headers"/>
+  <int value="1599554714"
+      label="cache-control: missing in activation request's headers"/>
+  <int value="1599554715" label="cache-control: value mismatch"/>
+  <int value="1619613973"
+      label="cross-origin-embedder-policy: missing in prerendering request's
+             headers"/>
+  <int value="1619613974"
+      label="cross-origin-embedder-policy: missing in activation request's
+             headers"/>
+  <int value="1619613975" label="cross-origin-embedder-policy: value mismatch"/>
+  <int value="1633897341"
+      label="sec-ch-ua: missing in prerendering request's headers"/>
+  <int value="1633897342"
+      label="sec-ch-ua: missing in activation request's headers"/>
+  <int value="1633897343" label="sec-ch-ua: value mismatch"/>
+  <int value="1640675233"
+      label="etag: missing in prerendering request's headers"/>
+  <int value="1640675234"
+      label="etag: missing in activation request's headers"/>
+  <int value="1640675235" label="etag: value mismatch"/>
+  <int value="1649900533"
+      label="sec-ch-dpr: missing in prerendering request's headers"/>
+  <int value="1649900534"
+      label="sec-ch-dpr: missing in activation request's headers"/>
+  <int value="1649900535" label="sec-ch-dpr: value mismatch"/>
+  <int value="1663123657"
+      label="accept-encoding: missing in prerendering request's headers"/>
+  <int value="1663123658"
+      label="accept-encoding: missing in activation request's headers"/>
+  <int value="1663123659" label="accept-encoding: value mismatch"/>
+  <int value="1663371857"
+      label="non-standard: missing in prerendering request's headers"/>
+  <int value="1663371858"
+      label="non-standard: missing in activation request's headers"/>
+  <int value="1663371859" label="non-standard: value mismatch"/>
+  <int value="1674665633"
+      label="accept-language: missing in prerendering request's headers"/>
+  <int value="1674665634"
+      label="accept-language: missing in activation request's headers"/>
+  <int value="1674665635" label="accept-language: value mismatch"/>
+  <int value="1700035417"
+      label="sec-ch-ua-mobile: missing in prerendering request's headers"/>
+  <int value="1700035418"
+      label="sec-ch-ua-mobile: missing in activation request's headers"/>
+  <int value="1700035419" label="sec-ch-ua-mobile: value mismatch"/>
+  <int value="1713905633"
+      label="from: missing in prerendering request's headers"/>
+  <int value="1713905634"
+      label="from: missing in activation request's headers"/>
+  <int value="1713905635" label="from: value mismatch"/>
+  <int value="1719209249"
+      label="x-eligible-tablet: missing in prerendering request's headers"/>
+  <int value="1719209250"
+      label="x-eligible-tablet: missing in activation request's headers"/>
+  <int value="1719209251" label="x-eligible-tablet: value mismatch"/>
+  <int value="1719462769"
+      label="if-unmodified-since: missing in prerendering request's headers"/>
+  <int value="1719462770"
+      label="if-unmodified-since: missing in activation request's headers"/>
+  <int value="1719462771" label="if-unmodified-since: value mismatch"/>
+  <int value="1741300633"
+      label="transfer-encoding: missing in prerendering request's headers"/>
+  <int value="1741300634"
+      label="transfer-encoding: missing in activation request's headers"/>
+  <int value="1741300635" label="transfer-encoding: value mismatch"/>
+  <int value="1777747249"
+      label="x-chrome-uma-log-sha1: missing in prerendering request's headers"/>
+  <int value="1777747250"
+      label="x-chrome-uma-log-sha1: missing in activation request's headers"/>
+  <int value="1777747251" label="x-chrome-uma-log-sha1: value mismatch"/>
+  <int value="1781578969"
+      label="sec-ch-ua-model: missing in prerendering request's headers"/>
+  <int value="1781578970"
+      label="sec-ch-ua-model: missing in activation request's headers"/>
+  <int value="1781578971" label="sec-ch-ua-model: value mismatch"/>
+  <int value="1842584997"
+      label="x-goog-update-updater: missing in prerendering request's headers"/>
+  <int value="1842584998"
+      label="x-goog-update-updater: missing in activation request's headers"/>
+  <int value="1842584999" label="x-goog-update-updater: value mismatch"/>
+  <int value="1887810253"
+      label="sec-fetch-mode: missing in prerendering request's headers"/>
+  <int value="1887810254"
+      label="sec-fetch-mode: missing in activation request's headers"/>
+  <int value="1887810255" label="sec-fetch-mode: value mismatch"/>
+  <int value="1897640941"
+      label="last-modified: missing in prerendering request's headers"/>
+  <int value="1897640942"
+      label="last-modified: missing in activation request's headers"/>
+  <int value="1897640943" label="last-modified: value mismatch"/>
+  <int value="1902535141"
+      label="x-offline-prefetch-experiment: missing in prerendering request's
+             headers"/>
+  <int value="1902535142"
+      label="x-offline-prefetch-experiment: missing in activation request's
+             headers"/>
+  <int value="1902535143"
+      label="x-offline-prefetch-experiment: value mismatch"/>
+  <int value="1975072765"
+      label="access-control-max-age: missing in prerendering request's
+             headers"/>
+  <int value="1975072766"
+      label="access-control-max-age: missing in activation request's headers"/>
+  <int value="1975072767" label="access-control-max-age: value mismatch"/>
+  <int value="1977567957"
+      label="proxy-connection: missing in prerendering request's headers"/>
+  <int value="1977567958"
+      label="proxy-connection: missing in activation request's headers"/>
+  <int value="1977567959" label="proxy-connection: value mismatch"/>
+  <int value="1999517197"
+      label="service-worker-navigation-preload: missing in prerendering
+             request's headers"/>
+  <int value="1999517198"
+      label="service-worker-navigation-preload: missing in activation
+             request's headers"/>
+  <int value="1999517199"
+      label="service-worker-navigation-preload: value mismatch"/>
+  <int value="2013870465"
+      label="sec-ch-ua-reduced: missing in prerendering request's headers"/>
+  <int value="2013870466"
+      label="sec-ch-ua-reduced: missing in activation request's headers"/>
+  <int value="2013870467" label="sec-ch-ua-reduced: value mismatch"/>
+  <int value="2015014201"
+      label="sec-fetch-user: missing in prerendering request's headers"/>
+  <int value="2015014202"
+      label="sec-fetch-user: missing in activation request's headers"/>
+  <int value="2015014203" label="sec-fetch-user: value mismatch"/>
+  <int value="2094349477"
+      label="sec-webtransport-http3-draft02: missing in prerendering
+             request's headers"/>
+  <int value="2094349478"
+      label="sec-webtransport-http3-draft02: missing in activation request's
+             headers"/>
+  <int value="2094349479"
+      label="sec-webtransport-http3-draft02: value mismatch"/>
+  <int value="2132592837"
+      label="date: missing in prerendering request's headers"/>
+  <int value="2132592838"
+      label="date: missing in activation request's headers"/>
+  <int value="2132592839" label="date: value mismatch"/>
+  <int value="2145736073"
+      label="pragma: missing in prerendering request's headers"/>
+  <int value="2145736074"
+      label="pragma: missing in activation request's headers"/>
+  <int value="2145736075" label="pragma: value mismatch"/>
+</enum>
+
+<enum name="PrerenderActivationNavigationParamsMatch">
+  <int value="0" label="kOk"/>
+  <int value="1" label="kInitiatorFrameToken"/>
+  <int value="2" label="kHttpRequestHeader"/>
+  <int value="3" label="kCacheLoadFlags"/>
+  <int value="4" label="kLoadFlags"/>
+  <int value="5" label="kSkipServiceWorker"/>
+  <int value="6" label="kMixedContentContextType"/>
+  <int value="7" label="kIsFormSubmission"/>
+  <int value="8" label="kSearchableFormUrl"/>
+  <int value="9" label="kSearchableFormEncoding"/>
+  <int value="10" label="kTrustTokenParams"/>
+  <int value="11" label="kWebBundleToken"/>
+  <int value="12" label="kRequestContextType"/>
+  <int value="13" label="kImpressionHasValue"/>
+  <int value="14" label="kInitiatorOrigin"/>
+  <int value="15" label="kTransition"/>
+  <int value="16" label="kNavigationType"/>
+  <int value="17" label="kBaseUrlForDataUrl"/>
+  <int value="18" label="kPostData"/>
+  <int value="19" label="kStartedFromContextMenu"/>
+  <int value="20" label="kInitiatorOriginTrialFeature"/>
+  <int value="21" label="kHrefTranslate"/>
+  <int value="22" label="kIsHistoryNavigationInNewChildFrame"/>
+  <int value="23" label="kReferrerPolicy (Obsolete)"/>
+  <int value="24" label="kRequestDestination"/>
+</enum>
+
+<enum name="PrerenderActivationTransitionMismatchType">
+  <int value="0" label="Link"/>
+  <int value="1" label="Typed"/>
+  <int value="2" label="Auto bookmark"/>
+  <int value="3" label="Auto subframe"/>
+  <int value="4" label="Manual subframe"/>
+  <int value="5" label="Generated"/>
+  <int value="6" label="Auto toplevel"/>
+  <int value="7" label="Form submit"/>
+  <int value="8" label="Reload"/>
+  <int value="9" label="Keyword"/>
+  <int value="10" label="Keyword generated"/>
+  <int value="33554432" label="From address bar"/>
+  <int value="33554433" label="From address bar | Typed"/>
+  <int value="33554434" label="From address bar | Auto bookmark"/>
+  <int value="33554435" label="From address bar | Auto subframe"/>
+  <int value="33554436" label="From address bar | Manual subframe"/>
+  <int value="33554437" label="From address bar | Generated"/>
+  <int value="33554438" label="From address bar | Auto toplevel"/>
+  <int value="33554439" label="From address bar | Form submit"/>
+  <int value="33554440" label="From address bar | Reload"/>
+  <int value="33554441" label="From address bar | Keyword"/>
+  <int value="33554442" label="From address bar | Keyword generated"/>
+</enum>
+
+<enum name="PrerenderCancelledInterface">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kGamepadHapticsManager"/>
+  <int value="2" label="kGamepadMonitor"/>
+  <int value="3" label="kNotificationService (Obsolete)"/>
+  <int value="4" label="kSyncEncryptionKeysExtension"/>
+</enum>
+
+<enum name="PrerenderCancelledUnknownInterface">
+  <summary>
+    Enumerates names of Mojo interfaces. Work as supplementary information for
+    PrerenderCancelledInterface.kUnknown. See comments in
+    InterfaceNameHasher(content/browser/prerender/prerender_metrics.cc) for how
+    to update the enums.
+  </summary>
+  <int value="-2066290458" label="search.mojom.EmbeddedSearchConnector"/>
+  <int value="-2012727489" label="device.mojom.ScreenOrientation"/>
+  <int value="-1398143678" label="blink.mojom.ClipboardHost (Unexpected)"/>
+  <int value="-1354302262" label="blink.mojom.BackForwardCacheControllerHost"/>
+  <int value="-1150785480"
+      label="subresource_filter.mojom.SubresourceFilterHost"/>
+  <int value="-363037346"
+      label="extensions.mojom.EventRouter (Obsolete in M122)"/>
+  <int value="-71187962" label="supervised_user.mojom.SupervisedUserCommands"/>
+  <int value="-10666109" label="chrome.mojom.PluginInfoHost"/>
+  <int value="-4973921" label="blink.mojom.AttributionHost"/>
+  <int value="191605727" label="content.mojom.PepperHost"/>
+  <int value="828689080" label="blink.mojom.BlobURLStore (Obsolete)"/>
+  <int value="1515506006" label="extensions.mojom.RendererHost"/>
+  <int value="1984681860"
+      label="chrome.mojom.OpenSearchDescriptionDocumentHandler (Obsolete)"/>
+</enum>
+
+<enum name="PrerenderCrossOriginRedirectionMismatch">
+  <int value="0" label="kShouldNotBeReported"/>
+  <int value="1" label="kPortMismatch"/>
+  <int value="2" label="kHostMismatch"/>
+  <int value="3" label="kHostPortMismatch"/>
+  <int value="4" label="kSchemeMismatch"/>
+  <int value="5" label="kSchemePortMismatch"/>
+  <int value="6" label="kSchemeHostMismatch"/>
+  <int value="7" label="kSchemeHostPortMismatch"/>
+</enum>
+
+<enum name="PrerenderCrossOriginRedirectionProtocolChange">
+  <int value="0" label="kHttpProtocolUpgrade"/>
+  <int value="1" label="kHttpProtocolDowngrade"/>
+</enum>
+
+<enum name="PrerenderFinalStatus">
+  <int value="0" label="USED"/>
+  <int value="1" label="TIMED_OUT"/>
+  <int value="2" label="EVICTED (Obsolete)"/>
+  <int value="3" label="MANAGER_SHUTDOWN (Obsolete)"/>
+  <int value="4" label="CLOSED (Obsolete)"/>
+  <int value="5" label="CREATE_NEW_WINDOW (Obsolete)"/>
+  <int value="6" label="PROFILE_DESTROYED"/>
+  <int value="7" label="APP_TERMINATING"/>
+  <int value="8" label="JAVASCRIPT_ALERT (Obsolete)"/>
+  <int value="9" label="AUTH_NEEDED"/>
+  <int value="10" label="HTTPS (Obsolete)"/>
+  <int value="11" label="DOWNLOAD"/>
+  <int value="12" label="MEMORY_LIMIT_EXCEEDED"/>
+  <int value="13" label="JS_OUT_OF_MEMORY (Obsolete)"/>
+  <int value="14" label="RENDERER_UNRESPONSIVE (Obsolete)"/>
+  <int value="15" label="TOO_MANY_PROCESSES"/>
+  <int value="16" label="RATE_LIMIT_EXCEEDED"/>
+  <int value="17" label="PENDING_SKIPPED (Obsolete)"/>
+  <int value="18" label="CONTROL_GROUP (Obsolete)"/>
+  <int value="19" label="HTML5_MEDIA (Obsolete)"/>
+  <int value="20" label="SOURCE_RENDER_VIEW_CLOSED (Obsolete)"/>
+  <int value="21" label="RENDERER_CRASHED"/>
+  <int value="22" label="UNSUPPORTED_SCHEME"/>
+  <int value="23" label="INVALID_HTTP_METHOD (Obsolete)"/>
+  <int value="24" label="WINDOW_PRINT (Obsolete)"/>
+  <int value="25" label="RECENTLY_VISITED"/>
+  <int value="26" label="WINDOW_OPENER (Obsolete)"/>
+  <int value="27" label="PAGE_ID_CONFLICT (Obsolete)"/>
+  <int value="28" label="SAFE_BROWSING"/>
+  <int value="29" label="FRAGMENT_MISMATCH (Obsolete)"/>
+  <int value="30" label="SSL_CLIENT_CERTIFICATE_REQUESTED"/>
+  <int value="31" label="CACHE_OR_HISTORY_CLEARED"/>
+  <int value="32" label="CANCELLED"/>
+  <int value="33" label="SSL_ERROR"/>
+  <int value="34" label="CROSS_SITE_NAVIGATION_PENDING (Obsolete)"/>
+  <int value="35" label="DEVTOOLS_ATTACHED (Obsolete)"/>
+  <int value="36" label="SESSION_STORAGE_NAMESPACE_MISMATCH (Obsolete)"/>
+  <int value="37" label="NO_USE_GROUP (Obsolete)"/>
+  <int value="38" label="MATCH_COMPLETE_DUMMY (Obsolete)"/>
+  <int value="39" label="DUPLICATE"/>
+  <int value="40" label="OPEN_URL"/>
+  <int value="41" label="WOULD_HAVE_BEEN_USED (Obsolete)"/>
+  <int value="42" label="REGISTER_PROTOCOL_HANDLER (Obsolete)"/>
+  <int value="43" label="CREATING_AUDIO_STREAM (Obsolete)"/>
+  <int value="44" label="PAGE_BEING_CAPTURED (Obsolete)"/>
+  <int value="45" label="BAD_DEFERRED_REDIRECT (Obsolete)"/>
+  <int value="46" label="NAVIGATION_UNCOMMITTED (Obsolete)"/>
+  <int value="47" label="NEW_NAVIGATION_ENTRY (Obsolete)"/>
+  <int value="48" label="COOKIE_STORE_NOT_LOADED (Obsolete)"/>
+  <int value="49" label="COOKIE_CONFLICT (Obsolete)"/>
+  <int value="50" label="NON_EMPTY_BROWSING_INSTANCE (Obsolete)"/>
+  <int value="51" label="NAVIGATION_INTERCEPTED"/>
+  <int value="52" label="PRERENDERING_DISABLED"/>
+  <int value="53" label="CELLULAR_NETWORK"/>
+  <int value="54" label="BLOCK_THIRD_PARTY_COOKIES"/>
+  <int value="55" label="CREDENTIAL_MANAGER_API (Obsolete)"/>
+  <int value="56" label="NOSTATE_PREFETCH_FINISHED"/>
+  <int value="57" label="LOW_END_DEVICE"/>
+  <int value="58" label="FINAL_STATUS_BROWSER_SWITCH"/>
+  <int value="59" label="FINAL_STATUS_GWS_HOLDBACK"/>
+  <int value="60" label="FINAL_STATUS_UNKNOWN"/>
+  <int value="61" label="FINAL_STATUS_NAVIGATION_PREDICTOR_HOLDBACK"/>
+  <int value="62" label="SINGLE PROCESS"/>
+  <int value="63" label="LINK REL NEXT NOT ALLOWED"/>
+</enum>
+
+<enum name="PrerenderPredictionResult">
+  <int value="0" label="Prerendered and navigated (True Positive)"/>
+  <int value="1" label="Prerendered but not navigated (False Positive)"/>
+  <int value="2" label="Not prerendered but navigated (False Negative)"/>
+  <int value="3" label="Not prerendered and not navigated (True Negative)"/>
+</enum>
+
+<enum name="PrerenderPredictionStatus">
+  <int value="0" label="Prerender not started"/>
+  <int value="1" label="Prerender cancelled"/>
+  <int value="2" label="Prerender unused"/>
+  <int value="3" label="Prerender hit finished"/>
+</enum>
+
+<enum name="RelatedActiveContentsSyncAccessInfo">
+  <int value="0" label="kNoSyncAccess"/>
+  <int value="1"
+      label="kPotentiallySyncAccessibleDefaultSiteInstance (deprecated)"/>
+  <int value="2" label="kPotentiallySyncAccessible"/>
+</enum>
+
+<enum name="ThirdPartyCookieBlockState">
+  <int value="0" label="Cookies allowed"/>
+  <int value="1" label="Third-party cookies blocked"/>
+  <int value="2" label="Third-party cookie blocking disabled for site"/>
+</enum>
+
+<enum name="TpcdMetadataInstallationResult">
+  <int value="0" label="kSuccessful"/>
+  <int value="1" label="kMissingMetadataFile"/>
+  <int value="2" label="kReadingMetadataFileFailed"/>
+  <int value="3" label="kParsingToProtoFailed"/>
+  <int value="4" label="kErroneousSpec"/>
+</enum>
+
+<enum name="UserAgentStringType">
+  <int value="0" label="Full user agent string"/>
+  <int value="1" label="Reduced user agent string"/>
+  <int value="2" label="Overridden user agent string"/>
+</enum>
+
+<enum name="WebSchedulerTrackedFeature">
+<!-- Generated from third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h.
+Called by update_scheduler_enums.py.-->
+
+  <int value="0" label="WebSocket"/>
+  <int value="1" label="WebRTC"/>
+  <int value="2" label="MainResourceHasCacheControlNoCache"/>
+  <int value="3" label="MainResourceHasCacheControlNoStore"/>
+  <int value="4" label="SubresourceHasCacheControlNoCache"/>
+  <int value="5" label="SubresourceHasCacheControlNoStore"/>
+  <int value="6" label="PageShowEventListener"/>
+  <int value="7" label="PageHideEventListener"/>
+  <int value="8" label="BeforeUnloadEventListener"/>
+  <int value="9" label="UnloadEventListener"/>
+  <int value="10" label="FreezeEventListener"/>
+  <int value="11" label="ResumeEventListener"/>
+  <int value="12" label="ContainsPlugins"/>
+  <int value="13" label="DocumentLoaded"/>
+  <int value="14" label="DedicatedWorkerOrWorklet"/>
+  <int value="15" label="OutstandingNetworkRequestOthers"/>
+  <int value="16" label="ServiceWorkerControlledPage"/>
+  <int value="17" label="OutstandingIndexedDBTransaction"/>
+  <int value="18" label="HasScriptableFramesInMultipleTabs"/>
+  <int value="19" label="RequestedGeolocationPermission"/>
+  <int value="20" label="RequestedNotificationsPermission"/>
+  <int value="21" label="RequestedMIDIPermission"/>
+  <int value="22" label="RequestedAudioCapturePermission"/>
+  <int value="23" label="RequestedVideoCapturePermission"/>
+  <int value="24" label="RequestedBackForwardCacheBlockedSensors"/>
+  <int value="25" label="WebTransportSticky"/>
+  <int value="26" label="RequestedBackgroundWorkPermission"/>
+  <int value="27" label="BroadcastChannel"/>
+  <int value="28" label="IndexedDBConnection"/>
+  <int value="29" label="WebGL"/>
+  <int value="30" label="WebVR"/>
+  <int value="31" label="WebXR"/>
+  <int value="32" label="SharedWorker"/>
+  <int value="33" label="WebLocks"/>
+  <int value="34" label="WebHID"/>
+  <int value="35" label="WakeLock"/>
+  <int value="36" label="WebShare"/>
+  <int value="37" label="RequestedStorageAccessGrant"/>
+  <int value="38" label="WebNfc"/>
+  <int value="39" label="WebFileSystem"/>
+  <int value="40" label="OutstandingNetworkRequestFetch"/>
+  <int value="41" label="OutstandingNetworkRequestXHR"/>
+  <int value="42" label="AppBanner"/>
+  <int value="43" label="Printing"/>
+  <int value="44" label="WebDatabase"/>
+  <int value="45" label="PictureInPicture"/>
+  <int value="46" label="Portal"/>
+  <int value="47" label="SpeechRecognizer"/>
+  <int value="48" label="IdleManager"/>
+  <int value="49" label="PaymentManager"/>
+  <int value="50" label="SpeechSynthesis"/>
+  <int value="51" label="KeyboardLock"/>
+  <int value="52" label="WebOTPService"/>
+  <int value="53" label="OutstandingNetworkRequestDirectSocket"/>
+  <int value="54" label="InjectedJavascript"/>
+  <int value="55" label="InjectedStyleSheet"/>
+  <int value="56" label="MediaSessionImplOnServiceCreated"/>
+  <int value="57" label="WebTransport"/>
+  <int value="58" label="Dummy"/>
+  <int value="59" label="Keepalive request"/>
+  <int value="60" label="JsNetworkRequestReceivedCacheControlNoStoreResource"/>
+  <int value="61" label="IndexedDBEvent"/>
+  <int value="62" label="WebSerial"/>
+  <int value="63" label="WebSocketSticky"/>
+  <int value="64" label="WebRTCSticky"/>
+  <int value="65" label="SmartCard"/>
+  <int value="66" label="LiveMediaStreamTrack"/>
+  <int value="67" label="UnloadHandler"/>
 </enum>
 
 </enums>
