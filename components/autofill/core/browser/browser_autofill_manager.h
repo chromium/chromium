@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -228,6 +229,25 @@ class BrowserAutofillManager : public AutofillManager {
 
   CreditCardAccessManager& GetCreditCardAccessManager();
   const CreditCardAccessManager& GetCreditCardAccessManager() const;
+
+  // Handles post-filling logic of `form_structure`, like notifying observers
+  // and logging form metrics.
+  // `filled_fields` are the fields that were filled by the browser.
+  // `safe_fields` are the fields that were deemed safe to fill by the router
+  // according to the iframe security policy.
+  // `safe_filled_fields` is the intersection of `filled_fields` and
+  // `safe_fields`.
+  void OnDidFillOrPreviewForm(
+      mojom::ActionPersistence action_persistence,
+      const FormStructure& form_structure,
+      const AutofillField& trigger_autofill_field,
+      base::span<const FormFieldData*> safe_filled_fields,
+      const base::flat_set<FieldGlobalId>& filled_fields,
+      const base::flat_set<FieldGlobalId>& safe_fields,
+      absl::variant<const AutofillProfile*, const CreditCard*>
+          profile_or_credit_card,
+      const AutofillTriggerDetails& trigger_details,
+      bool is_refill);
 
   // AutofillManager:
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
@@ -491,7 +511,7 @@ class BrowserAutofillManager : public AutofillManager {
       const std::u16string* optional_cvc,
       FormStructure* form_structure,
       AutofillField* autofill_field,
-      const AutofillTriggerDetails trigger_details,
+      const AutofillTriggerDetails& trigger_details,
       bool is_refill = false);
 
   // Creates a FormStructure using the FormData received from the renderer. Will

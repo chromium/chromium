@@ -2384,7 +2384,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     const std::u16string* optional_cvc,
     FormStructure* form_structure,
     AutofillField* autofill_trigger_field,
-    const AutofillTriggerDetails trigger_details,
+    const AutofillTriggerDetails& trigger_details,
     bool is_refill) {
   bool is_credit_card =
       absl::holds_alternative<const CreditCard*>(profile_or_credit_card);
@@ -2589,13 +2589,6 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   if (could_attempt_refill) {
     filling_context->filled_form = result_form;
   }
-
-  autofilled_form_signatures_.push_front(form_structure->form_signature());
-  // Only remember the last few forms that we've seen, both to avoid false
-  // positives and to avoid wasting memory.
-  if (autofilled_form_signatures_.size() > kMaxRecentFormSignaturesToRemember)
-    autofilled_form_signatures_.pop_back();
-
   auto field_types = base::MakeFlatMap<FieldGlobalId, FieldType>(
       *form_structure, {}, [](const auto& field) {
         return std::make_pair(field->global_id(),
@@ -2604,8 +2597,6 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   base::flat_set<FieldGlobalId> safe_fields =
       driver().ApplyFormAction(mojom::ActionType::kFill, action_persistence,
                                result_form, field.origin, field_types);
-  client().DidFillOrPreviewForm(action_persistence,
-                                trigger_details.trigger_source, is_refill);
 
   // This will hold the fields (and autofill_fields) in the intersection of
   // safe_fields and newly_filled_fields_id.
@@ -2615,7 +2606,6 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     std::vector<const AutofillField*> cached;
   } safe_newly_filled_fields;
 
-  // Report the fields that were not filled due to the iframe security policy.
   for (FieldGlobalId newly_filled_field_id : newly_filled_field_ids) {
     if (safe_fields.contains(newly_filled_field_id)) {
       // A safe field was filled. Both functions will not return a nullptr
@@ -2646,7 +2636,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       }
       continue;
     }
-    // Find and report index of fields that were not filled.
+    // Find and report index of fields that were not filled due to the iframe
+    // security policy.
     auto it = base::ranges::find(result_form.fields, newly_filled_field_id,
                                  &FormFieldData::global_id);
     if (it != result_form.fields.end()) {
@@ -2688,46 +2679,74 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
                         << LogMessage::kSendFillingData << Br{}
                         << std::move(buffer);
 
-  NotifyObservers(&Observer::OnFillOrPreviewDataModelForm, form.global_id(),
-                  action_persistence, safe_newly_filled_fields.new_values,
-                  profile_or_credit_card);
+  if (filling_context) {
+    // When a new preview/fill starts, previously forced_fill_values should be
+    // ignored the operation could be for a different card or address.
+    filling_context->forced_fill_values.clear();
+  }
 
-  // Call OnDidFillSuggestion() to log the metrics.
-  if (action_persistence == mojom::ActionPersistence::kFill && !is_refill) {
-    if (is_credit_card) {
+  OnDidFillOrPreviewForm(
+      action_persistence, *form_structure, *autofill_trigger_field,
+      safe_newly_filled_fields.new_values, newly_filled_field_ids, safe_fields,
+      profile_or_credit_card, trigger_details, is_refill);
+}
+
+void BrowserAutofillManager::OnDidFillOrPreviewForm(
+    mojom::ActionPersistence action_persistence,
+    const FormStructure& form_structure,
+    const AutofillField& trigger_autofill_field,
+    base::span<const FormFieldData*> safe_filled_fields,
+    const base::flat_set<FieldGlobalId>& filled_fields,
+    const base::flat_set<FieldGlobalId>& safe_fields,
+    absl::variant<const AutofillProfile*, const CreditCard*>
+        profile_or_credit_card,
+    const AutofillTriggerDetails& trigger_details,
+    bool is_refill) {
+  client().DidFillOrPreviewForm(action_persistence,
+                                trigger_details.trigger_source, is_refill);
+  NotifyObservers(&Observer::OnFillOrPreviewDataModelForm,
+                  form_structure.global_id(), action_persistence,
+                  safe_filled_fields, profile_or_credit_card);
+  if (action_persistence == mojom::ActionPersistence::kPreview) {
+    return;
+  }
+  CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
+
+  autofilled_form_signatures_.push_front(form_structure.form_signature());
+  // Only remember the last few forms that we've seen, both to avoid false
+  // positives and to avoid wasting memory.
+  if (autofilled_form_signatures_.size() > kMaxRecentFormSignaturesToRemember) {
+    autofilled_form_signatures_.pop_back();
+  }
+
+  if (!is_refill) {
+    if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
       // The originally selected masked card is `credit_card_`. So we must log
       // `credit_card_` as opposed to
       // `absl::get<CreditCard*>(profile_or_credit_card)` to correctly indicate
       // whether the user filled the form using a masked card suggestion.
       credit_card_form_event_logger_->OnDidFillSuggestion(
-          credit_card_, *form_structure, *autofill_trigger_field,
-          newly_filled_field_ids, safe_fields, signin_state_for_metrics_,
+          credit_card_, form_structure, trigger_autofill_field, filled_fields,
+          safe_fields, signin_state_for_metrics_,
           trigger_details.trigger_source);
     } else {
       // An address form was filled.
       CHECK(absl::holds_alternative<const AutofillProfile*>(
           profile_or_credit_card));
-      if (autofill_trigger_field
-              ->ShouldSuppressSuggestionsAndFillingByDefault()) {
+      if (trigger_autofill_field
+              .ShouldSuppressSuggestionsAndFillingByDefault()) {
         autocomplete_unrecognized_fallback_logger_->OnDidFillSuggestion();
       } else {
         address_form_event_logger_->OnDidFillSuggestion(
             *absl::get<const AutofillProfile*>(profile_or_credit_card),
-            *form_structure, *autofill_trigger_field, signin_state_for_metrics_,
+            form_structure, trigger_autofill_field, signin_state_for_metrics_,
             trigger_details.trigger_source);
       }
     }
   }
-
-  // Note that this may invalidate |profile_or_credit_card|.
-  if (action_persistence == mojom::ActionPersistence::kFill && !is_refill) {
+  if (!is_refill) {
+    // Note that this may invalidate `profile_or_credit_card`.
     client().GetPersonalDataManager()->RecordUseOf(profile_or_credit_card);
-  }
-
-  if (filling_context) {
-    // When a new preview/fill starts, previously forced_fill_values should be
-    // ignored the operation could be for a different card or address.
-    filling_context->forced_fill_values.clear();
   }
 }
 
