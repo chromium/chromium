@@ -693,6 +693,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityComboboxAriaHaspopupChanged) {
+  RunRegressionTest(FILE_PATH_LITERAL("combobox-aria-haspopup-changed.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaComboboxUneditable) {
   RunAriaTest(FILE_PATH_LITERAL("aria-combobox-uneditable.html"));
 }

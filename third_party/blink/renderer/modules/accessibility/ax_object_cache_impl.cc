@@ -4073,6 +4073,8 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
           // kPopupButton.
           DeferTreeUpdate(TreeUpdateReason::kRoleChangeFromAriaHasPopup,
                           element);
+        } else {
+          MarkElementDirty(element);
         }
       }
     } else if (attr_name == html_names::kAriaControlsAttr ||

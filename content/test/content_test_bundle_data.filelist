@@ -5435,6 +5435,8 @@ data/accessibility/regression/aria-pressed-changes-button-role-expected-blink.tx
 data/accessibility/regression/aria-pressed-changes-button-role.html
 data/accessibility/regression/clear-children-while-computing-name-expected-blink.txt
 data/accessibility/regression/clear-children-while-computing-name.html
+data/accessibility/regression/combobox-aria-haspopup-changed-expected-blink.txt
+data/accessibility/regression/combobox-aria-haspopup-changed.html
 data/accessibility/regression/compute-name-while-freezing.html
 data/accessibility/regression/content-visibility-label-expected-blink.txt
 data/accessibility/regression/content-visibility-label.html
