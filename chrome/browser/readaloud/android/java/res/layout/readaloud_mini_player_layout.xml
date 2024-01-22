@@ -176,6 +176,7 @@ found in the LICENSE file.
                 android:layout_height="@dimen/readaloud_close_button_size"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:background="@drawable/rounded_ripple"
                 android:scaleType="fitCenter"/>
 
         </RelativeLayout>
