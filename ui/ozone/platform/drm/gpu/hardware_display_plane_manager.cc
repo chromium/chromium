@@ -331,6 +331,13 @@ void HardwareDisplayPlaneManager::SetGammaAdjustment(
 bool HardwareDisplayPlaneManager::SetColorMatrix(
     uint32_t crtc_id,
     const std::vector<float>& color_matrix) {
+  if (color_matrix.empty()) {
+    // TODO: Consider allowing an empty matrix to disable the color transform
+    // matrix.
+    LOG(ERROR) << "CTM is empty. Expected a 3x3 matrix.";
+    return false;
+  }
+
   const auto crtc_index = LookupCrtcIndex(crtc_id);
   DCHECK(crtc_index.has_value());
   CrtcState* crtc_state = &crtc_state_[*crtc_index];
