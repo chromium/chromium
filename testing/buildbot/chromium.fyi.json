@@ -47044,6 +47044,7 @@
         "args": [
           "--enable-sanitizer"
         ],
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -47071,6 +47072,7 @@
   "linux-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -47098,6 +47100,7 @@
           "--flag-specific",
           "highdpi"
         ],
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -47126,6 +47129,7 @@
           "--flag-specific",
           "disable-site-isolation-trials"
         ],
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -48993,6 +48997,7 @@
   "mac10.15-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -49022,6 +49027,7 @@
   "mac11-arm64-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -49051,6 +49057,7 @@
   "mac11-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -49080,6 +49087,7 @@
   "mac12-arm64-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -49109,6 +49117,7 @@
   "mac12-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -49138,6 +49147,7 @@
   "mac13-arm64-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -49167,6 +49177,7 @@
   "mac13-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -51761,6 +51772,7 @@
           "--target",
           "Release_x64"
         ],
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -51794,6 +51806,7 @@
           "--target",
           "Release_x64"
         ],
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [

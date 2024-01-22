@@ -5243,6 +5243,7 @@ targets.legacy_basic_suite(
             swarming = targets.swarming(
                 shards = 15,
             ),
+            experiment_percentage = 100,
         ),
     },
 )
@@ -5269,6 +5270,7 @@ targets.legacy_basic_suite(
             swarming = targets.swarming(
                 shards = 3,
             ),
+            experiment_percentage = 100,
         ),
     },
 )
@@ -5280,6 +5282,7 @@ targets.legacy_basic_suite(
             swarming = targets.swarming(
                 shards = 10,
             ),
+            experiment_percentage = 100,
         ),
     },
 )
