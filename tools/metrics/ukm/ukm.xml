@@ -9056,27 +9056,62 @@ be describing additional metrics about the same event.
       then it is considered medium; if this is greater than 64 presented frames,
       then it is considered large.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="PredictorJankyFrameCount">
     <summary>
       The number of frames that are deemed janky to the human eye after Chrome
       has applied its scroll prediction algorithm..
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ScrollJank.DelayedFrameCount">
     <summary>
       The number of delayed frames.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ScrollJank.MissedVsyncsMax">
     <summary>
       The maximum number of vsyncs missed during any and all janks.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ScrollJank.MissedVsyncsSum">
     <summary>
       The total number of vsyncs missed during any and all janks that occurred.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="VsyncCount">
     <summary>
@@ -9085,6 +9120,13 @@ be describing additional metrics about the same event.
       greater than 16 and less than or equal to 64 vsyncs, then it is considered
       medium; if this is greater than 64 vsyncs, then is considered large.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -9182,6 +9224,13 @@ be describing additional metrics about the same event.
       threshold, the scroll is considered fast. This also helps to determine
       what the threshold for jank should be.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ScrollUpdate.MissedVsync.FrameAboveJankyThreshold2">
     <summary>
@@ -9189,6 +9238,13 @@ be describing additional metrics about the same event.
       frame relative to its neighboring frames in the sequence, if the previous
       vsync was missed.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ScrollUpdate.NoMissedVsync.FrameAboveJankyThreshold2">
     <summary>
@@ -9196,6 +9252,13 @@ be describing additional metrics about the same event.
       frame relative to its neighboring frames in the sequence, if the previous
       vsync was not missed.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
