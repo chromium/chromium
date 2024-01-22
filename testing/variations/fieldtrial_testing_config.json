@@ -11893,6 +11893,7 @@
                     "name": "Redesigned_Quests_WithHaTS_20240105",
                     "params": {
                         "NtpHistoryClustersModuleCategoriesBoostlistParam": "/m/testparsinglogicboost,/m/testparsinglogicboost-2",
+                        "NtpHistoryClustersModuleScoreThresholdParam": "-0.25",
                         "NtpModuleIgnoredHaTSDelayTimeParam": "12",
                         "NtpModulesInteractionBasedSurveyEligibleIdsParam": "{\"disable\":{\"history_clusters\":\"abc\"},\"dismiss\":{\"history_clusters\":\"abc\"},\"ignore\":{\"history_clusters\":\"abc\"},\"use\":{\"history_clusters\":\"abc\"}}",
                         "NtpModulesOrderParam": "drive",
