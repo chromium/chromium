@@ -963,6 +963,12 @@ chromium-metrics-reviews@google.com.
   <int value="38" label="BruschettaVmStartupSuccess"/>
   <int value="39" label="BruschettaVmShutdown"/>
   <int value="40" label="BruschettaVmShutdownSuccess"/>
+  <int value="41" label="BorealisVmStartup"/>
+  <int value="42" label="BorealisVmStartupSuccess"/>
+  <int value="43" label="BorealisVmShutdown"/>
+  <int value="44" label="BorealisVmShutdownSuccess"/>
+  <int value="45" label="ConfigureNetwork"/>
+  <int value="46" label="ConfigureNetworkSuccess"/>
 </enum>
 
 <enum name="NetworkPatchpanelDHCPServerEvent">
