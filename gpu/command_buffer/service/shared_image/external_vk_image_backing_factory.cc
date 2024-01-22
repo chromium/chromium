@@ -92,7 +92,7 @@ base::flat_map<VkFormat, VkImageUsageFlags> CreateImageUsageCache(
 bool IsFormatSupported(viz::SharedImageFormat format,
                        gfx::GpuMemoryBufferType gmb_type,
                        uint32_t usage) {
-  // GL interop does not work with external sampler. Also, see
+  // Accessing via GL does not work with external sampling. Also, see
   // https://crbug.com/1394888.
   // NOTE: At the current time this check is elided on Fuchsia as there is no
   // alternative backing that can be used in this case on Fuchsia, which results
@@ -104,8 +104,7 @@ bool IsFormatSupported(viz::SharedImageFormat format,
   // TODO(crbug.com/1310026): Enable ImageBackingOzone to be used for all planes
   // in Fuchsia and enable this check for Fuchsia.
 #if !BUILDFLAG(IS_FUCHSIA)
-  if (HasGLES2ReadOrWriteUsage(usage) ||
-      usage & SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT) {
+  if (HasGLES2ReadOrWriteUsage(usage)) {
     if (format.IsLegacyMultiplanar() || format.PrefersExternalSampler()) {
       return false;
     }
