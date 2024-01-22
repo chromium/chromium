@@ -201,6 +201,23 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
     return;
   }
 
+  auto policy_effect = ComputeDevicePolicyEffect(*profile_);
+  // This check should be done prior to the profile already set up check below,
+  // to include the case where the feature `kForceSigninFlowInProfilePicker` is
+  // enabled which would cause the profile to be signed in already at this
+  // point.
+  if (policy_effect != PolicyEffect::kNone &&
+      signin_util::IsForceSigninEnabled() &&
+      base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
+    // When ForceSignin is enabled and the flows are going through the profile
+    // picker, the final profile setup should not yet be reached. The
+    // rest of the flow is still happening within the Profile Picker, either
+    // the management acceptance screen for Managed accounts, or the Sync
+    // Confirmation screen for Consumer accounts.
+    FinishFirstRun(FinishedReason::kForceSignin);
+    return;
+  }
+
   bool has_set_up_profile =
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       // Indicates that the profile was likely migrated from pre-Lacros Ash.
@@ -216,8 +233,6 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
     FinishFirstRun(FinishedReason::kProfileAlreadySetUp);
     return;
   }
-
-  auto policy_effect = ComputeDevicePolicyEffect(*profile_);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   switch (policy_effect) {
@@ -241,18 +256,7 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
 #endif
 
   if (policy_effect != PolicyEffect::kNone) {
-    FinishedReason reason = FinishedReason::kSkippedByPolicies;
-    if (signin_util::IsForceSigninEnabled() &&
-        base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
-      // When ForceSignin is enabled and the flows are going through the profile
-      // picker, the final profile setup should not yet be reached. The
-      // rest of the flow is still happening within the Profile Picker, either
-      // the management acceptance screen for Managed accounts, or the Sync
-      // Confirmation screen for Consumer accounts.
-      reason = FinishedReason::kForceSignin;
-    }
-
-    FinishFirstRun(reason);
+    FinishFirstRun(FinishedReason::kSkippedByPolicies);
     return;
   }
 
@@ -353,7 +357,10 @@ void FirstRunService::FinishFirstRun(FinishedReason reason) {
   }
 #endif
 
-  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+  // If the reason is `FinishedReason::kForceSignin` the profile is already
+  // signed in and finalized. It should not finish the setup again.
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      reason != FinishedReason::kForceSignin) {
     // Noting that we expect that the name should already be available, as
     // after sign-in, the extended info is fetched and used for the sync
     // opt-in screen.
