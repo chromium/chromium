@@ -132,6 +132,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   FormDataImporter* GetFormDataImporter() override;
   payments::PaymentsAutofillClient* GetPaymentsAutofillClient() override;
   payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
+  payments::PaymentsWindowManager* GetPaymentsWindowManager() override;
   StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   ukm::SourceId GetUkmSourceId() override;
@@ -328,6 +329,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       payments_autofill_client_;
   std::unique_ptr<payments::PaymentsNetworkInterface>
       payments_network_interface_;
+  std::unique_ptr<payments::PaymentsWindowManager> payments_window_manager_;
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
   std::unique_ptr<CreditCardRiskBasedAuthenticator> risk_based_authenticator_;

@@ -241,6 +241,12 @@ TEST_F(ChromeAutofillClientTest, TriggerUserPerceptionOfAutofillSurvey) {
 }
 #endif
 
+// Test that there is always an PaymentsWindowManager present if attempted
+// to be retrieved.
+TEST_F(ChromeAutofillClientTest, GetPaymentsWindowManager) {
+  EXPECT_NE(client()->GetPaymentsWindowManager(), nullptr);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 class ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature
     : public ChromeAutofillClientTest {

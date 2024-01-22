@@ -434,6 +434,7 @@ static_library("browser") {
     "payments/payments_service_url.h",
     "payments/payments_util.cc",
     "payments/payments_util.h",
+    "payments/payments_window_manager.h",
     "payments/risk_data_loader.h",
     "payments/virtual_card_enroll_metrics_logger.cc",
     "payments/virtual_card_enroll_metrics_logger.h",

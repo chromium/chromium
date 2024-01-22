@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -103,6 +104,10 @@ CreditCardRiskBasedAuthenticator* AutofillClient::GetRiskBasedAuthenticator() {
 }
 
 payments::PaymentsAutofillClient* AutofillClient::GetPaymentsAutofillClient() {
+  return nullptr;
+}
+
+payments::PaymentsWindowManager* AutofillClient::GetPaymentsWindowManager() {
   return nullptr;
 }
 

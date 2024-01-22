@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
+#include "chrome/browser/ui/autofill/payments/chrome_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
@@ -387,6 +388,16 @@ ChromeAutofillClient::GetPaymentsNetworkInterface() {
                 ->IsOffTheRecord());
   }
   return payments_network_interface_.get();
+}
+
+payments::PaymentsWindowManager*
+ChromeAutofillClient::GetPaymentsWindowManager() {
+  if (!payments_window_manager_) {
+    payments_window_manager_ =
+        std::make_unique<payments::ChromePaymentsWindowManager>();
+  }
+
+  return payments_window_manager_.get();
 }
 
 StrikeDatabase* ChromeAutofillClient::GetStrikeDatabase() {
