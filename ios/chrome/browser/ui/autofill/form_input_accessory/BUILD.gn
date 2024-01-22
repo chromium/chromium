@@ -15,6 +15,7 @@ source_set("form_input_accessory") {
     "form_input_accessory_mediator.mm",
     "form_input_accessory_view_controller.h",
     "form_input_accessory_view_controller.mm",
+    "form_input_accessory_view_controller_delegate.h",
     "form_suggestion_label.h",
     "form_suggestion_label.mm",
     "form_suggestion_view.h",

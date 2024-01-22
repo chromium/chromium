@@ -68,6 +68,9 @@ extern NSString* const AccessoryCreditCardAccessibilityIdentifier;
 // Invoked after the user taps the `passwords` button.
 - (void)passwordButtonPressed:(UIButton*)sender;
 
+// Set the hidden property of this view controller's view.
+- (void)setViewHidden:(BOOL)hidden;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_MANUAL_FILL_ACCESSORY_VIEW_CONTROLLER_H_

@@ -142,6 +142,10 @@ static NSTimeInterval MFAnimationDuration = 0.2;
   _passwordButtonHidden = passwordButtonHidden;
 }
 
+- (void)setViewHidden:(BOOL)hidden {
+  self.view.hidden = hidden;
+}
+
 #pragma mark - Private
 
 // Helper to create a system button with the passed data and `self` as the
