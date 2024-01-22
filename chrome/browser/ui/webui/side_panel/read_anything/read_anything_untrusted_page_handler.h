@@ -104,7 +104,6 @@ class ReadAnythingUntrustedPageHandler
       read_anything::mojom::LetterSpacing letter_spacing) override;
   void OnFontChange(const std::string& font) override;
   void OnFontSizeChange(double font_size) override;
-  void OnLinksEnabledChanged(bool enabled) override;
   void OnColorChange(read_anything::mojom::Colors color) override;
   void OnSpeechRateChange(double rate) override;
   void OnVoiceChange(const std::string& voice,

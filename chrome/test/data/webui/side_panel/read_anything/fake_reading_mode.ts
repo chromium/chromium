@@ -130,9 +130,6 @@ export class FakeReadingMode {
   onFontSizeChanged(_increase: boolean) {}
   onFontSizeReset() {}
 
-  // Called when a user toggles links via the webui toolbar.
-  onLinksEnabledToggled() {}
-
   // Called when the letter spacing is changed via the webui toolbar.
   onStandardLetterSpacing() {}
   onWideLetterSpacing() {}

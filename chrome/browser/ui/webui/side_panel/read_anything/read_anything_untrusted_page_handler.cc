@@ -215,13 +215,6 @@ void ReadAnythingUntrustedPageHandler::OnFontSizeChange(double font_size) {
         prefs::kAccessibilityReadAnythingFontScale, saved_font_size);
   }
 }
-void ReadAnythingUntrustedPageHandler::OnLinksEnabledChanged(bool enabled) {
-  if (browser_) {
-    browser_->profile()->GetPrefs()->SetBoolean(
-        prefs::kAccessibilityReadAnythingLinksEnabled,
-        static_cast<size_t>(enabled));
-  }
-}
 void ReadAnythingUntrustedPageHandler::OnColorChange(
     read_anything::mojom::Colors color) {
   if (browser_) {

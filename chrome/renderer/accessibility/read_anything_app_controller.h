@@ -191,7 +191,6 @@ class ReadAnythingAppController
   float SpeechRate() const;
   void OnFontSizeChanged(bool increase);
   void OnFontSizeReset();
-  void OnLinksEnabledToggled();
   SkColor ForegroundColor() const;
   float LetterSpacing() const;
   float LineSpacing() const;

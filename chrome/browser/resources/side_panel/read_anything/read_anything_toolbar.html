@@ -204,17 +204,6 @@
 
   <hr class="separator" aria-hidden="true">
 
-  <template is="dom-repeat" items="[[textStyleToggles_]]">
-    <cr-icon-button
-    tabindex="-1"
-    class="toolbar-button"
-    id="[[item.id]]"
-      aria-label="[[item.ariaLabel]]"
-      iron-icon="[[item.icon]]"
-      on-click="onToggleButtonClick_">
-    </cr-icon-button>
-  </template>
-
   <template is="dom-repeat" items="[[textStyleOptions_]]">
     <cr-icon-button
       class="toolbar-button"
