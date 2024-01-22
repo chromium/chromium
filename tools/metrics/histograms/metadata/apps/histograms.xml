@@ -622,8 +622,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.GameProvider.SearchStatus"
     enum="GameProviderSearchStatus" expires_after="2024-05-19">
-  <owner>laurencom@chromium.org</owner>
-  <owner>amandadeacon@chromium.org</owner>
+  <owner>chenjih@chromium.org</owner>
+  <owner>dgrebenyuk@chromium.org</owner>
   <summary>
     The outcome of a query for game results. Logged once per game search query.
   </summary>
@@ -631,8 +631,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.GameProvider.UpdateStatus" enum="DiscoveryError"
     expires_after="2023-11-12">
-  <owner>laurencom@chromium.org</owner>
-  <owner>amandadeacon@chromium.org</owner>
+  <owner>chenjih@chromium.org</owner>
+  <owner>dgrebenyuk@chromium.org</owner>
   <summary>
     The outcome of an index update from the Discovery service. Logged once per
     update.
@@ -641,8 +641,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.GameResult.IconLoadStatus" enum="DiscoveryError"
     expires_after="2024-02-28">
-  <owner>amandadeacon@chromium.org</owner>
   <owner>chenjih@chromium.org</owner>
+  <owner>dgrebenyuk@chromium.org</owner>
   <summary>
     The outcome of the icon load from the Discovery service. Logged once per
     icon loaded in game result.
@@ -709,8 +709,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Keyword.NumberOfKeywordsInQuery" units="count"
     expires_after="2024-04-28">
-  <owner>laurencom@chromium.org</owner>
-  <owner>amandadeacon@chromium.org</owner>
+  <owner>chenjih@chromium.org</owner>
+  <owner>dgrebenyuk@chromium.org</owner>
   <summary>
     Records the number of keyword tokens that are detected in a user query.
     Reported once each time for each query generated.
@@ -893,8 +893,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Scoring.ScoreAboveBestMatchThreshold{Type}"
     units="BooleanHit" expires_after="2024-04-28">
-  <owner>amandadeacon@chromium.org</owner>
-  <owner>laurencom@chromium.org</owner>
+  <owner>chenjih@chromium.org</owner>
+  <owner>dgrebenyuk@chromium.org</owner>
   <summary>
     The number of the results above the BestMatch threshold with {Type} case.
     Recorded once per result's score above the BestMatch threshold.
