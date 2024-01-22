@@ -1005,6 +1005,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="PSB 5MHz-wide"/>
   <int value="7" label="802.11ac"/>
   <int value="8" label="802.11ax"/>
+  <int value="9" label="802.11be"/>
 </enum>
 
 <enum name="NetworkPortalResult">
