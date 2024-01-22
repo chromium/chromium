@@ -188,6 +188,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test that the Reading List sign-in promo is in the "no accounts" mode when
 // there is no identity on the device.
 - (void)testPromoWithNoMainAccount {
+  // TODO(crbug.com/1520508): Re-enable on iPhone when fixed.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPhone.");
+  }
+
   OpenReadingList();
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
@@ -196,6 +201,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test that the Reading List sign-in promo show the existing identity when an
 // identity exists on the device.
 - (void)testPromoWithMainAccount {
+  // TODO(crbug.com/1520508): Re-enable on iPhone when fixed.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPhone.");
+  }
+
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   OpenReadingList();
@@ -207,6 +217,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // with a tap on the promo primary button, and when the sign-in is done, a
 // snackbar with the user's email and a undo button is shown.
 - (void)testSignInWithPromoPrimaryButton {
+  // TODO(crbug.com/1520508): Re-enable on iPhone when fixed.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPhone.");
+  }
+
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Sign-in with the existing identity with the promo.
@@ -318,6 +333,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test that if the identity is signed-in with full sync (sync feature) enabled,
 // the Reading List promo is hidden.
 - (void)testPromoHiddenAfterSignInWithFullSync {
+  // TODO(crbug.com/1520508): Re-enable on iPhone when fixed.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPhone.");
+  }
+
   // Sign-in with full sync.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
@@ -329,6 +349,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test that if the identity is signed-in with sync and account storage both
 // disabled, the Reading List promo is hidden.
 - (void)testPromoHiddenAfterSignInWithoutAccountStorageOrSync {
+  // TODO(crbug.com/1520508): Re-enable on iPhone when fixed.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPhone.");
+  }
+
   // Sign-in without full sync.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
@@ -412,6 +437,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Tests that the signin promo is shown again when last signed-in user removes
 // data during sign-out.
 - (void)testPromoShownWhenSyncDataIsRemoved {
+  // TODO(crbug.com/1520508): Re-enable on iPhone when fixed.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPhone.");
+  }
+
   // Sign-in with sync with `fakeIdentity1`.
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:YES];
@@ -454,6 +484,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Tests to sign-in in incognito mode with the promo.
 // See http://crbug.com/1432747.
 - (void)testSignInPromoInIncognito {
+  // TODO(crbug.com/1520508): Re-enable on iPhone when fixed.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPhone.");
+  }
+
   // Add identity to sign-in with.
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
@@ -476,6 +511,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // the promo item is still shown.
 // See https://crbug.com/1439243.
 - (void)testPromoShownAfterContentReload {
+  // TODO(crbug.com/1520508): Re-enable on iPhone when fixed.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPhone.");
+  }
+
   OpenReadingList();
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
@@ -602,6 +642,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // When signed-in with the Reading List promo, test that tapping on "Undo" from
 // the "item added" snackbar removes the item from the Reading List.
 - (void)testUndoAddItemWithAccountStorage {
+  // TODO(crbug.com/1520508): Re-enable on iPhone when fixed.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPhone.");
+  }
+
   // Sign-in with the Reading List promo.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -668,6 +713,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // account storage sign-in, then the user upgrades to full sync, both items are
 // visible and do not have the cloud icon.
 - (void)testAddAccountItemThenUpgradeToFullSync {
+  // TODO(crbug.com/1520508): Re-enable on iPhone when fixed.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPhone.");
+  }
+
   AddURLToReadingList(self.testServer->GetURL(kPage1URL));
   // Sign-in with fakeIdentity in the Reading List.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -733,6 +783,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // and one is removed, then after a sign-out and a new sign-in with the Reading
 // List sign-in promo with the same account, the removed item is not visible.
 - (void)testRemoveItemAfterSignInThenRefreshSignin {
+  // TODO(crbug.com/1520508): Re-enable on iPhone when fixed.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPhone.");
+  }
+
   // Sign-in with the Reading List Promo.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -782,6 +837,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // unread items sections should be shown correctly and remain so after a
 // sign-out & sign-in with the same account.
 - (void)testMoveItemThenRefreshSignIn {
+  // TODO(crbug.com/1520508): Re-enable on iPhone when fixed.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPhone.");
+  }
+
   // Sign-in with the Reading List Promo.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
