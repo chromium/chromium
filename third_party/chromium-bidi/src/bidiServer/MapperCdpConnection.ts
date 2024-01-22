@@ -42,7 +42,6 @@ const getLogger = (type: LogPrefix) => {
 
 export class MapperServerCdpConnection {
   #cdpConnection: MapperCdpConnection;
-  #mapperCdpClient: MapperCdpClient;
   #bidiSession: SimpleTransport;
 
   static async create(
@@ -52,13 +51,13 @@ export class MapperServerCdpConnection {
     mapperOptions: MapperOptions
   ): Promise<MapperServerCdpConnection> {
     try {
-      const mapperCdpClient = await this.#initMapper(
+      const bidiSession = await this.#initMapper(
         cdpConnection,
         mapperTabSource,
         verbose,
         mapperOptions
       );
-      return new MapperServerCdpConnection(cdpConnection, mapperCdpClient);
+      return new MapperServerCdpConnection(cdpConnection, bidiSession);
     } catch (e) {
       cdpConnection.close();
       throw e;
@@ -67,29 +66,18 @@ export class MapperServerCdpConnection {
 
   private constructor(
     cdpConnection: MapperCdpConnection,
-    mapperCdpClient: MapperCdpClient
+    bidiSession: SimpleTransport
   ) {
     this.#cdpConnection = cdpConnection;
-    this.#mapperCdpClient = mapperCdpClient;
-    this.#bidiSession = new SimpleTransport(
-      async (message) => await this.#sendMessage(message)
-    );
-
-    this.#mapperCdpClient.on('Runtime.bindingCalled', this.#onBindingCalled);
-    this.#mapperCdpClient.on(
-      'Runtime.consoleAPICalled',
-      this.#onConsoleAPICalled
-    );
-    // Catch unhandled exceptions in the mapper.
-    this.#mapperCdpClient.on(
-      'Runtime.exceptionThrown',
-      this.#onRuntimeExceptionThrown
-    );
+    this.#bidiSession = bidiSession;
   }
 
-  async #sendMessage(message: string): Promise<void> {
+  static async #sendMessage(
+    mapperCdpClient: MapperCdpClient,
+    message: string
+  ): Promise<void> {
     try {
-      await this.#mapperCdpClient.sendCommand('Runtime.evaluate', {
+      await mapperCdpClient.sendCommand('Runtime.evaluate', {
         expression: `onBidiMessage(${JSON.stringify(message)})`,
       });
     } catch (error) {
@@ -105,15 +93,18 @@ export class MapperServerCdpConnection {
     return this.#bidiSession;
   }
 
-  #onBindingCalled = (params: Protocol.Runtime.BindingCalledEvent) => {
+  static #onBindingCalled = (
+    params: Protocol.Runtime.BindingCalledEvent,
+    bidiSession: SimpleTransport
+  ) => {
     if (params.name === 'sendBidiResponse') {
-      this.#bidiSession.emit('message', params.payload);
+      bidiSession.emit('message', params.payload);
     } else if (params.name === 'sendDebugMessage') {
       this.#onDebugMessage(params.payload);
     }
   };
 
-  #onDebugMessage = (json: string) => {
+  static #onDebugMessage = (json: string) => {
     try {
       const log: {
         logType?: LogType;
@@ -130,7 +121,9 @@ export class MapperServerCdpConnection {
     }
   };
 
-  #onConsoleAPICalled = (params: Protocol.Runtime.ConsoleAPICalledEvent) => {
+  static #onConsoleAPICalled = (
+    params: Protocol.Runtime.ConsoleAPICalledEvent
+  ) => {
     debugInfo(
       'consoleAPICalled: %s %O',
       params.type,
@@ -138,7 +131,7 @@ export class MapperServerCdpConnection {
     );
   };
 
-  #onRuntimeExceptionThrown = (
+  static #onRuntimeExceptionThrown = (
     params: Protocol.Runtime.ExceptionThrownEvent
   ) => {
     debugInfo('exceptionThrown:', params);
@@ -149,7 +142,7 @@ export class MapperServerCdpConnection {
     mapperTabSource: string,
     verbose: boolean,
     mapperOptions: MapperOptions
-  ): Promise<MapperCdpClient> {
+  ): Promise<SimpleTransport> {
     debugInternal('Initializing Mapper.', mapperOptions);
 
     const browserClient = await cdpConnection.createBrowserSession();
@@ -166,6 +159,22 @@ export class MapperServerCdpConnection {
     );
 
     const mapperCdpClient = cdpConnection.getCdpClient(mapperSessionId);
+
+    const bidiSession = new SimpleTransport(
+      async (message) => await this.#sendMessage(mapperCdpClient, message)
+    );
+
+    // Process responses from the mapper tab.
+    mapperCdpClient.on('Runtime.bindingCalled', (params) =>
+      this.#onBindingCalled(params, bidiSession)
+    );
+    // Forward console messages from the mapper tab.
+    mapperCdpClient.on('Runtime.consoleAPICalled', this.#onConsoleAPICalled);
+    // Catch unhandled exceptions in the mapper.
+    mapperCdpClient.on(
+      'Runtime.exceptionThrown',
+      this.#onRuntimeExceptionThrown
+    );
 
     await mapperCdpClient.sendCommand('Runtime.enable');
 
@@ -198,6 +207,6 @@ export class MapperServerCdpConnection {
     });
 
     debugInternal('Mapper is launched!');
-    return mapperCdpClient;
+    return bidiSession;
   }
 }
