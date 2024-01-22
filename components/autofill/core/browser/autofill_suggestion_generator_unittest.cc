@@ -110,6 +110,22 @@ Matcher<Suggestion> EqualsIbanSuggestion(
                                {Suggestion::Text(first_label_value)}}));
 }
 
+// Checks that `arg` contains necessary credit card footer suggestions. `arg`
+// has to be of type std::vector<Suggestion>.
+MATCHER(ContainsCreditCardFooterSuggestions, "") {
+  EXPECT_GT(arg.size(), 1ul);
+  EXPECT_THAT(arg.back(), EqualsSuggestion(PopupItemId::kSeparator));
+  return true;
+}
+
+// Checks that `arg` contains necessary address footer suggestions. `arg`
+// has to be of type std::vector<Suggestion>.
+MATCHER(ContainsAddressFooterSuggestions, "") {
+  EXPECT_GT(arg.size(), 1ul);
+  EXPECT_THAT(arg.back(), EqualsSuggestion(PopupItemId::kSeparator));
+  return true;
+}
+
 }  // namespace
 
 // Test component for tests to access implementation details in
@@ -1466,13 +1482,15 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
 
   FormFieldData triggering_field;
 
-  EXPECT_EQ(suggestion_generator()
-                ->GetSuggestionsForProfiles(
-                    {UNKNOWN_TYPE}, triggering_field, UNKNOWN_TYPE,
-                    /*last_targeted_fields=*/std::nullopt,
-                    AutofillSuggestionTriggerSource::kManualFallbackAddress)
-                .size(),
-            2u);
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->GetSuggestionsForProfiles(
+          {UNKNOWN_TYPE}, triggering_field, UNKNOWN_TYPE,
+          /*last_targeted_fields=*/std::nullopt,
+          AutofillSuggestionTriggerSource::kManualFallbackAddress);
+  EXPECT_EQ(suggestions.size(), 3ul);
+  EXPECT_THAT(suggestions[0], EqualsSuggestion(PopupItemId::kAddressEntry));
+  EXPECT_THAT(suggestions[1], EqualsSuggestion(PopupItemId::kAddressEntry));
+  EXPECT_THAT(suggestions, ContainsAddressFooterSuggestions());
 }
 
 // Generally, a profile is displayed with name as main text and address as
@@ -1742,21 +1760,22 @@ TEST_F(AutofillSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
                    .starts_with(profile1.GetRawInfo(NAME_FIRST)));
 
   // Expect that regular suggestions filter.
-  EXPECT_EQ(suggestion_generator()
-                ->GetSuggestionsForProfiles(
-                    {NAME_FIRST}, triggering_field, NAME_FIRST,
-                    /*last_targeted_fields=*/std::nullopt,
-                    AutofillSuggestionTriggerSource::kFormControlElementClicked)
-                .size(),
-            1u);
+  std::vector<Suggestion> address_suggestions =
+      suggestion_generator()->GetSuggestionsForProfiles(
+          {NAME_FIRST}, triggering_field, NAME_FIRST,
+          /*last_targeted_fields=*/std::nullopt,
+          AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  EXPECT_EQ(address_suggestions.size(), 2ul);
+  EXPECT_THAT(address_suggestions, ContainsAddressFooterSuggestions());
+
   // But manual fallback suggestions do not.
-  EXPECT_EQ(suggestion_generator()
-                ->GetSuggestionsForProfiles(
-                    {NAME_FIRST}, triggering_field, NAME_FIRST,
-                    /*last_targeted_fields=*/std::nullopt,
-                    AutofillSuggestionTriggerSource::kManualFallbackAddress)
-                .size(),
-            2u);
+  std::vector<Suggestion> manual_fallback_suggestions =
+      suggestion_generator()->GetSuggestionsForProfiles(
+          {NAME_FIRST}, triggering_field, NAME_FIRST,
+          /*last_targeted_fields=*/std::nullopt,
+          AutofillSuggestionTriggerSource::kManualFallbackAddress);
+  EXPECT_EQ(manual_fallback_suggestions.size(), 3ul);
+  EXPECT_THAT(manual_fallback_suggestions, ContainsAddressFooterSuggestions());
 }
 
 TEST_F(AutofillSuggestionGeneratorTest,
@@ -2002,7 +2021,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
           with_offer, with_cvc, metadata_logging_context);
 
   EXPECT_TRUE(with_offer);
-  ASSERT_EQ(suggestions.size(), 3U);
+  ASSERT_EQ(suggestions.size(), 4U);
   // The suggestion with card linked offer available should be ranked to the
   // top.
   EXPECT_EQ(suggestions[0].GetPayload<Suggestion::BackendId>(),
@@ -2015,6 +2034,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(suggestions[2].GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId(
                 Suggestion::Guid("00000000-0000-0000-0000-000000000001")));
+  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
 }
 
 // Ensures we appropriately generate suggestions for virtual cards on a
@@ -2036,7 +2056,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
       suggestion_generator()->GetSuggestionsForVirtualCardStandaloneCvc(
           metadata_logging_context, virtual_card_guid_to_last_four_map);
 
-  ASSERT_EQ(suggestions.size(), 1U);
+  ASSERT_EQ(suggestions.size(), 2U);
+  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
 }
 
 // Ensures we appropriately generate suggestions for credit saved with CVC.
@@ -2055,8 +2076,9 @@ TEST_F(AutofillSuggestionGeneratorTest, GetCardSuggestionsWithCvc) {
           /*should_show_cards_from_account=*/false, should_display_gpay_logo,
           with_offer, with_cvc, metadata_logging_context);
 
-  ASSERT_EQ(suggestions.size(), 1U);
+  ASSERT_EQ(suggestions.size(), 2U);
   EXPECT_TRUE(with_cvc);
+  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
 }
 
 // Verifies that the `should_display_gpay_logo` is set correctly.
@@ -2083,8 +2105,9 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
             /*should_show_cards_from_account=*/false, should_display_gpay_logo,
             with_offer, with_cvc, metadata_logging_context);
 
-    EXPECT_EQ(suggestions.size(), 2U);
+    EXPECT_EQ(suggestions.size(), 3U);
     EXPECT_TRUE(should_display_gpay_logo);
+    EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
   }
 
   personal_data().ClearCreditCards();
@@ -2112,8 +2135,9 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
             /*should_show_cards_from_account=*/false, should_display_gpay_logo,
             with_offer, with_cvc, metadata_logging_context);
 
-    EXPECT_EQ(suggestions.size(), 2U);
+    EXPECT_EQ(suggestions.size(), 3U);
     EXPECT_FALSE(should_display_gpay_logo);
+    EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
   }
 
   personal_data().ClearCreditCards();
@@ -2143,8 +2167,9 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
             /*should_show_cards_from_account=*/false, should_display_gpay_logo,
             with_offer, with_cvc, metadata_logging_context);
 
-    EXPECT_EQ(suggestions.size(), 1U);
+    EXPECT_EQ(suggestions.size(), 2U);
     EXPECT_TRUE(should_display_gpay_logo);
+    EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
   }
 
   personal_data().ClearCreditCards();
@@ -2195,12 +2220,14 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowScanCreditCard) {
           /*should_show_cards_from_account=*/false, should_display_gpay_logo,
           with_offer, with_cvc, metadata_logging_context);
 
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsSuggestion(PopupItemId::kCreditCardEntry),
-                          EqualsSuggestion(PopupItemId::kScanCreditCard,
-                                           l10n_util::GetStringUTF16(
-                                               IDS_AUTOFILL_SCAN_CREDIT_CARD),
-                                           Suggestion::Icon::kScanCreditCard)));
+  EXPECT_EQ(suggestions.size(), 3ul);
+  EXPECT_THAT(suggestions[0], EqualsSuggestion(PopupItemId::kCreditCardEntry));
+  EXPECT_THAT(
+      suggestions[1],
+      EqualsSuggestion(PopupItemId::kScanCreditCard,
+                       l10n_util::GetStringUTF16(IDS_AUTOFILL_SCAN_CREDIT_CARD),
+                       Suggestion::Icon::kScanCreditCard));
+  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
@@ -2216,13 +2243,14 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
           /*should_show_cards_from_account=*/true, should_display_gpay_logo,
           with_offer, with_cvc, metadata_logging_context);
 
-  EXPECT_EQ(suggestions.size(), 2ul);
+  EXPECT_EQ(suggestions.size(), 3ul);
   EXPECT_THAT(suggestions[0], EqualsSuggestion(PopupItemId::kCreditCardEntry));
   EXPECT_THAT(suggestions[1],
               EqualsSuggestion(
                   PopupItemId::kShowAccountCards,
                   l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS),
                   Suggestion::Icon::kGoogle));
+  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
 }
 
 // Test that the virtual card option is shown when all of the prerequisites are
@@ -3089,7 +3117,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
           with_offer, with_cvc, metadata_logging_context);
 
   // Credit card suggestions should not depend on the field's value.
-  EXPECT_EQ(suggestions.size(), 1U);
+  EXPECT_EQ(suggestions.size(), 2U);
+  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -3118,7 +3147,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   // Both local card and server card suggestion should be shown when CVC field
   // is focused.
-  ASSERT_EQ(suggestions.size(), 2U);
+  ASSERT_EQ(suggestions.size(), 3U);
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(suggestions[0].main_text.value, u"CVC");
   EXPECT_EQ(suggestions[1].main_text.value, u"CVC");
@@ -3130,6 +3159,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   EXPECT_EQ(suggestions[0].minor_text.value, u"");
   EXPECT_EQ(suggestions[1].minor_text.value, u"");
 #endif
+  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
 }
 
 // Verify that the suggestion's texts are populated correctly for a duplicate
@@ -3151,8 +3181,9 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
           /*should_show_cards_from_account=*/false, should_display_gpay_logo,
           with_offer, with_cvc, metadata_logging_context);
 
-  // Only 1 suggestion should be shown when CVC field is focused.
-  ASSERT_EQ(suggestions.size(), 1U);
+  // Only 1 suggestion + footer should be shown when CVC field is focused.
+  ASSERT_EQ(suggestions.size(), 2U);
+  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
 }
 
 // Verify that the FPAN and VCN suggestion's texts are populated correctly for a
@@ -3177,7 +3208,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
           with_offer, with_cvc, metadata_logging_context);
 
   // Both FPAN and VCN suggestion should be shown when CVC field is focused.
-  ASSERT_EQ(suggestions.size(), 2U);
+  ASSERT_EQ(suggestions.size(), 3U);
 
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(suggestions[0].main_text.value, u"CVC");
@@ -3190,6 +3221,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   EXPECT_EQ(suggestions[0].minor_text.value, u"");
   EXPECT_EQ(suggestions[1].minor_text.value, u"");
 #endif
+  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
 }
 
 // Verify that the FPAN and VCN suggestion's texts are populated correctly for a
@@ -3216,7 +3248,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
           with_offer, with_cvc, metadata_logging_context);
 
   // Both FPAN and VCN suggestion should be shown when CVC field is focused.
-  ASSERT_EQ(suggestions.size(), 2U);
+  ASSERT_EQ(suggestions.size(), 3U);
+  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
 }
 
 #if BUILDFLAG(IS_IOS)

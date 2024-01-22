@@ -1544,15 +1544,15 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Suggestions should be returned for the first two fields.
   GetAutofillSuggestions(form, form.fields[0]);
-  external_delegate()->CheckSuggestionCount(form.fields[0].global_id(), 2);
+  external_delegate()->CheckSuggestionCount(form.fields[0].global_id(), 3);
   GetAutofillSuggestions(form, form.fields[1]);
-  external_delegate()->CheckSuggestionCount(form.fields[1].global_id(), 2);
+  external_delegate()->CheckSuggestionCount(form.fields[1].global_id(), 3);
 
   GetAutofillSuggestions(form, form.fields[2]);
   // For the third field, suggestions should only be shown on mobile due to the
   // unrecognized autocomplete attribute.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  external_delegate()->CheckSuggestionCount(form.fields[2].global_id(), 2);
+  external_delegate()->CheckSuggestionCount(form.fields[2].global_id(), 3);
 #else
   external_delegate()->CheckNoSuggestions(form.fields[2].global_id());
 #endif
@@ -1571,13 +1571,13 @@ TEST_F(BrowserAutofillManagerTest,
       AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
   FormsSeen({form});
 
-  // Expect that two suggestions are returned for all fields, independently of
-  // the autocomplete attribute. Two, because the fixture created three profiles
-  // during set up, one of which is empty and cannot be suggested
-  // (see `CreateTestAutofillProfiles()`).
+  // Expect that two suggestions + footer are returned for all fields,
+  // independently of the autocomplete attribute. Two, because the fixture
+  // created three profiles during set up, one of which is empty and cannot be
+  // suggested (see `CreateTestAutofillProfiles()`).
   for (const FormFieldData& field : form.fields) {
     GetAutofillSuggestions(form, field);
-    external_delegate()->CheckSuggestionCount(field.global_id(), 2);
+    external_delegate()->CheckSuggestionCount(field.global_id(), 3);
   }
 }
 #else
@@ -1601,12 +1601,12 @@ TEST_F(BrowserAutofillManagerTest,
       form, first_field,
       AutofillSuggestionTriggerSource::kManualFallbackAddress);
   external_delegate()->CheckSuggestionsNotReturned(first_field.global_id());
-  // Expect 3 credit card suggestions because the fixture created 3 credit cards
-  // during setup (see `CreateTestCreditCards()`).
+  // Expect 3 credit card suggestions + footer because the fixture created 3
+  // credit cards during setup (see `CreateTestCreditCards()`).
   GetAutofillSuggestions(
       form, first_field,
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
-  external_delegate()->CheckSuggestionCount(first_field.global_id(), 3);
+  external_delegate()->CheckSuggestionCount(first_field.global_id(), 4);
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -1622,24 +1622,25 @@ TEST_F(BrowserAutofillManagerTest,
   GetAutofillSuggestions(form, first_field);
   external_delegate()->CheckNoSuggestions(first_field.global_id());
 
-  // Expect 2 suggestions because the fixture created three profiles during set
-  // up, one of which is empty and cannot be suggested
+  // Expect 2 address suggestions + footer because the fixture created three
+  // profiles during set up, one of which is empty and cannot be suggested
   // (see `CreateTestAutofillProfiles()`).
   GetAutofillSuggestions(
       form, first_field,
       AutofillSuggestionTriggerSource::kManualFallbackAddress);
-  external_delegate()->CheckSuggestionCount(first_field.global_id(), 2);
-  // Expect 3 credit card suggestions because the fixture created 3 credit cards
-  // during setup (see `CreateTestCreditCards()`).
+  external_delegate()->CheckSuggestionCount(first_field.global_id(), 3);
+  // Expect 4 credit card suggestions + footer because the fixture created 3
+  // credit cards during setup (see `CreateTestCreditCards()`).
   GetAutofillSuggestions(
       form, first_field,
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
-  external_delegate()->CheckSuggestionCount(first_field.global_id(), 3);
+  external_delegate()->CheckSuggestionCount(first_field.global_id(), 4);
 
-  // Expect that two suggestions are returned for all other fields.
+  // Expect that two address suggestions + footer are returned for all other
+  // fields.
   for (size_t i = 1; i < form.fields.size(); i++) {
     GetAutofillSuggestions(form, form.fields[i]);
-    external_delegate()->CheckSuggestionCount(form.fields[i].global_id(), 2);
+    external_delegate()->CheckSuggestionCount(form.fields[i].global_id(), 3);
   }
 }
 
@@ -1650,25 +1651,26 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   for (const auto& field : form.fields) {
-    // Expect 2 suggestions because the fixture created three profiles during
-    // set up, one of which is empty and cannot be suggested
+    // Expect 2 address suggestions + footer because the fixture created three
+    // profiles during set up, one of which is empty and cannot be suggested
     // (see `CreateTestAutofillProfiles()`).
     GetAutofillSuggestions(
         form, field, AutofillSuggestionTriggerSource::kManualFallbackAddress);
-    external_delegate()->CheckSuggestionCount(field.global_id(), 2);
+    external_delegate()->CheckSuggestionCount(field.global_id(), 3);
     base::ranges::all_of(
         external_delegate()->suggestions(), [](const Suggestion& suggestion) {
           return suggestion.popup_item_id == PopupItemId::kAddressEntry;
         });
-    // Expect 3 credit card suggestions because the fixture created 3 credit
-    // cards during setup (see `CreateTestCreditCards()`).
+    // Expect 3 credit card suggestions + footer because the fixture created 3
+    // credit cards during setup (see `CreateTestCreditCards()`).
     GetAutofillSuggestions(
         form, field, AutofillSuggestionTriggerSource::kManualFallbackPayments);
-    external_delegate()->CheckSuggestionCount(field.global_id(), 3);
-    EXPECT_TRUE(base::ranges::all_of(external_delegate()->suggestions(),
-                                     [](const Suggestion& suggestion) {
-                                       return !suggestion.is_acceptable;
-                                     }));
+    external_delegate()->CheckSuggestionCount(field.global_id(), 4);
+    EXPECT_TRUE(base::ranges::all_of(
+        external_delegate()->suggestions(), [](const Suggestion& suggestion) {
+          return suggestion.popup_item_id != PopupItemId::kAddressEntry ||
+                 !suggestion.is_acceptable;
+        }));
   }
 }
 
@@ -1683,16 +1685,15 @@ TEST_F(BrowserAutofillManagerTest,
   // suggestions shown after the address suggestions are generated for
   // unclassified fields.
   const FormFieldData& cc_name_field = form.fields[0];
-  // Expect 2 suggestions because manual fallback flow triggered on a classified
-  // credit card field should generate regular suggestions.
+  // Expect 2 credit card suggestions + footer because manual fallback flow
+  // triggered on a classified credit card field should generate regular
+  // suggestions.
   GetAutofillSuggestions(
       form, cc_name_field,
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
-  external_delegate()->CheckSuggestionCount(cc_name_field.global_id(), 2);
-  EXPECT_TRUE(base::ranges::all_of(
-      external_delegate()->suggestions(), [](const Suggestion& suggestion) {
-        return suggestion.popup_item_id == PopupItemId::kCreditCardEntry;
-      }));
+  external_delegate()->CheckSuggestionCount(cc_name_field.global_id(), 3);
+  EXPECT_EQ(external_delegate()->GetMainFillingProduct(),
+            FillingProduct::kCreditCard);
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
@@ -1749,7 +1750,8 @@ TEST_F(BrowserAutofillManagerTest,
       {Suggestion("Charles", "", Suggestion::Icon::kNoIcon,
                   PopupItemId::kAddressEntry),
        Suggestion("Elvis", "", Suggestion::Icon::kNoIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 
   // Check that there are no suggestions for the field without the autocomplete
   // attribute.
@@ -1781,7 +1783,8 @@ TEST_F(BrowserAutofillManagerTest,
       {Suggestion("Charles", "Charles Hardin Holley", kAddressEntryIcon,
                   PopupItemId::kAddressEntry),
        Suggestion("Elvis", "Elvis Aaron Presley", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 
   GetAutofillSuggestions(form, form.fields[1]);
   external_delegate()->CheckSuggestions(
@@ -1789,7 +1792,8 @@ TEST_F(BrowserAutofillManagerTest,
       {Suggestion("Holley", "Charles Hardin Holley", kAddressEntryIcon,
                   PopupItemId::kAddressEntry),
        Suggestion("Presley", "Elvis Aaron Presley", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that the call is properly forwarded to its SingleFieldFormFillRouter.
@@ -1881,7 +1885,8 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_EmptyValue) {
       {Suggestion("Charles", "123 Apple St.", kAddressEntryIcon,
                   PopupItemId::kAddressEntry),
        Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that we return only matching address profile suggestions when the
@@ -1898,7 +1903,8 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_MatchCharacter) {
   external_delegate()->CheckSuggestions(
       field.global_id(),
       {Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Tests that we return address profile suggestions values when the section
@@ -1947,7 +1953,8 @@ TEST_P(SuggestionMatchingTest,
       {Suggestion("Googler", "1600 Amphitheater pkwy", kAddressEntryIcon,
                   PopupItemId::kAddressEntry),
        Suggestion("Grimes", "1234 Smith Blvd.", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Tests that we return address profile suggestions values when the section
@@ -1969,7 +1976,8 @@ TEST_P(SuggestionMatchingTest,
   external_delegate()->CheckSuggestions(
       field.global_id(),
       {Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that we return no suggestions when the form has no relevant fields.
@@ -2101,7 +2109,8 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_WithDuplicates) {
       {Suggestion("Charles", "123 Apple St.", kAddressEntryIcon,
                   PopupItemId::kAddressEntry),
        Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that we return no suggestions when autofill is disabled.
@@ -2193,7 +2202,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   // Test that we sent the credit card suggestions to the external delegate.
   external_delegate()->CheckSuggestions(
       form.fields[1].global_id(),
-      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard)});
+      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that we return all credit card profile suggestions when the triggering
@@ -2212,7 +2222,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       field.global_id(),
-      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard)});
+      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that we return all credit card profile suggestions when the triggering
@@ -2230,7 +2241,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       field.global_id(),
-      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard)});
+      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that we return all credit card profile suggestions when the triggering
@@ -2249,7 +2261,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       field.global_id(),
-      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard)});
+      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that we return all credit card profile suggestions when the triggering
@@ -2274,8 +2287,9 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   GetAutofillSuggestions(form, field);
 
   // Test that we sent the right value to the external delegate.
-  external_delegate()->CheckSuggestions(field.global_id(),
-                                        {GetCardSuggestion(kMasterCard)});
+  external_delegate()->CheckSuggestions(
+      field.global_id(), {GetCardSuggestion(kMasterCard),
+                          AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that we return only matching credit card profile suggestions when the
@@ -2292,8 +2306,9 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   GetAutofillSuggestions(form, field);
 
   // Test that we sent the right values to the external delegate.
-  external_delegate()->CheckSuggestions(field.global_id(),
-                                        {GetCardSuggestion(kVisaCard)});
+  external_delegate()->CheckSuggestions(
+      field.global_id(), {GetCardSuggestion(kVisaCard),
+                          AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that we return credit card profile suggestions when the selected form
@@ -2334,7 +2349,8 @@ TEST_F(CreditCardSuggestionTest, GetCreditCardSuggestions_CCNumber) {
                   PopupItemId::kCreditCardEntry),
        Suggestion(master_card_value, master_card_label,
                   Suggestion::Icon::kCardMasterCard,
-                  PopupItemId::kCreditCardEntry)});
+                  PopupItemId::kCreditCardEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that we return credit card profile suggestions when the selected form
@@ -2385,7 +2401,8 @@ TEST_F(CreditCardSuggestionTest, GetCreditCardSuggestions_NonCCNumber) {
                   PopupItemId::kCreditCardEntry),
        Suggestion("Buddy Holly", master_card_label,
                   Suggestion::Icon::kCardMasterCard,
-                  PopupItemId::kCreditCardEntry)});
+                  PopupItemId::kCreditCardEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that we return a warning explaining that credit card profile suggestions
@@ -2433,7 +2450,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       form.fields[1].global_id(),
-      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard)});
+      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that we return credit card suggestions for secure pages that have a
@@ -2452,7 +2470,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       form.fields[1].global_id(),
-      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard)});
+      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that we return all credit card suggestions in the case that two cards
@@ -2480,7 +2499,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   external_delegate()->CheckSuggestions(
       form.fields[1].global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
-       GetCardSuggestion(kMasterCard)});
+       GetCardSuggestion(kMasterCard),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that a masked server card is not suggested if more than six digits
@@ -2563,7 +2583,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   // Test that we sent the credit card suggestions to the external delegate.
   external_delegate()->CheckSuggestions(
       form.fields[1].global_id(),
-      {mastercard_suggestion, amex_suggestion, visa_suggestion});
+      {mastercard_suggestion, amex_suggestion, visa_suggestion,
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test cards that are expired AND disused are suppressed when suppression is
@@ -2615,8 +2636,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                     Suggestion::Icon::kCardMasterCard,
                     PopupItemId::kCreditCardEntry),
          Suggestion("Clyde Barrow", GenerateLabelsFromCreditCard(credit_card1),
-                    Suggestion::Icon::kCardVisa,
-                    PopupItemId::kCreditCardEntry)});
+                    Suggestion::Icon::kCardVisa, PopupItemId::kCreditCardEntry),
+         AutofillSuggestionGenerator::CreateSeparator()});
   }
 
   // Query with name prefix for card0 returns card0.
@@ -2629,7 +2650,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
         form.fields[0].global_id(),
         {Suggestion("Bonnie Parker", GenerateLabelsFromCreditCard(credit_card0),
                     Suggestion::Icon::kCardMasterCard,
-                    PopupItemId::kCreditCardEntry)});
+                    PopupItemId::kCreditCardEntry),
+         AutofillSuggestionGenerator::CreateSeparator()});
   }
 
   // Query with name prefix for card1 returns card1.
@@ -2641,8 +2663,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
     external_delegate()->CheckSuggestions(
         form.fields[0].global_id(),
         {Suggestion("Clyde Barrow", GenerateLabelsFromCreditCard(credit_card1),
-                    Suggestion::Icon::kCardVisa,
-                    PopupItemId::kCreditCardEntry)});
+                    Suggestion::Icon::kCardVisa, PopupItemId::kCreditCardEntry),
+         AutofillSuggestionGenerator::CreateSeparator()});
   }
 
   // Query with name prefix for card2 returns card2.
@@ -2656,7 +2678,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
         {Suggestion("John Dillinger",
                     GenerateLabelsFromCreditCard(credit_card2),
                     Suggestion::Icon::kCardAmericanExpress,
-                    PopupItemId::kCreditCardEntry)});
+                    PopupItemId::kCreditCardEntry),
+         AutofillSuggestionGenerator::CreateSeparator()});
   }
 }
 
@@ -2699,7 +2722,9 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 // Sublabel is expiration date when filling card number. The second card
 // doesn't have a number so it should not be included in the suggestions.
   external_delegate()->CheckSuggestions(
-      form.fields[1].global_id(), {GetCardSuggestion(kAmericanExpressCard)});
+      form.fields[1].global_id(),
+      {GetCardSuggestion(kAmericanExpressCard),
+       AutofillSuggestionGenerator::CreateSeparator()});
 
   // Query by cardholder name field.
   GetAutofillSuggestions(form, form.fields[0]);
@@ -2710,7 +2735,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                   PopupItemId::kCreditCardEntry),
        Suggestion("Clyde Barrow", GenerateLabelsFromCreditCard(credit_card0),
                   Suggestion::Icon::kCardAmericanExpress,
-                  PopupItemId::kCreditCardEntry)});
+                  PopupItemId::kCreditCardEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that we return profile and credit card suggestions for combined forms.
@@ -2727,7 +2753,8 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
       {Suggestion("Charles", "123 Apple St.", kAddressEntryIcon,
                   PopupItemId::kAddressEntry),
        Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 
   FormFieldData field = CreateTestFormField("Card Number", "cardnumber", "",
                                             FormControlType::kInputText);
@@ -2736,7 +2763,8 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
   // Test that we sent the credit card suggestions to the external delegate.
   external_delegate()->CheckSuggestions(
       field.global_id(),
-      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard)});
+      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that for non-https forms with both address and credit card fields, we
@@ -3497,7 +3525,8 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWhenFormIsAutofilled) {
       {Suggestion("Charles", "123 Apple St.", kAddressEntryIcon,
                   PopupItemId::kAddressEntry),
        Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // The method `AutofillSuggestionGenerator::GetPrefixMatchedProfiles` prevents
@@ -3526,7 +3555,8 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
   external_delegate()->CheckSuggestions(
       field.global_id(),
       {Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 #endif
 
@@ -3570,7 +3600,8 @@ TEST_F(BrowserAutofillManagerTest,
   external_delegate()->CheckSuggestions(
       form.fields[2].global_id(),
       {Suggestion("356", "1800FLOWERS", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 
   const FormFieldData& phone_suffix = form.fields[3];
   GetAutofillSuggestions(form, phone_suffix);
@@ -3579,7 +3610,8 @@ TEST_F(BrowserAutofillManagerTest,
   external_delegate()->CheckSuggestions(
       form.fields[3].global_id(),
       {Suggestion("9377", "1800FLOWERS", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Tests that the suggestion consists of phone number without the country code
@@ -3602,7 +3634,8 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_ForPhoneField) {
   external_delegate()->CheckSuggestions(
       form.fields[9].global_id(),
       {Suggestion("123456789", "Natty Bumppo", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Tests that we return email profile suggestions values
@@ -3647,7 +3680,8 @@ TEST_F(BrowserAutofillManagerTest,
   external_delegate()->CheckSuggestions(
       form.fields[2].global_id(),
       {Suggestion("test@example.com", "Natty Bumppo", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that we correctly fill an address form.
@@ -8255,8 +8289,10 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   // Get the suggestions for already filled credit card |number_field|.
   GetAutofillSuggestions(form, number_field);
 
-  external_delegate()->CheckSuggestions(form.fields[3].global_id(),
-                                        {GetCardSuggestion(kVisaCard)});
+  external_delegate()->CheckSuggestions(
+      form.fields[3].global_id(),
+      {GetCardSuggestion(kVisaCard),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Test that inputs detected to be CVC inputs are forced to
@@ -8690,7 +8726,8 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
            std::string("nickname  ") +
                test::ObfuscatedCardDigitsAsUTF8(
                    "3456", ObfuscationLengthForCreditCardLastFourDigits()),
-           label, Suggestion::Icon::kCardVisa, PopupItemId::kCreditCardEntry)});
+           label, Suggestion::Icon::kCardVisa, PopupItemId::kCreditCardEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 
   // Non card number field (cardholder name field).
   GetAutofillSuggestions(form, form.fields[0]);
@@ -8714,7 +8751,8 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
       form.fields[0].global_id(),
       {virtual_card_suggestion,
        Suggestion("Elvis Presley", label, Suggestion::Icon::kCardVisa,
-                  PopupItemId::kCreditCardEntry)});
+                  PopupItemId::kCreditCardEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 
   // Incomplete form.
   GetAutofillSuggestions(form, form.fields[0]);
@@ -8723,7 +8761,8 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
       form.fields[0].global_id(),
       {virtual_card_suggestion,
        Suggestion("Elvis Presley", label, Suggestion::Icon::kCardVisa,
-                  PopupItemId::kCreditCardEntry)});
+                  PopupItemId::kCreditCardEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -10063,7 +10102,8 @@ TEST_F(BrowserAutofillManagerTest, NoPlusAddressSuggestionsByDefault) {
       {Suggestion("buddy@gmail.com", "", Suggestion::Icon::kNoIcon,
                   PopupItemId::kAddressEntry),
        Suggestion("theking@gmail.com", "", Suggestion::Icon::kNoIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Tests that compose suggestions are not queried if Autofill has suggestions
@@ -10088,7 +10128,8 @@ TEST_F(BrowserAutofillManagerTest, NoComposeSuggestionsByDefault) {
                   PopupItemId::kAddressEntry),
        Suggestion("3734 Elvis Presley Blvd., Apt. 10",
                   "3734 Elvis Presley Blvd.", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // Tests that Compose suggestions are queried if the trigger source indicates
@@ -10387,7 +10428,8 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
 
   external_delegate()->CheckSuggestions(
       form.fields[1].global_id(),
-      {GetCardSuggestion(kAmericanExpressCard, expected_nickname_)});
+      {GetCardSuggestion(kAmericanExpressCard, expected_nickname_),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 TEST_P(BrowserAutofillManagerTestForSharingNickname,
@@ -10416,7 +10458,8 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
   external_delegate()->CheckSuggestions(
       form.fields[1].global_id(),
       {GetCardSuggestion(kAmericanExpressCard, local_nickname_),
-       GetCardSuggestion(kAmericanExpressCard, server_nickname_)});
+       GetCardSuggestion(kAmericanExpressCard, server_nickname_),
+       AutofillSuggestionGenerator::CreateSeparator()});
 }
 
 // The following Refill Tests ensure that Autofill can handle the situation
@@ -10826,7 +10869,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
       {Suggestion("Charles", "", Suggestion::Icon::kNoIcon,
                   PopupItemId::kAddressEntry),
        Suggestion("Elvis", "", Suggestion::Icon::kNoIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 
   // Also check that there are no suggestions for the field without the
   // autocomplete attribute, ensuring that unrecognized fields don't get plus
@@ -10861,7 +10905,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, PlusAddressSuggestionShown) {
        Suggestion("buddy@gmail.com", "", Suggestion::Icon::kNoIcon,
                   PopupItemId::kAddressEntry),
        Suggestion("theking@gmail.com", "", Suggestion::Icon::kNoIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressSuggestionMetric),
       BucketsAre(base::Bucket(
@@ -10897,7 +10942,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
        Suggestion("buddy@gmail.com", "", Suggestion::Icon::kNoIcon,
                   PopupItemId::kAddressEntry),
        Suggestion("theking@gmail.com", "", Suggestion::Icon::kNoIcon,
-                  PopupItemId::kAddressEntry)});
+                  PopupItemId::kAddressEntry),
+       AutofillSuggestionGenerator::CreateSeparator()});
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(kPlusAddressSuggestionMetric),
               BucketsAre(base::Bucket(plus_addresses::PlusAddressMetrics::

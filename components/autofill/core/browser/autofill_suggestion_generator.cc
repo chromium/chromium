@@ -1169,10 +1169,20 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   }
   autofill_metrics::LogPreviouslyHiddenProfileSuggestionNumber(
       previously_hidden_profiles_guid.size());
-  return CreateSuggestionsFromProfiles(profiles_to_suggest, field_types,
-                                       last_targeted_fields, trigger_field_type,
-                                       trigger_field.max_length,
-                                       previously_hidden_profiles_guid);
+
+  std::vector<Suggestion> suggestions = CreateSuggestionsFromProfiles(
+      profiles_to_suggest, field_types, last_targeted_fields,
+      trigger_field_type, trigger_field.max_length,
+      previously_hidden_profiles_guid);
+
+  if (suggestions.empty()) {
+    return suggestions;
+  }
+
+  base::ranges::move(GetAddressFooterSuggestions(),
+                     std::back_inserter(suggestions));
+
+  return suggestions;
 }
 
 std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
@@ -1537,10 +1547,10 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     return suggestions;
   }
 
-  for (const Suggestion& suggestion : GetCreditCardFooterSuggestions(
-           should_show_scan_credit_card, should_show_cards_from_account)) {
-    suggestions.push_back(suggestion);
-  }
+  base::ranges::move(
+      GetCreditCardFooterSuggestions(should_show_scan_credit_card,
+                                     should_show_cards_from_account),
+      std::back_inserter(suggestions));
 
   return suggestions;
 }
@@ -1592,6 +1602,16 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
     }
     suggestions.push_back(suggestion);
   }
+
+  if (suggestions.empty()) {
+    return suggestions;
+  }
+
+  base::ranges::move(
+      GetCreditCardFooterSuggestions(/*should_show_scan_credit_card=*/false,
+                                     /*should_show_cards_from_account=*/false),
+      std::back_inserter(suggestions));
+
   return suggestions;
 }
 
@@ -2109,6 +2129,15 @@ void AutofillSuggestionGenerator::SetCardArtURL(
 }
 
 std::vector<Suggestion>
+AutofillSuggestionGenerator::GetAddressFooterSuggestions() const {
+  std::vector<Suggestion> footer_suggestions;
+
+  footer_suggestions.push_back(CreateSeparator());
+
+  return footer_suggestions;
+}
+
+std::vector<Suggestion>
 AutofillSuggestionGenerator::GetCreditCardFooterSuggestions(
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account) const {
@@ -2128,6 +2157,8 @@ AutofillSuggestionGenerator::GetCreditCardFooterSuggestions(
     show_card_from_account.icon = Suggestion::Icon::kGoogle;
     footer_suggestions.push_back(show_card_from_account);
   }
+
+  footer_suggestions.push_back(CreateSeparator());
 
   return footer_suggestions;
 }

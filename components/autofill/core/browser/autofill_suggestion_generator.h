@@ -246,6 +246,10 @@ class AutofillSuggestionGenerator {
                      const CreditCard& credit_card,
                      bool virtual_card_option) const;
 
+  // Returns non address suggestions which are displayed below address
+  // suggestions in the Autofill popup.
+  std::vector<Suggestion> GetAddressFooterSuggestions() const;
+
   // Returns non credit card suggestions which are displayed below credit card
   // suggestions in the Autofill popup.
   std::vector<Suggestion> GetCreditCardFooterSuggestions(

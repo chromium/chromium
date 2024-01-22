@@ -870,7 +870,6 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
 
   const auto kExpectedSuggestions =
       SuggestionVectorIdsAre(PopupItemId::kAddressEntry,
-                             PopupItemId::kSeparator,
                              PopupItemId::kAutofillOptions);
   EXPECT_CALL(client(),
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
@@ -913,7 +912,6 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
                              PopupItemId::kSeparator,
 #endif
                              PopupItemId::kAddressEntry,
-                             PopupItemId::kSeparator,
                              PopupItemId::kAutofillOptions);
   EXPECT_CALL(client(),
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
@@ -955,7 +953,6 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
                              PopupItemId::kSeparator,
 #endif
                              PopupItemId::kAddressEntry,
-                             PopupItemId::kSeparator,
                              PopupItemId::kAutofillOptions);
   EXPECT_CALL(client(),
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
@@ -997,7 +994,6 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
       PopupItemId::kSeparator,
 #endif
       PopupItemId::kAddressEntry,
-      PopupItemId::kSeparator,
       PopupItemId::kAutofillOptions);
   EXPECT_CALL(client(),
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
@@ -2318,19 +2314,16 @@ TEST_F(AutofillExternalDelegateUnitTest, ShouldShowGooglePayIcon) {
   // On Desktop, the GPay icon should be stored in the store indicator icon.
 #if BUILDFLAG(IS_ANDROID)
       SuggestionVectorIconsAre(Suggestion::Icon::kNoIcon,
-                               Suggestion::Icon::kNoIcon,
                                AnyOf(Suggestion::Icon::kGooglePay,
                                      Suggestion::Icon::kGooglePayDark));
 #elif BUILDFLAG(IS_IOS)
       SuggestionVectorIconsAre(Suggestion::Icon::kNoIcon,
-                               Suggestion::Icon::kNoIcon,
                                AnyOf(Suggestion::Icon::kGooglePay,
                                      Suggestion::Icon::kGooglePayDark));
 #else
       SuggestionVectorStoreIndicatorIconsAre(
-          Suggestion::Icon::kNoIcon, Suggestion::Icon::kNoIcon,
-          AnyOf(Suggestion::Icon::kGooglePay,
-                Suggestion::Icon::kGooglePayDark));
+          Suggestion::Icon::kNoIcon, AnyOf(Suggestion::Icon::kGooglePay,
+                                           Suggestion::Icon::kGooglePayDark));
 #endif
   EXPECT_CALL(client(),
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
@@ -2346,7 +2339,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   const auto kExpectedSuggestions =
       SuggestionVectorIconsAre(Suggestion::Icon::kNoIcon,
-                               Suggestion::Icon::kNoIcon,
                                Suggestion::Icon::kSettings);
   EXPECT_CALL(client(),
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
@@ -2361,7 +2353,6 @@ TEST_F(AutofillExternalDelegateUnitTest, ShouldUseNewSettingName) {
 
   const auto kExpectedSuggestions = SuggestionVectorMainTextsAre(
       Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(true)),
-      Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(false)),
       Suggestion::Text(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
                        Suggestion::Text::IsPrimary(true)));
   EXPECT_CALL(client(),

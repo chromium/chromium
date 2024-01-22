@@ -1200,12 +1200,6 @@ void AutofillExternalDelegate::PossiblyRemoveAutofillWarnings(
 void AutofillExternalDelegate::ApplyAutofillOptions(
     std::vector<Suggestion>* suggestions,
     bool is_all_server_suggestions) {
-  // Add a separator before the Autofill options unless there are no suggestions
-  // yet.
-  if (!suggestions->empty()) {
-    suggestions->push_back(Suggestion(PopupItemId::kSeparator));
-  }
-
   // The form has been auto-filled, so give the user the chance to clear the
   // form.  Append the 'Clear form' menu item.
   if (query_field_.is_autofilled) {

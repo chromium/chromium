@@ -73,9 +73,10 @@ TEST_F(AddressRewriterInProfileSubsetMetricsTest, PreviouslyHiddenSuggestion) {
           std::nullopt, AutofillSuggestionTriggerSource::kUnspecified);
   histogram_tester.ExpectUniqueSample(
       "Autofill.PreviouslyHiddenSuggestionNumber", 1, 1);
-  ASSERT_EQ(suggestions.size(), 2u);
+  ASSERT_EQ(suggestions.size(), 3u);
   EXPECT_FALSE(suggestions[0].hidden_prior_to_address_rewriter_usage);
   EXPECT_TRUE(suggestions[1].hidden_prior_to_address_rewriter_usage);
+  EXPECT_EQ(suggestions[2].popup_item_id, PopupItemId::kSeparator);
 
   external_delegate().DidAcceptSuggestion(
       suggestions[0], AutofillPopupDelegate::SuggestionPosition{.row = 0});

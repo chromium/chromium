@@ -1205,7 +1205,11 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
             context.is_context_secure);
       }
       if (context.filling_product == FillingProduct::kAddress) {
-        AutofillMetrics::LogAddressSuggestionsCount(suggestions.size());
+        AutofillMetrics::LogAddressSuggestionsCount(base::ranges::count_if(
+            suggestions, [](const Suggestion& suggestion) {
+              return GetFillingProductFromPopupItemId(
+                         suggestion.popup_item_id) == FillingProduct::kAddress;
+            }));
       }
     }
   }
