@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -67,9 +68,9 @@ class ButtonOptionsActionEdit : public ActionEditView {
       : ActionEditView(controller,
                        action,
                        /*is_editing_list=*/false) {
-    // TODO(b/274690042): Replace the hardcoded string with a localized string.
-    name_tag_->SetTitle(action_->is_new() ? u"Assign a keyboard a key:"
-                                          : u"Assigned keyboard key:");
+    name_tag_->SetTitle(l10n_util::GetStringUTF16(
+        action_->is_new() ? IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ASSIGN_NEW_KEY
+                          : IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ASSIGNED_KEY));
     labels_view_->set_should_update_title(false);
   }
   ButtonOptionsActionEdit(const ButtonOptionsActionEdit&) = delete;
@@ -79,8 +80,8 @@ class ButtonOptionsActionEdit : public ActionEditView {
   // ActionEditView:
   void OnActionInputBindingUpdated() override {
     ActionEditView::OnActionInputBindingUpdated();
-    // TODO(b/274690042): Replace the hardcoded string with a localized string.
-    name_tag_->SetTitle(u"Assigned keyboard key:");
+    name_tag_->SetTitle(l10n_util::GetStringUTF16(
+        IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ASSIGNED_KEY));
   }
 
  private:
@@ -104,8 +105,9 @@ class DoneButton : public views::LabelButton {
 
  public:
   explicit DoneButton(PressedCallback pressed_callback)
-      // TODO(b/274690042): Replace placeholder text with localized strings.
-      : LabelButton(std::move(pressed_callback), u"Done button") {
+      : LabelButton(std::move(pressed_callback),
+                    l10n_util::GetStringUTF16(
+                        IDS_INPUT_OVERLAY_EDITING_DONE_BUTTON_LABEL)) {
     // TODO(b/279117180): Replace with proper accessible name.
     SetAccessibleName(u"done");
 
@@ -218,8 +220,7 @@ void ButtonOptionsMenu::AddHeader() {
       base::BindRepeating(&ButtonOptionsMenu::OnTrashButtonPressed,
                           base::Unretained(this)),
       ash::IconButton::Type::kMedium, &kGameControlsDeleteIcon,
-      // TODO(b/279117180): Replace placeholder names with a11y strings.
-      IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
+      IDS_INPUT_OVERLAY_BUTTON_OPTIONS_DELETE_TOOLTIP_TEXT));
 
   action_name_label_->SetMultiLine(true);
   action_name_label_->SetMaximumWidth(
@@ -232,10 +233,8 @@ void ButtonOptionsMenu::AddEditTitle() {
   // ||"Buttons let..."|          |
   // ------------------------------
   auto* label = AddChildView(ash::bubble_utils::CreateLabel(
-      // TODO(b/274690042): Replace placeholder text with localized strings.
       ash::TypographyToken::kCrosAnnotation2,
-      u"Buttons let you choose keyboard keys to press on screen mobile buttons "
-      u"in your game.",
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_BUTTON_OPTIONS_EDIT_INFO),
       cros_tokens::kCrosSysOnSurface));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -263,8 +262,8 @@ void ButtonOptionsMenu::AddActionSelection() {
       /*between_child_spacing=*/12));
 
   auto* label = container->AddChildView(ash::bubble_utils::CreateLabel(
-      // TODO(b/274690042): Replace placeholder text with localized strings.
-      ash::TypographyToken::kCrosButton2, u"Choose your button type:",
+      ash::TypographyToken::kCrosButton2,
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_BUTTON_OPTIONS_BUTTON_TYPE),
       cros_tokens::kCrosSysOnSurface));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);

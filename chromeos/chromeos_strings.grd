@@ -4763,6 +4763,45 @@
         <message name="IDS_INPUT_OVERLAY_BUTTON_PLACEMENT_NUDGE_BODY" desc="Button placement mode rich nudge body text." translateable="false">
           Place control on game action to play with your keyboard
         </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ASSIGN_NEW_KEY" desc="The instruction in the second last row of the Button Options Menu to assign a key from the keyboard to a newly created button." translateable="false">
+          Assign a keyboard key
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ASSIGNED_KEY" desc="The label in the second last row of the Button Options Menu indicating which keyboard key has been assigned to the selected button." translateable="false">
+          Assigned keyboard key
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_BUTTON_TYPE" desc="The text directly above the Joystick and Single Button options in the Button Options Menu saying to choose between the two options." translateable="false">
+          Select your control type
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_DELETE_TOOLTIP_TEXT" desc="The tooltip text for the trash button within Game Controls so that users know what the button does." translateable="false">
+          Delete
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_EDIT_INFO" desc="The text directly below the title of the Button Options Menu explaining that you can choose keyboard keys for the current mobile game." translateable="false">
+          Place controls on game actions to play with keyboard keys
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_TYPE_SINGLE_BUTTON_LABEL" desc="The button label of the single button fir choosing that button type in the 'Create Button' menu." translateable="false">
+          Button
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_TYPE_JOYSTICK_BUTTON_LABEL" desc="The button label of the joystick button for choosing that button type in the 'Create Button' menu." translateable="false">
+          Joystick
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_DONE_BUTTON_LABEL" desc="The title of buttons in the Game Controls menu indicating to save and close either the main or editor menu." translateable="false">
+          Done
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_FIRST_CONTROL_LABEL" desc="The label to the left of the '+' button in the row below the title in the Game Controls editor menu without having created any buttons." translateable="false">
+          Assign first control
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_NEW_CONTROL_LABEL" desc="The label to the left of the '+' button in the row below the title in the Game Controls editor menu having created at least one button." translateable="false">
+          Assign another control
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_KEY_EDIT_NUDGE_TITLE" desc="The title of the Key Edit Nudge in the Game Controls editor menu which appears after creating your first button." translateable="false">
+          Quickly switch keys
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_KEY_EDIT_NUDGE_SUB_TITLE" desc="The subtitle of the Key Edit Nudge in the Game Controls editor menu which appears after creating your first button." translateable="false">
+          Reassign by selecting a new key
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_TITLE" desc="The title in the header row of the Game Controls editor menu." translateable="false">
+          Controls
+        </message>
         <!-- End of Arc Input Overlay -->
       </if>
 

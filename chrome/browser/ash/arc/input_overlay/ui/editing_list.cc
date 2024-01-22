@@ -28,8 +28,10 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/grit/component_extension_resources.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "net/base/url_util.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -169,8 +171,8 @@ void EditingList::AddHeader() {
   editing_header_label_ =
       header_container->AddChildView(ash::bubble_utils::CreateLabel(
           ash::TypographyToken::kCrosTitle1,
-          // TODO(b/274690042): Replace it with localized strings.
-          u"Controls", cros_tokens::kCrosSysOnSurface));
+          l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDITING_LIST_TITLE),
+          cros_tokens::kCrosSysOnSurface));
 
   // Add helper button.
   header_container->AddChildView(std::make_unique<ash::IconButton>(
@@ -185,8 +187,8 @@ void EditingList::AddHeader() {
   header_container->AddChildView(std::make_unique<ash::PillButton>(
       base::BindRepeating(&EditingList::OnDoneButtonPressed,
                           base::Unretained(this)),
-      // TODO(b/274690042): Replace it with localized strings.
-      u"Done", ash::PillButton::Type::kSecondaryWithoutIcon));
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDITING_DONE_BUTTON_LABEL),
+      ash::PillButton::Type::kSecondaryWithoutIcon));
 }
 
 void EditingList::AddActionAddRow() {
@@ -273,11 +275,13 @@ void EditingList::ShowKeyEditNudge() {
   const auto& list_children = scroll_content_->children();
   DCHECK_EQ(list_children.size(), 1u);
 
-  // TODO(b/274690042): Replace it with localized strings.
   auto nudge_data = ash::AnchoredNudgeData(
       kKeyEditNudgeID, ash::NudgeCatalogName::kGameDashboardControlsNudge,
-      u"Reassign by selecting a new key", list_children[0]);
-  nudge_data.title_text = u"Quickly switch keys";
+      l10n_util::GetStringUTF16(
+          IDS_INPUT_OVERLAY_EDITING_LIST_KEY_EDIT_NUDGE_SUB_TITLE),
+      list_children[0]);
+  nudge_data.title_text = l10n_util::GetStringUTF16(
+      IDS_INPUT_OVERLAY_EDITING_LIST_KEY_EDIT_NUDGE_TITLE);
   nudge_data.image_model =
       ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
           IDR_ARC_INPUT_OVERLAY_KEY_EDIT_NUDGE_JSON);
@@ -308,9 +312,9 @@ void EditingList::UpdateOnZeroState(bool is_zero_state) {
                         kEditingListInsideBorderInsets));
 
   DCHECK(add_title_);
-  // TODO(b/274690042): Replace it with localized strings.
-  add_title_->SetText(is_zero_state_ ? u"Create your first button"
-                                     : u"Create button");
+  add_title_->SetText(l10n_util::GetStringUTF16(
+      is_zero_state ? IDS_INPUT_OVERLAY_EDITING_LIST_FIRST_CONTROL_LABEL
+                    : IDS_INPUT_OVERLAY_EDITING_LIST_NEW_CONTROL_LABEL));
 }
 
 void EditingList::OnAddButtonPressed() {

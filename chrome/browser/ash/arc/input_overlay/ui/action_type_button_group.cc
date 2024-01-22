@@ -10,6 +10,8 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -44,13 +46,15 @@ void ActionTypeButtonGroup::Init() {
   auto* tap_button = AddActionTypeButton(
       base::BindRepeating(&ActionTypeButtonGroup::OnActionTapButtonPressed,
                           base::Unretained(this)),
-      // TODO(b/274690042): Replace placeholder text with localized strings.
-      u"Single button", kGameControlsSingleButtonIcon);
+      l10n_util::GetStringUTF16(
+          IDS_INPUT_OVERLAY_BUTTON_TYPE_SINGLE_BUTTON_LABEL),
+      kGameControlsSingleButtonIcon);
   auto* move_button = AddActionTypeButton(
       base::BindRepeating(&ActionTypeButtonGroup::OnActionMoveButtonPressed,
                           base::Unretained(this)),
-      // TODO(b/274690042): Replace placeholder text with localized strings.
-      u"Joystick", kGameControlsDpadKeyboardIcon);
+      l10n_util::GetStringUTF16(
+          IDS_INPUT_OVERLAY_BUTTON_TYPE_JOYSTICK_BUTTON_LABEL),
+      kGameControlsDpadKeyboardIcon);
 
   selected_action_type_ = action_->GetType();
   switch (selected_action_type_) {
