@@ -8,9 +8,11 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/media/captured_surface_control_permission_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
@@ -23,13 +25,14 @@ class CONTENT_EXPORT CapturedSurfaceController {
   using CapturedSurfaceControlResult =
       ::blink::mojom::CapturedSurfaceControlResult;
 
-  CapturedSurfaceController(GlobalRenderFrameHostId capturer_rfh_id,
-                            WebContentsMediaCaptureId captured_wc_id);
-
-  CapturedSurfaceController(
+  static std::unique_ptr<CapturedSurfaceController> CreateForTesting(
       WebContentsMediaCaptureId captured_wc_id,
       std::unique_ptr<CapturedSurfaceControlPermissionManager>
-          permission_manager);
+          permission_manager,
+      base::RepeatingCallback<void()> wc_resolution_callback);
+
+  CapturedSurfaceController(GlobalRenderFrameHostId capturer_rfh_id,
+                            WebContentsMediaCaptureId captured_wc_id);
 
   virtual ~CapturedSurfaceController();
 
@@ -61,22 +64,49 @@ class CONTENT_EXPORT CapturedSurfaceController {
   using PermissionResult =
       ::content::CapturedSurfaceControlPermissionManager::PermissionResult;
 
-  // The ID of the captured tab.
-  // * When `this` object is constructed, `captured_wc_id_` is set to a valid ID
-  // of a valid tab.
-  // * Later, through dynamic switching of the captured surface, the user might
-  // start capturing something other than a tab, leading to this field being set
-  // to the null ID.
+  CapturedSurfaceController(
+      WebContentsMediaCaptureId captured_wc_id,
+      std::unique_ptr<CapturedSurfaceControlPermissionManager>
+          permission_manager,
+      base::RepeatingCallback<void()> wc_resolution_callback);
+
+  // Manage the resolution of WebContents-IDs into base::WeakPtr<WebContents>.
+  void ResolveCapturedWebContents(WebContentsMediaCaptureId captured_wc_id);
+  void OnCapturedWebContentsResolved(base::WeakPtr<WebContents> captured_wc);
+
+  // References the captured tab through its WebContents.
   //
-  // TODO(crbug.com/1511754): Whenever `captured_wc_id_` is recorded - either
-  // set to its initial value or updated to a new value - pipe along from the UI
-  // thread the knowledge of whether the capture-session is self-capture, record
-  // that here, and use it on the IO thread to reject API calls until the user
-  // invokes share-this-tab-instead to change self-capture into
-  // other-tab-capture.
-  WebContentsMediaCaptureId captured_wc_id_;
+  // Set to nullopt when:
+  // * The captured surface is not a tab.
+  // * Right after construction, before the ID is first resolved (on the
+  //   UI thread) to a valid base::WeakPtr<WebContents>.
+  // * Whenever the captured tab changes, and UpdateCaptureTarget() is
+  //   called. This triggers a new resolution, and in the intervening time,
+  //   this will be set back to nullptr.
+  //
+  // Set to a concrete value otherwise.
+  // However, this concrete value can be nullptr, (1) as with any WeakPtr,
+  // or (2) if the ID failed to resolve to a valid WebContents.
+  //
+  // Note that `this` lives on the IO thread, and it is not possible to
+  // check the value of the underlying WebContents* here, or even compare
+  // it to nullptr.
+  //
+  // In the unlikely-yet-possible case that SendWheel() or SetZoomLevel()
+  // are called while the task to resolve is pending, those calls will
+  // fail gracefully. Subsequent calls are valid and can succeed.
+  // TODO(crbug.com/1520375): Add UMA to measure how often this happens
+  // and determine whether it's worth the effort to fix.
+  absl::optional<base::WeakPtr<WebContents>> captured_wc_;
 
   std::unique_ptr<CapturedSurfaceControlPermissionManager> permission_manager_;
+
+  // Callback to be invoked whenever an ID's resolution to a
+  // base::WeakPtr<WebContents> completes. (Successful and unsuccessful
+  // resolutions are treated identically.)
+  const base::RepeatingCallback<void()> wc_resolution_callback_;
+
+  base::WeakPtrFactory<CapturedSurfaceController> weak_factory_{this};
 };
 
 }  // namespace content

@@ -130,6 +130,20 @@ base::OnceCallback<void(CSCResult)> MakeCallbackExpectingResult(
       run_loop, expected_result);
 }
 
+// Equivalent to MakeCallbackExpectingResult, but for GetZoomLevel().
+base::OnceCallback<void(std::optional<int>, CSCResult)>
+MakeGetZoomCallbackExpectingResult(base::RunLoop* run_loop,
+                                   CSCResult expected_result) {
+  return base::BindOnce(
+      [](base::RunLoop* run_loop, CSCResult expected_result,
+         std::optional<int> zoom_level, CSCResult result) {
+        EXPECT_EQ(result, expected_result);
+        // `zoom_level` intentionally ignored.
+        run_loop->Quit();
+      },
+      run_loop, expected_result);
+}
+
 // Make a callback that expects `result` and then unblock `run_loop`.
 base::OnceCallback<void(std::optional<int>, CSCResult)>
 MakeGetZoomLevelCallbackExpectingResult(base::RunLoop* run_loop,
@@ -175,6 +189,14 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
+    // MainSetUp() is in a helper so that test fixtures that inherit from the
+    // current one would be able to directly run it without also running
+    // AwaitWebContentsResolution().
+    MainSetUp();
+    AwaitWebContentsResolution();
+  }
+
+  void MainSetUp() {
     capturing_wc_ = MakeTestWebContents();
     captured_wc_ = MakeTestWebContents();
 
@@ -194,8 +216,13 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
         capturing_wc_->GetPrimaryMainFrame()->GetGlobalId());
     permission_manager_ = permission_manager.get();
 
-    controller_ = std::make_unique<CapturedSurfaceController>(
-        captured_wc_id, std::move(permission_manager));
+    // `base::Unretained(this)` is safe because `this` owns `controller_` and
+    // therefore has a longer lifetime.
+    controller_ = CapturedSurfaceController::CreateForTesting(
+        captured_wc_id, std::move(permission_manager),
+        base::BindRepeating(
+            &CapturedSurfaceControllerTestBase::OnWebContentsResolved,
+            base::Unretained(this)));
   }
 
   void UnloadCapturedWebContents() {
@@ -219,12 +246,27 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
     RenderViewHostTestHarness::TearDown();
   }
 
+  void AwaitWebContentsResolution() {
+    CHECK(!wc_resolution_run_loop_);
+    wc_resolution_run_loop_ = std::make_unique<base::RunLoop>();
+    wc_resolution_run_loop_->Run();
+    wc_resolution_run_loop_.reset();
+  }
+
+  void OnWebContentsResolved() {
+    if (wc_resolution_run_loop_) {
+      wc_resolution_run_loop_->Quit();
+    }
+  }
+
+ protected:
   std::unique_ptr<CapturedSurfaceController> controller_;
   raw_ptr<MockPermissionManager> permission_manager_ = nullptr;
   std::unique_ptr<TestView> captured_rwhv_;
   raw_ptr<RenderWidgetHostViewBase> old_rwhv_ = nullptr;
   std::unique_ptr<TestWebContents> capturing_wc_;
   std::unique_ptr<TestWebContents> captured_wc_;
+  std::unique_ptr<base::RunLoop> wc_resolution_run_loop_;
 };
 
 class CapturedSurfaceControllerSendWheelTest
@@ -389,32 +431,56 @@ TEST_P(CapturedSurfaceControllerSetZoomLevelTest, SetZoomLevelSuccess) {
 enum class CapturedSurfaceControlAPI {
   kSendWheel,
   kSetZoomLevel,
+  // TODO(crbug.com/1466247): Remove kGetZoomLevel after making that API sync.
+  kGetZoomLevel,
 };
 
-class CapturedSurfaceControllerInterfaceTest
-    : public CapturedSurfaceControllerTestBase,
-      public ::testing::WithParamInterface<CapturedSurfaceControlAPI> {
+class CapturedSurfaceControllerInterfaceTestBase
+    : public CapturedSurfaceControllerTestBase {
  public:
-  CapturedSurfaceControllerInterfaceTest() : tested_interface_(GetParam()) {}
+  CapturedSurfaceControllerInterfaceTestBase(
+      CapturedSurfaceControlAPI tested_interface)
+      : tested_interface_(tested_interface) {}
+  ~CapturedSurfaceControllerInterfaceTestBase() override = default;
 
-  ~CapturedSurfaceControllerInterfaceTest() override = default;
-
-  void RunTestedAction(base::OnceCallback<void(CSCResult)> callback) {
+  void RunTestedActionAndExpect(base::RunLoop* run_loop,
+                                CSCResult expected_result) {
     switch (tested_interface_) {
       case CapturedSurfaceControlAPI::kSendWheel:
-        controller_->SendWheel(MakeCapturedWheelActionPtr(),
-                               std::move(callback));
+        controller_->SendWheel(
+            MakeCapturedWheelActionPtr(),
+            MakeCallbackExpectingResult(run_loop, expected_result));
         return;
       case CapturedSurfaceControlAPI::kSetZoomLevel:
-        controller_->SetZoomLevel(/*zoom_level=*/100, std::move(callback));
+        controller_->SetZoomLevel(
+            /*zoom_level=*/100,
+            MakeCallbackExpectingResult(run_loop, expected_result));
+        return;
+      case CapturedSurfaceControlAPI::kGetZoomLevel:
+        controller_->GetZoomLevel(
+            MakeGetZoomCallbackExpectingResult(run_loop, expected_result));
         return;
     }
     NOTREACHED_NORETURN();
   }
 
+ protected:
   const CapturedSurfaceControlAPI tested_interface_;
 };
 
+class CapturedSurfaceControllerInterfaceTest
+    : public CapturedSurfaceControllerInterfaceTestBase,
+      public ::testing::WithParamInterface<CapturedSurfaceControlAPI> {
+ public:
+  CapturedSurfaceControllerInterfaceTest()
+      : CapturedSurfaceControllerInterfaceTestBase(GetParam()) {}
+
+  ~CapturedSurfaceControllerInterfaceTest() override = default;
+};
+
+// Note that kGetZoomLevel is not tested because it's currently allowed
+// without requiring permissions, and that is by design.
+// TODO(crbug.com/1466247): Remove above comment after making that API sync.
 INSTANTIATE_TEST_SUITE_P(
     ,
     CapturedSurfaceControllerInterfaceTest,
@@ -424,15 +490,14 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(CapturedSurfaceControllerInterfaceTest, SuccessReportedIfPermitted) {
   base::RunLoop run_loop;
   permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
-  RunTestedAction(MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+  RunTestedActionAndExpect(&run_loop, CSCResult::kSuccess);
   run_loop.Run();
 }
 
 TEST_P(CapturedSurfaceControllerInterfaceTest, NoPermissionReportedIfDenied) {
   base::RunLoop run_loop;
   permission_manager_->SetPermissionResult(CSCPermissionResult::kDenied);
-  RunTestedAction(
-      MakeCallbackExpectingResult(&run_loop, CSCResult::kNoPermissionError));
+  RunTestedActionAndExpect(&run_loop, CSCResult::kNoPermissionError);
   run_loop.Run();
 }
 
@@ -440,8 +505,7 @@ TEST_P(CapturedSurfaceControllerInterfaceTest,
        UnknownErrorReportedIfPermissionError) {
   base::RunLoop run_loop;
   permission_manager_->SetPermissionResult(CSCPermissionResult::kError);
-  RunTestedAction(
-      MakeCallbackExpectingResult(&run_loop, CSCResult::kUnknownError));
+  RunTestedActionAndExpect(&run_loop, CSCResult::kUnknownError);
   run_loop.Run();
 }
 
@@ -452,8 +516,7 @@ TEST_P(CapturedSurfaceControllerInterfaceTest,
   base::RunLoop run_loop;
   permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
   UnloadCapturedWebContents();
-  RunTestedAction(MakeCallbackExpectingResult(
-      &run_loop, CSCResult::kCapturedSurfaceNotFoundError));
+  RunTestedActionAndExpect(&run_loop, CSCResult::kCapturedSurfaceNotFoundError);
   run_loop.Run();
 }
 
@@ -462,9 +525,167 @@ TEST_P(CapturedSurfaceControllerInterfaceTest,
   base::RunLoop run_loop;
   permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
   controller_->UpdateCaptureTarget(WebContentsMediaCaptureId());
-  RunTestedAction(MakeCallbackExpectingResult(
-      &run_loop, CSCResult::kCapturedSurfaceNotFoundError));
+  RunTestedActionAndExpect(&run_loop, CSCResult::kCapturedSurfaceNotFoundError);
   run_loop.Run();
+}
+
+// Test suite ensuring that API calls before/after the WebContents ID is
+// resolved to a base::WeakPtr<WebContents> behave as expected.
+class CapturedSurfaceControllerWebContentsResolutionTest
+    : public CapturedSurfaceControllerInterfaceTestBase,
+      public ::testing::WithParamInterface<CapturedSurfaceControlAPI> {
+ public:
+  CapturedSurfaceControllerWebContentsResolutionTest()
+      : CapturedSurfaceControllerInterfaceTestBase(GetParam()) {}
+
+  ~CapturedSurfaceControllerWebContentsResolutionTest() override = default;
+
+  void SetUp() override {
+    // Intentionally skip CapturedSurfaceControllerInterfaceTestBase's SetUp(),
+    // and therefore also CapturedSurfaceControllerTestBase's SetUp().
+    RenderViewHostTestHarness::SetUp();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CapturedSurfaceControllerWebContentsResolutionTest,
+    ::testing::Values(CapturedSurfaceControlAPI::kSendWheel,
+                      CapturedSurfaceControlAPI::kSetZoomLevel,
+                      CapturedSurfaceControlAPI::kGetZoomLevel));
+
+TEST_P(CapturedSurfaceControllerWebContentsResolutionTest,
+       ApiInvocationAfterWebContentsResolutionSucceeds) {
+  MainSetUp();  // Triggers resolution but does not await it.
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+
+  AwaitWebContentsResolution();
+
+  base::RunLoop run_loop;
+  RunTestedActionAndExpect(&run_loop, CSCResult::kSuccess);
+  run_loop.Run();
+}
+
+TEST_P(CapturedSurfaceControllerWebContentsResolutionTest,
+       ApiInvocationPriorToWebContentsResolutionFails) {
+  MainSetUp();  // Triggers resolution but does not await it.
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+
+  base::RunLoop run_loop;
+  RunTestedActionAndExpect(&run_loop, CSCResult::kCapturedSurfaceNotFoundError);
+  run_loop.Run();
+
+  AwaitWebContentsResolution();
+}
+
+TEST_P(
+    CapturedSurfaceControllerWebContentsResolutionTest,
+    ApiInvocationPriorToWebContentsResolutionFailsButSubsequentCallsAreNotBlocked) {
+  // Setup - repeat ApiInvocationPriorToWebContentsResolutionFails.
+  {
+    MainSetUp();  // Triggers resolution but does not await it.
+    permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+
+    base::RunLoop run_loop;
+    RunTestedActionAndExpect(&run_loop,
+                             CSCResult::kCapturedSurfaceNotFoundError);
+    run_loop.Run();
+
+    AwaitWebContentsResolution();
+  }
+
+  // After AwaitWebContentsResolution() is called, subsequent API calls succeed.
+  base::RunLoop run_loop;
+  RunTestedActionAndExpect(&run_loop, CSCResult::kSuccess);
+  run_loop.Run();
+}
+
+// Similar to CapturedSurfaceControllerWebContentsResolutionTest,
+// but focuses on calls to UpdateCaptureTarget(), which also trigger resolution.
+class CapturedSurfaceControllerWebContentsResolutionOfUpdatesTest
+    : public CapturedSurfaceControllerInterfaceTestBase,
+      public ::testing::WithParamInterface<CapturedSurfaceControlAPI> {
+ public:
+  CapturedSurfaceControllerWebContentsResolutionOfUpdatesTest()
+      : CapturedSurfaceControllerInterfaceTestBase(GetParam()) {}
+
+  ~CapturedSurfaceControllerWebContentsResolutionOfUpdatesTest() override =
+      default;
+
+  void SetUp() override {
+    // Unlike CapturedSurfaceControllerWebContentsResolutionTest, the current
+    // test works well with the parent's SetUp(), which awaits the resolution
+    // of the *first* ID. This is due to the current test's focus on what
+    // happens before/after the call to UpdateCaptureTarget().
+    CapturedSurfaceControllerInterfaceTestBase::SetUp();
+
+    permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+
+    // Prepare a new tab to capture instead of the original one.
+    newly_captured_wc_ = MakeTestWebContents();
+    RenderFrameHost* const captured_main_rfh =
+        newly_captured_wc_->GetPrimaryMainFrame();
+    newly_captured_wc_id_ =
+        WebContentsMediaCaptureId(captured_main_rfh->GetProcess()->GetID(),
+                                  captured_main_rfh->GetRoutingID());
+
+    // Set up a RenderWidgetHostImpl with a custom size. This is needed by
+    // SendWheel(), or else it would error out, producing false-positives and
+    // false-negatives in the tests.
+    newly_captured_wc_original_rwhv_ = GetView(*newly_captured_wc_);
+    newly_captured_rwhv_ = std::make_unique<TestView>(
+        GetRenderWidgetHostImpl(*newly_captured_wc_));
+    SetView(*newly_captured_wc_, newly_captured_rwhv_.get());
+    newly_captured_rwhv_->SetSize(kCapturedViewportSize);
+  }
+
+  void TearDown() override {
+    SetView(*newly_captured_wc_, newly_captured_wc_original_rwhv_);
+    newly_captured_wc_original_rwhv_ = nullptr;
+
+    newly_captured_rwhv_.reset();
+    newly_captured_wc_.reset();
+
+    CapturedSurfaceControllerInterfaceTestBase::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<TestWebContents> newly_captured_wc_;
+  std::unique_ptr<TestView> newly_captured_rwhv_;
+  raw_ptr<RenderWidgetHostViewBase> newly_captured_wc_original_rwhv_ = nullptr;
+  WebContentsMediaCaptureId newly_captured_wc_id_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CapturedSurfaceControllerWebContentsResolutionOfUpdatesTest,
+    ::testing::Values(CapturedSurfaceControlAPI::kSendWheel,
+                      CapturedSurfaceControlAPI::kSetZoomLevel,
+                      CapturedSurfaceControlAPI::kGetZoomLevel));
+
+TEST_P(
+    CapturedSurfaceControllerWebContentsResolutionOfUpdatesTest,
+    AfterUpdateCaptureTargetApiInvocationAfterToWebContentsResolutionSucceeds) {
+  // Call UpdateCaptureTarget() - capturing a new tab.
+  controller_->UpdateCaptureTarget(newly_captured_wc_id_);
+  AwaitWebContentsResolution();
+
+  base::RunLoop run_loop;
+  RunTestedActionAndExpect(&run_loop, CSCResult::kSuccess);
+  run_loop.Run();
+}
+
+TEST_P(CapturedSurfaceControllerWebContentsResolutionOfUpdatesTest,
+       AfterUpdateCaptureTargetApiInvocationPriorToWebContentsResolutionFails) {
+  // Call UpdateCaptureTarget() - capturing a new tab.
+  controller_->UpdateCaptureTarget(newly_captured_wc_id_);
+  // Note absence of call to AwaitWebContentsResolution().
+
+  base::RunLoop run_loop;
+  RunTestedActionAndExpect(&run_loop, CSCResult::kCapturedSurfaceNotFoundError);
+  run_loop.Run();
+
+  AwaitWebContentsResolution();
 }
 
 }  // namespace
