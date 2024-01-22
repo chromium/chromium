@@ -10,6 +10,7 @@
 #include <set>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
@@ -23,6 +24,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-shared.h"
@@ -133,7 +135,9 @@ PermissionServiceImpl::~PermissionServiceImpl() {}
 void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
     std::vector<PermissionDescriptorPtr> permissions,
     mojo::PendingRemote<EmbeddedPermissionControlClient> observer) {
-  if (!base::FeatureList::IsEnabled(features::kPermissionElement)) {
+  if (!base::FeatureList::IsEnabled(features::kPermissionElement) &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kEnableExperimentalWebPlatformFeatures)) {
     bad_message::ReceivedBadMessage(
         context_->render_frame_host()->GetProcess(),
         bad_message::PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE);
@@ -187,7 +191,9 @@ void PermissionServiceImpl::OnPageEmbeddedPermissionControlRegistered(
 void PermissionServiceImpl::RequestPageEmbeddedPermission(
     EmbeddedPermissionRequestDescriptorPtr descriptor,
     RequestPageEmbeddedPermissionCallback callback) {
-  if (!base::FeatureList::IsEnabled(features::kPermissionElement)) {
+  if (!base::FeatureList::IsEnabled(features::kPermissionElement) &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableExperimentalWebPlatformFeatures)) {
     bad_message::ReceivedBadMessage(
         context_->render_frame_host()->GetProcess(),
         bad_message::PSI_REQUEST_EMBEDDED_PERMISSION_WITHOUT_FEATURE);
