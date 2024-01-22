@@ -731,4 +731,62 @@ TEST_F(SyncModelLoadManagerTest, ShouldNotStartFailedTypesUponLoadModels) {
   // No crash from LoadModels.
 }
 
+// Regression test for crbug.com/1519806.
+// Tests that stop callbacks for a type which is not in NOT_RUNNING state
+// anymore are ignored.
+TEST_F(SyncModelLoadManagerTest,
+       ShouldHandleMultipleStopCallbacksForStoppingType) {
+  // Create a controller with manual loading.
+  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  GetController(BOOKMARKS)->model()->EnableManualModelStart();
+
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
+  ModelTypeSet preferred_types = {BOOKMARKS};
+
+  model_load_manager.Configure(
+      /*preferred_types_without_errors=*/preferred_types, preferred_types,
+      BuildConfigureContext());
+
+  // Bring BOOKMARKS to a STOPPING state.
+  model_load_manager.Stop(SyncStopMetadataFate::KEEP_METADATA);
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::STOPPING);
+
+  // It should wait for BOOKMARKS to finish loading before notifying the data
+  // type manager.
+  EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure).Times(0);
+
+  model_load_manager.Configure(
+      /*preferred_types_without_errors=*/preferred_types, preferred_types,
+      BuildConfigureContext());
+
+  // BOOKMARKS needs to finish stopping first before it can start again.
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::STOPPING);
+
+  // Add the same stop callback again to be called after the type has finished
+  // stopping.
+  model_load_manager.Configure(
+      /*preferred_types_without_errors=*/preferred_types, preferred_types,
+      BuildConfigureContext());
+
+  // BOOKMARKS needs to finish stopping first before it can start again.
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::STOPPING);
+
+  // Finish loading of BOOKMARKS for the first time. This should first move the
+  // state to NOT_RUNNING. But, as part of the load callback,
+  // ModelTypeController::LoadModels() will be called which will set its state
+  // to MODEL_STARTING.
+  GetController(BOOKMARKS)->model()->SimulateModelStartFinished();
+  EXPECT_EQ(GetController(BOOKMARKS)->state(),
+            DataTypeController::MODEL_STARTING);
+
+  // Finish loading of BOOKMARKS. This will lead to a call to notify the
+  // delegate that all the types are ready.
+  EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure);
+  GetController(BOOKMARKS)->model()->SimulateModelStartFinished();
+  ASSERT_EQ(GetController(BOOKMARKS)->state(),
+            DataTypeController::MODEL_LOADED);
+
+  // Note: The second stop callback didn't do anything and was a no-op.
+}
+
 }  // namespace syncer
