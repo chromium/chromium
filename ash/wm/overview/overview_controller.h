@@ -121,10 +121,17 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
     delayed_animation_task_delay_ = delta;
   }
 
+  void set_pine_callback_for_test(base::OnceClosure callback) {
+    pine_callback_for_test_ = std::move(callback);
+  }
+
   // Returns true if it's possible to enter overview mode in the current
   // configuration. This can be false at certain times, such as when the lock
   // screen is visible we can't overview mode.
   bool CanEnterOverview() const;
+
+  // Called when `OverviewGrid::pine_widget_` is shown.
+  void OnPineWidgetShown();
 
  private:
   friend class SavedDeskTest;
@@ -191,6 +198,9 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // `disable_app_id_check_for_saved_desks_` is true, then this check is
   // omitted so we can test Saved Desks.
   bool disable_app_id_check_for_saved_desks_ = false;
+
+  // If set, it will be called `OnPineWidgetShown`.
+  base::OnceClosure pine_callback_for_test_;
 
   base::WeakPtrFactory<OverviewController> weak_ptr_factory_{this};
 };

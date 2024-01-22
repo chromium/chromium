@@ -4,6 +4,7 @@
 
 #include "ash/wm/window_restore/pine_contents_view.h"
 
+#include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -28,6 +29,7 @@ class PineTest : public AshTestBase {
   ~PineTest() override = default;
 
  private:
+  InProcessDataDecoder decoder_;
   base::test::ScopedFeatureList scoped_feature_list_{features::kPine};
 };
 
@@ -42,7 +44,10 @@ TEST_F(PineTest, Show) {
 }
 
 TEST_F(PineTest, ShowContextMenuOnSettingsButtonClicked) {
+  base::RunLoop run_loop;
+  OverviewController::Get()->set_pine_callback_for_test(run_loop.QuitClosure());
   Shell::Get()->window_restore_controller()->MaybeStartPineOverviewSession();
+  run_loop.Run();
 
   // Get the active Pine widget.
   OverviewGrid* grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());

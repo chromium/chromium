@@ -583,6 +583,11 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
                          size_t position,
                          bool animate);
 
+  // Creates and shows the `pine_widget_`. The given `pine_image` will be shown
+  // if it exists, otherwise some other data like apps info will be shown
+  // instead.
+  void CreateAndShowPine(const gfx::ImageSkia& pine_image);
+
   // The drop target is created when a window or overview item is being dragged,
   // and is destroyed when the drag ends or overview mode is ended. The drop
   // target is hidden when a snap preview area is shown. You can drop a window

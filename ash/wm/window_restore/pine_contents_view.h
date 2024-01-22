@@ -33,12 +33,14 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   using AppData = std::pair<std::string, std::vector<std::string>>;
   using AppsData = std::vector<AppData>;
 
-  explicit PineContentsView(const AppsData& apps);
+  explicit PineContentsView(const gfx::ImageSkia& pine_image);
   PineContentsView(const PineContentsView&) = delete;
   PineContentsView& operator=(const PineContentsView&) = delete;
   ~PineContentsView() override;
 
-  static std::unique_ptr<views::Widget> Create(aura::Window* root);
+  static std::unique_ptr<views::Widget> Create(
+      aura::Window* root,
+      const gfx::ImageSkia& pine_image);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PineTest, ShowContextMenuOnSettingsButtonClicked);

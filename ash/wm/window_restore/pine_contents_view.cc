@@ -245,7 +245,7 @@ END_METADATA
 
 }  // namespace
 
-PineContentsView::PineContentsView(const AppsData& apps) {
+PineContentsView::PineContentsView(const gfx::ImageSkia& pine_image) {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysBaseElevated, kContentsRounding));
   SetBetweenChildSpacing(kContentsChildSpacing);
@@ -310,26 +310,35 @@ PineContentsView::PineContentsView(const AppsData& apps) {
   views::AsViewClass<views::BoxLayoutView>(spacer->parent())
       ->SetFlexForView(spacer, 1);
 
-  PineItemsContainerView* container_view =
-      AddChildView(std::make_unique<PineItemsContainerView>(apps));
-  container_view->SetPreferredSize(kItemsContainerPreferredSize);
+  if (pine_image.isNull()) {
+    // TODO(sammiequon|zxdan): Remove this temporary data used for testing.
+    AppsData kTestingAppsData = {
+        {"mgndgikekgjfcpckkfioiadnlibdjbkf",  // Chrome
+         {"https://www.cnn.com/", "https://www.youtube.com/",
+          "https://www.google.com/"}},
+        {"njfbnohfdkmbmnjapinfcopialeghnmh", {}},  // Camera
+        {"odknhmnlageboeamepcngndbggdpaobj", {}},  // Settings
+        {"fkiggjmkendpmbegkagpmagjepfkpmeb", {}},  // Files
+    };
+    PineItemsContainerView* container_view = AddChildView(
+        std::make_unique<PineItemsContainerView>(kTestingAppsData));
+    container_view->SetPreferredSize(kItemsContainerPreferredSize);
+  } else {
+    views::ImageView* preview =
+        AddChildView(std::make_unique<views::ImageView>());
+    preview->SetImage(pine_image);
+    // TODO(minch): Make this respect the aspect ratio of the screenshot.
+    preview->SetImageSize(kItemsContainerPreferredSize);
+  }
 }
 
 PineContentsView::~PineContentsView() = default;
 
 // static
-std::unique_ptr<views::Widget> PineContentsView::Create(aura::Window* root) {
-  // TODO(sammiequon|zxdan): Remove this temporary data used for testing.
-  AppsData kTestingAppsData = {
-      {"mgndgikekgjfcpckkfioiadnlibdjbkf",  // Chrome
-       {"https://www.cnn.com/", "https://www.youtube.com/",
-        "https://www.google.com/"}},
-      {"njfbnohfdkmbmnjapinfcopialeghnmh", {}},  // Camera
-      {"odknhmnlageboeamepcngndbggdpaobj", {}},  // Settings
-      {"fkiggjmkendpmbegkagpmagjepfkpmeb", {}},  // Files
-  };
-
-  auto contents_view = std::make_unique<PineContentsView>(kTestingAppsData);
+std::unique_ptr<views::Widget> PineContentsView::Create(
+    aura::Window* root,
+    const gfx::ImageSkia& pine_image) {
+  auto contents_view = std::make_unique<PineContentsView>(pine_image);
   gfx::Rect contents_bounds = root->GetBoundsInScreen();
   contents_bounds.ClampToCenteredSize(contents_view->GetPreferredSize());
 

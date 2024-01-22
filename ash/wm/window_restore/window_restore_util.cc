@@ -11,6 +11,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -24,6 +25,8 @@
 namespace ash {
 
 namespace {
+
+base::FilePath pine_image_path_for_test_;
 
 // If `use_screen` is true we convert to screen coordinates, otherwise we
 // convert to root window coordinates.
@@ -157,6 +160,19 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
   }
 
   return window_info;
+}
+
+base::FilePath GetShutdownPineImagePath() {
+  if (!pine_image_path_for_test_.empty()) {
+    return pine_image_path_for_test_;
+  }
+  base::FilePath home_dir;
+  CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
+  return home_dir.AppendASCII("pine_image.png");
+}
+
+void SetPineImagePathForTest(const base::FilePath& path) {
+  pine_image_path_for_test_ = path;
 }
 
 }  // namespace ash

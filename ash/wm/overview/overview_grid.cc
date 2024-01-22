@@ -61,6 +61,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/pine_contents_view.h"
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
@@ -598,8 +599,10 @@ void OverviewGrid::PrepareForOverview() {
   if (root_window_ == Shell::GetPrimaryRootWindow() &&
       overview_session_->enter_exit_overview_type() ==
           OverviewEnterExitType::kPine) {
-    pine_widget_ = PineContentsView::Create(root_window_);
-    pine_widget_->ShowInactive();
+    image_util::DecodeImageFile(base::BindOnce(&OverviewGrid::CreateAndShowPine,
+                                               weak_ptr_factory_.GetWeakPtr()),
+                                GetShutdownPineImagePath(),
+                                data_decoder::mojom::ImageCodec::kPng);
   }
 
   for (const auto& item : item_list_) {
@@ -2864,6 +2867,12 @@ void OverviewGrid::AddDropTargetImpl(OverviewItemBase* dragged_item,
     ignored_items.insert(dragged_item);
   }
   PositionWindows(animate, ignored_items);
+}
+
+void OverviewGrid::CreateAndShowPine(const gfx::ImageSkia& pine_image) {
+  pine_widget_ = PineContentsView::Create(root_window_, pine_image);
+  pine_widget_->ShowInactive();
+  OverviewController::Get()->OnPineWidgetShown();
 }
 
 }  // namespace ash
