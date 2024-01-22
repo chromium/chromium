@@ -537,15 +537,15 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
     worker_context_provider_wrapper_.reset();
   }
 
+  const bool enable_gpu_rasterization =
+      features::IsUiGpuRasterizationEnabled() &&
+      gpu_feature_info
+              .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
+          gpu::kGpuFeatureStatusEnabled;
+
   if (!worker_context_provider_wrapper_) {
     // If the worker context supports GPU rasterization then UI tiles will be
     // rasterized on the GPU.
-    bool enable_gpu_rasterization =
-        features::IsUiGpuRasterizationEnabled() &&
-        gpu_feature_info
-                .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
-            gpu::kGpuFeatureStatusEnabled;
-
     auto worker_context_provider = CreateContextProvider(
         gpu_channel_host, /*supports_locking=*/true,
         /*supports_gles2_interface=*/false, enable_gpu_rasterization,
@@ -572,9 +572,12 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
   if (!main_context_provider_) {
     bool supports_gles2 = !UseRasterDecoderForBrowserContext();
 
+    // The main thread context is not used for UI tile rasterization. Other UI
+    // code can use the main thread context for GPU rasterization if it's
+    // enabled for tiles.
     main_context_provider_ = CreateContextProvider(
         std::move(gpu_channel_host), /*supports_locking=*/false, supports_gles2,
-        /*supports_gpu_rasterization=*/false,
+        enable_gpu_rasterization,
         viz::command_buffer_metrics::ContextType::BROWSER_MAIN_THREAD);
     main_context_provider_->SetDefaultTaskRunner(resize_task_runner_);
 

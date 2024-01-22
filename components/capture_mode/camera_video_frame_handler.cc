@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/system/sys_info.h"
@@ -163,8 +164,7 @@ bool IsFatalError(media::VideoCaptureError error) {
 // SharedMemoryBufferHandleHolder:
 
 // Defines an implementation for a `BufferHandleHolder` that can extract a video
-// frame that is backed by a `kSharedMemory` buffer type. This implementation is
-// used only when running on a linux-chromeos build (a.k.a. the emulator).
+// frame that is backed by a `kSharedMemory` buffer type.
 class SharedMemoryBufferHandleHolder : public BufferHandleHolder {
  public:
   explicit SharedMemoryBufferHandleHolder(
@@ -222,6 +222,46 @@ class SharedMemoryBufferHandleHolder : public BufferHandleHolder {
   // Shared memory mapping associated with the held `region_`.
   base::WritableSharedMemoryMapping mapping_;
 };
+
+#if BUILDFLAG(IS_MAC)
+// -----------------------------------------------------------------------------
+// MacGpuMemoryBufferHandleHolder:
+
+// Defines an implementation for a `BufferHandleHolder` that can extract a video
+// frame that is backed by an IOSurface on mac. It maps the memory and produces
+// a software video frame.
+class MacGpuMemoryBufferHandleHolder : public BufferHandleHolder {
+ public:
+  explicit MacGpuMemoryBufferHandleHolder(
+      media::mojom::VideoBufferHandlePtr buffer_handle)
+      : gpu_memory_buffer_handle_(
+            std::move(buffer_handle->get_gpu_memory_buffer_handle())) {
+    DCHECK(buffer_handle->is_gpu_memory_buffer_handle());
+  }
+  MacGpuMemoryBufferHandleHolder(const MacGpuMemoryBufferHandleHolder&) =
+      delete;
+  MacGpuMemoryBufferHandleHolder& operator=(
+      const MacGpuMemoryBufferHandleHolder&) = delete;
+  ~MacGpuMemoryBufferHandleHolder() override = default;
+
+  // BufferHandleHolder:
+  scoped_refptr<media::VideoFrame> OnFrameReadyInBuffer(
+      video_capture::mojom::ReadyFrameInBufferPtr buffer) override {
+    auto frame = media::VideoFrame::WrapUnacceleratedIOSurface(
+        gpu_memory_buffer_handle_.Clone(), buffer->frame_info->visible_rect,
+        buffer->frame_info->timestamp);
+
+    if (!frame) {
+      VLOG(0) << "Failed to create a video frame.";
+    }
+    return frame;
+  }
+
+ private:
+  // The held GPU buffer handle associated with this object.
+  const gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle_;
+};
+#endif
 
 // -----------------------------------------------------------------------------
 // GpuMemoryBufferHandleHolder:
@@ -527,6 +567,14 @@ std::unique_ptr<BufferHandleHolder> BufferHandleHolder::Create(
   }
 
   DCHECK(buffer_handle->is_gpu_memory_buffer_handle());
+#if BUILDFLAG(IS_MAC)
+  auto provider = context_factory->SharedMainThreadRasterContextProvider();
+  CHECK(provider);
+  if (!provider->ContextCapabilities().gpu_rasterization) {
+    return std::make_unique<MacGpuMemoryBufferHandleHolder>(
+        std::move(buffer_handle));
+  }
+#endif
   return std::make_unique<GpuMemoryBufferHandleHolder>(std::move(buffer_handle),
                                                        context_factory);
 }
