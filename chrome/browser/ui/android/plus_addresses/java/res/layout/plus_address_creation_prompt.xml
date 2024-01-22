@@ -50,6 +50,15 @@ found in the LICENSE file.
       android:background="@drawable/rounded_rectangle_surface_1"
       android:paddingVertical="10dp" />
 
+  <org.chromium.ui.widget.TextViewWithClickableSpans
+      android:id="@+id/plus_address_modal_error_report"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textAlignment="center"
+      android:breakStrategy="simple"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+    />
+
   <org.chromium.ui.widget.ButtonCompat
       android:id="@+id/plus_address_confirm_button"
       style="@style/FilledButton.Flat"

@@ -39,8 +39,9 @@ public class PlusAddressCreationCoordinatorTest {
     private static final String MODAL_OK = "ok";
     private static final String MODAL_CANCEL = "cancel";
     private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
-    private static final String MODAL_ERROR_MESSAGE = "error!";
+    private static final String MODAL_ERROR_MESSAGE = "error! <link>test link</link>";
     private static final GURL MANAGE_URL = new GURL("manage.com");
+    private static final GURL ERROR_URL = new GURL("error.com");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
@@ -70,7 +71,9 @@ public class PlusAddressCreationCoordinatorTest {
                         MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
                         MODAL_OK,
                         MODAL_CANCEL,
-                        MANAGE_URL);
+                        MODAL_ERROR_MESSAGE,
+                        MANAGE_URL,
+                        ERROR_URL);
         mCoordinator.setMediatorForTesting(mMediator);
     }
 
@@ -98,8 +101,8 @@ public class PlusAddressCreationCoordinatorTest {
     @Test
     @SmallTest
     public void testShowError_callsMediator() {
-        mCoordinator.showError(MODAL_ERROR_MESSAGE);
-        verify(mMediator).showError(MODAL_ERROR_MESSAGE);
+        mCoordinator.showError();
+        verify(mMediator).showError();
     }
 
     @Test

@@ -28,7 +28,9 @@ public class PlusAddressCreationCoordinator {
             String proposedPlusAddressPlaceholder,
             String plusAddressModalOkText,
             String plusAddressModalCancelText,
-            GURL manageUrl) {
+            String errorReportInstruction,
+            GURL manageUrl,
+            GURL errorReportUrl) {
         PlusAddressCreationBottomSheetContent bottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(
                         activity,
@@ -37,7 +39,9 @@ public class PlusAddressCreationCoordinator {
                         proposedPlusAddressPlaceholder,
                         plusAddressModalOkText,
                         plusAddressModalCancelText,
-                        manageUrl);
+                        errorReportInstruction,
+                        manageUrl,
+                        errorReportUrl);
         mMediator =
                 new PlusAddressCreationMediator(
                         bottomSheetContent,
@@ -56,8 +60,8 @@ public class PlusAddressCreationCoordinator {
         mMediator.updateProposedPlusAddress(plusAddress);
     }
 
-    public void showError(String message) {
-        mMediator.showError(message);
+    public void showError() {
+        mMediator.showError();
     }
 
     public void finishConfirm() {

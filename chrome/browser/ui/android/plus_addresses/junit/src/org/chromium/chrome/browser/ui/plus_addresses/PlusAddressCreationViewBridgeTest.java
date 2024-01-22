@@ -51,8 +51,9 @@ public class PlusAddressCreationViewBridgeTest {
     private static final String MODAL_OK = "ok";
     private static final String MODAL_CANCEL = "cancel";
     private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
-    private static final String MODAL_ERROR_MESSAGE = "error!";
+    private static final String MODAL_ERROR_MESSAGE = "error! <link>test link</link>";
     private static final String MANAGE_URL = "manage.com";
+    private static final String ERROR_URL = "bug.com";
 
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private Profile mProfile;
@@ -107,7 +108,9 @@ public class PlusAddressCreationViewBridgeTest {
                         MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
                         MODAL_OK,
                         MODAL_CANCEL,
-                        new GURL(MANAGE_URL)))
+                        MODAL_ERROR_MESSAGE,
+                        new GURL(MANAGE_URL),
+                        new GURL(ERROR_URL)))
                 .thenReturn(mCoordinator);
     }
 
@@ -118,7 +121,9 @@ public class PlusAddressCreationViewBridgeTest {
                 MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
                 MODAL_OK,
                 MODAL_CANCEL,
-                MANAGE_URL);
+                MODAL_ERROR_MESSAGE,
+                MANAGE_URL,
+                ERROR_URL);
     }
 
     @Test
@@ -211,8 +216,8 @@ public class PlusAddressCreationViewBridgeTest {
     public void testShowError_callsCoordinator() {
         setupCoordinatorFactory();
         showBottomSheet();
-        mPlusAddressCreationViewBridge.showError(MODAL_ERROR_MESSAGE);
-        verify(mCoordinator, times(1)).showError(MODAL_ERROR_MESSAGE);
+        mPlusAddressCreationViewBridge.showError();
+        verify(mCoordinator, times(1)).showError();
     }
 
     @Test
@@ -228,7 +233,7 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testwhenCoordinatorHasNotBeenCreated() {
         mPlusAddressCreationViewBridge.updateProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
-        mPlusAddressCreationViewBridge.showError(MODAL_ERROR_MESSAGE);
+        mPlusAddressCreationViewBridge.showError();
         mPlusAddressCreationViewBridge.finishConfirm();
         mPlusAddressCreationViewBridge.destroy();
         verifyNoInteractions(mCoordinator);
