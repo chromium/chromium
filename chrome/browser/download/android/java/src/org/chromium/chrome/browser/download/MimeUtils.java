@@ -4,11 +4,18 @@
 
 package org.chromium.chrome.browser.download;
 
+import android.content.Intent;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.PackageManagerUtils;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -92,6 +99,37 @@ public class MimeUtils {
             if (index > 0) return filename.substring(index + 1);
         }
         return MimeTypeMap.getFileExtensionFromUrl(url);
+    }
+
+    /**
+     * Helper method to find apps that can open PDF file.
+     *
+     * @return A list of ResolveInfo that can open the PDF type.
+     */
+    public static List<ResolveInfo> getPdfIntentHandlers() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(
+                Uri.fromFile(
+                        new File(ContextUtils.getApplicationContext().getCacheDir(), "empty.pdf")),
+                "application/pdf");
+        return PackageManagerUtils.queryIntentActivities(intent, 0);
+    }
+
+    /**
+     * Helper method to get the app name for the first pdf viewer returned by
+     * queryIntentActivities().
+     *
+     * @return App name.
+     */
+    public static String getDefaultPdfViewerName() {
+        List<ResolveInfo> resolveInfos = getPdfIntentHandlers();
+        if (resolveInfos.size() > 0) {
+            return resolveInfos
+                    .get(0)
+                    .loadLabel(ContextUtils.getApplicationContext().getPackageManager())
+                    .toString();
+        }
+        return null;
     }
 
     /**
