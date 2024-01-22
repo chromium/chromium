@@ -109,7 +109,7 @@ static bool ConsumeRelativeOriginColor(CSSParserTokenRange& args,
 static absl::optional<double> ConsumeRelativeColorChannel(
     CSSParserTokenRange& input_range,
     const CSSParserContext& context,
-    const HashMap<CSSValueID, double> color_channel_keyword_values) {
+    const HashMap<CSSValueID, double>& color_channel_keyword_values) {
   const CSSParserToken& token = input_range.Peek();
   // Relative color channels can be calc() functions with color channel
   // replacements. e.g. In "color(from magenta srgb calc(r / 2) 0 0)", the

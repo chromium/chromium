@@ -85,7 +85,7 @@ class CORE_EXPORT CSSMathExpressionNode
       CSSAnchorQueryTypes allowed_anchor_queries,
       // Variable substitutions for relative color syntax.
       // https://www.w3.org/TR/css-color-5/#relative-colors
-      const HashMap<CSSValueID, double> color_channel_keyword_values = {});
+      const HashMap<CSSValueID, double>& color_channel_keyword_values = {});
 
   virtual CSSMathExpressionNode* Copy() const = 0;
 
