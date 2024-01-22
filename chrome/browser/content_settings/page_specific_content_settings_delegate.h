@@ -99,6 +99,12 @@ class PageSpecificContentSettingsDelegate
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
 
+  // Notify `PageSpecificContentSettings` about changes in capturing audio and
+  // video.
+  void OnCapturingStateChanged(content::WebContents* web_contents,
+                               ContentSettingsType type,
+                               bool is_capturing);
+
   // The pending protocol handler, if any. This can be set if
   // registerProtocolHandler was invoked without user gesture.
   // The |IsEmpty| method will be true if no protocol handler is
