@@ -10,12 +10,15 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
+#include "components/bookmarks/common/bookmark_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -146,8 +149,33 @@ BookmarkPermanentNode::CreateManagedBookmarks(int64_t id) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new BookmarkPermanentNode(
       id, FOLDER, base::Uuid::ParseLowercase(kManagedNodeUuid),
-      std::u16string(),
-      /*visible_when_empty=*/false));
+      std::u16string()));
+}
+
+// static
+bool BookmarkPermanentNode::IsTypeVisibleWhenEmpty(Type type) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  bool is_desktop = false;
+#else
+  bool is_desktop = true;
+#endif
+
+  switch (type) {
+    case BookmarkNode::URL:
+      NOTREACHED_NORETURN();
+    case BookmarkNode::FOLDER:
+      // Managed node.
+      return false;
+    case BookmarkNode::BOOKMARK_BAR:
+      return is_desktop;
+    case BookmarkNode::OTHER_NODE:
+      return is_desktop || base::FeatureList::IsEnabled(
+                               kAllBookmarksBaselineFolderVisibility);
+    case BookmarkNode::MOBILE:
+      // Either MOBILE or OTHER_NODE is visible when empty, but never both.
+      return !IsTypeVisibleWhenEmpty(BookmarkNode::OTHER_NODE);
+  }
+  NOTREACHED_NORETURN();
 }
 
 BookmarkPermanentNode::~BookmarkPermanentNode() = default;
@@ -158,45 +186,38 @@ bool BookmarkPermanentNode::IsVisible() const {
 
 // static
 std::unique_ptr<BookmarkPermanentNode> BookmarkPermanentNode::CreateBookmarkBar(
-    int64_t id,
-    bool visible_when_empty) {
+    int64_t id) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new BookmarkPermanentNode(
       id, BOOKMARK_BAR, base::Uuid::ParseLowercase(kBookmarkBarNodeUuid),
-      l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_FOLDER_NAME),
-      visible_when_empty));
+      l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_FOLDER_NAME)));
 }
 
 // static
 std::unique_ptr<BookmarkPermanentNode>
-BookmarkPermanentNode::CreateOtherBookmarks(int64_t id,
-                                            bool visible_when_empty) {
+BookmarkPermanentNode::CreateOtherBookmarks(int64_t id) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new BookmarkPermanentNode(
       id, OTHER_NODE, base::Uuid::ParseLowercase(kOtherBookmarksNodeUuid),
-      l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_OTHER_FOLDER_NAME),
-      visible_when_empty));
+      l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_OTHER_FOLDER_NAME)));
 }
 
 // static
 std::unique_ptr<BookmarkPermanentNode>
-BookmarkPermanentNode::CreateMobileBookmarks(int64_t id,
-                                             bool visible_when_empty) {
+BookmarkPermanentNode::CreateMobileBookmarks(int64_t id) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new BookmarkPermanentNode(
       id, MOBILE, base::Uuid::ParseLowercase(kMobileBookmarksNodeUuid),
-      l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_MOBILE_FOLDER_NAME),
-      visible_when_empty));
+      l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_MOBILE_FOLDER_NAME)));
 }
 
 BookmarkPermanentNode::BookmarkPermanentNode(int64_t id,
                                              Type type,
                                              const base::Uuid& uuid,
-                                             const std::u16string& title,
-                                             bool visible_when_empty)
+                                             const std::u16string& title)
     : BookmarkNode(id, uuid, GURL(), type, /*is_permanent_node=*/true),
-      visible_when_empty_(visible_when_empty) {
-  DCHECK(type != URL);
+      visible_when_empty_(IsTypeVisibleWhenEmpty(type)) {
+  CHECK(type != URL);
   SetTitle(title);
 }
 

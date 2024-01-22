@@ -68,8 +68,8 @@ class VisibilityComparator {
                   const std::unique_ptr<BookmarkNode>& n2) {
     DCHECK(n1->is_permanent_node());
     DCHECK(n2->is_permanent_node());
-    bool n1_visible = client_->IsPermanentNodeVisibleWhenEmpty(n1->type());
-    bool n2_visible = client_->IsPermanentNodeVisibleWhenEmpty(n2->type());
+    bool n1_visible = BookmarkPermanentNode::IsTypeVisibleWhenEmpty(n1->type());
+    bool n2_visible = BookmarkPermanentNode::IsTypeVisibleWhenEmpty(n2->type());
     return n1_visible != n2_visible && n1_visible;
   }
 
@@ -1353,9 +1353,7 @@ void BookmarkModel::CreateAccountPermanentFolders() {
 
   {
     std::unique_ptr<BookmarkPermanentNode> account_bookmark_bar_node =
-        BookmarkPermanentNode::CreateBookmarkBar(
-            next_node_id_++, client_->IsPermanentNodeVisibleWhenEmpty(
-                                 BookmarkNode::BOOKMARK_BAR));
+        BookmarkPermanentNode::CreateBookmarkBar(next_node_id_++);
     account_bookmark_bar_node_ = account_bookmark_bar_node.get();
     AddNode(root_, root_->children().size(),
             std::move(account_bookmark_bar_node),
@@ -1363,18 +1361,14 @@ void BookmarkModel::CreateAccountPermanentFolders() {
   }
   {
     std::unique_ptr<BookmarkPermanentNode> account_other_node =
-        BookmarkPermanentNode::CreateOtherBookmarks(
-            next_node_id_++,
-            client_->IsPermanentNodeVisibleWhenEmpty(BookmarkNode::OTHER_NODE));
+        BookmarkPermanentNode::CreateOtherBookmarks(next_node_id_++);
     account_other_node_ = account_other_node.get();
     AddNode(root_, root_->children().size(), std::move(account_other_node),
             /*added_by_user=*/false, NodeTypeForUuidLookup::kAccountNodes);
   }
   {
     std::unique_ptr<BookmarkPermanentNode> account_mobile_node =
-        BookmarkPermanentNode::CreateMobileBookmarks(
-            next_node_id_++,
-            client_->IsPermanentNodeVisibleWhenEmpty(BookmarkNode::MOBILE));
+        BookmarkPermanentNode::CreateMobileBookmarks(next_node_id_++);
     account_mobile_node_ = account_mobile_node.get();
     AddNode(root_, root_->children().size(), std::move(account_mobile_node),
             /*added_by_user=*/false, NodeTypeForUuidLookup::kAccountNodes);

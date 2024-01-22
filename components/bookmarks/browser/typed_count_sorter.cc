@@ -7,6 +7,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "components/bookmarks/browser/bookmark_client.h"
+#include "components/bookmarks/browser/titled_url_node.h"
 
 namespace bookmarks {
 

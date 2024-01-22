@@ -12,7 +12,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -22,6 +21,7 @@ class GURL;
 namespace bookmarks {
 
 class BookmarkModel;
+class BookmarkNode;
 class BookmarkPermanentNode;
 
 // A callback that generates a std::unique_ptr<BookmarkPermanentNode>, given a
@@ -39,10 +39,6 @@ class BookmarkClient {
   using UrlTypedCountMap = std::unordered_map<const GURL*, int>;
 
   virtual ~BookmarkClient() = default;
-
-  // Returns whether the embedder wants permanent node of type |type|
-  // to always be visible or to only show them when not empty.
-  bool IsPermanentNodeVisibleWhenEmpty(BookmarkNode::Type type) const;
 
   // Called during initialization of BookmarkModel.
   virtual void Init(BookmarkModel* model);
