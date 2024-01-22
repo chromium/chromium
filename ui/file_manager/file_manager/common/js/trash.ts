@@ -542,7 +542,7 @@ class TrashDirectoryReader implements FileSystemDirectoryReader {
 
     if (entriesToDelete.length > 0) {
       startIOTask(
-          chrome.fileManagerPrivate.IOTaskType.DELETE, entriesToDelete, {
+          chrome.fileManagerPrivate.IoTaskType.DELETE, entriesToDelete, {
             showNotification: false,
             destinationFolder: undefined,
             password: undefined,

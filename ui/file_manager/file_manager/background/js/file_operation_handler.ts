@@ -32,7 +32,7 @@ export class FileOperationHandler {
       item = new ProgressCenterItem();
       newItem = true;
       item.id = taskId;
-      item.type = getTypeFromIOTaskType(event.type);
+      item.type = getTypeFromIoTaskType(event.type);
       item.itemCount = event.itemCount;
       const state = getStore().getState();
       const volume = state.volumes[event.destinationVolumeId];
@@ -46,12 +46,12 @@ export class FileOperationHandler {
     item.destinationMessage = event.destinationName;
 
     switch (event.state) {
-      case chrome.fileManagerPrivate.IOTaskState.QUEUED:
+      case chrome.fileManagerPrivate.IoTaskState.QUEUED:
         item.progressMax = event.totalBytes;
         item.progressValue = event.bytesTransferred;
         item.remainingTime = event.remainingSeconds;
         break;
-      case chrome.fileManagerPrivate.IOTaskState.SCANNING:
+      case chrome.fileManagerPrivate.IoTaskState.SCANNING:
         item.sourceMessage = event.sourceName;
         item.destinationMessage = event.destinationName;
         item.state = ProgressItemState.SCANNING;
@@ -61,7 +61,7 @@ export class FileOperationHandler {
         item.progressValue = event.sourcesScanned;
         item.remainingTime = event.remainingSeconds;
         break;
-      case chrome.fileManagerPrivate.IOTaskState.PAUSED:
+      case chrome.fileManagerPrivate.IoTaskState.PAUSED:
         // Check if the task is paused because of warning level restrictions.
         if (event.pauseParams && event.pauseParams.policyParams) {
           item.state = ProgressItemState.PAUSED;
@@ -91,20 +91,20 @@ export class FileOperationHandler {
           break;
         }
         // Otherwise same is in-progress - fall through
-      case chrome.fileManagerPrivate.IOTaskState.IN_PROGRESS:
+      case chrome.fileManagerPrivate.IoTaskState.IN_PROGRESS:
         item.progressMax = event.totalBytes;
         item.progressValue = event.bytesTransferred;
         item.remainingTime = event.remainingSeconds;
         item.state = ProgressItemState.PROGRESSING;
         break;
-      case chrome.fileManagerPrivate.IOTaskState.SUCCESS:
-      case chrome.fileManagerPrivate.IOTaskState.CANCELLED:
-      case chrome.fileManagerPrivate.IOTaskState.ERROR:
+      case chrome.fileManagerPrivate.IoTaskState.SUCCESS:
+      case chrome.fileManagerPrivate.IoTaskState.CANCELLED:
+      case chrome.fileManagerPrivate.IoTaskState.ERROR:
         if (newItem) {
           // ERROR events can be dispatched before BEGIN events.
           item.progressMax = 1;
         }
-        if (event.state === chrome.fileManagerPrivate.IOTaskState.SUCCESS) {
+        if (event.state === chrome.fileManagerPrivate.IoTaskState.SUCCESS) {
           item.state = ProgressItemState.COMPLETED;
           item.progressValue = item.progressMax;
           item.remainingTime = event.remainingSeconds;
@@ -116,12 +116,12 @@ export class FileOperationHandler {
                 ProgressItemState.COMPLETED, str('UNDO_DELETE_ACTION_LABEL'),
                 () => {
                   startIOTask(
-                      chrome.fileManagerPrivate.IOTaskType.RESTORE, infoEntries,
+                      chrome.fileManagerPrivate.IoTaskType.RESTORE, infoEntries,
                       /*params=*/ {});
                 });
           }
         } else if (
-            event.state === chrome.fileManagerPrivate.IOTaskState.CANCELLED) {
+            event.state === chrome.fileManagerPrivate.IoTaskState.CANCELLED) {
           item.state = ProgressItemState.CANCELED;
         } else {  // ERROR
           item.state = ProgressItemState.ERROR;
@@ -164,12 +164,12 @@ export class FileOperationHandler {
           }
         }
         break;
-      case chrome.fileManagerPrivate.IOTaskState.NEED_PASSWORD:
+      case chrome.fileManagerPrivate.IoTaskState.NEED_PASSWORD:
         // Set state to canceled so notification doesn't display.
         item.state = ProgressItemState.CANCELED;
         break;
       default:
-        console.error(`Invalid IOTaskState: ${event.state}`);
+        console.error(`Invalid IoTaskState: ${event.state}`);
     }
 
     if (!event.showNotification) {
@@ -184,26 +184,26 @@ export class FileOperationHandler {
 /**
  * Obtains ProgressItemType from OperationType of ProgressStatus.type.
  */
-function getTypeFromIOTaskType(type: chrome.fileManagerPrivate.IOTaskType):
+function getTypeFromIoTaskType(type: chrome.fileManagerPrivate.IoTaskType):
     ProgressItemType {
   switch (type) {
-    case chrome.fileManagerPrivate.IOTaskType.COPY:
+    case chrome.fileManagerPrivate.IoTaskType.COPY:
       return ProgressItemType.COPY;
-    case chrome.fileManagerPrivate.IOTaskType.DELETE:
+    case chrome.fileManagerPrivate.IoTaskType.DELETE:
       return ProgressItemType.DELETE;
-    case chrome.fileManagerPrivate.IOTaskType.EMPTY_TRASH:
+    case chrome.fileManagerPrivate.IoTaskType.EMPTY_TRASH:
       return ProgressItemType.EMPTY_TRASH;
-    case chrome.fileManagerPrivate.IOTaskType.EXTRACT:
+    case chrome.fileManagerPrivate.IoTaskType.EXTRACT:
       return ProgressItemType.EXTRACT;
-    case chrome.fileManagerPrivate.IOTaskType.MOVE:
+    case chrome.fileManagerPrivate.IoTaskType.MOVE:
       return ProgressItemType.MOVE;
-    case chrome.fileManagerPrivate.IOTaskType.RESTORE:
+    case chrome.fileManagerPrivate.IoTaskType.RESTORE:
       return ProgressItemType.RESTORE;
-    case chrome.fileManagerPrivate.IOTaskType.RESTORE_TO_DESTINATION:
+    case chrome.fileManagerPrivate.IoTaskType.RESTORE_TO_DESTINATION:
       return ProgressItemType.RESTORE_TO_DESTINATION;
-    case chrome.fileManagerPrivate.IOTaskType.TRASH:
+    case chrome.fileManagerPrivate.IoTaskType.TRASH:
       return ProgressItemType.TRASH;
-    case chrome.fileManagerPrivate.IOTaskType.ZIP:
+    case chrome.fileManagerPrivate.IoTaskType.ZIP:
       return ProgressItemType.ZIP;
     default:
       console.error('Unknown operation type: ' + type);
@@ -218,7 +218,7 @@ function getMessageFromProgressEvent(
     event: chrome.fileManagerPrivate.ProgressStatus): string {
   // The non-error states text is managed directly in the
   // ProgressCenterPanel.
-  if (event.state !== chrome.fileManagerPrivate.IOTaskState.ERROR) {
+  if (event.state !== chrome.fileManagerPrivate.IoTaskState.ERROR) {
     return '';
   }
   // TODO(b/295438773): Remove this special case for the "in use" error once
@@ -226,30 +226,30 @@ function getMessageFromProgressEvent(
   // properly added.
   if (event.errorName === 'InUseError' && event.itemCount === 1) {
     switch (event.type) {
-      case chrome.fileManagerPrivate.IOTaskType.MOVE:
+      case chrome.fileManagerPrivate.IoTaskType.MOVE:
         return str('MOVE_IN_USE_ERROR');
-      case chrome.fileManagerPrivate.IOTaskType.DELETE:
+      case chrome.fileManagerPrivate.IoTaskType.DELETE:
         return str('DELETE_IN_USE_ERROR');
     }
   }
   const detail = getFileErrorString(event.errorName);
   switch (event.type) {
-    case chrome.fileManagerPrivate.IOTaskType.COPY:
+    case chrome.fileManagerPrivate.IoTaskType.COPY:
       return strf('COPY_FILESYSTEM_ERROR', detail);
-    case chrome.fileManagerPrivate.IOTaskType.EMPTY_TRASH:
+    case chrome.fileManagerPrivate.IoTaskType.EMPTY_TRASH:
       return str('EMPTY_TRASH_UNEXPECTED_ERROR');
-    case chrome.fileManagerPrivate.IOTaskType.EXTRACT:
+    case chrome.fileManagerPrivate.IoTaskType.EXTRACT:
       return strf('EXTRACT_FILESYSTEM_ERROR', detail);
-    case chrome.fileManagerPrivate.IOTaskType.MOVE:
+    case chrome.fileManagerPrivate.IoTaskType.MOVE:
       return strf('MOVE_FILESYSTEM_ERROR', detail);
-    case chrome.fileManagerPrivate.IOTaskType.ZIP:
+    case chrome.fileManagerPrivate.IoTaskType.ZIP:
       return strf('ZIP_FILESYSTEM_ERROR', detail);
-    case chrome.fileManagerPrivate.IOTaskType.DELETE:
+    case chrome.fileManagerPrivate.IoTaskType.DELETE:
       return str('DELETE_ERROR');
-    case chrome.fileManagerPrivate.IOTaskType.RESTORE:
-    case chrome.fileManagerPrivate.IOTaskType.RESTORE_TO_DESTINATION:
+    case chrome.fileManagerPrivate.IoTaskType.RESTORE:
+    case chrome.fileManagerPrivate.IoTaskType.RESTORE_TO_DESTINATION:
       return str('RESTORE_FROM_TRASH_ERROR');
-    case chrome.fileManagerPrivate.IOTaskType.TRASH:
+    case chrome.fileManagerPrivate.IoTaskType.TRASH:
       return str('TRASH_UNEXPECTED_ERROR');
     default:
       console.warn(`Unexpected operation type: ${event.type}`);
@@ -286,7 +286,7 @@ function getPolicyErrorFromIOTaskPolicyError(
  */
 function getPolicyExtraButtonText(
     event: chrome.fileManagerPrivate.ProgressStatus): string {
-  if (event.state === chrome.fileManagerPrivate.IOTaskState.PAUSED &&
+  if (event.state === chrome.fileManagerPrivate.IoTaskState.PAUSED &&
       event.pauseParams && event.pauseParams.policyParams) {
     if (event.pauseParams.policyParams.policyFileCount > 1 ||
         event.pauseParams.policyParams.alwaysShowReview) {
@@ -294,17 +294,17 @@ function getPolicyExtraButtonText(
     }
     // Single item:
     switch (event.type) {
-      case chrome.fileManagerPrivate.IOTaskType.COPY:
+      case chrome.fileManagerPrivate.IoTaskType.COPY:
         return str('DLP_FILES_COPY_WARN_CONTINUE_BUTTON');
-      case chrome.fileManagerPrivate.IOTaskType.MOVE:
-      case chrome.fileManagerPrivate.IOTaskType.RESTORE_TO_DESTINATION:
+      case chrome.fileManagerPrivate.IoTaskType.MOVE:
+      case chrome.fileManagerPrivate.IoTaskType.RESTORE_TO_DESTINATION:
         return str('DLP_FILES_MOVE_WARN_CONTINUE_BUTTON');
       default:
         console.error('Unexpected operation type: ' + event.type);
         return '';
     }
   }
-  if (event.state === chrome.fileManagerPrivate.IOTaskState.ERROR &&
+  if (event.state === chrome.fileManagerPrivate.IoTaskState.ERROR &&
       event.policyError) {
     if (event.policyError.type !== PolicyErrorType.DLP_WARNING_TIMEOUT &&
         (event.policyError.policyFileCount > 1 ||

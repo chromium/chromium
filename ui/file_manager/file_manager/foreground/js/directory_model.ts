@@ -1738,7 +1738,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       return;
     }
     const isIOTaskFinished =
-        event.state === chrome.fileManagerPrivate.IOTaskState.SUCCESS;
+        event.state === chrome.fileManagerPrivate.IoTaskState.SUCCESS;
     if (isIOTaskFinished) {
       this.rescanLater(/* refresh= */ false, /* invalidateCache= */ true);
     }

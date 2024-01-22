@@ -173,9 +173,9 @@ export async function getEntry(
  * or identify the ongoing IO operation.
  */
 export async function startIOTask(
-    type: chrome.fileManagerPrivate.IOTaskType,
+    type: chrome.fileManagerPrivate.IoTaskType,
     entries: Array<Entry|FilesAppEntry>,
-    params: chrome.fileManagerPrivate.IOTaskParams) {
+    params: chrome.fileManagerPrivate.IoTaskParams) {
   if (params.destinationFolder) {
     params.destinationFolder =
         unwrapEntry(params.destinationFolder) as DirectoryEntry;

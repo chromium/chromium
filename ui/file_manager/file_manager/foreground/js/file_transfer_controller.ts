@@ -717,13 +717,13 @@ export class FileTransferController {
         if (entries.length > 0) {
           if (isAllTrashEntries(entries, this.volumeManager_)) {
             await startIOTask(
-                chrome.fileManagerPrivate.IOTaskType.RESTORE_TO_DESTINATION,
+                chrome.fileManagerPrivate.IoTaskType.RESTORE_TO_DESTINATION,
                 entries, {destinationFolder: destinationEntry});
             return;
           }
 
-          const taskType = toMove ? chrome.fileManagerPrivate.IOTaskType.MOVE :
-                                    chrome.fileManagerPrivate.IOTaskType.COPY;
+          const taskType = toMove ? chrome.fileManagerPrivate.IoTaskType.MOVE :
+                                    chrome.fileManagerPrivate.IoTaskType.COPY;
           await startIOTask(
               taskType, entries, {destinationFolder: destinationEntry});
         }
@@ -974,7 +974,7 @@ export class FileTransferController {
           entries.every(isModifiableAndNotInTrashRoot);
       if (canTrashEntries && (!failureUrls || failureUrls.length === 0)) {
         startIOTask(
-            chrome.fileManagerPrivate.IOTaskType.TRASH, entries,
+            chrome.fileManagerPrivate.IoTaskType.TRASH, entries,
             /*params=*/ {});
       }
       this.clearDropTarget_();

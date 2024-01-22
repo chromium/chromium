@@ -215,28 +215,28 @@ ash::disks::FormatFileSystemType ApiFormatFileSystemToChromeEnum(
   return ash::disks::FormatFileSystemType::kUnknown;
 }
 
-std::optional<file_manager::io_task::OperationType> IOTaskTypeToChromeEnum(
-    api::file_manager_private::IOTaskType type) {
+std::optional<file_manager::io_task::OperationType> IoTaskTypeToChromeEnum(
+    api::file_manager_private::IoTaskType type) {
   switch (type) {
-    case api::file_manager_private::IOTaskType::kCopy:
+    case api::file_manager_private::IoTaskType::kCopy:
       return file_manager::io_task::OperationType::kCopy;
-    case api::file_manager_private::IOTaskType::kDelete:
+    case api::file_manager_private::IoTaskType::kDelete:
       return file_manager::io_task::OperationType::kDelete;
-    case api::file_manager_private::IOTaskType::kEmptyTrash:
+    case api::file_manager_private::IoTaskType::kEmptyTrash:
       return file_manager::io_task::OperationType::kEmptyTrash;
-    case api::file_manager_private::IOTaskType::kExtract:
+    case api::file_manager_private::IoTaskType::kExtract:
       return file_manager::io_task::OperationType::kExtract;
-    case api::file_manager_private::IOTaskType::kMove:
+    case api::file_manager_private::IoTaskType::kMove:
       return file_manager::io_task::OperationType::kMove;
-    case api::file_manager_private::IOTaskType::kRestore:
+    case api::file_manager_private::IoTaskType::kRestore:
       return file_manager::io_task::OperationType::kRestore;
-    case api::file_manager_private::IOTaskType::kRestoreToDestination:
+    case api::file_manager_private::IoTaskType::kRestoreToDestination:
       return file_manager::io_task::OperationType::kRestoreToDestination;
-    case api::file_manager_private::IOTaskType::kTrash:
+    case api::file_manager_private::IoTaskType::kTrash:
       return file_manager::io_task::OperationType::kTrash;
-    case api::file_manager_private::IOTaskType::kZip:
+    case api::file_manager_private::IoTaskType::kZip:
       return file_manager::io_task::OperationType::kZip;
-    case api::file_manager_private::IOTaskType::kNone:
+    case api::file_manager_private::IoTaskType::kNone:
       return {};
   }
   NOTREACHED() << "Unknown I/O task type " << base::to_underlying(type);
@@ -1689,7 +1689,7 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
     source_urls.push_back(std::move(cracked_url));
   }
 
-  auto type = IOTaskTypeToChromeEnum(params->type);
+  auto type = IoTaskTypeToChromeEnum(params->type);
   if (!type) {
     return RespondNow(Error("Invalid I/O task type given."));
   }

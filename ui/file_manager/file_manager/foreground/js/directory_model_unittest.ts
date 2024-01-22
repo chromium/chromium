@@ -57,12 +57,12 @@ function getDirectoryModel(): DirectoryModel {
  */
 export function testRecanAfterDeletionForRecents() {
   const deleteEvent = {
-    type: chrome.fileManagerPrivate.IOTaskType.DELETE,
-    state: chrome.fileManagerPrivate.IOTaskState.SUCCESS,
+    type: chrome.fileManagerPrivate.IoTaskType.DELETE,
+    state: chrome.fileManagerPrivate.IoTaskState.SUCCESS,
   } as chrome.fileManagerPrivate.ProgressStatus;
   const copyEvent = {
-    type: chrome.fileManagerPrivate.IOTaskType.COPY,
-    state: chrome.fileManagerPrivate.IOTaskState.SUCCESS,
+    type: chrome.fileManagerPrivate.IoTaskType.COPY,
+    state: chrome.fileManagerPrivate.IoTaskState.SUCCESS,
   } as chrome.fileManagerPrivate.ProgressStatus;
 
   const directoryModel = getDirectoryModel();
@@ -104,23 +104,23 @@ export function testRescanAfterIOTaskOperationOnlyForNonWatchableVolume() {
     } as VolumeInfo;
   };
 
-  /** @type {!Array<!chrome.fileManagerPrivate.IOTaskType>} */
+  /** @type {!Array<!chrome.fileManagerPrivate.IoTaskType>} */
   const operations = [
-    chrome.fileManagerPrivate.IOTaskType.COPY,
-    chrome.fileManagerPrivate.IOTaskType.DELETE,
-    chrome.fileManagerPrivate.IOTaskType.EMPTY_TRASH,
-    chrome.fileManagerPrivate.IOTaskType.EXTRACT,
-    chrome.fileManagerPrivate.IOTaskType.MOVE,
-    chrome.fileManagerPrivate.IOTaskType.RESTORE,
-    chrome.fileManagerPrivate.IOTaskType.RESTORE_TO_DESTINATION,
-    chrome.fileManagerPrivate.IOTaskType.TRASH,
-    chrome.fileManagerPrivate.IOTaskType.ZIP,
+    chrome.fileManagerPrivate.IoTaskType.COPY,
+    chrome.fileManagerPrivate.IoTaskType.DELETE,
+    chrome.fileManagerPrivate.IoTaskType.EMPTY_TRASH,
+    chrome.fileManagerPrivate.IoTaskType.EXTRACT,
+    chrome.fileManagerPrivate.IoTaskType.MOVE,
+    chrome.fileManagerPrivate.IoTaskType.RESTORE,
+    chrome.fileManagerPrivate.IoTaskType.RESTORE_TO_DESTINATION,
+    chrome.fileManagerPrivate.IoTaskType.TRASH,
+    chrome.fileManagerPrivate.IoTaskType.ZIP,
   ];
 
   for (const operation of operations) {
     const event = {
       type: operation,
-      state: chrome.fileManagerPrivate.IOTaskState.SUCCESS,
+      state: chrome.fileManagerPrivate.IoTaskState.SUCCESS,
     } as chrome.fileManagerPrivate.ProgressStatus;
 
     isRescanCalled = false;
