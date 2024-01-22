@@ -3696,7 +3696,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SearchEngineChoice.SearchEngineBeforeChoicePrompt"
-    enum="OmniboxSearchEngineType" expires_after="2024-01-20">
+    enum="OmniboxSearchEngineType" expires_after="2025-01-20">
   <owner>wylieb@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
   <summary>
