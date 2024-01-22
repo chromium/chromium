@@ -169,6 +169,14 @@
       light: 'rgba($cros.ref.error40.rgb, 0.30)',
       dark: 'rgba($cros.ref.error80.rgb, 0.30)',
     },
+    'inverse-error': {
+      light: '$cros.ref.error80',
+      dark:  '$cros.ref.error40',
+    },
+    'inverse-on-error': {
+      light: '$cros.ref.error20',
+      dark:  '$cros.ref.error100',
+    },
 
     /* Neutral */
     'surface-variant': {
