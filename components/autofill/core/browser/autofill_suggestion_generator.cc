@@ -1232,9 +1232,13 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
   FieldTypeGroup trigger_field_type_group =
       GroupTypeOfFieldType(trigger_field_type);
   for (const AutofillProfile* profile : profiles) {
-    // Name fields should have `NAME_FULL` as main text.
+    // Name fields should have `NAME_FULL` as main text, unless in field by
+    // field filling mode.
+    const PopupItemId popup_item_id = GetProfileSuggestionPopupItemId(
+        last_targeted_fields, trigger_field_type);
     FieldType main_text_field_type =
         GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kName &&
+                popup_item_id != PopupItemId::kAddressFieldByFieldFilling &&
                 base::FeatureList::IsEnabled(
                     features::kAutofillGranularFillingAvailable)
             ? NAME_FULL
@@ -1252,8 +1256,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     suggestions.back().payload = Suggestion::Guid(profile->guid());
     suggestions.back().acceptance_a11y_announcement =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
-    suggestions.back().popup_item_id = GetProfileSuggestionPopupItemId(
-        last_targeted_fields, trigger_field_type);
+    suggestions.back().popup_item_id = popup_item_id;
     suggestions.back().is_acceptable = IsAddressType(trigger_field_type);
     suggestions.back().hidden_prior_to_address_rewriter_usage =
         previously_hidden_profiles_guid.contains(profile->guid());

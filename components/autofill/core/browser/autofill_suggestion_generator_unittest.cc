@@ -1192,10 +1192,14 @@ TEST_F(
       profile(), std::optional<FieldTypeSet>({NAME_LAST}), NAME_FIRST);
 
   ASSERT_EQ(suggestions.size(), 1u);
+  // Differently from other filling modes, where when focusing on a name field
+  // the NAME_FULL is rendered in the main text, field-by-field filling always
+  // displays the value that will actually be used to fill the field as main
+  // text.
   EXPECT_THAT(suggestions[0],
               EqualsFieldByFieldFillingSuggestion(
                   PopupItemId::kAddressFieldByFieldFilling,
-                  profile().GetInfo(NAME_FULL, app_locale()), NAME_FIRST,
+                  profile().GetInfo(NAME_FIRST, app_locale()), NAME_FIRST,
                   Suggestion::Guid(profile().guid()), {{}}));
 }
 
