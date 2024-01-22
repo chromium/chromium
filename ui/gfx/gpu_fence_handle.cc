@@ -92,7 +92,17 @@ void GpuFenceHandle::Reset() {
 GpuFenceHandle::~GpuFenceHandle() = default;
 
 bool GpuFenceHandle::is_null() const {
-  return !smart_fence_.get();
+  if (!smart_fence_.get()) {
+    return true;
+  }
+
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  return !smart_fence_.get()->scoped_fence_.is_valid();
+#elif BUILDFLAG(IS_WIN)
+  return !smart_fence_.get()->scoped_fence_.IsValid();
+#else
+  return true;
+#endif
 }
 
 GpuFenceHandle::RefCountedScopedFence::RefCountedScopedFence(
