@@ -787,6 +787,11 @@ const CGFloat kModuleMinMargin = 16;
   if (!self.feedWrapperViewController) {
     return;
   }
+  // Scroll events might still be queued for a previous scroll view which was
+  // now replaced. In these cases, ignore the scroll event.
+  if (scrollView != self.collectionView) {
+    return;
+  }
   [self.overscrollActionsController scrollViewDidScroll:scrollView];
   [self updateFakeOmniboxForScrollPosition];
 
@@ -803,6 +808,11 @@ const CGFloat kModuleMinMargin = 16;
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
+  // Scroll events might still be queued for a previous scroll view which was
+  // now replaced. In these cases, ignore the scroll event.
+  if (scrollView != self.collectionView) {
+    return;
+  }
   // User has interacted with the surface, so it is safe to assume that a saved
   // scroll position can now be overriden.
   self.hasSavedOffsetFromPreviousScrollState = NO;
@@ -813,6 +823,11 @@ const CGFloat kModuleMinMargin = 16;
 - (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
                      withVelocity:(CGPoint)velocity
               targetContentOffset:(inout CGPoint*)targetContentOffset {
+  // Scroll events might still be queued for a previous scroll view which was
+  // now replaced. In these cases, ignore the scroll event.
+  if (scrollView != self.collectionView) {
+    return;
+  }
   [self.overscrollActionsController
       scrollViewWillEndDragging:scrollView
                    withVelocity:velocity
@@ -821,6 +836,11 @@ const CGFloat kModuleMinMargin = 16;
 
 - (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
                   willDecelerate:(BOOL)decelerate {
+  // Scroll events might still be queued for a previous scroll view which was
+  // now replaced. In these cases, ignore the scroll event.
+  if (scrollView != self.collectionView) {
+    return;
+  }
   [self.overscrollActionsController scrollViewDidEndDragging:scrollView
                                               willDecelerate:decelerate];
   if (self.isFeedVisible) {
@@ -846,6 +866,11 @@ const CGFloat kModuleMinMargin = 16;
 }
 
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView*)scrollView {
+  // Scroll events might still be queued for a previous scroll view which was
+  // now replaced. In these cases, ignore the scroll event.
+  if (scrollView != self.collectionView) {
+    return YES;
+  }
   // User has tapped the status bar to scroll to the top.
   // Prevent scrolling back to pre-focus state, making sure we don't have
   // two scrolling animations running at the same time.
