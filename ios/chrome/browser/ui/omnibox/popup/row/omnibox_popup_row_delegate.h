@@ -17,6 +17,11 @@
             (OmniboxPopupRowContentConfiguration*)configuration
          didTapTrailingButtonAtIndexPath:(NSIndexPath*)indexPath;
 
+/// Accessibility actions updated.
+- (void)omniboxPopupRowWithConfiguration:
+            (OmniboxPopupRowContentConfiguration*)configuration
+    didUpdateAccessibilityActionsAtIndexPath:(NSIndexPath*)indexPath;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_ROW_OMNIBOX_POPUP_ROW_DELEGATE_H_

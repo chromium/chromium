@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
-#import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_content_configuration+view.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_content_view.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_util.h"
@@ -35,91 +34,130 @@ const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
 
 }  // namespace
 
-@implementation OmniboxPopupRowContentConfiguration {
-  /// Autocomplete suggestion displayed in the view.
-  id<AutocompleteSuggestion> _suggestion;
-}
+/// Redefines "Content View interface" as readwrite.
+@interface OmniboxPopupRowContentConfiguration ()
 
-- (instancetype)initWithAutocompleteSuggestion:
-    (id<AutocompleteSuggestion>)suggestion {
-  self = [super init];
-  if (self) {
-    _suggestion = suggestion;
+// Background.
+@property(nonatomic, assign, readwrite) BOOL showSelectedBackgroundView;
 
-    // Leading Icon.
-    _leadingIcon = _suggestion.icon;
+// Leading Icon.
+@property(nonatomic, strong, readwrite) id<OmniboxIcon> leadingIcon;
+@property(nonatomic, assign, readwrite) BOOL leadingIconHighlighted;
 
-    // Primary Text.
-    _primaryText = _suggestion.text;
-    if (_suggestion.isWrapping) {
-      _primaryTextNumberOfLines = kWrappingSuggestNumberOfLines;
-    } else {
-      _primaryTextNumberOfLines = 1;
-    }
+// Primary text.
+@property(nonatomic, strong, readwrite) NSAttributedString* primaryText;
+@property(nonatomic, assign, readwrite) NSInteger primaryTextNumberOfLines;
 
-    // Secondary Text.
-    _secondaryText = _suggestion.detailText;
-    _secondaryTextNumberOfLines =
-        _suggestion.hasAnswer ? _suggestion.numberOfLines : 1;
-    _secondaryTextFading = !_suggestion.hasAnswer;
-    _secondaryTextDisplayAsURL = _suggestion.isURL;
+// Secondary Text.
+@property(nonatomic, strong, readwrite) NSAttributedString* secondaryText;
+@property(nonatomic, assign, readwrite) NSInteger secondaryTextNumberOfLines;
+@property(nonatomic, assign, readwrite) BOOL secondaryTextFading;
+@property(nonatomic, assign, readwrite) BOOL secondaryTextDisplayAsURL;
 
-    // Trailing Button.
-    NSString* trailingButtonActionName = nil;
-    if (_suggestion.isTabMatch) {
-      _trailingIcon = DefaultSymbolWithPointSize(kNavigateToTabSymbol,
-                                                 kTrailingButtonPointSize);
-      _trailingButtonAccessibilityIdentifier =
-          kOmniboxPopupRowSwitchTabAccessibilityIdentifier;
-      trailingButtonActionName =
-          l10n_util::GetNSString(IDS_IOS_OMNIBOX_POPUP_SWITCH_TO_OPEN_TAB);
+// Trailing Icon.
+@property(nonatomic, strong, readwrite) UIImage* trailingIcon;
+@property(nonatomic, strong, readwrite) UIColor* trailingIconTintColor;
+@property(nonatomic, strong, readwrite)
+    NSString* trailingButtonAccessibilityIdentifier;
 
-    } else if (_suggestion.isAppendable) {
-      _trailingIcon = DefaultSymbolWithPointSize(kRefineQuerySymbol,
-                                                 kTrailingButtonPointSize);
-      _trailingButtonAccessibilityIdentifier =
-          kOmniboxPopupRowAppendAccessibilityIdentifier;
-      trailingButtonActionName =
-          l10n_util::GetNSString(IDS_IOS_OMNIBOX_POPUP_APPEND);
-    }
+// Margins.
+@property(nonatomic, assign, readwrite)
+    NSDirectionalEdgeInsets directionalLayoutMargin;
 
-    if (_trailingIcon) {
-      // Starting from iOS 16 `imageWithHorizontallyFlippedOrientation` is
-      // flipping the icon automatically when the UI is RTL/LTR.
-      if (@available(iOS 16, *)) {
-        _trailingIcon = [_trailingIcon imageWithHorizontallyFlippedOrientation];
-      }
-      _trailingIcon = [_trailingIcon
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    }
+@end
 
-    // Accessibility actions.
-    NSMutableArray<UIAccessibilityCustomAction*>* customActions =
-        [[NSMutableArray alloc] init];
-    if (trailingButtonActionName) {
-      [customActions
-          addObject:[[UIAccessibilityCustomAction alloc]
-                        initWithName:trailingButtonActionName
-                              target:self
-                            selector:@selector(trailingButtonTapped)]];
-    }
-    self.accessibilityCustomActions = customActions;
-  }
-  return self;
-}
+@implementation OmniboxPopupRowContentConfiguration
 
 /// Layout this cell with the given data before displaying.
-+ (instancetype)configurationWithAutocompleteSuggestion:
-    (id<AutocompleteSuggestion>)suggestion {
-  return [[OmniboxPopupRowContentConfiguration alloc]
-      initWithAutocompleteSuggestion:suggestion];
++ (instancetype)cellConfiguration {
+  return [[OmniboxPopupRowContentConfiguration alloc] init];
+}
+
+- (void)setSuggestion:(id<AutocompleteSuggestion>)suggestion {
+  _suggestion = suggestion;
+
+  // Leading Icon.
+  _leadingIcon = _suggestion.icon;
+
+  // Primary Text.
+  _primaryText = _suggestion.text;
+  if (_suggestion.isWrapping) {
+    _primaryTextNumberOfLines = kWrappingSuggestNumberOfLines;
+  } else {
+    _primaryTextNumberOfLines = 1;
+  }
+
+  // Secondary Text.
+  _secondaryText = _suggestion.detailText;
+  _secondaryTextNumberOfLines =
+      _suggestion.hasAnswer ? _suggestion.numberOfLines : 1;
+  _secondaryTextFading = !_suggestion.hasAnswer;
+  _secondaryTextDisplayAsURL = _suggestion.isURL;
+
+  // Trailing Button.
+  NSString* trailingButtonActionName = nil;
+  if (_suggestion.isTabMatch) {
+    _trailingIcon = DefaultSymbolWithPointSize(kNavigateToTabSymbol,
+                                               kTrailingButtonPointSize);
+    _trailingButtonAccessibilityIdentifier =
+        kOmniboxPopupRowSwitchTabAccessibilityIdentifier;
+    trailingButtonActionName =
+        l10n_util::GetNSString(IDS_IOS_OMNIBOX_POPUP_SWITCH_TO_OPEN_TAB);
+
+  } else if (_suggestion.isAppendable) {
+    _trailingIcon = DefaultSymbolWithPointSize(kRefineQuerySymbol,
+                                               kTrailingButtonPointSize);
+    _trailingButtonAccessibilityIdentifier =
+        kOmniboxPopupRowAppendAccessibilityIdentifier;
+    trailingButtonActionName =
+        l10n_util::GetNSString(IDS_IOS_OMNIBOX_POPUP_APPEND);
+  }
+
+  if (_trailingIcon) {
+    // Starting from iOS 16 `imageWithHorizontallyFlippedOrientation` is
+    // flipping the icon automatically when the UI is RTL/LTR.
+    if (@available(iOS 16, *)) {
+      _trailingIcon = [_trailingIcon imageWithHorizontallyFlippedOrientation];
+    }
+    _trailingIcon = [_trailingIcon
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  }
+
+  // Accessibility actions.
+  NSMutableArray<UIAccessibilityCustomAction*>* customActions =
+      [[NSMutableArray alloc] init];
+  if (trailingButtonActionName) {
+    [customActions addObject:[[UIAccessibilityCustomAction alloc]
+                                 initWithName:trailingButtonActionName
+                                       target:self
+                                     selector:@selector(trailingButtonTapped)]];
+  }
+  self.accessibilityCustomActions = customActions;
 }
 
 #pragma mark - UIContentConfiguration
 
 - (id)copyWithZone:(NSZone*)zone {
-  // The configuration is immutable.
-  return self;
+  __typeof__(self) configuration = [[self.class alloc] init];
+  configuration.suggestion = self.suggestion;
+  configuration.delegate = self.delegate;
+  configuration.indexPath = self.indexPath;
+  configuration.showSeparator = self.showSeparator;
+  configuration.semanticContentAttribute = self.semanticContentAttribute;
+  configuration.omniboxLayoutGuide = self.omniboxLayoutGuide;
+  configuration.faviconRetriever = self.faviconRetriever;
+  configuration.imageRetriever = self.imageRetriever;
+
+  // Setting `suggestion` already sets some properties in "Content View
+  // interface". Update the properties that can change with
+  // `updatedConfigurationForState`.
+  configuration.showSelectedBackgroundView = self.showSelectedBackgroundView;
+  configuration.leadingIconHighlighted = self.leadingIconHighlighted;
+  configuration.primaryText = self.primaryText;
+  configuration.secondaryText = self.secondaryText;
+  configuration.trailingIconTintColor = self.trailingIconTintColor;
+  configuration.directionalLayoutMargin = self.directionalLayoutMargin;
+  return configuration;
 }
 
 - (UIView<UIContentView>*)makeContentView {
@@ -132,32 +170,33 @@ const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
   if (![state isKindOfClass:[UIViewConfigurationState class]]) {
     return self;
   }
+  OmniboxPopupRowContentConfiguration* configuration = [self copy];
 
   UIViewConfigurationState* viewState = state;
   // Highlight.
   const BOOL allowHighlight = viewState.highlighted || viewState.selected;
-  _showSelectedBackgroundView = allowHighlight;
-  _leadingIconHighlighted = allowHighlight;
-  _primaryText =
+  configuration.showSelectedBackgroundView = allowHighlight;
+  configuration.leadingIconHighlighted = allowHighlight;
+  configuration.primaryText =
       allowHighlight
           ? [self highlightedAttributedStringWithString:_suggestion.text]
           : _suggestion.text;
-  _secondaryText =
+  configuration.secondaryText =
       allowHighlight
           ? [self highlightedAttributedStringWithString:_suggestion.detailText]
           : _suggestion.detailText;
-  _trailingIconTintColor =
+  configuration.trailingIconTintColor =
       allowHighlight ? UIColor.whiteColor : [UIColor colorNamed:kBlueColor];
 
   // Constraint to omnibox layout guide.
-  if (self.omniboxLayoutGuide && CanUseOmniboxLayoutGuide()) {
+  if (_omniboxLayoutGuide && CanUseOmniboxLayoutGuide()) {
     if (!ShouldApplyOmniboxLayoutGuide(state.traitCollection)) {
-      _directionalLayoutMargin = NSDirectionalEdgeInsetsZero;
+      configuration.directionalLayoutMargin = NSDirectionalEdgeInsetsZero;
     } else {
-      CGRect omniboxFrame = self.omniboxLayoutGuide.layoutFrame;
-      CGRect popupFrame = self.omniboxLayoutGuide.owningView.bounds;
+      CGRect omniboxFrame = _omniboxLayoutGuide.layoutFrame;
+      CGRect popupFrame = _omniboxLayoutGuide.owningView.bounds;
       UIEdgeInsets safeAreaInsets =
-          self.omniboxLayoutGuide.owningView.safeAreaInsets;
+          _omniboxLayoutGuide.owningView.safeAreaInsets;
       CGFloat leftSpace = CGRectGetMinX(omniboxFrame) -
                           CGRectGetMinX(popupFrame) - safeAreaInsets.left;
       CGFloat rightSpace = CGRectGetMaxX(popupFrame) -
@@ -168,12 +207,12 @@ const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
           UIUserInterfaceLayoutDirectionRightToLeft;
       CGFloat spacing = omniboxIsRTL ? rightSpace : leftSpace;
       CGFloat leadingMargin = spacing + kOmniboxLayoutGuideLeadingOffset;
-      _directionalLayoutMargin =
+      configuration.directionalLayoutMargin =
           NSDirectionalEdgeInsetsMake(0, leadingMargin, 0, 0);
     }
   }
 
-  return self;
+  return configuration;
 }
 
 #pragma mark - Private

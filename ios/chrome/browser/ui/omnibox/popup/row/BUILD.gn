@@ -8,7 +8,6 @@ source_set("row") {
     "omnibox_popup_row_cell.mm",
     "omnibox_popup_row_cell_experimental.h",
     "omnibox_popup_row_cell_experimental.mm",
-    "omnibox_popup_row_content_configuration+view.h",
     "omnibox_popup_row_content_configuration.h",
     "omnibox_popup_row_content_configuration.mm",
     "omnibox_popup_row_content_view.h",

@@ -641,10 +641,27 @@ BOOL ShouldDismissKeyboardOnScroll() {
          didTapTrailingButtonAtIndexPath:(NSIndexPath*)indexPath {
   id<AutocompleteSuggestion> suggestion =
       [self suggestionAtIndexPath:indexPath];
-  CHECK(suggestion);
+  if (suggestion != configuration.suggestion) {
+    return;
+  }
   [self.delegate autocompleteResultConsumer:self
            didTapTrailingButtonOnSuggestion:suggestion
                                       inRow:indexPath.row];
+}
+
+- (void)omniboxPopupRowWithConfiguration:
+            (OmniboxPopupRowContentConfiguration*)configuration
+    didUpdateAccessibilityActionsAtIndexPath:(NSIndexPath*)indexPath {
+  id<AutocompleteSuggestion> suggestion =
+      [self suggestionAtIndexPath:indexPath];
+  if (suggestion != configuration.suggestion) {
+    return;
+  }
+  // Actions reference the configuration that created them. When applying a
+  // new configuration to the content view, also update the actions to avoid
+  // retaining the old configuration.
+  UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+  cell.accessibilityCustomActions = configuration.accessibilityCustomActions;
 }
 
 #pragma mark - OmniboxReturnDelegate
@@ -881,8 +898,8 @@ BOOL ShouldDismissKeyboardOnScroll() {
                                  forIndexPath:indexPath];
 
         OmniboxPopupRowContentConfiguration* configuration =
-            [OmniboxPopupRowContentConfiguration
-                configurationWithAutocompleteSuggestion:suggestion];
+            [OmniboxPopupRowContentConfiguration cellConfiguration];
+        configuration.suggestion = suggestion;
         configuration.delegate = self;
         configuration.indexPath = indexPath;
         configuration.showSeparator =
@@ -894,8 +911,6 @@ BOOL ShouldDismissKeyboardOnScroll() {
         configuration.imageRetriever = self.imageRetriever;
 
         [cell setContentConfiguration:configuration];
-        cell.accessibilityCustomActions =
-            configuration.accessibilityCustomActions;
         cell.backgroundConfiguration =
             [UIBackgroundConfiguration clearConfiguration];
         return cell;

@@ -12,9 +12,7 @@
 @protocol AutocompleteSuggestion;
 @protocol FaviconRetriever;
 @protocol ImageRetriever;
-@class LayoutGuideCenter;
-@class OmniboxIconView;
-@class OmniboxPopupRowCell;
+@protocol OmniboxIcon;
 @protocol OmniboxPopupRowDelegate;
 
 /// Content configuration of the omnibox popup row, contains the logic of the
@@ -22,6 +20,8 @@
 @interface OmniboxPopupRowContentConfiguration
     : NSObject <UIContentConfiguration>
 
+/// Autocomplete suggestion.
+@property(nonatomic, strong) id<AutocompleteSuggestion> suggestion;
 /// Delegate for events in OmniboxPopupRow.
 @property(nonatomic, weak) id<OmniboxPopupRowDelegate> delegate;
 /// Index path of the row.
@@ -38,12 +38,39 @@
 /// Image retriever for `OmniboxIconView`.
 @property(nonatomic, weak) id<ImageRetriever> imageRetriever;
 
-/// Returns a omnibox popup row content configuration with the specified
-/// autocomplete `suggestion`.
-+ (instancetype)configurationWithAutocompleteSuggestion:
-    (id<AutocompleteSuggestion>)suggestion;
+/// Returns the default configuration for a list cell.
++ (instancetype)cellConfiguration;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+#pragma mark - Content View interface
+
+// Background.
+@property(nonatomic, assign, readonly) BOOL showSelectedBackgroundView;
+
+// Leading Icon.
+@property(nonatomic, strong, readonly) id<OmniboxIcon> leadingIcon;
+@property(nonatomic, assign, readonly) BOOL leadingIconHighlighted;
+
+// Primary text.
+@property(nonatomic, strong, readonly) NSAttributedString* primaryText;
+@property(nonatomic, assign, readonly) NSInteger primaryTextNumberOfLines;
+
+// Secondary Text.
+@property(nonatomic, strong, readonly) NSAttributedString* secondaryText;
+@property(nonatomic, assign, readonly) NSInteger secondaryTextNumberOfLines;
+@property(nonatomic, assign, readonly) BOOL secondaryTextFading;
+@property(nonatomic, assign, readonly) BOOL secondaryTextDisplayAsURL;
+
+// Trailing Icon.
+@property(nonatomic, strong, readonly) UIImage* trailingIcon;
+@property(nonatomic, strong, readonly) UIColor* trailingIconTintColor;
+@property(nonatomic, strong, readonly)
+    NSString* trailingButtonAccessibilityIdentifier;
+
+// Margins.
+@property(nonatomic, assign, readonly)
+    NSDirectionalEdgeInsets directionalLayoutMargin;
 
 @end
 

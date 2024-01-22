@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_view.h"
-#import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_content_configuration+view.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -326,6 +325,9 @@ const CGFloat kTopGradientColorOpacity = 0.85;
 
   self.directionalLayoutMargins = configuration.directionalLayoutMargin;
   self.semanticContentAttribute = configuration.semanticContentAttribute;
+  [configuration.delegate
+              omniboxPopupRowWithConfiguration:configuration
+      didUpdateAccessibilityActionsAtIndexPath:configuration.indexPath];
 }
 
 /// Handles tap on trailing button.
