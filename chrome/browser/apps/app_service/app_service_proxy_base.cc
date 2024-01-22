@@ -553,8 +553,8 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
     if (!update.HandlesIntents().value_or(false)) {
       return;
     }
-    if (exclude_browser_tab_apps &&
-        update.WindowMode() == WindowMode::kBrowser) {
+    if (ShouldExcludeBrowserTabApps(exclude_browser_tab_apps,
+                                    update.WindowMode())) {
       return;
     }
     // |activity_label| -> {index, is_generic}
@@ -591,6 +591,12 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
     }
   });
   return intent_launch_info;
+}
+
+bool AppServiceProxyBase::ShouldExcludeBrowserTabApps(
+    bool exclude_browser_tab_apps,
+    WindowMode window_mode) {
+  return (exclude_browser_tab_apps && window_mode == WindowMode::kBrowser);
 }
 
 std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForFiles(

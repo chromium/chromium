@@ -434,6 +434,9 @@ class AppServiceProxyBase : public KeyedService,
   virtual void OnLaunched(LaunchCallback callback,
                           LaunchResult&& launch_result);
 
+  virtual bool ShouldExcludeBrowserTabApps(bool exclude_browser_tab_apps,
+                                           WindowMode window_mode);
+
   // Returns true if we should read icon image files from the local app_service
   // icon directory on disk, e.g. for ChromeOS. Otherwise, returns false.
   virtual bool ShouldReadIcons(AppType app_type);

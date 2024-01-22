@@ -342,9 +342,11 @@ std::vector<IntentLaunchInfo> AppServiceProxyLacros::GetAppsForIntent(
         !update.ShowInLauncher().value_or(false)) {
       return;
     }
-    if (exclude_browser_tab_apps &&
-        update.WindowMode() == WindowMode::kBrowser) {
-      return;
+    if (!chromeos::features::IsCrosShortstandEnabled()) {
+      if (exclude_browser_tab_apps &&
+          update.WindowMode() == WindowMode::kBrowser) {
+        return;
+      }
     }
     std::set<std::string> existing_activities;
     for (const auto& filter : update.IntentFilters()) {
