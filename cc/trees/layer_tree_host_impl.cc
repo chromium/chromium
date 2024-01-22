@@ -4835,7 +4835,6 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
 
   UIResourceData data;
   data.opaque = bitmap.GetOpaque();
-  data.format = format;
   if (!use_shared_image) {
     data.shared_bitmap_id = shared_bitmap_id;
     data.shared_mapping = std::move(shared_mapping);
