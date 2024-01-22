@@ -839,6 +839,10 @@ public final class ProductionSupportedFlagList {
                 "When enabled, invalidates the LocalSurfaceId of the DelegatedFrameHostAndroid when"
                         + " the old page is about to be unloaded."),
         Flag.baseFeature(
+                BlinkFeatures.INCREMENT_LOCAL_SURFACE_ID_FOR_MAINFRAME_SAME_DOC_NAVIGATION,
+                "When enabled, every mainframe same-doc navigation will increment the"
+                        + " `viz::LocalSurfaceId` from the impl thread."),
+        Flag.baseFeature(
                 BaseFeatures.PARTITION_ALLOC_SCHEDULER_LOOP_QUARANTINE,
                 "Enables Partition Allocator's FreeFlags::kSchedulerLoopQuarantine"),
         Flag.baseFeature(
