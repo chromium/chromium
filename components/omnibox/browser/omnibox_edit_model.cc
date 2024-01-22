@@ -1990,37 +1990,33 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
 }
 
 void OmniboxEditModel::OnPopupResultChanged() {
-  if (popup_view_) {
-    rich_suggestion_bitmaps_.clear();
-    const AutocompleteResult& result = autocomplete_controller()->result();
-    size_t old_selected_line = GetPopupSelection().line;
-
-    if (result.default_match()) {
-      OmniboxPopupSelection selection = GetPopupSelection();
-      selection.line = 0;
-
-      const bool has_focused_match =
-          selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_ACTION &&
-          result.match_at(selection.line).has_tab_match.value_or(false);
-      const bool has_changed =
-          selection.line != old_selected_line ||
-          result.match_at(selection.line).destination_url != old_focused_url_;
-
-      if (!has_focused_match || has_changed) {
-        selection.state = OmniboxPopupSelection::NORMAL;
-      }
-      popup_selection_ = selection;
-    } else {
-      popup_selection_ = OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
-                                               OmniboxPopupSelection::NORMAL);
-    }
-
-    bool popup_was_open = popup_view_->IsOpen();
-    popup_view_->UpdatePopupAppearance();
-    if (popup_view_->IsOpen() != popup_was_open) {
-      controller_->client()->OnPopupVisibilityChanged();
-    }
+  if (!popup_view_) {
+    return;
   }
+  rich_suggestion_bitmaps_.clear();
+  const AutocompleteResult& result = autocomplete_controller()->result();
+  size_t old_selected_line = GetPopupSelection().line;
+
+  if (result.default_match()) {
+    OmniboxPopupSelection selection = GetPopupSelection();
+    selection.line = 0;
+
+    const bool has_focused_match =
+        selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_ACTION &&
+        result.match_at(selection.line).has_tab_match.value_or(false);
+    const bool has_changed =
+        selection.line != old_selected_line ||
+        result.match_at(selection.line).destination_url != old_focused_url_;
+
+    if (!has_focused_match || has_changed) {
+      selection.state = OmniboxPopupSelection::NORMAL;
+    }
+    popup_selection_ = selection;
+  } else {
+    popup_selection_ = OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
+                                             OmniboxPopupSelection::NORMAL);
+  }
+  popup_view_->UpdatePopupAppearance();
 }
 
 const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
