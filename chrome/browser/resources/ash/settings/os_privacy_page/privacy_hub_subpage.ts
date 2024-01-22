@@ -169,6 +169,12 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
             'prefs.ash.user.microphone_allowed.*)',
       },
 
+      microphoneToggleTooltipText_: {
+        type: String,
+        computed: 'computeMicrophoneToggleTooltipText_(isMicListEmpty_, ' +
+            'microphoneHardwareToggleActive_)',
+      },
+
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
@@ -377,6 +383,16 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
     return microphoneAllowed ?
         this.i18n('privacyHubPageMicrophoneRowSubtext') :
         this.i18n('privacyHubMicrophoneAccessBlockedText');
+  }
+
+  private computeMicrophoneToggleTooltipText_(): string {
+    if (this.isMicListEmpty_) {
+      return this.i18n('privacyHubNoMicrophoneConnectedTooltipText');
+    } else if (this.microphoneHardwareToggleActive_) {
+      return this.i18n('microphoneHwToggleTooltip');
+    } else {
+      return '';
+    }
   }
 }
 

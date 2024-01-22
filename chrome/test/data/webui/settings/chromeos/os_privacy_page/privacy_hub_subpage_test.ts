@@ -756,10 +756,11 @@ suite('<settings-privacy-hub-subpage> app permissions', () => {
 
     // There is no MediaDevice connected initially. Microphone toggle should be
     // disabled as no microphone is connected.
-    assertTrue(getMicrophoneCrToggle()!.disabled);
-    // Tooltip should not be displayed when the microphone toggle is disabled
-    // due to no microphone being connected.
-    assertTrue(getMicrophoneTooltip()!.hidden);
+    assertTrue(getMicrophoneCrToggle().disabled);
+    assertFalse(getMicrophoneTooltip().hidden);
+    assertEquals(
+        privacyHubSubpage.i18n('privacyHubNoMicrophoneConnectedTooltipText'),
+        getMicrophoneTooltip().textContent!.trim());
 
     // Add a microphone.
     mediaDevices.addDevice('audioinput', 'Fake Microphone');
@@ -767,9 +768,8 @@ suite('<settings-privacy-hub-subpage> app permissions', () => {
 
     // Microphone toggle should be enabled to click now as there is a microphone
     // connected and the hw toggle is inactive.
-    assertFalse(getMicrophoneCrToggle()!.disabled);
-    // The tooltip should only show when the HW switch is engaged.
-    assertTrue(getMicrophoneTooltip()!.hidden);
+    assertFalse(getMicrophoneCrToggle().disabled);
+    assertTrue(getMicrophoneTooltip().hidden);
 
     // Activate the hw toggle.
     webUIListenerCallback('microphone-hardware-toggle-changed', true);
@@ -777,13 +777,38 @@ suite('<settings-privacy-hub-subpage> app permissions', () => {
 
     // Microphone toggle should be disabled again due to the hw switch being
     // active.
-    assertTrue(getMicrophoneCrToggle()!.disabled);
+    assertTrue(getMicrophoneCrToggle().disabled);
     // With the HW switch being active the tooltip should be visible.
-    assertFalse(getMicrophoneTooltip()!.hidden);
+    assertFalse(getMicrophoneTooltip().hidden);
     // Ensure that the tooltip has the intended content.
     assertEquals(
         privacyHubSubpage.i18n('microphoneHwToggleTooltip'),
-        getMicrophoneTooltip()!.textContent!.trim());
+        getMicrophoneTooltip().textContent!.trim());
+
+    mediaDevices.popDevice();
+  });
+
+  function getCameraTooltip(): PaperTooltipElement {
+    const tooltip =
+        privacyHubSubpage.shadowRoot!.querySelector<PaperTooltipElement>(
+            '#cameraToggleTooltip');
+    assertTrue(!!tooltip);
+    return tooltip;
+  }
+
+  test('Camera toggle tooltip displayed when no camera connected', async () => {
+    assertTrue(getCameraCrToggle().disabled);
+    assertFalse(getCameraTooltip().hidden);
+    assertEquals(
+        privacyHubSubpage.i18n('privacyHubNoCameraConnectedTooltipText'),
+        getCameraTooltip().textContent!.trim());
+
+    // Add a camera.
+    mediaDevices.addDevice('videoinput', 'Fake Camera');
+    await flushTasks();
+
+    assertFalse(getCameraCrToggle().disabled);
+    assertTrue(getCameraTooltip().hidden);
 
     mediaDevices.popDevice();
   });
