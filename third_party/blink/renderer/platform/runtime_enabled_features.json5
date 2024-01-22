@@ -1808,6 +1808,13 @@
       status: "stable",
     },
     {
+      name: "FledgeFeatureDetection",
+      // This will likely have to be enabled based on an OR of many
+      // base::Features.
+      base_feature: "none",
+      public: true,
+    },
+    {
       name: "FledgeNegativeTargeting",
       status: "stable",
     },

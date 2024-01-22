@@ -14,6 +14,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/ad_auction/auction_ad_config.idl",
   "//third_party/blink/renderer/modules/ad_auction/auction_ad_interest_group.idl",
   "//third_party/blink/renderer/modules/ad_auction/navigator_auction.idl",
+  "//third_party/blink/renderer/modules/ad_auction/protected_audience.idl",
   "//third_party/blink/renderer/modules/animationworklet/animation_worklet_global_scope.idl",
   "//third_party/blink/renderer/modules/animationworklet/css_animation_worklet.idl",
   "//third_party/blink/renderer/modules/animationworklet/worklet_animation.idl",

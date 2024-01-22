@@ -20432,6 +20432,44 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DetachedFramePromiseResolve) {
   EXPECT_EQ(nullptr, EvalJs(shell(), kTopLevelScript));
 }
 
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, NoFeatureDetection) {
+  // Tests behavior with all feature detection off; this is currently default,
+  // but should go away once anything enabling it goes to 100%
+
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(false, EvalJs(shell(), "'protectedAudience' in navigator"));
+}
+
+class InterestGroupAdComponentLimitBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  InterestGroupAdComponentLimitBrowserTest() {
+    const std::map<std::string, std::string> params = {
+        {"FledgeAdComponentLimit", "45"}};
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFledgeCustomMaxAuctionAdComponents, params);
+  }
+
+  ~InterestGroupAdComponentLimitBrowserTest() override = default;
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAdComponentLimitBrowserTest,
+                       FeatureDetection) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(45, EvalJs(shell(),
+                       "navigator.protectedAudience.queryFeatureSupport('"
+                       "adComponentsLimit')"));
+}
+
 }  // namespace
 
 }  // namespace content
