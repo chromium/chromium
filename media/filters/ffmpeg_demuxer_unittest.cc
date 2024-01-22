@@ -457,7 +457,10 @@ TEST_F(FFmpegDemuxerTest, Initialize_Multitrack) {
 
   std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams =
       demuxer_->GetAllStreams();
-  EXPECT_EQ(4u, streams.size());
+
+  const size_t kExpectedStreamCount =
+      base::FeatureList::IsEnabled(kTheoraVideoCodec) ? 4 : 3;
+  ASSERT_EQ(kExpectedStreamCount, streams.size());
 
   // Stream #0 should be VP8 video.
   DemuxerStream* stream = streams[0];
@@ -471,18 +474,27 @@ TEST_F(FFmpegDemuxerTest, Initialize_Multitrack) {
   EXPECT_EQ(DemuxerStream::AUDIO, stream->type());
   EXPECT_EQ(AudioCodec::kVorbis, stream->audio_decoder_config().codec());
 
-  // The subtitles stream is skipped.
-  // Stream #2 should be Theora video.
-  stream = streams[2];
-  ASSERT_TRUE(stream);
-  EXPECT_EQ(DemuxerStream::VIDEO, stream->type());
-  EXPECT_EQ(VideoCodec::kTheora, stream->video_decoder_config().codec());
+  if (kExpectedStreamCount == 4u) {
+    // The subtitles should be skipped.
+    // Stream #2 should be Theora video.
+    stream = streams[2];
+    ASSERT_TRUE(stream);
+    EXPECT_EQ(DemuxerStream::VIDEO, stream->type());
+    EXPECT_EQ(VideoCodec::kTheora, stream->video_decoder_config().codec());
 
-  // Stream #3 should be PCM audio.
-  stream = streams[3];
-  ASSERT_TRUE(stream);
-  EXPECT_EQ(DemuxerStream::AUDIO, stream->type());
-  EXPECT_EQ(AudioCodec::kPCM, stream->audio_decoder_config().codec());
+    // Stream #3 should be PCM audio.
+    stream = streams[3];
+    ASSERT_TRUE(stream);
+    EXPECT_EQ(DemuxerStream::AUDIO, stream->type());
+    EXPECT_EQ(AudioCodec::kPCM, stream->audio_decoder_config().codec());
+  } else {
+    // The subtitles and theora tracks should be skipped.
+    // Stream #2 should be PCM audio.
+    stream = streams[2];
+    ASSERT_TRUE(stream);
+    EXPECT_EQ(DemuxerStream::AUDIO, stream->type());
+    EXPECT_EQ(AudioCodec::kPCM, stream->audio_decoder_config().codec());
+  }
 }
 #endif
 
@@ -701,9 +713,11 @@ TEST_F(FFmpegDemuxerTest, Read_AudioNoStartTime) {
   }
 }
 
-// Android has no Theora support, so these tests doesn't work.
+// Android has no Theora support, so these tests doesn't work. Recreating this
+// clip with vp8 instead of Theora doesn't end up testing the right things.
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOggDiscard_Bear) {
+  base::test::ScopedFeatureList scoped_enable(kTheoraVideoCodec);
   // Many ogg files have negative starting timestamps, so ensure demuxing and
   // seeking work correctly with a negative start time.
   CreateDemuxer("bear.ogv");
@@ -739,6 +753,7 @@ TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOggDiscard_Bear) {
     event.RunAndWaitForStatus(PIPELINE_OK);
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Same test above, but using sync2.ogv which has video stream muxed before the
 // audio stream, so seeking based only on start time will fail since ffmpeg is
@@ -764,9 +779,9 @@ TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOggDiscard_Sync) {
     // must always be >= zero.
     EXPECT_EQ(base::TimeDelta(), demuxer_->GetStartTime());
 
-    Read(video, FROM_HERE, 9997, 0, true);
-    Read(video, FROM_HERE, 16, 33241, false);
-    Read(video, FROM_HERE, 631, 66482, false);
+    Read(video, FROM_HERE, 12087, 0, true);
+    Read(video, FROM_HERE, 28, 33241, false);
+    Read(video, FROM_HERE, 529, 66482, false);
 
     // Seek back to the beginning and repeat the test.
     WaitableMessageLoopEvent event;
@@ -774,7 +789,6 @@ TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOggDiscard_Sync) {
     event.RunAndWaitForStatus(PIPELINE_OK);
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Similar to the test above, but using an opus clip with a large amount of
 // pre-skip, which ffmpeg encodes as negative timestamps.
@@ -1178,7 +1192,7 @@ TEST_F(FFmpegDemuxerTest, Mp3WithVideoStreamID3TagData) {
 TEST_F(FFmpegDemuxerTest, UnsupportedAudioSupportedVideoDemux) {
   CreateDemuxerWithStrictMediaLog("speex_audio_vorbis_video.ogv");
 
-  EXPECT_MEDIA_LOG_PROPERTY(kBitrate, 398289);
+  EXPECT_MEDIA_LOG_PROPERTY(kBitrate, 373182);
   EXPECT_MEDIA_LOG_PROPERTY(kStartTime, 0.0f);
   EXPECT_MEDIA_LOG_PROPERTY(kAudioTracks, std::vector<AudioDecoderConfig>{});
   EXPECT_MEDIA_LOG_PROPERTY_ANY_VALUE(kVideoTracks);

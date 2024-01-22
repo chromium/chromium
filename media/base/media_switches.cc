@@ -1705,7 +1705,7 @@ BASE_FEATURE(kLibaomUseChromeThreads,
 // Allows decoding of theora / vp3 content.
 BASE_FEATURE(kTheoraVideoCodec,
              "TheoraVideoCodec",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Allows demuxing of AVI and decoding of MPEG4 streams. These should not be
