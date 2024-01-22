@@ -63,6 +63,7 @@ std::unique_ptr<views::Widget> CreateDragWidget(
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_DRAG);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.accept_events = false;
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 
   gfx::Point location = root_location - drag_widget_offset;
   params.bounds = gfx::Rect(location, image.size());
