@@ -213,9 +213,13 @@ DIPSService::DIPSService(content::BrowserContext* context)
 
   storage_ = base::SequenceBound<DIPSStorage>(CreateTaskRunner(), path_to_use);
 
-  storage_.AsyncCall(&DIPSStorage::IsPrepopulated)
-      .Then(base::BindOnce(&DIPSService::InitializeStorageWithEngagedSites,
-                           weak_factory_.GetWeakPtr()));
+  if (browser_context_->IsOffTheRecord()) {
+    wait_for_prepopulating_.Quit();
+  } else {
+    storage_.AsyncCall(&DIPSStorage::IsPrepopulated)
+        .Then(base::BindOnce(&DIPSService::InitializeStorageWithEngagedSites,
+                             weak_factory_.GetWeakPtr()));
+  }
   if (repeating_timer_) {
     repeating_timer_->Start();
   }

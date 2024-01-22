@@ -525,6 +525,32 @@ IN_PROC_BROWSER_TEST_F(DIPSPrepopulateTest, PrepopulateTest) {
   EXPECT_TRUE(state->user_interaction_times.has_value());
 }
 
+IN_PROC_BROWSER_TEST_F(DIPSPrepopulateTest, PRE_PrepopulateOTRTest) {
+  ASSERT_EQ(dips_service, nullptr);  // Verify that DIPS is off.
+  // Simulate the user typing the URL to visit the page, which will record site
+  // engagement.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("c.test", "/title1.html"), 1));
+  FlushLossyWebsiteSettings();
+}
+
+IN_PROC_BROWSER_TEST_F(DIPSPrepopulateTest, PrepopulateOTRTest) {
+  ASSERT_NE(dips_service, nullptr);  // Verify that DIPS is on.
+  // Even though there was previous site engagement in the regular profile, the
+  // DIPS storage should not be prepopulated with a user interaction timestamp
+  // in the OTR profile.
+  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      /*user_gesture=*/true));
+
+  DIPSServiceFactory::GetForBrowserContext(incognito_browser->profile())
+      ->WaitForInitCompleteForTesting();
+  std::optional<StateValue> state = GetDIPSState(
+      DIPSServiceFactory::GetForBrowserContext(incognito_browser->profile()),
+      GURL("http://c.test"));
+  EXPECT_FALSE(state.has_value());
+}
+
 IN_PROC_BROWSER_TEST_F(DIPSPrepopulateTest,
                        PRE_PRE_PRE_PrepopulateExactlyOnce) {
   ASSERT_EQ(dips_service, nullptr);  // Verify that DIPS is off.
