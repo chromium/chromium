@@ -281,6 +281,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   void SetBubbleBorderInsets(gfx::Insets insets);
 
   views::BoxLayout* box_layout() { return layout_; }
+  const views::BoxLayout* box_layout() const { return layout_; }
 
  private:
   // This reroutes receiving key events to the TrayBubbleView passed in the

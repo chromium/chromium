@@ -94,6 +94,45 @@ class AddNewTaskButton : public views::LabelButton {
 BEGIN_METADATA(AddNewTaskButton)
 END_METADATA
 
+class TaskListScrollView : public views::ScrollView,
+                           public views::ViewObserver {
+  METADATA_HEADER(TaskListScrollView, views::ScrollView)
+ public:
+  TaskListScrollView() : scoped_observation_(this) {
+    SetID(base::to_underlying(GlanceablesViewId::kTasksBubbleListScrollView));
+    ClipHeightTo(0, std::numeric_limits<int>::max());
+    SetBackgroundColor(std::nullopt);
+    SetDrawOverflowIndicator(false);
+  }
+
+  TaskListScrollView(const TaskListScrollView&) = delete;
+  TaskListScrollView& operator=(const TaskListScrollView&) = delete;
+  ~TaskListScrollView() override = default;
+
+  views::View* SetContents(std::unique_ptr<views::View> view) {
+    views::View* contents = views::ScrollView::SetContents(std::move(view));
+    scoped_observation_.Observe(contents);
+    return contents;
+  }
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(View* observed_view) override {
+    // Updates the preferred size of the scroll view when the content's
+    // preferred size changed.
+    if (contents_old_size_ != observed_view->size()) {
+      contents_old_size_ = observed_view->size();
+      PreferredSizeChanged();
+    }
+  }
+
+ private:
+  gfx::Size contents_old_size_;
+  base::ScopedObservation<views::View, views::ViewObserver> scoped_observation_;
+};
+
+BEGIN_METADATA(TaskListScrollView)
+END_METADATA
+
 }  // namespace
 
 GlanceablesTasksViewBase::GlanceablesTasksViewBase()
@@ -131,10 +170,8 @@ GlanceablesTasksView::GlanceablesTasksView(
   progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
-  auto* const scroll_view = AddChildView(std::make_unique<views::ScrollView>());
-  scroll_view->ClipHeightTo(0, std::numeric_limits<int>::max());
-  scroll_view->SetBackgroundColor(std::nullopt);
-  scroll_view->SetDrawOverflowIndicator(false);
+  auto* const scroll_view =
+      AddChildView(std::make_unique<TaskListScrollView>());
 
   auto* const list_view =
       scroll_view->SetContents(std::make_unique<views::View>());
@@ -217,6 +254,10 @@ GlanceablesTasksView::~GlanceablesTasksView() {
     RecordNumberOfAddedTasks(added_tasks_, task_list_initially_empty_,
                              user_with_no_tasks_);
   }
+}
+
+void GlanceablesTasksView::ChildPreferredSizeChanged(View* child) {
+  PreferredSizeChanged();
 }
 
 void GlanceablesTasksView::CancelUpdates() {

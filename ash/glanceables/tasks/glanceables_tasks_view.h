@@ -60,6 +60,9 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   GlanceablesTasksView& operator=(const GlanceablesTasksView&) = delete;
   ~GlanceablesTasksView() override;
 
+  // views::View:
+  void ChildPreferredSizeChanged(View* child) override;
+
   // GlanceablesTasksViewBase:
   void CancelUpdates() override;
 

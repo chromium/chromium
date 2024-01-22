@@ -5,6 +5,7 @@
 #include "ash/system/unified/glanceable_tray_bubble_view.h"
 
 #include <memory>
+#include <numeric>
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
@@ -63,8 +64,6 @@ class TimeManagementContainer : public views::FlexLayoutView {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     SetOrientation(views::LayoutOrientation::kVertical);
-    SetProperty(views::kMarginsKey,
-                gfx::Insets::TLBR(0, 0, kMarginBetweenGlanceables, 0));
     SetInteriorMargin(gfx::Insets(12));
     SetBackground(views::CreateThemedRoundedRectBackground(
         cros_tokens::kCrosSysSystemBaseElevated,
@@ -204,6 +203,7 @@ GlanceableTrayBubbleView::GlanceableTrayBubbleView(
   // should be prioritized to be shrunk. Set the default flex to 0 and manually
   // updates the flex of views depending on the view hierarchy.
   box_layout()->SetDefaultFlex(0);
+  box_layout()->set_between_child_spacing(kMarginBetweenGlanceables);
 }
 
 GlanceableTrayBubbleView::~GlanceableTrayBubbleView() {
@@ -321,6 +321,14 @@ void GlanceableTrayBubbleView::InitializeContents() {
   initialized_ = true;
 }
 
+int GlanceableTrayBubbleView::GetHeightForWidth(int width) const {
+  // Let the layout manager calculate the preferred height instead of using the
+  // one from TrayBubbleView, which doesn't take the layout manager and margin
+  // settings into consider.
+  return std::min(views::View::GetHeightForWidth(width),
+                  CalculateMaxTrayBubbleHeight(shelf_->GetWindow()));
+}
+
 void GlanceableTrayBubbleView::AddedToWidget() {
   if (!initialized_) {
     InitializeContents();
@@ -380,9 +388,6 @@ void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
   } else {
     tasks_bubble_view_ = scroll_view_->contents()->AddChildViewAt(
         std::make_unique<TasksBubbleView>(task_lists), 0);
-    tasks_bubble_view_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(0, 0, kMarginBetweenGlanceables, 0));
     box_layout()->SetFlexForView(scroll_view_, 1);
   }
 

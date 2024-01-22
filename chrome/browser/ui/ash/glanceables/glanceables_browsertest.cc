@@ -41,6 +41,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
 
@@ -145,6 +146,11 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
   Combobox* GetTasksComboBoxView() const {
     return views::AsViewClass<Combobox>(GetTasksView()->GetViewByID(
         base::to_underlying(GlanceablesViewId::kTasksBubbleComboBox)));
+  }
+
+  views::ScrollView* GetTasksScrollView() const {
+    return views::AsViewClass<views::ScrollView>(GetTasksView()->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kTasksBubbleListScrollView)));
   }
 
   views::View* GetTasksItemContainerView() const {
@@ -650,6 +656,63 @@ IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest, EditTaskItem) {
     ASSERT_FALSE(title_text_field);
     EXPECT_EQ(title_label->GetText(), u"Task List 1 Item 1 Title upd");
   }
+}
+
+IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest, TasksViewLayout) {
+  // Click the date tray to show the glanceable bubbles.
+  GetEventGenerator()->MoveMouseTo(
+      GetDateTray()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  ASSERT_TRUE(GetGlanceableTrayBubble());
+  ASSERT_TRUE(GetTasksView());
+
+  // Calculate the available space for tasks and make sure there is enough for
+  // additional task view.
+  auto display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  const int kGlanceableMargins = 8;
+  const int kCalendarHeight = 340;
+  const int available_height_for_tasks =
+      display.work_area().height() - kCalendarHeight - kGlanceableMargins;
+  const int original_task_view_height = GetTasksView()->height();
+  ASSERT_GT(available_height_for_tasks, original_task_view_height);
+
+  const auto* const add_task_button =
+      views::AsViewClass<views::LabelButton>(GetTasksView()->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton)));
+  ASSERT_TRUE(add_task_button);
+
+  const auto* const task_items_container = GetTasksItemContainerView();
+  ASSERT_TRUE(task_items_container);
+
+  // Use the visibility of the scroll bar to determine if the contents of the
+  // scroll view is larger than its viewport. In this case, they should have the
+  // same sizes.
+  const auto* scroll_bar = GetTasksScrollView()->vertical_scroll_bar();
+  EXPECT_FALSE(scroll_bar->GetVisible());
+
+  // Click on `add_task_button` and verify that `task_items_container` has the
+  // new "pending" item.
+  EXPECT_EQ(task_items_container->children().size(), 2u);
+  GetEventGenerator()->MoveMouseTo(
+      add_task_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_EQ(task_items_container->children().size(), 3u);
+
+  // The tasks view should update its height if there is space available.
+  EXPECT_GT(GetTasksView()->height(), original_task_view_height);
+  EXPECT_FALSE(scroll_bar->GetVisible());
+
+  // Commit the empty new task, which removes the temporary task view.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
+  base::RunLoop().RunUntilIdle();
+  GetTasksView()->GetWidget()->LayoutRootViewIfNecessary();
+  EXPECT_EQ(task_items_container->children().size(), 2u);
+
+  // Verify that the tasks view height is resized to its original height without
+  // the new task.
+  EXPECT_EQ(GetTasksView()->height(), original_task_view_height);
+  EXPECT_FALSE(scroll_bar->GetVisible());
 }
 
 }  // namespace ash
