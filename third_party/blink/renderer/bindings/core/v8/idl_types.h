@@ -127,6 +127,10 @@ using IDLUnrestrictedDouble = IDLFloatingPointNumberTypeBase<
     double,
     bindings::IDLFloatingPointNumberConvMode::kUnrestricted>;
 
+// DOMHighResTimeStamp
+// https://w3c.github.io/hr-time/#sec-domhighrestimestamp
+struct IDLDOMHighResTimeStamp final : public IDLBaseHelper<base::Time> {};
+
 // Strings
 
 namespace bindings {

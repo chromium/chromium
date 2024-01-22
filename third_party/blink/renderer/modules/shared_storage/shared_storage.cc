@@ -678,7 +678,7 @@ ScriptPromise SharedStorage::remainingBudget(ScriptState* script_state,
                 "Storage.SharedStorage.Worklet.Timing.RemainingBudget",
                 base::TimeTicks::Now() - start_time);
 
-            resolver->Resolve(bits);
+            resolver->Resolve<IDLDouble>(bits);
           },
           WrapPersistent(resolver), WrapPersistent(this), start_time));
 

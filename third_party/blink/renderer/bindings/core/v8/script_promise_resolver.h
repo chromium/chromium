@@ -384,12 +384,6 @@ class CORE_EXPORT ScriptPromiseResolver
     return ToV8UnsignedIntegerInternal<sizeof value>(value, isolate);
   }
 
-  static v8::Local<v8::Value> ToV8(double value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    return v8::Number::New(isolate, value);
-  }
-
   static v8::Local<v8::Value> ToV8(bool value,
                                    v8::Local<v8::Object> creation_context,
                                    v8::Isolate* isolate) {

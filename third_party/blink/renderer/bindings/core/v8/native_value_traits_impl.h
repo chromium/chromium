@@ -215,6 +215,24 @@ struct CORE_EXPORT NativeValueTraits<IDLUnrestrictedFloat>
   }
 };
 
+// DOMHighResTimeStamp is a typedef of double, so we should never need its
+// NativeValueTraits
+template <>
+struct CORE_EXPORT NativeValueTraits<IDLDOMHighResTimeStamp>
+    : public NativeValueTraitsBase<IDLDOMHighResTimeStamp> {
+  static double NativeValue(v8::Isolate* isolate,
+                            v8::Local<v8::Value> value,
+                            ExceptionState& exception_state) = delete;
+};
+
+template <>
+struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLDOMHighResTimeStamp>>
+    : public NativeValueTraitsBase<IDLNullable<IDLDOMHighResTimeStamp>> {
+  static double NativeValue(v8::Isolate* isolate,
+                            v8::Local<v8::Value> value,
+                            ExceptionState& exception_state) = delete;
+};
+
 // Strings
 
 namespace bindings {
