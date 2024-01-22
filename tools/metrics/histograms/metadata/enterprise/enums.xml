@@ -2014,6 +2014,9 @@ chromium-metrics-reviews@google.com.
   <int value="1194" label="DeviceLoginScreenTouchVirtualKeyboardEnabled"/>
   <int value="1195" label="DeviceExtendedAutoUpdateEnabled"/>
   <int value="1196" label="CAPlatformIntegrationEnabled"/>
+  <int value="1197" label="FloatingSsoEnabled"/>
+  <int value="1198" label="FloatingSsoDomainBlocklist"/>
+  <int value="1199" label="FloatingSsoDomainBlocklistExceptions"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

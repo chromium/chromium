@@ -1,0 +1,26 @@
+caption: Floating SSO Service blocked domain list
+desc: |-
+  Configures a list of blocked cookie domains that will not be moved when a user switches between <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices, when the Floating SSO Service is enabled.
+
+  If a cookie is set for a domain which matches one of the provided filters, the cookie is excluded from the move. Cookie domains are matched according to "host" field rules outlined in https://support.google.com/chrome/a?p=url_blocklist_filter_format, all other fields are ignored. Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
+
+  The <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME">FloatingSsoDomainBlocklistExceptions</ph> policy takes precedence.
+example_value:
+- '*'
+- 'example.com'
+- '*.example.com'
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome_os
+owners:
+- andreydav@google.com
+- mpetrisor@chromium.org
+- imprivata-eng@google.com
+schema:
+  items:
+    type: string
+  type: array
+tags: []
+type: list
