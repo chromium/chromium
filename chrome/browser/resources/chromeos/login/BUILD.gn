@@ -106,7 +106,6 @@ generate_grd("build_oobe_grd") {
     ":build_ts",
     ":preprocess_unconditional_existing_structure",
     "../supervision:build_oobe_grdp",
-    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
   ]
   manifest_files = [
     "$target_gen_dir/build_ts_manifest.json",
@@ -306,6 +305,7 @@ ts_library("build_ts") {
   deps = [
     "//ash/webui/common/resources:build_ts",
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",

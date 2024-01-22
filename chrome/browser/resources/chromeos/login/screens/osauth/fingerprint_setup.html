@@ -14,16 +14,16 @@ found in the LICENSE file.
 </style>
 <oobe-adaptive-dialog id="setupFingerprint" role="dialog" for-step="start"
     footer-shrinkable>
-  <h1 slot="title" hidden="[[isChildAccount_]]" aria-live="polite">
+  <h1 slot="title" hidden="[[isChildAccount]]" aria-live="polite">
     [[i18nDynamic(locale, 'setupFingerprintScreenTitle')]]
   </h1>
-  <h1 slot="title" hidden="[[!isChildAccount_]]" aria-live="polite">
+  <h1 slot="title" hidden="[[!isChildAccount]]" aria-live="polite">
     [[i18nDynamic(locale, 'setupFingerprintScreenTitleForChild')]]
   </h1>
-  <p slot="subtitle" hidden="[[isChildAccount_]]" aria-live="polite">
+  <p slot="subtitle" hidden="[[isChildAccount]]" aria-live="polite">
     [[i18nDynamic(locale, 'setupFingerprintScreenDescription')]]
   </p>
-  <p slot="subtitle" hidden="[[!isChildAccount_]]" aria-live="polite">
+  <p slot="subtitle" hidden="[[!isChildAccount]]" aria-live="polite">
     [[i18nDynamic(locale, 'setupFingerprintScreenDescriptionForChild')]]
   </p>
   <iron-icon slot="icon" icon="oobe-32:fingerprint"></iron-icon>
@@ -37,7 +37,7 @@ found in the LICENSE file.
   <div slot="bottom-buttons">
     <oobe-text-button id="skipStart"
         text-key="skipFingerprintSetup"
-        on-click="onSkipOnStart_" class="focus-on-show">
+        on-click="onSkipOnStart" class="focus-on-show">
     </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
@@ -45,54 +45,54 @@ found in the LICENSE file.
     for-step="progress" footer-shrinkable
     aria-label$="[[i18nDynamic(locale, 'enrollmentProgressScreenTitle')]]">
   <iron-icon slot="icon" icon="oobe-32:fingerprint"></iron-icon>
-  <h1 slot="title" hidden="[[complete_]]">
+  <h1 slot="title" hidden="[[complete]]">
     [[i18nDynamic(locale, 'enrollmentProgressScreenTitle')]]
   </h1>
-  <h1 slot="title" hidden="[[!complete_]]">
+  <h1 slot="title" hidden="[[!complete]]">
     [[i18nDynamic(locale, 'setupFingerprintEnrollmentSuccessTitle')]]
   </h1>
-  <div slot="subtitle" hidden="[[!complete_]]">
-    <div hidden="[[isChildAccount_]]">
+  <div slot="subtitle" hidden="[[!complete]]">
+    <div hidden="[[isChildAccount]]">
       [[i18nDynamic(locale,
           'setupFingerprintEnrollmentSuccessDescription')]]
     </div>
-    <div hidden="[[!isChildAccount_]]">
+    <div hidden="[[!isChildAccount]]">
       [[i18nDynamic(locale,
           'setupFingerprintEnrollmentSuccessDescriptionForChild')]]
     </div>
   </div>
-  <div slot="subtitle" hidden="[[!isProblemImmobile_(scanResult_)]]">
-    <div hidden="[[isChildAccount_]]">
+  <div slot="subtitle" hidden="[[!isProblemImmobile(scanResult)]]">
+    <div hidden="[[isChildAccount]]">
       [[i18nDynamic(locale, 'setupFingerprintScanMoveFinger')]]
     </div>
-    <div hidden="[[!isChildAccount_]]">
+    <div hidden="[[!isChildAccount]]">
       [[i18nDynamic(locale, 'setupFingerprintScanMoveFingerForChild')]]
     </div>
   </div>
-  <div slot="subtitle" hidden="[[!isProblemOther_(scanResult_)]]">
+  <div slot="subtitle" hidden="[[!isProblemOther(scanResult)]]">
     [[i18nDynamic(locale, 'setupFingerprintScanTryAgain')]]
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
-    <fingerprint-progress id="arc" dynamic="[[isDynamicColor_]]"
+    <fingerprint-progress id="arc" dynamic="[[isDynamicColor]]"
         autoplay>
     </fingerprint-progress>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="skipProgress"
-        on-click="onSkipInProgress_" class="focus-on-show"
+        on-click="onSkipInProgress" class="focus-on-show"
         text-key="skipFingerprintSetup"
-        hidden="[[complete_]]">
+        hidden="[[complete]]">
     </oobe-text-button>
     <oobe-text-button id="addAnotherFinger"
         text-key="fingerprintSetupAddAnother"
-        hidden="[[!isAnotherButtonVisible_(percentComplete_,
+        hidden="[[!isAnotherButtonVisible(percentComplete,
             canAddFinger)]]"
-        on-click="onAddAnother_">
+        on-click="onAddAnother">
     </oobe-text-button>
     <oobe-text-button id="done"
-        hidden="[[!complete_]]"
+        hidden="[[!complete]]"
         text-key="fingerprintSetupDone"
-        on-click="onDone_" class="focus-on-show" inverse>
+        on-click="onDone" class="focus-on-show" inverse>
     </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
