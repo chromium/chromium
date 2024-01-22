@@ -422,7 +422,7 @@ public class FeedSurfaceMediator
                 .getView()
                 .addOnLayoutChangeListener(
                         (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-                            mSnapScrollHelper.handleScroll();
+                            mCoordinator.getView().postOnAnimation(mSnapScrollHelper::handleScroll);
                             float pixelToDp = mContext.getResources().getDisplayMetrics().density;
                             int widthDp = (int) ((right - left) / pixelToDp);
                             updateLayout(widthDp < SMALL_WIDTH_DP);
@@ -578,12 +578,17 @@ public class FeedSurfaceMediator
 
                     @Override
                     public void onScrolled(RecyclerView v, int dx, int dy) {
-                        if (mSnapScrollHelper != null) {
-                            mSnapScrollHelper.handleScroll();
-                        }
-                        for (ScrollListener listener : mScrollListeners) {
-                            listener.onScrolled(dx, dy);
-                        }
+                        mCoordinator
+                                .getView()
+                                .postOnAnimation(
+                                        () -> {
+                                            if (mSnapScrollHelper != null) {
+                                                mSnapScrollHelper.handleScroll();
+                                            }
+                                            for (ScrollListener listener : mScrollListeners) {
+                                                listener.onScrolled(dx, dy);
+                                            }
+                                        });
                     }
                 };
         mCoordinator.getRecyclerView().addOnScrollListener(mStreamScrollListener);
