@@ -174,6 +174,11 @@ void Av1Encoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
                << aom_codec_err_to_string(ret);
   }
 
+  CHECK_EQ(
+      aom_codec_control(&encoder_, AV1E_SET_TUNE_CONTENT, AOM_CONTENT_SCREEN),
+      AOM_CODEC_OK);
+  CHECK_EQ(aom_codec_control(&encoder_, AV1E_SET_ENABLE_PALETTE, 1),
+           AOM_CODEC_OK);
   // This cpu_used setting is a trade-off between cpu usage and encoded video
   // quality. The default is zero, with increasingly less CPU to be used as the
   // value is more positive. Starting with the highest encoding speed

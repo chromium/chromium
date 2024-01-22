@@ -188,9 +188,21 @@ void VpxEncoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
   // Raise the threshold for considering macroblocks as static.  The default is
   // zero, so this setting makes the encoder less sensitive to motion.  This
   // lowers the probability of needing to utilize more CPU to search for motion
-  // vectors.
-  CHECK_EQ(vpx_codec_control(&encoder_, VP8E_SET_STATIC_THRESHOLD, 1),
+  // vectors. The value is the same as WebRTC.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/modules/video_coding/codecs/vp8/libvpx_vp8_encoder.cc
+  CHECK_EQ(vpx_codec_control(&encoder_, VP8E_SET_STATIC_THRESHOLD, 100),
            VPX_CODEC_OK);
+
+  if (cast_config_.codec == Codec::kVideoVp9) {
+    CHECK_EQ(vpx_codec_control(&encoder_, VP9E_SET_TUNE_CONTENT,
+                               VP9E_CONTENT_SCREEN),
+             VPX_CODEC_OK);
+  } else {
+    // Setting 1, not 2, so the libvpx encoder doesn't drop a frame.
+    CHECK_EQ(
+        vpx_codec_control(&encoder_, VP8E_SET_SCREEN_CONTENT_MODE, 1 /*On*/),
+        VPX_CODEC_OK);
+  }
 
   // This cpu_used setting is a trade-off between cpu usage and encoded video
   // quality. The default is zero, with increasingly less CPU to be used as the
