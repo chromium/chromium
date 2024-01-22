@@ -99,6 +99,7 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness,
       UnsafeResource resource;
       resource.url = url_;
       resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+      resource.navigation_id = navigation_id;
       ui_manager_->AddUnsafeResource(url_, resource);
     }
     UrlCheckerOnSB::OnCompleteCheckResult result(

@@ -149,12 +149,13 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   void AddUnsafeResource(GURL url,
                          security_interstitials::UnsafeResource resource);
 
-  // Checks if an UnsafeResource |resource| exists for |url|, if so, it is
-  // removed from the vector, assigned to |resource| and the function returns
-  // true. Otherwise the function returns false and nothing gets assigned to
-  // |resource|.
-  bool PopUnsafeResourceForURL(
+  // Checks if an UnsafeResource |resource| exists for |url| and
+  // |navigation_id|, if so, it is removed from the vector, assigned to
+  // |resource| and the function returns true. Otherwise the function returns
+  // false and nothing gets assigned to |resource|.
+  bool PopUnsafeResourceForNavigation(
       GURL url,
+      int64_t navigation_id,
       security_interstitials::UnsafeResource* resource);
 
   // Goes over the |handle->RedirectChain| and returns the severest threat.

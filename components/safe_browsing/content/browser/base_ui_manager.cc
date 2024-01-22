@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
 #include "components/safe_browsing/content/browser/unsafe_resource_util.h"
@@ -478,15 +479,27 @@ void BaseUIManager::AddUnsafeResource(
   unsafe_resources_.push_back(std::make_pair(url, resource));
 }
 
-bool BaseUIManager::PopUnsafeResourceForURL(
+bool BaseUIManager::PopUnsafeResourceForNavigation(
     GURL url,
+    int64_t navigation_id,
     security_interstitials::UnsafeResource* resource) {
   for (auto it = unsafe_resources_.begin(); it != unsafe_resources_.end();
        it++) {
     if (it->first == url) {
-      *resource = it->second;
-      unsafe_resources_.erase(it);
-      return true;
+      bool match_navigation_id =
+          it->second.navigation_id.has_value() &&
+          it->second.navigation_id.value() == navigation_id;
+      base::UmaHistogramBoolean(
+          "SafeBrowsing.NavigationIdMatchedInUnsafeResource",
+          match_navigation_id);
+      // Add the flag check to ensure no behavioral change when the flag is
+      // disabled.
+      if (match_navigation_id ||
+          !base::FeatureList::IsEnabled(kSafeBrowsingAsyncRealTimeCheck)) {
+        *resource = it->second;
+        unsafe_resources_.erase(it);
+        return true;
+      }
     }
   }
   return false;
@@ -503,7 +516,8 @@ ThreatSeverity BaseUIManager::GetSeverestThreatForNavigation(
 
   for (auto&& url : handle->GetRedirectChain()) {
     security_interstitials::UnsafeResource resource;
-    if (PopUnsafeResourceForURL(url, &resource)) {
+    if (PopUnsafeResourceForNavigation(url, handle->GetNavigationId(),
+                                       &resource)) {
       ThreatSeverity severity = GetThreatSeverity(resource.threat_type);
       if (severity > min_severity)
         continue;

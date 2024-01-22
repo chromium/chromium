@@ -1599,6 +1599,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.NavigationIdMatchedInUnsafeResource"
+    enum="BooleanMatched" expires_after="2024-07-19">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether the navigation id of the current navigation matches the one
+    that is stored in unsafe resources. A warning will likely be shown if the
+    value is true. Logged when PopUnsafeResourceForNavigation is called and the
+    URL already matches. This histogram will help us understand how many
+    warnings are skipped because the navigation id doesn't match.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.NavigationObserver.IsScriptUrlValid"
     enum="BooleanValid" expires_after="2024-02-23">
   <owner>nwokedi@chromium.org</owner>
