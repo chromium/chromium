@@ -566,6 +566,7 @@ void PasswordStoreAndroidBackend::InitBackend(
   // applies to the account store. Support needs to be specifically implemented
   // if desired. See crbug.com/1004777.
   CHECK(!sync_enabled_or_disabled_cb);
+  CHECK(completion);
   affiliated_match_helper_ = affiliated_match_helper;
   main_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   stored_passwords_changed_ = std::move(remote_form_changes_received);
@@ -573,7 +574,7 @@ void PasswordStoreAndroidBackend::InitBackend(
       &PasswordStoreAndroidBackend::OnForegroundSessionStart,
       base::Unretained(this)));
   // TODO(https://crbug.com/1229650): Create subscription before completion.
-  std::move(completion).Run(/*success=*/true);
+  init_completion_callback_ = std::move(completion);
 }
 
 void PasswordStoreAndroidBackend::Shutdown(
@@ -587,6 +588,7 @@ void PasswordStoreAndroidBackend::Shutdown(
 
 void PasswordStoreAndroidBackend::GetAllLoginsAsync(
     LoginsOrErrorReply callback) {
+  CHECK(!init_completion_callback_, base::NotFatalUntil::M123);
   GetAllLoginsForAccountInternal(GetSyncingAccount(sync_service_),
                                  std::move(callback),
                                  PasswordStoreOperation::kGetAllLoginsAsync,
@@ -595,6 +597,7 @@ void PasswordStoreAndroidBackend::GetAllLoginsAsync(
 
 void PasswordStoreAndroidBackend::GetAllLoginsWithAffiliationAndBrandingAsync(
     LoginsOrErrorReply callback) {
+  CHECK(!init_completion_callback_, base::NotFatalUntil::M123);
   if (bridge_helper_->CanUseGetAllLoginsWithBrandingInfoAPI()) {
     JobId job_id = bridge_helper_->GetAllLoginsWithBrandingInfo(
         GetSyncingAccount(sync_service_));
@@ -615,6 +618,7 @@ void PasswordStoreAndroidBackend::GetAllLoginsWithAffiliationAndBrandingAsync(
 
 void PasswordStoreAndroidBackend::GetAutofillableLoginsAsync(
     LoginsOrErrorReply callback) {
+  CHECK(!init_completion_callback_, base::NotFatalUntil::M123);
   GetAutofillableLoginsInternal(
       GetSyncingAccount(sync_service_), std::move(callback),
       PasswordStoreOperation::kGetAutofillableLoginsAsync,
@@ -625,6 +629,7 @@ void PasswordStoreAndroidBackend::GetAllLoginsForAccountAsync(
     std::string account,
     LoginsOrErrorReply callback) {
   CHECK(!account.empty());
+  CHECK(!init_completion_callback_, base::NotFatalUntil::M123);
 
   GetAllLoginsForAccountInternal(
       std::move(account), std::move(callback),
@@ -636,6 +641,7 @@ void PasswordStoreAndroidBackend::FillMatchingLoginsAsync(
     LoginsOrErrorReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
+  CHECK(!init_completion_callback_, base::NotFatalUntil::M123);
   if (forms.empty()) {
     std::move(callback).Run(LoginsResult());
     return;
@@ -669,6 +675,7 @@ void PasswordStoreAndroidBackend::FillMatchingLoginsAsync(
 void PasswordStoreAndroidBackend::GetGroupedMatchingLoginsAsync(
     const PasswordFormDigest& form_digest,
     LoginsOrErrorReply callback) {
+  CHECK(!init_completion_callback_, base::NotFatalUntil::M123);
   if (bridge_helper_->CanUseGetAffiliatedPasswordsAPI()) {
     JobId job_id = bridge_helper_->GetAffiliatedLoginsForSignonRealm(
         form_digest.signon_realm, GetSyncingAccount(sync_service_));
@@ -687,6 +694,7 @@ void PasswordStoreAndroidBackend::GetGroupedMatchingLoginsAsync(
 void PasswordStoreAndroidBackend::AddLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
+  CHECK(!init_completion_callback_, base::NotFatalUntil::M123);
   PasswordForm sanitized_form = form;
   if (sanitized_form.blocked_by_user) {
     sanitized_form.username_value.clear();
@@ -702,6 +710,7 @@ void PasswordStoreAndroidBackend::AddLoginAsync(
 void PasswordStoreAndroidBackend::UpdateLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
+  CHECK(!init_completion_callback_, base::NotFatalUntil::M123);
   PasswordForm sanitized_form = form;
   if (sanitized_form.blocked_by_user) {
     sanitized_form.username_value.clear();
@@ -714,6 +723,7 @@ void PasswordStoreAndroidBackend::UpdateLoginAsync(
 void PasswordStoreAndroidBackend::RemoveLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
+  CHECK(!init_completion_callback_, base::NotFatalUntil::M123);
   RemoveLoginInternal(
       GetSyncingAccount(sync_service_), form, std::move(callback),
       PasswordStoreOperation::kRemoveLoginAsync, /*delay=*/base::Seconds(0));
@@ -725,6 +735,7 @@ void PasswordStoreAndroidBackend::RemoveLoginsByURLAndTimeAsync(
     base::Time delete_end,
     base::OnceCallback<void(bool)> sync_completion,
     PasswordChangesOrErrorReply callback) {
+  CHECK(!init_completion_callback_, base::NotFatalUntil::M123);
   // Record metrics prior to invoking |callback|.
   PasswordChangesOrErrorReply record_metrics_and_reply =
       ReportMetricsAndInvokeCallbackForStoreModifications(
@@ -747,6 +758,7 @@ void PasswordStoreAndroidBackend::RemoveLoginsCreatedBetweenAsync(
     base::Time delete_begin,
     base::Time delete_end,
     PasswordChangesOrErrorReply callback) {
+  CHECK(!init_completion_callback_, base::NotFatalUntil::M123);
   // Record metrics prior to invoking |callback|.
   PasswordChangesOrErrorReply record_metrics_and_reply =
       ReportMetricsAndInvokeCallbackForStoreModifications(
@@ -769,6 +781,7 @@ void PasswordStoreAndroidBackend::RemoveLoginsCreatedBetweenAsync(
 void PasswordStoreAndroidBackend::DisableAutoSignInForOriginsAsync(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::OnceClosure completion) {
+  CHECK(!init_completion_callback_, base::NotFatalUntil::M123);
   // TODO(https://crbug.com/1229655) Switch to using base::PassThrough to handle
   // this callback more gracefully when it's implemented.
   PasswordChangesOrErrorReply record_metrics_and_run_completion =
@@ -817,6 +830,12 @@ void PasswordStoreAndroidBackend::OnSyncServiceInitialized(
   }
   sync_service_ = sync_service;
   sync_controller_delegate_->OnSyncServiceInitialized(sync_service);
+
+  // `PasswordStore` creation and initialization always happens before
+  // `SyncService` creation.
+  CHECK(init_completion_callback_);
+  // The backend is now considered fully functional.
+  std::move(init_completion_callback_).Run(/*success=*/true);
 
   // Stop fetching affiliations if AndroidBackend can be used and branding info
   // can be obtained directly from the GMS Core backend.

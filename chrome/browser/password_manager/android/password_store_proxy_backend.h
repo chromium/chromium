@@ -15,6 +15,8 @@
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
 
 class PrefService;
 
@@ -23,7 +25,8 @@ namespace password_manager {
 // This backend forwards requests to two backends in order to compare and record
 // their results and time differences. The main backend fulfills the  request
 // while the shadow backend is only queried to record shadow traffic.
-class PasswordStoreProxyBackend final : public PasswordStoreBackend {
+class PasswordStoreProxyBackend final : public PasswordStoreBackend,
+                                        public syncer::SyncServiceObserver {
  public:
   // `built_in_backend` and `android_backend` must not be null and must outlive
   // this object as long as Shutdown() is not called.
@@ -85,17 +88,14 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend {
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
   base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
+  void OnSyncShutdown(syncer::SyncService* sync_service) override;
+
   // Forwards the (possible) forms changes caused by a remote event to the
   // main backend.
   void OnRemoteFormChangesReceived(
       CallbackOriginatesFromAndroidBackend originatesFromAndroid,
       RemoteChangesReceived remote_form_changes_received,
       std::optional<PasswordStoreChangeList> changes);
-
-  // Forwards sync status changes by the backend facilitating them.
-  void OnSyncEnabledOrDisabled(
-      CallbackOriginatesFromAndroidBackend originatesFromAndroid,
-      base::RepeatingClosure sync_enabled_or_disabled_cb);
 
   // Helper used to determine main *and* fallback backends.
   // The account store doesn't use any fallback backend.
@@ -132,7 +132,7 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend {
   const raw_ptr<PasswordStoreBackend> built_in_backend_;
   const raw_ptr<PasswordStoreBackend> android_backend_;
   raw_ptr<PrefService> const prefs_ = nullptr;
-  raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
+  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
 
   IsAccountStore is_account_store_;
   base::WeakPtrFactory<PasswordStoreProxyBackend> weak_ptr_factory_{this};

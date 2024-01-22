@@ -121,10 +121,6 @@ class PasswordStoreProxyBackendBaseTest : public testing::Test {
 
   void SetUp() override {
     proxy_backend_ = CreateProxyBackend();
-
-    // Initialize sync service.
-    EXPECT_CALL(android_backend(), OnSyncServiceInitialized(&sync_service_));
-    proxy_backend().OnSyncServiceInitialized(&sync_service_);
   }
 
   virtual std::unique_ptr<PasswordStoreProxyBackend> CreateProxyBackend() {
@@ -174,35 +170,55 @@ TEST_F(PasswordStoreProxyBackendBaseTest, CallCompletionCallbackAfterInit) {
           WithArg<3>(Invoke([](base::OnceCallback<void(bool)> reply) -> void {
             std::move(reply).Run(true);
           })));
+
+  base::OnceCallback<void(bool)> captured_android_backend_reply;
   EXPECT_CALL(android_backend(), InitBackend)
       .WillOnce(
-          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> reply) -> void {
-            std::move(reply).Run(true);
+          WithArg<3>(Invoke([&](base::OnceCallback<void(bool)> reply) -> void {
+            captured_android_backend_reply = std::move(reply);
           })));
-  EXPECT_CALL(completion_callback, Run(true));
+
   proxy_backend().InitBackend(nullptr, base::DoNothing(), base::DoNothing(),
                               completion_callback.Get());
+  // The android backend requires the sync service to be initialized before
+  // signaling that the backend initialization is complete.
+  EXPECT_CALL(completion_callback, Run(true));
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()))
+      .WillOnce(Invoke([&]() -> void {
+        std::move(captured_android_backend_reply).Run(true);
+      }));
+  proxy_backend().OnSyncServiceInitialized(sync_service());
 }
 
 TEST_F(PasswordStoreProxyBackendBaseTest,
        CallCompletionWithFailureForAnyError) {
   base::MockCallback<base::OnceCallback<void(bool)>> completion_callback;
 
-  // If one backend fails to initialize, the result of the second is irrelevant.
+  // If one backend fails to initialize, the result of the second is
+  // irrelevant.
   EXPECT_CALL(built_in_backend(), InitBackend)
       .WillOnce(
           WithArg<3>(Invoke([](base::OnceCallback<void(bool)> reply) -> void {
             std::move(reply).Run(false);
           })));
+  base::OnceCallback<void(bool)> captured_android_backend_reply;
   EXPECT_CALL(android_backend(), InitBackend)
       .Times(AtMost(1))
       .WillOnce(
-          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> reply) -> void {
-            std::move(reply).Run(true);
+          WithArg<3>(Invoke([&](base::OnceCallback<void(bool)> reply) -> void {
+            captured_android_backend_reply = std::move(reply);
           })));
-  EXPECT_CALL(completion_callback, Run(false));
+
   proxy_backend().InitBackend(nullptr, base::DoNothing(), base::DoNothing(),
                               completion_callback.Get());
+  // The android backend requires the sync service to be initialized before
+  // signaling that the backend initialization is complete.
+  EXPECT_CALL(completion_callback, Run(false));
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()))
+      .WillOnce(Invoke([&]() -> void {
+        std::move(captured_android_backend_reply).Run(false);
+      }));
+  proxy_backend().OnSyncServiceInitialized(sync_service());
 }
 
 TEST_F(PasswordStoreProxyBackendBaseTest,
@@ -218,6 +234,8 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
       .WillOnce(SaveArg<1>(&android_remote_changes_callback));
   proxy_backend().InitBackend(nullptr, original_callback.Get(),
                               base::DoNothing(), base::DoNothing());
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+  proxy_backend().OnSyncServiceInitialized(sync_service());
 
   // With sync enabled, only the android backend calls the original callback.
   EnablePasswordSync();
@@ -258,6 +276,8 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
       .WillOnce(SaveArg<1>(&android_remote_changes_callback));
   proxy_backend().InitBackend(nullptr, original_callback.Get(),
                               base::DoNothing(), base::DoNothing());
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+  proxy_backend().OnSyncServiceInitialized(sync_service());
 
   // With sync enabled, only the android backend calls the original callback.
   EnablePasswordSync();
@@ -283,7 +303,8 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
 
 TEST_F(PasswordStoreProxyBackendBaseTest,
        AccountCallRemoteChangesOnlyForMainBackend) {
-  // The account backend only exists if there is support for local passwords.
+  // The account store backend only exists if there is support for local
+  // passwords.
   prefs()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(
@@ -306,8 +327,10 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
 
   proxy_backend->InitBackend(nullptr, original_callback.Get(),
                              base::DoNothing(), base::DoNothing());
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+  proxy_backend->OnSyncServiceInitialized(sync_service());
 
-  // The account backend is only active when sync is enabled.
+  // The account store backend is only active when sync is enabled.
   EnablePasswordSync();
 
   // Only the android backend should report that logins have changed to avoid
@@ -332,6 +355,8 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
   EXPECT_CALL(android_backend(), InitBackend);
   proxy_backend().InitBackend(nullptr, base::DoNothing(),
                               original_callback.Get(), base::DoNothing());
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+  proxy_backend().OnSyncServiceInitialized(sync_service());
 
   // With sync enabled, only the built-in backend calls the original callback.
   EnablePasswordSync();
@@ -368,6 +393,8 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
           &built_in_backend_, &android_backend_, prefs(), IsAccountStore(true));
   proxy_backend->InitBackend(nullptr, base::DoNothing(),
                              original_callback.Get(), base::DoNothing());
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+  proxy_backend->OnSyncServiceInitialized(sync_service());
 
   // With sync enabled, only the built-in backend calls the original callback.
   EnablePasswordSync();
@@ -400,6 +427,13 @@ class PasswordStoreProxyBackendTest
  public:
   void SetUp() override {
     PasswordStoreProxyBackendBaseTest::SetUp();
+    EXPECT_CALL(android_backend(), InitBackend);
+    EXPECT_CALL(built_in_backend(), InitBackend);
+    proxy_backend().InitBackend(nullptr, base::DoNothing(), base::DoNothing(),
+                                base::DoNothing());
+    EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+    proxy_backend().OnSyncServiceInitialized(sync_service());
+
     if (GetParam().is_sync_enabled) {
       EnablePasswordSync();
     } else {
@@ -609,13 +643,6 @@ TEST_P(PasswordStoreProxyBackendTest,
   proxy_backend().GetSmartBubbleStatsStore();
 }
 
-TEST_P(PasswordStoreProxyBackendTest,
-       OnSyncServiceInitializedPropagatedToAndroidBackend) {
-  syncer::TestSyncService sync_service;
-  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(&sync_service));
-  proxy_backend().OnSyncServiceInitialized(&sync_service);
-}
-
 INSTANTIATE_TEST_SUITE_P(
     PasswordStoreProxyBackendBaseTest,
     PasswordStoreProxyBackendTest,
@@ -719,6 +746,12 @@ class PasswordStoreProxyBackendTestWithErrorsForFallbacks
  public:
   void SetUp() override {
     PasswordStoreProxyBackendBaseTest::SetUp();
+    EXPECT_CALL(android_backend(), InitBackend);
+    EXPECT_CALL(built_in_backend(), InitBackend);
+    proxy_backend().InitBackend(nullptr, base::DoNothing(), base::DoNothing(),
+                                base::DoNothing());
+    EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+    proxy_backend().OnSyncServiceInitialized(sync_service());
     if (GetParam().is_using_split_account_local_stores) {
       prefs()->SetInteger(
           password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,

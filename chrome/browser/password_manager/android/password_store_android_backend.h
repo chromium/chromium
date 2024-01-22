@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "base/containers/small_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -361,6 +362,10 @@ class PasswordStoreAndroidBackend
   // This object is the proxy to the dispatcher JNI bridge that performs the API
   // requests.
   std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper_;
+
+  // Callback to be invoked when the backend finished initializing with
+  // the success status of the initialization.
+  base::OnceCallback<void(bool)> init_completion_callback_;
 
   raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 
