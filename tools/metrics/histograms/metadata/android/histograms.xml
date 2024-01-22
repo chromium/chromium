@@ -4778,32 +4778,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.DevUi.CrashList.NumberShown"
-    units="crash reports" expires_after="2024-01-14">
-  <owner>ntfschr@chromium.org</owner>
-  <owner>hazems@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the number of crashes shown in the developer UI. This is logged each
-    time the crash UI is launched and each time its list is refreshed. The UI
-    currently limits the number of crashes at 20, so clients logging the maximum
-    may have more logs sitting on disk.
-  </summary>
-</histogram>
-
-<histogram name="Android.WebView.DevUi.DeveloperModeBlockingTime" units="ms"
-    expires_after="2024-01-14">
-  <owner>ntfschr@chromium.org</owner>
-  <owner>hazems@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the time spent blocking WebView startup to check for developer mode
-    (see &quot;Android.WebView.DevUi.DeveloperModeEnabled&quot;). This is
-    recorded once during WebView startup, regardless of whether developer mode
-    is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.DevUi.DeveloperModeEnabled"
     enum="BooleanEnabled" expires_after="2025-01-16">
   <owner>ntfschr@chromium.org</owner>
@@ -4875,21 +4849,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the user's selection in the developer UI overflow menu or action
     bar, recorded after each selection.
-  </summary>
-</histogram>
-
-<histogram name="Android.WebView.DevUi.MonochromeIconStateToggled"
-    enum="BooleanEnabled" expires_after="2024-01-14">
-  <owner>ntfschr@chromium.org</owner>
-  <owner>hazems@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records how the developer UI launcher icon for Monochrome was toggled: was
-    it enabled or disabled? This can be recorded either from WebView's
-    non-embedded processes or Chrome's browser process whenever either changes
-    the icon state (nothing is logged if we don't need to change the icon
-    state). This is only recorded in Monochrome (Android Nougat, Oreo, and Pie),
-    since this logic is only relevant in that case.
   </summary>
 </histogram>
 

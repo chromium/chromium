@@ -202,9 +202,6 @@ public class CrashesListFragment extends DevUiBaseFragment {
                             crashesSummaryView.setText(
                                     String.format(
                                             Locale.US, "Crashes (%d)", mCrashInfoList.size()));
-                            RecordHistogram.recordCount100Histogram(
-                                    "Android.WebView.DevUi.CrashList.NumberShown",
-                                    mCrashInfoList.size());
                         }
                     });
         }
