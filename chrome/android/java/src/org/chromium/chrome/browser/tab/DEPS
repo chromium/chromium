@@ -52,7 +52,6 @@ include_rules = [
   "+chrome/browser/tab",
   "+chrome/browser/ui/android/native_page",
   "+chrome/browser/version",
-  "+chrome/test/android/javatests/src/org/chromium/chrome/test/util/browser/Features.java",
   "+components/browser_ui/styles/android",
   "+components/browser_ui/widget/android",
   "+components/security_state/content/android/java/src/org/chromium/components/security_state/SecurityStateModel.java",
