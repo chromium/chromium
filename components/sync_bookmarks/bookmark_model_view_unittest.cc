@@ -8,10 +8,12 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,7 +31,6 @@ class BookmarkModelViewTest : public testing::Test {
     // Enable all possible permanent folders to verify how BookmarkModelView
     // does the filtering.
     auto client = std::make_unique<bookmarks::TestBookmarkClient>();
-    client->AllowFoldersForAccountStorage();
     managed_node_ = client->EnableManagedNode();
     model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
@@ -51,6 +52,8 @@ class BookmarkModelViewTest : public testing::Test {
 
   ~BookmarkModelViewTest() override = default;
 
+  base::test::ScopedFeatureList features_{
+      syncer::kEnableBookmarkFoldersForAccountStorage};
   std::unique_ptr<bookmarks::BookmarkModel> model_;
   raw_ptr<bookmarks::BookmarkNode> managed_node_;
 };

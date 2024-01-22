@@ -43,7 +43,6 @@ class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
 
   // bookmarks::BookmarkClient:
   void Init(bookmarks::BookmarkModel* model) override;
-  bool AreFoldersForAccountStorageAllowed() override;
   base::CancelableTaskTracker::TaskId GetFaviconImageForPageURL(
       const GURL& page_url,
       favicon_base::FaviconImageCallback callback,

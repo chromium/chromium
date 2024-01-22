@@ -43,6 +43,7 @@
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/favicon_size.h"
 
@@ -51,6 +52,11 @@ using base::Time;
 namespace bookmarks {
 
 namespace {
+
+bool AreFoldersForAccountStorageAllowed() {
+  return base::FeatureList::IsEnabled(
+      syncer::kEnableBookmarkFoldersForAccountStorage);
+}
 
 // Helper to get a mutable bookmark node.
 BookmarkNode* AsMutable(const BookmarkNode* node) {
@@ -184,22 +190,21 @@ scoped_refptr<ModelLoader> BookmarkModel::model_loader() {
 const BookmarkNode* BookmarkModel::account_bookmark_bar_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Must be null if the feature flag isn't enabled.
-  CHECK(!account_bookmark_bar_node_ ||
-        client_->AreFoldersForAccountStorageAllowed());
+  CHECK(!account_bookmark_bar_node_ || AreFoldersForAccountStorageAllowed());
   return account_bookmark_bar_node_;
 }
 
 const BookmarkNode* BookmarkModel::account_other_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Must be null if the feature flag isn't enabled.
-  CHECK(!account_other_node_ || client_->AreFoldersForAccountStorageAllowed());
+  CHECK(!account_other_node_ || AreFoldersForAccountStorageAllowed());
   return account_other_node_;
 }
 
 const BookmarkNode* BookmarkModel::account_mobile_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Must be null if the feature flag isn't enabled.
-  CHECK(!account_mobile_node_ || client_->AreFoldersForAccountStorageAllowed());
+  CHECK(!account_mobile_node_ || AreFoldersForAccountStorageAllowed());
   return account_mobile_node_;
 }
 
@@ -1348,7 +1353,7 @@ int64_t BookmarkModel::generate_next_node_id() {
 
 void BookmarkModel::CreateAccountPermanentFolders() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(client_->AreFoldersForAccountStorageAllowed());
+  CHECK(AreFoldersForAccountStorageAllowed());
   CHECK(loaded_);
 
   {
@@ -1377,7 +1382,7 @@ void BookmarkModel::CreateAccountPermanentFolders() {
 
 void BookmarkModel::RemoveAccountPermanentFolders() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(client_->AreFoldersForAccountStorageAllowed());
+  CHECK(AreFoldersForAccountStorageAllowed());
   CHECK(loaded_);
 
   // No-op if account permanent folders don't exist.

@@ -42,10 +42,6 @@ void BookmarkClientImpl::Init(bookmarks::BookmarkModel* model) {
   model_ = model;
 }
 
-bool BookmarkClientImpl::AreFoldersForAccountStorageAllowed() {
-  return false;
-}
-
 base::CancelableTaskTracker::TaskId
 BookmarkClientImpl::GetFaviconImageForPageURL(
     const GURL& page_url,

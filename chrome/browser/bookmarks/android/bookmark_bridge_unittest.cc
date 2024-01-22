@@ -91,9 +91,6 @@ class BookmarkBridgeTest : public testing::Test {
         std::make_unique<bookmarks::TestBookmarkClient>();
     BookmarkNode* managed_node = bookmark_client->EnableManagedNode();
     managed_node->SetTitle(u"Managed bookmarks");
-    if (enable_account_bookmarks) {
-      bookmark_client->AllowFoldersForAccountStorage();
-    }
     bookmark_model_ =
         std::make_unique<bookmarks::BookmarkModel>(std::move(bookmark_client));
     bookmark_model_->LoadEmptyForTest();
@@ -103,8 +100,7 @@ class BookmarkBridgeTest : public testing::Test {
     std::unique_ptr<ReadingListManagerImpl> account_reading_list_manager =
         nullptr;
     if (enable_account_bookmarks) {
-      base::test::ScopedFeatureList features;
-      features.InitWithFeatures(
+      features_.InitWithFeatures(
           /*enabled_features=*/{syncer::kEnableBookmarkFoldersForAccountStorage,
                                 syncer::kReplaceSyncPromosWithSignInPromos},
           /*disabled_features=*/{});
@@ -169,6 +165,7 @@ class BookmarkBridgeTest : public testing::Test {
     return std::move(reading_list_model);
   }
 
+  base::test::ScopedFeatureList features_;
   base::SimpleTestClock clock_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;

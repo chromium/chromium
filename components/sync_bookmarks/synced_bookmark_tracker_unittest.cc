@@ -14,6 +14,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
@@ -950,10 +951,10 @@ TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfMissingFaviconHash) {
 
 TEST(SyncedBookmarkTrackerTest,
      ShouldInvalidateMetadataIfPermanentFolderMissingLocally) {
-  auto client = std::make_unique<bookmarks::TestBookmarkClient>();
-  client->AllowFoldersForAccountStorage();
+  base::test::ScopedFeatureList features(
+      syncer::kEnableBookmarkFoldersForAccountStorage);
   std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
+      bookmarks::TestBookmarkClient::CreateModel();
 
   BookmarkModelViewUsingAccountNodes view(model.get());
   view.EnsurePermanentNodesExist();

@@ -127,11 +127,6 @@ void ChromeBookmarkClient::Init(bookmarks::BookmarkModel* model) {
 #endif
 }
 
-bool ChromeBookmarkClient::AreFoldersForAccountStorageAllowed() {
-  return base::FeatureList::IsEnabled(
-      syncer::kEnableBookmarkFoldersForAccountStorage);
-}
-
 base::CancelableTaskTracker::TaskId
 ChromeBookmarkClient::GetFaviconImageForPageURL(
     const GURL& page_url,

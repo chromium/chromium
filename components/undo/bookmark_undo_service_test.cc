@@ -9,10 +9,12 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/sync/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
@@ -57,6 +59,8 @@ class BookmarkUndoServiceTest : public testing::Test {
   BookmarkUndoService* GetUndoService();
 
  private:
+  base::test::ScopedFeatureList features_{
+      syncer::kEnableBookmarkFoldersForAccountStorage};
   std::unique_ptr<BookmarkUndoService> bookmark_undo_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
@@ -67,11 +71,9 @@ void BookmarkUndoServiceTest::SetUp() {
   DCHECK(!bookmark_model_);
   DCHECK(!bookmark_undo_service_);
   bookmark_undo_service_ = std::make_unique<BookmarkUndoService>();
-  auto client = std::make_unique<TestBookmarkClientWithUndo>(
-      bookmark_undo_service_.get());
-  client->AllowFoldersForAccountStorage();
-  bookmark_model_ =
-      bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
+  bookmark_model_ = bookmarks::TestBookmarkClient::CreateModelWithClient(
+      std::make_unique<TestBookmarkClientWithUndo>(
+          bookmark_undo_service_.get()));
   bookmark_undo_service_->StartObservingBookmarkModel(bookmark_model_.get());
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_.get());
 }

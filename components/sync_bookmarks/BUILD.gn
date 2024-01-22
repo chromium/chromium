@@ -74,6 +74,7 @@ source_set("unit_tests") {
     "//components/favicon/core/test:test_support",
     "//components/prefs:test_support",
     "//components/sync:test_support",
+    "//components/sync/base:features",
     "//components/undo",
     "//skia",
     "//testing/gmock",
