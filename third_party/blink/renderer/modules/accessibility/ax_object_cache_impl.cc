@@ -1424,6 +1424,9 @@ AXObject* AXObjectCacheImpl::RepairChildrenOfIncludedParent(Node* child) {
         // Detach from parent, so that when we fall through, it can be
         // reattached when the correct parent adds it as a child.
         ax_owned_child->DetachFromParent();
+        // Ensure that the cached values are recomputed with the new parent as
+        // a basis, since some cached values are inherited from the parent.
+        ax_owned_child->InvalidateCachedValues();
       }
       // aria-owns relation was not valid, fall through to using DOM ancestry.
     }
