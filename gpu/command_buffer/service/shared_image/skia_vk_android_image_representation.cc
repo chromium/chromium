@@ -294,7 +294,8 @@ SkiaVkAndroidImageRepresentation::GetEndAccessState() {
 
   const uint32_t kSingleDeviceUsage =
       SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-      SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+      SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
 
   // If SharedImage is used outside of current VkDeviceQueue we need to transfer
   // image back to it's original queue. Note, that for multithreading we use
