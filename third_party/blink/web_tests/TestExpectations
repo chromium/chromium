@@ -6752,4 +6752,5 @@ crbug.com/1519124 [ Mac12-arm64 ] external/wpt/webrtc-encoded-transform/tentativ
 crbug.com/1519124 [ Linux ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass Timeout ]
 
 # Gardener: 2024-01-22
+crbug.com/1518453 inspector-protocol/input/dispatchTouchEvent.js [ Failure Pass Timeout ]
 crbug.com/1520409 [ Linux ] virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-service-worker-fetch.tentative.https.sub.html [ Failure Pass ]
