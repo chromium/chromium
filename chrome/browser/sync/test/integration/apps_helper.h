@@ -165,8 +165,6 @@ class AppsStatusChangeChecker : public StatusChangeChecker,
  private:
   void InstallSyncedApps(Profile* profile);
 
-  content::NotificationRegistrar registrar_;
-
   base::ScopedMultiSourceObservation<extensions::InstallTracker,
                                      extensions::InstallObserver>
       install_tracker_observation_{this};

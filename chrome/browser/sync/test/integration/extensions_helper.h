@@ -115,7 +115,6 @@ class ExtensionsMatchChecker : public StatusChangeChecker,
   void OnExtensionUpdatingStarted(Profile* profile);
 
   std::vector<raw_ptr<Profile, VectorExperimental>> profiles_;
-  content::NotificationRegistrar registrar_;
 
   base::WeakPtrFactory<ExtensionsMatchChecker> weak_ptr_factory_{this};
 };

@@ -68,7 +68,6 @@ class DownloadObserver : public content::DownloadManager::Observer {
   }
 
  private:
-  content::NotificationRegistrar registrar_;
   base::RunLoop download_run_loop_;
   GURL last_url_;
 };

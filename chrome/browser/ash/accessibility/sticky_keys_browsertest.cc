@@ -90,7 +90,6 @@ class StickyKeysBrowserTest : public AccessibilityFeatureBrowserTest {
         /*control=*/false, /*shift=*/false, /*alt=*/false, /*command=*/false);
   }
 
-  content::NotificationRegistrar registrar_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<AutomationTestUtils> utils_;
 };

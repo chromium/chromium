@@ -17,10 +17,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/fetch/fetch_api_request_headers_map.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
@@ -218,79 +214,7 @@ class MessageLoopRunner : public base::RefCountedThreadSafe<MessageLoopRunner> {
   base::ThreadChecker thread_checker_;
 };
 
-// A WindowedNotificationObserver allows code to wait until a condition is met.
-// Simple conditions are specified by providing a |notification_type| and a
-// |source|. When a notification of the expected type from the expected source
-// is received, the condition is met.
-// More complex conditions can be specified by providing a |notification_type|
-// and a |callback|. The callback is called whenever the notification is fired.
-// If the callback returns |true|, the condition is met. Otherwise, the
-// condition is not yet met and the callback will be invoked again every time a
-// notification of the expected type is received until the callback returns
-// |true|.
-//
-// This helper class exists to avoid the following common pattern in tests:
-//   PerformAction()
-//   WaitForCompletionNotification()
-// The pattern leads to flakiness as there is a window between PerformAction
-// returning and the observers getting registered, where a notification will be
-// missed.
-//
-// Rather, one can do this:
-//   WindowedNotificationObserver signal(...)
-//   PerformAction()
-//   signal.Wait()
-class WindowedNotificationObserver : public NotificationObserver {
- public:
-  // Callback invoked on notifications. Should return |true| when the condition
-  // being waited for is met.
-  using ConditionTestCallback =
-      base::RepeatingCallback<bool(const NotificationSource&,
-                                   const NotificationDetails&)>;
-
-  // Set up to wait for a simple condition. The condition is met when a
-  // notification of the given |notification_type| from the given |source| is
-  // received. To accept notifications from all sources, specify
-  // NotificationService::AllSources() as |source|.
-  WindowedNotificationObserver(int notification_type,
-                               const NotificationSource& source);
-
-  // Set up to wait for a complex condition. The condition is met when
-  // |callback| returns |true|. The callback is invoked whenever a notification
-  // of |notification_type| from any source is received.
-  WindowedNotificationObserver(int notification_type,
-                               ConditionTestCallback callback);
-
-  WindowedNotificationObserver(const WindowedNotificationObserver&) = delete;
-  WindowedNotificationObserver& operator=(const WindowedNotificationObserver&) =
-      delete;
-
-  ~WindowedNotificationObserver() override;
-
-  // Wait until the specified condition is met. If the condition is already met
-  // (that is, the expected notification has already been received or the
-  // given callback returns |true| already), Wait() returns immediately.
-  void Wait();
-
-  // Whether the expected notification has already been received.
-  bool NotificationReceived() const;
-
-  // NotificationObserver:
-  void Observe(int type,
-               const NotificationSource& source,
-               const NotificationDetails& details) override;
-
- private:
-  bool seen_ = false;
-  NotificationRegistrar registrar_;
-
-  ConditionTestCallback callback_;
-
-  base::RunLoop run_loop_;
-};
-
-// Helper to wait for loading to stop on a WebContents.  It should be preferred
-// to uses of WindowedNotificationObserver for NOTIFICATION_LOAD_STOP.
+// Helper to wait for loading to stop on a WebContents.
 //
 // This helper class exists to avoid the following common pattern in tests:
 //   PerformAction()
