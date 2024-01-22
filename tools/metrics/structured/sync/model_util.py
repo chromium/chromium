@@ -14,7 +14,7 @@ Functions use the concept of 'compound' and 'text' XML nodes.
 
 import collections
 import re
-from typing import List, Set
+from typing import List, Optional, Set
 import xml.etree.ElementTree as ET
 
 
@@ -29,7 +29,9 @@ def error(elem: ET.Element, msg: str) -> None:
   raise ValueError(msg)
 
 
-def get_attr(elem: ET.Element, tag: str, regex: str = None) -> str:
+def get_attr(elem: ET.Element,
+             tag: str,
+             regex: Optional[str] = None) -> Optional[str]:
   """Get an attribute.
 
     Error if it is missing, optionally error if it doesn't match the provided
@@ -59,7 +61,9 @@ def get_attr(elem: ET.Element, tag: str, regex: str = None) -> str:
   return attr
 
 
-def get_optional_attr(elem: ET.Element, tag: str, regex: str = None) -> str:
+def get_optional_attr(elem: ET.Element,
+                      tag: str,
+                      regex: Optional[str] = None) -> Optional[str]:
   """Get an attribute.
 
     Returns None if it doesn't exist.
@@ -140,7 +144,9 @@ def get_compound_child(elem: ET.Element, tag: str) -> ET.Element:
   return children[0]
 
 
-def get_text_children(elem: ET.Element, tag: str, regex: str = None) -> str:
+def get_text_children(elem: ET.Element,
+                      tag: str,
+                      regex: Optional[str] = None) -> List[Optional[str]]:
   """Get the text of all child nodes of `elem` with tag `tag`.
 
     Error if none exist, or a child is not a text node. Optionally ensure the
@@ -166,7 +172,7 @@ def get_text_children(elem: ET.Element, tag: str, regex: str = None) -> str:
   for child in children:
     check_attributes(child, set())
     check_children(child, set())
-    text = child.text.strip()
+    text = child.text.strip() if child.text else None
     if not text:
       error(elem, f"missing text in '{tag}'")
     if regex and not re.fullmatch(regex, text):
@@ -179,7 +185,9 @@ def get_text_children(elem: ET.Element, tag: str, regex: str = None) -> str:
   return result
 
 
-def get_text_child(elem: ET.Element, tag: str, regex: str = None) -> ET.Element:
+def get_text_child(elem: ET.Element,
+                   tag: str,
+                   regex: Optional[str] = None) -> Optional[str]:
   """Get the text of the child of `elem` with tag `tag`.
 
     Error if there isn't exactly one matching child, or it isn't a text node.
@@ -202,9 +210,11 @@ def get_text_child(elem: ET.Element, tag: str, regex: str = None) -> ET.Element:
   return result[0]
 
 
-def check_attributes(elem: ET.Element,
-                     expected_attrs: Set[str],
-                     optional_attrs: Set[str] = None) -> None:
+def check_attributes(
+    elem: ET.Element,
+    expected_attrs: Set[str],
+    optional_attrs: Optional[Set[str]] = None,
+) -> None:
   """Ensure `elem` has no attributes except those in `expected_attrs`.
 
     Args:
