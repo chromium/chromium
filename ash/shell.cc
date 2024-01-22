@@ -1426,10 +1426,7 @@ void Shell::Init(
   desks_controller_ = std::make_unique<DesksController>();
   saved_desk_delegate_ = shell_delegate_->CreateSavedDeskDelegate();
   // Initialized here since it depends on desks.
-  if (base::FeatureList::IsEnabled(features::kAppLaunchAutomation) ||
-      chromeos::features::IsDeskProfilesEnabled()) {
-    saved_desk_controller_ = std::make_unique<SavedDeskController>();
-  }
+  saved_desk_controller_ = std::make_unique<SavedDeskController>();
 
   Shell::SetRootWindowForNewWindows(GetPrimaryRootWindow());
 

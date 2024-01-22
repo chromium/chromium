@@ -3595,8 +3595,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest,
 
 class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
  public:
-  AdminTemplateTest()
-      : scoped_feature_list_(ash::features::kAppLaunchAutomation) {
+  AdminTemplateTest() {
     // Suppress the multitask menu nudge as we'll be checking the stacking order
     // and the count of the active desk children.
     chromeos::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(true);

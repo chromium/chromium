@@ -151,10 +151,8 @@ std::unique_ptr<SearchController> CreateSearchController(
   controller->AddProvider(
       std::make_unique<HelpAppZeroStateProvider>(profile, notifier));
 
-  if (base::FeatureList::IsEnabled(ash::features::kAppLaunchAutomation)) {
-    controller->AddProvider(
-        std::make_unique<DesksAdminTemplateProvider>(profile, list_controller));
-  }
+  controller->AddProvider(
+      std::make_unique<DesksAdminTemplateProvider>(profile, list_controller));
 
   if (search_features::IsLauncherGameSearchEnabled()) {
     controller->AddProvider(

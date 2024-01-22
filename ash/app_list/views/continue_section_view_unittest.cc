@@ -395,7 +395,6 @@ TEST_P(ContinueSectionViewTest, VerifyAddedViewsOrder) {
 // template.
 TEST_P(ContinueSectionViewTest, ShowContinueSectionWhenAdminTemplateAvailable) {
   base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(features::kAppLaunchAutomation);
 
   AddSearchResult("id", AppListSearchResultType::kDesksAdminTemplate);
 
