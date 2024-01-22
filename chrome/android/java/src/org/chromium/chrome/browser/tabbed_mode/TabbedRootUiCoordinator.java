@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
+import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthTopToolbarDelegate;
@@ -176,6 +177,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private MultiInstanceManager mMultiInstanceManager;
     private int mStatusIndicatorHeight;
     private TouchEventObserver mDragDropTouchObserver;
+    private final OneshotSupplier<HubManager> mHubManagerSupplier;
 
     /**
      * A common {@link CallbackController} used for being notified when {@link TabSwitcher} or
@@ -231,6 +233,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
      * @param tabSwitcherSupplier Supplier of the {@link TabSwitcher}.
+     * @param hubManagerSupplier Supplier for the {@link HubManager}.
      * @param incognitoTabSwitcherSupplier Supplier of the incognito {@link TabSwitcher}.
      * @param intentMetadataOneshotSupplier Supplier with information about the launching intent.
      * @param layoutStateProviderOneshotSupplier Supplier of the {@link LayoutStateProvider}.
@@ -280,6 +283,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull OneshotSupplier<StartSurface> startSurfaceSupplier,
             @NonNull OneshotSupplier<TabSwitcher> tabSwitcherSupplier,
             @NonNull OneshotSupplier<TabSwitcher> incognitoTabSwitcherSupplier,
+            @NonNull OneshotSupplier<HubManager> hubManagerSupplier,
             @NonNull OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
@@ -384,6 +388,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     }
                 };
         mMultiInstanceManager = multiInstanceManager;
+        mHubManagerSupplier = hubManagerSupplier;
     }
 
     @Override
@@ -685,6 +690,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         new SettingsLauncherImpl(),
                         incognitoReauthTopToolbarDelegate,
                         mLayoutManager,
+                        mHubManagerSupplier,
                         /* showRegularOverviewIntent= */ null,
                         /* isTabbedActivity= */ true);
 

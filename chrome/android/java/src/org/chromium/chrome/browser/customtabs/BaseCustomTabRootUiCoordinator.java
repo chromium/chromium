@@ -416,6 +416,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 new SettingsLauncherImpl(),
                 /* incognitoReauthTopToolbarDelegate= */ null,
                 /* layoutManager= */ null,
+                /* hubManagerSupplier= */ null,
                 /* showRegularOverviewIntent= */ showRegularOverviewIntent,
                 /* isTabbedActivity= */ false);
     }

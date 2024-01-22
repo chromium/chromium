@@ -109,6 +109,7 @@ import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.hub.DefaultPaneOrderController;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
+import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.HubProvider;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
@@ -397,6 +398,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private ObservableSupplierImpl<Tab> mStartSurfaceParentTabSupplier =
             new ObservableSupplierImpl<>();
     private HubProvider mHubProvider;
+    private OneshotSupplierImpl<HubManager> mHubManagerSupplier = new OneshotSupplierImpl<>();
     private ObservableSupplierImpl<TabModelStartupInfo> mTabModelStartupInfoSupplier;
     // Calls isStartSurfaceRefactorEnabled() instead of using this variable directly.
     private Boolean mIsStartSurfaceRefactorEnabled;
@@ -905,6 +907,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         () -> {
                             return createTabSwitcherPane(true);
                         }));
+        mHubProvider
+                .getHubManagerSupplier()
+                .onAvailable(
+                        manager -> {
+                            mHubManagerSupplier.set(manager);
+                        });
     }
 
     private Pane createTabSwitcherPane(boolean isIncognito) {
@@ -2096,6 +2104,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mStartSurfaceSupplier,
                 mTabSwitcherSupplier,
                 mIncognitoTabSwitcherSupplier,
+                mHubManagerSupplier,
                 mIntentMetadataOneshotSupplier,
                 mLayoutStateProviderSupplier,
                 mStartSurfaceParentTabSupplier,
