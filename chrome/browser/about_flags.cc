@@ -9637,6 +9637,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"pwa-restore-ui", flag_descriptions::kPwaRestoreUiName,
      flag_descriptions::kPwaRestoreUiDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kPwaRestoreUi)},
+
+    {"pwa-universal-install-ui", flag_descriptions::kPwaUniversalInstallUiName,
+     flag_descriptions::kPwaUniversalInstallUiDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kPwaUniversalInstallUi)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"autofill-enable-ranking-formula-address-profiles",
      flag_descriptions::kAutofillEnableRankingFormulaAddressProfilesName,

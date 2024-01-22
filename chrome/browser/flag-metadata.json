@@ -6819,6 +6819,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "pwa-universal-install-ui",
+    "owners": [ "finnur@chromium.org", "beverloo@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "pwa-update-dialog-for-icon",
     "owners": [ "finnur@chromium.org", "beverloo@chromium.org" ],
     "expiry_milestone": 140
