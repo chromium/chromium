@@ -1,0 +1,100 @@
+This is a testharness.js-based test.
+Found 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] cast float16 4D tensor to int64 / sync
+  assert_true: assert_array_approx_equals_ulp: test cast int64 actual 137438953475 should be close enough to expected 3 by the acceptable 0 ULP distance, but they have 137438953472 ULP distance expected true got false
+[FAIL] cast int64 4D tensor to float16 / sync
+  assert_true: assert_array_approx_equals_ulp: test cast float16 actual 0 should be close enough to expected 1 by the acceptable 1 ULP distance, but they have 15360 ULP distance expected true got false
+[FAIL] cast float32 0D tensor to int32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast float32 1D tensor to int32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast float32 2D tensor to int32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast float32 3D tensor to int32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast float32 4D tensor to int32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast float32 5D tensor to int32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast float32 4D tensor to float16 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast float32 4D tensor to uint32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast float32 4D tensor to int64 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast float32 4D tensor to int8 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast float32 4D tensor to uint8 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast float16 4D tensor to float32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast float16 4D tensor to int32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast float16 4D tensor to uint32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast float16 4D tensor to int64 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast float16 4D tensor to int8 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast float16 4D tensor to uint8 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int32 4D tensor to float32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int32 4D tensor to float16 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int32 4D tensor to int64 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int32 4D tensor to int8 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int32 4D tensor to uint8 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast uint32 4D tensor to float32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast uint32 4D tensor to float16 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast uint32 4D tensor to int32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast uint32 4D tensor to int64 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast uint32 4D tensor to int8 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast uint32 4D tensor to uint8 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int64 4D tensor to float32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int64 4D tensor to float16 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int64 4D tensor to int32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int64 4D tensor to uint32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int64 4D tensor to int8 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int64 4D tensor to uint8 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int8 4D tensor to float32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int8 4D tensor to float16 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int8 4D tensor to int32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int8 4D tensor to uint32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int8 4D tensor to int64 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast int8 4D tensor to uint8 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast uint8 4D tensor to float32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast uint8 4D tensor to float16 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast uint8 4D tensor to int32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast uint8 4D tensor to uint32 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast uint8 4D tensor to int64 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cast uint8 4D tensor to int8 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+Harness: the test ran to completion.
+

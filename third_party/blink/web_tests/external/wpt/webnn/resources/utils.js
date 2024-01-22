@@ -289,6 +289,7 @@ const PrecisionMetrics = {
   argMax: {ULP: {int64: 0}},
   argMin: {ULP: {int64: 0}},
   batchNormalization: {ULP: {float32: 6, float16: 6}},
+  cast: {ULP: {float32: 1, float16: 1, int32: 0, uint32: 0, int64: 0, int8: 0, uint8: 0}},
   clamp: {ULP: {float32: 0, float16: 0}},
   concat: {ULP: {float32: 0, float16: 0}},
   conv2d: {ULP: {float32: getConv2dPrecisionTolerance, float16: getConv2dPrecisionTolerance}},
@@ -603,6 +604,15 @@ const buildBatchNorm = (operationName, builder, resources) => {
   // invoke builder.batchNormalization()
   namedOutputOperand[resources.expected.name] =
       builder[operationName](inputOperand, meanOperand, varianceOperand, batchNormOptions);
+  return namedOutputOperand;
+};
+
+const buildCast = (operationName, builder, resources) => {
+  // MLOperand cast(MLOperand input, MLOperandDataType type);
+  const namedOutputOperand = {};
+  const inputOperand = createSingleInputOperand(builder, resources);
+  // invoke builder.cast()
+  namedOutputOperand[resources.expected.name] = builder[operationName](inputOperand, resources.type);
   return namedOutputOperand;
 };
 

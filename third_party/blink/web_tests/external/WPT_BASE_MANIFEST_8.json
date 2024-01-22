@@ -357520,7 +357520,7 @@
          []
         ],
         "rc-helper.js": [
-         "9ecdc91ff147ac785154ae2ab5991ea32f9dacb3",
+         "80c164f56053d3379e0ac5ed31cde312c09ae6a3",
          []
         ],
         "service-worker.js": [
@@ -381613,7 +381613,7 @@
     ],
     "not-restored-reasons": {
      "abort-block-bfcache.window-expected.txt": [
-      "4647057212b9416abbc38f74c71acbda97b3a8a3",
+      "5077930bbdb5b4b6dcbbdaaf94836d8f306d23be",
       []
      ],
      "performance-navigation-timing-lock.https.tentative.window-expected.txt": [
@@ -381625,7 +381625,7 @@
       []
      ],
      "test-helper.js": [
-      "a172546512a0f2f28c986c36cbb06d1ba333af3b",
+      "97695cd0acec89bc5fa223eadf516d3103ddc302",
       []
      ]
     },
@@ -389092,7 +389092,7 @@
          ]
         },
         "router-rules.js": [
-         "3ecd2025b39f54c78e84ae6838ec0272ff609c2d",
+         "d0458e7f240bb74b8c60f676921912d726b834e8",
          []
         ],
         "simple-test-for-condition-main-resource.html": [
@@ -397403,6 +397403,14 @@
      "65a021e4b59ca8841f87aace6aa0f8129a2b84fa",
      []
     ],
+    "cast.https.any-expected.txt": [
+     "d47e14f40f3451980d2f8e5b048c4b16e128f51e",
+     []
+    ],
+    "cast.https.any.worker-expected.txt": [
+     "073fd9089ecc875a64672a4ce51b396eb8353e3e",
+     []
+    ],
     "clamp.https.any.worker-expected.txt": [
      "bb81193fdcee180e750d8d48ba1dc0617ee21282",
      []
@@ -397536,11 +397544,11 @@
      []
     ],
     "pooling.https.any-expected.txt": [
-     "570e340cd602b2a473b4ba48afc860451a61bc06",
+     "b2074d6673c4bc62c74e2f2a988b3613c4ebcc87",
      []
     ],
     "pooling.https.any.worker-expected.txt": [
-     "c6138a98f4feb89c5adcad57913fca23e26db3c2",
+     "8db7404a087e2b2b402dd39f7162c152d64354b9",
      []
     ],
     "prelu.https.any-expected.txt": [
@@ -397591,6 +397599,10 @@
       ],
       "batch_normalization.json": [
        "04ab0d0d6f1f4bc6c4287f70026d2547d0e25420",
+       []
+      ],
+      "cast.json": [
+       "59d1036eeed5ad93460f75f04efb51bfc67a4617",
        []
       ],
       "ceil.json": [
@@ -397843,7 +397855,7 @@
       ]
      },
      "utils.js": [
-      "955e01fb94948ec401fda13b21acd9e54adec398",
+      "92fffeb80f3f6b3bb043c15f4702bd7ebaad7767",
       []
      ]
     },
@@ -601274,7 +601286,7 @@
       ]
      ],
      "performance-navigation-timing-attributes.tentative.window.js": [
-      "2fabf45f351d983a1001d4e1ed6970e818c0c2b6",
+      "44495fa981b75209dbc869511b1c5561cd223722",
       [
        "performance-timeline/not-restored-reasons/performance-navigation-timing-attributes.tentative.window.html",
        {
@@ -601321,7 +601333,7 @@
       ]
      ],
      "performance-navigation-timing-bfcache-reasons-stay.tentative.window.js": [
-      "897a9900268076826b9c07d2b0051bb2c7404b0e",
+      "28dbc38575a3b26924ccf2e6bf452cbb100c041d",
       [
        "performance-timeline/not-restored-reasons/performance-navigation-timing-bfcache-reasons-stay.tentative.window.html",
        {
@@ -601411,7 +601423,7 @@
       ]
      ],
      "performance-navigation-timing-cross-origin-bfcache.tentative.window.js": [
-      "42769cf458b77020e8d0fb0218b19f109cf59663",
+      "42bda12919d1b7ff10c37ac37798fc42f1f50058",
       [
        "performance-timeline/not-restored-reasons/performance-navigation-timing-cross-origin-bfcache.tentative.window.html",
        {
@@ -601458,7 +601470,7 @@
       ]
      ],
      "performance-navigation-timing-fetch.tentative.window.js": [
-      "5cd35c7ba362e1a1b844fab38fe72e4991005192",
+      "c8f53a660fa9a144b21be7d009c4107d005d058c",
       [
        "performance-timeline/not-restored-reasons/performance-navigation-timing-fetch.tentative.window.html",
        {
@@ -601591,7 +601603,7 @@
       ]
      ],
      "performance-navigation-timing-not-bfcached.tentative.window.js": [
-      "0dc1519d1bb1c05026029f5ff644738f74fcd744",
+      "1cf1d55d90f78abca7d8c55ffb1aacb8e13f2fa5",
       [
        "performance-timeline/not-restored-reasons/performance-navigation-timing-not-bfcached.tentative.window.html",
        {
@@ -601685,7 +601697,7 @@
       ]
      ],
      "performance-navigation-timing-reload.tentative.window.js": [
-      "58584390cd3dc5a2400e62c65df1cf5ce99fa6c6",
+      "1a8972778d287c51c73a0d9db9cc61c0160c4034",
       [
        "performance-timeline/not-restored-reasons/performance-navigation-timing-reload.tentative.window.html",
        {
@@ -601732,7 +601744,7 @@
       ]
      ],
      "performance-navigation-timing-same-origin-bfcache.tentative.window.js": [
-      "44b44a865c0e5aa7dfd5320f5407b1e74748ab97",
+      "89d66b070ed8c4fe89fde91a8e6aeb6135854b75",
       [
        "performance-timeline/not-restored-reasons/performance-navigation-timing-same-origin-bfcache.tentative.window.html",
        {
@@ -601779,7 +601791,7 @@
       ]
      ],
      "performance-navigation-timing-same-origin-replace.tentative.window.js": [
-      "c833db751390fbf43a73f49870c74377691c4b54",
+      "1162bfaf7600fdacfc3e0f7da147bc320d038a9d",
       [
        "performance-timeline/not-restored-reasons/performance-navigation-timing-same-origin-replace.tentative.window.html",
        {
@@ -627697,14 +627709,14 @@
      "tentative": {
       "static-router": {
        "static-router-main-resource.https.html": [
-        "30bbf60e83f849390a04a7795fd04184ed121ccd",
+        "9be7d74cc78c0e5e4ce4f4dd14fc3085feda4ff7",
         [
          null,
          {}
         ]
        ],
        "static-router-subresource.https.html": [
-        "6154c38f2d7013150021a2903d9b8a7301dc7013",
+        "c0eb8e9f2f51a2254e37f9c594189d45a60c4776",
         [
          null,
          {}
@@ -664971,6 +664983,57 @@
       }
      ]
     ],
+    "cast.https.any.js": [
+     "c9be45a770d3ad6247bfca04e20dc915eb12fc10",
+     [
+      "webnn/cast.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API cast operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "webnn/cast.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API cast operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
     "clamp.https.any.js": [
      "9818aed7c12be552b24427efa3beb78547ef2e0e",
      [
@@ -665617,6 +665680,57 @@
          [
           "title",
           "test WebNN API batchNormalization operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "cast.https.any.js": [
+      "1830364eb55234a06c3b3821003ba8477bc459b9",
+      [
+       "webnn/gpu/cast.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API cast operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/gpu/cast.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API cast operation"
          ],
          [
           "global",
@@ -669419,14 +669533,14 @@
      ]
     ],
     "back-forward-cache-with-open-webrtc-connection.https.window.js": [
-     "4a4807d5141123cd1cf7e85cc1c8e29623944f59",
+     "a516aa4c79988fabceca08da087c56734175ca0f",
      [
       "webrtc/back-forward-cache-with-open-webrtc-connection.https.window.html",
       {
        "script_metadata": [
         [
          "title",
-         "Testing BFCache support for page with open WebRTC connection."
+         "Testing BFCache support for page with open WebRTC connection and live MediaStreamTrack."
         ],
         [
          "script",
