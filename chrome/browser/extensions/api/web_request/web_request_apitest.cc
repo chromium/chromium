@@ -3815,8 +3815,14 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
 // Ensure we don't strip off initiator incorrectly in web request events when
 // both the normal and incognito contexts are active. Regression test for
 // crbug.com/934398.
+// TODO(crbug.com/1520416): enable this flaky test
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_Initiator_SpanningIncognito DISABLED_Initiator_SpanningIncognito
+#else
+#define MAYBE_Initiator_SpanningIncognito Initiator_SpanningIncognito
+#endif
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       Initiator_SpanningIncognito) {
+                       MAYBE_Initiator_SpanningIncognito) {
   embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
 
