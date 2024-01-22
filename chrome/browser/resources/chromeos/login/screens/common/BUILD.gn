@@ -27,7 +27,6 @@ js_type_check("closure_compile_local") {
     ":error_message",
     ":guest_tos",
     ":offline_ad_login",
-    ":quick_start",
     ":recommend_apps",
     ":saml_confirm_password",
     ":signin_fatal_error",
@@ -98,20 +97,6 @@ js_library("offline_ad_login") {
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("quick_start") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/quick_start.js" ]
-  deps = [
-    "../../components:oobe_types",
-    "../../components:qr_code_canvas",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_loading_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]
 }

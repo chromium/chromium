@@ -138,7 +138,7 @@ common_screens_js_files = [
   "screens/common/os_install.ts",
   "screens/common/os_trial.ts",
   "screens/common/parental_handoff.ts",
-  "screens/common/quick_start.js",
+  "screens/common/quick_start.ts",
   "screens/common/remote_activity_notification.ts",
 
   # Template used by the `tools/oobe/generate_screen_template.py` script.
