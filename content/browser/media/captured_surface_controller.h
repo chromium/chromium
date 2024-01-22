@@ -26,6 +26,7 @@ class CONTENT_EXPORT CapturedSurfaceController {
       ::blink::mojom::CapturedSurfaceControlResult;
 
   static std::unique_ptr<CapturedSurfaceController> CreateForTesting(
+      GlobalRenderFrameHostId capturer_rfh_id,
       WebContentsMediaCaptureId captured_wc_id,
       std::unique_ptr<CapturedSurfaceControlPermissionManager>
           permission_manager,
@@ -65,6 +66,7 @@ class CONTENT_EXPORT CapturedSurfaceController {
       ::content::CapturedSurfaceControlPermissionManager::PermissionResult;
 
   CapturedSurfaceController(
+      GlobalRenderFrameHostId capturer_rfh_id,
       WebContentsMediaCaptureId captured_wc_id,
       std::unique_ptr<CapturedSurfaceControlPermissionManager>
           permission_manager,
@@ -73,6 +75,8 @@ class CONTENT_EXPORT CapturedSurfaceController {
   // Manage the resolution of WebContents-IDs into base::WeakPtr<WebContents>.
   void ResolveCapturedWebContents(WebContentsMediaCaptureId captured_wc_id);
   void OnCapturedWebContentsResolved(base::WeakPtr<WebContents> captured_wc);
+
+  const GlobalRenderFrameHostId capturer_rfh_id_;
 
   // References the captured tab through its WebContents.
   //

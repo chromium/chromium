@@ -186,32 +186,41 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
     GetRenderWidgetHostImpl(wc)->SetView(rwhv);
   }
 
+  WebContentsMediaCaptureId GetWebContentsMediaCaptureId(
+      WebContents& wc) const {
+    RenderFrameHost* const captured_main_rfh = wc.GetPrimaryMainFrame();
+    return WebContentsMediaCaptureId(captured_main_rfh->GetProcess()->GetID(),
+                                     captured_main_rfh->GetRoutingID());
+  }
+
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
     // MainSetUp() is in a helper so that test fixtures that inherit from the
-    // current one would be able to directly run it without also running
-    // AwaitWebContentsResolution().
+    // current one would be able to directly run it without also starting
+    // capture and/or running AwaitWebContentsResolution().
     MainSetUp();
+    StartCaptureOf(*captured_wc_);
     AwaitWebContentsResolution();
   }
 
   void MainSetUp() {
     capturing_wc_ = MakeTestWebContents();
+    old_capturing_rwhv_ = GetView(*capturing_wc_);
+    capturing_rwhv_ =
+        std::make_unique<TestView>(GetRenderWidgetHostImpl(*capturing_wc_));
+    SetView(*capturing_wc_, capturing_rwhv_.get());
+    capturing_rwhv_->SetSize(kCapturedViewportSize);
+
     captured_wc_ = MakeTestWebContents();
-
-    RenderFrameHost* const captured_main_rfh =
-        captured_wc_->GetPrimaryMainFrame();
-    const WebContentsMediaCaptureId captured_wc_id(
-        captured_main_rfh->GetProcess()->GetID(),
-        captured_main_rfh->GetRoutingID());
-
-    old_rwhv_ = GetView(*captured_wc_);
+    old_captured_rwhv_ = GetView(*captured_wc_);
     captured_rwhv_ =
         std::make_unique<TestView>(GetRenderWidgetHostImpl(*captured_wc_));
     SetView(*captured_wc_, captured_rwhv_.get());
     captured_rwhv_->SetSize(kCapturedViewportSize);
+  }
 
+  void StartCaptureOf(WebContents& captured_wc) {
     auto permission_manager = std::make_unique<MockPermissionManager>(
         capturing_wc_->GetPrimaryMainFrame()->GetGlobalId());
     permission_manager_ = permission_manager.get();
@@ -219,10 +228,24 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
     // `base::Unretained(this)` is safe because `this` owns `controller_` and
     // therefore has a longer lifetime.
     controller_ = CapturedSurfaceController::CreateForTesting(
-        captured_wc_id, std::move(permission_manager),
+        capturing_wc_->GetPrimaryMainFrame()->GetGlobalId(),
+        GetWebContentsMediaCaptureId(captured_wc),
+        std::move(permission_manager),
         base::BindRepeating(
             &CapturedSurfaceControllerTestBase::OnWebContentsResolved,
             base::Unretained(this)));
+  }
+
+  void UnloadCapturingWebContents() {
+    if (!capturing_wc_) {
+      return;
+    }
+
+    SetView(*capturing_wc_, old_capturing_rwhv_);
+    old_capturing_rwhv_ = nullptr;
+
+    capturing_wc_.reset();
+    capturing_rwhv_.reset();
   }
 
   void UnloadCapturedWebContents() {
@@ -230,18 +253,18 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
       return;
     }
 
-    SetView(*captured_wc_, old_rwhv_);
-    old_rwhv_ = nullptr;
+    SetView(*captured_wc_, old_captured_rwhv_);
+    old_captured_rwhv_ = nullptr;
 
     captured_wc_.reset();
+    captured_rwhv_.reset();
   }
 
   void TearDown() override {
     permission_manager_ = nullptr;
     controller_.reset();
-    capturing_wc_.reset();
+    UnloadCapturingWebContents();
     UnloadCapturedWebContents();
-    captured_rwhv_.reset();
 
     RenderViewHostTestHarness::TearDown();
   }
@@ -262,10 +285,15 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
  protected:
   std::unique_ptr<CapturedSurfaceController> controller_;
   raw_ptr<MockPermissionManager> permission_manager_ = nullptr;
-  std::unique_ptr<TestView> captured_rwhv_;
-  raw_ptr<RenderWidgetHostViewBase> old_rwhv_ = nullptr;
+
   std::unique_ptr<TestWebContents> capturing_wc_;
+  std::unique_ptr<TestView> capturing_rwhv_;
+  raw_ptr<RenderWidgetHostViewBase> old_capturing_rwhv_ = nullptr;
+
   std::unique_ptr<TestWebContents> captured_wc_;
+  std::unique_ptr<TestView> captured_rwhv_;
+  raw_ptr<RenderWidgetHostViewBase> old_captured_rwhv_ = nullptr;
+
   std::unique_ptr<base::RunLoop> wc_resolution_run_loop_;
 };
 
@@ -557,6 +585,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(CapturedSurfaceControllerWebContentsResolutionTest,
        ApiInvocationAfterWebContentsResolutionSucceeds) {
   MainSetUp();  // Triggers resolution but does not await it.
+  StartCaptureOf(*captured_wc_);
   permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
 
   AwaitWebContentsResolution();
@@ -569,6 +598,7 @@ TEST_P(CapturedSurfaceControllerWebContentsResolutionTest,
 TEST_P(CapturedSurfaceControllerWebContentsResolutionTest,
        ApiInvocationPriorToWebContentsResolutionFails) {
   MainSetUp();  // Triggers resolution but does not await it.
+  StartCaptureOf(*captured_wc_);
   permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
 
   base::RunLoop run_loop;
@@ -584,6 +614,7 @@ TEST_P(
   // Setup - repeat ApiInvocationPriorToWebContentsResolutionFails.
   {
     MainSetUp();  // Triggers resolution but does not await it.
+    StartCaptureOf(*captured_wc_);
     permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
 
     base::RunLoop run_loop;
@@ -686,6 +717,77 @@ TEST_P(CapturedSurfaceControllerWebContentsResolutionOfUpdatesTest,
   run_loop.Run();
 
   AwaitWebContentsResolution();
+}
+
+// Test suite ensuring that API calls before/after the WebContents ID is
+// resolved to a base::WeakPtr<WebContents> behave as expected.
+class CapturedSurfaceControllerSelfCaptureTest
+    : public CapturedSurfaceControllerInterfaceTestBase,
+      public ::testing::WithParamInterface<CapturedSurfaceControlAPI> {
+ public:
+  CapturedSurfaceControllerSelfCaptureTest()
+      : CapturedSurfaceControllerInterfaceTestBase(GetParam()) {}
+
+  ~CapturedSurfaceControllerSelfCaptureTest() override = default;
+
+  void SetUp() override {
+    // Intentionally skip CapturedSurfaceControllerInterfaceTestBase's SetUp(),
+    // and therefore also CapturedSurfaceControllerTestBase's SetUp().
+    RenderViewHostTestHarness::SetUp();
+    MainSetUp();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CapturedSurfaceControllerSelfCaptureTest,
+    ::testing::Values(CapturedSurfaceControlAPI::kSendWheel,
+                      CapturedSurfaceControlAPI::kSetZoomLevel,
+                      CapturedSurfaceControlAPI::kGetZoomLevel));
+
+TEST_P(CapturedSurfaceControllerSelfCaptureTest, SelfCaptureDisallowed) {
+  StartCaptureOf(*capturing_wc_);
+  AwaitWebContentsResolution();
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+
+  base::RunLoop run_loop;
+  RunTestedActionAndExpect(&run_loop, CSCResult::kUnknownError);
+  run_loop.Run();
+}
+
+TEST_P(CapturedSurfaceControllerSelfCaptureTest,
+       UpdateCaptureTargetToOtherTabEnablesCapturedSurfaceControl) {
+  StartCaptureOf(*capturing_wc_);
+  AwaitWebContentsResolution();
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+
+  controller_->UpdateCaptureTarget(GetWebContentsMediaCaptureId(*captured_wc_));
+  AwaitWebContentsResolution();
+
+  base::RunLoop run_loop;
+  RunTestedActionAndExpect(&run_loop, CSCResult::kSuccess);
+  run_loop.Run();
+}
+
+TEST_P(CapturedSurfaceControllerSelfCaptureTest,
+       UpdateCaptureTargetToCapturingTabDisablesCapturedSurfaceControl) {
+  StartCaptureOf(*captured_wc_);
+  AwaitWebContentsResolution();
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+
+  {
+    base::RunLoop run_loop;
+    RunTestedActionAndExpect(&run_loop, CSCResult::kSuccess);
+    run_loop.Run();
+  }
+
+  controller_->UpdateCaptureTarget(
+      GetWebContentsMediaCaptureId(*capturing_wc_));
+  AwaitWebContentsResolution();
+
+  base::RunLoop run_loop;
+  RunTestedActionAndExpect(&run_loop, CSCResult::kUnknownError);
+  run_loop.Run();
 }
 
 }  // namespace

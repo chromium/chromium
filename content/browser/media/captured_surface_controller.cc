@@ -7,10 +7,11 @@
 #include <cmath>
 
 #include "base/task/bind_post_task.h"
-#include "content/browser/media/media_stream_web_contents_observer.h"
 #include "content/browser/media/captured_surface_control_permission_manager.h"
+#include "content/browser/media/media_stream_web_contents_observer.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -54,6 +55,7 @@ base::WeakPtr<WebContents> ResolveWebContentsOnUI(
 // Return `CapturedSurfaceControlResult` to be reported back to the renderer,
 // indicating success or failure (with reason).
 CapturedSurfaceControlResult DoSendWheel(
+    GlobalRenderFrameHostId capturer_rfh_id,
     base::WeakPtr<WebContents> captured_wc,
     blink::mojom::CapturedWheelActionPtr action) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -62,6 +64,12 @@ CapturedSurfaceControlResult DoSendWheel(
       captured_wc ? captured_wc->GetPrimaryMainFrame() : nullptr;
   if (!rfh) {
     return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
+  }
+
+  if (WebContentsImpl::FromRenderFrameHostID(capturer_rfh_id) ==
+      captured_wc.get()) {
+    // TODO(crbug.com/1466247): Use a dedicated error for self-capture.
+    return CapturedSurfaceControlResult::kUnknownError;
   }
 
   RenderFrameHostImpl* const rfhi =
@@ -113,12 +121,19 @@ CapturedSurfaceControlResult DoSendWheel(
 // Return `CapturedSurfaceControlResult` to be reported back to the renderer,
 // indicating success or failure (with reason).
 CapturedSurfaceControlResult DoSetZoomLevel(
+    GlobalRenderFrameHostId capturer_rfh_id,
     base::WeakPtr<WebContents> captured_wc,
     int zoom_level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!captured_wc) {
     return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
+  }
+
+  if (WebContentsImpl::FromRenderFrameHostID(capturer_rfh_id) ==
+      captured_wc.get()) {
+    // TODO(crbug.com/1466247): Use a dedicated error for self-capture.
+    return CapturedSurfaceControlResult::kUnknownError;
   }
 
   content::HostZoomMap::SetZoomLevel(
@@ -131,6 +146,7 @@ CapturedSurfaceControlResult DoSetZoomLevel(
 //
 // Return the zoom_level if successful or nullopt otherwise.
 std::pair<std::optional<int>, CapturedSurfaceControlResult> DoGetZoomLevel(
+    GlobalRenderFrameHostId capturer_rfh_id,
     base::WeakPtr<WebContents> captured_wc) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -138,6 +154,13 @@ std::pair<std::optional<int>, CapturedSurfaceControlResult> DoGetZoomLevel(
     return std::make_pair(
         std::nullopt,
         CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
+  }
+
+  if (WebContentsImpl::FromRenderFrameHostID(capturer_rfh_id) ==
+      captured_wc.get()) {
+    // TODO(crbug.com/1466247): Use a dedicated error for self-capture.
+    return std::make_pair(std::nullopt,
+                          CapturedSurfaceControlResult::kUnknownError);
   }
 
   double zoom_level = blink::PageZoomLevelToZoomFactor(
@@ -197,11 +220,12 @@ base::OnceCallback<void(PermissionResult)> ComposeCallbacks(
 
 std::unique_ptr<CapturedSurfaceController>
 CapturedSurfaceController::CreateForTesting(
+    GlobalRenderFrameHostId capturer_rfh_id,
     WebContentsMediaCaptureId captured_wc_id,
     std::unique_ptr<CapturedSurfaceControlPermissionManager> permission_manager,
     base::RepeatingCallback<void()> wc_resolution_callback) {
   return base::WrapUnique(new CapturedSurfaceController(
-      captured_wc_id, std::move(permission_manager),
+      capturer_rfh_id, captured_wc_id, std::move(permission_manager),
       std::move(wc_resolution_callback)));
 }
 
@@ -209,15 +233,18 @@ CapturedSurfaceController::CapturedSurfaceController(
     GlobalRenderFrameHostId capturer_rfh_id,
     WebContentsMediaCaptureId captured_wc_id)
     : CapturedSurfaceController(
+          capturer_rfh_id,
           captured_wc_id,
           std::make_unique<PermissionManager>(capturer_rfh_id),
           /*wc_resolution_callback=*/base::DoNothing()) {}
 
 CapturedSurfaceController::CapturedSurfaceController(
+    GlobalRenderFrameHostId capturer_rfh_id,
     WebContentsMediaCaptureId captured_wc_id,
     std::unique_ptr<PermissionManager> permission_manager,
     base::RepeatingCallback<void()> wc_resolution_callback)
-    : permission_manager_(std::move(permission_manager)),
+    : capturer_rfh_id_(capturer_rfh_id),
+      permission_manager_(std::move(permission_manager)),
       wc_resolution_callback_(std::move(wc_resolution_callback)) {
   ResolveCapturedWebContents(captured_wc_id);
 }
@@ -244,7 +271,8 @@ void CapturedSurfaceController::SendWheel(
 
   // Action to be performed on the UI thread if permitted.
   base::OnceCallback<CapturedSurfaceControlResult(void)> action_callback =
-      base::BindOnce(&DoSendWheel, captured_wc_.value(), std::move(action));
+      base::BindOnce(&DoSendWheel, capturer_rfh_id_, captured_wc_.value(),
+                     std::move(action));
 
   permission_manager_->CheckPermission(
       ComposeCallbacks(std::move(action_callback), std::move(reply_callback)));
@@ -262,7 +290,8 @@ void CapturedSurfaceController::GetZoomLevel(
   }
 
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&DoGetZoomLevel, captured_wc_.value()),
+      FROM_HERE,
+      base::BindOnce(&DoGetZoomLevel, capturer_rfh_id_, captured_wc_.value()),
       base::BindOnce(
           [](GetZoomLevelReplyCallback reply_callback,
              std::pair<std::optional<int>, CapturedSurfaceControlResult>
@@ -285,7 +314,8 @@ void CapturedSurfaceController::SetZoomLevel(
 
   // Action to be performed on the UI thread if permitted.
   base::OnceCallback<CapturedSurfaceControlResult(void)> action_callback =
-      base::BindOnce(&DoSetZoomLevel, captured_wc_.value(), zoom_level);
+      base::BindOnce(&DoSetZoomLevel, capturer_rfh_id_, captured_wc_.value(),
+                     zoom_level);
 
   permission_manager_->CheckPermission(
       ComposeCallbacks(std::move(action_callback), std::move(reply_callback)));
