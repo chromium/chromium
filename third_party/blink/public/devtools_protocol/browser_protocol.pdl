@@ -11832,6 +11832,12 @@ experimental domain FedCm
       ErrorGotIt
       ErrorMoreDetails
 
+  # The URLs that each account has
+  type AccountUrlType extends string
+    enum
+      TermsOfService
+      PrivacyPolicy
+
   # Corresponds to IdentityRequestAccount
   type Account extends object
     properties
@@ -11881,6 +11887,12 @@ experimental domain FedCm
     parameters
       string dialogId
       DialogButton dialogButton
+
+  command openUrl
+    parameters
+      string dialogId
+      integer accountIndex
+      AccountUrlType accountUrlType
 
   command dismissDialog
     parameters

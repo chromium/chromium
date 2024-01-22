@@ -60,6 +60,8 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
 
   std::string GetTitle() const override;
 
+  void ShowUrl(LinkType link_type, const GURL& url) override;
+
   content::WebContents* ShowModalDialog(
       const GURL& url,
       DismissCallback dismiss_callback) override;
