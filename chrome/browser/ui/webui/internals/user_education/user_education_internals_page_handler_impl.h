@@ -40,11 +40,13 @@ class UserEducationInternalsPageHandlerImpl
   void StartTutorial(const std::string& tutorial_id,
                      StartTutorialCallback callback) override;
 
+  void GetSessionData(GetSessionDataCallback callback) override;
   void GetFeaturePromos(GetFeaturePromosCallback callback) override;
   void ShowFeaturePromo(const std::string& feature_name,
                         ShowFeaturePromoCallback callback) override;
   void ClearFeaturePromoData(const std::string& feature_name,
                              ClearFeaturePromoDataCallback callback) override;
+  void ClearSessionData(ClearSessionDataCallback callback) override;
 
  private:
   raw_ptr<content::WebUI> web_ui_ = nullptr;

@@ -3,24 +3,30 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import 'chrome://resources/cr_elements/cr_nav_menu_item_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import './user_education_internals_card.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {CrContainerShadowMixin, CrContainerShadowMixinInterface} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
+import {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './user_education_internals.html.js';
-import {FeaturePromoDemoPageInfo, UserEducationInternalsPageHandler, UserEducationInternalsPageHandlerInterface} from './user_education_internals.mojom-webui.js';
+import {FeaturePromoDemoPageData, FeaturePromoDemoPageInfo, UserEducationInternalsPageHandler, UserEducationInternalsPageHandlerInterface} from './user_education_internals.mojom-webui.js';
 
 const UserEducationInternalsElementBase =
     CrContainerShadowMixin(HelpBubbleMixin(PolymerElement)) as {
@@ -30,7 +36,9 @@ const UserEducationInternalsElementBase =
 
 interface UserEducationInternalsElement {
   $: {
+    content: Element,
     errorMessageToast: CrToastElement,
+    menu: CrMenuSelector,
     promos: DomRepeat,
     toolbar: CrToolbarElement,
     tutorials: DomRepeat,
@@ -61,6 +69,14 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
       featurePromos_: Array,
       featurePromoErrorMessage_: String,
       narrow_: Boolean,
+
+      /**
+       * Indicates if the list of promo data is expanded or collapsed.
+       */
+      sessionExpanded_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -69,6 +85,7 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
   private featurePromos_: FeaturePromoDemoPageInfo[];
   private featurePromoErrorMessage_: string;
   private narrow_: boolean = false;
+  private sessionData_: FeaturePromoDemoPageData[];
 
   private handler_: UserEducationInternalsPageHandlerInterface;
 
@@ -80,10 +97,6 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
   override ready() {
     super.ready();
     ColorChangeUpdater.forDocument().start();
-
-    this.handler_.getTutorials().then(({tutorialInfos}) => {
-      this.tutorials_ = tutorialInfos;
-    });
 
     // There is a self-referential demo IPH for showing a help bubble in a
     // WebUI (specifically, this WebUI). Because of that, the target anchor for
@@ -100,6 +113,14 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
         }, {
           once: true,
         });
+
+    this.handler_.getTutorials().then(({tutorialInfos}) => {
+      this.tutorials_ = tutorialInfos;
+    });
+
+    this.handler_.getSessionData().then(({sessionData}) => {
+      this.sessionData_ = sessionData;
+    });
 
     this.handler_.getFeaturePromos().then(({featurePromos}) => {
       this.featurePromos_ = featurePromos;
@@ -150,6 +171,19 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
     });
   }
 
+  private clearSessionData_() {
+    this.handler_.clearSessionData().then(({errorMessage}) => {
+      this.featurePromoErrorMessage_ = errorMessage;
+      if (errorMessage !== '') {
+        this.$.errorMessageToast.show();
+      } else {
+        this.handler_.getSessionData().then(({sessionData}) => {
+          this.sessionData_ = sessionData;
+        });
+      }
+    });
+  }
+
   private promoFilter_(promo: FeaturePromoDemoPageInfo, filter: string) {
     return filter === '' || promo.displayTitle.toLowerCase().includes(filter) ||
         promo.displayDescription.toLowerCase().includes(filter) ||
@@ -158,6 +192,21 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
                 instruction.toLowerCase().includes(filter)) ||
         promo.supportedPlatforms.find(
             (platform: string) => platform.toLowerCase().includes(filter));
+  }
+
+  /**
+   * Prevent clicks on sidebar items from navigating.
+   */
+  private onLinkClick_(event: Event) {
+    event.preventDefault();
+  }
+
+  private onSelectorActivate_(event: CustomEvent<{selected: string}>) {
+    const url = event.detail.selected;
+    this.$.menu.selected = url;
+    const idx = url.lastIndexOf('#');
+    const el = this.$.content.querySelector(url.substring(idx));
+    el?.scrollIntoView(true);
   }
 }
 
