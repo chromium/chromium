@@ -24312,6 +24312,7 @@ from previous Chrome versions.
   <int value="61141457" label="DecodeScriptSourceOffThread:enabled"/>
   <int value="61205887" label="enable-text-input-focus-manager"/>
   <int value="61466986" label="AsyncDns:disabled"/>
+  <int value="61770125" label="LinkPreview:enabled"/>
   <int value="63187126" label="DownloadsAutoResumptionNative:enabled"/>
   <int value="63693157" label="cast-streaming-force-disable-hardware-h264"/>
   <int value="64016368" label="SafeBrowsingSeparateNetworkContexts:enabled"/>
@@ -24916,6 +24917,7 @@ from previous Chrome versions.
   <int value="345611669"
       label="OmniboxLocalZeroSuggestFrecencyRanking:enabled"/>
   <int value="345664265" label="BlinkHeapIncrementalMarking:disabled"/>
+  <int value="346080486" label="LinkPreview:disabled"/>
   <int value="346117324" label="FedCmLogoutRps:disabled"/>
   <int value="346406287" label="EnableWebAppUninstallFromOsSettings:disabled"/>
   <int value="346430505" label="SidePanel:enabled"/>

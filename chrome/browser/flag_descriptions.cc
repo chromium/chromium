@@ -4756,6 +4756,14 @@ const char kHeuristicMemorySaverDescription[] =
     "discarding a tab rather than doing it after a fixed amount of time in the "
     "background.";
 
+const char kLinkPreviewName[] = "Link Preview";
+const char kLinkPreviewDescription[] =
+    "When enabled, Link Preview feature gets to be available to preview a "
+    "linked page in a dedicated small window before navigating to the linked "
+    "page. The feature can be triggered from a context menu item, or users' "
+    "actions. For now, Alt + Click is used for the shortcut, but we will "
+    "introduce more options for usability study.";
+
 const char kMemorySaverMultistateModeAvailableName[] =
     "Enable the multi-state option for Memory Saver Mode.";
 const char kMemorySaverMultistateModeAvailableDescription[] =

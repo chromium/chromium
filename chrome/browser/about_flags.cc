@@ -11123,6 +11123,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kLockedMode)},
 #endif  // BUILDFLAG_(IS_CHROMEOS)
 
+#if defined(USE_AURA)
+    {"link-preview", flag_descriptions::kLinkPreviewName,
+     flag_descriptions::kLinkPreviewDescription, kOsAura,
+     FEATURE_VALUE_TYPE(blink::features::kLinkPreview)},
+#endif  // USE_AURA
+
 #if BUILDFLAG(IS_ANDROID)
     {"seed-accounts-revamp", flag_descriptions::kSeedAccountsRevampName,
      flag_descriptions::kSeedAccountsRevampDescription, kOsAndroid,

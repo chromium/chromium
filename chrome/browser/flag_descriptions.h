@@ -2753,6 +2753,9 @@ extern const char kGlobalMediaControlsCastStartStopDescription[];
 extern const char kHeuristicMemorySaverName[];
 extern const char kHeuristicMemorySaverDescription[];
 
+extern const char kLinkPreviewName[];
+extern const char kLinkPreviewDescription[];
+
 extern const char kMemorySaverMultistateModeAvailableName[];
 extern const char kMemorySaverMultistateModeAvailableDescription[];
 

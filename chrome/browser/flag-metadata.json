@@ -5302,6 +5302,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "link-preview",
+    "owners": [ "//chrome/browser/preloading/preview/OWNERS" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "list-all-display-modes",
     "owners": [ "//ui/display/OWNERS" ],
     // This flag is used for debugging and development purposes to list all
