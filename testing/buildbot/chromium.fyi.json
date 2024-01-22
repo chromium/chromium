@@ -4636,7 +4636,6 @@
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-public/R122-15724.0.0",
         "name": "chrome_all_tast_tests JACUZZI_CQ_PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
@@ -4646,6 +4645,7 @@
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 14400,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
       },
       {
@@ -4653,7 +4653,6 @@
         "bucket": "chromiumos-image-archive",
         "ci_only": true,
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-public/R122-15724.0.0",
         "experiment_percentage": 100,
         "name": "chrome_criticalstaging_tast_tests JACUZZI_CQ_PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
@@ -4664,6 +4663,7 @@
         "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 14400,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
       },
       {
@@ -4671,7 +4671,6 @@
         "bucket": "chromiumos-image-archive",
         "ci_only": true,
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-public/R122-15724.0.0",
         "experiment_percentage": 100,
         "name": "chrome_disabled_tast_tests JACUZZI_CQ_PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
@@ -4682,6 +4681,7 @@
         "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
         "test_level_retries": 1,
         "timeout_sec": 14400,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
       }
     ]
@@ -4695,7 +4695,6 @@
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "octopus",
-        "cros_img": "octopus-public/R122-15724.0.0",
         "name": "chrome_all_tast_tests OCTOPUS_PUBLIC_LKGM",
         "shards": 15,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
@@ -4703,6 +4702,7 @@
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 14400,
+        "use_lkgm": true,
         "variant_id": "OCTOPUS_PUBLIC_LKGM"
       }
     ]

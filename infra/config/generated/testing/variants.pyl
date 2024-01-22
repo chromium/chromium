@@ -141,7 +141,7 @@
     'identifier': 'JACUZZI_CQ_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_img': 'jacuzzi-public/R122-15724.0.0',
+      'use_lkgm': True,
       'bucket': 'chromiumos-image-archive',
       'public_builder': 'cros_test_platform_public',
       'public_builder_bucket': 'testplatform-public',
@@ -165,7 +165,7 @@
     'identifier': 'OCTOPUS_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-public/R122-15724.0.0',
+      'use_lkgm': True,
       'bucket': 'chromiumos-image-archive',
     },
   },
