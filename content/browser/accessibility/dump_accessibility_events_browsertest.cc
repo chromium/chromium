@@ -364,9 +364,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-tree-expand.html"));
 }
 
-// TODO(crbug.com/983801): Flaky.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       DISABLED_AccessibilityEventsAriaTreeItemFocus) {
+                       AccessibilityEventsAriaTreeItemFocus) {
   RunEventTest(FILE_PATH_LITERAL("aria-treeitem-focus.html"));
 }
 
