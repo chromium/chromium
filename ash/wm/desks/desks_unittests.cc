@@ -59,6 +59,7 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
+#include "ash/wm/desks/desk_profiles_view.h"
 #include "ash/wm/desks/desk_textfield.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
@@ -11735,9 +11736,18 @@ TEST_F(DeskProfilesTest, DeskProfilesButtonClickMetrics) {
   DeskProfilesButton* desk_profile_button =
       desk_bar_view->mini_views()[0]->desk_profile_button_;
   ASSERT_NE(desk_profile_button, nullptr);
+  DeskProfilesButton::TestApi test_api(desk_profile_button);
   auto* event_generator = GetEventGenerator();
+  // Test desk profile button click metrics.
   ClickOnView(desk_profile_button, event_generator);
   histogram_tester.ExpectTotalCount(kDeskProfilesPressesHistogramName, 1);
+  // Test context menu profile manager click metrics.
+  ASSERT_TRUE(desk_profile_button->IsMenuShowing());
+  int IDC_ASH_DESKS_OPEN_PROFILE_MANAGER = 35358;
+  ClickOnView(test_api.GetMenuItemByID(IDC_ASH_DESKS_OPEN_PROFILE_MANAGER),
+              event_generator);
+  histogram_tester.ExpectTotalCount(
+      kDeskProfilesOpenProfileManagerHistogramName, 1);
 }
 
 }  // namespace ash

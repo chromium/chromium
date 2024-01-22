@@ -96,6 +96,8 @@ constexpr char kDeskButtonDeskBarReorderDeskHistogramName[] =
 
 constexpr char kDeskProfilesPressesHistogramName[] =
     "Ash.Desks.DeskProfiles.AvatarView.ButtonPressed";
+constexpr char kDeskProfilesOpenProfileManagerHistogramName[] =
+    "Ash.Desks.DeskProfiles.ContextMenu.OpenProfileManager";
 
 constexpr char kOverviewDeskBarActivateDeskHistogramName[] =
     "Ash.Desks.Overview.BarAction.ActivateDesk";

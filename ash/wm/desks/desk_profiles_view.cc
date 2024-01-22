@@ -51,6 +51,9 @@ constexpr int IDC_ASH_DESKS_OPEN_PROFILE_MANAGER = 35358;
 using ProfilesList = std::vector<LacrosProfileSummary>;
 }  // namespace
 
+// -----------------------------------------------------------------------------
+// DeskProfilesMenuModelAdapter:
+
 class DeskProfilesMenuModelAdapter : public views::MenuModelAdapter {
  public:
   DeskProfilesMenuModelAdapter(ui::SimpleMenuModel* model,
@@ -66,7 +69,15 @@ class DeskProfilesMenuModelAdapter : public views::MenuModelAdapter {
   DeskProfilesMenuModelAdapter(const DeskProfilesMenuModelAdapter&) = delete;
   DeskProfilesMenuModelAdapter& operator=(const DeskProfilesMenuModelAdapter&) =
       delete;
-  ~DeskProfilesMenuModelAdapter() override {}
+  ~DeskProfilesMenuModelAdapter() override {
+    menu_runner_.reset();
+    root_menu_item_view_ = nullptr;
+  }
+
+  views::MenuRunner* menu_runner() { return menu_runner_.get(); }
+  views::MenuItemView* root_menu_item_view() const {
+    return root_menu_item_view_;
+  }
 
   // Shows the menu anchored at `menu_anchor_position`. `run_types` is used for
   // the MenuRunner::RunTypes associated with the menu.`menu_anchor_rect`
@@ -74,7 +85,10 @@ class DeskProfilesMenuModelAdapter : public views::MenuModelAdapter {
   void Run(const gfx::Rect& menu_anchor_rect,
            views::MenuAnchorPosition menu_anchor_position,
            int run_types) {
-    menu_runner_ = std::make_unique<views::MenuRunner>(CreateMenu(), run_types);
+    std::unique_ptr<views::MenuItemView> menu = CreateMenu();
+    root_menu_item_view_ = menu.get();
+    menu_runner_ =
+        std::make_unique<views::MenuRunner>(std::move(menu), run_types);
     menu_runner_->RunMenuAt(/*parent=*/nullptr,
                             /* button_controller=*/nullptr, menu_anchor_rect,
                             menu_anchor_position, source_type_);
@@ -131,18 +145,21 @@ class DeskProfilesMenuModelAdapter : public views::MenuModelAdapter {
     }
     return item_view;
   }
+
   // The list of logged in profiles.
   const raw_ptr<ProfilesList> profiles_;
-
-  // The menu runner that is responsible to run the menu.
   // The avatar button.
   raw_ptr<DeskProfilesButton> button_;
-
   // The event type which was used to show the menu.
   const ui::MenuSourceType source_type_;
+  // The root menu item view. Cached for testing.
+  raw_ptr<views::MenuItemView> root_menu_item_view_ = nullptr;
   // Responsible for showing menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 };
+
+// -----------------------------------------------------------------------------
+// DeskProfilesButton::MenuController:
 
 class DeskProfilesButton::MenuController : public ui::SimpleMenuModel::Delegate,
                                            public views::ContextMenuController {
@@ -153,11 +170,15 @@ class DeskProfilesButton::MenuController : public ui::SimpleMenuModel::Delegate,
   MenuController& operator=(const MenuController&) = delete;
   ~MenuController() override = default;
 
-  views::MenuRunner* menu_runner() { return menu_runner_.get(); }
+  views::MenuRunner* menu_runner() {
+    return context_menu_adapter_->menu_runner();
+  }
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override {
     if (command_id == IDC_ASH_DESKS_OPEN_PROFILE_MANAGER) {
+      base::UmaHistogramBoolean(kDeskProfilesOpenProfileManagerHistogramName,
+                                true);
       Shell::Get()->shell_delegate()->OpenProfileManager();
       return;
     }
@@ -185,6 +206,7 @@ class DeskProfilesButton::MenuController : public ui::SimpleMenuModel::Delegate,
   }
 
  private:
+  friend class TestApi;
   // Builds and saves a default menu model to `context_menu_model_`;
   void BuildMenuModel() {
     auto* delegate = Shell::Get()->GetDeskProfilesDelegate();
@@ -207,7 +229,6 @@ class DeskProfilesButton::MenuController : public ui::SimpleMenuModel::Delegate,
   // Called when the context menu is closed. Used as a callback for
   // `menu_model_adapter_`.
   void OnMenuClosed() {
-    menu_runner_.reset();
     context_menu_model_.Clear();
     context_menu_adapter_.reset();
   }
@@ -219,15 +240,23 @@ class DeskProfilesButton::MenuController : public ui::SimpleMenuModel::Delegate,
   // The current logged in profiles that displayed on the context menu.
   ProfilesList profiles_;
 
-  // The menu runner that is responsible to run the menu.
-  std::unique_ptr<views::MenuRunner> menu_runner_;
-
   // Owned by views hierarchy.
   raw_ptr<DeskProfilesButton> profile_button_ = nullptr;
 
   base::WeakPtrFactory<DeskProfilesButton::MenuController> weak_ptr_factory_{
       this};
 };
+
+// -----------------------------------------------------------------------------
+// DeskProfilesButton::TestApi:
+
+views::MenuItemView* DeskProfilesButton::TestApi::GetMenuItemByID(int id) {
+  return button_->context_menu_->context_menu_adapter_->root_menu_item_view()
+      ->GetMenuItemByID(id);
+}
+
+// -----------------------------------------------------------------------------
+// DeskProfilesButton:
 
 DeskProfilesButton::DeskProfilesButton(views::Button::PressedCallback callback,
                                        Desk* desk)
