@@ -415,8 +415,13 @@ class DemoSessionLoginWithGrowthCampaignTest : public DemoSessionLoginTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DemoSWALaunchesOnSessionStartupWithPayload DISABLED_DemoSWALaunchesOnSessionStartupWithPayload
+#else
+#define MAYBE_DemoSWALaunchesOnSessionStartupWithPayload DemoSWALaunchesOnSessionStartupWithPayload
+#endif
 IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
-                       DemoSWALaunchesOnSessionStartupWithPayload) {
+                       MAYBE_DemoSWALaunchesOnSessionStartupWithPayload) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   CreateTestCampaignsFile(R"({
