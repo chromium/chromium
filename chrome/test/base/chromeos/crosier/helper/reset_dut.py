@@ -87,11 +87,6 @@ def _run_cmd(args: List[str]):
 def reset_system_state_files():
     """Resets a known list of system state files and restart daemons"""
 
-    # Clean-ups before resetting states.
-    _run_cmd(["cryptohome", "--action=pkcs11_terminate"])
-    _run_cmd(["cryptohome", "--action=unmount"])
-    _run_cmd(["umount", "/run/namespaces/mnt_chrome"])
-
     # Stops daemons that touch the system state files. Note the script does
     # not touch `ui` service because it runs as part of
     # chromeos_integration_tests which stop ui service while running.
