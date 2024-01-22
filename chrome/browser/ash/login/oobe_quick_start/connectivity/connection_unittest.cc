@@ -998,10 +998,9 @@ TEST_F(ConnectionTest,
   EXPECT_FALSE(read_result.has_value());
 }
 
-TEST_F(ConnectionTest, CloseFromCompleteNotifiesPhoneWhenAuthenticated) {
+TEST_F(ConnectionTest, NotifyPhoneSetupComplete) {
   MarkConnectionAuthenticated();
-  connection_->Close(
-      TargetDeviceConnectionBroker::ConnectionClosedReason::kComplete);
+  authenticated_connection_->NotifyPhoneSetupComplete();
 
   std::vector<uint8_t> notify_source_data =
       fake_nearby_connection_->GetWrittenData();
@@ -1017,18 +1016,6 @@ TEST_F(ConnectionTest, CloseFromCompleteNotifiesPhoneWhenAuthenticated) {
       /*should_succeed=*/true,
       /*message_type=*/QuickStartMetrics::MessageType::kBootstrapStateComplete,
       /*error_code=*/std::nullopt, /*response_expected=*/false);
-}
-
-TEST_F(ConnectionTest, CloseFromCompleteDoesNotNotifyPhoneWhenUnauthenticated) {
-  connection_->Close(
-      TargetDeviceConnectionBroker::ConnectionClosedReason::kComplete);
-
-  std::vector<uint8_t> notify_source_data =
-      fake_nearby_connection_->GetWrittenData();
-  QuickStartMessage::ReadResult read_result =
-      ash::quick_start::QuickStartMessage::ReadMessage(
-          notify_source_data, QuickStartMessageType::kBootstrapState);
-  EXPECT_FALSE(read_result.has_value());
 }
 
 TEST_F(ConnectionTest, NoResponseAfterClose) {

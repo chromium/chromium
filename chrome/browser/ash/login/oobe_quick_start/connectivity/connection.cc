@@ -115,11 +115,6 @@ void Connection::Close(
     // NearbyConnection immediately after.
     SendMessageWithoutResponse(requests::BuildBootstrapStateCancelMessage(),
                                QuickStartResponseType::kBootstrapStateCancel);
-  } else if (authenticated_ && reason ==
-                                   TargetDeviceConnectionBroker::
-                                       ConnectionClosedReason::kComplete) {
-    SendMessageWithoutResponse(requests::BuildBootstrapStateCompleteMessage(),
-                               QuickStartResponseType::kBootstrapStateComplete);
   }
 
   connection_state_ = State::kClosing;
@@ -456,6 +451,11 @@ void Connection::OnUserVerificationPacketDecoded(
 
 base::Value::Dict Connection::GetPrepareForUpdateInfo() {
   return session_context_.GetPrepareForUpdateInfo();
+}
+
+void Connection::NotifyPhoneSetupComplete() {
+  SendMessageWithoutResponse(requests::BuildBootstrapStateCompleteMessage(),
+                             QuickStartResponseType::kBootstrapStateComplete);
 }
 
 void Connection::DecodeQuickStartMessage(

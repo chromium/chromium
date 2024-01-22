@@ -167,14 +167,21 @@ void TargetDeviceBootstrapController::OnConnectionRejected() {
 }
 
 void TargetDeviceBootstrapController::OnConnectionClosed(
-    TargetDeviceConnectionBroker::ConnectionClosedReason reason) {
+    ConnectionClosedReason reason) {
   if (status_.step == Step::REQUESTING_WIFI_CREDENTIALS) {
     QuickStartMetrics::RecordWifiTransferResult(
         /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
             WifiTransferResultFailureReason::kConnectionDroppedDuringAttempt);
   }
 
-  UpdateStatus(/*step=*/Step::ERROR, /*payload=*/ErrorCode::CONNECTION_CLOSED);
+  // UI observer will automatically exit the QuickStartScreen if there's an
+  // error. We want the user to manually exit the Quick Start screen when the
+  // setup is complete, so don't update the status to Step::Error in this case.
+  if (status_.step != Step::SETUP_COMPLETE) {
+    UpdateStatus(/*step=*/Step::ERROR,
+                 /*payload=*/ErrorCode::CONNECTION_CLOSED);
+  }
+
   authenticated_connection_.reset();
   CleanupIfNeeded();
 }
@@ -244,9 +251,7 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
     prefs->CommitPendingWrite();
   }
 
-  authenticated_connection_->Close(
-      TargetDeviceConnectionBroker::ConnectionClosedReason::
-          kTargetDeviceUpdate);
+  authenticated_connection_->Close(ConnectionClosedReason::kTargetDeviceUpdate);
 }
 
 void TargetDeviceBootstrapController::WaitForUserVerification() {
@@ -328,6 +333,12 @@ void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
 void TargetDeviceBootstrapController::Cleanup() {
   status_ = Status();
   CleanupIfNeeded();
+}
+
+void TargetDeviceBootstrapController::OnSetupComplete() {
+  CHECK(authenticated_connection_);
+  UpdateStatus(/*step=*/Step::SETUP_COMPLETE, /*payload=*/absl::monostate());
+  authenticated_connection_->NotifyPhoneSetupComplete();
 }
 
 void TargetDeviceBootstrapController::OnChallengeBytesReceived(
@@ -493,6 +504,9 @@ std::ostream& operator<<(std::ostream& stream,
     case TargetDeviceBootstrapController::Step::
         TRANSFERRED_GOOGLE_ACCOUNT_DETAILS:
       stream << "[transferred Google account details]";
+      break;
+    case TargetDeviceBootstrapController::Step::SETUP_COMPLETE:
+      stream << "[setup complete]";
       break;
   }
 

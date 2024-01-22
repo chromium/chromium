@@ -329,7 +329,8 @@ void QuickStartController::OnStatusChanged(
         QS_LOG(ERROR) << "Missing ErrorCode.";
       }
       AbortFlow(AbortFlowReason::ERROR);
-
+      return;
+    case Step::SETUP_COMPLETE:
       return;
   }
 }
@@ -444,6 +445,7 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
     // show the last step of the flow.
     if (controller_state_ == ControllerState::SETUP_COMPLETE) {
       UpdateUiState(UiState::SETUP_COMPLETE);
+      bootstrap_controller_->OnSetupComplete();
       return;
     }
 
