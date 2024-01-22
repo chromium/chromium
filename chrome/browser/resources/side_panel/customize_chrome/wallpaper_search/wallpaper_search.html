@@ -458,7 +458,8 @@
       <cr-icon-button id="inspirationToggle" class$="[[inspirationToggleIcon_]]"
           aria-label="$i18n{showInspirationCardToggle}"
           title="$i18n{showInspirationCardToggle}" slot="buttons"
-          on-click="onInspirationToggleClick_">
+          on-click="onInspirationToggleClick_"
+          aria-expanded="[[openInspirations_]]">
       </cr-icon-button>
     </sp-heading>
     <iron-collapse opened="[[openInspirations_]]">

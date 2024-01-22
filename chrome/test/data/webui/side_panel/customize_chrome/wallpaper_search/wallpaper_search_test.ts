@@ -1866,6 +1866,10 @@ suite('WallpaperSearchTest', () => {
           'expand-carets',
           wallpaperSearchElement.shadowRoot!
               .querySelector('#inspirationToggle')!.className);
+      assertEquals(
+          'false',
+          $$<IronCollapseElement>(
+              wallpaperSearchElement, '#inspirationToggle')!.ariaExpanded);
 
       $$<CrIconButtonElement>(
           wallpaperSearchElement, '#inspirationToggle')!.click();
@@ -1875,6 +1879,10 @@ suite('WallpaperSearchTest', () => {
           'collapse-carets',
           wallpaperSearchElement.shadowRoot!
               .querySelector('#inspirationToggle')!.className);
+      assertEquals(
+          'true',
+          $$<IronCollapseElement>(
+              wallpaperSearchElement, '#inspirationToggle')!.ariaExpanded);
 
       $$<CrIconButtonElement>(
           wallpaperSearchElement, '#inspirationToggle')!.click();
@@ -1884,6 +1892,10 @@ suite('WallpaperSearchTest', () => {
           'expand-carets',
           wallpaperSearchElement.shadowRoot!
               .querySelector('#inspirationToggle')!.className);
+      assertEquals(
+          'false',
+          $$<IronCollapseElement>(
+              wallpaperSearchElement, '#inspirationToggle')!.ariaExpanded);
     });
 
     test('inspiration card collapsible reacts to history updates', async () => {
