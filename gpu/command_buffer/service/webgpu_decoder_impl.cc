@@ -1215,8 +1215,7 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
         return true;
       }
 
-      auto* info =
-          dawn_instance_->GetFeatureInfo(static_cast<WGPUFeatureName>(feature));
+      auto* info = dawn::native::GetFeatureInfo(feature);
       if (info == nullptr) {
         return false;
       }
