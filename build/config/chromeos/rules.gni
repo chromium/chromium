@@ -170,6 +170,9 @@ template("generate_chromeos_sdk_deps") {
       # as data here so that changes to it will trigger analyze.
       "//chromeos/CHROMEOS_LKGM",
     ]
+    if (cros_boards_with_qemu_images != "") {
+      data += [ "//build/cros_cache/cipd/" ]
+    }
   }
 }
 
