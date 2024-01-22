@@ -235,10 +235,7 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [ "android/template_url_service_android_unittest.cc" ]
-    deps += [
-      "//components/search_engines/android:jni_headers",
-      "//components/search_engines/android:test_utils_jni_headers",
-    ]
+    # deps += [ "//components/search_engines/android:jni_headers" ]
   }
 }
 

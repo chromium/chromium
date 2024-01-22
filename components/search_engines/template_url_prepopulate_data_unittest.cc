@@ -165,19 +165,7 @@ class TemplateURLPrepopulateDataTest : public testing::Test {
     // Pick any EEA country
     const int kFranceCountryId =
         country_codes::CountryCharsToCountryID('F', 'R');
-    OverrideCountryId(kFranceCountryId);
-  }
-
-  void OverrideCountryId(int country_id) {
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kSearchEngineChoiceCountry)) {
-      base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-          switches::kSearchEngineChoiceCountry);
-    }
-
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kSearchEngineChoiceCountry,
-        country_codes::CountryIDToCountryString(country_id));
+    prefs_.SetInteger(country_codes::kCountryIDAtInstall, kFranceCountryId);
   }
 
  protected:
@@ -190,7 +178,7 @@ class TemplateURLPrepopulateDataTest : public testing::Test {
 // ids.
 TEST_F(TemplateURLPrepopulateDataTest, UniqueIDs) {
   for (int country_id : kAllCountryIds) {
-    OverrideCountryId(country_id);
+    prefs_.SetInteger(country_codes::kCountryIDAtInstall, country_id);
     std::vector<std::unique_ptr<TemplateURLData>> urls =
         TemplateURLPrepopulateData::GetPrepopulatedEngines(
             &prefs_, &search_engine_choice_service_, nullptr);
@@ -214,7 +202,7 @@ TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
   const size_t kMaxRow = 5;
 
   for (int country_id : kAllCountryIds) {
-    OverrideCountryId(country_id);
+    prefs_.SetInteger(country_codes::kCountryIDAtInstall, country_id);
 
     const size_t kNumberOfSearchEngines =
         TemplateURLPrepopulateData::GetPrepopulatedEngines(
@@ -382,7 +370,6 @@ TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrefs) {
 }
 
 TEST_F(TemplateURLPrepopulateDataTest, ClearProvidersFromPrefs) {
-  OverrideCountryId(country_codes::kCountryIDUnknown);
   prefs_.SetUserPref(prefs::kSearchProviderOverridesVersion,
                      std::make_unique<base::Value>(1));
 
@@ -433,7 +420,7 @@ TEST_F(TemplateURLPrepopulateDataTest, ClearProvidersFromPrefs) {
 // Verifies that built-in search providers are processed correctly.
 TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrepopulated) {
   // Use United States.
-  OverrideCountryId(country_codes::CountryCharsToCountryID('U', 'S'));
+  prefs_.SetInteger(country_codes::kCountryIDAtInstall, 'U' << 8 | 'S');
   size_t default_index;
   std::vector<std::unique_ptr<TemplateURLData>> t_urls =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
@@ -473,7 +460,7 @@ TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrepopulated) {
 // use https urls.
 TEST_F(TemplateURLPrepopulateDataTest, PrepopulatedAreHttps) {
   for (int country_id : kAllCountryIds) {
-    OverrideCountryId(country_id);
+    prefs_.SetInteger(country_codes::kCountryIDAtInstall, country_id);
 
     std::vector<std::unique_ptr<TemplateURLData>> t_urls =
         TemplateURLPrepopulateData::GetPrepopulatedEngines(
@@ -629,7 +616,7 @@ TEST_F(TemplateURLPrepopulateDataTest, FindGoogleIndex) {
   std::vector<std::unique_ptr<TemplateURLData>> urls;
 
   // Google is first in US, so confirm index 0.
-  OverrideCountryId(country_codes::CountryCharsToCountryID('U', 'S'));
+  prefs_.SetInteger(country_codes::kCountryIDAtInstall, 'U' << 8 | 'S');
   urls = TemplateURLPrepopulateData::GetPrepopulatedEngines(
       &prefs_, &search_engine_choice_service_, &index);
   EXPECT_EQ(index, size_t{0});
@@ -639,7 +626,7 @@ TEST_F(TemplateURLPrepopulateDataTest, FindGoogleIndex) {
   // If Google ever does reach top in China, this test will need to be adjusted:
   // check template_url_prepopulate_data.cc reference orders (engines_CN, etc.)
   // to find a suitable country and index.
-  OverrideCountryId(country_codes::CountryCharsToCountryID('C', 'N'));
+  prefs_.SetInteger(country_codes::kCountryIDAtInstall, 'C' << 8 | 'N');
   urls = TemplateURLPrepopulateData::GetPrepopulatedEngines(
       &prefs_, &search_engine_choice_service_, &index);
   EXPECT_GT(index, size_t{0});
@@ -651,7 +638,8 @@ TEST_F(TemplateURLPrepopulateDataTest, FindGoogleIndex) {
 TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEngineFromFullList) {
   // Ensure that we use the default set of search engines, which is google,
   // bing, yahoo.
-  OverrideCountryId(country_codes::kCountryIDUnknown);
+  prefs_.SetInteger(country_codes::kCountryIDAtInstall,
+                    country_codes::kCountryIDUnknown);
   ASSERT_EQ(TemplateURLPrepopulateData::GetPrepopulatedEngines(
                 &prefs_, &search_engine_choice_service_, nullptr)
                 .size(),
@@ -677,8 +665,8 @@ TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEngineFromFullList) {
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(TemplateURLPrepopulateDataTest, GetLocalPrepopulatedEngines) {
   constexpr char sample_country[] = "US";
-  OverrideCountryId(country_codes::CountryCharsToCountryID(sample_country[0],
-                                                           sample_country[1]));
+  prefs_.SetInteger(country_codes::kCountryIDAtInstall,
+                    sample_country[0] << 8 | sample_country[1]);
 
   // For a given country, the output from `GetLocalPrepopulatedEngines`
   // should match the template URLs obtained from `GetPrepopulatedEngines`.

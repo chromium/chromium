@@ -18,7 +18,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
@@ -103,10 +102,6 @@ class DefaultSearchManagerTest : public testing::Test {
             *pref_service_);
     DefaultSearchManager::RegisterProfilePrefs(pref_service_->registry());
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_->registry());
-
-    // Override the country checks to simulate being in the US.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kSearchEngineChoiceCountry, "US");
   }
 
   sync_preferences::TestingPrefServiceSyncable* pref_service() {
