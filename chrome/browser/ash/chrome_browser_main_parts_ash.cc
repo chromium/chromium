@@ -1345,11 +1345,8 @@ void ChromeBrowserMainPartsAsh::PreBrowserStart() {
 
 void ChromeBrowserMainPartsAsh::PostBrowserStart() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Instantiate report controller if the feature is enabled.
-  if (base::FeatureList::IsEnabled(features::kDeviceActiveClient)) {
-    report_controller_initializer_ =
-        std::make_unique<ReportControllerInitializer>();
-  }
+  report_controller_initializer_ =
+      std::make_unique<ReportControllerInitializer>();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Construct a delegate to connect the accessibility component extensions and
