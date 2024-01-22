@@ -29,16 +29,21 @@ namespace ash::download_status {
 namespace {
 
 // Returns the command ID corresponding to the given command type.
+// NOTE: It is fine to map both `CommandType::kOpenFile` and
+// `CommandType::kShowInBrowser` to `kOpenItem`, because `kOpenItem` is not
+// accessible from a holding space chip's context menu.
 HoldingSpaceCommandId ConvertCommandTypeToId(CommandType type) {
   switch (type) {
     case CommandType::kCancel:
       return HoldingSpaceCommandId::kCancelItem;
-    case CommandType::kShowInBrowser:
+    case CommandType::kOpenFile:
       return HoldingSpaceCommandId::kOpenItem;
     case CommandType::kPause:
       return HoldingSpaceCommandId::kPauseItem;
     case CommandType::kResume:
       return HoldingSpaceCommandId::kResumeItem;
+    case CommandType::kShowInBrowser:
+      return HoldingSpaceCommandId::kOpenItem;
     case CommandType::kShowInFolder:
       return HoldingSpaceCommandId::kShowInFolder;
   }

@@ -9485,6 +9485,60 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DownloadNotificationV2.Button_Cancel">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-system-ui-productivity-eng@google.com</owner>
+  <description>
+    User clicks &quot;Cancel&quot; button on a download notification with the
+    downloads integration V2 feature enabled.
+  </description>
+</action>
+
+<action name="DownloadNotificationV2.Button_Pause">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-system-ui-productivity-eng@google.com</owner>
+  <description>
+    User clicks &quot;Pause&quot; button on a download notification with the
+    downloads integration V2 feature enabled.
+  </description>
+</action>
+
+<action name="DownloadNotificationV2.Button_Resume">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-system-ui-productivity-eng@google.com</owner>
+  <description>
+    User clicks &quot;Resume&quot; button on a download notification with the
+    downloads integration V2 feature enabled.
+  </description>
+</action>
+
+<action name="DownloadNotificationV2.Button_ShowInFolder">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-system-ui-productivity-eng@google.com</owner>
+  <description>
+    User clicks &quot;Show in folder&quot; button on a download notification
+    with the downloads integration V2 feature enabled.
+  </description>
+</action>
+
+<action name="DownloadNotificationV2.Click_Completed">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-system-ui-productivity-eng@google.com</owner>
+  <description>
+    User clicks a completed download notification's body with the downloads
+    integration V2 feature enabled.
+  </description>
+</action>
+
+<action name="DownloadNotificationV2.Click_InProgress">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-system-ui-productivity-eng@google.com</owner>
+  <description>
+    User clicks an in-progress download notification's body with the downloads
+    integration V2 feature enabled.
+  </description>
+</action>
+
 <action name="Downloads_OpenUrlOfDownloadedItem">
   <owner>chrome-analysis-team@google.com</owner>
   <description>

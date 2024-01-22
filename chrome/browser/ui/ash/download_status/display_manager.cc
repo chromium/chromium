@@ -124,11 +124,25 @@ std::optional<std::u16string> GetText(
   return file_path.get().BaseName().LossyDisplayName();
 }
 
-// Opens the download file specified by `file_path` in the folder under the file
+// Opens the download file specified by `file_path` under the file system
+// associated with `profile`.
+void OpenFile(Profile* profile, const base::FilePath& file_path) {
+  if (file_path.empty()) {
+    LOG(ERROR) << "Tried to open a file with an empty path.";
+    return;
+  }
+
+  // TODO(http://b/316368295): Track successful file openings as a metric.
+  platform_util::OpenItem(profile, file_path,
+                          platform_util::OpenItemType::OPEN_FILE,
+                          /*callback=*/base::DoNothing());
+}
+
+// Shows the download file specified by `file_path` in the folder under the file
 // system associated with `profile`.
 void ShowInFolder(Profile* profile, const base::FilePath& file_path) {
   if (file_path.empty()) {
-    LOG(ERROR) << "Tried to open an empty file path in folder.";
+    LOG(ERROR) << "Tried to show a file in folder with an empty path.";
     return;
   }
 
@@ -218,6 +232,13 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
   }
   switch (download_status.state) {
     case crosapi::mojom::DownloadState::kComplete:
+      // NOTE: `kOpenFile` is not shown so it doesn't require an icon/text_id.
+      command_infos.emplace_back(
+          base::BindRepeating(
+              &DisplayManager::PerformCommand, weak_ptr_factory_.GetWeakPtr(),
+              CommandType::kOpenFile, *download_status.full_path),
+          /*icon=*/nullptr, /*text_id=*/-1, CommandType::kOpenFile);
+
       // NOTE: The `kShowInFolder` button does not have an icon.
       command_infos.emplace_back(
           base::BindRepeating(
@@ -257,6 +278,9 @@ void DisplayManager::PerformCommand(
     case CommandType::kCancel:
       download_status_updater_->Cancel(/*guid=*/std::get<std::string>(param),
                                        /*callback=*/base::DoNothing());
+      break;
+    case CommandType::kOpenFile:
+      OpenFile(profile_, std::get<base::FilePath>(param));
       break;
     case CommandType::kPause:
       download_status_updater_->Pause(/*guid=*/std::get<std::string>(param),

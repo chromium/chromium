@@ -22,6 +22,7 @@ namespace ash::download_status {
 // Lists the types of commands that can be performed on a displayed download.
 enum class CommandType {
   kCancel,
+  kOpenFile,
   kPause,
   kResume,
   kShowInBrowser,

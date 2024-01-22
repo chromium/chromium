@@ -26,6 +26,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -113,6 +114,8 @@ int GetCommandTextId(CommandType command_type) {
   switch (command_type) {
     case CommandType::kCancel:
       return IDS_ASH_DOWNLOAD_COMMAND_TEXT_CANCEL;
+    case CommandType::kOpenFile:
+      NOTREACHED_NORETURN();
     case CommandType::kPause:
       return IDS_ASH_DOWNLOAD_COMMAND_TEXT_PAUSE;
     case CommandType::kResume:
@@ -296,11 +299,14 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CancelDownload) {
   ASSERT_NE(cancel_button_iter, action_buttons.end());
 
   // Click on the cancel button and wait until download is cancelled.
+  base::UserActionTester tester;
   test::Click(*cancel_button_iter, ui::EF_NONE);
   run_loop.Run();
 
   // After download cancellation, the associated notification should be removed.
+  // The button click should be recorded.
   EXPECT_THAT(GetDisplayedNotificationIds(), Not(Contains(notification_id)));
+  EXPECT_EQ(tester.GetActionCount("DownloadNotificationV2.Button_Cancel"), 1);
 }
 
 // Verifies clicking a completed download's notification.
@@ -348,14 +354,17 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   // The command that shows downloads in browser should not be performed.
   EXPECT_CALL(download_status_updater_client(), ShowInBrowser).Times(0);
 
-  // Click `notification_view` and wait until window activation updates.
+  // Click `notification_view` and wait until window activation updates. Then
+  // verify that the click is recorded.
   base::test::TestFuture<void> future;
   EXPECT_CALL(activation_mock_observer, OnWindowActivated)
       .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
+  base::UserActionTester tester;
   test::Click(notification_view, ui::EF_NONE);
-  future.Get();
+  EXPECT_TRUE(future.Wait());
   Mock::VerifyAndClearExpectations(&activation_mock_observer);
   Mock::VerifyAndClearExpectations(&download_status_updater_client());
+  EXPECT_EQ(tester.GetActionCount("DownloadNotificationV2.Click_Completed"), 1);
 }
 
 // Verifies clicking an in-progress download's notification.
@@ -379,7 +388,9 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
       GetPopupView(profile, notification_id);
   ASSERT_TRUE(notification_view);
 
-  // Click `notification_view` and wait until showing downloads in browser.
+  // Click `notification_view` and wait until showing downloads in browser. Then
+  // verify that the click is recorded.
+  base::UserActionTester tester;
   base::RunLoop run_loop;
   EXPECT_CALL(download_status_updater_client(),
               ShowInBrowser(download->guid, _))
@@ -394,6 +405,8 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   test::Click(notification_view, ui::EF_NONE);
   run_loop.Run();
   Mock::VerifyAndClearExpectations(&download_status_updater_client());
+  EXPECT_EQ(tester.GetActionCount("DownloadNotificationV2.Click_InProgress"),
+            1);
 }
 
 // Verifies that when an in-progress download completes, its notification should
@@ -689,7 +702,9 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
                                               &views::LabelButton::GetText);
   ASSERT_NE(pause_button_iter, action_buttons.end());
 
-  // Click on the pause button and wait until download is paused.
+  // Click on the pause button and wait until download is paused. Then verify
+  // that the click is recorded.
+  base::UserActionTester tester;
   auto run_loop = std::make_unique<base::RunLoop>();
   EXPECT_CALL(service_observer(), OnNotificationDisplayed)
       .WillOnce(WithArg<0>(
@@ -699,6 +714,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   test::Click(*pause_button_iter, ui::EF_NONE);
   run_loop->Run();
   Mock::VerifyAndClearExpectations(&service_observer());
+  EXPECT_EQ(tester.GetActionCount("DownloadNotificationV2.Button_Pause"), 1);
 
   // After pausing, `popup_view` is hidden. Therefore, get the notification view
   // from the notification center bubble.
@@ -731,7 +747,9 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
             std::move(callback).Run(/*handled=*/true);
           });
 
-  // Click on the resume button and wait until download is resumed.
+  // Click on the resume button and wait until download is resumed. Then verify
+  // that the click is recorded.
+  EXPECT_EQ(tester.GetActionCount("DownloadNotificationV2.Button_Resume"), 0);
   run_loop = std::make_unique<base::RunLoop>();
   EXPECT_CALL(service_observer(), OnNotificationDisplayed)
       .WillOnce(WithArg<0>(
@@ -741,6 +759,8 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   test::Click(*resume_button_iter, ui::EF_NONE);
   run_loop->Run();
   Mock::VerifyAndClearExpectations(&service_observer());
+  EXPECT_EQ(tester.GetActionCount("DownloadNotificationV2.Button_Pause"), 1);
+  EXPECT_EQ(tester.GetActionCount("DownloadNotificationV2.Button_Resume"), 1);
 }
 
 // Verifies that the show-in-folder button works as expected.
@@ -797,10 +817,14 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, ShowInFolder) {
       action_buttons, button_text, &views::LabelButton::GetText);
   ASSERT_NE(show_in_folder_button_iter, action_buttons.end());
 
-  // Click the show-in-folder button and wait until the Files app opens.
+  // Click the show-in-folder button and wait until the Files app opens. Then
+  // verify that the click is recorded.
   env_observation.Observe(aura::Env::GetInstance());
+  base::UserActionTester tester;
   test::Click(*show_in_folder_button_iter, ui::EF_NONE);
   run_loop.Run();
+  EXPECT_EQ(tester.GetActionCount("DownloadNotificationV2.Button_ShowInFolder"),
+            1);
 }
 
 }  // namespace ash::download_status

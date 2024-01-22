@@ -18,12 +18,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"
-#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/grit/generated_resources.h"
@@ -112,32 +112,71 @@ class DownloadNotificationDelegate
 
 // Helpers ---------------------------------------------------------------------
 
+const char* GetMetricString(CommandType command) {
+  switch (command) {
+    case CommandType::kCancel:
+      return "DownloadNotificationV2.Button_Cancel";
+    case CommandType::kOpenFile:
+      return "DownloadNotificationV2.Click_Completed";
+    case CommandType::kPause:
+      return "DownloadNotificationV2.Button_Pause";
+    case CommandType::kResume:
+      return "DownloadNotificationV2.Button_Resume";
+    case CommandType::kShowInBrowser:
+      return "DownloadNotificationV2.Click_InProgress";
+    case CommandType::kShowInFolder:
+      return "DownloadNotificationV2.Button_ShowInFolder";
+  }
+}
+
+// Returns true if the execution of `command` is triggered by a click on a
+// notification body.
+bool IsBodyClickCommandType(CommandType command) {
+  switch (command) {
+    case CommandType::kOpenFile:
+    case CommandType::kShowInBrowser:
+      return true;
+    case CommandType::kCancel:
+    case CommandType::kPause:
+    case CommandType::kResume:
+    case CommandType::kShowInFolder:
+      return false;
+  }
+}
+
+// Returns true if the execution of `command` is triggered by a click on a
+// notification button.
+bool IsButtonClickCommandType(CommandType command) {
+  switch (command) {
+    case CommandType::kCancel:
+    case CommandType::kPause:
+    case CommandType::kResume:
+    case CommandType::kShowInFolder:
+      return true;
+    case CommandType::kOpenFile:
+    case CommandType::kShowInBrowser:
+      return false;
+  }
+}
+
+void RecordCommand(CommandType command) {
+  base::RecordAction(base::UserMetricsAction(GetMetricString(command)));
+}
+
 // Returns the callback that runs when the notification body associated with
-// `display_metadata` is clicked. Performs the show-in-browser command if
-// `display_metadata` contains it. Otherwise, the download file will be opened.
+// `display_metadata` is clicked.
 base::RepeatingClosure GetNotificationBodyClickCallback(
     Profile* profile,
     const DisplayMetadata& display_metadata) {
-  const std::vector<CommandInfo>& command_infos =
-      display_metadata.command_infos;
-  if (auto show_in_browser_iter = base::ranges::find(
-          command_infos, CommandType::kShowInBrowser, &CommandInfo::type);
-      show_in_browser_iter != command_infos.end()) {
-    return show_in_browser_iter->command_callback;
+  for (const auto& command : display_metadata.command_infos) {
+    if (const CommandType type = command.type; IsBodyClickCommandType(type)) {
+      return command.command_callback.Then(
+          base::BindRepeating(&RecordCommand, type));
+    }
   }
 
-  // TODO(http://b/316368295): Track successful file openings as a metric.
-  return base::BindRepeating(
-      [](const AccountId& account_id, const base::FilePath& file_path) {
-        if (Profile* const profile =
-                ProfileHelper::Get()->GetProfileByAccountId(account_id)) {
-          platform_util::OpenItem(profile, file_path,
-                                  platform_util::OpenItemType::OPEN_FILE,
-                                  /*callback=*/base::DoNothing());
-        }
-      },
-      ProfileHelper::Get()->GetUserByProfile(profile)->GetAccountId(),
-      display_metadata.file_path);
+  LOG(ERROR) << "Failed to find a notification body click callback";
+  return base::DoNothing();
 }
 
 // NOTE: This function returns a non-empty string indicating the notification
@@ -223,18 +262,11 @@ void NotificationDisplayClient::AddOrUpdate(
   std::vector<base::RepeatingClosure> button_click_callbacks;
   std::vector<message_center::ButtonInfo> buttons;
   for (const auto& command_info : display_metadata.command_infos) {
-    switch (command_info.type) {
-      case CommandType::kCancel:
-      case CommandType::kPause:
-      case CommandType::kResume:
-      case CommandType::kShowInFolder:
-        button_click_callbacks.push_back(command_info.command_callback);
-        buttons.emplace_back(l10n_util::GetStringUTF16(command_info.text_id));
-        break;
-      case CommandType::kShowInBrowser:
-        // NOTE: The `kShowInBrowser` command is associated with the
-        // notification body and is not rendered as a button.
-        break;
+    if (const CommandType type = command_info.type;
+        IsButtonClickCommandType(type)) {
+      button_click_callbacks.push_back(command_info.command_callback.Then(
+          base::BindRepeating(&RecordCommand, type)));
+      buttons.emplace_back(l10n_util::GetStringUTF16(command_info.text_id));
     }
   }
 
