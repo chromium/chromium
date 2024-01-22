@@ -5,6 +5,8 @@
 #ifndef ASH_PICKER_VIEWS_PICKER_SEARCH_FIELD_VIEW_H_
 #define ASH_PICKER_VIEWS_PICKER_SEARCH_FIELD_VIEW_H_
 
+#include <string_view>
+
 #include "ash/ash_export.h"
 #include "ash/picker/picker_session_metrics.h"
 #include "base/functional/callback_forward.h"
@@ -52,7 +54,7 @@ class ASH_EXPORT PickerSearchFieldView : public views::View,
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
   // Set the placeholder text to show when the textfield is empty.
-  void SetPlaceholderText(base::StringPiece16 new_placeholder_text);
+  void SetPlaceholderText(std::u16string_view new_placeholder_text);
 
   const views::Textfield& textfield_for_testing() const { return *textfield_; }
 

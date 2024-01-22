@@ -5,6 +5,7 @@
 #include "ash/picker/views/picker_search_field_view.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
@@ -82,7 +83,7 @@ void PickerSearchFieldView::OnDidChangeFocus(View* focused_before,
 }
 
 void PickerSearchFieldView::SetPlaceholderText(
-    base::StringPiece16 new_placeholder_text) {
+    std::u16string_view new_placeholder_text) {
   textfield_->SetPlaceholderText(std::u16string(new_placeholder_text));
 }
 
