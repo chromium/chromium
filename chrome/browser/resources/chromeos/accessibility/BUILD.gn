@@ -56,10 +56,7 @@ ts_library("ts_build") {
     "//tools/typescript/definitions/windows.d.ts",
   ]
 
-  in_files = [
-    "chromevox_loader.ts",
-    "switch_access_loader.ts",
-  ]
+  in_files = [ "chromevox_loader.ts" ]
 
   tsconfig_base = "tsconfig.base.json"
 }
