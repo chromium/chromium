@@ -14,21 +14,17 @@ import {getTemplate} from './base_page.html.js';
  */
 export class BasePageElement extends PolymerElement {
   static get is() {
-    return 'base-page';
+    return 'base-page' as const;
   }
 
   static get template() {
     return getTemplate();
   }
+}
 
-  /** @override */
-  constructor() {
-    super();
-  }
-
-  /** @override */
-  ready() {
-    super.ready();
+declare global {
+  interface HTMLElementTagNameMap {
+    [BasePageElement.is]: BasePageElement;
   }
 }
 
