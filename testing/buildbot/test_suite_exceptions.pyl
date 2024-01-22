@@ -3668,6 +3668,12 @@
       'chromeos-volteer-chrome-skylab',
     ],
   },
+  'net_unittests BRYA_RELEASE_LKGM': {
+    # TODO(b/319364912): vpython cannot be delivered via CIPD on skylab builders
+    'remove_from': [
+      'chromeos-brya-chrome-skylab',
+    ],
+  },
   'not_site_per_process_blink_web_tests': {
     'remove_from': [
       # TODO(dpranke): Should we be running this step on Linux Tests (dbg)(1)?
