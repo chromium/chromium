@@ -15,9 +15,13 @@ namespace base {
 class Time;
 }
 
-namespace net {
-
+namespace bssl {
+namespace der {
 struct GeneralizedTime;
+}  // namespace der
+}  // namespace bssl
+
+namespace net {
 
 // Encodes |time|, a UTC-based time, to DER |generalized_time|, for comparing
 // against other GeneralizedTime objects. Returns true on success or false if
