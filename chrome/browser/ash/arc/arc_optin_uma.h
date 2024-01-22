@@ -270,6 +270,7 @@ void UpdateArcUiAvailableTime(const base::TimeDelta& elapsed_time,
                               const Profile* profile);
 void UpdatePlayStoreLaunchTime(const base::TimeDelta& elapsed_time);
 void UpdateDeferredLaunchTime(const base::TimeDelta& elapsed_time);
+void UpdateOptinTosLoadResultUMA(bool success);
 void UpdateSilentAuthCodeUMA(OptInSilentAuthCode state);
 void UpdateSupervisionTransitionResultUMA(mojom::ManagementChangeStatus result);
 void UpdateReauthorizationSilentAuthCodeUMA(OptInSilentAuthCode state);

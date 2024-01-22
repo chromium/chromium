@@ -109,6 +109,13 @@ void FakeArcSupport::ClickRunNetworkTestsButton() {
   native_message_host_->OnMessage("{\"event\": \"onRunNetworkTestsClicked\"}");
 }
 
+void FakeArcSupport::TosLoadResult(bool success) {
+  DCHECK(native_message_host_);
+  native_message_host_->OnMessage(
+      base::StrCat({"{\"event\": \"onTosLoadResult\", \"success\": ",
+                    success ? "true" : "false", "}"}));
+}
+
 void FakeArcSupport::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }

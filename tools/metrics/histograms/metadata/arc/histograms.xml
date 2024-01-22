@@ -1588,6 +1588,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.OptinTosLoadResult" enum="BooleanSuccess"
+    expires_after="2024-03-17">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Records the status of loading Play terms of service in in-session optin
+    dialog. This metric reports false on aborts and failed retries as well.
+  </summary>
+</histogram>
+
 <histogram name="Arc.PlayAutoInstallRequest.State{ArcUserTypes}"
     enum="ArcPlayAutoInstallRequestState" expires_after="2024-07-01">
   <owner>jhorwich@google.com</owner>

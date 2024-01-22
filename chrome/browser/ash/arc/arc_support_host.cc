@@ -116,6 +116,14 @@ constexpr char kEventOnSendFeedbackClicked[] = "onSendFeedbackClicked";
 // button.
 constexpr char kEventOnRunNetworkTestsClicked[] = "onRunNetworkTestsClicked";
 
+// "onTosLoadResult" is fired when terms of service page is loaded or fails to
+// load.
+constexpr char kEventOnTosLoadResult[] = "onTosLoadResult";
+
+// "onTosLoadResult" should have the following fields:
+// - success
+constexpr char kSuccess[] = "success";
+
 // "onErrorPageShown" is fired when the error page is shown.
 constexpr char kEventOnErrorPageShown[] = "onErrorPageShown";
 
@@ -781,6 +789,11 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
   } else if (*event == kEventOnRunNetworkTestsClicked) {
     DCHECK(error_delegate_);
     error_delegate_->OnRunNetworkTestsClicked();
+  } else if (*event == kEventOnTosLoadResult) {
+    if (tos_delegate_) {
+      tos_delegate_->OnTermsLoadResult(
+          message.FindBool(kSuccess).value_or(false));
+    }
   } else if (*event == kEventOnErrorPageShown) {
     DCHECK(error_delegate_);
     error_delegate_->OnErrorPageShown(

@@ -493,6 +493,7 @@ class TermsOfServicePage {
         this.onTermsViewLoadAborted_('unable to get ToS content');
         return;
       }
+      onTosLoadResult(true /*success*/);
       this.state_ = LoadState.LOADED;
       this.tosContent_ = results[0];
       this.tosShown_ = true;
@@ -515,6 +516,7 @@ class TermsOfServicePage {
     // Mark ABORTED so that onTermsViewLoaded_() won't show the content view.
     this.fastLocation_ = undefined;
     this.state_ = LoadState.ABORTED;
+    onTosLoadResult(false /*success*/);
     showErrorPage(
         appWindow.contentWindow.loadTimeData.getString('serverError'),
         true /*opt_shouldShowSendFeedback*/,
@@ -698,6 +700,16 @@ function showPage(pageDivId) {
   if (pageDivId == 'terms' || pageDivId == 'arc-loading') {
     appWindow.contentWindow.startProgressAnimation(pageDivId);
   }
+}
+
+/**
+ * Sends a message to host that TOS load has failed or succeeded.
+ *
+ * @param {boolean} success If set to true, loading has succeeded. False
+ *     otherwise.
+ */
+function onTosLoadResult(success) {
+  sendNativeMessage('onTosLoadResult', {success: success});
 }
 
 /**
