@@ -505,6 +505,17 @@ void SafeBrowsingService::RefreshState() {
         estimated_extended_reporting_by_prefs_ = erl;
       }
     }
+
+    if (IsEnhancedProtectionEnabled(*pref.first)) {
+      if (pref.first->GetTime(prefs::kSafeBrowsingEsbEnabledTimestamp)
+              .is_null()) {
+        pref.first->SetTime(prefs::kSafeBrowsingEsbEnabledTimestamp,
+                            base::Time::Now());
+      }
+    } else {
+      pref.first->SetTime(prefs::kSafeBrowsingEsbEnabledTimestamp,
+                          base::Time());
+    }
   }
 
   if (enabled_by_prefs_) {

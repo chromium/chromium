@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+
 #include <memory>
 
 #include "base/test/bind.h"
@@ -14,6 +15,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -63,6 +65,7 @@ class SafeBrowsingServiceTest : public testing::Test {
     // dependency of PingManager on ChromeOS.
     TestingBrowserProcess::GetGlobal()->SetLocalState(profile_->GetPrefs());
 #endif
+    sb_service_->OnProfileAdded(profile_.get());
   }
 
   void TearDown() override {
@@ -244,6 +247,33 @@ TEST_F(
       ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED,
       /*did_proceed=*/true,
       /*show_download_in_folder=*/true));
+}
+
+TEST_F(SafeBrowsingServiceTest, EsbEnabledTimestampOnlyWhenEsbEnabled) {
+  SetSafeBrowsingState(profile_->GetPrefs(),
+                       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION,
+                       /*is_esb_enabled_in_sync=*/false);
+  EXPECT_FALSE(profile_->GetPrefs()
+                   ->GetTime(prefs::kSafeBrowsingEsbEnabledTimestamp)
+                   .is_null());
+  SetSafeBrowsingState(profile_->GetPrefs(),
+                       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
+                       /*is_esb_enabled_in_sync=*/false);
+  EXPECT_TRUE(profile_->GetPrefs()
+                  ->GetTime(prefs::kSafeBrowsingEsbEnabledTimestamp)
+                  .is_null());
+}
+
+TEST_F(SafeBrowsingServiceTest, DoesNotChangeEsbTimestampIfPresent) {
+  profile_->GetPrefs()->SetTime(prefs::kSafeBrowsingEsbEnabledTimestamp,
+                                base::Time::FromTimeT(12345));
+  SetSafeBrowsingState(profile_->GetPrefs(),
+                       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION,
+                       /*is_esb_enabled_in_sync=*/false);
+  EXPECT_EQ(profile_->GetPrefs()
+                ->GetTime(prefs::kSafeBrowsingEsbEnabledTimestamp)
+                .ToTimeT(),
+            12345);
 }
 
 class SafeBrowsingServiceAntiPhishingTelemetryTest
