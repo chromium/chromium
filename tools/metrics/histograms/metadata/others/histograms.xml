@@ -2377,9 +2377,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.AcceptCHFrame" enum="AcceptCHFrameRestart"
-    expires_after="2024-07-07">
+    expires_after="2024-10-01">
   <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
+  <owner>potassium-katabolism@google.com</owner>
   <summary>
     Emitted on two related events: First, when an request that is eligable to be
     restarted receives an ACCEPT_CH HTTP2/HTTP3 frame via a TLS connection with
@@ -2389,16 +2390,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.CriticalCHRestart" enum="CriticalCHRestart"
-    expires_after="2024-07-07">
+    expires_after="2024-10-01">
   <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
+  <owner>potassium-katabolism@google.com</owner>
   <summary>
     Count of requests restarted because of the Critical-CH response header.
   </summary>
 </histogram>
 
 <histogram name="ClientHints.FetchLatency{OperationType}" units="microseconds"
-    expires_after="2024-06-30">
+    expires_after="2024-10-01">
+  <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>potassium-katabolism@google.com</owner>
   <summary>
@@ -2417,7 +2420,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.StoreLatency" units="ms"
-    expires_after="2024-07-07">
+    expires_after="2024-10-01">
+  <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>potassium-katabolism@google.com</owner>
   <summary>
@@ -2427,7 +2431,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.UpdateEventCount" units="count"
-    expires_after="2024-03-03">
+    expires_after="2024-10-01">
   <owner>victortan@chromium.org</owner>
   <owner>potassium-katabolism@google.com</owner>
   <summary>
@@ -2437,7 +2441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.UpdateSize" units="count"
-    expires_after="2024-05-05">
+    expires_after="2024-10-01">
   <owner>victortan@chromium.org</owner>
   <owner>potassium-katabolism@google.com</owner>
   <summary>
