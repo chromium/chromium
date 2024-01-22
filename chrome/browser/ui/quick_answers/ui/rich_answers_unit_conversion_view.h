@@ -31,6 +31,8 @@ class RichAnswersUnitConversionView : public RichAnswersView {
 
  private:
   void InitLayout();
+  void AddConversionResultText();
+  void MaybeAddFormulaInformation();
 
   raw_ptr<views::View> content_view_ = nullptr;
 

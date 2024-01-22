@@ -228,6 +228,18 @@
       <message name="IDS_QUICK_ANSWERS_DEFINITION_SYNONYMS_LABEL_TEXT" desc="The text that precedes a list of synonyms in a Quick Answers definition result card.">
       Similar:
        </message>
+       <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_FORMULA_LABEL_TEXT" desc="The text that precedes a formula description in a Quick Answers unit conversion result card.">
+      Formula
+       </message>
+       <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_FORMULA_MULTIPLICATION_OPERATOR_TEXT" desc="The text that denotes a multiplication operation in the formula in a Quick Answers unit conversion result card.">
+      multiply
+       </message>
+       <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_FORMULA_DIVISION_OPERATOR_TEXT" desc="The text that denotes a division operation in the formula in a Quick Answers unit conversion result card.">
+      divide
+       </message>
+       <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_FORMULA_DESCRIPTION_TEXT" desc="The formula description text format string used for Quick Answers unit conversion result card. The first placeholder contains the arithmetic operator, the second placeholder contains the unit conversion category, and the third placeholder contains the conversion rate number.">
+      For an approximate result, <ph name="OPERATOR_TEXT">$1<ex>multiply</ex></ph> the <ph name="CATEGORY_TEXT">$2<ex>length</ex></ph> value by <ph name="CONVERSION_RATE">$3<ex>3</ex></ph>
+       </message>
       <message name="IDS_UNIT_CONVERSION_POUND_DISPLAY_TEXT" desc="The display text of pound unit type.">
         pounds
       </message>

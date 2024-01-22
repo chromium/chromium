@@ -21,6 +21,9 @@ namespace quick_answers {
 // Size constants.
 inline constexpr int kContentHeaderWidth = 248;
 inline constexpr int kContentTextWidth = 280;
+inline constexpr int kSubContentViewIndent = 12;
+inline constexpr int kSubContentTextWidth =
+    kContentTextWidth - kSubContentViewIndent;
 
 // Spacing constants.
 inline constexpr int kContentSingleSpacing = 8;
@@ -32,6 +35,8 @@ inline constexpr gfx::Insets kViewHorizontalSpacingMargins =
 inline constexpr int kRichAnswersIconContainerRadius = 24;
 inline constexpr int kRichAnswersIconSizeDip = 16;
 inline constexpr int kRichAnswersIconBorderDip = 4;
+inline constexpr gfx::Insets kSubContentViewInsets =
+    gfx::Insets::TLBR(0, kSubContentViewIndent, 0, 0);
 
 // Font constants.
 inline constexpr char kGoogleSansFont[] = "Google Sans";
@@ -61,6 +66,7 @@ enum class TypographyToken {
   kCrosBody2,
   kCrosBody2Italic,
   kCrosButton2,
+  kCrosDisplay5,
   kCrosTitle1
 };
 
