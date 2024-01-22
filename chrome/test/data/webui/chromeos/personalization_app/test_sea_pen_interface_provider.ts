@@ -53,8 +53,6 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
       ReturnType<SeaPenProviderInterface['selectSeaPenThumbnail']> =
           Promise.resolve({success: true});
 
-  shouldShowSeaPenTermsOfServiceDialogResponse = true;
-
   constructor() {
     super([
       'searchWallpaper',
@@ -63,8 +61,6 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
       'getRecentSeaPenImages',
       'getRecentSeaPenImageThumbnail',
       'deleteRecentSeaPenImage',
-      'shouldShowSeaPenTermsOfServiceDialog',
-      'handleSeaPenTermsOfServiceAccepted',
     ]);
   }
 
@@ -105,16 +101,5 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
   openFeedbackDialog(metadata: SeaPenFeedbackMetadata): void {
     this.methodCalled('openFeedbackDialog', metadata);
     return;
-  }
-
-  shouldShowSeaPenTermsOfServiceDialog() {
-    this.methodCalled('shouldShowSeaPenTermsOfServiceDialog');
-    return Promise.resolve(
-        {shouldShowDialog: this.shouldShowSeaPenTermsOfServiceDialogResponse});
-  }
-
-  handleSeaPenTermsOfServiceAccepted() {
-    this.methodCalled('handleSeaPenTermsOfServiceAccepted');
-    this.shouldShowSeaPenTermsOfServiceDialogResponse = false;
   }
 }

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 import './sea_pen_images_element.js';
@@ -10,17 +9,14 @@ import './sea_pen_input_query_element.js';
 import './sea_pen_recent_wallpapers_element.js';
 import './sea_pen_template_query_element.js';
 import './sea_pen_templates_element.js';
-import './sea_pen_terms_of_service_dialog_element.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Query} from './constants.js';
 import {isSeaPenEnabled, isSeaPenTextInputEnabled} from './load_time_booleans.js';
 import {SeaPenTemplateId} from './sea_pen.mojom-webui.js';
-import {acceptSeaPenTermsOfService, getShouldShowSeaPenTermsOfServiceDialog} from './sea_pen_controller.js';
-import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {getTemplate} from './sea_pen_router_element.html.js';
-import {WithSeaPenStore} from './sea_pen_store.js';
 
 export enum SeaPenPaths {
   ROOT = '',
@@ -33,7 +29,7 @@ export interface SeaPenQueryParams {
 
 let instance: SeaPenRouterElement|null = null;
 
-export class SeaPenRouterElement extends WithSeaPenStore {
+export class SeaPenRouterElement extends PolymerElement {
   static get is() {
     return 'sea-pen-router';
   }
@@ -54,8 +50,6 @@ export class SeaPenRouterElement extends WithSeaPenStore {
         computed: 'computeRelativePath_(path_, basePath)',
         observer: 'onRelativePathChanged_',
       },
-
-      showSeaPenTermsOfServiceDialog_: Boolean,
     };
   }
 
@@ -69,17 +63,11 @@ export class SeaPenRouterElement extends WithSeaPenStore {
   private query_: string;
   private queryParams_: SeaPenQueryParams;
   private relativePath_: string|null;
-  private showSeaPenTermsOfServiceDialog_: boolean;
 
   override connectedCallback() {
     assert(isSeaPenEnabled(), 'sea pen must be enabled');
     super.connectedCallback();
     instance = this;
-    this.watch<SeaPenRouterElement['showSeaPenTermsOfServiceDialog_']>(
-        'showSeaPenTermsOfServiceDialog_',
-        state => state.shouldShowSeaPenTermsOfServiceDialog);
-    this.updateFromStore();
-    this.fetchTermsOfServiceDialogStatus();
   }
 
   override disconnectedCallback() {
@@ -173,15 +161,6 @@ export class SeaPenRouterElement extends WithSeaPenStore {
       return 'Query';
     }
     return parseInt(templateId) as SeaPenTemplateId;
-  }
-
-  private async fetchTermsOfServiceDialogStatus() {
-    await getShouldShowSeaPenTermsOfServiceDialog(
-        getSeaPenProvider(), this.getStore());
-  }
-
-  private async onAcceptSeaPenTerms_() {
-    await acceptSeaPenTermsOfService(getSeaPenProvider(), this.getStore());
   }
 }
 

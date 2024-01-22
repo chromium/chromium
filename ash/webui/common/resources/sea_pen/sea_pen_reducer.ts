@@ -196,16 +196,6 @@ function thumbnailsReducer(
   }
 }
 
-function shouldShowSeaPenTermsOfServiceDialogReducer(
-    state: boolean, action: SeaPenActions): boolean {
-  switch (action.name) {
-    case SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_TERMS_OF_SERVICE_DIALOG:
-      return action.shouldShowDialog;
-    default:
-      return state;
-  }
-}
-
 export function seaPenReducer(
     state: SeaPenState, action: SeaPenActions): SeaPenState {
   const newState = {
@@ -218,9 +208,6 @@ export function seaPenReducer(
     currentSelected: currentSelectedReducer(state.currentSelected, action),
     pendingSelected:
         pendingSelectedReducer(state.pendingSelected, action, state),
-    shouldShowSeaPenTermsOfServiceDialog:
-        shouldShowSeaPenTermsOfServiceDialogReducer(
-            state.shouldShowSeaPenTermsOfServiceDialog, action),
   };
   return newState;
 }

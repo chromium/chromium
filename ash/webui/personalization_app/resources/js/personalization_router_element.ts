@@ -255,10 +255,6 @@ export class PersonalizationRouterElement extends PolymerElement {
         break;
     }
   }
-
-  private onRefuseSeaPenTermsOfService_() {
-    this.goToRoute(Paths.COLLECTIONS);
-  }
 }
 
 customElements.define(

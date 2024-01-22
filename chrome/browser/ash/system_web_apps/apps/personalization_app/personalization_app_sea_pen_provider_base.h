@@ -75,11 +75,6 @@ class PersonalizationAppSeaPenProviderBase
 
   void OpenFeedbackDialog(mojom::SeaPenFeedbackMetadataPtr metadata) override;
 
-  void ShouldShowSeaPenTermsOfServiceDialog(
-      ShouldShowSeaPenTermsOfServiceDialogCallback callback) override;
-
-  void HandleSeaPenTermsOfServiceAccepted() override;
-
  protected:
   virtual void SelectRecentSeaPenImageInternal(
       const base::FilePath& path,

@@ -33,14 +33,6 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
       {"seaPenErrorGeneric", IDS_SEA_PEN_ERROR_GENERIC},
       {"seaPenExperimentLabel", IDS_SEA_PEN_EXPERIMENT_LABEL},
       {"seaPenThumbnailsLoading", IDS_SEA_PEN_THUMBNAILS_LOADING},
-      {"seaPenWallpaperTermsDialogTitle",
-       IDS_SEA_PEN_WALLPAPER_TERMS_DIALOG_TITLE},
-      {"seaPenWallpaperTermsAcceptButton",
-       IDS_SEA_PEN_WALLPAPER_TERMS_ACCEPT_BUTTON},
-      {"seaPenWallpaperTermsRefuseButton",
-       IDS_SEA_PEN_WALLPAPER_TERMS_REFUSE_BUTTON},
-      {"seaPenWallpaperTermsOfServiceDesc",
-       IDS_SEA_PEN_WALLPAPER_TERMS_OF_SERVICE_DESC},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 }

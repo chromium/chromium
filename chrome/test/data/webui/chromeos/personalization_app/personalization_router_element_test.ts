@@ -4,26 +4,23 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, Paths, PersonalizationRouterElement, SeaPenTermsOfServiceDialogElement} from 'chrome://personalization/js/personalization_app.js';
+import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, Paths, PersonalizationRouterElement} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestSeaPenProvider} from './test_sea_pen_interface_provider.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 suite('PersonalizationRouterElementTest', function() {
   let personalizationStore: TestPersonalizationStore;
   let wallpaperProvider: TestWallpaperProvider;
-  let seaPenProvider: TestSeaPenProvider;
 
   setup(() => {
     const mocks = baseSetup();
     personalizationStore = mocks.personalizationStore;
     wallpaperProvider = mocks.wallpaperProvider;
-    seaPenProvider = mocks.seaPenProvider;
   });
 
   test('will show ambient subpage if allowed', async () => {
@@ -154,7 +151,7 @@ suite('PersonalizationRouterElementTest', function() {
   test('hides SeaPen from ineligible users', async () => {
     loadTimeData.overrideValues({isSeaPenEnabled: false});
 
-    const routerElement = initElement(PersonalizationRouterElement, {});
+    const routerElement = initElement(PersonalizationRouterElement);
 
     for (const path of [Paths.SEA_PEN_COLLECTION, Paths.SEA_PEN_RESULTS]) {
       PersonalizationRouterElement.instance().goToRoute(path);
@@ -201,45 +198,4 @@ suite('PersonalizationRouterElementTest', function() {
         getComputedStyle(seaPenRouterElement).display, 'none',
         'sea-pen-router is shown');
   });
-
-  test(
-      'refuses SeaPen wallpaper terms and routes back to Wallpaper subpage',
-      async () => {
-        loadTimeData.overrideValues({isSeaPenEnabled: true});
-        personalizationStore.setReducersEnabled(true);
-
-        const routerElement = initElement(PersonalizationRouterElement);
-        await waitAfterNextRender(routerElement);
-
-        routerElement.goToRoute(Paths.SEA_PEN_COLLECTION);
-        await seaPenProvider.whenCalled('shouldShowSeaPenTermsOfServiceDialog');
-        await waitAfterNextRender(routerElement);
-
-        let seaPenRouterElement =
-            routerElement.shadowRoot!.querySelector('sea-pen-router');
-        assertTrue(!!seaPenRouterElement, 'sea-pen-router exists');
-        assertNotEquals(
-            getComputedStyle(seaPenRouterElement).display, 'none',
-            'sea-pen-router is shown');
-
-        const seaPenTermsDialog = seaPenRouterElement.shadowRoot!.querySelector(
-            SeaPenTermsOfServiceDialogElement.is);
-        assertTrue(
-            !!seaPenTermsDialog, 'SeaPen terms of service dialog is displayed');
-
-        const button = seaPenTermsDialog!.shadowRoot!.getElementById('refuse');
-        assertTrue(!!button, `refuse must exist`);
-        button!.click();
-        await waitAfterNextRender(routerElement!);
-
-        seaPenRouterElement =
-            routerElement.shadowRoot!.querySelector('sea-pen-router');
-        assertFalse(!!seaPenRouterElement, 'sea-pen-router no longer exists');
-
-        assertEquals(
-            Paths.COLLECTIONS,
-            routerElement.shadowRoot?.querySelector('iron-location')?.path,
-            'redirect to Wallpaper subpage');
-      });
-
 });

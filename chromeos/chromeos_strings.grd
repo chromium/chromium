@@ -3114,21 +3114,7 @@
         <message name="IDS_SEA_PEN_FEEDBACK_PLACEHOLDER" desc="Placeholder text displayed in the feedback text box">
           Feedback for wallpaper powered by Google AI
         </message>
-        <message name="IDS_SEA_PEN_WALLPAPER_TERMS_DIALOG_TITLE" desc="Title for the wallpaper terms of service dialog.">
-          Terms of service
-        </message>
-        <message name="IDS_SEA_PEN_WALLPAPER_TERMS_ACCEPT_BUTTON" desc="The button which accepts and agrees to the terms for wallpaper service.">
-          I agree
-        </message>
-        <message name="IDS_SEA_PEN_WALLPAPER_TERMS_REFUSE_BUTTON" desc="The button which refuses the terms for wallpaper service.">
-          No thanks
-        </message>
-        <message name="IDS_SEA_PEN_WALLPAPER_TERMS_OF_SERVICE_DESC" desc="Title for the wallpaper terms of service dialog.">
-          You must be at least 18 years old and agree your use of AI wallpapers is subject to <ph name="GOOGLE_TERMS_OF_SERVICE_LINK">&lt;a target="_blank" href="https://policies.google.com/terms"&gt;</ph>Google Terms of Service<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE">&lt;a target="_blank" href="https://policies.google.com/terms/generative-ai"&gt;</ph>Generative AI Additional Terms of Service<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE">&lt;/a&gt;</ph>.
-          <ph name="LINE_BREAK">&lt;br&gt;</ph>
-          <ph name="LINE_BREAK">&lt;br&gt;</ph>
-          You can only create wallpapers with AI for personal and non-commercial use. When you get wallpaper help, text is sent to Google AI servers to generate wallpaper suggestions, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY">&lt;a target="_blank" href="https://policies.google.com/privacy"&gt;</ph>Google's Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY">&lt;/a&gt;</ph>. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="https://support.google.com/chromebook?p=copyeditor"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
-        </message>
+
 
         <!-- Traffic Counters UI -->
         <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">

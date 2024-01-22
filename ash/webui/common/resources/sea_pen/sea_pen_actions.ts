@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {MantaStatusCode, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {Action} from 'chrome://resources/js/store.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
 import {RecentSeaPenData} from './constants.js';
-import {MantaStatusCode, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 
 /**
  * @fileoverview defines the actions to change SeaPen state.
@@ -29,8 +28,6 @@ export enum SeaPenActionName {
   SET_RECENT_SEA_PEN_IMAGES = 'set_recent_sea_pen_images',
   SET_RECENT_SEA_PEN_IMAGE_DATA = 'set_recent_sea_pen_image_data',
   SET_SELECTED_RECENT_SEA_PEN_IMAGE = 'set_selected_recent_sea_pen_image',
-  SET_SHOULD_SHOW_SEA_PEN_TERMS_OF_SERVICE_DIALOG =
-      'set_should_show_sea_pen_terms_of_service_dialog',
 }
 
 export type SeaPenActions = BeginSearchSeaPenThumbnailsAction|
@@ -40,8 +37,7 @@ export type SeaPenActions = BeginSearchSeaPenThumbnailsAction|
     SetThumbnailResponseStatusCodeAction|SetSeaPenThumbnailsAction|
     SetRecentSeaPenImagesAction|SetRecentSeaPenImageDataAction|
     SetSelectedRecentSeaPenImageAction|BeginSelectSeaPenThumbnailAction|
-    EndSelectSeaPenThumbnailAction|
-    SetShouldShowSeaPenTermsOfServiceDialogAction;
+    EndSelectSeaPenThumbnailAction;
 
 export interface BeginSearchSeaPenThumbnailsAction extends Action {
   name: SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS;
@@ -248,22 +244,4 @@ export interface ClearSeaPenThumbnailsAction extends Action {
 
 export function clearSeaPenThumbnailsAction(): ClearSeaPenThumbnailsAction {
   return {name: SeaPenActionName.CLEAR_SEA_PEN_THUMBNAILS};
-}
-
-export interface SetShouldShowSeaPenTermsOfServiceDialogAction extends Action {
-  name: SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_TERMS_OF_SERVICE_DIALOG;
-  shouldShowDialog: boolean;
-}
-
-/**
- * Sets the boolean that determines whether to show the Sea Pen terms of service
- * dialog.
- */
-export function setShouldShowSeaPenTermsOfServiceDialogAction(
-    shouldShowDialog: boolean): SetShouldShowSeaPenTermsOfServiceDialogAction {
-  assert(typeof shouldShowDialog === 'boolean');
-  return {
-    name: SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_TERMS_OF_SERVICE_DIALOG,
-    shouldShowDialog,
-  };
 }
