@@ -5,6 +5,7 @@
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
@@ -208,6 +209,7 @@ TEST_P(AsyncCheckTrackerTest, DisplayBlockingPageCalled) {
 }
 
 TEST_P(AsyncCheckTrackerTest, IsMainPageLoadPending) {
+  base::HistogramTester histograms;
   content::MockNavigationHandle handle(web_contents());
   UnsafeResource resource;
   resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
@@ -216,11 +218,23 @@ TEST_P(AsyncCheckTrackerTest, IsMainPageLoadPending) {
 
   AsyncCheckTracker* tracker =
       AsyncCheckTracker::FromWebContents(web_contents());
-  tracker->DidStartNavigation(&handle);
   EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(resource));
 
   tracker->DidFinishNavigation(&handle);
+  // The navigation is not committed.
+  EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(resource));
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.AsyncCheck.CommittedNavigationIdsSize",
+      /*sample=*/0,
+      /*expected_count=*/1);
+
+  handle.set_has_committed(true);
+  tracker->DidFinishNavigation(&handle);
   EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(resource));
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.AsyncCheck.CommittedNavigationIdsSize",
+      /*sample=*/1,
+      /*expected_count=*/1);
 }
 
 TEST_P(AsyncCheckTrackerTest, IsMainPageLoadPending_NoNavigationId) {
@@ -255,12 +269,22 @@ TEST_P(AsyncCheckTrackerTest,
 
 TEST_P(AsyncCheckTrackerTest,
        PendingCheckersManagement_DeleteOldCheckersAfterDidFinishNavigation) {
+  base::HistogramTester histograms;
   content::MockNavigationHandle handle_1(url_, main_rfh());
   content::MockNavigationHandle handle_2(url_, main_rfh());
   content::MockNavigationHandle handle_3(url_, main_rfh());
   CallTransferUrlChecker(handle_1.GetNavigationId());
+  histograms.ExpectUniqueSample("SafeBrowsing.AsyncCheck.PendingCheckersSize",
+                                /*sample=*/1,
+                                /*expected_count=*/1);
   CallTransferUrlChecker(handle_2.GetNavigationId());
+  histograms.ExpectBucketCount("SafeBrowsing.AsyncCheck.PendingCheckersSize",
+                               /*sample=*/2,
+                               /*expected_count=*/1);
   CallTransferUrlChecker(handle_3.GetNavigationId());
+  histograms.ExpectBucketCount("SafeBrowsing.AsyncCheck.PendingCheckersSize",
+                               /*sample=*/3,
+                               /*expected_count=*/1);
   EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 3u);
 
   // Only the third navigation is committed successfully.

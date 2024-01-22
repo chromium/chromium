@@ -61,7 +61,6 @@ class AsyncCheckTracker
   bool IsNavigationPending(int64_t navigation_id);
 
   // content::WebContentsObserver methods:
-  void DidStartNavigation(content::NavigationHandle* handle) override;
   void DidFinishNavigation(content::NavigationHandle* handle) override;
 
   size_t PendingCheckersSizeForTesting();
@@ -98,8 +97,8 @@ class AsyncCheckTracker
   // called. Reset to false after interstitial is triggered.
   bool show_interstitial_after_finish_navigation_ = false;
 
-  // A set of navigation ids that are pending.
-  base::flat_set<int64_t> pending_navigation_ids_;
+  // A set of navigation ids that have committed.
+  base::flat_set<int64_t> committed_navigation_ids_;
 
   base::WeakPtrFactory<AsyncCheckTracker> weak_factory_{this};
 

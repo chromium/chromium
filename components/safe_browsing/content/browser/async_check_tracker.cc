@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -68,6 +69,8 @@ void AsyncCheckTracker::TransferUrlChecker(
   pending_checkers_[id] = std::move(checker);
   pending_checkers_[id]->SwapCompleteCallback(base::BindRepeating(
       &AsyncCheckTracker::PendingCheckerCompleted, GetWeakPtr(), id));
+  base::UmaHistogramCounts10000("SafeBrowsing.AsyncCheck.PendingCheckersSize",
+                                pending_checkers_.size());
 }
 
 void AsyncCheckTracker::PendingCheckerCompleted(
@@ -90,23 +93,23 @@ void AsyncCheckTracker::PendingCheckerCompleted(
 }
 
 bool AsyncCheckTracker::IsNavigationPending(int64_t navigation_id) {
-  // This approach works based on the assumption that
-  //   1) DidStartNavigation must be called before DidFinishNavigation.
-  //   2) DidFinishNavigation must be called if DidStartNavigation is called (to
-  //      avoid memory leak).
-  //   3) The navigation id remains unchanged.
-  return base::Contains(pending_navigation_ids_, navigation_id);
-}
-
-void AsyncCheckTracker::DidStartNavigation(content::NavigationHandle* handle) {
-  pending_navigation_ids_.insert(handle->GetNavigationId());
+  return !base::Contains(committed_navigation_ids_, navigation_id);
 }
 
 void AsyncCheckTracker::DidFinishNavigation(content::NavigationHandle* handle) {
   int64_t navigation_id = handle->GetNavigationId();
-  pending_navigation_ids_.erase(navigation_id);
-  // TODO(crbug.com/1501194): Add histograms to track the size of
-  // pending_navigation_ids_ and pending_checkers_.
+  if (handle->HasCommitted() && !handle->IsSameDocument()) {
+    // Do not filter out non primary main frame navigation because
+    // `IsNavigationPending` may be called for these navigation. For example,
+    // an async check is performed on the current WebContents (so
+    // AsyncCheckTracker is created) and then a prerendered navigation starts
+    // on the same WebContents.
+    committed_navigation_ids_.insert(navigation_id);
+  }
+  base::UmaHistogramCounts10000(
+      "SafeBrowsing.AsyncCheck.CommittedNavigationIdsSize",
+      committed_navigation_ids_.size());
+
   if (!handle->IsInPrimaryMainFrame() || handle->IsSameDocument() ||
       !handle->HasCommitted()) {
     return;

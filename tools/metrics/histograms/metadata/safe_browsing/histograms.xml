@@ -202,6 +202,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.AsyncCheck.CommittedNavigationIdsSize"
+    units="count" expires_after="2024-07-19">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The size of committed navigation ids stored in async check tracker. Logged
+    each time DidFinishNavigation is called. The size keeps growing until the
+    tab is closed, so this histogram helps us track if we should clean up the
+    ids at some point.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.AsyncCheck.PendingCheckersSize" units="count"
+    expires_after="2024-07-19">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The size of pending checkers stored in async check tracker. Logged each time
+    TransferUrlChecker is called. This histogram helps us track if we leak any
+    pending checker.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.BlockingPage.RequestDestination"
     enum="RequestDestination" expires_after="2024-05-19">
   <owner>xinghuilu@chromium.org</owner>
