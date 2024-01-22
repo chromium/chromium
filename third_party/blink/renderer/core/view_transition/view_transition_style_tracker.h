@@ -325,7 +325,7 @@ class ViewTransitionStyleTracker
   // will be initialized from the cached state at creation but is currently
   // unset.
   // TODO(bokan): Implement for cross-document transitions. crbug.com/1404957.
-  absl::optional<gfx::Size> snapshot_root_size_at_capture_;
+  absl::optional<gfx::Size> snapshot_root_layout_size_at_capture_;
 
   // Map of the CSS |view-transition-name| property to state for that tag.
   HeapHashMap<AtomicString, Member<ElementData>> element_data_map_;

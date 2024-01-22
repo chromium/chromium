@@ -311,8 +311,9 @@ int ComputeMaxCaptureSize(Document& document,
   const int max_texture_size_in_layout =
       static_cast<int>(std::ceil(*max_texture_size / min_page_scale_factor));
 
-  CHECK_LE(snapshot_root_size.width(), max_texture_size_in_layout);
-  CHECK_LE(snapshot_root_size.height(), max_texture_size_in_layout);
+  LOG_IF(WARNING, snapshot_root_size.width() > max_texture_size_in_layout ||
+                      snapshot_root_size.height() > max_texture_size_in_layout)
+      << "root snapshot does not fit within max texture size";
 
   // While we can render up to the max texture size, that would significantly
   // add to the memory overhead. So limit to up to a viewport worth of
@@ -436,7 +437,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     : document_(document), state_(State::kCaptured), deserialized_(true) {
   device_pixel_ratio_ = transition_state.device_pixel_ratio;
   captured_name_count_ = static_cast<int>(transition_state.elements.size());
-  snapshot_root_size_at_capture_ =
+  snapshot_root_layout_size_at_capture_ =
       transition_state.snapshot_root_size_at_capture;
 
   VectorOf<AtomicString> transition_names;
@@ -763,8 +764,8 @@ bool ViewTransitionStyleTracker::Capture() {
   set_element_sequence_id_ = 0;
   pending_transition_element_names_.clear();
 
-  DCHECK(!snapshot_root_size_at_capture_.has_value());
-  snapshot_root_size_at_capture_ = GetSnapshotRootSize();
+  DCHECK(!snapshot_root_layout_size_at_capture_.has_value());
+  snapshot_root_layout_size_at_capture_ = GetSnapshotRootSize();
 
   return true;
 }
@@ -1071,11 +1072,26 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     return false;
   }
 
-  const int max_capture_size = ComputeMaxCaptureSize(
+  const int max_capture_size_in_layout = ComputeMaxCaptureSize(
       *document_,
       document_->GetPage()->GetChromeClient().GetMaxRenderBufferBounds(
           *document_->GetFrame()),
-      *snapshot_root_size_at_capture_);
+      *snapshot_root_layout_size_at_capture_);
+
+  if (snapshot_root_layout_size_at_capture_->width() >
+          max_capture_size_in_layout ||
+      snapshot_root_layout_size_at_capture_->height() >
+          max_capture_size_in_layout) {
+    // TODO(crbug.com/1516874): This skips the transition if the root is too
+    // large to fit into a texture but non-root elements clip in this case
+    // instead. It would be better to clip the root like we do child elements,
+    // rather than skipping (and that would comply better with the spec).
+
+    // For main frames the capture size should never be bigger than the
+    // window so we only expect to end up here due to large subframes.
+    CHECK(!document_->GetFrame()->IsOutermostMainFrame());
+    return false;
+  }
 
   bool needs_style_invalidation = false;
 
@@ -1108,7 +1124,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       visual_overflow_rect_in_layout_space.size = layout_view_size;
     } else {
       ComputeLiveElementGeometry(
-          max_capture_size, *layout_object, container_properties,
+          max_capture_size_in_layout, *layout_object, container_properties,
           visual_overflow_rect_in_layout_space, captured_rect_in_layout_space);
     }
 
@@ -1274,7 +1290,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
   // bounds which includes this scale.
   captured_rect_in_layout_space = ComputeCaptureRect(
       max_capture_size, visual_overflow_rect_in_layout_space,
-      snapshot_matrix_in_layout_space, *snapshot_root_size_at_capture_);
+      snapshot_matrix_in_layout_space, *snapshot_root_layout_size_at_capture_);
 
   container_properties = ContainerProperties(border_box_size_in_css_space,
                                              snapshot_matrix_in_css_space);
@@ -1565,9 +1581,9 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
   ViewTransitionState transition_state;
 
   transition_state.device_pixel_ratio = device_pixel_ratio_;
-  DCHECK(snapshot_root_size_at_capture_);
+  DCHECK(snapshot_root_layout_size_at_capture_);
   transition_state.snapshot_root_size_at_capture =
-      *snapshot_root_size_at_capture_;
+      *snapshot_root_layout_size_at_capture_;
 
   for (const auto& entry : element_data_map_) {
     const auto& element_data = entry.value;
@@ -1927,7 +1943,7 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
 }
 
 bool ViewTransitionStyleTracker::SnapshotRootDidChangeSize() const {
-  if (!snapshot_root_size_at_capture_.has_value()) {
+  if (!snapshot_root_layout_size_at_capture_.has_value()) {
     return false;
   }
 
@@ -1937,9 +1953,9 @@ bool ViewTransitionStyleTracker::SnapshotRootDidChangeSize() const {
   // viewport-resizing UI (e.g. the virtual keyboard insets the viewport but
   // then outsets the viewport rect to get the snapshot root). These
   // adjustments can be off by a pixel due to different pixel snapping.
-  if (std::abs(snapshot_root_size_at_capture_->width() -
+  if (std::abs(snapshot_root_layout_size_at_capture_->width() -
                current_size.width()) <= 1 &&
-      std::abs(snapshot_root_size_at_capture_->height() -
+      std::abs(snapshot_root_layout_size_at_capture_->height() -
                current_size.height()) <= 1) {
     return false;
   }
