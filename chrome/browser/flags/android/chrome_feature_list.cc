@@ -350,6 +350,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &syncer::kSyncAndroidLimitNTPPromoImpressions,
     &syncer::kSyncDecoupleAddressPaymentSettings,
     &syncer::kSyncEnableContactInfoDataTypeInTransportMode,
+    &syncer::kSyncShowIdentityErrorsForSignedInUsers,
     &webapps::features::kWebApkInstallFailureNotification,
     &webapps::features::kAmbientBadgeSuppressFirstVisit,
     &network::features::kPrivateStateTokens,

@@ -24699,6 +24699,8 @@ from previous Chrome versions.
   <int value="176401620" label="TabGroupParityAndroid:enabled"/>
   <int value="176421334"
       label="OmniboxHistoryQuickProviderSpecificityScoreCountUniqueHosts:enabled"/>
+  <int value="176501467"
+      label="SyncShowIdentityErrorsForSignedInUsers:disabled"/>
   <int value="176526479" label="AccessibilityPageZoom:enabled"/>
   <int value="176760435" label="DesktopPWAsPreventClose:enabled"/>
   <int value="176773784" label="EnableHardwareMirrorMode:disabled"/>
@@ -24905,6 +24907,8 @@ from previous Chrome versions.
   <int value="277483398" label="ClipboardHistory:disabled"/>
   <int value="277565405" label="ContextualSearchDefinitions:disabled"/>
   <int value="277769727" label="JourneysZeroStateFiltering:disabled"/>
+  <int value="278028552"
+      label="SyncShowIdentityErrorsForSignedInUsers:enabled"/>
   <int value="278756320" label="disable-app-list-app-info"/>
   <int value="279525129" label="SystemEmojiPickerJellySupport:disabled"/>
   <int value="280459238" label="ChromeSharingHubLaunchAdjacent:disabled"/>

@@ -221,6 +221,11 @@ inline constexpr base::FeatureParam<double>
 // to schedule poll requests.
 BASE_DECLARE_FEATURE(kSyncSchedulerUseWallClockTimer);
 
+#if BUILDFLAG(IS_ANDROID)
+// If enabled, shows identity errors for signed-in non-syncing users.
+BASE_DECLARE_FEATURE(kSyncShowIdentityErrorsForSignedInUsers);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

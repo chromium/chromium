@@ -11147,6 +11147,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kSeedAccountsRevamp)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"show-identity-errors-for-signed-in-users",
+     flag_descriptions::kSyncShowIdentityErrorsForSignedInUsersName,
+     flag_descriptions::kSyncShowIdentityErrorsForSignedInUsersDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(syncer::kSyncShowIdentityErrorsForSignedInUsers)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -3297,6 +3297,11 @@ const char kSyncSessionOnVisibilityChangedName[] =
 const char kSyncSessionOnVisibilityChangedDescription[] =
     "This flag enables session syncing when the visibility of a tab changes.";
 
+const char kSyncShowIdentityErrorsForSignedInUsersName[] =
+    "SyncShowIdentityErrorsForSignedInUsers";
+const char kSyncShowIdentityErrorsForSignedInUsersDescription[] =
+    "Enables showing identitiy errors signed in non-syncing users on Android.";
+
 const char kSyncTrustedVaultPassphrasePromoName[] =
     "Enable promos for sync trusted vault passphrase.";
 const char kSyncTrustedVaultPassphrasePromoDescription[] =
