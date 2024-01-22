@@ -504,6 +504,7 @@ class BrowserAutofillManager : public AutofillManager {
   // product of the operation being undone.
   FillingProduct UndoAutofillImpl(mojom::ActionPersistence action_persistence,
                                   FormData form,
+                                  FormStructure& form_structure,
                                   const FormFieldData& trigger_field);
 
   // Fills or previews |data_model| in the |form|.

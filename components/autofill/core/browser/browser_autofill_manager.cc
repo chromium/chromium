@@ -1447,10 +1447,14 @@ void BrowserAutofillManager::UndoAutofill(
     mojom::ActionPersistence action_persistence,
     const FormData& form,
     const FormFieldData& trigger_field) {
+  FormStructure* form_structure = FindCachedFormById(form.global_id());
+  if (!form_structure) {
+    return;
+  }
   // This will apply the undo operation and return information about the
   // operation being undone, for metric purposes.
-  FillingProduct filling_product =
-      UndoAutofillImpl(action_persistence, form, trigger_field);
+  FillingProduct filling_product = UndoAutofillImpl(
+      action_persistence, form, *form_structure, trigger_field);
 
   // The remaining logic is only relevant for filling.
   if (action_persistence != mojom::ActionPersistence::kPreview) {
@@ -2323,6 +2327,7 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
 FillingProduct BrowserAutofillManager::UndoAutofillImpl(
     mojom::ActionPersistence action_persistence,
     FormData form,
+    FormStructure& form_structure,
     const FormFieldData& trigger_field) {
   if (!form_autofill_history_.HasHistory(trigger_field.global_id())) {
     LOG_AF(log_manager())
@@ -2336,22 +2341,29 @@ FillingProduct BrowserAutofillManager::UndoAutofillImpl(
       form_autofill_history_.GetLastFillingOperationForField(
           trigger_field.global_id());
 
+  base::flat_map<FieldGlobalId, AutofillField*> cached_fields =
+      base::MakeFlatMap<FieldGlobalId, AutofillField*>(
+          form_structure.fields(), {},
+          [](const std::unique_ptr<AutofillField>& field) {
+            return std::make_pair(field->global_id(), field.get());
+          });
   // Remove the fields to be skipped so that we only pass fields to be modified
   // by the renderer.
-  std::erase_if(
-      form.fields, [this, &operation, &form](const FormFieldData& field) {
-        // Skip not-autofilled fields as undo only acts on autofilled fields.
-        return !field.is_autofilled ||
-               // Skip fields whose last autofill operations is different than
-               // the one of the trigger field.
-               form_autofill_history_.GetLastFillingOperationForField(
-                   field.global_id()) != operation ||
-               // Skip fields that are not cached to avoid unexpected outcomes.
-               GetAutofillField(form, field) == nullptr;
-      });
+  std::erase_if(form.fields, [this, &operation,
+                              &cached_fields](const FormFieldData& field) {
+    // Skip not-autofilled fields as undo only acts on autofilled fields.
+    return !field.is_autofilled ||
+           // Skip fields whose last autofill operations is different than
+           // the one of the trigger field.
+           form_autofill_history_.GetLastFillingOperationForField(
+               field.global_id()) != operation ||
+           // Skip fields that are not cached to avoid unexpected outcomes.
+           !cached_fields.contains(field.global_id());
+  });
 
   for (FormFieldData& field : form.fields) {
-    AutofillField& autofill_field = CHECK_DEREF(GetAutofillField(form, field));
+    AutofillField& autofill_field =
+        CHECK_DEREF(cached_fields[field.global_id()]);
     const FormAutofillHistory::FieldFillingEntry& previous_state =
         operation.GetFieldFillingEntry(field.global_id());
     // Update the FormFieldData to be sent for the renderer.
