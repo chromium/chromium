@@ -60,27 +60,35 @@ CapturedSurfaceControlResult DoSendWheel(
     blink::mojom::CapturedWheelActionPtr action) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  RenderFrameHost* const rfh =
+  WebContentsImpl* const capturer_wc = WebContentsImpl::FromRenderFrameHostImpl(
+      RenderFrameHostImpl::FromID(capturer_rfh_id));
+  if (!capturer_wc) {
+    // The capturing frame or tab appears to have closed asynchronously.
+    // TODO(crbug.com/1466247): Use a dedicated error.
+    return CapturedSurfaceControlResult::kUnknownError;
+  }
+
+  RenderFrameHost* const captured_rfh =
       captured_wc ? captured_wc->GetPrimaryMainFrame() : nullptr;
-  if (!rfh) {
+  if (!captured_rfh) {
     return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
   }
 
-  if (WebContentsImpl::FromRenderFrameHostID(capturer_rfh_id) ==
-      captured_wc.get()) {
+  RenderFrameHostImpl* const captured_rfhi =
+      RenderFrameHostImpl::FromID(captured_rfh->GetGlobalId());
+  RenderWidgetHostImpl* const captured_rwhi =
+      captured_rfhi ? captured_rfhi->GetRenderWidgetHost() : nullptr;
+  if (!captured_rwhi) {
+    return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
+  }
+
+  if (capturer_wc == captured_wc.get()) {
     return CapturedSurfaceControlResult::kDisallowedForSelfCaptureError;
   }
 
-  RenderFrameHostImpl* const rfhi =
-      RenderFrameHostImpl::FromID(rfh->GetGlobalId());
-  RenderWidgetHostImpl* const rwhi =
-      rfhi ? rfhi->GetRenderWidgetHost() : nullptr;
-  if (!rwhi) {
-    return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
-  }
-
   // Scale (x, y).
-  const gfx::Size captured_viewport_size = rwhi->GetRootWidgetViewportSize();
+  const gfx::Size captured_viewport_size =
+      captured_rwhi->GetRootWidgetViewportSize();
   if (captured_viewport_size.width() < 1 ||
       captured_viewport_size.height() < 1) {
     return CapturedSurfaceControlResult::kUnknownError;
@@ -98,7 +106,7 @@ CapturedSurfaceControlResult DoSendWheel(
             blink::WebInputEvent::kNoModifiers,
             ui::ScrollGranularity::kScrollByPixel);
     event.phase = blink::WebMouseWheelEvent::Phase::kPhaseBegan;
-    rwhi->ForwardWheelEvent(event);
+    captured_rwhi->ForwardWheelEvent(event);
   }
 
   // Close the loop by producing an event at the same location with zero deltas
@@ -109,7 +117,7 @@ CapturedSurfaceControlResult DoSendWheel(
             x, y, /*dx=*/0, /*dy=*/0, blink::WebInputEvent::kNoModifiers,
             ui::ScrollGranularity::kScrollByPixel);
     event.phase = blink::WebMouseWheelEvent::Phase::kPhaseEnded;
-    rwhi->ForwardWheelEvent(event);
+    captured_rwhi->ForwardWheelEvent(event);
   }
 
   return CapturedSurfaceControlResult::kSuccess;
@@ -125,12 +133,19 @@ CapturedSurfaceControlResult DoSetZoomLevel(
     int zoom_level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  WebContentsImpl* const capturer_wc = WebContentsImpl::FromRenderFrameHostImpl(
+      RenderFrameHostImpl::FromID(capturer_rfh_id));
+  if (!capturer_wc) {
+    // The capturing frame or tab appears to have closed asynchronously.
+    // TODO(crbug.com/1466247): Use a dedicated error.
+    return CapturedSurfaceControlResult::kUnknownError;
+  }
+
   if (!captured_wc) {
     return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
   }
 
-  if (WebContentsImpl::FromRenderFrameHostID(capturer_rfh_id) ==
-      captured_wc.get()) {
+  if (capturer_wc == captured_wc.get()) {
     return CapturedSurfaceControlResult::kDisallowedForSelfCaptureError;
   }
 
@@ -148,20 +163,28 @@ std::pair<std::optional<int>, CapturedSurfaceControlResult> DoGetZoomLevel(
     base::WeakPtr<WebContents> captured_wc) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  WebContentsImpl* const capturer_wc = WebContentsImpl::FromRenderFrameHostImpl(
+      RenderFrameHostImpl::FromID(capturer_rfh_id));
+  if (!capturer_wc) {
+    // The capturing frame or tab appears to have closed asynchronously.
+    // TODO(crbug.com/1466247): Use a dedicated error.
+    return std::make_pair(std::nullopt,
+                          CapturedSurfaceControlResult::kUnknownError);
+  }
+
   if (!captured_wc) {
     return std::make_pair(
         std::nullopt,
         CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
   }
 
-  if (WebContentsImpl::FromRenderFrameHostID(capturer_rfh_id) ==
-      captured_wc.get()) {
+  if (capturer_wc == captured_wc.get()) {
     return std::make_pair(
         std::nullopt,
         CapturedSurfaceControlResult::kDisallowedForSelfCaptureError);
   }
 
-  double zoom_level = blink::PageZoomLevelToZoomFactor(
+  const double zoom_level = blink::PageZoomLevelToZoomFactor(
       content::HostZoomMap::GetZoomLevel(captured_wc.get()));
   return std::make_pair(std::round(100 * zoom_level),
                         CapturedSurfaceControlResult::kSuccess);

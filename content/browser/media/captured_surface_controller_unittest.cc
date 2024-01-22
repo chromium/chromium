@@ -504,7 +504,8 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     CapturedSurfaceControllerInterfaceTest,
     ::testing::Values(CapturedSurfaceControlAPI::kSendWheel,
-                      CapturedSurfaceControlAPI::kSetZoomLevel));
+                      CapturedSurfaceControlAPI::kSetZoomLevel,
+                      CapturedSurfaceControlAPI::kGetZoomLevel));
 
 TEST_P(CapturedSurfaceControllerInterfaceTest, SuccessReportedIfPermitted) {
   base::RunLoop run_loop;
@@ -514,6 +515,9 @@ TEST_P(CapturedSurfaceControllerInterfaceTest, SuccessReportedIfPermitted) {
 }
 
 TEST_P(CapturedSurfaceControllerInterfaceTest, NoPermissionReportedIfDenied) {
+  if (tested_interface_ == CapturedSurfaceControlAPI::kGetZoomLevel) {
+    GTEST_SKIP() << "No permission check required for getZoomLevel().";
+  }
   base::RunLoop run_loop;
   permission_manager_->SetPermissionResult(CSCPermissionResult::kDenied);
   RunTestedActionAndExpect(&run_loop, CSCResult::kNoPermissionError);
@@ -522,6 +526,9 @@ TEST_P(CapturedSurfaceControllerInterfaceTest, NoPermissionReportedIfDenied) {
 
 TEST_P(CapturedSurfaceControllerInterfaceTest,
        UnknownErrorReportedIfPermissionError) {
+  if (tested_interface_ == CapturedSurfaceControlAPI::kGetZoomLevel) {
+    GTEST_SKIP() << "No permission check required for getZoomLevel().";
+  }
   base::RunLoop run_loop;
   permission_manager_->SetPermissionResult(CSCPermissionResult::kError);
   RunTestedActionAndExpect(&run_loop, CSCResult::kUnknownError);
@@ -545,6 +552,16 @@ TEST_P(CapturedSurfaceControllerInterfaceTest,
   permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
   controller_->UpdateCaptureTarget(WebContentsMediaCaptureId());
   RunTestedActionAndExpect(&run_loop, CSCResult::kCapturedSurfaceNotFoundError);
+  run_loop.Run();
+}
+
+TEST_P(CapturedSurfaceControllerInterfaceTest,
+       CapturerNotFoundErrorReportedIfCapturerClosed) {
+  base::RunLoop run_loop;
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+  capturer_.reset();
+  // TODO(crbug.com/1466247): Use kCapturerNotFoundError after introducing it.
+  RunTestedActionAndExpect(&run_loop, CSCResult::kUnknownError);
   run_loop.Run();
 }
 
