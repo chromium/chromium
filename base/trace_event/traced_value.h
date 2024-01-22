@@ -43,7 +43,7 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
   void SetBoolean(const char* name, bool value);
   void SetString(const char* name, base::StringPiece value);
   void SetValue(const char* name, TracedValue* value);
-  void SetPointer(const char* name, void* value);
+  void SetPointer(const char* name, const void* value);
   void BeginDictionary(const char* name);
   void BeginArray(const char* name);
 
@@ -53,7 +53,7 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
   void SetBooleanWithCopiedName(base::StringPiece name, bool value);
   void SetStringWithCopiedName(base::StringPiece name, base::StringPiece value);
   void SetValueWithCopiedName(base::StringPiece name, TracedValue* value);
-  void SetPointerWithCopiedName(base::StringPiece name, void* value);
+  void SetPointerWithCopiedName(base::StringPiece name, const void* value);
   void BeginDictionaryWithCopiedName(base::StringPiece name);
   void BeginArrayWithCopiedName(base::StringPiece name);
 
@@ -61,7 +61,7 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
   void AppendDouble(double);
   void AppendBoolean(bool);
   void AppendString(base::StringPiece);
-  void AppendPointer(void*);
+  void AppendPointer(const void*);
   void BeginArray();
   void BeginDictionary();
 
