@@ -39,8 +39,6 @@ namespace {
 
 constexpr int BODY_TOP_MARGIN = 10;
 constexpr int DISTANCE_BUTTON_VERTICAL = 8;
-constexpr int FAVICON_SIZE_IN_PIXEL = 28;
-constexpr int FAVICON_SPACER = 5;
 
 void AddElementIdentifierToLabel(views::Label& label, size_t index) {
   ui::ElementIdentifier id;
@@ -101,15 +99,22 @@ void EmbeddedPermissionPromptBaseView::AddedToWidget() {
   const gfx::VectorIcon& vector_icon = GetIcon();
 
   if (!vector_icon.is_empty()) {
+    const int kPermissionIconSize = features::IsChromeRefresh2023() ? 20 : 18;
+
+    ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+
     auto icon =
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icon, ui::kColorIcon, FAVICON_SIZE_IN_PIXEL));
+            vector_icon, ui::kColorIcon, kPermissionIconSize));
     icon->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
     title_container->AddChildView(std::move(icon));
 
     // Add space between the icon and the text.
     auto spacer = std::make_unique<views::View>();
-    spacer->SetPreferredSize(gfx::Size(FAVICON_SPACER, /*height=*/1));
+    spacer->SetPreferredSize(
+        gfx::Size(provider->GetDistanceMetric(
+                      DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING),
+                  /*height=*/1));
     title_container->AddChildView(std::move(spacer));
   }
 
