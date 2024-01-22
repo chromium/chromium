@@ -43,6 +43,11 @@ std::unique_ptr<proto::LogAiDataRequest> BuildComposeLogAiDataReuqest() {
   std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request(
       new proto::LogAiDataRequest());
 
+  // Inject logging metadata and make sure it gets written to final log.
+  log_ai_data_request->mutable_logging_metadata()
+      ->mutable_system_profile()
+      ->set_build_timestamp(12345);
+
   proto::ComposeLoggingData compose_logging_data;
 
   proto::ComposeRequest request;
@@ -218,6 +223,9 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestSuccessfulResponse) {
             pending_request->logging_metadata()
                 .on_device_system_profile()
                 .performance_class());
+  EXPECT_EQ(
+      12345,
+      pending_request->logging_metadata().system_profile().build_timestamp());
 
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelQualityLogsUploaderService.NetErrorCode",
