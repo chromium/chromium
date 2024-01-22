@@ -916,13 +916,6 @@
       base_feature: "none",
     },
     {
-      // If enabled,
-      // image-set values without the `-webkit-` prefix
-      // will be parsed.
-      name: "CSSImageSet",
-      status: "stable",
-    },
-    {
       name: "CSSLayoutAPI",
       status: "experimental",
       base_feature: "none",
