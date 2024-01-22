@@ -1054,6 +1054,12 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Hit maximum number of template status"/>
 </enum>
 
+<enum name="FocusModeEndSessionSource">
+  <int value="0" label="Focus panel"/>
+  <int value="1" label="Contextual panel"/>
+  <int value="2" label="Feature pod"/>
+</enum>
+
 <enum name="GlanceableStudentAssignmentList">
   <int value="0" label="Assigned"/>
   <int value="1" label="NoDueDate"/>

@@ -469,8 +469,10 @@ void FocusModeDetailedView::CreateToggleView() {
 
   toggle_view_->AddRightView(
       std::make_unique<PillButton>(
-          base::BindRepeating(&FocusModeController::ToggleFocusMode,
-                              base::Unretained(focus_mode_controller)),
+          base::BindRepeating(
+              &FocusModeController::ToggleFocusMode,
+              base::Unretained(focus_mode_controller),
+              focus_mode_histogram_names::ToggleSource::kFocusPanel),
           l10n_util::GetStringUTF16(
               in_focus_session
                   ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON

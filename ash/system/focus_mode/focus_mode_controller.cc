@@ -14,6 +14,7 @@
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -98,8 +99,13 @@ void FocusModeController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void FocusModeController::ToggleFocusMode() {
+void FocusModeController::ToggleFocusMode(
+    focus_mode_histogram_names::ToggleSource source) {
   if (in_focus_session()) {
+    base::UmaHistogramEnumeration(
+        /*name=*/focus_mode_histogram_names::
+            kToggleEndButtonDuringSessionHistogramName,
+        /*sample=*/source);
     ResetFocusSession();
     return;
   }

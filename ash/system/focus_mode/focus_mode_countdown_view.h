@@ -61,6 +61,8 @@ class ASH_EXPORT FocusModeCountdownView : public views::FlexLayoutView {
 
   // Whether to create the "End" button to end the focus session.
   const bool include_end_button_;
+  // The `End` button.
+  raw_ptr<PillButton> end_button_ = nullptr;
 };
 
 }  // namespace ash

@@ -129,9 +129,11 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
 
   FocusModeController* focus_mode_controller = FocusModeController::Get();
   if (include_end_button_) {
-    button_container->AddChildView(std::make_unique<PillButton>(
-        base::BindRepeating(&FocusModeController::ToggleFocusMode,
-                            base::Unretained(focus_mode_controller)),
+    end_button_ = button_container->AddChildView(std::make_unique<PillButton>(
+        base::BindRepeating(
+            &FocusModeController::ToggleFocusMode,
+            base::Unretained(focus_mode_controller),
+            focus_mode_histogram_names::ToggleSource::kContextualPanel),
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON),
         PillButton::Type::kPrimaryWithoutIcon, /*icon=*/nullptr));

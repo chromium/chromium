@@ -11,11 +11,13 @@
 #include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_detailed_view.h"
+#include "ash/system/focus_mode/focus_mode_histogram_names.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/views/view_utils.h"
 
@@ -97,6 +99,7 @@ TEST_F(FocusModeFeaturePodControllerTest, TileVisibility) {
 
 // Tests that pressing the icon works and toggles a Focus Mode Session.
 TEST_F(FocusModeFeaturePodControllerTest, PressIconTogglesFocusModeSession) {
+  base::HistogramTester histogram_tester;
   auto* controller = FocusModeController::Get();
   EXPECT_FALSE(controller->in_focus_session());
   EXPECT_TRUE(tile_->GetVisible());
@@ -117,6 +120,11 @@ TEST_F(FocusModeFeaturePodControllerTest, PressIconTogglesFocusModeSession) {
   EXPECT_FALSE(controller->in_focus_session());
   EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
   EXPECT_FALSE(tile_->IsToggled());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::
+          kToggleEndButtonDuringSessionHistogramName,
+      /*sample=*/focus_mode_histogram_names::ToggleSource::kFeaturePod,
+      /*expected_count=*/1);
 }
 
 // Tests that pressing the label works and shows the `FocusModeDetailedView`.

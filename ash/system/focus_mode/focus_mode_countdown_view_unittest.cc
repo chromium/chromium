@@ -7,10 +7,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_histogram_names.h"
 #include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 
@@ -42,6 +44,10 @@ class FocusModeCountdownViewTest : public AshTestBase {
   views::Label* GetTimeRemainingLabel() {
     return focus_mode_tray_->countdown_view_for_testing()
         ->time_remaining_label_;
+  }
+
+  PillButton* GetEndButton() {
+    return focus_mode_tray_->countdown_view_for_testing()->end_button_;
   }
 
  protected:
@@ -99,6 +105,33 @@ TEST_F(FocusModeCountdownViewTest, ExtendSessionDurationUntilUpperBound) {
   EXPECT_EQ(u"5:00:00", label->GetText());
   EXPECT_EQ(focus_mode_util::kMaximumDuration,
             controller->GetSessionDuration());
+}
+
+// Tests that when clicking the `End` button from the contextual panel, the
+// histogram will record it.
+TEST_F(FocusModeCountdownViewTest, ToogleEndButton) {
+  base::HistogramTester histogram_tester;
+
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+  controller->SetInactiveSessionDuration(focus_mode_util::kMaximumDuration -
+                                         base::Minutes(1));
+
+  // Start a focus session.
+  controller->ToggleFocusMode();
+
+  LeftClickOn(focus_mode_tray_);
+  EXPECT_TRUE(focus_mode_tray_->GetBubbleView());
+  // Toggle `End` button on the contextual panel and check the histogram.
+  auto* button = GetEndButton();
+  EXPECT_TRUE(button);
+  LeftClickOn(button);
+  EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::
+          kToggleEndButtonDuringSessionHistogramName,
+      /*sample=*/focus_mode_histogram_names::ToggleSource::kContextualPanel,
+      /*expected_count=*/1);
 }
 
 }  // namespace ash
