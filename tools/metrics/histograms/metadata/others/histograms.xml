@@ -5482,7 +5482,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.Browser.Metrics"
-    enum="FetchKeepAliveBrowserMetricType" expires_after="2024-04-10">
+    enum="FetchKeepAliveBrowserMetricType" expires_after="2024-07-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5491,156 +5491,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FetchKeepAlive.Browser.Total" enum="Boolean"
-    expires_after="2024-04-10">
+<histogram name="FetchKeepAlive.Browser.Total{LoaderStatus}" enum="Boolean"
+    expires_after="2024-07-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
-    Recorded true every time a new Fetch keepalive request is created by a
-    browser. It does NOT equal to the total number of JavaScript Fetch keepalive
-    call, as the latter can be immediately rejected with various JavaScript
-    exceptions.
-
-    This number should be compared with `FetchKeepAlive.Renderer.Total`.
+    Recorded true every time a Fetch keepalive request loader in browser has
+    {LoaderStatus}
   </summary>
-</histogram>
-
-<histogram name="FetchKeepAlive.Browser.Total.Finished" enum="Boolean"
-    expires_after="2024-04-10">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Recorded once every time a FetchLater request loading is finished in
-    browser. A finished loading can be either suceeded or failed.
-
-    This number may be &lt;= `FetchKeepAlive.Browser.Total.Started`, as a
-    request may be dropped for other undocumented reasons like browser killed or
-    crashes. Also, this number is ~= `kLoadingSuceeded` + `kLoadingFailed` in
-    `FetchKeepAlive.Browser.Metrics`.
-  </summary>
-</histogram>
-
-<histogram name="FetchKeepAlive.Browser.Total.ReceivedResponse" enum="Boolean"
-    expires_after="2024-04-10">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Recorded once every time a Fetch keepalive request loader in browser has
-    received a response.
-
-    This number should be compared with
-    `FetchKeepAlive.Renderer.Total.ReceivedResponse`.
-  </summary>
-</histogram>
-
-<histogram name="FetchKeepAlive.Browser.Total.Redirected" enum="Boolean"
-    expires_after="2024-04-10">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Recorded once every time a Fetch keepalive request loader in browser has
-    received a redirect.
-
-    This number should be compared with
-    `FetchKeepAlive.Renderer.Total.Redirected`.
-  </summary>
-</histogram>
-
-<histogram name="FetchKeepAlive.Browser.Total.Started" enum="Boolean"
-    expires_after="2024-04-10">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Recorded once every time a created Fetch keepalive request is started in the
-    browser. This number should be the same as `FetchKeepAlive.Browser.Total`,
-    but logging to figure out if any differneces exist.
-  </summary>
-</histogram>
-
-<histogram name="FetchKeepAlive.Renderer.Duration" units="ms"
-    expires_after="2024-06-23">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Recorded the time taken to complete a fetch keepalive request in a renderer
-    process, no matter a request succeeds or fails.
-
-    As this is from the view of a renderer, it should not be used if in-browser
-    migration is enabled, as renderer will not be able to outlive even if any of
-    fetch keepalive request is still pending.
-  </summary>
-</histogram>
-
-<histogram name="FetchKeepAlive.Renderer.Duration.Failed" units="ms"
-    expires_after="2024-06-23">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Recorded the time taken to complete a failed fetch keepalive request in a
-    renderer process.
-
-    This is the duration of a subset of requests logged by
-    `FetchKeepAlive.Renderer.Duration`. See that histogram for more details.
-  </summary>
-</histogram>
-
-<histogram name="FetchKeepAlive.Renderer.Duration.Succeeded" units="ms"
-    expires_after="2024-06-23">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Recorded the time taken to complete a succeeded fetch keepalive request in a
-    renderer process.
-
-    This is the duration of a subset of requests logged by
-    `FetchKeepAlive.Renderer.Duration`. See that histogram for more details.
-  </summary>
-</histogram>
-
-<histogram name="FetchKeepAlive.Renderer.DurationAfterDetached" units="ms"
-    expires_after="2024-04-10">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Recorded the time between a fetch context is &quot;detached&quot; and
-    completing a fetch keepalive request, no matter a request succeeds or fails.
-
-    As this is from the view of a renderer, it should not be used if in-browser
-    migration is enabled, as renderer will not be able to detach even if any of
-    fetch keepalive request is still pending.
-  </summary>
-</histogram>
-
-<histogram name="FetchKeepAlive.Renderer.DurationAfterDetached.Failed"
-    units="ms" expires_after="2024-04-10">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Recorded the time between a fetch context is &quot;detached&quot; and
-    completing a failed fetch keepalive request.
-
-    This is the duration of a subset of requests logged by
-    `FetchKeepAlive.Renderer.DurationAfterDetached`. See that histogram for more
-    details.
-  </summary>
-</histogram>
-
-<histogram name="FetchKeepAlive.Renderer.DurationAfterDetached.Succeeded"
-    units="ms" expires_after="2024-04-10">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Recorded the time between a fetch context is &quot;detached&quot; and
-    completing a succeeded fetch keepalive request.
-
-    This is the duration of a subset of requests logged by
-    `FetchKeepAlive.Renderer.DurationAfterDetached`. See that histogram for more
-    details.
-  </summary>
+  <token key="LoaderStatus">
+    <variant name=""
+        summary="been created. It does NOT equal to the total number of
+                 JavaScript Fetch keepalive call, as the latter can be
+                 immediately rejected with various JavaScript exceptions.
+                 This number should be compared with
+                 `FetchKeepAlive.Renderer.Total`."/>
+    <variant name=".Finished"
+        summary="finished loading. A finished loading can be either suceeded
+                 or failed. This number may be &lt;=
+                 `FetchKeepAlive.Browser.Total.Started`, as a request may be
+                 dropped for other undocumented reasons like browser killed
+                 or crashes. Also, this number is ~= `kLoadingSuceeded` +
+                 `kLoadingFailed` in `FetchKeepAlive.Browser.Metrics`."/>
+    <variant name=".ReceivedResponse"
+        summary="received a response. This number should be compared with
+                 `FetchKeepAlive.Renderer.Total.ReceivedResponse`."/>
+    <variant name=".Redirected"
+        summary="received a redirect. This number should be compared with
+                 `FetchKeepAlive.Renderer.Total.Redirected`."/>
+    <variant name=".Started"
+        summary="started to load. This number should be the same as
+                 `FetchKeepAlive.Browser.Total`, but logging to figure out if
+                 any differneces exist."/>
+  </token>
 </histogram>
 
 <histogram name="FetchKeepAlive.Renderer.Metrics"
-    enum="FetchKeepAliveRendererMetricType" expires_after="2024-04-10">
+    enum="FetchKeepAliveRendererMetricType" expires_after="2024-07-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5649,76 +5536,69 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FetchKeepAlive.Renderer.Total" enum="Boolean"
-    expires_after="2024-04-10">
+<histogram name="FetchKeepAlive.Renderer.Total{LoaderStatus}" enum="Boolean"
+    expires_after="2024-07-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
-    Recorded true every time a new FetchLater request is created by a renderer.
-    It does NOT equal to the total number of JavaScript FetchLater API call, as
-    the latter can be immediately rejected with various JavaScript exceptions.
-
-    This metric is recorded to compare whether different behavior happens
-    between renderer and browser. This number should be compared with
-    `FetchKeepAlive.Browser.Total`.
+    Recorded true every time a Fetch keepalive request loader in a renderer
+    {LoaderStatus}
   </summary>
+  <token key="LoaderStatus">
+    <variant name=""
+        summary="is created. It does NOT equal to the total number of
+                 JavaScript Fetch API call, as the latter can be immediately
+                 rejected with various JavaScript exceptions. This metric is
+                 recorded to compare whether different behavior happens
+                 between renderer and browser. This number should be compared
+                 with `FetchKeepAlive.Browser.Total`."/>
+    <variant name=".Finished"
+        summary="is finished loading. A finished loading can be either
+                 suceeded or failed. This number may be &lt;=
+                 `FetchKeepAlive.Renderer.Total.Started`, as a request may be
+                 dropped for other undocumented reasons like browser killed
+                 or crashes. Also, this number is &lt;=
+                 `FetchKeepAlive.Browser.Total.Finished`."/>
+    <variant name=".ReceivedResponse"
+        summary="has received a response. This number should be compared with
+                 `FetchKeepAlive.Renderer.Total.ReceivedResponse`."/>
+    <variant name=".Redirected"
+        summary="has received a redirect. This number should be compared with
+                 `FetchKeepAlive.Browser.Total.Redirected`."/>
+    <variant name=".Started"
+        summary="is started to load. This number may be &lt;=
+                 `FetchKeepAlive.Renderer.Total`, as a created request may
+                 not be started at all."/>
+  </token>
 </histogram>
 
-<histogram name="FetchKeepAlive.Renderer.Total.Finished" enum="Boolean"
-    expires_after="2024-04-10">
+<histogram name="FetchKeepAlive.Renderer.{DurationType}{RequestStatus}"
+    units="ms" expires_after="2024-07-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Recorded once every time a Fetch keepalive request loading is finished in a
-    renderer process. A finished loading can be either suceeded or failed.
-
-    This number may be &lt;= `FetchKeepAlive.Renderer.Total.Started`, as a
-    request may be dropped for other undocumented reasons like browser killed or
-    crashes. Also, this number is &lt;= `FetchKeepAlive.Browser.Total.Finished`.
-  </summary>
-</histogram>
-
-<histogram name="FetchKeepAlive.Renderer.Total.ReceivedResponse" enum="Boolean"
-    expires_after="2024-04-10">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Recorded once every time a Fetch keepalive request loader in a renderer has
-    received a response.
-
-    This number should be compared with
-    `FetchKeepAlive.Renderer.Total.ReceivedResponse`.
-  </summary>
-</histogram>
-
-<histogram name="FetchKeepAlive.Renderer.Total.Redirected" enum="Boolean"
-    expires_after="2024-04-10">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Recorded once every time a Fetch keepalive request loader in a renderer has
-    received a redirect.
-
-    This number should be compared with
-    `FetchKeepAlive.Browser.Total.Redirected`.
-  </summary>
-</histogram>
-
-<histogram name="FetchKeepAlive.Renderer.Total.Started" enum="Boolean"
-    expires_after="2024-04-10">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Recorded once every time a created Fetch keepalive request is started in a
-    renderer process.
-
-    This number may be &lt;= `FetchKeepAlive.Renderer.Total`, as a created
-    request may not be started at all.
-  </summary>
+  <summary>Recorded the time {DurationType} {RequestStatus}</summary>
+  <token key="DurationType">
+    <variant name="Duration"
+        summary="taken to complete a fetch keepalive request in a renderer
+                 process"/>
+    <variant name="DurationAfterDetached"
+        summary="between a fetch context is &quot;detached&quot; and
+                 completing a fetch keepalive request"/>
+  </token>
+  <token key="RequestStatus">
+    <variant name=""
+        summary=", no matter a request succeeds or fails. As this is from the
+                 view of a renderer, it should not be used if in-browser
+                 migration is enabled, as renderer will not be able to
+                 outlive even if any of fetch keepalive request is still
+                 pending."/>
+    <variant name=".Failed" summary=", where the request has failed."/>
+    <variant name=".Succeeded" summary=", where the request has succeeded."/>
+  </token>
 </histogram>
 
 <histogram name="FetchLater.Browser.Metrics" enum="FetchLaterBrowserMetricType"
-    expires_after="2024-04-10">
+    expires_after="2024-07-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5727,36 +5607,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FetchLater.Browser.Total" enum="Boolean"
-    expires_after="2024-04-10">
+<histogram name="FetchLater.Browser.Total{LoaderStatus}" enum="Boolean"
+    expires_after="2024-07-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Records true every time a new FetchLater request is scheduled by a browser.
-    It does NOT equal to the total number of JavaScript FetchLater API call, as
-    the latter can be immediately rejected with various JavaScript exceptions.
-
-    This number should be compared with `FetchLater.Renderer.Total`, and it may
-    be &gt;= the sum of `FetchLater.Browser.Metrics`, as a request may be
-    dropped for other undocumented reasons like browser killed or crashes.
-  </summary>
-</histogram>
-
-<histogram name="FetchLater.Browser.Total.Started" enum="Boolean"
-    expires_after="2024-04-10">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Records once every time a scheduled FetchLater request is started in
-    browser.
-
-    This number should be the sum of enum values &quot;kStarted*&quot; in
-    `FetchLater.Browser.Metrics`.
-  </summary>
+  <summary>Records true every time {LoaderStatus}</summary>
+  <token key="LoaderStatus">
+    <variant name=""
+        summary="a new FetchLater request is scheduled by a browser. It does
+                 NOT equal to the total number of JavaScript FetchLater API
+                 call, as the latter can be immediately rejected with various
+                 JavaScript exceptions. This number should be compared with
+                 `FetchLater.Renderer.Total`, and it may be &gt;= the sum of
+                 `FetchLater.Browser.Metrics`, as a request may be dropped
+                 for other undocumented reasons like browser killed or
+                 crashes."/>
+    <variant name=".Started"
+        summary="a scheduled FetchLater request is started in browser. This
+                 number should be the sum of enum values
+                 &quot;kStarted*&quot; in `FetchLater.Browser.Metrics`."/>
+  </token>
 </histogram>
 
 <histogram name="FetchLater.Renderer.Metrics"
-    enum="FetchLaterRendererMetricType" expires_after="2024-04-10">
+    enum="FetchLaterRendererMetricType" expires_after="2024-07-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -5766,7 +5640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchLater.Renderer.Total" enum="Boolean"
-    expires_after="2024-04-10">
+    expires_after="2024-07-10">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
