@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -84,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
 }
 
 // TODO(b/321593065): enable this flaky test.
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable \
   DISABLED_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
 #else
