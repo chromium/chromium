@@ -8,6 +8,10 @@
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/test/scoped_feature_list.h"
+#endif
+
 namespace base {
 class CommandLine;
 }
@@ -42,6 +46,11 @@ class TwoClientWebAppsIntegrationTestBase
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
   WebAppIntegrationTestDriver helper_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
 };
 
 }  // namespace web_app::integration_tests
