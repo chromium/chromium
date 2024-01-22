@@ -165,6 +165,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/model/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/session_metrics.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -3660,8 +3661,10 @@ void InjectNTP(Browser* browser) {
     return;
   }
 
-  self.mainInterface.userInteractionEnabled = YES;
-  self.incognitoInterface.userInteractionEnabled = YES;
+  WebUsageEnablerBrowserAgent::FromBrowser(self.mainInterface.browser)
+      ->SetWebUsageEnabled(true);
+  WebUsageEnablerBrowserAgent::FromBrowser(self.incognitoInterface.browser)
+      ->SetWebUsageEnabled(true);
   [self.currentInterface setPrimary:YES];
 }
 

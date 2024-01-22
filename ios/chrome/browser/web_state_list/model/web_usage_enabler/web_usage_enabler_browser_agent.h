@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_WEB_USAGE_ENABLER_WEB_USAGE_ENABLER_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_WEB_USAGE_ENABLER_WEB_USAGE_ENABLER_BROWSER_AGENT_H_
 
+#include "base/observer_list.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
@@ -13,6 +14,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
+
+class WebUsageEnablerBrowserAgentObserver;
 
 // An agent that observes the browser's WebStateList and enables or disables web
 // usage for WebStates that are added or removed.  This can be used to easily
@@ -37,6 +40,10 @@ class WebUsageEnablerBrowserAgent
 
   // The current value set with `SetWebUsageEnabled`.
   bool IsWebUsageEnabled() const;
+
+  // Adds and removes observers.
+  void AddObserver(WebUsageEnablerBrowserAgentObserver* observer);
+  void RemoveObserver(WebUsageEnablerBrowserAgentObserver* observer);
 
  private:
   friend class BrowserUserData<WebUsageEnablerBrowserAgent>;
@@ -78,6 +85,10 @@ class WebUsageEnablerBrowserAgent
 
   base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
       web_state_observations_{this};
+
+  // The list of observers.
+  base::ObserverList<WebUsageEnablerBrowserAgentObserver, /*check_empty=*/true>
+      observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_WEB_USAGE_ENABLER_WEB_USAGE_ENABLER_BROWSER_AGENT_H_

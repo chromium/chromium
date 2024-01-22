@@ -36,8 +36,6 @@ class ChromeBrowserState;
 @property(nonatomic) Browser* inactiveBrowser;
 // The browser state for this interface. This can never be nullptr.
 @property(nonatomic, readonly) ChromeBrowserState* browserState;
-// YES if the tab view is available for user interaction.
-@property(nonatomic) BOOL userInteractionEnabled;
 // YES if this interface is incognito.
 @property(nonatomic, readonly) BOOL incognito;
 // YES if TTS audio is playing.

@@ -229,6 +229,7 @@
 #import "ios/chrome/browser/web/model/web_navigation_ntp_delegate.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -273,6 +274,7 @@ enum class ToolbarKind {
     OverscrollActionsControllerDelegate,
     PageInfoCommands,
     PageInfoPresentation,
+    ParcelTrackingOptInCommands,
     PasswordBreachCommands,
     PasswordControllerDelegate,
     PasswordProtectionCommands,
@@ -301,10 +303,16 @@ enum class ToolbarKind {
     URLLoadingDelegate,
     WebContentCommands,
     WebNavigationNTPDelegate,
-    ParcelTrackingOptInCommands>
+    WebUsageEnablerBrowserAgentObserving>
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
+
+// Activates/deactivates the object. This will enable/disable the ability for
+// this object to browse, and to have live UIWebViews associated with it. While
+// not active, the UI will not react to changes in the tab model, so generally
+// an inactive BVC should not be visible.
+@property(nonatomic, assign, getter=isActive) BOOL active;
 
 // Whether web usage is enabled for the WebStates in `self.browser`.
 @property(nonatomic, assign, getter=isWebUsageEnabled) BOOL webUsageEnabled;
@@ -543,6 +551,8 @@ enum class ToolbarKind {
   UrlLoadingBrowserAgent* _urlLoadingBrowserAgent;
   AddContactsCoordinator* _addContactsCoordinator;
   OmniboxPositionChoiceCoordinator* _omniboxPositionChoiceCoordinator;
+  std::unique_ptr<WebUsageEnablerBrowserAgentObserverBridge>
+      _webUsageEnablerObserver;
 }
 
 #pragma mark - ChromeCoordinator
@@ -552,6 +562,10 @@ enum class ToolbarKind {
     return;
 
   DCHECK(!self.viewController);
+
+  _webUsageEnablerObserver =
+      std::make_unique<WebUsageEnablerBrowserAgentObserverBridge>(
+          WebUsageEnablerBrowserAgent::FromBrowser(self.browser), self);
 
   // TabLifeCycleMediator should start before createViewController because it
   // needs to register itself as a WebStateListObserver before the rest of the
@@ -602,6 +616,7 @@ enum class ToolbarKind {
   [self stopChildCoordinators];
   [self destroyViewController];
   [self destroyViewControllerDependencies];
+  _webUsageEnablerObserver.reset();
 }
 
 - (void)dealloc {
@@ -772,8 +787,6 @@ enum class ToolbarKind {
   if (!self.browser->GetBrowserState() || !self.started) {
     return;
   }
-  WebUsageEnablerBrowserAgent::FromBrowser(self.browser)
-      ->SetWebUsageEnabled(webUsageEnabled);
   _webUsageEnabled = webUsageEnabled;
   self.viewController.webUsageEnabled = webUsageEnabled;
 }
@@ -3288,6 +3301,14 @@ enum class ToolbarKind {
 
 - (BOOL)isBrowserPresentingUI {
   return self.viewController.presentedViewController != nil;
+}
+
+#pragma mark - WebUsageEnablerBrowserAgentObserving
+
+- (void)webUsageEnablerValueChanged:
+    (WebUsageEnablerBrowserAgent*)webUsageEnabler {
+  self.active = WebUsageEnablerBrowserAgent::FromBrowser(self.browser)
+                    ->IsWebUsageEnabled();
 }
 
 @end
