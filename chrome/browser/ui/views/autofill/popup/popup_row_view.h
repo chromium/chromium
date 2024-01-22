@@ -119,6 +119,7 @@ class PopupRowView : public views::View, public views::ViewObserver {
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // views::ViewObserver:
   void OnViewFocused(views::View* focused_now) override;
@@ -154,32 +155,6 @@ class PopupRowView : public views::View, public views::ViewObserver {
   int line_number() const { return line_number_; }
 
  private:
-  // If the suggestion has child suggestions the row view adds this view to
-  // provide a control for the sub-popup. It implements visualization and event
-  // handling only, `PopupViewViews` controls the logic of opening/closing.
-  class ExpandChildSuggestionsView : public views::View {
-    METADATA_HEADER(ExpandChildSuggestionsView, views::View)
-
-   public:
-    ExpandChildSuggestionsView();
-    ExpandChildSuggestionsView(const ExpandChildSuggestionsView&) = delete;
-    ExpandChildSuggestionsView& operator=(const ExpandChildSuggestionsView&) =
-        delete;
-    ~ExpandChildSuggestionsView() override = default;
-
-    // views::View:
-    void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
-    // Sets the a11y checked state. It should reflect the sub-popup open state.
-    void SetChecked(bool checked);
-
-   private:
-    // This property controls the a11y `ax::mojom::CheckedState` attribute.
-    // The value is controlled by external clients (see `SetChecked()`) and
-    // expected to be synced with the sub-popup open state.
-    bool checked_ = false;
-  };
-
   void RunOnAcceptedForEvent(const ui::Event& event);
 
   AccessibilitySelectionDelegate& GetA11ySelectionDelegate() {
@@ -208,7 +183,7 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // The view wrapping the content area of the row.
   raw_ptr<PopupRowContentView> content_view_ = nullptr;
   // The view wrapping the control area of the row.
-  raw_ptr<ExpandChildSuggestionsView> expand_child_suggestions_view_ = nullptr;
+  raw_ptr<views::View> expand_child_suggestions_view_ = nullptr;
 
   // Overriding event handles for the content and control views.
   std::unique_ptr<ui::EventHandler> content_event_handler_;

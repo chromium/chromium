@@ -245,7 +245,9 @@ std::unique_ptr<views::ImageView> GetIconImageViewFromIcon(
   NOTREACHED_NORETURN();
 }
 
-std::u16string GetSuggestionA11yCoreMessage(const Suggestion& suggestion) {
+}  // namespace
+
+std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
   if (suggestion.voice_over) {
     return *suggestion.voice_over;
   }
@@ -272,31 +274,6 @@ std::u16string GetSuggestionA11yCoreMessage(const Suggestion& suggestion) {
   add_if_not_empty(suggestion.additional_label);
 
   return base::JoinString(text, u" ");
-}
-
-}  // namespace
-
-std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
-  std::vector<std::u16string> text({GetSuggestionA11yCoreMessage(suggestion)});
-
-  if (!suggestion.children.empty()) {
-    CHECK(IsExpandablePopupItemId(suggestion.popup_item_id));
-
-    if (suggestion.popup_item_id == PopupItemId::kAddressEntry) {
-      text.push_back(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_EXPANDABLE_SUGGESTION_FULL_ADDRESS_A11Y_ADDON));
-    }
-
-    std::u16string shortcut = l10n_util::GetStringUTF16(
-        base::i18n::IsRTL()
-            ? IDS_AUTOFILL_EXPANDABLE_SUGGESTION_EXPAND_SHORTCUT_RTL
-            : IDS_AUTOFILL_EXPANDABLE_SUGGESTION_EXPAND_SHORTCUT);
-
-    text.push_back(l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_EXPANDABLE_SUGGESTION_SUBMENU_HINT, shortcut));
-  }
-
-  return base::JoinString(text, u". ");
 }
 
 gfx::Insets GetMarginsForContentCell(bool has_control_element) {

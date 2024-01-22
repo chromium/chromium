@@ -250,24 +250,16 @@ TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsWithControl) {
   ASSERT_TRUE(row_view().GetExpandChildSuggestionsView());
   EXPECT_FALSE(row_view().GetSelectedCell().has_value());
 
-  base::MockRepeatingCallback<void(const ui::AXPlatformNodeDelegate*,
-                                   const ax::mojom::Event)>
-      a11y_callback;
-
-  row_view()
-      .GetExpandChildSuggestionsView()
-      ->GetViewAccessibility()
-      .set_accessibility_events_callback(a11y_callback.Get());
-
   // Selecting the control cell notifies the accessibility system that the
   // respective view has been selected.
-  EXPECT_CALL(a11y_callback, Run(_, ax::mojom::Event::kFocus));
+  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection(Ref(row_view())));
   row_view().SetSelectedCell(CellType::kControl);
   EXPECT_EQ(row_view().GetSelectedCell(),
             std::make_optional<CellType>(CellType::kControl));
 
   // Selecting it again leads to no notification.
-  EXPECT_CALL(a11y_callback, Run).Times(0);
+  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection(Ref(row_view())))
+      .Times(0);
   row_view().SetSelectedCell(CellType::kControl);
   EXPECT_EQ(row_view().GetSelectedCell(),
             std::make_optional<CellType>(CellType::kControl));
@@ -298,20 +290,11 @@ TEST_F(PopupRowViewTest, NotifyAXSelectionCalledOnChangesOnly) {
   ASSERT_TRUE(row_view().GetExpandChildSuggestionsView());
   row_view().SetSelectedCell(CellType::kContent);
 
-  base::MockRepeatingCallback<void(const ui::AXPlatformNodeDelegate*,
-                                   const ax::mojom::Event)>
-      a11y_callback;
-
-  row_view()
-      .GetExpandChildSuggestionsView()
-      ->GetViewAccessibility()
-      .set_accessibility_events_callback(a11y_callback.Get());
-
-  EXPECT_CALL(a11y_callback, Run(_, ax::mojom::Event::kFocus));
+  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection(Ref(row_view())));
   row_view().SetSelectedCell(CellType::kControl);
 
   // Hitting right again does not do anything.
-  EXPECT_CALL(a11y_callback, Run).Times(0);
+  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection).Times(0);
   row_view().SetSelectedCell(CellType::kControl);
 
   EXPECT_CALL(a11y_selection_delegate(),
@@ -486,18 +469,5 @@ TEST_P(PopupRowPosInSetViewTest, All) {
 INSTANTIATE_TEST_SUITE_P(All,
                          PopupRowPosInSetViewTest,
                          ::testing::ValuesIn(kPosInSetTestcases));
-
-TEST_F(PopupRowViewTest, ChildSuggestionsExpandingControlA11yCheckedState) {
-  ShowView(/*line_number=*/0, /*has_control=*/true);
-  ASSERT_TRUE(row_view().GetExpandChildSuggestionsView());
-
-  ui::AXNodeData node_data;
-  row_view().GetExpandChildSuggestionsView()->GetAccessibleNodeData(&node_data);
-  ASSERT_EQ(node_data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
-
-  row_view().SetChildSuggestionsDisplayed(true);
-  row_view().GetExpandChildSuggestionsView()->GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(node_data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
-}
 
 }  // namespace autofill

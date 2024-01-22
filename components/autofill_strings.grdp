@@ -590,10 +590,7 @@
     <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the dialog that edits an address before saving it.">
       Cancel
     </message>
-    <message name="IDS_AUTOFILL_EXPANDABLE_SUGGESTION_CONTROLL_A11Y_NAME" desc="Autofill desktop popup: the a11y name for the expandable suggestion controll." translateable="false">
-      Expand suggestion
-    </message>
-    <message name="IDS_AUTOFILL_EXPANDABLE_SUGGESTION_FULL_ADDRESS_A11Y_ADDON" desc="Autofill desktop popup: additional screen reader info to distinguish the address top level suggestions from others.">
+    <message name="IDS_AUTOFILL_EXPANDABLE_SUGGESTION_FILL_ADDRESS_A11Y_ADDON" desc="Autofill desktop popup: call to action message part for expandable address suggestions.">
       Fill address
     </message>
     <message name="IDS_AUTOFILL_EXPANDABLE_SUGGESTION_EXPAND_SHORTCUT" desc="Autofill desktop popup: the shortcut used to focus the expanding control and effectively open the sub-menu, used in IDS_AUTOFILL_EXPANDABLE_SUGGESTION_SUBMENU_HINT.">
