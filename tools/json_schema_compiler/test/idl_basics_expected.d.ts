@@ -110,6 +110,24 @@ declare global {
 
       export function function30(): idl_other_namespace.SomeType[];
 
+      export function funcAsync(): Promise<MyType2[]>;
+
+      export function funcOptionalArgAndNotPromiseBased(
+          cb: (arg0?: string) => void): void;
+
+      export function funcOptionalArgCallback(): Promise<string|undefined>;
+
+      export function funcOptionalCallbackNotPromiseBased(
+          cb?: (x: number) => void): void;
+
+      export function funcOptionalCallback(): Promise<number>;
+
+      export function funcWithEntry(entries: Entry[]): void;
+
+      export function funcWithArrayObj(entries: Array<{
+        [key: string]: any,
+      }>): void;
+
       export const onFoo1: ChromeEvent<() => void>;
 
       export const onFoo2: ChromeEvent<(arg: MyType1) => void>;
