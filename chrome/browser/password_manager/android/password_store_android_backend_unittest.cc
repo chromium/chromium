@@ -910,7 +910,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   EXPECT_CALL(
       mock_reply,
       Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
-                      PasswordStoreBackendErrorRecoveryType::kRetriable)));
+                      PasswordStoreBackendErrorRecoveryType::kRecoverable)));
   consumer().OnError(kJobId, CreateNetworkError());
 
   RunUntilIdle();
@@ -1656,8 +1656,13 @@ class PasswordStoreAndroidBackendWithoutUnenrollmentTest
   }
 
   bool IsRetriableError() {
-    return password_manager_upm_eviction::ShouldRetryOnApiError(
-        static_cast<int>(GetParam().first));
+    const base::flat_set<AndroidBackendAPIErrorCode> kRetriableErrors = {
+        AndroidBackendAPIErrorCode::kNetworkError,
+        AndroidBackendAPIErrorCode::kApiNotConnected,
+        AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall,
+        AndroidBackendAPIErrorCode::kReconnectionTimedOut,
+        AndroidBackendAPIErrorCode::kBackendGeneric};
+    return kRetriableErrors.contains(GetParam().first);
   }
 
   PasswordStoreBackendErrorRecoveryType RecoveryType() {

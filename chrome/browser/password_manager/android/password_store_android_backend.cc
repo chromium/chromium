@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -265,62 +266,6 @@ void LogUPMActiveStatus(syncer::SyncService* sync_service, PrefService* prefs) {
                                 UnifiedPasswordManagerActiveStatus::kActive);
 }
 
-bool IsAuthenticationError(AndroidBackendAPIErrorCode api_error_code) {
-  switch (api_error_code) {
-    case AndroidBackendAPIErrorCode::kAuthErrorResolvable:
-    case AndroidBackendAPIErrorCode::kAuthErrorUnresolvable:
-      return true;
-    case AndroidBackendAPIErrorCode::kNetworkError:
-    case AndroidBackendAPIErrorCode::kInternalError:
-    case AndroidBackendAPIErrorCode::kDeveloperError:
-    case AndroidBackendAPIErrorCode::kApiNotConnected:
-    case AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall:
-    case AndroidBackendAPIErrorCode::kReconnectionTimedOut:
-    case AndroidBackendAPIErrorCode::kPassphraseRequired:
-    case AndroidBackendAPIErrorCode::kKeyRetrievalRequired:
-    case AndroidBackendAPIErrorCode::kAccessDenied:
-    case AndroidBackendAPIErrorCode::kBadRequest:
-    case AndroidBackendAPIErrorCode::kBackendGeneric:
-    case AndroidBackendAPIErrorCode::kBackendResourceExhausted:
-    case AndroidBackendAPIErrorCode::kInvalidData:
-    case AndroidBackendAPIErrorCode::kUnmappedErrorCode:
-    case AndroidBackendAPIErrorCode::kUnexpectedError:
-    case AndroidBackendAPIErrorCode::kChromeSyncAPICallError:
-    case AndroidBackendAPIErrorCode::kErrorWhileDoingLeakServiceGRPC:
-    case AndroidBackendAPIErrorCode::kRequiredSyncingAccountMissing:
-    case AndroidBackendAPIErrorCode::kLeakCheckServiceAuthError:
-    case AndroidBackendAPIErrorCode::kLeakCheckServiceResourceExhausted:
-      return false;
-  }
-  // The api_error_code is determined by static casting an int. It is thus
-  // possible for the value to not be among the explicit enum values, however
-  // that case should still be handled. Not adding a default statement to the
-  // switch, so that the compiler still warns when a new enum value is added and
-  // not explicitly handled here.
-  return false;
-}
-
-bool IsRetriableOperation(PasswordStoreOperation operation) {
-  switch (operation) {
-    case PasswordStoreOperation::kGetAllLoginsAsync:
-    case PasswordStoreOperation::kGetAutofillableLoginsAsync:
-      return true;
-    case PasswordStoreOperation::kGetAllLoginsForAccountAsync:
-    case PasswordStoreOperation::kFillMatchingLoginsAsync:
-    case PasswordStoreOperation::kAddLoginAsync:
-    case PasswordStoreOperation::kUpdateLoginAsync:
-    case PasswordStoreOperation::kRemoveLoginAsync:
-    case PasswordStoreOperation::kRemoveLoginsByURLAndTimeAsync:
-    case PasswordStoreOperation::kRemoveLoginsCreatedBetweenAsync:
-    case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
-    case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
-    case PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync:
-      return false;
-  }
-  NOTREACHED() << "Operation code not handled";
-  return false;
-}
-
 std::string GetOperationName(PasswordStoreOperation operation) {
   switch (operation) {
     case PasswordStoreOperation::kGetAllLoginsAsync:
@@ -377,47 +322,80 @@ void RecordRetryHistograms(PasswordStoreOperation operation,
                                 attempt, kMaxReportedRetryAttempts);
 }
 
-bool IsUnrecoverableBackendError(
-    AndroidBackendAPIErrorCode api_error_code,
-    PasswordStoreOperation operation,
-    PasswordStoreAndroidBackendBridgeHelper* bridge_helper) {
-  if (password_manager_upm_eviction::ShouldRetryOnApiError(
-          static_cast<int>(api_error_code)) &&
-      IsRetriableOperation(operation)) {
-    // If the error and the operation are retriable, the error does not require
-    // any error-specific support and could be recovered.
-    // Retriable operations as they are defined at the moment should not result
-    // in eviction, not even if the retrying has timed out.
-    return false;
-  }
+enum class ActionOnApiError {
+  // See password_manager_upm_eviction::EvictCurrentUser().
+  kEvict,
+  // See prefs::kSavePasswordsSuspendedByError.
+  kDisableSaving,
+  kRetry,
+  kNone,
+};
 
-  if (api_error_code != AndroidBackendAPIErrorCode::kPassphraseRequired &&
-      bridge_helper->CanRemoveUnenrollment()) {
-    // If unenrollment can be removed, users can be evicted only if they
-    // encounter passphrase error.
-    return false;
+ActionOnApiError GetActionOnApiError(AndroidBackendAPIErrorCode api_error_code,
+                                     PasswordStoreOperation operation,
+                                     base::TimeDelta delay,
+                                     bool can_remove_unenrollment) {
+  switch (api_error_code) {
+    case AndroidBackendAPIErrorCode::kAuthErrorResolvable:
+    case AndroidBackendAPIErrorCode::kAuthErrorUnresolvable:
+      return ActionOnApiError::kDisableSaving;
+    case AndroidBackendAPIErrorCode::kPassphraseRequired: {
+      // kPassphraseRequired is treated separately from most errors leading to
+      // eviction - CanRemoveUnenrollment() branch below - to allow a rollout
+      // independent of kRemoveUPMUnenrollment.
+      // TODO(crbug.com/1511304): Send passphrase to platform client if flag
+      // enabled.
+      return ActionOnApiError::kEvict;
+    }
+    case AndroidBackendAPIErrorCode::kNetworkError:
+    case AndroidBackendAPIErrorCode::kApiNotConnected:
+    case AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall:
+    case AndroidBackendAPIErrorCode::kReconnectionTimedOut:
+    case AndroidBackendAPIErrorCode::kBackendGeneric:
+      if (operation == PasswordStoreOperation::kGetAllLoginsAsync ||
+          operation == PasswordStoreOperation::kGetAutofillableLoginsAsync) {
+        // This (error, operation) tuple is generally retriable. Still, impose
+        // a max retry timeout. If time ran out...
+        // - ...and unenrollment is present, the operation should still not
+        // result in eviction (historical artifact).
+        // - ...and unenrollment is gone, disable saving.
+        return delay < kTaskRetryTimeout
+                   ? ActionOnApiError::kRetry
+                   : (can_remove_unenrollment ? ActionOnApiError::kDisableSaving
+                                              : ActionOnApiError::kNone);
+      }
+      // Not retriable. Handle with other errors leading to eviction below.
+      ABSL_FALLTHROUGH_INTENDED;
+    case AndroidBackendAPIErrorCode::kInternalError:
+    case AndroidBackendAPIErrorCode::kDeveloperError:
+    case AndroidBackendAPIErrorCode::kAccessDenied:
+    case AndroidBackendAPIErrorCode::kBadRequest:
+    case AndroidBackendAPIErrorCode::kBackendResourceExhausted:
+    case AndroidBackendAPIErrorCode::kInvalidData:
+    case AndroidBackendAPIErrorCode::kUnmappedErrorCode:
+    case AndroidBackendAPIErrorCode::kUnexpectedError:
+    case AndroidBackendAPIErrorCode::kKeyRetrievalRequired:
+    case AndroidBackendAPIErrorCode::kChromeSyncAPICallError:
+    case AndroidBackendAPIErrorCode::kErrorWhileDoingLeakServiceGRPC:
+    case AndroidBackendAPIErrorCode::kRequiredSyncingAccountMissing:
+    case AndroidBackendAPIErrorCode::kLeakCheckServiceAuthError:
+    case AndroidBackendAPIErrorCode::kLeakCheckServiceResourceExhausted:
+      break;
   }
-
-  if (!password_manager_upm_eviction::ShouldIgnoreOnApiError(
-          static_cast<int>(api_error_code))) {
-    // If the error should not be ignored, it will immediately evict the user
-    // with no possibility to recover.
-    return true;
-  }
-
-  return false;
+  return can_remove_unenrollment ? ActionOnApiError::kDisableSaving
+                                 : ActionOnApiError::kEvict;
 }
 
 PasswordStoreBackendErrorType APIErrorCodeToErrorType(
     AndroidBackendAPIErrorCode api_error_code,
-    PasswordStoreAndroidBackendBridgeHelper* bridge_helper) {
+    bool can_remove_unenrollment) {
   switch (api_error_code) {
     case AndroidBackendAPIErrorCode::kAuthErrorResolvable:
       return PasswordStoreBackendErrorType::kAuthErrorResolvable;
     case AndroidBackendAPIErrorCode::kAuthErrorUnresolvable:
       return PasswordStoreBackendErrorType::kAuthErrorUnresolvable;
     case AndroidBackendAPIErrorCode::kKeyRetrievalRequired:
-      return bridge_helper->CanRemoveUnenrollment()
+      return can_remove_unenrollment
                  ? PasswordStoreBackendErrorType::kKeyRetrievalRequired
                  : PasswordStoreBackendErrorType::kUncategorized;
     case AndroidBackendAPIErrorCode::kNetworkError:
@@ -449,18 +427,11 @@ PasswordStoreBackendErrorType APIErrorCodeToErrorType(
   return PasswordStoreBackendErrorType::kUncategorized;
 }
 
-bool ShouldRetryOperation(PasswordStoreOperation operation,
-                          int api_error,
-                          base::TimeDelta delay) {
-  return IsRetriableOperation(operation) &&
-         password_manager_upm_eviction::ShouldRetryOnApiError(api_error) &&
-         (delay < kTaskRetryTimeout);
-}
-
 PasswordStoreBackendError BackendErrorFromAndroidBackendError(
     const AndroidBackendError& error,
     PasswordStoreOperation operation,
-    PasswordStoreAndroidBackendBridgeHelper* bridge_helper) {
+    base::TimeDelta delay,
+    bool can_remove_unenrollment) {
   if (error.type != AndroidBackendErrorType::kExternalError) {
     return PasswordStoreBackendError(
         PasswordStoreBackendErrorType::kUncategorized,
@@ -478,21 +449,24 @@ PasswordStoreBackendError BackendErrorFromAndroidBackendError(
   AndroidBackendAPIErrorCode api_error_code =
       static_cast<AndroidBackendAPIErrorCode>(error.api_error_code.value());
   PasswordStoreBackendErrorType error_type =
-      APIErrorCodeToErrorType(api_error_code, bridge_helper);
+      APIErrorCodeToErrorType(api_error_code, can_remove_unenrollment);
 
-  if (password_manager_upm_eviction::ShouldRetryOnApiError(
-          error.api_error_code.value())) {
-    return PasswordStoreBackendError(
-        error_type,
-        IsRetriableOperation(operation)
-            ? PasswordStoreBackendErrorRecoveryType::kRetriable
-            : PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
+  switch (GetActionOnApiError(api_error_code, operation, delay,
+                              can_remove_unenrollment)) {
+    case ActionOnApiError::kRetry:
+      return PasswordStoreBackendError(
+          error_type, PasswordStoreBackendErrorRecoveryType::kRetriable);
+    case ActionOnApiError::kEvict:
+      return PasswordStoreBackendError(
+          error_type, PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
+    // Counterintuitively, kDisableSaving is kRecoverable, as kUnrecoverable is
+    // reserved for eviction.
+    case ActionOnApiError::kDisableSaving:
+    case ActionOnApiError::kNone:
+      return PasswordStoreBackendError(
+          error_type, PasswordStoreBackendErrorRecoveryType::kRecoverable);
   }
-  PasswordStoreBackendErrorRecoveryType recovery_type =
-      IsUnrecoverableBackendError(api_error_code, operation, bridge_helper)
-          ? PasswordStoreBackendErrorRecoveryType::kUnrecoverable
-          : PasswordStoreBackendErrorRecoveryType::kRecoverable;
-  return PasswordStoreBackendError(error_type, recovery_type);
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -973,9 +947,10 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   // The error to report is computed before potential eviction. This is because
   // eviction resets state which might be used to infer the recovery type of
   // the error.
+  base::TimeDelta delay = reply->GetDelay();
   PasswordStoreBackendError reported_error =
-      BackendErrorFromAndroidBackendError(error, operation,
-                                          bridge_helper_.get());
+      BackendErrorFromAndroidBackendError(
+          error, operation, delay, bridge_helper_->CanRemoveUnenrollment());
 
   if (error.api_error_code.has_value() && sync_service_) {
     // TODO(crbug.com/1324588): DCHECK_EQ(api_error_code,
@@ -989,58 +964,35 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
 
     // Retry the call if the performed operation in combination with the error
     // was retriable and the time limit was not reached.
-    base::TimeDelta delay = reply->GetDelay();
-    if (ShouldRetryOperation(operation, api_error, delay)) {
-      RecordRetryHistograms(operation, api_error_code, delay);
-      switch (operation) {
-        case PasswordStoreOperation::kGetAllLoginsAsync:
-          RetryOperation(
-              base::BindOnce(
-                  &PasswordStoreAndroidBackend::GetAllLoginsForAccountInternal,
-                  weak_ptr_factory_.GetWeakPtr(),
-                  GetSyncingAccount(sync_service_),
-                  std::move(*reply).Get<LoginsOrErrorReply>(), operation),
-              delay);
-          return;
-        case PasswordStoreOperation::kGetAutofillableLoginsAsync:
-          RetryOperation(
-              base::BindOnce(
-                  &PasswordStoreAndroidBackend::GetAutofillableLoginsInternal,
-                  weak_ptr_factory_.GetWeakPtr(),
-                  GetSyncingAccount(sync_service_),
-                  std::move(*reply).Get<LoginsOrErrorReply>(), operation),
-              delay);
-          return;
-        case PasswordStoreOperation::kGetAllLoginsForAccountAsync:
-        case PasswordStoreOperation::kFillMatchingLoginsAsync:
-        case PasswordStoreOperation::kAddLoginAsync:
-        case PasswordStoreOperation::kUpdateLoginAsync:
-        case PasswordStoreOperation::kRemoveLoginAsync:
-        case PasswordStoreOperation::kRemoveLoginsByURLAndTimeAsync:
-        case PasswordStoreOperation::kRemoveLoginsCreatedBetweenAsync:
-        case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
-        case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
-        case PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync:
-          NOTREACHED();
-          return;
+    switch (GetActionOnApiError(api_error_code, operation, delay,
+                                bridge_helper_->CanRemoveUnenrollment())) {
+      case ActionOnApiError::kRetry: {
+        RecordRetryHistograms(operation, api_error_code, delay);
+        CHECK(operation == PasswordStoreOperation::kGetAllLoginsAsync ||
+              operation == PasswordStoreOperation::kGetAutofillableLoginsAsync);
+        const auto method =
+            operation == PasswordStoreOperation::kGetAllLoginsAsync
+                ? &PasswordStoreAndroidBackend::GetAllLoginsForAccountInternal
+                : &PasswordStoreAndroidBackend::GetAutofillableLoginsInternal;
+        RetryOperation(
+            base::BindOnce(method, weak_ptr_factory_.GetWeakPtr(),
+                           GetSyncingAccount(sync_service_),
+                           std::move(*reply).Get<LoginsOrErrorReply>(),
+                           operation),
+            delay);
+        return;
       }
-    }
-
-    // If the user is experiencing an error unresolvable by Chrome or by the
-    // user, unenroll the user from the UPM experience.
-    if (password_manager::IsUnrecoverableBackendError(api_error_code, operation,
-                                                      bridge_helper_.get())) {
-      if (!password_manager_upm_eviction::IsCurrentUserEvicted(prefs_)) {
-        password_manager_upm_eviction::EvictCurrentUser(api_error, prefs_);
+      case ActionOnApiError::kEvict: {
+        if (!password_manager_upm_eviction::IsCurrentUserEvicted(prefs_)) {
+          password_manager_upm_eviction::EvictCurrentUser(api_error, prefs_);
+        }
+        break;
       }
-    } else if (IsAuthenticationError(api_error_code) ||
-               bridge_helper_->CanRemoveUnenrollment()) {
-      // Disable password manager if auth error is encountered or unenrollment
-      // can be removed.
-      prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);
-      // Mark the error as recoverable to avoid fallbacks to the LoginDatabase.
-      reported_error.recovery_type =
-          PasswordStoreBackendErrorRecoveryType::kRecoverable;
+      case ActionOnApiError::kDisableSaving:
+        prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);
+        break;
+      case ActionOnApiError::kNone:
+        break;
     }
   }
 
