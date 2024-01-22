@@ -182,7 +182,9 @@ BrowserClosingStatus UnloadController::GetBrowserClosingStatus() {
   // 4. Otherwise: return true.
   is_attempting_to_close_browser_ = true;
   // Cases 1 and 4.
-  bool need_beforeunload_fired = TabsNeedBeforeUnloadFired();
+  tabs_needing_before_unload_fired_ = GetTabsNeedingBeforeUnloadFired();
+
+  bool need_beforeunload_fired = !tabs_needing_before_unload_fired_.empty();
   if (need_beforeunload_fired == is_calling_before_unload_handlers()) {
     return need_beforeunload_fired
                ? BrowserClosingStatus::kDeniedUnloadHandlersNeedTime
@@ -201,9 +203,14 @@ bool UnloadController::TryToCloseWindow(
   // The devtools browser gets its beforeunload events as the results of
   // intercepting events from the inspected tab, so don't send them here as
   // well.
-  if (browser_->is_type_devtools() || HasCompletedUnloadProcessing() ||
-      !TabsNeedBeforeUnloadFired())
+  if (browser_->is_type_devtools() || HasCompletedUnloadProcessing()) {
     return false;
+  }
+
+  tabs_needing_before_unload_fired_ = GetTabsNeedingBeforeUnloadFired();
+  if (tabs_needing_before_unload_fired_.empty()) {
+    return false;
+  }
 
   is_attempting_to_close_browser_ = true;
   on_close_confirmed_ = on_close_confirmed;
@@ -218,21 +225,32 @@ void UnloadController::ResetTryToCloseWindow() {
   CancelWindowClose();
 }
 
-bool UnloadController::TabsNeedBeforeUnloadFired() {
-  if (tabs_needing_before_unload_fired_.empty()) {
-    for (int i = 0; i < browser_->tab_strip_model()->count(); ++i) {
-      content::WebContents* contents =
-          browser_->tab_strip_model()->GetWebContentsAt(i);
-      bool should_fire_beforeunload =
-          contents->NeedToFireBeforeUnloadOrUnloadEvents() ||
-          DevToolsWindow::NeedsToInterceptBeforeUnload(contents);
-      if (!base::Contains(tabs_needing_unload_fired_, contents) &&
-          should_fire_beforeunload) {
-        tabs_needing_before_unload_fired_.insert(contents);
-      }
+bool UnloadController::TabsNeedBeforeUnloadFired() const {
+  return !GetTabsNeedingBeforeUnloadFired().empty();
+}
+
+UnloadController::UnloadListenerSet
+UnloadController::GetTabsNeedingBeforeUnloadFired() const {
+  if (!is_attempting_to_close_browser_) {
+    CHECK(tabs_needing_unload_fired_.empty());
+  }
+
+  UnloadListenerSet tabs_needing_beforeunload;
+  for (int i = 0; i < browser_->tab_strip_model()->count(); ++i) {
+    content::WebContents* const contents =
+        browser_->tab_strip_model()->GetWebContentsAt(i);
+    const bool should_fire_beforeunload =
+        contents->NeedToFireBeforeUnloadOrUnloadEvents() ||
+        DevToolsWindow::NeedsToInterceptBeforeUnload(contents);
+    // Note that we filter out tabs in `tabs_needing_unload_fired_` as they have
+    // already had their BeforeUnload fired (and don't need it fired again
+    // unless browser closing gets cancelled).
+    if (!base::Contains(tabs_needing_unload_fired_, contents) &&
+        should_fire_beforeunload) {
+      tabs_needing_beforeunload.insert(contents);
     }
   }
-  return !tabs_needing_before_unload_fired_.empty();
+  return tabs_needing_beforeunload;
 }
 
 void UnloadController::CancelWindowClose() {
@@ -330,11 +348,14 @@ void UnloadController::ProcessPendingTabs(bool skip_beforeunload) {
     return;
   }
 
-  if (HasCompletedUnloadProcessing() && !TabsNeedBeforeUnloadFired()) {
-    // We've finished all the unload events and can proceed to close the
-    // browser.
-    browser_->OnWindowClosing();
-    return;
+  if (HasCompletedUnloadProcessing()) {
+    tabs_needing_before_unload_fired_ = GetTabsNeedingBeforeUnloadFired();
+    if (tabs_needing_before_unload_fired_.empty()) {
+      // We've finished all the unload events and can proceed to close the
+      // browser.
+      browser_->OnWindowClosing();
+      return;
+    }
   }
 
   if (skip_beforeunload) {
@@ -346,7 +367,7 @@ void UnloadController::ProcessPendingTabs(bool skip_beforeunload) {
   // Process beforeunload tabs first. When that queue is empty, process
   // unload tabs.
   if (!tabs_needing_before_unload_fired_.empty()) {
-    content::WebContents* web_contents =
+    content::WebContents* const web_contents =
         *(tabs_needing_before_unload_fired_.begin());
     // Null check render_view_host here as this gets called on a PostTask and
     // the tab's render_view_host may have been nulled out.
@@ -360,7 +381,9 @@ void UnloadController::ProcessPendingTabs(bool skip_beforeunload) {
     } else {
       ClearUnloadState(web_contents, true);
     }
-  } else if (is_calling_before_unload_handlers()) {
+    return;
+  }
+  if (is_calling_before_unload_handlers()) {
     base::RepeatingCallback<void(bool)> on_close_confirmed =
         on_close_confirmed_;
     // Reset |on_close_confirmed_| in case the callback tests
@@ -370,25 +393,25 @@ void UnloadController::ProcessPendingTabs(bool skip_beforeunload) {
       on_close_confirmed_.Reset();
     if (!skip_beforeunload)
       on_close_confirmed.Run(true);
-  } else if (!tabs_needing_unload_fired_.empty()) {
-    // We've finished firing all beforeunload events and can proceed with unload
-    // events.
-    // TODO(ojan): We should add a call to browser_shutdown::OnShutdownStarting
-    // somewhere around here so that we have accurate measurements of shutdown
-    // time.
-    // TODO(ojan): We can probably fire all the unload events in parallel and
-    // get a perf benefit from that in the cases where the tab hangs in it's
-    // unload handler or takes a long time to page in.
-    content::WebContents* web_contents = *(tabs_needing_unload_fired_.begin());
-    // Null check render_view_host here as this gets called on a PostTask and
-    // the tab's render_view_host may have been nulled out.
-    if (web_contents->GetPrimaryMainFrame()->GetRenderViewHost()) {
-      web_contents->ClosePage();
-    } else {
-      ClearUnloadState(web_contents, true);
-    }
+    return;
+  }
+  CHECK(!tabs_needing_unload_fired_.empty());
+  // We've finished firing all beforeunload events and can proceed with unload
+  // events.
+  // TODO(ojan): We should add a call to browser_shutdown::OnShutdownStarting
+  // somewhere around here so that we have accurate measurements of shutdown
+  // time.
+  // TODO(ojan): We can probably fire all the unload events in parallel and
+  // get a perf benefit from that in the cases where the tab hangs in it's
+  // unload handler or takes a long time to page in.
+  content::WebContents* const web_contents =
+      *(tabs_needing_unload_fired_.begin());
+  // Null check render_view_host here as this gets called on a PostTask and
+  // the tab's render_view_host may have been nulled out.
+  if (web_contents->GetPrimaryMainFrame()->GetRenderViewHost()) {
+    web_contents->ClosePage();
   } else {
-    NOTREACHED();
+    ClearUnloadState(web_contents, true);
   }
 }
 

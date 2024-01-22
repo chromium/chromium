@@ -603,8 +603,7 @@ class Browser : public TabStripModelObserver,
   void ResetTryToCloseWindow();
 
   // Figure out if there are tabs that have beforeunload handlers.
-  // It starts beforeunload/unload processing as a side-effect.
-  bool TabsNeedBeforeUnloadFired();
+  bool TabsNeedBeforeUnloadFired() const;
 
   // Browser closing consists of the following phases:
   //
