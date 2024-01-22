@@ -123,7 +123,7 @@ NSString* const kSetUpListTitleAxId = @"kSetUpListTitleAxId";
 
   UIStackView* setUpListItemStackView = [[UIStackView alloc] init];
   setUpListItemStackView.axis = UILayoutConstraintAxisVertical;
-  setUpListItemStackView.alignment = UIStackViewAlignmentLeading;
+  setUpListItemStackView.alignment = UIStackViewAlignmentFill;
   setUpListItemStackView.distribution = UIStackViewDistributionFill;
   setUpListItemStackView.translatesAutoresizingMaskIntoConstraints = NO;
   setUpListItemStackView.spacing = kSetUpListItemSpacing;
