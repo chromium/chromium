@@ -58,7 +58,6 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
   void RestartAggregator() {
     source_id_ = ukm::UkmRecorder::GetNewSourceID();
     aggregator_ = base::MakeRefCounted<LocalFrameUkmAggregator>();
-    // ukm::UkmRecorder::GetNewSourceID(), &recorder_, true);
     aggregator_->SetTickClockForTesting(test_task_runner_->GetMockTickClock());
   }
 
@@ -1302,10 +1301,6 @@ TEST_P(LocalFrameUkmAggregatorSyncScrollTest, SyncScrollHeuristicRAFSetTop) {
     // Should only have triggered for the one post FCP scroll.
     histogram_tester.ExpectTotalCount(
         "Blink.PossibleSynchronizedScrollCount2.UpdateTime.PostFCP", 1);
-    // Should only trigger for the two scroll top adjustments.
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Renderer.PossibleSynchronizedScroll2"),
-        base::BucketsInclude(base::Bucket(0, 2), base::Bucket(1, 2)));
   } else {
     // Should never trigger.
     EXPECT_THAT(
@@ -1314,9 +1309,6 @@ TEST_P(LocalFrameUkmAggregatorSyncScrollTest, SyncScrollHeuristicRAFSetTop) {
         base::BucketsAre(base::Bucket(0, 1)));
     histogram_tester.ExpectTotalCount(
         "Blink.PossibleSynchronizedScrollCount2.UpdateTime.PostFCP", 0);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Renderer.PossibleSynchronizedScroll2"),
-        base::BucketsInclude(base::Bucket(0, 4)));
   }
 }
 

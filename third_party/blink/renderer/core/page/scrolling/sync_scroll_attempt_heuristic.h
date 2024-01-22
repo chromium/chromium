@@ -13,21 +13,37 @@ namespace blink {
 class Frame;
 
 // SyncScrollAttemptHeuristic handles detecting cases where a page attempts to
-// synchronize an effect with scrolling. While a vended Scope instance exists,
-// the heuristic observes when script accesses scroll position and then also
-// modifies inline style in order to estimate when script is attempting to
-// synchronize content with scrolling. This is complicated somewhat by rAF. It
-// can happen that a scroll handler will use rAF to realize the update. Our
-// heuristic is imprecise in this case - we consider it to be a sync scroll
-// attempt if
+// synchronize an effect with scrolling (eg, using JavaScript to implement a
+// parallax scroller). While a vended Scope instance exists, the heuristic
+// observes when script accesses scroll position and then also modifies inline
+// style or scroll offset in order to estimate when script is attempting to
+// synchronize content with scrolling (these style/scroll-offset updates may
+// not actually be implementing a sync-scroll effect, so this can be
+// inaccurate).
+//
+// This is complicated somewhat by rAF. It can happen that a scroll handler
+// will use rAF to realize the update. Our heuristic is imprecise in this case.
+// We consider it to be a sync scroll attempt if
 //   a) a rAF callback was scheduled via a scroll handler and,
 //   b) any rAF callback then mutates inline style or scroll position.
 // I.e., we do not distinguish the rAF callback scheduled during the scroll
 // handler from any other rAF callback, which can lead to incorrectly flagging a
 // rAF-induced mutation as a sync scroll attempt.
 //
+// More precisely,
+//   - A Scope |A| is created before step 6.9 of the html processing model[1]
+//     and it is destroyed before step 6.10. This scope is always active.
+//   - We then create a Scope |B| before step 6.14 that is destroyed before step
+//     6.15 [1]. This scope is only active (i.e., listening for updates), if
+//     a rAF callback was scheduled during Scope |A|'s lifetime.
+// If, while Scopes |A| and |B| are active, scroll offset was accessed and
+// either inline style or scroll position was modified, the heuristic considers
+// this to have been an attempt at creating a scroll-synchronized effect.
+//
 // We only attempt to detect sync scroll attempts if the given frame is the
-// outermost main frame and  UKM is not recorded when the given frame is remote.
+// outermost main frame and UKM is not recorded when the given frame is remote.
+//
+// [1] https://html.spec.whatwg.org/#event-loop-processing-model
 //
 // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
 // impact is understood.

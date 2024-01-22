@@ -3222,8 +3222,16 @@ chromium-metrics-reviews@google.com.
   <owner>vollick@chromium.org</owner>
   <owner>flackr@chromium.org</owner>
   <summary>
-    The total number times a page is estimated to have attempted a sync-scroll
-    update (i.e., synchronizing an effect with scroll).
+    Counts whether a possible sync-scroll update is attempted during an
+    animation update of the outermost main frame of a page (see
+    sync_scroll_attempt_heuristic.h for details).
+
+    We will only record a 1 when the heuristic detects a possible sync scroll
+    (and we will also subsample further). This means PreFCP and PostFCP will
+    only report ones, and only when subsampled.
+
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
   </summary>
 </histogram>
 

@@ -5077,19 +5077,26 @@ be describing additional metrics about the same event.
       01/2024.
     </obsolete>
     <summary>
-      The total number times a page (whose main frame is both the outermost main
-      frame and is local) is estimated to have attempted a sync- scroll update
-      (i.e., synchronizing an effect with scroll) between navigation and First
-      Contentful Paint.
+      Counts whether a possible sync-scroll update is attempted during an
+      animation update of the outermost main frame of a page between navigation
+      and First Contentful Paint (see sync_scroll_attempt_heuristic.h for
+      details).
+
+      The heuristic is checked once per main frame update. The recorded value
+      will be either 1 or 0 for a sampled frame depending on whether the
+      heuristic determined that there was a possible sync-scroll update.
     </summary>
   </metric>
   <metric name="PossibleSynchronizedScrollCount2">
     <summary>
-      The number times a page (whose main frame is both the outermost main frame
-      and is local) is estimated to have attempted a sync- scroll update (i.e.,
-      synchronizing an effect with scroll) between navigation and First
-      Contentful Paint. We consider only effects realized by either changing
-      inline style or updating scroll offset.
+      Counts whether a possible sync-scroll update is attempted during an
+      animation update of the outermost main frame of a page between navigation
+      and First Contentful Paint (see sync_scroll_attempt_heuristic.h for
+      details).
+
+      The heuristic is checked once per main frame update. The recorded value
+      will be either 1 or 0 for a sampled frame depending on whether the
+      heuristic determined that there was a possible sync-scroll update.
     </summary>
   </metric>
   <metric name="PrePaint">
@@ -6160,40 +6167,39 @@ be describing additional metrics about the same event.
       01/2024.
     </obsolete>
     <summary>
-      The total number times a page (whose main frame is both the outermost main
-      frame and is local) is estimated to have attempted a sync- scroll update
-      (i.e., synchronizing an effect with scroll).
+      Counts whether a possible sync-scroll update is attempted during an
+      animation update of the outermost main frame of a page (see
+      sync_scroll_attempt_heuristic.h for details).
+
+      The heuristic is checked once per main frame update. The recorded value
+      will be either 1 or 0 for a sampled frame depending on whether the
+      heuristic determined that there was a possible sync-scroll update.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="PossibleSynchronizedScrollCount2">
     <summary>
-      The number times a page (whose main frame is both the outermost main frame
-      and is local) is estimated to have attempted a sync- scroll update (i.e.,
-      synchronizing an effect with scroll). We consider only effects realized by
-      either changing inline style or updating scroll offset.
+      Counts whether a possible sync-scroll update is attempted during an
+      animation update of the outermost main frame of a page (see
+      sync_scroll_attempt_heuristic.h for details).
+
+      The heuristic is checked once per main frame update. The recorded value
+      will be either 1 or 0 for a sampled frame depending on whether the
+      heuristic determined that there was a possible sync-scroll update.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="PossibleSynchronizedScrollCount2BeginMainFrame">
     <summary>
-      The number times a page (whose main frame is both the outermost main frame
-      and is local) is estimated to have attempted a sync- scroll update (i.e.,
-      synchronizing an effect with scroll) during begin main frame updates. We
-      consider only effects realized by either changing inline style or updating
-      scroll offset.
+      Counts whether a possible sync-scroll update is attempted during an
+      animation update of the outermost main frame of a page (see
+      sync_scroll_attempt_heuristic.h for details).
+
+      The heuristic is checked once per main frame update. The recorded value
+      will be either 1 or 0 for a sampled frame depending on whether the
+      heuristic determined that there was a possible sync-scroll update.
+
+      Note that since the check happens during main frame updates, there should
+      be no difference between this metric and PossibleSynchronizedScrollCount2
+      above.
     </summary>
   </metric>
   <metric name="PossibleSynchronizedScrollCountBeginMainFrame">
@@ -6203,9 +6209,17 @@ be describing additional metrics about the same event.
       Deprecated 01/2024.
     </obsolete>
     <summary>
-      The total number times a page (whose main frame is both the outermost main
-      frame and is local) is estimated to have attempted a sync- scroll update
-      (i.e., synchronizing an effect with scroll).
+      Counts whether a possible sync-scroll update is attempted during an
+      animation update of the outermost main frame of a page (see
+      sync_scroll_attempt_heuristic.h for details).
+
+      The heuristic is checked once per main frame update. The recorded value
+      will be either 1 or 0 for a sampled frame depending on whether the
+      heuristic determined that there was a possible sync-scroll update.
+
+      Note that since the check happens during main frame updates, there should
+      be no difference between this metric and PossibleSynchronizedScrollCount2
+      above.
     </summary>
   </metric>
   <metric name="PrePaint">
