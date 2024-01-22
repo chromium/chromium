@@ -415,10 +415,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-slider-valuetext-change.html"));
 }
 
-// crbug.com/1047282: disabled due to flakiness.
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityEventsTest,
-    DISABLED_AccessibilityEventsAriaSpinButtonValueBothChange) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAriaSpinButtonValueBothChange) {
   RunEventTest(FILE_PATH_LITERAL("aria-spinbutton-value-both-change.html"));
 }
 
