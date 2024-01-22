@@ -218,9 +218,6 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 test, self.mac_port.BASELINE_SUFFIX, '.' + suffix)
             self._write(baseline_name, 'contents')
 
-        self.mac_port.host.filesystem.write_text_file(
-            '/test.checkout/web_tests/external/wpt/MANIFEST.json', '{}')
-
     def tearDown(self):
         BaseTestCase.tearDown(self)
         LoggingTestCase.tearDown(self)
@@ -237,7 +234,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'verbose': False,
             'builders': [],
             'patchset': None,
-            'flag_specific': None,
+            'manifest_update': True,
         }
         options.update(kwargs)
         return optparse.Values(options)

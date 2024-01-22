@@ -61,7 +61,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         help='Patchset number to fetch try results from (defaults to latest).')
 
     def __init__(self, tool, io_pool: Optional[Executor] = None):
-        super(RebaselineCL, self).__init__(options=[
+        super().__init__(options=[
             self.only_changed_tests_option,
             self.no_trigger_jobs_option,
             self.test_name_file_option,
@@ -77,6 +77,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             self.no_optimize_option,
             self.dry_run_option,
             self.results_directory_option,
+            *self.wpt_options,
         ])
         self._tool = tool
         # Use a separate thread pool for parallel network I/O in the main
@@ -109,7 +110,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         setattr(parser.values, option.dest, selected_builders)
 
     def execute(self, options, args, tool):
-        self._tool = tool
         self._dry_run = options.dry_run
         self.git_cl = self.git_cl or GitCL(tool)
 

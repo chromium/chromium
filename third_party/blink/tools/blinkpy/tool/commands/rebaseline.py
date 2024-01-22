@@ -128,6 +128,15 @@ class AbstractRebaseliningCommand(Command):
         self._results_dir = None
         self._dry_run = False
 
+    def check_arguments_and_execute(self,
+                                    options: optparse.Values,
+                                    args: List[str],
+                                    tool: Optional['BlinkTool'] = None) -> int:
+        self._tool = tool
+        for option, value in vars(options).items():
+            self._host_port.set_option_default(option, value)
+        return super().check_arguments_and_execute(options, args, tool)
+
     def baseline_directory(self, builder_name):
         port = self._tool.port_factory.get_from_builder_name(builder_name)
         return port.baseline_version_dir()
@@ -169,9 +178,10 @@ class AbstractRebaseliningCommand(Command):
         for wpt_dir, url_base in self._host_port.WPT_DIRS.items():
             if test_name.startswith(wpt_dir):
                 manifest = self._host_port.wpt_manifest(wpt_dir)
-                return manifest.get_test_type(
-                    manifest.file_path_for_test_url(
-                        test_name[len(f'{wpt_dir}/'):]))
+                file_path = manifest.file_path_for_test_url(
+                    test_name[len(f'{wpt_dir}/'):])
+                assert file_path, f'{test_name!r} not in the {url_base!r} manifest'
+                return manifest.get_test_type(file_path)
         return None  # Not a WPT.
 
 
@@ -695,7 +705,7 @@ class Rebaseline(AbstractParallelRebaselineCommand):
     argument_names = '[TEST_NAMES]'
 
     def __init__(self):
-        super(Rebaseline, self).__init__(options=[
+        super().__init__(options=[
             self.no_optimize_option,
             self.dry_run_option,
             # FIXME: should we support the platform options in addition to (or instead of) --builders?
@@ -707,6 +717,7 @@ class Rebaseline(AbstractParallelRebaselineCommand):
                 help=
                 ('Comma-separated-list of builders to pull new baselines from '
                  '(can also be provided multiple times).')),
+            *self.wpt_options,
         ])
 
     def _builders_to_pull_from(self):
@@ -716,7 +727,6 @@ class Rebaseline(AbstractParallelRebaselineCommand):
             can_choose_multiple=True)
 
     def execute(self, options, args, tool):
-        self._tool = tool
         self._dry_run = options.dry_run
         if not args:
             _log.error('Must list tests to rebaseline.')

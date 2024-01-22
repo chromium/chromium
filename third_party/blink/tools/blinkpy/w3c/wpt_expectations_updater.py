@@ -685,7 +685,8 @@ class WPTExpectationsUpdater:
         for test in tests_to_rebaseline:
             _log.info('  %s', test)
 
-        args = ['--no-trigger-jobs']
+        # The importer should have already updated the manifests.
+        args = ['--no-trigger-jobs', '--no-manifest-update']
         if self.options.verbose:
             args.append('--verbose')
         if self.patchset:
