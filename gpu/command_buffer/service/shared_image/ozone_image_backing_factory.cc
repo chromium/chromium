@@ -280,7 +280,8 @@ bool OzoneImageBackingFactory::IsSupported(
     return false;
   }
 
-  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
+  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER_READ) ||
+                      (usage & SHARED_IMAGE_USAGE_RASTER_WRITE) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE);
   bool used_by_vulkan =

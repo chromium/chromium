@@ -892,10 +892,8 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
 
   const FormatInfo& format_info = GetFormatInfo(format);
 
-  // SHARED_IMAGE_USAGE_RASTER is set when we want to write on Skia
-  // representation and SHARED_IMAGE_USAGE_DISPLAY_READ is used for cases we
-  // want to read from skia representation.
-  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
+  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER_READ) ||
+                      (usage & SHARED_IMAGE_USAGE_RASTER_WRITE) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE);
   bool used_by_gl = (HasGLES2ReadOrWriteUsage(usage)) ||

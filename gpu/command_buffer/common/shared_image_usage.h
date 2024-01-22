@@ -28,9 +28,9 @@ enum SharedImageUsage : uint32_t {
   // Image will be used as a scanout buffer (overlay)
   SHARED_IMAGE_USAGE_SCANOUT = 1 << 5,
   // Image will be used in OOP rasterization. This flag is used on top of
-  // SHARED_IMAGE_USAGE_RASTER to indicate that the client will only use
-  // RasterInterface for OOP rasterization. TODO(backer): Eliminate once we can
-  // CPU raster to SkImage via RasterInterface.
+  // SHARED_IMAGE_USAGE_RASTER_{READ, WRITE} to indicate that the client will
+  // only use RasterInterface for OOP rasterization. TODO(backer): Eliminate
+  // once we can CPU raster to SkImage via RasterInterface.
   SHARED_IMAGE_USAGE_OOP_RASTERIZATION = 1 << 6,
   // Image will be used by Dawn (for WebGPU)
   SHARED_IMAGE_USAGE_WEBGPU = 1 << 7,
@@ -85,13 +85,6 @@ enum SharedImageUsage : uint32_t {
 
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };
-
-// Constant left in place while we transition the codebase to use RASTER_READ
-// and RASTER_WRITE.
-// TODO(crbug.com/1519074): Transition all usage of this constant and eliminate
-// the constant.
-inline constexpr uint32_t SHARED_IMAGE_USAGE_RASTER =
-    SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
 
 // Returns true if usage is a valid client usage.
 GPU_EXPORT bool IsValidClientUsage(uint32_t usage);

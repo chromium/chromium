@@ -459,7 +459,8 @@ OzoneImageBacking::OzoneImageBacking(
       context_state_(std::move(context_state)),
       workarounds_(workarounds),
       use_passthrough_(use_passthrough) {
-  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
+  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER_READ) ||
+                      (usage & SHARED_IMAGE_USAGE_RASTER_WRITE) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_READ);
   bool used_by_gl =
       (HasGLES2ReadOrWriteUsage(usage)) ||

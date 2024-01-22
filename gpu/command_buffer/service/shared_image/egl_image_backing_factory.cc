@@ -132,7 +132,8 @@ bool EGLImageBackingFactory::IsSupported(uint32_t usage,
   if (gr_context_type != GrContextType::kGL &&
       ((usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
        (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE) ||
-       (usage & SHARED_IMAGE_USAGE_RASTER))) {
+       (usage & SHARED_IMAGE_USAGE_RASTER_READ) ||
+       (usage & SHARED_IMAGE_USAGE_RASTER_WRITE))) {
     return false;
   }
   constexpr uint32_t kInvalidUsage = SHARED_IMAGE_USAGE_VIDEO_DECODE |
