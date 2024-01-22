@@ -28,6 +28,9 @@ class AddressFieldTest
                                          AutofillScanner* scanner) override {
     return AddressFieldParser::Parse(context, scanner);
   }
+
+  base::test::ScopedFeatureList default_features{
+      features::kAutofillUseI18nAddressModel};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -149,8 +152,8 @@ TEST_P(AddressFieldTest, ParseDependentLocality) {
 // Tests that the landmark is correctly classified.
 TEST_P(AddressFieldTest, ParseLandmark) {
   // TODO(crbug.com/1441904): Remove once launched.
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(features::kAutofillEnableSupportForLandmark);
+  base::test::ScopedFeatureList enabled{
+      features::kAutofillEnableSupportForLandmark};
 
   AddTextFormFieldData("landmark", "Landmark", ADDRESS_HOME_LANDMARK);
   ClassifyAndVerify(ParseResult::PARSED, GeoIpCountryCode("BR"),

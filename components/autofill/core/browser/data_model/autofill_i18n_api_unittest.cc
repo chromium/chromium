@@ -211,14 +211,10 @@ TEST_F(AutofillI18nApiTest, IsTypeEnabledForCountry) {
                    << "Testing type " << FieldTypeToStringView(field_type)
                    << " in country " << address_country_code);
 
-      if (!kAutofillModelRules.contains(country_code)) {
-        EXPECT_FALSE(IsTypeEnabledForCountry(field_type, address_country_code));
-      } else {
-        bool is_contained =
-            test_api(store.Root()).GetNodeForType(field_type) != nullptr;
-        EXPECT_EQ(is_contained,
-                  IsTypeEnabledForCountry(field_type, address_country_code));
-      }
+      bool is_contained =
+          test_api(store.Root()).GetNodeForType(field_type) != nullptr;
+      EXPECT_EQ(is_contained,
+                IsTypeEnabledForCountry(field_type, address_country_code));
     }
   }
 }

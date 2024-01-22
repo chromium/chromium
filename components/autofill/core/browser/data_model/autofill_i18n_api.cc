@@ -198,9 +198,9 @@ AddressComponent* BuildSubTree(
 }
 
 TreeEdgesList GetTreeEdges(AddressCountryCode country_code) {
-  // Always use legacy rules while `kAutofillUseI18nAddressModel` is not rolled
-  // out.
-  if (!base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
+  // Always use legacy rules if the country has no available custom address
+  // model.
+  if (!IsCustomHierarchyAvailableForCountry(country_code)) {
     return kAutofillModelRules.find(kLegacyHierarchyCountryCode.value())
         ->second;
   }
@@ -301,15 +301,15 @@ std::optional<std::u16string_view> GetStopwordsExpression(
 
 bool IsTypeEnabledForCountry(FieldType field_type,
                              AddressCountryCode country_code) {
-  auto* it = kAutofillModelRules.find(country_code.value());
-  if (it == kAutofillModelRules.end()) {
-    return false;
+  if (!IsCustomHierarchyAvailableForCountry(country_code)) {
+    country_code = kLegacyHierarchyCountryCode;
   }
 
   if (kAddressComputedTypes.contains(field_type)) {
     return true;
   }
 
+  auto* it = kAutofillModelRules.find(country_code.value());
   return base::ranges::any_of(
       it->second, [field_type](const FieldTypeDescription& description) {
         return description.field_type == field_type ||
