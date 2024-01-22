@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_scene_agent.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/ranges/algorithm.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
+#import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
@@ -61,9 +63,25 @@
       pref_service);
 }
 
-// Returns true if this is likely the user's default browser.
+// Returns true if this is likely the user's default browser and the user is not
+// in a country excluded from the default browser eligibility condition.
 - (BOOL)isDefaultBrowserConditionMet {
-  return IsChromeLikelyDefaultBrowser();
+  if (!IsDefaultBrowserConditionExclusionInEffect()) {
+    return IsChromeLikelyDefaultBrowser();
+  }
+
+  // If for some reason the variations service isn't available to determine the
+  // current country, err on the side of caution and assume the country is
+  // excluded.
+  BOOL countryIsExcluded = true;
+  variations::VariationsService* variations_service =
+      GetApplicationContext()->GetVariationsService();
+  if (variations_service) {
+    countryIsExcluded =
+        base::Contains(GetCountriesExcludedFromDefaultBrowserCondition(),
+                       variations_service->GetStoredPermanentCountry());
+  }
+  return IsChromeLikelyDefaultBrowser() && !countryIsExcluded;
 }
 
 // Returns true if the user is considered engaged for the purpose of the App
