@@ -89,8 +89,7 @@ TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressSanity) {
   // some more highlevel conditions that are less probable to change.
 
   // The full name should be part of the envelope style address.
-  EXPECT_NE(address.find(
-                profile.GetInfo(NAME_FULL_WITH_HONORIFIC_PREFIX, GetLocale())),
+  EXPECT_NE(address.find(profile.GetInfo(NAME_FULL, GetLocale())),
             std::string::npos);
 
   // City should be part of the envelope style address.
@@ -204,10 +203,9 @@ TEST_F(AddressFormattingTest,
   AutofillProfile profile2 = profile1;
   profile2.SetInfo(NAME_FULL, u"John Doe", "en-US");
 
-  EXPECT_THAT(
-      GetProfileDifferenceForUi(profile1, profile2, "en-US"),
-      ElementsAre(ProfileValueDifference{NAME_FULL_WITH_HONORIFIC_PREFIX,
-                                         u"John H. Doe", u"John Doe"}));
+  EXPECT_THAT(GetProfileDifferenceForUi(profile1, profile2, "en-US"),
+              ElementsAre(ProfileValueDifference{NAME_FULL, u"John H. Doe",
+                                                 u"John Doe"}));
 }
 
 TEST_F(AddressFormattingTest,

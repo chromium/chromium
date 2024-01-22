@@ -236,9 +236,7 @@ std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetAddressSummary()
   // a fixed set of fields and doesn't depend on libaddressinput.
   if (is_migration_to_account_) {
     static constexpr std::array fields = {
-        FieldType::NAME_FULL_WITH_HONORIFIC_PREFIX,
-        FieldType::ADDRESS_HOME_LINE1, FieldType::EMAIL_ADDRESS,
-        FieldType::PHONE_HOME_WHOLE_NUMBER};
+        NAME_FULL, ADDRESS_HOME_LINE1, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER};
     std::vector<std::u16string> values;
     for (FieldType field : fields) {
       std::u16string value = address_profile_->GetInfo(field, app_locale_);
