@@ -31163,6 +31163,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SearchEngineChoiceScreenShown">
+  <owner>jyammine@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <description>
+    Recorded when the search engine choice screen is displayed. The screen could
+    be displayed in the modal dialog (or promo) and the first run experience on
+    iOS and Desktop and the profile creation flow on Desktop.
+  </description>
+</action>
+
 <action name="SearchEnginePromo.ExistingDevice.PromoSelected">
   <owner>yusufo@chromium.org</owner>
   <description>

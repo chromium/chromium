@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
@@ -95,6 +96,14 @@ void RecordChoiceScreenProfileInitCondition(
 void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event) {
   base::UmaHistogramEnumeration(kSearchEngineChoiceScreenEventsHistogram,
                                 event);
+
+  if (event == SearchEngineChoiceScreenEvents::kChoiceScreenWasDisplayed ||
+      event == SearchEngineChoiceScreenEvents::kFreChoiceScreenWasDisplayed ||
+      event == SearchEngineChoiceScreenEvents::
+                   kProfileCreationChoiceScreenWasDisplayed) {
+    base::RecordAction(
+        base::UserMetricsAction("SearchEngineChoiceScreenShown"));
+  }
 }
 
 void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type) {

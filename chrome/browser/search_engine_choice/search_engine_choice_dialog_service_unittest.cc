@@ -5,7 +5,9 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
@@ -58,11 +60,16 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
     return histogram_tester_;
   }
 
+  const base::UserActionTester& user_action_tester() const {
+    return user_action_tester_;
+  }
+
   base::test::ScopedFeatureList& feature_list() { return feature_list_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
   std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;
 };
 
@@ -106,6 +113,22 @@ TEST_F(SearchEngineChoiceDialogServiceTest, CanShowDialog) {
       search_engines::SearchEngineChoiceScreenConditions::
           kBrowserWindowTooSmall,
       1);
+}
+
+TEST_F(SearchEngineChoiceDialogServiceTest, NotifyDialogOpened) {
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(search_engine_choice_dialog_service);
+
+  search_engine_choice_dialog_service->NotifyDialogOpened(browser(),
+                                                          base::DoNothing());
+  histogram_tester().ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::kChoiceScreenWasDisplayed,
+      1);
+
+  EXPECT_EQ(
+      user_action_tester().GetActionCount("SearchEngineChoiceScreenShown"), 1);
 }
 
 TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade) {
