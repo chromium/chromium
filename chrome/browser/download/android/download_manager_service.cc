@@ -37,7 +37,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/download/network/android/network_status_listener_android.h"
-#include "components/download/public/common/auto_resumption_handler.h"
+#include "components/download/public/common/android/auto_resumption_handler.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_item_impl.h"

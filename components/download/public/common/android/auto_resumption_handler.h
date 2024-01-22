@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_AUTO_RESUMPTION_HANDLER_H_
-#define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_AUTO_RESUMPTION_HANDLER_H_
+#ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_ANDROID_AUTO_RESUMPTION_HANDLER_H_
+#define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_ANDROID_AUTO_RESUMPTION_HANDLER_H_
 
 #include <stddef.h>
 
@@ -48,12 +48,6 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
   // Returns the singleton instance of the AutoResumptionHandler, or nullptr if
   // initialization is not yet complete.
   static AutoResumptionHandler* Get();
-
-  // Utility function to determine whether an interrupted download should be
-  // auto-resumable.
-  static bool IsInterruptedDownloadAutoResumable(
-      download::DownloadItem* download_item,
-      int auto_resumption_size_limit);
 
   AutoResumptionHandler(
       std::unique_ptr<download::NetworkStatusListener> network_listener,
@@ -124,4 +118,4 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
 
 }  // namespace download
 
-#endif  // COMPONENTS_DOWNLOAD_PUBLIC_COMMON_AUTO_RESUMPTION_HANDLER_H_
+#endif  // COMPONENTS_DOWNLOAD_PUBLIC_COMMON_ANDROID_AUTO_RESUMPTION_HANDLER_H_

@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/download/public/common/auto_resumption_handler.h"
 #include "components/download/public/common/download_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
@@ -80,7 +79,7 @@ bool IsInterruptedDownloadAutoResumable(download::DownloadItem* item) {
   auto_resumption_size_limit = DownloadUtils::GetAutoResumptionSizeLimit();
 #endif
 
-  return download::AutoResumptionHandler::IsInterruptedDownloadAutoResumable(
+  return download::IsInterruptedDownloadAutoResumable(
       item, auto_resumption_size_limit);
 }
 

@@ -7,10 +7,13 @@
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
-#include "components/download/public/common/auto_resumption_handler.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item_impl.h"
 #include "components/download/public/common/download_target_info.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/download/public/common/android/auto_resumption_handler.h"
+#endif
 
 namespace download {
 
@@ -96,9 +99,12 @@ bool DownloadItemImplDelegate::IsOffTheRecord() const {
 }
 
 bool DownloadItemImplDelegate::IsActiveNetworkMetered() const {
-  return download::AutoResumptionHandler::Get()
-             ? download::AutoResumptionHandler::Get()->IsActiveNetworkMetered()
-             : false;
+#if BUILDFLAG(IS_ANDROID)
+  return download::AutoResumptionHandler::Get() &&
+         download::AutoResumptionHandler::Get()->IsActiveNetworkMetered();
+#else
+  return false;
+#endif
 }
 
 void DownloadItemImplDelegate::ReportBytesWasted(DownloadItemImpl* download) {}
