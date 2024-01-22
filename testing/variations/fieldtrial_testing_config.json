@@ -9259,21 +9259,6 @@
             ]
         }
     ],
-    "IOSGhostCards": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DiscoverFeedGhostCardsEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSIPHForSafariSwitcher": [
         {
             "platforms": [
@@ -9667,6 +9652,21 @@
                     "enable_features": [
                         "IPH_WhatsNew",
                         "WhatsNewIOSM116"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSiPadGhostCards": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableiPadFeedGhostCards"
                     ]
                 }
             ]
