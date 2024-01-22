@@ -23,7 +23,8 @@
                 "build_config": "Debug",
                 "config": "clang_tot_linux",
                 "target_arch": "intel",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
