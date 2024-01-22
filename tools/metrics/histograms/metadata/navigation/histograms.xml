@@ -939,6 +939,51 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Navigation.MainFrame.NewNavigation.IgnoreRestore.IsHTTPOrHTTPS.{DurationFromTo}.Time"
+    units="ms" expires_after="2024-04-20">
+  <owner>chikamune@chromium.org</owner>
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <summary>
+    Record when (a) the navigation happened in MainFrame, (b) it was a new
+    navigation, (c) it was not a session restore, (d) the URL was http or https,
+    and (e) the navigation was successfully committed. Measures the duration
+    between {DurationFromTo}. This is also included in the trace log.
+  </summary>
+  <token key="DurationFromTo">
+    <variant name="BeginNavigationToLoaderStart"
+        summary="when the BeginNavigation starts, to when the
+                 NavigationURLLoader starts"/>
+    <variant name="FetchStart"
+        summary="when the browser is ready to fetch the document using an
+                 HTTP(S) request (which is called as fetchStart), to when the
+                 first HTTP(S) request is sent"/>
+    <variant name="LoaderStartToFetchStart"
+        summary="when the NavigationURLLoader starts, to when the browser is
+                 ready to fetch the document using an HTTP(S) request (which
+                 is called as fetchStart)"/>
+    <variant name="LoaderStartToReceiveResponse"
+        summary="when the NavigationURLLoader starts, to when the browser
+                 process receives the response (HTTP header)"/>
+    <variant name="NavigationStartToBeginNavigation"
+        summary="when the navigation starts, to when the BeginNavigation
+                 starts"/>
+    <variant name="ReceiveHeaders"
+        summary="when the first HTTP(S) request is sent, to when the final
+                 headers are received in the network service. This duration
+                 can involve multiple redirects"/>
+    <variant name="ReceiveHeadersToReceiveResponse"
+        summary="when the final headers are received in the network service,
+                 to when the browser process receives the response (HTTP
+                 header)"/>
+    <variant name="ReceiveResponseToCommitNavigation"
+        summary="when the browser process receives the response (HTTP
+                 header), to when the CommitNavigation mojo API is called in
+                 the browser process"/>
+  </token>
+</histogram>
+
+<histogram
     name="Navigation.MainFrame.RendererInitiated.InitiatorFramePresentAtStart"
     enum="BooleanPresent" expires_after="2023-10-01">
   <owner>yaoxia@chromium.org</owner>

@@ -2035,7 +2035,7 @@ class CONTENT_EXPORT NavigationRequest
   GetOriginForURLLoaderFactoryUncheckedWithDebugInfo();
   url::Origin GetOriginForURLLoaderFactoryUnchecked();
 
-  void MaybeRecordTraceEvents();
+  void MaybeRecordTraceEventsAndHistograms();
 
   // Never null. The pointee node owns this navigation request instance.
   // This field is not a raw_ptr because of incompatibilities with tracing
