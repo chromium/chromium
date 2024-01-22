@@ -80,16 +80,15 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
     base::Value&& value,
     const content_settings::ContentSettingConstraints& constraints,
     const content_settings::PartitionKey& partition_key) {
-  // The current implementation of this method doesn't handle website settings
-  // because this method doesn't know how to read the state in value for them.
-  // Additionally the transitions as well as responsibility sharing between this
-  // provider and the pref provider may be different in those cases. Such
-  // settings are currently rejected by
-  // `PermissionUtil::CanPermissionBeAllowedOnce`. If in the future such
-  // settings should be supported, this method will need to be amended
-  // accordingly.
   if (!permissions::PermissionUtil::CanPermissionBeAllowedOnce(
           content_settings_type)) {
+    return false;
+  }
+
+  if (!content_settings::ContentSettingsRegistry::GetInstance()->Get(
+          content_settings_type)) {
+    // Object permissions cannot be mapped to a ContentSetting and thus cannot
+    // be handled by this provider.
     return false;
   }
 

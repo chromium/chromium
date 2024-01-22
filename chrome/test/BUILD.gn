@@ -8395,6 +8395,7 @@ if (!is_fuchsia) {
       deps += [
         "//chrome/browser/chromeos",
         "//chrome/browser/chromeos:test_support",
+        "//chrome/browser/smart_card:unit_tests",
         "//chromeos/components/disks:prefs",
         "//chromeos/dbus/power",
         "//components/arc/common",
@@ -11355,6 +11356,7 @@ if (!is_android && !is_chromeos_device && !is_fuchsia) {
       deps += [
         "//chrome/browser/chromeos",
         "//chrome/browser/chromeos:test_support",
+        "//chrome/browser/smart_card:interactive_ui_tests",
         "//chromeos/constants",
         "//chromeos/dbus/dlp:dlp",
         "//chromeos/ui/base",

@@ -104,9 +104,7 @@ void OneTimePermissionsTracker::WebContentsUnloadedOrigin(
     origin_tracker_[origin].undiscarded_tab_counter--;
     DCHECK(!(origin_tracker_[origin].undiscarded_tab_counter < 0));
     if (origin_tracker_[origin].undiscarded_tab_counter == 0) {
-      for (auto& observer : observer_list_) {
-        observer.OnLastPageFromOriginClosed(origin);
-      }
+      NotifyLastPageFromOriginClosed(origin);
     }
   }
 }
@@ -252,6 +250,13 @@ void OneTimePermissionsTracker::FireRunningTimersForTesting() {
         timer_entry->second->FireNow();
       }
     }
+  }
+}
+
+void OneTimePermissionsTracker::NotifyLastPageFromOriginClosed(
+    const url::Origin& origin) {
+  for (auto& observer : observer_list_) {
+    observer.OnLastPageFromOriginClosed(origin);
   }
 }
 
