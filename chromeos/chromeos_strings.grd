@@ -2487,7 +2487,7 @@
           Auto
         </message>
         <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WALLPAPER" translateable="false" desc="In Personalization>Wallpaper, the warning text that tells users that system geolocation permission is needed for auto theme mode scheduling">
-          Current schedule is set to 6am - 6pm. To automatically update the dark mode schedule <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
+          Current schedule won't be updated. To automatically update the dark mode schedule <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WEATHER" translateable="false" desc="In Personalization > Screen saver, the warning text that tells users that system geolocation permission is needed for displaying local weather info">
           Weather is not displayed because it doesn't know your location. To display local weather, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
