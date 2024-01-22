@@ -9,7 +9,7 @@ import '../../module_header.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FooDataItem} from '../../../foo.mojom-webui.js';
+import type {FooDataItem} from '../../../foo.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 

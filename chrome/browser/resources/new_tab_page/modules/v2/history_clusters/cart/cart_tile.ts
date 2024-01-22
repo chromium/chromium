@@ -6,7 +6,7 @@ import '../../../history_clusters/page_favicon.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Cart} from '../../../../cart.mojom-webui.js';
+import type {Cart} from '../../../../cart.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../../../i18n_setup.js';
 
 import {getTemplate} from './cart_tile.html.js';

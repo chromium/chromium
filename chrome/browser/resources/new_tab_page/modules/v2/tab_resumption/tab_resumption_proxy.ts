@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageHandler, PageHandlerRemote} from '../../../tab_resumption.mojom-webui.js';
+import type {PageHandlerRemote} from '../../../tab_resumption.mojom-webui.js';
+import {PageHandler} from '../../../tab_resumption.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a singleton class that exposes the Mojo

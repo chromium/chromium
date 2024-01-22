@@ -14,7 +14,7 @@ import {driveDescriptor} from './drive/module.js';
 import {feedDescriptor} from './feed/module.js';
 import {HistoryClustersProxyImpl} from './history_clusters/history_clusters_proxy.js';
 import {historyClustersDescriptor} from './history_clusters/module.js';
-import {ModuleDescriptor} from './module_descriptor.js';
+import type {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {photosDescriptor} from './photos/module.js';
 import {recipeTasksDescriptor} from './recipes/module.js';

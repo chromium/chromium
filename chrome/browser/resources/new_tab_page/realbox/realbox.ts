@@ -5,10 +5,11 @@
 import 'chrome://resources/cr_components/omnibox/realbox_dropdown.js';
 import 'chrome://resources/cr_components/omnibox/realbox_icon.js';
 
-import {AutocompleteMatch, AutocompleteResult, NavigationPredictor, PageCallbackRouter, PageHandlerInterface, SideType} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
+import {NavigationPredictor, SideType} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from 'chrome://resources/cr_components/omnibox/realbox_browser_proxy.js';
-import {RealboxDropdownElement} from 'chrome://resources/cr_components/omnibox/realbox_dropdown.js';
-import {RealboxIconElement} from 'chrome://resources/cr_components/omnibox/realbox_icon.js';
+import type {RealboxDropdownElement} from 'chrome://resources/cr_components/omnibox/realbox_dropdown.js';
+import type {RealboxIconElement} from 'chrome://resources/cr_components/omnibox/realbox_icon.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';

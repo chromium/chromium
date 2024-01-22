@@ -9,10 +9,11 @@ import './page_favicon.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {ClientId as PageImageServiceClientId} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Annotation, URLVisit} from '../../history_cluster_types.mojom-webui.js';
+import type {URLVisit} from '../../history_cluster_types.mojom-webui.js';
+import {Annotation} from '../../history_cluster_types.mojom-webui.js';
 import {I18nMixin} from '../../i18n_setup.js';
 
 import {getTemplate} from './tile.html.js';

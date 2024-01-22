@@ -8,22 +8,23 @@ import './suggest_tile.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../../../discount.mojom-webui.js';
 
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Cart} from '../../../cart.mojom-webui.js';
-import {Cluster, InteractionState} from '../../../history_cluster_types.mojom-webui.js';
+import type {Cart} from '../../../cart.mojom-webui.js';
+import type {Cluster} from '../../../history_cluster_types.mojom-webui.js';
+import {InteractionState} from '../../../history_cluster_types.mojom-webui.js';
 import {LayoutType} from '../../../history_clusters_layout_type.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
 import {NewTabPageProxy} from '../../../new_tab_page_proxy.js';
-import {InfoDialogElement} from '../../info_dialog';
+import type {InfoDialogElement} from '../../info_dialog';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 
 import {HistoryClustersProxyImpl} from './history_clusters_proxy.js';
 import {getTemplate} from './module.html.js';
-import {VisitTileModuleElement} from './visit_tile.js';
+import type {VisitTileModuleElement} from './visit_tile.js';
 
 export const MAX_MODULE_ELEMENT_INSTANCES = 3;
 

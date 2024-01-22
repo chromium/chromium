@@ -5,14 +5,14 @@
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../../history_clusters/page_favicon.js';
 
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Tab} from '../../../history_types.mojom-webui.js';
+import type {Tab} from '../../../history_types.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
-import {InfoDialogElement} from '../../info_dialog';
+import type {InfoDialogElement} from '../../info_dialog';
 import {ModuleDescriptor} from '../../module_descriptor.js';
-import {MenuItem, ModuleHeaderElementV2} from '../module_header';
+import type {MenuItem, ModuleHeaderElementV2} from '../module_header';
 
 import {getTemplate} from './module.html.js';
 import {TabResumptionProxyImpl} from './tab_resumption_proxy.js';
