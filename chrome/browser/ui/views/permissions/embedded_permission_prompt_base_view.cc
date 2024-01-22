@@ -22,6 +22,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/views_features.h"
@@ -56,6 +57,21 @@ void AddElementIdentifierToLabel(views::Label& label, size_t index) {
   label.SetProperty(views::kElementIdentifierKey, id);
 }
 
+std::unique_ptr<views::View> AddSpacer() {
+  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+
+  auto spacer = std::make_unique<views::View>();
+  spacer->SetPreferredSize(
+      gfx::Size(provider->GetDistanceMetric(
+                    DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING),
+                /*height=*/1));
+  return spacer;
+}
+
+int GetPermissionIconSize() {
+  return features::IsChromeRefresh2023() ? 20 : 18;
+}
+
 }  // namespace
 
 EmbeddedPermissionPromptBaseView::EmbeddedPermissionPromptBaseView(
@@ -79,6 +95,10 @@ const gfx::VectorIcon& EmbeddedPermissionPromptBaseView::GetIcon() const {
   return gfx::kNoneIcon;
 }
 
+bool EmbeddedPermissionPromptBaseView::ShowLoadingIcon() const {
+  return false;
+}
+
 void EmbeddedPermissionPromptBaseView::CreateWidget() {
   DCHECK(browser_->window());
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
@@ -86,6 +106,20 @@ void EmbeddedPermissionPromptBaseView::CreateWidget() {
   if (base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
     widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelSecurity);
   }
+}
+
+std::unique_ptr<views::FlexLayoutView>
+EmbeddedPermissionPromptBaseView::CreateLoadingIcon() {
+  auto throbber_container = std::make_unique<views::FlexLayoutView>();
+  throbber_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  auto throbber = std::make_unique<views::Throbber>();
+  throbber->SetPreferredSize(
+      gfx::Size(GetPermissionIconSize(), GetPermissionIconSize()));
+  throbber->SetProperty(views::kMarginsKey,
+                        gfx::Insets().set_top_bottom(1, 25));
+  throbber->Start();
+  throbber_container->AddChildView(std::move(throbber));
+  return throbber_container;
 }
 
 void EmbeddedPermissionPromptBaseView::AddedToWidget() {
@@ -99,23 +133,14 @@ void EmbeddedPermissionPromptBaseView::AddedToWidget() {
   const gfx::VectorIcon& vector_icon = GetIcon();
 
   if (!vector_icon.is_empty()) {
-    const int kPermissionIconSize = features::IsChromeRefresh2023() ? 20 : 18;
-
-    ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-
     auto icon =
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icon, ui::kColorIcon, kPermissionIconSize));
+            vector_icon, ui::kColorIcon, GetPermissionIconSize()));
     icon->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
     title_container->AddChildView(std::move(icon));
 
     // Add space between the icon and the text.
-    auto spacer = std::make_unique<views::View>();
-    spacer->SetPreferredSize(
-        gfx::Size(provider->GetDistanceMetric(
-                      DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING),
-                  /*height=*/1));
-    title_container->AddChildView(std::move(spacer));
+    title_container->AddChildView(AddSpacer());
   }
 
   auto label = std::make_unique<views::Label>(
@@ -129,6 +154,14 @@ void EmbeddedPermissionPromptBaseView::AddedToWidget() {
                                views::MaximumFlexSizeRule::kScaleToMaximum,
                                /*adjust_height_for_width=*/true));
   AddElementIdentifierToLabel(*label, /*index*/ 0);
+
+  if (ShowLoadingIcon()) {
+    title_container->AddChildView(CreateLoadingIcon());
+
+    // Add space between the icon and the text.
+    title_container->AddChildView(AddSpacer());
+  }
+
   title_container->AddChildView(std::move(label));
 
   GetBubbleFrameView()->SetTitleView(std::move(title_container));
@@ -207,8 +240,6 @@ void EmbeddedPermissionPromptBaseView::Init() {
 void EmbeddedPermissionPromptBaseView::AddRequestLine(
     const RequestLineConfiguration& line,
     std::size_t index) {
-  const int kPermissionIconSize = features::IsChromeRefresh2023() ? 20 : 18;
-
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
   auto* line_container = AddChildViewAt(std::make_unique<views::View>(), index);
@@ -222,7 +253,7 @@ void EmbeddedPermissionPromptBaseView::AddRequestLine(
   if (line.icon) {
     auto* icon = line_container->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            *line.icon, ui::kColorIcon, kPermissionIconSize)));
+            *line.icon, ui::kColorIcon, GetPermissionIconSize())));
     icon->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   }
 

@@ -106,6 +106,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
       const = 0;
   virtual std::vector<ButtonConfiguration> GetButtonsConfiguration() const = 0;
   const virtual gfx::VectorIcon& GetIcon() const;
+  virtual bool ShowLoadingIcon() const;
 
   base::WeakPtr<EmbeddedPermissionPromptViewDelegate>& delegate() {
     return delegate_;
@@ -120,6 +121,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
   void AddRequestLine(const RequestLineConfiguration& line, std::size_t index);
   void AddButton(views::View& buttons_container,
                  const ButtonConfiguration& button);
+  std::unique_ptr<views::FlexLayoutView> CreateLoadingIcon();
 
   const raw_ptr<Browser> browser_;
   base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate_;
