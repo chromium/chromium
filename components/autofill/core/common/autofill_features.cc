@@ -320,9 +320,17 @@ BASE_FEATURE(kAutofillUseAddressRewriterInProfileSubsetComparison,
 
 // Enables using the newer i18n address model, overriding the legacy one.
 // This includes:
+// - Using newer i18n address hierarchies.
 // - Using newer i18n address format strings.
+// - Using newer i18n address parsing rules.
 BASE_FEATURE(kAutofillUseI18nAddressModel,
              "AutofillUseI18nAddressModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables using the a custom address model for Germany, overriding the legacy
+// one.
+BASE_FEATURE(kAutofillUseDEAddressModel,
+             "AutofillUseDEAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Changes Autofill Clear Form into Undo Autofill.

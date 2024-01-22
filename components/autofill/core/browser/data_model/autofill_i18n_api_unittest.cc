@@ -47,12 +47,18 @@ bool IsTree(AddressComponent* node, FieldTypeSet* visited_types) {
 
 class AutofillI18nApiTest : public testing::Test {
  public:
-  AutofillI18nApiTest() = default;
+  AutofillI18nApiTest() {
+    feature_list_.InitWithFeatures(
+        {
+            features::kAutofillUseI18nAddressModel,
+            features::kAutofillUseDEAddressModel,
+        },
+        {});
+  }
   ~AutofillI18nApiTest() override = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillUseI18nAddressModel};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnsNonEmptyModel) {
@@ -162,14 +168,14 @@ TEST_F(AutofillI18nApiTest, ParseValueByI18nRegularExpression) {
 
   std::string street_address = "street no 123 apt 10";
 
-  // Parsing expression for address street in not available for Germany.
+  // Parsing expression for address street in not available for Spain.
   ASSERT_TRUE(
-      kAutofillParsingRulesMap.find({"DE", ADDRESS_HOME_STREET_ADDRESS}) ==
+      kAutofillParsingRulesMap.find({"ES", ADDRESS_HOME_STREET_ADDRESS}) ==
       kAutofillParsingRulesMap.end());
   // In that case the legacy expression is used (if available).
   EXPECT_EQ(ParseValueByI18nRegularExpression(street_address,
                                               ADDRESS_HOME_STREET_ADDRESS,
-                                              AddressCountryCode("DE")),
+                                              AddressCountryCode("ES")),
             ParseValueByI18nRegularExpression(street_address,
                                               ADDRESS_HOME_STREET_ADDRESS,
                                               kLegacyHierarchyCountryCode));

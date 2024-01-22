@@ -300,6 +300,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_USE_I18N_ADDRESS_MODEL,
                 "When enabled, Autofill uses the i18n version of the address model."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_USE_DE_ADDRESS_MODEL,
+                "When enabled, Autofill uses a custom address model for Germany."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_STREET_NAME_OR_HOUSE_NUMBER_PRECEDENCE_OVER_AUTOCOMPLETE,
                 "When enabled, Autofill prioritizes local heuristics over some server "
                         + "classifications."),

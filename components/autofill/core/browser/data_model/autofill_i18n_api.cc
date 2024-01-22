@@ -322,6 +322,12 @@ bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
       !base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
     return false;
   }
+
+  if (country_code == AddressCountryCode("DE") &&
+      !base::FeatureList::IsEnabled(features::kAutofillUseDEAddressModel)) {
+    return false;
+  }
+
   return kAutofillModelRules.find(country_code.value()) !=
          kAutofillModelRules.end();
 }

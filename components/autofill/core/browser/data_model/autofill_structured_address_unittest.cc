@@ -1638,6 +1638,140 @@ TEST_F(AutofillI18nStructuredAddress, ParseSubpremiseBR) {
   }
 }
 
+TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressDE) {
+  base::test::ScopedFeatureList features_{features::kAutofillUseDEAddressModel};
+  std::vector<AddressLineParsingTestCase> test_cases = {
+      // Examples for Germany.
+      {.country_code = "DE",
+       .street_address = "Implerstr. 73a Obergeschoss 2 Wohnung 3",
+       .street_location = "Implerstr. 73a",
+       .street_name = "Implerstr.",
+       .house_number = "73a",
+       .overflow = "Obergeschoss 2 Wohnung 3"},
+      {.country_code = "DE",
+       .street_address = "Implerstr. 73 OG 2",
+       .street_location = "Implerstr. 73",
+       .street_name = "Implerstr.",
+       .house_number = "73",
+       .overflow = "OG 2"},
+      {.country_code = "DE",
+       .street_address = "Implerstr. nummer 73 2. OG",
+       .street_location = "Implerstr. nummer 73",
+       .street_name = "Implerstr.",
+       .house_number = "73",
+       .overflow = "2. OG"},
+      {.country_code = "DE",
+       .street_address = "Implerstr. 73 abcdefg",
+       .street_location = "Implerstr. 73",
+       .street_name = "Implerstr.",
+       .house_number = "73",
+       .overflow = "abcdefg"},
+  };
+
+  for (const auto& test_case : test_cases) {
+    AddressComponentsStore address =
+        i18n_model_definition::CreateAddressComponentModel(
+            AddressCountryCode(test_case.country_code));
+
+    const AddressComponentTestValues test_value = {
+        {.type = ADDRESS_HOME_STREET_ADDRESS,
+         .value = test_case.street_address,
+         .status = VerificationStatus::kObserved}};
+
+    SetTestValues(address.Root(), test_value);
+
+    const AddressComponentTestValues expectation = {
+        {.type = ADDRESS_HOME_COUNTRY,
+         .value = test_case.country_code,
+         .status = VerificationStatus::kObserved},
+        {.type = ADDRESS_HOME_STREET_ADDRESS,
+         .value = test_case.street_address,
+         .status = VerificationStatus::kObserved},
+        {.type = ADDRESS_HOME_STREET_LOCATION,
+         .value = test_case.street_location,
+         .status = VerificationStatus::kParsed},
+        {.type = ADDRESS_HOME_STREET_NAME,
+         .value = test_case.street_name,
+         .status = VerificationStatus::kParsed},
+        {.type = ADDRESS_HOME_HOUSE_NUMBER,
+         .value = test_case.house_number,
+         .status = VerificationStatus::kParsed},
+        {.type = ADDRESS_HOME_OVERFLOW,
+         .value = test_case.overflow,
+         .status = VerificationStatus::kParsed},
+    };
+    VerifyTestValues(address.Root(), expectation);
+  }
+}
+
+TEST_F(AutofillI18nStructuredAddress, ParseStreetLocationDE) {
+  base::test::ScopedFeatureList features_{features::kAutofillUseDEAddressModel};
+  std::vector<AddressLineParsingTestCase> test_cases = {
+      // Examples for Germany.
+      {.country_code = "DE",
+       .street_location = "Erika-Mann-Str. 3",
+       .street_name = "Erika-Mann-Str.",
+       .house_number = "3"},
+      {.country_code = "DE",
+       .street_location = "Implerstr. 73a",
+       .street_name = "Implerstr.",
+       .house_number = "73a"},
+      {.country_code = "DE",
+       .street_location = "Implerstr. no 73a",
+       .street_name = "Implerstr.",
+       .house_number = "73a"},
+      {.country_code = "DE",
+       .street_location = "Implerstr. °73a",
+       .street_name = "Implerstr.",
+       .house_number = "73a"},
+      {.country_code = "DE",
+       .street_location = "Implerstr. Nummer 73a",
+       .street_name = "Implerstr.",
+       .house_number = "73a"},
+      {.country_code = "DE",
+       .street_location = "Implerstr. 10/12",
+       .street_name = "Implerstr.",
+       .house_number = "10/12"},
+      {.country_code = "DE",
+       .street_location = "Implerstr. Nummer 10 - 12",
+       .street_name = "Implerstr.",
+       .house_number = "10 - 12"},
+      {.country_code = "DE",
+       .street_location = "Implerstr. 73 a",
+       .street_name = "Implerstr.",
+       .house_number = "73 a"},
+  };
+
+  for (const auto& test_case : test_cases) {
+    AddressComponentsStore address =
+        i18n_model_definition::CreateAddressComponentModel(
+            AddressCountryCode(test_case.country_code));
+
+    const AddressComponentTestValues test_value = {
+        {.type = ADDRESS_HOME_STREET_LOCATION,
+         .value = test_case.street_location,
+         .status = VerificationStatus::kObserved}};
+
+    SetTestValues(address.Root(), test_value);
+
+    const AddressComponentTestValues expectation = {
+        {.type = ADDRESS_HOME_COUNTRY,
+         .value = test_case.country_code,
+         .status = VerificationStatus::kObserved},
+        {.type = ADDRESS_HOME_STREET_LOCATION,
+         .value = test_case.street_location,
+         .status = VerificationStatus::kObserved},
+        {.type = ADDRESS_HOME_STREET_NAME,
+         .value = test_case.street_name,
+         .status = VerificationStatus::kParsed},
+        {.type = ADDRESS_HOME_HOUSE_NUMBER,
+         .value = test_case.house_number,
+         .status = VerificationStatus::kParsed},
+    };
+    VerifyTestValues(address.Root(), expectation);
+  }
+}
+
 }  // namespace
 
 }  // namespace autofill

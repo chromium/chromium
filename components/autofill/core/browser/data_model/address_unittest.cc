@@ -610,7 +610,7 @@ TEST_F(AddressTest, IsLegacyAddressUpdateCountry) {
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"BR");
   EXPECT_FALSE(address.IsLegacyAddress());
 
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
+  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"AZ");
   EXPECT_TRUE(address.IsLegacyAddress());
 
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"MX");
@@ -622,7 +622,6 @@ TEST_F(AddressTest, IsLegacyAddressUpdateCountry) {
 
 TEST_F(AddressTest, TestUpdateLegacyToCustomHierarchy) {
   Address address(kLegacyHierarchyCountryCode);
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
   address.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY, u"Munich",
                                            VerificationStatus::kObserved);
   address.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STATE, u"Bayern",
@@ -723,10 +722,10 @@ TEST_F(AddressTest, TestUpdateCustomHierarchyToLegacy) {
                                            VerificationStatus::kParsed);
 
   // Updates the internal hierarchy and copies the data into the legacy model.
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
+  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"AZ");
   address.FinalizeAfterImport();
 
-  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"DE");
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"AZ");
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_CITY), u"Munich");
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STATE), u"Bayern");
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_ZIP), u"111");
