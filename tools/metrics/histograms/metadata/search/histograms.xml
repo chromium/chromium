@@ -1056,6 +1056,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.SearchEngineDuplicateCounts" units="keyword duplicates"
+    expires_after="M124">
+  <owner>dgn@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    The number of keyword duplicates resulting from conflict resolution. This is
+    sampled once per browser session immediately after the client syncs Search
+    Engines.
+  </summary>
+</histogram>
+
 <histogram name="Search.SearchEngineListedInPromoDialog"
     enum="OmniboxSearchEngineType" expires_after="M81">
 <!-- Name completed by histogram_suffixes name="SearchEnginePromoOrdering" and name="SearchEnginePromoDeviceType" -->

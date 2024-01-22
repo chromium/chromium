@@ -8053,6 +8053,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Pepper.PluginHung" enum="BooleanHit" expires_after="M124">
+  <owner>mackinlay@google.com</owner>
+  <summary>Count how often the plugin hung infobar is displayed.</summary>
+</histogram>
+
 <histogram name="PeriodicBackgroundSync.Event.BatchSize" units="events"
     expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
@@ -8176,6 +8181,20 @@ chromium-metrics-reviews@google.com.
     changes in what type of web page people are looking at or changes in the
     implementation of popular websites.
   </summary>
+</histogram>
+
+<histogram name="Plugin.DisabledPlugins" enum="PluginType" expires_after="M124">
+  <owner>xhwang@chromium.org</owner>
+  <summary>
+    Record of the number of attempts to load a plugin that were blocked because
+    the plugin in question was disabled. An attempt to load a plugin may be made
+    typically once during a page load (or re-load).
+  </summary>
+</histogram>
+
+<histogram name="Plugin.MissingPlugins" enum="PluginType" expires_after="M124">
+  <owner>xhwang@chromium.org</owner>
+  <summary>Number of times the plugin has been found missing.</summary>
 </histogram>
 
 <histogram base="true" name="PointingStick.Acceleration" enum="BooleanEnabled"
@@ -9733,6 +9752,14 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="SpellCheck.api.showUI" enum="BooleanEnabled"
+    expires_after="M124">
+  <owner>groby@chromium.org</owner>
+  <summary>
+    The number of times the platform spelling UI was enabled/disabled.
+  </summary>
+</histogram>
+
 <histogram name="SpellCheck.CheckedWords" units="words"
     expires_after="2024-04-01">
   <owner>basiaz@google.com</owner>
@@ -9850,6 +9877,11 @@ should be kept until we remove incident reporting. -->
   <summary>
     The percentage of replacement executions within suggestion occurrences.
   </summary>
+</histogram>
+
+<histogram name="SpellCheck.UniqueWords" units="words" expires_after="M124">
+  <owner>groby@chromium.org</owner>
+  <summary>The number of unique checked words within a session.</summary>
 </histogram>
 
 <histogram base="true" name="Spellcheck.Windows.ChromeLocalesSupport2"

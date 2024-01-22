@@ -157,7 +157,6 @@ tools/metrics/histograms/metadata/phonehub/enums.xml
 tools/metrics/histograms/metadata/phonehub/histograms.xml
 tools/metrics/histograms/metadata/platform/enums.xml
 tools/metrics/histograms/metadata/platform/histograms.xml
-tools/metrics/histograms/metadata/plugin/histograms.xml
 tools/metrics/histograms/metadata/plugin_vm/histograms.xml
 tools/metrics/histograms/metadata/power/histograms.xml
 tools/metrics/histograms/metadata/prefetch/histograms.xml

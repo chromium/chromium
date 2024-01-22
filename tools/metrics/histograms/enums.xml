@@ -14545,26 +14545,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Start on NTP"/>
 </enum>
 
-<enum name="FlashNavigateUsageType">
-  <int value="0" label="Rejected because of Authorization header."/>
-  <int value="1" label="Rejected because of Cache-Control header."/>
-  <int value="2" label="Rejected because of Content-Encoding header."/>
-  <int value="3" label="Rejected because of Content-MD5 header."/>
-  <int value="4" label="Rejected because of Content-Type header."/>
-  <int value="5" label="Rejected because of Expires header."/>
-  <int value="6" label="Rejected because of From header."/>
-  <int value="7" label="Rejected because of If-Match header."/>
-  <int value="8" label="Rejected because of If-None-Match header."/>
-  <int value="9" label="Rejected because of If-Range header."/>
-  <int value="10" label="Rejected because of If-Unmodified-Since header."/>
-  <int value="11" label="Rejected because of Pragma header."/>
-  <int value="12" label="Rejected because of Referer header."/>
-  <int value="13"
-      label="Rejected because of other headers (e.g., custom headers)."/>
-  <int value="14" label="The total number of rejected navigate requests."/>
-  <int value="15" label="The total number of navigate requests."/>
-</enum>
-
 <enum name="FsckResult">
   <summary>
     These correspond to e2fsck exit codes. Note that 0 differs from e2fsck's man
@@ -32036,6 +32016,20 @@ Called by update_net_error_codes.py.-->
   <int value="14" label="NOT_EMPTY"/>
   <int value="15" label="INVALID_URL"/>
   <int value="16" label="I/O"/>
+</enum>
+
+<enum name="PluginType">
+  <int value="0" label="Windows Media Player"/>
+  <int value="1" label="Silverlight"/>
+  <int value="2" label="RealPlayer"/>
+  <int value="3" label="Java"/>
+  <int value="4" label="QuickTime"/>
+  <int value="5" label="Other"/>
+  <int value="6" label="Unsupported Mimetype"/>
+  <int value="7" label="Unsupported Extension"/>
+  <int value="10" label="Browser Plugin"/>
+  <int value="11" label="Shockwave Flash"/>
+  <int value="12" label="Widevine CDM"/>
 </enum>
 
 <enum name="PluginVmDlcUseResult">
