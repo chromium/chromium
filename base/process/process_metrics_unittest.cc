@@ -43,7 +43,7 @@
 #include <sys/mman.h>
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
 #include <mach/mach.h>
 
 #include "base/apple/mach_logging.h"
@@ -136,13 +136,13 @@ class TestChildLauncher {
   CommandLine command_line_ = GetMultiProcessTestChildBaseCommandLine();
   Process child_process_;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
   class TestChildPortProvider;
   std::unique_ptr<TestChildPortProvider> port_provider_;
 #endif
 };
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
 
 // Adapted from base/mac/mach_port_rendezvous_unittest.cc and
 // https://mw.foldr.org/posts/computers/macosx/task-info-fun-with-mach/
@@ -208,8 +208,12 @@ AssertionResult TestChildLauncher::SpawnChildProcess(
 }
 
 std::unique_ptr<ProcessMetrics> TestChildLauncher::CreateChildProcessMetrics() {
+#if BUILDFLAG(IS_MAC)
   return ProcessMetrics::CreateProcessMetrics(child_process_.Handle(),
                                               port_provider_.get());
+#else
+  return ProcessMetrics::CreateProcessMetrics(child_process_.Handle());
+#endif
 }
 
 bool TestChildLauncher::TerminateChildProcess() {
