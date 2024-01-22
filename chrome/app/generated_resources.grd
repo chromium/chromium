@@ -7958,10 +7958,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Black
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_DESCRIPTION" desc="The description of the message displayed when a wallpaper search request is throttled.">
-        Please try again tomorrow.
+        Please try again in a few minutes.
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_TITLE" desc="The title of the message displayed when a wallpaper search request is throttled.">
-        You've reached your limit for today.
+        Can't create a theme right now.
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_SUBMIT_BTN_TEXT" desc="Button text for submitting the form to get wallpaper search results." >
         Create

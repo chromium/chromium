@@ -1127,7 +1127,10 @@ suite('WallpaperSearchTest', () => {
       });
 
       [[WallpaperSearchStatus.kError, 'Please try again later.'],
-       [WallpaperSearchStatus.kRequestThrottled, 'Please try again tomorrow.'],
+       [
+         WallpaperSearchStatus.kRequestThrottled,
+         'Please try again in a few minutes.',
+       ],
       ].forEach(([status, description]) => {
         test(`shows error ${description} for status ${status}`, async () => {
           handler.setResultFor(
