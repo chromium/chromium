@@ -1112,24 +1112,23 @@ ChromeFileSystemAccessPermissionContext::
   content_settings_ = base::WrapRefCounted(
       HostContentSettingsMapFactory::GetForProfile(profile_));
 
+  // TODO(crbug.com/1520037): Disabled temporarily on Android, as accessing
+  // FS content settings, which are not enabled on Android, causes a crash.
+  // Instead of disabling this logic, ChromeFileSystemAccessPermissionContext
+  // should not be created on Android.
 #if !BUILDFLAG(IS_ANDROID)
   auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(profile_));
   if (provider) {
     install_manager_observation_.Observe(&provider->install_manager());
   }
-#endif
-  // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
-  // flag after FSA Persistent Permissions feature launch.
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions)) {
-#if !BUILDFLAG(IS_ANDROID)
     if (base::FeatureList::IsEnabled(
             permissions::features::kOneTimePermission)) {
       one_time_permissions_tracker_.Observe(
           OneTimePermissionsTrackerFactory::GetForBrowserContext(context));
     }
-#endif
     // Deprecated persisted permission objects contains a timestamp key, used
     // in old implementation. Revoke them so that the state is reset for the new
     // persisted permission implementation.
@@ -1144,6 +1143,7 @@ ChromeFileSystemAccessPermissionContext::
       }
     }
   }
+#endif
 }
 
 ChromeFileSystemAccessPermissionContext::
