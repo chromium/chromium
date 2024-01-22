@@ -24,7 +24,7 @@ DocumentSubresourceFilter::DocumentSubresourceFilter(
     scoped_refptr<const MemoryMappedRuleset> ruleset)
     : activation_state_(activation_state),
       ruleset_(std::move(ruleset)),
-      ruleset_matcher_(ruleset_->data(), ruleset_->length()) {
+      ruleset_matcher_(ruleset_->data()) {
   DCHECK_NE(activation_state_.activation_level,
             mojom::ActivationLevel::kDisabled);
   if (!activation_state_.filtering_disabled_for_document) {

@@ -334,8 +334,7 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
                     const base::FilePath& license_path = base::FilePath()) {
     return RulesetService::WriteRuleset(
                GetExpectedVersionDirPath(indexed_version), license_path,
-               test_ruleset_pair.indexed.contents.data(),
-               test_ruleset_pair.indexed.contents.size()) ==
+               test_ruleset_pair.indexed.contents) ==
            RulesetService::IndexAndWriteRulesetResult::SUCCESS;
   }
 

@@ -53,7 +53,7 @@ std::vector<uint8_t> SerializeIndexedRulesetWithMultipleRules(
   for (const auto& rule : rules)
     EXPECT_TRUE(indexer.AddUrlRule(rule));
   indexer.Finish();
-  return std::vector<uint8_t>(indexer.data(), indexer.data() + indexer.size());
+  return std::vector<uint8_t>(indexer.data().begin(), indexer.data().end());
 }
 
 }  // namespace

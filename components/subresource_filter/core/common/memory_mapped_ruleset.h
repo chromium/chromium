@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace subresource_filter {
 
@@ -30,8 +31,9 @@ class MemoryMappedRuleset final : public base::RefCounted<MemoryMappedRuleset> {
 
   static void SetMemoryMapFailuresForTesting(bool fail);
 
-  const uint8_t* data() const { return ruleset_.data(); }
-  size_t length() const { return base::strict_cast<size_t>(ruleset_.length()); }
+  base::span<const uint8_t> data() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return ruleset_.bytes();
+  }
 
   base::WeakPtr<MemoryMappedRuleset> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
