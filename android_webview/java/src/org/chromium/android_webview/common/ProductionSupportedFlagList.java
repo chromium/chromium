@@ -220,15 +220,14 @@ public final class ProductionSupportedFlagList {
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME,
                 "When enabled, prefill requests are supported for login forms."),
         Flag.baseFeature(
-                AndroidAutofillFeatures
-                        .ANDROID_AUTOFILL_SIGNATURE_FOR_PREFILL_REQUEST_SIMILARITY_CHECK_NAME,
-                "When enabled, the comparison between the cached form and the currently focused"
-                        + " form that is used to decide whether to show a bottom sheet is performed"
-                        + " by comparing form signatures."),
-        Flag.baseFeature(
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPORT_VISIBILITY_CHANGES_NAME,
                 "Enables communicating visibility changes of form fields of a form in an "
                         + "ongoing Autofill session to Android AutofillManager."),
+        Flag.baseFeature(
+                AndroidAutofillFeatures.ANDROID_AUTOFILL_USE_PWM_PREDICTIONS_FOR_OVERRIDES_NAME,
+                "When enabled, the comparison between the cached form and the currently focused"
+                        + " form that is used to decide whether to show a bottom sheet is performed"
+                        + " by comparing password manager's FormDataParser predictions."),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_DEPENDENT_LOCALITY_PARSING,
                 "Enables parsing dependent locality fields (e.g. Bairros in Brazil)."),

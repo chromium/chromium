@@ -17,8 +17,8 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kAndroidAutofillBottomSheetWorkaround,
     &kAndroidAutofillFormSubmissionCheckById,
     &kAndroidAutofillPrefillRequestsForLoginForms,
-    &kAndroidAutofillSignatureForPrefillRequestSimilarityCheck,
     &kAndroidAutofillSupportVisibilityChanges,
+    &kAndroidAutofillUsePwmPredictionsForOverrides,
 };
 
 }  // namespace
@@ -50,15 +50,6 @@ BASE_FEATURE(kAndroidAutofillPrefillRequestsForLoginForms,
              "AndroidAutofillPrefillRequestsForLoginForms",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, similarity checks between cached forms and focused forms are
-// replaced by comparing the form signatures of the cached and the focused form.
-// The motivation behind this experiment is that the decision to cache a form is
-// made based on server predictions and the server predictions of two forms
-// match iff their form signatures match.
-BASE_FEATURE(kAndroidAutofillSignatureForPrefillRequestSimilarityCheck,
-             "AndroidAutofillSignatureForPrefillRequestSimilarityCheck",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, visibility changes of form fields of the form of an ongoing
 // Autofill session are communicated to Android's `AutofillManager` by calling
 // `AutofillManager.notifyViewVisibilityChanged()`.
@@ -67,6 +58,16 @@ BASE_FEATURE(kAndroidAutofillSignatureForPrefillRequestSimilarityCheck,
 // for more details on the API.
 BASE_FEATURE(kAndroidAutofillSupportVisibilityChanges,
              "AndroidAutofillSupportVisibilityChanges",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, username and password field predictions are taken from
+// `password_manager::FormDataParser` and overwrite Autofill's native
+// predictions. Furthermore, similarity checks between cached forms and focused
+// forms that serve to decide whether to show a bottomsheet are performed using
+// these predictions: Two forms are considered similar iff they have the same
+// `FormDataParser` predictions.
+BASE_FEATURE(kAndroidAutofillUsePwmPredictionsForOverrides,
+             "AndroidAutofillUsePwmPredictionsForOverrides",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 static jlong JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env, jint ordinal) {

@@ -685,7 +685,7 @@ TEST_F(AutofillProviderAndroidTest,
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
       {features::kAndroidAutofillPrefillRequestsForLoginForms,
-       features::kAndroidAutofillSignatureForPrefillRequestSimilarityCheck},
+       features::kAndroidAutofillUsePwmPredictionsForOverrides},
       /*disabled_features=*/{});
 
   FormData form =
@@ -719,7 +719,7 @@ TEST_F(AutofillProviderAndroidTest,
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
       {features::kAndroidAutofillPrefillRequestsForLoginForms,
-       features::kAndroidAutofillSignatureForPrefillRequestSimilarityCheck},
+       features::kAndroidAutofillUsePwmPredictionsForOverrides},
       /*disabled_features=*/{});
 
   FormData form =
@@ -768,10 +768,10 @@ class AutofillProviderAndroidPrefillRequestTest
   AutofillProviderAndroidPrefillRequestTest() {
     if (GetParam()) {
       param_feature_list_.InitAndEnableFeature(
-          features::kAndroidAutofillSignatureForPrefillRequestSimilarityCheck);
+          features::kAndroidAutofillUsePwmPredictionsForOverrides);
     } else {
       param_feature_list_.InitAndDisableFeature(
-          features::kAndroidAutofillSignatureForPrefillRequestSimilarityCheck);
+          features::kAndroidAutofillUsePwmPredictionsForOverrides);
     }
   }
 
