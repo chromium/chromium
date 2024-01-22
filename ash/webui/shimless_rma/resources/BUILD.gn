@@ -69,7 +69,7 @@ build_webui("build") {
   non_web_component_files = [
     "data.ts",
     "events.ts",
-    "fake_data.js",
+    "fake_data.ts",
     "fake_shimless_rma_service.ts",
     "mojo_interface_provider.js",
     "shimless_rma_util.ts",

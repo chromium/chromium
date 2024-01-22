@@ -6,11 +6,10 @@ import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {NetworkStateProperties as Network} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
-import {CalibrationComponentStatus, CalibrationStatus, Component, ComponentRepairStatus, ComponentType, QrCode, RmadErrorCode, State, StateResult} from './shimless_rma.mojom-webui.js';
+import {CalibrationComponentStatus, CalibrationStatus, Component, ComponentRepairStatus, ComponentType, RmadErrorCode, State, StateResult} from './shimless_rma.mojom-webui.js';
 
 
-/** @type {!Array<!StateResult>} */
-export const fakeStates = [
+export const fakeStates: StateResult[] = [
   {
     state: State.kWelcomeScreen,
     canExit: true,
@@ -151,23 +150,19 @@ export const fakeStates = [
   },
 ];
 
-/** @type {!Array<string>} */
-export const fakeChromeVersion = [
+export const fakeChromeVersion: string[] = [
   '89.0.1232.1',
   '92.0.999.0',
   '95.0.4444.123',
 ];
 
-/** @type {string} */
 export const fakeRsuChallengeCode =
     'HRBXHV84NSTHT25WJECYQKB8SARWFTMSWNGFT2FVEEPX69VE99USV3QFBEANDVXGQVL93QK2M6P3DNV4';
 
-/** @type {!Array<number>} */
-export const fakeRsuChallengeQrCode =
+export const fakeRsuChallengeQrCode: number[] =
     [0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0];
 
-/** @type {!Array<!Component>} */
-export const fakeComponents = [
+export const fakeComponents: Component[] = [
   {
     component: ComponentType.kCamera,
     state: ComponentRepairStatus.kOriginal,
@@ -187,8 +182,7 @@ export const fakeComponents = [
 
 // onboarding_select_components_page_test needs a components list covering all
 // possible repair states.
-/** @type {!Array<!Component>} */
-export const fakeComponentsForRepairStateTest = [
+export const fakeComponentsForRepairStateTest: Component[] = [
   {
     component: ComponentType.kAudioCodec,
     state: ComponentRepairStatus.kMissing,
@@ -236,93 +230,87 @@ export const fakeComponentsForRepairStateTest = [
   },
 ];
 
-/** @type {!Array<!CalibrationComponentStatus>} */
-export const fakeCalibrationComponentsWithFails = [
-  {
-    component: ComponentType.kCamera,
-    status: CalibrationStatus.kCalibrationFailed,
-    progress: 0.0,
-  },
-  {
-    component: ComponentType.kBattery,
-    status: CalibrationStatus.kCalibrationComplete,
-    progress: 1.0,
-  },
-  {
-    component: ComponentType.kLidAccelerometer,
-    status: CalibrationStatus.kCalibrationComplete,
-    progress: 1.0,
-  },
-  {
-    component: ComponentType.kBaseAccelerometer,
-    status: CalibrationStatus.kCalibrationComplete,
-    progress: 1.0,
-  },
-  {
-    component: ComponentType.kTouchpad,
-    status: CalibrationStatus.kCalibrationComplete,
-    progress: 0.0,
-  },
-  {
-    component: ComponentType.kScreen,
-    status: CalibrationStatus.kCalibrationFailed,
-    progress: 1.0,
-  },
-  {
-    component: ComponentType.kBaseGyroscope,
-    status: CalibrationStatus.kCalibrationFailed,
-    progress: 1.0,
-  },
-];
+export const fakeCalibrationComponentsWithFails: CalibrationComponentStatus[] =
+    [
+      {
+        component: ComponentType.kCamera,
+        status: CalibrationStatus.kCalibrationFailed,
+        progress: 0.0,
+      },
+      {
+        component: ComponentType.kBattery,
+        status: CalibrationStatus.kCalibrationComplete,
+        progress: 1.0,
+      },
+      {
+        component: ComponentType.kLidAccelerometer,
+        status: CalibrationStatus.kCalibrationComplete,
+        progress: 1.0,
+      },
+      {
+        component: ComponentType.kBaseAccelerometer,
+        status: CalibrationStatus.kCalibrationComplete,
+        progress: 1.0,
+      },
+      {
+        component: ComponentType.kTouchpad,
+        status: CalibrationStatus.kCalibrationComplete,
+        progress: 0.0,
+      },
+      {
+        component: ComponentType.kScreen,
+        status: CalibrationStatus.kCalibrationFailed,
+        progress: 1.0,
+      },
+      {
+        component: ComponentType.kBaseGyroscope,
+        status: CalibrationStatus.kCalibrationFailed,
+        progress: 1.0,
+      },
+    ];
 
-/** @type {!Array<!CalibrationComponentStatus>} */
-export const fakeCalibrationComponentsWithoutFails = [
-  {
-    component: ComponentType.kCamera,
-    status: CalibrationStatus.kCalibrationComplete,
-    progress: 0.0,
-  },
-  {
-    component: ComponentType.kBattery,
-    status: CalibrationStatus.kCalibrationComplete,
-    progress: 1.0,
-  },
-  {
-    component: ComponentType.kBaseAccelerometer,
-    status: CalibrationStatus.kCalibrationComplete,
-    progress: 1.0,
-  },
-  {
-    component: ComponentType.kLidAccelerometer,
-    status: CalibrationStatus.kCalibrationComplete,
-    progress: 1.0,
-  },
-  {
-    component: ComponentType.kTouchpad,
-    status: CalibrationStatus.kCalibrationComplete,
-    progress: 0.0,
-  },
-];
+export const fakeCalibrationComponentsWithoutFails:
+    CalibrationComponentStatus[] = [
+      {
+        component: ComponentType.kCamera,
+        status: CalibrationStatus.kCalibrationComplete,
+        progress: 0.0,
+      },
+      {
+        component: ComponentType.kBattery,
+        status: CalibrationStatus.kCalibrationComplete,
+        progress: 1.0,
+      },
+      {
+        component: ComponentType.kBaseAccelerometer,
+        status: CalibrationStatus.kCalibrationComplete,
+        progress: 1.0,
+      },
+      {
+        component: ComponentType.kLidAccelerometer,
+        status: CalibrationStatus.kCalibrationComplete,
+        progress: 1.0,
+      },
+      {
+        component: ComponentType.kTouchpad,
+        status: CalibrationStatus.kCalibrationComplete,
+        progress: 0.0,
+      },
+    ];
 
-/** @type {!Array<!Network>} */
-export const fakeNetworks = [
+export const fakeNetworks: Network[] = [
   OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi0'),
 ];
 
-/** @type {!Array<string>} */
-export const fakeDeviceRegions = ['EMEA', 'APAC', 'AMER'];
+export const fakeDeviceRegions: string[] = ['EMEA', 'APAC', 'AMER'];
 
-/** @type {!Array<bigint>} */
-export const fakeDeviceSkus = [1, 2, 3];
+export const fakeDeviceSkus: bigint[] = [BigInt(1), BigInt(2), BigInt(3)];
 
-/** @type {!Array<string>} */
-export const fakeDeviceCustomLabels =
+export const fakeDeviceCustomLabels: string[] =
     ['Custom-label 1', 'Custom-label 2', 'Custom-label 3', ''];
 
-/** @type {!Array<string>} */
-export const fakeDeviceSkuDescriptions = ['SKU 1', 'SKU 2', 'SKU 3'];
+export const fakeDeviceSkuDescriptions: string[] = ['SKU 1', 'SKU 2', 'SKU 3'];
 
-/** @type {string} */
 export const fakeLog =
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod ' +
     'tempor incididunt ut labore et dolore magna aliqua. Vitae auctor eu ' +
@@ -501,5 +489,4 @@ export const fakeLog =
     'lectus. Tellus pellentesque eu tincidunt tortor aliquam. Fermentum leo ' +
     'vel orci porta non pulvinar neque laoreet suspendisse.\n';
 
-/** @type {string} */
 export const fakeLogSavePath = 'fake/save/path';
