@@ -8,11 +8,6 @@
 
 namespace payments {
 
-const char kPaymentsFirstTransactionCompleted[] =
-    "payments.first_transaction_completed";
-
-const char kCanMakePaymentEnabled[] = "payments.can_make_payment_enabled";
-
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kPaymentsFirstTransactionCompleted, false);
   registry->RegisterBooleanPref(

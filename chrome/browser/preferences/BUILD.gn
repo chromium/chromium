@@ -48,7 +48,7 @@ java_cpp_strings("java_pref_names_srcjar") {
     "//components/history/core/common/pref_names.cc",
     "//components/language/core/browser/pref_names.h",
     "//components/password_manager/core/common/password_manager_pref_names.h",
-    "//components/payments/core/payment_prefs.cc",
+    "//components/payments/core/payment_prefs.h",
     "//components/policy/core/common/policy_pref_names.cc",
     "//components/privacy_sandbox/privacy_sandbox_prefs.h",
     "//components/privacy_sandbox/tracking_protection_prefs.h",
