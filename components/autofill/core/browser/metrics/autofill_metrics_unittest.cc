@@ -6915,11 +6915,10 @@ TEST_F(AutofillMetricsTest, DynamicFormMetrics) {
                      Bucket(FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL, 0)));
 
   // Trigger a refill, the refill metric should be updated.
-  test_api(autofill_manager())
-      .TriggerRefill(form, {.trigger_source = AutofillTriggerSource::kPopup});
+  autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
-      BucketsInclude(Bucket(FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, 1),
+      BucketsInclude(Bucket(FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, 2),
                      Bucket(FORM_EVENT_DID_DYNAMIC_REFILL, 1),
                      Bucket(FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL, 0)));
 
@@ -6931,7 +6930,7 @@ TEST_F(AutofillMetricsTest, DynamicFormMetrics) {
                            RefillTriggerReason::kFormChanged);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
-      BucketsInclude(Bucket(FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, 2),
+      BucketsInclude(Bucket(FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, 3),
                      Bucket(FORM_EVENT_DID_DYNAMIC_REFILL, 1),
                      Bucket(FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL, 1)));
 }

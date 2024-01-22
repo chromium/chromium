@@ -2718,30 +2718,31 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
   if (autofilled_form_signatures_.size() > kMaxRecentFormSignaturesToRemember) {
     autofilled_form_signatures_.pop_back();
   }
-
-  if (!is_refill) {
-    if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
-      // The originally selected masked card is `credit_card_`. So we must log
-      // `credit_card_` as opposed to
-      // `absl::get<CreditCard*>(profile_or_credit_card)` to correctly indicate
-      // whether the user filled the form using a masked card suggestion.
-      credit_card_form_event_logger_->OnDidFillSuggestion(
-          credit_card_, form_structure, trigger_autofill_field, filled_fields,
-          safe_fields, signin_state_for_metrics_,
-          trigger_details.trigger_source);
-    } else {
-      // An address form was filled.
-      CHECK(absl::holds_alternative<const AutofillProfile*>(
-          profile_or_credit_card));
-      if (trigger_autofill_field
-              .ShouldSuppressSuggestionsAndFillingByDefault()) {
-        autocomplete_unrecognized_fallback_logger_->OnDidFillSuggestion();
-      } else {
-        address_form_event_logger_->OnDidFillSuggestion(
-            *absl::get<const AutofillProfile*>(profile_or_credit_card),
-            form_structure, trigger_autofill_field, signin_state_for_metrics_,
-            trigger_details.trigger_source);
-      }
+  if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
+    // The originally selected masked card is `credit_card_`. So we must log
+    // `credit_card_` as opposed to
+    // `absl::get<CreditCard*>(profile_or_credit_card)` to correctly indicate
+    // whether the user filled the form using a masked card suggestion.
+    is_refill ? credit_card_form_event_logger_->OnDidRefill(
+                    signin_state_for_metrics_, form_structure)
+              : credit_card_form_event_logger_->OnDidFillSuggestion(
+                    credit_card_, form_structure, trigger_autofill_field,
+                    filled_fields, safe_fields, signin_state_for_metrics_,
+                    trigger_details.trigger_source);
+  } else {
+    CHECK(absl::holds_alternative<const AutofillProfile*>(
+        profile_or_credit_card));
+    if (!trigger_autofill_field
+             .ShouldSuppressSuggestionsAndFillingByDefault()) {
+      is_refill
+          ? address_form_event_logger_->OnDidRefill(signin_state_for_metrics_,
+                                                    form_structure)
+          : address_form_event_logger_->OnDidFillSuggestion(
+                *absl::get<const AutofillProfile*>(profile_or_credit_card),
+                form_structure, trigger_autofill_field,
+                signin_state_for_metrics_, trigger_details.trigger_source);
+    } else if (!is_refill) {
+      autocomplete_unrecognized_fallback_logger_->OnDidFillSuggestion();
     }
   }
   if (!is_refill) {
@@ -3447,12 +3448,9 @@ void BrowserAutofillManager::TriggerRefill(
     const FormData& form,
     const AutofillTriggerDetails& trigger_details) {
   FormStructure* form_structure = FindCachedFormById(form.global_id());
-  if (!form_structure)
+  if (!form_structure) {
     return;
-
-  address_form_event_logger_->OnDidRefill(signin_state_for_metrics_,
-                                          *form_structure);
-
+  }
   FillingContext* filling_context =
       GetFillingContext(form_structure->global_id());
   DCHECK(filling_context);
@@ -3461,9 +3459,9 @@ void BrowserAutofillManager::TriggerRefill(
   // after waiting for a while. Therefore, although this condition has been
   // checked prior to calling TriggerRefill, it may not hold, when we get
   // here.
-  if (filling_context->attempted_refill)
+  if (filling_context->attempted_refill) {
     return;
-
+  }
   filling_context->attempted_refill = true;
 
   // Try to find the field from which the original fill originated.
@@ -3493,9 +3491,9 @@ void BrowserAutofillManager::TriggerRefill(
       (autofill_field->global_id() == filling_context->filled_field_id ||
        autofill_field->GetFieldSignature() ==
            filling_context->filled_field_signature);
-  if (!found_matching_element)
+  if (!found_matching_element) {
     return;
-
+  }
   FormFieldData field = *autofill_field;
   if (absl::holds_alternative<std::pair<CreditCard, std::u16string>>(
           filling_context->profile_or_credit_card_with_cvc)) {
