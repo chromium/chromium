@@ -36,7 +36,6 @@ const OobeWelcomeDialogBase =
  * @typedef {{
  *   title:  HTMLAnchorElement,
  *   chromeVoxHint:  OobeModalDialog,
- *   quickStartWelcomeEntryPoint:  QuickStartEntryPoint,
  *   welcomeAnimation:  OobeCrLottie,
  * }}
  */
@@ -336,10 +335,6 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
    */
   showAnimationSlot() {
     return !this.isBootAnimation_;
-  }
-
-  onShowQuickStartBluetoothDialog_() {
-    this.$.quickStartWelcomeEntryPoint.showQuickStartBluetoothDialog();
   }
 }
 

@@ -91,8 +91,6 @@ constexpr const char kUserActionActivateRemoraRequisition[] =
 constexpr const char kUserActionEditDeviceRequisition[] =
     "editDeviceRequisition";
 constexpr const char kUserActionQuickStartClicked[] = "quickStartClicked";
-constexpr const char kUserActionQuickStartEnableBluetooth[] =
-    "quickStartEnableBluetooth";
 constexpr const char kWelcomeScreenLocaleChangeMetric[] =
     "OOBE.WelcomeScreen.UserChangedLocale";
 constexpr const char kSetLocaleId[] = "setLocaleId";
@@ -408,10 +406,6 @@ void WelcomeScreen::OnUserAction(const base::Value::List& args) {
     OnQuickStartClicked();
     return;
   }
-  if (action_id == kUserActionQuickStartEnableBluetooth) {
-    OnTurnOnBluetoothForQuickStart();
-    return;
-  }
   if (action_id == kUserActionContinueButtonClicked) {
     OnContinueButtonPressed();
     return;
@@ -721,21 +715,6 @@ void WelcomeScreen::UpdateA11yState() {
 
 void WelcomeScreen::OnQuickStartClicked() {
   CHECK(context()->quick_start_enabled);
-  if (WizardController::default_controller()
-          ->quick_start_controller()
-          ->ShouldShowBluetoothDialog()) {
-    // Show bluetooth dialog
-    view_->ShowQuickStartBluetoothDialog();
-  } else {
-    Exit(Result::kQuickStart);
-  }
-}
-
-void WelcomeScreen::OnTurnOnBluetoothForQuickStart() {
-  CHECK(context()->quick_start_enabled);
-  WizardController::default_controller()
-      ->quick_start_controller()
-      ->TurnOnBluetooth();
   Exit(Result::kQuickStart);
 }
 

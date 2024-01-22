@@ -47,6 +47,8 @@ class QuickStartController
   // TODO(b:283965994) - Finalize states.
   enum class ControllerState {
     NOT_ACTIVE,
+    WAITING_FOR_BLUETOOTH_PERMISSION,
+    WAITING_FOR_BLUETOOTH_ACTIVATION,
     INITIALIZING,
     ADVERTISING,
     CONNECTED,
@@ -70,6 +72,7 @@ class QuickStartController
     // UI State that is used for dictating what the QuickStartScreen should
     // show.
     enum class UiState {
+      SHOWING_BLUETOOTH_DIALOG,
       CONNECTING_TO_PHONE,
       SHOWING_QR,
       SHOWING_PIN,
@@ -138,15 +141,8 @@ class QuickStartController
   UserInfo GetUserInfo() { return user_info_; }
   std::string GetWiFiName() { return wifi_name_.value(); }
 
-  // Check if bluetooth is disabled which would require showing the enable
-  // bluetooth dialog to turn on bluetooth before continuing quick start flow.
-  bool ShouldShowBluetoothDialog();
-
-  // Turn on bluetooth for quick start flow to continue
-  void TurnOnBluetooth();
-
-  bluetooth_config::mojom::BluetoothSystemState
-  get_bluetooth_system_state_for_testing();
+  // Triggered when the user clicks on 'Turn on Bluetooth'
+  void OnBluetoothPermissionGranted();
 
   // Exit point to be used when the flow is cancelled.
   EntryPoint GetExitPoint();
@@ -161,6 +157,10 @@ class QuickStartController
 
   // Initializes the Bluetooth and starts to observe it.
   void StartObservingBluetoothState();
+
+  // Request advertising to start. Should only be called when bluetooth is
+  // enabled.
+  void StartAdvertising();
 
   // bluetooth_config::mojom::SystemPropertiesObserver
   void OnPropertiesUpdated(bluetooth_config::mojom::BluetoothSystemPropertiesPtr
@@ -217,6 +217,8 @@ class QuickStartController
 
   // Performs the final steps and triggers ChromeOS account creation flow.
   void FinishAccountCreation();
+
+  bool IsBluetoothDisabled();
 
   // Resets all internal values. Invoked when the flow is interrupted.
   void ResetState();

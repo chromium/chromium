@@ -18,6 +18,7 @@ namespace {
 
 constexpr const char kUserActionCancelClicked[] = "cancel";
 constexpr const char kUserActionNextClicked[] = "next";
+constexpr const char kUserActionTurnOnBluetooth[] = "turn_on_bluetooth";
 
 base::Value::List ConvertQrCode(quick_start::QRCode::PixelData qr_code) {
   base::Value::List qr_code_list;
@@ -96,6 +97,8 @@ void QuickStartScreen::OnUserAction(const base::Value::List& args) {
   } else if (action_id == kUserActionNextClicked) {
     controller_->DetachFrontend(this);
     exit_callback_.Run(Result::SETUP_COMPLETE_NEXT_BUTTON);
+  } else if (action_id == kUserActionTurnOnBluetooth) {
+    controller_->OnBluetoothPermissionGranted();
   } else {
     BaseScreen::OnUserAction(args);
   }
@@ -140,6 +143,10 @@ void QuickStartScreen::OnUiUpdateRequested(
       break;
     case ash::quick_start::QuickStartController::UiState::CONNECTING_TO_PHONE:
       view_->ShowConnectingToPhoneStep();
+      break;
+    case ash::quick_start::QuickStartController::UiState::
+        SHOWING_BLUETOOTH_DIALOG:
+      view_->ShowBluetoothDialog();
       break;
     case ash::quick_start::QuickStartController::UiState::EXIT_SCREEN:
       // Controller requested the flow to be aborted.

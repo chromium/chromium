@@ -40,6 +40,12 @@ export const QuickStartUIState = {
   SETUP_COMPLETE: 'setup_complete',
 };
 
+const UserActions = {
+  CANCEL: 'cancel',
+  NEXT: 'next',
+  TURN_ON_BLUETOOTH: 'turn_on_bluetooth',
+};
+
 /**
  * @constructor
  * @extends {PolymerElement}
@@ -110,6 +116,7 @@ class QuickStartScreen extends QuickStartScreenBase {
       'setQRCode',
       'setPin',
       'showInitialUiStep',
+      'showBluetoothDialog',
       'showConnectingToPhoneStep',
       'showConnectingToWifi',
       'setDiscoverableName',
@@ -165,6 +172,7 @@ class QuickStartScreen extends QuickStartScreenBase {
   }
 
   showConnectingToPhoneStep() {
+    this.$.quickStartBluetoothDialog.hideDialog();
     this.setUIStep(QuickStartUIState.CONNECTING_TO_PHONE);
   }
 
@@ -176,6 +184,7 @@ class QuickStartScreen extends QuickStartScreenBase {
    * @param {!Array<boolean>} qrCode
    */
   setQRCode(qrCode) {
+    this.$.quickStartBluetoothDialog.hideDialog();
     this.usePinInsteadOfQrForVerification_ = false;
     this.setUIStep(QuickStartUIState.VERIFICATION);
     flush();
@@ -229,6 +238,22 @@ class QuickStartScreen extends QuickStartScreenBase {
     return this.shadowRoot.querySelector('#qrCodeCanvas');
   }
 
+  showBluetoothDialog() {
+    // Shown on top of the QR code step.
+    this.setUIStep(QuickStartUIState.VERIFICATION);
+    this.$.quickStartBluetoothDialog.showDialog();
+  }
+
+  cancelBluetoothDialog_() {
+    this.$.quickStartBluetoothDialog.hideDialog();
+    this.userActed(UserActions.CANCEL);
+  }
+
+  turnOnBluetooth_() {
+    this.$.quickStartBluetoothDialog.hideDialog();
+    this.userActed(UserActions.TURN_ON_BLUETOOTH);
+  }
+
   /**
    * Wrap the user avatar as an image into a html snippet.
    *
@@ -255,11 +280,11 @@ class QuickStartScreen extends QuickStartScreenBase {
   }
 
   onCancelClicked_() {
-    this.userActed('cancel');
+    this.userActed(UserActions.CANCEL);
   }
 
   onNextClicked_() {
-    this.userActed('next');
+    this.userActed(UserActions.NEXT);
   }
 
   isEq_(a, b) {

@@ -56,8 +56,6 @@ class WelcomeView : public base::SupportsWeakPtr<WelcomeView> {
   virtual void UpdateA11yState(const A11yState& state) = 0;
 
   virtual void SetQuickStartEnabled() = 0;
-  // Show bluetooth dialog asking user to enable bluetooth for quickstart flow
-  virtual void ShowQuickStartBluetoothDialog() = 0;
 };
 
 // WebUI implementation of WelcomeScreenView. It is used to interact with
@@ -83,7 +81,6 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   void GiveChromeVoxHint() override;
   void UpdateA11yState(const A11yState& state) override;
   void SetQuickStartEnabled() override;
-  void ShowQuickStartBluetoothDialog() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
