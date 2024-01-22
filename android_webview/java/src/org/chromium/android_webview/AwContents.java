@@ -3815,7 +3815,6 @@ public class AwContents implements SmartClipProvider {
             effectiveImportance = ChildProcessImportance.NORMAL;
         } else {
             switch (mRendererPriority) {
-                case RendererPriority.INITIAL:
                 case RendererPriority.HIGH:
                     effectiveImportance = ChildProcessImportance.IMPORTANT;
                     break;

@@ -7,9 +7,8 @@
 
 namespace android_webview {
 
-// TODO(boliu): Remove INITIAL.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview.renderer_priority
-enum class RendererPriority { INITIAL = -1, WAIVED = 0, LOW = 1, HIGH = 2 };
+enum class RendererPriority { WAIVED = 0, LOW = 1, HIGH = 2 };
 
 }  // namespace android_webview
 
