@@ -396,7 +396,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                                 new HomeModulesCoordinator(
                                         mActivity,
                                         moduleDelegateHost,
-                                        mView.findViewById(R.id.task_surface_header)),
+                                        mView.findViewById(R.id.task_surface_header),
+                                        mProfileSupplier.get()),
                         mParentTabSupplier,
                         logoContainerView,
                         mGridTabSwitcher == null ? backPressManager : null,

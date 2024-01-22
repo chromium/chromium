@@ -99,7 +99,7 @@ public class HomeModulesCoordinatorUnitTest {
     @SmallTest
     public void testCreate_phones() {
         assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
-        mCoordinator = new HomeModulesCoordinator(mActivity, mModuleDelegateHost, mView);
+        mCoordinator = new HomeModulesCoordinator(mActivity, mModuleDelegateHost, mView, null);
 
         // Verifies that there isn't an observer of UiConfig registered.
         assertTrue(mCoordinator.getIsSnapHelperAttachedForTesting());
@@ -116,7 +116,7 @@ public class HomeModulesCoordinatorUnitTest {
                 new DisplayStyle(HorizontalDisplayStyle.WIDE, VerticalDisplayStyle.REGULAR);
         when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyle);
 
-        mCoordinator = new HomeModulesCoordinator(mActivity, mModuleDelegateHost, mView);
+        mCoordinator = new HomeModulesCoordinator(mActivity, mModuleDelegateHost, mView, null);
         // Verifies that an observer is registered to the mUiConfig on tablets.
         verify(mUiConfig).addObserver(mDisplayStyleObserver.capture());
 
@@ -145,7 +145,7 @@ public class HomeModulesCoordinatorUnitTest {
                 new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
         when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyle);
 
-        mCoordinator = new HomeModulesCoordinator(mActivity, mModuleDelegateHost, mView);
+        mCoordinator = new HomeModulesCoordinator(mActivity, mModuleDelegateHost, mView, null);
         // Verifies that an observer is registered to the mUiConfig on tablets.
         verify(mUiConfig).addObserver(mDisplayStyleObserver.capture());
 

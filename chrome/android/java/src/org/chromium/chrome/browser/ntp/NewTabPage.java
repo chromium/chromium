@@ -1287,7 +1287,8 @@ public class NewTabPage
                                                 R.id.home_modules_recycler_view_stub))
                                 .inflate();
         updateSingleTabCardContainerMargins(mHomeModulesContainer);
-        mHomeModulesCoordinator = new HomeModulesCoordinator(mActivity, this, mNewTabPageLayout);
+        mHomeModulesCoordinator =
+                new HomeModulesCoordinator(mActivity, this, mNewTabPageLayout, mTab.getProfile());
     }
 
     private void onMagicStackShown(boolean isVisible) {

@@ -16,16 +16,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry.OnViewCreatedCallback;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.segmentation_platform.PredictionOptions;
+import org.chromium.components.segmentation_platform.SegmentationPlatformService;
+import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Root coordinator which is responsible for showing modules on home surfaces. */
@@ -36,6 +43,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private final RecyclerView mRecyclerView;
     private final ModelList mModel;
     private final HomeModulesContextMenuManager mHomeModulesContextMenuManager;
+    private final SegmentationPlatformService mSegmentationPlatformService;
 
     private CirclePagerIndicatorDecoration mPageIndicatorDecoration;
     private SnapHelper mSnapHelper;
@@ -53,7 +61,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     public HomeModulesCoordinator(
             @NonNull Activity activity,
             @NonNull ModuleDelegateHost moduleDelegateHost,
-            @NonNull ViewGroup parentView) {
+            @NonNull ViewGroup parentView,
+            Profile profile) {
         mModuleDelegateHost = moduleDelegateHost;
         mHomeModulesContextMenuManager =
                 new HomeModulesContextMenuManager(
@@ -73,6 +82,10 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         setupRecyclerView(activity);
 
         mMediator = new HomeModulesMediator(mModel, ModuleRegistry.getInstance());
+        mSegmentationPlatformService =
+                (profile != null)
+                        ? SegmentationPlatformServiceFactory.getForProfile(profile)
+                        : null;
     }
 
     private void setupRecyclerView(Activity activity) {
@@ -158,18 +171,13 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
      * @param onHomeModulesShownCallback The callback called when the magic stack is shown.
      */
     public void show(Callback<Boolean> onHomeModulesShownCallback) {
-        List<Integer> moduleList = getModuleList();
-        if (moduleList == null) {
-            onHomeModulesShownCallback.onResult(false);
+        if (mSegmentationPlatformService == null
+                || !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER)) {
+            onGotRankedModules(getFixedModuleList(), onHomeModulesShownCallback);
             return;
         }
-
-        mMediator.buildModulesAndShow(
-                moduleList,
-                this,
-                (isVisible) -> {
-                    onHomeModulesShownCallback.onResult(isVisible);
-                });
+        getSegmentationRanking(onHomeModulesShownCallback);
     }
 
     /** Hides the modules and cleans up. */
@@ -270,9 +278,59 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         return mIsSnapHelperAttached;
     }
 
-    private List<Integer> getModuleList() {
-        // TODO(https://crbug.com/1512962): Gets the modules ranking list using segmentation service
-        // API.
+    private List<Integer> getFixedModuleList() {
         return List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+    }
+
+    private void onGotRankedModules(
+            List<Integer> moduleList, Callback<Boolean> onHomeModulesShownCallback) {
+        if (moduleList == null) {
+            onHomeModulesShownCallback.onResult(false);
+            return;
+        }
+
+        mMediator.buildModulesAndShow(
+                moduleList,
+                this,
+                (isVisible) -> {
+                    onHomeModulesShownCallback.onResult(isVisible);
+                });
+    }
+
+    private void getSegmentationRanking(Callback<Boolean> onHomeModulesShownCallback) {
+        PredictionOptions options = new PredictionOptions(false);
+        mSegmentationPlatformService.getClassificationResult(
+                "android_home_module_ranker",
+                options,
+                null,
+                result -> {
+                    // If segmentation service fails, fallback to return fixed module list.
+                    List<Integer> moduleList;
+                    if (result.status != PredictionStatus.SUCCEEDED
+                            || result.orderedLabels.isEmpty()) {
+                        moduleList = getFixedModuleList();
+                    } else {
+                        moduleList = convertLabelsToModuleList(result.orderedLabels);
+                    }
+                    onGotRankedModules(moduleList, onHomeModulesShownCallback);
+                });
+    }
+
+    private List<Integer> convertLabelsToModuleList(List<String> orderedLabels) {
+        List<Integer> moduleList = new ArrayList<Integer>();
+        for (String label : orderedLabels) {
+            moduleList.add(convertLabelToModuleType(label));
+        }
+        return moduleList;
+    }
+
+    private Integer convertLabelToModuleType(String label) {
+        switch (label) {
+            case "SingleTab":
+                return ModuleType.SINGLE_TAB;
+            case "PriceChange":
+                return ModuleType.PRICE_CHANGE;
+        }
+        return ModuleType.NUM_ENTRIES;
     }
 }
