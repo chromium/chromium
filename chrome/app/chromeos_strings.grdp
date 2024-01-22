@@ -5568,6 +5568,9 @@
   </message>
 
   <!-- Strings for EcheApp -->
+  <message name="IDS_ECHE_APP_NAME" desc="Public facing name for the Eche App.">
+    App Streaming
+  </message>
   <message name="IDS_ECHE_APP_SCREEN_LOCK_SETTINGS_BUTTON" desc="Label for the button in the screen lock notification of EcheApp to open the settings app.">
     Settings
   </message>

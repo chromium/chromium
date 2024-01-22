@@ -14,7 +14,9 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/grit/generated_resources.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 
 namespace {
@@ -29,9 +31,7 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForEcheApp() {
       std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(ash::eche_app::kChromeUIEcheAppURL);
   info->scope = GURL(ash::eche_app::kChromeUIEcheAppURL);
-  // |title| should come from a resource string, but this is the Eche app, and
-  // doesn't have one.
-  info->title = u"Eche App";
+  info->title = l10n_util::GetStringUTF16(IDS_ECHE_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
       {{"app_icon_256.png", 256, IDR_ASH_ECHE_APP_ICON_256_PNG}}, *info);
