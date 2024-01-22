@@ -3765,6 +3765,8 @@ enum WebFeature {
   kOBSOLETE_DialogCloseWatcherCloseSignalClosedMultiple = 4424,
   kNoVarySearch = 4425,
   kFedCmUserInfo = 4426,
+  // The items above roughly this point are available in the M110 branch.
+
   kIDNA2008DeviationCharacterInHostnameOfSubresource = 4427,
   kIDNA2008DeviationCharacterInHostnameOfIFrame = 4428,
   kWindowOpenPopupOnMobile = 4429,
@@ -3792,6 +3794,8 @@ enum WebFeature {
   kContentDispositionInSvgUse = 4451,
   kSameDocumentCrossOriginInitiator = 4452,
   kServiceWorkerFetchHandlerModifiedAfterInitialization = 4453,
+  // The items above roughly this point are available in the M111 branch.
+
   kOptionLabelInQuirksMode = 4454,
   kParseFromStringIncludeShadows = 4455,
   kWebAppManifestScopeExtensions = 4456,
@@ -3818,6 +3822,8 @@ enum WebFeature {
   kFencedFrameConfigAttribute = 4477,
   kURLSearchParams_Has_Delete_MultipleArguments = 4478,
   kPaymentHandlerMinimalHeaderUX = 4479,
+  // The items above roughly this point are available in the M112 branch.
+
   kPopoverTypeHint = 4480,
   kOBSOLETE_WebGPUWebCodecs = 4481,
   kRTCPeerConnectionLegacyGetStatsTrial = 4482,
@@ -3865,6 +3871,8 @@ enum WebFeature {
   kAsyncClipboardAPIUnsanitizedRead = 4524,
   kWindowOpenFullscreenRequested = 4525,
   kFullscreenAllowedByWindowOpen = 4526,
+  // The items above roughly this point are available in the M113 branch.
+
   kAttributeValueContainsLtOrGt = 4527,
   kV8ImportAssertionDeprecatedSyntax = 4528,
   kImageCaptureBackgroundBlur = 4529,
@@ -3887,6 +3895,8 @@ enum WebFeature {
   kAttributionReportingCrossAppWeb = 4546,
   kSecurePaymentConfirmationActivationlessShow = 4547,
   kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest = 4548,
+  // The items above roughly this point are available in the M114 branch.
+
   kFlexIntrinsicSizesCacheMiss = 4549,
   kCSSStyleContainerQuery = 4550,
   kCSSValueAppearanceMediaSlider = 4551,
@@ -3917,6 +3927,8 @@ enum WebFeature {
   kV8Navigator_GetInterestGroupAdAuctionData_Method = 4576,
   kLongAnimationFrameObserver = 4577,
   kLongAnimationFrameRequested = 4578,
+  // The items above roughly this point are available in the M115 branch.
+
   kFedCmLoginHint = 4579,
   kFedCmRpContext = 4580,
   kEventTimingArtificialPointerupOrClick = 4581,
@@ -3938,6 +3950,8 @@ enum WebFeature {
   kEventTimingPresentationPromiseResolvedAfterReport = 4597,
   kGetCoalescedEventsInInsecureContext = 4598,
   kCSPEESameOriginBlanketEnforcement = 4599,
+  // The items above roughly this point are available in the M116 branch.
+
   kSharedDictionaryUsed = 4601,
   kSharedDictionaryUsedForNavigation = 4602,
   kSharedDictionaryUsedForMainFrameNavigation = 4603,
@@ -3955,6 +3969,8 @@ enum WebFeature {
   kV8WasmMemory64 = 4615,
   kV8WasmMultiMemory = 4616,
   kV8WasmGC = 4617,
+  // The items above roughly this point are available in the M117 branch.
+
   kOBSOLETE_ORBBlockWithoutAnyEventHandler = 4618,
   kOBSOLETE_ORBBlockWithOnErrorButWithoutOnLoadEventHandler = 4619,
   kOBSOLETE_ORBBlockWithOnLoadButWithoutOnErrorEventHandler = 4620,
@@ -4002,6 +4018,8 @@ enum WebFeature {
   kViewportFitContain = 4662,
   kViewportFitCover = 4663,
   kViewportFitCoverOrSafeAreaInsetBottom = 4664,
+  // The items above roughly this point are available in the M118 branch.
+
   kOutOfFlowJustifySelfNoInsets = 4665,
   kOutOfFlowJustifySelfSingleInset = 4666,
   kOutOfFlowJustifySelfBothInsets = 4667,
@@ -4012,6 +4030,8 @@ enum WebFeature {
   kObservableConstructor = 4672,
   kTextWrapBalance = 4673,
   kTextWrapPretty = 4674,
+  // The items above roughly this point are available in the M119 branch.
+
   kV8PointerEvent_DeviceId_AttributeGetter = 4675,
   kSourceMappingUrlMagicCommentAtSign = 4676,
   kHTMLDetailsElementNameAttribute = 4677,
@@ -4075,6 +4095,8 @@ enum WebFeature {
   kThirdPartyCookieDeprecation_AllowBy3PCDHeuristics = 4735,
   kThirdPartyCookieDeprecation_AllowByStorageAccess = 4736,
   kThirdPartyCookieDeprecation_AllowByTopLevelStorageAccess = 4737,
+  // The items above roughly this point are available in the M120 branch.
+
   kIframeAdAuctionHeadersAttribute = 4738,
   kAutoSpeculationRulesOptedOut = 4739,
   kOverrideFlashEmbedwithHTML = 4740,
@@ -4092,6 +4114,8 @@ enum WebFeature {
   kTrustedTypesIntrospection = 4752,
   kTrustedTypesIsCheck = 4753,
   kMouseDragOnCancelledMouseMove = 4754,
+  // The items above roughly this point are available in the M121 branch.
+
   kFedCmDomainHint = 4755,
   kLCPImageWasLazy = 4756,
   kEventTargetOnObservable = 4757,
