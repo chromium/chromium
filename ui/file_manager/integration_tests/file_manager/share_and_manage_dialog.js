@@ -38,6 +38,8 @@ async function shareWithOthersExpectBrowserURL(
 
   // Right-click to show the context menu.
   chrome.test.assertTrue(
+      // @ts-ignore: error TS1345: An expression of type 'void' cannot be tested
+      // for truthiness.
       !!await remoteCall.waitAndRightClick(appId, '.table-row[selected]'));
 
   // Wait and click on the visible and enabled menu item.
@@ -112,6 +114,8 @@ async function manageWithDriveExpectBrowserURL(
 /**
  * Tests sharing a file on Drive.
  */
+// @ts-ignore: error TS4111: Property 'shareFileDrive' comes from an index
+// signature, so it must be accessed with ['shareFileDrive'].
 testcase.shareFileDrive = () => {
   const URL = 'https://file_alternate_link/world.ogv?userstoinvite=%22%22';
   return shareWithOthersExpectBrowserURL('world.ogv', URL);
@@ -120,6 +124,8 @@ testcase.shareFileDrive = () => {
 /**
  * Tests sharing a directory on Drive.
  */
+// @ts-ignore: error TS4111: Property 'shareDirectoryDrive' comes from an index
+// signature, so it must be accessed with ['shareDirectoryDrive'].
 testcase.shareDirectoryDrive = () => {
   const URL = 'https://folder_alternate_link/photos?userstoinvite=%22%22';
   return shareWithOthersExpectBrowserURL('photos', URL);
@@ -128,6 +134,8 @@ testcase.shareDirectoryDrive = () => {
 /**
  * Tests sharing a hosted file (gdoc) on Drive.
  */
+// @ts-ignore: error TS4111: Property 'shareHostedFileDrive' comes from an index
+// signature, so it must be accessed with ['shareHostedFileDrive'].
 testcase.shareHostedFileDrive = () => {
   const URL =
       'https://document_alternate_link/Test%20Document?userstoinvite=%22%22';
@@ -137,6 +145,8 @@ testcase.shareHostedFileDrive = () => {
 /**
  * Tests managing a file on Drive.
  */
+// @ts-ignore: error TS4111: Property 'manageFileDrive' comes from an index
+// signature, so it must be accessed with ['manageFileDrive'].
 testcase.manageFileDrive = () => {
   const URL = 'https://file_alternate_link/world.ogv';
   return manageWithDriveExpectBrowserURL('world.ogv', URL);
@@ -145,6 +155,8 @@ testcase.manageFileDrive = () => {
 /**
  * Tests managing a directory on Drive.
  */
+// @ts-ignore: error TS4111: Property 'manageDirectoryDrive' comes from an index
+// signature, so it must be accessed with ['manageDirectoryDrive'].
 testcase.manageDirectoryDrive = () => {
   const URL = 'https://folder_alternate_link/photos';
   return manageWithDriveExpectBrowserURL('photos', URL);
@@ -153,6 +165,8 @@ testcase.manageDirectoryDrive = () => {
 /**
  * Tests managing a hosted file (gdoc) on Drive.
  */
+// @ts-ignore: error TS4111: Property 'manageHostedFileDrive' comes from an
+// index signature, so it must be accessed with ['manageHostedFileDrive'].
 testcase.manageHostedFileDrive = () => {
   const URL = 'https://document_alternate_link/Test%20Document';
   return manageWithDriveExpectBrowserURL('Test Document.gdoc', URL);
@@ -161,6 +175,8 @@ testcase.manageHostedFileDrive = () => {
 /**
  * Tests sharing a file in a team drive.
  */
+// @ts-ignore: error TS4111: Property 'shareFileTeamDrive' comes from an index
+// signature, so it must be accessed with ['shareFileTeamDrive'].
 testcase.shareFileTeamDrive = () => {
   const URL =
       'https://file_alternate_link/teamDriveAFile.txt?userstoinvite=%22%22';
@@ -171,6 +187,8 @@ testcase.shareFileTeamDrive = () => {
 /**
  * Tests that sharing a directory in a team drive is not allowed.
  */
+// @ts-ignore: error TS4111: Property 'shareDirectoryTeamDrive' comes from an
+// index signature, so it must be accessed with ['shareDirectoryTeamDrive'].
 testcase.shareDirectoryTeamDrive = async () => {
   const teamDrive = 'Team Drive A';
   const path = 'teamDriveADirectory';
@@ -211,6 +229,8 @@ testcase.shareDirectoryTeamDrive = async () => {
 /**
  * Tests sharing a hosted file (gdoc) in a team drive.
  */
+// @ts-ignore: error TS4111: Property 'shareHostedFileTeamDrive' comes from an
+// index signature, so it must be accessed with ['shareHostedFileTeamDrive'].
 testcase.shareHostedFileTeamDrive = () => {
   const URL =
       'https://document_alternate_link/teamDriveAHostedDoc?userstoinvite=%22%22';
@@ -221,6 +241,8 @@ testcase.shareHostedFileTeamDrive = () => {
 /**
  * Tests managing a file in a team drive.
  */
+// @ts-ignore: error TS4111: Property 'manageFileTeamDrive' comes from an index
+// signature, so it must be accessed with ['manageFileTeamDrive'].
 testcase.manageFileTeamDrive = () => {
   const URL = 'https://file_alternate_link/teamDriveAFile.txt';
   return manageWithDriveExpectBrowserURL(
@@ -230,6 +252,8 @@ testcase.manageFileTeamDrive = () => {
 /**
  * Tests managing a directory in a team drive.
  */
+// @ts-ignore: error TS4111: Property 'manageDirectoryTeamDrive' comes from an
+// index signature, so it must be accessed with ['manageDirectoryTeamDrive'].
 testcase.manageDirectoryTeamDrive = () => {
   const URL = 'https://folder_alternate_link/teamDriveADirectory';
   return manageWithDriveExpectBrowserURL(
@@ -239,6 +263,8 @@ testcase.manageDirectoryTeamDrive = () => {
 /**
  * Tests managing a hosted file (gdoc) in a team drive.
  */
+// @ts-ignore: error TS4111: Property 'manageHostedFileTeamDrive' comes from an
+// index signature, so it must be accessed with ['manageHostedFileTeamDrive'].
 testcase.manageHostedFileTeamDrive = () => {
   const URL = 'https://document_alternate_link/teamDriveAHostedDoc';
   return manageWithDriveExpectBrowserURL(
@@ -248,6 +274,8 @@ testcase.manageHostedFileTeamDrive = () => {
 /**
  * Tests managing a team drive.
  */
+// @ts-ignore: error TS4111: Property 'manageTeamDrive' comes from an index
+// signature, so it must be accessed with ['manageTeamDrive'].
 testcase.manageTeamDrive = () => {
   const URL = 'https://folder_alternate_link/Team%20Drive%20A';
   return manageWithDriveExpectBrowserURL('Team Drive A', URL, '');
@@ -256,6 +284,8 @@ testcase.manageTeamDrive = () => {
 /**
  * Tests sharing a team drive.
  */
+// @ts-ignore: error TS4111: Property 'shareTeamDrive' comes from an index
+// signature, so it must be accessed with ['shareTeamDrive'].
 testcase.shareTeamDrive = () => {
   const URL =
       'https://folder_alternate_link/Team%20Drive%20A?userstoinvite=%22%22';

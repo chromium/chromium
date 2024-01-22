@@ -44,6 +44,7 @@ export const BASIC_LOCAL_ENTRY_SET = [
  * @type {!Array<!TestEntryInfo>}
  * @const
  */
+// @ts-ignore: error TS2769: No overload matches this call.
 export const BASIC_LOCAL_ENTRY_SET_WITH_HIDDEN = BASIC_LOCAL_ENTRY_SET.concat([
   ENTRIES.hiddenFile,
   ENTRIES.dotTrash,
@@ -75,6 +76,8 @@ export const BASIC_DRIVE_ENTRY_SET = [
  * @const
  */
 export const BASIC_DRIVE_ENTRY_SET_WITH_HIDDEN = BASIC_DRIVE_ENTRY_SET.concat([
+  // @ts-ignore: error TS4111: Property 'hiddenFile' comes from an index
+  // signature, so it must be accessed with ['hiddenFile'].
   ENTRIES.hiddenFile,
 ]);
 
@@ -275,6 +278,7 @@ export const BASIC_ANDROID_ENTRY_SET = [
  * @const
  */
 export const BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN =
+    // @ts-ignore: error TS2769: No overload matches this call.
     BASIC_ANDROID_ENTRY_SET.concat([
       ENTRIES.hello,
       ENTRIES.world,

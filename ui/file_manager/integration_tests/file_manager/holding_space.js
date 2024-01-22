@@ -12,6 +12,8 @@ import {waitForDialog} from './file_dialog.js';
  * Tests that the holding space welcome banner appears and that it can be
  * dismissed.
  */
+// @ts-ignore: error TS4111: Property 'holdingSpaceWelcomeBanner' comes from an
+// index signature, so it must be accessed with ['holdingSpaceWelcomeBanner'].
 testcase.holdingSpaceWelcomeBanner = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -44,6 +46,10 @@ testcase.holdingSpaceWelcomeBanner = async () => {
  * Tests that the holding space welcome banner will show for modal dialogs when
  * using the new banners framework.
  */
+// @ts-ignore: error TS4111: Property
+// 'holdingSpaceWelcomeBannerWillShowForModalDialogs' comes from an index
+// signature, so it must be accessed with
+// ['holdingSpaceWelcomeBannerWillShowForModalDialogs'].
 testcase.holdingSpaceWelcomeBannerWillShowForModalDialogs = async () => {
   // Open Save as dialog in the foreground window.
   await openEntryChoosingWindow({type: 'saveFile'});
@@ -55,6 +61,8 @@ testcase.holdingSpaceWelcomeBannerWillShowForModalDialogs = async () => {
       appId, 'holding-space-welcome-banner');
 
   // Wait to finish initial load.
+  // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
+  // parameter of type '(arg0: Object) => boolean | Object'.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
   // Check: the holding space welcome banner should be visible.
@@ -66,6 +74,9 @@ testcase.holdingSpaceWelcomeBannerWillShowForModalDialogs = async () => {
  * Tests that the holding space welcome banner will update its text depending on
  * whether or not tablet mode is enabled.
  */
+// @ts-ignore: error TS4111: Property
+// 'holdingSpaceWelcomeBannerOnTabletModeChanged' comes from an index signature,
+// so it must be accessed with ['holdingSpaceWelcomeBannerOnTabletModeChanged'].
 testcase.holdingSpaceWelcomeBannerOnTabletModeChanged = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -76,11 +87,15 @@ testcase.holdingSpaceWelcomeBannerOnTabletModeChanged = async () => {
 
   // Async function which repeats until the element matching the specified
   // `query` has a calculated display matching the specified `displayValue`.
+  // @ts-ignore: error TS7006: Parameter 'displayValue' implicitly has an 'any'
+  // type.
   async function waitForElementWithDisplay(query, displayValue) {
     await repeatUntil(async () => {
       const caller = getCaller();
       const el =
           await remoteCall.waitForElementStyles(appId, query, ['display']);
+      // @ts-ignore: error TS4111: Property 'display' comes from an index
+      // signature, so it must be accessed with ['display'].
       if (el && el.styles && el.styles.display === displayValue) {
         return el;
       }

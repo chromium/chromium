@@ -26,14 +26,14 @@ export class FilesAppState {
   constructor() {
     /**
      * The desired target directory when opening a new window.
-     * @public {string|null|undefined}
+     * @type {string|null|undefined}
      */
     this.currentDirectoryURL;
 
     /**
      * The URL for a file or directory to be selected once a new window is
      * spawned.
-     * @public {string|undefined}
+     * @type {string|undefined}
      */
     this.selectionURL;
 
@@ -41,20 +41,20 @@ export class FilesAppState {
      * For SaveAs dialog it prefills the <input> for the file name with this
      * value.
      * For FilePicker it pre-selects the file in the file list.
-     * @public {string|undefined}
+     * @type {string|undefined}
      */
     this.targetName;
 
     /**
      * Search term to initialize the Files app directly in a search results.
-     * @public {string|undefined}
+     * @type {string|undefined}
      */
     this.searchQuery;
 
     /**
      * The type of the window being opened, when it's undefined it defaults to
      * the normal Files app window (non-dialog version).
-     * @public {!DialogType|undefined}
+     * @type {!DialogType|undefined}
      */
     this.type;
 
@@ -64,14 +64,14 @@ export class FilesAppState {
      * Files app displays Android apps that can handle such extensions in the
      * DirectoryTree.
      * TODO(lucmult): Add type for the Object below:
-     * @public {!Array<!Object>|undefined}
+     * @type {!Array<!Object>|undefined}
      */
     this.typeList;
 
     /**
      * For FilePicker indicates that the "All files" should be displayed in the
      * file type dropdown in the footer.
-     * @public {boolean|undefined}
+     * @type {boolean|undefined}
      */
     this.includeAllFiles;
 
@@ -80,13 +80,13 @@ export class FilesAppState {
      * used, any virtual volume (FSPs) is hidden.
      *
      * Defaults to `ANY_PATH_OR_URL` when undefined.
-     * @public {!AllowedPaths|undefined}
+     * @type {!AllowedPaths|undefined}
      */
     this.allowedPaths;
 
     /**
      * If the Android apps should be shown in the DirectoryTree for FilePicker.
-     * @public {boolean|undefined}
+     * @type {boolean|undefined}
      */
     this.showAndroidPickerApps;
 
@@ -97,7 +97,7 @@ export class FilesAppState {
      * See filtered_volume_manager.js for details about the available volume
      * filter names and their volume filter effects.
      *
-     * @public {!Array<string>|undefined}
+     * @type {!Array<string>|undefined}
      */
     this.volumeFilter;
   }

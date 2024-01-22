@@ -13,6 +13,9 @@ import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from
 /**
  * Tests that the Delete menu item is disabled if no entry is selected.
  */
+// @ts-ignore: error TS4111: Property 'toolbarDeleteWithMenuItemNoEntrySelected'
+// comes from an index signature, so it must be accessed with
+// ['toolbarDeleteWithMenuItemNoEntrySelected'].
 testcase.toolbarDeleteWithMenuItemNoEntrySelected = async () => {
   const contextMenu = '#file-context-menu:not([hidden])';
 
@@ -36,12 +39,19 @@ testcase.toolbarDeleteWithMenuItemNoEntrySelected = async () => {
  * Tests that the toolbar Delete button opens the delete confirm dialog and
  * that the dialog cancel button has the focus by default.
  */
+// @ts-ignore: error TS4111: Property
+// 'toolbarDeleteButtonOpensDeleteConfirmDialog' comes from an index signature,
+// so it must be accessed with ['toolbarDeleteButtonOpensDeleteConfirmDialog'].
 testcase.toolbarDeleteButtonOpensDeleteConfirmDialog = async () => {
   // Open Files app.
   const appId =
+      // @ts-ignore: error TS4111: Property 'desktop' comes from an index
+      // signature, so it must be accessed with ['desktop'].
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.desktop]);
 
   // Select My Desktop Background.png
+  // @ts-ignore: error TS4111: Property 'desktop' comes from an index signature,
+  // so it must be accessed with ['desktop'].
   await remoteCall.waitUntilSelected(appId, ENTRIES.desktop.nameText);
 
   // Click the toolbar Delete button.
@@ -60,6 +70,9 @@ testcase.toolbarDeleteButtonOpensDeleteConfirmDialog = async () => {
  * Tests that the toolbar Delete button keeps focus after the delete confirm
  * dialog is closed.
  */
+// @ts-ignore: error TS4111: Property 'toolbarDeleteButtonKeepFocus' comes from
+// an index signature, so it must be accessed with
+// ['toolbarDeleteButtonKeepFocus'].
 testcase.toolbarDeleteButtonKeepFocus = async () => {
   // Open Files app.
   const appId =
@@ -105,6 +118,8 @@ testcase.toolbarDeleteButtonKeepFocus = async () => {
 /**
  * Tests deleting an entry using the toolbar.
  */
+// @ts-ignore: error TS4111: Property 'toolbarDeleteEntry' comes from an index
+// signature, so it must be accessed with ['toolbarDeleteEntry'].
 testcase.toolbarDeleteEntry = async () => {
   const beforeDeletion = TestEntryInfo.getExpectedRows([
     ENTRIES.photos,
@@ -126,6 +141,10 @@ testcase.toolbarDeleteEntry = async () => {
 
   // Confirm entries in the directory before the deletion.
   await remoteCall.waitForFiles(
+      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
+      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
+      // | null | undefined; ignoreFileSize: boolean | null | undefined;
+      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       appId, beforeDeletion, {ignoreLastModifiedTime: true});
 
   // Select My Desktop Background.png
@@ -137,6 +156,10 @@ testcase.toolbarDeleteEntry = async () => {
 
   // Confirm the file is removed.
   await remoteCall.waitForFiles(
+      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
+      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
+      // | null | undefined; ignoreFileSize: boolean | null | undefined;
+      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       appId, afterDeletion, {ignoreLastModifiedTime: true});
 };
 
@@ -148,6 +171,9 @@ testcase.toolbarDeleteEntry = async () => {
  * button should be hidden when entering the selection mode.
  * crbug.com/978383
  */
+// @ts-ignore: error TS4111: Property 'toolbarRefreshButtonWithSelection' comes
+// from an index signature, so it must be accessed with
+// ['toolbarRefreshButtonWithSelection'].
 testcase.toolbarRefreshButtonWithSelection = async () => {
   // Open files app.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -166,6 +192,8 @@ testcase.toolbarRefreshButtonWithSelection = async () => {
 
   // Ctrl+A to enter selection mode.
   const ctrlA = ['#file-list', 'a', true, false, false];
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   await remoteCall.fakeKeyDown(appId, ...ctrlA);
 
   // Check that the button should be hidden.
@@ -175,9 +203,14 @@ testcase.toolbarRefreshButtonWithSelection = async () => {
 /**
  * Tests that refresh button is not shown when the Recent view is selected.
  */
+// @ts-ignore: error TS4111: Property 'toolbarRefreshButtonHiddenInRecents'
+// comes from an index signature, so it must be accessed with
+// ['toolbarRefreshButtonHiddenInRecents'].
 testcase.toolbarRefreshButtonHiddenInRecents = async () => {
   // Open files app.
   const appId =
+      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
+      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Navigate to Recent.
@@ -192,6 +225,10 @@ testcase.toolbarRefreshButtonHiddenInRecents = async () => {
 /**
  * Tests that refresh button is shown for non-watchable volumes.
  */
+// @ts-ignore: error TS4111: Property
+// 'toolbarRefreshButtonShownForNonWatchableVolume' comes from an index
+// signature, so it must be accessed with
+// ['toolbarRefreshButtonShownForNonWatchableVolume'].
 testcase.toolbarRefreshButtonShownForNonWatchableVolume = async () => {
   // Open files app.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -212,9 +249,14 @@ testcase.toolbarRefreshButtonShownForNonWatchableVolume = async () => {
 /**
  * Tests that refresh button is hidden for watchable volumes.
  */
+// @ts-ignore: error TS4111: Property
+// 'toolbarRefreshButtonHiddenForWatchableVolume' comes from an index signature,
+// so it must be accessed with ['toolbarRefreshButtonHiddenForWatchableVolume'].
 testcase.toolbarRefreshButtonHiddenForWatchableVolume = async () => {
   // Open Files app on local Downloads.
   const appId =
+      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
+      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // It should start in Downloads.
@@ -228,13 +270,19 @@ testcase.toolbarRefreshButtonHiddenForWatchableVolume = async () => {
 /**
  * Tests that command Alt+A focus the toolbar.
  */
+// @ts-ignore: error TS4111: Property 'toolbarAltACommand' comes from an index
+// signature, so it must be accessed with ['toolbarAltACommand'].
 testcase.toolbarAltACommand = async () => {
   // Open files app.
   const appId =
+      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
+      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Press Alt+A in the File List.
   const altA = ['#file-list', 'a', false, false, true];
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   await remoteCall.fakeKeyDown(appId, ...altA);
 
   // Check that a menu-button should be focused.
@@ -248,6 +296,9 @@ testcase.toolbarAltACommand = async () => {
  * Tests that the menu drop down follows the button if the button moves. This
  * happens when the search box is expanded and then collapsed.
  */
+// @ts-ignore: error TS4111: Property 'toolbarMultiMenuFollowsButton' comes from
+// an index signature, so it must be accessed with
+// ['toolbarMultiMenuFollowsButton'].
 testcase.toolbarMultiMenuFollowsButton = async () => {
   const entry = ENTRIES.hello;
 
@@ -275,6 +326,7 @@ testcase.toolbarMultiMenuFollowsButton = async () => {
 
   // Check that the dropdown menu and "Open" button are aligned.
   const caller = getCaller();
+  // @ts-ignore: error TS7030: Not all code paths return a value.
   await repeatUntil(async () => {
     const openButton =
         await remoteCall.waitForElementStyles(appId, '#tasks', ['width']);
@@ -293,6 +345,9 @@ testcase.toolbarMultiMenuFollowsButton = async () => {
 /**
  * Tests that the sharesheet button is enabled and executable.
  */
+// @ts-ignore: error TS4111: Property 'toolbarSharesheetButtonWithSelection'
+// comes from an index signature, so it must be accessed with
+// ['toolbarSharesheetButtonWithSelection'].
 testcase.toolbarSharesheetButtonWithSelection = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -304,6 +359,10 @@ testcase.toolbarSharesheetButtonWithSelection = async () => {
 
   // Fake chrome.fileManagerPrivate.invokeSharesheet.
   fakeData = {
+    // @ts-ignore: error TS2353: Object literal may only specify known
+    // properties, and ''chrome.fileManagerPrivate.invokeSharesheet'' does not
+    // exist in type '{ 'chrome.fileManagerPrivate.sharesheetHasTargets':
+    // (string | boolean[])[]; }'.
     'chrome.fileManagerPrivate.invokeSharesheet': ['static_fake', []],
   };
   await remoteCall.callRemoteTestUtil('foregroundFake', appId, [fakeData]);
@@ -311,6 +370,7 @@ testcase.toolbarSharesheetButtonWithSelection = async () => {
   const entry = ENTRIES.hello;
 
   // Select an entry in the file list.
+  // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   await remoteCall.waitAndClickElement(
@@ -331,6 +391,9 @@ testcase.toolbarSharesheetButtonWithSelection = async () => {
 /**
  * Tests that the sharesheet command in context menu is enabled and executable.
  */
+// @ts-ignore: error TS4111: Property
+// 'toolbarSharesheetContextMenuWithSelection' comes from an index signature, so
+// it must be accessed with ['toolbarSharesheetContextMenuWithSelection'].
 testcase.toolbarSharesheetContextMenuWithSelection = async () => {
   const contextMenu = '#file-context-menu:not([hidden])';
 
@@ -344,6 +407,10 @@ testcase.toolbarSharesheetContextMenuWithSelection = async () => {
 
   // Fake chrome.fileManagerPrivate.invokeSharesheet.
   fakeData = {
+    // @ts-ignore: error TS2353: Object literal may only specify known
+    // properties, and ''chrome.fileManagerPrivate.invokeSharesheet'' does not
+    // exist in type '{ 'chrome.fileManagerPrivate.sharesheetHasTargets':
+    // (string | boolean[])[]; }'.
     'chrome.fileManagerPrivate.invokeSharesheet': ['static_fake', []],
   };
   await remoteCall.callRemoteTestUtil('foregroundFake', appId, [fakeData]);
@@ -381,6 +448,9 @@ testcase.toolbarSharesheetContextMenuWithSelection = async () => {
 /**
  * Tests that the sharesheet item is hidden if no entry is selected.
  */
+// @ts-ignore: error TS4111: Property 'toolbarSharesheetNoEntrySelected' comes
+// from an index signature, so it must be accessed with
+// ['toolbarSharesheetNoEntrySelected'].
 testcase.toolbarSharesheetNoEntrySelected = async () => {
   const contextMenu = '#file-context-menu:not([hidden])';
 
@@ -394,6 +464,8 @@ testcase.toolbarSharesheetNoEntrySelected = async () => {
 
   // Right click the list without selecting an entry.
   chrome.test.assertTrue(
+      // @ts-ignore: error TS1345: An expression of type 'void' cannot be tested
+      // for truthiness.
       !!await remoteCall.waitAndRightClick(appId, 'list.list'));
 
   // Wait until the context menu is shown.
@@ -416,6 +488,10 @@ testcase.toolbarSharesheetNoEntrySelected = async () => {
 /**
  * Tests that the cloud icon does not appear if bulk pinning is disabled.
  */
+// @ts-ignore: error TS4111: Property
+// 'toolbarCloudIconShouldNotShowWhenBulkPinningDisabled' comes from an index
+// signature, so it must be accessed with
+// ['toolbarCloudIconShouldNotShowWhenBulkPinningDisabled'].
 testcase.toolbarCloudIconShouldNotShowWhenBulkPinningDisabled = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
@@ -428,6 +504,10 @@ testcase.toolbarCloudIconShouldNotShowWhenBulkPinningDisabled = async () => {
  * panel.
  */
 testcase
+    // @ts-ignore: error TS4111: Property
+    // 'toolbarCloudIconShouldNotShowIfPreferenceDisabledAndNoUIStateAvailable'
+    // comes from an index signature, so it must be accessed with
+    // ['toolbarCloudIconShouldNotShowIfPreferenceDisabledAndNoUIStateAvailable'].
     .toolbarCloudIconShouldNotShowIfPreferenceDisabledAndNoUIStateAvailable =
     async () => {
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: false});
@@ -441,6 +521,9 @@ testcase
  * Tests that the cloud icon should only show when the bulk pinning is in
  * progress.
  */
+// @ts-ignore: error TS4111: Property 'toolbarCloudIconShouldShowForInProgress'
+// comes from an index signature, so it must be accessed with
+// ['toolbarCloudIconShouldShowForInProgress'].
 testcase.toolbarCloudIconShouldShowForInProgress = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
@@ -463,6 +546,10 @@ testcase.toolbarCloudIconShouldShowForInProgress = async () => {
  * Tests that the cloud icon should show when there is not enough disk space
  * available to pin.
  */
+// @ts-ignore: error TS4111: Property
+// 'toolbarCloudIconShowsWhenNotEnoughDiskSpaceIsReturned' comes from an index
+// signature, so it must be accessed with
+// ['toolbarCloudIconShowsWhenNotEnoughDiskSpaceIsReturned'].
 testcase.toolbarCloudIconShowsWhenNotEnoughDiskSpaceIsReturned = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
@@ -485,6 +572,10 @@ testcase.toolbarCloudIconShowsWhenNotEnoughDiskSpaceIsReturned = async () => {
  * Tests that the cloud icon should not show if an error state has been
  * returned (in this case `CannotGetFreeSpace`).
  */
+// @ts-ignore: error TS4111: Property
+// 'toolbarCloudIconShouldNotShowWhenCannotGetFreeSpace' comes from an index
+// signature, so it must be accessed with
+// ['toolbarCloudIconShouldNotShowWhenCannotGetFreeSpace'].
 testcase.toolbarCloudIconShouldNotShowWhenCannotGetFreeSpace = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
@@ -511,6 +602,10 @@ testcase.toolbarCloudIconShouldNotShowWhenCannotGetFreeSpace = async () => {
  * Tests that when the cloud icon is pressed the xf-cloud-panel moves into space
  * and resizes correctly.
  */
+// @ts-ignore: error TS4111: Property
+// 'toolbarCloudIconWhenPressedShouldOpenCloudPanel' comes from an index
+// signature, so it must be accessed with
+// ['toolbarCloudIconWhenPressedShouldOpenCloudPanel'].
 testcase.toolbarCloudIconWhenPressedShouldOpenCloudPanel = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
@@ -541,6 +636,10 @@ testcase.toolbarCloudIconWhenPressedShouldOpenCloudPanel = async () => {
  * Tests that the cloud icon should not show if bulk pinning is paused (which
  * represents an offline state) and the user preference is disabled.
  */
+// @ts-ignore: error TS4111: Property
+// 'toolbarCloudIconShouldNotShowWhenPrefDisabled' comes from an index
+// signature, so it must be accessed with
+// ['toolbarCloudIconShouldNotShowWhenPrefDisabled'].
 testcase.toolbarCloudIconShouldNotShowWhenPrefDisabled = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
@@ -572,6 +671,9 @@ testcase.toolbarCloudIconShouldNotShowWhenPrefDisabled = async () => {
  * Tests that the cloud icon should show if bulk pinning is paused (which
  * represents an offline state) and the user preference is enabled.
  */
+// @ts-ignore: error TS4111: Property
+// 'toolbarCloudIconShouldShowWhenPausedState' comes from an index signature, so
+// it must be accessed with ['toolbarCloudIconShouldShowWhenPausedState'].
 testcase.toolbarCloudIconShouldShowWhenPausedState = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
@@ -599,6 +701,10 @@ testcase.toolbarCloudIconShouldShowWhenPausedState = async () => {
  * This mainly tests that on startup the bulk pin progress is fetched and
  * doesn't require an async event to show.
  */
+// @ts-ignore: error TS4111: Property
+// 'toolbarCloudIconShouldShowOnStartupEvenIfSyncing' comes from an index
+// signature, so it must be accessed with
+// ['toolbarCloudIconShouldShowOnStartupEvenIfSyncing'].
 testcase.toolbarCloudIconShouldShowOnStartupEvenIfSyncing = async () => {
   await addEntries(['drive'], [ENTRIES.hello]);
 
@@ -628,6 +734,8 @@ testcase.toolbarCloudIconShouldShowOnStartupEvenIfSyncing = async () => {
   // Open a new window to the Drive root and ensure the cloud button is not
   // hidden. The cloud button will show on startup as it relies on the bulk
   // pinning preference to be set.
+  // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
+  // parameter of type 'FilesAppState'.
   const appId = await openNewWindow(RootPath.DRIVE, /*appState=*/ {});
   await remoteCall.waitForElement(appId, '#detail-table');
   await remoteCall.waitForElement(appId, '#cloud-button:not([hidden])');
@@ -645,6 +753,10 @@ testcase.toolbarCloudIconShouldShowOnStartupEvenIfSyncing = async () => {
  * Tests that the cloud icon should show if bulk pinning is paused due to being
  * on a metered network.
  */
+// @ts-ignore: error TS4111: Property
+// 'toolbarCloudIconShouldShowWhenOnMeteredNetwork' comes from an index
+// signature, so it must be accessed with
+// ['toolbarCloudIconShouldShowWhenOnMeteredNetwork'].
 testcase.toolbarCloudIconShouldShowWhenOnMeteredNetwork = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);

@@ -84,14 +84,18 @@ export let remoteCall;
  *     directory during initialization. Can be null, for no default path.
  * @param {?FilesAppState=} appState App state to be passed with on opening the
  *     Files app.
- * @return {Promise} Promise to be fulfilled after window creating.
+ * @return {Promise<string>} Promise to be fulfilled after window creating.
  */
+// @ts-ignore: error TS2740: Type '{}' is missing the following properties from
+// type 'FilesAppState': currentDirectoryURL, selectionURL, targetName,
+// searchQuery, and 6 more.
 export async function openNewWindow(initialRoot, appState = {}) {
   // TODO(mtomasz): Migrate from full paths to a pair of a volumeId and a
   // relative path. To compose the URL communicate via messages with
   // file_manager_browser_test.cc.
   if (initialRoot) {
     const tail = `external${initialRoot}`;
+    // @ts-ignore: error TS18047: 'appState' is possibly 'null'.
     appState.currentDirectoryURL = `filesystem:${FILE_MANAGER_SWA_ID}/${tail}`;
   }
 
@@ -107,6 +111,8 @@ export async function openNewWindow(initialRoot, appState = {}) {
     searchQuery,
   });
 
+  // @ts-ignore: error TS2322: Type 'unknown' is not assignable to type
+  // 'string'.
   return appId;
 }
 
@@ -124,6 +130,7 @@ export async function openEntryChoosingWindow(params) {
   const url = 'file_manager/choose_entry.html?' +
       new URLSearchParams({value: json}).toString();
   return new Promise((resolve, reject) => {
+    // @ts-ignore: error TS7006: Parameter 'win' implicitly has an 'any' type.
     chrome.windows.create({url, height: 600, width: 400}, (win) => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
@@ -140,7 +147,9 @@ export async function openEntryChoosingWindow(params) {
  * @return {!Promise<?(Entry|Array<Entry>)>} the entry set by the dialog shown
  *     via chooseEntry().
  */
+// @ts-ignore: error TS7006: Parameter 'caller' implicitly has an 'any' type.
 export async function pollForChosenEntry(caller) {
+  // @ts-ignore: error TS7030: Not all code paths return a value.
   await repeatUntil(() => {
     if (window[CHOOSE_ENTRY_PROPERTY] === undefined) {
       return pending(caller, 'Waiting for chooseEntry() result');
@@ -158,13 +167,13 @@ export async function pollForChosenEntry(caller) {
  * @param {string} volumeType Volume icon type passed to the directory page
  *     object's selectItemByType function.
  * @param {!Array<!TestEntryInfo>} expectedSet Expected set of the entries.
- * @param {function(string):Promise} closeDialog Function to close the
+ * @param {function(string):Promise<void>} closeDialog Function to close the
  *     dialog.
  * @param {boolean} useBrowserOpen Whether to launch the select file dialog via
  *     a browser OpenFile() call.
  * @param {boolean=} debug Whether to debug the waitForWindow().
- * @return {Promise} Promise to be fulfilled with the result entry of the
- *     dialog.
+ * @return {Promise<unknown>} Promise to be fulfilled with the result entry of
+ *     the dialog.
  */
 export async function openAndWaitForClosingDialog(
     dialogParams, volumeType, expectedSet, closeDialog, useBrowserOpen = false,
@@ -177,6 +186,8 @@ export async function openAndWaitForClosingDialog(
       return await sendTestMessage({name: 'waitForSelectFileDialogNavigation'});
     };
   } else {
+    // @ts-ignore: error TS2559: Type 'AcceptsOption' has no properties in
+    // common with type 'ChooseEntryOptions'.
     await openEntryChoosingWindow(dialogParams);
     resultPromise = () => {
       return pollForChosenEntry(caller);
@@ -185,12 +196,15 @@ export async function openAndWaitForClosingDialog(
 
   const appId = await remoteCall.waitForWindow(debug);
   await remoteCall.waitForElement(appId, '#file-list');
+  // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
+  // parameter of type '(arg0: Object) => boolean | Object'.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.selectItemByType(volumeType);
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(expectedSet));
   await closeDialog(appId);
+  // @ts-ignore: error TS7030: Not all code paths return a value.
   await repeatUntil(async () => {
     const windows = await remoteCall.getWindows();
     if (windows[appId] === appId) {
@@ -214,10 +228,13 @@ export async function openAndWaitForClosingDialog(
  *     entries to load in Google Drive (defaults to a basic entry set).
  * @param {?FilesAppState=} appState App state to be passed with on opening the
  *     Files app.
- * @return {Promise} Promise to be fulfilled with the window ID.
+ * @return {Promise<string>} Promise to be fulfilled with the window ID.
  */
 export async function setupAndWaitUntilReady(
     initialRoot, initialLocalEntries = BASIC_LOCAL_ENTRY_SET,
+    // @ts-ignore: error TS2740: Type '{}' is missing the following properties
+    // from type 'FilesAppState': currentDirectoryURL, selectionURL, targetName,
+    // searchQuery, and 6 more.
     initialDriveEntries = BASIC_DRIVE_ENTRY_SET, appState = {}) {
   const localEntriesPromise = addEntries(['local'], initialLocalEntries);
   const driveEntriesPromise = addEntries(['drive'], initialDriveEntries);
@@ -231,6 +248,8 @@ export async function setupAndWaitUntilReady(
     localEntriesPromise,
     driveEntriesPromise,
   ]);
+  // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
+  // parameter of type '(arg0: Object) => boolean | Object'.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
   return appId;
 }
@@ -241,6 +260,8 @@ export async function setupAndWaitUntilReady(
  * @return {string} Name of the file.
  */
 export function getFileName(fileListEntry) {
+  // @ts-ignore: error TS2322: Type 'string | undefined' is not assignable to
+  // type 'string'.
   return fileListEntry[0];
 }
 
@@ -250,6 +271,8 @@ export function getFileName(fileListEntry) {
  * @return {string} Size of the file.
  */
 export function getFileSize(fileListEntry) {
+  // @ts-ignore: error TS2322: Type 'string | undefined' is not assignable to
+  // type 'string'.
   return fileListEntry[1];
 }
 
@@ -259,6 +282,8 @@ export function getFileSize(fileListEntry) {
  * @return {string} Type of the file.
  */
 export function getFileType(fileListEntry) {
+  // @ts-ignore: error TS2322: Type 'string | undefined' is not assignable to
+  // type 'string'.
   return fileListEntry[2];
 }
 
@@ -271,7 +296,8 @@ export const IGNORE_APP_ERRORS = Symbol('IGNORE_APP_ERRORS');
 /**
  * For async function tests, wait for the test to complete, check for app errors
  * unless skipped, and report the results.
- * @param {Promise} resultPromise A promise that resolves with the test result.
+ * @param {Promise<void>} resultPromise A promise that resolves with the test
+ *     result.
  * @private
  */
 export async function awaitAsyncTestResult(resultPromise) {
@@ -279,6 +305,8 @@ export async function awaitAsyncTestResult(resultPromise) {
       resultPromise instanceof Promise, 'test did not return a Promise');
 
   // Hold a pending callback to ensure the test doesn't complete early.
+  // @ts-ignore: error TS2339: Property 'callbackPass' does not exist on type
+  // 'typeof test'.
   const passCallback = chrome.test.callbackPass();
 
   try {
@@ -293,6 +321,7 @@ export async function awaitAsyncTestResult(resultPromise) {
     // emits an exception; catch it to avoid spurious logging about an uncaught
     // exception.
     try {
+      // @ts-ignore: error TS18046: 'error' is of type 'unknown'.
       chrome.test.fail(error.stack || error);
     } catch (_) {
       return;
@@ -313,38 +342,58 @@ window.addEventListener('load', () => {
     // Request the guest mode state.
     () => {
       remoteCall = new RemoteCallFilesApp(FILE_MANAGER_SWA_ID);
+      // @ts-ignore: error TS2345: Argument of type '((mode: any) => void) |
+      // undefined' is not assignable to parameter of type '(result: string) =>
+      // void'.
       sendBrowserTestCommand({name: 'isInGuestMode'}, steps.shift());
     },
     // Request the root entry paths.
+    // @ts-ignore: error TS7006: Parameter 'mode' implicitly has an 'any' type.
     mode => {
+      // @ts-ignore: error TS2339: Property 'extension' does not exist on type
+      // 'typeof chrome'.
       if (JSON.parse(mode) !== chrome.extension.inIncognitoContext) {
         return;
       }
+      // @ts-ignore: error TS2345: Argument of type '((mode: any) => void) |
+      // undefined' is not assignable to parameter of type '(result: string) =>
+      // void'.
       sendBrowserTestCommand({name: 'getRootPaths'}, steps.shift());
     },
     // Request the test case name.
+    // @ts-ignore: error TS7006: Parameter 'paths' implicitly has an 'any' type.
     paths => {
       const roots = /** @type {getRootPathsResult} */ (JSON.parse(paths));
       RootPath.DOWNLOADS = roots.downloads;
       RootPath.MY_FILES = roots.my_files;
       RootPath.DRIVE = roots.drive;
       RootPath.ANDROID_FILES = roots.android_files;
+      // @ts-ignore: error TS2345: Argument of type '((mode: any) => void) |
+      // undefined' is not assignable to parameter of type '(result: string) =>
+      // void'.
       sendBrowserTestCommand({name: 'getTestName'}, steps.shift());
     },
     // Run the test case.
+    // @ts-ignore: error TS7006: Parameter 'testCaseName' implicitly has an
+    // 'any' type.
     testCaseName => {
       // Get the test function from testcase namespace testCaseName.
       const test = testcase[testCaseName];
       // Verify test is an unnamed (aka 'anonymous') Function.
       if (!(test instanceof Function) || test.name) {
         chrome.test.fail('[' + testCaseName + '] not found.');
+        // @ts-ignore: error TS7027: Unreachable code detected.
         return;
       }
       // Define the test case and its name for chrome.test logging.
+      // @ts-ignore: error TS2339: Property 'generatedName' does not exist on
+      // type 'TestFunction'.
       test.generatedName = testCaseName;
       const testCaseSymbol = Symbol(testCaseName);
       const testCase = {
         [testCaseSymbol]: () => {
+          // @ts-ignore: error TS2345: Argument of type 'void | Promise<void>'
+          // is not assignable to parameter of type 'Promise<void>'.
           return awaitAsyncTestResult(test());
         },
       };
@@ -352,6 +401,8 @@ window.addEventListener('load', () => {
       chrome.test.runTests([testCase[testCaseSymbol]]);
     },
   ];
+  // @ts-ignore: error TS2722: Cannot invoke an object which is possibly
+  // 'undefined'.
   steps.shift()();
 });
 
@@ -361,7 +412,7 @@ window.addEventListener('load', () => {
  *
  * @param {string} appId Files app windowId.
  * @param {string} directoryName Directory of shortcut to be created.
- * @return {Promise} Promise fulfilled on success.
+ * @return {Promise<void>} Promise fulfilled on success.
  */
 export async function createShortcut(appId, directoryName) {
   await remoteCall.waitUntilSelected(appId, directoryName);
@@ -452,6 +503,7 @@ export async function waitForMediaApp() {
   // The MediaApp window should open for the file.
   const caller = getCaller();
   const mediaAppAppId = 'jhdjimmaggjajfjphpljagpgkidjilnj';
+  // @ts-ignore: error TS7030: Not all code paths return a value.
   await repeatUntil(async () => {
     const result = await sendTestMessage({
       name: 'hasSwaStarted',

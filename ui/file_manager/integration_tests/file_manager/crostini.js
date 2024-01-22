@@ -10,6 +10,8 @@ import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 const LINUX_FILES_TYPE = 'crostini';
 
+// @ts-ignore: error TS4111: Property 'mountCrostini' comes from an index
+// signature, so it must be accessed with ['mountCrostini'].
 testcase.mountCrostini = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
@@ -22,6 +24,8 @@ testcase.mountCrostini = async () => {
   await directoryTree.waitForPlaceholderItemByType(LINUX_FILES_TYPE);
 };
 
+// @ts-ignore: error TS4111: Property 'mountCrostiniWithSubFolder' comes from an
+// index signature, so it must be accessed with ['mountCrostiniWithSubFolder'].
 testcase.mountCrostiniWithSubFolder = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
@@ -36,6 +40,8 @@ testcase.mountCrostiniWithSubFolder = async () => {
   await directoryTree.waitForItemExpandIconToShowByLabel('Linux files');
 };
 
+// @ts-ignore: error TS4111: Property 'enableDisableCrostini' comes from an
+// index signature, so it must be accessed with ['enableDisableCrostini'].
 testcase.enableDisableCrostini = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
@@ -53,6 +59,8 @@ testcase.enableDisableCrostini = async () => {
   await directoryTree.waitForPlaceholderItemByType(LINUX_FILES_TYPE);
 };
 
+// @ts-ignore: error TS4111: Property 'sharePathWithCrostini' comes from an
+// index signature, so it must be accessed with ['sharePathWithCrostini'].
 testcase.sharePathWithCrostini = async () => {
   const photos = '#file-list [file-name="photos"]';
   const menuShareWithLinux = '#file-context-menu:not([hidden]) ' +
@@ -102,6 +110,9 @@ testcase.sharePathWithCrostini = async () => {
   await remoteCall.waitForElement(appId, shareMessageShown);
 };
 
+// @ts-ignore: error TS4111: Property 'pluginVmDirectoryNotSharedErrorDialog'
+// comes from an index signature, so it must be accessed with
+// ['pluginVmDirectoryNotSharedErrorDialog'].
 testcase.pluginVmDirectoryNotSharedErrorDialog = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   const pluginVmAppDescriptor = {
@@ -144,12 +155,15 @@ testcase.pluginVmDirectoryNotSharedErrorDialog = async () => {
   const appOptions = await remoteCall.callRemoteTestUtil(
       'queryAllElements', appId, ['#tasks-menu [tabindex]']);
   chrome.test.assertEq(
+      // @ts-ignore: error TS7006: Parameter 'el' implicitly has an 'any' type.
       1, appOptions.filter(el => el.text === 'App (Windows)').length);
 
   // Click on the Plugin VM app, and wait for error dialog.
   await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId,
       [`#tasks-menu [tabindex]:nth-of-type(${
+          // @ts-ignore: error TS7006: Parameter 'el' implicitly has an 'any'
+          // type.
           appOptions.map(el => el.text).indexOf('App (Windows)') + 1})`]);
   await remoteCall.waitUntilTaskExecutes(
       appId, pluginVmAppDescriptor, ['hello.txt'],
@@ -165,16 +179,21 @@ testcase.pluginVmDirectoryNotSharedErrorDialog = async () => {
       'queryAllElements', appId,
       ['.cr-dialog-frame:not(#default-task-dialog) .cr-dialog-text']);
 
+  // @ts-ignore: error TS7006: Parameter 'el' implicitly has an 'any' type.
   chrome.test.assertEq([''], dialogTitles.map(el => el.text));
   chrome.test.assertEq(
       ['To open files with App (Windows), ' +
        'first move them to the Windows files folder.'],
+      // @ts-ignore: error TS7006: Parameter 'el' implicitly has an 'any' type.
       dialogTexts.map(el => el.text));
 
   // TODO(crbug.com/1049453): Test file is moved. This can only be tested when
   // tests allow creating /MyFiles/PvmDefault.
 };
 
+// @ts-ignore: error TS4111: Property 'pluginVmFileOnExternalDriveErrorDialog'
+// comes from an index signature, so it must be accessed with
+// ['pluginVmFileOnExternalDriveErrorDialog'].
 testcase.pluginVmFileOnExternalDriveErrorDialog = async () => {
   // Use files outside of MyFiles to show 'copy' rather than 'move'.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
@@ -218,12 +237,15 @@ testcase.pluginVmFileOnExternalDriveErrorDialog = async () => {
   const appOptions = await remoteCall.callRemoteTestUtil(
       'queryAllElements', appId, ['#tasks-menu [tabindex]']);
   chrome.test.assertEq(
+      // @ts-ignore: error TS7006: Parameter 'el' implicitly has an 'any' type.
       1, appOptions.filter(el => el.text === 'App (Windows)').length);
 
   // Click on the Plugin VM app, and wait for error dialog.
   await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId,
       [`#tasks-menu [tabindex]:nth-of-type(${
+          // @ts-ignore: error TS7006: Parameter 'el' implicitly has an 'any'
+          // type.
           appOptions.map(el => el.text).indexOf('App (Windows)') + 1})`]);
   await remoteCall.waitUntilTaskExecutes(
       appId, pluginVmAppDescriptor, ['hello.txt'],
@@ -239,10 +261,12 @@ testcase.pluginVmFileOnExternalDriveErrorDialog = async () => {
       'queryAllElements', appId,
       ['.cr-dialog-frame:not(#default-task-dialog) .cr-dialog-text']);
 
+  // @ts-ignore: error TS7006: Parameter 'el' implicitly has an 'any' type.
   chrome.test.assertEq([''], dialogTitles.map(el => el.text));
   chrome.test.assertEq(
       ['To open files with App (Windows), ' +
        'first copy them to the Windows files folder.'],
+      // @ts-ignore: error TS7006: Parameter 'el' implicitly has an 'any' type.
       dialogTexts.map(el => el.text));
 
   // TODO(crbug.com/1049453): Test file is moved. This can only be tested when
@@ -253,6 +277,9 @@ testcase.pluginVmFileOnExternalDriveErrorDialog = async () => {
  * Tests that when drag from Files app and dropping in the Plugin VM a
  * dialog is displayed if the containing folder isn't shared with Plugin VM.
  */
+// @ts-ignore: error TS4111: Property 'pluginVmFileDropFailErrorDialog' comes
+// from an index signature, so it must be accessed with
+// ['pluginVmFileDropFailErrorDialog'].
 testcase.pluginVmFileDropFailErrorDialog = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 

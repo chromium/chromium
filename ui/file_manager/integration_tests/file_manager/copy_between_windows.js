@@ -17,7 +17,8 @@ const USB_VOLUME_TYPE = 'removable';
  * Opens two window of given root paths.
  * @param {string} rootPath1 Root path of the first window.
  * @param {string} rootPath2 Root path of the second window.
- * @return {Promise} Promise fulfilled with an array containing two window IDs.
+ * @return {Promise<[string, string]>} Promise fulfilled with an array
+ *     containing two window IDs.
  */
 async function openTwoWindows(rootPath1, rootPath2) {
   const windowIds =
@@ -35,7 +36,9 @@ async function openTwoWindows(rootPath1, rootPath2) {
  * @param {string} window1 ID of the source window.
  * @param {string} window2 ID of the destination window.
  * @param {TestEntryInfo} file Test entry info to be copied.
- * @return {Promise} Promise fulfilled on success.
+ * @param {?TestEntryInfo} alreadyPresentFile Test entry info for file that
+ *     should already exist.
+ * @return {Promise<void>} Promise fulfilled on success.
  */
 async function copyBetweenWindows(
     window1, window2, file, alreadyPresentFile = null) {
@@ -58,12 +61,19 @@ async function copyBetweenWindows(
   if (alreadyPresentFile) {
     expectedFiles.push(alreadyPresentFile.getExpectedRow());
   }
+  // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
+  // boolean; }' is not assignable to parameter of type '{ orderCheck: boolean |
+  // null | undefined; ignoreFileSize: boolean | null | undefined;
+  // ignoreLastModifiedTime: boolean | null | undefined; }'.
   await remoteCall.waitForFiles(window2, expectedFiles, flag);
 }
 
 /**
  * Tests file copy+paste from Drive to Downloads.
  */
+// @ts-ignore: error TS4111: Property 'copyBetweenWindowsDriveToLocal' comes
+// from an index signature, so it must be accessed with
+// ['copyBetweenWindowsDriveToLocal'].
 testcase.copyBetweenWindowsDriveToLocal = async () => {
   // Open two Files app windows.
   const [window1, window2] =
@@ -85,6 +95,9 @@ testcase.copyBetweenWindowsDriveToLocal = async () => {
 /**
  * Tests file copy+paste from Downloads to Drive.
  */
+// @ts-ignore: error TS4111: Property 'copyBetweenWindowsLocalToDrive' comes
+// from an index signature, so it must be accessed with
+// ['copyBetweenWindowsLocalToDrive'].
 testcase.copyBetweenWindowsLocalToDrive = async () => {
   // Open two Files app windows.
   const [window1, window2] =
@@ -106,6 +119,9 @@ testcase.copyBetweenWindowsLocalToDrive = async () => {
 /**
  * Tests file copy+paste from Drive to USB.
  */
+// @ts-ignore: error TS4111: Property 'copyBetweenWindowsDriveToUsb' comes from
+// an index signature, so it must be accessed with
+// ['copyBetweenWindowsDriveToUsb'].
 testcase.copyBetweenWindowsDriveToUsb = async () => {
   // Add photos to Downloads.
   await addEntries(['local'], [ENTRIES.photos]);
@@ -144,6 +160,9 @@ testcase.copyBetweenWindowsDriveToUsb = async () => {
 /**
  * Tests file copy+paste from Downloads to USB.
  */
+// @ts-ignore: error TS4111: Property 'copyBetweenWindowsLocalToUsb' comes from
+// an index signature, so it must be accessed with
+// ['copyBetweenWindowsLocalToUsb'].
 testcase.copyBetweenWindowsLocalToUsb = async () => {
   // Add photos to Drive.
   await addEntries(['drive'], [ENTRIES.photos]);
@@ -182,6 +201,9 @@ testcase.copyBetweenWindowsLocalToUsb = async () => {
 /**
  * Tests file copy+paste from USB to Drive.
  */
+// @ts-ignore: error TS4111: Property 'copyBetweenWindowsUsbToDrive' comes from
+// an index signature, so it must be accessed with
+// ['copyBetweenWindowsUsbToDrive'].
 testcase.copyBetweenWindowsUsbToDrive = async () => {
   // Add photos to Downloads.
   await addEntries(['local'], [ENTRIES.photos]);
@@ -219,6 +241,9 @@ testcase.copyBetweenWindowsUsbToDrive = async () => {
 /**
  * Tests file copy+paste from USB to Downloads.
  */
+// @ts-ignore: error TS4111: Property 'copyBetweenWindowsUsbToLocal' comes from
+// an index signature, so it must be accessed with
+// ['copyBetweenWindowsUsbToLocal'].
 testcase.copyBetweenWindowsUsbToLocal = async () => {
   // Add photos to Drive.
   await addEntries(['drive'], [ENTRIES.photos]);

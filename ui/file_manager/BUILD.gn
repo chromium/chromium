@@ -38,18 +38,6 @@ component("file_manager") {
   defines = [ "FILE_MANAGER_IMPLEMENTATION" ]
 }
 
-group("closure_compile") {
-  # Subfolders' closure_compile groups bundle the non-test "module" type-check
-  # groups as well as unittests and test_support.
-  testonly = true
-
-  deps = [
-    "integration_tests:closure_compile",
-    "integration_tests/file_manager:closure_compile",
-    "integration_tests/file_manager/page_objects:closure_compile",
-  ]
-}
-
 preprocess_folder = "$target_gen_dir/preprocessed"
 
 # Move files to the preprocessed folder to combine all resources in the same

@@ -17,7 +17,7 @@ import {BASIC_ANDROID_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
  * @param {TestEntryInfo} file Test entry info to be copied/cut.
  * @param {string} destination Name of the destination folder.
  * @param {boolean} isCopy Whether it should copy or move the file.
- * @return {Promise} Promise fulfilled on success.
+ * @return {Promise<void>} Promise fulfilled on success.
  */
 async function copyOrMove(appId, file, destination, isCopy) {
   if (!file || !file.nameText || !destination) {
@@ -86,7 +86,7 @@ async function getPanelItem(appId, panelType) {
  * @param {?string} secondaryText Expected secondary text. Can be null.
  * @param {StatusIndicator} status Expected status indicator (failure or
  *     warning).
- * @return {Promise} Promise fulfilled on success.
+ * @return {Promise<void>} Promise fulfilled on success.
  */
 async function verifyPanelItem(
     appId, panelType, primaryText, secondaryText, status) {
@@ -153,6 +153,8 @@ async function maybeExpandSummary(appId) {
 /**
  * Tests that DLP block toast is shown when a restricted file is cut.
  */
+// @ts-ignore: error TS4111: Property 'transferShowDlpToast' comes from an index
+// signature, so it must be accessed with ['transferShowDlpToast'].
 testcase.transferShowDlpToast = async () => {
   const entry = ENTRIES.hello;
 
@@ -189,6 +191,8 @@ testcase.transferShowDlpToast = async () => {
  * Tests that if the file is restricted by DLP, a managed icon is shown in the
  * detail list and a tooltip is displayed when hovering over that icon.
  */
+// @ts-ignore: error TS4111: Property 'dlpShowManagedIcon' comes from an index
+// signature, so it must be accessed with ['dlpShowManagedIcon'].
 testcase.dlpShowManagedIcon = async () => {
   // Add entries to Downloads and setup the fake source URLs.
   await addEntries(['local'], BASIC_LOCAL_ENTRY_SET);
@@ -233,6 +237,9 @@ testcase.dlpShowManagedIcon = async () => {
  * Tests that if the file is restricted by DLP, the Restriction details context
  * menu item appears and is enabled.
  */
+// @ts-ignore: error TS4111: Property 'dlpContextMenuRestrictionDetails' comes
+// from an index signature, so it must be accessed with
+// ['dlpContextMenuRestrictionDetails'].
 testcase.dlpContextMenuRestrictionDetails = async () => {
   // Add entries to Downloads and setup the fake source URLs.
   const entry = ENTRIES.hello;
@@ -286,10 +293,13 @@ const cancelButton = '.button-panel button.cancel';
  * and after being mounted, both in the navigation list and in
  * the details list.
  */
+// @ts-ignore: error TS4111: Property 'saveAsDlpRestrictedAndroid' comes from an
+// index signature, so it must be accessed with ['saveAsDlpRestrictedAndroid'].
 testcase.saveAsDlpRestrictedAndroid = async () => {
   // Setup the restrictions.
   await sendTestMessage({name: 'setBlockedComponent', component: 'arc'});
 
+  // @ts-ignore: error TS7006: Parameter 'dialog' implicitly has an 'any' type.
   const closer = async (dialog) => {
     // Select My Files folder and wait for file list to display Downloads, Play
     // files, and Linux files.
@@ -299,6 +309,11 @@ testcase.saveAsDlpRestrictedAndroid = async () => {
 
     await remoteCall.waitForFiles(
         dialog, [downloadsRow, playFilesRow, linuxFilesRow],
+        // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
+        // ignoreLastModifiedTime: true; }' is not assignable to parameter of
+        // type '{ orderCheck: boolean | null | undefined; ignoreFileSize:
+        // boolean | null | undefined; ignoreLastModifiedTime: boolean | null |
+        // undefined; }'.
         {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
     // Only one directory, Android files, should be disabled, both as the tree
@@ -334,6 +349,11 @@ testcase.saveAsDlpRestrictedAndroid = async () => {
     await directoryTree.selectPlaceholderItemByType('android_files');
     await remoteCall.waitForFiles(
         dialog, [downloadsRow, playFilesRow, linuxFilesRow],
+        // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
+        // ignoreLastModifiedTime: true; }' is not assignable to parameter of
+        // type '{ orderCheck: boolean | null | undefined; ignoreFileSize:
+        // boolean | null | undefined; ignoreLastModifiedTime: boolean | null |
+        // undefined; }'.
         {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
     // Click the close button to dismiss the dialog.
@@ -343,6 +363,8 @@ testcase.saveAsDlpRestrictedAndroid = async () => {
   chrome.test.assertEq(
       undefined,
       await openAndWaitForClosingDialog(
+          // @ts-ignore: error TS2353: Object literal may only specify known
+          // properties, and 'type' does not exist in type 'AcceptsOption'.
           {type: 'saveFile'}, 'downloads', [], closer));
 };
 
@@ -352,6 +374,8 @@ testcase.saveAsDlpRestrictedAndroid = async () => {
  * list both before and after mounting, but in the file list it will only be
  * disabled after mounting.
  */
+// @ts-ignore: error TS4111: Property 'saveAsDlpRestrictedVm' comes from an
+// index signature, so it must be accessed with ['saveAsDlpRestrictedVm'].
 testcase.saveAsDlpRestrictedVm = async () => {
   // Setup the restrictions.
   await sendTestMessage({name: 'setBlockedComponent', component: 'pluginVm'});
@@ -364,6 +388,7 @@ testcase.saveAsDlpRestrictedVm = async () => {
     vmType: 'bruschetta',
   });
 
+  // @ts-ignore: error TS7006: Parameter 'dialog' implicitly has an 'any' type.
   const closer = async (dialog) => {
     // Select My Files folder and wait for file list.
     const directoryTree =
@@ -372,6 +397,11 @@ testcase.saveAsDlpRestrictedVm = async () => {
     const guestFilesRow = [guestName, '--', 'Folder'];
     await remoteCall.waitForFiles(
         dialog, [downloadsRow, playFilesRow, linuxFilesRow, guestFilesRow],
+        // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
+        // ignoreLastModifiedTime: true; }' is not assignable to parameter of
+        // type '{ orderCheck: boolean | null | undefined; ignoreFileSize:
+        // boolean | null | undefined; ignoreLastModifiedTime: boolean | null |
+        // undefined; }'.
         {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
     const directory = `.directory:not([disabled])[file-name="${guestName}"]`;
@@ -420,6 +450,8 @@ testcase.saveAsDlpRestrictedVm = async () => {
   chrome.test.assertEq(
       undefined,
       await openAndWaitForClosingDialog(
+          // @ts-ignore: error TS2353: Object literal may only specify known
+          // properties, and 'type' does not exist in type 'AcceptsOption'.
           {type: 'saveFile'}, 'downloads', [], closer));
 };
 
@@ -429,6 +461,9 @@ testcase.saveAsDlpRestrictedVm = async () => {
  * list both before and after mounting, but in the file list it will only be
  * disabled after mounting.
  */
+// @ts-ignore: error TS4111: Property 'saveAsDlpRestrictedCrostini' comes from
+// an index signature, so it must be accessed with
+// ['saveAsDlpRestrictedCrostini'].
 testcase.saveAsDlpRestrictedCrostini = async () => {
   // Setup the restrictions.
   await sendTestMessage({name: 'setBlockedComponent', component: 'crostini'});
@@ -436,8 +471,11 @@ testcase.saveAsDlpRestrictedCrostini = async () => {
   // Add entries to Downloads.
   await addEntries(['local'], [ENTRIES.hello]);
 
+  // @ts-ignore: error TS7006: Parameter 'dialog' implicitly has an 'any' type.
   const closer = async (dialog) => {
     // Verify that the button is enabled when a file is selected.
+    // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
+    // assignable to parameter of type 'string'.
     await remoteCall.waitUntilSelected(dialog, ENTRIES.hello.targetPath);
     await remoteCall.waitForElement(dialog, okButton);
 
@@ -448,6 +486,11 @@ testcase.saveAsDlpRestrictedCrostini = async () => {
     await directoryTree.navigateToPath('/My files');
     await remoteCall.waitForFiles(
         dialog, [downloadsRow, playFilesRow, linuxFilesRow],
+        // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
+        // ignoreLastModifiedTime: true; }' is not assignable to parameter of
+        // type '{ orderCheck: boolean | null | undefined; ignoreFileSize:
+        // boolean | null | undefined; ignoreLastModifiedTime: boolean | null |
+        // undefined; }'.
         {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
     const directory = '.directory:not([disabled])[file-name="Linux files"]';
@@ -482,12 +525,16 @@ testcase.saveAsDlpRestrictedCrostini = async () => {
   chrome.test.assertEq(
       undefined,
       await openAndWaitForClosingDialog(
+          // @ts-ignore: error TS2353: Object literal may only specify known
+          // properties, and 'type' does not exist in type 'AcceptsOption'.
           {type: 'saveFile'}, 'downloads', [ENTRIES.hello], closer));
 };
 
 /**
  * Tests the save dialogs properly show blocked USB volumes.
  */
+// @ts-ignore: error TS4111: Property 'saveAsDlpRestrictedUsb' comes from an
+// index signature, so it must be accessed with ['saveAsDlpRestrictedUsb'].
 testcase.saveAsDlpRestrictedUsb = async () => {
   // Mount a USB volume.
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
@@ -495,6 +542,7 @@ testcase.saveAsDlpRestrictedUsb = async () => {
   // Setup the restrictions.
   await sendTestMessage({name: 'setBlockedComponent', component: 'usb'});
 
+  // @ts-ignore: error TS7006: Parameter 'dialog' implicitly has an 'any' type.
   const closer = async (dialog) => {
     const directoryTree =
         await DirectoryTreePageObject.create(dialog, remoteCall);
@@ -522,16 +570,21 @@ testcase.saveAsDlpRestrictedUsb = async () => {
   chrome.test.assertEq(
       undefined,
       await openAndWaitForClosingDialog(
+          // @ts-ignore: error TS2353: Object literal may only specify known
+          // properties, and 'type' does not exist in type 'AcceptsOption'.
           {type: 'saveFile'}, 'downloads', [], closer));
 };
 
 /**
  * Tests the save dialogs properly show blocked Google drive volume.
  */
+// @ts-ignore: error TS4111: Property 'saveAsDlpRestrictedDrive' comes from an
+// index signature, so it must be accessed with ['saveAsDlpRestrictedDrive'].
 testcase.saveAsDlpRestrictedDrive = async () => {
   // Setup the restrictions.
   await sendTestMessage({name: 'setBlockedComponent', component: 'drive'});
 
+  // @ts-ignore: error TS7006: Parameter 'dialog' implicitly has an 'any' type.
   const closer = async (dialog) => {
     const directoryTree =
         await DirectoryTreePageObject.create(dialog, remoteCall);
@@ -549,6 +602,8 @@ testcase.saveAsDlpRestrictedDrive = async () => {
   chrome.test.assertEq(
       undefined,
       await openAndWaitForClosingDialog(
+          // @ts-ignore: error TS2353: Object literal may only specify known
+          // properties, and 'type' does not exist in type 'AcceptsOption'.
           {type: 'saveFile'}, 'downloads', [], closer));
 };
 
@@ -559,10 +614,13 @@ testcase.saveAsDlpRestrictedDrive = async () => {
  * case, which assert that if the directory is blocked, the dialog will not be
  * opened in the requested path.
  */
+// @ts-ignore: error TS4111: Property 'saveAsNonDlpRestricted' comes from an
+// index signature, so it must be accessed with ['saveAsNonDlpRestricted'].
 testcase.saveAsNonDlpRestricted = async () => {
   // Add entries to Play files.
   await addEntries(['android_files'], BASIC_ANDROID_ENTRY_SET);
 
+  // @ts-ignore: error TS7006: Parameter 'dialog' implicitly has an 'any' type.
   const allowedCloser = async (dialog) => {
     // Double check: current directory should be Play files.
     await remoteCall.waitUntilCurrentDirectoryIsChanged(
@@ -576,6 +634,8 @@ testcase.saveAsNonDlpRestricted = async () => {
   chrome.test.assertEq(
       undefined,
       await openAndWaitForClosingDialog(
+          // @ts-ignore: error TS2353: Object literal may only specify known
+          // properties, and 'type' does not exist in type 'AcceptsOption'.
           {type: 'saveFile'}, 'android_files', BASIC_ANDROID_ENTRY_SET,
           allowedCloser));
 };
@@ -584,6 +644,9 @@ testcase.saveAsNonDlpRestricted = async () => {
  * Tests that save dialogs are never opened in a DLP blocked volume/directory,
  * but rather in the default display root.
  */
+// @ts-ignore: error TS4111: Property 'saveAsDlpRestrictedRedirectsToMyFiles'
+// comes from an index signature, so it must be accessed with
+// ['saveAsDlpRestrictedRedirectsToMyFiles'].
 testcase.saveAsDlpRestrictedRedirectsToMyFiles = async () => {
   // Add entries to Downloads and Play files.
   await addEntries(['local'], [ENTRIES.hello]);
@@ -592,6 +655,7 @@ testcase.saveAsDlpRestrictedRedirectsToMyFiles = async () => {
   // Setup the restrictions.
   await sendTestMessage({name: 'setBlockedComponent', component: 'arc'});
 
+  // @ts-ignore: error TS7006: Parameter 'dialog' implicitly has an 'any' type.
   const blockedCloser = async (dialog) => {
     // Double check: current directory should be the default root, not Play
     // files.
@@ -607,6 +671,8 @@ testcase.saveAsDlpRestrictedRedirectsToMyFiles = async () => {
   chrome.test.assertEq(
       undefined,
       await openAndWaitForClosingDialog(
+          // @ts-ignore: error TS2353: Object literal may only specify known
+          // properties, and 'type' does not exist in type 'AcceptsOption'.
           {type: 'saveFile'}, 'android_files', [ENTRIES.hello], blockedCloser));
 };
 
@@ -616,6 +682,8 @@ testcase.saveAsDlpRestrictedRedirectsToMyFiles = async () => {
  * details list. If such a file is selected, the "Open" dialog button should be
  * disabled.
  */
+// @ts-ignore: error TS4111: Property 'openDlpRestrictedFile' comes from an
+// index signature, so it must be accessed with ['openDlpRestrictedFile'].
 testcase.openDlpRestrictedFile = async () => {
   // Add entries to Downloads and setup the fake source URLs.
   await addEntries(['local'], BASIC_LOCAL_ENTRY_SET);
@@ -635,6 +703,7 @@ testcase.openDlpRestrictedFile = async () => {
   await sendTestMessage({name: 'setIsRestrictedByAnyRuleRestrictions'});
   await sendTestMessage({name: 'setIsRestrictedDestinationRestriction'});
 
+  // @ts-ignore: error TS7006: Parameter 'dialog' implicitly has an 'any' type.
   const closer = async (dialog) => {
     // Wait for the file list to appear.
     await remoteCall.waitForElement(dialog, '#file-list');
@@ -649,6 +718,8 @@ testcase.openDlpRestrictedFile = async () => {
 
     // Verify that the button is enabled when a non-blocked (warning level) file
     // is selected.
+    // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
+    // signature, so it must be accessed with ['beautiful'].
     await remoteCall.waitUntilSelected(dialog, ENTRIES.beautiful.nameText);
     await remoteCall.waitForElement(dialog, okButton);
 
@@ -663,6 +734,8 @@ testcase.openDlpRestrictedFile = async () => {
   chrome.test.assertEq(
       undefined,
       await openAndWaitForClosingDialog(
+          // @ts-ignore: error TS2353: Object literal may only specify known
+          // properties, and 'type' does not exist in type 'AcceptsOption'.
           {type: 'openFile'}, 'downloads', BASIC_LOCAL_ENTRY_SET, closer));
 };
 
@@ -670,12 +743,16 @@ testcase.openDlpRestrictedFile = async () => {
  * Tests that the file picker disables DLP blocked files and doesn't allow
  * opening them, while it allows selecting and opening folders.
  */
+// @ts-ignore: error TS4111: Property 'openFolderDlpRestricted' comes from an
+// index signature, so it must be accessed with ['openFolderDlpRestricted'].
 testcase.openFolderDlpRestricted = async () => {
   // Make sure the file picker will open to Downloads.
   sendBrowserTestCommand({name: 'setLastDownloadDir'}, () => {});
 
   const directoryAjpeg = new TestEntryInfo({
     type: EntryType.FILE,
+    // @ts-ignore: error TS4111: Property 'directoryA' comes from an index
+    // signature, so it must be accessed with ['directoryA'].
     targetPath: `${ENTRIES.directoryA.nameText}/deep.jpg`,
     sourceFileName: 'small.jpg',
     mimeType: 'image/jpeg',
@@ -684,9 +761,13 @@ testcase.openFolderDlpRestricted = async () => {
     sizeText: '886 bytes',
     typeText: 'JPEG image',
   });
+  // @ts-ignore: error TS4111: Property 'directoryA' comes from an index
+  // signature, so it must be accessed with ['directoryA'].
   const entries = [ENTRIES.directoryA, directoryAjpeg];
 
   // Add entries to Downloads and setup the fake source URLs.
+  // @ts-ignore: error TS2345: Argument of type '(TestEntryInfo | undefined)[]'
+  // is not assignable to parameter of type 'TestEntryInfo[]'.
   await addEntries(['local'], entries);
   await sendTestMessage({
     name: 'setGetFilesSourcesMock',
@@ -700,6 +781,7 @@ testcase.openFolderDlpRestricted = async () => {
   await sendTestMessage({name: 'setIsRestrictedByAnyRuleRestrictions'});
   await sendTestMessage({name: 'setIsRestrictedDestinationRestriction'});
 
+  // @ts-ignore: error TS7006: Parameter 'dialog' implicitly has an 'any' type.
   const closer = async (dialog) => {
     // Wait for directoryA to appear.
     await remoteCall.waitForElement(
@@ -732,10 +814,14 @@ testcase.openFolderDlpRestricted = async () => {
   chrome.test.assertEq(
       undefined,
       await openAndWaitForClosingDialog(
+          // @ts-ignore: error TS2353: Object literal may only specify known
+          // properties, and 'type' does not exist in type 'AcceptsOption'.
           {type: 'openFile'}, 'downloads', [ENTRIES.directoryA], closer));
 
   // Open Files app on Downloads as a folder picker.
   const dialog = await setupAndWaitUntilReady(
+      // @ts-ignore: error TS2345: Argument of type '{ type: string; }' is not
+      // assignable to parameter of type 'FilesAppState'.
       RootPath.DOWNLOADS, entries, [], {type: DialogType.SELECT_UPLOAD_FOLDER});
 
   // Verify that directoryA is not disabled.
@@ -759,6 +845,8 @@ testcase.openFolderDlpRestricted = async () => {
 /**
  * Tests that DLP disabled file tasks are shown as disabled in the menu.
  */
+// @ts-ignore: error TS4111: Property 'fileTasksDlpRestricted' comes from an
+// index signature, so it must be accessed with ['fileTasksDlpRestricted'].
 testcase.fileTasksDlpRestricted = async () => {
   const entry = ENTRIES.hello;
   // Open Files app.
@@ -778,6 +866,7 @@ testcase.fileTasksDlpRestricted = async () => {
   await remoteCall.callRemoteTestUtil('overrideTasks', appId, [fakeTasks]);
 
   // Open the context menu.
+  // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
   await remoteCall.showContextMenuFor(appId, entry.nameText);
 
   // Verify that the default task item is visible but disabled.
@@ -787,6 +876,7 @@ testcase.fileTasksDlpRestricted = async () => {
        '[command="#default-task"][disabled]:not([hidden])']);
 
   // Select the file.
+  // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   // Display the tasks menu.
@@ -812,6 +902,9 @@ testcase.fileTasksDlpRestricted = async () => {
  * Tests that extraction works when the scoped file access delegate exists and
  * correct output files are generated.
  */
+// @ts-ignore: error TS4111: Property 'zipExtractRestrictedArchiveCheckContent'
+// comes from an index signature, so it must be accessed with
+// ['zipExtractRestrictedArchiveCheckContent'].
 testcase.zipExtractRestrictedArchiveCheckContent = async () => {
   const entry = ENTRIES.zipArchive;
 
@@ -854,6 +947,7 @@ testcase.zipExtractRestrictedArchiveCheckContent = async () => {
   });
 
   // Select the file.
+  // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   // Right-click the selected file.
@@ -884,6 +978,11 @@ testcase.zipExtractRestrictedArchiveCheckContent = async () => {
         ['text.txt', '--', 'Plain text'],
         ['image.png', '--', 'PNG image'],
       ],
+      // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
+      // ignoreLastModifiedTime: true; }' is not assignable to parameter of type
+      // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean |
+      // null | undefined; ignoreLastModifiedTime: boolean | null | undefined;
+      // }'.
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 };
 
@@ -891,6 +990,8 @@ testcase.zipExtractRestrictedArchiveCheckContent = async () => {
  * Tests that a copy or move IO task that completed with error due to block
  * restriction properly updates the task state and shows a correct panel item.
  */
+// @ts-ignore: error TS4111: Property 'blockShowsPanelItem' comes from an index
+// signature, so it must be accessed with ['blockShowsPanelItem'].
 testcase.blockShowsPanelItem = async () => {
   // Add entry to Downloads.
   const entry = ENTRIES.hello;
@@ -939,6 +1040,8 @@ testcase.blockShowsPanelItem = async () => {
  * Tests that a copy or move IO task that is paused due to warn restriction
  * properly updates the task state and shows a correct panel item.
  */
+// @ts-ignore: error TS4111: Property 'warnShowsPanelItem' comes from an index
+// signature, so it must be accessed with ['warnShowsPanelItem'].
 testcase.warnShowsPanelItem = async () => {
   // Add entry to Downloads.
   const entry = ENTRIES.hello;
@@ -951,6 +1054,7 @@ testcase.warnShowsPanelItem = async () => {
   await sendTestMessage({
     name: 'setCheckFilesTransferMockToPause',
     taskId: 1,
+    // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
     fileNames: [entry.nameText],
     action: 'copy',
   });
@@ -969,6 +1073,7 @@ testcase.warnShowsPanelItem = async () => {
   // text, and has the expected button types.
   await verifyPanelItem(
       appId, PanelType.INFO, 'Review is required before copying',
+      // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
       `${entry.nameText} may contain sensitive content`,
       StatusIndicator.WARNING);
   await verifyPanelButtonsAndClick(appId, 'cancel', 'secondary');
@@ -977,17 +1082,21 @@ testcase.warnShowsPanelItem = async () => {
   await sendTestMessage({
     name: 'setCheckFilesTransferMockToPause',
     taskId: 2,
+    // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
     fileNames: [entry.nameText],
     action: 'move',
   });
 
   // Cut and paste the file to USB.
+  // @ts-ignore: error TS2345: Argument of type 'TestEntryInfo | undefined' is
+  // not assignable to parameter of type 'TestEntryInfo'.
   await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ false);
 
   // Check that the warning panel is open with correct primary and secondary
   // text, and has the expected button types.
   await verifyPanelItem(
       appId, PanelType.INFO, 'Review is required before moving',
+      // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
       `${entry.nameText} may contain sensitive content`,
       StatusIndicator.WARNING);
   await verifyPanelButtonsAndClick(appId, 'cancel', 'primary');
@@ -998,6 +1107,8 @@ testcase.warnShowsPanelItem = async () => {
  * Tests that after DLP warning times out, the copy or move IO task
  * properly updates the task state and shows a correct panel item.
  */
+// @ts-ignore: error TS4111: Property 'warnTimeoutShowsPanelItem' comes from an
+// index signature, so it must be accessed with ['warnTimeoutShowsPanelItem'].
 testcase.warnTimeoutShowsPanelItem = async () => {
   // Add entry to Downloads.
   const entry = ENTRIES.hello;
@@ -1048,17 +1159,22 @@ testcase.warnTimeoutShowsPanelItem = async () => {
  * task) panels, or multiple warnings, but is not shown if only one panel is
  * visible.
  */
+// @ts-ignore: error TS4111: Property 'mixedSummaryDisplayPanel' comes from an
+// index signature, so it must be accessed with ['mixedSummaryDisplayPanel'].
 testcase.mixedSummaryDisplayPanel = async () => {
   // Add entry to Downloads.
   const entry = ENTRIES.hello;
   await addEntries(['local'], [entry]);
 
   // Open Files app.
+  // @ts-ignore: error TS2322: Type 'TestEntryInfo | undefined' is not
+  // assignable to type 'TestEntryInfo'.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Block the second task.
   await sendTestMessage({
     name: 'setBlockedFilesTransfer',
+    // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
     fileNames: [entry.nameText],
   });
 
@@ -1070,6 +1186,8 @@ testcase.mixedSummaryDisplayPanel = async () => {
   await directoryTree.waitForItemByType('removable');
 
   // Copy and paste the file to USB.
+  // @ts-ignore: error TS2345: Argument of type 'TestEntryInfo | undefined' is
+  // not assignable to parameter of type 'TestEntryInfo'.
   await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ true);
 
   // Check that only 1 error panel is opened.
@@ -1083,11 +1201,14 @@ testcase.mixedSummaryDisplayPanel = async () => {
   await sendTestMessage({
     name: 'setCheckFilesTransferMockToPause',
     taskId: 2,
+    // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
     fileNames: [entry.nameText],
     action: 'copy',
   });
 
   // Copy the file to USB.
+  // @ts-ignore: error TS2345: Argument of type 'TestEntryInfo | undefined' is
+  // not assignable to parameter of type 'TestEntryInfo'.
   await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ true);
 
   // Check that the summary panel is open with correct title and the two sub
@@ -1119,11 +1240,14 @@ testcase.mixedSummaryDisplayPanel = async () => {
   await sendTestMessage({
     name: 'setCheckFilesTransferMockToPause',
     taskId: 3,
+    // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
     fileNames: [entry.nameText],
     action: 'copy',
   });
 
   // Copy the file to USB.
+  // @ts-ignore: error TS2345: Argument of type 'TestEntryInfo | undefined' is
+  // not assignable to parameter of type 'TestEntryInfo'.
   await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ true);
 
   // Check that the summary panel is open with correct title and the two sub

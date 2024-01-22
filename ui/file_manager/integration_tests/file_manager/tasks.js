@@ -15,7 +15,7 @@ import {FILE_MANAGER_EXTENSIONS_ID} from './test_data.js';
 export class FakeTask {
   /**
    * @param {boolean} isDefault Whether the task is default or not.
-   * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor Task
+   * @param {!FileTaskDescriptor} descriptor Task
    *     descriptor.
    * @param {string=} opt_title Title of the task.
    * @param {boolean=} opt_isGenericFileHandler Whether the task is a generic
@@ -112,7 +112,7 @@ async function setupTaskTest(rootPath, fakeTasks) {
  * Tests executing the default task when there is only one task.
  *
  * @param {string} appId Window ID.
- * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor Task
+ * @param {!FileTaskDescriptor} descriptor Task
  *     descriptor.
  */
 async function executeDefaultTask(appId, descriptor) {
@@ -132,9 +132,9 @@ async function executeDefaultTask(appId, descriptor) {
  * Tests to specify default task via the default task dialog.
  *
  * @param {string} appId Window ID.
- * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor Task
+ * @param {!FileTaskDescriptor} descriptor Task
  *     descriptor of the task expected to be newly specified as default.
- * @return {Promise} Promise to be fulfilled/rejected depends on the test
+ * @return {Promise<void>} Promise to be fulfilled/rejected depends on the test
  *     result.
  */
 async function defaultTaskDialog(appId, descriptor) {
@@ -164,7 +164,10 @@ async function defaultTaskDialog(appId, descriptor) {
         ['#default-task-dialog #default-tasks-list li']);
 
     // Compare the contents of items.
+    // @ts-ignore: error TS7006: Parameter 'item' implicitly has an 'any' type.
     const actualLabels = items.map((item) => item.text);
+    // @ts-ignore: error TS2339: Property 'checkDeepEq' does not exist on type
+    // 'typeof test'.
     if (chrome.test.checkDeepEq(expectedLabels, actualLabels)) {
       return true;
     }
@@ -210,33 +213,52 @@ async function defaultTaskDialog(appId, descriptor) {
   await remoteCall.waitUntilTaskExecutes(appId, descriptor, ['hello.txt']);
 }
 
+// @ts-ignore: error TS4111: Property 'executeDefaultTaskDrive' comes from an
+// index signature, so it must be accessed with ['executeDefaultTaskDrive'].
 testcase.executeDefaultTaskDrive = async () => {
   const appId = await setupTaskTest(RootPath.DRIVE, DRIVE_FAKE_TASKS);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   await executeDefaultTask(appId, DRIVE_FAKE_TASKS[0].descriptor);
 };
 
+// @ts-ignore: error TS4111: Property 'executeDefaultTaskDownloads' comes from
+// an index signature, so it must be accessed with
+// ['executeDefaultTaskDownloads'].
 testcase.executeDefaultTaskDownloads = async () => {
   const appId = await setupTaskTest(RootPath.DOWNLOADS, DOWNLOADS_FAKE_TASKS);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   await executeDefaultTask(appId, DOWNLOADS_FAKE_TASKS[0].descriptor);
 };
 
+// @ts-ignore: error TS4111: Property 'defaultTaskForTextPlain' comes from an
+// index signature, so it must be accessed with ['defaultTaskForTextPlain'].
 testcase.defaultTaskForTextPlain = async () => {
   const appId = await setupTaskTest(RootPath.DOWNLOADS, DOWNLOADS_FAKE_TEXT);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   await executeDefaultTask(appId, DOWNLOADS_FAKE_TEXT[0].descriptor);
 };
 
+// @ts-ignore: error TS4111: Property 'defaultTaskForPdf' comes from an index
+// signature, so it must be accessed with ['defaultTaskForPdf'].
 testcase.defaultTaskForPdf = async () => {
   const appId = await setupTaskTest(RootPath.DOWNLOADS, DOWNLOADS_FAKE_PDF);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   await executeDefaultTask(appId, DOWNLOADS_FAKE_PDF[0].descriptor);
 };
 
+// @ts-ignore: error TS4111: Property 'defaultTaskDialogDrive' comes from an
+// index signature, so it must be accessed with ['defaultTaskDialogDrive'].
 testcase.defaultTaskDialogDrive = async () => {
   const appId = await setupTaskTest(RootPath.DRIVE, DRIVE_FAKE_TASKS);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   await defaultTaskDialog(appId, DRIVE_FAKE_TASKS[1].descriptor);
 };
 
+// @ts-ignore: error TS4111: Property 'defaultTaskDialogDownloads' comes from an
+// index signature, so it must be accessed with ['defaultTaskDialogDownloads'].
 testcase.defaultTaskDialogDownloads = async () => {
   const appId = await setupTaskTest(RootPath.DOWNLOADS, DOWNLOADS_FAKE_TASKS);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   await defaultTaskDialog(appId, DOWNLOADS_FAKE_TASKS[1].descriptor);
 };
 
@@ -244,6 +266,9 @@ testcase.defaultTaskDialogDownloads = async () => {
 /**
  * Tests that the Change Default Task dialog has a scrollable list.
  */
+// @ts-ignore: error TS4111: Property 'changeDefaultDialogScrollList' comes from
+// an index signature, so it must be accessed with
+// ['changeDefaultDialogScrollList'].
 testcase.changeDefaultDialogScrollList = async () => {
   const tasks = [
     new FakeTask(
@@ -305,6 +330,8 @@ testcase.changeDefaultDialogScrollList = async () => {
       appId, '#default-task-dialog.bottom-shadow');
 };
 
+// @ts-ignore: error TS4111: Property 'genericTaskIsNotExecuted' comes from an
+// index signature, so it must be accessed with ['genericTaskIsNotExecuted'].
 testcase.genericTaskIsNotExecuted = async () => {
   const tasks = [new FakeTask(
       false,
@@ -324,6 +351,9 @@ testcase.genericTaskIsNotExecuted = async () => {
   });
 };
 
+// @ts-ignore: error TS4111: Property 'genericTaskAndNonGenericTask' comes from
+// an index signature, so it must be accessed with
+// ['genericTaskAndNonGenericTask'].
 testcase.genericTaskAndNonGenericTask = async () => {
   const tasks = [
     new FakeTask(
@@ -341,9 +371,13 @@ testcase.genericTaskAndNonGenericTask = async () => {
   ];
 
   const appId = await setupTaskTest(RootPath.DOWNLOADS, tasks);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   await executeDefaultTask(appId, tasks[1].descriptor);
 };
 
+// @ts-ignore: error TS4111: Property 'noActionBarOpenForDirectories' comes from
+// an index signature, so it must be accessed with
+// ['noActionBarOpenForDirectories'].
 testcase.noActionBarOpenForDirectories = async () => {
   const fileTasks = [new FakeTask(
       true,
@@ -391,6 +425,8 @@ testcase.noActionBarOpenForDirectories = async () => {
   chrome.test.assertEq('Change default…', appOptions[2].text);
 };
 
+// @ts-ignore: error TS4111: Property 'executeViaDblClick' comes from an index
+// signature, so it must be accessed with ['executeViaDblClick'].
 testcase.executeViaDblClick = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await remoteCall.callRemoteTestUtil(
@@ -401,6 +437,7 @@ testcase.executeViaDblClick = async () => {
       ['#file-list li[file-name="hello.txt"] .filename-label span']));
 
   // Wait until the task is executed.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   const descriptor = DOWNLOADS_FAKE_TASKS[0].descriptor;
   await remoteCall.waitUntilTaskExecutes(appId, descriptor, ['hello.txt']);
 

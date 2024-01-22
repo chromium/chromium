@@ -14,6 +14,9 @@ import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
  * appears in the selected folder .tree-row and the "Current directory" aria
  * description is present on the corresponding tree item.
  */
+// @ts-ignore: error TS4111: Property 'directoryTreeActiveDirectory' comes from
+// an index signature, so it must be accessed with
+// ['directoryTreeActiveDirectory'].
 testcase.directoryTreeActiveDirectory = async () => {
   // Open FilesApp on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -67,6 +70,9 @@ testcase.directoryTreeActiveDirectory = async () => {
  * activated (via the Enter key for example), both the selected folder and the
  * tree item with a "Current directory" aria description are updated.
  */
+// @ts-ignore: error TS4111: Property 'directoryTreeSelectedDirectory' comes
+// from an index signature, so it must be accessed with
+// ['directoryTreeSelectedDirectory'].
 testcase.directoryTreeSelectedDirectory = async () => {
   // Open FilesApp on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -109,6 +115,9 @@ testcase.directoryTreeSelectedDirectory = async () => {
 /**
  * Tests that the directory tree can be vertically scrolled.
  */
+// @ts-ignore: error TS4111: Property 'directoryTreeVerticalScroll' comes from
+// an index signature, so it must be accessed with
+// ['directoryTreeVerticalScroll'].
 testcase.directoryTreeVerticalScroll = async () => {
   const folders = [ENTRIES.photos];
 
@@ -125,6 +134,8 @@ testcase.directoryTreeVerticalScroll = async () => {
   }
 
   // Open FilesApp on Downloads and expand the tree view of Downloads.
+  // @ts-ignore: error TS2345: Argument of type '(TestEntryInfo | undefined)[]'
+  // is not assignable to parameter of type 'TestEntryInfo[]'.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, folders, []);
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.recursiveExpand('/My files/Downloads');
@@ -148,6 +159,9 @@ testcase.directoryTreeVerticalScroll = async () => {
 /**
  * Tests that the directory tree does not horizontally scroll.
  */
+// @ts-ignore: error TS4111: Property 'directoryTreeHorizontalScroll' comes from
+// an index signature, so it must be accessed with
+// ['directoryTreeHorizontalScroll'].
 testcase.directoryTreeHorizontalScroll = async () => {
   // Open FilesApp on Downloads and expand the tree view of Downloads.
   const appId = await setupAndWaitUntilReady(
@@ -171,6 +185,7 @@ testcase.directoryTreeHorizontalScroll = async () => {
 
   // Check: the directory tree should not be horizontally scrolled.
   const caller = getCaller();
+  // @ts-ignore: error TS7030: Not all code paths return a value.
   await repeatUntil(async () => {
     const scrolled = await remoteCall.waitForElementStyles(
         appId, directoryTree.rootSelector, ['scrollLeft']);
@@ -184,6 +199,9 @@ testcase.directoryTreeHorizontalScroll = async () => {
  * Tests that the directory tree does not horizontally scroll when expanding
  * nested folder items.
  */
+// @ts-ignore: error TS4111: Property 'directoryTreeExpandHorizontalScroll'
+// comes from an index signature, so it must be accessed with
+// ['directoryTreeExpandHorizontalScroll'].
 testcase.directoryTreeExpandHorizontalScroll = async () => {
   /**
    * Creates a folder test entry from a folder |path|.
@@ -225,11 +243,14 @@ testcase.directoryTreeExpandHorizontalScroll = async () => {
       [directoryTree.containerSelector, {width: '150px'}]);
 
   // Expand the tree Downloads > nested-folder1 > nested-folder2 ...
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   const lastFolderPath = nestedFolderTestEntries.pop().targetPath;
   await directoryTree.navigateToPath(`/My files/Downloads/${lastFolderPath}`);
 
   // Check: the directory tree should be showing the last test entry.
   const folder5Item = await directoryTree.waitForItemByLabel('nested-folder5');
+  // @ts-ignore: error TS4111: Property 'hidden' comes from an index signature,
+  // so it must be accessed with ['hidden'].
   chrome.test.assertFalse(!!folder5Item.attributes.hidden);
 
   // Ensure the directory tree scroll event handling is complete.
@@ -264,6 +285,9 @@ function createFolderTestEntry(path) {
  * Tests that the directory tree does not horizontally scroll when expanding
  * nested folder items when the text direction is RTL.
  */
+// @ts-ignore: error TS4111: Property 'directoryTreeExpandHorizontalScrollRTL'
+// comes from an index signature, so it must be accessed with
+// ['directoryTreeExpandHorizontalScrollRTL'].
 testcase.directoryTreeExpandHorizontalScrollRTL = async () => {
   // Build an array of nested folder test entries.
   const nestedFolderTestEntries = [];
@@ -292,11 +316,14 @@ testcase.directoryTreeExpandHorizontalScrollRTL = async () => {
       [directoryTree.containerSelector, {width: '150px'}]);
 
   // Expand the tree Downloads > nested-folder1 > nested-folder2 ...
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   const lastFolderPath = nestedFolderTestEntries.pop().targetPath;
   await directoryTree.navigateToPath(`/My files/Downloads/${lastFolderPath}`);
 
   // Check: the directory tree should be showing the last test entry.
   const folder5Item = await directoryTree.waitForItemByLabel('nested-folder5');
+  // @ts-ignore: error TS4111: Property 'hidden' comes from an index signature,
+  // so it must be accessed with ['hidden'].
   chrome.test.assertFalse(!!folder5Item.attributes.hidden);
 
   // Ensure the directory tree scroll event handling is complete.
@@ -343,6 +370,8 @@ function addSubFolders(number, namePrefix) {
 /**
  * Tests that expanding a folder updates the its sub-folders expand icons.
  */
+// @ts-ignore: error TS4111: Property 'directoryTreeExpandFolder' comes from an
+// index signature, so it must be accessed with ['directoryTreeExpandFolder'].
 testcase.directoryTreeExpandFolder = async () => {
   // Create a large-folder inside Downloads.
   let entries = addSubFolders(1, 'large-folder');
@@ -387,6 +416,10 @@ testcase.directoryTreeExpandFolder = async () => {
  * Tests to ensure expand icon does not show up if show hidden files is off
  * and a directory only contains hidden directories.
  */
+// @ts-ignore: error TS4111: Property
+// 'directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOff' comes from an
+// index signature, so it must be accessed with
+// ['directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOff'].
 testcase.directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOff =
     async () => {
   // Populate a normal folder entry with a hidden folder inside.
@@ -411,6 +444,10 @@ testcase.directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOff =
  * Tests to ensure expand icon shows up if show hidden files
  * is on and a directory only contains hidden directories.
  */
+// @ts-ignore: error TS4111: Property
+// 'directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn' comes from an
+// index signature, so it must be accessed with
+// ['directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn'].
 testcase.directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn =
     async () => {
   // Populate a normal folder entry with a hidden folder inside.
@@ -445,6 +482,10 @@ testcase.directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn =
  * directories of the current directory to see if the children have
  * children: if they do, an expand icon is shown, if not, it is hidden.
  */
+// @ts-ignore: error TS4111: Property
+// 'directoryTreeExpandFolderOnNonDelayExpansionVolume' comes from an index
+// signature, so it must be accessed with
+// ['directoryTreeExpandFolderOnNonDelayExpansionVolume'].
 testcase.directoryTreeExpandFolderOnNonDelayExpansionVolume = async () => {
   // Create a parent folder with a child folder inside it.
   const entries = [
@@ -482,6 +523,10 @@ testcase.directoryTreeExpandFolderOnNonDelayExpansionVolume = async () => {
  * that icon is clicked, the child directory is read and the icon will
  * only remain if the child really has children.
  */
+// @ts-ignore: error TS4111: Property
+// 'directoryTreeExpandFolderOnDelayExpansionVolume' comes from an index
+// signature, so it must be accessed with
+// ['directoryTreeExpandFolderOnDelayExpansionVolume'].
 testcase.directoryTreeExpandFolderOnDelayExpansionVolume = async () => {
   // Create a parent folder with a child folder inside it, and another
   // where the child also has a child.
@@ -547,6 +592,9 @@ testcase.directoryTreeExpandFolderOnDelayExpansionVolume = async () => {
  * When drag a file and hover over the directory tree item, the item should be
  * expanded and selected, current directory should also change to that folder.
  */
+// @ts-ignore: error TS4111: Property 'directoryTreeExpandAndSelectedOnDragMove'
+// comes from an index signature, so it must be accessed with
+// ['directoryTreeExpandAndSelectedOnDragMove'].
 testcase.directoryTreeExpandAndSelectedOnDragMove = async () => {
   // Create a file and a folder.
   const entries = [
@@ -557,6 +605,8 @@ testcase.directoryTreeExpandAndSelectedOnDragMove = async () => {
   ];
 
   // Open Files app.
+  // @ts-ignore: error TS2345: Argument of type '(TestEntryInfo | undefined)[]'
+  // is not assignable to parameter of type 'TestEntryInfo[]'.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.waitForSelectedItemByLabel('Downloads');
@@ -589,6 +639,10 @@ testcase.directoryTreeExpandAndSelectedOnDragMove = async () => {
  * When My Drive is active, clicking Google Drive shouldn't change the current
  * directory.
  */
+// @ts-ignore: error TS4111: Property
+// 'directoryTreeClickDriveRootWhenMyDriveIsActive' comes from an index
+// signature, so it must be accessed with
+// ['directoryTreeClickDriveRootWhenMyDriveIsActive'].
 testcase.directoryTreeClickDriveRootWhenMyDriveIsActive = async () => {
   // Open Files app.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);

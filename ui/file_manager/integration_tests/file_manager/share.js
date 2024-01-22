@@ -14,10 +14,17 @@ import {remoteCall, setupAndWaitUntilReady} from './background.js';
  * doesn't need to access the contents). Other options, such as “Copy”, should
  * be removed.
  */
+// @ts-ignore: error TS4111: Property 'checkEncryptedSharesheetOptions' comes
+// from an index signature, so it must be accessed with
+// ['checkEncryptedSharesheetOptions'].
 testcase.checkEncryptedSharesheetOptions = async () => {
   const appId =
+      // @ts-ignore: error TS4111: Property 'testCSEFile' comes from an index
+      // signature, so it must be accessed with ['testCSEFile'].
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
 
+  // @ts-ignore: error TS4111: Property 'testCSEFile' comes from an index
+  // signature, so it must be accessed with ['testCSEFile'].
   await remoteCall.showContextMenuFor(appId, ENTRIES.testCSEFile.nameText);
 
   const shareMenuItem =
@@ -28,6 +35,8 @@ testcase.checkEncryptedSharesheetOptions = async () => {
 
   const shareInfo = await sendTestMessage({name: 'getSharesheetInfo'});
   const shareTargetsList =
+      // @ts-ignore: error TS2345: Argument of type 'unknown' is not assignable
+      // to parameter of type 'string'.
       /** @type {!Array<string>} */ (JSON.parse(shareInfo));
 
   for (const target of shareTargetsList) {

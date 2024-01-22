@@ -35,6 +35,8 @@ async function getSelectedOptionText(appId, type) {
 /**
  * Tests searching inside Downloads with results.
  */
+// @ts-ignore: error TS4111: Property 'searchDownloadsWithResults' comes from an
+// index signature, so it must be accessed with ['searchDownloadsWithResults'].
 testcase.searchDownloadsWithResults = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -58,6 +60,9 @@ testcase.searchDownloadsWithResults = async () => {
 /**
  * Tests searching inside Downloads without results.
  */
+// @ts-ignore: error TS4111: Property 'searchDownloadsWithNoResults' comes from
+// an index signature, so it must be accessed with
+// ['searchDownloadsWithNoResults'].
 testcase.searchDownloadsWithNoResults = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -79,22 +84,35 @@ testcase.searchDownloadsWithNoResults = async () => {
 /**
  * Tests that clearing the search box announces the A11y.
  */
+// @ts-ignore: error TS4111: Property 'searchDownloadsClearSearch' comes from an
+// index signature, so it must be accessed with ['searchDownloadsClearSearch'].
 testcase.searchDownloadsClearSearch = async () => {
   // Perform a normal search, to be able to clear the search box.
+  // @ts-ignore: error TS4111: Property 'searchDownloadsWithResults' comes from
+  // an index signature, so it must be accessed with
+  // ['searchDownloadsWithResults'].
   const appId = await testcase.searchDownloadsWithResults();
 
   // Click on the clear search button.
+  // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+  // parameter of type 'string'.
   await remoteCall.waitAndClickElement(appId, '#search-box .clear');
 
   // Wait for the search box to fully collapse.
+  // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+  // parameter of type 'string'.
   await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
 
   // Wait for file list to display all files.
   await remoteCall.waitForFiles(
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'string'.
       appId, TestEntryInfo.getExpectedRows(BASIC_LOCAL_ENTRY_SET));
 
   // Check that a11y message for clearing the search term has been issued.
   const a11yMessages =
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'string | null'.
       await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
   chrome.test.assertEq(
       2, a11yMessages.length,
@@ -106,29 +124,46 @@ testcase.searchDownloadsClearSearch = async () => {
 /**
  * Tests that clearing the search box with keydown crbug.com/910068.
  */
+// @ts-ignore: error TS4111: Property 'searchDownloadsClearSearchKeyDown' comes
+// from an index signature, so it must be accessed with
+// ['searchDownloadsClearSearchKeyDown'].
 testcase.searchDownloadsClearSearchKeyDown = async () => {
   // Perform a normal search, to be able to clear the search box.
+  // @ts-ignore: error TS4111: Property 'searchDownloadsWithResults' comes from
+  // an index signature, so it must be accessed with
+  // ['searchDownloadsWithResults'].
   const appId = await testcase.searchDownloadsWithResults();
 
   const clearButton = '#search-box .clear';
   // Wait for clear button.
+  // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+  // parameter of type 'string'.
   await remoteCall.waitForElement(appId, clearButton);
 
   // Send a enter key to the clear button.
   const enterKey = [clearButton, 'Enter', false, false, false];
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   await remoteCall.fakeKeyDown(appId, ...enterKey);
 
   // Check: Search input field is empty.
   const searchInput =
+      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
+      // parameter of type 'string'.
       await remoteCall.waitForElement(appId, '#search-box [type="search"]');
+  // @ts-ignore: error TS2339: Property 'value' does not exist on type
+  // 'ElementObject'.
   chrome.test.assertEq('', searchInput.value);
 
   // Wait until the search button get the focus.
   // Use repeatUntil() here because the focus won't shift to search button
   // until the CSS animation is finished.
   const caller = getCaller();
+  // @ts-ignore: error TS7030: Not all code paths return a value.
   await repeatUntil(async () => {
     const activeElement =
+        // @ts-ignore: error TS2345: Argument of type 'void' is not assignable
+        // to parameter of type 'string | null'.
         await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
     if (activeElement.attributes['id'] !== 'search-button') {
       return pending(
@@ -142,6 +177,8 @@ testcase.searchDownloadsClearSearchKeyDown = async () => {
  * Tests that the search text entry box stays expanded until the end of user
  * interaction.
  */
+// @ts-ignore: error TS4111: Property 'searchHidingTextEntryField' comes from an
+// index signature, so it must be accessed with ['searchHidingTextEntryField'].
 testcase.searchHidingTextEntryField = async () => {
   const entry = ENTRIES.hello;
 
@@ -181,10 +218,14 @@ testcase.searchHidingTextEntryField = async () => {
 /**
  * Tests that the search box collapses when empty and Tab out of the box.
  */
+// @ts-ignore: error TS4111: Property 'searchHidingViaTab' comes from an index
+// signature, so it must be accessed with ['searchHidingViaTab'].
 testcase.searchHidingViaTab = async () => {
   const entry = ENTRIES.hello;
 
   // Open Files app on Downloads.
+  // @ts-ignore: error TS2322: Type 'TestEntryInfo | undefined' is not
+  // assignable to type 'TestEntryInfo'.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Search box should start collapsed.
@@ -213,6 +254,8 @@ testcase.searchHidingViaTab = async () => {
 /**
  * Tests that clicking the search button expands and collapses the search box.
  */
+// @ts-ignore: error TS4111: Property 'searchButtonToggles' comes from an index
+// signature, so it must be accessed with ['searchButtonToggles'].
 testcase.searchButtonToggles = async () => {
   const entry = ENTRIES.hello;
 
@@ -234,9 +277,12 @@ testcase.searchButtonToggles = async () => {
 
   // Check: The search box width should have increased.
   const caller = getCaller();
+  // @ts-ignore: error TS7030: Not all code paths return a value.
   await repeatUntil(async () => {
     const element = await remoteCall.waitForElementStyles(
         appId, '#search-wrapper', ['width']);
+    // @ts-ignore: error TS18048: 'element.renderedWidth' is possibly
+    // 'undefined'.
     if (collapsedSearchBox.renderedWidth >= element.renderedWidth) {
       return pending(caller, 'Waiting search box to expand');
     }
@@ -249,9 +295,12 @@ testcase.searchButtonToggles = async () => {
   await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
 
   // Check: the search box width should decrease.
+  // @ts-ignore: error TS7030: Not all code paths return a value.
   await repeatUntil(async () => {
     const element = await remoteCall.waitForElementStyles(
         appId, '#search-wrapper', ['width']);
+    // @ts-ignore: error TS18048: 'element.renderedWidth' is possibly
+    // 'undefined'.
     if (collapsedSearchBox.renderedWidth < element.renderedWidth) {
       return pending(caller, 'Waiting search box to collapse');
     }
@@ -262,19 +311,27 @@ testcase.searchButtonToggles = async () => {
  * Tests that Files app performs a search at app start up when
  * LaunchParam.searchQuery is specified.
  */
+// @ts-ignore: error TS4111: Property 'searchQueryLaunchParam' comes from an
+// index signature, so it must be accessed with ['searchQueryLaunchParam'].
 testcase.searchQueryLaunchParam = async () => {
   // Open Files app with LaunchParam.searchQuery='gdoc'.
   const query = 'gdoc';
   /** @type {!FilesAppState} */
+  // @ts-ignore: error TS2740: Type '{ searchQuery: string; }' is missing the
+  // following properties from type 'FilesAppState': currentDirectoryURL,
+  // selectionURL, targetName, type, and 5 more.
   const appState = {searchQuery: query};
   const appId = await setupAndWaitUntilReady(
       null, BASIC_LOCAL_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, appState);
 
   // Check: search box should be filled with the query.
   const caller = getCaller();
+  // @ts-ignore: error TS7030: Not all code paths return a value.
   await repeatUntil(async () => {
     const searchBoxInput =
         await remoteCall.waitForElement(appId, '#search-box cr-input');
+    // @ts-ignore: error TS2339: Property 'value' does not exist on type
+    // 'ElementObject'.
     if (searchBoxInput.value !== query) {
       return pending(caller, 'Waiting search box to be filled with the query.');
     }
@@ -288,7 +345,11 @@ testcase.searchQueryLaunchParam = async () => {
 
   // Check: Query-matched files should be shown in the files list.
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    // @ts-ignore: error TS4111: Property 'testDocument' comes from an index
+    // signature, so it must be accessed with ['testDocument'].
     ENTRIES.testDocument,
+    // @ts-ignore: error TS4111: Property 'testSharedDocument' comes from an
+    // index signature, so it must be accessed with ['testSharedDocument'].
     ENTRIES.testSharedDocument,
   ]));
 };
@@ -296,6 +357,8 @@ testcase.searchQueryLaunchParam = async () => {
 /**
  * Checks that changing location options correctly filters search results.
  */
+// @ts-ignore: error TS4111: Property 'searchWithLocationOptions' comes from an
+// index signature, so it must be accessed with ['searchWithLocationOptions'].
 testcase.searchWithLocationOptions = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -305,6 +368,8 @@ testcase.searchWithLocationOptions = async () => {
   const nestedHello = ENTRIES.hello.cloneWith({
     targetPath: 'A/hello.txt',
   });
+  // @ts-ignore: error TS4111: Property 'directoryA' comes from an index
+  // signature, so it must be accessed with ['directoryA'].
   addEntries(['local'], [ENTRIES.directoryA, nestedHello]);
 
   // Start in the nested directory, as the default search location
@@ -339,6 +404,8 @@ testcase.searchWithLocationOptions = async () => {
 /**
  * Checks that changing recency options correctly filters search results.
  */
+// @ts-ignore: error TS4111: Property 'searchWithRecencyOptions' comes from an
+// index signature, so it must be accessed with ['searchWithRecencyOptions'].
 testcase.searchWithRecencyOptions = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -381,13 +448,19 @@ testcase.searchWithRecencyOptions = async () => {
  * Checks that when searching Google Drive we correctly match on name, not on
  * contents.
  */
+// @ts-ignore: error TS4111: Property 'matchDriveFilesByName' comes from an
+// index signature, so it must be accessed with ['matchDriveFilesByName'].
 testcase.matchDriveFilesByName = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, BASIC_LOCAL_ENTRY_SET, [
+        // @ts-ignore: error TS4111: Property 'image2' comes from an index
+        // signature, so it must be accessed with ['image2'].
         ENTRIES.image2,
       ]);
   await remoteCall.typeSearchText(appId, 'image2');
   await remoteCall.waitForFiles(
+      // @ts-ignore: error TS4111: Property 'image2' comes from an index
+      // signature, so it must be accessed with ['image2'].
       appId, TestEntryInfo.getExpectedRows([ENTRIES.image2]));
 };
 
@@ -395,13 +468,16 @@ testcase.matchDriveFilesByName = async () => {
  * Checks that changing recency options correctly filters search results on
  * drive.
  */
+// @ts-ignore: error TS4111: Property 'searchDriveWithRecencyOptions' comes from
+// an index signature, so it must be accessed with
+// ['searchDriveWithRecencyOptions'].
 testcase.searchDriveWithRecencyOptions = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Modify the basic entry set by adding another hello file with
   // a recent date. We cannot make it today's date as those dates
-  // are rendered with 'Today' string rather than actual date string.
+  // so it must be accessed with ['hello'].
   const recentHello = ENTRIES.hello.cloneWith({
     nameText: 'hello-recent.txt',
     lastModifiedTime: getDateWithDayDiff(3),
@@ -438,6 +514,8 @@ testcase.searchDriveWithRecencyOptions = async () => {
  * Checks that changing file types options correctly filters local
  * search results.
  */
+// @ts-ignore: error TS4111: Property 'searchLocalWithTypeOptions' comes from an
+// index signature, so it must be accessed with ['searchLocalWithTypeOptions'].
 testcase.searchLocalWithTypeOptions = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -456,6 +534,8 @@ testcase.searchLocalWithTypeOptions = async () => {
 
   // Expect only world, which is a video file.
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    // @ts-ignore: error TS4111: Property 'world' comes from an index signature,
+    // so it must be accessed with ['world'].
     ENTRIES.world,
   ]));
 };
@@ -464,6 +544,8 @@ testcase.searchLocalWithTypeOptions = async () => {
  * Checks that changing file types options correctly filters
  * Drive search results.
  */
+// @ts-ignore: error TS4111: Property 'searchDriveWithTypeOptions' comes from an
+// index signature, so it must be accessed with ['searchDriveWithTypeOptions'].
 testcase.searchDriveWithTypeOptions = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -478,7 +560,11 @@ testcase.searchDriveWithTypeOptions = async () => {
   await remoteCall.typeSearchText(appId, 'b');
 
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    // @ts-ignore: error TS4111: Property 'desktop' comes from an index
+    // signature, so it must be accessed with ['desktop'].
     ENTRIES.desktop,
+    // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
+    // signature, so it must be accessed with ['beautiful'].
     ENTRIES.beautiful,
   ]));
 
@@ -488,6 +574,8 @@ testcase.searchDriveWithTypeOptions = async () => {
       'Failed to click "Audio" type selector');
 
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
+    // signature, so it must be accessed with ['beautiful'].
     ENTRIES.beautiful,
   ]));
 };
@@ -514,6 +602,8 @@ async function mountUsb(appId, withPartitions) {
 /**
  * Checks that the new search correctly finds files on a USB drive.
  */
+// @ts-ignore: error TS4111: Property 'searchRemovableDevice' comes from an
+// index signature, so it must be accessed with ['searchRemovableDevice'].
 testcase.searchRemovableDevice = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   // Mount a USB with no partitions.
@@ -535,6 +625,9 @@ testcase.searchRemovableDevice = async () => {
  * Checks that the new search correctly finds files on a USB drive with multiple
  * partitions.
  */
+// @ts-ignore: error TS4111: Property 'searchPartitionedRemovableDevice' comes
+// from an index signature, so it must be accessed with
+// ['searchPartitionedRemovableDevice'].
 testcase.searchPartitionedRemovableDevice = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await mountUsb(appId, /* withPartitions= */ true);
@@ -568,6 +661,9 @@ testcase.searchPartitionedRemovableDevice = async () => {
 /**
  * Checks that the search options are reset to default on folder change.
  */
+// @ts-ignore: error TS4111: Property 'resetSearchOptionsOnFolderChange' comes
+// from an index signature, so it must be accessed with
+// ['resetSearchOptionsOnFolderChange'].
 testcase.resetSearchOptionsOnFolderChange = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -607,6 +703,9 @@ testcase.resetSearchOptionsOnFolderChange = async () => {
  * Checks that we are showing the correct message in breadcrumbs when search is
  * active.
  */
+// @ts-ignore: error TS4111: Property 'showSearchResultMessageWhenSearching'
+// comes from an index signature, so it must be accessed with
+// ['showSearchResultMessageWhenSearching'].
 testcase.showSearchResultMessageWhenSearching = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -641,6 +740,8 @@ testcase.showSearchResultMessageWhenSearching = async () => {
 /**
  * Checks that search works correctly when starting in My Files.
  */
+// @ts-ignore: error TS4111: Property 'searchFromMyFiles' comes from an index
+// signature, so it must be accessed with ['searchFromMyFiles'].
 testcase.searchFromMyFiles = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
@@ -680,19 +781,22 @@ testcase.searchFromMyFiles = async () => {
  * Checks that the selection path correctly reflects paths of elements found by
  * search.
  */
+// @ts-ignore: error TS4111: Property 'selectionPath' comes from an index
+// signature, so it must be accessed with ['selectionPath'].
 testcase.selectionPath = async () => {
   const appId =
+      // @ts-ignore: error TS2769: No overload matches this call.
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, NESTED_ENTRY_SET.concat([
         ENTRIES.hello,
         ENTRIES.desktop,
-        ENTRIES.deeplyBurriedSmallJpeg,
+        ENTRIES.deeplyBuriedSmallJpeg,
       ]));
   // Search for files containing 'e'; should be three of those.
   await remoteCall.typeSearchText(appId, 'e');
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
     ENTRIES.hello,
     ENTRIES.desktop,
-    ENTRIES.deeplyBurriedSmallJpeg,
+    ENTRIES.deeplyBuriedSmallJpeg,
   ]));
   await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
   const breadcrumbSingleSelection = await remoteCall.waitForElement(appId, [
@@ -701,6 +805,8 @@ testcase.selectionPath = async () => {
   chrome.test.assertFalse(breadcrumbSingleSelection.hidden);
   chrome.test.assertEq(
       'My files/Downloads/' + ENTRIES.hello.nameText,
+      // @ts-ignore: error TS4111: Property 'path' comes from an index
+      // signature, so it must be accessed with ['path'].
       breadcrumbSingleSelection.attributes.path);
   // Select now the desktop entry, too. Two or more selected files,
   // regardless of the directory in which they sit, result in no path.
@@ -711,15 +817,19 @@ testcase.selectionPath = async () => {
     '#search-breadcrumb',
   ]);
   chrome.test.assertTrue(breadcrumbDoubleSelection.hidden);
+  // @ts-ignore: error TS4111: Property 'path' comes from an index signature, so
+  // it must be accessed with ['path'].
   chrome.test.assertEq('', breadcrumbDoubleSelection.attributes.path);
   await remoteCall.waitAndClickElement(
       appId,
-      `#file-list [file-name="${ENTRIES.deeplyBurriedSmallJpeg.nameText}"]`,
+      `#file-list [file-name="${ENTRIES.deeplyBuriedSmallJpeg.nameText}"]`,
       {ctrl: true});
   const breadcrumbTripleSelection = await remoteCall.waitForElement(appId, [
     '#search-breadcrumb',
   ]);
   chrome.test.assertTrue(breadcrumbTripleSelection.hidden);
+  // @ts-ignore: error TS4111: Property 'path' comes from an index signature, so
+  // it must be accessed with ['path'].
   chrome.test.assertEq('', breadcrumbTripleSelection.attributes.path);
 
   // Close search. Select any file. Confirm that the path display is not shown,
@@ -740,6 +850,8 @@ testcase.selectionPath = async () => {
  * under the root folder. Finally, search everywhere should search everything
  * we can search (Google Doc, removable drives, local file syste, * etc.).
  */
+// @ts-ignore: error TS4111: Property 'searchHierarchy' comes from an index
+// signature, so it must be accessed with ['searchHierarchy'].
 testcase.searchHierarchy = async () => {
   // hello file stored in My files/Downloads/photos.
   const photosHello = ENTRIES.hello.cloneWith({
@@ -837,12 +949,15 @@ testcase.searchHierarchy = async () => {
 /**
  * Checks that search is not visible when in the Trash volume.
  */
+// @ts-ignore: error TS4111: Property 'hideSearchInTrash' comes from an index
+// signature, so it must be accessed with ['hideSearchInTrash'].
 testcase.hideSearchInTrash = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   // Make sure that the search button is visible in Downloads.
   await remoteCall.waitForElement(appId, '#search-button');
   let searchButton = await remoteCall.waitForElementStyles(
       appId, ['#search-button'], ['display']);
+  // @ts-ignore: error TS18048: 'searchButton.styles' is possibly 'undefined'.
   chrome.test.assertTrue(searchButton.styles['display'] !== 'none');
 
   // Navigate to Trash and confirm that the search button is now hidden.
@@ -850,21 +965,27 @@ testcase.hideSearchInTrash = async () => {
   await directoryTree.navigateToPath('/Trash');
   searchButton = await remoteCall.waitForElementStyles(
       appId, ['#search-button'], ['visibility']);
+  // @ts-ignore: error TS18048: 'searchButton.styles' is possibly 'undefined'.
   chrome.test.assertTrue(searchButton.styles['visibility'] === 'hidden');
 
   // Try to use keyboard shortcuts Ctrl+F to launch search anyway.
   const ctrlF = ['#file-list', 'f', true, false, false];
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   await remoteCall.fakeKeyDown(appId, ...ctrlF);
 
   const searchWrapper =
       await remoteCall.waitForElement(appId, ['#search-wrapper']);
   // Confirm that search wrapper is still in collapsed state.
+  // @ts-ignore: error TS4111: Property 'collapsed' comes from an index
+  // signature, so it must be accessed with ['collapsed'].
   chrome.test.assertEq(searchWrapper.attributes.collapsed, '');
 
   // Go back to Downloads and confirm that the search button is visible again.
   await directoryTree.navigateToPath('/My files/Downloads');
   searchButton = await remoteCall.waitForElementStyles(
       appId, ['#search-button'], ['visibility']);
+  // @ts-ignore: error TS18048: 'searchButton.styles' is possibly 'undefined'.
   chrome.test.assertTrue(searchButton.styles['visibility'] !== 'hidden');
 
   // Make sure that search still works.
@@ -877,6 +998,8 @@ testcase.hideSearchInTrash = async () => {
  * Checks that files in trash do not appear in the search results when trash
  * is enabled, and appear when it is disabled.
  */
+// @ts-ignore: error TS4111: Property 'searchTrashedFiles' comes from an index
+// signature, so it must be accessed with ['searchTrashedFiles'].
 testcase.searchTrashedFiles = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -919,6 +1042,8 @@ testcase.searchTrashedFiles = async () => {
  * Checcks that finding files directly in Shared with me, or in folders nested
  * in Shared with me, works.
  */
+// @ts-ignore: error TS4111: Property 'searchSharedWithMe' comes from an index
+// signature, so it must be accessed with ['searchSharedWithMe'].
 testcase.searchSharedWithMe = async () => {
   // Create a shared file for nested directory. It must have SHARED_WITH_ME
   // attribute on it, as NESTED_SHARED_WITH_ME does not have shared metadata
@@ -953,6 +1078,8 @@ testcase.searchSharedWithMe = async () => {
  * Checks that the simple search from the root of a documents provider directory
  * works. No file category or modified time filters are used.
  */
+// @ts-ignore: error TS4111: Property 'searchDocumentsProvider' comes from an
+// index signature, so it must be accessed with ['searchDocumentsProvider'].
 testcase.searchDocumentsProvider = async () => {
   await addEntries(
       ['documents_provider'], COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET);
@@ -975,6 +1102,9 @@ testcase.searchDocumentsProvider = async () => {
  * Checks that changing file types options correctly filters
  * files exposed via Documents Provider.
  */
+// @ts-ignore: error TS4111: Property 'searchDocumentsProviderWithTypeOptions'
+// comes from an index signature, so it must be accessed with
+// ['searchDocumentsProviderWithTypeOptions'].
 testcase.searchDocumentsProviderWithTypeOptions = async () => {
   await addEntries(
       ['documents_provider'], COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET);
@@ -1009,6 +1139,9 @@ testcase.searchDocumentsProviderWithTypeOptions = async () => {
  * Checks that changing file types options correctly filters
  * files exposed via Documents Provider.
  */
+// @ts-ignore: error TS4111: Property
+// 'searchDocumentsProviderWithRecencyOptions' comes from an index signature, so
+// it must be accessed with ['searchDocumentsProviderWithRecencyOptions'].
 testcase.searchDocumentsProviderWithRecencyOptions = async () => {
   const recentHellos = [];
   for (let i = 0; i < 10; ++i) {
@@ -1051,6 +1184,8 @@ testcase.searchDocumentsProviderWithRecencyOptions = async () => {
 /**
  * Checks that search works on volumes mounted via fileSystemProvider.
  */
+// @ts-ignore: error TS4111: Property 'searchFileSystemProvider' comes from an
+// index signature, so it must be accessed with ['searchFileSystemProvider'].
 testcase.searchFileSystemProvider = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await sendTestMessage({
@@ -1085,6 +1220,8 @@ testcase.searchFileSystemProvider = async () => {
  * search service. So that's all we test: that we can find images by terms
  * associated with them.
  */
+// @ts-ignore: error TS4111: Property 'searchImageByContent' comes from an index
+// signature, so it must be accessed with ['searchImageByContent'].
 testcase.searchImageByContent = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.hello, ENTRIES.desktop, ENTRIES.image3]);
@@ -1125,6 +1262,9 @@ testcase.searchImageByContent = async () => {
  * Checks that any search, regardless if it has results or not, is closed if we
  * navigate to another directory.
  */
+// @ts-ignore: error TS4111: Property 'changingDirectoryClosesSearch' comes from
+// an index signature, so it must be accessed with
+// ['changingDirectoryClosesSearch'].
 testcase.changingDirectoryClosesSearch = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await remoteCall.typeSearchText(appId, 'hello');
@@ -1140,6 +1280,8 @@ testcase.changingDirectoryClosesSearch = async () => {
  * the nested directories, we show the correct location. As we always search the
  * entire Google Drive, we should always show My Drive as the selected location.
  */
+// @ts-ignore: error TS4111: Property 'verifyDriveLocationOption' comes from an
+// index signature, so it must be accessed with ['verifyDriveLocationOption'].
 testcase.verifyDriveLocationOption = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [
@@ -1179,6 +1321,10 @@ testcase.verifyDriveLocationOption = async () => {
  * Checks that search with non-current folder in Downloads should unselect the
  * current directory item in the tree.
  */
+// @ts-ignore: error TS4111: Property
+// 'unselectCurrentDirectoryInTreeOnSearchInDownloads' comes from an index
+// signature, so it must be accessed with
+// ['unselectCurrentDirectoryInTreeOnSearchInDownloads'].
 testcase.unselectCurrentDirectoryInTreeOnSearchInDownloads = async () => {
   // Setup default file set within Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -1224,6 +1370,10 @@ testcase.unselectCurrentDirectoryInTreeOnSearchInDownloads = async () => {
  * Checks that search with non-root folder in Drive should unselect the current
  * directory item in the tree.
  */
+// @ts-ignore: error TS4111: Property
+// 'unselectCurrentDirectoryInTreeOnSearchInDrive' comes from an index
+// signature, so it must be accessed with
+// ['unselectCurrentDirectoryInTreeOnSearchInDrive'].
 testcase.unselectCurrentDirectoryInTreeOnSearchInDrive = async () => {
   // Setup Drive with Computers files.
   const appId =

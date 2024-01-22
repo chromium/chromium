@@ -1734,7 +1734,6 @@ if (is_chromeos_ash && enable_js_type_check) {
       "chrome/test/data/webui:closure_compile",
       "mojo/public/tools/bindings/generators/js_templates/lite/test:closure_compile",
       "mojo/public/tools/bindings/generators/js_templates/lite/test:closure_compile_modules",
-      "ui/file_manager:closure_compile",
     ]
   }
 }

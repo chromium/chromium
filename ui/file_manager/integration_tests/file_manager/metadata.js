@@ -59,6 +59,9 @@ function createTestTeamDrive(name) {
   return new TestEntryInfo({
     teamDriveName: name,
     type: EntryType.SHARED_DRIVE,
+    // @ts-ignore: error TS2561: Object literal may only specify known
+    // properties, but 'capabilites' does not exist in type
+    // 'TestEntryInfoOptions'. Did you mean to write 'capabilities'?
     capabilites: {
       canCopy: true,
       canDelete: true,
@@ -97,6 +100,8 @@ const testEntries = [
  *  - Opening Files app in My Drive with 8 files and 3 folders.
  *  - Navigate to My Drive > photos1 > folder2, which is empty.
  */
+// @ts-ignore: error TS4111: Property 'metadataDrive' comes from an index
+// signature, so it must be accessed with ['metadataDrive'].
 testcase.metadataDrive = async () => {
   // Open Files app on Drive.
   const appId =
@@ -136,6 +141,8 @@ testcase.metadataDrive = async () => {
  *  - Opening Files app in Downloads with 8 files and 3 folders.
  *  - Navigate to Downloads > photos1 > folder1 which is empty.
  */
+// @ts-ignore: error TS4111: Property 'metadataDownloads' comes from an index
+// signature, so it must be accessed with ['metadataDownloads'].
 testcase.metadataDownloads = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(
@@ -182,6 +189,8 @@ testcase.metadataDownloads = async () => {
  * Using 50 files and 50 folders because in the Drive backend it has a
  * throttle for max of 20 concurrent operations.
  */
+// @ts-ignore: error TS4111: Property 'metadataLargeDrive' comes from an index
+// signature, so it must be accessed with ['metadataLargeDrive'].
 testcase.metadataLargeDrive = async () => {
   const entries = [createTestFolder('folder1')];
 
@@ -213,6 +222,8 @@ testcase.metadataLargeDrive = async () => {
   // to wait until the metadata stats to have the expected count.
   // If the asserts below fail, check if your change has increased the number
   // of metadata operations, because they impact the overall app performance.
+  // @ts-ignore: error TS7006: Parameter 'metadataStats' implicitly has an 'any'
+  // type.
   const checkMetadata = (metadataStats) => {
     let result = true;
     // Full fetch tally:
@@ -221,16 +232,26 @@ testcase.metadataLargeDrive = async () => {
     // +   1 My Drive root.
     // +   1 read again folder1 when naviated to it.
     // = 103
+    // @ts-ignore: error TS2447: The '&=' operator is not allowed for boolean
+    // types. Consider using '&&' instead.
     result &= equal1PercentMargin(metadataStats.fullFetch, 103);
 
     // 50 team drives cached, reading from file list when navigating to
     // /team_drives, then read cached when expanding directory tree.
+    // @ts-ignore: error TS2447: The '&=' operator is not allowed for boolean
+    // types. Consider using '&&' instead.
     result &= metadataStats.fromCache < 70;
 
     // Cleared 51 folders when navigated out of My Drive and clearing file
     // list.
+    // @ts-ignore: error TS2447: The '&=' operator is not allowed for boolean
+    // types. Consider using '&&' instead.
     result &= equal1PercentMargin(metadataStats.clearCacheCount, 51);
+    // @ts-ignore: error TS2447: The '&=' operator is not allowed for boolean
+    // types. Consider using '&&' instead.
     result &= metadataStats.clearAllCount === 0;
+    // @ts-ignore: error TS2447: The '&=' operator is not allowed for boolean
+    // types. Consider using '&&' instead.
     result &= metadataStats.invalidateCount === 0;
     return result;
   };
@@ -243,6 +264,8 @@ testcase.metadataLargeDrive = async () => {
  *  - Navigate to Shared Drives, with 50 team drives.
  *  - Expand Shared Drives to display the 50 team drives..
  */
+// @ts-ignore: error TS4111: Property 'metadataTeamDrives' comes from an index
+// signature, so it must be accessed with ['metadataTeamDrives'].
 testcase.metadataTeamDrives = async () => {
   const entries = [];
   const driveEntries = [];
@@ -316,6 +339,8 @@ testcase.metadataTeamDrives = async () => {
 /**
  *  Tests that fetching content metadata from a DocumentsProvider completes.
  */
+// @ts-ignore: error TS4111: Property 'metadataDocumentsProvider' comes from an
+// index signature, so it must be accessed with ['metadataDocumentsProvider'].
 testcase.metadataDocumentsProvider = async () => {
   // Add files to the DocumentsProvider volume.
   await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
@@ -340,5 +365,7 @@ testcase.metadataDocumentsProvider = async () => {
       'getContentMetadata', appId, [['mediaMimeType']]);
 
   // Check nothing in the result was returned.
+  // @ts-ignore: error TS2339: Property 'checkDeepEq' does not exist on type
+  // 'typeof test'.
   chrome.test.checkDeepEq([], result);
 };

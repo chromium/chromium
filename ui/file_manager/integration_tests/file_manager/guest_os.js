@@ -11,6 +11,8 @@ import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 /**
  * Tests that Guest OS entries show up in the sidebar at files app launch.
  */
+// @ts-ignore: error TS4111: Property 'fakesListed' comes from an index
+// signature, so it must be accessed with ['fakesListed'].
 testcase.fakesListed = async () => {
   // Prepopulate the list with a bunch of guests.
   const names = ['Electra', 'Etcetera', 'Jemima'];
@@ -34,6 +36,9 @@ testcase.fakesListed = async () => {
  * Tests that the list of guests is updated when new guests are added or
  * removed.
  */
+// @ts-ignore: error TS4111: Property 'listUpdatedWhenGuestsChanged' comes from
+// an index signature, so it must be accessed with
+// ['listUpdatedWhenGuestsChanged'].
 testcase.listUpdatedWhenGuestsChanged = async () => {
   // Open the files app.
   const appId =
@@ -79,6 +84,8 @@ testcase.listUpdatedWhenGuestsChanged = async () => {
  * corresponding volume, and that the UI is updated appropriately (volume in
  * sidebar and not fake, contents show up once done loading, etc).
  */
+// @ts-ignore: error TS4111: Property 'mountGuestSuccess' comes from an index
+// signature, so it must be accessed with ['mountGuestSuccess'].
 testcase.mountGuestSuccess = async () => {
   const guestName = 'JennyAnyDots';
   // Start off with one guest.
@@ -132,6 +139,8 @@ testcase.mountGuestSuccess = async () => {
  * corresponding volume, and that the UI is update appropriately (volume in
  * sidebar and not fake, contents show up once done loading, etc).
  */
+// @ts-ignore: error TS4111: Property 'mountAndroidVolumeSuccess' comes from an
+// index signature, so it must be accessed with ['mountAndroidVolumeSuccess'].
 testcase.mountAndroidVolumeSuccess = async () => {
   await sendTestMessage({name: 'unmountPlayFiles'});
   const guestName = 'Play files';

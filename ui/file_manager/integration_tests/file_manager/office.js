@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ENTRIES, getCaller, getHistogramCount, pending, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
+import {ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
-import {FILE_MANAGER_EXTENSIONS_ID, FILE_MANAGER_SWA_APP_ID, FILE_SWA_BASE_URL} from './test_data.js';
+import {FILE_MANAGER_SWA_APP_ID, FILE_SWA_BASE_URL} from './test_data.js';
 
 /**
  * Returns 'Open in Google Docs' task descriptor.
  *
- * @return {!chrome.fileManagerPrivate.FileTaskDescriptor}
+ * @return {!FileTaskDescriptor}
  */
 function openDocWithDriveDescriptor() {
   const filesAppId = FILE_MANAGER_SWA_APP_ID;
@@ -24,7 +24,7 @@ function openDocWithDriveDescriptor() {
 /**
  * Returns 'Open with Excel' task descriptor.
  *
- * @return {!chrome.fileManagerPrivate.FileTaskDescriptor}
+ * @return {!FileTaskDescriptor}
  */
 function openExcelWithDriveDescriptor() {
   const filesAppId = FILE_MANAGER_SWA_APP_ID;
@@ -37,7 +37,7 @@ function openExcelWithDriveDescriptor() {
 /**
  * Returns 'Open in PowerPoint' task descriptor.
  *
- * @return {!chrome.fileManagerPrivate.FileTaskDescriptor}
+ * @return {!FileTaskDescriptor}
  */
 function openPowerPointWithDriveDescriptor() {
   const filesAppId = FILE_MANAGER_SWA_APP_ID;
@@ -54,7 +54,7 @@ function openPowerPointWithDriveDescriptor() {
  *
  * @param {string} appId Window ID.
  * @param {number} expectedCount
- * @return {!Promise<!chrome.fileManagerPrivate.FileTaskDescriptor>}
+ * @return {!Promise<!FileTaskDescriptor>}
  */
 async function getExecutedTask(appId, expectedCount = 1) {
   const caller = getCaller();
@@ -79,14 +79,20 @@ async function getExecutedTask(appId, expectedCount = 1) {
   return executeTaskArgs[0];
 }
 
+// @ts-ignore: error TS4111: Property 'openOfficeWordFile' comes from an index
+// signature, so it must be accessed with ['openOfficeWordFile'].
 testcase.openOfficeWordFile = async () => {
   await sendTestMessage({
     name: 'expectFileTask',
+    // @ts-ignore: error TS4111: Property 'smallDocxHosted' comes from an index
+    // signature, so it must be accessed with ['smallDocxHosted'].
     fileNames: [ENTRIES.smallDocxHosted.targetPath],
     openType: 'launch',
   });
 
   const appId = await setupAndWaitUntilReady(
+      // @ts-ignore: error TS4111: Property 'smallDocxHosted' comes from an
+      // index signature, so it must be accessed with ['smallDocxHosted'].
       RootPath.DRIVE, [], [ENTRIES.smallDocxHosted]);
 
   // Disable office setup flow so the dialog doesn't open when the file is
@@ -95,6 +101,8 @@ testcase.openOfficeWordFile = async () => {
 
   // Open file.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      // @ts-ignore: error TS4111: Property 'smallDocxHosted' comes from an
+      // index signature, so it must be accessed with ['smallDocxHosted'].
       'openFile', appId, [ENTRIES.smallDocxHosted.nameText]));
 
   // Check that the Word file's alternate URL has been opened in a browser
@@ -102,11 +110,17 @@ testcase.openOfficeWordFile = async () => {
   // opened from drive have this query parameter added
   // (https://crrev.com/c/3867338).
   await remoteCall.waitForLastOpenedBrowserTabUrl(
+      // @ts-ignore: error TS4111: Property 'smallDocxHosted' comes from an
+      // index signature, so it must be accessed with ['smallDocxHosted'].
       ENTRIES.smallDocxHosted.alternateUrl.concat('&cros_files=true'));
 };
 
+// @ts-ignore: error TS4111: Property 'openOfficeWordFromMyFiles' comes from an
+// index signature, so it must be accessed with ['openOfficeWordFromMyFiles'].
 testcase.openOfficeWordFromMyFiles = async () => {
   const appId =
+      // @ts-ignore: error TS4111: Property 'smallDocx' comes from an index
+      // signature, so it must be accessed with ['smallDocx'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.smallDocx]);
 
   // Fake chrome.fileManagerPrivate.executeTask to return
@@ -118,6 +132,8 @@ testcase.openOfficeWordFromMyFiles = async () => {
 
   // Open file.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      // @ts-ignore: error TS4111: Property 'smallDocx' comes from an index
+      // signature, so it must be accessed with ['smallDocx'].
       'openFile', appId, [ENTRIES.smallDocx.nameText]));
 
   // The available Office task should be "Upload to Drive".
@@ -133,8 +149,14 @@ testcase.openOfficeWordFromMyFiles = async () => {
 
 // Tests that "Upload to Drive" cannot be enabled if the "Upload Office To
 // Cloud" flag is disabled (test setup similar to `openOfficeWordFromMyFiles`).
+// @ts-ignore: error TS4111: Property
+// 'uploadToDriveRequiresUploadOfficeToCloudEnabled' comes from an index
+// signature, so it must be accessed with
+// ['uploadToDriveRequiresUploadOfficeToCloudEnabled'].
 testcase.uploadToDriveRequiresUploadOfficeToCloudEnabled = async () => {
   const appId =
+      // @ts-ignore: error TS4111: Property 'smallDocx' comes from an index
+      // signature, so it must be accessed with ['smallDocx'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.smallDocx]);
   // Fake chrome.fileManagerPrivate.executeTask to return
   // chrome.fileManagerPrivate.TaskResult.EMPTY.
@@ -145,6 +167,8 @@ testcase.uploadToDriveRequiresUploadOfficeToCloudEnabled = async () => {
 
   // Open file.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      // @ts-ignore: error TS4111: Property 'smallDocx' comes from an index
+      // signature, so it must be accessed with ['smallDocx'].
       'openFile', appId, [ENTRIES.smallDocx.nameText]));
 
   // Since the Upload Office To Cloud flag isn't enabled, the Upload to Drive
@@ -162,8 +186,12 @@ testcase.uploadToDriveRequiresUploadOfficeToCloudEnabled = async () => {
   chrome.test.assertEq(1, removedCount);
 };
 
+// @ts-ignore: error TS4111: Property 'openOfficeWordFromDrive' comes from an
+// index signature, so it must be accessed with ['openOfficeWordFromDrive'].
 testcase.openOfficeWordFromDrive = async () => {
   const appId = await setupAndWaitUntilReady(
+      // @ts-ignore: error TS4111: Property 'smallDocxHosted' comes from an
+      // index signature, so it must be accessed with ['smallDocxHosted'].
       RootPath.DRIVE, [], [ENTRIES.smallDocxHosted]);
 
   // Fake chrome.fileManagerPrivate.executeTask to return
@@ -175,6 +203,8 @@ testcase.openOfficeWordFromDrive = async () => {
 
   // Open file.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      // @ts-ignore: error TS4111: Property 'smallDocxHosted' comes from an
+      // index signature, so it must be accessed with ['smallDocxHosted'].
       'openFile', appId, [ENTRIES.smallDocxHosted.nameText]));
 
   // The Drive/Docs task should be available and executed.
@@ -187,8 +217,12 @@ testcase.openOfficeWordFromDrive = async () => {
   chrome.test.assertEq(1, removedCount);
 };
 
+// @ts-ignore: error TS4111: Property 'openOfficeExcelFromDrive' comes from an
+// index signature, so it must be accessed with ['openOfficeExcelFromDrive'].
 testcase.openOfficeExcelFromDrive = async () => {
   const appId = await setupAndWaitUntilReady(
+      // @ts-ignore: error TS4111: Property 'smallXlsxPinned' comes from an
+      // index signature, so it must be accessed with ['smallXlsxPinned'].
       RootPath.DRIVE, [], [ENTRIES.smallXlsxPinned]);
 
   // Fake chrome.fileManagerPrivate.executeTask to return
@@ -200,6 +234,8 @@ testcase.openOfficeExcelFromDrive = async () => {
 
   // Open file.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      // @ts-ignore: error TS4111: Property 'smallXlsxPinned' comes from an
+      // index signature, so it must be accessed with ['smallXlsxPinned'].
       'openFile', appId, [ENTRIES.smallXlsxPinned.nameText]));
 
   // The Web Drive Office Excel task should be available and executed.
@@ -212,8 +248,13 @@ testcase.openOfficeExcelFromDrive = async () => {
   chrome.test.assertEq(1, removedCount);
 };
 
+// @ts-ignore: error TS4111: Property 'openOfficePowerPointFromDrive' comes from
+// an index signature, so it must be accessed with
+// ['openOfficePowerPointFromDrive'].
 testcase.openOfficePowerPointFromDrive = async () => {
   const appId = await setupAndWaitUntilReady(
+      // @ts-ignore: error TS4111: Property 'smallPptxPinned' comes from an
+      // index signature, so it must be accessed with ['smallPptxPinned'].
       RootPath.DRIVE, [], [ENTRIES.smallPptxPinned]);
 
   // Fake chrome.fileManagerPrivate.executeTask to return
@@ -225,6 +266,8 @@ testcase.openOfficePowerPointFromDrive = async () => {
 
   // Open file.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      // @ts-ignore: error TS4111: Property 'smallPptxPinned' comes from an
+      // index signature, so it must be accessed with ['smallPptxPinned'].
       'openFile', appId, [ENTRIES.smallPptxPinned.nameText]));
 
   // The Web Drive Office PowerPoint task should be available and executed.
@@ -237,9 +280,14 @@ testcase.openOfficePowerPointFromDrive = async () => {
   chrome.test.assertEq(1, removedCount);
 };
 
+// @ts-ignore: error TS4111: Property 'openMultipleOfficeWordFromDrive' comes
+// from an index signature, so it must be accessed with
+// ['openMultipleOfficeWordFromDrive'].
 testcase.openMultipleOfficeWordFromDrive = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [],
+      // @ts-ignore: error TS4111: Property 'smallDocxHosted' comes from an
+      // index signature, so it must be accessed with ['smallDocxHosted'].
       [ENTRIES.smallDocx, ENTRIES.smallDocxPinned, ENTRIES.smallDocxHosted]);
 
   const enterKey = ['#file-list', 'Enter', false, false, false];
@@ -253,10 +301,13 @@ testcase.openMultipleOfficeWordFromDrive = async () => {
 
   // Select all the files.
   const ctrlA = ['#file-list', 'a', true, false, false];
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   await remoteCall.fakeKeyDown(appId, ...ctrlA);
 
   // Check: the file-list should show 3 selected files.
   const caller = getCaller();
+  // @ts-ignore: error TS7030: Not all code paths return a value.
   await repeatUntil(async () => {
     const element = await remoteCall.waitForElement(
         appId, '.check-select #files-selected-label');
@@ -268,6 +319,8 @@ testcase.openMultipleOfficeWordFromDrive = async () => {
 
   let taskDescriptor;
   let expectedExecuteTaskCount = 0;
+  // @ts-ignore: error TS6133: 'histogramCount' is declared but its value is
+  // never read.
   let histogramCount;
 
   // Wait for the tasks calculation to complete, updating the "Open" button.
@@ -281,6 +334,8 @@ testcase.openMultipleOfficeWordFromDrive = async () => {
   // "docs.google.com" alternate URL.
 
   // Press Enter to execute the task.
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   remoteCall.fakeKeyDown(appId, ...enterKey);
 
   // Check that it's the Docs task.
@@ -291,14 +346,22 @@ testcase.openMultipleOfficeWordFromDrive = async () => {
 
   // Unselect the file that doesn't have an alternate URL.
   await remoteCall.waitAndClickElement(
+      // @ts-ignore: error TS4111: Property 'smallDocx' comes from an index
+      // signature, so it must be accessed with ['smallDocx'].
       appId, `#file-list [file-name="${ENTRIES.smallDocx.nameText}"]`,
+      // @ts-ignore: error TS2345: Argument of type '{ ctrl: true; }' is not
+      // assignable to parameter of type 'KeyModifiers'.
       {ctrl: true});
 
   // Wait for the file to be unselected.
   await remoteCall.waitForElement(
+      // @ts-ignore: error TS4111: Property 'smallDocx' comes from an index
+      // signature, so it must be accessed with ['smallDocx'].
       appId, `[file-name="${ENTRIES.smallDocx.nameText}"]:not([selected])`);
 
   // Press Enter.
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   remoteCall.fakeKeyDown(appId, ...enterKey);
 
   // The Drive/Docs task should be available and executed.
@@ -312,8 +375,13 @@ testcase.openMultipleOfficeWordFromDrive = async () => {
   chrome.test.assertEq(1, removedCount);
 };
 
+// @ts-ignore: error TS4111: Property 'openOfficeWordFromDriveNotSynced' comes
+// from an index signature, so it must be accessed with
+// ['openOfficeWordFromDriveNotSynced'].
 testcase.openOfficeWordFromDriveNotSynced = async () => {
   const appId =
+      // @ts-ignore: error TS4111: Property 'smallDocx' comes from an index
+      // signature, so it must be accessed with ['smallDocx'].
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.smallDocx]);
 
   // Fake chrome.fileManagerPrivate.executeTask to return
@@ -325,6 +393,8 @@ testcase.openOfficeWordFromDriveNotSynced = async () => {
 
   // Open file.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      // @ts-ignore: error TS4111: Property 'smallDocx' comes from an index
+      // signature, so it must be accessed with ['smallDocx'].
       'openFile', appId, [ENTRIES.smallDocx.nameText]));
 
   // The Drive/Docs task should be available and executed.
@@ -338,8 +408,13 @@ testcase.openOfficeWordFromDriveNotSynced = async () => {
   chrome.test.assertEq(1, removedCount);
 };
 
+// @ts-ignore: error TS4111: Property 'openOfficeWordFromMyFilesOffline' comes
+// from an index signature, so it must be accessed with
+// ['openOfficeWordFromMyFilesOffline'].
 testcase.openOfficeWordFromMyFilesOffline = async () => {
   const appId =
+      // @ts-ignore: error TS4111: Property 'smallDocx' comes from an index
+      // signature, so it must be accessed with ['smallDocx'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.smallDocx]);
 
   // Fake chrome.fileManagerPrivate.executeTask to return
@@ -351,6 +426,8 @@ testcase.openOfficeWordFromMyFilesOffline = async () => {
 
   // Open file.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      // @ts-ignore: error TS4111: Property 'smallDocx' comes from an index
+      // signature, so it must be accessed with ['smallDocx'].
       'openFile', appId, [ENTRIES.smallDocx.nameText]));
 
   // The Drive/Docs task should be executed, but it will fall back to
@@ -365,8 +442,13 @@ testcase.openOfficeWordFromMyFilesOffline = async () => {
   chrome.test.assertEq(1, removedCount);
 };
 
+// @ts-ignore: error TS4111: Property 'openOfficeWordFromDriveOffline' comes
+// from an index signature, so it must be accessed with
+// ['openOfficeWordFromDriveOffline'].
 testcase.openOfficeWordFromDriveOffline = async () => {
   const appId = await setupAndWaitUntilReady(
+      // @ts-ignore: error TS4111: Property 'smallDocxPinned' comes from an
+      // index signature, so it must be accessed with ['smallDocxPinned'].
       RootPath.DRIVE, [], [ENTRIES.smallDocxPinned]);
 
   // Fake chrome.fileManagerPrivate.executeTask to return
@@ -378,6 +460,8 @@ testcase.openOfficeWordFromDriveOffline = async () => {
 
   // Open file.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      // @ts-ignore: error TS4111: Property 'smallDocxPinned' comes from an
+      // index signature, so it must be accessed with ['smallDocxPinned'].
       'openFile', appId, [ENTRIES.smallDocxPinned.nameText]));
 
   // The Drive/Docs task should be executed, but it will fall back to
@@ -393,6 +477,8 @@ testcase.openOfficeWordFromDriveOffline = async () => {
 };
 
 /** Tests that the educational nudge is displayed when the preference is set. */
+// @ts-ignore: error TS4111: Property 'officeShowNudgeGoogleDrive' comes from an
+// index signature, so it must be accessed with ['officeShowNudgeGoogleDrive'].
 testcase.officeShowNudgeGoogleDrive = async () => {
   // Set the pref emulating that the user has moved a file.
   await sendTestMessage({
@@ -402,6 +488,8 @@ testcase.officeShowNudgeGoogleDrive = async () => {
 
   // Open the Files app.
   const appId = await setupAndWaitUntilReady(
+      // @ts-ignore: error TS4111: Property 'smallDocxPinned' comes from an
+      // index signature, so it must be accessed with ['smallDocxPinned'].
       RootPath.DRIVE, [], [ENTRIES.smallDocxPinned]);
 
   // Check that the nudge and its text is visible.

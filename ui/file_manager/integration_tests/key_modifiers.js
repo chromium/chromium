@@ -7,9 +7,11 @@
  * Object containing common key modifiers: shift, alt, and ctrl.
  *
  * @typedef {{
- *   shift: (boolean|undefined),
- *   alt: (boolean|undefined),
- *   ctrl: (boolean|undefined),
+ *   shift?: (boolean|undefined),
+ *   alt?: (boolean|undefined),
+ *   ctrl?: (boolean|undefined),
  * }}
  */
+// @ts-ignore: error TS7005: Variable 'KeyModifiers' implicitly has an 'any'
+// type.
 export let KeyModifiers;

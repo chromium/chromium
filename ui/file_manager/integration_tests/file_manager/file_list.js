@@ -19,6 +19,7 @@ import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
  *   updating the selected item which is async can be detected after an extra
  *   Tab has been sent.
  */
+// @ts-ignore: error TS7006: Parameter 'appId' implicitly has an 'any' type.
 async function tabUntilFileSelected(appId) {
   // Check: the file-list should have nothing selected.
   const selectedRows = await remoteCall.callRemoteTestUtil(
@@ -45,8 +46,12 @@ async function tabUntilFileSelected(appId) {
 /**
  * Tests that file list column header have ARIA attributes.
  */
+// @ts-ignore: error TS4111: Property 'fileListAriaAttributes' comes from an
+// index signature, so it must be accessed with ['fileListAriaAttributes'].
 testcase.fileListAriaAttributes = async () => {
   const appId =
+      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
+      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Fetch column header.
@@ -68,6 +73,8 @@ testcase.fileListAriaAttributes = async () => {
  * Tests using tab to focus the file list will select the first item, if
  * nothing is selected.
  */
+// @ts-ignore: error TS4111: Property 'fileListFocusFirstItem' comes from an
+// index signature, so it must be accessed with ['fileListFocusFirstItem'].
 testcase.fileListFocusFirstItem = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -79,6 +86,7 @@ testcase.fileListFocusFirstItem = async () => {
   const fileRows = await remoteCall.callRemoteTestUtil(
       'deepQueryAllElements', appId, ['#file-list li']);
   chrome.test.assertEq(5, fileRows.length);
+  // @ts-ignore: error TS7006: Parameter 'item' implicitly has an 'any' type.
   const selectedRows = fileRows.filter(item => 'selected' in item.attributes);
   chrome.test.assertEq(1, selectedRows.length);
   chrome.test.assertEq(0, fileRows.indexOf(selectedRows[0]));
@@ -88,6 +96,9 @@ testcase.fileListFocusFirstItem = async () => {
  * Tests that after a multiple selection, canceling the selection and using
  * Tab to focus the files list it selects the item that was last focused.
  */
+// @ts-ignore: error TS4111: Property 'fileListSelectLastFocusedItem' comes from
+// an index signature, so it must be accessed with
+// ['fileListSelectLastFocusedItem'].
 testcase.fileListSelectLastFocusedItem = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -126,6 +137,7 @@ testcase.fileListSelectLastFocusedItem = async () => {
   chrome.test.assertEq(2, selectedRows.length);
 
   // Cancel the selection.
+  // @ts-ignore: error TS6133: 'button' is declared but its value is never read.
   const button = ['#cancel-selection-button'];
   await remoteCall.waitAndClickElement(appId, '#cancel-selection-button');
 
@@ -139,6 +151,7 @@ testcase.fileListSelectLastFocusedItem = async () => {
   const fileRows = await remoteCall.callRemoteTestUtil(
       'deepQueryAllElements', appId, ['#file-list li']);
   chrome.test.assertEq(5, fileRows.length);
+  // @ts-ignore: error TS7006: Parameter 'item' implicitly has an 'any' type.
   selectedRows = fileRows.filter(item => 'selected' in item.attributes);
   chrome.test.assertEq(1, selectedRows.length);
   chrome.test.assertEq(2, fileRows.indexOf(selectedRows[0]));
@@ -148,6 +161,8 @@ testcase.fileListSelectLastFocusedItem = async () => {
  * Tests that after a multiple selection, canceling the selection and using
  * Tab to focus the files list it selects the item that was last focused.
  */
+// @ts-ignore: error TS4111: Property 'fileListSortWithKeyboard' comes from an
+// index signature, so it must be accessed with ['fileListSortWithKeyboard'].
 testcase.fileListSortWithKeyboard = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -227,6 +242,9 @@ export async function countAndCheckLatestA11yMessage(
  * NOTE: Test shared with grid_view.js.
  * @param {boolean=} isGridView if the test is testing the grid view.
  */
+// @ts-ignore: error TS4111: Property 'fileListKeyboardSelectionA11y' comes from
+// an index signature, so it must be accessed with
+// ['fileListKeyboardSelectionA11y'].
 testcase.fileListKeyboardSelectionA11y = async (isGridView) => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -250,6 +268,8 @@ testcase.fileListKeyboardSelectionA11y = async (isGridView) => {
   const escKey = [viewSelector, 'Escape', false, false, false];
 
   // Select first item with Home key.
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   await remoteCall.fakeKeyDown(appId, ...homeKey);
 
   // Navigating with Home key doesn't use aria-live message, it only uses the
@@ -257,7 +277,11 @@ testcase.fileListKeyboardSelectionA11y = async (isGridView) => {
   await countAndCheckLatestA11yMessage(appId, a11yMsgCount);
 
   // Ctrl+Down & Ctrl+Space to select second item: Beautiful Song.ogg
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   await remoteCall.fakeKeyDown(appId, ...ctrlDownKey);
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   await remoteCall.fakeKeyDown(appId, ...ctrlSpaceKey);
 
   // Check: Announced "Beautiful Song.add" added to selection.
@@ -265,6 +289,8 @@ testcase.fileListKeyboardSelectionA11y = async (isGridView) => {
       appId, ++a11yMsgCount, 'Added Beautiful Song.ogg to selection.');
 
   // Shift+End to select from 2nd item to the last item.
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   await remoteCall.fakeKeyDown(appId, ...shiftEndKey);
 
   // Check: Announced range selection from "Beautiful Song.add" to hello.txt.
@@ -273,6 +299,8 @@ testcase.fileListKeyboardSelectionA11y = async (isGridView) => {
       'Selected a range of 4 entries from Beautiful Song.ogg to hello.txt.');
 
   // Ctrl+Space to de-select currently focused item (last item).
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   await remoteCall.fakeKeyDown(appId, ...ctrlSpaceKey);
 
   // Check: Announced de-selecting hello.txt
@@ -280,6 +308,8 @@ testcase.fileListKeyboardSelectionA11y = async (isGridView) => {
       appId, ++a11yMsgCount, 'Removed hello.txt from selection.');
 
   // Ctrl+A to select all items.
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   await remoteCall.fakeKeyDown(appId, ...ctrlAKey);
 
   // Check: Announced selecting all entries.
@@ -287,6 +317,8 @@ testcase.fileListKeyboardSelectionA11y = async (isGridView) => {
       appId, ++a11yMsgCount, 'Selected all entries.');
 
   // Esc key to deselect all.
+  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
+  // or be passed to a rest parameter.
   await remoteCall.fakeKeyDown(appId, ...escKey);
 
   // Check: Announced deselecting all entries.
@@ -300,6 +332,8 @@ testcase.fileListKeyboardSelectionA11y = async (isGridView) => {
  * NOTE: Test shared with grid_view.js.
  * @param {boolean=} isGridView if the test is testing the grid view.
  */
+// @ts-ignore: error TS4111: Property 'fileListMouseSelectionA11y' comes from an
+// index signature, so it must be accessed with ['fileListMouseSelectionA11y'].
 testcase.fileListMouseSelectionA11y = async (isGridView) => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -323,6 +357,8 @@ testcase.fileListMouseSelectionA11y = async (isGridView) => {
 
   // Ctrl+Click second item.
   await remoteCall.waitAndClickElement(
+      // @ts-ignore: error TS2345: Argument of type '{ ctrl: true; }' is not
+      // assignable to parameter of type 'KeyModifiers'.
       appId, '#file-list [file-name="Beautiful Song.ogg"]', {ctrl: true});
 
   // Check: Announced "Beautiful Song.add" added to selection.
@@ -331,6 +367,8 @@ testcase.fileListMouseSelectionA11y = async (isGridView) => {
 
   // Shift+Click last item.
   await remoteCall.waitAndClickElement(
+      // @ts-ignore: error TS2345: Argument of type '{ shift: true; }' is not
+      // assignable to parameter of type 'KeyModifiers'.
       appId, '#file-list [file-name="hello.txt"]', {shift: true});
 
   // Check: Announced range selection from "Beautiful Song.add" to hello.txt.
@@ -340,6 +378,8 @@ testcase.fileListMouseSelectionA11y = async (isGridView) => {
 
   // Ctrl+Click to de-select the last item.
   await remoteCall.waitAndClickElement(
+      // @ts-ignore: error TS2345: Argument of type '{ ctrl: true; }' is not
+      // assignable to parameter of type 'KeyModifiers'.
       appId, '#file-list [file-name="hello.txt"]', {ctrl: true});
 
   // Check: Announced de-selecting hello.txt
@@ -359,6 +399,9 @@ testcase.fileListMouseSelectionA11y = async (isGridView) => {
  * remaining items should have the lead, but shouldn't be in check-select
  * mode.
  */
+// @ts-ignore: error TS4111: Property 'fileListDeleteMultipleFiles' comes from
+// an index signature, so it must be accessed with
+// ['fileListDeleteMultipleFiles'].
 testcase.fileListDeleteMultipleFiles = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -367,6 +410,8 @@ testcase.fileListDeleteMultipleFiles = async () => {
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="world.ogv"]');
   await remoteCall.waitAndClickElement(
+      // @ts-ignore: error TS2345: Argument of type '{ shift: true; }' is not
+      // assignable to parameter of type 'KeyModifiers'.
       appId, '#file-list [file-name="hello.txt"]', {shift: true});
 
   // Press move to trash button.
@@ -415,6 +460,8 @@ testcase.fileListDeleteMultipleFiles = async () => {
  * The lead and the selected item(s) are different when we deselect a file
  * list item in selection mode. crbug.com/1094260
  */
+// @ts-ignore: error TS4111: Property 'fileListRenameSelectedItem' comes from an
+// index signature, so it must be accessed with ['fileListRenameSelectedItem'].
 testcase.fileListRenameSelectedItem = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -423,10 +470,14 @@ testcase.fileListRenameSelectedItem = async () => {
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="hello.txt"]');
   await remoteCall.waitAndClickElement(
+      // @ts-ignore: error TS2345: Argument of type '{ ctrl: true; }' is not
+      // assignable to parameter of type 'KeyModifiers'.
       appId, '#file-list [file-name="world.ogv"]', {ctrl: true});
 
   // Deselect first item.
   await remoteCall.waitAndClickElement(
+      // @ts-ignore: error TS2345: Argument of type '{ ctrl: true; }' is not
+      // assignable to parameter of type 'KeyModifiers'.
       appId, '#file-list [file-name="hello.txt"]', {ctrl: true});
 
   // Check: the first item should have the lead state.
@@ -466,8 +517,13 @@ testcase.fileListRenameSelectedItem = async () => {
  * Tests that user can rename a file/folder after using "select all" without
  * having selected any file previously.
  */
+// @ts-ignore: error TS4111: Property 'fileListRenameFromSelectAll' comes from
+// an index signature, so it must be accessed with
+// ['fileListRenameFromSelectAll'].
 testcase.fileListRenameFromSelectAll = async () => {
   const appId =
+      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
+      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Select all the files.

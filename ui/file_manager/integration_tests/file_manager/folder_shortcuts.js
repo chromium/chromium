@@ -24,11 +24,23 @@ const TREEITEM_E = `${TREEITEM_D}/E`;
  * @type {!Array<TestEntryInfo>}
  */
 const FOLDER_ENTRY_SET = [
+  // @ts-ignore: error TS4111: Property 'directoryA' comes from an index
+  // signature, so it must be accessed with ['directoryA'].
   ENTRIES.directoryA,
+  // @ts-ignore: error TS4111: Property 'directoryB' comes from an index
+  // signature, so it must be accessed with ['directoryB'].
   ENTRIES.directoryB,
+  // @ts-ignore: error TS4111: Property 'directoryC' comes from an index
+  // signature, so it must be accessed with ['directoryC'].
   ENTRIES.directoryC,
+  // @ts-ignore: error TS4111: Property 'directoryD' comes from an index
+  // signature, so it must be accessed with ['directoryD'].
   ENTRIES.directoryD,
+  // @ts-ignore: error TS4111: Property 'directoryE' comes from an index
+  // signature, so it must be accessed with ['directoryE'].
   ENTRIES.directoryE,
+  // @ts-ignore: error TS4111: Property 'directoryF' comes from an index
+  // signature, so it must be accessed with ['directoryF'].
   ENTRIES.directoryF,
 ];
 
@@ -39,18 +51,26 @@ const FOLDER_ENTRY_SET = [
 const DIRECTORY = {
   Drive: {
     contents: [
+      // @ts-ignore: error TS4111: Property 'directoryA' comes from an index
+      // signature, so it must be accessed with ['directoryA'].
       ENTRIES.directoryA.getExpectedRow(),
+      // @ts-ignore: error TS4111: Property 'directoryD' comes from an index
+      // signature, so it must be accessed with ['directoryD'].
       ENTRIES.directoryD.getExpectedRow(),
     ],
     name: 'My Drive',
     treeItem: TREEITEM_DRIVE,
   },
   A: {
+    // @ts-ignore: error TS4111: Property 'directoryB' comes from an index
+    // signature, so it must be accessed with ['directoryB'].
     contents: [ENTRIES.directoryB.getExpectedRow()],
     name: 'A',
     treeItem: TREEITEM_A,
   },
   B: {
+    // @ts-ignore: error TS4111: Property 'directoryC' comes from an index
+    // signature, so it must be accessed with ['directoryC'].
     contents: [ENTRIES.directoryC.getExpectedRow()],
     name: 'B',
     treeItem: TREEITEM_B,
@@ -61,11 +81,15 @@ const DIRECTORY = {
     treeItem: TREEITEM_C,
   },
   D: {
+    // @ts-ignore: error TS4111: Property 'directoryE' comes from an index
+    // signature, so it must be accessed with ['directoryE'].
     contents: [ENTRIES.directoryE.getExpectedRow()],
     name: 'D',
     treeItem: TREEITEM_D,
   },
   E: {
+    // @ts-ignore: error TS4111: Property 'directoryF' comes from an index
+    // signature, so it must be accessed with ['directoryF'].
     contents: [ENTRIES.directoryF.getExpectedRow()],
     name: 'E',
     treeItem: TREEITEM_E,
@@ -76,13 +100,17 @@ const DIRECTORY = {
  * Expands whole directory tree under DIRECTORY.Drive.
  *
  * @param {string} appId Files app windowId.
- * @return {Promise} Promise fulfilled on success.
+ * @return {Promise<void>} Promise fulfilled on success.
  */
 async function expandDirectoryTree(appId) {
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  // @ts-ignore: error TS2339: Property 'Drive' does not exist on type 'Object'.
   await directoryTree.recursiveExpand(DIRECTORY.Drive.treeItem);
+  // @ts-ignore: error TS2339: Property 'A' does not exist on type 'Object'.
   await directoryTree.recursiveExpand(DIRECTORY.A.treeItem);
+  // @ts-ignore: error TS2339: Property 'B' does not exist on type 'Object'.
   await directoryTree.recursiveExpand(DIRECTORY.B.treeItem);
+  // @ts-ignore: error TS2339: Property 'D' does not exist on type 'Object'.
   await directoryTree.recursiveExpand(DIRECTORY.D.treeItem);
 }
 
@@ -91,12 +119,16 @@ async function expandDirectoryTree(appId) {
  *
  * @param {string} appId Files app windowId.
  * @param {Object} directory Directory to navigate to.
- * @return {Promise} Promise fulfilled on success.
+ * @return {Promise<void>} Promise fulfilled on success.
  */
 async function navigateToDirectory(appId, directory) {
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  // @ts-ignore: error TS2339: Property 'treeItem' does not exist on type
+  // 'Object'.
   await directoryTree.navigateToPath(directory.treeItem);
 
+  // @ts-ignore: error TS2339: Property 'contents' does not exist on type
+  // 'Object'.
   await remoteCall.waitForFiles(appId, directory.contents);
 }
 
@@ -106,7 +138,7 @@ async function navigateToDirectory(appId, directory) {
  *
  * @param {string} appId Files app windowId.
  * @param {Object} directory Directory of shortcut to be removed.
- * @return {Promise} Promise fulfilled on success.
+ * @return {Promise<void>} Promise fulfilled on success.
  */
 async function removeShortcut(appId, directory) {
   const caller = getCaller();
@@ -117,6 +149,8 @@ async function removeShortcut(appId, directory) {
   // Right-click for context menu with retry.
   await repeatUntil(async () => {
     // Right click.
+    // @ts-ignore: error TS2339: Property 'name' does not exist on type
+    // 'Object'.
     await directoryTree.showContextMenuForShortcutItemByLabel(directory.name);
 
     // Wait context menu to show.
@@ -140,6 +174,7 @@ async function removeShortcut(appId, directory) {
       ['#roots-context-menu [command="#unpin-folder"]:' +
        'not([hidden])']);
 
+  // @ts-ignore: error TS2339: Property 'name' does not exist on type 'Object'.
   await directoryTree.waitForShortcutItemLostByLabel(directory.name);
 }
 
@@ -150,11 +185,14 @@ async function removeShortcut(appId, directory) {
  * @param {string} appId Files app windowId.
  * @param {Object} currentDir Directory which should be a current directory.
  * @param {Object} shortcutDir Directory whose shortcut should be selected.
- * @return {Promise} Promise fulfilled on success.
+ * @return {Promise<void>} Promise fulfilled on success.
  */
 async function expectSelection(appId, currentDir, shortcutDir) {
+  // @ts-ignore: error TS2339: Property 'contents' does not exist on type
+  // 'Object'.
   await remoteCall.waitForFiles(appId, currentDir.contents);
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  // @ts-ignore: error TS2339: Property 'name' does not exist on type 'Object'.
   await directoryTree.waitForFocusedShortcutItemByLabel(shortcutDir.name);
 }
 
@@ -163,16 +201,19 @@ async function expectSelection(appId, currentDir, shortcutDir) {
  *
  * @param {string} appId Files app windowId.
  * @param {Object} directory Directory whose shortcut will be clicked.
- * @return {Promise} Promise fulfilled on success.
+ * @return {Promise<void>} Promise fulfilled on success.
  */
 async function clickShortcut(appId, directory) {
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  // @ts-ignore: error TS2339: Property 'name' does not exist on type 'Object'.
   await directoryTree.selectShortcutItemByLabel(directory.name);
 }
 
 /**
  * Creates some shortcuts and traverse them and some other directories.
  */
+// @ts-ignore: error TS4111: Property 'traverseFolderShortcuts' comes from an
+// index signature, so it must be accessed with ['traverseFolderShortcuts'].
 testcase.traverseFolderShortcuts = async () => {
   // Open Files app on Drive.
   const appId =
@@ -182,12 +223,15 @@ testcase.traverseFolderShortcuts = async () => {
   await expandDirectoryTree(appId);
 
   // Create a shortcut to directory D.
+  // @ts-ignore: error TS2339: Property 'D' does not exist on type 'Object'.
   await createShortcut(appId, DIRECTORY.D.name);
 
   // Navigate to directory B.
+  // @ts-ignore: error TS2339: Property 'B' does not exist on type 'Object'.
   await navigateToDirectory(appId, DIRECTORY.B);
 
   // Create a shortcut to directory C.
+  // @ts-ignore: error TS2339: Property 'C' does not exist on type 'Object'.
   await createShortcut(appId, DIRECTORY.C.name);
 
   // Click the Drive root (My Drive).
@@ -213,6 +257,7 @@ testcase.traverseFolderShortcuts = async () => {
   await directoryTree.focusTree();
 
   // Check: current directory and selection should be D.
+  // @ts-ignore: error TS2339: Property 'D' does not exist on type 'Object'.
   await expectSelection(appId, DIRECTORY.D, DIRECTORY.D);
 
   // Send UpArrow key to directory tree to select the shortcut
@@ -220,12 +265,14 @@ testcase.traverseFolderShortcuts = async () => {
   await directoryTree.focusPreviousItem();
 
   // Check: current directory should be D, with shortcut C selected.
+  // @ts-ignore: error TS2339: Property 'C' does not exist on type 'Object'.
   await expectSelection(appId, DIRECTORY.D, DIRECTORY.C);
 
   // Send Enter key to the directory tree to change to directory C.
   await directoryTree.selectFocusedItem();
 
   // Check: current directory and selection should be C.
+  // @ts-ignore: error TS2339: Property 'C' does not exist on type 'Object'.
   await expectSelection(appId, DIRECTORY.C, DIRECTORY.C);
 };
 
@@ -233,10 +280,14 @@ testcase.traverseFolderShortcuts = async () => {
  * Adds and removes shortcuts from other window and check if the active
  * directories and selected navigation items are correct.
  */
+// @ts-ignore: error TS4111: Property 'addRemoveFolderShortcuts' comes from an
+// index signature, so it must be accessed with ['addRemoveFolderShortcuts'].
 testcase.addRemoveFolderShortcuts = async () => {
   async function openFilesAppOnDrive() {
     const appId = await openNewWindow(RootPath.DRIVE);
     await remoteCall.waitForElement(appId, '#file-list');
+    // @ts-ignore: error TS2339: Property 'Drive' does not exist on type
+    // 'Object'.
     await remoteCall.waitForFiles(appId, DIRECTORY.Drive.contents);
     return appId;
   }
@@ -256,21 +307,27 @@ testcase.addRemoveFolderShortcuts = async () => {
   await sendTestMessage({appId: appId1, name: 'focusWindow'});
 
   // Create a shortcut to D.
+  // @ts-ignore: error TS2339: Property 'D' does not exist on type 'Object'.
   await createShortcut(appId1, DIRECTORY.D.name);
 
   // Click the shortcut to D.
+  // @ts-ignore: error TS2339: Property 'D' does not exist on type 'Object'.
   await clickShortcut(appId1, DIRECTORY.D);
 
   // Check: current directory and selection should be D.
+  // @ts-ignore: error TS2339: Property 'D' does not exist on type 'Object'.
   await expectSelection(appId1, DIRECTORY.D, DIRECTORY.D);
 
   // Create a shortcut to A from the other window.
+  // @ts-ignore: error TS2339: Property 'A' does not exist on type 'Object'.
   await createShortcut(appId2, DIRECTORY.A.name);
 
   // Check: current directory and selection should still be D.
+  // @ts-ignore: error TS2339: Property 'D' does not exist on type 'Object'.
   await expectSelection(appId1, DIRECTORY.D, DIRECTORY.D);
 
   // Remove shortcut to D from the other window.
+  // @ts-ignore: error TS2339: Property 'D' does not exist on type 'Object'.
   await removeShortcut(appId2, DIRECTORY.D);
 
   // Check: directory D in the directory tree should be focused.
