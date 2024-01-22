@@ -1769,15 +1769,18 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
                         << std::move(change);
 
   AnalyzeJavaScriptChangedAutofilledValue(form, field);
-  MaybeTriggerRefillForExpirationDate(
-      form, field, old_value,
-      {.trigger_source =
-           AutofillTriggerSource::kJavaScriptChangedAutofilledValue});
+  if (FormStructure* form_structure = FindCachedFormById(form.global_id())) {
+    MaybeTriggerRefillForExpirationDate(
+        form, field, *form_structure, old_value,
+        {.trigger_source =
+             AutofillTriggerSource::kJavaScriptChangedAutofilledValue});
+  }
 }
 
 void BrowserAutofillManager::MaybeTriggerRefillForExpirationDate(
     const FormData& form,
     const FormFieldData& field,
+    const FormStructure& form_structure,
     const std::u16string& old_value,
     const AutofillTriggerDetails& trigger_details) {
   // We currently support a single case of refilling credit card expiration
@@ -1785,21 +1788,24 @@ void BrowserAutofillManager::MaybeTriggerRefillForExpirationDate(
   // website turned it into "05 / 20" (i.e. it broke the year by cutting the
   // last two digits instead of stripping the first two digits).
   constexpr size_t kSupportedLength = std::string_view("MM/YYYY").size();
-  if (old_value.length() != kSupportedLength)
+  if (old_value.length() != kSupportedLength) {
     return;
-  if (old_value == field.value)
+  }
+  if (old_value == field.value) {
     return;
-
+  }
   static constexpr char16_t kFormatRegEx[] =
       uR"(^(\d\d)(\s?[/-]?\s?)?(\d\d|\d\d\d\d)$)";
   std::vector<std::u16string> old_groups;
-  if (!MatchesRegex<kFormatRegEx>(old_value, &old_groups))
+  if (!MatchesRegex<kFormatRegEx>(old_value, &old_groups)) {
     return;
+  }
   DCHECK_EQ(old_groups.size(), 4u);
 
   std::vector<std::u16string> new_groups;
-  if (!MatchesRegex<kFormatRegEx>(field.value, &new_groups))
+  if (!MatchesRegex<kFormatRegEx>(field.value, &new_groups)) {
     return;
+  }
   DCHECK_EQ(new_groups.size(), 4u);
 
   int old_month, old_year, new_month, new_year;
@@ -1813,21 +1819,18 @@ void BrowserAutofillManager::MaybeTriggerRefillForExpirationDate(
       old_year / 100 != new_year) {
     return;
   }
-
   std::u16string refill_value = field.value;
   CHECK(refill_value.size() >= 2);
   refill_value[refill_value.size() - 1] = '0' + (old_year % 10);
   refill_value[refill_value.size() - 2] = '0' + ((old_year % 100) / 10);
 
-  FormStructure* form_structure = FindCachedFormById(form.global_id());
-  if (form_structure &&
-      ShouldTriggerRefill(*form_structure,
+  if (ShouldTriggerRefill(form_structure,
                           RefillTriggerReason::kExpirationDateFormatted)) {
     FillingContext* filling_context =
-        GetFillingContext(form_structure->global_id());
+        GetFillingContext(form_structure.global_id());
     DCHECK(filling_context);  // This is enforced by ShouldTriggerRefill.
     filling_context->forced_fill_values[field.global_id()] = refill_value;
-    ScheduleRefill(form, trigger_details);
+    ScheduleRefill(form, form_structure, trigger_details);
   }
 }
 
@@ -3033,11 +3036,9 @@ void BrowserAutofillManager::OnFormProcessed(
       FetchPotentialCardLastFourDigitsCombinationFromDOM();
     }
   }
-
   if (data_util::ContainsPhone(data_util::DetermineGroups(form_structure))) {
     has_observed_phone_number_field_ = true;
   }
-
   // TODO(crbug.com/869482): avoid logging developer engagement multiple
   // times for a given form if it or other forms on the page are dynamic.
   LogDeveloperEngagementUkm(client().GetUkmRecorder(),
@@ -3049,7 +3050,6 @@ void BrowserAutofillManager::OnFormProcessed(
       break;
     }
   }
-
   // Log the type of form that was parsed.
   DenseSet<FormType> form_types = form_structure.GetFormTypes();
   bool card_form = base::Contains(form_types, FormType::kCreditCardForm);
@@ -3060,7 +3060,6 @@ void BrowserAutofillManager::OnFormProcessed(
   if (address_form) {
     address_form_event_logger_->OnDidParseForm(form_structure);
   }
-
   // `autofill_optimization_guide_` is not present on unsupported platforms.
   if (auto* autofill_optimization_guide =
           client().GetAutofillOptimizationGuide()) {
@@ -3074,7 +3073,8 @@ void BrowserAutofillManager::OnFormProcessed(
   // of the form changed, and there has not been a refill attempt on that form
   // yet, start the process of triggering a refill.
   if (ShouldTriggerRefill(form_structure, RefillTriggerReason::kFormChanged)) {
-    ScheduleRefill(form, {.trigger_source = AutofillTriggerSource::kFormsSeen});
+    ScheduleRefill(form, form_structure,
+                   {.trigger_source = AutofillTriggerSource::kFormsSeen});
   }
 }
 
@@ -3460,20 +3460,16 @@ bool BrowserAutofillManager::ShouldTriggerRefill(
 
 void BrowserAutofillManager::ScheduleRefill(
     const FormData& form,
+    const FormStructure& form_structure,
     const AutofillTriggerDetails& trigger_details) {
-  FormStructure* form_structure = FindCachedFormById(form.global_id());
-  if (!form_structure)
-    return;
-
   FillingContext* filling_context =
-      GetFillingContext(form_structure->global_id());
+      GetFillingContext(form_structure.global_id());
   DCHECK(filling_context != nullptr);
-
   // If a timer for the refill was already running, it means the form
   // changed again. Stop the timer and start it again.
-  if (filling_context->on_refill_timer.IsRunning())
+  if (filling_context->on_refill_timer.IsRunning()) {
     filling_context->on_refill_timer.AbandonAndStop();
-
+  }
   // Start a new timer to trigger refill.
   filling_context->on_refill_timer.Start(
       FROM_HERE, kWaitTimeForDynamicForms,

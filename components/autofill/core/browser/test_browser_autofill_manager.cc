@@ -162,6 +162,7 @@ const gfx::Image& TestBrowserAutofillManager::GetCardImage(
 
 void TestBrowserAutofillManager::ScheduleRefill(
     const FormData& form,
+    const FormStructure& form_structure,
     const AutofillTriggerDetails& trigger_details) {
   test_api(*this).TriggerRefill(form, trigger_details);
 }

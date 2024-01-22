@@ -641,6 +641,7 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Schedules a call of TriggerRefill. Virtual for testing.
   virtual void ScheduleRefill(const FormData& form,
+                              const FormStructure& form_structure,
                               const AutofillTriggerDetails& trigger_details);
 
   // Attempts to refill the form that was changed dynamically. Should only be
@@ -655,6 +656,7 @@ class BrowserAutofillManager : public AutofillManager {
   void MaybeTriggerRefillForExpirationDate(
       const FormData& form,
       const FormFieldData& field,
+      const FormStructure& form_structure,
       const std::u16string& old_value,
       const AutofillTriggerDetails& trigger_details);
 

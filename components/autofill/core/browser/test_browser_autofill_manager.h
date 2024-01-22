@@ -77,6 +77,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
       bool observed_submission) override;
   // Immediately triggers the refill.
   void ScheduleRefill(const FormData& form,
+                      const FormStructure& form_structure,
                       const AutofillTriggerDetails& trigger_details) override;
 
   // Unique to TestBrowserAutofillManager:
