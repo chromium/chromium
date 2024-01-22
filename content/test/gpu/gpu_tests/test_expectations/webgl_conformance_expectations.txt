@@ -447,7 +447,6 @@ crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/state/gl-object-ge
 crbug.com/1489477 [ fuchsia fuchsia-board-sherlock ] conformance/state/gl-object-get-calls.html [ Failure ]
 crbug.com/1489477 [ fuchsia fuchsia-board-sherlock ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
 crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
-crbug.com/1489477 [ fuchsia fuchsia-board-nelson ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
 crbug.com/1489477 [ fuchsia ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Failure ]
 crbug.com/1489477 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Failure ]
