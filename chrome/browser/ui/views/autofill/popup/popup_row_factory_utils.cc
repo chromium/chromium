@@ -212,9 +212,8 @@ std::unique_ptr<PopupRowContentView> CreatePopupRowContentView(
     FillingProduct main_filling_product) {
   auto view = std::make_unique<PopupRowContentView>();
   std::unique_ptr<views::Label> main_text_label =
-      popup_cell_utils::CreateMainTextLabel(
-          suggestion.main_text,
-          GetMainTextStyleForPopupItemId(suggestion.popup_item_id));
+      popup_cell_utils::CreateMainTextLabel(suggestion.main_text,
+                                            GetPrimaryTextStyle());
   popup_cell_utils::FormatLabel(
       *main_text_label, suggestion.main_text, main_filling_product,
       popup_cell_utils::GetMaxPopupAddressProfileWidth());

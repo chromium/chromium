@@ -168,9 +168,6 @@ bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents);
 // either to the main or the footer section.
 bool IsFooterPopupItemId(PopupItemId popup_item_id);
 
-// TODO(crbug.com/1491373): Move to popup_cell_utils.h/cc.
-int GetMainTextStyleForPopupItemId(PopupItemId popup_item_id);
-
 // Return whether the suggestion with this `popup_item_id` can have child
 // suggestions.
 bool IsExpandablePopupItemId(PopupItemId popup_item_id);

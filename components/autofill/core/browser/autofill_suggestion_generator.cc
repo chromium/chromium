@@ -237,6 +237,7 @@ Suggestion GetDeleteAddressProfileSuggestion(Suggestion::BackendId backend_id) {
 Suggestion GetFillFullAddressSuggestion(Suggestion::BackendId backend_id) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED));
+  suggestion.main_text.is_primary = Suggestion::Text::IsPrimary(false);
   suggestion.popup_item_id = PopupItemId::kFillFullAddress;
   suggestion.payload = backend_id;
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
@@ -249,6 +250,7 @@ Suggestion GetFillFullNameSuggestion(Suggestion::BackendId backend_id) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED));
   suggestion.popup_item_id = PopupItemId::kFillFullName;
+  suggestion.main_text.is_primary = Suggestion::Text::IsPrimary(false);
   suggestion.payload = backend_id;
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_NAME_GROUP_POPUP_OPTION_SELECTED);
