@@ -16,6 +16,8 @@ class Config {
     this.gestureToConfidence = null;
     /** @type {number} */
     this.bufferSize = -1;
+    /** @type {boolean} */
+    this.useMouseAcceleration = false;
   }
 
   /**
@@ -51,6 +53,14 @@ class Config {
    */
   withBufferSize(bufferSize) {
     this.bufferSize = bufferSize;
+    return this;
+  }
+
+  /**
+   * @return {!Config}
+   */
+  withMouseAcceleration() {
+    this.useMouseAcceleration = true;
     return this;
   }
 }
@@ -183,6 +193,9 @@ FaceGazeTestBase = class extends E2ETestBase {
     if (config.bufferSize !== -1) {
       faceGaze.mouseController_.targetBufferSize_ = config.bufferSize;
     }
+
+    faceGaze.mouseController_.useMouseAcceleration_ =
+        config.useMouseAcceleration;
 
     return new Promise(resolve => {
       faceGaze.setOnInitCallbackForTest(resolve);

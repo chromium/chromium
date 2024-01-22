@@ -27,8 +27,13 @@ export class MouseController {
   private onMouseDraggedHandler_: EventHandler;
   private screenBounds_: ScreenRect|undefined;
 
-  /** Smoothing buffer size. */
+  /** These should come from user prefs, but are currently simply hard-coded. */
   private targetBufferSize_ = MouseController.BUFFER_SIZE;
+  private useMouseAcceleration_ = MouseController.USE_MOUSE_ACCELERATION;
+  private spdRight_ = MouseController.SPD_RIGHT;
+  private spdLeft_ = MouseController.SPD_LEFT;
+  private spdUp_ = MouseController.SPD_UP;
+  private spdDown_ = MouseController.SPD_DOWN;
 
   /** The most recent raw face landmark mouse locations. */
   private buffer_: ScreenPoint[] = [];
@@ -156,6 +161,11 @@ export class MouseController {
     const velocityY = smoothed.y - this.previousSmoothedLocation_.y;
     const scaledVel = this.asymmetryScale_({x: velocityX, y: velocityY});
     this.previousSmoothedLocation_ = smoothed;
+
+    if (this.useMouseAcceleration_) {
+      scaledVel.x *= this.applySigmoidAcceleration_(scaledVel.x);
+      scaledVel.y *= this.applySigmoidAcceleration_(scaledVel.y);
+    }
 
     // The mouse location is the previous location plus the velocity.
     const newX = this.mouseLocation_.x + scaledVel.x;
@@ -285,16 +295,32 @@ export class MouseController {
    */
   private asymmetryScale_(vel: FloatingPoint2D): FloatingPoint2D {
     if (vel.x > 0) {
-      vel.x *= MouseController.SPD_RIGHT;
+      vel.x *= this.spdRight_;
     } else {
-      vel.x *= MouseController.SPD_LEFT;
+      vel.x *= this.spdLeft_;
     }
     if (vel.y > 0) {
-      vel.y *= MouseController.SPD_DOWN;
+      vel.y *= this.spdDown_;
     } else {
-      vel.y *= MouseController.SPD_UP;
+      vel.y *= this.spdUp_;
     }
     return vel;
+  }
+
+  /**
+   * Calculate a sigmoid function that creates an S curve with
+   * a y intercept around ~.2 for velocity == 0 and
+   * approaches 1.2 around velocity of 22. Change is near-linear
+   * around velocities 0 to 9, centered at velocity of five.
+   */
+  private applySigmoidAcceleration_(velocity: number): number {
+    const shift = 5;
+    const slope = 0.3;
+    const multiply = 1.2;
+
+    velocity = Math.abs(velocity);
+    const sig = 1 / (1 + Math.exp(-slope * (velocity - shift)));
+    return multiply * sig;
   }
 }
 
@@ -314,6 +340,7 @@ export namespace MouseController {
   export const IGNORE_UPDATES_AFTER_MOUSE_MOVE_MS = 500;
 
   export const BUFFER_SIZE = 6;
+  export const USE_MOUSE_ACCELERATION = true;
   export const SPD_RIGHT = 20;
   export const SPD_LEFT = 20;
   export const SPD_DOWN = 20;

@@ -96,6 +96,15 @@ AX_TEST_F('FaceGazeTest', 'UpdateMouseLocation', async function() {
   cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
   assertEquals(600, cursorPosition.x);
   assertEquals(400, cursorPosition.y);
+
+  // Try a larger movement.
+  result =
+      new MockFaceLandmarkerResult().setNormalizedForeheadLocation(0.4, 0.5);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ true);
+  cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
+  assertEquals(409, cursorPosition.x);
+  assertEquals(528, cursorPosition.y);
 });
 
 // Test that if the forehead location is moving around a different part of
@@ -204,6 +213,45 @@ AX_TEST_F('FaceGazeTest', 'UpdateMouseLocationWithBuffer', async function() {
   assertTrue(newCursorPosition.x < 600);
   assertTrue(newCursorPosition.y > 400);
 });
+
+AX_TEST_F(
+    'FaceGazeTest', 'UpdateMouseLocationWithAcceleration', async function() {
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withBufferSize(1)
+                         .withMouseAcceleration();
+      await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+
+      // With mouse acceleration on, small movements are smaller than without
+      // it.
+      let result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+          0.11, 0.21);
+      this.processFaceLandmarkerResult(
+          result, /*triggerMouseControllerInterval=*/ true);
+      let cursorPosition =
+          this.mockAccessibilityPrivate.getLatestCursorPosition();
+      assertEquals(595, cursorPosition.x);
+      assertEquals(402, cursorPosition.y);
+
+      // Move to where we were. Since the buffer size is 1, should end up at the
+      // exact same location.
+      result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+          0.1, 0.2);
+      this.processFaceLandmarkerResult(
+          result, /*triggerMouseControllerInterval=*/ true);
+      cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
+      assertEquals(600, cursorPosition.x);
+      assertEquals(400, cursorPosition.y);
+
+      // Big movements are bigger than without mouse acceleration.
+      result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+          0.4, 0.5);
+      this.processFaceLandmarkerResult(
+          result, /*triggerMouseControllerInterval=*/ true);
+      cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
+      assertEquals(370, cursorPosition.x);
+      assertEquals(553, cursorPosition.y);
+    });
 
 AX_TEST_F('FaceGazeTest', 'DetectGesturesAndPerformActions', async function() {
   const gestureToAction =
