@@ -56,7 +56,7 @@ class AutomationManagerAura : public ui::AXActionHandler,
   void Disable();
 
   // Handle an event fired upon the root view.
-  void HandleEvent(ax::mojom::Event event_type);
+  void HandleEvent(ax::mojom::Event event_type, bool from_user);
 
   // Handles a textual alert.
   void HandleAlert(const std::string& text);
@@ -111,7 +111,8 @@ class AutomationManagerAura : public ui::AXActionHandler,
 
   void PostEvent(int32_t id,
                  ax::mojom::Event event_type,
-                 int action_request_id = -1);
+                 int action_request_id = -1,
+                 bool from_user = false);
 
   void SendPendingEvents();
 
@@ -142,6 +143,7 @@ class AutomationManagerAura : public ui::AXActionHandler,
     ax::mojom::Event event_type;
     int action_request_id;
     ax::mojom::Action currently_performing_action;
+    bool from_user;
   };
 
   std::vector<Event> pending_events_;
