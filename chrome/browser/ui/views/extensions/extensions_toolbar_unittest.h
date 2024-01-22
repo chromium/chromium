@@ -46,6 +46,10 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
     return extensions_container()->GetExtensionsButton();
   }
 
+  ExtensionsRequestAccessButton* request_access_button() {
+    return extensions_container()->GetRequestAccessButton();
+  }
+
   ExtensionsMenuCoordinator* menu_coordinator() {
     return extensions_container()->GetExtensionsMenuCoordinatorForTesting();
   }
