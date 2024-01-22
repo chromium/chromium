@@ -3964,14 +3964,14 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAVE_PASSWORD_TO_ACCOUNT_STORE_DESCRIPTION" desc="Description of save password in google account action. [iOS only]" meaning="Telling user that current password is in local device store and suggesting moving it to their google account store.">
         This password is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>.
       </message>
-      <message name="IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_TITLE" desc="Dialog title to invite the user to pick an account to save a file to Google Drive. [iOS only]">
-        Save in Google Drive
+      <message name="IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_TITLE" desc="Dialog title to invite the user to pick a destination for their download (e.g. Files or Drive) and if applicable (e.g. they choose Drive) an account to save a file as. [iOS only]">
+        Save in...
       </message>
-      <message name="IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_BODY" desc="Text when a user attempts to download a file and save it to Google Drive, then is presented with the account picker dialog to select which account they want to use to save the file. [iOS only]" meaning="Text when a user attempts to download a file and save it to Google Drive, then is presented with the account picker dialog to select which account they want to use to save the file. [iOS only]">
-        Select the account you want to use to save <ph name="FILENAME">$1<ex>file.zip</ex></ph>
+      <message name="IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_BODY" desc="Text when a user attempts to download a file and is eligible to save it to Google Drive, then is presented with the account picker dialog to select a destination for their download, and if applicable e.g. they choose Drive as a destination, which account they want to use to save the file. [iOS only]" meaning="Text when a user attempts to download a file and is eligible to save it to Google Drive, then is presented with the account picker dialog to select a destination for their download, and if applicable e.g. they choose Drive as a destination, which account they want to use to save the file. [iOS only]">
+        Choose where to save <ph name="FILENAME">$1<ex>file.zip</ex></ph>
       </message>
-      <message name="IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_BODY_WITH_SIZE" desc="Text when a user attempts to download a file and save it to Google Drive, then is presented with the account picker dialog to select which account they want to use to save the file. [iOS only]" meaning="Text when a user attempts to download a file and save it to Google Drive, then is presented with the account picker dialog to select which account they want to use to save the file. [iOS only]">
-        Select the account you want to use to save <ph name="FILENAME">$1<ex>file.zip</ex></ph> (<ph name="FILE_SIZE">$2<ex>456KB</ex></ph>)
+      <message name="IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_BODY_WITH_SIZE" desc="Text when a user attempts to download a file and is eligible to save it to Google Drive, then is presented with the account picker dialog to select a destination for their download, and if applicable e.g. they choose Drive as a destination, which account they want to use to save the file. [iOS only]" meaning="Text when a user attempts to download a file and is eligible to save it to Google Drive, then is presented with the account picker dialog to select a destination for their download, and if applicable e.g. they choose Drive as a destination, which account they want to use to save the file. [iOS only]">
+        Choose where to save <ph name="FILENAME">$1<ex>file.zip</ex></ph> (<ph name="FILE_SIZE">$2<ex>456KB</ex></ph>)
       </message>
       <message name="IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_SUBMIT" desc="Dialog primary button label to validate the account picked to save a file to Google Drive. [iOS only]" meaning="This button saves the file to the user's Google Drive storage i.e. this means 'Save' as in 'Save in Google Drive'.">
         Save

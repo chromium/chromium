@@ -142,19 +142,42 @@ TEST_F(SaveToDriveMediatorTest, HidesSaveToDriveOnWebStateHidden) {
 }
 
 // Tests that the `DownloadManagerTabHelper` is informed and that the
-// `DownloadTask` and the selected identity are sent to the `DriveTabHelper`
-// when `startDownloadAndSaveToDriveWithIdentity:` is invoked.
-TEST_F(SaveToDriveMediatorTest, AddsDownloadToSaveToDrive) {
+// `DownloadTask` and the selected identity are not sent to the `DriveTabHelper`
+// when `startDownloadWithIdentity:` is invoked if the selected destination is
+// `FileDestination::kFiles`.
+TEST_F(SaveToDriveMediatorTest, DoesNotSaveToDriveIfDestinationIsFiles) {
   id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
   FakeDownloadManagerTabHelper* download_helper = GetDownloadManagerTabHelper();
   DriveTabHelper* drive_helper = GetDriveTabHelper();
   EXPECT_EQ(nullptr, download_helper->download_task_started_);
   EXPECT_EQ(nullptr,
             drive_helper->GetUploadTaskForDownload(download_task_.get()));
-  [mediator_ startDownloadAndSaveToDriveWithIdentity:identity];
+  [mediator_ fileDestinationPicker:nil
+              didSelectDestination:FileDestination::kFiles];
+  [mediator_ startDownloadWithIdentity:identity];
   EXPECT_EQ(download_task_.get(), download_helper->download_task_started_);
   UploadTask* upload_task =
       drive_helper->GetUploadTaskForDownload(download_task_.get());
-  EXPECT_NE(nullptr, upload_task);
+  ASSERT_EQ(nullptr, upload_task);
+}
+
+// Tests that the `DownloadManagerTabHelper` is informed and that the
+// `DownloadTask` and the selected identity are sent to the `DriveTabHelper`
+// when `startDownloadWithIdentity:` is invoked if the selected destination is
+// `FileDestination::kDrive`.
+TEST_F(SaveToDriveMediatorTest, SavesToDriveIfDestinationIsDrive) {
+  id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
+  FakeDownloadManagerTabHelper* download_helper = GetDownloadManagerTabHelper();
+  DriveTabHelper* drive_helper = GetDriveTabHelper();
+  EXPECT_EQ(nullptr, download_helper->download_task_started_);
+  EXPECT_EQ(nullptr,
+            drive_helper->GetUploadTaskForDownload(download_task_.get()));
+  [mediator_ fileDestinationPicker:nil
+              didSelectDestination:FileDestination::kDrive];
+  [mediator_ startDownloadWithIdentity:identity];
+  EXPECT_EQ(download_task_.get(), download_helper->download_task_started_);
+  UploadTask* upload_task =
+      drive_helper->GetUploadTaskForDownload(download_task_.get());
+  ASSERT_NE(nullptr, upload_task);
   EXPECT_EQ(identity, upload_task->GetIdentity());
 }

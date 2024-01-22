@@ -977,7 +977,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)openInButton {
-  return grey_accessibilityID(kDownloadManagerOpenInAccessibilityIdentifier);
+  return grey_allOf(
+      grey_accessibilityID(kDownloadManagerOpenInAccessibilityIdentifier),
+      grey_interactable(), nil);
 }
 
 + (id<GREYMatcher>)tabGridCellAtIndex:(unsigned int)index {
