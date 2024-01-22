@@ -4,7 +4,9 @@
 
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -13,10 +15,12 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/fwupd/dbus_constants.h"
 #include "chromeos/ash/components/dbus/fwupd/fake_fwupd_client.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -94,6 +98,29 @@ std::string ParseCheckSum(const std::string& raw_sum) {
   return raw_sum;
 }
 
+std::optional<DeviceRequestId> GetDeviceRequestIdFromFwupdString(
+    std::string fwupd_device_id_string) {
+  static base::NoDestructor<FwupdStringToRequestIdMap>
+      fwupdStringToRequestIdMap(
+          {{kFwupdDeviceRequestId_DoNotPowerOff,
+            DeviceRequestId::kDoNotPowerOff},
+           {kFwupdDeviceRequestId_ReplugInstall,
+            DeviceRequestId::kReplugInstall},
+           {kFwupdDeviceRequestId_InsertUSBCable,
+            DeviceRequestId::kInsertUSBCable},
+           {kFwupdDeviceRequestId_RemoveUSBCable,
+            DeviceRequestId::kRemoveUSBCable},
+           {kFwupdDeviceRequestId_PressUnlock, DeviceRequestId::kPressUnlock},
+           {kFwupdDeviceRequestId_RemoveReplug,
+            DeviceRequestId::kRemoveReplug}});
+
+  if (fwupdStringToRequestIdMap->contains(fwupd_device_id_string)) {
+    return fwupdStringToRequestIdMap->at(fwupd_device_id_string);
+  } else {
+    return std::nullopt;
+  }
+}
+
 class FwupdClientImpl : public FwupdClient {
  public:
   FwupdClientImpl() = default;
@@ -110,6 +137,12 @@ class FwupdClientImpl : public FwupdClient {
     proxy_->ConnectToSignal(
         kFwupdServiceInterface, kFwupdDeviceAddedSignalName,
         base::BindRepeating(&FwupdClientImpl::OnDeviceAddedReceived,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&FwupdClientImpl::OnSignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
+    proxy_->ConnectToSignal(
+        kFwupdServiceInterface, kFwupdDeviceRequestReceivedSignalName,
+        base::BindRepeating(&FwupdClientImpl::OnDeviceRequestReceived,
                             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&FwupdClientImpl::OnSignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -436,6 +469,63 @@ class FwupdClientImpl : public FwupdClient {
   void OnDeviceAddedReceived(dbus::Signal* signal) {
     if (client_is_in_testing_mode_) {
       ++device_signal_call_count_for_testing_;
+    }
+  }
+
+  void OnDeviceRequestReceived(dbus::Signal* signal) {
+    VLOG(1) << "fwupd: Received device request";
+    dbus::MessageReader signal_reader(signal);
+    dbus::MessageReader array_reader(nullptr);
+
+    if (!signal_reader.PopArray(&array_reader)) {
+      LOG(ERROR) << "Failed to pop array into the array reader.";
+      return;
+    }
+
+    std::string request_id_string;
+    uint32_t request_kind;
+
+    while (array_reader.HasMoreData()) {
+      dbus::MessageReader dict_entry_reader(nullptr);
+      dbus::MessageReader value_reader(nullptr);
+      std::string key;
+      if (!array_reader.PopDictEntry(&dict_entry_reader) ||
+          !dict_entry_reader.PopString(&key) ||
+          !dict_entry_reader.PopVariant(&value_reader)) {
+        LOG(ERROR) << "Failed to pop dict entry into the entry reader.";
+        return;
+      }
+      if (key == kFwupdDeviceRequestKey_AppstreamId) {
+        if (!value_reader.PopString(&request_id_string)) {
+          LOG(ERROR)
+              << "Failed to pop string for AppstreamId (DeviceRequestId).";
+          return;
+        }
+      } else if (key == kFwupdDeviceRequestKey_RequestKind) {
+        if (!value_reader.PopUint32(&request_kind)) {
+          LOG(ERROR) << "Failed to pop uint32 for RequestKind";
+          return;
+        }
+      }
+    }
+
+    if (request_id_string.empty()) {
+      LOG(ERROR) << "Could not parse request_id from DeviceRequest signal.";
+      return;
+    }
+
+    std::optional<DeviceRequestId> request_id =
+        GetDeviceRequestIdFromFwupdString(request_id_string);
+
+    if (!request_id.has_value()) {
+      LOG(ERROR) << "Could not get DeviceRequestId for string "
+                 << request_id_string;
+      return;
+    }
+
+    for (auto& observer : observers_) {
+      observer.OnDeviceRequestResponse(FwupdRequest(
+          static_cast<uint32_t>(request_id.value()), request_kind));
     }
   }
 
