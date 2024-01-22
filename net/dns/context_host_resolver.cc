@@ -74,8 +74,11 @@ ContextHostResolver::CreateRequest(
     std::optional<ResolveHostParameters> optional_parameters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (shutting_down_)
+  // TODO(crbug.com/1520189): `resolve_context_` should never be nullptr when
+  // `shutting_down_` is true.
+  if (shutting_down_ || !resolve_context_) {
     return HostResolver::CreateFailingRequest(ERR_CONTEXT_SHUT_DOWN);
+  }
 
   return manager_->CreateRequest(
       Host(std::move(host)), std::move(network_anonymization_key),
@@ -91,8 +94,11 @@ ContextHostResolver::CreateRequest(
     const std::optional<ResolveHostParameters>& optional_parameters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (shutting_down_)
+  // TODO(crbug.com/1520189): `resolve_context_` should never be nullptr when
+  // `shutting_down_` is true.
+  if (shutting_down_ || !resolve_context_) {
     return HostResolver::CreateFailingRequest(ERR_CONTEXT_SHUT_DOWN);
+  }
 
   return manager_->CreateRequest(host, network_anonymization_key,
                                  source_net_log, optional_parameters,
