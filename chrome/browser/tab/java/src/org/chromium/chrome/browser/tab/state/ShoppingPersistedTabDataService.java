@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * refactor that will move it out of current folder.
  */
 public class ShoppingPersistedTabDataService {
-    private static final BooleanCachedFieldTrialParameter
+    public static final BooleanCachedFieldTrialParameter
             SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION =
                     ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                             ChromeFeatureList.PRICE_CHANGE_MODULE,
