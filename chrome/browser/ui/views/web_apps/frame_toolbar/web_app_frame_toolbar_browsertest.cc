@@ -1776,6 +1776,23 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
         browser(), std::move(web_app_info), start_url);
   }
 
+  bool RunUntil(base::FunctionRef<bool(void)> condition) {
+    // TODO(crbug.com/1519551):`base::test::RunUntil` is flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+    while (!condition()) {
+      base::test::TestFuture<void> future;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, future.GetCallback(), TestTimeouts::tiny_timeout());
+      if (!future.Wait()) {
+        return false;  // Timed out.
+      }
+    }
+    return true;
+#else
+    return base::test::RunUntil(condition);
+#endif
+  }
+
   bool MatchMediaMatches(content::WebContents* web_contents,
                          std::string match_media_script) {
     return EvalJs(web_contents, match_media_script).ExtractBool();
@@ -1788,17 +1805,12 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
         content::JsReplace("window.setResizable($1)", resizable);
     EXPECT_TRUE(ExecJs(web_contents, set_resizable_script));
     content::WaitForLoadStop(web_contents);
-
-    // TODO(crbug.com/1519130): `base::test::RunUntil` times out on mac.
-    while (!MatchMediaMatches(
-        web_contents,
-        content::JsReplace("window.matchMedia('(resizable: $1)').matches",
-                           expected))) {
-      base::RunLoop run_loop;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-      run_loop.Run();
-    }
+    RunUntil([&]() {
+      return MatchMediaMatches(
+          web_contents,
+          content::JsReplace("window.matchMedia('(resizable: $1)').matches",
+                             expected));
+    });
   }
 
   void CheckCanResize(bool browser_view_can_resize_expected,
@@ -2027,7 +2039,6 @@ IN_PROC_BROWSER_TEST_F(
 }
 #endif  // defined(USE_AURA)
 
-#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
     MinimizeWindowWithApi) {
@@ -2042,13 +2053,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // Minimize window
   EXPECT_TRUE(ExecJs(web_contents, "window.minimize()"));
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return helper()->browser_view()->IsMinimized(); }));
+  EXPECT_TRUE(
+      RunUntil([&]() { return helper()->browser_view()->IsMinimized(); }));
 
   // On Windows the minimizing seems to be so fast that it doesn't have
   // sufficient time to update the CSS before it already minimized.
 #if !BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(base::test::RunUntil([&]() {
+  EXPECT_TRUE(RunUntil([&]() {
     return MatchMediaMatches(
         web_contents,
         "window.matchMedia('(display-state: minimized)').matches");
@@ -2070,9 +2081,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Maximize window
   EXPECT_TRUE(ExecJs(web_contents, "window.maximize()"));
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return helper()->browser_view()->IsMaximized(); }));
-  EXPECT_TRUE(base::test::RunUntil([&]() {
+  EXPECT_TRUE(
+      RunUntil([&]() { return helper()->browser_view()->IsMaximized(); }));
+  EXPECT_TRUE(RunUntil([&]() {
     return MatchMediaMatches(
         web_contents,
         "window.matchMedia('(display-state: maximized)').matches");
@@ -2080,14 +2091,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // Restore window
   EXPECT_TRUE(ExecJs(web_contents, "window.restore()"));
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return !helper()->browser_view()->IsMaximized(); }));
-  EXPECT_TRUE(base::test::RunUntil([&]() {
+  EXPECT_TRUE(
+      RunUntil([&]() { return !helper()->browser_view()->IsMaximized(); }));
+  EXPECT_TRUE(RunUntil([&]() {
     return MatchMediaMatches(
         web_contents, "window.matchMedia('(display-state: normal)').matches");
   }));
 }
-#endif  // !BUILDFLAG(IS_MAC)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class OriginTextVisibilityWaiter : public views::ViewObserver {
