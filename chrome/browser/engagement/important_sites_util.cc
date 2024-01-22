@@ -159,6 +159,10 @@ void MaybePopulateImportantInfoForReason(
     return;
   std::string registerable_domain =
       ImportantSitesUtil::GetRegisterableDomainOrIP(origin);
+  if (registerable_domain.empty()) {
+    return;
+  }
+
   ImportantDomainInfo& info = (*output)[registerable_domain];
   info.reason_bitfield |= 1 << reason;
   if (info.example_origin.is_empty()) {
@@ -264,6 +268,11 @@ void PopulateInfoMapWithEngagement(
 
     std::string registerable_domain =
         ImportantSitesUtil::GetRegisterableDomainOrIP(detail.origin);
+
+    if (registerable_domain.empty()) {
+      continue;
+    }
+
     ImportantDomainInfo& info = (*output)[registerable_domain];
     if (detail.total_score > info.engagement_score) {
       info.registerable_domain = registerable_domain;
