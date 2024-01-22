@@ -18,6 +18,8 @@ class NonTabPageLoadMetricsObserver
   explicit NonTabPageLoadMetricsObserver(const std::string& webui_name);
 
   // page_load_metrics::PageLoadMetricsObserver:
+  void OnFirstContentfulPaintInPage(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 

@@ -34,16 +34,23 @@ TEST_F(NonTabPageLoadMetricsObserverTest, RecordsHistogramsIfEmbedderIsWebUI) {
   NavigateAndCommit(GURL("chrome://version"));
 
   tester()->SimulateTimingUpdate(timing);
+  tester()->histogram_tester().ExpectUniqueTimeSample(
+      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NonTabWebUI."
+      "Test",
+      base::Milliseconds(10), 1);
+  tester()->histogram_tester().ExpectUniqueTimeSample(
+      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NonTabWebUI",
+      base::Milliseconds(10), 1);
 
   // Navigate again to force logging.
   tester()->NavigateToUntrackedUrl();
-  tester()->histogram_tester().ExpectTotalCount(
+  tester()->histogram_tester().ExpectUniqueTimeSample(
       "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.NonTabWebUI."
       "Test",
-      1);
-  tester()->histogram_tester().ExpectTotalCount(
+      base::Milliseconds(100), 1);
+  tester()->histogram_tester().ExpectUniqueTimeSample(
       "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.NonTabWebUI",
-      1);
+      base::Milliseconds(100), 1);
   // The regular LCP histogram shouldn't be logged from this path.
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.PaintTiming.NavigationToLargestContenfulPaint2", 0);
@@ -69,6 +76,12 @@ TEST_F(NonTabPageLoadMetricsObserverNonWebUITest,
   NavigateAndCommit(GURL("chrome://version"));
 
   tester()->SimulateTimingUpdate(timing);
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NonTabWebUI."
+      "Test",
+      0);
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NonTabWebUI", 0);
 
   // Navigate again to force logging.
   tester()->NavigateToUntrackedUrl();
