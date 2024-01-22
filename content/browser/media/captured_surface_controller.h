@@ -30,7 +30,8 @@ class CONTENT_EXPORT CapturedSurfaceController {
       WebContentsMediaCaptureId captured_wc_id,
       std::unique_ptr<CapturedSurfaceControlPermissionManager>
           permission_manager,
-      base::RepeatingCallback<void()> wc_resolution_callback);
+      base::RepeatingCallback<void(base::WeakPtr<WebContents>)>
+          wc_resolution_callback);
 
   CapturedSurfaceController(GlobalRenderFrameHostId capturer_rfh_id,
                             WebContentsMediaCaptureId captured_wc_id);
@@ -70,7 +71,8 @@ class CONTENT_EXPORT CapturedSurfaceController {
       WebContentsMediaCaptureId captured_wc_id,
       std::unique_ptr<CapturedSurfaceControlPermissionManager>
           permission_manager,
-      base::RepeatingCallback<void()> wc_resolution_callback);
+      base::RepeatingCallback<void(base::WeakPtr<WebContents>)>
+          wc_resolution_callback);
 
   // Manage the resolution of WebContents-IDs into base::WeakPtr<WebContents>.
   void ResolveCapturedWebContents(WebContentsMediaCaptureId captured_wc_id);
@@ -103,12 +105,16 @@ class CONTENT_EXPORT CapturedSurfaceController {
   // and determine whether it's worth the effort to fix.
   absl::optional<base::WeakPtr<WebContents>> captured_wc_;
 
+  // Counts the pending resolutions, so that `captured_wc_` would only
+  // be set to a concrete values when the last one resolves.
+  int pending_wc_resolutions_ = 0;
+
   std::unique_ptr<CapturedSurfaceControlPermissionManager> permission_manager_;
 
   // Callback to be invoked whenever an ID's resolution to a
-  // base::WeakPtr<WebContents> completes. (Successful and unsuccessful
-  // resolutions are treated identically.)
-  const base::RepeatingCallback<void()> wc_resolution_callback_;
+  // base::WeakPtr<WebContents> completes.
+  const base::RepeatingCallback<void(base::WeakPtr<WebContents>)>
+      wc_resolution_callback_;
 
   base::WeakPtrFactory<CapturedSurfaceController> weak_factory_{this};
 };

@@ -224,7 +224,8 @@ CapturedSurfaceController::CreateForTesting(
     GlobalRenderFrameHostId capturer_rfh_id,
     WebContentsMediaCaptureId captured_wc_id,
     std::unique_ptr<CapturedSurfaceControlPermissionManager> permission_manager,
-    base::RepeatingCallback<void()> wc_resolution_callback) {
+    base::RepeatingCallback<void(base::WeakPtr<WebContents>)>
+        wc_resolution_callback) {
   return base::WrapUnique(new CapturedSurfaceController(
       capturer_rfh_id, captured_wc_id, std::move(permission_manager),
       std::move(wc_resolution_callback)));
@@ -243,7 +244,8 @@ CapturedSurfaceController::CapturedSurfaceController(
     GlobalRenderFrameHostId capturer_rfh_id,
     WebContentsMediaCaptureId captured_wc_id,
     std::unique_ptr<PermissionManager> permission_manager,
-    base::RepeatingCallback<void()> wc_resolution_callback)
+    base::RepeatingCallback<void(base::WeakPtr<WebContents>)>
+        wc_resolution_callback)
     : capturer_rfh_id_(capturer_rfh_id),
       permission_manager_(std::move(permission_manager)),
       wc_resolution_callback_(std::move(wc_resolution_callback)) {
@@ -330,6 +332,11 @@ void CapturedSurfaceController::ResolveCapturedWebContents(
   // while pending resolution.
   captured_wc_ = absl::nullopt;
 
+  // Ensure that, in the unlikely case that multiple resolutions are pending at
+  // the same time, only the resolution of the last one will set `captured_wc_`
+  // back to a concrete value.
+  ++pending_wc_resolutions_;
+
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&ResolveWebContentsOnUI, captured_wc_id),
       base::BindOnce(&CapturedSurfaceController::OnCapturedWebContentsResolved,
@@ -339,10 +346,14 @@ void CapturedSurfaceController::ResolveCapturedWebContents(
 void CapturedSurfaceController::OnCapturedWebContentsResolved(
     base::WeakPtr<WebContents> captured_wc) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // Note that `captured_wc_` may be non-nullopt if a second call to
-  // ResolveWebContentsOnUI() was scheduled before the first one resolved.
+
+  DCHECK_GE(pending_wc_resolutions_, 1);
+  if (--pending_wc_resolutions_ > 0) {
+    return;
+  }
+
   captured_wc_ = captured_wc;
-  wc_resolution_callback_.Run();
+  wc_resolution_callback_.Run(captured_wc);
 }
 
 }  // namespace content

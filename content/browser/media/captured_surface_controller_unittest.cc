@@ -272,10 +272,11 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
     wc_resolution_run_loop_.reset();
   }
 
-  void OnWebContentsResolved() {
+  void OnWebContentsResolved(base::WeakPtr<WebContents> wc) {
     if (wc_resolution_run_loop_) {
       wc_resolution_run_loop_->Quit();
     }
+    last_resolved_web_contents_ = wc;
   }
 
  protected:
@@ -284,6 +285,7 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
   std::unique_ptr<TestTab> capturer_;
   std::unique_ptr<TestTab> capturee_;
   std::unique_ptr<base::RunLoop> wc_resolution_run_loop_;
+  absl::optional<base::WeakPtr<WebContents>> last_resolved_web_contents_;
 };
 
 class CapturedSurfaceControllerSendWheelTest
@@ -561,7 +563,19 @@ class CapturedSurfaceControllerWebContentsResolutionTest
     // Intentionally skip CapturedSurfaceControllerInterfaceTestBase's SetUp(),
     // and therefore also CapturedSurfaceControllerTestBase's SetUp().
     RenderViewHostTestHarness::SetUp();
+
+    // Prepare a new tab to capture instead of the original one.
+    new_capturee_ = std::make_unique<TestTab>(GetBrowserContext());
   }
+
+  void TearDown() override {
+    new_capturee_.reset();
+
+    CapturedSurfaceControllerInterfaceTestBase::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<TestTab> new_capturee_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -618,6 +632,32 @@ TEST_P(
   base::RunLoop run_loop;
   RunTestedActionAndExpect(&run_loop, CSCResult::kSuccess);
   run_loop.Run();
+}
+
+TEST_P(CapturedSurfaceControllerWebContentsResolutionTest,
+       MultiplePendingResolutions) {
+  SetUpTestTabs();  // Triggers resolution but does not await it.
+  StartCaptureOf(*capturee_);
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+
+  // The original resolution has not yet resolved.
+  ASSERT_FALSE(last_resolved_web_contents_.has_value());
+
+  // Updating to capture another tab schedules a new task to resolve.
+  controller_->UpdateCaptureTarget(
+      new_capturee_->GetWebContentsMediaCaptureId());
+
+  // Neither resolutions has completed at this point.
+  ASSERT_FALSE(last_resolved_web_contents_.has_value());
+
+  // We await the resolution to be considered complete.
+  // This should only happen after the last pending task resolves.
+  // In our cases, that is for the new tab. The first response
+  // should be ignored.
+  AwaitWebContentsResolution();
+  ASSERT_TRUE(last_resolved_web_contents_.has_value());
+  EXPECT_EQ(last_resolved_web_contents_.value().get(),
+            new_capturee_->web_contents());
 }
 
 // Similar to CapturedSurfaceControllerWebContentsResolutionTest,
