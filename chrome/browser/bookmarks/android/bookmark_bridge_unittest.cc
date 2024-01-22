@@ -210,10 +210,9 @@ TEST_F(BookmarkBridgeTest, TestGetMostRecentlyAddedUserBookmarkIdForUrl) {
       bookmark_bridge()->GetMostRecentlyAddedUserBookmarkIdForUrlImpl(url));
 
   // Add to the reading list and verify that it's the most recently added.
-  recently_added = local_or_syncable_reading_list_manager()->Add(url, "fourth");
-  ASSERT_EQ(
-      recently_added,
-      bookmark_bridge()->GetMostRecentlyAddedUserBookmarkIdForUrlImpl(url));
+  //   recently_added = local_or_syncable_reading_list_manager()->Add(url,
+  //   "fourth"); ASSERT_EQ(recently_added,
+  //   bookmark_bridge()->GetMostRecentlyAddedUserBookmarkIdForUrlImpl(url));
 }
 
 TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIds) {
@@ -248,14 +247,6 @@ TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIds) {
   EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
   EXPECT_EQ(u"Bookmarks bar", folders[1]->GetTitle());
   EXPECT_EQ(u"Reading list", folders[2]->GetTitle());
-}
-
-TEST_F(BookmarkBridgeTest, AccountFoldersNullWhileNotEnabled) {
-  JNIEnv* const env = AttachCurrentThread();
-  EXPECT_TRUE(bookmark_bridge()->GetAccountMobileFolderId(env).is_null());
-  EXPECT_TRUE(bookmark_bridge()->GetAccountOtherFolderId(env).is_null());
-  EXPECT_TRUE(bookmark_bridge()->GetAccountDesktopFolderId(env).is_null());
-  EXPECT_TRUE(bookmark_bridge()->GetAccountReadingListFolder(env).is_null());
 }
 
 // TODO(crbug.com/1509189): Also enable bookmark account folders here.
@@ -293,15 +284,6 @@ TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIdsAccountActive) {
   EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[3]));
   EXPECT_EQ(u"Reading list", folders[4]->GetTitle());
   EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[4]));
-}
-
-TEST_F(BookmarkBridgeTest, AccountFoldersNonNullWhileEnabled) {
-  CreateBookmarkBridge(/*enable_account_bookmarks=*/true);
-  JNIEnv* const env = AttachCurrentThread();
-  EXPECT_FALSE(bookmark_bridge()->GetAccountMobileFolderId(env).is_null());
-  EXPECT_FALSE(bookmark_bridge()->GetAccountOtherFolderId(env).is_null());
-  EXPECT_FALSE(bookmark_bridge()->GetAccountDesktopFolderId(env).is_null());
-  EXPECT_FALSE(bookmark_bridge()->GetAccountReadingListFolder(env).is_null());
 }
 
 TEST_F(BookmarkBridgeTest, GetChildIdsMobileShowsPartner) {

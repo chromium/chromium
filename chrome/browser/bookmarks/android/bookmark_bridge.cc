@@ -460,10 +460,6 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetAccountMobileFolderId(
     JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const BookmarkNode* mobile_node = bookmark_model_->account_mobile_node();
-  if (!mobile_node) {
-    return nullptr;
-  }
-
   ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
       env, mobile_node->id(), GetBookmarkType(mobile_node));
   return folder_id_obj;
@@ -473,10 +469,6 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetAccountOtherFolderId(
     JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const BookmarkNode* other_node = bookmark_model_->account_other_node();
-  if (!other_node) {
-    return nullptr;
-  }
-
   ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
       env, other_node->id(), GetBookmarkType(other_node));
   return folder_id_obj;
@@ -487,10 +479,6 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetAccountDesktopFolderId(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const BookmarkNode* desktop_node =
       bookmark_model_->account_bookmark_bar_node();
-  if (!desktop_node) {
-    return nullptr;
-  }
-
   ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
       env, desktop_node->id(), GetBookmarkType(desktop_node));
   return folder_id_obj;
