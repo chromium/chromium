@@ -4,6 +4,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/model_validator_keyed_service.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -154,8 +155,14 @@ class ModelExecutionValidationBrowserTest
   }
 };
 
+// TODO(b/318433299): Flaky on linux-chromeos
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_ModelExecutionSuccess DISABLED_ModelExecutionSuccess
+#else
+#define MAYBE_ModelExecutionSuccess ModelExecutionSuccess
+#endif
 IN_PROC_BROWSER_TEST_F(ModelExecutionValidationBrowserTest,
-                       ModelExecutionSuccess) {
+                       MAYBE_ModelExecutionSuccess) {
   EnableSignin();
   RetryForHistogramUntilCountReached(
       &histogram_tester_, "OptimizationGuide.ModelExecution.Result.Test", 1);
@@ -167,8 +174,15 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionValidationBrowserTest,
       FetcherRequestStatus::kSuccess, 1);
 }
 
+// TODO(b/318433299): Flaky on linux-chromeos
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_ModelExecutionFailsServerFailure \
+  DISABLED_ModelExecutionFailsServerFailure
+#else
+#define MAYBE_ModelExecutionFailsServerFailure ModelExecutionFailsServerFailure
+#endif
 IN_PROC_BROWSER_TEST_F(ModelExecutionValidationBrowserTest,
-                       ModelExecutionFailsServerFailure) {
+                       MAYBE_ModelExecutionFailsServerFailure) {
   EnableServerModelExecutionFailure();
   EnableSignin();
   RetryForHistogramUntilCountReached(
