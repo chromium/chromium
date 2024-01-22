@@ -49,6 +49,8 @@ These builders must pass before a CL may land that affects files outside of
 
 * [ios-simulator](https://ci.chromium.org/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator""))
 
+* [lacros-amd64-generic-rel-gtest](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel-gtest) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-amd64-generic-rel-gtest""))
+
 * [lacros-amd64-generic-rel-renamed](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel-renamed) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-amd64-generic-rel-renamed""))
 
 * [lacros-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-arm-generic-rel""))
@@ -636,9 +638,6 @@ as required builders.
 
 * [ios-simulator-siso](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-siso) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-siso""))
   * Experiment percentage: 10.0
-
-* [lacros-amd64-generic-rel-gtest](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel-gtest) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-amd64-generic-rel-gtest""))
-  * Experiment percentage: 100.0
 
 * [linux-chromeos-compile-siso-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-compile-siso-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-chromeos-compile-siso-dbg""))
   * Experiment percentage: 10.0
