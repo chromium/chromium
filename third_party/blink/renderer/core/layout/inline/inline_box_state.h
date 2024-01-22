@@ -45,10 +45,15 @@ struct InlineBoxState {
   Member<const ComputedStyle> style;
 
   // Points to style->GetFont(), or |scaled_font| in an SVG <text>.
-  const Font* font;
+  const Font* font = nullptr;
+
   // A storage of SVG scaled font. Do not touch this outside of
-  // InitializeFont().
-  absl::optional<Font> scaled_font;
+  // ResetStyle().
+  //
+  // NOTE: This doesn't use a std::optional to avoid a potentially racy branch
+  // within the Trace method.
+  Font scaled_font;
+  bool has_scaled_font = false;
 
   // SVG scaling factor for this box. We use a font of which size is
   // css-specified-size * scaling_factor.
@@ -96,7 +101,10 @@ struct InlineBoxState {
   InlineBoxState(const InlineBoxState&) = delete;
   InlineBoxState& operator=(const InlineBoxState&) = delete;
 
-  void Trace(Visitor* visitor) const { visitor->Trace(style); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(style);
+    visitor->Trace(scaled_font);
+  }
 
   // Reset |style|, |is_svg_text|, |font|, |scaled_font|, |scaling_factor|, and
   // |alignment_type|.
