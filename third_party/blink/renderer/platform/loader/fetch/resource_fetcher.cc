@@ -1252,7 +1252,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   ImageLoadBlockingPolicy load_blocking_policy =
       ImageLoadBlockingPolicy::kDefault;
   if (resource->GetType() == ResourceType::kImage) {
-    image_resources_.insert(resource);
     not_loaded_image_resources_.insert(resource);
     if (params.GetImageRequestBehavior() ==
         FetchParameters::ImageRequestBehavior::kNonBlockingImage) {
@@ -2806,7 +2805,6 @@ void ResourceFetcher::Trace(Visitor* visitor) const {
   visitor->Trace(non_blocking_loaders_);
   visitor->Trace(cached_resources_map_);
   visitor->Trace(emulated_load_started_for_inspector_resources_map_);
-  visitor->Trace(image_resources_);
   visitor->Trace(not_loaded_image_resources_);
   visitor->Trace(preloads_);
   visitor->Trace(matched_preloads_);
