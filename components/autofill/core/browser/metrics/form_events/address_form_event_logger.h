@@ -54,14 +54,6 @@ class AddressFormEventLogger : public FormEventLoggerBase {
 
   void OnDidUndoAutofill();
 
-  void OnDidSeeFillableDynamicForm(
-      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-      const FormStructure& form);
-
-  void OnSubsequentRefillAttempt(
-      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-      const FormStructure& form);
-
  protected:
   void RecordPollSuggestions() override;
   void RecordParseForm() override;

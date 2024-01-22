@@ -76,14 +76,17 @@ enum FormEvent {
   FORM_EVENT_SUBMIT_WITHOUT_SELECTING_SUGGESTIONS_FAIL_LUHN_CHECK_CARD = 25,
 
   // The form was changed dynamically. This value has been deprecated.
-  FORM_EVENT_DID_SEE_DYNAMIC_FORM = 26,
+  // DEPRECATED_FORM_EVENT_DID_SEE_DYNAMIC_FORM = 26,
+
   // The form was changed dynamically and was fillable.
-  FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM = 27,
+  // DEPRECATED_FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM = 27,
+
   // There was a dynamic change of the form and it got re-filled
   // automatically.
   FORM_EVENT_DID_DYNAMIC_REFILL = 28,
+
   // The form dynamically changed another time after the refill.
-  FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL = 29,
+  // DEPRECATED_FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL = 29,
 
   // The two events below are deprecated and no longer emitted.
   FORM_EVENT_POPUP_SUPPRESSED = 30,

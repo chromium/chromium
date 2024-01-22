@@ -1142,9 +1142,11 @@ Called by update_autofill_enums.py.-->
       label="Submitted with fail-luhn-check card without selecting
              suggestions (once)"/>
   <int value="26" label="The form changed dynamically (Deprecated)"/>
-  <int value="27" label="The form changed dynamically and was fillable"/>
+  <int value="27"
+      label="The form changed dynamically and was fillable (Deprecated)"/>
   <int value="28" label="The form changed dynamically and was re-filled"/>
-  <int value="29" label="The form changed dynamically again after the refill"/>
+  <int value="29"
+      label="The form changed dynamically again after the refill (Deprecated)"/>
   <int value="30" label="The popup was suppressed"/>
   <int value="31" label="The popup was suppressed (once)"/>
   <int value="32" label="The form was parsed"/>

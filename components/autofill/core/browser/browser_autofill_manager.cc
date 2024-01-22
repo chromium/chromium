@@ -3444,16 +3444,8 @@ bool BrowserAutofillManager::ShouldTriggerRefill(
     return false;
   }
 
-  address_form_event_logger_->OnDidSeeFillableDynamicForm(
-      signin_state_for_metrics_, form_structure);
-
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta delta = now - filling_context->original_fill_time;
-
-  if (filling_context->attempted_refill && delta < limit_before_refill_) {
-    address_form_event_logger_->OnSubsequentRefillAttempt(
-        signin_state_for_metrics_, form_structure);
-  }
 
   return !filling_context->attempted_refill && delta < limit_before_refill_;
 }

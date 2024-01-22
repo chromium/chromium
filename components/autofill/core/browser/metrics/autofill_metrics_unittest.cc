@@ -6908,31 +6908,13 @@ TEST_F(AutofillMetricsTest, DynamicFormMetrics) {
   test_api(autofill_manager())
       .ShouldTriggerRefill(FormStructure(form),
                            RefillTriggerReason::kFormChanged);
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
-      BucketsInclude(Bucket(FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, 1),
-                     Bucket(FORM_EVENT_DID_DYNAMIC_REFILL, 0),
-                     Bucket(FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL, 0)));
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
+              BucketsInclude(Bucket(FORM_EVENT_DID_DYNAMIC_REFILL, 0)));
 
   // Trigger a refill, the refill metric should be updated.
   autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
-      BucketsInclude(Bucket(FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, 2),
-                     Bucket(FORM_EVENT_DID_DYNAMIC_REFILL, 1),
-                     Bucket(FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL, 0)));
-
-  // Dynamically change the form again.
-  form.fields.pop_back();
-  // Trigger a check to see whether a refill should happen.
-  test_api(autofill_manager())
-      .ShouldTriggerRefill(FormStructure(form),
-                           RefillTriggerReason::kFormChanged);
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
-      BucketsInclude(Bucket(FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, 3),
-                     Bucket(FORM_EVENT_DID_DYNAMIC_REFILL, 1),
-                     Bucket(FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
+              BucketsInclude(Bucket(FORM_EVENT_DID_DYNAMIC_REFILL, 1)));
 }
 
 // Tests that the LogUserHappinessBySecurityLevel are recorded correctly.

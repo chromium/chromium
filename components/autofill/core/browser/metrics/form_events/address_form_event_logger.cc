@@ -69,20 +69,6 @@ void AddressFormEventLogger::OnDidUndoAutofill() {
   base::RecordAction(base::UserMetricsAction("Autofill_UndoAddressAutofill"));
 }
 
-void AddressFormEventLogger::OnDidSeeFillableDynamicForm(
-    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-    const FormStructure& form) {
-  signin_state_for_metrics_ = signin_state_for_metrics;
-  Log(FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, form);
-}
-
-void AddressFormEventLogger::OnSubsequentRefillAttempt(
-    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-    const FormStructure& form) {
-  signin_state_for_metrics_ = signin_state_for_metrics;
-  Log(FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL, form);
-}
-
 void AddressFormEventLogger::OnLog(const std::string& name,
                                    FormEvent event,
                                    const FormStructure& form) const {
