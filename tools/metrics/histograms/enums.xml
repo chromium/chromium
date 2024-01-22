@@ -275,12 +275,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="5" label="kNotSecure"/>
 </enum>
 
-<enum name="ActionUponResourceRequest">
-  <int value="0" label="Load resource"/>
-  <int value="1" label="Revalidate resource"/>
-  <int value="2" label="Use resource from cache"/>
-</enum>
-
 <enum name="ActivationList">
   <int value="0" label="No match"/>
   <int value="1" label="Social Eng Ads Interstitial"/>
@@ -1545,19 +1539,6 @@ Called by update_autofill_enums.py.-->
   <int value="275" label="UpdateServerIbanMetadata: Failure"/>
 </enum>
 
-<enum name="AutomaticLazyFrameLoadReason">
-  <int value="0" label="Not eligible"/>
-  <int value="1" label="Eligible for LazyEmbeds"/>
-  <int value="2" label="Eligible for LazyAds"/>
-  <int value="3" label="Eligible for both"/>
-</enum>
-
-<enum name="AutomaticLazyLoadFrameState">
-  <int value="0" label="Feature is not enabled"/>
-  <int value="1" label="Target frames not found"/>
-  <int value="2" label="Target frames found"/>
-</enum>
-
 <enum name="AutoScreenBrightnessAlsReaderStatus">
   <int value="0" label="Success"/>
   <int value="1" label="InProgress"/>
@@ -1644,12 +1625,6 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Not Processed (e.g. device not eligible)"/>
 </enum>
 
-<enum name="AVIFCleanApertureType">
-  <int value="0" label="kInvalid"/>
-  <int value="1" label="kNonzeroOrigin"/>
-  <int value="2" label="kZeroOrigin"/>
-</enum>
-
 <enum name="BackForwardCacheBrowsingInstanceNotSwappedReason">
   <int value="0" label="Swapped"/>
   <int value="1" label="Proactive swap disabled"/>
@@ -1731,15 +1706,6 @@ Called by update_autofill_enums.py.-->
   <int value="51814" label="MixedContentSettingsTabHelper"/>
   <int value="55334" label="WebUSB"/>
   <int value="58230" label="MediaWebContentsObserver::OnMediaPlaying"/>
-</enum>
-
-<enum name="BackgroundResourceFetchSupportStatus">
-  <int value="0" label="Supported"/>
-  <int value="1" label="Unsupported sync request"/>
-  <int value="2" label="Unsupported because HTTP method is not GET"/>
-  <int value="3" label="Unsupported non-HTTP scheme URL request"/>
-  <int value="4" label="Unsupported keepalive request"/>
-  <int value="5" label="Unsupported request from prefetch only document"/>
 </enum>
 
 <enum name="BackgroundSyncFiredEvents">
@@ -2086,11 +2052,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Contains price drop"/>
 </enum>
 
-<enum name="BooleanContentChangeMode">
-  <int value="0" label="Discard Content"/>
-  <int value="1" label="Retain Content"/>
-</enum>
-
 <enum name="BooleanCorrect">
   <int value="0" label="Incorrect"/>
   <int value="1" label="Correct"/>
@@ -2410,11 +2371,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Completed"/>
 </enum>
 
-<enum name="BooleanStreamed">
-  <int value="0" label="Not streamed"/>
-  <int value="1" label="Streamed"/>
-</enum>
-
 <enum name="BooleanSuccess">
   <int value="0" label="Failure"/>
   <int value="1" label="Success"/>
@@ -2473,11 +2429,6 @@ Called by update_autofill_enums.py.-->
 <enum name="BooleanWebAuthnAssertionRequestSucceeded">
   <int value="0" label="Did not get a successful web authn assertion"/>
   <int value="1" label="Got a successful web authn assertion"/>
-</enum>
-
-<enum name="BooleanWillReadFrequently">
-  <int value="0" label="Not initialized to be read frequently"/>
-  <int value="1" label="Initialized to be read frequently"/>
 </enum>
 
 <enum name="BooleanYesNo">
@@ -2672,121 +2623,12 @@ Called by update_autofill_enums.py.-->
   <int value="4" label="Zoom level is above maximum value"/>
 </enum>
 
-<enum name="CanvasCreateImageBitmapSource">
-  <int value="0" label="Blob"/>
-  <int value="1" label="ImageBitmap"/>
-  <int value="2" label="ImageData"/>
-  <int value="3" label="HTML Canvas Element"/>
-  <int value="4" label="HTML Image Element"/>
-  <int value="5" label="HTML Video Element"/>
-  <int value="6" label="OffscreenCanvas"/>
-  <int value="7" label="SVG Image Element"/>
-  <int value="8" label="VideoFrame"/>
-</enum>
-
-<enum name="CanvasGPUFallbackToCPUScenario">
-  <int value="0" label="Large pattern drawn onto a GPU canvas"/>
-  <int value="1" label="Slow getImageData on GPU canvases"/>
-</enum>
-
-<enum name="CanvasHibernationEvent">
-  <int value="0" label="Scheduled"/>
-  <int value="1"
-      label="Aborted due to destruction while hibernate was pending"/>
-  <int value="2" label="Aborted due to pending destruction (obsolete)"/>
-  <int value="3" label="Aborted due to visibility change"/>
-  <int value="4" label="Aborted due to GPU Context loss"/>
-  <int value="5" label="Aborted due to switch to unaccelerated rendering"/>
-  <int value="6" label="Aborted due to allocation failure"/>
-  <int value="7" label="Ended normally"/>
-  <int value="8" label="Ended with switch to background rendering"/>
-  <int value="9" label="Ended with fallback to software"/>
-  <int value="10" label="Ended with teardown"/>
-  <int value="11" label="Aborted because there was no surface"/>
-</enum>
-
-<enum name="CanvasOverdrawOp">
-  <int value="0" label="None (should have 0 counts)"/>
-  <int value="1" label="Total ops"/>
-  <int value="2" label="ClearRect op"/>
-  <int value="3" label="(Obsolete) FillRect op. Deprecated as of 2021-10."/>
-  <int value="4" label="(Obsolete) PutImageData op. Deprecated as of 2021-10."/>
-  <int value="5" label="DrawImage op"/>
-  <int value="6" label="ContextReset op"/>
-  <int value="7"
-      label="(Obsolete) ClearForSrcBlendMode op. Deprecated as of 2021-10."/>
-  <int value="8"
-      label="(Obsolete) Has opaque shader. Deprecated as of 2021-10."/>
-  <int value="9" label="Has transform"/>
-  <int value="10"
-      label="(Obsolete) Has source-over blend mode. Deprecated as of 2021-10."/>
-  <int value="11"
-      label="(Obsolete) Has clear blend mode. Deprecated as of 2021-10."/>
-  <int value="13" label="Has clip"/>
-  <int value="14" label="Has transform and clip"/>
-</enum>
-
 <enum name="CanvasRenderingAPI">
   <int value="0" label="2d"/>
   <int value="1" label="webgl"/>
   <int value="2" label="webgl2"/>
   <int value="3" label="bitmaprenderer"/>
   <int value="4" label="webgpu"/>
-</enum>
-
-<enum name="CanvasResourceProviderFlushReason">
-  <int value="0" label="None (should never happen)"/>
-  <int value="1" label="Testing (should never happen in prod)"/>
-  <int value="2" label="Non 2D Canvas"/>
-  <int value="3" label="Clear"/>
-  <int value="4" label="Hibernating"/>
-  <int value="5" label="OffscreenCanvas commit"/>
-  <int value="6" label="OffscreenCanvas push frame"/>
-  <int value="7" label="CreateImageBitmap"/>
-  <int value="8" label="GetImageData"/>
-  <int value="9" label="Volatile source image"/>
-  <int value="10" label="Canvas push frame"/>
-  <int value="11" label="Canvas push frame while printing"/>
-  <int value="12" label="Write pixels"/>
-  <int value="13" label="ToBlob"/>
-  <int value="14" label="CreateVideoFrame"/>
-  <int value="15" label="DrawImage"/>
-  <int value="16" label="DrawListener"/>
-  <int value="17" label="Paint"/>
-  <int value="18" label="Transfer"/>
-  <int value="19" label="Printing"/>
-  <int value="20" label="WebGPU external image"/>
-  <int value="21" label="Shape detector"/>
-  <int value="22" label="WebGL texture upload"/>
-  <int value="23" label="CreatePattern"/>
-  <int value="24" label="Copy to clipboard"/>
-  <int value="25" label="Source image will change"/>
-  <int value="26" label="WebGPU texture upload"/>
-  <int value="27" label="ToDataURL"/>
-  <int value="28" label="GPU/CPU switch"/>
-  <int value="29" label="RecordingLimitExceeded"/>
-</enum>
-
-<enum name="CanvasResourceProviderType">
-  <int value="0" label="Texture"/>
-  <int value="1" label="Bitmap"/>
-  <int value="2" label="Shared Bitmap"/>
-  <int value="3" label="Texture Gpu Memory Buffer"/>
-  <int value="4" label="Bitmap Gpu Memory Buffer"/>
-  <int value="5" label="Shared Image"/>
-  <int value="6" label="Direct Gpu Memory Buffer"/>
-  <int value="7" label="Passthrough"/>
-  <int value="8" label="Swap Chain"/>
-</enum>
-
-<enum name="CanvasResourceProviderUsage">
-  <int value="0" label="Software"/>
-  <int value="1" label="Software Composited"/>
-  <int value="2" label="Accelerated"/>
-  <int value="3" label="Accelerated Composited"/>
-  <int value="4" label="Accelerated Direct 2D"/>
-  <int value="5" label="Accelerated Direct 3D"/>
-  <int value="6" label="Software Composited Direct 2D (deprecated)"/>
 </enum>
 
 <enum name="CaptivePortalBlockingPageEvent">
@@ -4196,46 +4038,9 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Update"/>
 </enum>
 
-<enum name="CompositorAnimationsFailureReason">
-  <int value="0" label="No failure"/>
-  <int value="1" label="Accelerated animations disabled"/>
-  <int value="2" label="Effect suppressed by devtools"/>
-  <int value="3" label="Either the animation or effect is invalid"/>
-  <int value="4" label="Effect has unsupported timing parameters"/>
-  <int value="5" label="Effect has a composite mode other than 'replace'"/>
-  <int value="6" label="Target element has invalid compositing state"/>
-  <int value="7" label="Target element has other incompatible animations"/>
-  <int value="8" label="Target element has a CSS offset"/>
-  <int value="9"
-      label="Target element has multiple transform properties specified"/>
-  <int value="10" label="Animation affects non-CSS properties"/>
-  <int value="11"
-      label="Transform related property cannot be animated on the target
-             element"/>
-  <int value="12" label="Transform related property depends on box size"/>
-  <int value="13" label="Filter related property moves pixels"/>
-  <int value="14" label="Animation has an unsupported CSS property"/>
-  <int value="15"
-      label="There are multiple transform animations on the target element"/>
-  <int value="16"
-      label="Custom property contains different value types in keyframe
-             animation"/>
-  <int value="17" label="Scroll timeline source is not composited"/>
-  <int value="18" label="Compositor property animations have no effect"/>
-  <int value="19" label="Animation affects an !important property"/>
-  <int value="20"
-      label="Target SVG element uses an individual transform property"/>
-</enum>
-
 <enum name="CompositorType">
   <int value="0" label="Software compositor"/>
   <int value="1" label="GPU compositor"/>
-</enum>
-
-<enum name="CompressionStreamsFormat">
-  <int value="0" label="gzip"/>
-  <int value="1" label="deflate"/>
-  <int value="2" label="deflate-raw"/>
 </enum>
 
 <enum name="ConfigParsingEvent">
@@ -4957,14 +4762,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Only read cookie(s)"/>
   <int value="2" label="Only wrote cookie(s)"/>
   <int value="3" label="Both read and wrote cookies"/>
-</enum>
-
-<enum name="CookieCacheLookupResult">
-  <int value="0" label="kCacheMissFirstAccess"/>
-  <int value="1" label="kCacheHitAfterGet"/>
-  <int value="2" label="kCacheHitAfterSet"/>
-  <int value="3" label="kCacheMissAfterGet"/>
-  <int value="4" label="kCacheMissAfterSet"/>
 </enum>
 
 <enum name="CookieControlsMode">
@@ -6372,18 +6169,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="48" label="Error - Inconsistent Message"/>
   <int value="49" label="Error - Interactive Authorization Required"/>
   <int value="50" label="Error - Not Container"/>
-</enum>
-
-<enum name="DecodedImageType">
-  <int value="0" label="kImageUnknown"/>
-  <int value="1" label="kImageJPEG"/>
-  <int value="2" label="kImagePNG"/>
-  <int value="3" label="kImageGIF"/>
-  <int value="4" label="kImageWebP"/>
-  <int value="5" label="kImageICO"/>
-  <int value="6" label="kImageBMP"/>
-  <int value="7" label="kImageAVIF"/>
-  <int value="8" label="(obsolete) kImageJXL"/>
 </enum>
 
 <enum name="DefaultAppName">
@@ -14106,35 +13891,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="117" label="PublicKeyCredentialsCreate"/>
 </enum>
 
-<enum name="FedCmAccountsResponseInvalidReason">
-  <int value="0" label="Response is not JSON or dict"/>
-  <int value="1" label="No accounts key"/>
-  <int value="2" label="Account list is empty"/>
-  <int value="3" label="Account is not dict"/>
-  <int value="4" label="Account misses required field"/>
-  <int value="5" label="Accounts share the same id"/>
-</enum>
-
-<enum name="FedCmCancelReason">
-  <int value="0" label="Other"/>
-  <int value="1" label="Close button"/>
-  <int value="2" label="Swipe"/>
-  <int value="3" label="Virtual keyboard shown"/>
-  <int value="4" label="Got it button"/>
-  <int value="5" label="More details button"/>
-</enum>
-
-<enum name="FedCmClosePopupWindowReason">
-  <int value="0" label="IDP initiated close"/>
-  <int value="1" label="Pop-up window destroyed"/>
-</enum>
-
-<enum name="FedCmCspStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="FailedPathButPassedOrigin"/>
-  <int value="2" label="FailedOrigin"/>
-</enum>
-
 <enum name="FedCmDisconnectStatus">
   <int value="0" label="Success"/>
   <int value="1" label="TooManyRequests"/>
@@ -14193,67 +13949,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Cross-site with config URL"/>
 </enum>
 
-<enum name="FedCmIdpSigninMatchStatus">
-  <int value="0"
-      label="Match. Browser has signed-in IDP status, accounts endpoint
-             returned accounts."/>
-  <int value="1"
-      label="Match. Browser has signed-out IDP status, accounts endpoint
-             returned no accounts."/>
-  <int value="2"
-      label="Browser has no IDP sign-in status, accounts endpoint returned
-             accounts."/>
-  <int value="3"
-      label="Match. Browser has no IDP sign-in status, accounts endpoint
-             returned no accounts."/>
-  <int value="4"
-      label="Browser has signed-in IDP status, accounts endpoint returned
-             network error."/>
-  <int value="5"
-      label="Browser has signed-in IDP status, accounts endpoint returned no
-             content."/>
-  <int value="6"
-      label="Browser has signed-in IDP status, accounts endpoint returned
-             invalid response."/>
-  <int value="7"
-      label="Browser has signed-out IDP status, accounts endpoint returned
-             accounts."/>
-</enum>
-
-<enum name="FedCmLifecycleStateFailureReason">
-  <int value="0" label="Other state"/>
-  <int value="1" label="Speculative"/>
-  <int value="2" label="Pending Commit"/>
-  <int value="3" label="Prerendering"/>
-  <int value="4" label="In Back/Forward Cache"/>
-  <int value="5" label="Running Unload Handlers"/>
-  <int value="6" label="Ready to be deleted"/>
-</enum>
-
-<enum name="FedCmMismatchDialogResult">
-  <int value="0" label="Continue button clicked"/>
-  <int value="1" label="Dismissed by user through clicking close icon"/>
-  <int value="2" label="Dialog unhandled by user"/>
-</enum>
-
-<enum name="FedCmMismatchDialogType">
-  <int value="0" label="First mismatch of the request, without hints"/>
-  <int value="1" label="First mismatch of the request, with hints"/>
-  <int value="2" label="Repeated mismatch in a request, without hints"/>
-  <int value="3" label="Repeated mismatch in a request, with hints"/>
-</enum>
-
 <enum name="FedCmNumAccounts">
   <int value="0" label="Zero accounts"/>
   <int value="1" label="One account"/>
   <int value="2" label="Multiple accounts"/>
-</enum>
-
-<enum name="FedCmPopupWindowResult">
-  <int value="0" label="Accounts received and pop-up closed by IDP"/>
-  <int value="1" label="Accounts received but pop-up not closed by IDP"/>
-  <int value="2" label="Accounts not received but pop-up closed by IDP"/>
-  <int value="3" label="Accounts not received and pop-up not closed by IDP"/>
 </enum>
 
 <enum name="FedCmRequesterFrameType">
@@ -14331,33 +14030,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="17" label="ThirdPartyCookiesBlocked"/>
 </enum>
 
-<enum name="FedCmRpContext">
-  <int value="0" label="Sign in"/>
-  <int value="1" label="Sign up"/>
-  <int value="2" label="Use"/>
-  <int value="3" label="Continue"/>
-</enum>
-
-<enum name="FedCmSetLoginStatusIgnoredReason">
-  <int value="0" label="Looking up the FrameTreeNode by ID failed"/>
-  <int value="1" label="Request came from within a fenced frame tree"/>
-  <int value="2" label="Request came from a cross-origin context"/>
-</enum>
-
-<enum name="FedCmSheetType">
-  <int value="0" label="Account selection"/>
-  <int value="1" label="Verifying"/>
-  <int value="2" label="Auto re-authn"/>
-  <int value="3" label="Sign in to IDP static"/>
-  <int value="4" label="Sign in error"/>
-</enum>
-
-<enum name="FedCmShowPopupWindowResult">
-  <int value="0" label="Successfully opened"/>
-  <int value="1" label="Invalid URL"/>
-  <int value="2" label="Failed for other reasons"/>
-</enum>
-
 <enum name="FedCmSignInStateMatchStatus">
   <int value="0" label="Success"/>
   <int value="1" label="IdpClaimedSignIn"/>
@@ -14369,20 +14041,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Token received and error received"/>
   <int value="2" label="Token not received and error not received"/>
   <int value="3" label="Token not received and error received"/>
-</enum>
-
-<enum name="FedCmUserInfoStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Caller is not same origin with config URL"/>
-  <int value="2" label="Caller is not an iframe"/>
-  <int value="3" label="Config URL is not potentially trustworthy"/>
-  <int value="4" label="FedCM is disabled"/>
-  <int value="5" label="IDP Sign-in Status is signed out"/>
-  <int value="6" label="Not a returning user"/>
-  <int value="7" label="Invalid config or well known"/>
-  <int value="8" label="Invalid accounts response"/>
-  <int value="9" label="No returning user from accounts response"/>
-  <int value="10" label="Request is destroyed"/>
 </enum>
 
 <enum name="FederatedClientEvent">
@@ -14517,33 +14175,6 @@ Called by update_permissions_policy_enum.py.-->
 <!-- Keep elements in sync with components/feed/core/feed_logging_metrics.cc and
  third_party/feed_library/src/src/main/java/com/google/android/libraries/feed/api/host/logging/InternalFeedError.java
  -->
-
-<enum name="FencedFrameBeaconReportingResult">
-  <int value="0" label="Unknown result"/>
-  <int value="1" label="Invalid / missing network request for an enum beacon"/>
-  <int value="2" label="Successful network request for an enum beacon"/>
-  <int value="3" label="Failed network request for an enum beacon"/>
-  <int value="4" label="Invalid / missing network request for a URL beacon"/>
-  <int value="5" label="Successful network request for a URL beacon"/>
-  <int value="6" label="Failed network request for a URL beacon"/>
-  <int value="7"
-      label="Invalid / missing network request for an automatic beacon"/>
-  <int value="8" label="Successful network request for an automatic beacon"/>
-  <int value="9" label="Failed network request for an automatic beacon"/>
-</enum>
-
-<enum name="FencedFrameCreationOutcome">
-  <int value="0" label="Success (default mode)"/>
-  <int value="1" label="Success (opaque ads mode)"/>
-  <int value="2" label="Required sandbox flags not set"/>
-  <int value="3" label="Mode incompatible with parent's mode"/>
-  <int value="4" label="Load in an insecure context"/>
-  <int value="5" label="URL is incompatible with mode=default"/>
-  <int value="6" label="URL is incompatible with mode=opaque ads"/>
-  <int value="7"
-      label="Supports-Loading-Mode response header 'fenced-frame' not
-             opted-in"/>
-</enum>
 
 <enum name="FetchKeepAliveBrowserMetricType">
   <int value="0"
@@ -14932,11 +14563,6 @@ Called by update_permissions_policy_enum.py.-->
       label="Rejected because of other headers (e.g., custom headers)."/>
   <int value="14" label="The total number of rejected navigate requests."/>
   <int value="15" label="The total number of navigate requests."/>
-</enum>
-
-<enum name="FramebustInterventionOutcome">
-  <int value="0" label="Accepted"/>
-  <int value="1" label="Declined and navigated"/>
 </enum>
 
 <enum name="FsckResult">
@@ -15337,34 +14963,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="781547301" label="ScufProduct7725"/>
   <int value="1717962343" label="PrototypeVendorProduct0667"/>
   <int value="1717998593" label="PrototypeVendorProduct9401"/>
-</enum>
-
-<enum name="Gamma">
-  <int value="0" label="GammaLinear"/>
-  <int value="1" label="GammaSRGB"/>
-  <int value="2" label="Gamma2Dot2"/>
-  <int value="3" label="GammaNonStandard"/>
-  <int value="4" label="GammaNull"/>
-  <int value="5" label="GammaFail"/>
-  <int value="6" label="GammaInvalid"/>
-  <int value="7" label="GammaExponent"/>
-  <int value="8" label="GammaTable"/>
-  <int value="9" label="GammaParametric"/>
-  <int value="10" label="GammaNamed"/>
-</enum>
-
-<enum name="Gamut">
-  <int value="0" label="GamutUnknown"/>
-  <int value="1" label="GamutLessThanNTSC"/>
-  <int value="2" label="GamutNTSC"/>
-  <int value="3" label="GamutSRGB"/>
-  <int value="4" label="GamutAlmostP3"/>
-  <int value="5" label="GamutP3"/>
-  <int value="6" label="GamutAdobeRGB"/>
-  <int value="7" label="GamutWide"/>
-  <int value="8" label="GamutBT2020"/>
-  <int value="9" label="GamutProPhoto"/>
-  <int value="10" label="GamutUltraWide"/>
 </enum>
 
 <enum name="GCMCheckinRequestStatus">
@@ -16464,161 +16062,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="8" label="kEndorsementFailure"/>
 </enum>
 
-<enum name="IDBAction">
-  <int value="0" label="BackingStoreOpenAttempt">
-    Recorded when the there is an attempt to open the backing store from disk,
-    where it wasn't previously opened. This can happen during the API calls
-    IDBFactory::Open, GetDatabaseNames, GetDatabaseInfo, and DeleteDatabase.
-  </int>
-  <int value="1" label="DatabaseDeleteAttempt">
-    Recorded when there is an attempt to delete the database using the
-    IDBFactory::DeleteDatabase API.
-  </int>
-</enum>
-
-<enum name="IDBContextForcedCloseReason">
-  <int value="0" label="DeleteOrigin">
-    A request was made to delete the data for an origin.
-  </int>
-  <int value="1" label="BackingStoreFailure">
-    An unrecoverable error occurred accessing the backing store.
-  </int>
-  <int value="2" label="InternalsPage">
-    A forced close was requested from the indexeddb-internals page.
-  </int>
-  <int value="3" label="CopyOrigin">
-    The database is force closed so that it can be copied.
-  </int>
-  <int value="4" label="ForceSchemaDowngradeInternalsPage">
-    A forced schema downgrade was requested from the indexeddb-internals page.
-  </int>
-</enum>
-
-<enum name="IDBException">
-  <int value="0" label="Unknown error"/>
-  <int value="1" label="Constraint error"/>
-  <int value="2" label="Data error"/>
-  <int value="3" label="Version error"/>
-  <int value="4" label="Abort error"/>
-  <int value="5" label="Quota error"/>
-  <int value="6" label="Timeout error"/>
-</enum>
-
-<enum name="IDBLevelDBBackingStoreInternalErrorType">
-  <int value="0" label="IDBLevelDBBackingStoreReadError">
-    IndexedDB encountered an error attempting to read or decode a value from the
-    leveldb backing store, indicative of corruption or I/O error. Unused as of
-    M26.
-  </int>
-  <int value="1" label="IDBLevelDBBackingStoreWriteError">
-    IndexeDB encountered an error attempting to write or commit a value to the
-    leveldb backing store, indicative of I/O error. Unused as of M26.
-  </int>
-  <int value="2" label="IDBLevelDBBackingStoreConsistencyError">
-    IndexedDB encountered a consistency error in the leveldb backing store,
-    indicative of corruption or an coding error. Unused as of M26.
-  </int>
-  <int value="3" label="FindKeyInIndex"/>
-  <int value="4" label="GetIDBDatabaseMetaData"/>
-  <int value="5" label="GetIndexes"/>
-  <int value="6" label="GetKeyGeneratorCurrentNumber"/>
-  <int value="7" label="GetObjectStores"/>
-  <int value="8" label="GetRecord"/>
-  <int value="9" label="KeyExistsInObjectStore"/>
-  <int value="10" label="LoadCurrentRow"/>
-  <int value="11" label="SetupMetadata"/>
-  <int value="12" label="GetPrimaryKeyViaIndex"/>
-  <int value="13" label="KeyExistsInIndex"/>
-  <int value="14" label="VersionExists"/>
-  <int value="15" label="DeleteObjectStore"/>
-  <int value="16" label="SetMaxObjectStoreId"/>
-  <int value="17" label="SetMaxIndexId"/>
-  <int value="18" label="GetNewDatabaseId"/>
-  <int value="19" label="GetNewVersionNumber"/>
-  <int value="20" label="CreateIDBDatabaseMetaData"/>
-  <int value="21" label="DeleteDatabase"/>
-  <int value="22" label="TransactionCommit"/>
-  <int value="23" label="GetDatabaseNames"/>
-  <int value="24" label="DeleteIndex"/>
-  <int value="25" label="ClearObjectStore"/>
-  <int value="26" label="ReadBlobJournal"/>
-  <int value="27" label="DecodeBlobJournal"/>
-  <int value="28" label="GetBlobKeyGeneratorCurrentNumber"/>
-  <int value="29" label="GetBlobInfoForRecord"/>
-  <int value="30" label="UpgradingSchemaWithCorruptedBlobs"/>
-</enum>
-
-<enum name="IDBLevelDBBackingStoreOpenResult">
-  <int value="0" label="OpenMemorySuccess (Deprecated)">
-    An in-memory backing store was opened successfully.
-  </int>
-  <int value="1" label="OpenSuccess">
-    An on-disk backing store was opened successfully.
-  </int>
-  <int value="2" label="OpenFailedDirectory">
-    An on-disk backing store could not be opened or created because the
-    directory could not be opened or created. Cleanup will not be attempted.
-  </int>
-  <int value="3" label="OpenFailedUnknownSchema">
-    An on-disk backing store was opened but had an unknown schema version, due
-    to corruption or reverting to a previous version of Chrome. Cleanup will be
-    attempted.
-  </int>
-  <int value="4" label="OpenCleanupDestroyFailed">
-    An on-disk backing store failed to open; cleanup was attempted but the
-    database could not be destroyed.
-  </int>
-  <int value="5" label="OpenCleanupReopenFailed">
-    An on-disk backing store failed to open; cleanup was attempted but
-    re-opening the database failed.
-  </int>
-  <int value="6" label="OpenCleanupReopenSuccess">
-    An on-disk backing store failed to open; cleanup was attempted and the
-    database was then opened successfully.
-  </int>
-  <int value="7" label="OpenFailedIOErrCheckingSchema">
-    An on-disk backing store was opened but leveldb failed to read the schema
-    version.
-  </int>
-  <int value="8" label="OpenFailedUnknownErr (Deprecated)"/>
-  <int value="9" label="OpenMemoryFailed (Deprecated)">
-    An in-memory backing store failed to open.
-  </int>
-  <int value="10" label="OpenNonASCII">
-    A database with non-ascii characters in its path was opened (with either
-    success or failure).
-  </int>
-  <int value="11" label="OpenAttemptDiskFull">
-    An open failed on a machine with a full disk. No cleanup was attempted.
-  </int>
-  <int value="12" label="OpenAttemptPathTooLong">
-    Open failed because either a path component or the overall path was too
-    long.
-  </int>
-  <int value="13" label="OpenAttemptNoRecovery">
-    An open attempt failed with an I/O error that doesn't necessitate a recovery
-    attempt.
-  </int>
-  <int value="14" label="OpenAttemptPriorCorruption">
-    The corrupted open database was deleted.
-  </int>
-  <int value="15" label="OpenCleanupBlobJournalFailed">
-    Open failed because the blob journal could not be cleaned up.
-  </int>
-  <int value="16" label="OpenFailedMetadataSetup">
-    Open failed because the backing store's metadata could not be set up.
-  </int>
-</enum>
-
-<enum name="IdleTaskStatus">
-  <int value="0" label="IdleTaskNotStarted"/>
-  <int value="1" label="IdleTaskStarted"/>
-  <int value="2" label="IdleTaskCompleted"/>
-  <int value="3" label="IdleTaskFailed"/>
-  <int value="4" label="IdleTaskSwitchedToMainThreadTask"/>
-  <int value="5" label="IdleTaskNotSupported"/>
-</enum>
-
 <enum name="IDNA2008DeviationCharacter">
   <int value="0" label="None"/>
   <int value="1" label="Eszett"/>
@@ -16666,25 +16109,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="12" label="Load image metadata"/>
 </enum>
 
-<enum name="ImageHasMultipleGeneratorClientIds">
-  <int value="0" label="Image decode is requested by at least one client"/>
-  <int value="1" label="Image decode is requested by more than one client"/>
-</enum>
-
 <enum name="ImageSelectionOutcome">
   <int value="0" label="Image node was the topmost node."/>
   <int value="1" label="Image node was below topmost node"/>
   <int value="2" label="Blocking opaque node was found"/>
   <int value="3" label="Context menu listener was found"/>
   <int value="4" label="Blocking cross frame node was found"/>
-</enum>
-
-<enum name="ImageSelectionRetrievalOutcome">
-  <int value="0" label="Cached image node was successfully retrieved."/>
-  <int value="1" label="Cached image node was not found."/>
-  <int value="2"
-      label="Specified frame was different from the cached node so the image
-             was not retrieved."/>
 </enum>
 
 <enum name="IMEAssistiveAction">
@@ -16801,69 +16231,6 @@ Called by update_permissions_policy_enum.py.-->
 <enum name="IncognitoClearBrowsingDataDialogActionType">
   <int value="0" label="Cancel"/>
   <int value="1" label="Close Incognito"/>
-</enum>
-
-<enum name="InnerHTMLFastPathParserParseResult">
-  <int value="0" label="Content was successfully parsed"/>
-  <int value="1" label="Could not use fast path because tracing is enabled"/>
-  <int value="2"
-      label="Could not use fast path because of ParserContentPolicy"/>
-  <int value="3" label="Could not use fast path because in form"/>
-  <int value="4"
-      label="Failed because context element tag type is unsupported"/>
-  <int value="5"
-      label="Failed because a child element was encountered in an option"/>
-  <int value="6" label="Failed because end of input was not reached"/>
-  <int value="7" label="Failed because a null character was encountered"/>
-  <int value="8" label="Failed parsing the tag name"/>
-  <int value="9" label="Failed parsing a quoted attributed value"/>
-  <int value="10" label="Failed parsing an unquoted attribute value"/>
-  <int value="11" label="Failed parsing a quoted escaped attribute value"/>
-  <int value="12" label="Failed parsing an unquoted escaped attribute value"/>
-  <int value="13" label="Failed parsing an character reference"/>
-  <int value="14" label="Filed because end of input reached prematurely"/>
-  <int value="15" label="Failed parsing attributes"/>
-  <int value="16" label="Failed parsing in ParseSpecificElements()"/>
-  <int value="17" label="Failed parsing the element name"/>
-  <int value="18" label="Failed because an unsupported tag was encountered"/>
-  <int value="19"
-      label="Failed because end of input reached prematurely for a container
-             element"/>
-  <int value="20"
-      label="Failed because '&gt;' was not matched for end tag name"/>
-  <int value="21"
-      label="Failed because end tag name did not not muatch start start name"/>
-  <int value="22" label="Could not use fast path because of shadow roots"/>
-  <int value="23"
-      label="(Obsolete) Could not use fast path because
-             Document::IsDirAttributeDirty() is true"/>
-  <int value="24" label="Failed because an attribute name starts with 'on'."/>
-  <int value="25" label="Failed because a deep hierarchy was encountered."/>
-  <int value="26" label="Failed because a long text string was encountered."/>
-  <int value="27"
-      label="Could not use fast path because Document::IsDirAttributeDirty()
-             is true and css-pseudo-dir is enabled."/>
-</enum>
-
-<enum name="InnerHTMLFastPathParserUnsupportedTagType">
-  <int value="1"
-      label="At least one tag in the first grouping was encountered"/>
-  <int value="2"
-      label="At least one tag in the second grouping was encountered"/>
-  <int value="3"
-      label="At least one tag in the first and second groupings was
-             encountered"/>
-  <int value="4"
-      label="At least one tag in the third grouping was encountered"/>
-  <int value="5"
-      label="At least one tag in the first and third groupings was
-             encountered"/>
-  <int value="6"
-      label="At least one tag in the second and third groupings was
-             encountered"/>
-  <int value="7"
-      label="At least one tag in the first, second, and third groupings was
-             encountered"/>
 </enum>
 
 <enum name="InProductHelpDismissalReason">
@@ -17457,12 +16824,6 @@ Called by update_permissions_policy_enum.py.-->
 <enum name="KerberosUserType">
   <int value="0" label="Managed"/>
   <int value="1" label="Unmanaged"/>
-</enum>
-
-<enum name="KeyboardLockMethods">
-  <int value="0" label="keyboardLock() requested for all keys"/>
-  <int value="1" label="keyboardLock() requested for a subset of keys"/>
-  <int value="2" label="keyboardUnlock()"/>
 </enum>
 
 <enum name="KeyboardModifierRemappingKeys">
@@ -18553,48 +17914,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="14" label="Disabled for Enterprise user"/>
 </enum>
 
-<enum name="LevelDBCorruptionTypes">
-  <int value="0" label="other"/>
-  <int value="1" label="missing files"/>
-  <int value="2" label="log record too small"/>
-  <int value="3" label="corrupted internal key"/>
-  <int value="4" label="partial record"/>
-  <int value="5" label="missing start of fragmented record"/>
-  <int value="6" label="error in middle of record"/>
-  <int value="7" label="unknown record type"/>
-  <int value="8" label="truncated record at end"/>
-  <int value="9" label="bad record length"/>
-  <int value="10" label="VersionEdit"/>
-  <int value="11" label="FileReader invoked with unexpected value"/>
-  <int value="12" label="corrupted key"/>
-  <int value="13" label="CURRENT file does not end with newline"/>
-  <int value="14" label="no meta-nextfile entry"/>
-  <int value="15" label="no meta-lognumber entry"/>
-  <int value="16" label="no last-sequence-number entry"/>
-  <int value="17" label="malformed WriteBatch"/>
-  <int value="18" label="bad WriteBatch Put"/>
-  <int value="19" label="bad WriteBatch Delete"/>
-  <int value="20" label="unknown WriteBatch tag"/>
-  <int value="21" label="WriteBatch has wrong count"/>
-  <int value="22" label="bad entry in block"/>
-  <int value="23" label="bad block contents"/>
-  <int value="24" label="bad block handle"/>
-  <int value="25" label="truncated block read"/>
-  <int value="26" label="block checksum mismatch"/>
-  <int value="27" label="checksum mismatch"/>
-  <int value="28" label="corrupted compressed block contents"/>
-  <int value="29" label="bad block type"/>
-  <int value="30" label="bad magic number"/>
-  <int value="31" label="file is too short"/>
-</enum>
-
-<enum name="LevelDBErrorTypes">
-  <int value="0" label="NotFound"/>
-  <int value="1" label="Corruption"/>
-  <int value="2" label="IOError"/>
-  <int value="3" label="Other"/>
-</enum>
-
 <enum name="LevelDBIOErrorMethods">
   <int value="0" label="SequentialFileRead"/>
   <int value="1" label="SequentialFileSkip"/>
@@ -19128,13 +18447,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="21" label="Fluxbox"/>
   <int value="22" label="Xmonad"/>
   <int value="23" label="Unnamed"/>
-</enum>
-
-<enum name="ListItemPosition">
-  <int value="0" label="Only item"/>
-  <int value="1" label="First item"/>
-  <int value="2" label="Any middle item"/>
-  <int value="3" label="Last item"/>
 </enum>
 
 <enum name="LiteVideoBlocklistReason">
@@ -29848,150 +29160,6 @@ Called by update_use_counter_css.py.-->
   <int value="781" label="inset-area"/>
 </enum>
 
-<enum name="MappedEditingCommands">
-<!-- Generated from third_party/WebKit/Source/core/editing/EditorCommand.cpp -->
-
-  <int value="1" label="AlignJustified"/>
-  <int value="2" label="AlignLeft"/>
-  <int value="3" label="AlignRight"/>
-  <int value="4" label="BackColor"/>
-  <int value="5" label="BackwardDelete"/>
-  <int value="6" label="Bold"/>
-  <int value="7" label="Copy"/>
-  <int value="8" label="CreateLink"/>
-  <int value="9" label="Cut"/>
-  <int value="10" label="DefaultParagraphSeparator"/>
-  <int value="11" label="Delete"/>
-  <int value="12" label="DeleteBackward"/>
-  <int value="13" label="DeleteBackwardByDecomposingPreviousCharacter"/>
-  <int value="14" label="DeleteForward"/>
-  <int value="15" label="DeleteToBeginningOfLine"/>
-  <int value="16" label="DeleteToBeginningOfParagraph"/>
-  <int value="17" label="DeleteToEndOfLine"/>
-  <int value="18" label="DeleteToEndOfParagraph"/>
-  <int value="19" label="DeleteToMark"/>
-  <int value="20" label="DeleteWordBackward"/>
-  <int value="21" label="DeleteWordForward"/>
-  <int value="22" label="FindString"/>
-  <int value="23" label="FontName"/>
-  <int value="24" label="FontSize"/>
-  <int value="25" label="FontSizeDelta"/>
-  <int value="26" label="ForeColor"/>
-  <int value="27" label="FormatBlock"/>
-  <int value="28" label="ForwardDelete"/>
-  <int value="29" label="HiliteColor"/>
-  <int value="30" label="IgnoreSpelling"/>
-  <int value="31" label="Indent"/>
-  <int value="32" label="InsertBacktab"/>
-  <int value="33" label="InsertHTML"/>
-  <int value="34" label="InsertHorizontalRule"/>
-  <int value="35" label="InsertImage"/>
-  <int value="36" label="InsertLineBreak"/>
-  <int value="37" label="InsertNewline"/>
-  <int value="38" label="InsertNewlineInQuotedContent"/>
-  <int value="39" label="InsertOrderedList"/>
-  <int value="40" label="InsertParagraph"/>
-  <int value="41" label="InsertTab"/>
-  <int value="42" label="InsertText"/>
-  <int value="43" label="InsertUnorderedList"/>
-  <int value="44" label="Italic"/>
-  <int value="45" label="JustifyCenter"/>
-  <int value="46" label="JustifyFull"/>
-  <int value="47" label="JustifyLeft"/>
-  <int value="48" label="JustifyNone"/>
-  <int value="49" label="JustifyRight"/>
-  <int value="50" label="MakeTextWritingDirectionLeftToRight"/>
-  <int value="51" label="MakeTextWritingDirectionNatural"/>
-  <int value="52" label="MakeTextWritingDirectionRightToLeft"/>
-  <int value="53" label="MoveBackward"/>
-  <int value="54" label="MoveBackwardAndModifySelection"/>
-  <int value="55" label="MoveDown"/>
-  <int value="56" label="MoveDownAndModifySelection"/>
-  <int value="57" label="MoveForward"/>
-  <int value="58" label="MoveForwardAndModifySelection"/>
-  <int value="59" label="MoveLeft"/>
-  <int value="60" label="MoveLeftAndModifySelection"/>
-  <int value="61" label="MovePageDown"/>
-  <int value="62" label="MovePageDownAndModifySelection"/>
-  <int value="63" label="MovePageUp"/>
-  <int value="64" label="MovePageUpAndModifySelection"/>
-  <int value="65" label="MoveParagraphBackward"/>
-  <int value="66" label="MoveParagraphBackwardAndModifySelection"/>
-  <int value="67" label="MoveParagraphForward"/>
-  <int value="68" label="MoveParagraphForwardAndModifySelection"/>
-  <int value="69" label="MoveRight"/>
-  <int value="70" label="MoveRightAndModifySelection"/>
-  <int value="71" label="MoveToBeginningOfDocument"/>
-  <int value="72" label="MoveToBeginningOfDocumentAndModifySelection"/>
-  <int value="73" label="MoveToBeginningOfLine"/>
-  <int value="74" label="MoveToBeginningOfLineAndModifySelection"/>
-  <int value="75" label="MoveToBeginningOfParagraph"/>
-  <int value="76" label="MoveToBeginningOfParagraphAndModifySelection"/>
-  <int value="77" label="MoveToBeginningOfSentence"/>
-  <int value="78" label="MoveToBeginningOfSentenceAndModifySelection"/>
-  <int value="79" label="MoveToEndOfDocument"/>
-  <int value="80" label="MoveToEndOfDocumentAndModifySelection"/>
-  <int value="81" label="MoveToEndOfLine"/>
-  <int value="82" label="MoveToEndOfLineAndModifySelection"/>
-  <int value="83" label="MoveToEndOfParagraph"/>
-  <int value="84" label="MoveToEndOfParagraphAndModifySelection"/>
-  <int value="85" label="MoveToEndOfSentence"/>
-  <int value="86" label="MoveToEndOfSentenceAndModifySelection"/>
-  <int value="87" label="MoveToLeftEndOfLine"/>
-  <int value="88" label="MoveToLeftEndOfLineAndModifySelection"/>
-  <int value="89" label="MoveToRightEndOfLine"/>
-  <int value="90" label="MoveToRightEndOfLineAndModifySelection"/>
-  <int value="91" label="MoveUp"/>
-  <int value="92" label="MoveUpAndModifySelection"/>
-  <int value="93" label="MoveWordBackward"/>
-  <int value="94" label="MoveWordBackwardAndModifySelection"/>
-  <int value="95" label="MoveWordForward"/>
-  <int value="96" label="MoveWordForwardAndModifySelection"/>
-  <int value="97" label="MoveWordLeft"/>
-  <int value="98" label="MoveWordLeftAndModifySelection"/>
-  <int value="99" label="MoveWordRight"/>
-  <int value="100" label="MoveWordRightAndModifySelection"/>
-  <int value="101" label="Outdent"/>
-  <int value="102" label="OverWrite"/>
-  <int value="103" label="Paste"/>
-  <int value="104" label="PasteAndMatchStyle"/>
-  <int value="105" label="PasteGlobalSelection"/>
-  <int value="106" label="Print"/>
-  <int value="107" label="Redo"/>
-  <int value="108" label="RemoveFormat"/>
-  <int value="109" label="ScrollPageBackward"/>
-  <int value="110" label="ScrollPageForward"/>
-  <int value="111" label="ScrollLineUp"/>
-  <int value="112" label="ScrollLineDown"/>
-  <int value="113" label="ScrollToBeginningOfDocument"/>
-  <int value="114" label="ScrollToEndOfDocument"/>
-  <int value="115" label="SelectAll"/>
-  <int value="116" label="SelectLine"/>
-  <int value="117" label="SelectParagraph"/>
-  <int value="118" label="SelectSentence"/>
-  <int value="119" label="SelectToMark"/>
-  <int value="120" label="SelectWord"/>
-  <int value="121" label="SetMark"/>
-  <int value="122" label="Strikethrough"/>
-  <int value="123" label="StyleWithCSS"/>
-  <int value="124" label="Subscript"/>
-  <int value="125" label="Superscript"/>
-  <int value="126" label="SwapWithMark"/>
-  <int value="127" label="ToggleBold"/>
-  <int value="128" label="ToggleItalic"/>
-  <int value="129" label="ToggleUnderline"/>
-  <int value="130" label="Transpose"/>
-  <int value="131" label="Underline"/>
-  <int value="132" label="Undo"/>
-  <int value="133" label="Unlink"/>
-  <int value="134" label="Unscript"/>
-  <int value="135" label="Unselect"/>
-  <int value="136" label="UseCSS"/>
-  <int value="137" label="Yank"/>
-  <int value="138" label="YankAndSelect"/>
-  <int value="139" label="AlignCenter"/>
-</enum>
-
 <enum name="MediaEncryptionType">
   <int value="0" label="None"/>
   <int value="1" label="Clear"/>
@@ -30944,37 +30112,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="PROCESS_NOTIFIED"/>
   <int value="2" label="PROFILE_IN_USE"/>
   <int value="3" label="LOCK_ERROR"/>
-</enum>
-
-<enum name="NotStreamingReason">
-  <int value="0" label="DEPRECATED: Already loaded"/>
-  <int value="1" label="Not HTTP"/>
-  <int value="2" label="Revalidation"/>
-  <int value="3" label="Context not valid"/>
-  <int value="4" label="Encoding not supported"/>
-  <int value="5" label="Thread busy"/>
-  <int value="6" label="V8 cannot stream"/>
-  <int value="7" label="Script too small"/>
-  <int value="8" label="No resource buffer"/>
-  <int value="9" label="Code-cache available for script"/>
-  <int value="10" label="Streamer not ready when GetSource called"/>
-  <int value="11" label="Internal script"/>
-  <int value="12" label="Streaming was never started"/>
-  <int value="13" label="An error had occurred before GetSource was called"/>
-  <int value="14" label="Streaming was disabled"/>
-  <int value="15" label="Second use of a script resource"/>
-  <int value="16" label="Worker script"/>
-  <int value="17" label="Module script"/>
-</enum>
-
-<enum name="NQEEffectiveConnectionType">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Offline"/>
-  <int value="2" label="Slow 2G"/>
-  <int value="3" label="2G"/>
-  <int value="4" label="3G"/>
-  <int value="5" label="4G"/>
-  <int value="6" label="(Obsolete) Broadband. Deprecated as of 01/2017."/>
 </enum>
 
 <enum name="NQEObservationSource">
@@ -34256,11 +33393,6 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Failed to create directory"/>
 </enum>
 
-<enum name="RaceTaskPriority">
-  <int value="0" label="LowerPriority"/>
-  <int value="1" label="NormalPriority"/>
-</enum>
-
 <enum name="RankerModelStatus">
   <int value="0" label="OK"/>
   <int value="1" label="Download Throttled"/>
@@ -34601,22 +33733,6 @@ Called by update_net_error_codes.py.-->
   <int value="23" label="DICTIONARY"/>
 </enum>
 
-<enum name="RequestedImageMimeType">
-  <int value="0" label="Png"/>
-  <int value="1" label="Jpeg"/>
-  <int value="2" label="Webp"/>
-  <int value="3" label="Gif"/>
-  <int value="4" label="Bmp"/>
-  <int value="5" label="Ico"/>
-  <int value="6" label="Tiff"/>
-  <int value="7" label="Unknown"/>
-</enum>
-
-<enum name="ResourceHasClient">
-  <int value="0" label="No client"/>
-  <int value="1" label="Has client"/>
-</enum>
-
 <enum name="ResourcePrefetchPredictorRedirectStatus">
   <int value="0" label="NO_REDIRECT"/>
   <int value="1" label="NO_REDIRECT_BUT_PREDICTED"/>
@@ -34647,15 +33763,6 @@ Called by update_net_error_codes.py.-->
 <enum name="ReusePendingOrCommittedSiteEnum">
   <int value="0" label="Had to create a new RenderProcessHost"/>
   <int value="1" label="Could reuse an existing RenderProcessHost"/>
-</enum>
-
-<enum name="RevalidationPolicy">
-  <int value="0" label="Use"/>
-  <int value="1" label="Revalidate"/>
-  <int value="2" label="Reload"/>
-  <int value="3" label="Load"/>
-  <int value="4" label="Defer"/>
-  <int value="5" label="PreviouslyDeferredLoad"/>
 </enum>
 
 <!--
@@ -35229,17 +34336,6 @@ Called by update_net_error_codes.py.-->
 <enum name="ScopedTerminationCheckerStatus">
   <int value="0" label="Started"/>
   <int value="1" label="Finished"/>
-</enum>
-
-<enum name="ScriptSchedulingType">
-  <int value="0" label="NotSet"/>
-  <int value="1" label="Defer"/>
-  <int value="2" label="ParserBlocking"/>
-  <int value="3" label="ParserBlockingInline"/>
-  <int value="4" label="InOrder"/>
-  <int value="5" label="Async"/>
-  <int value="6" label="Immediate"/>
-  <int value="7" label="ForceDefer"/>
 </enum>
 
 <enum name="ScrollAndClickStatus">
@@ -36553,19 +35649,6 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Conservative"/>
   <int value="1" label="Moderate"/>
   <int value="2" label="Eager"/>
-</enum>
-
-<enum name="SpeculationRulesLoadOutcome">
-  <int value="0" label="Success"/>
-  <int value="1" label="Unparseable Speculation-Rules response header"/>
-  <int value="2" label="Empty Speculation-Rules response header after parsing"/>
-  <int value="3" label="Invalid item in Speculation-Rules response header"/>
-  <int value="4" label="Invalid status code when fetching"/>
-  <int value="5" label="Invalid MIME type when fetching"/>
-  <int value="6" label="Empty response body when fetching"/>
-  <int value="7" label="Fetched speculation rules failed parsing"/>
-  <int value="8" label="Inline speculation rules failed parsing"/>
-  <int value="9" label="Browser injected speculation rules failed parsing"/>
 </enum>
 
 <enum name="SqliteErrorCode">
@@ -38068,29 +37151,6 @@ would be helpful to identify which type is being sent.
   <int value="2077967579" label="pdf_compositor"/>
 </enum>
 
-<enum name="V8CompileHintsModelQuality">
-  <int value="0" label="No model"/>
-  <int value="1" label="Bad model"/>
-  <int value="2" label="Good model"/>
-</enum>
-
-<enum name="V8CompileHintsStatus">
-  <int value="0"
-      label="Consume local compile hints, classic script, no streaming"/>
-  <int value="1" label="Consume local compile hints, module, no streaming"/>
-  <int value="2"
-      label="Consume crowdsourced compile hints, classic script, no streaming"/>
-  <int value="3"
-      label="Consume crowdsourced compile hints, module, no streaming"/>
-  <int value="4" label="Produce compile hints, classic script, no streaming"/>
-  <int value="5" label="Produce compile hints, module, no streaming"/>
-  <int value="6" label="Consume code cache, classic script, no streaming"/>
-  <int value="7" label="Consume code cache, module, no streaming"/>
-  <int value="8" label="Consume local compile hints, streaming"/>
-  <int value="9" label="Consume crowdsourced compile hints streaming"/>
-  <int value="10" label="Produce compile hints, streaming"/>
-</enum>
-
 <enum name="VariationsSeedExpiry">
   <int value="0" label="Not Expired"/>
   <int value="1" label="Fetch Time Missing"/>
@@ -38508,62 +37568,6 @@ This is true even if the type has been removed from the mojom file.
   <int value="3" label="Hit memory cache"/>
 </enum>
 
-<enum name="WebFontInstantiationResult">
-  <int value="0" label="Error instantiating variable font, falling back"/>
-  <int value="1" label="Success conventional web font"/>
-  <int value="2" label="Success variable web font"/>
-  <int value="3" label="Success CBDT/CBLC color font"/>
-  <int value="4" label="Success CFF2 outline font"/>
-  <int value="5" label="Success Sbix color font"/>
-  <int value="6" label="Success COLR/CPAL color font"/>
-  <int value="7" label="Success COLRv1 color font"/>
-</enum>
-
-<enum name="WebGLANGLEImplementation">
-  <int value="0" label="WebGL1, None"/>
-  <int value="1" label="WebGL1, D3D9"/>
-  <int value="2" label="WebGL1, D3D11"/>
-  <int value="3" label="WebGL1, OpenGL"/>
-  <int value="4" label="WebGL1, OpenGLES"/>
-  <int value="5" label="WebGL1, Null"/>
-  <int value="6" label="WebGL1, Vulkan"/>
-  <int value="7" label="WebGL1, SwiftShader"/>
-  <int value="8" label="WebGL1, Metal"/>
-  <int value="9" label="WebGL1, Default"/>
-  <int value="20" label="WebGL2, None"/>
-  <int value="21" label="WebGL2, D3D9 (should never happen)"/>
-  <int value="22" label="WebGL2, D3D11"/>
-  <int value="23" label="WebGL2, OpenGL"/>
-  <int value="24" label="WebGL2, OpenGLES"/>
-  <int value="25" label="WebGL2, Null"/>
-  <int value="26" label="WebGL2, Vulkan"/>
-  <int value="27" label="WebGL2, SwiftShader"/>
-  <int value="28" label="WebGL2, Metal"/>
-  <int value="29" label="WebGL2, Default"/>
-</enum>
-
-<enum name="WebOTPBackendAvailability">
-  <int value="0" label="Available"/>
-  <int value="1" label="API not connected"/>
-  <int value="2" label="Platform not supported"/>
-  <int value="3" label="API not available"/>
-</enum>
-
-<enum name="WebOTPCrossDeviceFailure">
-  <int value="0" label="No failure"/>
-  <int value="1" label="Feature disabled"/>
-  <int value="2" label="No remote device"/>
-  <int value="3" label="No sharing service"/>
-  <int value="4" label="Sharing message failure"/>
-  <int value="5" label="API failure on Android"/>
-  <int value="6" label="Android to Android not supported"/>
-</enum>
-
-<enum name="WebOTPServiceInfobarAction">
-  <int value="0" label="Baseline: InfobarShown"/>
-  <int value="1" label="KeyboardDismissed"/>
-</enum>
-
 <enum name="WebOTPServiceOutcome">
   <int value="0" label="Success"/>
   <int value="1" label="Unhandled Request"/>
@@ -38576,41 +37580,11 @@ This is true even if the type has been removed from the mojom file.
   <int value="8" label="Cross device failure"/>
 </enum>
 
-<enum name="WebPFileFormat">
-  <int value="0" label="Simple File Format - Lossy"/>
-  <int value="1" label="Simple File Format - Lossless"/>
-  <int value="2" label="Extended File Format - Alpha"/>
-  <int value="3" label="Extended File Format - Animation"/>
-  <int value="4" label="Extended File Format - Animation and Alpha"/>
-  <int value="5" label="Unknown"/>
-</enum>
-
 <enum name="WebPushDeviceState">
   <int value="0" label="Not idle, not high priority"/>
   <int value="1" label="Not idle, high priority"/>
   <int value="2" label="Idle, not high priority"/>
   <int value="3" label="Idle, high priority"/>
-</enum>
-
-<enum name="WebSandboxFlags">
-  <int value="1" label="Navigation"/>
-  <int value="2" label="Plugins"/>
-  <int value="4" label="Origin"/>
-  <int value="8" label="Forms"/>
-  <int value="16" label="Scripts"/>
-  <int value="32" label="Top Navigation"/>
-  <int value="64" label="Popups"/>
-  <int value="128" label="Automatic Features"/>
-  <int value="256" label="Pointer Lock"/>
-  <int value="512" label="Document Domain"/>
-  <int value="1024" label="Orientation Lock"/>
-  <int value="2048" label="Propagates To Auxiliary Browsing Contexts"/>
-  <int value="4096" label="Modals"/>
-  <int value="8192" label="Presentation Controller"/>
-  <int value="16384" label="Top Navigation By User Activation"/>
-  <int value="32768" label="Downloads"/>
-  <int value="65536" label="Storage Access By User Activation"/>
-  <int value="131072" label="Top Navigation To Custom Protocols"/>
 </enum>
 
 <enum name="WebShareMethod">

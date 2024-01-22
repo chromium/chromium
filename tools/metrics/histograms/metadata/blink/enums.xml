@@ -1,0 +1,653 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AutomaticLazyFrameLoadReason">
+  <int value="0" label="Not eligible"/>
+  <int value="1" label="Eligible for LazyEmbeds"/>
+  <int value="2" label="Eligible for LazyAds"/>
+  <int value="3" label="Eligible for both"/>
+</enum>
+
+<enum name="AutomaticLazyLoadFrameState">
+  <int value="0" label="Feature is not enabled"/>
+  <int value="1" label="Target frames not found"/>
+  <int value="2" label="Target frames found"/>
+</enum>
+
+<enum name="AVIFCleanApertureType">
+  <int value="0" label="kInvalid"/>
+  <int value="1" label="kNonzeroOrigin"/>
+  <int value="2" label="kZeroOrigin"/>
+</enum>
+
+<enum name="BackgroundResourceFetchSupportStatus">
+  <int value="0" label="Supported"/>
+  <int value="1" label="Unsupported sync request"/>
+  <int value="2" label="Unsupported because HTTP method is not GET"/>
+  <int value="3" label="Unsupported non-HTTP scheme URL request"/>
+  <int value="4" label="Unsupported keepalive request"/>
+  <int value="5" label="Unsupported request from prefetch only document"/>
+</enum>
+
+<enum name="BooleanContentChangeMode">
+  <int value="0" label="Discard Content"/>
+  <int value="1" label="Retain Content"/>
+</enum>
+
+<enum name="BooleanWillReadFrequently">
+  <int value="0" label="Not initialized to be read frequently"/>
+  <int value="1" label="Initialized to be read frequently"/>
+</enum>
+
+<enum name="CanvasCreateImageBitmapSource">
+  <int value="0" label="Blob"/>
+  <int value="1" label="ImageBitmap"/>
+  <int value="2" label="ImageData"/>
+  <int value="3" label="HTML Canvas Element"/>
+  <int value="4" label="HTML Image Element"/>
+  <int value="5" label="HTML Video Element"/>
+  <int value="6" label="OffscreenCanvas"/>
+  <int value="7" label="SVG Image Element"/>
+  <int value="8" label="VideoFrame"/>
+</enum>
+
+<enum name="CanvasGPUFallbackToCPUScenario">
+  <int value="0" label="Large pattern drawn onto a GPU canvas"/>
+  <int value="1" label="Slow getImageData on GPU canvases"/>
+</enum>
+
+<enum name="CanvasHibernationEvent">
+  <int value="0" label="Scheduled"/>
+  <int value="1"
+      label="Aborted due to destruction while hibernate was pending"/>
+  <int value="2" label="Aborted due to pending destruction (obsolete)"/>
+  <int value="3" label="Aborted due to visibility change"/>
+  <int value="4" label="Aborted due to GPU Context loss"/>
+  <int value="5" label="Aborted due to switch to unaccelerated rendering"/>
+  <int value="6" label="Aborted due to allocation failure"/>
+  <int value="7" label="Ended normally"/>
+  <int value="8" label="Ended with switch to background rendering"/>
+  <int value="9" label="Ended with fallback to software"/>
+  <int value="10" label="Ended with teardown"/>
+  <int value="11" label="Aborted because there was no surface"/>
+</enum>
+
+<enum name="CanvasOverdrawOp">
+  <int value="0" label="None (should have 0 counts)"/>
+  <int value="1" label="Total ops"/>
+  <int value="2" label="ClearRect op"/>
+  <int value="3" label="(Obsolete) FillRect op. Deprecated as of 2021-10."/>
+  <int value="4" label="(Obsolete) PutImageData op. Deprecated as of 2021-10."/>
+  <int value="5" label="DrawImage op"/>
+  <int value="6" label="ContextReset op"/>
+  <int value="7"
+      label="(Obsolete) ClearForSrcBlendMode op. Deprecated as of 2021-10."/>
+  <int value="8"
+      label="(Obsolete) Has opaque shader. Deprecated as of 2021-10."/>
+  <int value="9" label="Has transform"/>
+  <int value="10"
+      label="(Obsolete) Has source-over blend mode. Deprecated as of 2021-10."/>
+  <int value="11"
+      label="(Obsolete) Has clear blend mode. Deprecated as of 2021-10."/>
+  <int value="13" label="Has clip"/>
+  <int value="14" label="Has transform and clip"/>
+</enum>
+
+<enum name="CanvasResourceProviderFlushReason">
+  <int value="0" label="None (should never happen)"/>
+  <int value="1" label="Testing (should never happen in prod)"/>
+  <int value="2" label="Non 2D Canvas"/>
+  <int value="3" label="Clear"/>
+  <int value="4" label="Hibernating"/>
+  <int value="5" label="OffscreenCanvas commit"/>
+  <int value="6" label="OffscreenCanvas push frame"/>
+  <int value="7" label="CreateImageBitmap"/>
+  <int value="8" label="GetImageData"/>
+  <int value="9" label="Volatile source image"/>
+  <int value="10" label="Canvas push frame"/>
+  <int value="11" label="Canvas push frame while printing"/>
+  <int value="12" label="Write pixels"/>
+  <int value="13" label="ToBlob"/>
+  <int value="14" label="CreateVideoFrame"/>
+  <int value="15" label="DrawImage"/>
+  <int value="16" label="DrawListener"/>
+  <int value="17" label="Paint"/>
+  <int value="18" label="Transfer"/>
+  <int value="19" label="Printing"/>
+  <int value="20" label="WebGPU external image"/>
+  <int value="21" label="Shape detector"/>
+  <int value="22" label="WebGL texture upload"/>
+  <int value="23" label="CreatePattern"/>
+  <int value="24" label="Copy to clipboard"/>
+  <int value="25" label="Source image will change"/>
+  <int value="26" label="WebGPU texture upload"/>
+  <int value="27" label="ToDataURL"/>
+  <int value="28" label="GPU/CPU switch"/>
+  <int value="29" label="RecordingLimitExceeded"/>
+</enum>
+
+<enum name="CanvasResourceProviderType">
+  <int value="0" label="Texture"/>
+  <int value="1" label="Bitmap"/>
+  <int value="2" label="Shared Bitmap"/>
+  <int value="3" label="Texture Gpu Memory Buffer"/>
+  <int value="4" label="Bitmap Gpu Memory Buffer"/>
+  <int value="5" label="Shared Image"/>
+  <int value="6" label="Direct Gpu Memory Buffer"/>
+  <int value="7" label="Passthrough"/>
+  <int value="8" label="Swap Chain"/>
+</enum>
+
+<enum name="CanvasResourceProviderUsage">
+  <int value="0" label="Software"/>
+  <int value="1" label="Software Composited"/>
+  <int value="2" label="Accelerated"/>
+  <int value="3" label="Accelerated Composited"/>
+  <int value="4" label="Accelerated Direct 2D"/>
+  <int value="5" label="Accelerated Direct 3D"/>
+  <int value="6" label="Software Composited Direct 2D (deprecated)"/>
+</enum>
+
+<enum name="CompositorAnimationsFailureReason">
+  <int value="0" label="No failure"/>
+  <int value="1" label="Accelerated animations disabled"/>
+  <int value="2" label="Effect suppressed by devtools"/>
+  <int value="3" label="Either the animation or effect is invalid"/>
+  <int value="4" label="Effect has unsupported timing parameters"/>
+  <int value="5" label="Effect has a composite mode other than 'replace'"/>
+  <int value="6" label="Target element has invalid compositing state"/>
+  <int value="7" label="Target element has other incompatible animations"/>
+  <int value="8" label="Target element has a CSS offset"/>
+  <int value="9"
+      label="Target element has multiple transform properties specified"/>
+  <int value="10" label="Animation affects non-CSS properties"/>
+  <int value="11"
+      label="Transform related property cannot be animated on the target
+             element"/>
+  <int value="12" label="Transform related property depends on box size"/>
+  <int value="13" label="Filter related property moves pixels"/>
+  <int value="14" label="Animation has an unsupported CSS property"/>
+  <int value="15"
+      label="There are multiple transform animations on the target element"/>
+  <int value="16"
+      label="Custom property contains different value types in keyframe
+             animation"/>
+  <int value="17" label="Scroll timeline source is not composited"/>
+  <int value="18" label="Compositor property animations have no effect"/>
+  <int value="19" label="Animation affects an !important property"/>
+  <int value="20"
+      label="Target SVG element uses an individual transform property"/>
+</enum>
+
+<enum name="CompressionStreamsFormat">
+  <int value="0" label="gzip"/>
+  <int value="1" label="deflate"/>
+  <int value="2" label="deflate-raw"/>
+</enum>
+
+<enum name="CookieCacheLookupResult">
+  <int value="0" label="kCacheMissFirstAccess"/>
+  <int value="1" label="kCacheHitAfterGet"/>
+  <int value="2" label="kCacheHitAfterSet"/>
+  <int value="3" label="kCacheMissAfterGet"/>
+  <int value="4" label="kCacheMissAfterSet"/>
+</enum>
+
+<enum name="DecodedImageType">
+  <int value="0" label="kImageUnknown"/>
+  <int value="1" label="kImageJPEG"/>
+  <int value="2" label="kImagePNG"/>
+  <int value="3" label="kImageGIF"/>
+  <int value="4" label="kImageWebP"/>
+  <int value="5" label="kImageICO"/>
+  <int value="6" label="kImageBMP"/>
+  <int value="7" label="kImageAVIF"/>
+  <int value="8" label="(obsolete) kImageJXL"/>
+</enum>
+
+<enum name="FedCmAccountsResponseInvalidReason">
+  <int value="0" label="Response is not JSON or dict"/>
+  <int value="1" label="No accounts key"/>
+  <int value="2" label="Account list is empty"/>
+  <int value="3" label="Account is not dict"/>
+  <int value="4" label="Account misses required field"/>
+  <int value="5" label="Accounts share the same id"/>
+</enum>
+
+<enum name="FedCmCancelReason">
+  <int value="0" label="Other"/>
+  <int value="1" label="Close button"/>
+  <int value="2" label="Swipe"/>
+  <int value="3" label="Virtual keyboard shown"/>
+  <int value="4" label="Got it button"/>
+  <int value="5" label="More details button"/>
+</enum>
+
+<enum name="FedCmClosePopupWindowReason">
+  <int value="0" label="IDP initiated close"/>
+  <int value="1" label="Pop-up window destroyed"/>
+</enum>
+
+<enum name="FedCmCspStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="FailedPathButPassedOrigin"/>
+  <int value="2" label="FailedOrigin"/>
+</enum>
+
+<enum name="FedCmIdpSigninMatchStatus">
+  <int value="0"
+      label="Match. Browser has signed-in IDP status, accounts endpoint
+             returned accounts."/>
+  <int value="1"
+      label="Match. Browser has signed-out IDP status, accounts endpoint
+             returned no accounts."/>
+  <int value="2"
+      label="Browser has no IDP sign-in status, accounts endpoint returned
+             accounts."/>
+  <int value="3"
+      label="Match. Browser has no IDP sign-in status, accounts endpoint
+             returned no accounts."/>
+  <int value="4"
+      label="Browser has signed-in IDP status, accounts endpoint returned
+             network error."/>
+  <int value="5"
+      label="Browser has signed-in IDP status, accounts endpoint returned no
+             content."/>
+  <int value="6"
+      label="Browser has signed-in IDP status, accounts endpoint returned
+             invalid response."/>
+  <int value="7"
+      label="Browser has signed-out IDP status, accounts endpoint returned
+             accounts."/>
+</enum>
+
+<enum name="FedCmLifecycleStateFailureReason">
+  <int value="0" label="Other state"/>
+  <int value="1" label="Speculative"/>
+  <int value="2" label="Pending Commit"/>
+  <int value="3" label="Prerendering"/>
+  <int value="4" label="In Back/Forward Cache"/>
+  <int value="5" label="Running Unload Handlers"/>
+  <int value="6" label="Ready to be deleted"/>
+</enum>
+
+<enum name="FedCmMismatchDialogResult">
+  <int value="0" label="Continue button clicked"/>
+  <int value="1" label="Dismissed by user through clicking close icon"/>
+  <int value="2" label="Dialog unhandled by user"/>
+</enum>
+
+<enum name="FedCmMismatchDialogType">
+  <int value="0" label="First mismatch of the request, without hints"/>
+  <int value="1" label="First mismatch of the request, with hints"/>
+  <int value="2" label="Repeated mismatch in a request, without hints"/>
+  <int value="3" label="Repeated mismatch in a request, with hints"/>
+</enum>
+
+<enum name="FedCmPopupWindowResult">
+  <int value="0" label="Accounts received and pop-up closed by IDP"/>
+  <int value="1" label="Accounts received but pop-up not closed by IDP"/>
+  <int value="2" label="Accounts not received but pop-up closed by IDP"/>
+  <int value="3" label="Accounts not received and pop-up not closed by IDP"/>
+</enum>
+
+<enum name="FedCmRpContext">
+  <int value="0" label="Sign in"/>
+  <int value="1" label="Sign up"/>
+  <int value="2" label="Use"/>
+  <int value="3" label="Continue"/>
+</enum>
+
+<enum name="FedCmSetLoginStatusIgnoredReason">
+  <int value="0" label="Looking up the FrameTreeNode by ID failed"/>
+  <int value="1" label="Request came from within a fenced frame tree"/>
+  <int value="2" label="Request came from a cross-origin context"/>
+</enum>
+
+<enum name="FedCmSheetType">
+  <int value="0" label="Account selection"/>
+  <int value="1" label="Verifying"/>
+  <int value="2" label="Auto re-authn"/>
+  <int value="3" label="Sign in to IDP static"/>
+  <int value="4" label="Sign in error"/>
+</enum>
+
+<enum name="FedCmShowPopupWindowResult">
+  <int value="0" label="Successfully opened"/>
+  <int value="1" label="Invalid URL"/>
+  <int value="2" label="Failed for other reasons"/>
+</enum>
+
+<enum name="FedCmUserInfoStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Caller is not same origin with config URL"/>
+  <int value="2" label="Caller is not an iframe"/>
+  <int value="3" label="Config URL is not potentially trustworthy"/>
+  <int value="4" label="FedCM is disabled"/>
+  <int value="5" label="IDP Sign-in Status is signed out"/>
+  <int value="6" label="Not a returning user"/>
+  <int value="7" label="Invalid config or well known"/>
+  <int value="8" label="Invalid accounts response"/>
+  <int value="9" label="No returning user from accounts response"/>
+  <int value="10" label="Request is destroyed"/>
+</enum>
+
+<enum name="FencedFrameBeaconReportingResult">
+  <int value="0" label="Unknown result"/>
+  <int value="1" label="Invalid / missing network request for an enum beacon"/>
+  <int value="2" label="Successful network request for an enum beacon"/>
+  <int value="3" label="Failed network request for an enum beacon"/>
+  <int value="4" label="Invalid / missing network request for a URL beacon"/>
+  <int value="5" label="Successful network request for a URL beacon"/>
+  <int value="6" label="Failed network request for a URL beacon"/>
+  <int value="7"
+      label="Invalid / missing network request for an automatic beacon"/>
+  <int value="8" label="Successful network request for an automatic beacon"/>
+  <int value="9" label="Failed network request for an automatic beacon"/>
+</enum>
+
+<enum name="FencedFrameCreationOutcome">
+  <int value="0" label="Success (default mode)"/>
+  <int value="1" label="Success (opaque ads mode)"/>
+  <int value="2" label="Required sandbox flags not set"/>
+  <int value="3" label="Mode incompatible with parent's mode"/>
+  <int value="4" label="Load in an insecure context"/>
+  <int value="5" label="URL is incompatible with mode=default"/>
+  <int value="6" label="URL is incompatible with mode=opaque ads"/>
+  <int value="7"
+      label="Supports-Loading-Mode response header 'fenced-frame' not
+             opted-in"/>
+</enum>
+
+<enum name="Gamma">
+  <int value="0" label="GammaLinear"/>
+  <int value="1" label="GammaSRGB"/>
+  <int value="2" label="Gamma2Dot2"/>
+  <int value="3" label="GammaNonStandard"/>
+  <int value="4" label="GammaNull"/>
+  <int value="5" label="GammaFail"/>
+  <int value="6" label="GammaInvalid"/>
+  <int value="7" label="GammaExponent"/>
+  <int value="8" label="GammaTable"/>
+  <int value="9" label="GammaParametric"/>
+  <int value="10" label="GammaNamed"/>
+</enum>
+
+<enum name="Gamut">
+  <int value="0" label="GamutUnknown"/>
+  <int value="1" label="GamutLessThanNTSC"/>
+  <int value="2" label="GamutNTSC"/>
+  <int value="3" label="GamutSRGB"/>
+  <int value="4" label="GamutAlmostP3"/>
+  <int value="5" label="GamutP3"/>
+  <int value="6" label="GamutAdobeRGB"/>
+  <int value="7" label="GamutWide"/>
+  <int value="8" label="GamutBT2020"/>
+  <int value="9" label="GamutProPhoto"/>
+  <int value="10" label="GamutUltraWide"/>
+</enum>
+
+<enum name="IdleTaskStatus">
+  <int value="0" label="IdleTaskNotStarted"/>
+  <int value="1" label="IdleTaskStarted"/>
+  <int value="2" label="IdleTaskCompleted"/>
+  <int value="3" label="IdleTaskFailed"/>
+  <int value="4" label="IdleTaskSwitchedToMainThreadTask"/>
+  <int value="5" label="IdleTaskNotSupported"/>
+</enum>
+
+<enum name="ImageHasMultipleGeneratorClientIds">
+  <int value="0" label="Image decode is requested by at least one client"/>
+  <int value="1" label="Image decode is requested by more than one client"/>
+</enum>
+
+<enum name="ImageSelectionRetrievalOutcome">
+  <int value="0" label="Cached image node was successfully retrieved."/>
+  <int value="1" label="Cached image node was not found."/>
+  <int value="2"
+      label="Specified frame was different from the cached node so the image
+             was not retrieved."/>
+</enum>
+
+<enum name="InnerHTMLFastPathParserParseResult">
+  <int value="0" label="Content was successfully parsed"/>
+  <int value="1" label="Could not use fast path because tracing is enabled"/>
+  <int value="2"
+      label="Could not use fast path because of ParserContentPolicy"/>
+  <int value="3" label="Could not use fast path because in form"/>
+  <int value="4"
+      label="Failed because context element tag type is unsupported"/>
+  <int value="5"
+      label="Failed because a child element was encountered in an option"/>
+  <int value="6" label="Failed because end of input was not reached"/>
+  <int value="7" label="Failed because a null character was encountered"/>
+  <int value="8" label="Failed parsing the tag name"/>
+  <int value="9" label="Failed parsing a quoted attributed value"/>
+  <int value="10" label="Failed parsing an unquoted attribute value"/>
+  <int value="11" label="Failed parsing a quoted escaped attribute value"/>
+  <int value="12" label="Failed parsing an unquoted escaped attribute value"/>
+  <int value="13" label="Failed parsing an character reference"/>
+  <int value="14" label="Filed because end of input reached prematurely"/>
+  <int value="15" label="Failed parsing attributes"/>
+  <int value="16" label="Failed parsing in ParseSpecificElements()"/>
+  <int value="17" label="Failed parsing the element name"/>
+  <int value="18" label="Failed because an unsupported tag was encountered"/>
+  <int value="19"
+      label="Failed because end of input reached prematurely for a container
+             element"/>
+  <int value="20"
+      label="Failed because '&gt;' was not matched for end tag name"/>
+  <int value="21"
+      label="Failed because end tag name did not not muatch start start name"/>
+  <int value="22" label="Could not use fast path because of shadow roots"/>
+  <int value="23"
+      label="(Obsolete) Could not use fast path because
+             Document::IsDirAttributeDirty() is true"/>
+  <int value="24" label="Failed because an attribute name starts with 'on'."/>
+  <int value="25" label="Failed because a deep hierarchy was encountered."/>
+  <int value="26" label="Failed because a long text string was encountered."/>
+  <int value="27"
+      label="Could not use fast path because Document::IsDirAttributeDirty()
+             is true and css-pseudo-dir is enabled."/>
+</enum>
+
+<enum name="InnerHTMLFastPathParserUnsupportedTagType">
+  <int value="1"
+      label="At least one tag in the first grouping was encountered"/>
+  <int value="2"
+      label="At least one tag in the second grouping was encountered"/>
+  <int value="3"
+      label="At least one tag in the first and second groupings was
+             encountered"/>
+  <int value="4"
+      label="At least one tag in the third grouping was encountered"/>
+  <int value="5"
+      label="At least one tag in the first and third groupings was
+             encountered"/>
+  <int value="6"
+      label="At least one tag in the second and third groupings was
+             encountered"/>
+  <int value="7"
+      label="At least one tag in the first, second, and third groupings was
+             encountered"/>
+</enum>
+
+<enum name="KeyboardLockMethods">
+  <int value="0" label="keyboardLock() requested for all keys"/>
+  <int value="1" label="keyboardLock() requested for a subset of keys"/>
+  <int value="2" label="keyboardUnlock()"/>
+</enum>
+
+<enum name="NQEEffectiveConnectionType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Offline"/>
+  <int value="2" label="Slow 2G"/>
+  <int value="3" label="2G"/>
+  <int value="4" label="3G"/>
+  <int value="5" label="4G"/>
+  <int value="6" label="(Obsolete) Broadband. Deprecated as of 01/2017."/>
+</enum>
+
+<enum name="RaceTaskPriority">
+  <int value="0" label="LowerPriority"/>
+  <int value="1" label="NormalPriority"/>
+</enum>
+
+<enum name="RequestedImageMimeType">
+  <int value="0" label="Png"/>
+  <int value="1" label="Jpeg"/>
+  <int value="2" label="Webp"/>
+  <int value="3" label="Gif"/>
+  <int value="4" label="Bmp"/>
+  <int value="5" label="Ico"/>
+  <int value="6" label="Tiff"/>
+  <int value="7" label="Unknown"/>
+</enum>
+
+<enum name="RevalidationPolicy">
+  <int value="0" label="Use"/>
+  <int value="1" label="Revalidate"/>
+  <int value="2" label="Reload"/>
+  <int value="3" label="Load"/>
+  <int value="4" label="Defer"/>
+  <int value="5" label="PreviouslyDeferredLoad"/>
+</enum>
+
+<enum name="ScriptSchedulingType">
+  <int value="0" label="NotSet"/>
+  <int value="1" label="Defer"/>
+  <int value="2" label="ParserBlocking"/>
+  <int value="3" label="ParserBlockingInline"/>
+  <int value="4" label="InOrder"/>
+  <int value="5" label="Async"/>
+  <int value="6" label="Immediate"/>
+  <int value="7" label="ForceDefer"/>
+</enum>
+
+<enum name="SpeculationRulesLoadOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unparseable Speculation-Rules response header"/>
+  <int value="2" label="Empty Speculation-Rules response header after parsing"/>
+  <int value="3" label="Invalid item in Speculation-Rules response header"/>
+  <int value="4" label="Invalid status code when fetching"/>
+  <int value="5" label="Invalid MIME type when fetching"/>
+  <int value="6" label="Empty response body when fetching"/>
+  <int value="7" label="Fetched speculation rules failed parsing"/>
+  <int value="8" label="Inline speculation rules failed parsing"/>
+  <int value="9" label="Browser injected speculation rules failed parsing"/>
+</enum>
+
+<enum name="WebFontInstantiationResult">
+  <int value="0" label="Error instantiating variable font, falling back"/>
+  <int value="1" label="Success conventional web font"/>
+  <int value="2" label="Success variable web font"/>
+  <int value="3" label="Success CBDT/CBLC color font"/>
+  <int value="4" label="Success CFF2 outline font"/>
+  <int value="5" label="Success Sbix color font"/>
+  <int value="6" label="Success COLR/CPAL color font"/>
+  <int value="7" label="Success COLRv1 color font"/>
+</enum>
+
+<enum name="WebGLANGLEImplementation">
+  <int value="0" label="WebGL1, None"/>
+  <int value="1" label="WebGL1, D3D9"/>
+  <int value="2" label="WebGL1, D3D11"/>
+  <int value="3" label="WebGL1, OpenGL"/>
+  <int value="4" label="WebGL1, OpenGLES"/>
+  <int value="5" label="WebGL1, Null"/>
+  <int value="6" label="WebGL1, Vulkan"/>
+  <int value="7" label="WebGL1, SwiftShader"/>
+  <int value="8" label="WebGL1, Metal"/>
+  <int value="9" label="WebGL1, Default"/>
+  <int value="20" label="WebGL2, None"/>
+  <int value="21" label="WebGL2, D3D9 (should never happen)"/>
+  <int value="22" label="WebGL2, D3D11"/>
+  <int value="23" label="WebGL2, OpenGL"/>
+  <int value="24" label="WebGL2, OpenGLES"/>
+  <int value="25" label="WebGL2, Null"/>
+  <int value="26" label="WebGL2, Vulkan"/>
+  <int value="27" label="WebGL2, SwiftShader"/>
+  <int value="28" label="WebGL2, Metal"/>
+  <int value="29" label="WebGL2, Default"/>
+</enum>
+
+<enum name="WebOTPBackendAvailability">
+  <int value="0" label="Available"/>
+  <int value="1" label="API not connected"/>
+  <int value="2" label="Platform not supported"/>
+  <int value="3" label="API not available"/>
+</enum>
+
+<enum name="WebOTPCrossDeviceFailure">
+  <int value="0" label="No failure"/>
+  <int value="1" label="Feature disabled"/>
+  <int value="2" label="No remote device"/>
+  <int value="3" label="No sharing service"/>
+  <int value="4" label="Sharing message failure"/>
+  <int value="5" label="API failure on Android"/>
+  <int value="6" label="Android to Android not supported"/>
+</enum>
+
+<enum name="WebOTPServiceInfobarAction">
+  <int value="0" label="Baseline: InfobarShown"/>
+  <int value="1" label="KeyboardDismissed"/>
+</enum>
+
+<enum name="WebPFileFormat">
+  <int value="0" label="Simple File Format - Lossy"/>
+  <int value="1" label="Simple File Format - Lossless"/>
+  <int value="2" label="Extended File Format - Alpha"/>
+  <int value="3" label="Extended File Format - Animation"/>
+  <int value="4" label="Extended File Format - Animation and Alpha"/>
+  <int value="5" label="Unknown"/>
+</enum>
+
+<enum name="WebSandboxFlags">
+  <int value="1" label="Navigation"/>
+  <int value="2" label="Plugins"/>
+  <int value="4" label="Origin"/>
+  <int value="8" label="Forms"/>
+  <int value="16" label="Scripts"/>
+  <int value="32" label="Top Navigation"/>
+  <int value="64" label="Popups"/>
+  <int value="128" label="Automatic Features"/>
+  <int value="256" label="Pointer Lock"/>
+  <int value="512" label="Document Domain"/>
+  <int value="1024" label="Orientation Lock"/>
+  <int value="2048" label="Propagates To Auxiliary Browsing Contexts"/>
+  <int value="4096" label="Modals"/>
+  <int value="8192" label="Presentation Controller"/>
+  <int value="16384" label="Top Navigation By User Activation"/>
+  <int value="32768" label="Downloads"/>
+  <int value="65536" label="Storage Access By User Activation"/>
+  <int value="131072" label="Top Navigation To Custom Protocols"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
