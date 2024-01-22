@@ -26,7 +26,6 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/public/web/web_heap.h"
-#include "third_party/blink/renderer/modules/mediarecorder/buildflags.h"
 #include "third_party/blink/renderer/modules/mediarecorder/fake_encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
@@ -74,7 +73,7 @@ const TestFrameType kTestFrameTypes[] = {TestFrameType::kNv12GpuMemoryBuffer,
 const VideoTrackRecorder::CodecId kTrackRecorderTestCodec[] = {
     VideoTrackRecorder::CodecId::kVp8,
     VideoTrackRecorder::CodecId::kVp9,
-#if BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(ENABLE_OPENH264)
     VideoTrackRecorder::CodecId::kH264,
 #endif
 #if BUILDFLAG(ENABLE_LIBAOM)
@@ -96,7 +95,7 @@ constexpr media::VideoCodec MediaVideoCodecFromCodecId(
       return media::VideoCodec::kVP9;
 // Note: The H264 tests in this file are written explicitly for OpenH264 and
 // will fail for hardware encoders that aren't 1 in 1 out.
-#if BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(ENABLE_OPENH264)
     case VideoTrackRecorder::CodecId::kH264:
       return media::VideoCodec::kH264;
 #endif
@@ -120,7 +119,7 @@ media::VideoCodecProfile MediaVideoCodecProfileFromCodecId(
       return media::VideoCodecProfile::VP9PROFILE_PROFILE0;
 // Note: The H264 tests in this file are written explicitly for OpenH264 and
 // will fail for hardware encoders that aren't 1 in 1 out.
-#if BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(ENABLE_OPENH264)
     case VideoTrackRecorder::CodecId::kH264:
       return media::VideoCodecProfile::H264PROFILE_MIN;
 #endif
@@ -815,7 +814,7 @@ std::string PrintTestParams(
     case VideoTrackRecorder::CodecId::kVp9:
       ss << "vp9";
       break;
-#if BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(ENABLE_OPENH264)
     case VideoTrackRecorder::CodecId::kH264:
       ss << "h264";
       break;
@@ -1366,7 +1365,7 @@ TEST_F(CodecEnumeratorTest, GetFirstSupportedVideoCodecProfileNoVp8VBR) {
       emulator.GetFirstSupportedVideoCodecProfile(CodecId::kVp8));
 }
 
-#if BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(ENABLE_OPENH264)
 TEST_F(CodecEnumeratorTest, FindSupportedVideoCodecProfileH264) {
   const CodecEnumerator emulator(MakeH264Profiles());
   EXPECT_EQ(std::make_pair(media::H264PROFILE_HIGH, /*vbr_support=*/false),

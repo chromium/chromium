@@ -296,7 +296,7 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
   }
 
   bool IsCodecSupported() {
-#if !BUILDFLAG(RTC_USE_H264)
+#if !BUILDFLAG(ENABLE_OPENH264)
     // Test requires OpenH264 encoder. It can't use the VEA encoder.
     if (std::string(GetParam().codecs) == "avc1") {
       return false;

@@ -865,14 +865,6 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
     preferred_pixel_formats_ = {webrtc::VideoFrameBuffer::Type::kNV12};
   }
 
-  // When we don't have built in H264 software encoding, allow usage of any
-  // software encoders provided by the platform.
-#if !BUILDFLAG(ENABLE_OPENH264) && BUILDFLAG(RTC_USE_H264)
-  if (profile >= media::H264PROFILE_MIN && profile <= media::H264PROFILE_MAX) {
-    vea_config.required_encoder_type =
-        media::VideoEncodeAccelerator::Config::EncoderType::kNoPreference;
-  }
-#endif
   encoder_metrics_provider_ =
       encoder_metrics_provider_factory_->CreateVideoEncoderMetricsProvider();
   encoder_metrics_provider_->Initialize(
@@ -1971,6 +1963,15 @@ int32_t RTCVideoEncoder::InitEncode(
   vea_config_->inter_layer_pred = inter_layer_pred;
   vea_config_->drop_frame_thresh_percentage =
       GetDropFrameThreshold(*codec_settings);
+  // When we don't have built in H264 software encoding, allow usage of any
+  // software encoders provided by the platform.
+#if !BUILDFLAG(ENABLE_OPENH264) && BUILDFLAG(RTC_USE_H264)
+  if (profile_ >= media::H264PROFILE_MIN &&
+      profile_ <= media::H264PROFILE_MAX) {
+    vea_config_->required_encoder_type =
+        media::VideoEncodeAccelerator::Config::EncoderType::kNoPreference;
+  }
+#endif
 
   if (!base::FeatureList::IsEnabled(
           features::kWebRtcInitializeEncoderOnFirstFrame)) {
