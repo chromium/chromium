@@ -34,16 +34,16 @@ const char kDefaultGroup[] = "Default";
 // Probabilities for all field trial groups add up to kTotalGroupWeight.
 constexpr base::FieldTrial::Probability kTotalGroupWeight = 1000;
 
-constexpr int kNonStableEnabledWeight = 500;
-constexpr int kNonStableDisabledWeight = 500;
-constexpr int kNonStableDefaultWeight = 0;
+constexpr int kNonStableEnabledWeight = 0;
+constexpr int kNonStableDisabledWeight = 0;
+constexpr int kNonStableDefaultWeight = 1000;
 static_assert(kTotalGroupWeight == kNonStableEnabledWeight +
                                        kNonStableDisabledWeight +
                                        kNonStableDefaultWeight);
 
-constexpr int kStableEnabledWeight = 5;
-constexpr int kStableDisabledWeight = 5;
-constexpr int kStableDefaultWeight = 990;
+constexpr int kStableEnabledWeight = 0;
+constexpr int kStableDisabledWeight = 0;
+constexpr int kStableDefaultWeight = 1000;
 static_assert(kTotalGroupWeight == kStableEnabledWeight +
                                        kStableDisabledWeight +
                                        kStableDefaultWeight);

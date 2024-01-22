@@ -37,13 +37,13 @@ BASE_FEATURE(kSearchEngineChoiceTrigger,
 #elif BUILDFLAG(IS_WIN)
              base::FEATURE_DISABLED_BY_DEFAULT
 #else
-             base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 
 );
 
 const base::FeatureParam<bool> kSearchEngineChoiceTriggerForTaggedProfilesOnly{
-    &kSearchEngineChoiceTrigger, /*name=*/"for_tagged_profiles_only", false};
+    &kSearchEngineChoiceTrigger, /*name=*/"for_tagged_profiles_only", true};
 
 const base::FeatureParam<bool> kSearchEngineChoiceTriggerWithForceEeaCountry{
     &kSearchEngineChoiceTrigger, /*name=*/"with_force_eea_country", false};

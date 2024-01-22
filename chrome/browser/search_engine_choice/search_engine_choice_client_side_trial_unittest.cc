@@ -99,7 +99,7 @@ TEST_P(SearchEngineChoiceClientSideTrialTest, SetUpIfNeeded) {
         switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get());
   } else {
     // Default value of the flag, independent from the feature state.
-    EXPECT_FALSE(
+    EXPECT_TRUE(
         switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get());
   }
 
@@ -131,36 +131,31 @@ INSTANTIATE_TEST_SUITE_P(
         // declared. So for a split at 33% enabled, 33% disabled, 33% default
         // a .4 entropy value should select the "disabled" group.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+        // Today, the feature is enabled by default, never enroll clients.
         SearchEngineChoiceFieldTrialTestParams{
             .entropy_value = 0.01,
             .channel = version_info::Channel::BETA,
-            // In the 50% treatment group
-            .expect_study_enabled = true,
-            .expect_feature_enabled = true},
-        SearchEngineChoiceFieldTrialTestParams{
-            .entropy_value = 0.6,
-            .channel = version_info::Channel::BETA,
-            // In the 50% control group
-            .expect_study_enabled = true,
-            .expect_feature_enabled = false},
-        SearchEngineChoiceFieldTrialTestParams{
-            .entropy_value = 0.0001,
-            .channel = version_info::Channel::STABLE,
-            // In the .5% treatment group
-            .expect_study_enabled = true,
-            .expect_feature_enabled = true},
-        SearchEngineChoiceFieldTrialTestParams{
-            .entropy_value = 0.009,
-            .channel = version_info::Channel::STABLE,
-            // In the .5% control group
-            .expect_study_enabled = true,
-            .expect_feature_enabled = false},
-        SearchEngineChoiceFieldTrialTestParams{
-            .entropy_value = 0.99,
-            .channel = version_info::Channel::STABLE,
-            // Not in the study (99%)
             .expect_study_enabled = false,
-            .expect_feature_enabled = false}
+            .expect_feature_enabled = true},
+        SearchEngineChoiceFieldTrialTestParams{
+            .entropy_value = 0.01,
+            .channel = version_info::Channel::STABLE,
+            .expect_study_enabled = false,
+            .expect_feature_enabled = true}
+#elif BUILDFLAG(IS_CHROMEOS)
+        // Did not have a client-side field trial, so it's not bundled with the
+        // group above, but it's being enabled on a different schedule than the
+        // group below.
+        SearchEngineChoiceFieldTrialTestParams{
+            .entropy_value = 0.01,
+            .channel = version_info::Channel::BETA,
+            .expect_study_enabled = false,
+            .expect_feature_enabled = true},
+        SearchEngineChoiceFieldTrialTestParams{
+            .entropy_value = 0.01,
+            .channel = version_info::Channel::STABLE,
+            .expect_study_enabled = false,
+            .expect_feature_enabled = true}
 #else
         SearchEngineChoiceFieldTrialTestParams{
             .entropy_value = 0.01,
