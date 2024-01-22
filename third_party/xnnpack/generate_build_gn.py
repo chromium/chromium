@@ -40,6 +40,8 @@ import shutil
 import subprocess
 import sys
 
+from dataclasses import dataclass, field
+
 _HEADER = '''
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
@@ -352,9 +354,28 @@ cc_toolchain_config = rule(
 
 '''.strip()
 
-# A SourceSet corresponds to a single source_set() gn tuple.
-SourceSet = collections.namedtuple('SourceSet', ['dir', 'srcs', 'args'],
-                                   defaults=['', [], []])
+
+@dataclass
+class SourceSet:
+  """A SourceSet corresponds to a single source_set() gn tuple."""
+
+  dir: str = ''
+  srcs: list[str] = field(default_factory=list)
+  args: list[str] = field(default_factory=list)
+
+  def AddSource(self, src):
+    if src not in self.srcs:
+      self.srcs.append(src)
+
+
+@dataclass(frozen=True)
+class ObjectBuild:
+  """An ObjectBuild corresponds to a single built object, which is parsed from a
+  single bazel compiler invocation on a single source file."""
+
+  dir: str
+  src: str
+  args: list[str]
 
 
 def NameForSourceSet(source_set, arch):
@@ -374,12 +395,6 @@ def NameForSourceSet(source_set, arch):
       })
 
 
-# An ObjectBuild corresponds to a single built object, which is parsed from a
-# single bazel compiler invocation on a single source file.
-ObjectBuild = collections.namedtuple('ObjectBuild', ['src', 'dir', 'args'],
-                                     defaults=['', '', []])
-
-
 def _objectbuild_from_bazel_log(action):
   """
   Attempts to scrape a compiler invocation from a single bazel build output
@@ -391,16 +406,21 @@ def _objectbuild_from_bazel_log(action):
   dir = ''
   args = []
   for i, arg in enumerate(action_args):
-    if arg == '-c' and action_args[i + 1].startswith("external/XNNPACK/"):
-      src = os.path.join('src', action_args[i + 1][len("external/XNNPACK/"):])
-      # |src| should look like 'src/src/...'.
+    # Capture compiler flags.
+    if arg.startswith('-m'):
+      args.append(arg)
+
+    # Capture the source and its directory.
+    if arg == '-c' and action_args[i + 1].startswith("src/"):
+      src = os.path.join('src', 'src', action_args[i + 1][len("src/"):])
+      # |src| should look like 'src/...'
       src_path = src.split('/')
       if len(src_path) == 3:
         dir = 'xnnpack'
       else:
         dir = src_path[2]
-    if arg.startswith('-m'):
-      args.append(arg)
+  if not src:
+    return None
   return ObjectBuild(src=src, dir=dir, args=args)
 
 
@@ -411,15 +431,14 @@ def _xnnpack_dir():
   return os.path.dirname(os.path.realpath(__file__))
 
 
-def _tflite_dir():
+def _xnnpack_src_dir():
   """
-  Returns the absolute path of //third_party/tflite/src/tensorflow/lite/.
+  Returns the absolute path of //third_party/xnnpack/src.
   """
-  tp_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-  return os.path.join(tp_dir, "tflite", "src", "tensorflow", "lite")
+  return os.path.join(_xnnpack_dir(), "src")
 
 
-_TOOLCHAIN_DIR = os.path.join(_tflite_dir(),
+_TOOLCHAIN_DIR = os.path.join(_xnnpack_src_dir(),
                               "xnnpack-generate_build_gn-toolchain")
 
 
@@ -461,7 +480,7 @@ def _run_bazel_cmd(args):
   cmd.extend(args)
   proc = subprocess.Popen(cmd,
                           text=True,
-                          cwd=_tflite_dir(),
+                          cwd=_xnnpack_src_dir(),
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)
   stdout, stderr = proc.communicate()
@@ -483,25 +502,24 @@ def _run_bazel_cmd(args):
 def GenerateObjectBuilds(cpu):
   """
   Queries bazel for the compile commands needed for the XNNPACK source files
-  necessary to fulfill the :tensorflowlite target's dependencies for the given
-  cpu.
+  necessary to fulfill the :xnnpack_for_tflite target's dependencies for the
+  given cpu.
 
   Args:
     cpu: aarch64 or k8
   """
   logging.info(f'Querying xnnpack compile commands for {cpu} with bazel...')
   basename = os.path.basename(_TOOLCHAIN_DIR)
-  crosstool_top = f'//tensorflow/lite/{basename}:cc_suite'
+  crosstool_top = f'//{basename}:cc_suite'
   logs = _run_bazel_cmd([
-      'aquery',
-      f'--crosstool_top={crosstool_top}',
-      '--host_crosstool_top=@bazel_tools//tools/cpp:toolchain',
-      f'--cpu={cpu}',
-      ('mnemonic("CppCompile",'
-       'filter("@XNNPACK//:", deps(:tensorflowlite)))'),
-      '--define',
-      'xnn_enable_jit=false',
-      "--output=jsonproto",
+    'aquery',
+    f'--crosstool_top={crosstool_top}',
+    '--host_crosstool_top=@bazel_tools//tools/cpp:toolchain',
+    f'--cpu={cpu}',
+    'mnemonic("CppCompile", filter("//:", deps(:xnnpack_for_tflite)))',
+    '--define',
+    'xnn_enable_jit=false',
+    "--output=jsonproto",
   ])
   logging.info('parsing actions from bazel aquery...')
   obs = []
@@ -519,26 +537,25 @@ def CombineObjectBuildsIntoSourceSets(obs, arch):
   """
   Combines all the given ObjectBuild's into SourceSet's by combining source
   files whose SourceSet name's (that is their directory and compiler flags)
-  match.
+  match. Returns the top level XNNPACK source set and an iterable of all other
+  sub-source sets.
 
   Args:
     obs: a list of ObjectBuild's
     arch: CPU architecture, arm64 or x64
   """
-  sss = {}
+  source_sets = {}
   for ob in obs:
     single = SourceSet(dir=ob.dir, srcs=[ob.src], args=ob.args)
     name = NameForSourceSet(single, arch)
-    if name not in sss:
-      sss[name] = single
+    if name not in source_sets:
+      source_sets[name] = single
     else:
-      ss = sss[name]
-      ss = ss._replace(srcs=list(set(ss.srcs + [ob.src])))
-      sss[name] = ss
-  xxnpack_ss = sss.pop('xnnpack')
-  logging.info('Generated %d sub targets for xnnpack' % len(sss))
-  return xxnpack_ss, sorted(list(sss.values()),
-                            key=lambda ss: NameForSourceSet(ss, arch))
+      source_sets[name].AddSource(ob.src)
+  xxnpack_source_set = source_sets.pop('xnnpack')
+  logging.info('Generated %d sub targets for xnnpack' % len(source_sets))
+  return xxnpack_source_set, sorted(
+      source_sets.values(), key=lambda ss: NameForSourceSet(ss, arch))
 
 
 def MakeTargetSourceSet(ss, arch):
@@ -677,7 +694,11 @@ def main():
         f.write('\n\n')
       f.write('}\n')
 
-  logging.info('Done! Please run `git cl format`')
+  logging.info('Running `git cl format` for you.')
+
+  subprocess.check_output(['git', 'cl', 'format'], cwd=_xnnpack_dir())
+
+  logging.info('Done')
 
 
 if __name__ == "__main__":
