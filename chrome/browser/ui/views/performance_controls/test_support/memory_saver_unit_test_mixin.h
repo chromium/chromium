@@ -37,7 +37,7 @@ class MemorySaverUnitTestMixin : public T {
   // discard reason if the tab was discarded
   void AddNewTab(int memory_savings,
                  mojom::LifecycleUnitDiscardReason discard_reason) {
-    T::AddTab(T::browser(), GURL("http://foo"));
+    T::AddTab(T::browser(), GURL("http://foo.com"));
     content::WebContents* const contents =
         T::browser()->tab_strip_model()->GetActiveWebContents();
     MemorySaverChipTabHelper::CreateForWebContents(contents);
