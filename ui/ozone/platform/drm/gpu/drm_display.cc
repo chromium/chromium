@@ -161,7 +161,9 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
       is_hdr_capable_ &&
       base::FeatureList::IsEnabled(display::features::kUseHDRTransferFunction);
 
-  if (is_hdr_capable_) {
+  if (is_hdr_capable_ &&
+      base::FeatureList::IsEnabled(
+          display::features::kEnableExternalDisplayHDR10Mode)) {
     current_color_space_ = display_snapshot.color_space();
     SetColorspaceProperty(display_snapshot.color_space());
     SetHdrOutputMetadata(display_snapshot.color_space());
