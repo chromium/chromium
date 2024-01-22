@@ -28,6 +28,7 @@
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -37,11 +38,11 @@
 namespace ash {
 namespace {
 
-constexpr gfx::Size kPickerSize(420, 480);
-constexpr int kBorderRadius = 20;
+constexpr gfx::Size kPickerSize(320, 340);
+constexpr int kBorderRadius = 12;
 constexpr int kShadowElevation = 3;
-constexpr ui::ColorId kBackgroundColor = cros_tokens::kCrosSysBaseElevated;
-constexpr auto kSearchFieldMargins = gfx::Insets::TLBR(16, 16, 8, 16);
+constexpr ui::ColorId kBackgroundColor =
+    cros_tokens::kCrosSysSystemBaseElevated;
 
 std::unique_ptr<views::BubbleBorder> CreateBorder() {
   auto border = std::make_unique<views::BubbleBorder>(
@@ -67,10 +68,14 @@ PickerView::PickerView(PickerViewDelegate* delegate,
   search_field_view_ = AddChildView(std::make_unique<PickerSearchFieldView>(
       base::BindRepeating(&PickerView::StartSearch, base::Unretained(this)),
       &session_metrics_));
-  search_field_view_->SetProperty(views::kMarginsKey, kSearchFieldMargins);
 
   // Automatically focus on the search field.
   SetInitiallyFocusedView(search_field_view_);
+
+  AddChildView(views::Builder<views::Separator>()
+                   .SetOrientation(views::Separator::Orientation::kHorizontal)
+                   .SetColorId(cros_tokens::kCrosSysSeparator)
+                   .Build());
 
   contents_view_ = AddChildView(std::make_unique<PickerContentsView>());
   contents_view_->SetProperty(

@@ -6864,6 +6864,12 @@ New install
         images
       </message>
 
+      <!-- Picker -->
+      <!-- TODO: b/309706053 - Finalize these strings and then mark them as these as translateable -->
+      <message name="IDS_PICKER_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI.">
+        Search to insert
+      </message>
+
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">
         Picture-in-picture started, Alt+Shift+V to focus

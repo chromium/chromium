@@ -139,9 +139,9 @@ TEST_F(PickerViewTest, BackgroundIsCorrect) {
 
   ASSERT_TRUE(view);
   ASSERT_TRUE(view->background());
-  EXPECT_EQ(
-      view->background()->get_color(),
-      view->GetColorProvider()->GetColor(cros_tokens::kCrosSysBaseElevated));
+  EXPECT_EQ(view->background()->get_color(),
+            view->GetColorProvider()->GetColor(
+                cros_tokens::kCrosSysSystemBaseElevated));
 }
 
 TEST_F(PickerViewTest, SizeIsCorrect) {
@@ -150,7 +150,7 @@ TEST_F(PickerViewTest, SizeIsCorrect) {
   widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
 
-  EXPECT_EQ(view->size(), gfx::Size(420, 480));
+  EXPECT_EQ(view->size(), gfx::Size(320, 340));
 }
 
 TEST_F(PickerViewTest, ShowsZeroStateView) {

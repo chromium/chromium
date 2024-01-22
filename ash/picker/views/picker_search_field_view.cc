@@ -6,9 +6,13 @@
 
 #include <string>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/fill_layout.h"
@@ -17,6 +21,12 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+namespace {
+
+constexpr auto kSearchFieldBorderInsets = gfx::Insets::VH(0, 16);
+constexpr auto kSearchFieldVerticalPadding = gfx::Insets::VH(6, 0);
+
+}  // namespace
 
 PickerSearchFieldView::PickerSearchFieldView(
     SearchCallback search_callback,
@@ -27,10 +37,16 @@ PickerSearchFieldView::PickerSearchFieldView(
 
   textfield_ = AddChildView(std::make_unique<views::Textfield>());
   textfield_->set_controller(this);
+  textfield_->SetBorder(views::CreateEmptyBorder(kSearchFieldBorderInsets));
+  textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);
   textfield_->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
       TypographyToken::kCrosBody2));
+  textfield_->SetPlaceholderText(
+      l10n_util::GetStringUTF16(IDS_PICKER_SEARCH_FIELD_PLACEHOLDER_TEXT));
   // TODO(b/309706053): Replace this once the strings are finalized.
   textfield_->SetAccessibleName(u"placeholder");
+
+  SetProperty(views::kMarginsKey, kSearchFieldVerticalPadding);
 }
 
 PickerSearchFieldView::~PickerSearchFieldView() = default;
