@@ -72,6 +72,8 @@ class GURL;
 @property(nonatomic, copy) NSString* screenshotName;
 // What's New entry screenshot text provier for localization.
 @property(nonatomic, copy) NSDictionary* screenshotTextProvider;
+// Whether or not the feature or Chrome tip is exclusively available on iPhone.
+@property(nonatomic, assign) BOOL isIphoneOnly;
 
 @end
 

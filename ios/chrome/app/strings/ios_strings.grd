@@ -5581,6 +5581,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_WHATS_NEW_IPH_TEXT" desc="An in product help message to inform the user about the feature What's New.">
         Explore new features and tips in What’s New
       </message>
+      <message name="IDS_IOS_WHATS_NEW_IPHONE_ONLY_TITLE" desc="Title of a label in the What's New instructions notifies the user that the feature is exclusively available on iPhone.">
+        Only available on iPhone
+      </message>
       <message name="IDS_IOS_WHATS_NEW_LEARN_MORE_ACTION_TITLE" desc="Label of the button for users to learn more about a feature or a chrome tip.">
         Learn More
       </message>
