@@ -45,6 +45,8 @@ AutofillFieldByFieldFillingTypes GetFieldByFieldFillingType(
       return AutofillFieldByFieldFillingTypes::kCreditCardExpiryYear;
     case CREDIT_CARD_EXP_MONTH:
       return AutofillFieldByFieldFillingTypes::kCreditCardExpiryMonth;
+    case ADDRESS_HOME_CITY:
+      return AutofillFieldByFieldFillingTypes::kCity;
     default:
       NOTREACHED_NORETURN();
   }
@@ -86,8 +88,7 @@ void LogFieldByFieldFillingFieldUsed(
                     triggering_field_type_matches_filling_product
                         ? ".TriggeringFieldMatchesFillingProduct"
                         : ".TriggeringFieldDoesNotMatchFillingProduct"}),
-      GetFieldByFieldFillingType(field_type_used),
-      AutofillFieldByFieldFillingTypes::kMaxValue);
+      GetFieldByFieldFillingType(field_type_used));
 }
 
 }  // namespace autofill::autofill_metrics

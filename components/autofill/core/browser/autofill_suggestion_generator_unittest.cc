@@ -1106,14 +1106,15 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
   // 5. line separator
   // 6. address line 1
   // 7. address line 2
-  // 8. Zip
-  // 9. line separator
-  // 10. phone number
-  // 11. email
-  // 12. line separator
-  // 13. edit profile
-  // 14. delete address
-  ASSERT_EQ(14U, suggestions[0].children.size());
+  // 8. City
+  // 9. Zip
+  // 10. line separator
+  // 11. phone number
+  // 12. email
+  // 13. line separator
+  // 14. edit profile
+  // 15. delete address
+  ASSERT_EQ(15U, suggestions[0].children.size());
   EXPECT_THAT(
       suggestions[0].children,
       ElementsAre(
@@ -1139,6 +1140,10 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
               PopupItemId::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_LINE2, app_locale()),
               ADDRESS_HOME_LINE2, Suggestion::Guid(profile().guid())),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kAddressFieldByFieldFilling,
+              profile().GetInfo(ADDRESS_HOME_CITY, app_locale()),
+              ADDRESS_HOME_CITY, Suggestion::Guid(profile().guid())),
           EqualsFieldByFieldFillingSuggestion(
               PopupItemId::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_ZIP, app_locale()),
@@ -1246,21 +1251,22 @@ TEST_F(
   // 4. line separator
   // 5. address line 1
   // 6. address line 2
-  // 7. Zip
-  // 8. line separator
-  // 9. phone number
-  // 10. email
-  // 11. line separator
-  // 12. edit profile
-  // 13. delete address
-  ASSERT_EQ(13U, suggestions[0].children.size());
+  // 7. City
+  // 8. Zip
+  // 9. line separator
+  // 10. phone number
+  // 12. email
+  // 13. line separator
+  // 13. edit profile
+  // 14. delete address
+  ASSERT_EQ(14U, suggestions[0].children.size());
 
   // Triggering field is international phone number type, international phone
   // number should be shown to the user.
-  EXPECT_THAT(suggestions[0].children[8],
+  EXPECT_THAT(suggestions[0].children[9],
               EqualsSuggestion(PopupItemId::kFillFullPhoneNumber,
                                GetFormattedInternationalNumber()));
-  EXPECT_THAT(suggestions[0].children[8].children, IsEmpty());
+  EXPECT_THAT(suggestions[0].children[9].children, IsEmpty());
 }
 
 // Asserts that when the triggering field is a phone field, the phone number
@@ -1282,21 +1288,22 @@ TEST_F(
   // 4. line separator
   // 5. address line 1
   // 6. address line 2
-  // 7. Zip
-  // 8. line separator
-  // 9. phone number
-  // 10. email
-  // 11. line separator
-  // 12. edit profile
-  // 13. delete address
-  ASSERT_EQ(13U, suggestions[0].children.size());
+  // 7. City
+  // 8. Zip
+  // 9. line separator
+  // 10. phone number
+  // 11. email
+  // 12. line separator
+  // 13. edit profile
+  // 14. delete address
+  ASSERT_EQ(14U, suggestions[0].children.size());
 
   // Triggering field is phone number country code, international phone number
   // should be shown to the user.
-  EXPECT_THAT(suggestions[0].children[8],
+  EXPECT_THAT(suggestions[0].children[9],
               EqualsSuggestion(PopupItemId::kFillFullPhoneNumber,
                                GetFormattedInternationalNumber()));
-  EXPECT_THAT(suggestions[0].children[8].children, IsEmpty());
+  EXPECT_THAT(suggestions[0].children[9].children, IsEmpty());
 }
 
 // Asserts that when the triggering field is a phone field, the phone number
@@ -1318,20 +1325,21 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
   // 4. line separator
   // 5. address line 1
   // 6. address line 2
-  // 7. Zip
-  // 8. line separator
-  // 9. phone number
-  // 10. email
-  // 11. line separator
-  // 12. edit profile
-  // 13. delete address
-  ASSERT_EQ(13U, suggestions[0].children.size());
+  // 7. City
+  // 8. Zip
+  // 9. line separator
+  // 10. phone number
+  // 11. email
+  // 12. line separator
+  // 13. edit profile
+  // 14. delete address
+  ASSERT_EQ(14U, suggestions[0].children.size());
   // Triggering field is local phone number type, local phone number should
   // be shown to the user.
-  EXPECT_THAT(suggestions[0].children[8],
+  EXPECT_THAT(suggestions[0].children[9],
               EqualsSuggestion(PopupItemId::kFillFullPhoneNumber,
                                GetFormattedNationalNumber()));
-  EXPECT_THAT(suggestions[0].children[8].children, IsEmpty());
+  EXPECT_THAT(suggestions[0].children[9].children, IsEmpty());
 }
 
 // Same as above but for email fields.
@@ -1348,15 +1356,16 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
   // 4. line separator
   // 5. address line 1
   // 6. address line 2
-  // 7. Zip
-  // 8. line separator
-  // 9. phone number
-  // 10. email
-  // 11. line separator
-  // 12. edit profile
-  // 13. delete address
-  ASSERT_EQ(13U, suggestions[0].children.size());
-  EXPECT_THAT(suggestions[0].children[9],
+  // 7. City
+  // 8. Zip
+  // 9. line separator
+  // 10. phone number
+  // 11. email
+  // 12. line separator
+  // 13. edit profile
+  // 14. delete address
+  ASSERT_EQ(14U, suggestions[0].children.size());
+  EXPECT_THAT(suggestions[0].children[10],
               Field(&Suggestion::popup_item_id, PopupItemId::kFillFullEmail));
 }
 
@@ -1374,15 +1383,16 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
   // 5. fill full address
   // 6. address line 1
   // 7. address line 2
-  // 8. Zip
-  // 9. line separator
-  // 10. phone number
-  // 11. email
-  // 12. line separator
-  // 13. edit address
-  // 14. delete address
+  // 8. City
+  // 9. Zip
+  // 10. line separator
+  // 11. phone number
+  // 12. email
+  // 13. line separator
+  // 14. edit address
+  // 15. delete address
   ASSERT_EQ(suggestions.size(), 1u);
-  ASSERT_EQ(14U, suggestions[0].children.size());
+  ASSERT_EQ(15U, suggestions[0].children.size());
   EXPECT_THAT(suggestions[0].children[4],
               Field(&Suggestion::popup_item_id, PopupItemId::kFillFullAddress));
 }
@@ -1553,15 +1563,16 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
   // 4. line separator
   // 5. address line 1
   // 6. address line 2
-  // 7. Zip
-  // 8. line separator
-  // 9. phone number
-  // 10. email
-  // 11. line separator
-  // 12. edit address
-  // 13. delete address
+  // 7. City
+  // 8. Zip
+  // 9. line separator
+  // 10. phone number
+  // 11. email
+  // 12. line separator
+  // 13. edit address
+  // 14. delete address
   ASSERT_EQ(suggestions.size(), 1u);
-  ASSERT_EQ(13u, suggestions[0].children.size());
+  ASSERT_EQ(14u, suggestions[0].children.size());
 
   EXPECT_THAT(
       suggestions[0].children,
@@ -1587,6 +1598,10 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
               PopupItemId::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_LINE2, app_locale()),
               ADDRESS_HOME_LINE2, Suggestion::Guid(profile().guid())),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kAddressFieldByFieldFilling,
+              profile().GetInfo(ADDRESS_HOME_CITY, app_locale()),
+              ADDRESS_HOME_CITY, Suggestion::Guid(profile().guid())),
           EqualsFieldByFieldFillingSuggestion(
               PopupItemId::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_ZIP, app_locale()),

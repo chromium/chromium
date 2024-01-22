@@ -414,9 +414,11 @@ void AddAddressChildSuggestions(FieldTypeGroup trigger_field_type_group,
 
   bool added_any_address_line =
       AddAddressLineChildSuggestions(profile, app_locale, suggestion.children);
+  bool added_city = AddAddressFieldByFieldSuggestions(
+      {ADDRESS_HOME_CITY}, profile, app_locale, suggestion.children);
   bool added_zip = AddAddressFieldByFieldSuggestions(
       {ADDRESS_HOME_ZIP}, profile, app_locale, suggestion.children);
-  if (added_any_address_line || added_zip) {
+  if (added_any_address_line || added_zip || added_city) {
     suggestion.children.push_back(
         AutofillSuggestionGenerator::CreateSeparator());
   }
