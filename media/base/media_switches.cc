@@ -1230,7 +1230,12 @@ BASE_FEATURE(kChromeOSHWAV1Decoder,
 // ChromeOS.
 BASE_FEATURE(kChromeOSHWVBREncoding,
              "ChromeOSHWVBREncoding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if defined(ARCH_CPU_X86_FAMILY)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Use a dedicated thread for hardware video decoding in Video decoder process.
 // If this is disabled, a sequenced task runner in base::ThreadPool is used for
