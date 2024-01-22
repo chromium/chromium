@@ -436,19 +436,7 @@ void FirstRunFlowControllerDice::CancelPostSignInFlow() {
   // TODO(crbug.com/1465779): Refactor ProfilePickerSignedInFlowController
   // to split the lacros and dice behaviours more and remove the need for such
   // hacky workarounds. Look into letting the user keep their account.
-
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-  CoreAccountId primary_account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  DCHECK(!primary_account_id.empty());  // Cancelling the post-sign in flow
-                                        // implies we must already be signed in.
-
-  policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
-      ->ShutdownCloudPolicyManager();
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(profile_, false);
-  identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+  signin::ClearProfileWithManagedAccounts(profile_);
 
   HandleIdentityStepsCompleted(PostHostClearedCallback());
 }

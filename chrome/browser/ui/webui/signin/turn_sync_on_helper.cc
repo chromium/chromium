@@ -688,6 +688,18 @@ void TurnSyncOnHelper::FinishSyncSetupAndDelete(
       return;
 
     case LoginUIService::UI_CLOSED:
+      // When force sign in is enabled and the user did not accept enterprise
+      // management, or did not enable sync; make sure to clear the primary
+      // account. This is mainly useful not to remember information on the
+      // Default Profile that already exists (when creating a new profile the
+      // flow will simply stop).
+      if (signin_util::IsForceSigninEnabled() &&
+          !chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
+        primary_account_mutator->ClearPrimaryAccount(
+            signin_metrics::ProfileSignout::kAbortSignin,
+            signin_metrics::SignoutDelete::kIgnoreMetric);
+      }
+
       // No explicit action when the ui gets closed. No final callback is sent.
       scoped_callback_runner_.ReplaceClosure(base::OnceClosure());
       break;
