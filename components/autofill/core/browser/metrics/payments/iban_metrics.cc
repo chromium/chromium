@@ -4,8 +4,12 @@
 
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 
+#include <string>
+#include <vector>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
