@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 component("tab_groups") {
   sources = [
     "tab_group_color.cc",
@@ -24,4 +28,16 @@ component("tab_groups") {
     "//ui/base",
     "//ui/gfx",
   ]
+}
+
+if (is_android) {
+  java_cpp_enum("java_enums") {
+    visibility = [ ":*" ]
+    sources = [ "//components/tab_groups/tab_group_color.h" ]
+  }
+
+  android_library("tab_groups_java") {
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+    srcjar_deps = [ ":java_enums" ]
+  }
 }

@@ -31,6 +31,10 @@ namespace tab_groups {
 // chrome/browser/resources/tab_search/tab_group_color_helper.ts. As such these
 // colors should be kept in sync. Ex: Adding orange in this file,
 // requires adding orange in the other file.
+//
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.tab_groups
+//
 enum class TabGroupColorId {
   kGrey = 0,
   kBlue = 1,
