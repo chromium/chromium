@@ -497,7 +497,7 @@ public class CustomTabActivityTabController implements InflationObserver {
                         Runnable finishedCallback =
                                 () -> {
                                     if (tab.isInitialized()
-                                            && ActivityUtils.isActivityFinishingOrDestroyed(
+                                            && !ActivityUtils.isActivityFinishingOrDestroyed(
                                                     mActivity)) {
                                         tab.getView().setBackgroundResource(0);
                                     }
