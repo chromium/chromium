@@ -168,7 +168,7 @@ FaceGazeTestBase = class extends E2ETestBase {
     }
 
     if (config.bufferSize !== -1) {
-      faceGaze.mouseController_.targetBufferSize_ = config.bufferSize;
+      faceGaze.mouseController_.bufferSize_ = config.bufferSize;
     }
 
     return new Promise(resolve => {

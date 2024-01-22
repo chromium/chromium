@@ -19,6 +19,7 @@ interface FloatingPoint2D {
   y: number;
 }
 
+
 /** Handles all interaction with the mouse. */
 export class MouseController {
   /** Last seen mouse location (cached from event in onMouseMovedOrDragged_). */
@@ -28,7 +29,7 @@ export class MouseController {
   private screenBounds_: ScreenRect|undefined;
 
   /** Smoothing buffer size. */
-  private targetBufferSize_ = MouseController.BUFFER_SIZE;
+  private bufferSize_ = MouseController.BUFFER_SIZE;
 
   /** The most recent raw face landmark mouse locations. */
   private buffer_: ScreenPoint[] = [];
@@ -38,11 +39,6 @@ export class MouseController {
 
   /** The most recent smoothed mouse location. */
   private previousSmoothedLocation_: FloatingPoint2D|undefined;
-
-  /** The last location in screen coordinates of the tracked landmark. */
-  private lastLandmarkLocation_: FloatingPoint2D|undefined;
-
-  private mouseInterval_: number = -1;
 
   constructor() {
     this.onMouseMovedHandler_ = new EventHandler(
@@ -83,17 +79,17 @@ export class MouseController {
     if (!this.mouseLocation_) {
       this.resetLocation();
     }
-
-    // Start the logic to move the mouse.
-    this.mouseInterval_ = setInterval(
-        () => this.updateMouseLocation_(), MouseController.MOUSE_INTERVAL_MS);
   }
 
   /**
-   * Update the current location of the tracked face landmark.
+   * Uses the forehead landmark to update the location of the mouse.
+   * This function doesn't use the absolute position of the forehead
+   * landmark. Instead, it calculates deltas to be applied to the
+   * current mouse location based on the forehead's location relative
+   * to the center of the screen.
    */
-  onFaceLandmarkerResult(result: FaceLandmarkerResult): void {
-    if (!this.screenBounds_) {
+  updateMouseLocation(result: FaceLandmarkerResult): void {
+    if (!this.screenBounds_ || !this.mouseLocation_) {
       return;
     }
     if (!result.faceLandmarks || !result.faceLandmarks[0] ||
@@ -108,36 +104,23 @@ export class MouseController {
     // Calculate the absolute position on the screen, where the top left
     // corner represents (0,0) and the bottom right corner represents
     // (this.screenBounds_.width, this.screenBounds_.height).
-    // TODO(b/309121742): Handle multiple displays.
-    const absoluteY = Math.round(
-        foreheadLocation.y * this.screenBounds_.height +
-        this.screenBounds_.top);
+    // TODO(b/309121742): Handle multiple displays, and displays where
+    // the (left, top) is not (0, 0).
+    const absoluteY =
+        Math.round(foreheadLocation.y * this.screenBounds_.height);
     // Reflect the x coordinate since the webcam doesn't mirror in the
     // horizontal direction.
     const scaledX = Math.round(foreheadLocation.x * this.screenBounds_.width);
-    const absoluteX =
-        this.screenBounds_.width - scaledX + this.screenBounds_.left;
+    const absoluteX = (scaledX * -1) + this.screenBounds_.width;
 
-    this.lastLandmarkLocation_ = {x: absoluteX, y: absoluteY};
-  }
-
-  /**
-   * Called every MOUSE_INTERVAL_MS, this function uses the most recent
-   * landmark location to update the current mouse position within the
-   * screen, applying appropriate scaling and smoothing.
-   * This function doesn't simply set the absolute position of the tracked
-   * landmark. Instead, it calculates deltas to be applied to the
-   * current mouse location based on the landmark's location relative
-   * to its previous location.
-   */
-  private updateMouseLocation_(): void {
-    if (!this.lastLandmarkLocation_ || !this.mouseLocation_ ||
-        !this.screenBounds_) {
-      return;
+    // Add this latest point to the buffer.
+    if (this.buffer_.length === this.bufferSize_) {
+      this.buffer_.shift();
     }
-
-    // Add the most recent landmark point to the buffer.
-    this.addPointToBuffer_(this.lastLandmarkLocation_);
+    this.buffer_.push({x: absoluteX, y: absoluteY});
+    while (this.buffer_.length < this.bufferSize_) {
+      this.buffer_.push({x: absoluteX, y: absoluteY});
+    }
 
     // Smooth the buffer to get the latest target point.
     const smoothed = this.applySmoothing_();
@@ -163,29 +146,8 @@ export class MouseController {
     // Update mouse location: onMouseMovedOrChanged_ is async and may not
     // be called again until after another point is received from the
     // face tracking, so better to keep a fresh copy.
-    // Clamp to screen bounds.
-    // TODO(b/309121742): Handle multiple displays.
-    this.mouseLocation_ = {
-      x: Math.max(
-          Math.min(this.screenBounds_.width, Math.round(newX)),
-          this.screenBounds_.left),
-      y: Math.max(
-          Math.min(this.screenBounds_.height, Math.round(newY)),
-          this.screenBounds_.top),
-    };
-
+    this.mouseLocation_ = {x: Math.round(newX), y: Math.round(newY)};
     chrome.accessibilityPrivate.setCursorPosition(this.mouseLocation_);
-  }
-
-  private addPointToBuffer_(point: FloatingPoint2D): void {
-    // Add this latest point to the buffer.
-    if (this.buffer_.length === this.targetBufferSize_) {
-      this.buffer_.shift();
-    }
-    // Fill the buffer with this point until we reach buffer size.
-    while (this.buffer_.length < this.targetBufferSize_) {
-      this.buffer_.push(point);
-    }
   }
 
   clickLeft(): void {
@@ -211,10 +173,8 @@ export class MouseController {
     if (!this.screenBounds_) {
       return;
     }
-    const x =
-        Math.round(this.screenBounds_.width / 2) + this.screenBounds_.left;
-    const y =
-        Math.round(this.screenBounds_.height / 2) + this.screenBounds_.top;
+    const x = Math.round(this.screenBounds_.width / 2);
+    const y = Math.round(this.screenBounds_.height / 2);
     this.mouseLocation_ = {x, y};
     chrome.accessibilityPrivate.setCursorPosition({x, y});
   }
@@ -222,10 +182,6 @@ export class MouseController {
   stopEventListeners(): void {
     this.onMouseMovedHandler_.stop();
     this.onMouseDraggedHandler_.stop();
-    if (this.mouseInterval_ !== -1) {
-      clearInterval(this.mouseInterval_);
-      this.mouseInterval_ = -1;
-    }
   }
 
   /** Listener for when the mouse position changes. */
@@ -238,18 +194,16 @@ export class MouseController {
    * Construct a kernel for smoothing the recent facegaze points.
    * Specifically, this is a Hamming curve with M = BUFFER_SIZE * 2,
    * matching the project-gameface Python implementation.
-   * Note: Whenever the buffer size is updated, we must reconstruct
-   * the smoothing kernel so that it is the right length.
    */
   private calcSmoothKernel_(): void {
     let sum = 0;
-    for (let i = 0; i < this.targetBufferSize_; i++) {
-      const value = .54 -
-          .46 * Math.cos((2 * Math.PI * i) / (this.targetBufferSize_ * 2 - 1));
+    for (let i = 0; i < this.bufferSize_; i++) {
+      const value =
+          .54 - .46 * Math.cos((2 * Math.PI * i) / (this.bufferSize_ * 2 - 1));
       this.smoothKernel_.push(value);
       sum += value;
     }
-    for (let i = 0; i < this.targetBufferSize_; i++) {
+    for (let i = 0; i < this.bufferSize_; i++) {
       this.smoothKernel_[i] /= sum;
     }
   }
@@ -260,7 +214,7 @@ export class MouseController {
    */
   private applySmoothing_(): FloatingPoint2D {
     const result = {x: 0, y: 0};
-    for (let i = 0; i < this.targetBufferSize_; i++) {
+    for (let i = 0; i < this.bufferSize_; i++) {
       const kernelPart = this.smoothKernel_[i];
       result.x += this.buffer_[i].x * kernelPart;
       result.y += this.buffer_[i].y * kernelPart;
@@ -290,15 +244,6 @@ export class MouseController {
 export namespace MouseController {
   /** The index of the forehead landmark in a FaceLandmarkerResult. */
   export const FOREHEAD_LANDMARK_INDEX = 8;
-
-  /** How frequently to run the mouse movement logic. */
-  export const MOUSE_INTERVAL_MS = 30;
-
-  /**
-   * How long to wait after the user moves the mouse with a physical device
-   * before moving the mouse with facegaze.
-   */
-  export const IGNORE_UPDATES_AFTER_MOUSE_MOVE_MS = 500;
 
   // TODO(b/309121742): These constants should become prefs.
   export const BUFFER_SIZE = 6;
