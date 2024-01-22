@@ -17,9 +17,9 @@
 
 import {expect} from 'chai';
 
-import {SharedIdParser} from './SharedIdParser.js';
+import {getSharedId, parseSharedId} from './SharedId.js';
 
-describe('SharedIdParser', () => {
+describe('SharedId', () => {
   const PARSED_SHARED_ID = {
     frameId: 'frame_id',
     documentId: 'document_id',
@@ -34,24 +34,21 @@ describe('SharedIdParser', () => {
   const LEGACY_SHARED_ID = 'document_id_element_42';
   describe('parseSharedId', () => {
     it('should parse proper formatted string', () => {
-      expect(SharedIdParser.parseSharedId(SHARED_ID)).to.deep.equal(
-        PARSED_SHARED_ID
-      );
+      expect(parseSharedId(SHARED_ID)).to.deep.equal(PARSED_SHARED_ID);
     });
     it('should parse legacy sharedId', () => {
-      expect(SharedIdParser.parseSharedId(LEGACY_SHARED_ID)).to.deep.equal(
+      expect(parseSharedId(LEGACY_SHARED_ID)).to.deep.equal(
         PARSED_LEGACY_SHARED_ID
       );
     });
     it('should not parse incorrectly formatted string', () => {
-      expect(SharedIdParser.parseSharedId('some_incorrectly_formatted_string'))
-        .to.be.null;
+      expect(parseSharedId('some_incorrectly_formatted_string')).to.be.null;
     });
   });
   describe('getSharedId', () => {
     it('should generate new format', () => {
       expect(
-        SharedIdParser.getSharedId(
+        getSharedId(
           PARSED_SHARED_ID.frameId,
           PARSED_SHARED_ID.documentId,
           PARSED_SHARED_ID.backendNodeId,
@@ -63,7 +60,7 @@ describe('SharedIdParser', () => {
   describe('getLegacySharedId(', () => {
     it('should generate legacy format', () => {
       expect(
-        SharedIdParser.getSharedId(
+        getSharedId(
           PARSED_SHARED_ID.frameId,
           PARSED_SHARED_ID.documentId,
           PARSED_SHARED_ID.backendNodeId,

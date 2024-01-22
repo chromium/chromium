@@ -33,7 +33,7 @@ import type {EventManager} from '../session/EventManager.js';
 
 import {ChannelProxy} from './ChannelProxy.js';
 import type {RealmStorage} from './RealmStorage.js';
-import {SharedIdParser} from './SharedIdParser.js';
+import {getSharedId, parseSharedId} from './SharedId.js';
 
 export class Realm {
   readonly #realmStorage: RealmStorage;
@@ -180,7 +180,7 @@ export class Realm {
           delete bidiValue['loaderId'];
         }
         (deepSerializedValue as unknown as Script.SharedReference).sharedId =
-          SharedIdParser.getSharedId(
+          getSharedId(
             this.#getBrowsingContextId(navigableId),
             navigableId,
             bidiValue.backendNodeId,
@@ -540,7 +540,7 @@ export class Realm {
     localValue: Script.LocalValue
   ): Promise<Protocol.Runtime.CallArgument> {
     if ('sharedId' in localValue && localValue.sharedId) {
-      const parsedSharedId = SharedIdParser.parseSharedId(localValue.sharedId);
+      const parsedSharedId = parseSharedId(localValue.sharedId);
       if (parsedSharedId === null) {
         throw new NoSuchNodeException(
           `SharedId "${localValue.sharedId}" was not found.`
