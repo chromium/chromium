@@ -4,8 +4,6 @@
 
 #include "chrome/browser/user_education/user_education_configuration_provider.h"
 
-#include <cstring>
-
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -125,25 +123,99 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
   config.trigger.storage = feature_engagement::kMaxStoragePeriod;
   config.trigger.window = feature_engagement::kMaxStoragePeriod;
 
+  auto& additional = promo_spec->additional_conditions();
+
   // Set up a default "used" event if one is not present.
   if (config.used.name.empty()) {
     config.used.name = GetDefaultUsedName(feature);
   }
-  config.used.comparator.type = feature_engagement::EQUAL;
-  config.used.comparator.value = 0;
-  config.used.storage = feature_engagement::kMaxStoragePeriod;
-  config.used.window = feature_engagement::kMaxStoragePeriod;
 
-  // Unless there are additional constraints, the IPH should be available
-  // immediately; otherwise wait 7 days.
-  if (config.event_configs.empty()) {
-    config.availability.type = feature_engagement::ANY;
-    config.availability.value = 0;
-  } else {
-    config.availability.type = feature_engagement::GREATER_THAN_OR_EQUAL;
-    config.availability.value = 7;
+  // The allowed number of uses is only overridden if it's not set.
+  if (config.used.comparator.value == 0 &&
+      additional.used_limit().has_value()) {
+    config.used.comparator.type = feature_engagement::LESS_THAN_OR_EQUAL;
+    config.used.comparator.value = additional.used_limit().value();
+  } else if (config.used.comparator.type == feature_engagement::ANY) {
+    // However, since the default comparator is (ANY, 0) which is invalid for a
+    // "used" event, change it to a reasonable default.
+    config.used.comparator.type = feature_engagement::EQUAL;
+    config.used.comparator.value = 0;
   }
 
+  // The default window and storage are zero, which are not valid. If these have
+  // not been set, set them to reasonable values.
+  if (config.used.window == 0) {
+    config.used.window = feature_engagement::kMaxStoragePeriod;
+  }
+  if (config.used.storage < config.used.window) {
+    config.used.storage = config.used.window;
+  }
+
+  // Set up additional constraints, if specified and not overridden in the
+  // existing config.
+  std::vector<feature_engagement::EventConfig> new_event_configs;
+  for (const auto& condition : additional.additional_conditions()) {
+    const std::string name = condition.event_name;
+
+    // While the "used" condition can participate in additional constraints, the
+    // trigger should not.
+    CHECK_NE(config.trigger.name, name);
+
+    // Determine if there's already a config for this event.
+    if (std::any_of(config.event_configs.begin(), config.event_configs.end(),
+                    [&name](const auto& event_config) {
+                      return event_config.name == name;
+                    })) {
+      continue;
+    }
+
+    // Add the additional event configuration.
+    feature_engagement::ComparatorType comparator;
+    switch (condition.constraint) {
+      using Constraint = user_education::FeaturePromoSpecification::
+          AdditionalConditions::Constraint;
+      case Constraint::kAtLeast:
+        comparator = feature_engagement::GREATER_THAN_OR_EQUAL;
+        break;
+      case Constraint::kAtMost:
+        comparator = feature_engagement::LESS_THAN_OR_EQUAL;
+        break;
+      case Constraint::kExactly:
+        comparator = feature_engagement::EQUAL;
+        break;
+    }
+    const size_t window =
+        condition.in_days.value_or(feature_engagement::kMaxStoragePeriod);
+    new_event_configs.emplace_back(
+        name, feature_engagement::Comparator{comparator, condition.count},
+        window, window);
+  }
+  std::copy(new_event_configs.begin(), new_event_configs.end(),
+            std::inserter(config.event_configs, config.event_configs.begin()));
+
+  // Set up some reasonable availability values.
+  if (config.availability.value != 0) {
+    // There is already configuration specified for availability other than the
+    // default. Make sure the availability is a lower bound.
+    if (config.availability.type != feature_engagement::GREATER_THAN) {
+      config.availability.type = feature_engagement::GREATER_THAN_OR_EQUAL;
+    }
+  } else if (!config.event_configs.empty() ||
+             config.used.comparator.value != 0 ||
+             additional.initial_delay_days().has_value()) {
+    // Use the initial delay specified, or settle on a default. When there are
+    // additional conditions or a nontrivial "used" condition, assume that some
+    // time will be required to determine if the conditions are met.
+    config.availability.type = feature_engagement::GREATER_THAN_OR_EQUAL;
+    config.availability.value = additional.initial_delay_days().value_or(7);
+  } else {
+    // This should already be the default - the promo will be available as soon
+    // as the feature is enabled.
+    config.availability.type = feature_engagement::ANY;
+    config.availability.value = 0;
+  }
+
+  // By this point the configuration should be valid.
   config.valid = true;
 
   return true;

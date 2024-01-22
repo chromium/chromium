@@ -34,6 +34,71 @@ class FeaturePromoHandle;
 // Specifies the parameters for a feature promo and its associated bubble.
 class FeaturePromoSpecification {
  public:
+  // Represents additional conditions that can affect when a promo can show.
+  class AdditionalConditions {
+   public:
+    AdditionalConditions();
+    AdditionalConditions(AdditionalConditions&&) noexcept;
+    AdditionalConditions& operator=(AdditionalConditions&&) noexcept;
+    ~AdditionalConditions();
+
+    // Provides constraints on when the promo can show based on some other
+    // Feautre Engagement event.
+    enum class Constraint { kAtMost, kAtLeast, kExactly };
+
+    // Represents an additional condition for the promo to show.
+    struct AdditionalCondition {
+      // The associated event name.
+      std::string event_name;
+      // How `count` should be interpreted.
+      Constraint constraint = Constraint::kAtMost;
+      // The required count for `event_name`, interpreted by `constraint`.
+      uint32_t count = 0;
+      // The window in which to evaluate `count` using `constraint`.
+      absl::optional<uint32_t> in_days;
+    };
+
+    // Sets the number of days in which "used" and other events should be
+    // collected before deciding whether to show a promo.
+    //
+    // Default is zero unless there are additional conditions, in which case it
+    // is a week.
+    void set_initial_delay_days(uint32_t initial_delay_days) {
+      this->initial_delay_days_ = initial_delay_days;
+    }
+    absl::optional<uint32_t> initial_delay_days() const {
+      return initial_delay_days_;
+    }
+
+    // Sets the number of times a promoted feature can be used before the
+    // associated promo stops showing. Default is zero - i.e. if the feature is
+    // used at all, the promo won't show.
+    void set_used_limit(uint32_t used_limit) { this->used_limit_ = used_limit; }
+    absl::optional<uint32_t> used_limit() const { return used_limit_; }
+
+    // Adds an additional constraint on when the promo can show. `event_name` is
+    // arbitrary and can be shared between promos.
+    //
+    // Will only allow the promo to show if `event_name` has been seen
+    // `constraint` `count` times in `in_days` days. If `in_days` isn't
+    // specified, the period is effectively unlimited.
+    void AddAdditionalCondition(
+        const char* event_name,
+        Constraint constraint,
+        uint32_t count,
+        absl::optional<uint32_t> in_days = absl::nullopt);
+    void AddAdditionalCondition(
+        const AdditionalCondition& additional_condition);
+    const std::vector<AdditionalCondition>& additional_conditions() const {
+      return additional_conditions_;
+    }
+
+   private:
+    absl::optional<uint32_t> initial_delay_days_;
+    absl::optional<uint32_t> used_limit_;
+    std::vector<AdditionalCondition> additional_conditions_;
+  };
+
   // Provides metadata about an IPH. Metadata will be shown and used on the
   // tester page, and also provides a information as to when an IPH was added to
   // Chrome and by whom.
@@ -370,6 +435,13 @@ class FeaturePromoSpecification {
     return highlighted_menu_identifier_;
   }
 
+  // Sets the additional conditions for the promo to show.
+  FeaturePromoSpecification& SetAdditionalConditions(
+      AdditionalConditions additional_conditions);
+  const AdditionalConditions& additional_conditions() const {
+    return additional_conditions_;
+  }
+
   // Sets the metadata for this promotion.
   FeaturePromoSpecification& SetMetadata(Metadata metadata);
   const Metadata& metadata() const { return metadata_; }
@@ -460,6 +532,9 @@ class FeaturePromoSpecification {
   // Identifier of the menu item that should be highlighted while
   // FeaturePromo is active.
   ui::ElementIdentifier highlighted_menu_identifier_;
+
+  // Additional conditions describing when the promo can show.
+  AdditionalConditions additional_conditions_;
 
   // Metadata for this promo.
   Metadata metadata_;

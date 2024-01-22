@@ -32,6 +32,12 @@ constexpr char kToastTrigger[] = "ToastIphFeature_trigger";
 constexpr char kToastUsed[] = "ToastIphFeature_used";
 constexpr char kSnoozeTrigger[] = "SnoozeIphFeature_trigger";
 constexpr char kSnoozeUsed[] = "SnoozeIphFeature_used";
+constexpr uint32_t kAdditionalConditionDelayDays = 6;
+constexpr uint32_t kAdditionalConditionUsedLimit = 2;
+constexpr char kAdditionalConditionName[] = "AdditionalCondition";
+constexpr char kAdditionalCondition2Name[] = "AdditionalCondition2";
+constexpr uint32_t kAdditionalConditionCount = 3;
+constexpr uint32_t kAdditionalConditionDays = 14;
 constexpr char kPerAppTrigger[] = "PerAppIphFeature_trigger";
 constexpr char kPerAppUsed[] = "PerAppIphFeature_used";
 constexpr char kLegalNoticeTrigger[] = "LegalNoticeIphFeature_trigger";
@@ -44,6 +50,9 @@ BASE_FEATURE(kToastIphFeature,
 BASE_FEATURE(kSnoozeIphFeature,
              "IPH_SnoozeIphFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIphWithConditionFeature,
+             "IPH_kIphWithConditionFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPerAppIphFeature,
              "IPH_PerAppIphFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -54,8 +63,8 @@ BASE_FEATURE(kActionableAlertFeature,
              "IPH_ActionableAlertFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 const std::initializer_list<const base::Feature*> kKnownFeatures{
-    &kToastIphFeature, &kSnoozeIphFeature, &kPerAppIphFeature,
-    &kActionableAlertFeature, &kLegalNoticeIphFeature};
+    &kToastIphFeature,  &kSnoozeIphFeature,       &kIphWithConditionFeature,
+    &kPerAppIphFeature, &kActionableAlertFeature, &kLegalNoticeIphFeature};
 const std::initializer_list<const base::Feature*> kKnownGroups{};
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
@@ -64,7 +73,9 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
 //
 // Call this only when the provider is actually needed for the test, and after
 // SetEnableV2 (if necessary).
-std::unique_ptr<UserEducationConfigurationProvider> CreateProvider() {
+template <typename... Args>
+std::unique_ptr<UserEducationConfigurationProvider> CreateProvider(
+    Args... additional_specifications) {
   user_education::FeaturePromoRegistry registry;
 
   registry.RegisterFeature(
@@ -97,11 +108,16 @@ std::unique_ptr<UserEducationConfigurationProvider> CreateProvider() {
                                          PromoSubtype::kActionableAlert);
   registry.RegisterFeature(std::move(spec));
 
+  (registry.RegisterFeature(std::move(additional_specifications)), ...);
+
   return std::make_unique<UserEducationConfigurationProvider>(
       std::move(registry));
 }
 
 }  // namespace
+
+using AdditionalConditions =
+    user_education::FeaturePromoSpecification::AdditionalConditions;
 
 class UserEducationConfigurationProviderTest : public testing::Test {
  public:
@@ -352,7 +368,7 @@ TEST_F(UserEducationConfigurationProviderTest, v1_DoesntOverwriteValid) {
       100, 99);
   const feature_engagement::EventConfig used(
       "bar", feature_engagement::Comparator(feature_engagement::LESS_THAN, 8),
-      98, 97);
+      97, 98);
   config.trigger = trigger;
   config.used = used;
   config.valid = true;
@@ -363,7 +379,8 @@ TEST_F(UserEducationConfigurationProviderTest, v1_DoesntOverwriteValid) {
   EXPECT_EQ(used, config.used);
 }
 
-TEST_F(UserEducationConfigurationProviderTest, v2_DoesOverwriteValid) {
+TEST_F(UserEducationConfigurationProviderTest,
+       v2_DoesOverwriteValid_SpecifiesUsed) {
   SetEnableV2(true);
   feature_engagement::FeatureConfig config;
   const feature_engagement::EventConfig trigger(
@@ -371,7 +388,7 @@ TEST_F(UserEducationConfigurationProviderTest, v2_DoesOverwriteValid) {
       100, 99);
   const feature_engagement::EventConfig used(
       "bar", feature_engagement::Comparator(feature_engagement::LESS_THAN, 8),
-      98, 97);
+      97, 98);
   config.trigger = trigger;
   config.used = used;
   config.valid = true;
@@ -379,7 +396,238 @@ TEST_F(UserEducationConfigurationProviderTest, v2_DoesOverwriteValid) {
       kSnoozeIphFeature, config, kKnownFeatures, kKnownGroups));
 
   EXPECT_EQ(GetDefaultTrigger("foo"), config.trigger);
-  EXPECT_EQ(GetDefaultUsed("bar"), config.used);
+  EXPECT_EQ(used, config.used);
+}
+
+TEST_F(UserEducationConfigurationProviderTest,
+       v2_DoesOverwriteValid_NoUsedEvent) {
+  SetEnableV2(true);
+  feature_engagement::FeatureConfig config;
+  const feature_engagement::EventConfig trigger(
+      "foo", feature_engagement::Comparator(feature_engagement::LESS_THAN, 10),
+      100, 99);
+  config.trigger = trigger;
+  config.valid = true;
+  EXPECT_TRUE(CreateProvider()->MaybeProvideFeatureConfiguration(
+      kSnoozeIphFeature, config, kKnownFeatures, kKnownGroups));
+
+  EXPECT_EQ(GetDefaultTrigger("foo"), config.trigger);
+  EXPECT_EQ(GetDefaultUsed(kSnoozeUsed), config.used);
+}
+
+TEST_F(UserEducationConfigurationProviderTest,
+       AdditionalConditions_OriginalAvailabilityPreserved) {
+  SetEnableV2(true);
+  feature_engagement::FeatureConfig config;
+  const feature_engagement::Comparator availability = {
+      feature_engagement::GREATER_THAN, 4};
+  config.availability = availability;
+  config.valid = true;
+  EXPECT_TRUE(CreateProvider()->MaybeProvideFeatureConfiguration(
+      kSnoozeIphFeature, config, kKnownFeatures, kKnownGroups));
+
+  EXPECT_EQ(availability, config.availability);
+}
+
+TEST_F(UserEducationConfigurationProviderTest,
+       AdditionalConditions_DefaultAvailability) {
+  SetEnableV2(true);
+  feature_engagement::FeatureConfig config;
+  EXPECT_TRUE(CreateProvider()->MaybeProvideFeatureConfiguration(
+      kSnoozeIphFeature, config, kKnownFeatures, kKnownGroups));
+
+  EXPECT_EQ(kAny, config.availability);
+}
+
+TEST_F(UserEducationConfigurationProviderTest,
+       AdditionalConditions_AvailabilityFromSpec) {
+  SetEnableV2(true);
+  auto spec = user_education::FeaturePromoSpecification::CreateForToastPromo(
+      kIphWithConditionFeature, kTestElementId, IDS_CLOSE, IDS_CANCEL, {});
+  AdditionalConditions additional_conditions;
+  additional_conditions.set_initial_delay_days(kAdditionalConditionDelayDays);
+  spec.SetAdditionalConditions(std::move(additional_conditions));
+
+  feature_engagement::FeatureConfig config;
+  EXPECT_TRUE(CreateProvider(std::move(spec))
+                  ->MaybeProvideFeatureConfiguration(kIphWithConditionFeature,
+                                                     config, kKnownFeatures,
+                                                     kKnownGroups));
+
+  const feature_engagement::Comparator availability = {
+      feature_engagement::GREATER_THAN_OR_EQUAL, kAdditionalConditionDelayDays};
+  EXPECT_EQ(availability, config.availability);
+}
+
+TEST_F(UserEducationConfigurationProviderTest,
+       AdditionalConditions_UsedLimitDefaultAvailability) {
+  SetEnableV2(true);
+  auto spec = user_education::FeaturePromoSpecification::CreateForToastPromo(
+      kIphWithConditionFeature, kTestElementId, IDS_CLOSE, IDS_CANCEL, {});
+  AdditionalConditions additional_conditions;
+  additional_conditions.set_used_limit(kAdditionalConditionUsedLimit);
+  spec.SetAdditionalConditions(std::move(additional_conditions));
+
+  feature_engagement::FeatureConfig config;
+  EXPECT_TRUE(CreateProvider(std::move(spec))
+                  ->MaybeProvideFeatureConfiguration(kIphWithConditionFeature,
+                                                     config, kKnownFeatures,
+                                                     kKnownGroups));
+
+  const feature_engagement::Comparator comparator{
+      feature_engagement::LESS_THAN_OR_EQUAL, kAdditionalConditionUsedLimit};
+  EXPECT_EQ(comparator, config.used.comparator);
+  EXPECT_EQ(kAtLeast7, config.availability);
+}
+
+TEST_F(UserEducationConfigurationProviderTest,
+       AdditionalConditions_UsedLimitCustomAvailability) {
+  SetEnableV2(true);
+  auto spec = user_education::FeaturePromoSpecification::CreateForToastPromo(
+      kIphWithConditionFeature, kTestElementId, IDS_CLOSE, IDS_CANCEL, {});
+  AdditionalConditions additional_conditions;
+  additional_conditions.set_used_limit(kAdditionalConditionUsedLimit);
+  additional_conditions.set_initial_delay_days(kAdditionalConditionDelayDays);
+  spec.SetAdditionalConditions(std::move(additional_conditions));
+
+  feature_engagement::FeatureConfig config;
+  EXPECT_TRUE(CreateProvider(std::move(spec))
+                  ->MaybeProvideFeatureConfiguration(kIphWithConditionFeature,
+                                                     config, kKnownFeatures,
+                                                     kKnownGroups));
+
+  const feature_engagement::Comparator expected_used{
+      feature_engagement::LESS_THAN_OR_EQUAL, kAdditionalConditionUsedLimit};
+  const feature_engagement::Comparator expected_availability{
+      feature_engagement::GREATER_THAN_OR_EQUAL, kAdditionalConditionDelayDays};
+  EXPECT_EQ(expected_used, config.used.comparator);
+  EXPECT_EQ(expected_availability, config.availability);
+}
+
+TEST_F(UserEducationConfigurationProviderTest,
+       AdditionalConditions_AddedConditionDefaultAvailability) {
+  SetEnableV2(true);
+  auto spec = user_education::FeaturePromoSpecification::CreateForToastPromo(
+      kIphWithConditionFeature, kTestElementId, IDS_CLOSE, IDS_CANCEL, {});
+  AdditionalConditions additional_conditions;
+  additional_conditions.AddAdditionalCondition(
+      kAdditionalConditionName, AdditionalConditions::Constraint::kAtLeast,
+      kAdditionalConditionCount, kAdditionalConditionDays);
+  spec.SetAdditionalConditions(std::move(additional_conditions));
+
+  feature_engagement::FeatureConfig config;
+  EXPECT_TRUE(CreateProvider(std::move(spec))
+                  ->MaybeProvideFeatureConfiguration(kIphWithConditionFeature,
+                                                     config, kKnownFeatures,
+                                                     kKnownGroups));
+
+  EXPECT_EQ(1U, config.event_configs.size());
+  auto& event_config = *config.event_configs.begin();
+  EXPECT_EQ(kAdditionalConditionName, event_config.name);
+  EXPECT_EQ(kAdditionalConditionCount, event_config.comparator.value);
+  EXPECT_EQ(feature_engagement::GREATER_THAN_OR_EQUAL,
+            event_config.comparator.type);
+  EXPECT_EQ(kAdditionalConditionDays, event_config.window);
+  EXPECT_LE(kAdditionalConditionDays, event_config.storage);
+  EXPECT_EQ(kAtLeast7, config.availability);
+}
+
+TEST_F(UserEducationConfigurationProviderTest,
+       AdditionalConditions_AddedConditionCustomAvailability) {
+  SetEnableV2(true);
+  auto spec = user_education::FeaturePromoSpecification::CreateForToastPromo(
+      kIphWithConditionFeature, kTestElementId, IDS_CLOSE, IDS_CANCEL, {});
+  AdditionalConditions additional_conditions;
+  additional_conditions.set_initial_delay_days(kAdditionalConditionDelayDays);
+  additional_conditions.AddAdditionalCondition(
+      kAdditionalConditionName, AdditionalConditions::Constraint::kAtLeast,
+      kAdditionalConditionCount, kAdditionalConditionDays);
+  spec.SetAdditionalConditions(std::move(additional_conditions));
+
+  feature_engagement::FeatureConfig config;
+  EXPECT_TRUE(CreateProvider(std::move(spec))
+                  ->MaybeProvideFeatureConfiguration(kIphWithConditionFeature,
+                                                     config, kKnownFeatures,
+                                                     kKnownGroups));
+
+  EXPECT_EQ(1U, config.event_configs.size());
+  auto& event_config = *config.event_configs.begin();
+  EXPECT_EQ(kAdditionalConditionName, event_config.name);
+  EXPECT_EQ(kAdditionalConditionCount, event_config.comparator.value);
+  EXPECT_EQ(feature_engagement::GREATER_THAN_OR_EQUAL,
+            event_config.comparator.type);
+  EXPECT_EQ(kAdditionalConditionDays, event_config.window);
+  EXPECT_LE(kAdditionalConditionDays, event_config.storage);
+  const feature_engagement::Comparator expected_availability{
+      feature_engagement::GREATER_THAN_OR_EQUAL, kAdditionalConditionDelayDays};
+  EXPECT_EQ(expected_availability, config.availability);
+}
+
+TEST_F(UserEducationConfigurationProviderTest,
+       AdditionalConditions_AddedConditionInAddition) {
+  SetEnableV2(true);
+  auto spec = user_education::FeaturePromoSpecification::CreateForToastPromo(
+      kIphWithConditionFeature, kTestElementId, IDS_CLOSE, IDS_CANCEL, {});
+  AdditionalConditions additional_conditions;
+  additional_conditions.AddAdditionalCondition(
+      kAdditionalConditionName, AdditionalConditions::Constraint::kAtLeast,
+      kAdditionalConditionCount, kAdditionalConditionDays);
+  spec.SetAdditionalConditions(std::move(additional_conditions));
+
+  feature_engagement::FeatureConfig config;
+  feature_engagement::EventConfig event_config;
+  event_config.name = kAdditionalCondition2Name;
+  event_config.comparator = {feature_engagement::LESS_THAN_OR_EQUAL, 1};
+  config.event_configs.insert(event_config);
+  EXPECT_TRUE(CreateProvider(std::move(spec))
+                  ->MaybeProvideFeatureConfiguration(kIphWithConditionFeature,
+                                                     config, kKnownFeatures,
+                                                     kKnownGroups));
+
+  EXPECT_EQ(2U, config.event_configs.size());
+  for (const auto& cur_config : config.event_configs) {
+    if (cur_config.name == event_config.name) {
+      EXPECT_EQ(event_config.comparator, cur_config.comparator);
+    } else {
+      EXPECT_EQ(kAdditionalConditionName, cur_config.name);
+      EXPECT_EQ(kAdditionalConditionCount, cur_config.comparator.value);
+      EXPECT_EQ(feature_engagement::GREATER_THAN_OR_EQUAL,
+                cur_config.comparator.type);
+      EXPECT_EQ(kAdditionalConditionDays, cur_config.window);
+      EXPECT_LE(kAdditionalConditionDays, cur_config.storage);
+    }
+  }
+}
+
+TEST_F(UserEducationConfigurationProviderTest,
+       AdditionalConditions_AddedConditionNotOverridden) {
+  SetEnableV2(true);
+  auto spec = user_education::FeaturePromoSpecification::CreateForToastPromo(
+      kIphWithConditionFeature, kTestElementId, IDS_CLOSE, IDS_CANCEL, {});
+  AdditionalConditions additional_conditions;
+  additional_conditions.AddAdditionalCondition(
+      kAdditionalConditionName, AdditionalConditions::Constraint::kAtLeast,
+      kAdditionalConditionCount, kAdditionalConditionDays);
+  spec.SetAdditionalConditions(std::move(additional_conditions));
+
+  feature_engagement::FeatureConfig config;
+  feature_engagement::EventConfig event_config;
+  event_config.name = kAdditionalConditionName;
+  event_config.comparator = {feature_engagement::LESS_THAN_OR_EQUAL, 1};
+  event_config.window = 4;
+  event_config.storage = 8;
+  config.event_configs.insert(event_config);
+  EXPECT_TRUE(CreateProvider(std::move(spec))
+                  ->MaybeProvideFeatureConfiguration(kIphWithConditionFeature,
+                                                     config, kKnownFeatures,
+                                                     kKnownGroups));
+
+  EXPECT_EQ(1U, config.event_configs.size());
+  const auto& new_config = *config.event_configs.begin();
+  EXPECT_EQ(event_config.name, kAdditionalConditionName);
+  EXPECT_EQ(event_config.comparator, new_config.comparator);
+  EXPECT_EQ(event_config.window, new_config.window);
+  EXPECT_LE(event_config.storage, new_config.storage);
 }
 
 TEST_F(UserEducationConfigurationProviderTest, v1_SessionRate) {

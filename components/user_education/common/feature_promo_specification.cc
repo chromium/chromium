@@ -83,6 +83,29 @@ bool IsAllowedLegacyPromo(const base::Feature& promo_feature) {
 
 }  // namespace
 
+FeaturePromoSpecification::AdditionalConditions::AdditionalConditions() =
+    default;
+FeaturePromoSpecification::AdditionalConditions::AdditionalConditions(
+    AdditionalConditions&&) noexcept = default;
+FeaturePromoSpecification::AdditionalConditions&
+FeaturePromoSpecification::AdditionalConditions::operator=(
+    AdditionalConditions&&) noexcept = default;
+FeaturePromoSpecification::AdditionalConditions::~AdditionalConditions() =
+    default;
+
+void FeaturePromoSpecification::AdditionalConditions::AddAdditionalCondition(
+    const AdditionalCondition& additional_condition) {
+  additional_conditions_.emplace_back(additional_condition);
+}
+
+void FeaturePromoSpecification::AdditionalConditions::AddAdditionalCondition(
+    const char* event_name,
+    Constraint constraint,
+    uint32_t count,
+    absl::optional<uint32_t> in_days) {
+  AddAdditionalCondition({event_name, constraint, count, in_days});
+}
+
 FeaturePromoSpecification::Metadata::Metadata(
     int launch_milestone_,
     std::string owners_,
@@ -330,6 +353,12 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetAnchorElementFilter(
 FeaturePromoSpecification& FeaturePromoSpecification::SetInAnyContext(
     bool in_any_context) {
   in_any_context_ = in_any_context;
+  return *this;
+}
+
+FeaturePromoSpecification& FeaturePromoSpecification::SetAdditionalConditions(
+    AdditionalConditions additional_conditions) {
+  additional_conditions_ = std::move(additional_conditions);
   return *this;
 }
 
