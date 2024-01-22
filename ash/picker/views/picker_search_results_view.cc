@@ -74,8 +74,8 @@ std::unique_ptr<PickerItemView> PickerSearchResultsView::CreateItemView(
             auto item_view = std::make_unique<PickerItemView>(
                 base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
                                base::Unretained(this), result));
-            item_view->SetText(data.text);
-            item_view->SetIcon(kPlaceholderIcon);
+            item_view->SetPrimaryText(data.text);
+            item_view->SetLeadingIcon(kPlaceholderIcon);
             return item_view;
           },
           [&, this](const PickerSearchResult::GifData& data) {
@@ -86,7 +86,7 @@ std::unique_ptr<PickerItemView> PickerSearchResultsView::CreateItemView(
             constexpr gfx::Size kPlaceholderGifSize(200, 200);
             // `base::Unretained` is safe here because `this` owns the item
             // views and `asset_fetcher_` outlives `this`.
-            item_view->SetImageContents(std::make_unique<PickerGifView>(
+            item_view->SetPrimaryImage(std::make_unique<PickerGifView>(
                 base::BindRepeating(&PickerAssetFetcher::FetchGifFromUrl,
                                     base::Unretained(asset_fetcher_), data.url),
                 kPlaceholderGifSize));

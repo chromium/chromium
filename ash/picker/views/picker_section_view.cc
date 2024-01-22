@@ -24,9 +24,9 @@
 namespace ash {
 namespace {
 
-constexpr auto kSectionTitlePadding = gfx::Insets::VH(8, 4);
+constexpr auto kSectionTitlePadding = gfx::Insets::VH(8, 16);
 
-}
+}  // namespace
 
 PickerSectionView::PickerSectionView(const std::u16string& title_text) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
