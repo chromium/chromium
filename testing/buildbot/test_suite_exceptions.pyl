@@ -3655,6 +3655,18 @@
         },
       },
     },
+    # TODO(b/319364912): vpython cannot be delivered via CIPD on skylab builders
+    'remove_from': [
+      'chromeos-brya-chrome-dchecks-skylab',
+      'chromeos-brya-chrome-skylab',
+      'chromeos-jacuzzi-chrome-dchecks-skylab',
+      'chromeos-jacuzzi-chrome-skylab',
+      'chromeos-jacuzzi-rel-skylab-fyi',
+      'chromeos-octopus-chrome-skylab',
+      'chromeos-octopus-rel-skylab-fyi',
+      'chromeos-trogdor-chrome-skylab-tests-fyi',
+      'chromeos-volteer-chrome-skylab',
+    ],
   },
   'not_site_per_process_blink_web_tests': {
     'remove_from': [
