@@ -44,7 +44,7 @@
       <cr-link-row id="cameraSubpageLink"
           start-icon="app-management:camera"
           label="$i18n{cameraToggleTitle}"
-          sub-label="[[cameraSubLabel_]]"
+          sub-label="[[cameraRowSubtext_]]"
           on-click="onCameraSubpageLinkClick_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
@@ -55,7 +55,7 @@
           checked="{{prefs.ash.user.camera_allowed.value}}"
           disabled="[[shouldDisableCameraToggle_]]"
           aria-label="$i18n{cameraToggleTitle}"
-          aria-description="[[cameraSubLabel_]]">
+          aria-description="[[cameraRowSubtext_]]">
       </cr-toggle>
     </div>
   </template>
@@ -102,7 +102,7 @@
       <cr-link-row id="microphoneSubpageLink"
           start-icon="app-management:microphone"
           label="$i18n{microphoneToggleTitle}"
-          sub-label="$i18n{microphoneToggleSubtext}"
+          sub-label="[[microphoneRowSubtext_]]"
           on-click="onMicrophoneSubpageLinkClick_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
@@ -114,7 +114,7 @@
             checked="{{prefs.ash.user.microphone_allowed.value}}"
             disabled="[[shouldDisableMicrophoneToggle_]]"
             aria-label="$i18n{microphoneToggleTitle}"
-            aria-description="$i18n{microphoneToggleSubtext}">
+            aria-description="[[microphoneRowSubtext_]]">
         </cr-toggle>
       </div>
       <paper-tooltip

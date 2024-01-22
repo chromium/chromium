@@ -164,10 +164,44 @@ suite('<os-settings-privacy-page>', () => {
   let privacyPage: OsSettingsPrivacyPageElement;
   let browserProxy: TestPeripheralDataAccessBrowserProxy;
 
+  const PRIVACY_PAGE_PREFS = {
+    'ash': {
+      'user': {
+        'camera_allowed': {
+          value: true,
+        },
+        'microphone_allowed': {
+          value: true,
+        },
+      },
+    },
+    'settings': {
+      'suggested_content_enabled': {
+        value: false,
+      },
+    },
+    'cros': {
+      'device': {
+        'peripheral_data_access_enabled': {
+          value: true,
+        },
+      },
+    },
+    'dns_over_https': {
+      'mode': {
+        value: SecureDnsMode.AUTOMATIC,
+      },
+      'templates': {
+        value: '',
+      },
+    },
+  };
+
   setup(async () => {
     browserProxy = new TestPeripheralDataAccessBrowserProxy();
     PeripheralDataAccessBrowserProxyImpl.setInstanceForTesting(browserProxy);
     privacyPage = document.createElement('os-settings-privacy-page');
+    privacyPage.prefs = Object.assign({}, PRIVACY_PAGE_PREFS);
     document.body.appendChild(privacyPage);
     flush();
 
@@ -228,29 +262,7 @@ suite('<os-settings-privacy-page>', () => {
     });
 
     // Update the backing pref to enabled.
-    privacyPage.prefs = {
-      'settings': {
-        'suggested_content_enabled': {
-          value: true,
-        },
-      },
-      'cros': {
-        'device': {
-          'peripheral_data_access_enabled': {
-            value: true,
-          },
-        },
-      },
-      'dns_over_https': {
-        'mode': {
-          value: SecureDnsMode.AUTOMATIC,
-        },
-        'templates': {
-          value: '',
-        },
-      },
-    };
-
+    privacyPage.set('prefs.settings.suggested_content_enabled.value', true);
     flush();
 
     // The checkbox reflects the updated pref state.
@@ -522,6 +534,7 @@ suite('<os-settings-privacy-page>', () => {
     chrome.metricsPrivate =
         fakeMetricsPrivate as unknown as typeof chrome.metricsPrivate;
     privacyPage = document.createElement('os-settings-privacy-page');
+    privacyPage.prefs = Object.assign({}, PRIVACY_PAGE_PREFS);
     document.body.appendChild(privacyPage);
 
     await waitAfterNextRender(privacyPage);
