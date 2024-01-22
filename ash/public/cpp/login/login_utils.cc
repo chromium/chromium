@@ -4,8 +4,9 @@
 
 #include "ash/public/cpp/login/login_utils.h"
 
+#include <string_view>
+
 #include "ash/public/cpp/session/user_info.h"
-#include "base/strings/string_piece.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -26,7 +27,7 @@ UserAvatar BuildAshUserAvatarForUser(const user_manager::User& user) {
   // user_image_source::GetUserImageInternal.
   auto load_image_from_resource = [&avatar](int resource_id) {
     auto& rb = ui::ResourceBundle::GetSharedInstance();
-    base::StringPiece avatar_data = rb.GetRawDataResourceForScale(
+    std::string_view avatar_data = rb.GetRawDataResourceForScale(
         resource_id, rb.GetMaxResourceScaleFactor());
     avatar.bytes.assign(avatar_data.begin(), avatar_data.end());
   };

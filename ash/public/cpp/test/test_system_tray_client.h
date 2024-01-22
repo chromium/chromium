@@ -6,10 +6,10 @@
 #define ASH_PUBLIC_CPP_TEST_TEST_SYSTEM_TRAY_CLIENT_H_
 
 #include <optional>
+#include <string_view>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/system_tray_client.h"
-#include "base/strings/string_piece.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
 
 namespace ash {
@@ -30,7 +30,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowBluetoothSettings() override;
   void ShowBluetoothSettings(const std::string& device_id) override;
   void ShowBluetoothPairingDialog(
-      std::optional<base::StringPiece> device_address) override;
+      std::optional<std::string_view> device_address) override;
   void ShowDateSettings() override;
   void ShowSetTimeDialog() override;
   void ShowDisplaySettings() override;
