@@ -58,9 +58,17 @@ search_engines::SearchEngineChoiceScreenConditions ComputeProfileEligibility(
       search_engines::SearchEngineChoiceServiceFactory::GetForProfile(&profile);
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(&profile);
+  if (!template_url_service) {
+    // Some unit tests using `BrowserWithTestWindowTest` create browser windows
+    // without fully instantiating profiles.
+    CHECK_IS_TEST();
+    return search_engines::SearchEngineChoiceScreenConditions::
+        kUnsupportedBrowserType;
+  }
+
   return search_engine_choice_service->GetStaticChoiceScreenConditions(
       CHECK_DEREF(g_browser_process->policy_service()),
-      is_regular_or_guest_profile, CHECK_DEREF(template_url_service));
+      is_regular_or_guest_profile, *template_url_service);
 }
 
 bool IsProfileEligibleForChoiceScreen(Profile& profile) {

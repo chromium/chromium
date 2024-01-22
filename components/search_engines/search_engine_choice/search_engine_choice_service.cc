@@ -283,11 +283,7 @@ int SearchEngineChoiceService::GetCountryId() {
 void SearchEngineChoiceService::RecordChoiceMade(
     ChoiceMadeLocation choice_location,
     TemplateURLService* template_url_service) {
-  if (choice_location == ChoiceMadeLocation::kOther) {
-    // This is called from a path not resulting from a fully featured search
-    // engine choice screen, so skip recoding associated choice data.
-    return;
-  }
+  CHECK_NE(choice_location, ChoiceMadeLocation::kOther);
 
   if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
     return;

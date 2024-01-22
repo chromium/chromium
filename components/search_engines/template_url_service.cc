@@ -1000,7 +1000,11 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
     }
   }
 
-  if (selection_added) {
+  if (selection_added &&
+      // The choice record below should only be done when called from a path
+      // associated with a fully featured search engine choice screen.
+      choice_made_location != search_engines::ChoiceMadeLocation::kOther) {
+    CHECK(search_engine_choice_service_);  // See b/321280848.
     search_engine_choice_service_->RecordChoiceMade(choice_made_location, this);
   }
 
