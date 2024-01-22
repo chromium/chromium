@@ -7,8 +7,10 @@
 #include <string>
 #include <utility>
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -17,6 +19,7 @@
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -126,6 +129,14 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
       "img-src 'self' chrome-untrusted://resources;");
+  raw_ptr<Profile> profile = Profile::FromWebUI(web_ui);
+
+  // If the ThemeSource isn't added here, since Read Anything is
+  // chrome-untrusted, it will be unable to load stylesheets until a new tab
+  // is opened.
+  // TODO(crbug.com/1465029): Remove workaround code, as this is now unneeded.
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(
+                                           profile, /*serve_untrusted=*/true));
 }
 
 ReadAnythingUntrustedUI::~ReadAnythingUntrustedUI() = default;
