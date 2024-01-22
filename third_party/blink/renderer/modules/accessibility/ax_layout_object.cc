@@ -661,12 +661,9 @@ static bool ShouldUseLayoutNG(const LayoutObject& layout_object) {
          layout_object.IsInLayoutNGInlineFormattingContext();
 }
 
-// Get the deepest descendant that is included in the tree.
-// |start_object| does not have to be included in the tree.
-// If |first| is true, returns the deepest first descendant.
-// Otherwise, returns the deepest last descendant.
-static AXObject* GetDeepestAXChildInLayoutTree(AXObject* start_object,
-                                               bool first) {
+AXObject* AXLayoutObject::GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
+    AXObject* start_object,
+    bool first) const {
   if (!start_object)
     return nullptr;
 
@@ -677,6 +674,21 @@ static AXObject* GetDeepestAXChildInLayoutTree(AXObject* start_object,
   AXObject* result = start_object;
   Node* current_node = start_object->GetNode();
   while (current_node) {
+    // If we find a node that is inline-block, we want to return it rather than
+    // getting the deepest child for that. This is because these are now always
+    // being included in the tree and the Next/PreviousOnLine could be set on
+    // the inline-block element. We exclude list markers since those technically
+    // fulfill the inline-block condition.
+    AXObject* ax_object = start_object->AXObjectCache().Get(current_node);
+    if (ax_object && ax_object->AccessibilityIsIncludedInTree() &&
+        !current_node->IsMarkerPseudoElement()) {
+      if (start_object->GetLayoutObject() &&
+          start_object->GetLayoutObject()->IsInline() &&
+          start_object->GetLayoutObject()->IsAtomicInlineLevel()) {
+        return ax_object;
+      }
+    }
+
     current_node = first ? LayoutTreeBuilderTraversal::FirstChild(*current_node)
                          : LayoutTreeBuilderTraversal::LastChild(*current_node);
     if (!current_node)
@@ -684,8 +696,9 @@ static AXObject* GetDeepestAXChildInLayoutTree(AXObject* start_object,
 
     AXObject* tentative_child = start_object->AXObjectCache().Get(current_node);
 
-    if (tentative_child && tentative_child->AccessibilityIsIncludedInTree())
+    if (tentative_child && tentative_child->AccessibilityIsIncludedInTree()) {
       result = tentative_child;
+    }
   }
 
   // Have reached the end of LayoutTreeBuilderTraversal. From here on, traverse
@@ -724,7 +737,8 @@ AXObject* AXLayoutObject::NextOnLine() const {
     // Note that pseudo content is always included in the tree, so
     // NextSiblingIncludingIgnored() will succeed.
     if (AccessibilityIsIncludedInTree()) {
-      return GetDeepestAXChildInLayoutTree(NextSiblingIncludingIgnored(), true);
+      return GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
+          NextSiblingIncludingIgnored(), true);
     }
     return nullptr;
   }
@@ -763,7 +777,8 @@ AXObject* AXLayoutObject::NextOnLine() const {
 
       bool is_inert = result ? result->IsInert() : false;
 
-      result = GetDeepestAXChildInLayoutTree(result, true);
+      result =
+          GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(result, true);
       if (result) {
         return result;
       }
@@ -824,7 +839,8 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
   if (previous_sibling && previous_sibling->GetLayoutObject() &&
       previous_sibling->GetLayoutObject()->IsLayoutOutsideListMarker()) {
     // A list item should be preceded by a list marker on the same line.
-    return GetDeepestAXChildInLayoutTree(previous_sibling, false);
+    return GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
+        previous_sibling, false);
   }
 
   if (layout_object->IsBoxListMarkerIncludingNG() ||
@@ -858,7 +874,8 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
 
       bool is_inert = result ? result->IsInert() : false;
 
-      result = GetDeepestAXChildInLayoutTree(result, false);
+      result =
+          GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(result, false);
       if (result) {
         return result;
       }

@@ -508,6 +508,12 @@ AXObject* AXNodeObject::ActiveDescendant() {
   return ax_descendant && ax_descendant->IsVisible() ? ax_descendant : nullptr;
 }
 
+bool IsExemptFromInlineBlockCheck(ax::mojom::blink::Role role) {
+  return role == ax::mojom::blink::Role::kSvgRoot ||
+         role == ax::mojom::blink::Role::kCanvas ||
+         role == ax::mojom::blink::Role::kEmbeddedObject;
+}
+
 AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     IgnoredReasons* ignored_reasons) const {
   DCHECK(GetDocument());
@@ -770,6 +776,17 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // Process potential in-page link targets
   if (IsPotentialInPageLinkTarget(*element))
     return kIncludeObject;
+
+  if (AXObjectCache().GetAXMode().has_mode(ui::AXMode::kInlineTextBoxes)) {
+    // If we have an element with inline block specified, we should include.
+    // There are some roles where we shouldn't include even if inline block,
+    // or we'll get test failures.
+    if (!IsExemptFromInlineBlockCheck(native_role_) && GetLayoutObject() &&
+        GetLayoutObject()->IsInline() &&
+        GetLayoutObject()->IsAtomicInlineLevel()) {
+      return kIncludeObject;
+    }
+  }
 
   // <span> tags are inline tags and not meant to convey information if they
   // have no other ARIA information on them. If we don't ignore them, they may

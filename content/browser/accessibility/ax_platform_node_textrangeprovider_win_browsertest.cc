@@ -1590,6 +1590,81 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveEndpointByLineInlineBlockSpan) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <html>
+      <div contenteditable="true" style="outline: 1px solid;" aria-label="canvas">
+        <div>first line</div>
+        <div><span>this line </span><span style="display: inline-block" id="IB"><span style="display: block;">is</span></span><span> broken.</span></div>
+        <div>last line</div>
+      </div>
+      </html>)HTML");
+  auto* node = FindNode(ax::mojom::Role::kStaticText, "first line");
+  ASSERT_NE(nullptr, node);
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*node, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"first line");
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Line,
+      /*count*/ 1,
+      /*expected_text*/ L"first line\nthis line \nis\n broken.",
+      /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Line,
+      /*count*/ 1,
+      /*expected_text*/
+      L"this line \nis\n broken.",
+      /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(text_range_provider,
+                                   TextPatternRangeEndpoint_End, TextUnit_Line,
+                                   /*count*/ 1,
+                                   /*expected_text*/
+                                   L"this line \nis\n broken.\nlast line",
+                                   /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Line,
+      /*count*/ 1,
+      /*expected_text*/ L"last line",
+      /*expected_count*/ 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveEndpointByLineLinkInTwoLines) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(<!DOCTYPE html>
+      <div contenteditable style="width: 70px">
+        Hello
+        <a href="#">this is a</a>
+        test.
+      </div>
+      )HTML");
+  auto* node = FindNode(ax::mojom::Role::kStaticText, "Hello ");
+  ASSERT_NE(nullptr, node);
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*node, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Hello ");
+  text_range_provider->ExpandToEnclosingUnit(TextUnit_Line);
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Hello this ");
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(text_range_provider,
+                                   TextPatternRangeEndpoint_End, TextUnit_Line,
+                                   /*count*/ 1,
+                                   /*expected_text*/ L"Hello this is a test.",
+                                   /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Line,
+      /*count*/ 1,
+      /*expected_text*/
+      L"is a test.",
+      /*expected_count*/ 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        MoveEndpointByUnitFormatAllFormats) {
   LoadInitialAccessibilityTreeFromHtml(
       R"HTML(<!DOCTYPE html>
@@ -3225,12 +3300,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   AssertMoveByUnitForMarkup(
       TextUnit_Line, "<div style='display:inline-block'>a</div>", {L"a"});
 
-  // This tests a weird edge-case; TextUnit_Line breaks at the beginning of an
-  // "inline-block", but not at the end. Consequently, a line break should not
-  // be added after an "inline-block", in contrast to a "block".
-  AssertMoveByUnitForMarkup(TextUnit_Line,
-                            "a<div style='display:inline-block'>b</div>c",
-                            {L"a", L"bc"});
+  // This makes sure that inline block is not adding a line break
+  AssertMoveByUnitForMarkup(
+      TextUnit_Line, "a<div style='display:inline-block'>b</div>c", {L"abc"});
   AssertMoveByUnitForMarkup(TextUnit_Line,
                             "a<div style='display:block'>b</div>c",
                             {L"a", L"b", L"c"});

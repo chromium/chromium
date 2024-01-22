@@ -1184,14 +1184,14 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetChildren(SAFEARRAY** children) {
 bool AXPlatformNodeTextRangeProviderWin::AtStartOfLinePredicate(
     const AXPositionInstance& position) {
   return !position->IsIgnored() && position->AtStartOfAnchor() &&
-         (position->AtStartOfLine() || position->AtStartOfInlineBlock());
+         position->AtStartOfLine();
 }
 
 // static
 bool AXPlatformNodeTextRangeProviderWin::AtEndOfLinePredicate(
     const AXPositionInstance& position) {
   return !position->IsIgnored() && position->AtEndOfAnchor() &&
-         (position->AtEndOfLine() || position->AtStartOfInlineBlock());
+         position->AtEndOfLine();
 }
 
 // static
