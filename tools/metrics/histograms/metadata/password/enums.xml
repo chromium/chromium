@@ -650,6 +650,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Full note selected"/>
   <int value="15" label="Part of a note copied"/>
   <int value="16" label="Full note copied"/>
+  <int value="17" label="Move password link clicked in details footer"/>
 </enum>
 
 <enum name="PasswordManager.AssistantStoppedBubble.CloseReason">

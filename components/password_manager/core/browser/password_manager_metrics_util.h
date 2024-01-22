@@ -574,7 +574,8 @@ enum class PasswordManagementBubbleInteractions {
   kNoteFullySelected = 14,
   kNotePartiallyCopied = 15,
   kNoteFullyCopied = 16,
-  kMaxValue = kNoteFullyCopied,
+  kMovePasswordLinkClicked = 17,
+  kMaxValue = kMovePasswordLinkClicked,
 };
 
 // Represents different causes for showing the password migration warning.

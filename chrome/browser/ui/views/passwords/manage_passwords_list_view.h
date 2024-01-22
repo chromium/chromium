@@ -31,7 +31,8 @@ class ManagePasswordsListView : public views::BoxLayoutView {
       ui::ImageModel favicon,
       base::RepeatingCallback<void(password_manager::PasswordForm)>
           on_row_clicked_callback,
-      base::RepeatingClosure on_navigate_to_settings_clicked_callback);
+      base::RepeatingClosure on_navigate_to_settings_clicked_callback,
+      bool is_account_storage_available);
 
   ManagePasswordsListView(const ManagePasswordsListView&) = delete;
   ManagePasswordsListView& operator=(const ManagePasswordsListView&) = delete;

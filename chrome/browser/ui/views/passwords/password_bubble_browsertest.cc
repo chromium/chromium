@@ -31,7 +31,9 @@ class PasswordBubbleBrowserTest
   ~PasswordBubbleBrowserTest() override = default;
 
   void ShowUi(const std::string& name) override {
-    ConfigurePasswordSync(std::get<0>(GetParam()));
+    ConfigurePasswordSync(std::get<0>(GetParam())
+                              ? SyncConfiguration::kSyncing
+                              : SyncConfiguration::kNotSyncing);
     base::i18n::SetRTLForTesting(std::get<1>(GetParam()));
     if (StartsWith(name, "PendingPasswordBubble",
                    base::CompareCase::SENSITIVE)) {
