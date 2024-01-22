@@ -267,8 +267,7 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveIsolatedWebAppData) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/1493504): Re-enable on macOS once flakiness is resolved.
-#if !BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 TEST_F(ChromeBrowsingDataModelDelegateTest, CookieDeletionFilterChildUser) {
   profile_->SetIsSupervisedProfile(true);
 
@@ -308,7 +307,7 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, CookieDeletionFilterIncognitoUser) {
   EXPECT_FALSE(
       delegate()->IsCookieDeletionDisabled(GURL("https://youtube.com")));
 }
-#endif  // !BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveFederatedIdentityData) {
   const url::Origin kRequester =
