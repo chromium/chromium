@@ -9,6 +9,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/types/expected.h"
+#import "build/branding_buildflags.h"
+#import "components/grit/components_resources.h"
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/plus_address_metrics.h"
 #import "components/strings/grit/components_strings.h"
@@ -16,6 +18,7 @@
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -50,6 +53,16 @@ NSAttributedString* DescriptionMessage() {
 
   return AttributedStringFromStringWithLink(message, text_attributes,
                                             link_attributes);
+}
+
+// Returns the image that should be used for the PlusAddress logo.
+UIImage* PlusAddressesLogo() {
+  // IDR_PLUS_ADDRESS_LOGO only exists in official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return NativeImage(IDR_PLUS_ADDRESS_LOGO);
+#else
+  return DefaultSymbolTemplateWithPointSize(kMailFillSymbol, kImageSize);
+#endif
 }
 
 }  // namespace
@@ -95,7 +108,7 @@ NSAttributedString* DescriptionMessage() {
   // Set the properties read by the super when constructing the
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
   [self setupAboveTitleView];
-  self.image = DefaultSymbolTemplateWithPointSize(kMailFillSymbol, kImageSize);
+  self.image = PlusAddressesLogo();
   self.imageHasFixedSize = true;
   self.titleString = l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_TITLE);
   self.primaryActionString =

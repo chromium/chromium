@@ -11,10 +11,13 @@ source_set("ui") {
   ]
   deps = [
     ":constants",
+    "//build:branding_buildflags",
     "//components/plus_addresses",
+    "//components/resources",
     "//components/strings",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
