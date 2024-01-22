@@ -344,6 +344,7 @@ bool PlatformThreadChromeOS::IsThreadsBgFeatureEnabled() {
   return g_threads_bg_enabled.load();
 }
 
+// static
 bool PlatformThreadChromeOS::IsDisplayThreadsRtFeatureEnabled() {
   return g_display_threads_rt.load();
 }
