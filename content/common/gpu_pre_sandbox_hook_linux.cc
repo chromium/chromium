@@ -425,7 +425,8 @@ void AddVulkanICDPermissions(std::vector<BrokerFilePermission>* permissions) {
                                                      "/etc/vulkan/icd.d"};
 
   static const char* const kReadOnlyICDList[] = {
-      "intel_icd.x86_64.json", "nvidia_icd.json", "radeon_icd.x86_64.json"};
+      "intel_icd.x86_64.json", "nvidia_icd.json", "radeon_icd.x86_64.json",
+      "mali_icd.json"};
 
   for (std::string prefix : kReadOnlyICDPrefixes) {
     permissions->push_back(BrokerFilePermission::ReadOnly(prefix));
