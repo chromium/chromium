@@ -116,6 +116,8 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
   mixer[kColorSidePanelWallpaperSearchErrorButtonText] = {
       ui::kColorSysOnTonalContainer};
   mixer[kColorSidePanelWallpaperSearchTileBackground] = {ui::kColorSysSurface2};
+  mixer[kColorSidePanelWallpaperSearchInspirationDescriptors] = {
+      ui::kColorSysPrimary};
 
   /* Commerce */
   mixer[kColorSidePanelCommerceGraphAxis] = {ui::kColorSysDivider};
