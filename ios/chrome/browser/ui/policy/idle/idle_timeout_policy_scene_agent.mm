@@ -16,6 +16,9 @@
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -28,6 +31,7 @@
 #import "ios/chrome/browser/ui/policy/idle/idle_timeout_policy_utils.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @interface IdleTimeoutPolicySceneAgent () <
@@ -329,6 +333,7 @@
 
 // Shows the notification dialog for the account on the `viewController`
 - (void)showIdleTimeoutConfirmation {
+  [self closeMediaPresentationsIfFullScreenMode];
   _idleTimeoutConfirmationCoordinator =
       [[IdleTimeoutConfirmationCoordinator alloc]
           initWithBaseViewController:[_sceneUIProvider activeViewController]
@@ -441,6 +446,19 @@
         [weakSelf dismissExtendedLaunchScreenWindowIfDisplayed];
       }),
       base::Seconds(5));
+}
+
+// Closes the media presentations to avoid having the fullscreen video on top of
+// the dialog so the user does not miss the dialog if they are watching a video.
+- (void)closeMediaPresentationsIfFullScreenMode {
+  Browser* currentBrowser =
+      self.sceneState.browserProviderInterface.currentBrowserProvider.browser;
+  CHECK(currentBrowser);
+  web::WebState* activeWebState =
+      currentBrowser->GetWebStateList()->GetActiveWebState();
+  if (activeWebState) {
+    activeWebState->CloseMediaPresentations();
+  }
 }
 
 @end
