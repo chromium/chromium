@@ -28,6 +28,8 @@ const routerRules = {
   }],
   'condition-request-source-network':
       [{condition: {requestMode: 'no-cors'}, source: 'network'}],
+  'condition-request-navigate-source-cache':
+      [{condition: {requestMode: 'navigate'}, source: 'cache'}],
   'condition-or-source-network': [{
     condition: {
       or: [

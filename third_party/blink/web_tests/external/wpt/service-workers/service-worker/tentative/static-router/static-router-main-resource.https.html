@@ -18,6 +18,7 @@ const ROUTER_RULE_KEY_RESPECT_CASE =
 const ROUTER_RULE_KEY_MULTIPLE_RULES = 'multiple-router-rules';
 const ROUTER_RULE_KEY_URLPATTERN_CACHE =
   'condition-urlpattern-string-source-cache';
+const ROUTER_RULE_KEY_REQUEST_CACHE = 'condition-request-navigate-source-cache';
 const SCOPE = 'resources/';
 const REGISTERED_ROUTE = 'resources/direct.txt';
 const ADDITIONAL_REGISTERED_ROUTE = 'resources/direct.html';
@@ -110,6 +111,15 @@ iframeTest(CACHED_ROUTE, ROUTER_RULE_KEY_URLPATTERN_CACHE, async (t, iwin, worke
   assert_equals(requests.length, 0);
   assert_equals(iwin.document.body.innerText, "From cache");
 }, 'Main resource load matched with the cache source');
+
+iframeTest(NON_REGISTERED_ROUTE, ROUTER_RULE_KEY_REQUEST_CACHE, async (t, iwin, worker) => {
+  const {requests} = await get_fetched_urls(worker);
+  // When the request matched to the rule with the "cache" source but failed to
+  // get the cache entry, the fetch handler is not involved and the network
+  // fallback is triggered instead.
+  assert_equals(requests.length, 0);
+  assert_equals(iwin.document.body.innerText, "Here's a simple html file.");
+}, 'Main resource fallback to the network when there is no cache entry');
 
 </script>
 </body>
