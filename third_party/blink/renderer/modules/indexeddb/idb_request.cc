@@ -397,8 +397,9 @@ bool IDBRequest::CanStillSendResult() const {
   // but before `ContextDestroyed()` has been called. See
   // https://crbug.com/733642
   const ExecutionContext* execution_context = GetExecutionContext();
-  if (!execution_context)
+  if (!execution_context || execution_context->IsContextDestroyed()) {
     return false;
+  }
 
   DCHECK(ready_state_ == PENDING || ready_state_ == DONE);
   if (request_aborted_)
