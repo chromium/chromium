@@ -2580,6 +2580,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/search/background/wallpaper_search/wallpaper_search_service_browsertest.cc",
       "../browser/search/ntp_custom_background_enabled_policy_handler_browsertest.cc",
       "../browser/search_engines/template_url_scraper_browsertest.cc",
+      "../browser/search_engines/template_url_service_browsertest.cc",
       "../browser/secure_origin_allowlist_browsertest.cc",
       "../browser/segmentation_platform/service_browsertest.cc",
       "../browser/serial/chrome_serial_browsertest.cc",
