@@ -18,5 +18,10 @@
       { start: "2014-10-08", domain: "adenilson.org" },
     ]
   },
+  "marshall@chromium.org": {
+    affiliations: [
+      { start: "2010-03-09", domain: "gmail.com" },
+    ]
+  },
 }
 
