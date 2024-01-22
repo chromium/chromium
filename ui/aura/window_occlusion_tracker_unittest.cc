@@ -1025,44 +1025,6 @@ TEST_F(WindowOcclusionTrackerTest, RemoveUntrackedWindow) {
   delete window_b;
 }
 
-// Verify that occlusion tracking with customized WindowHasContent callback.
-TEST_F(WindowOcclusionTrackerTest, CustomizedWindowHasContent) {
-  // Create window a. Expect it to be non-occluded.
-  MockWindowDelegate* delegate_a = new MockWindowDelegate();
-  delegate_a->set_expectation(Window::OcclusionState::VISIBLE, SkRegion());
-  CreateTrackedWindow(delegate_a, gfx::Rect(0, 0, 10, 10));
-  EXPECT_FALSE(delegate_a->is_expecting_call());
-
-  // Create window b with layer type LAYER_NOT_DRAWN. Occlusion state of a is
-  // not changed.
-  MockWindowDelegate* delegate_b = new MockWindowDelegate();
-  Window* window_b = new Window(delegate_b);
-  delegate_b->set_window(window_b);
-  window_b->Init(ui::LAYER_NOT_DRAWN);
-  window_b->SetBounds(gfx::Rect(0, 0, 10, 10));
-  root_window()->AddChild(window_b);
-  delegate_b->set_expectation(Window::OcclusionState::HIDDEN, SkRegion());
-  window_b->TrackOcclusionState();
-  EXPECT_FALSE(delegate_b->is_expecting_call());
-
-  // Use customized WindowHasContent callback to mark b as opaque.
-  Env* env = Env::GetInstance();
-  env->GetWindowOcclusionTracker()->set_window_has_content_callback(
-      base::BindLambdaForTesting([window_b](const Window* window) -> bool {
-        return window == window_b;
-      }));
-
-  // Show window b to trigger a occlusion compute and window a is occluded.
-  delegate_a->set_expectation(Window::OcclusionState::OCCLUDED, SkRegion());
-  delegate_b->set_expectation(Window::OcclusionState::VISIBLE, SkRegion());
-  window_b->Show();
-  EXPECT_FALSE(delegate_a->is_expecting_call());
-  EXPECT_FALSE(delegate_b->is_expecting_call());
-
-  env->GetWindowOcclusionTracker()->set_window_has_content_callback(
-      base::NullCallback());
-}
-
 // Verify that when a tracked window is removed and re-added to a root,
 // occlusion states are still tracked.
 TEST_F(WindowOcclusionTrackerTest, RemoveAndAddTrackedToRoot) {

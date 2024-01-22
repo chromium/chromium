@@ -144,13 +144,6 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   // Returns true if there are ignored animating windows.
   bool HasIgnoredAnimatingWindows() const { return !animated_windows_.empty(); }
 
-  // Set a callback to determine whether a window has content to draw in
-  // addition to layer type check (window layer type != ui::LAYER_NOT_DRAWN).
-  using WindowHasContentCallback = base::RepeatingCallback<bool(const Window*)>;
-  void set_window_has_content_callback(WindowHasContentCallback callback) {
-    window_has_content_callback_ = std::move(callback);
-  }
-
   // Set the factory to create WindowOcclusionChangeBuilder.
   using OcclusionChangeBuilderFactory =
       base::RepeatingCallback<std::unique_ptr<WindowOcclusionChangeBuilder>()>;
@@ -401,9 +394,6 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   // Tracks the observed windows.
   base::ScopedMultiSourceObservation<Window, WindowObserver>
       window_observations_{this};
-
-  // Callback to be invoked for additional window has content check.
-  WindowHasContentCallback window_has_content_callback_;
 
   // Optional factory to create occlusion change builder.
   OcclusionChangeBuilderFactory occlusion_change_builder_factory_;

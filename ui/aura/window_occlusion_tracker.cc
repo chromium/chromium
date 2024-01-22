@@ -487,9 +487,6 @@ bool WindowOcclusionTracker::WindowHasContent(Window* window) const {
   if (window->layer()->type() != ui::LAYER_NOT_DRAWN)
     return true;
 
-  if (window_has_content_callback_)
-    return window_has_content_callback_.Run(window);
-
   return false;
 }
 
