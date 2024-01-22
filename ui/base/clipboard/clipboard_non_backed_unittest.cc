@@ -130,33 +130,73 @@ TEST_F(ClipboardNonBackedTest, AdminWriteDoesNotRecordHistograms) {
   histogram_tester.ExpectTotalCount("Clipboard.Write", 0);
 }
 
+// Tests that text data uses 'text/plain' mime type.
+TEST_F(ClipboardNonBackedTest, PlainText) {
+  auto data = std::make_unique<ClipboardData>();
+  data->set_text("hello");
+  clipboard()->WriteClipboardData(std::move(data));
+  std::vector<std::u16string> types;
+  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
+                                  /*data_dst=*/nullptr, &types);
+
+  // Text data uses mime type 'text/plain'.
+  EXPECT_EQ(std::vector<std::string>({"text/plain"}), UTF8Types(types));
+  EXPECT_TRUE(clipboard()->IsFormatAvailable(
+      ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
+
+  // Validate reading back the text.
+  std::u16string text;
+  clipboard()->ReadText(ClipboardBuffer::kCopyPaste, /*dat_dist=*/nullptr,
+                        &text);
+  EXPECT_EQ(u"hello", text);
+}
+
 // Tests that site bookmark URLs are accessed as text, and
 // IsFormatAvailable('text/uri-list') is only true for files.
-TEST_F(ClipboardNonBackedTest, TextURIList) {
+TEST_F(ClipboardNonBackedTest, BookmarkURL) {
   auto data = std::make_unique<ClipboardData>();
+  data->set_bookmark_title("Example Page");
   data->set_bookmark_url("http://example.com");
   clipboard()->WriteClipboardData(std::move(data));
   std::vector<std::u16string> types;
   clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
                                   /*data_dst=*/nullptr, &types);
 
-  // Bookmark data uses mime type 'text/plain' on Linux,
-  // 'public.utf8-plain-text' on Macs and CF_UNICODETEXT atom on Windows..
-  EXPECT_EQ(std::vector<std::string>(
-                {ClipboardFormatType::PlainTextType().GetName()}),
-            UTF8Types(types));
+  // Bookmark data returns available type 'text/plain'.
+  EXPECT_EQ(std::vector<std::string>({"text/plain"}), UTF8Types(types));
+  EXPECT_TRUE(clipboard()->IsFormatAvailable(
+      ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
   EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::UrlType(),
                                              ClipboardBuffer::kCopyPaste,
                                              /*data_dst=*/nullptr));
+  EXPECT_TRUE(clipboard()->IsFormatAvailable(
+      ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
   EXPECT_FALSE(clipboard()->IsFormatAvailable(
       ClipboardFormatType::FilenamesType(), ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
 
-  // Filenames data uses mime type 'text/uri-list'.
-  data = std::make_unique<ClipboardData>();
+  // Validate reading back the bookmark.
+  std::u16string title;
+  std::string url;
+  clipboard()->ReadBookmark(/*dat_dist=*/nullptr, &title, &url);
+  EXPECT_EQ(u"Example Page", title);
+  EXPECT_EQ("http://example.com", url);
+  std::u16string text;
+  clipboard()->ReadText(ClipboardBuffer::kCopyPaste, /*dat_dist=*/nullptr,
+                        &text);
+  EXPECT_EQ(u"http://example.com", text);
+}
+
+// Filenames data uses mime type 'text/uri-list'.
+TEST_F(ClipboardNonBackedTest, TextURIList) {
+  auto data = std::make_unique<ClipboardData>();
   data->set_filenames(
       {FileInfo(base::FilePath(FILE_PATH_LITERAL("/path")), base::FilePath())});
   clipboard()->WriteClipboardData(std::move(data));
+  std::vector<std::u16string> types;
   clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
                                   /*data_dst=*/nullptr, &types);
   EXPECT_EQ(std::vector<std::string>({"text/uri-list"}), UTF8Types(types));
