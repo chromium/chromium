@@ -180,7 +180,6 @@ which aren't allowed to run on the regular Chromium waterfalls:
 *   `angle_deqp_gles2_tests`
 *   `angle_deqp_gles3_tests`
 *   `angle_end2end_tests`
-*   `audio_unittests`
 
 The remaining GPU tests are run via Telemetry.  In order to run them, just
 build the `telemetry_gpu_integration_test` target (or

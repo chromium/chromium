@@ -294,30 +294,6 @@ test("media_perftests") {
   ]
 }
 
-# The audio subset of media_unittests. This target exists for running only the
-# audio tests on the GPU bots (which have audio hardware).
-test("audio_unittests") {
-  deps = [
-    ":test_support",
-    "//base/test:test_support",
-    "//media/audio:unit_tests",
-    "//media/test:run_all_unittests",
-  ]
-  if (is_android) {
-    deps += [
-      # The test needs the java dependencies to add the java classes for their
-      # native counterparts to the test apk.
-      "//media/base/android:media_java",
-      "//ui/android:ui_java",
-    ]
-  }
-
-  if (is_fuchsia) {
-    additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/audio_output.shard.test-cml" ]
-  }
-}
-
 # Note: Most external components should just depend on //media unless they
 # specifically need this pared own target (NaCl, PPAPI, etc). Internal targets
 # should just depend on //media/base which will propagate this target to them.
