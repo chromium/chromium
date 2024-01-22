@@ -55,6 +55,7 @@
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/features.h"
+#include "content/common/service_worker/race_network_request_write_buffer_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/console_message.h"
@@ -5362,8 +5363,8 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
           {{"strategy", "optin"},
            {"bypass_for", "all_with_race_network_request"}}}},
         {});
-    ServiceWorkerRaceNetworkRequestURLLoaderClient::
-        SetDataPipeCapacityBytesForTest(1024);
+    RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
+        1024);
   }
   ~ServiceWorkerRaceNetworkRequestBrowserTest() override = default;
 
@@ -6313,8 +6314,8 @@ class ServiceWorkerAutoPreloadBrowserTest
     feature_list_.InitWithFeatures(
         {features::kServiceWorkerAutoPreload},
         {features::kServiceWorkerBypassFetchHandler});
-    ServiceWorkerRaceNetworkRequestURLLoaderClient::
-        SetDataPipeCapacityBytesForTest(1024);
+    RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
+        1024);
   }
 
   ~ServiceWorkerAutoPreloadBrowserTest() override = default;
@@ -6608,8 +6609,8 @@ class ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest
              {{"enable_subresource_preload", "false"}}},
         },
         {});
-    ServiceWorkerRaceNetworkRequestURLLoaderClient::
-        SetDataPipeCapacityBytesForTest(1024);
+    RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
+        1024);
   }
 
  private:
@@ -6665,8 +6666,8 @@ class ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest
              {{"enable_only_when_service_worker_not_running", "true"}}},
         },
         {});
-    ServiceWorkerRaceNetworkRequestURLLoaderClient::
-        SetDataPipeCapacityBytesForTest(1024);
+    RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
+        1024);
   }
 
  private:

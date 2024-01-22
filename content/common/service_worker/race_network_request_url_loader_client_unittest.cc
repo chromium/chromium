@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
+#include "content/common/service_worker/race_network_request_write_buffer_manager.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/net_errors.h"
@@ -255,8 +256,8 @@ class ServiceWorkerRaceNetworkRequestURLLoaderClientTest
   }
 
   void SetUpURLLoaderClient(uint32_t data_pipe_capacity_num_bytes) {
-    ServiceWorkerRaceNetworkRequestURLLoaderClient::
-        SetDataPipeCapacityBytesForTest(data_pipe_capacity_num_bytes);
+    RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
+        data_pipe_capacity_num_bytes);
     mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client;
     client_for_fetch_handler_->Bind(&forwarding_client);
     client_ = std::make_unique<ServiceWorkerRaceNetworkRequestURLLoaderClient>(
