@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/ash/eche_app/app_id.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/mojom/app_permission_handler.mojom.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/testing_profile.h"
@@ -285,8 +286,10 @@ TEST_F(AppPermissionHandlerTest, GetSystemAppsThatUseMicrophone) {
              {std::make_pair(apps::PermissionType::kMicrophone, true)});
   InstallApp(ash::kChromeUIUntrustedProjectorSwaAppId,
              {std::make_pair(apps::PermissionType::kMicrophone, true)});
+  InstallApp(ash::eche_app::kEcheAppId,
+             {std::make_pair(apps::PermissionType::kMicrophone, true)});
 
-  EXPECT_EQ(2, GetNumberOfSystemAppsThatUseMicrophone());
+  EXPECT_EQ(3, GetNumberOfSystemAppsThatUseMicrophone());
 }
 
 }  // namespace ash::settings
