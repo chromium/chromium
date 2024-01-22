@@ -607,10 +607,8 @@
     },
     {
       name: "CapturedSurfaceControl",
-      // TODO(crbug.com/1466247): Once implementation is further along,
-      // set "default" to "experimental". (Note that Android support
-      // is not planned.)
-      status: {"Android": ""},
+      origin_trial_feature_name: "CapturedSurfaceControl",
+      status: {"Android": "", "default": "experimental"},
     },
     {
       name: "CaptureHandle",
