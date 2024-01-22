@@ -278,12 +278,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
       override;
 
-  // content::WebContentsObserver implementation.
-  void OnWebContentsLostFocus(
-      content::RenderWidgetHost* render_widget_host) override;
-  void OnWebContentsFocused(
-      content::RenderWidgetHost* render_widget_host) override;
-
   base::WeakPtr<AutofillPopupControllerImpl> popup_controller_for_testing() {
     return popup_controller_;
   }
@@ -371,9 +365,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>
       zoom_observation_{this};
 #endif
-
-  // True if and only if the associated web_contents() is currently focused.
-  bool has_focus_ = false;
 };
 
 }  // namespace autofill

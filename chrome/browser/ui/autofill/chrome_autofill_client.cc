@@ -1015,11 +1015,6 @@ void ChromeAutofillClient::HideTouchToFillCreditCard() {
 void ChromeAutofillClient::ShowAutofillPopup(
     const autofill::AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillPopupDelegate> delegate) {
-  // Autofill popups should only be shown in focused windows because on Windows
-  // the popup may overlap the focused window (see crbug.com/1239760).
-  if (!has_focus_)
-    return;
-
   // Convert element_bounds to be in screen space.
   gfx::Rect client_area = web_contents()->GetContainerBounds();
   gfx::RectF element_bounds_in_screen_space =
@@ -1317,16 +1312,6 @@ ChromeAutofillClient::GetDeviceAuthenticator() {
 #else
   return nullptr;
 #endif
-}
-
-void ChromeAutofillClient::OnWebContentsLostFocus(
-    content::RenderWidgetHost* render_widget_host) {
-  has_focus_ = false;
-}
-
-void ChromeAutofillClient::OnWebContentsFocused(
-    content::RenderWidgetHost* render_widget_host) {
-  has_focus_ = true;
 }
 
 #if !BUILDFLAG(IS_ANDROID)
