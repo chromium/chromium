@@ -117,6 +117,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private SelectionDelegate<HistoryItem> mSelectionDelegate;
     private boolean mShouldShowPrivacyDisclaimers;
     private PrefChangeRegistrar mPrefChangeRegistrar;
+    private String mAppId;
 
     /**
      * Creates a new HistoryContentManager.
@@ -251,10 +252,18 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mPrefChangeRegistrar.addObserver(Pref.INCOGNITO_MODE_AVAILABILITY, this);
     }
 
+    /**
+     * @param appId The app ID to retrieve history entries for.
+     */
+    public void setAppId(String appId) {
+        mAppId = appId;
+    }
+
     /** Tell the HistoryContentManager to start loading items. */
     public void startLoadingItems() {
         // Filtering the adapter to only the results from this particular host.
         mHistoryAdapter.setHostName(mHostName);
+        mHistoryAdapter.setAppId(mAppId);
         mHistoryAdapter.startLoadingItems();
     }
 

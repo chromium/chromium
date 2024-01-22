@@ -31,13 +31,16 @@
 #include "ui/base/page_transition_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_string.h"
 #include "chrome/browser/android/background_tab_manager.h"
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
+#include "chrome/browser/history/jni_headers/HistoryTabHelper_jni.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
+#include "content/public/browser/web_contents.h"
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -287,7 +290,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
                        navigation_handle->GetPreviousPrimaryMainFrameURL()))
                  : std::nullopt),
       chrome_ui_data == nullptr ? std::nullopt : chrome_ui_data->bookmark_id(),
-      std::move(context_annotations));
+      app_id_, std::move(context_annotations));
 
   if (ui::PageTransitionIsMainFrame(page_transition) &&
       virtual_url != navigation_handle->GetURL()) {
@@ -494,4 +497,14 @@ bool HistoryTabHelper::IsEligibleTab(
 #endif
 }
 
+#if BUILDFLAG(IS_ANDROID)
+static void JNI_HistoryTabHelper_SetAppIdNative(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& japp_id,
+    const base::android::JavaParamRef<jobject>& jweb_contents) {
+  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
+  auto* history_tab_helper = HistoryTabHelper::FromWebContents(web_contents);
+  history_tab_helper->SetAppId(base::android::ConvertJavaStringToUTF8(japp_id));
+}
+#endif
 WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryTabHelper);

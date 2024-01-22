@@ -162,6 +162,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       /*top_level_url=*/std::nullopt,
       /*opener=*/std::nullopt,
       /*bookmark_id=*/std::nullopt,
+      /*app_id=*/std::nullopt,
       /*context_annotations=*/std::move(context_annotations));
 }
 

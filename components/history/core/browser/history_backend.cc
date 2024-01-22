@@ -1022,7 +1022,7 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
                      request.visit_source, IsTypedIncrement(t), opener_visit,
                      request.consider_for_ntp_most_visited,
                      request.local_navigation_id, request.title, top_level_url,
-                     frame_url)
+                     frame_url, request.app_id)
             .second;
 
     // Update the segment for this visit. KEYWORD_GENERATED visits should not
@@ -1154,7 +1154,7 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
                        redirect_index == 0 ? opener_visit : 0,
                        request.consider_for_ntp_most_visited,
                        request.local_navigation_id, request.title,
-                       top_level_url, frame_url)
+                       top_level_url, frame_url, request.app_id)
               .second;
 
       if (t & ui::PAGE_TRANSITION_CHAIN_START) {
@@ -1361,6 +1361,7 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     absl::optional<std::u16string> title,
     absl::optional<GURL> top_level_url,
     absl::optional<GURL> frame_url,
+    absl::optional<std::string> app_id,
     absl::optional<base::TimeDelta> visit_duration,
     absl::optional<std::string> originator_cache_guid,
     absl::optional<VisitID> originator_visit_id,
@@ -1465,6 +1466,7 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
 
   visit_info.is_known_to_sync = is_known_to_sync;
   visit_info.consider_for_ntp_most_visited = consider_for_ntp_most_visited;
+  visit_info.app_id = app_id;
   visit_info.visit_id = db_->AddVisit(&visit_info, visit_source);
 
   if (visit_info.visit_time < first_recorded_time_)
@@ -1708,7 +1710,7 @@ VisitID HistoryBackend::AddSyncedVisit(
       visit.consider_for_ntp_most_visited,
       /*local_navigation_id=*/absl::nullopt, title,
       /*top_level_url=*/absl::nullopt, /*frame_url=*/absl::nullopt,
-      visit.visit_duration, visit.originator_cache_guid,
+      visit.app_id, visit.visit_duration, visit.originator_cache_guid,
       visit.originator_visit_id, visit.originator_referring_visit,
       visit.originator_opener_visit, visit.is_known_to_sync);
 

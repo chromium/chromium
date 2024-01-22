@@ -3913,7 +3913,8 @@ TEST_F(HistoryBackendTest, AddPageWithContextAnnotations) {
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
       /*title=*/absl::nullopt, /*top_level_url*/ absl::nullopt,
       /*opener=*/absl::nullopt,
-      /*bookmark_id=*/absl::nullopt, context_annotations);
+      /*bookmark_id=*/absl::nullopt, /*app_id=*/absl::nullopt,
+      context_annotations);
   backend_->AddPage(request);
 
   // Read the visit back from the DB and make sure the annotations are there.

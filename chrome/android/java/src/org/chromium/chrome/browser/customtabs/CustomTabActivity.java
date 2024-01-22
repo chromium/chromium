@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsMod
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
+import org.chromium.chrome.browser.history.HistoryTabHelper;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
@@ -89,11 +90,13 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                 @Override
                 public void onInitialTabCreated(@NonNull Tab tab, int mode) {
                     resetPostMessageHandlersForCurrentSession();
+                    maybeCreateHistoryTabHelper(tab);
                 }
 
                 @Override
                 public void onTabSwapped(@NonNull Tab tab) {
                     resetPostMessageHandlersForCurrentSession();
+                    maybeCreateHistoryTabHelper(tab);
                 }
 
                 @Override
@@ -101,6 +104,11 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                     resetPostMessageHandlersForCurrentSession();
                 }
             };
+
+    private void maybeCreateHistoryTabHelper(Tab tab) {
+        String appId = mIntentDataProvider.getClientPackageName();
+        if (appId != null) HistoryTabHelper.from(tab).setAppId(appId, tab.getWebContents());
+    }
 
     @Override
     protected BaseCustomTabActivityComponent createComponent(

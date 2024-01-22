@@ -406,6 +406,7 @@ public class HistoryManager
                         R.string.history_manager_empty_state_view_or_clear_page_visited);
 
         // 6. Load items.
+        // TODO: Set appId before loading items.
         mContentManager.startLoadingItems();
 
         if (showHistoryClustersImmediately) {

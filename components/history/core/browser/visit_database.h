@@ -351,6 +351,10 @@ class VisitDatabase {
   // Called by the derived classes to migrate the older visits table which
   // doesn't have the `visited_link_id` column.
   bool MigrateVisitsAddVisitedLinkIdColumn();
+
+  // Called by the derived classes to migrate the older visits table which
+  // doesn't have the `app_id` column.
+  bool MigrateVisitsAddAppId();
 };
 
 // Columns, in order, of the visit table.
@@ -359,7 +363,7 @@ class VisitDatabase {
   "segment_id,visit_duration,incremented_omnibox_typed_score,"      \
   "opener_visit,originator_cache_guid,originator_visit_id,"         \
   "originator_from_visit,originator_opener_visit,is_known_to_sync," \
-  "consider_for_ntp_most_visited,visited_link_id "
+  "consider_for_ntp_most_visited,visited_link_id,app_id "
 
 }  // namespace history
 

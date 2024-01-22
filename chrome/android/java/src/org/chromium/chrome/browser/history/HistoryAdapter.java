@@ -63,6 +63,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private boolean mClearBrowsingDataButtonVisible;
     private String mQueryText = EMPTY_QUERY;
     private String mHostName;
+    private String mAppId; // Not used if null i.e. query all entries regardless of app ID
 
     private boolean mDisableScrollToLoadForTest;
     private ObservableSupplier<Boolean> mShowHistoryToggleSupplier;
@@ -103,7 +104,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         if (mHostName != null) {
             mHistoryProvider.queryHistoryForHost(mHostName);
         } else {
-            mHistoryProvider.queryHistory(mQueryText);
+            mHistoryProvider.queryHistory(mQueryText, mAppId);
         }
     }
 
@@ -149,7 +150,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mQueryText = query;
         mIsSearching = true;
         mClearOnNextQueryComplete = true;
-        mHistoryProvider.queryHistory(mQueryText);
+        mHistoryProvider.queryHistory(mQueryText, mAppId);
     }
 
     /** Called when a search is ended. */
@@ -432,6 +433,13 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     /** @param hostName The hostName to retrieve history entries for. */
     public void setHostName(String hostName) {
         mHostName = hostName;
+    }
+
+    /**
+     * @param appId The app ID to retrieve history entries for.
+     */
+    public void setAppId(String appId) {
+        mAppId = appId;
     }
 
     ItemGroup getFirstGroupForTests() {

@@ -37,7 +37,8 @@ bool IsVisitInfoEqual(const VisitRow& a, const VisitRow& b) {
          a.originator_cache_guid == b.originator_cache_guid &&
          a.originator_visit_id == b.originator_visit_id &&
          a.is_known_to_sync == b.is_known_to_sync &&
-         a.consider_for_ntp_most_visited == b.consider_for_ntp_most_visited;
+         a.consider_for_ntp_most_visited == b.consider_for_ntp_most_visited &&
+         a.app_id == b.app_id;
 }
 
 }  // namespace
@@ -355,6 +356,10 @@ TEST_F(VisitDatabaseTest, GetAllVisitsInRange) {
 TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
   std::vector<VisitRow> test_visit_rows = GetTestVisitRows();
 
+  test_visit_rows[1].app_id = "org.chromium.dino";
+  test_visit_rows[2].app_id = "org.chromium.dino";
+  test_visit_rows[3].app_id = "org.chromium.dino";
+
   for (size_t i = 0; i < test_visit_rows.size(); ++i) {
     EXPECT_TRUE(AddVisit(&test_visit_rows[i], SOURCE_BROWSED));
   }
@@ -367,6 +372,23 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
   ASSERT_EQ(static_cast<size_t>(2), results.size());
   EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[5]));
   EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[3]));
+
+  // Query the visits with app_id. Only those with the matching app_id will be
+  // returned.
+  options.app_id = "org.chromium.dino";
+  GetVisibleVisitsInRange(options, &results);
+  ASSERT_EQ(static_cast<size_t>(2), results.size());
+  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[3]));
+  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[1]));
+
+  // Test the query with app_id, but in the reverse order.
+  options.visit_order = QueryOptions::OLDEST_FIRST;
+  GetVisibleVisitsInRange(options, &results);
+  ASSERT_EQ(static_cast<size_t>(2), results.size());
+  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
+  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[3]));
+
+  options = QueryOptions();  // Reset options to default.
 
   // Now try with only per-day de-duping -- the second visit should appear,
   // since it's a duplicate of visit6 but on a different day.

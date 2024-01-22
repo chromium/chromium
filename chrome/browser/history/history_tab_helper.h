@@ -31,11 +31,6 @@ class HistoryTabHelper
 
   ~HistoryTabHelper() override;
 
-  // Updates history with the specified navigation. This is called by
-  // DidFinishNavigation to update history state.
-  void UpdateHistoryForNavigation(
-      const history::HistoryAddPageArgs& add_page_args);
-
   // Returns the history::HistoryAddPageArgs to use for adding a page to
   // history.
   history::HistoryAddPageArgs CreateHistoryAddPageArgs(
@@ -54,6 +49,11 @@ class HistoryTabHelper
     force_eligible_tab_for_testing_ = force;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // Sets App ID that that goes into visit database.
+  void SetAppId(const std::string& app_id) { app_id_ = app_id; }
+#endif
+
  private:
   explicit HistoryTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<HistoryTabHelper>;
@@ -63,6 +63,11 @@ class HistoryTabHelper
                            CreateAddPageArgsHasOpenerWebContentseNotFirstPage);
   FRIEND_TEST_ALL_PREFIXES(HistoryFencedFrameBrowserTest,
                            FencedFrameDoesNotAffectLoadingState);
+
+  // Updates history with the specified navigation. This is called by
+  // DidFinishNavigation to update history state.
+  void UpdateHistoryForNavigation(
+      const history::HistoryAddPageArgs& add_page_args);
 
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(
@@ -115,6 +120,9 @@ class HistoryTabHelper
     GURL url;
   };
   std::optional<NavigationState> cached_navigation_state_;
+
+  // The package name of an app that opens a Custom Tab and visits a URL.
+  absl::optional<std::string> app_id_ = absl::nullopt;
 
   // Set to true in unit tests to avoid need for a Browser instance.
   bool force_eligible_tab_for_testing_ = false;

@@ -39,7 +39,7 @@ public class StubbedHistoryProvider implements HistoryProvider {
     }
 
     @Override
-    public void queryHistory(String query) {
+    public void queryHistory(String query, String appId) {
         mHostOnly = false;
         query(query);
     }
