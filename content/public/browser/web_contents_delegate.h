@@ -720,6 +720,10 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual PreloadingEligibility IsPrerender2Supported(
       WebContents& web_contents);
 
+  // Returns whether to override user agent for prerendering navigation.
+  virtual NavigationController::UserAgentOverrideOption
+  ShouldOverrideUserAgentForPrerender2();
+
   // If |old_contents| is being inspected by a DevTools window, it updates the
   // window to inspect |new_contents| instead and calls |callback| after it
   // finishes asynchronously. If no window is present, or no update is

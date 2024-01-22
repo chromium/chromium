@@ -374,6 +374,11 @@ PreloadingEligibility WebContentsDelegate::IsPrerender2Supported(
   return PreloadingEligibility::kPreloadingUnsupportedByWebContents;
 }
 
+NavigationController::UserAgentOverrideOption
+WebContentsDelegate::ShouldOverrideUserAgentForPrerender2() {
+  return NavigationController::UA_OVERRIDE_INHERIT;
+}
+
 void WebContentsDelegate::UpdateInspectedWebContentsIfNecessary(
     WebContents* old_contents,
     WebContents* new_contents,
