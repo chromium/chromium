@@ -831,7 +831,6 @@ static_library("browser") {
     "model_execution/model_execution_session.h",
     "model_execution/model_manager_impl.cc",
     "model_execution/model_manager_impl.h",
-    "native_window_notification_source.h",
     "navigation_predictor/anchor_element_preloader.cc",
     "navigation_predictor/anchor_element_preloader.h",
     "navigation_predictor/navigation_predictor.cc",
