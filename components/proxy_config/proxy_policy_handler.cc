@@ -21,6 +21,8 @@
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/strings/grit/components_strings.h"
 
+namespace proxy_config {
+
 namespace {
 
 using policy::kProxyPacMandatory;
@@ -69,6 +71,120 @@ const char* const kDeprecatedProxyPolicies[] = {
     kProxyMode, kProxyServerMode, kProxyServer, kProxyPacUrl, kProxyBypassList,
 };
 
+const base::Value* GetProxyPolicyValue(const base::Value* value,
+                                       const char* policy_name) {
+  if (!value) {
+    return nullptr;
+  }
+  const base::Value::Dict* settings = value->GetIfDict();
+  if (!settings) {
+    return nullptr;
+  }
+
+  const base::Value* policy_value = settings->Find(policy_name);
+  if (!policy_value || policy_value->is_none()) {
+    return nullptr;
+  }
+  const std::string* tmp = policy_value->GetIfString();
+  if (tmp && tmp->empty()) {
+    return nullptr;
+  }
+  return policy_value;
+}
+
+// Converts the deprecated ProxyServerMode policy value to a ProxyMode value
+// and places the result in |mode_value|. Returns whether the conversion
+// succeeded.
+bool CheckProxyModeAndServerMode(const base::Value* proxy_settings,
+                                 PolicyErrorMap* errors,
+                                 std::string* mode_value) {
+  const base::Value* mode = GetProxyPolicyValue(proxy_settings, kProxyMode);
+  const base::Value* server = GetProxyPolicyValue(proxy_settings, kProxyServer);
+  const base::Value* server_mode =
+      GetProxyPolicyValue(proxy_settings, kProxyServerMode);
+  const base::Value* pac_url =
+      GetProxyPolicyValue(proxy_settings, kProxyPacUrl);
+
+  // If there's a server mode, convert it into a mode.
+  // When both are specified, the mode takes precedence.
+  if (mode) {
+    if (server_mode) {
+      errors->AddError(kProxySettings, IDS_POLICY_OVERRIDDEN, kProxyMode,
+                       PolicyErrorPath{kProxyServerMode});
+    }
+    if (!mode->is_string()) {
+      errors->AddError(kProxySettings, IDS_POLICY_TYPE_ERROR,
+                       base::Value::GetTypeName(base::Value::Type::BOOLEAN),
+                       PolicyErrorPath{kProxyMode});
+      return false;
+    }
+    *mode_value = mode->GetString();
+
+    ProxyPrefs::ProxyMode proxy_mode;
+    if (!ProxyPrefs::StringToProxyMode(*mode_value, &proxy_mode)) {
+      errors->AddError(kProxySettings, IDS_POLICY_INVALID_PROXY_MODE_ERROR,
+                       PolicyErrorPath{kProxyMode});
+      return false;
+    }
+
+    if (proxy_mode == ProxyPrefs::MODE_PAC_SCRIPT && !pac_url) {
+      errors->AddError(kProxySettings, IDS_POLICY_NOT_SPECIFIED_ERROR,
+                       PolicyErrorPath{kProxyPacUrl});
+      return false;
+    }
+    if (proxy_mode == ProxyPrefs::MODE_FIXED_SERVERS && !server) {
+      errors->AddError(kProxySettings, IDS_POLICY_NOT_SPECIFIED_ERROR,
+                       PolicyErrorPath{kProxyServer});
+      return false;
+    }
+  } else if (server_mode) {
+    if (!server_mode->is_int()) {
+      errors->AddError(kProxySettings, IDS_POLICY_TYPE_ERROR,
+                       base::Value::GetTypeName(base::Value::Type::INTEGER),
+                       PolicyErrorPath{kProxyServerMode});
+      return false;
+    }
+
+    switch (server_mode->GetInt()) {
+      case ProxyPolicyHandler::PROXY_SERVER_MODE:
+        *mode_value = ProxyPrefs::kDirectProxyModeName;
+        break;
+      case ProxyPolicyHandler::PROXY_AUTO_DETECT_PROXY_SERVER_MODE:
+        *mode_value = ProxyPrefs::kAutoDetectProxyModeName;
+        break;
+      case ProxyPolicyHandler::PROXY_MANUALLY_CONFIGURED_PROXY_SERVER_MODE:
+        if (server && pac_url) {
+          int message_id = IDS_POLICY_PROXY_BOTH_SPECIFIED_ERROR;
+          errors->AddError(kProxySettings, message_id,
+                           PolicyErrorPath{kProxyServer});
+          errors->AddError(kProxySettings, message_id,
+                           PolicyErrorPath{kProxyPacUrl});
+          return false;
+        }
+        if (!server && !pac_url) {
+          int message_id = IDS_POLICY_PROXY_NEITHER_SPECIFIED_ERROR;
+          errors->AddError(kProxySettings, message_id,
+                           PolicyErrorPath{kProxyServer});
+          errors->AddError(kProxySettings, message_id,
+                           PolicyErrorPath{kProxyPacUrl});
+          return false;
+        }
+        *mode_value = pac_url ? ProxyPrefs::kPacScriptProxyModeName
+                              : ProxyPrefs::kFixedServersProxyModeName;
+        break;
+      case ProxyPolicyHandler::PROXY_USE_SYSTEM_PROXY_SERVER_MODE:
+        *mode_value = ProxyPrefs::kSystemProxyModeName;
+        break;
+      default:
+        errors->AddError(kProxySettings, IDS_POLICY_OUT_OF_RANGE_ERROR,
+                         base::NumberToString(server_mode->GetInt()),
+                         PolicyErrorPath{kProxyServerMode});
+        return false;
+    }
+  }
+  return true;
+}
+
 // Maps the separate deprecated policies for proxy settings into a single
 // Dictionary policy. This allows to keep the logic of merging policies from
 // different sources simple, as all separate proxy policies should be considered
@@ -110,8 +226,6 @@ base::Value RemapProxyPolicies(const PolicyMap& policies) {
 }
 
 }  // namespace
-
-namespace proxy_config {
 
 // The proxy policies have the peculiarity that they are loaded from individual
 // policies, but the providers then expose them through a unified
@@ -236,7 +350,7 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   }
 
   auto set_proxy_pref_value = [&prefs](base::Value::Dict dict) {
-    prefs->SetValue(proxy_config::prefs::kProxy, base::Value(std::move(dict)));
+    prefs->SetValue(prefs::kProxy, base::Value(std::move(dict)));
   };
 
   switch (proxy_mode) {
@@ -272,115 +386,6 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     case ProxyPrefs::kModeCount:
       NOTREACHED();
   }
-}
-
-const base::Value* ProxyPolicyHandler::GetProxyPolicyValue(
-    const base::Value* value,
-    const char* policy_name) {
-  if (!value)
-    return nullptr;
-  const base::Value::Dict* settings = value->GetIfDict();
-  if (!settings)
-    return nullptr;
-
-  const base::Value* policy_value = settings->Find(policy_name);
-  if (!policy_value || policy_value->is_none())
-    return nullptr;
-  const std::string* tmp = policy_value->GetIfString();
-  if (tmp && tmp->empty())
-    return nullptr;
-  return policy_value;
-}
-
-bool ProxyPolicyHandler::CheckProxyModeAndServerMode(
-    const base::Value* proxy_settings,
-    PolicyErrorMap* errors,
-    std::string* mode_value) {
-  const base::Value* mode = GetProxyPolicyValue(proxy_settings, kProxyMode);
-  const base::Value* server = GetProxyPolicyValue(proxy_settings, kProxyServer);
-  const base::Value* server_mode =
-      GetProxyPolicyValue(proxy_settings, kProxyServerMode);
-  const base::Value* pac_url =
-      GetProxyPolicyValue(proxy_settings, kProxyPacUrl);
-
-  // If there's a server mode, convert it into a mode.
-  // When both are specified, the mode takes precedence.
-  if (mode) {
-    if (server_mode) {
-      errors->AddError(kProxySettings, IDS_POLICY_OVERRIDDEN, kProxyMode,
-                       PolicyErrorPath{kProxyServerMode});
-    }
-    if (!mode->is_string()) {
-      errors->AddError(kProxySettings, IDS_POLICY_TYPE_ERROR,
-                       base::Value::GetTypeName(base::Value::Type::BOOLEAN),
-                       PolicyErrorPath{kProxyMode});
-      return false;
-    }
-    *mode_value = mode->GetString();
-
-    ProxyPrefs::ProxyMode proxy_mode;
-    if (!ProxyPrefs::StringToProxyMode(*mode_value, &proxy_mode)) {
-      errors->AddError(kProxySettings, IDS_POLICY_INVALID_PROXY_MODE_ERROR,
-                       PolicyErrorPath{kProxyMode});
-      return false;
-    }
-
-    if (proxy_mode == ProxyPrefs::MODE_PAC_SCRIPT && !pac_url) {
-      errors->AddError(kProxySettings, IDS_POLICY_NOT_SPECIFIED_ERROR,
-                       PolicyErrorPath{kProxyPacUrl});
-      return false;
-    }
-    if (proxy_mode == ProxyPrefs::MODE_FIXED_SERVERS && !server) {
-      errors->AddError(kProxySettings, IDS_POLICY_NOT_SPECIFIED_ERROR,
-                       PolicyErrorPath{kProxyServer});
-      return false;
-    }
-  } else if (server_mode) {
-    if (!server_mode->is_int()) {
-      errors->AddError(kProxySettings, IDS_POLICY_TYPE_ERROR,
-                       base::Value::GetTypeName(base::Value::Type::INTEGER),
-                       PolicyErrorPath{kProxyServerMode});
-      return false;
-    }
-
-    switch (server_mode->GetInt()) {
-      case PROXY_SERVER_MODE:
-        *mode_value = ProxyPrefs::kDirectProxyModeName;
-        break;
-      case PROXY_AUTO_DETECT_PROXY_SERVER_MODE:
-        *mode_value = ProxyPrefs::kAutoDetectProxyModeName;
-        break;
-      case PROXY_MANUALLY_CONFIGURED_PROXY_SERVER_MODE:
-        if (server && pac_url) {
-          int message_id = IDS_POLICY_PROXY_BOTH_SPECIFIED_ERROR;
-          errors->AddError(kProxySettings, message_id,
-                           PolicyErrorPath{kProxyServer});
-          errors->AddError(kProxySettings, message_id,
-                           PolicyErrorPath{kProxyPacUrl});
-          return false;
-        }
-        if (!server && !pac_url) {
-          int message_id = IDS_POLICY_PROXY_NEITHER_SPECIFIED_ERROR;
-          errors->AddError(kProxySettings, message_id,
-                           PolicyErrorPath{kProxyServer});
-          errors->AddError(kProxySettings, message_id,
-                           PolicyErrorPath{kProxyPacUrl});
-          return false;
-        }
-        *mode_value = pac_url ? ProxyPrefs::kPacScriptProxyModeName
-                              : ProxyPrefs::kFixedServersProxyModeName;
-        break;
-      case PROXY_USE_SYSTEM_PROXY_SERVER_MODE:
-        *mode_value = ProxyPrefs::kSystemProxyModeName;
-        break;
-      default:
-        errors->AddError(kProxySettings, IDS_POLICY_OUT_OF_RANGE_ERROR,
-                         base::NumberToString(server_mode->GetInt()),
-                         PolicyErrorPath{kProxyServerMode});
-        return false;
-    }
-  }
-  return true;
 }
 
 }  // namespace proxy_config
