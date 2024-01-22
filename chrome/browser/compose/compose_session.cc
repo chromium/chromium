@@ -172,6 +172,8 @@ ComposeSession::ComposeSession(
     optimization_guide::OptimizationGuideModelExecutor* executor,
     optimization_guide::ModelQualityLogsUploader* model_quality_logs_uploader,
     base::Token session_id,
+    InnerTextProvider* inner_text,
+    autofill::FieldRendererId node_id,
     ComposeCallback callback)
     : executor_(executor),
       handler_receiver_(this),
@@ -187,6 +189,8 @@ ComposeSession::ComposeSession(
       web_contents_(web_contents),
       collect_inner_text_(
           base::FeatureList::IsEnabled(compose::features::kComposeInnerText)),
+      inner_text_caller_(inner_text),
+      node_id_(node_id),
       model_quality_logs_uploader_(model_quality_logs_uploader),
       session_id_(session_id),
       weak_ptr_factory_(this) {
@@ -341,7 +345,7 @@ void ComposeSession::RequestWithSession(
     bool is_input_edited) {
   if (!collect_inner_text_) {
     // Make sure context is added for sessions with no inner text.
-    AddPageContentToSession("");
+    AddPageContentToSession("", std::nullopt);
   }
 
   base::ElapsedTimer request_timer;
@@ -678,7 +682,6 @@ void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
   }
 }
 
-
 void ComposeSession::SaveMostRecentOkStateToUndoStack() {
   if (!most_recent_ok_state_->IsMojoValid()) {
     // Attempting to save a state with an invalid response onto the undo stack.
@@ -689,7 +692,9 @@ void ComposeSession::SaveMostRecentOkStateToUndoStack() {
       most_recent_ok_state_->TakeMojoState()));
 }
 
-void ComposeSession::AddPageContentToSession(std::string inner_text) {
+void ComposeSession::AddPageContentToSession(
+    std::string inner_text,
+    std::optional<uint64_t> node_offset) {
   if (!session_) {
     return;
   }
@@ -697,6 +702,10 @@ void ComposeSession::AddPageContentToSession(std::string inner_text) {
   page_metadata.set_page_url(web_contents_->GetLastCommittedURL().spec());
   page_metadata.set_page_title(base::UTF16ToUTF8(web_contents_->GetTitle()));
   page_metadata.set_page_inner_text(std::move(inner_text));
+
+  if (node_offset.has_value()) {
+    page_metadata.set_page_inner_text_offset(node_offset.value());
+  }
 
   optimization_guide::proto::ComposeRequest request;
   *request.mutable_page_metadata() = std::move(page_metadata);
@@ -715,6 +724,7 @@ void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
   }
   got_inner_text_ = true;
   std::string inner_text;
+  std::optional<uint64_t> node_offset;
   if (result) {
     const compose::Config& config = compose::GetComposeConfig();
     inner_text = std::move(result->inner_text);
@@ -724,8 +734,9 @@ void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
           inner_text.size() - config.inner_text_max_bytes);
       inner_text.erase(config.inner_text_max_bytes);
     }
+    node_offset = result->node_offset;
   }
-  AddPageContentToSession(std::move(inner_text));
+  AddPageContentToSession(std::move(inner_text), node_offset);
   if (!continue_compose_.is_null()) {
     std::move(continue_compose_).Run();
   }
@@ -738,8 +749,13 @@ void ComposeSession::RefreshInnerText() {
   }
 
   ++current_inner_text_request_id_;
-  content_extraction::GetInnerText(
-      *web_contents_->GetPrimaryMainFrame(), /*node_id*/ std::nullopt,
+
+  inner_text_caller_->GetInnerText(
+      *web_contents_->GetPrimaryMainFrame(),
+      // This unsafeValue call is acceptable ehre because node_id is a
+      // FieldRendererId which while being an U64 type is based one the int
+      // DOMid which we are querying here.
+      node_id_.GetUnsafeValue(),
       base::BindOnce(
           &ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary,
           weak_ptr_factory_.GetWeakPtr(), current_inner_text_request_id_));

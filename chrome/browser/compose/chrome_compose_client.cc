@@ -114,7 +114,7 @@ void ChromeComposeClient::BindComposeDialog(
   if (origin == url::Origin::Create(GURL(kComposeURL))) {
     debug_session_ = std::make_unique<ComposeSession>(
         &GetWebContents(), GetModelExecutor(), GetModelQualityLogsUploader(),
-        GetSessionId());
+        GetSessionId(), GetInnerTextProvider(), autofill::FieldRendererId(-1));
     debug_session_->set_collect_inner_text(false);
     debug_session_->set_fre_complete(
         pref_service_->GetBoolean(prefs::kPrefHasCompletedComposeFRE));
@@ -258,6 +258,13 @@ void ChromeComposeClient::OpenComposeSettings() {
   open_settings_requested_ = true;
 }
 
+void ChromeComposeClient::GetInnerText(
+    content::RenderFrameHost& host,
+    absl::optional<int> node_id,
+    content_extraction::InnerTextCallback callback) {
+  content_extraction::GetInnerText(host, node_id, std::move(callback));
+}
+
 void ChromeComposeClient::UpdateAllSessionsWithFirstRunComplete() {
   if (debug_session_) {
     debug_session_->SetFirstRunCompleted();
@@ -310,7 +317,8 @@ void ChromeComposeClient::CreateOrUpdateSession(
     // Now create and set up a new session.
     auto new_session = std::make_unique<ComposeSession>(
         &GetWebContents(), GetModelExecutor(), GetModelQualityLogsUploader(),
-        GetSessionId(), std::move(callback));
+        GetSessionId(), GetInnerTextProvider(),
+        trigger_field.global_id().renderer_id, std::move(callback));
     current_session = new_session.get();
     sessions_.insert_or_assign(active_compose_ids_.value().first,
                                std::move(new_session));
@@ -495,6 +503,10 @@ ChromeComposeClient::GetOptimizationGuide() {
   return opt_guide_;
 }
 
+InnerTextProvider* ChromeComposeClient::GetInnerTextProvider() {
+  return inner_text_provider_for_test_.value_or(this);
+}
+
 void ChromeComposeClient::SetModelExecutorForTest(
     optimization_guide::OptimizationGuideModelExecutor* model_executor) {
   model_executor_for_test_ = model_executor;
@@ -511,6 +523,10 @@ void ChromeComposeClient::SetSkipShowDialogForTest(bool should_skip) {
 
 void ChromeComposeClient::SetSessionIdForTest(base::Token session_id) {
   session_id_for_test_ = session_id;
+}
+void ChromeComposeClient::SetInnerTextProviderForTest(
+    InnerTextProvider* inner_text) {
+  inner_text_provider_for_test_ = inner_text;
 }
 
 bool ChromeComposeClient::IsDialogShowing() {

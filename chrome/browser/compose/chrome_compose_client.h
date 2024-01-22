@@ -42,7 +42,8 @@ class ChromeComposeClient
     : public compose::ComposeClient,
       public content::WebContentsObserver,
       public content::WebContentsUserData<ChromeComposeClient>,
-      public compose::mojom::ComposeClientPageHandler {
+      public compose::mojom::ComposeClientPageHandler,
+      public InnerTextProvider {
  public:
   using EntryPoint = autofill::AutofillComposeDelegate::UiEntryPoint;
   ChromeComposeClient(const ChromeComposeClient&) = delete;
@@ -73,6 +74,11 @@ class ChromeComposeClient
   // "Go to Settings" link is clicked in the MSBB dialog.
   void OpenComposeSettings() override;
 
+  // InnerTextProvider
+  void GetInnerText(content::RenderFrameHost& host,
+                    absl::optional<int> node_id,
+                    content_extraction::InnerTextCallback callback) override;
+
   bool GetMSBBStateFromPrefs();
 
   void UpdateAllSessionsWithFirstRunComplete();
@@ -92,6 +98,7 @@ class ChromeComposeClient
       optimization_guide::OptimizationGuideModelExecutor* model_executor);
   void SetSkipShowDialogForTest(bool should_skip);
   void SetSessionIdForTest(base::Token session_id);
+  void SetInnerTextProviderForTest(InnerTextProvider* inner_text);
 
   // content::WebContentsObserver implementation.
   // Called when the primary page location changes. This includes reloads.
@@ -137,6 +144,7 @@ class ChromeComposeClient
   optimization_guide::OptimizationGuideModelExecutor* GetModelExecutor();
   optimization_guide::OptimizationGuideDecider* GetOptimizationGuide();
   base::Token GetSessionId();
+  InnerTextProvider* GetInnerTextProvider();
   std::unique_ptr<TranslateLanguageProvider> translate_language_provider_;
   std::unique_ptr<ComposeEnabling> compose_enabling_;
 
@@ -195,6 +203,8 @@ class ChromeComposeClient
   // compose on.
   std::optional<std::pair<autofill::FieldGlobalId, autofill::FormGlobalId>>
       active_compose_ids_;
+
+  std::optional<InnerTextProvider*> inner_text_provider_for_test_;
 
   // Saved states for each compose field.
   base::flat_map<autofill::FieldGlobalId, std::unique_ptr<ComposeSession>>

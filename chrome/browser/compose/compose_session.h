@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_metrics.h"
@@ -28,6 +29,17 @@ class WebContents;
 namespace content_extraction {
 struct InnerTextResult;
 }  // namespace content_extraction
+
+// A simple interface to reroute inner text calls to allow for test mocks.
+class InnerTextProvider {
+ public:
+  virtual void GetInnerText(content::RenderFrameHost& host,
+                            absl::optional<int> node_id,
+                            content_extraction::InnerTextCallback callback) = 0;
+
+ protected:
+  virtual ~InnerTextProvider() = default;
+};
 
 // The state of a compose session. This currently includes the model quality log
 // entry, and the mojo based compose state.
@@ -58,6 +70,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
       optimization_guide::OptimizationGuideModelExecutor* executor,
       optimization_guide::ModelQualityLogsUploader* model_quality_logs_uploader,
       base::Token session_id,
+      InnerTextProvider* inner_text,
+      autofill::FieldRendererId node_id,
       ComposeCallback callback = base::NullCallback());
   ~ComposeSession() override;
 
@@ -172,7 +186,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
   // Adds page content to the session context.
-  void AddPageContentToSession(std::string inner_text);
+  void AddPageContentToSession(std::string inner_text,
+                               std::optional<uint64_t> node_offset);
 
   // Makes compose or rewrite request.
   void MakeRequest(optimization_guide::proto::ComposeRequest request,
@@ -260,11 +275,17 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   bool collect_inner_text_;
 
+  // This pointer is to a class that owns and creates this class, so will
+  // outlive the session.
+  raw_ptr<InnerTextProvider> inner_text_caller_;
+
   // Logging counters.
   compose::ComposeSessionEvents session_events_;
 
   // If true, the inner-text was received.
   bool got_inner_text_ = false;
+
+  autofill::FieldRendererId node_id_;
 
   base::OnceClosure continue_compose_;
 

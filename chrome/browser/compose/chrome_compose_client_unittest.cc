@@ -59,6 +59,15 @@ const uint64_t kSessionIdLow = 5678;
 constexpr char kTypeURL[] =
     "type.googleapis.com/optimization_guide.proto.ComposeResponse";
 
+class MockInnerText : public InnerTextProvider {
+ public:
+  MOCK_METHOD(void,
+              GetInnerText,
+              (content::RenderFrameHost & host,
+               absl::optional<int> node_id,
+               content_extraction::InnerTextCallback callback));
+};
+
 class MockModelExecutor
     : public optimization_guide::OptimizationGuideModelExecutor {
  public:
@@ -149,10 +158,20 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     AddTab(browser(), GetPageUrl());
     client_ = ChromeComposeClient::FromWebContents(web_contents());
     client_->SetModelExecutorForTest(&model_executor_);
+    client_->SetInnerTextProviderForTest(&model_inner_text_);
     client_->SetSkipShowDialogForTest(true);
     client_->SetModelQualityLogsUploaderForTest(&model_quality_logs_uploader_);
     client_->SetSessionIdForTest(base::Token(kSessionIdHigh, kSessionIdLow));
 
+    ON_CALL(model_inner_text(), GetInnerText(_, _, _))
+        .WillByDefault(testing::WithArg<2>(testing::Invoke(
+            [&](content_extraction::InnerTextCallback callback) {
+              std::unique_ptr<content_extraction::InnerTextResult>
+                  expected_inner_text =
+                      std::make_unique<content_extraction::InnerTextResult>("",
+                                                                            0);
+              std::move(callback).Run(std::move(expected_inner_text));
+            })));
     ON_CALL(model_executor_, StartSession(_)).WillByDefault([&] {
       return std::make_unique<MockSessionWrapper>(session());
     });
@@ -254,6 +273,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   MockModelQualityLogsUploader& model_quality_logs_uploader() {
     return model_quality_logs_uploader_;
   }
+  MockInnerText& model_inner_text() { return model_inner_text_; }
 
   MockComposeDialog& compose_dialog() { return compose_dialog_; }
   autofill::FormFieldData& field_data() { return field_data_; }
@@ -348,6 +368,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   raw_ptr<ChromeComposeClient> client_;
   testing::NiceMock<MockModelQualityLogsUploader> model_quality_logs_uploader_;
   testing::NiceMock<MockModelExecutor> model_executor_;
+  testing::NiceMock<MockInnerText> model_inner_text_;
   testing::NiceMock<MockSession> session_;
   testing::NiceMock<MockComposeDialog> compose_dialog_;
   autofill::FormFieldData field_data_;
@@ -2303,6 +2324,36 @@ TEST_F(ChromeComposeClientTest, TestOfflineError) {
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOffline, result->status);
+}
+
+TEST_F(ChromeComposeClientTest, TestInnerText) {
+  EXPECT_CALL(model_inner_text(), GetInnerText(_, _, _))
+      .WillOnce(testing::WithArg<2>(
+          testing::Invoke([&](content_extraction::InnerTextCallback callback) {
+            std::unique_ptr<content_extraction::InnerTextResult>
+                expected_inner_text =
+                    std::make_unique<content_extraction::InnerTextResult>(
+                        "inner_text", 123);
+            std::move(callback).Run(std::move(expected_inner_text));
+          })));
+
+  base::test::TestFuture<optimization_guide::proto::ComposeRequest> test_future;
+  EXPECT_CALL(session(), AddContext(_))
+      .WillOnce(testing::WithArg<0>(testing::Invoke(
+          [&](const google::protobuf::MessageLite& request_metadata) {
+            optimization_guide::proto::ComposeRequest request;
+            request.CheckTypeAndMergeFrom(request_metadata);
+            test_future.SetValue(request);
+          })));
+
+  ShowDialogAndBindMojo();
+  page_handler()->Compose("a user typed this", false);
+  optimization_guide::proto::ComposeRequest result = test_future.Take();
+
+  std::string result_string;
+  EXPECT_TRUE(result.SerializeToString(&result_string));
+  EXPECT_EQ("inner_text", result.page_metadata().page_inner_text());
+  EXPECT_EQ(123u, result.page_metadata().page_inner_text_offset());
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)
