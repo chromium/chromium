@@ -80,10 +80,7 @@ source_set("browser_test_support") {
 
 group("closure_compile") {
   testonly = true
-  deps = [
-    "resources/js:closure_compile",
-    "resources/mock/js:closure_compile",
-  ]
+  deps = [ "resources/js:closure_compile" ]
 }
 
 mojom("mojo_bindings") {

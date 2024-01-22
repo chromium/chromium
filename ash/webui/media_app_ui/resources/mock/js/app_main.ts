@@ -11,22 +11,18 @@
 /**
  * Helper that returns UI that can serve as an effective mock of a fragment of
  * the real app, after loading a provided Blob URL.
- *
- * @typedef{function(string, mediaApp.AbstractFile): Promise<!HTMLElement>}}
  */
-let ModuleHandler;
+type ModuleHandler = (blobSrc: string, file: AbstractFile) =>
+    Promise<HTMLElement>;
 
-/** @type {ModuleHandler} */
-const createVideoChild = async (blobSrc) => {
-  const video =
-      /** @type {HTMLVideoElement} */ (document.createElement('video'));
+const createVideoChild: ModuleHandler = async (blobSrc) => {
+  const video = document.createElement('video');
   video.src = blobSrc;
   return video;
 };
 
-/** @type {ModuleHandler} */
-const createImgChild = async (blobSrc, file) => {
-  const img = /** @type {!HTMLImageElement} */ (document.createElement('img'));
+const createImgChild: ModuleHandler = async (blobSrc, file) => {
+  const img = document.createElement('img');
   img.src = blobSrc;
   img.alt = file.name;
   try {
@@ -34,23 +30,19 @@ const createImgChild = async (blobSrc, file) => {
   } catch (error) {
     // Mimic what the real app does on decode errors so we can test error
     // handling for file access.
-    return /** @type {!HTMLElement} */ (await createErrorChild(blobSrc, file));
+    return await createErrorChild(blobSrc, file);
   }
   return img;
 };
 
-/** @type {ModuleHandler} */
-const createAudioChild = async (blobSrc, file) => {
-  const container =
-      /** @type {HTMLDivElement} */ (document.createElement('div'));
+const createAudioChild: ModuleHandler = async (blobSrc, file) => {
+  const container = document.createElement('div');
 
-  const title = /** @type {HTMLDivElement} */
-      (container.appendChild(document.createElement('div')));
+  const title = container.appendChild(document.createElement('div'));
   title.className = 'title';
   title.innerText = file.name;
 
-  const audio = /** @type {HTMLAudioElement} */
-      (container.appendChild(document.createElement('audio')));
+  const audio = container.appendChild(document.createElement('audio'));
   if (file.size === 0) {
     console.warn('Assuming zero-byte test file: not loading audio.');
     return container;
@@ -69,72 +61,63 @@ const createAudioChild = async (blobSrc, file) => {
   return container;
 };
 
-/** @type {ModuleHandler} */
-const createPdfChild = async (blobSrc, file) => {
-  const container =
-      /** @type {!HTMLDivElement} */ (document.createElement('div'));
+const createPdfChild: ModuleHandler = async (_, file) => {
+  const container = document.createElement('div');
 
   if (file.size === 0) {
     console.warn('Assuming zero-byte test file: not loading PDF.');
     return container;
   }
 
-  const canvas = /** @type {HTMLCanvasElement} */
-      (container.appendChild(document.createElement('canvas')));
+  container.appendChild(document.createElement('canvas'));
   return container;
 };
 
-/** @type {ModuleHandler} */
-const createErrorChild = async (_, file) => {
+const createErrorChild: ModuleHandler = async (_, file) => {
   console.warn(`Mock handling of ${file.name} resulted in error.`);
   // In the real app, a loaderror element is loaded infront of a placeholder
   // image with some error alt text. For tests, we only mock the placeholder.
-  const img = /** @type {!HTMLImageElement} */ (document.createElement('img'));
+  const img = document.createElement('img');
   img.alt = 'Unable to decode';
   return img;
 };
 
 /**
  * A mock app used for testing when src-internal is not available.
- * @implements mediaApp.ClientApi
  */
-class BacklightApp extends HTMLElement {
+class BacklightApp extends HTMLElement implements ClientApi {
+  appBar: BacklightAppBar;
+  currentHandler: HTMLElement;
+  currentMedia: HTMLElement;
+
+  files?: AbstractFileList;
+  delegate?: ClientApiDelegate|null;
+
   constructor() {
     super();
     const shadowRoot = this.attachShadow({mode: 'open'});
-    /** @type {?BacklightAppBar} */
-    this.appBar = /** @type {BacklightAppBar} */
-        (document.createElement('backlight-app-bar'));
+    this.appBar =
+        document.createElement('backlight-app-bar') as BacklightAppBar;
 
     shadowRoot.appendChild(this.appBar);
-    /** @type {?HTMLElement} */
-    this.currentHandler = /** @type {HTMLElement} */ (
-        document.createElement('backlight-media-handler'));
+    this.currentHandler = document.createElement('backlight-media-handler');
     this.appendChild(this.currentHandler);
-    this.currentMedia =
-        /** @type {!HTMLElement} */ (document.createElement('img'));
+    this.currentMedia = document.createElement('img');
     this.appendChild(this.currentMedia);
-    /** @type {?mediaApp.AbstractFileList} */
-    this.files;
-    /** @type {?mediaApp.ClientApiDelegate} */
-    this.delegate;
   }
 
   /**
    * Emulates the preprocessing done in the "real" BacklightApp to hook in the
    * RAW file converter. See go/media-app-element.
-   *
-   * @param {?mediaApp.AbstractFile} file
-   * @private
    */
-  async preprocessFile(file) {
+  private async preprocessFile(file: AbstractFile|null) {
     // This mock is only used for tests (which only test a .orf and .nef RAW
     // file). We don't maintain the full list of RAW extensions here.
     const rawExtensions = ['orf', 'nef'];
     const isRawFile =
-        file && rawExtensions.includes(file.name.split('.').pop());
+        file && rawExtensions.includes(file.name.split('.').pop() ?? '');
     if (isRawFile) {
-      file.blob = await this.delegate.extractPreview(file.blob);
+      file.blob = await this.delegate!.extractPreview(file.blob);
       file.mimeType = 'image/x-RAW';
     }
   }
@@ -143,12 +126,9 @@ class BacklightApp extends HTMLElement {
    * Emulates the sniffing done in the "real" BacklightApp to detect a file's
    * mime type. See go/media-app-element.
    *
-   * @param {?mediaApp.AbstractFile} file
-   * @return {!Promise<string>} The sniffed mime type, or empty string if none
-   *     detected.
-   * @private
+   * @return The sniffed mime type, or empty string if none detected.
    */
-  async sniffedMimeType(file) {
+  private async sniffedMimeType(file: AbstractFile): Promise<string> {
     const START_OF_IMAGE_MARKER = 0xffd8;
 
     const PNG_MARKER = 0x89504e47;  // Literally '‰PNG'.
@@ -169,9 +149,8 @@ class BacklightApp extends HTMLElement {
 
   /**
    * Emulates loading a single file at a time.
-   * @param {!mediaApp.AbstractFile} file
    */
-  async loadFile(file) {
+  async loadFile(file: AbstractFile) {
     await this.preprocessFile(file);
     const mimeType = file.mimeType || await this.sniffedMimeType(file);
     let factory;
@@ -191,7 +170,8 @@ class BacklightApp extends HTMLElement {
           factory = createPdfChild;
           break;
         }
-        // Fallthrough.
+        factory = createErrorChild;
+        break;
       default:
         factory = createErrorChild;
     }
@@ -200,7 +180,7 @@ class BacklightApp extends HTMLElement {
 
     this.replaceChild(child, this.currentMedia);
     this.currentMedia = child;
-    this.delegate.notifyCurrentFile(file.name, mimeType);
+    this.delegate!.notifyCurrentFile(file.name, mimeType);
     this.appBar.setFilename(file.name);
   }
 
@@ -208,21 +188,20 @@ class BacklightApp extends HTMLElement {
     // Loads a new handler each time a new media is loaded. Note: in actual
     // implementation we cache our handler instances and early exit if we load
     // the same media type.
-    const newHandler = /** @type {HTMLElement} */ (
-        document.createElement('backlight-media-handler'));
+    const newHandler = document.createElement('backlight-media-handler');
     this.replaceChild(newHandler, this.currentHandler);
     this.currentHandler = newHandler;
 
     // The presence of the 'filetraversalenabled' attribute emulates
     // `setFileTraversalEnabled()` in the real app.
     this.currentHandler.toggleAttribute(
-        'filetraversalenabled', this.files.length > 1);
+        'filetraversalenabled', this.files!.length > 1);
   }
 
-  /** @override  */
-  async loadFiles(files) {
+  // ClientApi implementation:
+  async loadFiles(files: AbstractFileList) {
     this.files = files;
-    files.addObserver((f) => this.onNewFiles(f));
+    files.addObserver((f: AbstractFileList) => this.onNewFiles(f));
 
     const file = files.item(files.currentFileIndex);
     if (!file) {
@@ -236,16 +215,13 @@ class BacklightApp extends HTMLElement {
     this.updateHandler();
   }
 
-  /** @override */
-  setViewport(viewportBox) {}
+  async setViewport(_viewport: Rect) {}
 
-  /** @override */
-  setDelegate(delegate) {
+  setDelegate(delegate: ClientApiDelegate|null) {
     this.delegate = delegate;
   }
 
-  /** @param {!mediaApp.AbstractFileList} files */
-  onNewFiles(files) {
+  onNewFiles(files: AbstractFileList) {
     if (files !== this.files) {
       return;
     }
@@ -263,18 +239,18 @@ window.customElements.define('backlight-app', BacklightApp);
 
 // Element mimicking the app bar which contains the current file's name.
 class BacklightAppBar extends HTMLElement {
+  child: HTMLElement;
+
   constructor() {
     super();
     const shadowRoot = this.attachShadow({mode: 'open'});
-    /** @type {?HTMLElement} */
-    this.child = /** @type {HTMLElement} */ (document.createElement('div'));
+    this.child = document.createElement('div');
     this.child.classList.add('app-bar-filename');
 
     shadowRoot.appendChild(this.child);
   }
 
-  /** @param {!string} filename */
-  setFilename(filename) {
+  setFilename(filename: string) {
     this.child.setAttribute('filename', filename);
   }
 }
@@ -291,23 +267,20 @@ window.customElements.define('backlight-video-container', VideoContainer);
 // Add error handlers similar to go/error-collector to test crash reporting in
 // the mock app. The handlers in go/error-collector are compiled-in and have
 // more sophisticated message extraction, with fewer assumptions.
-
-/** @suppress{reportUnknownTypes,missingProperties} */
-function sendCrashReport(params) {
-  chrome.crashReportPrivate.reportError(params, () => {});
+function sendCrashReport(params: any) {
+  (window as any).chrome.crashReportPrivate.reportError(params, () => {});
 }
-self.addEventListener('error', (event) => {
-  const errorEvent = /** @type {ErrorEvent} */ (event);
+self.addEventListener('error', (errorEvent: ErrorEvent) => {
   sendCrashReport({
-    message: /** @type {Error} */ (errorEvent.error).message,
+    message: errorEvent.error.message,
     url: window.location.href,
     product: 'ChromeOS_MediaAppMock',
     lineNumber: errorEvent.lineno,
     columnNumber: errorEvent.colno,
   });
 });
-self.addEventListener('unhandledrejection', (event) => {
-  const rejectionEvent = /** @type {{reason: Error}} */ (event);
+self.addEventListener('unhandledrejection', (event: Event) => {
+  const rejectionEvent = event as unknown as {reason: Error};
   sendCrashReport({
     message: rejectionEvent.reason.message,
     url: window.location.href,
@@ -327,4 +300,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return app.loadFiles(window.customLaunchData.files);
   }
+  return undefined;
 });

@@ -171,6 +171,7 @@ grit("media_app_bundle_resources") {
         "//ash/webui/media_app_ui/resources/prod/media_app_bundle_resources.grd"
   } else {
     source = "//ash/webui/media_app_ui/resources/mock/media_app_bundle_mock_resources.grd"
+    deps = [ "//ash/webui/media_app_ui/resources/mock/js:build_ts" ]
   }
 
   use_brotli = true
