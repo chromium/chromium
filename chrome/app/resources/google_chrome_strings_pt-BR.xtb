@@ -70,7 +70,6 @@
 <translation id="2130870084309816036">Não foi possível se conectar à Internet. Se você usa um firewall, coloque <ph name="PRODUCT_EXE_NAME" /> na lista de permissões.</translation>
 <translation id="2131230230468101642">Para proteger sua privacidade, excluímos automaticamente seus interesses que têm mais de quatro semanas. Enquanto você navega, um interesse pode aparecer na lista novamente. Você também pode remover interesses que não quer que o Chrome considere.</translation>
 <translation id="2139300032719313227">Reiniciar o ChromeOS</translation>
-<translation id="2146761408396054429">Este arquivo pode ser perigoso<ph name="LINE_BREAK" />O Chrome poderá verificar este download se você fornecer a senha, que não sairá do seu dispositivo</translation>
 <translation id="2151406531797534936">Reinicie o Chrome agora</translation>
 <translation id="2174917724755363426">A instalação não foi concluída. Tem certeza de que quer cancelar?</translation>
 <translation id="2190166659037789668">Erro na verificação de atualização: <ph name="UPDATE_CHECK_ERROR" />.</translation>

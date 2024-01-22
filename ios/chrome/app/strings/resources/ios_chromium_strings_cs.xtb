@@ -101,6 +101,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="3955621079070267756">Otevírejte Chromium z libovolné aplikace</translation>
 <translation id="4005283307739974863">Otevře a spustí bezpečnostní kontrolu v prohlížeči Chromium.</translation>
 <translation id="4043291146360695975">Hesla se ukládají pouze do Správce hesel na tomto zařízení.</translation>
+<translation id="4076589763479456892">Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chromium ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">V beta verzi prohlížeče Chromium není podporováno</translation>
 <translation id="4106512142782407609">Jste přihlášeni jako <ph name="EMAIL" />.
 
@@ -152,6 +153,7 @@ Vaše data jsou šifrována pomocí heslové fráze. Pokud chcete používat a 
 <translation id="5534584691915394889">Tyto údaje poslouží k vytváření událostí v Kalendáři Apple z prohlížeče Chromium a z Google Lens.</translation>
 <translation id="5571094606370987472">Otevře nedávno použité karty prohlížeče Chromium.</translation>
 <translation id="5623083843656850677">Uzamkněte anonymní karty, když prohlížeč Chromium opustíte nebo přejdete do jiné aplikace.</translation>
+<translation id="5671188105328420281">Tipy pro Chromium</translation>
 <translation id="5688047395118852662">Tato karta zobrazuje návrhy, jak Chromium využít na maximum.</translation>
 <translation id="5700709190537129682">Chromium nemůže zkontrolovat hesla</translation>
 <translation id="5777187867430702742">Stránka prohlížeče Chromium</translation>

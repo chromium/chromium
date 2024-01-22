@@ -244,7 +244,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5623402015214259806">{0,plural, =0{Ir pieejams Chromium atjauninājums}=1{Ir pieejams Chromium atjauninājums}zero{Chromium atjauninājums ir pieejams jau # dienu}one{Chromium atjauninājums ir pieejams jau # dienu}other{Chromium atjauninājums ir pieejams jau # dienas}}</translation>
 <translation id="5643865575100044307">Vienmēr notīrīt vietnes datus no ierīces, kad tiek aizvērts pārlūks Chromium</translation>
 <translation id="5653831366781983928">Lūdzu, nekavējoties restartējiet pārlūku Chromium</translation>
-<translation id="5675598751761067447">Šis fails var būt bīstams.<ph name="LINE_BREAK" />Chromium var pārbaudīt šo lejupielādi, ja norādīsiet paroli, — parole paliks jūsu ierīcē.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Rādīt Chromium šajā valodā</translation>
 <translation id="569897634095159764">Nevar izveidot savienojumu ar internetu. Starpniekserverī ir nepieciešama autentifikācija.</translation>

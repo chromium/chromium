@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">轻触并按住某个日期。</translation>
 <translation id="1959679933317802873">正在等待内容</translation>
 <translation id="1967461193809857427">{count,plural, =1{要继续使用之前在 Android 设备上打开的标签页吗？}other{要继续使用之前在 Android 设备上打开的标签页吗？}}</translation>
+<translation id="1972325230031091483">您的浏览速度会更快，因为系统会根据您当前访问的网页主动加载内容</translation>
 <translation id="1973912524893600642">保留数据</translation>
 <translation id="1974060860693918893">高级</translation>
 <translation id="1980417445547898121">{count,plural, =1{在这部 iPhone 上打开最近在其他设备上使用的 {count} 个标签页}other{在这部 iPhone 上打开最近在其他设备上使用的 {count} 个标签页}}</translation>
@@ -291,6 +292,7 @@
 <translation id="2547458583188611426">同步功能无法正常运行。若要开始同步，请输入您的口令。</translation>
 <translation id="2551153019974022505">账号错误</translation>
 <translation id="2556092377360758201">不保护（不建议）</translation>
+<translation id="2561375093019333908">打开</translation>
 <translation id="2562041823070056534">正在发送到“<ph name="DEVICE_NAME" />”…</translation>
 <translation id="2576499762020411840">将密码保存到您的 Google 账号并自动填充</translation>
 <translation id="2577522251608256362">街区</translation>
@@ -433,6 +435,7 @@
 <translation id="3235242129752692527">修改活动详细信息，然后点按“保存”。</translation>
 <translation id="3240426699337459095">已复制链接</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">如果您还共享了 Chrome 使用情况报告，这些报告会包含您访问过的网址</translation>
 <translation id="3245744387817103524">无法保存您的更改。</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" />，第 <ph name="INDEX" /> 项建议（共 <ph name="NUM_SUGGESTIONS" /> 项）</translation>
 <translation id="3264775633254836593">自动填充密码</translation>
@@ -632,7 +635,6 @@
 <translation id="4371591986692297148">已停用</translation>
 <translation id="4375040482473363939">QR 码搜索</translation>
 <translation id="4378154925671717803">电话</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" />与您分享了一个用于登录 <ph name="WEBSITE" /> 的密码</translation>
 <translation id="4389019817280890563">点按此行即可更改语言。</translation>
 <translation id="4405320213589929829">使用网页上的地址来获取本地信息和路线。</translation>
 <translation id="4420409367264901497">修改书签</translation>
@@ -848,6 +850,7 @@
 <translation id="5513681519188741830"><ph name="TIME" /> 小时前</translation>
 <translation id="5525269841082836315">创建密码</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{有 {COUNT} 个安全系数低的密码}other{有 {COUNT} 个安全系数低的密码}}</translation>
+<translation id="5532545557415295622">空闲超时对话框</translation>
 <translation id="5542540507657872337">找到了 <ph name="COUNT" /> 个</translation>
 <translation id="5548760955356983418">借助 Handoff 功能，您在此设备上浏览网站时，可轻松改用 Mac 继续浏览。当前打开的网站将显示在 Mac 的 Dock 中。
 
@@ -857,6 +860,7 @@
 <translation id="555749644339804659">正在检查密码…</translation>
 <translation id="5559567453458728487">转换在网上找到的计量单位</translation>
 <translation id="556042886152191864">按钮</translation>
+<translation id="5572648434713976849">您会在地址栏中获得经过改进的建议</translation>
 <translation id="5572684875078967866">信息存储空间</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{跟踪此包裹}other{跟踪所有包裹}}</translation>
 <translation id="5597915316964418992">打开标签页网格</translation>
@@ -1083,6 +1087,7 @@
 <translation id="6642362222295953972">切换到已打开的标签页</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6645899968535965230">二维码：<ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站</translation>
 <translation id="6647480763136463714">上次运行时间：<ph name="TIME" /></translation>
 <translation id="6656103420185847513">修改文件夹</translation>
 <translation id="6657585470893396449">密码</translation>
@@ -1288,6 +1293,7 @@
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{1 天后}other{{COUNT} 天后}}</translation>
 <translation id="7791543448312431591">添加</translation>
+<translation id="7792549458069452436">获取应用</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>
 <translation id="7812377703891978671">您可选择“<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />”来访问您的所有浏览记录。</translation>
 <translation id="78146569776629510">下载</translation>

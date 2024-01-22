@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Touch &amp; hold a date.</translation>
 <translation id="1959679933317802873">Waiting for content</translation>
 <translation id="1967461193809857427">{count,plural, =1{Pick up the tab you left on Android?}other{Pick up the tabs you left on Android?}}</translation>
+<translation id="1972325230031091483">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
 <translation id="1973912524893600642">Keep Data</translation>
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1980417445547898121">{count,plural, =1{Get your {count} recently active tab from your other device on this iPhone}other{Get your {count} recently active tabs from your other device on this iPhone}}</translation>
@@ -291,6 +292,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2547458583188611426">Sync is not working. To start sync, enter your passphrase.</translation>
 <translation id="2551153019974022505">Account error</translation>
 <translation id="2556092377360758201">No protection (not recommended)</translation>
+<translation id="2561375093019333908">OPEN</translation>
 <translation id="2562041823070056534">Sending to <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Use and save passwords in Your Google Account</translation>
 <translation id="2577522251608256362">Neighbourhood</translation>
@@ -433,6 +435,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3235242129752692527">Edit the event details and press “Save.“</translation>
 <translation id="3240426699337459095">Link copied</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">If you also share Chrome usage reports, those reports include the URLs that you visit</translation>
 <translation id="3245744387817103524">Your change couldn't be saved.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> of <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Auto-fill passwords</translation>
@@ -556,6 +559,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3922310737605261887">Search for copied text</translation>
 <translation id="3928666092801078803">Combine my data</translation>
 <translation id="3929457972718048006">Addresses</translation>
+<translation id="3948600256434252210">You can swipe right to browse in Incognito.</translation>
 <translation id="3955822496205734389">You have weak passwords.</translation>
 <translation id="3959736869653157332">Menu → New incognito tab</translation>
 <translation id="3962326069546168954">Save</translation>
@@ -632,7 +636,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4371591986692297148">Inactive</translation>
 <translation id="4375040482473363939">QR code Search</translation>
 <translation id="4378154925671717803">Phone</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> has shared a password with you for <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Tap to change language.</translation>
 <translation id="4405320213589929829">Use addresses on web pages to get local info and directions.</translation>
 <translation id="4420409367264901497">Edit Bookmark</translation>
@@ -661,6 +664,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4539187448429948815">{count,plural, =1{{count} saved autocomplete suggestion available above your keyboard.}other{{count} saved autocomplete suggestions available above your keyboard.}}</translation>
 <translation id="4540780316273593836">Something went wrong</translation>
 <translation id="4550040941166547650">Only on this device</translation>
+<translation id="4564893319561643483">Hide '<ph name="TITLE" />'</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Close {COUNT} inactive tab?}other{Close {COUNT} inactive tabs?}}</translation>
 <translation id="457386861538956877">More...</translation>
 <translation id="4587589328781138893">Sites</translation>
@@ -848,6 +852,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5513681519188741830"><ph name="TIME" /> h ago</translation>
 <translation id="5525269841082836315">Create passphrase</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} weak password}other{{COUNT} weak passwords}}</translation>
+<translation id="5532545557415295622">Idle timeout dialogue</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> found</translation>
 <translation id="5548760955356983418">Handoff lets you start browsing a website on this device and then easily continue on your Mac. The current open website will appear in the Dock of your Mac.
 
@@ -857,6 +862,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="555749644339804659">Checking passwords…</translation>
 <translation id="5559567453458728487">Convert measurement units found on the web</translation>
 <translation id="556042886152191864">Button</translation>
+<translation id="5572648434713976849">You'll get improved suggestions in the address bar</translation>
 <translation id="5572684875078967866">Information storage</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Track this package}other{Track all packages}}</translation>
 <translation id="5597915316964418992">Open the Tab grid</translation>
@@ -1083,6 +1089,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="6642362222295953972">Switch to existing tab</translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6645899968535965230">QR code: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">URLs that you visit are sent to Google to predict what sites you might visit next</translation>
 <translation id="6647480763136463714">Last run <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Edit Folder</translation>
 <translation id="6657585470893396449">Password</translation>
@@ -1260,6 +1267,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7666861622396822790">You can manage this in <ph name="BEGIN_LINK" />Content Settings<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">INSTALL</translation>
+<translation id="7673346542062368520">You can swipe left to browse in Incognito.</translation>
 <translation id="7679915578945954324">Site addresses copied</translation>
 <translation id="7687508192620387263">Calendar file available</translation>
 <translation id="7701040980221191251">None</translation>
@@ -1288,6 +1296,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7781829728241885113">Yesterday</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{After 1 Day}other{After {COUNT} Days}}</translation>
 <translation id="7791543448312431591">Add</translation>
+<translation id="7792549458069452436">GET THE APP</translation>
 <translation id="7807060072011926525">Provided by Google</translation>
 <translation id="7812377703891978671">You can access all your browsing history by selecting <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Downloads</translation>

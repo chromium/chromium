@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">تغيير موقع التنزيل التلقائي في أي وقت</translation>
 <translation id="1796666869097395659">تصغير علامة التبويب للرجوع إليها لاحقًا</translation>
 <translation id="1807246157184219062">فاتح</translation>
+<translation id="1807709131360304325">فتح نافذة جديدة</translation>
 <translation id="1810845389119482123">إعداد المزامنة الأولية لم يكتمل</translation>
 <translation id="1812027881030482584">ليس بإمكان "<ph name="SITE_ETLD_PLUS_ONE" />" مواصلة استخدام "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="1829244130665387512">البحث في الصفحة</translation>
@@ -923,6 +924,7 @@
 <translation id="5962718611393537961">النقر للتصغير</translation>
 <translation id="5964869237734432770">إيقاف عرض أوصاف الصور</translation>
 <translation id="5966233851250124270">‏سيتذكر متصفِّح Chrome اختيارك</translation>
+<translation id="5977976211062815271">على هذا الجهاز</translation>
 <translation id="5979084224081478209">التحقق من كلمات المرور</translation>
 <translation id="5995726099713306770">هل تريد تنزيل الصفحة مرة أخرى؟</translation>
 <translation id="6000066717592683814">‏الاستمرار في استخدام محرك Google</translation>
@@ -1330,6 +1332,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> قديم.</translation>
 <translation id="7944772052836377867">تحتاج ميزة المزامنة إلى التحقّق من هويتك</translation>
 <translation id="7947953824732555851">قبول وتسجيل الدخول</translation>
+<translation id="7951102827450076904">‏الفتح التلقائي لملفات PDF التي يتم تنزيلها</translation>
 <translation id="7957413488482743710">تُخفي البطاقة الافتراضية بطاقتك الفعلية للمساعدة على حمايتك من عمليات الاحتيال المحتمَلة. <ph name="BEGIN_LINK1" />مزيد من المعلومات حول البطاقات الافتراضية<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">زر الرجوع في تقرير "إحصاءات الصفحة"</translation>
 <translation id="7961926449547174351">لقد أوقفت إذن الوصول إلى "مساحة التخزين". يُرجى الانتقال إلى "الإعدادات" لتفعيله.</translation>

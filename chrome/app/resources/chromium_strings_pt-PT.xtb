@@ -247,7 +247,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5623402015214259806">{0,plural, =0{Está disponível uma atualização do Chromium}=1{Está disponível uma atualização do Chromium}other{Está disponível uma atualização do Chromium há # dias}}</translation>
 <translation id="5643865575100044307">Eliminar sempre os dados de sites do seu dispositivo ao fechar o Chromium</translation>
 <translation id="5653831366781983928">Reinicie o Chromium agora</translation>
-<translation id="5675598751761067447">Este ficheiro pode ser perigoso<ph name="LINE_BREAK" />O Chromium pode verificar esta transferência se facultar a palavra-passe. A palavra-passe permanece no seu dispositivo</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Apresentar o Chromium neste idioma</translation>
 <translation id="569897634095159764">Não é possível ligar à Internet. O servidor proxy necessita de autenticação.</translation>

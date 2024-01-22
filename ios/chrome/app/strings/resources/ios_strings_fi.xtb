@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Kosketa päivämäärää pitkään.</translation>
 <translation id="1959679933317802873">Odotetaan sisältöä</translation>
 <translation id="1967461193809857427">{count,plural, =1{Haluatko avata välilehden, joka oli avoinna Android-laitteella?}other{Haluatko avata välilehdet, jotka olivat avoinna Android-laitteella?}}</translation>
+<translation id="1972325230031091483">Selaaminen sujuu nopeammin, koska sisältö ladataan proaktiivisesti tällä hetkellä auki olevan verkkosivun perusteella</translation>
 <translation id="1973912524893600642">Säilytä data</translation>
 <translation id="1974060860693918893">Lisäasetukset</translation>
 <translation id="1980417445547898121">{count,plural, =1{Avaa {count} toisella laitteella äskettäin aktiivisena ollut välilehti tällä iPhonella}other{Avaa {count} toisella laitteella äskettäin aktiivisena ollutta välilehteä tällä iPhonella}}</translation>
@@ -291,6 +292,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2547458583188611426">Synkronointi ei toimi. Aloita synkronointi lisäämällä tunnuslause.</translation>
 <translation id="2551153019974022505">Tilivirhe</translation>
 <translation id="2556092377360758201">Ei suojausta (ei suositella)</translation>
+<translation id="2561375093019333908">AVAA</translation>
 <translation id="2562041823070056534">Lähetetään: <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">Käytä ja tallenna Google-tilisi salasanoja</translation>
 <translation id="2577522251608256362">Naapurusto</translation>
@@ -433,6 +435,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3235242129752692527">Muokkaa tapahtuman tietoja ja valitse "Tallenna".</translation>
 <translation id="3240426699337459095">Linkki kopioitu</translation>
 <translation id="3244271242291266297">KK</translation>
+<translation id="3245429137663807393">Jos jaat myös Chromen käyttöraportteja, avaamasi URL-osoitteet näkyvät niissä</translation>
 <translation id="3245744387817103524">Muutosta ei voitu tallentaa.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Salasanojen automaattinen täyttö</translation>
@@ -633,7 +636,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4371591986692297148">Ei aktiivinen</translation>
 <translation id="4375040482473363939">QR-koodihaku</translation>
 <translation id="4378154925671717803">Puhelin</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> on jakanut sinulle salasanan sivustolle <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Vaihda kieltä napauttamalla.</translation>
 <translation id="4405320213589929829">Verkkosivujen osoitteiden avulla voit saada paikallisia tietoja ja reittiohjeita.</translation>
 <translation id="4420409367264901497">Muokkaa kirjanmerkkiä</translation>
@@ -850,6 +852,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> h sitten</translation>
 <translation id="5525269841082836315">Luo tunnuslause</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} heikko salasana}other{{COUNT} heikkoa salasanaa}}</translation>
+<translation id="5532545557415295622">Epäaktiivisuudesta johtuvan aikakatkaisun valintaikkuna</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> löytyi</translation>
 <translation id="5548760955356983418">Handoffin avulla voit aloittaa verkkosivuston lukemisen laitteellasi ja jatkaa sitä Macilla. Avoin verkkosivusto näytetään Dockissa.
 
@@ -859,6 +862,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="555749644339804659">Tarkistetaan salasanoja…</translation>
 <translation id="5559567453458728487">Muunna verkosta löytyneet mittayksiköt</translation>
 <translation id="556042886152191864">Painike</translation>
+<translation id="5572648434713976849">Näet parempia ehdotuksia osoitepalkissa</translation>
 <translation id="5572684875078967866">Tietojen tallennus</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Seuraa tätä pakettia}other{Seuraa kaikkia paketteja}}</translation>
 <translation id="5597915316964418992">Avaa välilehtiruudukko</translation>
@@ -1085,6 +1089,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="6642362222295953972">Siirry aiemmalle välilehdelle</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6645899968535965230">QR-koodi: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">Avaamasi URL-osoitteet lähetetään Googlelle, jotta seuraavaksi mahdollisesti avaamasi sivustot voidaan ennakoida</translation>
 <translation id="6647480763136463714">Tarkistettu viimeksi: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Muokkaa kansiota</translation>
 <translation id="6657585470893396449">Salasana</translation>
@@ -1291,6 +1296,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7781829728241885113">Eilen</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{1 päivän päästä}other{{COUNT} päivän päästä}}</translation>
 <translation id="7791543448312431591">Lisää</translation>
+<translation id="7792549458069452436">LATAA SOVELLUS</translation>
 <translation id="7807060072011926525">Googlen tarjoama</translation>
 <translation id="7812377703891978671">Näet koko selaushistoriasi valitsemalla <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Lataukset</translation>

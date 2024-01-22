@@ -622,6 +622,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3577473026931028326">Er is iets misgegaan. Probeer het opnieuw.</translation>
 <translation id="3580650856351781466">Spraakbestanden downloaden</translation>
 <translation id="3585296979871889131">Recente foto's, media, meldingen en apps van je telefoon bekijken</translation>
+<translation id="3590441166907930941">Zijknop</translation>
 <translation id="3593039967545720377">Je opent je klembordgeschiedenis door op <ph name="SHORTCUT_KEY_NAME" /> + V te drukken. Daarna kun je kopiëren wat je nodig hebt.</translation>
 <translation id="3593646411856133110">Swipe omhoog en houd vast om apps te openen</translation>
 <translation id="3595596368722241419">Batterij is vol</translation>
@@ -1034,6 +1035,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5163434717504750796">Batterijconditie <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Aantal cycli <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Bureau opslaan als template</translation>
 <translation id="5168181903108465623">Cast-apparaten beschikbaar</translation>
+<translation id="5168753792967365150">Bewerken in Google Tasks</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
 <translation id="5176318573511391780">Opname van gedeeltelijk scherm maken</translation>
 <translation id="5187627942836026988">Toon de hotspotdetails. Hotspot wordt geblokkeerd door je beheerder.</translation>
@@ -1303,6 +1305,8 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="6168622430237609329">Je geïnstalleerde apps</translation>
 <translation id="6173151025443907148">Een tweede gebruiker inloggen wordt niet ondersteund als Lacros aanstaat. Gebruik in plaats daarvan een tweede browserprofiel in Lacros of zet Lacros uit en probeer het opnieuw.</translation>
 <translation id="6179832488876878285">Je kunt hier je belangrijke bestanden vastzetten. Open de app Bestanden om aan de slag te gaan.</translation>
+<translation id="6180193585172850042">Terugknop</translation>
+<translation id="6180651297859206670">Vooruitknop</translation>
 <translation id="6182592640011875895">Bureau openen</translation>
 <translation id="6185696379715117369">Page Up</translation>
 <translation id="619335566042889110">Nu volledig opladen</translation>

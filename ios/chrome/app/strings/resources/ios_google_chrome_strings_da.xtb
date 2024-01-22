@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="1066101356081285416">Chrome registrerer sporingsnumre på de websites, du besøger, og viser dig pakkeopdateringer på siden Ny fane. Pakkesporingsnummeret og websitets navn sendes til Google for at levere denne funktion og forbedre Googles shoppingfunktioner for alle. Du kan til enhver tid opdatere dette i <ph name="BEGIN_LINK" />indstillingerne for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Brug Chrome som standard</translation>
 <translation id="1105362920864247682">Ryd browserdata i Chrome.</translation>
 <translation id="1113057722807951993">Kryptering med adgangssætning omfatter ikke betalingsmetoder og adresser fra Google Pay.

@@ -70,7 +70,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2130870084309816036">Não é possível estabelecer ligação à Internet. Se usar uma firewall, adicione <ph name="PRODUCT_EXE_NAME" /> à lista de autorizações.</translation>
 <translation id="2131230230468101642">Para proteger a sua privacidade, eliminamos automaticamente os seus interesses com mais de 4 semanas. Enquanto navega, um interesse pode aparecer novamente na lista. Em alternativa, pode remover os interesses que não quer que o Chrome considere.</translation>
 <translation id="2139300032719313227">Reinicie o ChromeOS</translation>
-<translation id="2146761408396054429">Este ficheiro pode ser perigoso<ph name="LINE_BREAK" />O Chrome pode verificar esta transferência se facultar a palavra-passe. A palavra-passe permanece no seu dispositivo</translation>
 <translation id="2151406531797534936">Reinicie o Chrome agora</translation>
 <translation id="2174917724755363426">Instalação não concluída. Tem a certeza de que quer cancelar?</translation>
 <translation id="2190166659037789668">Erro na verificação de atualizações: <ph name="UPDATE_CHECK_ERROR" />.</translation>

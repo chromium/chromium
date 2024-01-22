@@ -242,7 +242,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5623402015214259806">{0,plural, =0{Bir Chromium güncellemesi var}=1{Bir Chromium güncellemesi var}other{# gün önce kullanıma sunulmuş bir Chromium güncellemesi var}}</translation>
 <translation id="5643865575100044307">Chromium'u kapattığımda site verileri her zaman cihazımdan silinsin</translation>
 <translation id="5653831366781983928">Lütfen Chromium'u şimdi yeniden başlatın</translation>
-<translation id="5675598751761067447">Bu dosya tehlikeli olabilir<ph name="LINE_BREAK" />Şifreyi sağlarsanız Chromium, indirme işlemini sizin için kontrol edebilir. Şifreniz cihazınızda kalır</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium'u bu dilde görüntüle</translation>
 <translation id="569897634095159764">İnternet'e bağlanılamıyor. Proxy sunucu kimlik doğrulama gerektiriyor.</translation>

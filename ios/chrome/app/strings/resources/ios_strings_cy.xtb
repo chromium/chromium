@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Cyffwrdd a dal dyddiad.</translation>
 <translation id="1959679933317802873">Wrthi'n aros am gynnwys</translation>
 <translation id="1967461193809857427">{count,plural, =1{Parhau â'r tab y gwnaethoch ei adael ar Android?}zero{Parhau â'r tabiau y gwnaethoch eu gadael ar Android?}two{Parhau â'r tabiau y gwnaethoch eu gadael ar Android?}few{Parhau â'r tabiau y gwnaethoch eu gadael ar Android?}many{Parhau â'r tabiau y gwnaethoch eu gadael ar Android?}other{Parhau â'r tabiau y gwnaethoch eu gadael ar Android?}}</translation>
+<translation id="1972325230031091483">Byddwch yn pori'n gyflymach oherwydd bod cynnwys yn cael ei lwytho'n rhagweithiol yn seiliedig ar eich ymweliad tudalen we bresennol</translation>
 <translation id="1973912524893600642">Cadw Data</translation>
 <translation id="1974060860693918893">Uwch</translation>
 <translation id="1980417445547898121">{count,plural, =1{Cael eich {count} tab a oedd yn weithredol yn ddiweddar o'ch dyfais arall ar yr iPhone hwn}zero{Cael eich {count} tab a oedd yn weithredol yn ddiweddar o'ch dyfais ar yr iPhone hwn}two{Cael eich {count} dab a oedd yn weithredol yn ddiweddar o'ch dyfais ar yr iPhone hwn}few{Cael eich {count} thab a oedd yn weithredol yn ddiweddar o'ch dyfais ar yr iPhone hwn}many{Cael eich {count} thab a oedd yn weithredol yn ddiweddar o'ch dyfais ar yr iPhone hwn}other{Cael eich {count} tab a oedd yn weithredol yn ddiweddar o'ch dyfais ar yr iPhone hwn}}</translation>
@@ -433,6 +434,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3235242129752692527">Golygu manylion y digwyddiad a thapiwch “Cadw.”</translation>
 <translation id="3240426699337459095">Cafodd y ddolen ei chopïo</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Os ydych hefyd yn rhannu adroddiadau defnydd Chrome, mae'r adroddiadau hynny'n cynnwys y cyfeiriadau URL rydych yn ymweld â nhw</translation>
 <translation id="3245744387817103524">Ni fu modd cadw'ch newid.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> o <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Awtolenwi Cyfrineiriau</translation>
@@ -632,7 +634,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4371591986692297148">Anweithredol</translation>
 <translation id="4375040482473363939">Chwilio am god QR</translation>
 <translation id="4378154925671717803">Ffôn</translation>
-<translation id="4388983683160515185">Mae <ph name="FULL_NAME" /> wedi rhannu cyfrinair gyda chi ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Tapiwch i newid iaith.</translation>
 <translation id="4405320213589929829">Defnyddiwch gyfeiriadau ar dudalennau gwe i gael gwybodaeth a chyfarwyddiadau lleol.</translation>
 <translation id="4420409367264901497">Golygu Nod Tudalen</translation>
@@ -857,6 +858,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="555749644339804659">Wrthi'n gwirio cyfrineiriau…</translation>
 <translation id="5559567453458728487">Trosi unedau mesur a ddarganfyddir ar y we</translation>
 <translation id="556042886152191864">Botwm</translation>
+<translation id="5572648434713976849">Byddwch yn cael awgrymiadau gwell yn y bar cyfeiriadau</translation>
 <translation id="5572684875078967866">Storfa Gwybodaeth</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Olrhain y Pecyn Hwn}zero{Olrhain Pob Pecyn}two{Olrhain Pob Pecyn}few{Olrhain Pob Pecyn}many{Olrhain Pob Pecyn}other{Olrhain Pob Pecyn}}</translation>
 <translation id="5597915316964418992">Agorwch y Grid Tabiau</translation>
@@ -1083,6 +1085,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="6642362222295953972">Newid i dab presennol</translation>
 <translation id="6643016212128521049">Clirio</translation>
 <translation id="6645899968535965230">Cod QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">Anfonir cyfeiriadau URL rydych yn ymweld â nhw at Google i ragfynegi pa wefannau y mae'n bosib y byddwch yn ymweld â nhw nesaf</translation>
 <translation id="6647480763136463714">Rhedwyd ddiwethaf <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Golygu'r Ffolder</translation>
 <translation id="6657585470893396449">Cyfrinair</translation>

@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">接收通知</translation>
 <translation id="4133493477912226187">有 <ph name="NUMBER_OF_TABS" /> 个标签页似乎彼此相关。为它们建组？</translation>
 <translation id="4212246570487010370">继续浏览</translation>
+<translation id="427987768447457592">新标签页分组</translation>
 <translation id="4648718555153979859">您的标签页会按组列在此处</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{（共有 <ph name="REVIEWS_COUNT_ONE" /> 条评价）}other{（共有 <ph name="REVIEWS_COUNT_MANY" /> 条评价）}}</translation>
 <translation id="4850886885716139402">视图</translation>

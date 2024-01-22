@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">தேதியைத் தொட்டுப் பிடிக்கவும்.</translation>
 <translation id="1959679933317802873">உள்ளடக்கத்தைப் பெறக் காத்திருக்கிறது</translation>
 <translation id="1967461193809857427">{count,plural, =1{Androidல் சமீபத்தில் செயலில் இருந்த பக்கத்தைப் பார்க்க வேண்டுமா?}other{Androidல் சமீபத்தில் செயலில் இருந்த பக்கங்களைப் பார்க்க வேண்டுமா?}}</translation>
+<translation id="1972325230031091483">நீங்கள் தற்போது பார்க்கும் இணையப் பக்கத்தின் அடிப்படையில் உள்ளடக்கம் முன்கூட்டியே ஏற்றப்படுவதால் விரைவாக உலாவலாம்</translation>
 <translation id="1973912524893600642">தரவை அழிக்காதே</translation>
 <translation id="1974060860693918893">மேம்பட்டவை</translation>
 <translation id="1980417445547898121">{count,plural, =1{வேறொரு சாதனத்தில் சமீபத்தில் செயலில் இருந்த {count} பக்கத்தை இந்த iPhoneனில் பார்க்கலாம்}other{வேறொரு சாதனத்தில் சமீபத்தில் செயலில் இருந்த {count} பக்கங்களை இந்த iPhoneனில் பார்க்கலாம்}}</translation>
@@ -434,6 +435,7 @@
 <translation id="3235242129752692527">நிகழ்வு குறித்த விவரங்களை மாற்றிய பின்னர், “சேமி“ என்பதைத் தட்டவும்.</translation>
 <translation id="3240426699337459095">இணைப்பு நகலெடுக்கப்பட்டது</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Chrome உபயோக அறிக்கைகளைப் பகிர்ந்தாலும் நீங்கள் பார்வையிட்ட URLகள் அவற்றில் இருக்கும்</translation>
 <translation id="3245744387817103524">நீங்கள் செய்த மாற்றத்தைச் சேமிக்க முடியவில்லை.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">கடவுச்சொற்களைத் தானாக நிரப்பு</translation>
@@ -633,7 +635,6 @@
 <translation id="4371591986692297148">செயலில் இல்லை</translation>
 <translation id="4375040482473363939">QR குறியீட்டுத் தேடல்</translation>
 <translation id="4378154925671717803">மொபைல்</translation>
-<translation id="4388983683160515185"><ph name="WEBSITE" /> தளத்திற்கான கடவுச்சொல்லை <ph name="FULL_NAME" /> உங்களுடன் பகிர்ந்துள்ளார்</translation>
 <translation id="4389019817280890563">மொழியை மாற்ற தட்டவும்.</translation>
 <translation id="4405320213589929829">உள்ளூர் தகவல்களையும் வழிகளையும் பெறுவதற்கு இணையப் பக்கங்களில் உள்ள முகவரிகளைப் பயன்படுத்தலாம்.</translation>
 <translation id="4420409367264901497">புக்மார்க்கை மாற்று</translation>
@@ -859,6 +860,7 @@
 <translation id="555749644339804659">சரிபார்க்கிறது…</translation>
 <translation id="5559567453458728487">இணையத்தில் கண்டறிந்த அளவீட்டு யூனிட்களை மாற்றும்</translation>
 <translation id="556042886152191864">பட்டன்</translation>
+<translation id="5572648434713976849">முகவரிப் பட்டியில் இன்னும் துல்லியமான பரிந்துரைகள் காட்டப்படும்</translation>
 <translation id="5572684875078967866">தகவல் சேமிப்பகம்</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{இந்தப் பேக்கேஜைக் கண்காணி}other{அனைத்து பேக்கேஜ்களையும் கண்காணி}}</translation>
 <translation id="5597915316964418992">பக்கத்தின் கட்டக் கட்சியைத் திறக்கவும்</translation>
@@ -1085,6 +1087,7 @@
 <translation id="6642362222295953972">ஏற்கனவே திறந்துள்ள தாவலுக்கு மாறு</translation>
 <translation id="6643016212128521049">அழி</translation>
 <translation id="6645899968535965230">QR குறியீடு: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">நீங்கள் அடுத்து பார்வையிடக்கூடிய தளங்களைக் கணிப்பதற்காக, நீங்கள் பார்வையிடும் URLகள் Googleளுக்கு அனுப்பப்படும்</translation>
 <translation id="6647480763136463714">கடைசியாகச் சரிபார்த்தது: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">ஃபோல்டரைத் திருத்து</translation>
 <translation id="6657585470893396449">கடவுச்சொல்</translation>

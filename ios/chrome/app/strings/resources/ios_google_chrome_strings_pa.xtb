@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
+<translation id="1066101356081285416">Chrome ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ ਦੇ ਟਰੈਕਿੰਗ ਨੰਬਰਾਂ ਦਾ ਪਤਾ ਲਗਾਵੇਗਾ ਅਤੇ ਨਵੇਂ ਟੈਬ ਪੰਨੇ 'ਤੇ ਤੁਹਾਨੂੰ ਪੈਕੇਜ ਸੰਬੰਧੀ ਅੱਪਡੇਟਾਂ ਦਿਖਾਵੇਗਾ। ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਮੁਹੱਈਆ ਕਰਨ ਅਤੇ ਹਰ ਕਿਸੇ ਲਈ Google ਖਰੀਦਦਾਰੀ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਪੈਕੇਜ ਟਰੈਕਿੰਗ ਨੰਬਰ ਅਤੇ ਵੈੱਬਸਾਈਟ ਦਾ ਨਾਮ Google ਨੂੰ ਭੇਜਿਆ ਜਾਵੇਗਾ। ਤੁਸੀਂ ਇਸਨੂੰ ਕਿਸੇ ਵੇਲੇ ਵੀ <ph name="BEGIN_LINK" />ਪੈਕੇਜ ਟਰੈਕਿੰਗ ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਅੱਪਡੇਟ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1085696779717592361">Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਵਰਤੋ</translation>
 <translation id="1105362920864247682">Chrome ਵਿੱਚ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ।</translation>
 <translation id="1113057722807951993">ਪਾਸਫਰੇਜ਼ ਇਨਕ੍ਰਿਪਸ਼ਨ ਵਿੱਚ Google Pay ਦੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤੇ ਸ਼ਾਮਲ ਨਹੀਂ ਹਨ।
@@ -40,6 +41,7 @@
 <translation id="1682483655351012182">ਆਪਣੇ Chrome ਡਾਟੇ ਦਾ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">ਤੁਹਾਡੇ Chrome ਬੁੱਕਮਾਰਕਾਂ ਵਿੱਚ ਇਨਪੁੱਟ ਕੀਤੇ URL ਸ਼ਾਮਲ ਕਰਦਾ ਹੈ।</translation>
+<translation id="1799920918471566157">Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ</translation>
 <translation id="1830634592642484976">ਇਹ ਪਤਾ ਫ਼ਿਲਹਾਲ Chrome 'ਤੇ ਰੱਖਿਅਤ ਹੈ। ਇਸਨੂੰ ਸਾਰੇ Google ਉਤਪਾਦਾਂ ਵਿੱਚ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ, <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">ਸੁਨੇਹਿਆਂ, ਦਸਤਾਵੇਜ਼ਾਂ ਅਤੇ ਹੋਰ ਐਪਾਂ ਦੇ ਲਿੰਕਾਂ 'ਤੇ ਟੈਪ ਕਰਨ 'ਤੇ ਉਨ੍ਹਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ Chrome ਵਿੱਚ ਖੋਲ੍ਹੋ।</translation>
 <translation id="1910975740091000991">iOS ਲਈ Chrome</translation>
@@ -74,6 +76,7 @@
 <translation id="2702250627063295552">Chrome ਦੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਆਈਟਮ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="2736805085127235148">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ Chrome ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਫ਼ਿਲਹਾਲ ਬੰਦ ਹਨ।</translation>
 <translation id="2767464022270041271">ਕੋਈ ਰੱਖਿਅਤ ਕੀਤਾ ਪਾਸਵਰਡ ਨਹੀਂ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ 'ਤੇ Google Password Manager ਉਨ੍ਹਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦਾ ਹੈ।</translation>
+<translation id="2789947168960170215">ਜੇ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਭੁੱਲ ਗਏ ਹੋ ਜਾਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK" />ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="2868822340714096138">Chrome ਵਿੱਚ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="2869959624320573933">Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome ਤੁਹਾਡੇ ਡਾਟੇ ਨੂੰ ਨਿੱਜੀ ਕਿਵੇਂ ਰੱਖਦਾ ਹੈ<ph name="END_LINK" /> ਇਸ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>

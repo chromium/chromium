@@ -1122,7 +1122,6 @@
 <translation id="1832848789136765277">Чтобы никогда не терять доступ к синхронизированным данным, подтвердите свою личность.</translation>
 <translation id="1834503245783133039">Не удалось скачать файл <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Обновление Linux</translation>
-<translation id="1835612721186505600">Доступ получат приложения и сайты с разрешением "Камера"</translation>
 <translation id="1838374766361614909">Удалить условия поиска</translation>
 <translation id="1839021455997460752">Ваш адрес электронной почты</translation>
 <translation id="1839540115464516994">Показать в сервисе "<ph name="LOCATION" />"</translation>
@@ -4580,7 +4579,6 @@
 <translation id="4507128560633489176">Данные удалены.</translation>
 <translation id="4507373251891673233">Вы заблокировали все расширения с сайта <ph name="HOST" />.</translation>
 <translation id="4507401683427517298">Нажмите "Добавить ярлык".</translation>
-<translation id="4508150454272293946">Разрешите приложениям и веб-страницам использовать камеры, подключенные к этому устройству. Если это не помогло, попробуйте перезапустить приложение или обновить веб-страницу.</translation>
 <translation id="450867954911715010">Настройки специальных возможностей</translation>
 <translation id="4508765956121923607">Исходный код страницы</translation>
 <translation id="4509277363725254222">Если вы поделитесь копией <ph name="BEGIN_BOLD_USERNAME" />имени пользователя<ph name="END_BOLD_USERNAME" /> и <ph name="BEGIN_BOLD_PASSWORD" />пароля<ph name="END_BOLD_PASSWORD" />, участники семейной группы смогут использовать их с помощью Google Менеджера паролей.</translation>
@@ -8483,7 +8481,6 @@
 <translation id="7610337976012700501">Чтобы вы могли передавать данные этим людям при помощи функции "<ph name="FEATURE_NAME" />", а они – вам, добавьте в контакты адреса электронной почты, которые связаны с аккаунтами Google нужных пользователей.</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612050744024016345">Все расширения</translation>
-<translation id="7612401678989660900">Доступ получат приложения и сайты с разрешением "Микрофон"</translation>
 <translation id="7612497353238585898">Активный сайт</translation>
 <translation id="7612655942094160088">Включить функции, использующие подключение к телефону.</translation>
 <translation id="7612989789287281429">Вход в аккаунт…</translation>
@@ -8701,7 +8698,7 @@
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> с сайта <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Открыть группу в новом окне</translation>
 <translation id="7764909446494215916">Управление аккаунтом &amp;Google</translation>
-<translation id="7765158879357617694">Переместить</translation>
+<translation id="7765158879357617694">Перенести</translation>
 <translation id="7765507180157272835">Требуется подключение к Bluetooth и сети Wi-Fi</translation>
 <translation id="7766082757934713382">Эта функция приостанавливает автоматическое обновление системы и приложений, что позволяет экономить сетевой трафик.</translation>
 <translation id="7766807826975222231">Узнать больше</translation>

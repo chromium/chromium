@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Atinge lung o dată.</translation>
 <translation id="1959679933317802873">Se așteaptă conținutul</translation>
 <translation id="1967461193809857427">{count,plural, =1{Reiei fila lăsată pe Android?}few{Reiei filele lăsate pe Android?}other{Reiei filele lăsate pe Android?}}</translation>
+<translation id="1972325230031091483">Vei naviga mai rapid deoarece conținutul se încarcă proactiv în funcție de pagina web accesată în acel moment</translation>
 <translation id="1973912524893600642">Păstrează datele</translation>
 <translation id="1974060860693918893">Avansate</translation>
 <translation id="1980417445547898121">{count,plural, =1{Accesează {count} filă activă recent de pe celălalt dispozitiv pe acest iPhone}few{Accesează {count} file active recent de pe celălalt dispozitiv pe acest iPhone}other{Accesează {count} de file active recent de pe celălalt dispozitiv pe acest iPhone}}</translation>
@@ -291,6 +292,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2547458583188611426">Sincronizarea nu funcționează. Pentru a porni sincronizarea, introdu expresia de acces.</translation>
 <translation id="2551153019974022505">Eroare de cont</translation>
 <translation id="2556092377360758201">Fără protecție (nu este recomandat)</translation>
+<translation id="2561375093019333908">DESCHIDE</translation>
 <translation id="2562041823070056534">Se trimite la <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Folosește și salvează parole din Contul Google</translation>
 <translation id="2577522251608256362">Cartier</translation>
@@ -433,6 +435,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3235242129752692527">Editează detaliile evenimentului și atinge Salvează.</translation>
 <translation id="3240426699337459095">Linkul a fost copiat</translation>
 <translation id="3244271242291266297">LL</translation>
+<translation id="3245429137663807393">Dacă trimiți rapoarte privind folosirea Chrome, acestea includ adresele URL pe care le accesezi</translation>
 <translation id="3245744387817103524">Modificarea nu a putut fi salvată.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> din <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Completează automat parolele</translation>
@@ -632,7 +635,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4371591986692297148">Inactiv</translation>
 <translation id="4375040482473363939">Căutare coduri QR</translation>
 <translation id="4378154925671717803">Telefon</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> ți-a permis accesul la o parolă pentru <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Atinge pentru a schimba limba.</translation>
 <translation id="4405320213589929829">Folosește adresele din paginile web pentru a obține informații și indicații de orientare locale.</translation>
 <translation id="4420409367264901497">Editează marcajul</translation>
@@ -848,6 +850,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5513681519188741830">acum <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Creează o expresie de acces</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} parolă slabă}few{{COUNT} parole slabe}other{{COUNT} de parole slabe}}</translation>
+<translation id="5532545557415295622">Casetă de dialog cu limita de inactivitate</translation>
 <translation id="5542540507657872337">S-au găsit <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Cu Handoff, începi să navighezi pe un site de pe acest dispozitiv, apoi continui cu ușurință de pe Mac. Site-ul deschis actual va apărea în Dock pe Mac.
 
@@ -857,6 +860,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="555749644339804659">Se verifică parolele…</translation>
 <translation id="5559567453458728487">Convertește unitățile de măsură găsite pe web</translation>
 <translation id="556042886152191864">Buton</translation>
+<translation id="5572648434713976849">Vei primi sugestii îmbunătățite în bara de adrese</translation>
 <translation id="5572684875078967866">Stocarea informațiilor</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Urmărește coletul}few{Urmăriți toate pachetele}other{Urmăriți toate pachetele}}</translation>
 <translation id="5597915316964418992">Deschide grila cu file</translation>
@@ -1083,6 +1087,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="6642362222295953972">Comută la o filă existentă</translation>
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6645899968535965230">Cod QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">Adresele URL pe care le accesezi sunt trimise la Google pentru a anticipa site-urile pe care le-ai putea accesa pe viitor</translation>
 <translation id="6647480763136463714">Ultima rulare: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Modificați dosarul</translation>
 <translation id="6657585470893396449">Parolă</translation>
@@ -1288,6 +1293,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7781829728241885113">Ieri</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{După o zi}few{După {COUNT} zile}other{După {COUNT} de zile}}</translation>
 <translation id="7791543448312431591">Adaugă</translation>
+<translation id="7792549458069452436">DESCARCĂ APLICAȚIA</translation>
 <translation id="7807060072011926525">Oferit de Google</translation>
 <translation id="7812377703891978671">Poți accesa întregul istoric de navigare dacă selectezi <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Descărcări</translation>

@@ -378,6 +378,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Impossible d'ouvrir le fichier}one{Impossible d'ouvrir le fichier}other{Impossible d'ouvrir les fichiers}}</translation>
 <translation id="1282311502488501110">Ne pas se connecter</translation>
 <translation id="1282465000333679776">Partager l'audio du système</translation>
+<translation id="1283126956823499975">Un problème est survenu lors de la configuration de l'appareil</translation>
 <translation id="1284277788676816155">Ne pas autoriser l'enregistrement des données</translation>
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
 <translation id="1285484354230578868">Stocker les données dans votre compte Google Drive</translation>
@@ -1120,7 +1121,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1832848789136765277">Pour toujours avoir accès à vos données synchronisées, confirmez votre identité</translation>
 <translation id="1834503245783133039">Échec du téléchargement : <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Mettre à niveau Linux</translation>
-<translation id="1835612721186505600">Autoriser l'accès pour les applis et sites Web avec l'autorisation d'accès à l'appareil photo</translation>
 <translation id="1838374766361614909">Effacer la recherche</translation>
 <translation id="1839021455997460752">Votre adresse e-mail</translation>
 <translation id="1839540115464516994">Afficher dans <ph name="LOCATION" /></translation>
@@ -4569,7 +4569,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4507128560633489176">Données effacées.</translation>
 <translation id="4507373251891673233">Vous avez bloqué toutes les extensions pour <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Cliquez sur "Ajouter un raccourci"</translation>
-<translation id="4508150454272293946">Autorisez les applis et pages Web à utiliser les appareils photo connectés à cet appareil. Si le problème persiste, essayez de redémarrer l'appli ou d'actualiser la page Web.</translation>
 <translation id="450867954911715010">Paramètres d'accessibilité</translation>
 <translation id="4508765956121923607">Afficher la s&amp;ource</translation>
 <translation id="4509277363725254222">Lorsque vous partagez une copie de votre <ph name="BEGIN_BOLD_USERNAME" />nom d'utilisateur<ph name="END_BOLD_USERNAME" /> et de votre <ph name="BEGIN_BOLD_PASSWORD" />mot de passe<ph name="END_BOLD_PASSWORD" />, le membre de votre famille peut les renseigner à l'aide du Gestionnaire de mots de passe de Google</translation>
@@ -5017,6 +5016,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4863769717153320198">La résolution est de <ph name="WIDTH" /> x <ph name="HEIGHT" /> (par défaut)</translation>
 <translation id="4864369630010738180">Connexion...</translation>
 <translation id="4864805589453749318">Sélectionne le parent qui t'autorise à ajouter un compte scolaire.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bloqué)</translation>
 <translation id="486505726797718946">Mémoire économisée</translation>
 <translation id="486635084936119914">Ouvrir automatiquement certains types de fichiers après leur téléchargement</translation>
 <translation id="4867272607148176509">Les parents peuvent approuver ou bloquer des applis, définir des limites de temps d'utilisation et contrôler la navigation sur le Web. Un compte scolaire peut être ajouté plus tard pour accéder à la plupart des ressources scolaires.</translation>
@@ -5510,6 +5510,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5261619498868361045">Vous devez indiquer un nom de conteneur.</translation>
 <translation id="5261683757250193089">Ouvrir sur le Web Store</translation>
 <translation id="5261799091118902550">Ce fichier est peut-être un virus ou un logiciel malveillant. Vous pouvez l'envoyer à Google pour vérifier s'il est dangereux.</translation>
+<translation id="5262334727506665688">Continuez à enregistrer les mots de passe dans votre compte Google</translation>
 <translation id="5262784498883614021">Se connecter automatiquement au réseau</translation>
 <translation id="5263656105659419083">Pour revenir facilement au panneau latéral, cliquez sur "Épingler" en haut à droite</translation>
 <translation id="5264148714798105376">Cette opération peut prendre environ une minute.</translation>
@@ -7050,6 +7051,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="649396225532207613">Ce fichier peut compromettre vos comptes personnels et de réseaux sociaux</translation>
 <translation id="6494327278868541139">Afficher les détails de la protection renforcée</translation>
 <translation id="6494445798847293442">N'est pas une autorité de certification</translation>
+<translation id="6494483173119160146">Une erreur irrécupérable s'est produite. Veuillez réinitialiser votre appareil (cela effacera toutes les données utilisateur), puis réessayer.</translation>
 <translation id="6497784818439587832">Agrandissez ou réduisez la taille des éléments à l'écran</translation>
 <translation id="6497789971060331894">Défilement inversé avec la souris</translation>
 <translation id="6498249116389603658">&amp;Toutes vos langues</translation>
@@ -8465,7 +8467,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7610337976012700501">Pour utiliser le <ph name="FEATURE_NAME" /> avec ces contacts, ajoutez à ceux-ci l'adresse e-mail associée à leur compte Google.</translation>
 <translation id="7611713099524036757">méta</translation>
 <translation id="7612050744024016345">Toutes les extensions</translation>
-<translation id="7612401678989660900">Autoriser l'accès pour les applis et sites Web avec l'autorisation d'accès au micro</translation>
 <translation id="7612497353238585898">Site actif</translation>
 <translation id="7612655942094160088">Activation des fonctionnalités connectées du téléphone.</translation>
 <translation id="7612989789287281429">Connexion…</translation>
@@ -9528,6 +9529,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8397825320644530257">Dissocier le téléphone connecté</translation>
 <translation id="8398877366907290961">Poursuivre quand même</translation>
 <translation id="8399282673057829204">Afficher le mot de passe</translation>
+<translation id="839949601275221554">Une erreur s'est produite. Veuillez redémarrer votre appareil et réessayer.</translation>
 <translation id="8401432541486058167">Utilisez le code associé à votre carte à puce.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome bloquera de nouveau les cookies aujourd'hui}=1{Chrome bloquera de nouveau les cookies demain}one{Chrome bloquera de nouveau les cookies dans # jour}other{Chrome bloquera de nouveau les cookies dans # jours}}</translation>
 <translation id="8403618281196981152">Vos données dans Chrome</translation>

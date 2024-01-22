@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">તારીખને ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="1959679933317802873">તમારું કન્ટેન્ટ લોડ થવાની રાહ જોઈ રહ્યાં છીએ</translation>
 <translation id="1967461193809857427">{count,plural, =1{Android પરથી તમે છોડેલા ટૅબને અહીં લાવીએ?}one{Android પરથી તમે છોડેલા ટૅબને અહીં લાવીએ?}other{Android પરથી તમે છોડેલા ટૅબને અહીં લાવીએ?}}</translation>
+<translation id="1972325230031091483">વેબપેજની તમારી વર્તમાન મુલાકાતના આધારે કન્ટેન્ટ સક્રિય રીતે લોડ કરવામાં આવતું હોવાને કારણે તમે વધુ ઝડપથી બ્રાઉઝ કરી શકશો</translation>
 <translation id="1973912524893600642">ડેટા રાખો</translation>
 <translation id="1974060860693918893">વિગતવાર</translation>
 <translation id="1980417445547898121">{count,plural, =1{તમારા અન્ય ડિવાઇસ પરથી તમારા {count} તાજેતરના સક્રિય ટૅબને આ iPhone પર મેળવો}one{તમારા અન્ય ડિવાઇસ પરથી તમારા {count} તાજેતરના સક્રિય ટૅબને આ iPhone પર મેળવો}other{તમારા અન્ય ડિવાઇસ પરથી તમારા {count} તાજેતરના સક્રિય ટૅબને આ iPhone પર મેળવો}}</translation>
@@ -434,6 +435,7 @@
 <translation id="3235242129752692527">ઇવેન્ટની વિગતોમાં ફેરફાર કરો અને "સાચવો" પર ટૅપ કરો.</translation>
 <translation id="3240426699337459095">લિંક કૉપિ કરી</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">જો તમે Chromeના વપરાશના રિપોર્ટ પણ શેર કરતા હો, તો તે રિપોર્ટમાં તમે મુલાકાત લો છો તે URLs શામેલ હોય છે</translation>
 <translation id="3245744387817103524">તમારો ફેરફાર સાચવી શકાયો નથી.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="NUM_SUGGESTIONS" /> માનું <ph name="INDEX" /></translation>
 <translation id="3264775633254836593">ઑટોમૅટિક રીતે પાસવર્ડ ભરો</translation>
@@ -633,7 +635,6 @@
 <translation id="4371591986692297148">નિષ્ક્રિય</translation>
 <translation id="4375040482473363939">QR કોડ શોધો</translation>
 <translation id="4378154925671717803">ફોન</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> દ્વારા તમારી સાથે <ph name="WEBSITE" /> માટેનો પાસવર્ડ શેર કરવામાં આવ્યો છે</translation>
 <translation id="4389019817280890563">ભાષા બદલવા માટે ટૅપ કરો.</translation>
 <translation id="4405320213589929829">સ્થાનિક માહિતી અને દિશાનિર્દેશો મેળવવા માટે, વેબપેજ પરના ઍડ્રેસનો ઉપયોગ કરો.</translation>
 <translation id="4420409367264901497">બુકમાર્કમાં ફેરફાર કરો</translation>
@@ -859,6 +860,7 @@
 <translation id="555749644339804659">પાસવર્ડ ચેક કરીએ છીએ…</translation>
 <translation id="5559567453458728487">વેબ પર મળેલા માપના એકમોનું રૂપાંતરણ કરો</translation>
 <translation id="556042886152191864">બટન</translation>
+<translation id="5572648434713976849">ઍડ્રેસ બારમાં તમે બહેતર સૂચનો મેળવશો</translation>
 <translation id="5572684875078967866">માહિતીનો સ્ટોરેજ</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{આ પૅકેજને ટ્રૅક કરો}one{પૅકેજને ટ્રૅક કરો}other{બધા પૅકેજને ટ્રૅક કરો}}</translation>
 <translation id="5597915316964418992">ટૅબ ગ્રિડ ખોલો</translation>
@@ -1085,6 +1087,7 @@
 <translation id="6642362222295953972">હાલના ટૅબ પર સ્વિચ કરો</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6645899968535965230">QR કોડ: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">હવે તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="6647480763136463714">છેલ્લે સલામતી માટે તપાસ કર્યાનો સમય <ph name="TIME" /></translation>
 <translation id="6656103420185847513">ફોલ્ડરમાં ફેરફાર કરો</translation>
 <translation id="6657585470893396449">પાસવર્ડ</translation>

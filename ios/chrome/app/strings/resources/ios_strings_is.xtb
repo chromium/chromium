@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Haltu fingri á dagsetningu.</translation>
 <translation id="1959679933317802873">Bíður eftir efni</translation>
 <translation id="1967461193809857427">{count,plural, =1{Opna flipann sem þú varst með virkan í Android?}one{Opna flipana sem þú varst með virka í Android?}other{Opna flipana sem þú varst með virka í Android?}}</translation>
+<translation id="1972325230031091483">Þú getur vafrað hraðar því að efni er hlaðið forvirkt í samræmi við vefsíðuna sem þú ert að skoða í hvert skipti</translation>
 <translation id="1973912524893600642">Geyma gögn</translation>
 <translation id="1974060860693918893">Ítarlegt</translation>
 <translation id="1980417445547898121">{count,plural, =1{Opnaðu {count} nýlega virkan flipa úr hinu tækinu í þessum iPhone}one{Opnaðu {count} nýlega virkan flipa úr hinu tækinu í þessum iPhone}other{Opnaðu {count} nýlega virka flipa úr hinu tækinu í þessum iPhone}}</translation>
@@ -433,6 +434,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3235242129752692527">Breyttu upplýsingum viðburðarins og ýtti á „Vista“.</translation>
 <translation id="3240426699337459095">Tengill afritaður</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Ef þú deilir einnig Chrome notkunarskýrslum innihalda þær skýrslur vefslóðirnar sem þú opnar</translation>
 <translation id="3245744387817103524">Ekki tókst að vista breytinguna.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> af <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Sjálfvirk útfylling aðgangsorða</translation>
@@ -632,7 +634,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4371591986692297148">Óvirkt</translation>
 <translation id="4375040482473363939">QR-kóðaleit</translation>
 <translation id="4378154925671717803">Sími</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> deildi aðgangsorði að <ph name="WEBSITE" /> með þér.</translation>
 <translation id="4389019817280890563">Ýttu til að skipta um tungumál.</translation>
 <translation id="4405320213589929829">Notaðu heimilisföng á vefsíðum til að fá staðbundnar upplýsingar og leiðarlýsingar.</translation>
 <translation id="4420409367264901497">Breyta bókamerki</translation>
@@ -857,6 +858,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="555749644339804659">Athugar aðgangsorð…</translation>
 <translation id="5559567453458728487">Umbreyta mælieiningum sem fundust á vefnum</translation>
 <translation id="556042886152191864">Hnappur</translation>
+<translation id="5572648434713976849">Þú færð betri tillögur í veffangastikunni</translation>
 <translation id="5572684875078967866">Upplýsingageymsla</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Rekja þennan pakka}one{Rekja alla pakka}other{Rekja alla pakka}}</translation>
 <translation id="5597915316964418992">Opna flipayfirlit</translation>
@@ -1083,6 +1085,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="6642362222295953972">Skipta yfir í núverandi flipa</translation>
 <translation id="6643016212128521049">Hreinsa</translation>
 <translation id="6645899968535965230">QR-kóði: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">Vefslóðir sem þú opnar eru sendar til Google til að spá fyrir um hvaða vefsvæði þú kannt að opna næst</translation>
 <translation id="6647480763136463714">Síðast keyrt <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Breyta möppu</translation>
 <translation id="6657585470893396449">Aðgangsorð</translation>

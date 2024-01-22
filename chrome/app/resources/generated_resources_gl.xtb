@@ -1118,7 +1118,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1832848789136765277">Para asegurarte de poder acceder sempre aos teus datos sincronizados, verifica a túa identidade</translation>
 <translation id="1834503245783133039">Non se descargou correctamente o ficheiro <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Actualizando Linux</translation>
-<translation id="1835612721186505600">Permite o acceso á cámara a todas as aplicacións e sitios web autorizados</translation>
 <translation id="1838374766361614909">Borrar busca</translation>
 <translation id="1839021455997460752">O teu enderezo de correo electrónico</translation>
 <translation id="1839540115464516994">Mostrar en: <ph name="LOCATION" /></translation>
@@ -4570,7 +4569,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4507128560633489176">Datos borrados.</translation>
 <translation id="4507373251891673233">Bloqueaches todas as extensións de <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Fai clic en Engadir atallo</translation>
-<translation id="4508150454272293946">Permite que as aplicacións e páxinas web usen as cámaras conectadas a este dispositivo. Se segues tendo problemas coa cámara, proba a reiniciar a aplicación ou actualiza a páxina web.</translation>
 <translation id="450867954911715010">Configuración de accesibilidade</translation>
 <translation id="4508765956121923607">Ver código f&amp;onte</translation>
 <translation id="4509277363725254222">Se compartes unha copia do teu <ph name="BEGIN_BOLD_USERNAME" />nome de usuario<ph name="END_BOLD_USERNAME" /> e <ph name="BEGIN_BOLD_PASSWORD" />contrasinal<ph name="END_BOLD_PASSWORD" />, o membro da túa familia poderá completalos co xestor de contrasinais de Google</translation>
@@ -8459,7 +8457,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7610337976012700501">Para poder usar <ph name="FEATURE_NAME" /> con estes contactos, engade aos teus contactos o enderezo de correo electrónico vinculado á súa Conta de Google.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Todas as extensións</translation>
-<translation id="7612401678989660900">Permite o acceso ao micrófono a todas as aplicacións e sitios web autorizados</translation>
 <translation id="7612497353238585898">Sitio activo</translation>
 <translation id="7612655942094160088">Activar funcións do teléfono conectado.</translation>
 <translation id="7612989789287281429">Iniciando sesión…</translation>

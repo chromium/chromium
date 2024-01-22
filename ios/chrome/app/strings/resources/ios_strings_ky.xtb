@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Күндү коё бербей басып туруңуз.</translation>
 <translation id="1959679933317802873">Мазмун күтүлүүдө</translation>
 <translation id="1967461193809857427">{count,plural, =1{Android'де көргөн өтмөктү ачасызбы?}other{Android'де көргөн өтмөктү ачасызбы?}}</translation>
+<translation id="1972325230031091483">Мазмун учурда ачылып турган веб-баракчанын негизинде жүктөлгөндүктөн, барактарды тезирээк карап чыгасыз</translation>
 <translation id="1973912524893600642">Дайындарды сактоо</translation>
 <translation id="1974060860693918893">Өркүндөтүлгөн</translation>
 <translation id="1980417445547898121">{count,plural, =1{Башка түзмөктө акыркы жолу ачылган {count} өтмөктү ушул iPhone'до көрүңүз}other{Башка түзмөктө акыркы жолу ачылган {count} өтмөктү ушул iPhone'до көрүңүз}}</translation>
@@ -433,6 +434,7 @@
 <translation id="3235242129752692527">Иш-чаранын чоо-жайын түзөтүп, "Сактоо" дегенди таптаңыз.</translation>
 <translation id="3240426699337459095">Шилтеме көчүрүлдү</translation>
 <translation id="3244271242291266297">АА</translation>
+<translation id="3245429137663807393">Chrome'дун колдонулушу тууралуу кабарларды да бөлүшсөңүз, ал кабарларда сиз баш баккан URL даректери камтылат</translation>
 <translation id="3245744387817103524">Өзгөртүүңүз сакталган жок.</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> ичинен <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
 <translation id="3264775633254836593">Сырсөздөрдү автоматтык түрдө толтуруу</translation>
@@ -632,7 +634,6 @@
 <translation id="4371591986692297148">Жигерсиз</translation>
 <translation id="4375040482473363939">QR кодду издөө</translation>
 <translation id="4378154925671717803">Телефон</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> сиз менен <ph name="WEBSITE" /> үчүн сырсөздү бөлүштү</translation>
 <translation id="4389019817280890563">Тилди өзгөртүү үчүн таптап коюңуз.</translation>
 <translation id="4405320213589929829">Жергиликтүү маалыматты жана багыттарды веб беттердеги даректерден көрүңүз.</translation>
 <translation id="4420409367264901497">Кыстарманы түзөтүү</translation>
@@ -857,6 +858,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="555749644339804659">Сырсөздөр текшерилүүдө…</translation>
 <translation id="5559567453458728487">Интернетте табылган конверсияны талдоо бирдиктери</translation>
 <translation id="556042886152191864">Баскыч</translation>
+<translation id="5572648434713976849">Дарек тилкесинде жакшыртылган сунуштарды аласыз</translation>
 <translation id="5572684875078967866">Маалымат сактагыч</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Бул таңгакка көз салуу}other{Бардык таңгактарга көз салуу}}</translation>
 <translation id="5597915316964418992">Өтмөк торчосун ачуу</translation>
@@ -1083,6 +1085,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6642362222295953972">Учурдагы өтмөккө которулуу</translation>
 <translation id="6643016212128521049">Тазалоо</translation>
 <translation id="6645899968535965230">QR код: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">Кийин кайсы сайттарга кирериңизди болжолдоо үчүн сиз баш баккан URL даректери Google'га жөнөтүлүп турат</translation>
 <translation id="6647480763136463714">Акыркы жолу иштетилген: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Куржунду түзөтүү</translation>
 <translation id="6657585470893396449">Сырсөз</translation>

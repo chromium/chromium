@@ -377,6 +377,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Impossibile aprire il file}other{Impossibile aprire i file}}</translation>
 <translation id="1282311502488501110">Non accedere</translation>
 <translation id="1282465000333679776">Condividi audio di sistema</translation>
+<translation id="1283126956823499975">Si è verificato un problema durante la configurazione del dispositivo</translation>
 <translation id="1284277788676816155">Non consentire il salvataggio dei dati</translation>
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
 <translation id="1285484354230578868">Memorizza dati nel tuo account Google Drive</translation>
@@ -1119,7 +1120,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1832848789136765277">Per assicurarti di poter accedere ai tuoi dati di sincronizzazione in qualsiasi momento, verifica la tua identità</translation>
 <translation id="1834503245783133039">Download non riuscito: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Upgrade di Linux</translation>
-<translation id="1835612721186505600">Consenti l'accesso per siti web e app che hanno l'autorizzazione di accesso alla fotocamera</translation>
 <translation id="1838374766361614909">Cancella ricerca</translation>
 <translation id="1839021455997460752">Il tuo indirizzo email</translation>
 <translation id="1839540115464516994">Mostra su <ph name="LOCATION" /></translation>
@@ -4568,7 +4568,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4507128560633489176">Dati cancellati.</translation>
 <translation id="4507373251891673233">Hai impedito a tutte le estensioni di accedere a <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Fai clic su "Aggiungi scorciatoia"</translation>
-<translation id="4508150454272293946">Consenti ad app e pagine web di utilizzare le fotocamere collegate a questo dispositivo. Se hai ancora problemi con la fotocamera, prova a riavviare l'app o ad aggiornare la pagina web.</translation>
 <translation id="450867954911715010">Impostazioni di accessibilità</translation>
 <translation id="4508765956121923607">Visualizza s&amp;orgente</translation>
 <translation id="4509277363725254222">Quando condividi una copia del tuo <ph name="BEGIN_BOLD_USERNAME" />nome utente<ph name="END_BOLD_USERNAME" /> e della tua <ph name="BEGIN_BOLD_PASSWORD" />password<ph name="END_BOLD_PASSWORD" />, il membro del tuo gruppo Famiglia può inserirli utilizzando Gestore delle password di Google</translation>
@@ -5016,6 +5015,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4863769717153320198">Risoluzione di <ph name="WIDTH" /> x <ph name="HEIGHT" /> (valore predefinito)</translation>
 <translation id="4864369630010738180">Accesso in corso...</translation>
 <translation id="4864805589453749318">Seleziona il genitore che sta concedendo l'autorizzazione per aggiungere un account della scuola.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bloccato)</translation>
 <translation id="486505726797718946">Ricordo salvato</translation>
 <translation id="486635084936119914">Apri automaticamente determinati tipi di file dopo il download</translation>
 <translation id="4867272607148176509">I genitori possono approvare o bloccare le app, impostare limiti di tempo e controllare la navigazione sul web. Un account della scuola può essere aggiunto in un secondo momento per accedere alla maggior parte delle risorse scolastiche.</translation>
@@ -5509,6 +5509,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5261619498868361045">È necessario specificare il nome del contenitore.</translation>
 <translation id="5261683757250193089">Apri nel Web Store</translation>
 <translation id="5261799091118902550">Questo file potrebbe essere un virus o un malware. Puoi inviarlo a Google per verificare se non è sicuro.</translation>
+<translation id="5262334727506665688">Continua a salvare le password nel tuo Account Google</translation>
 <translation id="5262784498883614021">Collegati automaticamente alla rete</translation>
 <translation id="5263656105659419083">Per tornare facilmente al riquadro laterale, fai clic su Fissa in alto a destra</translation>
 <translation id="5264148714798105376">L'operazione potrebbe richiedere un minuto circa.</translation>
@@ -7045,6 +7046,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="649396225532207613">Questo file può danneggiare i tuoi account personali e dei social network</translation>
 <translation id="6494327278868541139">Mostra dettagli della protezione avanzata</translation>
 <translation id="6494445798847293442">Non è un'autorità di certificazione</translation>
+<translation id="6494483173119160146">Si è verificato un errore irreversibile con il dispositivo. Reimposta il dispositivo (verranno resettati tutti i dati utente) e riprova.</translation>
 <translation id="6497784818439587832">Modifica le dimensioni del display per ingrandire o ridurre gli elementi visualizzati sullo schermo</translation>
 <translation id="6497789971060331894">Scorrimento invertito del mouse</translation>
 <translation id="6498249116389603658">&amp;Tutte le tue lingue</translation>
@@ -8458,7 +8460,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7610337976012700501">Per usare la funzionalità <ph name="FEATURE_NAME" /> con questi contatti, aggiungi ai tuoi contatti l'indirizzo email collegato al loro Account Google.</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612050744024016345">Tutte le estensioni</translation>
-<translation id="7612401678989660900">Consenti l'accesso per siti web e app che hanno l'autorizzazione di accesso al microfono</translation>
 <translation id="7612497353238585898">Sito attivo</translation>
 <translation id="7612655942094160088">Attiva le funzionalità collegate al telefono.</translation>
 <translation id="7612989789287281429">Accesso in corso…</translation>
@@ -9521,6 +9522,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8397825320644530257">Disconnettere un telefono connesso</translation>
 <translation id="8398877366907290961">Procedi comunque</translation>
 <translation id="8399282673057829204">Visualizza password</translation>
+<translation id="839949601275221554">Si è verificato un errore con il dispositivo. Riavvia il dispositivo e riprova.</translation>
 <translation id="8401432541486058167">Specifica il PIN associato alla tua smart card.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome bloccherà nuovamente i cookie oggi}=1{Chrome bloccherà nuovamente i cookie domani}other{# giorni al nuovo blocco dei cookie in Chrome}}</translation>
 <translation id="8403618281196981152">I tuoi dati in Chrome</translation>

@@ -102,6 +102,7 @@
 <translation id="3955621079070267756">যিকোনো এপৰ পৰা Chromium খোলক</translation>
 <translation id="4005283307739974863">Chromiumত সুৰক্ষা পৰীক্ষা খোলে আৰু চলায়।</translation>
 <translation id="4043291146360695975">পাছৱৰ্ডসমূহ কেৱল এই ডিভাইচটোত থকা পাছৱৰ্ড পৰিচালকত ছেভ কৰা হয়।</translation>
+<translation id="4076589763479456892">আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰিছে অথবা এই ছেটিংটো সলাব বিচাৰে, <ph name="BEGIN_LINK" />আপোনাৰ একাউণ্টৰ Chromiumৰ ডেটা মচক<ph name="END_LINK" />।</translation>
 <translation id="4099085513035183040">Chromium বিটাত সমৰ্থিত নহয়</translation>
 <translation id="4106512142782407609"><ph name="EMAIL" /> হিচাপে ছাইন ইন কৰিছে।
 
@@ -153,6 +154,7 @@
 <translation id="5534584691915394889">Chromium আৰু Google Lensৰ পৰা আপোনাৰ Apple Calendarত অনুষ্ঠান সৃষ্টি কৰিবলৈ এইটো ব্যৱহাৰ কৰা হ’ব।</translation>
 <translation id="5571094606370987472">Chromiumৰ শেহতীয়া টেব খোলে।</translation>
 <translation id="5623083843656850677">আপুনি Chromiumৰ পৰা বাহিৰ ওলালে অথবা অন্য কোনো এপ্ ব্যৱহাৰ কৰিলে আপোনাৰ ইনক’গনিট’ টেবসমূহ লক কৰক।</translation>
+<translation id="5671188105328420281">Chromiumৰ কিটিপ</translation>
 <translation id="5688047395118852662">এই কাৰ্ডখনে আপোনাক Chromiumৰ পৰা কেনেকৈ পাৰ্যমানে উপকৃত হ’ব পাৰি তাৰ পৰামৰ্শ দেখুৱায়।</translation>
 <translation id="5700709190537129682">Chromiumএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে</translation>
 <translation id="5777187867430702742">Chromium পৃষ্ঠা</translation>
@@ -281,6 +283,7 @@
 <translation id="8776843108004031667">এই একাউণ্টটো আৰু যিকোনো ছেভ নকৰা ডেটা Chromiumৰ পৰা আঁতৰোৱা হ’ব।</translation>
 <translation id="88376265765385899">Chromiumৰ বুকমাৰ্কসমূহ খোলে।</translation>
 <translation id="8860548555286245440">ইনক’গনিট’ত Chromiumত URL খোলক</translation>
+<translation id="8866191443434488382">Chromiumএ আপুনি চোৱা ছাইটসমূহত ট্ৰেকিং নম্বৰ চিনাক্ত কৰিব আৰু আপোনাক নতুন টেবৰ পৃষ্ঠাখনত পেকেজৰ আপডে’ট দেখুৱাব। এই সুবিধাটো প্ৰদান কৰিবলৈ আৰু সকলোৰে বাবে বজাৰ কৰাৰ সুবিধা উন্নত কৰিবলৈ পেকেজ ট্ৰেকিং নম্বৰ আৰু ৱেবছাইটৰ নাম Chromiumলৈ পঠিওৱা হ’ব। আপুনি <ph name="BEGIN_LINK" />পেকেজ ট্ৰেকিঙৰ ছেটিঙ<ph name="END_LINK" />ত যিকোনো সময়তে এইটো আপডে’ট কৰিব পাৰে।</translation>
 <translation id="8909995017390087892">iOSৰ বাবে Chromium</translation>
 <translation id="8924617840944134898">Chromium ইনক’গ্নিট’ টেব খোলক</translation>
 <translation id="894437814105052438">আপুনি ছাইন আউট কৰিলে Chromiumএ আপোনাৰ Google একাউণ্টত কোনো নতুন ডেটা ছিংক নকৰিব। পূৰ্বে ছিংক কৰা ডেটাখিনি একাউণ্টটোতে থাকে।</translation>

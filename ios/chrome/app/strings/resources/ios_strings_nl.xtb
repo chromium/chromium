@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Houd je vinger op een datum.</translation>
 <translation id="1959679933317802873">Wachten op content</translation>
 <translation id="1967461193809857427">{count,plural, =1{Wil je het tabblad ophalen dat je had achtergelaten op Android?}other{Wil je de tabbladen ophalen die je had achtergelaten op Android?}}</translation>
+<translation id="1972325230031091483">Je browst sneller, omdat content proactief wordt geladen op basis van je huidige webpagina</translation>
 <translation id="1973912524893600642">Gegevens behouden</translation>
 <translation id="1974060860693918893">Geavanceerd</translation>
 <translation id="1980417445547898121">{count,plural, =1{Krijg {count} recent actief tabblad van je andere apparaat op deze iPhone}other{Krijg {count} recent actieve tabbladen van je andere apparaat op deze iPhone}}</translation>
@@ -434,6 +435,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3235242129752692527">Bewerk de afspraakgegevens en tik op Opslaan.</translation>
 <translation id="3240426699337459095">Link gekopieerd</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Als je ook Chrome-gebruiksrapporten deelt, bevatten die rapporten de URL's die je bezoekt</translation>
 <translation id="3245744387817103524">De wijziging kan niet worden opgeslagen.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> van <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Wachtwoorden automatisch invullen</translation>
@@ -557,6 +559,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3922310737605261887">Zoeken naar gekopieerde tekst</translation>
 <translation id="3928666092801078803">Mijn gegevens combineren</translation>
 <translation id="3929457972718048006">Adressen</translation>
+<translation id="3948600256434252210">Swipe naar rechts om in de incognitomodus te browsen.</translation>
 <translation id="3955822496205734389">Je hebt zwakke wachtwoorden.</translation>
 <translation id="3959736869653157332">Menu → Nieuw incognitotabblad</translation>
 <translation id="3962326069546168954">Opslaan</translation>
@@ -633,7 +636,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4371591986692297148">Inactief</translation>
 <translation id="4375040482473363939">Zoeken naar QR-code</translation>
 <translation id="4378154925671717803">Telefoon</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> heeft een wachtwoord met je gedeeld voor <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Tik om de taal te wijzigen.</translation>
 <translation id="4405320213589929829">Gebruik adressen op webpagina's om lokale informatie en routes te krijgen.</translation>
 <translation id="4420409367264901497">Bookmark bewerken</translation>
@@ -662,6 +664,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4539187448429948815">{count,plural, =1{{count} opgeslagen suggestie voor automatische aanvulling beschikbaar boven je toetsenbord.}other{{count} opgeslagen suggesties voor automatisch aanvullen beschikbaar boven je toetsenbord.}}</translation>
 <translation id="4540780316273593836">Er is iets misgegaan</translation>
 <translation id="4550040941166547650">Alleen op dit apparaat</translation>
+<translation id="4564893319561643483"><ph name="TITLE" /> verbergen</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} inactief tabblad sluiten?}other{{COUNT} inactieve tabbladen sluiten?}}</translation>
 <translation id="457386861538956877">Meer...</translation>
 <translation id="4587589328781138893">Sites</translation>
@@ -859,6 +862,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="555749644339804659">Wachtwoorden checken…</translation>
 <translation id="5559567453458728487">Converteer meeteenheden die op internet zijn gevonden</translation>
 <translation id="556042886152191864">Knop</translation>
+<translation id="5572648434713976849">Je krijgt verbeterde suggesties in de adresbalk</translation>
 <translation id="5572684875078967866">Informatieopslag</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Dit pakket volgen}other{Alle pakketten volgen}}</translation>
 <translation id="5597915316964418992">Open het tabbladraster</translation>
@@ -1085,6 +1089,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="6642362222295953972">Overschakelen naar bestaand tabblad</translation>
 <translation id="6643016212128521049">Wissen</translation>
 <translation id="6645899968535965230">QR-code: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">URL's die je bezoekt, worden naar Google gestuurd om te voorspellen naar welke sites je misschien daarna gaat</translation>
 <translation id="6647480763136463714">Laatst uitgevoerd: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Map bewerken</translation>
 <translation id="6657585470893396449">Wachtwoord</translation>
@@ -1262,6 +1267,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7666861622396822790">Je kunt dit beheren in <ph name="BEGIN_LINK" />Contentinstellingen<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">INSTALLEER</translation>
+<translation id="7673346542062368520">Swipe naar links om in de incognitomodus te browsen.</translation>
 <translation id="7679915578945954324">Siteadressen gekopieerd</translation>
 <translation id="7687508192620387263">Agendabestand beschikbaar</translation>
 <translation id="7701040980221191251">Geen</translation>

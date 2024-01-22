@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="1066101356081285416">Made-detect ng Chrome ang mga tracking number sa mga site na binibisita mo at magpapakita ito sa iyo ng mga update sa package sa page na Bagong Tab. Ipapadala sa Google ang tracking number ng package at pangalan ng website para maibigay ang feature na ito at para mapahusay ang mga feature ng Google para sa shopping para sa lahat. Puwede mo itong i-update anumang oras sa <ph name="BEGIN_LINK" />Mga Setting ng Pagsubaybay sa Package<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Gamitin ang Chrome Bilang Default</translation>
 <translation id="1105362920864247682">I-clear ang Data Mula sa Pagba-browse sa Chrome.</translation>
 <translation id="1113057722807951993">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address mula sa Google Pay.

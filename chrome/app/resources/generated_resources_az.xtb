@@ -1116,7 +1116,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1832848789136765277">Həmişə sinxronlaşdırılmış datanıza girişinizin olduğuna əmin olmaq üçün kimliyinizi doğrulayın</translation>
 <translation id="1834503245783133039">Endirmə tamamlandı: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux güncəllənir</translation>
-<translation id="1835612721186505600">Kamera icazəsi ilə tətbiqlərə və vebsaytlara girişə icazə verin</translation>
 <translation id="1838374766361614909">Axtarışı təmizləyin</translation>
 <translation id="1839021455997460752">E-poçt ünvanınız</translation>
 <translation id="1839540115464516994">Burada göstərin: <ph name="LOCATION" /></translation>
@@ -4575,7 +4574,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4507128560633489176">Data silindi.</translation>
 <translation id="4507373251891673233"><ph name="HOST" /> domenindən bütün artırmaları bloklamısınız</translation>
 <translation id="4507401683427517298">"Qısayol əlavə edin" üzərinə klikləyin</translation>
-<translation id="4508150454272293946">Tətbiq və veb-səhifələrə bu cihaza qoşulmuş kameradan istifadə icazəsi verin. Kamera problemi davam edərsə, tətbiqi yenidən başladın və ya veb-səhifəni təzələyin.</translation>
 <translation id="450867954911715010">Əlçatımlılıq ayarları</translation>
 <translation id="4508765956121923607">Mənbəyə baxın</translation>
 <translation id="4509277363725254222"><ph name="BEGIN_BOLD_USERNAME" />İstifadəçi adı<ph name="END_BOLD_USERNAME" /> və <ph name="BEGIN_BOLD_PASSWORD" />parolun<ph name="END_BOLD_PASSWORD" /> kopyasını paylaşdıqda ailə meneceri Google Parol Meneceri vasitəsilə onları daxil edə bilər</translation>
@@ -8470,7 +8468,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7610337976012700501">Bu kontaktlar ilə <ph name="FEATURE_NAME" /> istifadəsi üçün onların Google Hesabı ilə əlaqəli e-poçt ünvanını kontaktlara əlavə edin.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Bütün artırmalar</translation>
-<translation id="7612401678989660900">Mikrofon icazəsi olan tətbiq və vebsaytlar üçün giriş icazəsi verin</translation>
 <translation id="7612497353238585898">Aktiv sayt</translation>
 <translation id="7612655942094160088">Qoşulmuş telefon funksiyalarının aktivləşdirilməsi.</translation>
 <translation id="7612989789287281429">Daxil olursunuz…</translation>

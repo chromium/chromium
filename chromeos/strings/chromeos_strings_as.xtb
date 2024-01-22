@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">ফৰৱাৰ্ড কৰক</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />ৰ পৰা হোৱা ডেটাৰ ব্যৱহাৰ</translation>
 <translation id="1621067168122174824">চাৰ্জ পৰীক্ষা চলাওক</translation>
+<translation id="1626590945318984973">শ্বৰ্টকাট উপলব্ধ নহয়। ফাংশ্বন আৰু <ph name="META_KEY" /> কী ব্যৱহাৰ নকৰাকৈ এটা নতুন শ্বৰ্টকাটত টিপক।</translation>
 <translation id="1639239467298939599">ল'ড কৰি থকা হৈছে</translation>
 <translation id="1641857168437328880">নথি ফীডাৰ (এফাল থকা)</translation>
 <translation id="1643449475550628585">দৈনিক ৱালপেপাৰৰ প্ৰতিচ্ছবি সলনি কৰক</translation>
@@ -452,7 +453,9 @@
 <translation id="4394049700291259645">অক্ষম কৰক</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ৰিষ্টাৰ্ট কৰি থকা হৈছে</translation>
 <translation id="4395835743215824109">কীব’ৰ্ড কাষ্টমাইজ কৰা</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> কী নথকা শ্বৰ্টকাটে কিছুমান এপৰ শ্বৰ্টকাটৰ সৈতে সংঘাত সৃষ্টি কৰিব পাৰে। এই শ্বৰ্টকাটটো ব্যৱহাৰ কৰি থাকিবলৈ এইটোত পুনৰ টিপক অথবা <ph name="KEY" /> কীটো ব্যৱহাৰ কৰি এটা নতুন শ্বৰ্টকাটত টিপক।</translation>
 <translation id="4415951057168511744">বৰ্তমানৰ অৱতাৰ</translation>
+<translation id="4417830657741848074">আপোনাৰ প্ৰশাসকে কিছুমান এপ্‌ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ হ’বলৈ ছেট আপ কৰিছে এইসমূহৰ কিছুমান এপ্‌ বন্ধ কৰা নহ’ব পাৰে।</translation>
 <translation id="4422041425070339732">তললৈ নিৰ্দেশ কৰা কাঁড় চিহ্ন</translation>
 <translation id="4425149324548788773">মোৰ ড্ৰাইভ</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> অফ কৰা আছে</translation>
@@ -465,6 +468,7 @@
 <translation id="4469288414739283461">পৃথিৱীৰ প্ৰবাহৰ স্ক্ৰীন ছেভাৰ</translation>
 <translation id="4479639480957787382">ইথাৰনেট</translation>
 <translation id="4483049906298469269">ডিফ’ল্ট হিচাপে নথকা নেটৱৰ্কৰ গে’টৱে’টোক পিং কৰাত বিফল হ'ল</translation>
+<translation id="4500722292849917410">শ্বৰ্টকাট উপলব্ধ নহয়। এটা সংশোধক চাবি (ctrl, alt, shift অথবা <ph name="META_KEY" />) ব্যৱহাৰ কৰি এটা নতুন শ্বৰ্টকাটত টিপক।</translation>
 <translation id="4500966230243561393">ইণ্টাৰফে’চৰ ৰং</translation>
 <translation id="4503223151711056411">লেফ্ট এৰ’</translation>
 <translation id="4507392511610824664">উজ্জ্বলতা বঢ়াওক</translation>
@@ -512,6 +516,7 @@
 <translation id="4832079907277790330">Files এপ্‌টোত ফ’ল্ডাৰ বাছনি কৰক...</translation>
 <translation id="4835901797422965222">কোনো সক্ৰিয় নেটৱৰ্ক নাই</translation>
 <translation id="4839698083503556542">নিজৰ চলচ্চিত্ৰ সৃষ্টি কৰক</translation>
+<translation id="48409034532829769">আপোনাৰ প্ৰশাসকে "<ph name="APP_NAME" />" স্বয়ংক্ৰিয়ভাৱে আৰম্ভ হ’বলৈ ছেট আপ কৰিছে। এই এপ্‌টো বন্ধ কৰা নহ’ব পাৰে।</translation>
 <translation id="484462545196658690">স্বয়ংক্ৰিয়</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> বাছনি কৰা হৈছে, <ph name="TOPIC_SOURCE" />ৰ এলবামসমূহ বাছনি কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="484790837831576105">(Android) DNS ৰিজ’লিউশ্বন</translation>
@@ -538,6 +543,7 @@
 <translation id="4969079779290789265">বিভক্ত কৰক</translation>
 <translation id="4972592110715526173">ম’ড সলনি কৰক</translation>
 <translation id="498186245079027698">স্কেনাৰটো পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক। স্কেন কৰা ফাইল ছেভ কৰিবলৈ পৰ্যাপ্ত পৰিমাণে স্থানীয় খালী ঠাই থকাটো নিশ্চিত কৰক।</translation>
+<translation id="4982627662315910959">শ্বৰ্টকাট উপলব্ধ নহয়। shift আৰু ১ টা সংশোধক চাবি (ctrl, alt, or <ph name="META_KEY" />) ব্যৱহাৰ কৰি এটা নতুন শ্বৰ্টকাটত টিপক।</translation>
 <translation id="4985509611418653372">চলাওক</translation>
 <translation id="4987769320337599931">ফায়াৰৱাল</translation>
 <translation id="4988526792673242964">পৃষ্ঠা</translation>
@@ -844,6 +850,7 @@
 <translation id="7216409898977639127">চেলুলাৰ প্ৰদানকাৰী</translation>
 <translation id="725133483556299729">ইমেইল বাছনি কৰক</translation>
 <translation id="7271040990581020067">বৰ্তমান স্কেনাৰটো ব্যৱহাৰ কৰি থকা হৈছে। পাছত পুনৰ চেষ্টা কৰক।</translation>
+<translation id="7271932918253517778">একেবাৰে ওপৰৰ শাৰীৰ কীসমূহ থকা শ্বৰ্টকাটত <ph name="META_KEY" /> কী অন্তৰ্ভুক্ত হ’ব লাগিব।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">মলয়া বতাহৰ আমেজ</translation>
 <translation id="7287310195820267359">ৱালপেপাৰৰ সংগ্ৰহ</translation>

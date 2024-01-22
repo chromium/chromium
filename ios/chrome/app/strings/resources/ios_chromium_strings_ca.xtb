@@ -102,6 +102,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="3955621079070267756">Obre Chromium des de qualsevol aplicació</translation>
 <translation id="4005283307739974863">Obre i executa la comprovació de seguretat a Chromium.</translation>
 <translation id="4043291146360695975">Les contrasenyes es desen al gestor de contrasenyes només en aquest dispositiu.</translation>
+<translation id="4076589763479456892">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">No s'admeten a la versió beta de Chromium</translation>
 <translation id="4106512142782407609">Has iniciat la sessió com a <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@ Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i de
 <translation id="5534584691915394889">S'utilitzarà per crear esdeveniments al teu Calendari d'Apple des de Chromium i Google Lens.</translation>
 <translation id="5571094606370987472">Obre les pestanyes recents de Chromium.</translation>
 <translation id="5623083843656850677">Bloqueja les pestanyes d'incògnit quan surtis de Chromium o quan canviïs d'aplicació.</translation>
+<translation id="5671188105328420281">Consells per a Chromium</translation>
 <translation id="5688047395118852662">Aquesta targeta mostra suggeriments sobre com pots treure el màxim profit de Chromium.</translation>
 <translation id="5700709190537129682">Chromium no pot comprovar les teves contrasenyes</translation>
 <translation id="5777187867430702742">Pàgina de Chromium</translation>

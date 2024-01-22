@@ -101,6 +101,7 @@
 <translation id="3955621079070267756">ከማንኛውም መተግበሪያ Chromiumን ይክፈቱ</translation>
 <translation id="4005283307739974863">በChromium ውስጥ የደህንነት ፍተሻን ይከፍታል እና ያሄዳል።</translation>
 <translation id="4043291146360695975">የይለፍ ቃላት የሚቀመጡት በዚህ መሣሪያ ላይ ብቻ ባለው የይለፍ ቃል አስተዳዳሪ ላይ ነው።</translation>
+<translation id="4076589763479456892">የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ፣ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChromium ውሂብ ያጽዱ<ph name="END_LINK" />።</translation>
 <translation id="4099085513035183040">በChromium ቅድመ-ይሁንታ ላይ አይደገፍም</translation>
 <translation id="4106512142782407609">እንደ <ph name="EMAIL" /> ሆነው ገብተዋል።
 
@@ -152,6 +153,7 @@
 <translation id="5534584691915394889">ይህ ከChromium እና Google ሌንስ በእርስዎ Apple ቀን መቁጠሪያ ውስጥ ክስተቶችን ለመፍጠር ሥራ ላይ ይውላል።</translation>
 <translation id="5571094606370987472">የChromium የቅርብ ጊዜ ትሮችን ይከፍታል።</translation>
 <translation id="5623083843656850677">ከChromium ሲወጡ ወይም ወደ ሌላ መተግበሪያ ሲቀይሩ የእርስዎን ማንነት የማያሳውቁ ትሮች ይቆልፉ።</translation>
+<translation id="5671188105328420281">የChromium ጠቃሚ ምክሮች</translation>
 <translation id="5688047395118852662">ይህ ካርድ እንዴት ከChromium ምርጡን ማግኘት እንደሚችሉ ጥቆማዎችን ያሳይዎታል።</translation>
 <translation id="5700709190537129682">Chromium የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም</translation>
 <translation id="5777187867430702742">የChromium ገፅ</translation>
@@ -280,6 +282,7 @@
 <translation id="8776843108004031667">ይህ መለያ እና ማንኛውም ያልተቀመጠ ውሂብ ከChromium ይወገዳል።</translation>
 <translation id="88376265765385899">የChromium እልባቶችን ይከፍታል።</translation>
 <translation id="8860548555286245440">የማይታወቁ ዩአርኤልዎችን በማንነት የማያሳውቅ Chromium ይክፈቱ</translation>
+<translation id="8866191443434488382">Chromium በሚጎበኟቸው ጣቢያዎች ላይ ያሉ የመከታተያ ቁጥሮች ለይቶ ያውቃል እና በአዲሱ የትር ገፅ ላይ የጥቅል ዝማኔዎች ያሳይዎታል። ይህንን ባህሪ ለማቅረብ እና ለሁሉም ሰው የግዢ ባህሪያትን ለማሻሻል የጥቅል መከታተያ ቁጥሩ እና የድር ጣቢያው ስም ወደ Chromium ይላካል። ይህንን በማንኛውም ጊዜ <ph name="BEGIN_LINK" />በጥቅል መከታተያ ቅንብሮች<ph name="END_LINK" /> ውስጥ ማዘመን ይችላሉ።</translation>
 <translation id="8909995017390087892">Chromium ለiOS</translation>
 <translation id="8924617840944134898">የChromium ማንነት የማያሳውቅ ትርን ክፈት</translation>
 <translation id="894437814105052438">ዘግተው ሲወጡ Chromium ማንኛውም አዲስ ውሂብ ከGoogle መለያዎ ጋር አያሰምርም። ከዚህ ቀደም የሰመረ ውሂብ በመለያው ውስጥ ይቆያል።</translation>

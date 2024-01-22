@@ -1118,7 +1118,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1832848789136765277">Maʼlumotlaringizni doim sinxronlash uchun shaxsingizni tasdiqlang</translation>
 <translation id="1834503245783133039">Yuklab olinmadi: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux yangilanmoqda</translation>
-<translation id="1835612721186505600">Ilova va saytlarga kameradan foydalanish uchun ruxsat bering</translation>
 <translation id="1838374766361614909">Qidiruv shartlarini tozalash</translation>
 <translation id="1839021455997460752">Email manzilingiz</translation>
 <translation id="1839540115464516994"><ph name="LOCATION" /> ichida ochish</translation>
@@ -4581,7 +4580,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4507128560633489176">Maʼlumotlar tozalandi</translation>
 <translation id="4507373251891673233"><ph name="HOST" /> saytida barcha kengaytmalar bloklangan</translation>
 <translation id="4507401683427517298">“Yorliq yaratish” ustiga bosing</translation>
-<translation id="4508150454272293946">Ilova va saytlarga bu qurilmaga ulangan kameralardan foydalanishga ruxsat berish. Kamera ishlashida muammo boʻlsa, ilovani qayta oching yoki sahifani yangilang.</translation>
 <translation id="450867954911715010">Qulayliklar</translation>
 <translation id="4508765956121923607">Sahifa &amp;kodini ko‘rish</translation>
 <translation id="4509277363725254222"><ph name="BEGIN_BOLD_USERNAME" />foydalanuvchi nomi<ph name="END_BOLD_USERNAME" /> va <ph name="BEGIN_BOLD_PASSWORD" />parol<ph name="END_BOLD_PASSWORD" /> nusxasini ulashsangiz, oila aʼzosi ularni Google Parollar menejeri yordamida toʻldirishlari mumkin</translation>
@@ -8478,7 +8476,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7610337976012700501"><ph name="FEATURE_NAME" /> ishlatish uchun kontaktlaringizga ularning Google hisobidagi email manzilini kiriting.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Barcha kengaytmalar</translation>
-<translation id="7612401678989660900">Ilova va saytlarga mikrofondan foydalanish uchun ruxsat bering</translation>
 <translation id="7612497353238585898">Faol sayt</translation>
 <translation id="7612655942094160088">Ulangan telefon funksiyalarini faollashtirish.</translation>
 <translation id="7612989789287281429">Hisobingizga kirmoqdasiz…</translation>

@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">ಡಿಫಾಲ್ಟ್ ಡೌನ್‌ಲೋಡ್ ಸ್ಥಳವನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಬದಲಾಯಿಸಿ</translation>
 <translation id="1796666869097395659">ನಂತರ ಹಿಂತಿರುಗಲು ಟ್ಯಾಬ್ ಅನ್ನು ಮಿನಿಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="1807246157184219062">ತಿಳಿ</translation>
+<translation id="1807709131360304325">ಹೊಸ ವಿಂಡೋವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1810845389119482123">ಆರಂಭಿಕ ಸಿಂಕ್ ಸೆಟಪ್ ಪೂರ್ಣಗೊಂಡಿಲ್ಲ</translation>
 <translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಅನ್ನು ಬಳಸಿಕೊಂಡು <ph name="SITE_ETLD_PLUS_ONE" /> ಮುಂದುವರಿಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="1829244130665387512">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ</translation>
@@ -920,6 +921,7 @@
 <translation id="5962718611393537961">ಕುಗ್ಗಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5964869237734432770">ಚಿತ್ರ ವಿವರಣೆಗಳನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="5966233851250124270">ನಿಮ್ಮ ಆಯ್ಕೆಯನ್ನು Chrome ನೆನಪಿಟ್ಟುಕೊಳ್ಳುತ್ತದೆ</translation>
+<translation id="5977976211062815271">ಈ ಸಾಧನದಲ್ಲಿರುವವು</translation>
 <translation id="5979084224081478209">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="5995726099713306770">ಪುಟವನ್ನು ಪುನಃ ಡೌನ್‌ಲೋಡ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6000066717592683814">Google ಇರಿಸಿಕೊಳ್ಳಿ</translation>
@@ -1326,6 +1328,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ನ ಅವಧಿ ಮುಗಿದಿದೆ.</translation>
 <translation id="7944772052836377867">ಇದು ನೀವೇ ಎಂದು ಪರಿಶೀಲಿಸಲು ಸಿಂಕ್‌ಗೆ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="7947953824732555851">ಸಮ್ಮತಿಸಿ ಮತ್ತು ಸೈನ್‌ ಇನ್‌ ಮಾಡಿ</translation>
+<translation id="7951102827450076904">ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ PDF ಗಳನ್ನು ಯಾವಾಗಲೂ ತೆರೆಯಿರಿ</translation>
 <translation id="7957413488482743710">ಸಂಭವನೀಯ ವಂಚನೆಯಿಂದ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ನಿಮ್ಮ ನಿಜವಾದ ಕಾರ್ಡ್ ಅನ್ನು ಮರೆಮಾಡುತ್ತದೆ. <ph name="BEGIN_LINK1" />ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">ಪುಟದ ಒಳನೋಟಗಳಿಗೆ ಹಿಂತಿರುಗುವ ಬಟನ್</translation>
 <translation id="7961926449547174351">ನೀವು ಸಂಗ್ರಹಣೆಯ ಪ್ರವೇಶವನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದೀರಿ, ಅದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>

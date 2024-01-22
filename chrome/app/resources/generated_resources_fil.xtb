@@ -1132,7 +1132,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1832848789136765277">Para matiyak na maa-access mo anumang oras ang iyong naka-sync na data, i-verify na ikaw ito</translation>
 <translation id="1834503245783133039">Hindi na-download: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Ina-upgrade ang Linux</translation>
-<translation id="1835612721186505600">Pinapayagan ang access para sa mga app at website na may pahintulot sa camera</translation>
 <translation id="1838374766361614909">I-clear ang paghahanap</translation>
 <translation id="1839021455997460752">Ang iyong email address</translation>
 <translation id="1839540115464516994">Ipakita sa <ph name="LOCATION" /></translation>
@@ -4595,7 +4594,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4507128560633489176">Na-clear na ang data.</translation>
 <translation id="4507373251891673233">Na-block mo ang lahat ng extension mula sa <ph name="HOST" /></translation>
 <translation id="4507401683427517298">I-click ang “Magdagdag ng Shortcut”</translation>
-<translation id="4508150454272293946">Payagan ang mga app at webpage na gamitin ang (mga) camera na nakakonekta sa device na ito. Kung may problema ka pa rin sa iyong camera, subukang i-restart ang app o i-refresh ang webpage.</translation>
 <translation id="450867954911715010">Mga setting ng pagiging naa-access</translation>
 <translation id="4508765956121923607">Tingnan ang P&amp;inagmulan</translation>
 <translation id="4509277363725254222">Kapag nag-share ka ng kopya ng iyong <ph name="BEGIN_BOLD_USERNAME" />username<ph name="END_BOLD_USERNAME" /> at <ph name="BEGIN_BOLD_PASSWORD" />password<ph name="END_BOLD_PASSWORD" />, puwedeng ilagay ng miyembro ng pamilya mo ang mga ito gamit ang Google Password Manager</translation>
@@ -8495,7 +8493,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7610337976012700501">Para magamit ang <ph name="FEATURE_NAME" /> sa mga contact na ito, idagdag sa iyong mga contact ang email address na naka-link sa kanilang Google Account.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Lahat ng Extension</translation>
-<translation id="7612401678989660900">Payagan ang access para sa mga app at website na may pahintulot sa mikropono</translation>
 <translation id="7612497353238585898">Aktibong site</translation>
 <translation id="7612655942094160088">Nag-e-enable sa mga feature ng nakakonektang telepono.</translation>
 <translation id="7612989789287281429">Sina-sign in ka…</translation>

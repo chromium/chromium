@@ -42,6 +42,7 @@
 <translation id="1062407476771304334">החלפה</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">סימניות שולחן עבודה</translation>
+<translation id="1067029985695494416">הפרטים של מנוע החיפוש</translation>
 <translation id="1068672505746868501">אף פעם אין לתרגם דפים ב<ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Metal (Glossy)</translation>
 <translation id="1070853536588271387">כלי רכב היברידיים ואלטרנטיביים</translation>
@@ -1812,7 +1813,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">בחרת להשתמש בנעילת המסך למילוי סיסמאות</translation>
 <translation id="4558551763791394412">יש לנסות להשבית את התוספים.</translation>
-<translation id="456043042661026303">מתבצעת בדיקה מאובטחת של פרטי התשלום</translation>
 <translation id="4566017918361049074">פעילות בחוץ</translation>
 <translation id="4567686777917670400">‏מנהל המערכת יכול לשנות את הגדרת הדפדפן שלך מרחוק. ניהול הפעילות במכשיר הזה אפשרי גם מחוץ ל-Chromium. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">מאומת</translation>
@@ -2664,7 +2664,6 @@ Del</translation>
 <translation id="6272088941196661550">‏חזרה לתהליך כדי להציג את הפעילות הרלוונטית בהיסטוריה ב-Chrome</translation>
 <translation id="6272383483618007430">‏עדכוני Google</translation>
 <translation id="6279183038361895380">יש להקיש על |<ph name="ACCELERATOR" />| כדי להציג את הסמן</translation>
-<translation id="628016388715774955">נבחרה האפשרות 'מילוי הכתובת המלאה'</translation>
 <translation id="6280223929691119688">לא ניתן לבצע מסירה בכתובת זו. עליך לבחור כתובת אחרת.</translation>
 <translation id="6284292079994426700">‏26x38 אינץ'</translation>
 <translation id="6284517535531159884">וריאציות של סוג המקור</translation>
@@ -2936,7 +2935,6 @@ Del</translation>
 <translation id="6807791860691150411">השכלה</translation>
 <translation id="681021252041861472">שדה חובה</translation>
 <translation id="6810899417690483278">מזהה של התאמה אישית</translation>
-<translation id="681459028290894216">מילוי הכתובת המלאה</translation>
 <translation id="6816109178681043245">מוצרי ספורט</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">יציאות טוריות</translation>

@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Dodirnite i zadržite datum.</translation>
 <translation id="1959679933317802873">Čeka se sadržaj</translation>
 <translation id="1967461193809857427">{count,plural, =1{Želite li da nastavite na kartici na kojoj ste stali na Android-u?}one{Želite li da nastavite na karticama na kojima ste stali na Android-u?}few{Želite li da nastavite na karticama na kojima ste stali na Android-u?}other{Želite li da nastavite na karticama na kojima ste stali na Android-u?}}</translation>
+<translation id="1972325230031091483">Pregledaćete brže jer se sadržaj proaktivno učitava na osnovu aktuelne posete veb-stranici</translation>
 <translation id="1973912524893600642">Zadrži podatke</translation>
 <translation id="1974060860693918893">Napredne opcije</translation>
 <translation id="1980417445547898121">{count,plural, =1{Preuzmite {count} nedavno aktivnu karticu sa drugog uređaja na ovom iPhone-u}one{Preuzmite {count} nedavno aktivnu karticu sa drugog uređaja na ovom iPhone-u}few{Preuzmite {count} nedavno aktivne kartice sa drugog uređaja na ovom iPhone-u}other{Preuzmite {count} nedavno aktivnih kartica sa drugog uređaja na ovom iPhone-u}}</translation>
@@ -434,6 +435,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3235242129752692527">Izmenite detalje događaja i dodirnite Sačuvaj.</translation>
 <translation id="3240426699337459095">Link je kopiran</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Ako delite i Chrome izveštaje o korišćenju, ti izveštaji obuhvataju URL-ove koje posećujete</translation>
 <translation id="3245744387817103524">Čuvanje promene nije uspelo.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> od <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Automatski popuni lozinke</translation>
@@ -633,7 +635,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4371591986692297148">Neaktivno</translation>
 <translation id="4375040482473363939">Pretraga QR kodova</translation>
 <translation id="4378154925671717803">Telefon</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> deli sa vama lozinku za <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Dodirnite da biste promenili jezik</translation>
 <translation id="4405320213589929829">Koristite adrese na veb-stranicama da biste dobijali lokalne informacije i putanju.</translation>
 <translation id="4420409367264901497">Izmenite obeleživač</translation>
@@ -859,6 +860,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="555749644339804659">Proveravaju se lozinke…</translation>
 <translation id="5559567453458728487">Konvertuj merne jedinice koje se nalaze na vebu</translation>
 <translation id="556042886152191864">Dugme</translation>
+<translation id="5572648434713976849">Dobijaćete poboljšane predloge na traci za adresu</translation>
 <translation id="5572684875078967866">Memorijski prostor za podatke</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Prati ovaj paket}one{Prati sve pakete}few{Prati sve pakete}other{Prati sve pakete}}</translation>
 <translation id="5597915316964418992">Otvorite mrežu za kartice</translation>
@@ -1085,6 +1087,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="6642362222295953972">Pređite na postojeću karticu</translation>
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6645899968535965230">QR kôd: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">URL-ovi koje posećujete se šalju Google-u da bi se predvideli sajtovi koje ćete možda sledeće posetiti</translation>
 <translation id="6647480763136463714">Poslednje pokretanje <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Izmena direktorijuma</translation>
 <translation id="6657585470893396449">Lozinka</translation>

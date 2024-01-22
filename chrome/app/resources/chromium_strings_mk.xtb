@@ -246,7 +246,6 @@
 <translation id="5623402015214259806">{0,plural, =0{Достапно е ажурирање за Chromium}=1{Достапно е ажурирање за Chromium}one{Достапно е ажурирање за Chromium веќе # ден}other{Достапно е ажурирање за Chromium веќе # дена}}</translation>
 <translation id="5643865575100044307">Секогаш бришете ги податоците од сајт од вашиот уред кога го затворате Chromium</translation>
 <translation id="5653831366781983928">Рестартирајте го Chromium сега</translation>
-<translation id="5675598751761067447">Датотекава можеби е опасна<ph name="LINE_BREAK" />Chromium може да го провери преземањево за вас ако ја внесете лозинката. Лозинката ќе остане на уредот.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Прикажи го Chromium на овој јазик</translation>
 <translation id="569897634095159764">Не може да се поврзе на интернет. Потребна е автентикација на прокси серверот.</translation>

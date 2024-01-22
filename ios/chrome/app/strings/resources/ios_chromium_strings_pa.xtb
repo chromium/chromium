@@ -102,6 +102,7 @@
 <translation id="3955621079070267756">ਕਿਸੇ ਵੀ ਐਪ ਤੋਂ Chrome ਖੋਲ੍ਹੋ</translation>
 <translation id="4005283307739974863">ਇਸ ਨਾਲ Chromium ਵਿੱਚ ਸੁਰੱਖਿਆ ਜਾਂਚ ਖੁੱਲ੍ਹਦੀ ਅਤੇ ਚੱਲਦੀ ਹੈ।</translation>
 <translation id="4043291146360695975">ਪਾਸਵਰਡ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਹਨ।</translation>
+<translation id="4076589763479456892">ਜੇ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਭੁੱਲ ਗਏ ਹੋ ਜਾਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK" />ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ Chromium ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="4099085513035183040">Chromium ਬੀਟਾ 'ਤੇ ਸਮਰਥਿਤ ਨਹੀਂ</translation>
 <translation id="4106512142782407609"><ph name="EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ।
 
@@ -153,6 +154,7 @@
 <translation id="5534584691915394889">ਇਸਦੀ ਵਰਤੋਂ Chromium ਅਤੇ Google Lens ਤੋਂ ਤੁਹਾਡੇ Apple Calendar ਵਿੱਚ ਇਵੈਂਟ ਬਣਾਉਣ ਲਈ ਕੀਤੀ ਜਾਵੇਗੀ।</translation>
 <translation id="5571094606370987472">Chromium ਹਾਲੀਆ ਟੈਬਾਂ ਖੋਲ੍ਹਦਾ ਹੈ।</translation>
 <translation id="5623083843656850677">Chromium ਤੋਂ ਬਾਹਰ ਨਿਕਲਣ ਜਾਂ ਕਿਸੇ ਵੱਖਰੀ ਐਪ 'ਤੇ ਸਵਿੱਚ ਕਰਨ ਦੌਰਾਨ ਆਪਣੀਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਨੂੰ ਲਾਕ ਕਰੋ।</translation>
+<translation id="5671188105328420281">Chromium ਸੰਬੰਧੀ ਨੁਕਤੇ</translation>
 <translation id="5688047395118852662">ਇਹ ਕਾਰਡ ਤੁਹਾਨੂੰ Chromium ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲੈਣ ਦੇ ਤਰੀਕੇ ਬਾਰੇ ਸੁਝਾਅ ਦਿਖਾਉਂਦਾ ਹੈ।</translation>
 <translation id="5700709190537129682">Chromium ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ</translation>
 <translation id="5777187867430702742">Chromium ਪੰਨਾ</translation>
@@ -283,6 +285,7 @@
 <translation id="8776843108004031667">Chromium ਤੋਂ ਇਸ ਖਾਤੇ ਅਤੇ ਕਿਸੇ ਵੀ ਅਣਰੱਖਿਅਤ ਡਾਟੇ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="88376265765385899">Chromium ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਖੋਲ੍ਹਦਾ ਹੈ।</translation>
 <translation id="8860548555286245440">Chromium ਵਿੱਚ URL ਨੂੰ ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
+<translation id="8866191443434488382">Chromium ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ ਦੇ ਟਰੈਕਿੰਗ ਨੰਬਰਾਂ ਦਾ ਪਤਾ ਲਗਾਵੇਗਾ ਅਤੇ ਨਵੇਂ ਟੈਬ ਪੰਨੇ 'ਤੇ ਤੁਹਾਨੂੰ ਪੈਕੇਜ ਸੰਬੰਧੀ ਅੱਪਡੇਟਾਂ ਦਿਖਾਵੇਗਾ। ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਮੁਹੱਈਆ ਕਰਨ ਅਤੇ ਹਰ ਕਿਸੇ ਲਈ ਖਰੀਦਦਾਰੀ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਪੈਕੇਜ ਟਰੈਕਿੰਗ ਨੰਬਰ ਅਤੇ ਵੈੱਬਸਾਈਟ ਦਾ ਨਾਮ Chromium ਨੂੰ ਭੇਜਿਆ ਜਾਵੇਗਾ। ਤੁਸੀਂ ਇਸਨੂੰ ਕਿਸੇ ਵੇਲੇ ਵੀ <ph name="BEGIN_LINK" />ਪੈਕੇਜ ਟਰੈਕਿੰਗ ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਅੱਪਡੇਟ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8909995017390087892">iOS ਲਈ Chromium</translation>
 <translation id="8924617840944134898">Chromium ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
 <translation id="894437814105052438">ਜਦੋਂ ਤੁਸੀਂ ਸਾਈਨ-ਆਊਟ ਕਰਦੇ ਹੋ, ਤਾਂ Chromium ਕਿਸੇ ਵੀ ਤਰ੍ਹਾਂ ਦੇ ਨਵੇਂ ਡਾਟੇ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਨਾਲ ਸਿੰਕ ਨਹੀਂ ਕਰੇਗਾ। ਪਹਿਲਾਂ ਸਿੰਕ ਕੀਤਾ ਗਿਆ ਡਾਟਾ ਖਾਤੇ ਵਿੱਚ ਹੀ ਰਹਿੰਦਾ ਹੈ।</translation>

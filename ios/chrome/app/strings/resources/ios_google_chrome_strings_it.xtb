@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="1066101356081285416">Chrome rileverà i numeri di riferimento sui siti che visiti e mostrerà gli aggiornamenti relativi ai pacchetti nella pagina Nuova scheda. Il numero per il monitoraggio della spedizione e il nome del sito web verranno inviati a Google per fornire questa funzionalità e migliorare le funzionalità di Google Shopping per tutti. Puoi aggiornarli in qualsiasi momento nelle <ph name="BEGIN_LINK" />impostazioni di monitoraggio della spedizione<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Usa Chrome per impostazione predefinita</translation>
 <translation id="1105362920864247682">Cancella i dati di navigazione in Chrome.</translation>
 <translation id="1113057722807951993">La crittografia delle passphrase non include metodi di pagamento e indirizzi di Google Pay.
@@ -40,6 +41,7 @@ Aspetti da considerare:
 <translation id="1682483655351012182">Sincronizza i tuoi dati di Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Aggiunge gli URL inseriti ai preferiti in Chrome.</translation>
+<translation id="1799920918471566157">Suggerimenti per Chrome</translation>
 <translation id="1830634592642484976">Al momento questo indirizzo è salvato su Chrome. Per usarlo su tutti i prodotti Google, salvalo nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">Usa automaticamente Chrome quando tocchi link in messaggi, documenti e altre app.</translation>
 <translation id="1910975740091000991">Chrome per iOS</translation>
@@ -74,6 +76,7 @@ Aspetti da considerare:
 <translation id="2702250627063295552">Aggiungi elemento dell'elenco di lettura a Chrome</translation>
 <translation id="2736805085127235148">Le notifiche di Chrome sono attualmente disattivate nelle impostazioni del dispositivo.</translation>
 <translation id="2767464022270041271">Nessuna password salvata. Gestore delle password di Google può controllare le tue password quando le salvi.</translation>
+<translation id="2789947168960170215">Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Cancella i dati di navigazione in Chrome</translation>
 <translation id="2869959624320573933">Accedi a Chrome</translation>
 <translation id="2876628302275096482">Scopri di più su <ph name="BEGIN_LINK" />come Chrome mantiene privati i tuoi dati<ph name="END_LINK" /></translation>

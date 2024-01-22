@@ -247,7 +247,6 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="5623402015214259806">{0,plural, =0{Chromium güncəlləməsi əlçatandır}=1{Chromium güncəlləməsi əlçatandır}other{Chromium güncəlləməsi # gün ərzində əlçatan olub}}</translation>
 <translation id="5643865575100044307">Chromium-u bağladıqda sayt datasını cihazdan silin</translation>
 <translation id="5653831366781983928">Chromium'u indi başladın</translation>
-<translation id="5675598751761067447">Bu fayl təhlükəli ola bilər<ph name="LINE_BREAK" />Parol təmin etsəniz, Chromium bu endirməni yoxlaya bilər (parol cihazda qalır)</translation>
 <translation id="5690427481109656848">Google MMC</translation>
 <translation id="5698481217667032250">Chromium'u bu dildə görüntüləyin</translation>
 <translation id="569897634095159764">İnternetə qoşulmaq olmur. Proksi serveri identifikasiya tələb edir.</translation>

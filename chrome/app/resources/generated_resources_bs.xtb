@@ -1130,7 +1130,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1832848789136765277">Potvrdite svoj identitet da uvijek možete pristupati sinhroniziranim podacima</translation>
 <translation id="1834503245783133039">Preuzimanje nije uspjelo: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Nadogradnja Linuxa</translation>
-<translation id="1835612721186505600">Omogućite pristup za aplikacije i web lokacije koje imaju odobrenje za kameru</translation>
 <translation id="1838374766361614909">Obriši pretraživanje</translation>
 <translation id="1839021455997460752">Vaša adresa e-pošte</translation>
 <translation id="1839540115464516994">Prikaži na lokaciji: <ph name="LOCATION" /></translation>
@@ -4593,7 +4592,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4507128560633489176">Podaci su obrisani.</translation>
 <translation id="4507373251891673233">Blokirali ste sve ekstenzije web lokacije <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Kliknite na "Dodajte prečicu"</translation>
-<translation id="4508150454272293946">Dozvolite aplikacijama i web stranicama da koriste kamere povezane s ovim uređajem. Ako i dalje imate problem s kamerom, pokušajte ponovo pokrenuti aplikaciju ili osvježiti web stranicu.</translation>
 <translation id="450867954911715010">Postavke pristupačnosti</translation>
 <translation id="4508765956121923607">Prikaži &amp;izvor</translation>
 <translation id="4509277363725254222">Kada podijelite kopiju svog <ph name="BEGIN_BOLD_USERNAME" />korisničkog imena<ph name="END_BOLD_USERNAME" /> i <ph name="BEGIN_BOLD_PASSWORD" />lozinke<ph name="END_BOLD_PASSWORD" />, član vaše porodice ih može popuniti pomoću Google upravitelja lozinki</translation>
@@ -8495,7 +8493,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7610337976012700501">Da koristite funkciju <ph name="FEATURE_NAME" /> s ovim kontaktima, u svoje kontakte dodajte adrese e-pošte povezane s njihovim Google računima.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Sve ekstenzije</translation>
-<translation id="7612401678989660900">Omogućite pristup za aplikacije i web lokacije koje imaju odobrenje za mikrofon</translation>
 <translation id="7612497353238585898">Aktivna web lokacija</translation>
 <translation id="7612655942094160088">Omogućavanje funkcija povezanog telefona.</translation>
 <translation id="7612989789287281429">Prijavljivanje…</translation>

@@ -1820,7 +1820,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Du bruker skjermlåsen til å fylle ut passord</translation>
 <translation id="4558551763791394412">Prøv å slå av utvidelsene dine.</translation>
-<translation id="456043042661026303">Utfører en sikker sjekk av betalingsopplysningene dine</translation>
 <translation id="4566017918361049074">Utendørs</translation>
 <translation id="4567686777917670400">Administratoren kan endre nettleseroppsettet eksternt. Aktiviteten på denne enheten kan også administreres utenfor Chromium. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">Bekreftet</translation>
@@ -2667,7 +2666,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6272088941196661550">Fortsett reisen for å se relevant aktivitet i Chrome-loggen</translation>
 <translation id="6272383483618007430">Google Oppdatering</translation>
 <translation id="6279183038361895380">Trykk på |<ph name="ACCELERATOR" />| for å se markøren</translation>
-<translation id="628016388715774955">Alternativet for å fylle ut hele adressen er valgt</translation>
 <translation id="6280223929691119688">Kan ikke levere til denne adressen. Velg en annen adresse.</translation>
 <translation id="6284292079994426700">26 x 38 tommer</translation>
 <translation id="6284517535531159884">Typer frøvarianter</translation>
@@ -2939,7 +2937,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6807791860691150411">Utdanning</translation>
 <translation id="681021252041861472">Obligatorisk felt</translation>
 <translation id="6810899417690483278">Tilpasnings-ID</translation>
-<translation id="681459028290894216">Fyll ut hele adressen</translation>
 <translation id="6816109178681043245">Sportsartikler</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">serielle porter</translation>

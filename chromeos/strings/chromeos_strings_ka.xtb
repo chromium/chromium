@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">წინ</translation>
 <translation id="1615335640928990664">მონაცემთა მოხმარება <ph name="FRIENDLY_DATE" />-დან</translation>
 <translation id="1621067168122174824">დატენის ტესტის გაშვება</translation>
+<translation id="1626590945318984973">მალსახმობი მიუწვდომელია. დააჭირეთ ახალ მალსახმობს ფუნქციური და „<ph name="META_KEY" />“ კლავიშების გამოყენების გარეშე.</translation>
 <translation id="1639239467298939599">იტვირთება</translation>
 <translation id="1641857168437328880">დოკუმენტების მიმწოდი (ცალმხრივი)</translation>
 <translation id="1643449475550628585">ფონის სურათის ყოველდღიურად შეცვლა</translation>
@@ -452,7 +453,9 @@
 <translation id="4394049700291259645">გამორთვა</translation>
 <translation id="439429847087949098">მიმდინარეობს <ph name="DEVICE_NAME" />-ის გადატვირთვა</translation>
 <translation id="4395835743215824109">კლავიატურის მორგება</translation>
+<translation id="4403262788869804671">მალსახმობები „<ph name="META_KEY" />“ კლავიშის გარეშე, შესაძლოა, კონფლიქტში აღმოჩნდეს ზოგიერთი აპის მალსახმობებთან. ხელახლა დააჭირეთ ამ მალსახმობს, რომ გააგრძელოთ მისი გამოყენება, ან დააჭირეთ ახალ მალსახმობს „<ph name="KEY" />“ კლავიშთან ერთად.</translation>
 <translation id="4415951057168511744">ამჟამინდელი ავატარი</translation>
+<translation id="4417830657741848074">თქვენმა ადმინისტრატორმა დააყენა პარამეტრები ისე, რომ ზოგიერთი აპი ავტომატურად გაეშვას. ამ აპებიდან ზოგიერთს ვერ დახურავთ.</translation>
 <translation id="4422041425070339732">ისარი ქვემოთ</translation>
 <translation id="4425149324548788773">ჩემი Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> გამორთულია</translation>
@@ -465,6 +468,7 @@
 <translation id="4469288414739283461">მიწის ნაკადის ეკრანმზოგი</translation>
 <translation id="4479639480957787382">ეთერნეთი</translation>
 <translation id="4483049906298469269">არანაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
+<translation id="4500722292849917410">მალსახმობი მიუწვდომელია. დააჭირეთ ახალ მალსახმობს მოდიფიკატორი კლავიშის (ctrl, alt, shift ან <ph name="META_KEY" />) მეშვეობით.</translation>
 <translation id="4500966230243561393">ინტერფეისის ფერი</translation>
 <translation id="4503223151711056411">ისარი მარცხნივ</translation>
 <translation id="4507392511610824664">სიკაშკაშის მომატება</translation>
@@ -512,6 +516,7 @@
 <translation id="4832079907277790330">საქაღალდის არჩევა ფაილების აპიდან...</translation>
 <translation id="4835901797422965222">აქტიური ქსელები არ არის</translation>
 <translation id="4839698083503556542">შექმენით საკუთარი ფილმი</translation>
+<translation id="48409034532829769">თქვენმა ადმინისტრატორმა დააყენა პარამეტრები ისე, რომ „<ph name="APP_NAME" />“ ავტომატურად გაეშვას. ამ აპს ვერ დახურავთ.</translation>
 <translation id="484462545196658690">ავტომატური</translation>
 <translation id="4847902821209177679">არჩეულია <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, <ph name="TOPIC_SOURCE" /> ალბომების ასარჩევად დააჭირეთ კლავიშზე Enter</translation>
 <translation id="484790837831576105">(Android) DNS-ის დარეგულირება</translation>
@@ -538,6 +543,7 @@
 <translation id="4969079779290789265">გაყოფილი</translation>
 <translation id="4972592110715526173">რეჟიმის შეცვლა</translation>
 <translation id="498186245079027698">შეამოწმეთ სკანერი და ცადეთ ხელახლა. დარწმუნდით, რომ ადგილობრივი მეხსიერება საკმარისია სკანირებული ფაილების შესანახად.</translation>
+<translation id="4982627662315910959">მალსახმობი მიუწვდომელია. დააჭირეთ ახალ მალსახმობს shift-ისა და კიდევ ერთი მოდიფიკატორი კლავიშის (ctrl, alt ან <ph name="META_KEY" />) მეშვეობით.</translation>
 <translation id="4985509611418653372">გაშვება</translation>
 <translation id="4987769320337599931">ქსელის დაცვა</translation>
 <translation id="4988526792673242964">გვერდები</translation>
@@ -844,6 +850,7 @@
 <translation id="7216409898977639127">ფიჭური ქსელის პროვაიდერი</translation>
 <translation id="725133483556299729">აირჩიეთ ელფოსტის მისამართი</translation>
 <translation id="7271040990581020067">სკანერი ამჟამად გამოიყენება. ცადეთ მოგვიანებით.</translation>
+<translation id="7271932918253517778">ზედა მწკრივის კლავიშების შემცველი მალსახმობი უნდა შეიცავდეს „<ph name="META_KEY" />“ კლავიშს.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ბრიზი</translation>
 <translation id="7287310195820267359">ფონების კოლექციები</translation>

@@ -517,6 +517,8 @@
 <translation id="1956486093533522234">Găsește, protejează sau șterge dispozitivul</translation>
 <translation id="1958218078413065209">Cel mai mare scor al tău este de <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Contribuie la îmbunătățirea securității pe web pentru toată lumea trimițând la Google <ph name="BEGIN_WHITEPAPER_LINK" />adresele URL ale unor pagini pe care le accesezi, informații de sistem limitate și părți din conținutul paginilor<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Politică de confidențialitate<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959445535228047762">Textul și conținutul paginii se trimit la Google și se pot folosi pentru a îmbunătăți această funcție.
+  <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">Marcaje <ph name="DOMAIN" /></translation>
 <translation id="196752089528718902">De obicei, te conectezi în siguranță la site-uri, dar Chrome nu a putut folosi o conexiune sigură de data aceasta. Un atacator ar putea încerca să intercepteze sau să modifice conexiunea la rețea. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Eroare de serializare</translation>
@@ -720,6 +722,7 @@
 <translation id="2354430244986887761">Navigarea sigură Google <ph name="BEGIN_LINK" />a descoperit recent aplicații dăunătoare<ph name="END_LINK" /> pe <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Este posibil ca atacatorii să poată vedea imaginile la care te uiți pe acest site și să te păcălească prin modificarea lor.</translation>
 <translation id="2356070529366658676">Întreabă-mă</translation>
+<translation id="2356926036049612643">Instrumentul de optimizare pentru V8</translation>
 <translation id="2357481397660644965">Dispozitivul este gestionat de <ph name="DEVICE_MANAGER" />, iar contul tău este gestionat de <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Mai multe</translation>
 <translation id="2359808026110333948">Continuă</translation>
@@ -1813,7 +1816,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Folosești blocarea ecranului pentru a completa parolele</translation>
 <translation id="4558551763791394412">Dezactivează extensiile.</translation>
-<translation id="456043042661026303">Verificarea în siguranță a detaliilor de plată</translation>
 <translation id="4566017918361049074">În aer liber</translation>
 <translation id="4567686777917670400">Administratorul poate schimba configurația browserului de la distanță. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată și din afara Chromium. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">Verificate</translation>
@@ -2660,7 +2662,6 @@
 <translation id="6272088941196661550">Continuă-ți parcursul pentru a vedea activitatea relevantă din istoricul Chrome</translation>
 <translation id="6272383483618007430">Actualizare Google</translation>
 <translation id="6279183038361895380">Apasă pe |<ph name="ACCELERATOR" />| pentru a fi afișat cursorul</translation>
-<translation id="628016388715774955">A fost selectată opțiunea de introducere a adresei complete</translation>
 <translation id="6280223929691119688">Nu se poate livra la această adresă. Selectează altă adresă.</translation>
 <translation id="6284292079994426700">26 x 38 in</translation>
 <translation id="6284517535531159884">Tipul valorii de bază pentru variante</translation>
@@ -2932,7 +2933,6 @@
 <translation id="6807791860691150411">Educație</translation>
 <translation id="681021252041861472">Câmp obligatoriu</translation>
 <translation id="6810899417690483278">ID-ul de personalizare</translation>
-<translation id="681459028290894216">Introdu adresa completă</translation>
 <translation id="6816109178681043245">Echipament sportiv</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">Porturi seriale</translation>

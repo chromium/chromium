@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1066101356081285416">Chrome va detecta numerele de urmărire pe site-urile pe care le accesezi și va afișa noutăți despre colete în pagina Filă nouă. Numărul de urmărire a coletului și numele site-ului se vor trimite la Google pentru a oferi această funcție și a îmbunătăți funcțiile Cumpărături Google pentru toată lumea. Poți actualiza oricând opțiunea în <ph name="BEGIN_LINK" />Setările pentru urmărirea coletelor<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Folosește Chrome în mod prestabilit</translation>
 <translation id="1105362920864247682">Șterge datele de navigare din Chrome.</translation>
 <translation id="1113057722807951993">Criptarea expresiei de acces nu include metodele de plată și adresele din Google Pay.

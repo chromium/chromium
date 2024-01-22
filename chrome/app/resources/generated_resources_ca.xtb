@@ -377,6 +377,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{No es pot obrir el fitxer}other{No es poden obrir els fitxers}}</translation>
 <translation id="1282311502488501110">No iniciïs la sessió</translation>
 <translation id="1282465000333679776">Comparteix l'àudio del sistema</translation>
+<translation id="1283126956823499975">S'ha produït un error en configurar el dispositiu</translation>
 <translation id="1284277788676816155">No permetis que es desin dades</translation>
 <translation id="1285320974508926690">No tradueixis mai aquest lloc</translation>
 <translation id="1285484354230578868">Emmagatzemar les dades al compte de Google Drive</translation>
@@ -1120,7 +1121,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1832848789136765277">Per assegurar-te de poder accedir a les dades sincronitzades en qualsevol moment, verifica la teva identitat</translation>
 <translation id="1834503245783133039">Error en la baixada: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">S'està actualitzant Linux</translation>
-<translation id="1835612721186505600">Permet l'accés a aplicacions i llocs web amb el permís d'accés a la càmera</translation>
 <translation id="1838374766361614909">Esborra la cerca</translation>
 <translation id="1839021455997460752">La teva adreça electrònica</translation>
 <translation id="1839540115464516994">Mostra a <ph name="LOCATION" /></translation>
@@ -4577,7 +4577,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4507128560633489176">Les dades s'han esborrat.</translation>
 <translation id="4507373251891673233">Has bloquejat totes les extensions de <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Fes clic a Afegeix una drecera</translation>
-<translation id="4508150454272293946">Permet que les aplicacions i les pàgines web utilitzin les càmeres connectades a aquest dispositiu. Si continues tenint un problema amb la càmera, prova de reiniciar l'aplicació o d'actualitzar la pàgina web.</translation>
 <translation id="450867954911715010">Configuració d'accessibilitat</translation>
 <translation id="4508765956121923607">Visualitza l'&amp;origen</translation>
 <translation id="4509277363725254222">Si comparteixes una còpia del teu <ph name="BEGIN_BOLD_USERNAME" />nom d'usuari<ph name="END_BOLD_USERNAME" /> i de la teva <ph name="BEGIN_BOLD_PASSWORD" />contrasenya<ph name="END_BOLD_PASSWORD" />, el membre de la teva família podrà utilitzar-los per a l'emplenament amb el gestor de contrasenyes de Google.</translation>
@@ -5026,6 +5025,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4863769717153320198">Resolució: <ph name="WIDTH" /> x <ph name="HEIGHT" /> (predeterminada)</translation>
 <translation id="4864369630010738180">S'està iniciant la sessió...</translation>
 <translation id="4864805589453749318">Selecciona quin dels teus pares concedeix el permís per afegir un compte de centre educatiu.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (s'ha bloquejat)</translation>
 <translation id="486505726797718946">Memòria estalviada</translation>
 <translation id="486635084936119914">Obre alguns tipus de fitxer automàticament després de baixar-los</translation>
 <translation id="4867272607148176509">Els pares poden aprovar o bloquejar aplicacions, establir límits de temps i controlar la navegació web. Més endavant, es pot afegir un compte de centre educatiu per accedir a la majoria de recursos educatius.</translation>
@@ -5520,6 +5520,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5261619498868361045">El nom del contenidor no pot estar buit.</translation>
 <translation id="5261683757250193089">Obre a Web Store</translation>
 <translation id="5261799091118902550">Aquest fitxer pot ser un virus o programari maliciós. Pots enviar-lo a Google per comprovar si no és segur.</translation>
+<translation id="5262334727506665688">Continua desant les contrasenyes al teu Compte de Google</translation>
 <translation id="5262784498883614021">Connecta a la xarxa automàticament</translation>
 <translation id="5263656105659419083">Per tornar fàcilment al tauler lateral, a la part superior dreta, fes clic a Fixa</translation>
 <translation id="5264148714798105376">Aquesta acció pot tardar més o menys un minut.</translation>
@@ -7059,6 +7060,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="649396225532207613">Aquest fitxer pot malmetre els teus comptes personals i de xarxes socials</translation>
 <translation id="6494327278868541139">Mostra els detalls de la protecció millorada</translation>
 <translation id="6494445798847293442">No és una entitat emissora de certificats</translation>
+<translation id="6494483173119160146">El dispositiu ha detectat un error irrecuperable. Restableix el dispositiu (s'esborraran totes les dades d'usuari) i torna-ho a provar.</translation>
 <translation id="6497784818439587832">Canvia la mida de visualització per ampliar o reduir els elements de la pantalla</translation>
 <translation id="6497789971060331894">Desplaçament invers del ratolí</translation>
 <translation id="6498249116389603658">&amp;Tots els vostres idiomes</translation>
@@ -8474,7 +8476,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7610337976012700501">Per fer servir <ph name="FEATURE_NAME" /> amb aquests contactes, afegeix les adreces electròniques enllaçades als seus Comptes de Google als teus contactes.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Totes les extensions</translation>
-<translation id="7612401678989660900">Permet l'accés a aplicacions i llocs web amb el permís d'accés al micròfon</translation>
 <translation id="7612497353238585898">Lloc web actiu</translation>
 <translation id="7612655942094160088">Activa la funció de telèfon connectat.</translation>
 <translation id="7612989789287281429">S'està iniciant la sessió…</translation>
@@ -9541,6 +9542,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8397825320644530257">Desconnecta el telèfon connectat</translation>
 <translation id="8398877366907290961">Continua igualment</translation>
 <translation id="8399282673057829204">Mostra la contrasenya</translation>
+<translation id="839949601275221554">El dispositiu ha detectat un error. Reinicia'l i torna-ho a provar.</translation>
 <translation id="8401432541486058167">Proporciona el PIN que està associat a la teva targeta intel·ligent.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome tornarà a bloquejar les galetes avui}=1{Chrome tornarà a bloquejar les galetes demà}other{# dies perquè Chrome torni a bloquejar les galetes}}</translation>
 <translation id="8403618281196981152">Les teves dades a Chrome</translation>

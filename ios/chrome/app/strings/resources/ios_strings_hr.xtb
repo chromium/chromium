@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Dodirnite i zadržite datum.</translation>
 <translation id="1959679933317802873">Čekanje sadržaja</translation>
 <translation id="1967461193809857427">{count,plural, =1{Želite li nastaviti na kartici na kojoj ste stali na Androidu?}one{Želite li nastaviti na karticama na kojima ste stali na Androidu?}few{Želite li nastaviti na karticama na kojima ste stali na Androidu?}other{Želite li nastaviti na karticama na kojima ste stali na Androidu?}}</translation>
+<translation id="1972325230031091483">Pregledavat ćete brže jer se sadržaj učitava proaktivno na temelju vašeg trenutačnog posjeta web-stranici</translation>
 <translation id="1973912524893600642">Zadrži podatke</translation>
 <translation id="1974060860693918893">Napredno</translation>
 <translation id="1980417445547898121">{count,plural, =1{Nabavite {count} nedavno aktivnu karticu s drugog uređaja na ovom iPhoneu}one{Nabavite {count} nedavno aktivnu karticu s drugog uređaja na ovom iPhoneu}few{Nabavite {count} nedavno aktivne kartice s drugog uređaja na ovom iPhoneu}other{Nabavite {count} nedavno aktivnih kartica s drugog uređaja na ovom iPhoneu}}</translation>
@@ -434,6 +435,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3235242129752692527">Uredite pojedinosti događaja i dodirnite Spremi.</translation>
 <translation id="3240426699337459095">Veza je kopirana</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Ako dijelite i izvješća o upotrebi Chromea, ta izvješća uključuju URL-ove koje posjećujete</translation>
 <translation id="3245744387817103524">Izmjena nije spremljena.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> od <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Automatsko popunjavanje zaporki</translation>
@@ -633,7 +635,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4371591986692297148">neaktivan</translation>
 <translation id="4375040482473363939">Pretraživanje QR kodova</translation>
 <translation id="4378154925671717803">Telefon</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> s vama dijeli zaporku za web-lokaciju <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Dodirnite da biste promijenili jezik.</translation>
 <translation id="4405320213589929829">Upotrijebite adrese na web-stranicama da biste dobili lokalne informacije i upute.</translation>
 <translation id="4420409367264901497">Uređivanje oznake</translation>
@@ -859,6 +860,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="555749644339804659">Provjera zaporki…</translation>
 <translation id="5559567453458728487">Preračunajte mjerne jedinice pronađene na webu</translation>
 <translation id="556042886152191864">Gumb</translation>
+<translation id="5572648434713976849">Primat ćete poboljšane prijedloge na adresnoj traci</translation>
 <translation id="5572684875078967866">Pohrana podataka</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Prati ovaj paket}one{Prati sve pakete}few{Prati sve pakete}other{Prati sve pakete}}</translation>
 <translation id="5597915316964418992">Otvorite rešetku kartica</translation>
@@ -1085,6 +1087,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="6642362222295953972">Prijeđite na postojeću karticu</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6645899968535965230">QR kôd: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">URL-ovi koje posjećujete šalju se Googleu kako bi se predvidjelo koje biste web-lokacije mogli posjetiti sljedeće</translation>
 <translation id="6647480763136463714">Posljednje pokretanje <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Uređivanje mape</translation>
 <translation id="6657585470893396449">Zaporka</translation>

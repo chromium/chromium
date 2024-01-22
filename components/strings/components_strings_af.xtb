@@ -42,6 +42,7 @@
 <translation id="1062407476771304334">Vervang</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Werkskermboekmerke</translation>
+<translation id="1067029985695494416">Soekenjinbesonderhede</translation>
 <translation id="1068672505746868501">Moet nooit bladsye in <ph name="SOURCE_LANGUAGE" /> vertaal nie</translation>
 <translation id="1070333806075222467">Metaal (glans)</translation>
 <translation id="1070853536588271387">Hibried- en alternatiewe voertuie</translation>
@@ -1812,7 +1813,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Jy gebruik tans jou skermslot vir die invul van wagwoorde</translation>
 <translation id="4558551763791394412">Probeer om jou uitbreidings te deaktiveer.</translation>
-<translation id="456043042661026303">Gaan tans jou betalingbesonderhede veilig na</translation>
 <translation id="4566017918361049074">Buitelug</translation>
 <translation id="4567686777917670400">Jou administrateur kan jou blaaieropstelling oor 'n afstand verander. Aktiwiteit op hierdie toestel kan ook buite Chromium bestuur word. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">Geverifieer</translation>
@@ -2659,7 +2659,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6272088941196661550">Hervat jou reis om relevante aktiwiteit in jou Chrome-geskiedenis te sien</translation>
 <translation id="6272383483618007430">Google-opdatering</translation>
 <translation id="6279183038361895380">Druk |<ph name="ACCELERATOR" />| om jou merker te wys</translation>
-<translation id="628016388715774955">Die opsie om die volle adres in te vul, is gekies</translation>
 <translation id="6280223929691119688">Kan nie by hierdie adres aflewer nie. Kies 'n ander adres.</translation>
 <translation id="6284292079994426700">26x38 dm.</translation>
 <translation id="6284517535531159884">Variasiesaadtipe</translation>
@@ -2931,7 +2930,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6807791860691150411">Opvoeding</translation>
 <translation id="681021252041861472">Vereiste veld</translation>
 <translation id="6810899417690483278">Pasmaking-ID</translation>
-<translation id="681459028290894216">Vul volle adres in</translation>
 <translation id="6816109178681043245">Sportgoedere</translation>
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">reekspoorte</translation>

@@ -6500,6 +6500,11 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
       Si vous définissez <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> et <ph name="CLEAR_SITE_SETTINGS_ACTION" />, la synchronisation sera désactivée pour les types de données respectifs si <ph name="CHROME_SYNC_NAME" /> n'est pas désactivé en définissant la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> et que <ph name="BROWSER_SIGNIN_POLICY_NAME" /> n'est pas désactivé.</translation>
 <translation id="6462604655173570082">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent afficher et utiliser le bouton <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans le champ de recherche de la page "Nouvel onglet". Si cette règle est désactivée, les utilisateurs ne verront pas le bouton <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans ce champ de recherche.</translation>
 <translation id="6464074037294098618">Activer la saisie automatique pour les adresses</translation>
+<translation id="6464564464230511695">Si cette règle est activée ou n'est pas configurée, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> est autorisé sur toutes les pages Web.
+
+Si elle est désactivée, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> n'est disponible sur aucune page Web.
+
+Les capacités d'IA générative de cette fonctionnalité ne sont pas disponibles pour les comptes Education ou Enterprise.</translation>
 <translation id="6467613372414922590">Autoriser les hôtes de messagerie natifs au niveau de l'utilisateur (installés sans l'autorisation d'un administrateur)</translation>
 <translation id="6467707081687600148">Programmer un redémarrage automatique après l'installation des mises à jour de <ph name="PRODUCT_OS_NAME" />.
 

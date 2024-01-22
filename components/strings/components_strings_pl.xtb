@@ -465,6 +465,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1828959155404624835">Wypożyczalnie samochodów</translation>
 <translation id="1834321415901700177">Ta strona zawiera szkodliwe programy</translation>
 <translation id="1838374766361614909">Wyczyść wyszukiwanie</translation>
+<translation id="1839331950812095887">kilka słów podsumowujących Twoją opinię</translation>
 <translation id="1839551713262164453">Weryfikacja wartości zasad nie udała się z powodu błędów</translation>
 <translation id="1842969606798536927">Zapłać</translation>
 <translation id="1846432862466000825">Plastik (materiały archiwalne)</translation>
@@ -698,6 +699,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2293443924986248631">Gdy to ustawienie jest włączone, strony internetowe nie mogą używać plików cookie śledzących, co robisz w sieci. Funkcje niektórych witryn mogą nie działać prawidłowo.</translation>
 <translation id="2295831393422400053">Aby korzystać z funkcji Pomóż mi napisać, włącz ustawienie Ulepsz wyszukiwanie i przeglądanie</translation>
 <translation id="2300306941146563769">Nieprzesłany</translation>
+<translation id="2301098101308036335">Jakie witryny są odwiedzane i kiedy.</translation>
 <translation id="230286397113210245">Przycisk Otwórz okno incognito; aktywuj, aby otworzyć nowe okno incognito i przeglądać prywatnie</translation>
 <translation id="2312234273148520048">Przyprawy i sosy</translation>
 <translation id="2316087952091171402">Mniej niż <ph name="UPPER_ESTIMATE" />. Podczas następnej wizyty niektóre strony mogą ładować się wolniej.</translation>
@@ -1365,6 +1367,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3655670868607891010">Jeśli często widzisz ten komunikat, przeczytaj <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Odzież codzienna</translation>
 <translation id="3658742229777143148">Wersja</translation>
+<translation id="3659521826520353662">Które witryny zdefiniowane przez administratora są odwiedzane i kiedy: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">Słowa kluczowe:</translation>
 <translation id="3665100783276035932">Większość stron powinna działać zgodnie z oczekiwaniami</translation>
 <translation id="3667704023705708645">Kapitał podwyższonego ryzyka</translation>
@@ -1455,6 +1458,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3812398568375898177">To kluczowa aktualizacja, która poprawia wydajność aplikacji na Androida w ChromeOS.</translation>
 <translation id="3815434930383843058">8 x 12 cali</translation>
 <translation id="3816482573645936981">Wartość (zastąpiona)</translation>
+<translation id="382115839591654906">Kod CVC karty <ph name="CARD_NAME" /></translation>
 <translation id="3823019343150397277">Numer IBAN</translation>
 <translation id="3823402221513322552">Przeglądarką zarządza <ph name="BROWSER_DOMAIN" />, a Twoim profilem – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Jeśli używasz serwera proxy...</translation>
@@ -1816,7 +1820,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Używasz blokady ekranu do wypełniania haseł</translation>
 <translation id="4558551763791394412">Spróbuj wyłączyć rozszerzenia.</translation>
-<translation id="456043042661026303">Bezpiecznie sprawdzam dane do płatności</translation>
 <translation id="4566017918361049074">Rekreacja w plenerze</translation>
 <translation id="4567686777917670400">Administrator może zdalnie zmienić konfigurację przeglądarki. Aktywność na tym urządzeniu może być zarządzana również poza Chromium. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">Zweryfikowane</translation>
@@ -2663,7 +2666,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6272088941196661550">Wznów swoją serię czynności, aby zobaczyć odpowiednią aktywność w historii Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6279183038361895380">Naciśnij |<ph name="ACCELERATOR" />|, by wyświetlić kursor</translation>
-<translation id="628016388715774955">Wybrano opcję wypełnienia całego adresu</translation>
 <translation id="6280223929691119688">Nie można dostarczyć pod ten adres. Wybierz inny.</translation>
 <translation id="6284292079994426700">26 x 38 cali</translation>
 <translation id="6284517535531159884">Typ materiału wyjściowego dla odmian</translation>
@@ -2935,7 +2937,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6807791860691150411">Edukacja</translation>
 <translation id="681021252041861472">Pole wymagane</translation>
 <translation id="6810899417690483278">Identyfikator dostosowania</translation>
-<translation id="681459028290894216">Wypełnij cały adres</translation>
 <translation id="6816109178681043245">Produkty sportowe</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">porty szeregowe</translation>
@@ -3206,6 +3207,7 @@ Dodatkowe informacje:
 <translation id="7341357280245177602">Pojazdy używane</translation>
 <translation id="7346048084945669753">Jest w tej samej domenie:</translation>
 <translation id="7346062987309535530">Zastawa stołowa</translation>
+<translation id="7346081071264046066">„zaakceptuj z entuzjazmem to zaproszenie na wesele"</translation>
 <translation id="7352651011704765696">Coś poszło nie tak</translation>
 <translation id="7353601530677266744">Wiersz poleceń</translation>
 <translation id="7354880545102894991">Tanie podróże i wycieczki last minute</translation>

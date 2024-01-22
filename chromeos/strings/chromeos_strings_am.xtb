@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">ወደ ፊት</translation>
 <translation id="1615335640928990664">የውሂብ አጠቃቀም ከ<ph name="FRIENDLY_DATE" /> ጀምሮ</translation>
 <translation id="1621067168122174824">የባትሪ መሙላት ሙከራን አሂድ</translation>
+<translation id="1626590945318984973">አቋራጭ አይገኝም። ተግባርን እና <ph name="META_KEY" /> ቁልፎችን ሳይጠቀሙ አዲስ አቋራጭን ይጫኑ።</translation>
 <translation id="1639239467298939599">በመጫን ላይ</translation>
 <translation id="1641857168437328880">ሰነድ መጋቢ (ባለአንድ ጎን)</translation>
 <translation id="1643449475550628585">የልጣፍ ምስልን በየቀኑ ቀይር</translation>
@@ -452,7 +453,9 @@
 <translation id="4394049700291259645">አሰናክል</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" />ን ዳግም በማስነሳት ላይ</translation>
 <translation id="4395835743215824109">የቁልፍ ሰሌዳ ማበጂያ</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> ቁልፍ የሌለው አቋራጭ ከተወሰነ መተግበሪያ አቋራጭ ጋር ሊጋጭ ይችላል። ይህን አቋራጭ መጠቀምን መቀጠል ከፈለጉ፣ በድጋሚ ይጫኑት ወይም <ph name="KEY" /> ቁልፉን በመጠቀም አዲስ አቋራጭ ይጫኑ።</translation>
 <translation id="4415951057168511744">የአሁኑ አምሳያ</translation>
+<translation id="4417830657741848074">አስተዳዳሪዎ አንዳንድ መተግበሪያዎችን በራስ-ሰር እንዲጀምሩ አዘጋጅቷል። ከእነዚህ መተግበሪያዎች ውስጥ አንዳንዶቹ ያልተዘጉ ሊሆኑ ይችላሉ።</translation>
 <translation id="4422041425070339732">ታች ቀስት</translation>
 <translation id="4425149324548788773">የእኔ Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ጠፍቷል</translation>
@@ -465,6 +468,7 @@
 <translation id="4469288414739283461">የመሬት ፍሰት የማያ ገፅ ቆጣቢ</translation>
 <translation id="4479639480957787382">ኢተርኔት</translation>
 <translation id="4483049906298469269">ነባሪ ያልሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
+<translation id="4500722292849917410">አቋራጭ አይገኝም። የአሻሻይ ቁልፍ (ctrl, alt, shift, ወይም <ph name="META_KEY" />) በመጠቀም አዲስ አቋራጭ ይጫኑ።</translation>
 <translation id="4500966230243561393">የበይነገጽ ቀለም</translation>
 <translation id="4503223151711056411">የግራ ቀስት</translation>
 <translation id="4507392511610824664">ብሩህነት ይጨምራል</translation>
@@ -512,6 +516,7 @@
 <translation id="4832079907277790330">በፋይሎች መተግበሪያ ውስጥ አቃፊን ይምረጡ...</translation>
 <translation id="4835901797422965222">ምንም ንቁ አውታረ መረቦች የሉም</translation>
 <translation id="4839698083503556542">የራስዎን ፊልም ይፍጠሩ</translation>
+<translation id="48409034532829769">አስተዳዳሪዎ በራስ-ሰር ለመጀመር «<ph name="APP_NAME" />» አዘጋጅቷል። ይህ መተግበሪያ ያልተዘጋ ሊሆን ይችላል።</translation>
 <translation id="484462545196658690">ራስ-ሰር</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ተመርጧል፣ የ<ph name="TOPIC_SOURCE" /> አልበሞችን ለመምረጥ አስገባን ይጫኑ</translation>
 <translation id="484790837831576105">(Android) የዲኤንኤስ መፍትሔ</translation>
@@ -538,6 +543,7 @@
 <translation id="4969079779290789265">ክፈል</translation>
 <translation id="4972592110715526173">ሁነታን የሚለውጥ</translation>
 <translation id="498186245079027698">መቃኛውን ይፈትሹ እና እንደገና ይሞክሩ። የተቃኙ ፋይሎችን ለማስቀመጥ በቂ አከባቢያዊ ቦታ መኖሩን ያረጋግጡ።</translation>
+<translation id="4982627662315910959">አቋራጭ አይገኝም። በshift እና 1 ተጨማሪ የአሻሻይ ቁልፍ (ctrl፣ alt፣ ወይም <ph name="META_KEY" />) በመጠቀም አዲስ አቋራጭ ይጫኑ።</translation>
 <translation id="4985509611418653372">አሂድ</translation>
 <translation id="4987769320337599931">ኬላ</translation>
 <translation id="4988526792673242964">ገፆች</translation>
@@ -844,6 +850,7 @@
 <translation id="7216409898977639127">የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ</translation>
 <translation id="725133483556299729">ኢሜይል ይምረጡ</translation>
 <translation id="7271040990581020067">ቃኚ በአሁኑ ጊዜ ጥቅም ላይ እየዋለ ነው። ቆይተው እንደገና ይሞክሩ።</translation>
+<translation id="7271932918253517778">ከላይ ረድፍ ቁልፎች ያለው አቋራጭ የ<ph name="META_KEY" /> ቁልፍን ማካተት ያስፈልገዋል።</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ነፋሱ ይሰማዎት</translation>
 <translation id="7287310195820267359">የልጣፍ ስብስቦች</translation>

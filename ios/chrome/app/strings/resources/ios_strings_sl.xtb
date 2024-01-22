@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Dotaknite se datuma in ga pridržite.</translation>
 <translation id="1959679933317802873">Čakanje na vsebino</translation>
 <translation id="1967461193809857427">{count,plural, =1{Želite nadaljevati na zavihku, na katerem ste končali v Androidu?}one{Želite nadaljevati na zavihkih, na katerih ste končali v Androidu?}two{Želite nadaljevati na zavihkih, na katerih ste končali v Androidu?}few{Želite nadaljevati na zavihkih, na katerih ste končali v Androidu?}other{Želite nadaljevati na zavihkih, na katerih ste končali v Androidu?}}</translation>
+<translation id="1972325230031091483">Brskali boste hitreje, ker se vsebina proaktivno naloži glede na trenutni obisk spletne strani.</translation>
 <translation id="1973912524893600642">Ohrani podatke</translation>
 <translation id="1974060860693918893">Dodatno</translation>
 <translation id="1980417445547898121">{count,plural, =1{Dobite {count} nedavno aktivni zavihek iz druge naprave v tem iPhonu}one{Dobite {count} nedavno aktivni zavihek iz druge naprave v tem iPhonu}two{Dobite {count} nedavno aktivna zavihka iz druge naprave v tem iPhonu}few{Dobite {count} nedavno aktivne zavihke iz druge naprave v tem iPhonu}other{Dobite {count} nedavno aktivnih zavihkov iz druge naprave v tem iPhonu}}</translation>
@@ -291,6 +292,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2547458583188611426">Sinhronizacija ne deluje. Če želite začeti sinhronizacijo, vnesite geslo.</translation>
 <translation id="2551153019974022505">Napaka računa</translation>
 <translation id="2556092377360758201">Brez zaščite (ni priporočljivo)</translation>
+<translation id="2561375093019333908">ODPRI</translation>
 <translation id="2562041823070056534">Pošiljanje v napravo <ph name="DEVICE_NAME" /> …</translation>
 <translation id="2576499762020411840">Uporaba in shranjevanje gesel v računu Google</translation>
 <translation id="2577522251608256362">Soseska</translation>
@@ -433,6 +435,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3235242129752692527">Uredite podrobnosti o dogodku in se dotaknite možnosti »Save« (Shrani).</translation>
 <translation id="3240426699337459095">Povezava kopirana</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Če delite tudi poročila o uporabi Chroma, so v teh poročilih vključeni URL-ji, ki jih obiščete.</translation>
 <translation id="3245744387817103524">Spremembe ni bilo mogoče shraniti.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> od <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Samodejno izpolnjevanje gesel</translation>
@@ -632,7 +635,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4371591986692297148">Neaktivno</translation>
 <translation id="4375040482473363939">Iskanje kod QR</translation>
 <translation id="4378154925671717803">Telefon</translation>
-<translation id="4388983683160515185">Oseba <ph name="FULL_NAME" /> je z vami delila geslo za spletno mesto <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Dotaknite se, če želite spremeniti jezik.</translation>
 <translation id="4405320213589929829">Uporabite naslove na spletnih straneh za pridobivanje lokalnih informacij in navodil za pot.</translation>
 <translation id="4420409367264901497">Urejanje zaznamka</translation>
@@ -848,6 +850,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="5513681519188741830">Pred <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Ustvarjanje gesla</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} šibko geslo}one{{COUNT} šibko geslo}two{{COUNT} šibki gesli}few{{COUNT} šibka gesla}other{{COUNT} šibkih gesel}}</translation>
+<translation id="5532545557415295622">Pogovorno okno za časovno omejitev nedejavnosti</translation>
 <translation id="5542540507657872337">Št. najdenih: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff lets you start browsing a website on this device and then easily continue on your Mac. The current open website will appear in the Dock of your Mac.
 
@@ -857,6 +860,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="555749644339804659">Preverjanje gesel …</translation>
 <translation id="5559567453458728487">Pretvorba merskih enot, najdenih v spletu</translation>
 <translation id="556042886152191864">Gumb</translation>
+<translation id="5572648434713976849">V naslovni vrstici boste prejemali izboljšane predloge.</translation>
 <translation id="5572684875078967866">Količina podatkov</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Sledi temu paketu}one{Sledi vsem paketom}two{Sledi vsem paketom}few{Sledi vsem paketom}other{Sledi vsem paketom}}</translation>
 <translation id="5597915316964418992">Odprite mrežo zavihkov</translation>
@@ -1083,6 +1087,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="6642362222295953972">Preklop na obstoječi zavihek</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6645899968535965230">Koda QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">URL-ji, ki jih obiščete, se pošljejo Googlu zaradi predvidevanja, katera spletna mesta boste morda obiskali.</translation>
 <translation id="6647480763136463714">Zadnje izvajanje: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Urejanje mape</translation>
 <translation id="6657585470893396449">Geslo</translation>
@@ -1288,6 +1293,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7781829728241885113">Včeraj</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Po 1 dnevu}one{Po {COUNT} dnevu}two{Po {COUNT} dnevih}few{Po {COUNT} dnevih}other{Po {COUNT} dnevih}}</translation>
 <translation id="7791543448312431591">Dodaj</translation>
+<translation id="7792549458069452436">PRENESI APLIKACIJO</translation>
 <translation id="7807060072011926525">Zagotavlja Google</translation>
 <translation id="7812377703891978671">Do celotne zgodovine brskanja lahko dostopate tako, da izberete <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Prenosi</translation>

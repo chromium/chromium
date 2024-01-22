@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1066101356081285416">Chrome はアクセスしたサイトで追跡番号を検出し、新しいタブページに最新情報を表示します。荷物追跡番号とウェブサイト名は、この機能の提供と Google ショッピング機能の改善を目的として、Google に送信されます。この設定は<ph name="BEGIN_LINK" />荷物追跡設定<ph name="END_LINK" />でいつでも変更できます。</translation>
 <translation id="1085696779717592361">Chrome をデフォルトに設定する</translation>
 <translation id="1105362920864247682">Chrome の閲覧データを削除します。</translation>
 <translation id="1113057722807951993">Google Pay のお支払い方法と住所は、パスフレーズによる暗号化の対象には含まれません。
@@ -40,6 +41,7 @@
 <translation id="1682483655351012182">Chrome のデータを同期する</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">入力した URL を Chrome のブックマークに追加します。</translation>
+<translation id="1799920918471566157">Chrome を使いこなすヒント</translation>
 <translation id="1830634592642484976">この住所は現在、Chrome に保存されています。Google サービス全体で使用するには、Google アカウント（<ph name="USER_EMAIL" />）に保存してください。</translation>
 <translation id="1843217788865538014">メッセージ、ドキュメント、他のアプリのリンクをタップすると、Chrome が自動的に開きます。</translation>
 <translation id="1910975740091000991">Chrome for iOS</translation>
@@ -74,6 +76,7 @@
 <translation id="2702250627063295552">Chrome にリーディング リストの項目を追加する</translation>
 <translation id="2736805085127235148">現在、デバイスの設定で Chrome の通知がオフになっています。</translation>
 <translation id="2767464022270041271">保存されているパスワードがありません。パスワードを保存すると、Google パスワード マネージャーで確認できるようになります。</translation>
+<translation id="2789947168960170215">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを消去<ph name="END_LINK" />してください。</translation>
 <translation id="2868822340714096138">Chrome の閲覧データを削除する</translation>
 <translation id="2869959624320573933">Chrome へのログイン</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome でユーザーデータのプライバシーを保護する方法<ph name="END_LINK" />についての詳細</translation>

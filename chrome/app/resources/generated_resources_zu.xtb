@@ -1130,7 +1130,6 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
 <translation id="1832848789136765277">Ukuze uqiniseke ukuthi uhlala ufinyelela idatha yakho yokuvumelanisa, qinisekisa ukuthi uwena</translation>
 <translation id="1834503245783133039">Ukulanda kuphumelele: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Ithuthukisa i-Linux</translation>
-<translation id="1835612721186505600">Vumela ukufinyelela kwama-app namawebhusayithi ngemvume yekhamera</translation>
 <translation id="1838374766361614909">Sula usesho</translation>
 <translation id="1839021455997460752">Ikheli lakho le-imeyili</translation>
 <translation id="1839540115464516994">Bonisa e-<ph name="LOCATION" /></translation>
@@ -4594,7 +4593,6 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="4507128560633489176">Idatha isuliwe.</translation>
 <translation id="4507373251891673233">Uvimbe zonke izandiso ezisuka ku-<ph name="HOST" /></translation>
 <translation id="4507401683427517298">Chofoza okuthi “Engeza Isinqamuleli”</translation>
-<translation id="4508150454272293946">Vumela ama-app namakhasi ewebhu ukuthi asebenzise amakhamera axhunywe kule divayisi. Uma usenenkinga ngekhamera yakho, zama ukuqala kabusha i-app noma uvuselele ikhasi lewebhu.</translation>
 <translation id="450867954911715010">Izulungiselelo zokufinyelela</translation>
 <translation id="4508765956121923607">Buka u&amp;mthombo</translation>
 <translation id="4509277363725254222">Lapho wabelana ngekhophi <ph name="BEGIN_BOLD_USERNAME" />yegama lakho lomsebenzisi<ph name="END_BOLD_USERNAME" /> kanye <ph name="BEGIN_BOLD_PASSWORD" />nephasiwedi<ph name="END_BOLD_PASSWORD" />, ilungu lomndeni wakho lingakwazi ukuwagcwalisa lisebenzisa Umphathi Wephasiwedi Ye-Google</translation>
@@ -8494,7 +8492,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7610337976012700501">Ukuze usebenzise i-<ph name="FEATURE_NAME" /> nalaba oxhumana nabo, engeza ikheli le-imeyili elilinkiwe ne-Google Account yabo koxhumana nabo.</translation>
 <translation id="7611713099524036757">i-meta</translation>
 <translation id="7612050744024016345">Izandiso Zonke</translation>
-<translation id="7612401678989660900">Vumela ukufinyelela kwama-app namawebhusayithi ngemvume yemakrofoni</translation>
 <translation id="7612497353238585898">Isayithi elisebenzayo</translation>
 <translation id="7612655942094160088">Nika amandla izici zefoni exhunyiwe.</translation>
 <translation id="7612989789287281429">Ikungenisa ngemvume…</translation>

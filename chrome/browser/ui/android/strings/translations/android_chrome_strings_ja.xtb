@@ -147,6 +147,7 @@
 <translation id="1792959175193046959">デフォルトのダウンロード保存先はいつでも変更できます</translation>
 <translation id="1796666869097395659">後で戻るにはタブを最小化します</translation>
 <translation id="1807246157184219062">明</translation>
+<translation id="1807709131360304325">新しいウィンドウを開く</translation>
 <translation id="1810845389119482123">最初の同期設定が終了していません</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> は <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の使用を続行できません</translation>
 <translation id="1829244130665387512">ページ内検索</translation>
@@ -922,6 +923,7 @@
 <translation id="5962718611393537961">タップして折りたたむ</translation>
 <translation id="5964869237734432770">画像の説明文の取得を停止する</translation>
 <translation id="5966233851250124270">この設定は Chrome に保存されます</translation>
+<translation id="5977976211062815271">このデバイス</translation>
 <translation id="5979084224081478209">パスワードを確認</translation>
 <translation id="5995726099713306770">ページを再ダウンロードしますか？</translation>
 <translation id="6000066717592683814">Google のままにする</translation>
@@ -1328,6 +1330,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> は最新ではありません。</translation>
 <translation id="7944772052836377867">同期するには本人確認が必要です</translation>
 <translation id="7947953824732555851">同意してログイン</translation>
+<translation id="7951102827450076904">ダウンロードした PDF を常に開く</translation>
 <translation id="7957413488482743710">仮想カードを使用すると、実際のカードを非表示にして、不正行為から保護できます。<ph name="BEGIN_LINK1" />仮想カードの詳細<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">ページの関連情報の [戻る] ボタン</translation>
 <translation id="7961926449547174351">ストレージへのアクセスは無効になっています。[設定] で有効にしてください。</translation>

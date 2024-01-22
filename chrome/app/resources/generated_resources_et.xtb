@@ -1122,7 +1122,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1832848789136765277">Selleks, et pääseksite alati oma sünkroonitud andmetele juurde, kinnitage oma isik</translation>
 <translation id="1834503245783133039">Allalaadimine nurjus: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux versiooni uuendamine</translation>
-<translation id="1835612721186505600">Luba juurdepääs kaamerale rakenduste ja veebisaitide puhul, millel on kaamerale juurdepääsemise luba</translation>
 <translation id="1838374766361614909">Otsingu kustutamine</translation>
 <translation id="1839021455997460752">Teie e-posti aadress</translation>
 <translation id="1839540115464516994">Kuva asukohas <ph name="LOCATION" /></translation>
@@ -4574,7 +4573,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4507128560633489176">Andmed kustutati.</translation>
 <translation id="4507373251891673233">Blokeerisite kõik laiendused saidil <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Klõpsake valikul „Lisa otsetee”</translation>
-<translation id="4508150454272293946">Lubage rakendustel ja veebilehtedel kasutada selle seadmega ühendatud kaamerat/kaameraid. Kui teil on endiselt probleeme kaameraga, taaskäivitage rakendus või värskendage veebilehte.</translation>
 <translation id="450867954911715010">Juurdepääsetavuse seaded</translation>
 <translation id="4508765956121923607">Vaata a&amp;llikat</translation>
 <translation id="4509277363725254222">Kui jagate oma <ph name="BEGIN_BOLD_USERNAME" />kasutajanime<ph name="END_BOLD_USERNAME" /> ja <ph name="BEGIN_BOLD_PASSWORD" />parooli<ph name="END_BOLD_PASSWORD" />, saab teie pereliige need väljad täita Google’i paroolihalduri abil.</translation>
@@ -8467,7 +8465,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7610337976012700501">Funktsiooni <ph name="FEATURE_NAME" /> kasutamiseks koos nende kontaktidega lisage nende Google'i kontodega lingitud e-posti aadressid oma kontaktide hulka.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Kõik laiendid</translation>
-<translation id="7612401678989660900">Luba juurdepääs mikrofonile rakenduste ja veebisaitide puhul, millel on mikrofonile juurdepääsemise luba</translation>
 <translation id="7612497353238585898">Aktiivne sait</translation>
 <translation id="7612655942094160088">Ühendatud telefoni funktsioonide lubamine.</translation>
 <translation id="7612989789287281429">Sisselogimine …</translation>

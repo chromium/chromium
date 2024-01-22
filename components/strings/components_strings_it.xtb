@@ -465,6 +465,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1828959155404624835">Autonoleggi</translation>
 <translation id="1834321415901700177">Il sito contiene programmi dannosi.</translation>
 <translation id="1838374766361614909">Cancella ricerca</translation>
+<translation id="1839331950812095887">poche parole che riassumono i tuoi pensieri</translation>
 <translation id="1839551713262164453">Convalida dei valori della norma non riuscita con errori</translation>
 <translation id="1842969606798536927">Paga</translation>
 <translation id="1846432862466000825">Plastica (archivio)</translation>
@@ -696,6 +697,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2293443924986248631">Se questa opzione è attiva, i siti non possono utilizzare i cookie per monitorare la tua attività sul Web. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="2295831393422400053">Attiva l'impostazione Migliora le ricerche e le attività di navigazione per usare Aiutami a scrivere</translation>
 <translation id="2300306941146563769">Non caricato</translation>
+<translation id="2301098101308036335">Quali siti web vengono visitati e quando.</translation>
 <translation id="230286397113210245">Pulsante Apri finestra di navigazione in incognito, attiva per aprire una nuova finestra di navigazione in incognito per navigare in privato</translation>
 <translation id="2312234273148520048">Salse e condimenti</translation>
 <translation id="2316087952091171402">Meno di <ph name="UPPER_ESTIMATE" />. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
@@ -1359,6 +1361,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3655670868607891010">Se questo problema si verifica spesso, prova questi <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Abbigliamento casual</translation>
 <translation id="3658742229777143148">Revisione</translation>
+<translation id="3659521826520353662">Quali siti web definiti dall'amministratore vengono visitati e quando: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">Parole chiave:</translation>
 <translation id="3665100783276035932">La maggior parte dei siti dovrebbe funzionare come previsto</translation>
 <translation id="3667704023705708645">Venture capital</translation>
@@ -1449,6 +1452,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3812398568375898177">Si tratta di un aggiornamento critico che migliora le prestazioni delle app per Android su ChromeOS.</translation>
 <translation id="3815434930383843058">8 x 12 in</translation>
 <translation id="3816482573645936981">Valore (sostituito)</translation>
+<translation id="382115839591654906">CVC di <ph name="CARD_NAME" /></translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Il tuo browser è gestito da <ph name="BROWSER_DOMAIN" /> e il tuo profilo è gestito da <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Se utilizzi un server proxy...</translation>
@@ -1810,7 +1814,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Stai usando il blocco schermo per inserire le password</translation>
 <translation id="4558551763791394412">Prova a disattivare le estensioni.</translation>
-<translation id="456043042661026303">Controllo sicuro dei dati di pagamento</translation>
 <translation id="4566017918361049074">Attività all'aria aperta</translation>
 <translation id="4567686777917670400">L'amministratore può modificare da remoto la configurazione del browser. L'attività svolta su questo dispositivo potrebbe essere gestita anche al di fuori di Chromium. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">Verificato</translation>
@@ -2656,7 +2659,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6272088941196661550">Riprendi il percorso per visualizzare le attività pertinenti nella tua cronologia di Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6279183038361895380">Premi |<ph name="ACCELERATOR" />| per mostrare il puntatore</translation>
-<translation id="628016388715774955">È stata selezionata l'opzione per inserire l'indirizzo completo</translation>
 <translation id="6280223929691119688">Impossibile consegnare all'indirizzo specificato. Seleziona un indirizzo diverso.</translation>
 <translation id="6284292079994426700">66,0 × 96,5 cm</translation>
 <translation id="6284517535531159884">Tipo di origine varianti</translation>
@@ -2928,7 +2930,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6807791860691150411">Istruzione</translation>
 <translation id="681021252041861472">Campo obbligatorio</translation>
 <translation id="6810899417690483278">ID personalizzazione</translation>
-<translation id="681459028290894216">Inserisci l'indirizzo completo</translation>
 <translation id="6816109178681043245">Articoli sportivi</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">porte seriali</translation>
@@ -3199,6 +3200,7 @@ Ulteriori dettagli:
 <translation id="7341357280245177602">Veicoli usati</translation>
 <translation id="7346048084945669753">Con affiliazione:</translation>
 <translation id="7346062987309535530">Vasellame</translation>
+<translation id="7346081071264046066">"rispondi sì a questo invito a nozze con entusiasmo"</translation>
 <translation id="7352651011704765696">Si è verificato un problema</translation>
 <translation id="7353601530677266744">Riga di comando</translation>
 <translation id="7354880545102894991">Viaggi low-cost e last-minute</translation>

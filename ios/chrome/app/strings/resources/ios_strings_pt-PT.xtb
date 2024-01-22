@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Toque sem soltar numa data.</translation>
 <translation id="1959679933317802873">A aguardar pelo conteúdo</translation>
 <translation id="1967461193809857427">{count,plural, =1{Retomar o separador que deixou no Android?}other{Retomar os separadores que deixou no Android?}}</translation>
+<translation id="1972325230031091483">Irá navegar mais depressa porque os conteúdos são carregados proativamente com base na página Web que está a visitar</translation>
 <translation id="1973912524893600642">Manter dados</translation>
 <translation id="1974060860693918893">Avançadas</translation>
 <translation id="1980417445547898121">{count,plural, =1{Obtenha {count} separador recentemente ativo do outro dispositivo neste iPhone}other{Obtenha {count} separadores recentemente ativos do outro dispositivo neste iPhone}}</translation>
@@ -434,6 +435,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3235242129752692527">Edite os detalhes do evento e toque em "Guardar".</translation>
 <translation id="3240426699337459095">Link copiado</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Se também partilhar relatórios de utilização do Chrome, esses relatórios incluem os URLs que visita</translation>
 <translation id="3245744387817103524">Não foi possível guardar a alteração.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Preencher palavras-passe automaticamente</translation>
@@ -634,7 +636,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4371591986692297148">Inativo</translation>
 <translation id="4375040482473363939">Pesquisa de códigos QR</translation>
 <translation id="4378154925671717803">Telemóvel</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> partilhou uma palavra-passe consigo para o Website <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Toque para alterar o idioma.</translation>
 <translation id="4405320213589929829">Use moradas em páginas Web para obter direções e informações locais.</translation>
 <translation id="4420409367264901497">Editar marcador</translation>
@@ -861,6 +862,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="555749644339804659">A verificar palav.-passe…</translation>
 <translation id="5559567453458728487">Converta unidades de medida encontradas na Web</translation>
 <translation id="556042886152191864">Botão</translation>
+<translation id="5572648434713976849">Receberá sugestões melhoradas na barra de endereço</translation>
 <translation id="5572684875078967866">Armazenamento de informações</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Acompanhar esta embalagem}other{Acompanhar todas as embalagens}}</translation>
 <translation id="5597915316964418992">Abra a grelha de separadores</translation>
@@ -1087,6 +1089,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="6642362222295953972">Mudar para um separador existente</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6645899968535965230">Código QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">Os URLs que visitar são enviados para a Google para prever os sites que pode visitar a seguir</translation>
 <translation id="6647480763136463714">Última execução: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Editar Pasta</translation>
 <translation id="6657585470893396449">Palavra-passe</translation>

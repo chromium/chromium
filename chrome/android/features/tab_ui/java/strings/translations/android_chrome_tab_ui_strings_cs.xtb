@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">Zasílat oznámení</translation>
 <translation id="4133493477912226187">Některé karty (<ph name="NUMBER_OF_TABS" />) spolu pravděpodobně souvisejí. Chcete je seskupit?</translation>
 <translation id="4212246570487010370">Pokračovat v prohlížení</translation>
+<translation id="427987768447457592">Nová skupina karet</translation>
 <translation id="4648718555153979859">Zde jsou seskupeny vaše karty</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenze)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenze)}many{(<ph name="REVIEWS_COUNT_MANY" /> recenze)}other{(<ph name="REVIEWS_COUNT_MANY" /> recenzí)}}</translation>
 <translation id="4850886885716139402">Zobrazit</translation>

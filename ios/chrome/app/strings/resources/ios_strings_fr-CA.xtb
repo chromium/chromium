@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Maintenez le doigt sur une date.</translation>
 <translation id="1959679933317802873">En attente de contenu…</translation>
 <translation id="1967461193809857427">{count,plural, =1{Reprendre l'onglet que vous avez laissé sur Android?}one{Reprendre les onglets que vous avez laissés sur Android?}other{Reprendre les onglets que vous avez laissés sur Android?}}</translation>
+<translation id="1972325230031091483">Vous naviguerez plus rapidement parce que le contenu sera chargé à l'avance en fonction de la page Web que vous êtes en train de consulter</translation>
 <translation id="1973912524893600642">Conserver les données</translation>
 <translation id="1974060860693918893">Options avancées</translation>
 <translation id="1980417445547898121">{count,plural, =1{Obtenez {count} onglet récemment actif à partir de votre autre appareil sur cet iPhone}one{Obtenez {count} onglet récemment actif à partir de votre autre appareil sur cet iPhone}other{Obtenez vos {count} onglets récemment actifs à partir de votre autre appareil sur cet iPhone}}</translation>
@@ -433,6 +434,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3235242129752692527">Modifiez les détails de l'événement et touchez « Enregistrer ».</translation>
 <translation id="3240426699337459095">Lien copié</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Si vous partagez aussi les rapports d'utilisation de Chrome, ceux-ci incluent les URL que vous consultez</translation>
 <translation id="3245744387817103524">Votre modification n'a pas pu être enregistrée.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Remplissage automatique des mots de passe</translation>
@@ -632,7 +634,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4371591986692297148">Inactif</translation>
 <translation id="4375040482473363939">Recherche de code QR</translation>
 <translation id="4378154925671717803">Numéro de téléphone</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> a partagé un mot de passe avec vous pour <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Toucher pour changer la langue.</translation>
 <translation id="4405320213589929829">Utilisez les adresses qui figurent sur des pages Web pour obtenir des informations locales et des itinéraires.</translation>
 <translation id="4420409367264901497">Modifier le favori</translation>
@@ -857,6 +858,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="555749644339804659">Vérif. mots de passe…</translation>
 <translation id="5559567453458728487">Convertir les unités de mesure trouvées sur le Web</translation>
 <translation id="556042886152191864">Bouton</translation>
+<translation id="5572648434713976849">Vous recevrez de meilleures suggestions dans la barre d'adresse</translation>
 <translation id="5572684875078967866">Stockage des informations</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Suivre ce colis}one{Suivre ce colis}other{Suivre tous les colis}}</translation>
 <translation id="5597915316964418992">Ouvrir la grille d'onglets</translation>
@@ -1083,6 +1085,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="6642362222295953972">Passer à l'onglet déjà ouvert</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6645899968535965230">Code QR : <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">Les URL des pages que vous visitez sont envoyées à Google aux fins de prédiction des sites que vous êtes susceptible de visiter ultérieurement</translation>
 <translation id="6647480763136463714">Dernière exécution : <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Modifier le dossier</translation>
 <translation id="6657585470893396449">Mot de passe</translation>

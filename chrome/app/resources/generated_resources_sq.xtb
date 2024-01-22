@@ -1116,7 +1116,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1832848789136765277">Për t'u siguruar që mund të qasesh gjithmonë te të dhënat e tua të sinkronizuara, verifiko që je ti</translation>
 <translation id="1834503245783133039">Shkarkimi ishte i pasuksesshëm: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Po përmirëson Linux</translation>
-<translation id="1835612721186505600">Lejo qasjen për aplikacionet dhe uebsajtet me lejen e kamerës</translation>
 <translation id="1838374766361614909">Fshi kërkimin</translation>
 <translation id="1839021455997460752">Adresa jote e email-it</translation>
 <translation id="1839540115464516994">Shfaqe në <ph name="LOCATION" /></translation>
@@ -4566,7 +4565,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4507128560633489176">Të dhënat u pastruan.</translation>
 <translation id="4507373251891673233">Ke bllokuar të gjitha shtesat nga <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Kliko te “Shto shkurtoren”</translation>
-<translation id="4508150454272293946">Lejo që aplikacionet dhe faqet e uebit të përdorin kamerat e lidhura me këtë pajisje. Nëse ke përsëri probleme me kamerën, provo ta rinisësh aplikacionin ose rifresko faqen e uebit.</translation>
 <translation id="450867954911715010">Cilësimet e qasjes</translation>
 <translation id="4508765956121923607">Shiko b&amp;urimin</translation>
 <translation id="4509277363725254222">Kur ndan një kopje të <ph name="BEGIN_BOLD_USERNAME" />emrit të përdoruesit<ph name="END_BOLD_USERNAME" /> dhe <ph name="BEGIN_BOLD_PASSWORD" />fjalëkalimit tënd<ph name="END_BOLD_PASSWORD" />, anëtari i familjes mund t'i plotësojë ato duke përdorur "Menaxherin e fjalëkalimeve të Google".</translation>
@@ -8458,7 +8456,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7610337976012700501">Për të përdorur "<ph name="FEATURE_NAME" />" me këto kontakte, shto te kontaktet e tua adresën e email-it të lidhur me "Llogarinë e tyre të Google".</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Të gjitha shtesat</translation>
-<translation id="7612401678989660900">Lejo qasjen për aplikacionet dhe uebsajtet me lejen e mikrofonit</translation>
 <translation id="7612497353238585898">Sajti aktiv</translation>
 <translation id="7612655942094160088">Aktivizo veçoritë e telefonit të lidhur.</translation>
 <translation id="7612989789287281429">Po identifikohesh…</translation>

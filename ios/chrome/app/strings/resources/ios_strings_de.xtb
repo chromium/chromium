@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Halte ein Datum gedrückt.</translation>
 <translation id="1959679933317802873">Inhalte werden abgerufen</translation>
 <translation id="1967461193809857427">{count,plural, =1{Möchtest du den Tab auf deinem Android-Gerät aufrufen?}other{Möchtest du die Tabs auf deinem Android-Gerät aufrufen?}}</translation>
+<translation id="1972325230031091483">Du kannst schneller surfen, da Inhalte basierend auf deinen Seitenaufrufen proaktiv geladen werden</translation>
 <translation id="1973912524893600642">Daten behalten</translation>
 <translation id="1974060860693918893">Erweitert</translation>
 <translation id="1980417445547898121">{count,plural, =1{{count} kürzlich aktiven Tab von deinem anderen Gerät auf dieses iPhone importieren}other{{count} kürzlich aktive Tabs von deinem anderen Gerät auf dieses iPhone importieren}}</translation>
@@ -434,6 +435,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3235242129752692527">Bearbeite die Termindetails und tippe auf „Speichern“.</translation>
 <translation id="3240426699337459095">Link wurde kopiert.</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Wenn du Chrome-Nutzungsberichte teilst, enthalten diese Berichte die von dir aufgerufenen URLs</translation>
 <translation id="3245744387817103524">Deine Änderung konnte nicht gespeichert werden.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> von <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Passwörter automatisch ausfüllen lassen</translation>
@@ -634,7 +636,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4375040482473363939">QR-Code-Suche</translation>
 <translation id="4378154925671717803">Telefon</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> hat ein Passwort für <ph name="WEBSITE" /> freigegeben</translation>
 <translation id="4389019817280890563">Zum Ändern der Sprache hier tippen.</translation>
 <translation id="4405320213589929829">Du kannst Adressen auf Webseiten verwenden, um lokale Informationen und Wegbeschreibungen zu erhalten.</translation>
 <translation id="4420409367264901497">Lesezeichen bearbeiten</translation>
@@ -861,6 +862,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="555749644339804659">Passwörter werden geprüft…</translation>
 <translation id="5559567453458728487">Im Web gefundene Maßeinheiten umrechnen</translation>
 <translation id="556042886152191864">Schaltfläche</translation>
+<translation id="5572648434713976849">Du erhältst bessere Vorschläge in der Adressleiste</translation>
 <translation id="5572684875078967866">Datenspeicherung</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Dieses Paket verfolgen}other{Alle Pakete verfolgen}}</translation>
 <translation id="5597915316964418992">Tab-Raster öffnen</translation>
@@ -1087,6 +1089,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="6642362222295953972">Zu vorhandenem Tab wechseln</translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6645899968535965230">QR-Code: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">URLs von Websites, die du besuchst, werden an Google gesendet, um Prognosen zu erstellen, welche Websites du voraussichtlich als Nächstes besuchen wirst</translation>
 <translation id="6647480763136463714">Zuletzt ausgeführt: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Ordner bearbeiten</translation>
 <translation id="6657585470893396449">Passwort</translation>

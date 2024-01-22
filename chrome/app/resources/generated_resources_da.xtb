@@ -1131,7 +1131,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1832848789136765277">Verificer din identitet for at sikre, at du altid har adgang til dine synkroniserede data</translation>
 <translation id="1834503245783133039">Downloaden blev ikke fuldført: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Opgraderer Linux</translation>
-<translation id="1835612721186505600">Brug kameratilladelsen til at give apps og websites adgang</translation>
 <translation id="1838374766361614909">Ryd søgning</translation>
 <translation id="1839021455997460752">Din mailadresse</translation>
 <translation id="1839540115464516994">Vis i <ph name="LOCATION" /></translation>
@@ -4585,7 +4584,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4507128560633489176">Dataene er ryddet.</translation>
 <translation id="4507373251891673233">Du har blokeret alle udvidelser fra <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Klik på "Tilføj genvej"</translation>
-<translation id="4508150454272293946">Tillad, at apps og websider anvender de kameraer, der er knyttet til denne enhed. Hvis du stadig har problemer med dit kamera, kan du prøve at genstarte appen eller opdatere websiden.</translation>
 <translation id="450867954911715010">Indstillinger for hjælpefunktioner</translation>
 <translation id="4508765956121923607">Vis k&amp;ilde</translation>
 <translation id="4509277363725254222">Når du deler en kopi af dit <ph name="BEGIN_BOLD_USERNAME" />brugernavn<ph name="END_BOLD_USERNAME" /> og din <ph name="BEGIN_BOLD_PASSWORD" />adgangskode<ph name="END_BOLD_PASSWORD" />, kan dine familiemedlemmer udfylde dem ved hjælp af Google Adgangskodeadministrator</translation>
@@ -8480,7 +8478,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7610337976012700501">Hvis du vil bruge <ph name="FEATURE_NAME" /> med disse kontakter, skal du føje de mailadresser, der er tilknyttet de pågældende Google-konti, til dine kontakter.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Alle udvidelser</translation>
-<translation id="7612401678989660900">Brug mikrofontilladelsen til at give apps og websites adgang</translation>
 <translation id="7612497353238585898">Aktivt website</translation>
 <translation id="7612655942094160088">Aktivering af tilknyttede telefonfunktioner.</translation>
 <translation id="7612989789287281429">Logger dig ind…</translation>

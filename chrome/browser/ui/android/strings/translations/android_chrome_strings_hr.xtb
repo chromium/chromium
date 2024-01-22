@@ -608,7 +608,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Ako se taj problem nastavi pojavljivati, možete isprobati nove načine da biste nastavili na <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Za pretraživanje se upotrebljava Sogou</translation>
-<translation id="4387647248986092471">Postavi zaključavanje profila automobila</translation>
+<translation id="4387647248986092471">Postavite zaključavanje profila automobila</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – preuzimanje…</translation>
 <translation id="4404568932422911380">Bez oznaka</translation>
 <translation id="4405224443901389797">Premjesti u…</translation>
@@ -922,6 +922,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5962718611393537961">Dodirnite da biste saželi</translation>
 <translation id="5964869237734432770">Zaustavite opise slike</translation>
 <translation id="5966233851250124270">Chrome će zapamtiti vaš odabir</translation>
+<translation id="5977976211062815271">Na ovom uređaju</translation>
 <translation id="5979084224081478209">Provjeri zaporke</translation>
 <translation id="5995726099713306770">Ponovo preuzeti stranicu?</translation>
 <translation id="6000066717592683814">Zadrži Google</translation>

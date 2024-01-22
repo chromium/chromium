@@ -247,7 +247,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5623402015214259806">{0,plural, =0{Dostupno je ažuriranje Chromiuma}=1{Dostupno je ažuriranje Chromiuma}one{Ažuriranje Chromiuma dostupno je već # dan}few{Ažuriranje Chromiuma dostupno je već # dana}other{Ažuriranje Chromiuma dostupno je već # dana}}</translation>
 <translation id="5643865575100044307">Podaci web-lokacije uvijek se brišu s uređaja kada zatvorite Chromium</translation>
 <translation id="5653831366781983928">Sada ponovo pokrenite Chromium</translation>
-<translation id="5675598751761067447">Datoteka može biti opasna<ph name="LINE_BREAK" />Chromium može provjeriti to preuzimanje za vas ako unesete zaporku — vaša zaporka ostaje na uređaju</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Prikaži Chromium na tom jeziku</translation>
 <translation id="569897634095159764">Povezivanje s internetom nije moguće. Proxy poslužitelj zahtijeva autentifikaciju.</translation>

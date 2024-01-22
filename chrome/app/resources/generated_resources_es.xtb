@@ -1119,7 +1119,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1832848789136765277">Verifica tu identidad para asegurarte de que siempre puedas acceder a tus datos sincronizados</translation>
 <translation id="1834503245783133039">No se ha podido completar la descarga: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux se ha actualizado</translation>
-<translation id="1835612721186505600">Permite que accedan los sitios web y aplicaciones con el permiso de cámara</translation>
 <translation id="1838374766361614909">Borrar búsqueda</translation>
 <translation id="1839021455997460752">Tu dirección de correo</translation>
 <translation id="1839540115464516994">Mostrar en <ph name="LOCATION" /></translation>
@@ -4568,7 +4567,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4507128560633489176">Datos borrados.</translation>
 <translation id="4507373251891673233">Has bloqueado todas las extensiones de <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Haz clic en Añadir acceso directo</translation>
-<translation id="4508150454272293946">Permite que las aplicaciones y las páginas web usen las cámaras conectadas a este dispositivo. Si sigues teniendo problemas con la cámara, prueba a reiniciar la aplicación o a actualizar la página web.</translation>
 <translation id="450867954911715010">Ajustes de accesibilidad</translation>
 <translation id="4508765956121923607">Ver código f&amp;uente</translation>
 <translation id="4509277363725254222">Si compartes una copia de tu <ph name="BEGIN_BOLD_USERNAME" />nombre de usuario<ph name="END_BOLD_USERNAME" /> y de tu <ph name="BEGIN_BOLD_PASSWORD" />contraseña<ph name="END_BOLD_PASSWORD" />, el miembro de tu familia podrá introducirlos usando el Gestor de contraseñas de Google.</translation>
@@ -8461,7 +8459,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7610337976012700501">Para usar <ph name="FEATURE_NAME" /> con estos contactos, añade a tus contactos las direcciones de correo electrónico vinculadas a sus cuentas de Google.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Todas las extensiones</translation>
-<translation id="7612401678989660900">Permite que accedan los sitios web y aplicaciones con el permiso de micrófono</translation>
 <translation id="7612497353238585898">Sitio activo</translation>
 <translation id="7612655942094160088">Habilitar funciones de teléfono conectado.</translation>
 <translation id="7612989789287281429">Iniciando sesión…</translation>

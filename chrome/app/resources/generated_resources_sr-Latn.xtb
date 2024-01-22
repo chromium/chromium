@@ -1119,7 +1119,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1832848789136765277">Da biste bili sigurni da uvek možete da pristupate sinhronizovanim podacima, potvrdite da ste to vi</translation>
 <translation id="1834503245783133039">Preuzimanje nije uspelo: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux se nadograđuje</translation>
-<translation id="1835612721186505600">Dozvolite pristup aplikacijama i veb-sajtovima sa dozvolom za kameru</translation>
 <translation id="1838374766361614909">Obrišite pretragu</translation>
 <translation id="1839021455997460752">Imejl adresa</translation>
 <translation id="1839540115464516994">Prikaži u: <ph name="LOCATION" /></translation>
@@ -4576,7 +4575,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4507128560633489176">Podaci su obrisani.</translation>
 <translation id="4507373251891673233">Blokirali ste sve dodatke sa <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Kliknite na Dodaj prečicu</translation>
-<translation id="4508150454272293946">Dozvolite aplikacijama i veb-stranicama da koriste kamere povezane sa ovim uređajem. Ako i dalje imate problem sa kamerom, probajte da ponovo pokrenete aplikaciju ili osvežite veb-stranicu.</translation>
 <translation id="450867954911715010">Podešavanja pristupačnosti</translation>
 <translation id="4508765956121923607">Prikaži i&amp;zvor</translation>
 <translation id="4509277363725254222">Kada delite kopiju <ph name="BEGIN_BOLD_USERNAME" />korisničkog imena<ph name="END_BOLD_USERNAME" /> i <ph name="BEGIN_BOLD_PASSWORD" />lozinke<ph name="END_BOLD_PASSWORD" />, član porodice može da ih popuni pomoću Google menadžera lozinki</translation>
@@ -8478,7 +8476,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7610337976012700501">Da biste koristili <ph name="FEATURE_NAME" /> sa ovim kontaktima, dodajte imejl adrese povezane sa Google nalozima tih osoba u kontakte.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Svi dodaci</translation>
-<translation id="7612401678989660900">Dozvolite pristup aplikacijama i veb-sajtovima sa dozvolom za mikrofon</translation>
 <translation id="7612497353238585898">Aktivan sajt</translation>
 <translation id="7612655942094160088">Omogućite povezane funkcije telefona.</translation>
 <translation id="7612989789287281429">Prijavljujete se…</translation>

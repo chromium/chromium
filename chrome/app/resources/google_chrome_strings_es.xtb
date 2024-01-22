@@ -74,7 +74,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2130870084309816036">No se puede conectar a Internet. Si usas un cortafuegos, incluye <ph name="PRODUCT_EXE_NAME" /> en la lista de permitidos.</translation>
 <translation id="2131230230468101642">Para proteger tu privacidad, eliminamos automáticamente tus intereses que tienen una antigüedad superior a 4 semanas. A medida que sigas navegando, es posible que un interés vuelva a aparecer en la lista. También puedes eliminar los intereses que no quieras que Chrome tenga en cuenta.</translation>
 <translation id="2139300032719313227">Reiniciar ChromeOS</translation>
-<translation id="2146761408396054429">Este archivo podría ser peligroso<ph name="LINE_BREAK" />Chrome puede comprobar esta descarga si proporcionas la contraseña (tu contraseña se guardará en tu dispositivo y no se compartirá externamente)</translation>
 <translation id="2151406531797534936">Reinicia Chrome ahora</translation>
 <translation id="2174917724755363426">No se ha completado la instalación. ¿Seguro que quieres cancelarla?</translation>
 <translation id="2190166659037789668">Error de comprobación de actualizaciones: <ph name="UPDATE_CHECK_ERROR" />.</translation>

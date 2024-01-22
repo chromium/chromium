@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">언제든지 기본 다운로드 위치 변경 가능</translation>
 <translation id="1796666869097395659">나중에 다시 보려면 탭 최소화</translation>
 <translation id="1807246157184219062">밝게</translation>
+<translation id="1807709131360304325">새 창 열기</translation>
 <translation id="1810845389119482123">초기 동기화 설정이 완료되지 않음</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />에서 ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)를 계속 사용할 수 없음</translation>
 <translation id="1829244130665387512">페이지에서 찾기</translation>
@@ -921,6 +922,7 @@
 <translation id="5962718611393537961">탭하여 접기</translation>
 <translation id="5964869237734432770">이미지 설명 중지</translation>
 <translation id="5966233851250124270">선택사항이 Chrome에 저장됩니다</translation>
+<translation id="5977976211062815271">이 기기에서</translation>
 <translation id="5979084224081478209">비밀번호 확인</translation>
 <translation id="5995726099713306770">페이지를 다시 다운로드하시겠습니까?</translation>
 <translation id="6000066717592683814">계속 Google 사용</translation>
@@ -1327,6 +1329,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />이(가) 이전 버전입니다.</translation>
 <translation id="7944772052836377867">동기화를 위해 본인 인증 필요</translation>
 <translation id="7947953824732555851">수락 및 로그인</translation>
+<translation id="7951102827450076904">다운로드한 PDF 항상 열기</translation>
 <translation id="7957413488482743710">가상 카드는 실제 카드를 숨겨서 사기당할 위험을 줄여줍니다. <ph name="BEGIN_LINK1" />가상 카드 자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">페이지 통계 뒤로 버튼</translation>
 <translation id="7961926449547174351">저장소 액세스 권한을 사용 중지했습니다. 설정으로 이동하여 사용 설정해 주세요.</translation>

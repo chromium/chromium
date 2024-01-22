@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">随时更改默认的下载内容保存位置</translation>
 <translation id="1796666869097395659">将标签页最小化以便稍后返回</translation>
 <translation id="1807246157184219062">浅色调</translation>
+<translation id="1807709131360304325">打开新窗口</translation>
 <translation id="1810845389119482123">未完成初始同步设置</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> 无法继续使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">在网页中查找</translation>
@@ -921,6 +922,7 @@
 <translation id="5962718611393537961">点按即可收起</translation>
 <translation id="5964869237734432770">停止获取图片说明</translation>
 <translation id="5966233851250124270">Chrome 会记住您的选择</translation>
+<translation id="5977976211062815271">在这部设备上</translation>
 <translation id="5979084224081478209">检查密码</translation>
 <translation id="5995726099713306770">再次下载此页面？</translation>
 <translation id="6000066717592683814">继续使用 Google</translation>
@@ -1327,6 +1329,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 不是最新版本。</translation>
 <translation id="7944772052836377867">同步功能需要验证您的身份</translation>
 <translation id="7947953824732555851">接受并登录</translation>
+<translation id="7951102827450076904">一律打开下载的 PDF</translation>
 <translation id="7957413488482743710">使用虚拟卡可隐藏您的实体卡信息，保护您免遭潜在欺诈活动的威胁。<ph name="BEGIN_LINK1" />详细了解虚拟卡<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">网页数据洞见工作表中的返回按钮</translation>
 <translation id="7961926449547174351">您已停用存储空间的访问权限，请转到“设置”启用该访问权限。</translation>

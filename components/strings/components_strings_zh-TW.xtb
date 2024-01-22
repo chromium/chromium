@@ -516,6 +516,8 @@
 <translation id="1956486093533522234">尋找、保護裝置或清除裝置資料</translation>
 <translation id="1958218078413065209">最高得分為 <ph name="SCORE" />。</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />將你造訪的部分網頁網址、特定的系統資訊以及部分網頁內容傳送<ph name="END_WHITEPAPER_LINK" />給 Google，協助我們改善所有使用者的網路安全。<ph name="BEGIN_PRIVACY_PAGE_LINK" />隱私權政策<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959445535228047762">你的文字和網頁內容會傳送給 Google，且可能會用於改善這項功能。
+  <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> 書籤</translation>
 <translation id="196752089528718902">你通常可以經由安全連線前往網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖竊聽或修改你的網路連線。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">序列化錯誤</translation>
@@ -719,6 +721,7 @@
 <translation id="2354430244986887761">Google 安全瀏覽服務最近在 <ph name="SITE" /> <ph name="BEGIN_LINK" />發現有害的應用程式<ph name="END_LINK" />。</translation>
 <translation id="2355395290879513365">攻擊者可能會看到你正在這個網站上瀏覽的圖片，並以修改圖片內容的方式讓你受騙。</translation>
 <translation id="2356070529366658676">詢問</translation>
+<translation id="2356926036049612643">V8 最佳化工具</translation>
 <translation id="2357481397660644965">你的裝置是由 <ph name="DEVICE_MANAGER" /> 管理，帳戶是由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
 <translation id="2359629602545592467">多種</translation>
 <translation id="2359808026110333948">繼續</translation>
@@ -1811,7 +1814,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">你正在使用螢幕鎖定功能填入密碼</translation>
 <translation id="4558551763791394412">試試看停用擴充功能。</translation>
-<translation id="456043042661026303">正在對付款資料進行安全檢查</translation>
 <translation id="4566017918361049074">戶外活動</translation>
 <translation id="4567686777917670400">你的系統管理員可從遠端變更瀏覽器設定。這部裝置上的活動也可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">驗證完成</translation>
@@ -2658,7 +2660,6 @@
 <translation id="6272088941196661550">繼續瀏覽歷程即可查看 Chrome 歷史記錄中的相關活動</translation>
 <translation id="6272383483618007430">Google 更新</translation>
 <translation id="6279183038361895380">按下 |<ph name="ACCELERATOR" />| 即可顯示游標</translation>
-<translation id="628016388715774955">已選取「填入完整地址」選項</translation>
 <translation id="6280223929691119688">快遞無法送貨到這個地址，請改用其他地址。</translation>
 <translation id="6284292079994426700">26 x 38 吋</translation>
 <translation id="6284517535531159884">種子類型變化版本</translation>
@@ -2930,7 +2931,6 @@
 <translation id="6807791860691150411">教育</translation>
 <translation id="681021252041861472">必填欄位</translation>
 <translation id="6810899417690483278">自訂 ID</translation>
-<translation id="681459028290894216">填入完整地址</translation>
 <translation id="6816109178681043245">運動用品</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">序列埠</translation>

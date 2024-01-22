@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Додирните и задржите датум.</translation>
 <translation id="1959679933317802873">Чека се садржај</translation>
 <translation id="1967461193809857427">{count,plural, =1{Желите ли да наставите на картици на којој сте стали на Android-у?}one{Желите ли да наставите на картицама на којима сте стали на Android-у?}few{Желите ли да наставите на картицама на којима сте стали на Android-у?}other{Желите ли да наставите на картицама на којима сте стали на Android-у?}}</translation>
+<translation id="1972325230031091483">Прегледаћете брже јер се садржај проактивно учитава на основу актуелне посете веб-страници</translation>
 <translation id="1973912524893600642">Задржи податке</translation>
 <translation id="1974060860693918893">Напредне опције</translation>
 <translation id="1980417445547898121">{count,plural, =1{Преузмите {count} недавно активну картицу са другог уређаја на овом iPhone-у}one{Преузмите {count} недавно активну картицу са другог уређаја на овом iPhone-у}few{Преузмите {count} недавно активне картице са другог уређаја на овом iPhone-у}other{Преузмите {count} недавно активних картица са другог уређаја на овом iPhone-у}}</translation>
@@ -434,6 +435,7 @@
 <translation id="3235242129752692527">Измените детаље догађаја и додирните Сачувај.</translation>
 <translation id="3240426699337459095">Линк је копиран</translation>
 <translation id="3244271242291266297">ММ</translation>
+<translation id="3245429137663807393">Ако делите и Chrome извештаје о коришћењу, ти извештаји обухватају URL-ове које посећујете</translation>
 <translation id="3245744387817103524">Чување промене није успело.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> од <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Аутоматски попуни лозинке</translation>
@@ -633,7 +635,6 @@
 <translation id="4371591986692297148">Неактивно</translation>
 <translation id="4375040482473363939">Претрага QR кодова</translation>
 <translation id="4378154925671717803">Телефон</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> дели са вама лозинку за <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Додирните да бисте променили језик</translation>
 <translation id="4405320213589929829">Користите адресе на веб-страницама да бисте добијали локалне информације и путању.</translation>
 <translation id="4420409367264901497">Измените обележивач</translation>
@@ -859,6 +860,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="555749644339804659">Проверавају се лозинке…</translation>
 <translation id="5559567453458728487">Конвертуј мерне јединице које се налазе на вебу</translation>
 <translation id="556042886152191864">Дугме</translation>
+<translation id="5572648434713976849">Добијаћете побољшане предлоге на траци за адресу</translation>
 <translation id="5572684875078967866">Меморијски простор за податке</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Прати овај пакет}one{Прати све пакете}few{Прати све пакете}other{Прати све пакете}}</translation>
 <translation id="5597915316964418992">Отворите мрежу за картице</translation>
@@ -1085,6 +1087,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6642362222295953972">Пређите на постојећу картицу</translation>
 <translation id="6643016212128521049">Обриши</translation>
 <translation id="6645899968535965230">QR кôд: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">URL-ови које посећујете се шаљу Google-у да би се предвидели сајтови које ћете можда следеће посетити</translation>
 <translation id="6647480763136463714">Последње покретање <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Измена директоријума</translation>
 <translation id="6657585470893396449">Лозинка</translation>

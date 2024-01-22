@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">ഒരു തീയതിയിൽ സ്‌പർശിച്ച് പിടിക്കുക.</translation>
 <translation id="1959679933317802873">ഉള്ളടക്കത്തിനായി കാത്തിരിക്കുന്നു</translation>
 <translation id="1967461193809857427">{count,plural, =1{Android-ലെ ടാബ് നിർത്തിയിടത്ത് നിന്ന് വീണ്ടും ഉപയോഗിച്ച് തുടങ്ങണോ?}other{Android-ലെ ടാബുകൾ നിർത്തിയിടത്ത് നിന്ന് വീണ്ടും ഉപയോഗിച്ച് തുടങ്ങണോ?}}</translation>
+<translation id="1972325230031091483">നിങ്ങളുടെ നിലവിലെ വെബ്‌പേജ് സന്ദർശനം അടിസ്ഥാനമാക്കി സമയോചിതമായി ഉള്ളടക്കം ലോഡ് ചെയ്യുന്നതിനാൽ നിങ്ങൾക്ക് കൂടുതൽ വേഗത്തിൽ ബ്രൗസ് ചെയ്യാം</translation>
 <translation id="1973912524893600642">ഡാറ്റ നിലനിർത്തുക</translation>
 <translation id="1974060860693918893">വിപുലമായത്</translation>
 <translation id="1980417445547898121">{count,plural, =1{ഈ iPhone-ലെ മറ്റ് ഉപകരണത്തിൽ നിന്ന്, അടുത്തിടെ സജീവമായ {count} ടാബ് നേടുക}other{ഈ iPhone-ലെ മറ്റ് ഉപകരണത്തിൽ നിന്ന്, അടുത്തിടെ സജീവമായ {count} ടാബുകൾ നേടുക}}</translation>
@@ -434,6 +435,7 @@
 <translation id="3235242129752692527">ഇവന്റ് വിശദാംശങ്ങൾ എഡിറ്റ് ചെയ്‌ത് “സംരക്ഷിക്കുക“ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="3240426699337459095">ലിങ്ക് പകർത്തി</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">നിങ്ങൾ Chrome ഉപയോഗ റിപ്പോർട്ടുകളും പങ്കിടുന്നുവെങ്കിൽ ആ റിപ്പോർട്ടുകളിൽ നിങ്ങൾ സന്ദർശിക്കുന്ന URL-കളും ഉൾപ്പെടും</translation>
 <translation id="3245744387817103524">നിങ്ങൾ വരുത്തിയ മാറ്റം സംരക്ഷിക്കാനായില്ല.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">പാസ്‌വേഡുകൾ സ്വയമേവ പൂരിപ്പിക്കുക</translation>
@@ -633,7 +635,6 @@
 <translation id="4371591986692297148">നിഷ്‌ക്രിയം</translation>
 <translation id="4375040482473363939">QR കോഡ് തിരയൽ</translation>
 <translation id="4378154925671717803">ഫോൺ</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> എന്നയാൾ <ph name="WEBSITE" /> എന്നതിന്റെ ഒരു പാസ്‌വേഡ് നിങ്ങളുമായി പങ്കിട്ടു</translation>
 <translation id="4389019817280890563">ഭാഷ മാറ്റാൻ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="4405320213589929829">പ്രാദേശിക വിവരങ്ങളും വഴികളും നേടാൻ വെബ് പേജുകളിലെ വിലാസങ്ങൾ ഉപയോഗിക്കുക.</translation>
 <translation id="4420409367264901497">ബുക്ക്‌മാർക്ക് എഡിറ്റ് ചെയ്യുക</translation>
@@ -859,6 +860,7 @@
 <translation id="555749644339804659">പാസ്‌വേഡ് പരിശോധന…</translation>
 <translation id="5559567453458728487">വെബിൽ കാണുന്ന മെഷർമെന്റ് യൂണിറ്റുകൾ കൺവേർട്ട് ചെയ്യുക</translation>
 <translation id="556042886152191864">ബട്ടൺ</translation>
+<translation id="5572648434713976849">വിലാസ ബാറിൽ നിങ്ങൾക്ക്, മെച്ചപ്പെടുത്തിയ നിർദ്ദേശങ്ങൾ ലഭിക്കും</translation>
 <translation id="5572684875078967866">വിവര സ്റ്റോറേജ്</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{ഈ പാക്കേജ് ട്രാക്ക് ചെയ്യുക}other{എല്ലാ പാക്കേജുകളും ട്രാക്ക് ചെയ്യുക}}</translation>
 <translation id="5597915316964418992">ടാബ് ഗ്രിഡ് തുറക്കുക</translation>
@@ -1085,6 +1087,7 @@
 <translation id="6642362222295953972">നിലവിലുള്ള ടാബിലേക്ക് മാറുക</translation>
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
 <translation id="6645899968535965230">QR കോഡ്: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">നിങ്ങൾ അടുത്തതായി ഏതൊക്കെ സൈറ്റുകളായിരിക്കും സന്ദർശിക്കുകയെന്ന് പ്രവചിക്കാൻ, നിങ്ങൾ സന്ദർശിക്കുന്ന URL-കൾ Google-ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="6647480763136463714">അവസാനം റൺ ചെയ്തത്: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">ഫോൾഡർ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>

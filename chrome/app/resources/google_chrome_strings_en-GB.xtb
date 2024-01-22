@@ -73,7 +73,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2130870084309816036">Unable to connect to the Internet. If you use a firewall, please allowlist <ph name="PRODUCT_EXE_NAME" />.</translation>
 <translation id="2131230230468101642">To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. Or you can remove interests that you don't want Chrome to consider.</translation>
 <translation id="2139300032719313227">Restart Chrome OS</translation>
-<translation id="2146761408396054429">This file may be dangerous<ph name="LINE_BREAK" />Chrome can check this download for you if you provide the password – your password stays on your device</translation>
 <translation id="2151406531797534936">Please restart Chrome now</translation>
 <translation id="2174917724755363426">Installation is not complete. Are you sure that you want to cancel?</translation>
 <translation id="2190166659037789668">Update check error: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -198,6 +197,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4053720452172726777">Customise and control Google Chrome</translation>
 <translation id="4106587138345390261">Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your info</translation>
 <translation id="4110895483821904099">Set up your new Chrome profile</translation>
+<translation id="4128488089242627000">Chrome runs faster and features that use JavaScript should work as designed (recommended)</translation>
 <translation id="4147555960264124640">You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installing...</translation>
 <translation id="4149882025268051530">The installer failed to uncompress archive. Please download Google Chrome again.</translation>
@@ -244,6 +244,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4793679854893018356">Learn how Chrome keeps you safe</translation>
 <translation id="4828579605166583682">Google Chrome is trying to replace existing passwords. Type in your Windows password to allow this.</translation>
 <translation id="4842397268809523050">Chrome OS Flex could not sync your data because sync is not available for your domain.</translation>
+<translation id="4873692836499071887">To get future Google Chrome updates, you'll need macOS 11 or later. This computer is using macOS 10.15.</translation>
 <translation id="4873783916118289636">Review key privacy and security controls in Chrome</translation>
 <translation id="4891791193823137474">Let Google Chrome run in the background</translation>
 <translation id="4895437082222824641">Open link in new Chrome &amp;tab</translation>
@@ -352,6 +353,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="677276454032249905">Exit Chrome anyway?</translation>
 <translation id="6794858689789885890">Always delete site data from your device when you close Chrome</translation>
 <translation id="683440813066116847">Inbound rule for Google Chrome Canary to allow mDNS traffic.</translation>
+<translation id="6851981911629679515">Turn on additional protection in Chrome’s JavaScript and WebAssembly engine</translation>
 <translation id="6881299373831449287">Updating Chrome</translation>
 <translation id="6885412569789873916">Chrome Beta apps</translation>
 <translation id="6933858244219479645">Chrome OS system</translation>
@@ -473,6 +475,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="873133009373065397">Google Chrome cannot determine or set the default browser</translation>
 <translation id="8765470054473112089">When you type in the address bar or search box, Chrome sends what you type to your default search engine to get better suggestions. This is off in Incognito.</translation>
 <translation id="878572486461146056">Install error: Your network administrator has applied a Group Policy that prevents installation: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8801657293260363985">V8 is Chrome’s JavaScript and WebAssembly engine used to improve site performance</translation>
 <translation id="8821043148920470810">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 7.</translation>
 <translation id="8823341990149967727">Chrome is Out of Date</translation>
 <translation id="8825634023950448068">To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. And if Chrome gets it wrong or you don't want to see certain ads, you can remove an interest.</translation>

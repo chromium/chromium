@@ -74,7 +74,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2130870084309816036">Povezivanje sa internetom nije uspelo. Ako koristite zaštitni zid, na listu dozvoljenih stavite <ph name="PRODUCT_EXE_NAME" />.</translation>
 <translation id="2131230230468101642">Radi zaštite privatnosti automatski brišemo interesovanja starija od 4 nedelje. Kada nastavite da pregledate, interesovanje će se možda ponovo pojaviti na listi. Možete i da uklanjate interesovanja za koja ne želite da ih Chrome uzima u obzir.</translation>
 <translation id="2139300032719313227">Restartujte Chrome OS</translation>
-<translation id="2146761408396054429">Ovaj fajl je možda opasan<ph name="LINE_BREAK" />Chrome može da proveri ovo preuzimanje umesto vas ako unesete lozinku – lozinka ostaje na uređaju</translation>
 <translation id="2151406531797534936">Ponovo pokrenite Chrome</translation>
 <translation id="2174917724755363426">Instalacija nije dovršena. Želite stvarno da je otkažete?</translation>
 <translation id="2190166659037789668">Greška sa proverom ažuriranja: <ph name="UPDATE_CHECK_ERROR" />.</translation>

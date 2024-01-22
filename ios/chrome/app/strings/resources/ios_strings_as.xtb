@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">এটা তাৰিখ স্পৰ্শ কৰি ধৰি ৰাখক।</translation>
 <translation id="1959679933317802873">সমলৰ বাবে অপেক্ষা কৰি থকা হৈছে</translation>
 <translation id="1967461193809857427">{count,plural, =1{আপুনি Androidত এৰি অহা টেবটোলৈ যাব বিচাৰেনে?}one{আপুনি Androidত এৰি অহা টেবসমূহলৈ যাব বিচাৰেনে?}other{আপুনি Androidত এৰি অহা টেবসমূহলৈ যাব বিচাৰেনে?}}</translation>
+<translation id="1972325230031091483">আপোনাৰ বৰ্তমান চোৱা ৱেবপৃষ্ঠাখনৰ ভিত্তিত সমল আগতীয়াকৈ ল’ড কৰা হয় বাবে আপুনি দ্ৰুতভাৱে ব্ৰাউজ কৰিব পাৰিব</translation>
 <translation id="1973912524893600642">ডেটাখিনি ৰাখক</translation>
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1980417445547898121">{count,plural, =1{এই iPhoneত আপোনাৰ অন্য ডিভাইচৰ পৰা আপোনাৰ {count} টা শেহতীয়াকৈ সক্ৰিয় হৈ থকা টেব লাভ কৰক}one{এই iPhoneত আপোনাৰ অন্য ডিভাইচৰ পৰা আপোনাৰ {count} টা শেহতীয়াকৈ সক্ৰিয় হৈ থকা টেব লাভ কৰক}other{এই iPhoneত আপোনাৰ অন্য ডিভাইচৰ পৰা আপোনাৰ {count} টা শেহতীয়াকৈ সক্ৰিয় হৈ থকা টেব লাভ কৰক}}</translation>
@@ -434,6 +435,7 @@
 <translation id="3235242129752692527">অনুষ্ঠানৰ সবিশেষ সম্পাদনা কৰি “ছেভ কৰক“ টিপক।</translation>
 <translation id="3240426699337459095">লিংকটোৰ প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="3244271242291266297">মাহ</translation>
+<translation id="3245429137663807393">যদি আপুনি Chrome ব্যৱহাৰ কৰাৰ ৰিপ’ৰ্টও শ্বেয়াৰ কৰে, সেই ৰিপ’ৰ্টত আপুনি চোৱা URLসমূহ অন্তৰ্ভুক্ত হয়</translation>
 <translation id="3245744387817103524">আপুনি কৰা সালসলনি ছেভ কৰিব পৰা নগ’ল।</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" />ৰ <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
 <translation id="3264775633254836593">পাছৱৰ্ড স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
@@ -557,6 +559,7 @@
 <translation id="3922310737605261887">প্ৰতিলিপি কৰা পাঠৰ সন্ধান কৰক</translation>
 <translation id="3928666092801078803">মোৰ ডেটা সংযুক্ত কৰক</translation>
 <translation id="3929457972718048006">ঠিকনা</translation>
+<translation id="3948600256434252210">আপুনি ইনক’গনিট’ত ব্ৰাউজ কৰিবলৈ সোঁফালে ছোৱাইপ কৰিব পাৰে।</translation>
 <translation id="3955822496205734389">আপোনাৰ অবিশ্বস্ত পাছৱৰ্ড আছে।</translation>
 <translation id="3959736869653157332">মেনু → নতুন ইনক’গনিট’ টেব</translation>
 <translation id="3962326069546168954">ছেভ কৰক</translation>
@@ -633,7 +636,6 @@
 <translation id="4371591986692297148">নিষ্ক্ৰিয় হৈ আছে</translation>
 <translation id="4375040482473363939">কিউআৰ ক’ড স্কেন কৰক</translation>
 <translation id="4378154925671717803">ফ'ন</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" />এ <ph name="WEBSITE" />ৰ বাবে আপোনাৰ সৈতে এটা পাছৱৰ্ড শ্বেয়াৰ কৰিছে</translation>
 <translation id="4389019817280890563">ভাষা সলনি কৰিবলৈ টিপক।</translation>
 <translation id="4405320213589929829">স্থানীয় তথ্য আৰু দিক্-নিৰ্দেশনা পাবলৈ ৱেব পৃষ্ঠাত থকা ঠিকনাসমূহ ব্যৱহাৰ কৰক।</translation>
 <translation id="4420409367264901497">বুকমাৰ্ক সম্পাদনা কৰক</translation>
@@ -662,6 +664,7 @@
 <translation id="4539187448429948815">{count,plural, =1{আপোনাৰ কীব’ৰ্ডৰ ওপৰত {count} টা স্বয়ংক্ৰিয়ভাৱে সম্পূৰ্ণ কৰাৰ সুবিধাই দিয়া ছেভ কৰি থোৱা পৰামৰ্শ উপলব্ধ।}one{আপোনাৰ কীব’ৰ্ডৰ ওপৰত {count} টা স্বয়ংক্ৰিয়ভাৱে সম্পূৰ্ণ কৰাৰ সুবিধাই দিয়া ছেভ কৰি থোৱা পৰামৰ্শ উপলব্ধ।}other{আপোনাৰ কীব’ৰ্ডৰ ওপৰত {count} টা স্বয়ংক্ৰিয়ভাৱে সম্পূৰ্ণ কৰাৰ সুবিধাই দিয়া ছেভ কৰি থোৱা পৰামৰ্শ উপলব্ধ।}}</translation>
 <translation id="4540780316273593836">কিবা ভুল হ’ল</translation>
 <translation id="4550040941166547650">কেৱল এই ডিভাইচটোত</translation>
+<translation id="4564893319561643483">"<ph name="TITLE" />" লুকুৱাওক</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} টা নিষ্ক্ৰিয় টেব বন্ধ কৰিবনে?}one{{COUNT} টা নিষ্ক্ৰিয় টেব বন্ধ কৰিবনে?}other{{COUNT} টা নিষ্ক্ৰিয় টেব বন্ধ কৰিবনে?}}</translation>
 <translation id="457386861538956877">অধিক…</translation>
 <translation id="4587589328781138893">Sites</translation>
@@ -859,6 +862,7 @@
 <translation id="555749644339804659">পাছৱৰ্ড পৰীক্ষা কৰি আছে…</translation>
 <translation id="5559567453458728487">ৱেবত পোৱা জোখ-মাখ একক ৰূপান্তৰ কৰক</translation>
 <translation id="556042886152191864">বুটাম</translation>
+<translation id="5572648434713976849">আপুনি ঠিকনাৰ বাৰত উন্নত পৰামৰ্শসমূহ পাব</translation>
 <translation id="5572684875078967866">তথ্যৰ ষ্ট’ৰেজ</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{এই পেকেজটো ট্ৰেক কৰক}one{আটাইবোৰ পেকেজ ট্ৰেক কৰক}other{আটাইবোৰ পেকেজ ট্ৰেক কৰক}}</translation>
 <translation id="5597915316964418992">টেব গ্ৰীডটো খোলক</translation>
@@ -1085,6 +1089,7 @@
 <translation id="6642362222295953972">ইতিমধ্যে থকা টেবলৈ যাওক</translation>
 <translation id="6643016212128521049">মচক</translation>
 <translation id="6645899968535965230">QR ক’ড: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">আপুনি ইয়াৰ পাছত কি ছাইট চাব সেয়া অনুমান কৰিবলৈ আপুনি চোৱা URLসমূহ Googleলৈ পঠিওৱা হয়</translation>
 <translation id="6647480763136463714"><ph name="TIME" /> অন্তিমবাৰ চলোৱা হৈছে</translation>
 <translation id="6656103420185847513">ফ’ল্ডাৰ সম্পাদনা কৰক</translation>
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
@@ -1262,6 +1267,7 @@
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7666861622396822790">আপুনি এইটো <ph name="BEGIN_LINK" />সমলৰ ছেটিঙ<ph name="END_LINK" />ত পৰিচালনা কৰিব পাৰে।</translation>
 <translation id="7671141431838911305">ইনষ্টল কৰক</translation>
+<translation id="7673346542062368520">আপুনি ইনক’গনিট’ত ব্ৰাউজ কৰিবলৈ বাওঁফালে ছোৱাইপ কৰিব পাৰে।</translation>
 <translation id="7679915578945954324">ছাইটৰ ঠিকনা প্ৰতিলিপি কৰা হৈছে</translation>
 <translation id="7687508192620387263">কেলেণ্ডাৰৰ ফাইল উপলব্ধ</translation>
 <translation id="7701040980221191251">নাই</translation>

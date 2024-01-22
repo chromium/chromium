@@ -73,7 +73,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2130870084309816036">Impossible de se connecter à Internet. Si vous utilisez un pare-feu, veuillez ajouter <ph name="PRODUCT_EXE_NAME" /> à la liste d'autorisation.</translation>
 <translation id="2131230230468101642">Pour protéger votre confidentialité, nous supprimons automatiquement vos centres d'intérêt s'ils datent de plus de quatre semaines. Au fil de votre navigation, un centre d'intérêt peut réapparaître dans la liste. Vous pouvez aussi supprimer des centres d'intérêt si vous ne souhaitez pas que Chrome les prenne en compte.</translation>
 <translation id="2139300032719313227">Redémarrer Chrome OS</translation>
-<translation id="2146761408396054429">Ce fichier peut être dangereux<ph name="LINE_BREAK" />Si vous fournissez le mot de passe, Chrome peut vérifier ce téléchargement pour vous. Votre mot de passe ne quittera pas votre appareil.</translation>
 <translation id="2151406531797534936">Veuillez redémarrer Chrome maintenant</translation>
 <translation id="2174917724755363426">Installation non terminée. Voulez-vous vraiment annuler ?</translation>
 <translation id="2190166659037789668">Erreur lors de la recherche de mises à jour : <ph name="UPDATE_CHECK_ERROR" />.</translation>

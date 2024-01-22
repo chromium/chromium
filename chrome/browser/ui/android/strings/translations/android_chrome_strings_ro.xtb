@@ -146,6 +146,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1792959175193046959">Schimbă oricând locația de descărcare prestabilită</translation>
 <translation id="1796666869097395659">Minimizează fila pentru a reveni la ea mai târziu</translation>
 <translation id="1807246157184219062">Luminos</translation>
+<translation id="1807709131360304325">Deschide o fereastră nouă</translation>
 <translation id="1810845389119482123">Configurarea inițială a sincronizării nu este finalizată</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> nu poate folosi <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Găsește în pagină</translation>
@@ -921,6 +922,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5962718611393537961">Atinge pentru a restrânge</translation>
 <translation id="5964869237734432770">Nu genera descrieri imagine</translation>
 <translation id="5966233851250124270">Chrome îți va memora alegerea</translation>
+<translation id="5977976211062815271">Pe acest dispozitiv</translation>
 <translation id="5979084224081478209">Verifică parolele</translation>
 <translation id="5995726099713306770">Descarci pagina din nou?</translation>
 <translation id="6000066717592683814">Păstrează Google</translation>
@@ -1327,6 +1329,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> este învechit.</translation>
 <translation id="7944772052836377867">Sincronizarea trebuie să-ți confirme identitatea</translation>
 <translation id="7947953824732555851">Accept și conectare</translation>
+<translation id="7951102827450076904">Deschide întotdeauna fișierele PDF descărcate</translation>
 <translation id="7957413488482743710">Cardul virtual îți ascunde cardul fizic pentru a te proteja împotriva fraudelor. <ph name="BEGIN_LINK1" />Află mai multe despre cardurile virtuale<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Butonul Înapoi din Statistici despre pagină</translation>
 <translation id="7961926449547174351">Ai dezactivat accesul la stocare. Accesează Setările pentru a-l activa.</translation>

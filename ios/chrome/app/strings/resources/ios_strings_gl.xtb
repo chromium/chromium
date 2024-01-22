@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Mantén premida unha data.</translation>
 <translation id="1959679933317802873">Á espera de contido</translation>
 <translation id="1967461193809857427">{count,plural, =1{Queres seguir usando a pestana que deixaches en Android?}other{Queres seguir usando as pestanas que deixaches en Android?}}</translation>
+<translation id="1972325230031091483">Navegarás máis rápido porque o contido se cargará de maneira proactiva en función da túa visita á páxina web na que te atopes</translation>
 <translation id="1973912524893600642">Conservar datos</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1980417445547898121">{count,plural, =1{Accede desde este iPhone a {count} pestana activa recentemente noutro dispositivo}other{Accede desde este iPhone a {count} pestanas activas recentemente noutro dispositivo}}</translation>
@@ -433,6 +434,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3235242129752692527">Edita os detalles do evento e toca Gardar.</translation>
 <translation id="3240426699337459095">Copiouse a ligazón</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Se, ademais, compartes os informes de uso de Chrome, neles inclúense os URL que visitas</translation>
 <translation id="3245744387817103524">Non se puido gardar o cambio.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Autocompletar contrasinais</translation>
@@ -632,7 +634,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4371591986692297148">Inactivo</translation>
 <translation id="4375040482473363939">Busca de códigos QR</translation>
 <translation id="4378154925671717803">Teléfono</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> compartiu un contrasinal contigo para <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Toca para cambiar de idioma.</translation>
 <translation id="4405320213589929829">Usa os enderezos das páxinas web para obter información local e indicacións.</translation>
 <translation id="4420409367264901497">Editar marcador</translation>
@@ -857,6 +858,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="555749644339804659">Comprobando contrasinais…</translation>
 <translation id="5559567453458728487">Converte as unidades de medida que se atopen na Web</translation>
 <translation id="556042886152191864">Botón</translation>
+<translation id="5572648434713976849">Recibirás suxestións melloradas na barra de enderezos</translation>
 <translation id="5572684875078967866">Almacenamento de información</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Facer seguimento deste paquete}other{Facer seguimento de todos os paquetes}}</translation>
 <translation id="5597915316964418992">Abre a grade de pestanas</translation>
@@ -1083,6 +1085,7 @@ Non poden utilizalas para ver a túa actividade de navegación en distintos siti
 <translation id="6642362222295953972">Cambiar á pestana xa aberta</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6645899968535965230">Código QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">Os URL que visitas envíanse a Google para predicir os sitios que probablemente visites a continuación</translation>
 <translation id="6647480763136463714">Última execución: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Editar cartafol</translation>
 <translation id="6657585470893396449">Contrasinal</translation>

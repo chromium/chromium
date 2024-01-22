@@ -249,7 +249,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5623402015214259806">{0,plural, =0{Ažuriranje za Chromium je dostupno}=1{Ažuriranje za Chromium je dostupno}one{Ažuriranje za Chromium je dostupno # dan}few{Ažuriranje za Chromium je dostupno # dana}other{Ažuriranje za Chromium je dostupno # dana}}</translation>
 <translation id="5643865575100044307">Uvijek izbrišite podatke web lokacije s uređaja kada zatvorite Chromium</translation>
 <translation id="5653831366781983928">Ponovo pokrenite Chromium sada</translation>
-<translation id="5675598751761067447">Fajl je možda opasan<ph name="LINE_BREAK" />Chromium može za vas provjeriti ovo preuzimanje ako navedete lozinku — ona ostaje na uređaju</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Prikaži Chromium na ovom jeziku.</translation>
 <translation id="569897634095159764">Nije moguće povezati se s internetom. Proksi server zahtijeva autentifikaciju.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
+<translation id="1066101356081285416">Chrome otkriva brojeve za praćenje na sajtovima koje posećujete i prikazuje vam novosti o paketima na stranici Nova kartica. Broj za praćenje paketa i naziv veb-sajta se šalju Google-u radi pružanja ove funkcije i poboljšanja funkcija Google kupovine za sve. To možete da ažurirate u svakom trenutku u <ph name="BEGIN_LINK" />podešavanjima praćenja paketa<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Podrazumevano koristite Chrome</translation>
 <translation id="1105362920864247682">Obrišite podatke pregledanja u Chrome-u.</translation>
 <translation id="1113057722807951993">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese iz Google Pay-a.

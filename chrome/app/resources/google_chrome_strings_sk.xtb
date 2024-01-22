@@ -72,7 +72,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2130870084309816036">Nepodarilo sa pripojiť k internetu. Ak používate firewall, pridajte <ph name="PRODUCT_EXE_NAME" /> na zoznam povolených.</translation>
 <translation id="2131230230468101642">V rámci ochrany vášho súkromia automaticky odstraňujeme záujmy, ktoré sú staršie ako štyri týždne. Pri ďalšom prehliadaní sa v zozname môže znova zobraziť určitý záujem. Prípadne môžete odstrániť záujmy, ktoré nemá Chrome posudzovať.</translation>
 <translation id="2139300032719313227">Reštartovanie systému Chrome OS</translation>
-<translation id="2146761408396054429">Tento súbor môže byť nebezpečný<ph name="LINE_BREAK" />Ak zadáte heslo, Chrome môže tento stiahnutý súbor skontrolovať (vaše heslo zostane v zariadení)</translation>
 <translation id="2151406531797534936">Reštartujte Chrome</translation>
 <translation id="2174917724755363426">Inštalácia nie je dokončená. Naozaj ju chcete zrušiť?</translation>
 <translation id="2190166659037789668">Chyba kontroly aktualizácií: <ph name="UPDATE_CHECK_ERROR" />.</translation>

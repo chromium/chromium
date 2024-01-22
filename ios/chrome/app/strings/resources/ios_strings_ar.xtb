@@ -185,6 +185,7 @@
 <translation id="1959441496380398824">انقر مع الاستمرار على تاريخ.</translation>
 <translation id="1959679933317802873">جارٍ انتظار عرض المحتوى</translation>
 <translation id="1967461193809857427">{count,plural, =1{‏هل تريد استئناف التصفح من علامة التبويب التي توقّفت عندها في Android؟}zero{‏هل تريد استئناف التصفح من علامات التبويب التي توقّفت عندها في Android؟}two{‏هل تريد استئناف التصفح من علامتَي التبويب اللتين توقّفت عندهما في Android؟}few{‏هل تريد استئناف التصفح من علامات التبويب التي توقّفت عندها في Android؟}many{‏هل تريد استئناف التصفح من علامات التبويب التي توقّفت عندها في Android؟}other{‏هل تريد استئناف التصفح من علامات التبويب التي توقّفت عندها في Android؟}}</translation>
+<translation id="1972325230031091483">ستتمكّن من التصفُّح بشكلٍ أسرع لأنه يتم تحميل المحتوى مسبقًا استنادًا إلى زيارتك الحالية لصفحة الويب.</translation>
 <translation id="1973912524893600642">الاحتفاظ بالبيانات</translation>
 <translation id="1974060860693918893">الإعدادات المتقدّمة</translation>
 <translation id="1980417445547898121">{count,plural, =1{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على علامة تبويب واحدة ({count}) نشطة مؤخرًا على جهازك الآخر.}zero{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على {count} علامة تبويب نشطة مؤخرًا على جهازك الآخر.}two{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على علامتَي تبويب ({count}) نشطتَين مؤخرًا على جهازك الآخر.}few{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على {count} علامات تبويب نشطة مؤخرًا على جهازك الآخر.}many{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على {count} علامة تبويب نشطة مؤخرًا على جهازك الآخر.}other{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على {count} علامة تبويب نشطة مؤخرًا على جهازك الآخر.}}</translation>
@@ -293,6 +294,7 @@
 <translation id="2547458583188611426">المزامنة غير مفعَّلة. يجب إدخال عبارة المرور لبدء المزامنة.</translation>
 <translation id="2551153019974022505">خطأ في الحساب</translation>
 <translation id="2556092377360758201">بلا حماية (غير مُستحسَن)</translation>
+<translation id="2561375093019333908">فتح</translation>
 <translation id="2562041823070056534">جارٍ الإرسال إلى <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">‏استخدام كلمات المرور في حساب Google وحفظها</translation>
 <translation id="2577522251608256362">الحي</translation>
@@ -435,6 +437,7 @@
 <translation id="3235242129752692527">عدِّل تفاصيل الحدث وانقر على "حفظ".</translation>
 <translation id="3240426699337459095">تم نسخ الرابط</translation>
 <translation id="3244271242291266297">الشهر</translation>
+<translation id="3245429137663807393">‏في حال مشاركة تقارير استخدام Chrome أيضًا، ستتضمّن هذه التقارير عناوين URL التي تزورها</translation>
 <translation id="3245744387817103524">تعذَّر حفظ التغيير.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />، و<ph name="ADDITIONAL_INFO" />، و<ph name="INDEX" /> من <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">الملء التلقائي لكلمات المرور</translation>
@@ -634,7 +637,6 @@
 <translation id="4371591986692297148">غير مفعّلة</translation>
 <translation id="4375040482473363939">البحث عن رمز الاستجابة السريعة</translation>
 <translation id="4378154925671717803">هاتف</translation>
-<translation id="4388983683160515185">لقد تلقّيت من "<ph name="FULL_NAME" />" كلمة مرور للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
 <translation id="4389019817280890563">انقر لتغيير اللغة.</translation>
 <translation id="4405320213589929829">استخدِم العناوين على صفحات الويب للحصول على المعلومات والاتجاهات المحليّة.</translation>
 <translation id="4420409367264901497">تعديل الإشارة المرجعية</translation>
@@ -850,6 +852,7 @@
 <translation id="5513681519188741830">قبل <ph name="TIME" /> ساعة</translation>
 <translation id="5525269841082836315">إنشاء عبارة مرور</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{هناك كلمة مرور واحدة ({COUNT}) ضعيفة}zero{هناك {COUNT} كلمة مرور ضعيفة}two{هناك كلمتا مرور ({COUNT}) ضعيفتان}few{هناك {COUNT} كلمات مرور ضعيفة}many{هناك {COUNT} كلمة مرور ضعيفة}other{هناك {COUNT} كلمة مرور ضعيفة}}</translation>
+<translation id="5532545557415295622">مربّع حوار تأكيد مهلة عدم استخدام الجهاز</translation>
 <translation id="5542540507657872337">تم العثور على <ph name="COUNT" /> علامة تبويب مفتوحة.</translation>
 <translation id="5548760955356983418">‏يتيح لك Handoff بدء تصفح موقع على هذا الجهاز ثم متابعة التصفح بسهولة على جهاز Mac. سيظهر الموقع المفتوح حاليًا على Dock بـ Mac.
 
@@ -859,6 +862,7 @@
 <translation id="555749644339804659">جارٍ التحقّق من كلمات المرور…</translation>
 <translation id="5559567453458728487">تحويل وحدات القياس التي تم العثور عليها على الويب</translation>
 <translation id="556042886152191864">زر</translation>
+<translation id="5572648434713976849">ستحصل على اقتراحات محسّنة في شريط العناوين.</translation>
 <translation id="5572684875078967866">تخزين المعلومات</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{تتبُّع هذا الطرد}zero{تتبُّع كل الطرود}two{تتبُّع هذين الطردَين}few{تتبُّع كل الطرود}many{تتبُّع كل الطرود}other{تتبُّع كل الطرود}}</translation>
 <translation id="5597915316964418992">افتح شبكة علامات التبويب.</translation>
@@ -1085,6 +1089,7 @@
 <translation id="6642362222295953972">التبديل إلى علامة تبويب حالية</translation>
 <translation id="6643016212128521049">محو</translation>
 <translation id="6645899968535965230">رمز الاستجابة السريعة: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">‏يتم إرسال عناوين URL التي تزورها إلى Google لتوقّع المواقع الإلكترونية التي ستزورها بعد ذلك.</translation>
 <translation id="6647480763136463714">‏وقت إجراء آخر عملية تحقُّق: ‎<ph name="TIME" /></translation>
 <translation id="6656103420185847513">تعديل مجلد</translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
@@ -1290,6 +1295,7 @@
 <translation id="7781829728241885113">أمس</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{بعد يوم واحد}zero{بعد {COUNT} يوم}two{بعد يومين ({COUNT})}few{بعد {COUNT} أيام}many{بعد {COUNT} يومًا}other{بعد {COUNT} يوم}}</translation>
 <translation id="7791543448312431591">إضافة</translation>
+<translation id="7792549458069452436">الحصول على التطبيق</translation>
 <translation id="7807060072011926525">‏خلاصة مقدَّمة من Google</translation>
 <translation id="7812377703891978671">يمكنك الوصول إلى جميع سجلّات التصفُّح من خلال اختيار <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">عمليات التنزيل</translation>

@@ -1129,7 +1129,6 @@
 <translation id="1832848789136765277">برای اینکه مطمئن شوید همیشه می‌توانید به داده‌های همگام‌سازی دسترسی داشته باشید، هویتتان را به‌تأیید برسانید</translation>
 <translation id="1834503245783133039">بارگیری ناموفق بود: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">‏درحال ارتقای Linux</translation>
-<translation id="1835612721186505600">مجاز کردن دسترسی برای برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین</translation>
 <translation id="1838374766361614909">پاک کردن جستجو</translation>
 <translation id="1839021455997460752">نشانی ایمیل شما</translation>
 <translation id="1839540115464516994">نشان دادن در <ph name="LOCATION" /></translation>
@@ -4591,7 +4590,6 @@
 <translation id="4507128560633489176">داده‌ها پاک شد.</translation>
 <translation id="4507373251891673233">همه افزونه‌های <ph name="HOST" /> را مسدود کرده‌اید</translation>
 <translation id="4507401683427517298">روی «افزودن میان‌بر» کلیک کنید</translation>
-<translation id="4508150454272293946">به برنامه‌ها و صفحه‌های وب اجازه داده می‌شود از دوربین(های) متصل به این دستگاه استفاده کنند. اگر همچنان مشکلی با دوربین دارید، برنامه را بازراه‌اندازی کنید یا صفحه وب را بازآوری کنید.</translation>
 <translation id="450867954911715010">تنظیمات دسترس‌پذیری</translation>
 <translation id="4508765956121923607">مشاهده م&amp;نبع</translation>
 <translation id="4509277363725254222">‏وقتی نسخه‌ای از <ph name="BEGIN_BOLD_USERNAME" />نام کاربری<ph name="END_BOLD_USERNAME" /> و <ph name="BEGIN_BOLD_PASSWORD" />گذرواژه<ph name="END_BOLD_PASSWORD" /> خود را هم‌رسانی کنید، عضو خانواده‌تان می‌تواند بااستفاده از «مدیر گذرواژه Google» این اطلاعات را وارد کند</translation>
@@ -8491,7 +8489,6 @@
 <translation id="7610337976012700501">‏برای استفاده از <ph name="FEATURE_NAME" /> با این مخاطبین، نشانی ایمیل پیوندشده با «حساب Google» آن‌ها را به مخاطبین خود اضافه کنید.</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612050744024016345">همه افزونه‌ها</translation>
-<translation id="7612401678989660900">مجاز کردن دسترسی برای برنامه‌ها و وب‌سایت‌های دارای اجازه میکروفون</translation>
 <translation id="7612497353238585898">سایت فعال</translation>
 <translation id="7612655942094160088">فعال کردن ویژگی‌های تلفن مرتبط.</translation>
 <translation id="7612989789287281429">درحال وارد کردن شما به سیستم…</translation>

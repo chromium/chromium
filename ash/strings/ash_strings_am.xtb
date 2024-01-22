@@ -622,6 +622,7 @@
 <translation id="3577473026931028326">የሆነ ችግር ተፈጥሯል። እንደገና ይሞክሩ።</translation>
 <translation id="3580650856351781466">የንግግር ፋይሎችን በማውረድ ላይ</translation>
 <translation id="3585296979871889131">የስልክዎን ፎቶዎች፣ ሚዲያ፣ ማሳወቂያዎች እና መተግበሪያዎች ይመልከቱ</translation>
+<translation id="3590441166907930941">የጎን አዝራር</translation>
 <translation id="3593039967545720377">የእርስዎን የቅንጥብ ሰሌዳ ለመመልከት <ph name="SHORTCUT_KEY_NAME" /> + Vን በመጫን የቅንጥብ ሰሌዳዎን ይድረሱ። ለመጀመር አንድ ንጥል ይቅዱ።</translation>
 <translation id="3593646411856133110">ክፍት መተግበሪያዎችን ለመመልከት ወደ ላይ በጣት ጠርገው ይያዙ</translation>
 <translation id="3595596368722241419">ባትሪ ሙሉ ነው</translation>
@@ -1034,6 +1035,7 @@
 <translation id="5163434717504750796">የባትሪ ጤና <ph name="BATTERY_HEALTH_PERCENTAGE" />% | የዑደት ቁጥር <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">ዴስክን እንደ ቅንብር ደንብ አስቀምጥ</translation>
 <translation id="5168181903108465623">የCast መሣሪያዎች ይገኛሉ</translation>
+<translation id="5168753792967365150">Google ተግባሮች ውስጥ ያርትዑ</translation>
 <translation id="5170568018924773124">በአቃፊ አሳይ</translation>
 <translation id="5176318573511391780">ከፊል የማያ ገጽን ቅረጽ</translation>
 <translation id="5187627942836026988">የመገናኛ ነጥብ ዝርዝሮችን አሳይ። መገናኛ ነጥብ በአስተዳዳሪዎ ታግዷል።</translation>
@@ -1303,6 +1305,8 @@
 <translation id="6168622430237609329">የተጫኑ መተግበሪያዎችዎ</translation>
 <translation id="6173151025443907148">Lacros ከነቃ ሁለተኛ ተጠቃሚ በመለያ ማስገባት አይደገፍም። እባክዎ በምትኩ በLacros ውስጥ ሁለተኛ የአሳሽ መገለጫ ይጠቀሙ ወይም Lacrosን ያሰናክሉ እና እንደገና ይሞክሩ።</translation>
 <translation id="6179832488876878285">እዚህ አስፈላጊ ፋይሎችዎን መሰካት ይችላሉ። ለመጀመር የፋይሎች መተግበሪያን ይክፈቱ።</translation>
+<translation id="6180193585172850042">ተመለስ አዝራር</translation>
+<translation id="6180651297859206670">አስተላልፍ አዝራር</translation>
 <translation id="6182592640011875895">ዴስክ ክፈት</translation>
 <translation id="6185696379715117369">ገፅ ወደላይ</translation>
 <translation id="619335566042889110">አሁን ሙሉ ኃይል ይሙሉ</translation>

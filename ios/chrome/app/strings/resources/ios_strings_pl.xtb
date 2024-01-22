@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Naciśnij i przytrzymaj datę.</translation>
 <translation id="1959679933317802873">Czekam na treść</translation>
 <translation id="1967461193809857427">{count,plural, =1{Czy chcesz wrócić na kartę ostatnio wyświetlaną na Androidzie?}few{Czy chcesz wrócić na karty ostatnio wyświetlane na Androidzie?}many{Czy chcesz wrócić na karty ostatnio wyświetlane na Androidzie?}other{Czy chcesz wrócić na karty ostatnio wyświetlane na Androidzie?}}</translation>
+<translation id="1972325230031091483">Przeglądarka będzie działać szybciej dzięki proaktywnemu wczytywaniu stron na podstawie danych o bieżącej wizycie na stronie</translation>
 <translation id="1973912524893600642">Zachowaj dane</translation>
 <translation id="1974060860693918893">Zaawansowane</translation>
 <translation id="1980417445547898121">{count,plural, =1{Pobierz na tego iPhone'a {count} ostatnio aktywną kartę z innego urządzenia}few{Pobierz na tego iPhone'a {count} ostatnio aktywne karty z innego urządzenia}many{Pobierz na tego iPhone'a {count} ostatnio aktywnych kart z innego urządzenia}other{Pobierz na tego iPhone'a {count} ostatnio aktywnej karty z innego urządzenia}}</translation>
@@ -434,6 +435,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3235242129752692527">Zmień szczegóły wydarzenia i kliknij „Zapisz”.</translation>
 <translation id="3240426699337459095">Link skopiowany</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Jeśli udostępnisz także raporty o użytkowaniu Chrome, będą one zawierały odwiedzane przez Ciebie adresy URL.</translation>
 <translation id="3245744387817103524">Nie udało się zapisać zmiany.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> z <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Automatycznie uzupełniaj hasła</translation>
@@ -557,6 +559,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3922310737605261887">Wyszukaj skopiowany tekst</translation>
 <translation id="3928666092801078803">Połącz moje dane</translation>
 <translation id="3929457972718048006">Adresy</translation>
+<translation id="3948600256434252210">Aby przeglądać treści w trybie incognito, możesz przesunąć palcem w prawo.</translation>
 <translation id="3955822496205734389">Masz słabe hasła.</translation>
 <translation id="3959736869653157332">Menu → Nowa karta incognito</translation>
 <translation id="3962326069546168954">Zapisz</translation>
@@ -633,7 +636,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4371591986692297148">Nieaktywna</translation>
 <translation id="4375040482473363939">Wyszukiwanie z użyciem kodu QR</translation>
 <translation id="4378154925671717803">Telefon</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> udostępnia Ci hasło do strony <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Kliknij, by zmienić język.</translation>
 <translation id="4405320213589929829">Używaj adresów na stronach internetowych, aby uzyskiwać informacje lokalne i wskazówki dojazdu.</translation>
 <translation id="4420409367264901497">Edytuj zakładkę</translation>
@@ -662,6 +664,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4539187448429948815">{count,plural, =1{{count} zapisana sugestia autouzupełniania dostępna nad klawiaturą.}few{{count} zapisane sugestie autouzupełniania dostępne nad klawiaturą.}many{{count} zapisanych sugestii autouzupełniania dostępnych nad klawiaturą.}other{{count} zapisanej sugestii autouzupełniania dostępne nad klawiaturą.}}</translation>
 <translation id="4540780316273593836">Coś poszło nie tak</translation>
 <translation id="4550040941166547650">Tylko na tym urządzeniu</translation>
+<translation id="4564893319561643483">Ukryj: „<ph name="TITLE" />”</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Zamknąć {COUNT} nieaktywną kartę?}few{Zamknąć {COUNT} nieaktywne karty?}many{Zamknąć {COUNT} nieaktywnych kart?}other{Zamknąć {COUNT} nieaktywnej karty?}}</translation>
 <translation id="457386861538956877">Więcej</translation>
 <translation id="4587589328781138893">Witryny</translation>
@@ -859,6 +862,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="555749644339804659">Sprawdzam hasła…</translation>
 <translation id="5559567453458728487">Przelicz jednostki miary znalezione w internecie</translation>
 <translation id="556042886152191864">Przycisk</translation>
+<translation id="5572648434713976849">Będziesz otrzymywać ulepszone sugestie na pasku adresu</translation>
 <translation id="5572684875078967866">Przechowywanie informacji</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Śledź tę przesyłkę}few{Śledź wszystkie przesyłki}many{Śledź wszystkie przesyłki}other{Śledź wszystkie przesyłki}}</translation>
 <translation id="5597915316964418992">Otwieranie siatki kart</translation>
@@ -1085,6 +1089,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="6642362222295953972">Przełącz na istniejącą kartę</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
 <translation id="6645899968535965230">Kod QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">Odwiedzane adresy URL są wysyłane do Google w celu prognozowania, jakie kolejne witryny możesz odwiedzić</translation>
 <translation id="6647480763136463714">Ostatnio uruchomiono: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Folder edytora</translation>
 <translation id="6657585470893396449">Hasło</translation>
@@ -1262,6 +1267,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7666861622396822790">Możesz to zmienić w <ph name="BEGIN_LINK" />Ustawieniach treści<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">ZAINSTALUJ</translation>
+<translation id="7673346542062368520">Aby przeglądać treści w trybie incognito, możesz przesunąć palcem w lewo.</translation>
 <translation id="7679915578945954324">Adresy witryn zostały skopiowane</translation>
 <translation id="7687508192620387263">Dostępny jest plik kalendarza</translation>
 <translation id="7701040980221191251">Brak</translation>

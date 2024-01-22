@@ -1131,7 +1131,6 @@
 <translation id="1832848789136765277">আপনার সিঙ্ক করা ডেটা সবসময় যাতে অ্যাক্সেস করতে পারেন তা নিশ্চিত করতে, নিজের পরিচয় যাচাই করুন</translation>
 <translation id="1834503245783133039">ডাউনলোড হয়নি: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux আপগ্রেড করা হচ্ছে</translation>
-<translation id="1835612721186505600">ক্যামেরা ব্যবহারের অনুমতি রয়েছে এমন অ্যাপ এবং ওয়েবসাইটকে অ্যাক্সেস দিন</translation>
 <translation id="1838374766361614909">সার্চ সাফ করুন</translation>
 <translation id="1839021455997460752">আপনার ইমেল আইডি</translation>
 <translation id="1839540115464516994"><ph name="LOCATION" />-এ দেখুন</translation>
@@ -4585,7 +4584,6 @@
 <translation id="4507128560633489176">ডেটা মোছা হয়েছে।</translation>
 <translation id="4507373251891673233"><ph name="HOST" />-এর সব এক্সটেনশন আপনি ব্লক করেছেন</translation>
 <translation id="4507401683427517298">“শর্টকাট যোগ করুন” বিকল্পে ক্লিক করুন</translation>
-<translation id="4508150454272293946">এই ক্যামেরার সাথে কানেক্ট থাকা ক্যামেরা ব্যবহার করার জন্য অ্যাপ ও ওয়েবপেজকে অনুমতি দিন। আপনার এখনও নিজের ক্যামেরা সম্পর্কে সমস্যা থাকলে, অ্যাপটি রিস্টার্ট বা ওয়েবপেজটি রিফ্রেশ করে দেখুন।</translation>
 <translation id="450867954911715010">অ্যাক্সেসযোগ্যতার সেটিংস</translation>
 <translation id="4508765956121923607">উ&amp;ৎস দেখুন</translation>
 <translation id="4509277363725254222">আপনি নিজের <ph name="BEGIN_BOLD_USERNAME" />ইউজারনেম<ph name="END_BOLD_USERNAME" /> ও <ph name="BEGIN_BOLD_PASSWORD" />পাসওয়ার্ড<ph name="END_BOLD_PASSWORD" /> শেয়ার করলে, আপনার পরিবারের সদস্যরা, সেগুলি Google Password Manager ব্যবহার করে পূরণ করতে পারবেন</translation>
@@ -8483,7 +8481,6 @@
 <translation id="7610337976012700501">এইসব পরিচিতির সাথে <ph name="FEATURE_NAME" /> ফিচারের সুবিধা ব্যবহার করার জন্য, তাদের Google অ্যাকাউন্টের সাথে যুক্ত ইমেল আইডি আপনার পরিচিতিতে যোগ করুন।</translation>
 <translation id="7611713099524036757">মেটা 'কী'</translation>
 <translation id="7612050744024016345">সব এক্সটেনশন</translation>
-<translation id="7612401678989660900">মাইক্রোফোন ব্যবহারের অনুমতি রয়েছে এমন অ্যাপ ও ওয়েবসাইটকে অ্যাক্সেস দিন</translation>
 <translation id="7612497353238585898">সাইট চালু আছে</translation>
 <translation id="7612655942094160088">কানেক্টেড ফোন ফিচার চালু করার বোতাম।</translation>
 <translation id="7612989789287281429">আপনাকে সাইন-ইন করানো হচ্ছে…</translation>

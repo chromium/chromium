@@ -249,7 +249,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5623402015214259806">{0,plural, =0{Pasiekiamas „Chromium“ naujinys}=1{Pasiekiamas „Chromium“ naujinys}one{„Chromium“ naujinys pasiekiamas # dieną}few{„Chromium“ naujinys pasiekiamas # dienas}many{„Chromium“ naujinys pasiekiamas # dienos}other{„Chromium“ naujinys pasiekiamas # dienų}}</translation>
 <translation id="5643865575100044307">Visada ištrinti svetainių duomenis iš įrenginio uždarius „Chromium“</translation>
 <translation id="5653831366781983928">Dabar iš naujo paleiskite „Chromium“</translation>
-<translation id="5675598751761067447">Šis failas gali būti pavojingas<ph name="LINE_BREAK" />„Chromium“ gali patikrinti šį atsisiuntimą už jus, jei pateiksite slaptažodį. Slaptažodis liks jūsų įrenginyje</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Pateikti „Chromium“ šia kalba</translation>
 <translation id="569897634095159764">Nepavyko prisijungti prie interneto. Reikalingas tarpinio serverio autentifikavimas.</translation>

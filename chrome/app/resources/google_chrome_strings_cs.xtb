@@ -74,7 +74,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2130870084309816036">Nelze se připojit k internetu. Pokud používáte firewall, přidejte <ph name="PRODUCT_EXE_NAME" /> na seznam povolených.</translation>
 <translation id="2131230230468101642">Abychom chránili vaše soukromí, vaše zájmy starší než 4 měsíce automaticky mažeme. Jak budete pracovat s internetem, zájmy se mohou na seznamu znovu objevit. Pokud se zájmy nemají zohledňovat, můžete je z Chromu odstranit.</translation>
 <translation id="2139300032719313227">Restartujte systém ChromeOS</translation>
-<translation id="2146761408396054429">Tento soubor může být nebezpečný.<ph name="LINE_BREAK" />Pokud zadáte heslo, může Chrome toto stažení zkontrolovat za vás – heslo zůstane ve vašem zařízení</translation>
 <translation id="2151406531797534936">Restartujte Chrome</translation>
 <translation id="2174917724755363426">Instalace není dokončena. Opravdu ji chcete zrušit?</translation>
 <translation id="2190166659037789668">Chyba kontroly aktualizace: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -199,6 +198,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4053720452172726777">Přizpůsobit a ovládat Google Chrome</translation>
 <translation id="4106587138345390261">Chrome zkoumá nové funkce, které webům umožňují poskytovat stejné prostředí a využívat při tom méně vašich dat a údajů</translation>
 <translation id="4110895483821904099">Nastavit nový profil prohlížeče Chrome</translation>
+<translation id="4128488089242627000">Chrome běží rychleji a funkce využívající JavaScript by měly fungovat tak, jak byly navrženy (doporučeno)</translation>
 <translation id="4147555960264124640">Přihlašujete se pomocí spravovaného účtu a poskytujete jeho správci kontrolu nad vaším profilem Google Chrome. Vaše údaje prohlížeče Chrome, například aplikace, záložky, historie, hesla a jiná nastavení, budou trvale přidružena k účtu <ph name="USER_NAME" />. Tyto údaje budete moci smazat pomocí Hlavního panelu Google, ale nebudete je moci přidružit k jinému účtu. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Instalace...</translation>
 <translation id="4149882025268051530">Instalačnímu programu se nepodařilo rozbalit archiv. Stáhněte prosím Google Chrome ještě jednou.</translation>
@@ -245,6 +245,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4793679854893018356">Přečtěte si, jak vás Chrome chrání</translation>
 <translation id="4828579605166583682">Google Chrome se pokouší nahradit stávající hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="4842397268809523050">Systém ChromeOS Flex nemůže synchronizovat data, protože ve vaší doméně není k dispozici Synchronizace.</translation>
+<translation id="4873692836499071887">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Google Chrome, budete potřebovat systém MacOS 11 nebo novější. Tento počítač používá systém macOS 10.15.</translation>
 <translation id="4873783916118289636">Zkontrolujte klíčové ovládací prvky ochrany soukromí a zabezpečení v Chromu</translation>
 <translation id="4891791193823137474">Nechat aplikaci Google Chrome spuštěnou na pozadí</translation>
 <translation id="4895437082222824641">Otevřít odkaz na nové kar&amp;tě Chrome</translation>
@@ -353,6 +354,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="677276454032249905">Přesto Chrome ukončit?</translation>
 <translation id="6794858689789885890">Při zavření prohlížeče Chrome ze zařízení vždy vymazat data webů</translation>
 <translation id="683440813066116847">Pravidlo příchozího provozu pro aplikaci Google Chrome Canary, které povolí provoz mDNS.</translation>
+<translation id="6851981911629679515">Zapnout dodatečnou ochranu modulu prohlížeče Chrome pro JavaScript a WebAssembly</translation>
 <translation id="6881299373831449287">Aktualizace Chromu</translation>
 <translation id="6885412569789873916">Chrome Beta – aplikace</translation>
 <translation id="6933858244219479645">Systém ChromeOS</translation>
@@ -474,6 +476,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="873133009373065397">Google Chrome nemůže určit ani nastavit výchozí prohlížeč</translation>
 <translation id="8765470054473112089">Při psaní do adresního řádku nebo vyhledávacího pole odesílá Chrome zadaný text do výchozího vyhledávače, aby vám mohl nabízet lepší návrhy. V anonymním režimu je tato funkce vypnutá.</translation>
 <translation id="878572486461146056">Chyba instalace: Správce sítě použil zásady skupiny, které brání instalaci: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8801657293260363985">V8 je modul prohlížeče Chrome pro JavaScript a WebAssembly používaný ke zlepšení výkonu webů</translation>
 <translation id="8821043148920470810">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Google Chrome, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 7.</translation>
 <translation id="8823341990149967727">Chrome je zastaralý</translation>
 <translation id="8825634023950448068">Abychom chránili vaše soukromí, vaše zájmy starší než 4 měsíce automaticky mažeme. Jak budete pracovat s internetem, zájmy se mohou na seznamu znovu objevit. Pokud Chrome zájem neodhadne správně nebo pokud některé reklamy nechcete vídat, můžete zájem odstranit.</translation>

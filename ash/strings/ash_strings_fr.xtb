@@ -622,6 +622,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3580650856351781466">Téléchargement des fichiers vocaux…</translation>
 <translation id="3585296979871889131">Afficher les photos, notifications, applis et contenus multimédias de votre téléphone</translation>
+<translation id="3590441166907930941">Bouton latéral</translation>
 <translation id="3593039967545720377">Appuyez sur <ph name="SHORTCUT_KEY_NAME" />+V pour afficher le presse-papiers et son historique. Copiez un élément pour commencer.</translation>
 <translation id="3593646411856133110">Balayez l'écran vers le haut et appuyez de manière prolongée pour afficher les applications ouvertes</translation>
 <translation id="3595596368722241419">Batterie pleine</translation>
@@ -1034,6 +1035,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5163434717504750796">Batterie à <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | <ph name="CYCLE_COUNT" /> cycles</translation>
 <translation id="5166007464919321363">Enregistrer le bureau comme modèle</translation>
 <translation id="5168181903108465623">Appareils Cast disponibles</translation>
+<translation id="5168753792967365150">Modifier dans Google Tasks</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
 <translation id="5176318573511391780">Enregistrer une partie de l'écran</translation>
 <translation id="5187627942836026988">Voir les détails du point d'accès. Celui-ci est bloqué par votre administrateur.</translation>
@@ -1303,6 +1305,8 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="6168622430237609329">Vos applis installées</translation>
 <translation id="6173151025443907148">Un second utilisateur ne peut pas se connecter si Lacros est activé. Veuillez utiliser un second profil de navigateur dans Lacros ou désactiver ce dernier, puis réessayer.</translation>
 <translation id="6179832488876878285">Vous pouvez épingler vos fichiers importants ici. Pour commencer, ouvrez l'application Fichiers.</translation>
+<translation id="6180193585172850042">Bouton Retour</translation>
+<translation id="6180651297859206670">Bouton Suivant</translation>
 <translation id="6182592640011875895">Ouvrir le bureau</translation>
 <translation id="6185696379715117369">Accéder à la page précédente</translation>
 <translation id="619335566042889110">Recharger complètement</translation>

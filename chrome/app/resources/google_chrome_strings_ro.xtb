@@ -69,7 +69,6 @@
 <translation id="2130870084309816036">Nu se poate realiza conexiunea la internet. Dacă folosești un firewall, adaugă <ph name="PRODUCT_EXE_NAME" /> pe lista cu acces permis.</translation>
 <translation id="2131230230468101642">Pentru a-ți proteja confidențialitatea, ștergem automat categoriile de interese mai vechi de patru săptămâni. Pe măsură ce navighezi, o categorie de interese poate să reapară în listă. Sau poți elimina categoriile de interese pe care nu dorești ca Chrome să le ia în considerare.</translation>
 <translation id="2139300032719313227">Repornește sistemul de operare Chrome</translation>
-<translation id="2146761408396054429">Fișierul poate fi periculos<ph name="LINE_BREAK" />Chrome poate verifica descărcarea dacă introduci parola. Aceasta rămâne pe dispozitiv</translation>
 <translation id="2151406531797534936">Repornește Chrome acum</translation>
 <translation id="2174917724755363426">Instalarea nu este finalizată. Sigur anulezi?</translation>
 <translation id="2190166659037789668">Eroare de verificare a actualizării: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -194,6 +193,7 @@
 <translation id="4053720452172726777">Personalizați și controlați Google Chrome</translation>
 <translation id="4106587138345390261">Chrome explorează noi funcții care le dau site-urilor posibilitatea să ofere aceeași experiență de navigare, folosind mai puține informații despre tine</translation>
 <translation id="4110895483821904099">Configurează noul profil Chrome</translation>
+<translation id="4128488089242627000">Chrome rulează mai rapid și funcțiile care folosesc JavaScript ar trebui să ruleze conform destinației lor (recomandat)</translation>
 <translation id="4147555960264124640">Vă conectați cu un cont gestionat și îi permiteți administratorului acestuia controlul asupra profilului dvs. Google Chrome. Datele Chrome, cum ar fi aplicațiile, marcajele, istoricul, parolele și alte setări vor fi asociate definitiv cu <ph name="USER_NAME" />. Veți putea să ștergeți aceste date prin intermediul Tabloului de bord pentru Conturi Google, însă nu veți putea să asociați aceste date cu un alt cont. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Se instalează...</translation>
 <translation id="4149882025268051530">Programul de instalare nu a putut decomprima arhiva. Descarcă din nou Google Chrome.</translation>
@@ -240,6 +240,7 @@
 <translation id="4793679854893018356">Află cum te protejează Chrome</translation>
 <translation id="4828579605166583682">Google Chrome încearcă să înlocuiască parolele existente. Introdu parola Windows pentru a permite acest lucru.</translation>
 <translation id="4842397268809523050">Sistemul de operare Chrome Flex nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
+<translation id="4873692836499071887">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de macOS 11 sau o versiune ulterioară. Acest computer folosește macOS 10.15.</translation>
 <translation id="4873783916118289636">Examinează cele mai importante opțiuni de confidențialitate și de securitate din Chrome</translation>
 <translation id="4891791193823137474">Permite ca Google Chrome să ruleze în fundal</translation>
 <translation id="4895437082222824641">Deschide linkul într-o &amp;filă Chrome nouă</translation>
@@ -344,6 +345,7 @@
 <translation id="677276454032249905">Ieși din Chrome oricum?</translation>
 <translation id="6794858689789885890">Șterge întotdeauna datele privind site-urile de pe dispozitiv când închizi Chrome</translation>
 <translation id="683440813066116847">Regula de intrare pentru Google Chrome Canary pentru a permite traficul mDNS.</translation>
+<translation id="6851981911629679515">Activează protecția suplimentară în motorul JavaScript și WebAssembly din Chrome</translation>
 <translation id="6881299373831449287">Se actualizează Chrome</translation>
 <translation id="6885412569789873916">Aplicații Chrome Beta</translation>
 <translation id="6933858244219479645">Sistemul de operare Chrome</translation>
@@ -465,6 +467,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="873133009373065397">Google Chrome nu poate determina sau seta browserul prestabilit</translation>
 <translation id="8765470054473112089">Când introduci text în bara de adrese sau în caseta de căutare, Chrome trimite ceea ce introduci la motorul de căutare prestabilit, pentru a primi sugestii mai bune. Această opțiune este dezactivată în modul incognito.</translation>
 <translation id="878572486461146056">Eroare la instalare: administratorul de rețea a aplicat o Politică de grup care împiedică instalarea: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8801657293260363985">V8 este motorul JavaScript și WebAssembly din Chrome, folosit pentru a îmbunătăți performanța site-ului</translation>
 <translation id="8821043148920470810">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de Windows 10 sau o versiune ulterioară. Acest computer folosește Windows 7.</translation>
 <translation id="8823341990149967727">Chrome nu este actualizat</translation>
 <translation id="8825634023950448068">Pentru a-ți proteja confidențialitatea, ștergem automat categoriile de interese mai vechi de patru săptămâni. Pe măsură ce navighezi, o categorie de interese poate să reapară în listă. Iar dacă Chrome alege opțiunea greșită sau nu vrei să vezi anumite anunțuri, poți să elimini o categorie de interese.</translation>

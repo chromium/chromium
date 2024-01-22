@@ -244,7 +244,6 @@
 <translation id="5623402015214259806">{0,plural, =0{Chromium-এর একটি আপডেট উপলভ্য আছে}=1{Chromium-এর একটি আপডেট উপলভ্য আছে}one{Chromium-এর একটি আপডেট # দিন ধরে উপলভ্য আছে}other{Chromium-এর একটি আপডেট # দিন ধরে উপলভ্য আছে}}</translation>
 <translation id="5643865575100044307">Chromium বন্ধ করার সময় আপনার ডিভাইস থেকে সবসময় সাইট ডেটা মুছুন</translation>
 <translation id="5653831366781983928">এখনই Chromium রিস্টার্ট করুন</translation>
-<translation id="5675598751761067447">এই ফাইল বিপজ্জনক হতে পারে<ph name="LINE_BREAK" />আপনি নিজের পাসওয়ার্ড দিলে Chromium আপনার জন্য এই ডাউনলোড চেক করতে পারবে — আপনার পাসওয়ার্ড ডিভাইসে রয়েছে</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">এই ভাষায় Chromium প্রদর্শন করুন</translation>
 <translation id="569897634095159764">ইন্টারনেটের সাথে কানেক্ট করা যায়নি। প্রক্সি সার্ভার যাচাই করতে হবে।</translation>

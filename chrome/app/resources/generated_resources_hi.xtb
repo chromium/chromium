@@ -1131,7 +1131,6 @@
 <translation id="1832848789136765277">यह पक्का करने के लिए कि आप हमेशा अपना सिंक किया हुआ डेटा ऐक्सेस कर सकें, अपनी पहचान की पुष्टि करें</translation>
 <translation id="1834503245783133039">फ़ाइल डाउनलोड नहीं हो सकी: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux को बेहतर बनाया जा रहा है</translation>
-<translation id="1835612721186505600">ऐसे सभी ऐप्लिकेशन और वेबसाइटों को कैमरे का ऐक्सेस दें जिनके पास कैमरा इस्तेमाल करने की अनुमति है</translation>
 <translation id="1838374766361614909">खोज साफ़ करें</translation>
 <translation id="1839021455997460752">आपका ईमेल पता</translation>
 <translation id="1839540115464516994"><ph name="LOCATION" /> में दिखाएं</translation>
@@ -4584,7 +4583,6 @@
 <translation id="4507128560633489176">डेटा मिटाया गया.</translation>
 <translation id="4507373251891673233">आपने <ph name="HOST" /> के लिए, सभी एक्सटेंशन को ब्लॉक कर दिया है</translation>
 <translation id="4507401683427517298">“शॉर्टकट जोड़ें” पर क्लिक करें</translation>
-<translation id="4508150454272293946">ऐप्लिकेशन और वेबपेजों को, इस डिवाइस से कनेक्ट किए गए कैमरे का इस्तेमाल करने की अनुमति दें. अगर आपको अब भी अपने कैमरे में कोई समस्या आ रही है, तो ऐप्लिकेशन को रीस्टार्ट करें या वेबपेज को रीफ़्रेश करके देखें.</translation>
 <translation id="450867954911715010">सुलभता सेटिंग</translation>
 <translation id="4508765956121923607">स्रोत देखें</translation>
 <translation id="4509277363725254222">अपने <ph name="BEGIN_BOLD_USERNAME" />उपयोगकर्ता नाम<ph name="END_BOLD_USERNAME" /> और <ph name="BEGIN_BOLD_PASSWORD" />पासवर्ड<ph name="END_BOLD_PASSWORD" /> की कॉपी शेयर करने पर, आपके फ़ैमिली ग्रुप का सदस्य, Google Password Manager की मदद से उनका इस्तेमाल कर सकता है</translation>
@@ -8478,7 +8476,6 @@
 <translation id="7610337976012700501">इन संपर्कों के साथ <ph name="FEATURE_NAME" /> का इस्तेमाल करने के लिए, उनके Google खाते से लिंक किए गए ईमेल पते अपने संपर्कों में जोड़ें.</translation>
 <translation id="7611713099524036757">मेटा</translation>
 <translation id="7612050744024016345">सभी एक्सटेंशन</translation>
-<translation id="7612401678989660900">ऐसे सभी ऐप्लिकेशन और वेबसाइटों को माइक्रोफ़ोन का ऐक्सेस दें जिनके पास माइक्रोफ़ोन इस्तेमाल करने की अनुमति है</translation>
 <translation id="7612497353238585898">साइट खुली है</translation>
 <translation id="7612655942094160088">कनेक्ट किए गए फ़ोन की सुविधाएं चालू करें.</translation>
 <translation id="7612989789287281429">साइन इन किया जा रहा है…</translation>

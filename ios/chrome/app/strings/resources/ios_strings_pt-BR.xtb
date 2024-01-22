@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Toque em uma data e a mantenha pressionada.</translation>
 <translation id="1959679933317802873">Aguardando conteúdo</translation>
 <translation id="1967461193809857427">{count,plural, =1{Continuar usando a guia que você deixou no Android?}one{Continuar usando a guia que você deixou no Android?}other{Continuar usando as guias que você deixou no Android?}}</translation>
+<translation id="1972325230031091483">Como o conteúdo é carregado proativamente com base na página da Web atual, você navega com mais rapidez</translation>
 <translation id="1973912524893600642">Manter dados</translation>
 <translation id="1974060860693918893">Avançado</translation>
 <translation id="1980417445547898121">{count,plural, =1{Acesse neste iPhone {count} guia ativa recentemente em outro dispositivo}one{Acesse neste iPhone {count} guia ativa recentemente em outro dispositivo}other{Acesse neste iPhone {count} guias ativas recentemente em outro dispositivo}}</translation>
@@ -434,6 +435,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3235242129752692527">Edite os detalhes do evento e toque em "Salvar".</translation>
 <translation id="3240426699337459095">Link copiado</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Se você também compartilhar os relatórios de uso do Chrome, eles vão incluir os URLs acessados</translation>
 <translation id="3245744387817103524">Não foi possível salvar a mudança.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Preenchimento automático de senhas</translation>
@@ -633,7 +635,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4371591986692297148">Inativos</translation>
 <translation id="4375040482473363939">Pesquisa por QR code</translation>
 <translation id="4378154925671717803">Telefone</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> compartilhou uma senha para <ph name="WEBSITE" /> com você</translation>
 <translation id="4389019817280890563">Toque para mudar o idioma.</translation>
 <translation id="4405320213589929829">Use endereços em páginas da Web para conferir informações locais e rotas.</translation>
 <translation id="4420409367264901497">Editar favorito</translation>
@@ -859,6 +860,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="555749644339804659">Verificando senhas…</translation>
 <translation id="5559567453458728487">Converta unidades de medida encontradas na Web</translation>
 <translation id="556042886152191864">Botão</translation>
+<translation id="5572648434713976849">Você vai receber sugestões melhores na barra de endereço</translation>
 <translation id="5572684875078967866">Armazenamento de informações</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Rastrear pacote}one{Rastrear todos os pacotes}other{Rastrear todos os pacotes}}</translation>
 <translation id="5597915316964418992">Abrir a grade de guias</translation>
@@ -1085,6 +1087,7 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="6642362222295953972">Mudar para guia existente</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6645899968535965230">QR code: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">Os URLs que você acessa são enviados ao Google para prever quais sites podem ser do seu interesse</translation>
 <translation id="6647480763136463714">Última execução: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Editar pasta</translation>
 <translation id="6657585470893396449">Senha</translation>

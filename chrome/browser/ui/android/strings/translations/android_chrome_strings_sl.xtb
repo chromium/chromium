@@ -146,6 +146,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1792959175193046959">Kadar koli lahko spremenite privzeto mesto za prenose</translation>
 <translation id="1796666869097395659">Minimizirajte zavihek, da se boste pozneje lahko vrnili nanj</translation>
 <translation id="1807246157184219062">Svetlo</translation>
+<translation id="1807709131360304325">Odpiranje novega okna</translation>
 <translation id="1810845389119482123">Začetna nastavitev sinhronizacije se ni dokončala</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ne more nadaljevati z računom ponudnika identitete <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="1829244130665387512">Poiščite na strani</translation>
@@ -921,6 +922,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5962718611393537961">Dotik za strnitev</translation>
 <translation id="5964869237734432770">Ustavi prenos opisov slik</translation>
 <translation id="5966233851250124270">Chrome si bo zapomnil vašo izbiro</translation>
+<translation id="5977976211062815271">V tej napravi</translation>
 <translation id="5979084224081478209">Preveri gesla</translation>
 <translation id="5995726099713306770">Ali želite znova prenesti stran?</translation>
 <translation id="6000066717592683814">Ohrani Google</translation>
@@ -1327,6 +1329,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7942131818088350342">Izdelek <ph name="PRODUCT_NAME" /> je zastarel.</translation>
 <translation id="7944772052836377867">Sinhroniziranje mora potrditi, da ste to vi</translation>
 <translation id="7947953824732555851">Sprejem in prijava</translation>
+<translation id="7951102827450076904">Vedno odpri prenesene datoteke PDF</translation>
 <translation id="7957413488482743710">Navidezna kartica skrije dejansko kartico in ste tako zaščiteni pred morebitno prevaro. <ph name="BEGIN_LINK1" />Preberite več o navideznih karticah<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Gumb za vrnitev na stran s podrobnimi podatki o strani</translation>
 <translation id="7961926449547174351">Onemogočili ste dostop do shrambe. Omogočite ga v nastavitvah.</translation>

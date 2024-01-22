@@ -102,6 +102,7 @@
 <translation id="3955621079070267756">เปิด Chromium จากแอปใดก็ได้</translation>
 <translation id="4005283307739974863">เปิดและเรียกใช้การตรวจสอบความปลอดภัยใน Chromium</translation>
 <translation id="4043291146360695975">รหัสผ่านจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านในอุปกรณ์นี้เท่านั้น</translation>
+<translation id="4076589763479456892">หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ล้างข้อมูล Chromium ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="4099085513035183040">ไม่รองรับใน Chromium เบต้า</translation>
 <translation id="4106512142782407609">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" />
 
@@ -153,6 +154,7 @@
 <translation id="5534584691915394889">ระบบจะใช้เพื่อสร้างกิจกรรมจาก Chromium และ Google Lens ในปฏิทินของ Apple</translation>
 <translation id="5571094606370987472">เปิดแท็บล่าสุดใน Chromium</translation>
 <translation id="5623083843656850677">ล็อกแท็บที่ไม่ระบุตัวตนเมื่อคุณออกจาก Chromium หรือเปลี่ยนไปใช้แอปอื่น</translation>
+<translation id="5671188105328420281">เคล็ดลับในการใช้ Chromium</translation>
 <translation id="5688047395118852662">การ์ดนี้แสดงคำแนะนำเกี่ยวกับวิธีใช้ Chromium ให้เกิดประโยชน์สูงสุด</translation>
 <translation id="5700709190537129682">Chromium ตรวจสอบรหัสผ่านของคุณไม่ได้</translation>
 <translation id="5777187867430702742">หน้า Chromium</translation>

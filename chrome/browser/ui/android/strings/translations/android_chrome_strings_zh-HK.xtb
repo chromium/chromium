@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">隨時變更預設的下載位置</translation>
 <translation id="1796666869097395659">將分頁縮到最小，稍後再返回查看</translation>
 <translation id="1807246157184219062">淺色</translation>
+<translation id="1807709131360304325">開啟新視窗</translation>
 <translation id="1810845389119482123">未完成初始同步處理設定</translation>
 <translation id="1812027881030482584">無法在「<ph name="SITE_ETLD_PLUS_ONE" />」上繼續使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」</translation>
 <translation id="1829244130665387512">喺網頁度搵</translation>
@@ -921,6 +922,7 @@
 <translation id="5962718611393537961">輕按即可收合</translation>
 <translation id="5964869237734432770">停止取得圖片說明</translation>
 <translation id="5966233851250124270">Chrome 會記住您的選擇</translation>
+<translation id="5977976211062815271">在此裝置上</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
 <translation id="5995726099713306770">要再次下載頁面嗎？</translation>
 <translation id="6000066717592683814">繼續使用 Google</translation>
@@ -1327,6 +1329,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 版本過舊。</translation>
 <translation id="7944772052836377867">同步功能需要驗證您的身分</translation>
 <translation id="7947953824732555851">接受並登入</translation>
+<translation id="7951102827450076904">一律開啟已下載的 PDF</translation>
 <translation id="7957413488482743710">虛擬卡會隱藏您的實體卡，保護您免受潛在欺詐行為的威脅。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">頁面分析資料的返回按鈕</translation>
 <translation id="7961926449547174351">您已停用儲存空間存取權，請前往「設定」頁面啟用該權限。</translation>

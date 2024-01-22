@@ -244,7 +244,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5623402015214259806">{0,plural, =0{Rendelkezésre áll egy Chromium-frissítés}=1{Rendelkezésre áll egy Chromium-frissítés}other{# napja rendelkezésre áll egy Chromium-frissítés}}</translation>
 <translation id="5643865575100044307">Mindig törölje a webhelyadatokat az eszközről a Chromium bezárásakor</translation>
 <translation id="5653831366781983928">Indítsa újra a Chromiumot most</translation>
-<translation id="5675598751761067447">Ez a fájl veszélyes lehet<ph name="LINE_BREAK" />A Chromium ellenőrizni tudja ezt a letöltést Ön helyett, ha megadja a jelszót – a jelszó az eszközön marad</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">A Chromium megjelenítése ezen a nyelven</translation>
 <translation id="569897634095159764">Nem lehet csatlakozni az internethez. A proxyszerver hitelesítést igényel.</translation>

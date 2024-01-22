@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Mantén premuda una data.</translation>
 <translation id="1959679933317802873">S'està esperant el contingut</translation>
 <translation id="1967461193809857427">{count,plural, =1{Vols continuar des de la pestanya on ho has deixat a Android?}other{Vols continuar des de les pestanyes on ho has deixat a Android?}}</translation>
+<translation id="1972325230031091483">Navegaràs més de pressa perquè el contingut es carrega de forma proactiva en funció de la pàgina web que estiguis visitant</translation>
 <translation id="1973912524893600642">Conserva les dades</translation>
 <translation id="1974060860693918893">Configuració avançada</translation>
 <translation id="1980417445547898121">{count,plural, =1{Obtén {count} pestanya activa recentment de l'altre dispositiu a aquest iPhone}other{Obtén les {count} pestanyes actives recentment de l'altre dispositiu a aquest iPhone}}</translation>
@@ -434,6 +435,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3235242129752692527">Edita els detalls de l'esdeveniment i toca Desa.</translation>
 <translation id="3240426699337459095">S'ha copiat l'enllaç.</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Si també comparteixes els informes d'ús de Chrome, aquests informes inclouen els URL que visites</translation>
 <translation id="3245744387817103524">No s'ha pogut desar el canvi.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Emplena automàticament les contrasenyes</translation>
@@ -557,6 +559,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3922310737605261887">Cerca el text copiat</translation>
 <translation id="3928666092801078803">Combina les meves dades</translation>
 <translation id="3929457972718048006">Adreces</translation>
+<translation id="3948600256434252210">Pots lliscar cap a la dreta per navegar d'incògnit.</translation>
 <translation id="3955822496205734389">Tens contrasenyes poc segures.</translation>
 <translation id="3959736869653157332">Menú → Nova pestanya d'incògnit</translation>
 <translation id="3962326069546168954">Desa</translation>
@@ -633,7 +636,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4371591986692297148">inactiu</translation>
 <translation id="4375040482473363939">Cerca mitjançant un codi QR</translation>
 <translation id="4378154925671717803">Telèfon</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> ha compartit una contrasenya amb tu per a <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Toca per canviar l'idioma.</translation>
 <translation id="4405320213589929829">Utilitza adreces a les pàgines web per obtenir informació i indicacions locals.</translation>
 <translation id="4420409367264901497">Edita l'adreça d'interès</translation>
@@ -662,6 +664,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4539187448429948815">{count,plural, =1{Hi ha {count} suggeriment de compleció automàtica desat disponible a sobre del teclat.}other{Hi ha {count} suggeriments de compleció automàtica desats disponibles a sobre del teclat.}}</translation>
 <translation id="4540780316273593836">S'ha produït un error</translation>
 <translation id="4550040941166547650">Només en aquest dispositiu</translation>
+<translation id="4564893319561643483">Amaga "<ph name="TITLE" />"</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Vols tancar {COUNT} pestanya inactiva?}other{Vols tancar {COUNT} pestanyes inactives?}}</translation>
 <translation id="457386861538956877">Més...</translation>
 <translation id="4587589328781138893">Llocs web</translation>
@@ -859,6 +862,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="555749644339804659">Comprovant contrasenyes…</translation>
 <translation id="5559567453458728487">Converteix les unitats de mesura que es trobin al web</translation>
 <translation id="556042886152191864">Botó</translation>
+<translation id="5572648434713976849">Obtindràs suggeriments millorats a la barra d'adreces</translation>
 <translation id="5572684875078967866">Emmagatzematge d'informació</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Fes el seguiment d'aquest paquet}other{Fes el seguiment de tots els paquets}}</translation>
 <translation id="5597915316964418992">Obre la quadrícula de pestanyes</translation>
@@ -1085,6 +1089,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="6642362222295953972">Canvia a la pestanya existent</translation>
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6645899968535965230">Codi QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">Els URL que visites s'envien a Google per preveure quins llocs web és possible que visitis a continuació</translation>
 <translation id="6647480763136463714">Darrera execució: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Edició de la carpeta</translation>
 <translation id="6657585470893396449">Contrasenya</translation>
@@ -1262,6 +1267,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7666861622396822790">Pots gestionar-ho a <ph name="BEGIN_LINK" />Configuració del contingut<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">INSTAL·LA</translation>
+<translation id="7673346542062368520">Pots lliscar cap a l'esquerra per navegar d'incògnit.</translation>
 <translation id="7679915578945954324">S'han copiat les adreces del lloc web</translation>
 <translation id="7687508192620387263">Hi ha disponible un fitxer de calendari</translation>
 <translation id="7701040980221191251">Cap</translation>

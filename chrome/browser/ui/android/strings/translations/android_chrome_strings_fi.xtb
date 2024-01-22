@@ -146,6 +146,7 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1792959175193046959">Muuta oletuslataussijaintia milloin tahansa</translation>
 <translation id="1796666869097395659">Pienennä välilehti ja palaa siihen myöhemmin</translation>
 <translation id="1807246157184219062">Vaalea</translation>
+<translation id="1807709131360304325">Avaa uusi ikkuna</translation>
 <translation id="1810845389119482123">Synkronoinnin alkumääritys ei valmis</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ei voi jatkaa tämän käyttöä: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Haku sivulta</translation>
@@ -921,6 +922,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5962718611393537961">Tiivistä napauttamalla.</translation>
 <translation id="5964869237734432770">Lopeta kuvaselitykset</translation>
 <translation id="5966233851250124270">Chrome muistaa valintasi</translation>
+<translation id="5977976211062815271">Tällä laitteella</translation>
 <translation id="5979084224081478209">Tarkista salasanat</translation>
 <translation id="5995726099713306770">Ladataanko sivu uudelleen?</translation>
 <translation id="6000066717592683814">Käytä Googlea</translation>
@@ -1327,6 +1329,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> on vanhentunut.</translation>
 <translation id="7944772052836377867">Synkronoinnin on vahvistettava henkilöllisyytesi</translation>
 <translation id="7947953824732555851">Hyväksy ja kirjaudu sisään</translation>
+<translation id="7951102827450076904">Avaa ladatut PDF-tiedostot aina</translation>
 <translation id="7957413488482743710">Virtuaalinen kortti piilottaa käyttämäsi kortin ja saat paremman suojauksen mahdollisia petoksia vastaan. <ph name="BEGIN_LINK1" />Lue lisää virtuaalisista korteista<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Sivun tietojen takaisin-painike</translation>
 <translation id="7961926449547174351">Olet estänyt pääsyn tallennustilaan. Salli se asetuksista.</translation>

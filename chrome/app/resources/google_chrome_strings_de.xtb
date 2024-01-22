@@ -70,7 +70,6 @@
 <translation id="2130870084309816036">Internetverbindung kann nicht hergestellt werden. Falls du eine Firewall verwendest, setz <ph name="PRODUCT_EXE_NAME" /> bitte auf die Zulassungsliste.</translation>
 <translation id="2131230230468101642">Zum Schutz deiner Daten löschen wir automatisch deine Interessen, die älter als vier Wochen sind. Je nach deinen Browsingaktivitäten können die Interessen wieder in der Liste erscheinen. Du kannst jedoch Interessen entfernen, die Chrome nicht berücksichtigen soll.</translation>
 <translation id="2139300032719313227">Chrome OS neu starten</translation>
-<translation id="2146761408396054429">Diese Datei könnte gefährlich sein<ph name="LINE_BREAK" />Chrome kann diesen Download für dich überprüfen, wenn du das Passwort eingibst – das Passwort bleibt auf deinem Gerät</translation>
 <translation id="2151406531797534936">Starte Chrome jetzt neu</translation>
 <translation id="2174917724755363426">Die Installation wurde nicht abgeschlossen. Möchtest du den Vorgang wirklich abbrechen?</translation>
 <translation id="2190166659037789668">Fehler bei der Prüfung auf Updates: <ph name="UPDATE_CHECK_ERROR" />.</translation>

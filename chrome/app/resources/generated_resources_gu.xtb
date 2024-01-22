@@ -1117,7 +1117,6 @@
 <translation id="1832848789136765277">તમે તમારો સિંક કરેલો ડેટા ગમે ત્યારે ઍક્સેસ કરી શકો છો, એની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="1834503245783133039">ડાઉનલોડ અસફળ: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux અપગ્રેડ કરી રહ્યાં છીએ</translation>
-<translation id="1835612721186505600">કૅમેરાની પરવાનગી ધરાવતી બધી ઍપ અને વેબસાઇટ માટે, ઍક્સેસની મંજૂરી આપો</translation>
 <translation id="1838374766361614909">શોધ સાફ કરો</translation>
 <translation id="1839021455997460752">તમારું ઇમેઇલ ઍડ્રેસ</translation>
 <translation id="1839540115464516994"><ph name="LOCATION" />માં બતાવો</translation>
@@ -4576,7 +4575,6 @@
 <translation id="4507128560633489176">ડેટા સાફ કરવામાં આવ્યો.</translation>
 <translation id="4507373251891673233">તમે <ph name="HOST" />ના તમામ એક્સ્ટેન્શન બ્લૉક કર્યા છે</translation>
 <translation id="4507401683427517298">“શૉર્ટકટ ઉમેરો” પર ક્લિક કરો</translation>
-<translation id="4508150454272293946">ઍપ અને વેેબપેજને આ ડિવાઇસ સાથે કનેક્ટેડ કૅમેરાનો ઉપયોગ કરવાની મંજૂરી આપો. જો તમારે હજી સુધી તમારા કૅમેરા સંબંધિત કોઈ સમસ્યા હોય, તો ઍપ ફરી શરૂ કરી જુઓ કે વેેબપેજ રિફ્રેશ કરી જુઓ.</translation>
 <translation id="450867954911715010">ઍક્સેસિબિલિટી સેટિંગ્સ</translation>
 <translation id="4508765956121923607">&amp;સ્રોત જુઓ</translation>
 <translation id="4509277363725254222">તમે તમારા <ph name="BEGIN_BOLD_USERNAME" />વપરાશકર્તા નામ<ph name="END_BOLD_USERNAME" /> અને <ph name="BEGIN_BOLD_PASSWORD" />પાસવર્ડ<ph name="END_BOLD_PASSWORD" />ની એક કૉપિ શેર કરો ત્યારે, તમારા કુટુંબનો સભ્ય તેમને Google Password Managerનો ઉપયોગ કરીને ભરી શકે છે</translation>
@@ -8478,7 +8476,6 @@ USB ડિવાઇસ</translation>
 <translation id="7610337976012700501">આ સંપર્કો સાથે <ph name="FEATURE_NAME" />નો ઉપયોગ કરવા માટે, તેમના Google એકાઉન્ટ સાથે લિંક કરવામાં આવેલું ઇમેઇલ ઍડ્રેસ તમારા સંપર્કોમાં ઉમેરો.</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612050744024016345">તમામ એક્સ્ટેન્શન</translation>
-<translation id="7612401678989660900">માઇક્રોફોનની પરવાનગી ધરાવતી બધી ઍપ અને વેબસાઇટ માટે, ઍક્સેસની મંજૂરી આપો</translation>
 <translation id="7612497353238585898">સક્રિય સાઇટ</translation>
 <translation id="7612655942094160088">કનેક્ટ કરેલી ફોન સુવિધાઓ ચાલુ છે.</translation>
 <translation id="7612989789287281429">તમને સાઇન ઇન કરી રહ્યાં છીએ…</translation>

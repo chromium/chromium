@@ -379,6 +379,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Tidak dapat membuka fail}other{Tidak dapat membuka fail}}</translation>
 <translation id="1282311502488501110">Jangan Log Masuk</translation>
 <translation id="1282465000333679776">Kongsi audio sistem</translation>
+<translation id="1283126956823499975">Ada masalah ketika menyediakan peranti</translation>
 <translation id="1284277788676816155">Jangan benarkan penyimpanan data</translation>
 <translation id="1285320974508926690">Jangan sekali-kali menterjemahkan tapak ini</translation>
 <translation id="1285484354230578868">Simpan data dalam akaun Google Drive anda</translation>
@@ -1131,7 +1132,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1832848789136765277">Untuk memastikan anda dapat mengakses data penyegerakan anda pada bila-bila masa, sahkan itu anda</translation>
 <translation id="1834503245783133039">Muat turun tidak berjaya: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Meningkatkan Linux</translation>
-<translation id="1835612721186505600">Benarkan akses untuk apl dan laman web dengan kebenaran kamera</translation>
 <translation id="1838374766361614909">Kosongkan carian</translation>
 <translation id="1839021455997460752">Alamat e-mel anda</translation>
 <translation id="1839540115464516994">Paparkan dalam <ph name="LOCATION" /></translation>
@@ -4594,7 +4594,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4507128560633489176">Data dikosongkan.</translation>
 <translation id="4507373251891673233">Anda menyekat semua sambungan daripada <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Klik “Tambah pintasan”</translation>
-<translation id="4508150454272293946">Benarkan apl dan halaman web menggunakan kamera yang disambungkan kepada peranti ini. Jika anda masih menghadapi masalah dengan kamera anda, cuba mulakan semula apl atau segarkan semula halaman web.</translation>
 <translation id="450867954911715010">Tetapan kebolehaksesan</translation>
 <translation id="4508765956121923607">Paparkan S&amp;umber</translation>
 <translation id="4509277363725254222">Apabila anda berkongsi salinan <ph name="BEGIN_BOLD_USERNAME" />nama pengguna<ph name="END_BOLD_USERNAME" /> dan <ph name="BEGIN_BOLD_PASSWORD" />kata laluan<ph name="END_BOLD_PASSWORD" /> anda, ahli keluarga anda boleh mengisi nama pengguna dan kata laluan tersebut menggunakan Google Password Manager</translation>
@@ -5043,6 +5042,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4863769717153320198">Kelihatan seperti <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Lalai)</translation>
 <translation id="4864369630010738180">Sedang log masuk...</translation>
 <translation id="4864805589453749318">Pilih ibu/bapa yang memberikan kebenaran untuk menambah akaun sekolah.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (disekat)</translation>
 <translation id="486505726797718946">Kenangan Disimpan</translation>
 <translation id="486635084936119914">Buka jenis fail tertentu secara automatik selepas memuat turun</translation>
 <translation id="4867272607148176509">Ibu bapa boleh meluluskan atau menyekat apl, menetapkan had masa dan mengawal penyemakan imbas web. Akaun sekolah boleh ditambahkan kemudian untuk mengakses kebanyakan sumber sekolah.</translation>
@@ -5536,6 +5536,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5261619498868361045">Nama bekas tidak boleh kosong.</translation>
 <translation id="5261683757250193089">Buka dalam Gedung Web</translation>
 <translation id="5261799091118902550">Fail ini mungkin virus atau perisian hasad. Anda boleh menghantar fail ini kepada Google untuk menyemak jika fail tersebut tidak selamat.</translation>
+<translation id="5262334727506665688">Teruskan menyimpan kata laluan dalam Google Account anda</translation>
 <translation id="5262784498883614021">Sambung kepada rangkaian secara automatik</translation>
 <translation id="5263656105659419083">Untuk kembali kepada panel sisi dengan mudah, klik Pin pada bahagian atas sebelah kanan</translation>
 <translation id="5264148714798105376">Proses ini mungkin mengambil masa seminit atau lebih.</translation>
@@ -7077,6 +7078,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="649396225532207613">Fail ini boleh membahayakan akaun peribadi dan rangkaian sosial anda</translation>
 <translation id="6494327278868541139">Paparkan butiran perlindungan dipertingkatkan</translation>
 <translation id="6494445798847293442">Bukan Pihak Berkuasa Pensijilan</translation>
+<translation id="6494483173119160146">Peranti mengalami ralat yang tidak dapat dipulihkan. Sila tetapkan semula peranti anda (tindakan ini akan memadamkan semua data pengguna anda) dan cuba lagi.</translation>
 <translation id="6497784818439587832">Tukar saiz paparan untuk menjadikan item pada skrin anda lebih kecil atau lebih besar</translation>
 <translation id="6497789971060331894">Penatalan terbalik tetikus</translation>
 <translation id="6498249116389603658">&amp;Semua bahasa anda</translation>
@@ -8492,7 +8494,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7610337976012700501">Untuk menggunakan <ph name="FEATURE_NAME" /> dengan kenalan ini, tambahkan alamat e-mel yang dipautkan dengan Google Account mereka pada kenalan anda.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Semua Sambungan</translation>
-<translation id="7612401678989660900">Benarkan akses untuk semua apl dan laman web dengan kebenaran mikrofon</translation>
 <translation id="7612497353238585898">Laman aktif</translation>
 <translation id="7612655942094160088">Dayakan ciri telefon yang disambungkan.</translation>
 <translation id="7612989789287281429">Anda sedang log masuk…</translation>
@@ -9559,6 +9560,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8397825320644530257">Putuskan sambungan telefon yang bersambung</translation>
 <translation id="8398877366907290961">Teruskan juga</translation>
 <translation id="8399282673057829204">Lihat kata laluan</translation>
+<translation id="839949601275221554">Peranti mengalami ralat. Sila mulakan semula peranti anda dan cuba lagi.</translation>
 <translation id="8401432541486058167">Sediakan PIN yang dikaitkan dengan kad pintar anda.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome akan menyekat kuki lagi hari ini}=1{Chrome akan menyekat kuki lagi esok}other{# hari sehingga Chrome menyekat kuki lagi}}</translation>
 <translation id="8403618281196981152">Data anda dalam Chrome</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="1066101356081285416">Chrome tuvastab teie külastatud saitidel jälgimiskoodid. Kui avate uue vahelehe, kuvatakse saadetise uusim olek. Selle funktsiooni pakkumiseks ja Google'i ostufunktsioonide kõigi jaoks paremaks muutmiseks edastatakse paki jälgimiskood ja veebisaidi nimi Google'ile. Saate seda muuta <ph name="BEGIN_LINK" />pakkide jälgimise seadetes<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Vaikimisi Chrome'i kasutamine</translation>
 <translation id="1105362920864247682">Tühjendage Chrome'i sirvimisandmed.</translation>
 <translation id="1113057722807951993">Parooliga krüpteerimine ei hõlma Google Pay makseviise ja aadresse.

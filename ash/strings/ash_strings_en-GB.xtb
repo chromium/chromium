@@ -622,6 +622,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3577473026931028326">Something went wrong. Try again.</translation>
 <translation id="3580650856351781466">Downloading speech files</translation>
 <translation id="3585296979871889131">View your phone's recent photos, media, notifications and apps</translation>
+<translation id="3590441166907930941">Side button</translation>
 <translation id="3593039967545720377">Access your clipboard history by pressing <ph name="SHORTCUT_KEY_NAME" /> + V to view your clipboard. Copy an item to get started.</translation>
 <translation id="3593646411856133110">Swipe up and hold to see open apps</translation>
 <translation id="3595596368722241419">Battery full</translation>
@@ -1034,6 +1035,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5163434717504750796">Battery health <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Cycle count <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Save desk as a template</translation>
 <translation id="5168181903108465623">Cast devices available</translation>
+<translation id="5168753792967365150">Edit in Google Tasks</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5176318573511391780">Record partial screen</translation>
 <translation id="5187627942836026988">Show hotspot details. Hotspot is blocked by your administrator.</translation>
@@ -1303,6 +1305,8 @@ Some features are limited to increase battery life.</translation>
 <translation id="6168622430237609329">Your installed apps</translation>
 <translation id="6173151025443907148">Signing in a second user is not supported if Lacros is enabled. Please use a second browser profile in Lacros instead, or disable Lacros and try again.</translation>
 <translation id="6179832488876878285">You can pin your important files here. Open Files app to get started.</translation>
+<translation id="6180193585172850042">Back button</translation>
+<translation id="6180651297859206670">Forward button</translation>
 <translation id="6182592640011875895">Open desk</translation>
 <translation id="6185696379715117369">Page up</translation>
 <translation id="619335566042889110">Fully charge now</translation>

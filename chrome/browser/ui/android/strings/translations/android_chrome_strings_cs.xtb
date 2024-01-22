@@ -146,6 +146,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1792959175193046959">Výchozí umístění pro stažené soubory můžete kdykoliv změnit.</translation>
 <translation id="1796666869097395659">Minimalizovat kartu, abyste se k ní mohli vrátit později</translation>
 <translation id="1807246157184219062">Světlé</translation>
+<translation id="1807709131360304325">Otevřít nové okno</translation>
 <translation id="1810845389119482123">Počáteční nastavení synchronizace nebylo dokončeno</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> již nemůže nadále používat <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Najít na stránce</translation>
@@ -921,6 +922,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5962718611393537961">Klepnutím sbalíte</translation>
 <translation id="5964869237734432770">Nezobrazovat popisy obrázků</translation>
 <translation id="5966233851250124270">Chrome si váš výběr zapamatuje</translation>
+<translation id="5977976211062815271">V tomto zařízení</translation>
 <translation id="5979084224081478209">Zkontrolovat hesla</translation>
 <translation id="5995726099713306770">Stáhnout stránku znovu?</translation>
 <translation id="6000066717592683814">Ponechat Google</translation>
@@ -1327,6 +1329,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7942131818088350342">Aplikace <ph name="PRODUCT_NAME" /> je zastaralá.</translation>
 <translation id="7944772052836377867">Synchronizace potřebuje ověřit vaši totožnost</translation>
 <translation id="7947953824732555851">Přijmout a přihlásit</translation>
+<translation id="7951102827450076904">Stažené soubory PDF vždy otevřít</translation>
 <translation id="7957413488482743710">Virtuální karta skryje vaši skutečnou kartu a chrání vás před případným podvodem. <ph name="BEGIN_LINK1" />Další informace o virtuálních kartách<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Tlačítko Zpět ve statistikách stránky</translation>
 <translation id="7961926449547174351">Zakázali jste přístup k úložišti. Přejděte do Nastavení a povolte ho.</translation>

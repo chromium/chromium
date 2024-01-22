@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">کسی تاریخ کو ٹچ کریں اور دبائے رکھیں۔</translation>
 <translation id="1959679933317802873">مواد کے منتظر</translation>
 <translation id="1967461193809857427">{count,plural, =1{‏وہ ٹیب منتخب کریں جو آپ نے Android پر چھوڑا تھا؟}other{‏وہ ٹیبز منتخب کریں جنہیں آپ نے Android پر چھوڑا تھا؟}}</translation>
+<translation id="1972325230031091483">آپ تیزی سے براؤز کریں گے کیونکہ مواد آپ کے موجودہ ویب صفحہ کے ملاحظہ کی بنیاد پر فعال طور پر لوڈ ہوتا ہے</translation>
 <translation id="1973912524893600642">ڈیٹا باقی رکھیں</translation>
 <translation id="1974060860693918893">جدید ترین</translation>
 <translation id="1980417445547898121">{count,plural, =1{‏اس iPhone پر اپنے دوسرے آلے سے حال ہی میں فعال اپنے {count} ٹیب حاصل کریں}other{‏اس iPhone پر اپنے دوسرے آلے سے حال ہی میں فعال اپنے {count} ٹیبز حاصل کریں}}</translation>
@@ -434,6 +435,7 @@
 <translation id="3235242129752692527">ایونٹ کی تفصیلات میں ترمیم کریں اور "محفوظ کریں" پر تھپتھپائیں۔</translation>
 <translation id="3240426699337459095">لنک کاپی ہوگیا</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">‏اگر آپ Chrome کے استعمال کی رپورٹس کا بھی اشتراک کرتے ہیں تو ان رپورٹس میں آپ کے ملاحظہ کردہ URLs شامل ہوں گے</translation>
 <translation id="3245744387817103524">آپ کی تبدیلی محفوظ نہیں ہو سکی۔</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />، <ph name="ADDITIONAL_INFO" />، <ph name="INDEX" /> از <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">آٹو فل پاس ورڈز</translation>
@@ -634,7 +636,6 @@
 <translation id="4371591986692297148">غیر فعال ہے</translation>
 <translation id="4375040482473363939">‏QR کوڈ کی تلاش</translation>
 <translation id="4378154925671717803">فون</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> نے <ph name="WEBSITE" /> کے لیے آپ کے ساتھ پاس ورڈ کا اشتراک کیا ہے</translation>
 <translation id="4389019817280890563">زبان تبدیل کرنے کے لیے تھپتھپائیں۔</translation>
 <translation id="4405320213589929829">مقامی معلومات اور ڈائریکشنز حاصل کرنے کے لیے ویب صفحات پر پتے استعمال کریں۔</translation>
 <translation id="4420409367264901497">بُک مارک میں ترمیم کریں</translation>
@@ -861,6 +862,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="555749644339804659">پاس ورڈز چیک ہو رہے ہیں…</translation>
 <translation id="5559567453458728487">ویب پر تبدیلی کی پیمائش کے یونٹس ملے</translation>
 <translation id="556042886152191864">بٹن</translation>
+<translation id="5572648434713976849">آپ کو ایڈریس بار میں بہتر کردہ تجاویز حاصل ہوں گی</translation>
 <translation id="5572684875078967866">معلوماتی اسٹوریج</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{اس پیکیج کو ٹریک کریں}other{تمام پیکیجز کو ٹریک کریں}}</translation>
 <translation id="5597915316964418992">ٹیب گرڈ کھولیں</translation>
@@ -1087,6 +1089,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6642362222295953972">موجودہ ٹیب پر سوئچ کریں</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
 <translation id="6645899968535965230">‏QR کوڈ: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">‏آپ کے ملاحظہ کردہ URLs اس بات کی پیشنگوئی کرنے کے لیے Google کو بھیجے جاتے ہیں کہ آپ اگلی بار کون سی سائٹس ملاحظہ کر سکتے ہیں</translation>
 <translation id="6647480763136463714">آخری بار <ph name="TIME" /> کو چلایا گیا</translation>
 <translation id="6656103420185847513">فولڈر میں ترمیم کریں</translation>
 <translation id="6657585470893396449">پاس ورڈ</translation>

@@ -70,7 +70,6 @@
 <translation id="2130870084309816036">Der kunne ikke oprettes forbindelse til internettet. Hvis du bruger en firewall, skal du føje <ph name="PRODUCT_EXE_NAME" /> til tilladelseslisten.</translation>
 <translation id="2131230230468101642">Vi sletter automatisk de interesser, der er ældre end 4 uger, for at beskytte dit privatliv. Mens du surfer, kan en interesse vises på listen igen. Du kan også fjerne interesser, som du ikke vil have, at Chrome skal tage med i betragtning.</translation>
 <translation id="2139300032719313227">Genstart ChromeOS</translation>
-<translation id="2146761408396054429">Denne fil kan være skadelig<ph name="LINE_BREAK" />Chrome kan tjekke denne download for dig, hvis du angiver adgangskoden – din adgangskode forbliver på enheden</translation>
 <translation id="2151406531797534936">Genstart Chrome nu</translation>
 <translation id="2174917724755363426">Installationen er ikke fuldført. Er du sikker på, at du vil annullere?</translation>
 <translation id="2190166659037789668">Fejl ved søgning efter opdatering: <ph name="UPDATE_CHECK_ERROR" />.</translation>

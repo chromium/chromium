@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">進む</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> 以降のデータ使用量</translation>
 <translation id="1621067168122174824">充電テストを実行</translation>
+<translation id="1626590945318984973">このショートカットは使用できません。ファンクション キーと <ph name="META_KEY" /> キーを使わない新しいショートカットを押してください。</translation>
 <translation id="1639239467298939599">読み込んでいます</translation>
 <translation id="1641857168437328880">ドキュメント フィーダー（片面）</translation>
 <translation id="1643449475550628585">壁紙画像を毎日変更する</translation>
@@ -452,7 +453,9 @@
 <translation id="4394049700291259645">無効にする</translation>
 <translation id="439429847087949098">「<ph name="DEVICE_NAME" />」を再起動しています</translation>
 <translation id="4395835743215824109">キーボードのカスタマイズ</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> キーを使わないショートカットは、一部のアプリのショートカットと競合する可能性があります。そのまま使用する場合は、このショートカットをもう一度押します。または、<ph name="KEY" /> キーを使用した新しいショートカットを押します。</translation>
 <translation id="4415951057168511744">現在のアバター</translation>
+<translation id="4417830657741848074">いくつかのアプリは、自動的に起動するよう管理者によって設定されています。これらのアプリの一部は終了できません。</translation>
 <translation id="4422041425070339732">下矢印</translation>
 <translation id="4425149324548788773">マイドライブ</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> はオフになっています</translation>
@@ -465,6 +468,7 @@
 <translation id="4469288414739283461">「地球の動き」のスクリーン セーバー</translation>
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
+<translation id="4500722292849917410">このショートカットは使用できません。修飾キー（Ctrl、Alt、Shift、または <ph name="META_KEY" />）を使用して新しいショートカットを押してください。</translation>
 <translation id="4500966230243561393">インターフェースの色</translation>
 <translation id="4503223151711056411">左矢印</translation>
 <translation id="4507392511610824664">明るさを上げる</translation>
@@ -512,6 +516,7 @@
 <translation id="4832079907277790330">ファイルアプリ内のフォルダを選択...</translation>
 <translation id="4835901797422965222">有効なネットワークがありません</translation>
 <translation id="4839698083503556542">オリジナルの動画を作成しましょう</translation>
+<translation id="48409034532829769">「<ph name="APP_NAME" />」は、自動的に起動するよう管理者によって設定されています。このアプリは終了できません。</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> が選択されています。<ph name="TOPIC_SOURCE" /> アルバムを選択するには Enter キーを押してください</translation>
 <translation id="484790837831576105">（Android）DNS の解決</translation>
@@ -538,6 +543,7 @@
 <translation id="4969079779290789265">分割</translation>
 <translation id="4972592110715526173">モード変更</translation>
 <translation id="498186245079027698">スキャナを確認して、もう一度お試しください。デバイスにスキャンしたファイルを保存するのに十分な容量があるかどうかも確認してください。</translation>
+<translation id="4982627662315910959">このショートカットは使用できません。Shift キーと他 1 個の修飾キー（Ctrl、Alt、または <ph name="META_KEY" />）を使用して新しいショートカットを押してください。</translation>
 <translation id="4985509611418653372">実行</translation>
 <translation id="4987769320337599931">ファイアウォール</translation>
 <translation id="4988526792673242964">ページ</translation>
@@ -844,6 +850,7 @@
 <translation id="7216409898977639127">モバイル プロバイダ</translation>
 <translation id="725133483556299729">メールアドレスを選択</translation>
 <translation id="7271040990581020067">スキャナは現在使用中です。しばらくしてからもう一度お試しください。</translation>
+<translation id="7271932918253517778">最上段のキーを使用するショートカットには、<ph name="META_KEY" /> キーを含める必要があります。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">そよ風を感じる</translation>
 <translation id="7287310195820267359">壁紙のコレクション</translation>

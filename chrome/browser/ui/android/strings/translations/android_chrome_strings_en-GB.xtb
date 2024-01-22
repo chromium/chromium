@@ -146,6 +146,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1792959175193046959">Change the default download location at any time</translation>
 <translation id="1796666869097395659">Minimise tab to return to it later</translation>
 <translation id="1807246157184219062">Light</translation>
+<translation id="1807709131360304325">Open a new window</translation>
 <translation id="1810845389119482123">Initial sync setup not finished</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> can't continue using <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Find in page</translation>
@@ -921,6 +922,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5962718611393537961">Tap to collapse</translation>
 <translation id="5964869237734432770">Stop image descriptions</translation>
 <translation id="5966233851250124270">Chrome will remember your choice</translation>
+<translation id="5977976211062815271">On this device</translation>
 <translation id="5979084224081478209">Check passwords</translation>
 <translation id="5995726099713306770">Download page again?</translation>
 <translation id="6000066717592683814">Keep Google</translation>
@@ -1327,6 +1329,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> is out of date.</translation>
 <translation id="7944772052836377867">Sync needs to verify that it's you</translation>
 <translation id="7947953824732555851">Accept and sign in</translation>
+<translation id="7951102827450076904">Always open downloaded PDFs</translation>
 <translation id="7957413488482743710">A virtual card hides your actual card to help protect you from potential fraud. <ph name="BEGIN_LINK1" />Learn more about virtual cards<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Page insights back button</translation>
 <translation id="7961926449547174351">You have disabled storage access. Please go to settings to enable it.</translation>

@@ -465,6 +465,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1828959155404624835">Autoverhuur</translation>
 <translation id="1834321415901700177">Deze site bevat schadelijke programma's</translation>
 <translation id="1838374766361614909">Zoekopdracht wissen</translation>
+<translation id="1839331950812095887">een paar woorden die je gedachten samenvatten</translation>
 <translation id="1839551713262164453">De validatie van de beleidswaarden is mislukt doordat er fouten zijn opgetreden</translation>
 <translation id="1842969606798536927">Betalen</translation>
 <translation id="1846432862466000825">Plastic (archief)</translation>
@@ -698,6 +699,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2293443924986248631">Als deze optie aanstaat, kunnen sites geen cookies gebruiken die je volgen op internet. Functies op bepaalde sites werken mogelijk niet meer.</translation>
 <translation id="2295831393422400053">Zet de instelling Zoekopdrachten en browsefunctionaliteit verbeteren aan om Help me met schrijven te gebruiken</translation>
 <translation id="2300306941146563769">Niet geüpload</translation>
+<translation id="2301098101308036335">Welke websites worden bezocht en wanneer.</translation>
 <translation id="230286397113210245">Knop Incognitovenster openen. Activeer deze om een nieuw incognitovenster te openen om privé te browsen.</translation>
 <translation id="2312234273148520048">Sauzen en dressings</translation>
 <translation id="2316087952091171402">Minder dan <ph name="UPPER_ESTIMATE" />. Sommige sites laden misschien langzamer bij je volgende bezoek.</translation>
@@ -1360,6 +1362,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3655670868607891010">Als je deze melding vaker ziet, probeer je deze <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Vrijetijdskleding</translation>
 <translation id="3658742229777143148">Revisie</translation>
+<translation id="3659521826520353662">Welke door de beheerder gedefinieerde websites worden bezocht en wanneer: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">Zoekwoorden:</translation>
 <translation id="3665100783276035932">De meeste sites werken zoals verwacht</translation>
 <translation id="3667704023705708645">Durfkapitaal</translation>
@@ -1450,6 +1453,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3812398568375898177">Dit is een essentiële update die de prestaties van Android-apps op ChromeOS verbetert.</translation>
 <translation id="3815434930383843058">8 x 12 inch</translation>
 <translation id="3816482573645936981">Waarde (vervangen)</translation>
+<translation id="382115839591654906">CVC voor <ph name="CARD_NAME" /></translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Je browser wordt beheerd door <ph name="BROWSER_DOMAIN" /> en je profiel wordt beheerd door <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Als je een proxyserver gebruikt...</translation>
@@ -1811,7 +1815,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Je gebruikt je schermvergrendeling om wachtwoorden in te vullen</translation>
 <translation id="4558551763791394412">Probeer je extensies uit te zetten.</translation>
-<translation id="456043042661026303">Je betalingsgegevens beveiligd checken</translation>
 <translation id="4566017918361049074">Buitenactiviteiten</translation>
 <translation id="4567686777917670400">Je beheerder kan je browserinstellingen op afstand wijzigen. Activiteit op dit apparaat kan ook buiten Chromium worden beheerd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">Geverifieerd</translation>
@@ -2657,7 +2660,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6272088941196661550">Hervat je traject om relevante activiteit in je Chrome-geschiedenis te bekijken</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6279183038361895380">Druk op |<ph name="ACCELERATOR" />| om je cursor te bekijken</translation>
-<translation id="628016388715774955">De optie Volledig adres invullen is geselecteerd</translation>
 <translation id="6280223929691119688">Kan niet bezorgen op dit adres. Selecteer een ander adres.</translation>
 <translation id="6284292079994426700">26 x 38 inch</translation>
 <translation id="6284517535531159884">Type variantseed</translation>
@@ -2929,7 +2931,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6807791860691150411">Onderwijs</translation>
 <translation id="681021252041861472">Verplicht veld</translation>
 <translation id="6810899417690483278">Aanpassings-ID</translation>
-<translation id="681459028290894216">Volledig adres invullen</translation>
 <translation id="6816109178681043245">Sportartikelen</translation>
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">seriële poorten</translation>
@@ -3200,6 +3201,7 @@ Aanvullende informatie:
 <translation id="7341357280245177602">Tweedehands voertuigen</translation>
 <translation id="7346048084945669753">Is gelieerd:</translation>
 <translation id="7346062987309535530">Servies</translation>
+<translation id="7346081071264046066">'antwoord vol enthousiasme ja op deze huwelijksuitnodiging'</translation>
 <translation id="7352651011704765696">Er is iets misgegaan</translation>
 <translation id="7353601530677266744">Opdrachtregel</translation>
 <translation id="7354880545102894991">Goedkope en lastminutereizen</translation>

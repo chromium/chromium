@@ -1130,7 +1130,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1832848789136765277">Verifiera din identitet så att du alltid får åtkomst till din synkroniserade data</translation>
 <translation id="1834503245783133039">Nedladdningen misslyckades: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Uppgraderar Linux</translation>
-<translation id="1835612721186505600">Tillåt åtkomst för appar och webbplatser med kamerabehörighet</translation>
 <translation id="1838374766361614909">Rensa sökning</translation>
 <translation id="1839021455997460752">Din e-postadress</translation>
 <translation id="1839540115464516994">Visa i <ph name="LOCATION" /></translation>
@@ -4584,7 +4583,6 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4507128560633489176">Datan har rensats.</translation>
 <translation id="4507373251891673233">Du har blockerat alla tillägg från <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Klicka på Lägg till genväg</translation>
-<translation id="4508150454272293946">Tillåt att appar och webbsidor använder de kameror som är anslutna till den här enheten. Om problemet med kameran kvarstår kan du testa att starta om appen eller uppdatera webbsidan.</translation>
 <translation id="450867954911715010">Inställningar för tillgänglighet</translation>
 <translation id="4508765956121923607">Visa &amp;källa</translation>
 <translation id="4509277363725254222">När du delar en kopia av ditt <ph name="BEGIN_BOLD_USERNAME" />användarnamn<ph name="END_BOLD_USERNAME" /> och <ph name="BEGIN_BOLD_PASSWORD" />lösenord<ph name="END_BOLD_PASSWORD" /> kan familjemedlemmen fylla i uppgifterna med Google Lösenordshantering</translation>
@@ -8477,7 +8475,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7610337976012700501">Lägg till de e-postadresser som är kopplade till personernas Google-konton i dina kontakter om du vill använda <ph name="FEATURE_NAME" /> med dem.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Alla tillägg</translation>
-<translation id="7612401678989660900">Tillåt åtkomst för appar och webbplatser med mikrofonbehörighet</translation>
 <translation id="7612497353238585898">Aktiv webbplats</translation>
 <translation id="7612655942094160088">Aktivera anslutna mobilfunktioner.</translation>
 <translation id="7612989789287281429">Du loggas in …</translation>

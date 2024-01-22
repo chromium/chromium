@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">දිනයක් ස්පර්ශ කර අල්ලා ගන්න.</translation>
 <translation id="1959679933317802873">අන්තර්ගතය සඳහා රැඳී සිටීම</translation>
 <translation id="1967461193809857427">{count,plural, =1{ඔබ Android මත හැර ගිය පටිත්ත ගන්නද?}one{ඔබ Android මත හැර ගිය පටිති ගන්නද?}other{ඔබ Android මත හැර ගිය පටිති ගන්නද?}}</translation>
+<translation id="1972325230031091483">ඔබගේ වත්මන් වෙබ් පිටුවට පැමිණීම මත පදනම්ව අන්තර්ගතය ප්‍රගාමීව පූරණය කර ඇති නිසා ඔබ වේගයෙන් බ්‍රවුස් කරනු ඇත</translation>
 <translation id="1973912524893600642">දත්ත තබා ගන්න</translation>
 <translation id="1974060860693918893">උසස් කළ</translation>
 <translation id="1980417445547898121">{count,plural, =1{මෙම iPhone මත ඔබේ අනෙක් උපාංගයෙන් ඔබේ මෑතක දී සක්‍රිය {count} පටිත්ත ලබා ගන්න}one{මෙම iPhone මත ඔබේ අනෙක් උපාංගයෙන් ඔබේ මෑතක දී සක්‍රිය පටිති {count} ලබා ගන්න}other{මෙම iPhone මත ඔබේ අනෙක් උපාංගයෙන් ඔබේ මෑතක දී සක්‍රිය පටිති {count} ලබා ගන්න}}</translation>
@@ -434,6 +435,7 @@
 <translation id="3235242129752692527">සිදුවීම් විස්තර සංස්කරණ කර "සුරකින්න" වෙත තට්ටු කරන්න.</translation>
 <translation id="3240426699337459095">සබැඳිය පිටපත් කරන ලදි</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">ඔබ Chrome පරිශීලන වාර්තාද බෙදා ගතහොත්, එම වාර්තාවලට ඔබ පිවිසෙන URL ඇතුළත් වේ</translation>
 <translation id="3245744387817103524">ඔබේ වෙනස සුරැකිය නොහැකි විය.</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" />කින් <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
 <translation id="3264775633254836593">මුරපද ස්වයං පුරවන්න</translation>
@@ -633,7 +635,6 @@
 <translation id="4371591986692297148">අක්‍රිය</translation>
 <translation id="4375040482473363939">QR කේතය සෙවීම</translation>
 <translation id="4378154925671717803">දුරකථනය</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> <ph name="WEBSITE" /> සඳහා මුරපදයක් ඔබ සමග බෙදා ගෙන ඇත</translation>
 <translation id="4389019817280890563">භාෂාව මාරු කිරීමට තට්ටු කරන්න.</translation>
 <translation id="4405320213589929829">දේශීය තොරතුරු සහ දිශා ලබා ගැනීමට වෙබ් පිටුවල ලිපින භාවිත කරන්න.</translation>
 <translation id="4420409367264901497">පිටුසන සංස්කරණය කරන්න</translation>
@@ -859,6 +860,7 @@
 <translation id="555749644339804659">මුරපද පරීක්ෂා කරමින්…</translation>
 <translation id="5559567453458728487">වෙබයෙහි හමු වූ මිනුම් ඒකක හරවන්න</translation>
 <translation id="556042886152191864">බොත්තම</translation>
+<translation id="5572648434713976849">ලිපින තීරුව තුළ ඔබට වැඩිදියුණු කළ යෝජනා ලැබෙනු ඇත</translation>
 <translation id="5572684875078967866">තොරතුරු ගබඩා කිරීම</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{මෙම පැකේජය නිරීක්ෂණය කරන්න}one{සියලු පැකේජ නිරීක්ෂණය කරන්න}other{සියලු පැකේජ නිරීක්ෂණය කරන්න}}</translation>
 <translation id="5597915316964418992">පටිති ජාලකය විවෘත කරන්න</translation>
@@ -1085,6 +1087,7 @@
 <translation id="6642362222295953972">පවතින පටිත්තට මාරු වන්න</translation>
 <translation id="6643016212128521049">මකන්න</translation>
 <translation id="6645899968535965230">QR කේතය: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">ඔබ පිවිසෙන URL ඔබ මීළඟට පිවිසිය හැකි අඩවි මොනවාදැයි පුරෝකථනය කිරීමට Google වෙත යවනු ලැබේ</translation>
 <translation id="6647480763136463714">අවසන් ධාවනය <ph name="TIME" /></translation>
 <translation id="6656103420185847513">ෆෝල්ඩරය සංස්කරණය කරන්න</translation>
 <translation id="6657585470893396449">මුරපදය</translation>

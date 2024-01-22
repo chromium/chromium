@@ -70,7 +70,6 @@
 <translation id="2130870084309816036">Nem lehet kapcsolódni az internethez. Tűzfal használata esetén helyezze engedélyezőlistára a következőt: <ph name="PRODUCT_EXE_NAME" />.</translation>
 <translation id="2131230230468101642">Adatai védelme érdekében a négy hétnél régebbi érdeklődési köreit automatikusan töröljük. Böngészési tevékenysége alapján az érdeklődési körök újra megjelenhetnek a listákon. Arra is lehetősége van, hogy eltávolítsa azokat az érdeklődési köröket, amelyeket nem szeretne, hogy a Chrome figyelembe vegyen.</translation>
 <translation id="2139300032719313227">A ChromeOS újraindítása</translation>
-<translation id="2146761408396054429">Ez a fájl veszélyes lehet<ph name="LINE_BREAK" />A Chrome ellenőrizni tudja ezt a letöltést Ön helyett, ha megadja a jelszót – a jelszó az eszközön marad</translation>
 <translation id="2151406531797534936">Indítsa újra most a Chrome-ot</translation>
 <translation id="2174917724755363426">A telepítés még nem fejeződött be. Biztosan megszakítja a műveletet?</translation>
 <translation id="2190166659037789668">Frissítés-ellenőrzési hiba: <ph name="UPDATE_CHECK_ERROR" />.</translation>

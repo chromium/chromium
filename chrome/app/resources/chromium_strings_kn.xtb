@@ -88,6 +88,7 @@
 <translation id="2583187216237139145">ಈ ಪ್ರೊಫೈಲ್‌ನ ಬಳಕೆಯ ಸಮಯದಲ್ಲಿ ಉತ್ಪತ್ತಿಯಾಗುವ ಯಾವುದೇ Chromium ಡೇಟಾವನ್ನು (ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ರಚನೆಯಂತಹ) ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ನಿರ್ವಾಹಕರು ತೆಗೆದುಹಾಕಬಹುದು. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium ಬಳಸಿಕೊಂಡು ಮುಂದುವರಿಯಿರಿ</translation>
 <translation id="259935314519650377">ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ಇನ್‌ಸ್ಟಾಲರ್‌‌ ಅನ್ನು ಕ್ಯಾಷ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ. ದೋಷ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium ವೇಗವಾಗಿ ರನ್ ಆಗುತ್ತದೆ ಮತ್ತು JavaScript ಅನ್ನು ಬಳಸುವ ಫೀಚರ್‌ಗಳು, ವಿನ್ಯಾಸಗೊಳಿಸಿದಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸಬೇಕು (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="2648074677641340862">ಸ್ಥಾಪಿಸುತ್ತಿರುವಾಗ ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಂ ದೋಷ ಸಂಭವಿಸಿದೆ. ದಯವಿಟ್ಟು Chromium ಅನ್ನು ಪುನಃ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="2661879430930417727">ನೀವು ಸಾಧನವನ್ನು ಹಂಚಿಕೊಂಡರೆ, ಸ್ನೇಹಿತರು ಮತ್ತು ಕುಟುಂಬದವರು ಪ್ರತ್ಯೇಕವಾಗಿ ಬ್ರೌಸ್ ಮಾಡಬಹುದು ಮತ್ತು Chromium ಅನ್ನು ಅವರಿಗೆ ಬೇಕಾದಂತೆ ಸೆಟಪ್ ಮಾಡಬಹುದು</translation>
 <translation id="268602741124540128">Chromium ಗೆ ಸುಸ್ವಾಗತ <ph name="ACCOUNT_FIRST_NAME" /> ಅವರೇ</translation>
@@ -121,6 +122,7 @@
 <translation id="3185330573522821672">ನಿಮ್ಮ ಹೊಸ Chromium ಪ್ರೊಫೈಲ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="3190315855212034486">ಓಹ್! Chromium ಕ್ರ್ಯಾಶ್ ಆಗಿದೆ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಾರಂಭಿಸುವುದೇ?</translation>
 <translation id="3258596308407688501">Chromium ಗೆ ಇದರ ಡೇಟಾ ಡೈರೆಕ್ಟರಿಯನ್ನು ಓದಲಾಗುವುದಿಲ್ಲ ಮತ್ತು ಬರೆಯಲಾಗುವುದಿಲ್ಲ: <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 ಎಂಬುದು Chromium ನ JavaScript ಮತ್ತು WebAssembly ಎಂಜಿನ್ ಆಗಿದ್ದು, ಸೈಟ್‌ನ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಸುಧಾರಿಸಲು ಬಳಸಲಾಗುತ್ತದೆ</translation>
 <translation id="3283186697780795848">Chromium ಆವೃತ್ತಿ <ph name="PRODUCT_VERSION" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3286538390144397061">ಈಗ ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="328888136576916638">Google API ಕೀಗಳು ಕಾಣೆಯಾಗಿವೆ. Chromium ನ ಕೆಲವು ಕಾರ್ಯವಿಧಾನಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
@@ -214,6 +216,7 @@
 <translation id="4814736265800133385">Chromium ಅನ್ನು ಖಾತೆಯಿಲ್ಲದೆಯೇ ಬಳಸಿ</translation>
 <translation id="4888717733111232871">mDNS ಟ್ರಾಫಿಕ್‌ಗೆ ಅನುಮತಿಸುವ ನಿಟ್ಟಿನಲ್ಲಿ Chromium ಗೆ ಒಳಬರುವ ನಿಯಮ.</translation>
 <translation id="4893347770495441059">&amp;Chromium ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="4942295735032723435">ಭವಿಷ್ಯದ Chromium ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯಲು, ನಿಮಗೆ macOS 11 ಅಥವಾ ಅದರ ನಂತರದ ಆವೃತ್ತಿಗಳ ಅಗತ್ಯವಿದೆ. ಈ ಕಂಪ್ಯೂಟರ್ macOS 10.15 ಅನ್ನು ಬಳಸುತ್ತಿದೆ.</translation>
 <translation id="4943838377383847465">Chromium ಹಿನ್ನೆಲೆ ಮೋಡ್‌ನಲ್ಲಿದೆ.</translation>
 <translation id="4987820182225656817">ಅತಿಥಿಗಳು ಏನನ್ನೂ ಉಳಿಸದೆಯೇ Chromium ಬಳಸಬಹುದು.</translation>
 <translation id="4994636714258228724">ನೀವಾಗಿಯೇ Chromium ಗೆ ಸೇರಿಕೊಳ್ಳಿ</translation>
@@ -242,7 +245,6 @@
 <translation id="5623402015214259806">{0,plural, =0{Chromium ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}=1{Chromium ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}one{# ದಿನಗಳ ಮಟ್ಟಿಗೆ Chromium ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}other{# ದಿನಗಳ ಮಟ್ಟಿಗೆ Chromium ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}}</translation>
 <translation id="5643865575100044307">ನೀವು Chromium ಅನ್ನು ಮುಚ್ಚಿದಾಗ ನಿಮ್ಮ ಸಾಧನದಿಂದ ಸೈಟ್ ಡೇಟಾವನ್ನು ಯಾವಾಗಲೂ ಅಳಿಸಿ</translation>
 <translation id="5653831366781983928">ಇದೀಗ Chromium ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
-<translation id="5675598751761067447">ಈ ಫೈಲ್ ಅಪಾಯಕಾರಿಯಾಗಬಹುದು<ph name="LINE_BREAK" />ನೀವು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಒದಗಿಸಿದರೆ Chromium ನಿಮಗಾಗಿ ಈ ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ಪರಿಶೀಲಿಸಬಹುದು - ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿಯೇ ಉಳಿಯುತ್ತದೆ</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">ಈ ಭಾಷೆಯಲ್ಲಿ Chromium ಪ್ರದರ್ಶಿಸು</translation>
 <translation id="569897634095159764">ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್‌ಗೆ ದೃಢೀಕರಣದ ಅಗತ್ಯವಿದೆ.</translation>
@@ -398,6 +400,7 @@
 <translation id="8105840573057009683">ಈ ಸೈಟ್‌ಗೆ ಸಂಬಂಧಿಸಿದಂತೆ Chromium ಗೆ ಸ್ಥಳ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8133124826068723441">ನಿಮ್ಮ ಡೊಮೇನ್‌ನಲ್ಲಿ ಸಿಂಕ್ ಮಾಡುವ ಸೌಲಭ್ಯವಿಲ್ಲದ ಕಾರಣ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡಲು ChromiumOS ಗೆ ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="813913629614996137">ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="8166782796394721554">Chromium ನ JavaScript ಮತ್ತು WebAssembly ಎಂಜಿನ್‌ನಲ್ಲಿ ಹೆಚ್ಚುವರಿ ರಕ್ಷಣೆಯನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="81770708095080097">ಈ ಫೈಲ್ ಅಪಾಯಕಾರಿಯಾಗಿದೆ, ಹೀಗಾಗಿ Chromium ಇದನ್ನು ನಿರ್ಬಂಧಿಸಿದೆ.</translation>
 <translation id="8213374284266571500">ಈ ರೀತಿಯ ಫೈಲ್ ಅಪಾಯಕಾರಿಯಾದ ಕಾರಣ Chromium ಈ ಫೈಲ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿದೆ</translation>
 <translation id="8248265253516264921">ಚಿತ್ರದಲ್ಲಿ ಉಪಯುಕ್ತ ವಿವರಣೆಯು ಇಲ್ಲದಿದ್ದರೆ, Chromium ನಿಮಗಾಗಿ ಒಂದು ವಿವರಣೆಯನ್ನು ಒದಗಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತದೆ. ವಿವರಣೆಗಳನ್ನು ರಚಿಸಲು, ಚಿತ್ರಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ಇದನ್ನು ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಆಫ್ ಮಾಡಬಹುದು.</translation>

@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">تلقّي إشعارات</translation>
 <translation id="4133493477912226187">يبدو أن هناك <ph name="NUMBER_OF_TABS" /> من علامات التبويب متشابهة. هل تريد تجميعها؟</translation>
 <translation id="4212246570487010370">مواصلة التصفّح</translation>
+<translation id="427987768447457592">مجموعة علامات تبويب جديدة</translation>
 <translation id="4648718555153979859">يتم جمع علامات التبويب معًا هنا</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(مراجعة واحدة (<ph name="REVIEWS_COUNT_ONE" />))}zero{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}two{(مراجعتان (<ph name="REVIEWS_COUNT_MANY" />))}few{(<ph name="REVIEWS_COUNT_MANY" /> مراجعات)}many{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}other{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}}</translation>
 <translation id="4850886885716139402">عرض</translation>

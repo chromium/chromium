@@ -246,7 +246,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5623402015214259806">{0,plural, =0{Det finns en uppdatering för Chromium}=1{Det finns en uppdatering för Chromium}other{Det finns en uppdatering för Chromium sedan # dagar}}</translation>
 <translation id="5643865575100044307">Radera alltid webbplatsdata från enheten när du stänger Chromium</translation>
 <translation id="5653831366781983928">Starta om Chromium nu</translation>
-<translation id="5675598751761067447">Den här filen kan vara farlig<ph name="LINE_BREAK" />Chromium kan kontrollera den här nedladdningen åt dig om du anger lösenordet (lösenordet lämnar inte enheten)</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Visa Chromium på det här språket</translation>
 <translation id="569897634095159764">Det går inte att ansluta till internet. Proxyservern kräver autentisering.</translation>

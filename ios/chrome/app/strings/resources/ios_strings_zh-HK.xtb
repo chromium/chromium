@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">輕觸並按住所需日期。</translation>
 <translation id="1959679933317802873">正在等待內容</translation>
 <translation id="1967461193809857427">{count,plural, =1{要繼續使用先前在 Android 上開啟的分頁嗎？}other{要繼續使用先前在 Android 上開啟的分頁嗎？}}</translation>
+<translation id="1972325230031091483">系統會根據您目前瀏覽的網頁主動載入內容，助您加快瀏覽速度</translation>
 <translation id="1973912524893600642">保留資料</translation>
 <translation id="1974060860693918893">進階選項</translation>
 <translation id="1980417445547898121">{count,plural, =1{在此 iPhone 上開啟最近在其他裝置使用的 {count} 個分頁}other{在此 iPhone 上開啟最近在其他裝置使用的 {count} 個分頁}}</translation>
@@ -291,6 +292,7 @@
 <translation id="2547458583188611426">同步處理無法運作。如要開始同步處理，請輸入密碼短語。</translation>
 <translation id="2551153019974022505">帳戶錯誤</translation>
 <translation id="2556092377360758201">無保護功能 (不建議)</translation>
+<translation id="2561375093019333908">開啟</translation>
 <translation id="2562041823070056534">正在傳送至 <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">將密碼儲存至 Google 帳戶中並自動填入</translation>
 <translation id="2577522251608256362">社區</translation>
@@ -433,6 +435,7 @@
 <translation id="3235242129752692527">編輯活動詳情，然後輕按 [儲存]。</translation>
 <translation id="3240426699337459095">已複製連結</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">如果您同時分享 Chrome 使用情況報告，這些報告將會包含您瀏覽的網址</translation>
 <translation id="3245744387817103524">無法儲存您的變更。</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /> (第 <ph name="INDEX" /> 項建議，共 <ph name="NUM_SUGGESTIONS" /> 項)</translation>
 <translation id="3264775633254836593">自動填入密碼</translation>
@@ -632,7 +635,6 @@
 <translation id="4371591986692297148">未啟用</translation>
 <translation id="4375040482473363939">二維條碼搜尋</translation>
 <translation id="4378154925671717803">電話號碼</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" />已與你分享 <ph name="WEBSITE" /> 的密碼</translation>
 <translation id="4389019817280890563">輕按即可變更語言。</translation>
 <translation id="4405320213589929829">使用網頁上的地址，取得當地資訊和路線。</translation>
 <translation id="4420409367264901497">編輯書籤</translation>
@@ -848,6 +850,7 @@
 <translation id="5513681519188741830"><ph name="TIME" /> 小時前</translation>
 <translation id="5525269841082836315">建立密碼短語</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} 個安全度低的密碼}other{{COUNT} 個安全度低的密碼}}</translation>
+<translation id="5532545557415295622">閒置逾時對話框</translation>
 <translation id="5542540507657872337">找到 <ph name="COUNT" /> 個已開啟的分頁</translation>
 <translation id="5548760955356983418">「Handoff」讓您可在此裝置上開始瀏覽網站，然後輕易在 Mac 上繼續瀏覽。目前開啟的網站將會在 Mac 的 Dock 中顯示。
 
@@ -857,6 +860,7 @@
 <translation id="555749644339804659">正在檢查密碼…</translation>
 <translation id="5559567453458728487">轉換在網上找到的量度單位</translation>
 <translation id="556042886152191864">按鈕</translation>
+<translation id="5572648434713976849">您會在網址列取得更貼近需求的建議</translation>
 <translation id="5572684875078967866">資料儲存空間</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{追蹤此包裹}other{追蹤所有包裹}}</translation>
 <translation id="5597915316964418992">開啟「分頁網格」</translation>
@@ -1083,6 +1087,7 @@
 <translation id="6642362222295953972">切換至現有的分頁</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6645899968535965230">二維條碼：<ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">系統會將您瀏覽的網址傳送至 Google，以便預測您接下來可能會瀏覽的網站</translation>
 <translation id="6647480763136463714">上次執行時間：<ph name="TIME" /></translation>
 <translation id="6656103420185847513">編輯資料夾</translation>
 <translation id="6657585470893396449">密碼</translation>
@@ -1288,6 +1293,7 @@
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{1 天後}other{{COUNT} 天後}}</translation>
 <translation id="7791543448312431591">新增</translation>
+<translation id="7792549458069452436">下載應用程式</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>
 <translation id="7812377703891978671">揀「<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />」就可以存取所有瀏覽記錄。</translation>
 <translation id="78146569776629510">下載</translation>

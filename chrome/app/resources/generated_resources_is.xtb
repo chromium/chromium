@@ -1131,7 +1131,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1832848789136765277">Staðfestu að þetta sért þú til að hafa alltaf aðgang að samstillingargögnunum þínum</translation>
 <translation id="1834503245783133039">Niðurhal mistókst: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Uppfærir Linux</translation>
-<translation id="1835612721186505600">Veita forritum og vefsvæðum með myndavélarheimild aðgang</translation>
 <translation id="1838374766361614909">Hreinsa leit</translation>
 <translation id="1839021455997460752">Netfangið þitt</translation>
 <translation id="1839540115464516994">Birta í <ph name="LOCATION" /></translation>
@@ -4585,7 +4584,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4507128560633489176">Gögn hreinsuð.</translation>
 <translation id="4507373251891673233">Þú lokaðir fyrir allar viðbætur frá <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Smelltu á „Bæta við flýtileið“</translation>
-<translation id="4508150454272293946">Leyfa forritum og vefsíðum að nota myndavélina/-vélarnar sem eru tengdar þessu tæki. Ef þú átt enn í vandræðum með myndavélina skaltu prófa að endurræsa forritið eða uppfæra vefsíðuna.</translation>
 <translation id="450867954911715010">Aðgengisstillingar</translation>
 <translation id="4508765956121923607">Sk&amp;oða frumkóða</translation>
 <translation id="4509277363725254222">Þegar þú deilir afriti af <ph name="BEGIN_BOLD_USERNAME" />notandanafninu<ph name="END_BOLD_USERNAME" /> og <ph name="BEGIN_BOLD_PASSWORD" />aðgangsorðinu<ph name="END_BOLD_PASSWORD" /> þínu getur fjölskyldumeðlimur notað þau með Google-aðgangsorðastjórnun</translation>
@@ -8479,7 +8477,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7610337976012700501">Til að nota „<ph name="FEATURE_NAME" />“ með þessum tengiliðum skaltu bæta netföngunum sem eru tengd við Google-reikninga þeirra við tengiliðina þína.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Allar viðbætur</translation>
-<translation id="7612401678989660900">Veita forritum og vefsvæðum með hljóðnemaheimild aðgang</translation>
 <translation id="7612497353238585898">Virkt vefsvæði</translation>
 <translation id="7612655942094160088">Kveikja á tengdum eiginleikum í síma</translation>
 <translation id="7612989789287281429">Skráir þig inn…</translation>

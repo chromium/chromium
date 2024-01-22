@@ -517,6 +517,8 @@
 <translation id="1956486093533522234">查找、保护或清空您的设备</translation>
 <translation id="1958218078413065209">您的最高得分是 <ph name="SCORE" />。</translation>
 <translation id="1959001866257244765">向 Google 发送<ph name="BEGIN_WHITEPAPER_LINK" />您访问的部分网页的网址、有限的系统信息以及部分网页内容<ph name="END_WHITEPAPER_LINK" />，帮助我们为所有人改善网络安全环境。<ph name="BEGIN_PRIVACY_PAGE_LINK" />隐私权政策<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959445535228047762">您的文字和网页内容会发送给 Google，并可能会用于改进此功能。
+  <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" />书签</translation>
 <translation id="196752089528718902">您通常可以安全地连接到网站，但目前 Chrome 无法使用安全连接。攻击者可能会试图对您的网络连接进行窃听或修改。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">序列化错误</translation>
@@ -720,6 +722,7 @@
 <translation id="2354430244986887761">Google 安全浏览功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />发现了有害应用<ph name="END_LINK" />。</translation>
 <translation id="2355395290879513365">攻击者可能能够看到您正在此网站上浏览的图片，并通过编辑这些图片让您受骗。</translation>
 <translation id="2356070529366658676">询问</translation>
+<translation id="2356926036049612643">V8 优化工具</translation>
 <translation id="2357481397660644965">您的设备由 <ph name="DEVICE_MANAGER" /> 管理，您的账号由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
 <translation id="2359629602545592467">多种货币</translation>
 <translation id="2359808026110333948">继续</translation>
@@ -1809,7 +1812,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">您正在使用屏幕锁定功能填充密码</translation>
 <translation id="4558551763791394412">尝试停用扩展程序。</translation>
-<translation id="456043042661026303">正在安全地检查您的付款信息</translation>
 <translation id="4566017918361049074">户外活动</translation>
 <translation id="4567686777917670400">您的管理员可以远程更改您的浏览器设置。此设备上的活动可能也在接受 Chromium 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">已验证</translation>
@@ -2655,7 +2657,6 @@
 <translation id="6272088941196661550">继续您的历程，以查看您的 Chrome 历史记录中的相关活动记录</translation>
 <translation id="6272383483618007430">Google 更新</translation>
 <translation id="6279183038361895380">按 |<ph name="ACCELERATOR" />| 可显示鼠标光标</translation>
-<translation id="628016388715774955">已选择“填充完整地址”选项</translation>
 <translation id="6280223929691119688">无法递送到此地址。请另选一个地址。</translation>
 <translation id="6284292079994426700">26 x 38 英寸</translation>
 <translation id="6284517535531159884">变体版本种子类型</translation>
@@ -2927,7 +2928,6 @@
 <translation id="6807791860691150411">教育</translation>
 <translation id="681021252041861472">必填字段</translation>
 <translation id="6810899417690483278">自定义 ID</translation>
-<translation id="681459028290894216">填充完整地址</translation>
 <translation id="6816109178681043245">体育用品</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">串行端口</translation>

@@ -74,7 +74,6 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2130870084309816036">Nije moguće povezati se s internetom. Ako koristite zaštitni zid, omogućite listu dozvoljenih <ph name="PRODUCT_EXE_NAME" />.</translation>
 <translation id="2131230230468101642">Da zaštitimo vašu privatnost, automatski brišemo interesovanja koja su starija od 4 sedmice. Kada nastavite koristiti preglednik, interesovanje se može ponovo pojaviti na listi. Ili možete ukloniti interesovanja koja ne želite dati Chromeu na razmatranje.</translation>
 <translation id="2139300032719313227">Ponovo pokrenite ChromeOS</translation>
-<translation id="2146761408396054429">Fajl je možda opasan<ph name="LINE_BREAK" />Chrome može za vas provjeriti ovo preuzimanje ako navedete lozinku — ona ostaje na uređaju</translation>
 <translation id="2151406531797534936">Ponovo pokrenite Chrome sada</translation>
 <translation id="2174917724755363426">Instalacija nije završena. Jeste li sigurni da želite otkazati?</translation>
 <translation id="2190166659037789668">Greška provjere ažuriranja: <ph name="UPDATE_CHECK_ERROR" />.</translation>

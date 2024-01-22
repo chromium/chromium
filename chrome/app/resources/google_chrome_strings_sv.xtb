@@ -74,7 +74,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2130870084309816036">Det går inte att ansluta till internet. Om du använder en brandvägg lägger du till <ph name="PRODUCT_EXE_NAME" /> på godkännandelistan.</translation>
 <translation id="2131230230468101642">För att skydda din integritet raderar vi automatiskt intressen som är äldre än fyra veckor. Medan du surfar kan ett intresse dyka upp på listan igen. Du kan också ta bort intressen som du inte vill att Chrome ska inkludera.</translation>
 <translation id="2139300032719313227">Starta om Chrome OS</translation>
-<translation id="2146761408396054429">Den här filen kan vara farlig<ph name="LINE_BREAK" />Chrome kan kontrollera den här nedladdningen åt dig om du anger lösenordet (lösenordet lämnar inte enheten)</translation>
 <translation id="2151406531797534936">Starta om Chrome nu</translation>
 <translation id="2174917724755363426">Installationen är inte klar. Är du säker på att du vill avbryta?</translation>
 <translation id="2190166659037789668">Fel vid uppdateringskontroll: <ph name="UPDATE_CHECK_ERROR" />.</translation>

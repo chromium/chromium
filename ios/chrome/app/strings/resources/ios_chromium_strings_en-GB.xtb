@@ -102,6 +102,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your 
 <translation id="3955621079070267756">Open Chromium from any app</translation>
 <translation id="4005283307739974863">Opens and Runs Safety Check in Chromium.</translation>
 <translation id="4043291146360695975">Passwords are saved to Password Manager on this device only.</translation>
+<translation id="4076589763479456892">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Not supported on Chromium beta</translation>
 <translation id="4106512142782407609">Signed in as <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@ Your data is encrypted with your passphrase. Enter it to use and save Chromium d
 <translation id="5534584691915394889">This will be used to create events in your Apple Calendar from Chromium and Google Lens.</translation>
 <translation id="5571094606370987472">Opens the Chromium Recent Tabs.</translation>
 <translation id="5623083843656850677">Lock your Incognito tabs when you leave Chromium or switch to a different app.</translation>
+<translation id="5671188105328420281">Chromium tips</translation>
 <translation id="5688047395118852662">This card shows you suggestions on how to get the most out of Chromium.</translation>
 <translation id="5700709190537129682">Chromium can't check your passwords</translation>
 <translation id="5777187867430702742">Chromium page</translation>

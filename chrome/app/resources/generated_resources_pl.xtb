@@ -379,6 +379,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Nie można otworzyć pliku}few{Nie można otworzyć plików}many{Nie można otworzyć plików}other{Nie można otworzyć plików}}</translation>
 <translation id="1282311502488501110">Nie loguj się</translation>
 <translation id="1282465000333679776">Udostępnij dźwięk z komputera</translation>
+<translation id="1283126956823499975">Podczas konfigurowania urządzenia coś poszło nie tak</translation>
 <translation id="1284277788676816155">Nie zezwalaj na zapisywanie danych</translation>
 <translation id="1285320974508926690">Nigdy nie tłumacz tej witryny</translation>
 <translation id="1285484354230578868">Przechowywanie danych na koncie Dysku Google</translation>
@@ -1118,7 +1119,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1832848789136765277">Aby zapewnić sobie stały dostęp do zsynchronizowanych danych, potwierdź swoją tożsamość</translation>
 <translation id="1834503245783133039">Nie udało się pobrać: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Uaktualnianie Linuksa</translation>
-<translation id="1835612721186505600">Zezwalanie na dostęp w przypadku aplikacji i stron internetowych, które mają uprawnienia do korzystania z aparatu</translation>
 <translation id="1838374766361614909">Wyczyść wyszukiwanie</translation>
 <translation id="1839021455997460752">Twój adres e-mail</translation>
 <translation id="1839540115464516994">Pokaż w tej lokalizacji: <ph name="LOCATION" /></translation>
@@ -4560,7 +4560,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4507128560633489176">Dane zostały wyczyszczone.</translation>
 <translation id="4507373251891673233">Wszystkie rozszerzenia mają zablokowany dostęp do witryny <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Kliknij „Dodaj skrót”</translation>
-<translation id="4508150454272293946">Zezwól aplikacjom i stronom internetowym na dostęp do kamer podłączonych do tego urządzenia. Jeśli nadal masz problem z kamerą, uruchom ponownie aplikację lub odśwież stronę.</translation>
 <translation id="450867954911715010">Ustawienia ułatwień dostępu</translation>
 <translation id="4508765956121923607">Wyświetl ź&amp;ródło</translation>
 <translation id="4509277363725254222">Gdy udostępnisz swoją <ph name="BEGIN_BOLD_USERNAME" />nazwę użytkownika<ph name="END_BOLD_USERNAME" /> i <ph name="BEGIN_BOLD_PASSWORD" />hasło<ph name="END_BOLD_PASSWORD" />, członek grupy rodzinnej będzie mógł wstawić te dane za pomocą Menedżera haseł Google.</translation>
@@ -5009,6 +5008,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4863769717153320198">Wygląda na <ph name="WIDTH" /> × <ph name="HEIGHT" /> (domyślna)</translation>
 <translation id="4864369630010738180">Loguję...</translation>
 <translation id="4864805589453749318">Wybierz rodzica, który zezwala na dodanie konta szkolnego.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (zablokowano)</translation>
 <translation id="486505726797718946">Zaoszczędzona pamięć</translation>
 <translation id="486635084936119914">Automatycznie otwieraj określone typy plików po pobraniu</translation>
 <translation id="4867272607148176509">Rodzice mogą zatwierdzać i blokować aplikacje, ustawiać limity czasu oraz kontrolować przeglądanie internetu. Później można dodać konto szkolne, aby uzyskać dostęp do większości zasobów szkolnych.</translation>
@@ -5502,6 +5502,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5261619498868361045">Nazwa kontenera nie może być pusta.</translation>
 <translation id="5261683757250193089">Otwórz w Chrome Web Store</translation>
 <translation id="5261799091118902550">Ten plik może zawierać wirusa lub złośliwe oprogramowanie. Możesz go wysłać do Google, aby sprawdzić, czy jest bezpieczny.</translation>
+<translation id="5262334727506665688">Nadal zapisuj hasła na koncie Google</translation>
 <translation id="5262784498883614021">Automatycznie łącz z siecią</translation>
 <translation id="5263656105659419083">Aby łatwo wrócić do panelu bocznego, kliknij Przypnij w prawym górnym rogu</translation>
 <translation id="5264148714798105376">To może potrwać około minuty.</translation>
@@ -7042,6 +7043,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="649396225532207613">Ten plik może zaszkodzić Twoim kontom osobistym i kontom w sieciach społecznościowch</translation>
 <translation id="6494327278868541139">Pokaż szczegóły silniejszej ochrony</translation>
 <translation id="6494445798847293442">To nie jest urząd certyfikacji</translation>
+<translation id="6494483173119160146">Na urządzeniu wystąpił nieodwracalny błąd. Zresetuj urządzenie (spowoduje to usunięcie wszystkich danych użytkownika) i spróbuj jeszcze raz.</translation>
 <translation id="6497784818439587832">Umożliwia zmienianie rozmiaru wyświetlacza, aby elementy na ekranie były mniejsze lub większe</translation>
 <translation id="6497789971060331894">Odwrotne przewijanie myszą</translation>
 <translation id="6498249116389603658">&amp;Wszystkie Twoje języki</translation>
@@ -8458,7 +8460,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7610337976012700501">Aby podczas korzystania z funkcji <ph name="FEATURE_NAME" /> używać tych kontaktów, dodaj do nich adresy e-mail połączone z ich kontami Google.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Wszystkie rozszerzenia</translation>
-<translation id="7612401678989660900">Zezwalanie na dostęp w przypadku aplikacji i stron internetowych, które mają uprawnienia do korzystania z mikrofonu</translation>
 <translation id="7612497353238585898">Aktywna witryna</translation>
 <translation id="7612655942094160088">Włącznik funkcji połączonego telefonu.</translation>
 <translation id="7612989789287281429">Loguję Cię…</translation>
@@ -9524,6 +9525,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8397825320644530257">Odłącz połączony telefon</translation>
 <translation id="8398877366907290961">Kontynuuj mimo wszystko</translation>
 <translation id="8399282673057829204">Wyświetl hasło</translation>
+<translation id="839949601275221554">Wystąpił błąd urządzenia. Uruchom je ponownie i spróbuj jeszcze raz.</translation>
 <translation id="8401432541486058167">Wpisz kod PIN powiązany z Twoją kartą elektroniczną.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome ponownie zablokuje pliki cookie dzisiaj}=1{Chrome ponownie zablokuje pliki cookie jutro}few{Chrome ponownie zablokuje pliki cookie za # dni}many{Chrome ponownie zablokuje pliki cookie za # dni}other{Chrome ponownie zablokuje pliki cookie za # dnia}}</translation>
 <translation id="8403618281196981152">Twoje dane w Chrome</translation>

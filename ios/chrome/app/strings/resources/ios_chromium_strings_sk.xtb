@@ -102,6 +102,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="3955621079070267756">Otvárajte Chromium z ľubovoľnej aplikácie</translation>
 <translation id="4005283307739974863">Otvorí a spustí kontrolu bezpečnosti v prehliadači Chromium.</translation>
 <translation id="4043291146360695975">Heslá sa ukladajú do správcu hesiel iba v tomto zariadení.</translation>
+<translation id="4076589763479456892">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehliadača Chromium vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Nepodporované vo verzii Chromium Beta</translation>
 <translation id="4106512142782407609">Prihlásili ste sa ako <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="5534584691915394889">Umožní to vytvárať udalosti vo vašom Kalendári Apple v prehliadači Chromium a funkcii Google Lens.</translation>
 <translation id="5571094606370987472">Otvorí nedávne karty v prehliadači Chromium.</translation>
 <translation id="5623083843656850677">Uzamknite karty inkognito, keď opustíte Chromium, alebo prepnite na inú aplikáciu.</translation>
+<translation id="5671188105328420281">Tipy pre Chromium</translation>
 <translation id="5688047395118852662">Na tejto karte sa vám zobrazujú návrhy, ako využívať Chromium naplno.</translation>
 <translation id="5700709190537129682">Chromium nemôže skontrolovať heslá</translation>
 <translation id="5777187867430702742">Stránka prehliadača Chromium</translation>

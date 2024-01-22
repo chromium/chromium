@@ -1135,7 +1135,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1832848789136765277">Kad užtikrintumėte galimybę visada pasiekti sinchronizuojamus duomenis, patvirtinkite savo tapatybę</translation>
 <translation id="1834503245783133039">Nepavyko atsisiųsti: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Naujovinama „Linux“</translation>
-<translation id="1835612721186505600">Leisti pasiekti programoms ir svetainėms, turinčioms fotoaparato leidimą</translation>
 <translation id="1838374766361614909">Išvalyti paiešką</translation>
 <translation id="1839021455997460752">Jūsų el. pašto adresas</translation>
 <translation id="1839540115464516994">Rodyti sistemoje „<ph name="LOCATION" />“</translation>
@@ -4598,7 +4597,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4507128560633489176">Duomenys išvalyti.</translation>
 <translation id="4507373251891673233">Užblokavote visus plėtinius iš <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Spustelėkite „Pridėti šaukinį“.</translation>
-<translation id="4508150454272293946">Leiskite programoms ir tinklalapiams naudoti prie šio įrenginio prijungtą (-us) fotoaparatą (-us). Jei vis tiek kyla problemų dėl fotoaparato, pabandykite paleisti programą iš naujo arba atnaujinti tinklalapį.</translation>
 <translation id="450867954911715010">Pasiekiamumo nustatymai</translation>
 <translation id="4508765956121923607">Žiūrėti ša&amp;ltinį</translation>
 <translation id="4509277363725254222">Kai bendrinate <ph name="BEGIN_BOLD_USERNAME" />naudotojo vardo<ph name="END_BOLD_USERNAME" /> ir <ph name="BEGIN_BOLD_PASSWORD" />slaptažodžio<ph name="END_BOLD_PASSWORD" /> kopiją, šeimos grupės narys gali juos užpildyti naudodamas „Google“ slaptažodžių tvarkyklę</translation>
@@ -8506,7 +8504,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7610337976012700501">Norėdami naudoti „<ph name="FEATURE_NAME" />“ su šiais kontaktais, prie savo kontaktų pridėkite el. pašto adresą, susietą su jų „Google“ paskyra.</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612050744024016345">Visi plėtiniai</translation>
-<translation id="7612401678989660900">Leisti pasiekti programoms ir svetainėms, turinčioms mikrofono leidimą</translation>
 <translation id="7612497353238585898">Aktyvi svetainė</translation>
 <translation id="7612655942094160088">Susietų telefono funkcijų įgalinimas.</translation>
 <translation id="7612989789287281429">Prisijungiama…</translation>

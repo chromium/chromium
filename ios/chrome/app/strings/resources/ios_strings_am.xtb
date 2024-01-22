@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">አንድን ቀን ይንኩ እና ይያዙ።</translation>
 <translation id="1959679933317802873">ይዘትን በመጠባበቅ ላይ</translation>
 <translation id="1967461193809857427">{count,plural, =1{በAndroid ላይ ትተውት የነበረ ትርን ለመቀጠል ይከፈት?}one{በAndroid ላይ ትተውት የነበረ ትርን ለመቀጠል ይከፈት?}other{በAndroid ላይ ትተዋቸው የነበሩ ትሮችን ለመቀጠል ይከፈቱ?}}</translation>
+<translation id="1972325230031091483">አሁን ባለው የድረ-ገፅ ጉብኝትዎ ላይ በመመስረት ይዘቱ በንቃት ስለተጫነ በፍጥነት ያስሱታል</translation>
 <translation id="1973912524893600642">ውሂብን አቆይ</translation>
 <translation id="1974060860693918893">የላቀ</translation>
 <translation id="1980417445547898121">{count,plural, =1{የእርስዎን {count} በቅርብ ጊዜ ገቢር የነበረ ትር ከሌላ መሣሪያዎ በዚህ iPhone ላይ ያግኙ}one{የእርስዎን {count} በቅርብ ጊዜ ገቢር የነበረ ትር ከሌላ መሣሪያዎ በዚህ iPhone ላይ ያግኙ}other{የእርስዎን {count} በቅርብ ጊዜ ገቢር የነበሩ ትሮች ከሌላ መሣሪያዎ በዚህ iPhone ላይ ያግኙ}}</translation>
@@ -434,6 +435,7 @@
 <translation id="3235242129752692527">የክስተት ዝርዝሮቹን ያርትዑ እና «አስቀምጥ» የሚለውን መታ ያድርጉ።</translation>
 <translation id="3240426699337459095">አገናኝ ተቀድቷል</translation>
 <translation id="3244271242291266297">ወወ</translation>
+<translation id="3245429137663807393">እንዲሁም የChrome አጠቃቀም ሪፖርቶችን ካጋሩ፣ እነዚያ ሪፖርቶች እርስዎ የሚጎበኟቸውን ዩአርኤሎች ያካትታሉ</translation>
 <translation id="3245744387817103524">ለውጥዎ መቀመጥ አልቻለም።</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />፣ <ph name="ADDITIONAL_INFO" />፣ <ph name="INDEX" /> ከ<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">የይለፍ ቃላትን ራስ-ሙላ</translation>
@@ -557,6 +559,7 @@
 <translation id="3922310737605261887">የቀዱትን ጽሁፍ ይፈልጉ</translation>
 <translation id="3928666092801078803">የእኔን ውሂብ አጣምር</translation>
 <translation id="3929457972718048006">አድራሻዎች</translation>
+<translation id="3948600256434252210">ማንነት የማያሳውቅ ውስጥ ለማሰስ ወደ ቀኝ ማንሸራተት ይችላሉ።</translation>
 <translation id="3955822496205734389">ደካማ የይለፍ ቃላት አሉዎት።</translation>
 <translation id="3959736869653157332">ምናሌ → አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="3962326069546168954">ያስቀምጡ</translation>
@@ -633,7 +636,6 @@
 <translation id="4371591986692297148">ያልነቃ</translation>
 <translation id="4375040482473363939">የQR ኮድ ፍለጋ</translation>
 <translation id="4378154925671717803">ስልክ</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> ለ<ph name="WEBSITE" /> የይለፍ ቃል ከእርስዎ ጋር አጋርተዋል።</translation>
 <translation id="4389019817280890563">ቋንቋን ለመለወጥ መታ ያድርጉ።</translation>
 <translation id="4405320213589929829">አካባቢያዊ መረጃ እና አቅጣጫዎችን ለማግኘት በድረ-ገጾች ላይ ያሉ አድራሻዎችን ይጠቀሙ።</translation>
 <translation id="4420409367264901497">እልባትን አርትዕ</translation>
@@ -662,6 +664,7 @@
 <translation id="4539187448429948815">{count,plural, =1{{count} የተቀመጠ ራስሰር አጠናቅ ጥቆማ ከቁልፍ ሰሌዳዎ በላይ ይገኛል።}one{{count} የተቀመጡ ራስሰር አጠናቅ ጥቆማዎች ከቁልፍ ሰሌዳዎ በላይ ይገኛሉ።}other{{count} የተቀመጡ ራስሰር አጠናቅ ጥቆማዎች ከቁልፍ ሰሌዳዎ በላይ ይገኛሉ።}}</translation>
 <translation id="4540780316273593836">የሆነ ችግር ተፈጥሯል</translation>
 <translation id="4550040941166547650">በዚህ መሣሪያ ላይ ብቻ</translation>
+<translation id="4564893319561643483">«<ph name="TITLE" />» የሚለውን ደብቅ</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} ገቢር ያልሆነ ትር ይዘጋ?}one{{COUNT} ገቢር ያልሆነ ትር ይዘጋ?}other{{COUNT} ገቢር ያልሆኑ ትሮች ይዘጉ?}}</translation>
 <translation id="457386861538956877">ተጨማሪ...</translation>
 <translation id="4587589328781138893">ጣቢያዎች</translation>
@@ -859,6 +862,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="555749644339804659">የይለፍ ቃላትን በመፈተሽ ላይ…</translation>
 <translation id="5559567453458728487">በድር ላይ የተገኙ የልወጣ መለኪያ አሃዶችን ይቀይሩ</translation>
 <translation id="556042886152191864">አዘራር</translation>
+<translation id="5572648434713976849">በአድራሻ አሞሌው ውስጥ የተሻሻሉ የአስተያየት ጥቆማዎችን ያገኛሉ</translation>
 <translation id="5572684875078967866">የመረጃ ማከማቻ</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{ይህን ጥቅል ተከታተል}one{ሁሉንም ጥቅል ተከታተል}other{ሁሉንም ጥቅል ተከታተል}}</translation>
 <translation id="5597915316964418992">የትር ፍርግርግን ይክፈቱ</translation>
@@ -1085,6 +1089,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6642362222295953972">አሁን ወዳለ ትር ይቀይሩ</translation>
 <translation id="6643016212128521049">አጽዳ</translation>
 <translation id="6645899968535965230">የQR ኮድ፦ <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">እርስዎ የሚጎበኟቸው ዩአርኤሎች ቀጥሎ የትኞቹን ጣቢያዎች ሊጎበኙ እንደሚችሉ ለመተንበይ ወደ Google ይላካሉ</translation>
 <translation id="6647480763136463714">መጨረሻ ያሄደው <ph name="TIME" /></translation>
 <translation id="6656103420185847513">አቃፊ ያርትዑ</translation>
 <translation id="6657585470893396449">የይለፍ ቃል</translation>
@@ -1262,6 +1267,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7666861622396822790">ይህን <ph name="BEGIN_LINK" />የይዘት ቅንብሮች<ph name="END_LINK" /> ውስጥ ማስተዳደር ይችላሉ።</translation>
 <translation id="7671141431838911305">ጫን</translation>
+<translation id="7673346542062368520">ማንነት የማያሳውቅ ውስጥ ለማሰስ ወደ ግራ ማንሸራተት ይችላሉ።</translation>
 <translation id="7679915578945954324">የድር ጣቢያ አድራሻዎች ተቀድተዋል</translation>
 <translation id="7687508192620387263">የቀን መቁጠሪያ ፋይል ይገኛል</translation>
 <translation id="7701040980221191251">ምንም</translation>

@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Pridržte nejaký dátum.</translation>
 <translation id="1959679933317802873">Čaká sa na obsah</translation>
 <translation id="1967461193809857427">{count,plural, =1{Chcete si zobraziť kartu, ktorú ste zavreli v Androide?}few{Chcete si zobraziť karty, ktoré ste zavreli v Androide?}many{Pick up the tabs you left on Android?}other{Chcete si zobraziť karty, ktoré ste zavreli v Androide?}}</translation>
+<translation id="1972325230031091483">Prehliadanie sa zrýchli, pretože obsah bude proaktívne načítaný na základe vašej návštevy aktuálnej webovej stránky</translation>
 <translation id="1973912524893600642">Ponechať údaje</translation>
 <translation id="1974060860693918893">Rozšírené</translation>
 <translation id="1980417445547898121">{count,plural, =1{Zobrazte si {count} nedávno aktívnu kartu z druhého zariadenia v tomto iPhone}few{Zobrazte si {count} nedávno aktívne karty z druhého zariadenia v tomto iPhone}many{Get your {count} recently active tabs from your other device on this iPhone}other{Zobrazte si {count} nedávno aktívnych kariet z druhého zariadenia v tomto iPhone}}</translation>
@@ -433,6 +434,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3235242129752692527">Upravte podrobnosti o udalosti a klepnite na Uložiť.</translation>
 <translation id="3240426699337459095">Odkaz bol skopírovaný</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Ak zdieľate aj prehľady používania Chromu, tieto prehľady zahŕňajú webové adresy, ktoré navštívite</translation>
 <translation id="3245744387817103524">Zmenu sa nepodarilo uložiť.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> z <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Automatické dopĺňanie hesiel</translation>
@@ -556,6 +558,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3922310737605261887">Vyhľadať skopírovaný text</translation>
 <translation id="3928666092801078803">Spojiť moje údaje</translation>
 <translation id="3929457972718048006">Adresy</translation>
+<translation id="3948600256434252210">Ak chcete prehliadať v režime inkognito, potiahnite doprava.</translation>
 <translation id="3955822496205734389">Máte slabé heslá.</translation>
 <translation id="3959736869653157332">Ponuka → Nová karta inkognito</translation>
 <translation id="3962326069546168954">Uložiť</translation>
@@ -632,7 +635,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4371591986692297148">Neaktívne</translation>
 <translation id="4375040482473363939">Vyhľadávanie QR kódov</translation>
 <translation id="4378154925671717803">Telefón</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> s vami zdieľal(a) heslo webu <ph name="WEBSITE" />.</translation>
 <translation id="4389019817280890563">Klepnutím zmeníte jazyk.</translation>
 <translation id="4405320213589929829">Pomocou adries na webových stránkach môžete získať miestne informácie a trasy.</translation>
 <translation id="4420409367264901497">Upraviť záložku</translation>
@@ -661,6 +663,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4539187448429948815">{count,plural, =1{Nad klávesnicou je k dispozícii {count} uložený návrh automatického dopĺňania.}few{Nad klávesnicou sú k dispozícii {count} uložené návrhy automatického dopĺňania.}many{{count} saved autocomplete suggestions available above your keyboard.}other{Nad klávesnicou je k dispozícii {count} uložených návrhov automatického dopĺňania.}}</translation>
 <translation id="4540780316273593836">Vyskytol sa problém</translation>
 <translation id="4550040941166547650">Iba v tomto zariadení</translation>
+<translation id="4564893319561643483">Skryť <ph name="TITLE" /></translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Chcete zavrieť {COUNT} neaktívnu kartu?}few{Chcete zavrieť {COUNT} neaktívne karty?}many{Close {COUNT} Inactive Tabs?}other{Chcete zavrieť {COUNT} neaktívnych kariet?}}</translation>
 <translation id="457386861538956877">Viac...</translation>
 <translation id="4587589328781138893">Weby</translation>
@@ -857,6 +860,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="555749644339804659">Kontrolujú sa heslá…</translation>
 <translation id="5559567453458728487">Konvertovať merné jednotky nájdené na internete</translation>
 <translation id="556042886152191864">Tlačidlo</translation>
+<translation id="5572648434713976849">V paneli s adresou budete dostávať zlepšené návrhy</translation>
 <translation id="5572684875078967866">Úložisko informácií</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Sledovať túto zásielku}few{Sledovať všetky zásielky}many{Sledovať všetky zásielky}other{Sledovať všetky zásielky}}</translation>
 <translation id="5597915316964418992">Otvorte mriežku kariet</translation>
@@ -1083,6 +1087,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="6642362222295953972">Prepnúť na existujúcu kartu</translation>
 <translation id="6643016212128521049">Vymazať</translation>
 <translation id="6645899968535965230">QR kód: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">Webové adresy, ktoré navštevujete, sa odosielajú Googlu, aby mohol vytvárať predpokladané dopyty webov, ktoré pravdepodobne navštívite</translation>
 <translation id="6647480763136463714">Naposledy spustená <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Upraviť priečinok</translation>
 <translation id="6657585470893396449">Heslo</translation>
@@ -1260,6 +1265,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7666861622396822790">Môžete to spravovať v sekcii <ph name="BEGIN_LINK" />Nastavenia obsahu<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">INŠTALOVAŤ</translation>
+<translation id="7673346542062368520">Ak chcete prehliadať v režime inkognito, potiahnite doľava.</translation>
 <translation id="7679915578945954324">Adresy webových stránok boli skopírované</translation>
 <translation id="7687508192620387263">K dispozícii je súbor kalendára</translation>
 <translation id="7701040980221191251">Žiadne</translation>

@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">తేదీని తాకి, నొక్కి ఉంచండి.</translation>
 <translation id="1959679933317802873">కంటెంట్ కోసం వేచి ఉంది</translation>
 <translation id="1967461193809857427">{count,plural, =1{Androidలో మీరు చివరిగా ఉపయోగించిన ట్యాబ్‌ను తెరవాలనుకుంటున్నారా?}other{Androidలో మీరు చివరిగా ఉపయోగించిన ట్యాబ్‌లను తెరవాలనుకుంటున్నారా?}}</translation>
+<translation id="1972325230031091483">మీరు ప్రస్తుతం సందర్శించిన వెబ్‌పేజీ ఆధారంగా కంటెంట్ ముందస్తుగా లోడ్ చేయబడింది, కాబట్టి మీరు వేగంగా బ్రౌజ్ చేయగలరు</translation>
 <translation id="1973912524893600642">డేటాను అలాగే ఉంచు</translation>
 <translation id="1974060860693918893">అధునాతన సెట్టింగ్‌లు</translation>
 <translation id="1980417445547898121">{count,plural, =1{ఈ iPhoneలోని మీ ఇతర పరికరం నుండి ఇటీవల యాక్టివ్‌గా ఉన్న {count} ట్యాబ్‌ను పొందండి}other{ఈ iPhoneలోని మీ ఇతర పరికరం నుండి ఇటీవల యాక్టివ్‌గా ఉన్న {count} ట్యాబ్‌లను పొందండి}}</translation>
@@ -434,6 +435,7 @@
 <translation id="3235242129752692527">ఈవెంట్ వివరాలను ఎడిట్ చేసి, "సేవ్"ను ట్యాప్ చేయండి.</translation>
 <translation id="3240426699337459095">లింక్ కాపీ చేయబడింది</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">మీరు Chrome వినియోగ రిపోర్ట్‌లను కూడా షేర్ చేస్తున్నట్లయితే, ఆ రిపోర్ట్‌లలో మీరు సందర్శించే URLలు ఉంటాయి</translation>
 <translation id="3245744387817103524">మీ మార్పు సేవ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="NUM_SUGGESTIONS" />లో <ph name="INDEX" /></translation>
 <translation id="3264775633254836593">పాస్‌వర్డ్‌లను ఆటోఫిల్ చేయండి</translation>
@@ -634,7 +636,6 @@
 <translation id="4371591986692297148">ఇన్‌యాక్టివ్</translation>
 <translation id="4375040482473363939">QR కోడ్ శోధన</translation>
 <translation id="4378154925671717803">ఫోన్</translation>
-<translation id="4388983683160515185"><ph name="WEBSITE" />‌కు సంబంధించిన పాస్‌వర్డ్‌ను <ph name="FULL_NAME" /> మీకు షేర్ చేశారు</translation>
 <translation id="4389019817280890563">భాషను మార్చడానికి నొక్కండి.</translation>
 <translation id="4405320213589929829">లోకల్ సమాచారం, దిశలను పొందడానికి వెబ్ పేజీలలో అడ్రస్‌లను ఉపయోగించండి.</translation>
 <translation id="4420409367264901497">బుక్‌మార్క్‌ను ఎడిట్ చేయండి</translation>
@@ -861,6 +862,7 @@
 <translation id="555749644339804659">పాస్‌వర్డ్‌ల చెకింగ్…</translation>
 <translation id="5559567453458728487">వెబ్‌లో కనుగొనబడిన మెజర్‌మెంట్ యూనిట్‌లను మార్చండి</translation>
 <translation id="556042886152191864">బటన్</translation>
+<translation id="5572648434713976849">మీరు అడ్రస్ బార్‌లో మెరుగైన సూచనలను పొందుతారు</translation>
 <translation id="5572684875078967866">సమాచార స్టోరేజ్</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{ఈ ప్యాకేజీని ట్రాక్ చేయండి}other{ప్యాకేజీలన్నింటినీ ట్రాక్ చేయండి}}</translation>
 <translation id="5597915316964418992">ట్యాబ్ గ్రిడ్‌ను తెరవండి</translation>
@@ -1087,6 +1089,7 @@
 <translation id="6642362222295953972">ప్రస్తుత ట్యాబ్‌కు మారు</translation>
 <translation id="6643016212128521049">క్లియర్ చేయండి</translation>
 <translation id="6645899968535965230">QR కోడ్: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">మీరు తర్వాత ఏ సైట్‌లను సందర్శించవచ్చు అనే దానిని అంచనా వేయడానికి మీరు సందర్శించే URLలు Googleకు పంపబడతాయి</translation>
 <translation id="6647480763136463714">చివరిసారిగా చెక్ చేసిన సమయం <ph name="TIME" /></translation>
 <translation id="6656103420185847513">ఫోల్డర్‌ను ఎడిట్ చేయండి</translation>
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>

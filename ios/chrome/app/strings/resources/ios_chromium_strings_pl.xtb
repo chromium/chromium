@@ -102,6 +102,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na s
 <translation id="3955621079070267756">Otwieraj Chromium z dowolnej aplikacji</translation>
 <translation id="4005283307739974863">Otwiera i uruchamia kontrolę zabezpieczeń w Chromium.</translation>
 <translation id="4043291146360695975">Hasła są zapisywane w Menedżerze haseł tylko na tym urządzeniu.</translation>
+<translation id="4076589763479456892">Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Nieobsługiwane w Chromium Beta</translation>
 <translation id="4106512142782407609">Zalogowano jako <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@ Dane zostały zaszyfrowane Twoim hasłem. Podaj hasło, aby korzystać z danych
 <translation id="5534584691915394889">Będziemy z tego korzystać, aby tworzyć wydarzenia z Chromium i Obiektywu Google w kalendarzu Apple.</translation>
 <translation id="5571094606370987472">Otwiera ostatnie karty w Chromium.</translation>
 <translation id="5623083843656850677">Po zamknięciu Chromium lub przełączeniu się na inną aplikację zablokuj karty incognito.</translation>
+<translation id="5671188105328420281">Chromium – wskazówki</translation>
 <translation id="5688047395118852662">Ta karta zawiera sugestie, które pomogą Ci w pełni wykorzystać możliwości Chromium.</translation>
 <translation id="5700709190537129682">Chromium nie może sprawdzić Twoich haseł</translation>
 <translation id="5777187867430702742">Strona Chromium</translation>
@@ -283,6 +285,7 @@ Pamiętaj, że:
 <translation id="8776843108004031667">To konto razem z wszelkimi niezapisanymi danymi zostanie usunięte z Chromium.</translation>
 <translation id="88376265765385899">Otwiera zakładki w Chromium.</translation>
 <translation id="8860548555286245440">Otwieraj adresy URL w Chromium w trybie incognito</translation>
+<translation id="8866191443434488382">Chromium będzie wykrywać numery śledzenia w odwiedzanych przez Ciebie witrynach i wyświetlać aktualne informacje o przesyłkach na stronie Nowa karta. Numery śledzenia przesyłek i nazwy witryn będą wysyłane do zespołu Chromium i używane do obsługi tej funkcji oraz do ogólnego ulepszania funkcji zakupów. Możesz to zmienić w dowolnym momencie w <ph name="BEGIN_LINK" />ustawieniach śledzenia przesyłek<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium na iOS</translation>
 <translation id="8924617840944134898">Otwórz kartę incognito w Chromium</translation>
 <translation id="894437814105052438">Gdy się wylogujesz, Chromium nie zsynchronizuje żadnych nowych danych z Twoim kontem Google. Dane, które zostały zsynchronizowane wcześniej, pozostaną na koncie.</translation>

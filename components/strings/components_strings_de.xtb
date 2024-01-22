@@ -1818,7 +1818,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Du verwendest die Displaysperre zum Ausfüllen von Passwörtern</translation>
 <translation id="4558551763791394412">Deaktiviere deine Erweiterungen.</translation>
-<translation id="456043042661026303">Zahlungsdetails werden auf sichere Weise geprüft</translation>
 <translation id="4566017918361049074">Outdoor</translation>
 <translation id="4567686777917670400">Dein Administrator kann die Browsereinstellungen per Remotezugriff ändern. Aktivitäten auf diesem Gerät können auch außerhalb von Chromium verwaltet werden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">Bestätigt</translation>
@@ -2665,7 +2664,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6272088941196661550">Du kannst weiter stöbern, um relevante Aktivitäten in deinem Chrome-Verlauf zu sehen</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6279183038361895380">Zum Einblenden des Cursors |<ph name="ACCELERATOR" />| drücken</translation>
-<translation id="628016388715774955">Die Option „Vollständige Adresse ausfüllen“ wurde ausgewählt</translation>
 <translation id="6280223929691119688">Die Lieferadresse wird nicht unterstützt. Bitte wähle eine andere Adresse aus.</translation>
 <translation id="6284292079994426700">26 x 38 Zoll</translation>
 <translation id="6284517535531159884">Quelltyp der Varianten</translation>
@@ -2937,7 +2935,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6807791860691150411">Bildung</translation>
 <translation id="681021252041861472">Pflichtfeld</translation>
 <translation id="6810899417690483278">Personalisierungs-ID</translation>
-<translation id="681459028290894216">Vollständige Adresse ausfüllen</translation>
 <translation id="6816109178681043245">Sportartikel</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">Serielle Schnittstellen</translation>

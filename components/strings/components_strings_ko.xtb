@@ -517,6 +517,8 @@
 <translation id="1956486093533522234">기기 찾기, 잠그기 또는 삭제</translation>
 <translation id="1958218078413065209">최고 점수는 <ph name="SCORE" />점입니다.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />방문한 일부 페이지의 URL, 제한된 시스템 정보, 일부 페이지 콘텐츠<ph name="END_WHITEPAPER_LINK" />를 Google에 전송하여 모든 웹 사용자를 위해 보안을 강화하는 데 참여해 주세요. <ph name="BEGIN_PRIVACY_PAGE_LINK" />개인정보처리방침<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959445535228047762">텍스트 및 페이지 콘텐츠가 Google로 전송되며, 이 기능을 개선하는 데 사용될 수 있습니다.
+  <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> 북마크</translation>
 <translation id="196752089528718902">일반적으로 사이트에 안전하게 연결되지만, 이번에는 Chrome에서 보안 연결을 사용할 수 없습니다. 공격자가 네트워크 연결을 도청하거나 수정하려고 시도하는 것일 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">일련화 오류</translation>
@@ -720,6 +722,7 @@
 <translation id="2354430244986887761">Google 세이프 브라우징이 최근 <ph name="SITE" />에서 <ph name="BEGIN_LINK" />유해한 앱을 발견<ph name="END_LINK" />했습니다.</translation>
 <translation id="2355395290879513365">공격자는 사용자가 이 사이트에서 보고 있는 이미지를 볼 수 있으며 이미지를 수정하여 사용자를 속일 수 있습니다.</translation>
 <translation id="2356070529366658676">확인</translation>
+<translation id="2356926036049612643">V8 옵티마이저</translation>
 <translation id="2357481397660644965">내 기기는 <ph name="DEVICE_MANAGER" />에서 관리하며 내 계정은 <ph name="ACCOUNT_MANAGER" />에서 관리합니다.</translation>
 <translation id="2359629602545592467">복수</translation>
 <translation id="2359808026110333948">계속</translation>
@@ -1813,7 +1816,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">비밀번호 입력 시 화면 잠금 사용 중</translation>
 <translation id="4558551763791394412">확장 프로그램 사용 중지해 보기</translation>
-<translation id="456043042661026303">안전하게 결제 세부정보 확인 중</translation>
 <translation id="4566017918361049074">야외 활동</translation>
 <translation id="4567686777917670400">관리자가 원격으로 브라우저 설정을 변경할 수 있습니다. 이 기기의 활동은 Chromium 외부에서도 관리할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">확인됨</translation>
@@ -2660,7 +2662,6 @@
 <translation id="6272088941196661550">Chrome 방문 기록에서 관련 활동을 보려면 탐색 여정을 재개하세요.</translation>
 <translation id="6272383483618007430">Google 업데이트</translation>
 <translation id="6279183038361895380">|<ph name="ACCELERATOR" />|을(를) 눌러 커서 표시</translation>
-<translation id="628016388715774955">전체 주소 입력 옵션이 선택됨</translation>
 <translation id="6280223929691119688">이 주소로 배달할 수 없습니다. 다른 주소를 선택하세요.</translation>
 <translation id="6284292079994426700">26x38인치</translation>
 <translation id="6284517535531159884">버전 시드 유형</translation>
@@ -2932,7 +2933,6 @@
 <translation id="6807791860691150411">교육</translation>
 <translation id="681021252041861472">필수 입력란</translation>
 <translation id="6810899417690483278">맞춤설정 ID</translation>
-<translation id="681459028290894216">전체 주소 입력</translation>
 <translation id="6816109178681043245">스포츠용품</translation>
 <translation id="6817217109584391709">자바스크립트</translation>
 <translation id="6820143000046097424">직렬 포트</translation>

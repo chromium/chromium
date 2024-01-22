@@ -88,6 +88,7 @@
 <translation id="2583187216237139145">在使用此工作资料（例如创建书签、历史记录、密码和其他设置）时生成的任何 Chromium 数据都可由工作资料管理员移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">继续使用 Chromium</translation>
 <translation id="259935314519650377">未能缓存所下载的安装程序。错误：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
+<translation id="264613044588233783">提高 Chromium 运行速度，让使用 JavaScript 的功能按预期运行（建议）</translation>
 <translation id="2648074677641340862">安装过程中出现操作系统错误。请重新下载 Chromium。</translation>
 <translation id="2661879430930417727">如果您是与亲朋好友共用一部设备，他们将能够使用单独的账号进行浏览，并可随心所欲地设置 Chromium</translation>
 <translation id="268602741124540128">欢迎使用 Chromium，<ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -123,6 +124,7 @@
 <translation id="3258596308407688501">Chromium 无法读写其数据目录：
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 是 Chromium 的 JavaScript 和 WebAssembly 引擎，用于提升网站性能</translation>
 <translation id="3283186697780795848">已安装 Chromium 版本 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">立即重新启动</translation>
 <translation id="328888136576916638">缺少 Google API 密钥，因此 Chromium 的部分功能将无法使用。</translation>
@@ -216,6 +218,7 @@
 <translation id="4814736265800133385">在不登录账号的情况下使用 Chromium</translation>
 <translation id="4888717733111232871">Chromium的入站规则，允许mDNS流量。</translation>
 <translation id="4893347770495441059">重新启动以更新 Chromium(&amp;C)</translation>
+<translation id="4942295735032723435">若要接收后续 Chromium 更新，您需使用 macOS 11 或更高版本。该计算机目前使用的是 macOS 10.15。</translation>
 <translation id="4943838377383847465">Chromium处于后台运行模式。</translation>
 <translation id="4987820182225656817">访客使用Chromium不会留下任何痕迹。</translation>
 <translation id="4994636714258228724">将您自己添加到Chromium</translation>
@@ -244,7 +247,6 @@
 <translation id="5623402015214259806">{0,plural, =0{有一项可用的 Chromium 更新}=1{有一项可用的 Chromium 更新}other{有一项可用的 Chromium 更新（已发布 # 天）}}</translation>
 <translation id="5643865575100044307">始终在关闭 Chromium 时删除设备上的网站数据</translation>
 <translation id="5653831366781983928">请立即重启 Chromium</translation>
-<translation id="5675598751761067447">这可能是个危险文件<ph name="LINE_BREAK" />如果您提供了密码（密码会保存在您的设备上），Chromium 可为您检查此下载内容</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">以这种语言显示 Chromium</translation>
 <translation id="569897634095159764">无法连接到互联网。代理服务器要求进行身份验证。</translation>
@@ -404,6 +406,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8105840573057009683">Chromium 需要为此网站授予位置信息权限</translation>
 <translation id="8133124826068723441">由于您的网域不支持同步，Chromium 操作系统无法同步您的数据。</translation>
 <translation id="813913629614996137">正在初始化…</translation>
+<translation id="8166782796394721554">开启 Chromium 的 JavaScript 和 WebAssembly 引擎额外保护功能</translation>
 <translation id="81770708095080097">此文件存在危险，因此 Chromium 已将其拦截。</translation>
 <translation id="8213374284266571500">Chromium 屏蔽了此文件，因为这类文件包含危险内容</translation>
 <translation id="8248265253516264921">如果图片缺少有用的说明，则 Chromium 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。您可以随时在“设置”中关闭此功能。</translation>

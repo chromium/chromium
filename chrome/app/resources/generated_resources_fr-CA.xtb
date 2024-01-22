@@ -1120,7 +1120,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1832848789136765277">Pour vous assurer de toujours pouvoir accéder à vos données de synchronisation, vérifiez qu'il s'agit bien de vous</translation>
 <translation id="1834503245783133039">Échec du téléchargement : <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Mise à niveau de Linux terminé</translation>
-<translation id="1835612721186505600">Permettez l'accès à l'appareil photo aux applications et aux sites Web en détenant l'autorisation</translation>
 <translation id="1838374766361614909">Effacer les termes de recherche</translation>
 <translation id="1839021455997460752">Votre adresse de courriel</translation>
 <translation id="1839540115464516994">Afficher dans <ph name="LOCATION" /></translation>
@@ -4571,7 +4570,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4507128560633489176">Données effacées.</translation>
 <translation id="4507373251891673233">Vous avez bloqué toutes les extensions de <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Cliquez sur « Ajouter un raccourci ».</translation>
-<translation id="4508150454272293946">Autorisez les applications et les pages Web à utiliser le ou les appareils photo connectés à cet appareil. Si le problème avec votre appareil photo persiste, essayez de redémarrer l'application ou d'actualiser la page Web.</translation>
 <translation id="450867954911715010">Paramètres d'accessibilité</translation>
 <translation id="4508765956121923607">Voir le code s&amp;ource</translation>
 <translation id="4509277363725254222">Lorsque vous partagez une copie de votre <ph name="BEGIN_BOLD_USERNAME" />nom d'utilisateur<ph name="END_BOLD_USERNAME" /> et de votre <ph name="BEGIN_BOLD_PASSWORD" />mot de passe<ph name="END_BOLD_PASSWORD" />, le membre de la famille peut les remplir à l'aide du gestionnaire de mots de passe Google.</translation>
@@ -8465,7 +8463,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7610337976012700501">Pour utiliser le <ph name="FEATURE_NAME" /> avec ces contacts, ajoutez l'adresse de courriel associée au compte Google de chacun d'entre eux à vos contacts.</translation>
 <translation id="7611713099524036757">méta</translation>
 <translation id="7612050744024016345">Toutes les extensions</translation>
-<translation id="7612401678989660900">Permettez l'accès au microphone à toutes les applications et à tous les sites Web en détenant l'autorisation</translation>
 <translation id="7612497353238585898">Site actif</translation>
 <translation id="7612655942094160088">Active les fonctionnalités de téléphone connecté.</translation>
 <translation id="7612989789287281429">Connexion en cours…</translation>

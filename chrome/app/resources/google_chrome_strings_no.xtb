@@ -69,7 +69,6 @@
 <translation id="2130870084309816036">Kan ikke koble til internett. Hvis du bruker en brannmur, må du legge til <ph name="PRODUCT_EXE_NAME" /> på godkjenningslisten.</translation>
 <translation id="2131230230468101642">For å beskytte personvernet ditt sletter vi automatisk interessene dine som er eldre enn fire uker. Når du fortsetter å surfe, kan det hende at interesser havner på listen igjen. Alternativt kan du fjerne interesse du ikke vil at Chrome skal vurdere.</translation>
 <translation id="2139300032719313227">Start ChromeOS på nytt</translation>
-<translation id="2146761408396054429">Denne filen kan være farlig<ph name="LINE_BREAK" />Chrome kan sjekke denne nedlastingen for deg hvis du oppgir passordet. Passordet blir værende på denne enheten.</translation>
 <translation id="2151406531797534936">Start Chrome på nytt nå</translation>
 <translation id="2174917724755363426">Installasjonen er ikke fullført. Er du sikker på at du vil avbryte?</translation>
 <translation id="2190166659037789668">Feil ved oppdateringssjekk: <ph name="UPDATE_CHECK_ERROR" />.</translation>

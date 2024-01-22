@@ -1130,7 +1130,6 @@
 <translation id="1832848789136765277">ເພື່ອກວດສອບວ່າທ່ານຈະສາມາດເຂົ້າເຖິງການຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ສະເໝີ, ກະລຸນາຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້ກ່ອນ</translation>
 <translation id="1834503245783133039">ການດາວໂຫຼດບໍ່ສຳເລັດ: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">ກຳລັງອັບເກຣດ Linux</translation>
-<translation id="1835612721186505600">ອະນຸຍາດສິດເຂົ້າເຖິງສຳລັບແອັບ ແລະ ເວັບໄຊທີ່ມີສິດອະນຸຍາດກ້ອງຖ່າຍຮູບ</translation>
 <translation id="1838374766361614909">ລຶບ​ການ​ຊອກ​ຫາ</translation>
 <translation id="1839021455997460752">ທີ່ຢູ່ອີເມວຂອງທ່ານ</translation>
 <translation id="1839540115464516994">ສະແດງໃນ <ph name="LOCATION" /></translation>
@@ -4594,7 +4593,6 @@
 <translation id="4507128560633489176">ລຶບລ້າງຂໍ້ມູນແລ້ວ.</translation>
 <translation id="4507373251891673233">ທ່ານໄດ້ບລັອກສ່ວນຂະຫຍາຍທັງໝົດຈາກ <ph name="HOST" /></translation>
 <translation id="4507401683427517298">ຄລິກ “ເພີ່ມທາງລັດ”</translation>
-<translation id="4508150454272293946">ອະນຸຍາດໃຫ້ແອັບ ແລະ ໜ້າເວັບໃຊ້ກ້ອງທີ່ເຊື່ອມຕໍ່ກັບອຸປະກອນນີ້. ຫາກທ່ານຍັງພົບບັນຫາກ່ຽວກັບກ້ອງຂອງທ່ານ, ໃຫ້ລອງຣີສະຕາດແອັບ ຫຼື ໂຫຼດຂໍ້ມູນໜ້າເວັບຄືນໃໝ່.</translation>
 <translation id="450867954911715010">ການຕັ້ງຄ່າການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="4508765956121923607">ເບິ່ງແຫຼ່ງທີ່ມາ</translation>
 <translation id="4509277363725254222">ເມື່ອທ່ານແບ່ງປັນສຳເນົາ <ph name="BEGIN_BOLD_USERNAME" />ຊື່ຜູ້ໃຊ່້<ph name="END_BOLD_USERNAME" /> ແລະ <ph name="BEGIN_BOLD_PASSWORD" />ລະຫັດຜ່ານ<ph name="END_BOLD_PASSWORD" /> ຂອງທ່ານ, ຄອບຄົວທ່ານຈະສາມາດຕື່ມຂໍ້ມູນໃສ່ພວກມັນໄດ້ໂດຍການໃຊ້ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
@@ -8492,7 +8490,6 @@
 <translation id="7610337976012700501">ເພື່ອໃຊ້ <ph name="FEATURE_NAME" /> ກັບລາຍຊື່ຜູ້ຕິດຕໍ່ເຫຼົ່ານີ້, ໃຫ້ເພີ່ມທີ່ຢູ່ອີເມວທີ່ລິ້ງກັບບັນຊີ Google ຂອງເຂົາເຈົ້າໃສ່ລາຍຊື່ຜູ້ຕິດຕໍ່ຂອງທ່ານ.</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612050744024016345">ສ່ວນຂະຫຍາຍທັງໝົດ</translation>
-<translation id="7612401678989660900">ອະນຸຍາດສິດເຂົ້າເຖິງສຳລັບແອັບ ແລະ ເວັບໄຊທີ່ມີສິດອະນຸຍາດໄມໂຄຣໂຟນ</translation>
 <translation id="7612497353238585898">ເວັບໄຊທີ່ເຄື່ອນໄຫວຢູ່</translation>
 <translation id="7612655942094160088">ເປີດການນຳໃຊ້ຄຸນສົມບັດໂທລະສັບທີ່ເຊື່ອມຕໍ່ຢູ່.</translation>
 <translation id="7612989789287281429">ກຳລັງພາທ່ານເຂົ້າສູ່ລະບົບ…</translation>

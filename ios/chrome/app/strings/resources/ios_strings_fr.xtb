@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Appuyez de manière prolongée sur une date.</translation>
 <translation id="1959679933317802873">En attente de contenu</translation>
 <translation id="1967461193809857427">{count,plural, =1{Afficher l'onglet que vous avez quitté sur Android ?}one{Afficher l'onglet que vous avez quitté sur Android ?}other{Afficher les onglets que vous avez quittés sur Android ?}}</translation>
+<translation id="1972325230031091483">Vous naviguerez plus rapidement, car le contenu sera chargé de manière proactive en fonction de la page Web que vous êtes en train de consulter</translation>
 <translation id="1973912524893600642">Conserver les données</translation>
 <translation id="1974060860693918893">Paramètres avancés</translation>
 <translation id="1980417445547898121">{count,plural, =1{Affichez sur cet iPhone {count} onglet récemment actif sur votre autre appareil}one{Affichez sur cet iPhone {count} onglet récemment actif sur votre autre appareil}other{Affichez sur cet iPhone vos {count} onglets récemment actifs sur votre autre appareil}}</translation>
@@ -433,6 +434,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3235242129752692527">Modifiez les détails de l'événement, puis appuyez sur "Enregistrer".</translation>
 <translation id="3240426699337459095">Le lien a bien été copié.</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Si vous partagez aussi les rapports d'utilisation Chrome, ceux-ci incluent les URL que vous consultez</translation>
 <translation id="3245744387817103524">Impossible d'enregistrer votre modification.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> sur <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Saisir automatiquement les mots de passe</translation>
@@ -556,6 +558,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3922310737605261887">Rechercher le texte copié</translation>
 <translation id="3928666092801078803">Combiner mes données</translation>
 <translation id="3929457972718048006">Adresses</translation>
+<translation id="3948600256434252210">Vous pouvez balayer l'écran vers la droite pour utiliser le mode navigation privée.</translation>
 <translation id="3955822496205734389">Vous avez des mots de passe peu sécurisés.</translation>
 <translation id="3959736869653157332">Menu → Nouvel onglet de navigation privée</translation>
 <translation id="3962326069546168954">Enregistrer</translation>
@@ -632,7 +635,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4371591986692297148">Inactive</translation>
 <translation id="4375040482473363939">Rechercher via un code QR</translation>
 <translation id="4378154925671717803">Téléphone</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> a partagé avec vous un mot de passe pour <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Appuyez pour modifier la langue.</translation>
 <translation id="4405320213589929829">Utilisez des adresses sur des pages Web pour obtenir des informations locales et des itinéraires.</translation>
 <translation id="4420409367264901497">Modifier le favori</translation>
@@ -661,6 +663,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4539187448429948815">{count,plural, =1{{count} suggestion de saisie automatique enregistrée disponible au-dessus de votre clavier.}one{{count} suggestion de saisie automatique enregistrée disponible au-dessus de votre clavier.}other{{count} suggestions de saisie automatique enregistrées disponibles au-dessus de votre clavier.}}</translation>
 <translation id="4540780316273593836">Un problème est survenu</translation>
 <translation id="4550040941166547650">Uniquement sur cet appareil</translation>
+<translation id="4564893319561643483">Masquer "<ph name="TITLE" />"</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Fermer {COUNT} onglet inactif ?}one{Fermer {COUNT} onglet inactif ?}other{Fermer {COUNT} onglets inactifs ?}}</translation>
 <translation id="457386861538956877">Autres...</translation>
 <translation id="4587589328781138893">Sites</translation>
@@ -857,6 +860,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="555749644339804659">Vérif. des mots de passe…</translation>
 <translation id="5559567453458728487">Convertir les unités de mesure trouvées sur le Web</translation>
 <translation id="556042886152191864">Bouton</translation>
+<translation id="5572648434713976849">Vous obtiendrez des suggestions améliorées dans la barre d'adresse</translation>
 <translation id="5572684875078967866">Stockage des informations</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Suivre ce colis}one{Suivre ce colis}other{Suivre tous les colis}}</translation>
 <translation id="5597915316964418992">Ouvrez la grille d'onglets</translation>
@@ -1083,6 +1087,7 @@ En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigat
 <translation id="6642362222295953972">Passer à un onglet existant</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6645899968535965230">Code QR : <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">Les URL que vous consultez sont envoyées à Google pour prédire les sites que vous êtes susceptible de visiter plus tard</translation>
 <translation id="6647480763136463714">Dernière exécution <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Modifier le dossier</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
@@ -1261,6 +1266,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7666861622396822790">Vous pouvez gérer cette option dans les <ph name="BEGIN_LINK" />Paramètres de contenu<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">INSTALLER</translation>
+<translation id="7673346542062368520">Vous pouvez balayer l'écran vers la gauche pour utiliser le mode navigation privée.</translation>
 <translation id="7679915578945954324">Adresses du site copiées</translation>
 <translation id="7687508192620387263">Fichier d'agenda disponible</translation>
 <translation id="7701040980221191251">Rien</translation>

@@ -1127,7 +1127,6 @@
 <translation id="1832848789136765277">Та синк хийсэн өгөгдөлдөө үргэлж хандах боломжтой эсэхээ баталгаажуулахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="1834503245783133039">Татаж чадсангүй: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux-г дэвшүүлж байна</translation>
-<translation id="1835612721186505600">Камерын зөвшөөрөлтэй аппууд болон вебсайтуудад хандалтыг зөвшөөрөх</translation>
 <translation id="1838374766361614909">Хайлтыг арилгах</translation>
 <translation id="1839021455997460752">Таны имэйл хаяг</translation>
 <translation id="1839540115464516994"><ph name="LOCATION" />-д харуулах</translation>
@@ -4589,7 +4588,6 @@
 <translation id="4507128560633489176">Өгөгдлийг арилгасан.</translation>
 <translation id="4507373251891673233">Та бүх өргөтгөлийг <ph name="HOST" />-с блоклосон</translation>
 <translation id="4507401683427517298">“Товчлол нэмэх”-ийг товшино уу</translation>
-<translation id="4508150454272293946">Апп болон веб хуудаснуудад энэ төхөөрөмжид холбогдсон камеруудыг ашиглахыг зөвшөөрнө үү. Хэрэв таны камертай холбоотой асуудал хэвээр байвал аппыг дахин эхлүүлэх эсвэл веб хуудсыг сэргээж үзнэ үү.</translation>
 <translation id="450867954911715010">Хандалтын тохиргоо</translation>
 <translation id="4508765956121923607">Эх үүсвэрийг харах</translation>
 <translation id="4509277363725254222">Таныг <ph name="BEGIN_BOLD_USERNAME" />хэрэглэгчийн нэр<ph name="END_BOLD_USERNAME" /> болон <ph name="BEGIN_BOLD_PASSWORD" />нууц үгнийхээ<ph name="END_BOLD_PASSWORD" /> хуулбарыг хуваалцах үед танай гэр бүлийн гишүүн Google Password Manager-г ашиглан тэдгээрийг бөглөх боломжтой</translation>
@@ -8486,7 +8484,6 @@
 <translation id="7610337976012700501"><ph name="FEATURE_NAME" />-г эдгээр харилцагчтай ашиглахын тулд тэдний Google Бүртгэлтэй холбосон имэйлийг харилцагчдадаа нэмнэ үү.</translation>
 <translation id="7611713099524036757">мета</translation>
 <translation id="7612050744024016345">Бүх өргөтгөл</translation>
-<translation id="7612401678989660900">Микрофоны зөвшөөрөлтэй аппууд болон вебсайтуудад хандалтыг зөвшөөрөх</translation>
 <translation id="7612497353238585898">Идэвхтэй сайт</translation>
 <translation id="7612655942094160088">Холбогдсон утасны онцлогуудын идэвхжилт.</translation>
 <translation id="7612989789287281429">Та нэвтэрч байна…</translation>

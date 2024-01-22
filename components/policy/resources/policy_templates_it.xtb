@@ -6553,6 +6553,11 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
       La configurazione dei criteri "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" e "<ph name="CLEAR_SITE_SETTINGS_ACTION" />" comporta la disattivazione della sincronizzazione per i rispettivi tipi di dati se né il criterio "<ph name="CHROME_SYNC_NAME" />" viene disattivato impostando il criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> né il criterio <ph name="BROWSER_SIGNIN_POLICY_NAME" /> viene disattivato.</translation>
 <translation id="6462604655173570082">Se il criterio non viene configurato o se viene impostato su Attivato, gli utenti possono visualizzare e usare il pulsante <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nella casella di ricerca della pagina Nuova scheda. Se il criterio viene impostato su Disattivato, gli utenti non vedranno il pulsante <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nella casella di ricerca della pagina Nuova scheda.</translation>
 <translation id="6464074037294098618">Attiva la Compilazione automatica per gli indirizzi</translation>
+<translation id="6464564464230511695">Se questo criterio viene attivato o se non viene configurato, la funzionalità <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> è consentita in tutte le pagine web.
+
+Se viene disattivato, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> non è disponibile in nessuna pagina web.
+
+Le funzionalità di IA generativa che fanno parte di questa funzionalità non sono disponibili per gli account aziendali o scolastici.</translation>
 <translation id="6467613372414922590">Consenti host di messaggistica nativi a livello di utente (installati senza privilegi di amministratore)</translation>
 <translation id="6467707081687600148">Programma un riavvio automatico dopo l'applicazione di un aggiornamento di <ph name="PRODUCT_OS_NAME" />.
 

@@ -90,6 +90,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="2583187216237139145">Any Chromium data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continue using Chromium</translation>
 <translation id="259935314519650377">Failed to cache the downloaded installer. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium runs faster and features that use JavaScript should work as designed (recommended)</translation>
 <translation id="2648074677641340862">An operating system error occurred during installation. Please download Chromium again.</translation>
 <translation id="2661879430930417727">If you share a device, friends and family can browse separately and set up Chromium just the way they want</translation>
 <translation id="268602741124540128">Welcome to Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -125,6 +126,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="3258596308407688501">Chromium cannot read and write to its data directory:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 is Chromium’s JavaScript and WebAssembly engine used to improve site performance</translation>
 <translation id="3283186697780795848">Chromium version <ph name="PRODUCT_VERSION" /> is installed</translation>
 <translation id="3286538390144397061">Restart Now</translation>
 <translation id="328888136576916638">Google API keys are missing. Some functionality of Chromium will be disabled.</translation>
@@ -218,6 +220,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="4814736265800133385">Use Chromium without an account</translation>
 <translation id="4888717733111232871">Inbound rule for Chromium to allow mDNS traffic.</translation>
 <translation id="4893347770495441059">Relaunch to Update &amp;Chromium</translation>
+<translation id="4942295735032723435">To get future Chromium updates, you'll need macOS 11 or later. This computer is using macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium is in background mode.</translation>
 <translation id="4987820182225656817">Guests can use Chromium without leaving anything behind.</translation>
 <translation id="4994636714258228724">Add yourself to Chromium</translation>
@@ -246,7 +249,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5623402015214259806">{0,plural, =0{A Chromium update is available}=1{A Chromium update is available}other{A Chromium update has been available for # days}}</translation>
 <translation id="5643865575100044307">Always delete site data from your device when you close Chromium</translation>
 <translation id="5653831366781983928">Please restart Chromium now</translation>
-<translation id="5675598751761067447">This file may be dangerous<ph name="LINE_BREAK" />Chromium can check this download for you if you provide the password – your password stays on your device</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Display Chromium in this language</translation>
 <translation id="569897634095159764">Unable to connect to the Internet. Proxy server requires authentication.</translation>
@@ -406,6 +408,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8105840573057009683">Chromium needs location permission for this site</translation>
 <translation id="8133124826068723441">Chromium OS could not sync your data because sync is not available for your domain.</translation>
 <translation id="813913629614996137">Initialising...</translation>
+<translation id="8166782796394721554">Turn on additional protection in Chromium’s JavaScript and WebAssembly engine</translation>
 <translation id="81770708095080097">This file is dangerous, so Chromium has blocked it.</translation>
 <translation id="8213374284266571500">Chromium blocked this file because this type of file is dangerous</translation>
 <translation id="8248265253516264921">If an image doesn’t have a useful description, Chromium will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>

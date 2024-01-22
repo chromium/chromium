@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Sentuh lama tanggal.</translation>
 <translation id="1959679933317802873">Menunggu konten</translation>
 <translation id="1967461193809857427">{count,plural, =1{Buka tab yang ditinggalkan di Android?}other{Buka tab yang ditinggalkan di Android?}}</translation>
+<translation id="1972325230031091483">Anda akan menjelajah lebih cepat karena konten dimuat secara proaktif berdasarkan halaman web yang sedang Anda buka</translation>
 <translation id="1973912524893600642">Simpan Data</translation>
 <translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1980417445547898121">{count,plural, =1{Dapatkan {count} tab yang baru-baru ini aktif dari perangkat lain di iPhone ini}other{Dapatkan {count} tab yang baru-baru ini aktif dari perangkat lain di iPhone ini}}</translation>
@@ -433,6 +434,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3235242129752692527">Edit detail acara dan ketuk “Simpan”.</translation>
 <translation id="3240426699337459095">Tautan disalin</translation>
 <translation id="3244271242291266297">BB</translation>
+<translation id="3245429137663807393">Jika Anda juga membagikan laporan penggunaan Chrome, laporan tersebut akan menyertakan URL yang Anda buka</translation>
 <translation id="3245744387817103524">Perubahan Anda tidak dapat disimpan.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> dari <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Isi Otomatis Sandi</translation>
@@ -632,7 +634,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4371591986692297148">Tidak aktif</translation>
 <translation id="4375040482473363939">Telusuri kode QR</translation>
 <translation id="4378154925671717803">Ponsel</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> telah berbagi sandi dengan Anda untuk <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Ketuk untuk mengubah bahasa.</translation>
 <translation id="4405320213589929829">Gunakan alamat di halaman web untuk mendapatkan info lokal dan rute.</translation>
 <translation id="4420409367264901497">Edit Bookmark</translation>
@@ -857,6 +858,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="555749644339804659">Memeriksa sandi…</translation>
 <translation id="5559567453458728487">Mengonversi unit pengukuran yang ditemukan di web</translation>
 <translation id="556042886152191864">Tombol</translation>
+<translation id="5572648434713976849">Anda akan mendapatkan saran yang lebih baik di kolom URL</translation>
 <translation id="5572684875078967866">Penyimpanan Informasi</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Lacak Paket Ini}other{Lacak Semua Paket}}</translation>
 <translation id="5597915316964418992">Buka Petak Tab</translation>
@@ -1083,6 +1085,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="6642362222295953972">Beralih ke tab yang ada</translation>
 <translation id="6643016212128521049">Hapus</translation>
 <translation id="6645899968535965230">Kode QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">URL yang Anda buka akan dikirim ke Google untuk memprediksi situs yang mungkin Anda buka berikutnya</translation>
 <translation id="6647480763136463714">Terakhir dijalankan <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Edit Folder</translation>
 <translation id="6657585470893396449">Sandi</translation>

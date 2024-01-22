@@ -6483,6 +6483,11 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
       Als je <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> en <ph name="CLEAR_SITE_SETTINGS_ACTION" /> instelt, wordt synchronisatie voor de betreffende gegevenstypen uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.</translation>
 <translation id="6462604655173570082">Als je dit beleid toepast of niet instelt, kunnen gebruikers de <ph name="GOOGLE_LENS_PRODUCT_NAME" />-knop zien en gebruiken in het zoekvak op de pagina Nieuw tabblad. Als je dit beleid niet toepast, zien gebruikers de <ph name="GOOGLE_LENS_PRODUCT_NAME" />-knop niet in het zoekvak op de pagina Nieuw tabblad.</translation>
 <translation id="6464074037294098618">Automatisch invullen voor adressen aanzetten</translation>
+<translation id="6464564464230511695">Als je dit beleid toepast of niet instelt, is <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> toegestaan op alle webpagina's.
+
+Als je dit beleid niet toepast, is <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> op geen enkele webpagina beschikbaar.
+
+GenAI-mogelijkheden die deel uitmaken van deze functie, zijn niet beschikbaar voor Education- of Enterprise-accounts.</translation>
 <translation id="6467613372414922590">Hosts voor native berichten op gebruikersniveau toestaan (geïnstalleerd zonder beheerdersrechten)</translation>
 <translation id="6467707081687600148">Plan automatisch opnieuw opstarten in nadat een <ph name="PRODUCT_OS_NAME" />-update is toegepast.
 

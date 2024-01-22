@@ -249,7 +249,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5623402015214259806">{0,plural, =0{May available na update sa Chromium}=1{May available na update sa Chromium}one{# araw nang may available na update sa Chromium}other{# na araw nang may available na update sa Chromium}}</translation>
 <translation id="5643865575100044307">Palaging i-delete ang data ng site mula sa iyong device kapag isinasara mo ang Chromium</translation>
 <translation id="5653831366781983928">Paki-restart ang Chromium ngayon</translation>
-<translation id="5675598751761067447">Posibleng mapanganib ang file na ito<ph name="LINE_BREAK" />Masusuri ng Chromium ang download na ito para sa iyo kung ibibigay mo ang password — mananatili sa iyong device ang password mo</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Ipakita ang Chromium sa wikang ito</translation>
 <translation id="569897634095159764">Hindi makakonekta sa Internet. Nagre-require ng pag-authenticate ang proxy server.</translation>

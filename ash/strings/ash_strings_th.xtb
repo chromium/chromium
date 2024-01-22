@@ -622,6 +622,7 @@
 <translation id="3577473026931028326">เกิดข้อผิดพลาด ลองใหม่</translation>
 <translation id="3580650856351781466">กำลังดาวน์โหลดไฟล์คำพูด</translation>
 <translation id="3585296979871889131">ดูรูปภาพ สื่อ การแจ้งเตือน และแอปล่าสุดของโทรศัพท์</translation>
+<translation id="3590441166907930941">ปุ่มด้านข้าง</translation>
 <translation id="3593039967545720377">เข้าถึงประวัติคลิปบอร์ดโดยกด <ph name="SHORTCUT_KEY_NAME" /> + V เพื่อดูคลิปบอร์ด คัดลอกรายการเพื่อเริ่มต้นใช้งาน</translation>
 <translation id="3593646411856133110">เลื่อนขึ้นค้างไว้เพื่อดูแอปที่เปิดอยู่</translation>
 <translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
@@ -1029,6 +1030,7 @@
 <translation id="5163434717504750796">ประสิทธิภาพของแบตเตอรี่ <ph name="BATTERY_HEALTH_PERCENTAGE" />% | จำนวนรอบ <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">บันทึกเดสก์เป็นเทมเพลต</translation>
 <translation id="5168181903108465623">เครื่องส่งพร้อมใช้งาน</translation>
+<translation id="5168753792967365150">แก้ไขใน Google Tasks</translation>
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
 <translation id="5176318573511391780">บันทึกหน้าจอบางส่วน</translation>
 <translation id="5187627942836026988">แสดงรายละเอียดฮอตสปอต ผู้ดูแลระบบบล็อกฮอตสปอต</translation>
@@ -1298,6 +1300,8 @@
 <translation id="6168622430237609329">แอปที่ติดตั้งของคุณ</translation>
 <translation id="6173151025443907148">ระบบไม่รองรับการลงชื่อเข้าใช้ของผู้ใช้คนที่ 2 หากเปิดใช้ Lacros โปรดใช้โปรไฟล์ที่ 2 ของเบราว์เซอร์ใน Lacros แทน หรือปิดใช้ Lacros แล้วลองอีกครั้ง</translation>
 <translation id="6179832488876878285">คุณปักหมุดไฟล์สำคัญๆ ไว้ที่นี่ได้ เปิดแอป Files เพื่อเริ่มต้นใช้งาน</translation>
+<translation id="6180193585172850042">ปุ่มย้อนกลับ</translation>
+<translation id="6180651297859206670">ปุ่มไปข้างหน้า</translation>
 <translation id="6182592640011875895">เปิดเดสก์</translation>
 <translation id="6185696379715117369">เลื่อนหน้าขึ้น</translation>
 <translation id="619335566042889110">ชาร์จจนเต็มเลย</translation>

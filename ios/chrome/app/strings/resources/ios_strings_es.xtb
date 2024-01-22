@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Mantén pulsada una fecha.</translation>
 <translation id="1959679933317802873">Esperando el contenido</translation>
 <translation id="1967461193809857427">{count,plural, =1{¿Quieres retomar la pestaña que dejaste en Android?}other{¿Quieres retomar las pestañas que dejaste en Android?}}</translation>
+<translation id="1972325230031091483">Navegarás más rápido porque el contenido se carga de forma proactiva en función de la página web en la que estás</translation>
 <translation id="1973912524893600642">Conservar datos</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1980417445547898121">{count,plural, =1{Accede en este iPhone a {count} pestaña activa recientemente de tu otro dispositivo}other{Accede en este iPhone a {count} pestañas activas recientemente de tu otro dispositivo}}</translation>
@@ -433,6 +434,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3235242129752692527">Edita los detalles del evento y toca Guardar.</translation>
 <translation id="3240426699337459095">Enlace copiado</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Si también compartes informes de uso de Chrome, esos informes incluirán las URLs que visites.</translation>
 <translation id="3245744387817103524">No se ha podido guardar tu cambio.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Autocompletar contraseñas</translation>
@@ -632,7 +634,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4371591986692297148">Inactivo</translation>
 <translation id="4375040482473363939">Búsqueda mediante códigos QR</translation>
 <translation id="4378154925671717803">Teléfono</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> ha compartido una contraseña de <ph name="WEBSITE" /> contigo</translation>
 <translation id="4389019817280890563">Toca para cambiar el idioma.</translation>
 <translation id="4405320213589929829">Usa direcciones en páginas web para obtener información local e indicaciones.</translation>
 <translation id="4420409367264901497">Editar marcador</translation>
@@ -857,6 +858,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="555749644339804659">Comprobando contraseñas…</translation>
 <translation id="5559567453458728487">Convierte las unidades de medida que se encuentran en la Web</translation>
 <translation id="556042886152191864">Botón</translation>
+<translation id="5572648434713976849">Recibirás sugerencias mejoradas en la barra de direcciones</translation>
 <translation id="5572684875078967866">Almacenamiento de información</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Seguir este paquete}other{Seguir todos los paquetes}}</translation>
 <translation id="5597915316964418992">Abre la cuadrícula de pestañas</translation>
@@ -1083,6 +1085,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="6642362222295953972">Cambiar a la pestaña existente</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6645899968535965230">Código QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">Las URLs que visitas se envian a Google para predecir qué sitios podrías visitar después</translation>
 <translation id="6647480763136463714">Última ejecución: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Editar carpeta</translation>
 <translation id="6657585470893396449">Contraseña</translation>

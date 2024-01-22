@@ -330,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">禁止网站使用您的虚拟现实设备和数据</translation>
 <translation id="6447842834002726250">Cookie</translation>
+<translation id="6452138246455930388">您打开的标签页中有降价，原价为 <ph name="OLD_PRICE" />，现价为 <ph name="NEW_PRICE" />”，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">当窗口狭窄时，请求使用移动版视图</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="652937045869844725">尝试允许使用第三方 Cookie，这意味着您将采用较低级别的保护措施，但网站功能更有可能正常运行</translation>

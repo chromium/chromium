@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">तारखेला स्पर्श करून धरून ठेवा.</translation>
 <translation id="1959679933317802873">आशयाची प्रतीक्षा करत आहे</translation>
 <translation id="1967461193809857427">{count,plural, =1{तुम्ही Android वर सोडलेला टॅब निवडायचा आहे का?}other{तुम्ही Android वर सोडलेले टॅब निवडायचे आहेत का?}}</translation>
+<translation id="1972325230031091483">तुम्हाला आणखी जलद ब्राउझ करता येईल कारण तुमच्या सध्याच्या वेबपेज भेटीच्या आधारावर आशय प्रोॲक्टिव्हपणे लोड केला जातो</translation>
 <translation id="1973912524893600642">स्टोअर करायचा असलेला डेटा</translation>
 <translation id="1974060860693918893">प्रगत</translation>
 <translation id="1980417445547898121">{count,plural, =1{तुमच्या इतर डिव्हाइसवरून या iPhone वर तुमचा अलीकडे अ‍ॅक्टिव्ह असलेला {count} टॅब मिळवा}other{तुमच्या इतर डिव्हाइसवरून या iPhone वर तुमचा अलीकडे अ‍ॅक्टिव्ह असलेले {count} टॅब मिळवा}}</translation>
@@ -291,6 +292,7 @@
 <translation id="2547458583188611426">सिंक काम करत नाही. सिंक सुरू करण्यासाठी तुमचा पासफ्रेझ एंटर करा.</translation>
 <translation id="2551153019974022505">खात्यासंबंधी एरर</translation>
 <translation id="2556092377360758201">संरक्षण नाही (शिफारस केली जात नाही)</translation>
+<translation id="2561375093019333908">उघडा</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> ला पाठवत आहे…</translation>
 <translation id="2576499762020411840">तुमच्या Google खाते मधील पासवर्ड वापरा आणि त्यामध्ये ते सेव्ह करा</translation>
 <translation id="2577522251608256362">अतिपरिचित क्षेत्र</translation>
@@ -433,6 +435,7 @@
 <translation id="3235242129752692527">इव्हेंट तपशील संपादित करा आणि "सेव्ह करा" वर टॅप करा.</translation>
 <translation id="3240426699337459095">लिंक कॉपी केला</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">तुम्ही Chrome वापर अहवालदेखील शेअर केल्यास, त्या अहवालांमध्ये तुम्ही भेट दिलेल्या URLs चा समावेश होतो</translation>
 <translation id="3245744387817103524">तुमचा बदल सेव्ह करता आला नाही.</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> पैकी <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
 <translation id="3264775633254836593">पासवर्ड ऑटोफिल करा</translation>
@@ -632,7 +635,6 @@
 <translation id="4371591986692297148">इनॅक्टिव्ह आहे</translation>
 <translation id="4375040482473363939">QR कोड शोध</translation>
 <translation id="4378154925671717803">फोन</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> यांनी <ph name="WEBSITE" /> साठी तुमच्यासोबत पासवर्ड शेअर केला आहे</translation>
 <translation id="4389019817280890563">भाषा बदलण्यासाठी टॅप करा.</translation>
 <translation id="4405320213589929829">स्थानिक माहिती आणि दिशानिर्देश मिळवण्यासाठी वेब पेजवरील पत्ते वापरा.</translation>
 <translation id="4420409367264901497">बुकमार्क संपादित करा</translation>
@@ -848,6 +850,7 @@
 <translation id="5513681519188741830"><ph name="TIME" /> तासांपूर्वी</translation>
 <translation id="5525269841082836315">सांकेतिक पासफ्रेझ तयार करा</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} कमकुवत पासवर्ड}other{{COUNT} कमकुवत पासवर्ड}}</translation>
+<translation id="5532545557415295622">आयडल टाइमआउट डायलॉग</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> आढळले</translation>
 <translation id="5548760955356983418">Handoff तुम्हाला या डिव्हाइसवर ब्राउझिंग सुरू करू आणि त्यानंतर आपल्या Mac वर सहजपणे सुरू ठेऊ देते. वर्तमान उघडलेली वेबसाइट आपल्या Mac च्या डॉकवर दिसून येईल.
 
@@ -857,6 +860,7 @@
 <translation id="555749644339804659">पासवर्ड तपासत आहे…</translation>
 <translation id="5559567453458728487">वेबवर आढळलेल्या मापनाच्या युनिटचे रूपांतर करा</translation>
 <translation id="556042886152191864">बटण</translation>
+<translation id="5572648434713976849">तुम्हाला अ‍ॅड्रेस बारमध्ये सुधारित सूचना मिळतील</translation>
 <translation id="5572684875078967866">माहितीचे स्टोरेज</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{हे पॅकेज ट्रॅक करा}other{सर्व पॅकेज ट्रॅक करा}}</translation>
 <translation id="5597915316964418992">टॅब ग्रिड उघडा</translation>
@@ -1084,6 +1088,7 @@
 <translation id="6642362222295953972">विद्यमान टॅबवर स्विच करा</translation>
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6645899968535965230">QR कोड: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">तुम्ही भेट देता त्या URLs तुम्ही पुढे कोणत्या साइटला भेट देऊ शकता याचा अंदाज घेण्यासाठी Google ला पाठवल्या जातात</translation>
 <translation id="6647480763136463714">शेवटचे <ph name="TIME" /> ला रन केले</translation>
 <translation id="6656103420185847513">फोल्डर संपादित करा</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
@@ -1289,6 +1294,7 @@
 <translation id="7781829728241885113">काल</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{एका दिवसानंतर}other{{COUNT} दिवसांनंतर}}</translation>
 <translation id="7791543448312431591">जोडा</translation>
+<translation id="7792549458069452436">अ‍ॅप मिळवा</translation>
 <translation id="7807060072011926525">Google द्वारे पुरवलेली</translation>
 <translation id="7812377703891978671">तुम्ही <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> निवडून तुमचा सर्व ब्राउझिंग इतिहास अ‍ॅक्सेस करू शकता.</translation>
 <translation id="78146569776629510">डाउनलोड</translation>

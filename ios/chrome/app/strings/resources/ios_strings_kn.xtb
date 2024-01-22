@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">ದಿನಾಂಕವನ್ನು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಹೋಲ್ಡ್‌ ಮಾಡಿ.</translation>
 <translation id="1959679933317802873">ವಿಷಯಕ್ಕಾಗಿ ಕಾಯಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1967461193809857427">{count,plural, =1{ನೀವು Android ನಲ್ಲಿ ಬಿಟ್ಟಿರುವ ಟ್ಯಾಬ್ ಅನ್ನು ತೆಗೆದುಕೊಳ್ಳಬೇಕೆ?}one{ನೀವು Android ನಲ್ಲಿ ಬಿಟ್ಟಿರುವ ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬೇಕೆ?}other{ನೀವು Android ನಲ್ಲಿ ಬಿಟ್ಟಿರುವ ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬೇಕೆ?}}</translation>
+<translation id="1972325230031091483">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ವೆಬ್‌ಪುಟದ ಭೇಟಿಯ ಆಧಾರದ ಮೇಲೆ ವಿಷಯವನ್ನು ಪೂರ್ವಭಾವಿಯಾಗಿ ಲೋಡ್ ಮಾಡಿರುವುದರಿಂದ ನೀವು ವೇಗವಾಗಿ ಬ್ರೌಸ್ ಮಾಡುತ್ತೀರಿ</translation>
 <translation id="1973912524893600642">ಡೇಟಾವನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="1974060860693918893">ಸುಧಾರಿತ</translation>
 <translation id="1980417445547898121">{count,plural, =1{ಈ iPhone ನಲ್ಲಿ ನಿಮ್ಮ ಇತರ ಸಾಧನದಿಂದ ನಿಮ್ಮ {count} ಇತ್ತೀಚೆಗೆ ಸಕ್ರಿಯವಾಗಿರುವ ಟ್ಯಾಬ್ ಅನ್ನು ಪಡೆಯಿರಿ}one{ಈ iPhone ನಲ್ಲಿ ನಿಮ್ಮ ಇತರ ಸಾಧನದಿಂದ ನಿಮ್ಮ {count} ಇತ್ತೀಚೆಗೆ ಸಕ್ರಿಯವಾಗಿರುವ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ}other{ಈ iPhone ನಲ್ಲಿ ನಿಮ್ಮ ಇತರ ಸಾಧನದಿಂದ ನಿಮ್ಮ {count} ಇತ್ತೀಚೆಗೆ ಸಕ್ರಿಯವಾಗಿರುವ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ}}</translation>
@@ -291,6 +292,7 @@
 <translation id="2547458583188611426">ಸಿಂಕ್ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ. ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು, ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ನಮೂದಿಸಿ.</translation>
 <translation id="2551153019974022505">ಖಾತೆ ದೋಷ</translation>
 <translation id="2556092377360758201">ಸುರಕ್ಷತೆ ಇಲ್ಲ (ಇದನ್ನು ನಾವು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ)</translation>
+<translation id="2561375093019333908">ತೆರೆಯಿರಿ</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2576499762020411840">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಿ ಮತ್ತು ಉಳಿಸಿ</translation>
 <translation id="2577522251608256362">ನೆರೆಹೊರೆ</translation>
@@ -433,6 +435,7 @@
 <translation id="3235242129752692527">ಈವೆಂಟ್ ವಿವರಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ ಮತ್ತು "ಸೇವ್ ಮಾಡಿ" ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="3240426699337459095">ಲಿಂಕ್ ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="3244271242291266297">ಮಿಮೀ</translation>
+<translation id="3245429137663807393">ನೀವು Chrome ಬಳಕೆಯ ವರದಿಗಳನ್ನು ಸಹ ಹಂಚಿಕೊಂಡರೆ, ಆ ವರದಿಗಳು ನೀವು ಭೇಟಿ ನೀಡುವ URL ಗಳನ್ನು ಒಳಗೊಂಡಿರುತ್ತವೆ</translation>
 <translation id="3245744387817103524">ನಿಮ್ಮ ಬದಲಾವಣೆಯನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> ರಲ್ಲಿ <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
 <translation id="3264775633254836593">ಆಟೋಫಿಲ್ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
@@ -632,7 +635,6 @@
 <translation id="4371591986692297148">ನಿಷ್ಕ್ರಿಯವಾಗಿದೆ</translation>
 <translation id="4375040482473363939">QR ಕೋಡ್ ಅನ್ನು ಹುಡುಕಿ</translation>
 <translation id="4378154925671717803">ಫೋನ್</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> ಅವರು <ph name="WEBSITE" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿಮ್ಮೊಂದಿಗೆ ಹಂಚಿಕೊಂಡಿದ್ದಾರೆ</translation>
 <translation id="4389019817280890563">ಭಾಷೆಯನ್ನು ಬದಲಾಯಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="4405320213589929829">ಸ್ಥಳೀಯ ಮಾಹಿತಿ ಮತ್ತು ನಿರ್ದೇಶನಗಳನ್ನು ಪಡೆಯಲು ವೆಬ್‌ಪುಟಗಳಲ್ಲಿ ವಿಳಾಸಗಳನ್ನು ಬಳಸಿ.</translation>
 <translation id="4420409367264901497">ಬುಕ್‌ಮಾರ್ಕ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
@@ -848,6 +850,7 @@
 <translation id="5513681519188741830"><ph name="TIME" /> ಗಂಟೆಯ ಹಿಂದೆ</translation>
 <translation id="5525269841082836315">ಪಾಸ್‌ಫ್ರೇಸ್ ರಚಿಸಿ</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್}one{{COUNT} ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}other{{COUNT} ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}}</translation>
+<translation id="5532545557415295622">ಐಡಲ್ ಟೈಮ್‌ಔಟ್ ಡೈಲಾಗ್</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="5548760955356983418">ಹ್ಯಾಂಡ್ಆಫ್ ವೆಬ್‌ಸೈಟ್ ಈ ಸಾಧನದಲ್ಲಿ ಬ್ರೌಸ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು ನಂತರ ನಿಮ್ಮ Mac ನಲ್ಲಿ ಸುಲಭವಾಗಿ ಮುಂದುವರಿಸಲು ಅನುಮತಿಸುತ್ತದೆ. ಪ್ರಸ್ತುತ ತೆರೆದ ವೆಬ್‌ಸೈಟ್ ನಿಮ್ಮ Mac ನಲ್ಲಿನ ಡಾಕ್‌ನಲ್ಲಿ ಗೋಚರಿಸುತ್ತದೆ.
 
@@ -857,6 +860,7 @@
 <translation id="555749644339804659">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="5559567453458728487">ವೆಬ್‌ನಲ್ಲಿ ಕಂಡುಬರುವ ಮಾಪನ ಯೂನಿಟ್‌ಗಳನ್ನು ಪರಿವರ್ತಿಸಿ</translation>
 <translation id="556042886152191864">ಬಟನ್</translation>
+<translation id="5572648434713976849">ನೀವು ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ಸುಧಾರಿತ ಸಲಹೆಗಳನ್ನು ಪಡೆಯುತ್ತೀರಿ</translation>
 <translation id="5572684875078967866">ಮಾಹಿತಿ ಸಂಗ್ರಹಣೆ</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{ಈ ಪ್ಯಾಕೇಜ್ ಅನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ}one{ಎಲ್ಲಾ ಪ್ಯಾಕೇಜ್‌ಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ}other{ಎಲ್ಲಾ ಪ್ಯಾಕೇಜ್‌ಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ}}</translation>
 <translation id="5597915316964418992">ಟ್ಯಾಬ್ ಗ್ರಿಡ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -1083,6 +1087,7 @@
 <translation id="6642362222295953972">ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="6643016212128521049">ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="6645899968535965230">QR ಕೋಡ್‌: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">ನೀವು ಮುಂದೆ ಯಾವ ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಬಹುದು ಎಂಬುದನ್ನು ಊಹಿಸಲು ನೀವು ಭೇಟಿ ನೀಡುವ URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="6647480763136463714"><ph name="TIME" /> ಕೊನೆಯದಾಗಿ ರನ್ ಮಾಡಿದ ಸಮಯ</translation>
 <translation id="6656103420185847513">ಫೋಲ್ಡರ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6657585470893396449">ಪಾಸ್‌ವರ್ಡ್</translation>
@@ -1288,6 +1293,7 @@
 <translation id="7781829728241885113">ನಿನ್ನೆ</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{1 ದಿನದ ನಂತರ}one{{COUNT} ದಿನಗಳ ನಂತರ}other{{COUNT} ದಿನಗಳ ನಂತರ}}</translation>
 <translation id="7791543448312431591">ಸೇರಿಸು</translation>
+<translation id="7792549458069452436">ಆ್ಯಪ್ ಪಡೆಯಿರಿ</translation>
 <translation id="7807060072011926525">Google ಮೂಲಕ ಒದಗಿಸಲಾಗಿದೆ</translation>
 <translation id="7812377703891978671"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> ಅನ್ನು ಆಯ್ಕೆ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ ಎಲ್ಲಾ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ನೀವು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು.</translation>
 <translation id="78146569776629510">ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>

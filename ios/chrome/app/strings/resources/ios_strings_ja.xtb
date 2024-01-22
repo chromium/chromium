@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">日付を長押しします。</translation>
 <translation id="1959679933317802873">コンテンツの待機中</translation>
 <translation id="1967461193809857427">{count,plural, =1{Android で開いたタブを表示しますか？}other{Android で開いたタブを表示しますか？}}</translation>
+<translation id="1972325230031091483">表示中のウェブページに基づいてコンテンツが事前に読み込まれるので、すばやくブラウジングできます</translation>
 <translation id="1973912524893600642">データを残す</translation>
 <translation id="1974060860693918893">詳細設定</translation>
 <translation id="1980417445547898121">{count,plural, =1{他のデバイスで最近開いた {count} 個のタブをこの iPhone で表示します}other{他のデバイスで最近開いた {count} 個のタブをこの iPhone で表示します}}</translation>
@@ -291,6 +292,7 @@
 <translation id="2547458583188611426">同期が機能していません。同期を開始するには、パスフレーズを入力してください。</translation>
 <translation id="2551153019974022505">アカウント エラー</translation>
 <translation id="2556092377360758201">保護なし（推奨されません）</translation>
+<translation id="2561375093019333908">開く</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> にタブを送信しています...</translation>
 <translation id="2576499762020411840">Google アカウントのパスワードの使用と保存</translation>
 <translation id="2577522251608256362">近隣住区（neighborhood）</translation>
@@ -433,6 +435,7 @@
 <translation id="3235242129752692527">予定の詳細を編集し、[保存] をタップします。</translation>
 <translation id="3240426699337459095">リンクをコピーしました</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Chrome の使用状況レポートを送信する場合は、アクセスした URL がこのレポートに含められます</translation>
 <translation id="3245744387817103524">変更を保存できませんでした。</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />、<ph name="ADDITIONAL_INFO" />、<ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">パスワードの自動入力</translation>
@@ -556,6 +559,7 @@
 <translation id="3922310737605261887">コピーしたテキストを検索</translation>
 <translation id="3928666092801078803">データを統合する</translation>
 <translation id="3929457972718048006">住所</translation>
+<translation id="3948600256434252210">右にスワイプすると、シークレット モードでブラウジングできます。</translation>
 <translation id="3955822496205734389">脆弱なパスワードがあります。</translation>
 <translation id="3959736869653157332">メニュー → 新しいシークレット タブ</translation>
 <translation id="3962326069546168954">保存</translation>
@@ -632,7 +636,6 @@
 <translation id="4371591986692297148">無効</translation>
 <translation id="4375040482473363939">QR コード検索</translation>
 <translation id="4378154925671717803">電話</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> さんが <ph name="WEBSITE" /> のパスワードをあなたと共有しました</translation>
 <translation id="4389019817280890563">タップして言語を変更できます。</translation>
 <translation id="4405320213589929829">ウェブページ上の住所を使用してローカル情報や経路を確認できます。</translation>
 <translation id="4420409367264901497">ブックマークを編集</translation>
@@ -661,6 +664,7 @@
 <translation id="4539187448429948815">{count,plural, =1{キーボードの上部に保存済みのオートコンプリートの候補が {count} 件表示されています。}other{キーボードの上部に保存済みのオートコンプリートの候補が {count} 件表示されています。}}</translation>
 <translation id="4540780316273593836">エラーが発生しました</translation>
 <translation id="4550040941166547650">このデバイスのみ</translation>
+<translation id="4564893319561643483">「<ph name="TITLE" />」を非表示にします</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{アクティブでない {COUNT} 個のタブを閉じますか？}other{アクティブでない {COUNT} 個のタブを閉じますか？}}</translation>
 <translation id="457386861538956877">その他...</translation>
 <translation id="4587589328781138893">ウェブサイト</translation>
@@ -848,6 +852,7 @@
 <translation id="5513681519188741830"><ph name="TIME" /> 時間前</translation>
 <translation id="5525269841082836315">パスフレーズの作成</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{脆弱なパスワード: {COUNT} 件}other{脆弱なパスワード: {COUNT} 件}}</translation>
+<translation id="5532545557415295622">アイドル タイムアウト ダイアログ</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> 件見つかりました</translation>
 <translation id="5548760955356983418">Handoffを使うと、このデバイスで見ているウェブサイトの続きをMacで見ることができます。現在開いているウェブサイトはMacのDockに表示されます。
 
@@ -857,6 +862,7 @@
 <translation id="555749644339804659">パスワードを確認しています…</translation>
 <translation id="5559567453458728487">ウェブで見つかった測定単位を変換する</translation>
 <translation id="556042886152191864">ボタン</translation>
+<translation id="5572648434713976849">より関連性の高い候補がアドレスバーに表示されます</translation>
 <translation id="5572684875078967866">情報容量</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{この荷物を追跡}other{すべての荷物を追跡}}</translation>
 <translation id="5597915316964418992">タブグリッドを開きます</translation>
@@ -1083,6 +1089,7 @@
 <translation id="6642362222295953972">既存のタブに切り替え</translation>
 <translation id="6643016212128521049">削除</translation>
 <translation id="6645899968535965230">QR コード: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">アクセスした URL が Google に送信され、次にアクセスするサイトの予測が行われます</translation>
 <translation id="6647480763136463714">前回の実行:　<ph name="TIME" /></translation>
 <translation id="6656103420185847513">フォルダの編集</translation>
 <translation id="6657585470893396449">パスワード</translation>
@@ -1260,6 +1267,7 @@
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7666861622396822790">これは [<ph name="BEGIN_LINK" />コンテンツの設定<ph name="END_LINK" />] で管理できます。</translation>
 <translation id="7671141431838911305">インストール</translation>
+<translation id="7673346542062368520">左にスワイプすると、シークレット モードでブラウジングできます。</translation>
 <translation id="7679915578945954324">サイトのアドレスをコピーしました</translation>
 <translation id="7687508192620387263">カレンダー ファイルを使用できます</translation>
 <translation id="7701040980221191251">なし</translation>
@@ -1288,6 +1296,7 @@
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{1 日後}other{{COUNT} 日後}}</translation>
 <translation id="7791543448312431591">追加</translation>
+<translation id="7792549458069452436">アプリをダウンロード</translation>
 <translation id="7807060072011926525">Google から提供</translation>
 <translation id="7812377703891978671">[<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />] を選択すると、すべての閲覧履歴にアクセスできます。</translation>
 <translation id="78146569776629510">ダウンロード</translation>

@@ -41,6 +41,7 @@
 <translation id="1682483655351012182">ซิงค์ข้อมูล Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">เพิ่ม URL ที่ป้อนไปยังบุ๊กมาร์กใน Chrome</translation>
+<translation id="1799920918471566157">เคล็ดลับในการใช้ Chrome</translation>
 <translation id="1830634592642484976">บันทึกที่อยู่นี้ไว้ใน Chrome แล้ว หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google ของคุณ <ph name="USER_EMAIL" /></translation>
 <translation id="1843217788865538014">ใช้ Chrome โดยอัตโนมัติเมื่อคุณแตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="1910975740091000991">Chrome สำหรับ iOS</translation>
@@ -75,6 +76,7 @@
 <translation id="2702250627063295552">เพิ่มรายการเรื่องรออ่านใน Chrome</translation>
 <translation id="2736805085127235148">ตอนนี้การแจ้งเตือนของ Chrome ปิดอยู่ในการตั้งค่าอุปกรณ์</translation>
 <translation id="2767464022270041271">ไม่มีรหัสผ่านที่บันทึกไว้ เครื่องมือจัดการรหัสผ่านบน Google จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกไว้</translation>
+<translation id="2789947168960170215">หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ล้างข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="2868822340714096138">ล้างข้อมูลการท่องเว็บใน Chrome</translation>
 <translation id="2869959624320573933">ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="2876628302275096482">ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK" />วิธีที่ Chrome ช่วยรักษาข้อมูลของคุณให้เป็นส่วนตัว<ph name="END_LINK" /></translation>

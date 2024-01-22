@@ -247,7 +247,6 @@
 <translation id="5623402015214259806">{0,plural, =0{มีอัปเดต Chromium พร้อมให้ใช้งาน}=1{มีอัปเดต Chromium พร้อมให้ใช้งาน}other{อัปเดต Chromium พร้อมให้ใช้งานมาแล้ว # วัน}}</translation>
 <translation id="5643865575100044307">ลบข้อมูลเว็บไซต์จากอุปกรณ์เสมอเมื่อปิด Chromium</translation>
 <translation id="5653831366781983928">โปรดรีสตาร์ท Chromium ตอนนี้เลย</translation>
-<translation id="5675598751761067447">ไฟล์นี้อาจเป็นอันตราย<ph name="LINE_BREAK" />Chromium ตรวจสอบการดาวน์โหลดนี้ให้คุณได้หากคุณให้รหัสผ่าน โดยรหัสผ่านจะอยู่แค่ในอุปกรณ์ของคุณเท่านั้น</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">แสดง Chromium ในภาษานี้</translation>
 <translation id="569897634095159764">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ พร็อกซีเซิร์ฟเวอร์ต้องมีการตรวจสอบสิทธิ์</translation>

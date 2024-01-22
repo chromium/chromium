@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">Pieskarieties datumam un turiet to.</translation>
 <translation id="1959679933317802873">Gaida saturu</translation>
 <translation id="1967461193809857427">{count,plural, =1{Vai atvērt cilni, ko skatījāt Android ierīcē?}zero{Vai atvērt cilnes, ko skatījāt Android tālrunī?}one{Vai atvērt cilnes, ko skatījāt Android tālrunī?}other{Vai atvērt cilnes, ko skatījāt Android tālrunī?}}</translation>
+<translation id="1972325230031091483">Pārlūkošana būs ātrāka, jo saturs tiks iepriekš ielādēts, pamatojoties uz jūsu pašlaik apmeklēto tīmekļa lapu.</translation>
 <translation id="1973912524893600642">Paturēt datus</translation>
 <translation id="1974060860693918893">Papildu</translation>
 <translation id="1980417445547898121">{count,plural, =1{Šajā iPhone tālrunī varat atvērt {count} cilni, ko nesen izmantojāt citā ierīcē}zero{Šajā iPhone tālrunī varat atvērt {count} cilnes, ko nesen izmantojāt citā ierīcē}one{Šajā iPhone tālrunī varat atvērt {count} cilni, ko nesen izmantojāt citā ierīcē}other{Šajā iPhone tālrunī varat atvērt {count} cilnes, ko nesen izmantojāt citā ierīcē}}</translation>
@@ -433,6 +434,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3235242129752692527">Rediģējiet pasākuma informāciju un pieskarieties pogai Saglabāt.</translation>
 <translation id="3240426699337459095">Saite nokopēta</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Ja kopīgojat arī Chrome lietojuma pārskatus, šajos pārskatos tiek iekļauti jūsu apmeklētie vietrāži URL.</translation>
 <translation id="3245744387817103524">Jūsu veiktās izmaiņas nevarēja saglabāt.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" />. no <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Paroļu automātiskā aizpilde</translation>
@@ -632,7 +634,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4371591986692297148">neaktīva</translation>
 <translation id="4375040482473363939">Meklēšana ar kvadrātkodu</translation>
 <translation id="4378154925671717803">Tālrunis</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> kopīgoja ar jums paroli vietnei <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Pieskarieties, lai mainītu valodu.</translation>
 <translation id="4405320213589929829">Tīmekļa lapās varat izmantot adreses, lai iegūtu vietējo informāciju un norādes.</translation>
 <translation id="4420409367264901497">Rediģēt grāmatzīmi</translation>
@@ -857,6 +858,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="555749644339804659">Notiek paroļu pārbaude…</translation>
 <translation id="5559567453458728487">Pārveidot tīmeklī atrastās mērvienības</translation>
 <translation id="556042886152191864">Poga</translation>
+<translation id="5572648434713976849">Jūs saņemsiet uzlabotus ieteikumus adreses joslā.</translation>
 <translation id="5572684875078967866">Informācijas glabāšana</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Izsekot šim sūtījumam}zero{Izsekot visiem sūtījumiem}one{Izsekot visiem sūtījumiem}other{Izsekot visiem sūtījumiem}}</translation>
 <translation id="5597915316964418992">Atveriet ciļņu režģi.</translation>
@@ -1083,6 +1085,7 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="6642362222295953972">Pāriet uz esošo cilni</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
 <translation id="6645899968535965230">Kvadrātkods: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">Uzņēmumam Google tiek sūtīti jūsu apmeklētie vietrāži URL, lai prognozētu, kuras vietnes jūs varētu apmeklēt turpmāk.</translation>
 <translation id="6647480763136463714">Pēdējoreiz palaista: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Mapes rediģēšana</translation>
 <translation id="6657585470893396449">Parole</translation>

@@ -88,6 +88,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="2583187216237139145">Työprofiilin järjestelmänvalvoja voi poistaa tämän profiilin käytön aikana luotua Chromium-dataa (esim. kirjanmerkit, historia, salasanat ja muut asetukset). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Jatka Chromiumin käyttöä</translation>
 <translation id="259935314519650377">Ladatun asennusohjelman siirtäminen välimuistiin epäonnistui. Virhe: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium toimii nopeammin ja JavaScriptiä käyttävien ominaisuuksien pitäisi toimia suunnitellusti (suositus)</translation>
 <translation id="2648074677641340862">Asennuksessa ilmeni käyttöjärjestelmävirhe. Lataa Chromium uudelleen.</translation>
 <translation id="2661879430930417727">Jos käytät jaettua laitetta, kaverisi ja perheenjäsenesi voivat selata verkkoa erillään ja räätälöidä Chromiumista juuri itselleen sopivan</translation>
 <translation id="268602741124540128">Tervetuloa Chromiumiin, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -123,6 +124,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="3258596308407688501">Chromium ei voi lukea tietohakemistoaan ja kirjoittaa siihen:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 on Chromiumin JavaScript- ja WebAssembly-moottori, jota käytetään sivuston suorituskyvyn parantamiseen</translation>
 <translation id="3283186697780795848">Chromiumin versio <ph name="PRODUCT_VERSION" /> asennettu</translation>
 <translation id="3286538390144397061">Käynnistä uudelleen</translation>
 <translation id="328888136576916638">Googlen sovellusliittymän avaimet puuttuvat. Jotkin Chromiumin toiminnoista poistetaan käytöstä.</translation>
@@ -216,6 +218,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="4814736265800133385">Käytä Chromiumia ilman tiliä</translation>
 <translation id="4888717733111232871">Chromiumin saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
 <translation id="4893347770495441059">Päivitä &amp;Chromium käynnistämällä se uudelleen</translation>
+<translation id="4942295735032723435">Sinulla on oltava macOS 11 tai uudempi, jotta saat tulevia Chromiumin päivityksiä. Tällä tietokoneella on macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium on käynnissä taustalla</translation>
 <translation id="4987820182225656817">Vierailijat voivat käyttää Chromiumia jälkiä jättämättä.</translation>
 <translation id="4994636714258228724">Lisää itsesi Chromiumiin</translation>
@@ -244,7 +247,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5623402015214259806">{0,plural, =0{Chromium-päivitys on saatavilla}=1{Chromium-päivitys on saatavilla}other{Chromium-päivitys on ollut saatavilla # vuorokauden ajan}}</translation>
 <translation id="5643865575100044307">Poista laitteen sivustodata aina, kun suljet Chromiumin</translation>
 <translation id="5653831366781983928">Käynnistä Chromium uudelleen nyt</translation>
-<translation id="5675598751761067447">Tämä tiedosto voi olla vaarallinen<ph name="LINE_BREAK" />Chromium voi tarkistaa latauksen puolestasi, jos annat salasanan – salasana pysyy laitteellasi</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Näytä Chromium tällä kielellä</translation>
 <translation id="569897634095159764">Internetyhteyden muodostaminen ei onnistu. Välityspalvelin edellyttää todennusta.</translation>
@@ -405,6 +407,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8105840573057009683">Chromium tarvitsee sijaintiluvan tällä sivustolla</translation>
 <translation id="8133124826068723441">Chromium-käyttöjärjestelmä ei voi synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
 <translation id="813913629614996137">Käynnistetään…</translation>
+<translation id="8166782796394721554">Laita lisäsuojaus päälle Chromiumin JavaScript- ja WebAssembly-moottorissa</translation>
 <translation id="81770708095080097">Tämä tiedosto on vaarallinen, joten Chromium on estänyt sen.</translation>
 <translation id="8213374284266571500">Chromium on estänyt tiedoston, koska tämäntyyppiset tiedostot ovat vaarallisia</translation>
 <translation id="8248265253516264921">Jos kuvalla ei ole hyödyllistä kuvausta, Chromium yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten. Voit milloin tahansa poistaa tämän käytöstä asetuksissa.</translation>

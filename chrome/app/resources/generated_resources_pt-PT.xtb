@@ -1121,7 +1121,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1832848789136765277">Para se certificar de que pode sempre aceder aos seus dados de sincronização, valide a sua identidade</translation>
 <translation id="1834503245783133039">Transferência sem êxito: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">A atualizar o Linux…</translation>
-<translation id="1835612721186505600">Permitir acesso a apps e Websites com a autorização da câmara</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="1839021455997460752">O seu endereço de email</translation>
 <translation id="1839540115464516994">Mostrar em <ph name="LOCATION" /></translation>
@@ -4580,7 +4579,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4507128560633489176">Dados limpos.</translation>
 <translation id="4507373251891673233">Bloqueou todas as extensões de <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Clique em "Adicionar atalho"</translation>
-<translation id="4508150454272293946">Permitir que as apps e as páginas Web usem as câmaras associadas a este dispositivo. Se continuar a ter problemas com a câmara, experimente reiniciar a app ou atualizar a página Web.</translation>
 <translation id="450867954911715010">Definições de acessibilidade</translation>
 <translation id="4508765956121923607">Ver &amp;Origem</translation>
 <translation id="4509277363725254222">Quando partilha uma cópia do seu <ph name="BEGIN_BOLD_USERNAME" />nome de utilizador<ph name="END_BOLD_USERNAME" /> e <ph name="BEGIN_BOLD_PASSWORD" />palavra-passe<ph name="END_BOLD_PASSWORD" />, o membro da família pode preenchê-los através do Gestor de Palavras-passe da Google</translation>
@@ -8482,7 +8480,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7610337976012700501">Para usar a funcionalidade <ph name="FEATURE_NAME" /> com estes contactos, adicione o endereço de email associado às respetivas Contas Google aos seus contactos.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Todas as extensões</translation>
-<translation id="7612401678989660900">Permitir acesso a apps e Websites com a autorização do microfone</translation>
 <translation id="7612497353238585898">Site ativo</translation>
 <translation id="7612655942094160088">Ativar funcionalidades do telemóvel associado.</translation>
 <translation id="7612989789287281429">A iniciar sessão…</translation>

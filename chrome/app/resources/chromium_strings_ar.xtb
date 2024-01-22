@@ -86,6 +86,7 @@
 <translation id="2583187216237139145">‏يمكن لمشرف الملف الشخصي للعمل إزالة أي بيانات مرتبطة بمتصفِّح Chromium والتي يتم إنشاؤها أثناء استخدام هذا الملف الشخصي (مثل إنشاء الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى).<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">‏مواصلة استخدام Chromium</translation>
 <translation id="259935314519650377">تعذَّر إجراء تخزين مؤقت للمثبّت الذي تم تنزيله. الخطأ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">‏سيعمل Chromium بشكل أسرع ومن المفترض أن تعمل الميزات التي تستخدِم JavaScript على النحو المطلوب (خيار يُنصَح به).</translation>
 <translation id="2648074677641340862">‏حدث خطأ في نظام التشغيل أثناء عملية التثبيت. يُرجى إعادة تنزيل Chromium.</translation>
 <translation id="2661879430930417727">‏في حال مشاركة جهاز مع الأصدقاء والعائلة، يمكنهم الحصول على تجربة تصفّح منفصلة وإعداد Chromium على النحو المفضّل لديهم.</translation>
 <translation id="268602741124540128">‏مرحبًا بك في Chromium، <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -121,6 +122,7 @@
 <translation id="3258596308407688501">‏يتعذر على Chromium القراءة والكتابة في دليل البيانات الخاص به:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">‏V8 هو محرك JavaScript وWebAssembly من Chromium يُستخدَم لتحسين أداء المواقع الإلكترونية.</translation>
 <translation id="3283186697780795848">‏الإصدار المُثبّت من Chromium: <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">إعادة التشغيل الآن</translation>
 <translation id="328888136576916638">‏مفاتيح واجهة برمجة تطبيقات Google مفقودة. وسيترتب على ذلك توقف بعض وظائف Chromium عن العمل.</translation>
@@ -214,6 +216,7 @@
 <translation id="4814736265800133385">‏استخدام Chromium بدون حساب</translation>
 <translation id="4888717733111232871">‏قاعدة الوارد إلى Chromium للسماح بحركة مرور mDNS.</translation>
 <translation id="4893347770495441059">‏إعادة تشغيل متصفِّح Chromium لتحديثه</translation>
+<translation id="4942295735032723435">‏للحصول على تحديثات Chromium في المستقبل، يجب استخدام جهاز يعمل بنظام التشغيل macOS 11 أو إصدار أحدث. ويعمل هذا الكمبيوتر بنظام التشغيل macOS 10.15.</translation>
 <translation id="4943838377383847465">‏Chromium في وضع الخلفية.</translation>
 <translation id="4987820182225656817">‏يمكن للضيف استخدام Chromium بدون أن يترك أي أثر وراءه.</translation>
 <translation id="4994636714258228724">‏إضافة نفسك إلى Chromium</translation>
@@ -242,7 +245,6 @@
 <translation id="5623402015214259806">{0,plural, =0{‏يتوفر تحديث لمتصفح Chromium}=1{‏يتوفر تحديث لمتصفح Chromium}two{‏يتوفر تحديث لمتصفح Chromium منذ يومين}few{‏يتوفر تحديث لمتصفح Chromium منذ # أيام}many{‏يتوفر تحديث لمتصفح Chromium منذ # يومًا}other{‏يتوفر تحديث لمتصفح Chromium منذ # يوم}}</translation>
 <translation id="5643865575100044307">‏حذف بيانات الموقع الإلكتروني من جهازك دائمًا عند إغلاق Chromium</translation>
 <translation id="5653831366781983928">‏يُرجى إعادة تشغيل Chromium الآن</translation>
-<translation id="5675598751761067447">‏قد يكون هذا الملف خطيرًا<ph name="LINE_BREAK" />بإمكان Chromium التحقّق من عملية التنزيل هذه في حال أدخلت كلمة المرور، علمًا بأنّه لن يتم مشاركة هذه الكلمة خارج نطاق جهازك.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">‏عرض Chromium بهذه اللغة</translation>
 <translation id="569897634095159764">يتعذّر الاتصال بالإنترنت. يتطلب الخادم الوكيل المصادقة.</translation>
@@ -403,6 +405,7 @@
 <translation id="8105840573057009683">‏يحتاج Chromium إلى إذن تحديد الموقع الجغرافي من أجل هذا الموقع الإلكتروني.</translation>
 <translation id="8133124826068723441">‏تعذّر على نظام التشغيل Chromium مزامنة بياناتك لأن المزامنة غير متاحة لنطاقك.</translation>
 <translation id="813913629614996137">تجري التهيئة...</translation>
+<translation id="8166782796394721554">‏يمكنك تفعيل ميزة "الحماية الإضافية" في محرك JavaScript وWebAssembly من Chromium.</translation>
 <translation id="81770708095080097">‏هذا الملف ضار، لذلك فقد حظره Chromium.</translation>
 <translation id="8213374284266571500">‏حَظَر Chromium هذا الملف لأنّه ملف خطير.</translation>
 <translation id="8248265253516264921">‏في حال لم تتضمن صورة ما وصفًا مفيدًا، سيحاول Chromium توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google. ويمكنك إيقاف هذه الميزة في الإعدادات في أي وقت.</translation>

@@ -245,7 +245,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5623402015214259806">{0,plural, =0{Une mise à jour de Chromium est disponible}=1{Une mise à jour de Chromium est disponible}one{Une mise à jour de Chromium est disponible depuis # jour}other{Une mise à jour de Chromium est disponible depuis # jours}}</translation>
 <translation id="5643865575100044307">Toujours supprimer les données des sites de votre appareil lorsque vous fermez Chromium</translation>
 <translation id="5653831366781983928">Veuillez redémarrer Chromium maintenant</translation>
-<translation id="5675598751761067447">Ce fichier peut être dangereux<ph name="LINE_BREAK" />Si vous fournissez le mot de passe, Chromium peut vérifier ce téléchargement pour vous. Votre mot de passe ne quittera pas votre appareil.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Afficher Chromium dans cette langue</translation>
 <translation id="569897634095159764">Impossible de se connecter à Internet. Le serveur proxy exige que vous vous authentifiiez.</translation>

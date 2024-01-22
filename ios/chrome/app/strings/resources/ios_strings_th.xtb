@@ -183,6 +183,7 @@
 <translation id="1959441496380398824">แตะวันที่ค้างไว้</translation>
 <translation id="1959679933317802873">กำลังรอเนื้อหา</translation>
 <translation id="1967461193809857427">{count,plural, =1{ดูแท็บที่ค้างไว้จาก Android ต่อไหม}other{ดูแท็บที่ค้างไว้จาก Android ต่อไหม}}</translation>
+<translation id="1972325230031091483">คุณจะท่องเว็บได้เร็วขึ้นเนื่องจากมีการโหลดเนื้อหาโดยอิงจากหน้าเว็บที่กำลังเข้าชมโดยที่คุณไม่ต้องขอ</translation>
 <translation id="1973912524893600642">เก็บข้อมูลไว้</translation>
 <translation id="1974060860693918893">ขั้นสูง</translation>
 <translation id="1980417445547898121">{count,plural, =1{รับแท็บที่เพิ่งใช้งาน {count} แท็บจากอุปกรณ์อื่นบน iPhone เครื่องนี้}other{รับแท็บที่เพิ่งใช้งาน {count} แท็บจากอุปกรณ์อื่นบน iPhone เครื่องนี้}}</translation>
@@ -434,6 +435,7 @@
 <translation id="3235242129752692527">แก้ไขรายละเอียดกิจกรรม แล้วแตะ "บันทึก"</translation>
 <translation id="3240426699337459095">คัดลอกลิงก์แล้ว</translation>
 <translation id="3244271242291266297">ดด</translation>
+<translation id="3245429137663807393">หากคุณแชร์รายงานการใช้งาน Chrome ด้วย รายงานดังกล่าวจะรวม URL ที่คุณเข้าชม</translation>
 <translation id="3245744387817103524">บันทึกการเปลี่ยนแปลงไม่ได้</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> จาก <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">ป้อนรหัสผ่านอัตโนมัติ</translation>
@@ -557,6 +559,7 @@
 <translation id="3922310737605261887">ค้นหาข้อความที่คัดลอก</translation>
 <translation id="3928666092801078803">รวมข้อมูลของฉัน</translation>
 <translation id="3929457972718048006">ที่อยู่</translation>
+<translation id="3948600256434252210">คุณสามารถปัดไปทางขวาเพื่อท่องเว็บในโหมดไม่ระบุตัวตน</translation>
 <translation id="3955822496205734389">คุณมีรหัสผ่านที่ไม่รัดกุม</translation>
 <translation id="3959736869653157332">เมนู → แท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="3962326069546168954">บันทึก</translation>
@@ -633,7 +636,6 @@
 <translation id="4371591986692297148">ไม่ได้ใช้งาน</translation>
 <translation id="4375040482473363939">ค้นหาโค้ด QR</translation>
 <translation id="4378154925671717803">โทรศัพท์</translation>
-<translation id="4388983683160515185"><ph name="FULL_NAME" /> ได้แชร์รหัสผ่านกับคุณสำหรับ <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">แตะเพื่อเปลี่ยนภาษา</translation>
 <translation id="4405320213589929829">ใช้ที่อยู่บนหน้าเว็บเพื่อรับข้อมูลและเส้นทางในพื้นที่</translation>
 <translation id="4420409367264901497">แก้ไขบุ๊กมาร์ก</translation>
@@ -662,6 +664,7 @@
 <translation id="4539187448429948815">{count,plural, =1{คำแนะนำที่เติมข้อความอัตโนมัติที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{คำแนะนำที่เติมข้อความอัตโนมัติที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
 <translation id="4540780316273593836">เกิดข้อผิดพลาด</translation>
 <translation id="4550040941166547650">เฉพาะในอุปกรณ์นี้</translation>
+<translation id="4564893319561643483">ซ่อน "<ph name="TITLE" />"</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{ปิดแท็บที่ไม่ได้ใช้งาน {COUNT} แท็บใช่ไหม}other{ปิดแท็บที่ไม่ได้ใช้งาน {COUNT} แท็บใช่ไหม}}</translation>
 <translation id="457386861538956877">เพิ่มเติม...</translation>
 <translation id="4587589328781138893">เว็บไซต์</translation>
@@ -859,6 +862,7 @@
 <translation id="555749644339804659">กำลังตรวจสอบรหัสผ่าน…</translation>
 <translation id="5559567453458728487">แปลงหน่วยวัดที่พบในเว็บ</translation>
 <translation id="556042886152191864">ปุ่ม</translation>
+<translation id="5572648434713976849">คุณจะได้รับคำแนะนำที่ดีขึ้นในแถบที่อยู่</translation>
 <translation id="5572684875078967866">พื้นที่เก็บข้อมูล</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{ติดตามพัสดุนี้}other{ติดตามพัสดุทั้งหมด}}</translation>
 <translation id="5597915316964418992">เปิดตารางกริดของแท็บ</translation>
@@ -1085,6 +1089,7 @@
 <translation id="6642362222295953972">เปลี่ยนไปใช้แท็บที่มีอยู่</translation>
 <translation id="6643016212128521049">ล้าง</translation>
 <translation id="6645899968535965230">คิวอาร์โค้ด: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647441008198474441">ระบบจะส่ง URL ที่คุณเข้าชมไปยัง Google เพื่อคาดคะเนเว็บไซต์ต่อไปที่คุณอาจเข้าชม</translation>
 <translation id="6647480763136463714">เรียกใช้ล่าสุด <ph name="TIME" /></translation>
 <translation id="6656103420185847513">แก้ไขโฟลเดอร์</translation>
 <translation id="6657585470893396449">รหัสผ่าน</translation>
@@ -1262,6 +1267,7 @@
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7666861622396822790">คุณจัดการตัวเลือกนี้ได้ใน<ph name="BEGIN_LINK" />การตั้งค่าเนื้อหา<ph name="END_LINK" /></translation>
 <translation id="7671141431838911305">ติดตั้ง</translation>
+<translation id="7673346542062368520">คุณสามารถปัดไปทางซ้ายเพื่อท่องเว็บในโหมดไม่ระบุตัวตน</translation>
 <translation id="7679915578945954324">คัดลอกที่อยู่เว็บไซต์แล้ว</translation>
 <translation id="7687508192620387263">ไฟล์ปฏิทินพร้อมให้ใช้งานแล้ว</translation>
 <translation id="7701040980221191251">ไม่มี</translation>

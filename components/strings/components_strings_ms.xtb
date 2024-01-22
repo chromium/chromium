@@ -465,6 +465,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1828959155404624835">Sewaan kereta</translation>
 <translation id="1834321415901700177">Tapak ini mengandungi atur cara berbahaya</translation>
 <translation id="1838374766361614909">Kosongkan carian</translation>
+<translation id="1839331950812095887">beberapa perkataan yang menyimpulkan pendapat anda</translation>
 <translation id="1839551713262164453">Pengesahan nilai dasar gagal dengan ralat</translation>
 <translation id="1842969606798536927">Bayar</translation>
 <translation id="1846432862466000825">Plastik (Arkib)</translation>
@@ -698,6 +699,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2293443924986248631">Apabila pilihan ini dihidupkan, tapak tidak dapat menggunakan kuki yang menjejaki anda merentas web. Ciri pada sesetengah tapak mungkin rosak.</translation>
 <translation id="2295831393422400053">Hidupkan tetapan Jadikan Carian dan Penyemakan Imbas Lebih Baik untuk menggunakan Bantu saya tulis</translation>
 <translation id="2300306941146563769">Tidak dimuat naik</translation>
+<translation id="2301098101308036335">Jenis dan masa laman web dilawati.</translation>
 <translation id="230286397113210245">Butang buka Tetingkap Inkognito, aktifkan untuk membuka tetingkap Inkognito untuk menyemak imbas secara peribadi</translation>
 <translation id="2312234273148520048">Perencah &amp; Sos</translation>
 <translation id="2316087952091171402">Kurang daripada <ph name="UPPER_ESTIMATE" />. Sesetengah laman mungkin dimuatkan dengan lebih perlahan pada lawatan anda yang seterusnya.</translation>
@@ -1366,6 +1368,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3655670868607891010">Jika anda kerap melihatnya, cuba <ph name="HELP_LINK" /> ini.</translation>
 <translation id="365641980390710834">Pakaian Kasual</translation>
 <translation id="3658742229777143148">Semakan</translation>
+<translation id="3659521826520353662">Jenis dan masa laman web ditakrifkan pentadbir dilawati: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">Kata kunci:</translation>
 <translation id="3665100783276035932">Kebanyakan laman harus berfungsi seperti yang dijangkakan</translation>
 <translation id="3667704023705708645">Modal usaha niaga</translation>
@@ -1456,6 +1459,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3812398568375898177">Kemaskinian ini penting kerana meningkatkan prestasi apl Android pada ChromeOS.</translation>
 <translation id="3815434930383843058">8 x 12 in</translation>
 <translation id="3816482573645936981">Nilai (digantikan)</translation>
+<translation id="382115839591654906">CVC untuk <ph name="CARD_NAME" /></translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Penyemak imbas anda diurus oleh <ph name="BROWSER_DOMAIN" /> dan profil anda diurus oleh <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Jika anda menggunakan pelayan proksi...</translation>
@@ -1817,7 +1821,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Anda menggunakan kunci skrin anda untuk mengisikan kata laluan</translation>
 <translation id="4558551763791394412">Cuba lumpuhkan sambungan anda.</translation>
-<translation id="456043042661026303">Semak butiran pembayaran anda dengan selamat</translation>
 <translation id="4566017918361049074">Aktiviti luar</translation>
 <translation id="4567686777917670400">Pentadbir anda boleh menukar persediaan penyemak imbas anda dari jauh. Aktiviti pada peranti ini juga mungkin diurus di luar Chromium. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">Disahkan</translation>
@@ -2664,7 +2667,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6272088941196661550">Sambung semula perjalanan anda untuk melihat aktiviti yang berkaitan dalam sejarah Chrome anda</translation>
 <translation id="6272383483618007430">Kemas Kini Google</translation>
 <translation id="6279183038361895380">Tekan |<ph name="ACCELERATOR" />| untuk memaparkan kursor anda</translation>
-<translation id="628016388715774955">Pilihan pengisian alamat penuh telah dipilih</translation>
 <translation id="6280223929691119688">Tidak dapat menghantar ke alamat ini. Pilih alamat lain.</translation>
 <translation id="6284292079994426700">26 x 38 in</translation>
 <translation id="6284517535531159884">Jenis Benih Variasi</translation>
@@ -2936,7 +2938,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6807791860691150411">Pendidikan</translation>
 <translation id="681021252041861472">Medan Diperlukan</translation>
 <translation id="6810899417690483278">ID Penyesuaian</translation>
-<translation id="681459028290894216">Isi alamat penuh</translation>
 <translation id="6816109178681043245">Barangan Sukan</translation>
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">port bersiri</translation>
@@ -3207,6 +3208,7 @@ Butiran tambahan:
 <translation id="7341357280245177602">Kenderaan terpakai</translation>
 <translation id="7346048084945669753">Ialah ahli gabungan:</translation>
 <translation id="7346062987309535530">Peralatan hidangan makanan</translation>
+<translation id="7346081071264046066">"balas ya kepada undangan majlis perkahwinan ini dengan keterujaan"</translation>
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
 <translation id="7353601530677266744">Baris Perintah</translation>
 <translation id="7354880545102894991">Perjalanan kos rendah &amp; saat akhir</translation>

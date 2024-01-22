@@ -1116,7 +1116,6 @@
 <translation id="1832848789136765277">Синхрондау деректерін әрдайым пайдалана алатыныңызға көз жеткізу үшін, жеке басыңызды растаңыз.</translation>
 <translation id="1834503245783133039">Жүктеп алынбады: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux жүйесінің жаңа нұсқасын орнату</translation>
-<translation id="1835612721186505600">Қолданбалар мен веб-сайттарға камераны пайдалануға мүмкіндік беру</translation>
 <translation id="1838374766361614909">Іздеуді тазарту</translation>
 <translation id="1839021455997460752">Электрондық мекенжайыңыз</translation>
 <translation id="1839540115464516994"><ph name="LOCATION" /> ішінде көрсету</translation>
@@ -4565,7 +4564,6 @@
 <translation id="4507128560633489176">Деректер өшірілді.</translation>
 <translation id="4507373251891673233"><ph name="HOST" /> сайтының барлық кеңейтімін бөгедіңіз.</translation>
 <translation id="4507401683427517298">"Таңбаша қосу" түймесін басыңыз.</translation>
-<translation id="4508150454272293946">Қолданбалар мен веб-беттердің осы құрылғыға қосылған камераларды пайдалануына рұқсат беріңіз. Камерада әлі де мәселе болса, қолданбаны қайта өшіріп қосып көріңіз немесе веб-бетті жаңартыңыз.</translation>
 <translation id="450867954911715010">Арнайы мүмкіндіктер параметрлері</translation>
 <translation id="4508765956121923607">Д&amp;ереккөзді көру</translation>
 <translation id="4509277363725254222"><ph name="BEGIN_BOLD_USERNAME" />Пайдаланушы аты<ph name="END_BOLD_USERNAME" /> және <ph name="BEGIN_BOLD_PASSWORD" />құпия сөз<ph name="END_BOLD_PASSWORD" /> көшірмесін бөліскен кезде, отбасы мүшесі оларды Google Password Manager көмегімен толтыра алады.</translation>
@@ -8453,7 +8451,6 @@
 <translation id="7610337976012700501"><ph name="FEATURE_NAME" /> функциясын осы контактілермен пайдалану үшін олардың Google аккаунтымен байланыстырылған электрондық поштаны контактілерге қосыңыз.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Барлық кеңейтім</translation>
-<translation id="7612401678989660900">Қолданбалар мен веб-сайттарға микрофонды пайдалануға мүмкіндік беру</translation>
 <translation id="7612497353238585898">Ашық сайт</translation>
 <translation id="7612655942094160088">Жалғанған телефон функцияларын қосу.</translation>
 <translation id="7612989789287281429">Аккаунтқа кіруде…</translation>

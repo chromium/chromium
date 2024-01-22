@@ -1118,7 +1118,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1832848789136765277">Bestätige deine Identität, damit du jederzeit auf deine synchronisierten Daten zugreifen kannst</translation>
 <translation id="1834503245783133039">Download fehlgeschlagen: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux wird aktualisiert</translation>
-<translation id="1835612721186505600">Zugriff für Apps und Websites mit der Kameraberechtigung erlauben</translation>
 <translation id="1838374766361614909">Suche löschen</translation>
 <translation id="1839021455997460752">Deine E-Mail-Adresse</translation>
 <translation id="1839540115464516994">In <ph name="LOCATION" /> anzeigen</translation>
@@ -4576,7 +4575,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4507128560633489176">Daten gelöscht.</translation>
 <translation id="4507373251891673233">Du hast alle Erweiterungen von <ph name="HOST" /> blockiert</translation>
 <translation id="4507401683427517298">Klicke auf „Verknüpfung hinzufügen“</translation>
-<translation id="4508150454272293946">Apps und Webseiten dürfen die mit diesem Gerät verbundenen Kameras verwenden. Wenn weiterhin Probleme mit der Kamera auftreten, starte die App neu oder aktualisiere die Webseite.</translation>
 <translation id="450867954911715010">Einstellungen für Bedienungshilfen</translation>
 <translation id="4508765956121923607">Q&amp;uelle anzeigen</translation>
 <translation id="4509277363725254222">Wenn du eine Kopie deines <ph name="BEGIN_BOLD_USERNAME" />Nutzernamens<ph name="END_BOLD_USERNAME" /> und deines <ph name="BEGIN_BOLD_PASSWORD" />Passworts<ph name="END_BOLD_PASSWORD" /> teilst, kann dein Familienmitglied diese Angaben mit dem Google Passwortmanager eintragen</translation>
@@ -8474,7 +8472,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7610337976012700501">Wenn du <ph name="FEATURE_NAME" /> mit diesen Kontakten verwenden möchtest, musst du deinen Kontakten die mit ihren Google-Konten verknüpften E‑Mail-Adressen hinzufügen.</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612050744024016345">Alle Erweiterungen</translation>
-<translation id="7612401678989660900">Zugriff für Apps und Websites mit der Mikrofonberechtigung erlauben</translation>
 <translation id="7612497353238585898">Aktive Website</translation>
 <translation id="7612655942094160088">Funktionen für verbundenes Smartphone aktivieren.</translation>
 <translation id="7612989789287281429">Du wirst angemeldet…</translation>

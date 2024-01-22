@@ -245,7 +245,6 @@
 <translation id="5623402015214259806">{0,plural, =0{Доступно обновление Chromium}=1{Доступно обновление Chromium}one{Обновление Chromium доступно # день}few{Обновление Chromium доступно # дня}many{Обновление Chromium доступно # дней}other{Обновление Chromium доступно # дня}}</translation>
 <translation id="5643865575100044307">Всегда удалять с устройства данные сайтов при закрытии Chromium</translation>
 <translation id="5653831366781983928">Перезапустите Chromium</translation>
-<translation id="5675598751761067447">Этот файл может быть опасен.<ph name="LINE_BREAK" />Chromium проверит его, если вы введете пароль. Ваш пароль останется на устройстве.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Отображать Chromium на этом языке</translation>
 <translation id="569897634095159764">Не удалось подключиться к интернету. Прокси-сервер требует пройти аутентификацию.</translation>

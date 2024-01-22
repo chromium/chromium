@@ -281,6 +281,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chromium 
 <translation id="8776843108004031667">Ovaj nalog i svi nesačuvani podaci ukloniće se iz Chromium-a.</translation>
 <translation id="88376265765385899">Otvara Chromium obeleživače.</translation>
 <translation id="8860548555286245440">Otvorite URL-ove u Chromium-u u režimu bez arhiviranja</translation>
+<translation id="8866191443434488382">Chromium otkriva brojeve za praćenje na sajtovima koje posećujete i prikazuje vam novosti o paketima na stranici Nova kartica. Broj za praćenje paketa i naziv veb-sajta biće poslati Chromium-u radi pružanja ove funkcije i poboljšanja funkcija kupovine za sve. To možete da ažurirate u svakom trenutku u <ph name="BEGIN_LINK" />podešavanjima praćenja paketa<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium za iOS</translation>
 <translation id="8924617840944134898">Otvori Chromium karticu bez arhiviranja</translation>
 <translation id="894437814105052438">Kada se odjavite, Chromium ne sinhronizuje nikakve nove podatke sa Google nalogom. Prethodno sinhronizovani podaci ostaju na nalogu.</translation>

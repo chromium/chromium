@@ -249,7 +249,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="5623402015214259806">{0,plural, =0{Ažuriranje za Chromium je dostupno}=1{Ažuriranje za Chromium je dostupno}one{Ažuriranje za Chromium je dostupno već # dan}few{Ažuriranje za Chromium je dostupno već # dana}other{Ažuriranje za Chromium je dostupno već # dana}}</translation>
 <translation id="5643865575100044307">Uvek izbrišite podatke o sajtovima sa uređaja kada zatvorite Chromium</translation>
 <translation id="5653831366781983928">Restartujte Chromium</translation>
-<translation id="5675598751761067447">Ovaj fajl može da bude opasan<ph name="LINE_BREAK" />Chromium može da proveri ovo preuzimanje umesto vas ako navedete lozinku – lozinka ostaje na uređaju</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Prikazuj Chromium na ovom jeziku</translation>
 <translation id="569897634095159764">Povezivanje sa internetom nije uspelo. Proksi server zahteva potvrdu identiteta.</translation>

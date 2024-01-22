@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">suivant</translation>
 <translation id="1615335640928990664">Consommation des données depuis le <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Lancer le test de recharge</translation>
+<translation id="1626590945318984973">Raccourci non disponible. Appuyez sur un nouveau raccourci sans utiliser les touches de fonction ni la touche <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Chargement en cours…</translation>
 <translation id="1641857168437328880">Chargeur de document (recto)</translation>
 <translation id="1643449475550628585">Modifier le fond d'écran tous les jours</translation>
@@ -452,7 +453,9 @@
 <translation id="4394049700291259645">Désactiver</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> : redémarrage…</translation>
 <translation id="4395835743215824109">personnalisation du clavier</translation>
+<translation id="4403262788869804671">Un raccourci sans la touche <ph name="META_KEY" /> peut entrer en conflit avec un raccourci d'une appli. Appuyez de nouveau sur ce raccourci pour continuer à l'utiliser ou appuyez sur un nouveau raccourci avec la touche <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Avatar actuel</translation>
+<translation id="4417830657741848074">Votre administrateur a configuré certaines applis pour qu'elles démarrent automatiquement. Certaines de ces applis ne peuvent pas être fermées.</translation>
 <translation id="4422041425070339732">flèche vers le bas</translation>
 <translation id="4425149324548788773">Mon Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> désactivé</translation>
@@ -465,6 +468,7 @@
 <translation id="4469288414739283461">Économiseur d'écran Flux terrestre</translation>
 <translation id="4479639480957787382">Ethernet </translation>
 <translation id="4483049906298469269">Impossible de pinguer la passerelle du réseau non défini par défaut</translation>
+<translation id="4500722292849917410">Raccourci non disponible. Appuyez sur un nouveau raccourci à l'aide d'une touche de modification (Ctrl, Alt, Maj ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Couleur de l'interface</translation>
 <translation id="4503223151711056411">Flèche vers la gauche</translation>
 <translation id="4507392511610824664">augmenter la luminosité</translation>
@@ -512,6 +516,7 @@
 <translation id="4832079907277790330">Sélectionner un dossier dans l'application Fichiers…</translation>
 <translation id="4835901797422965222">Aucun réseau actif</translation>
 <translation id="4839698083503556542">Créez votre propre film</translation>
+<translation id="48409034532829769">Votre administrateur a configuré l'appli "<ph name="APP_NAME" />" pour qu'elle démarre automatiquement. Elle ne peut pas être fermée.</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4847902821209177679">Source <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />) sélectionnée, appuyez sur Entrée pour sélectionner des albums dans <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Résolution DNS</translation>
@@ -538,6 +543,7 @@
 <translation id="4969079779290789265">Diviser</translation>
 <translation id="4972592110715526173">changement de mode</translation>
 <translation id="498186245079027698">Vérifiez le scanner et réessayez. Assurez-vous que l'espace de stockage local est suffisant pour y enregistrer les fichiers numérisés.</translation>
+<translation id="4982627662315910959">Raccourci non disponible. Appuyez sur un nouveau raccourci avec la touche Maj et une autre touche de modification (Ctrl, Alt ou <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Exécuter</translation>
 <translation id="4987769320337599931">Pare-feu</translation>
 <translation id="4988526792673242964">Pages</translation>
@@ -844,6 +850,7 @@
 <translation id="7216409898977639127">Opérateur de téléphonie mobile</translation>
 <translation id="725133483556299729">Sélectionnez une adresse e-mail</translation>
 <translation id="7271040990581020067">Le scanner est en cours d'utilisation. Réessayez plus tard.</translation>
+<translation id="7271932918253517778">Le raccourci avec des touches supérieures doit inclure la touche <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Brise légère</translation>
 <translation id="7287310195820267359">Collections de fonds d'écran</translation>

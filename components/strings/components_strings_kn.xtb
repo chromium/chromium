@@ -516,6 +516,8 @@
 <translation id="1956486093533522234">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಹುಡುಕಿ, ಸುರಕ್ಷಿತವಾಗಿರಿಸಿ ಅಥವಾ ಅಳಿಸಿ</translation>
 <translation id="1958218078413065209">ನಿಮ್ಮ ಅತಿ ಹೆಚ್ಚು ಸ್ಕೋರ್ <ph name="SCORE" /> ಆಗಿದೆ.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />ನೀವು ಭೇಟಿ ನೀಡುವ ಕೆಲವೊಂದು ಪುಟಗಳ URL ಗಳು, ಸಿಸ್ಟಂಗೆ ಸಂಬಂಧಿಸಿದ ಸೀಮಿತ ಮಾಹಿತಿ ಹಾಗೂ ಪುಟದಲ್ಲಿನ ಕೆಲವು ಕಂಟೆಂಟ್‍<ph name="END_WHITEPAPER_LINK" /> ಮುಂತಾದವುಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸುವ ಮೂಲಕ ಎಲ್ಲರಿಗಾಗಿ ವೆಬ್‌ನ ಸುರಕ್ಷತೆಯನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಿ. <ph name="BEGIN_PRIVACY_PAGE_LINK" />ಗೌಪ್ಯತೆ ನೀತಿ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959445535228047762">ನಿಮ್ಮ ಪಠ್ಯ ಮತ್ತು ಪುಟದ ಕಂಟೆಂಟ್ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ಈ ಫೀಚರ್ ಅನ್ನು ಸುಧಾರಿಸಲು ಅದನ್ನು ಬಳಸಬಹುದು.
+  <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="196752089528718902">ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಸೈಟ್‌ಗಳಿಗೆ ಸುರಕ್ಷಿತವಾಗಿ ಕನೆಕ್ಟ್ ಆಗುತ್ತೀರಿ, ಆದರೆ Chrome ಗೆ ಈ ಸಮಯದಲ್ಲಿ ಸುರಕ್ಷಿತ ಸಂಪರ್ಕವನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಅಟ್ಯಾಕರ್‌ಗಳು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಕದ್ದಾಲಿಕೆ ಮಾಡಲು ಅಥವಾ ಮಾರ್ಪಡಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು. <ph name="BEGIN_LEARN_MORE_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">ಅನುಕ್ರಮಗೊಳಿಸುವಿಕೆಯ ದೋಷ</translation>
@@ -719,6 +721,7 @@
 <translation id="2354430244986887761">Google ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ ಇತ್ತೀಚಿಗೆ <ph name="SITE" /> ನಲ್ಲಿ <ph name="BEGIN_LINK" />ಹಾನಿಕಾರಕ ಪ್ರೋಗ್ರಾಂಗಳನ್ನು ಕಂಡುಹಿಡಿದಿದೆ<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">ಈ ಸೈಟ್‌ನಲ್ಲಿ ನೀವು ನೋಡುತ್ತಿರುವ ಚಿತ್ರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಮತ್ತು ಅವುಗಳನ್ನು ಮಾರ್ಪಡಿಸುವ ಮೂಲಕ ನಿಮ್ಮನ್ನು ವಂಚಿಸಲು ದಾಳಿಕೋರರಿಗೆ ಸಾಧ್ಯವಾಗುತ್ತಿರಬಹುದು.</translation>
 <translation id="2356070529366658676">ಕೇಳಿ</translation>
+<translation id="2356926036049612643">V8 ಆಪ್ಟಿಮೈಸರ್</translation>
 <translation id="2357481397660644965">ನಿಮ್ಮ ಸಾಧನವನ್ನು <ph name="DEVICE_MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ ಮತ್ತು ನಿಮ್ಮ ಖಾತೆಯನ್ನು <ph name="ACCOUNT_MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="2359629602545592467">ಬಹು</translation>
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
@@ -1810,7 +1813,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಭರ್ತಿ ಮಾಡಲು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಬಳಸುತ್ತಿದ್ದೀರಿ</translation>
 <translation id="4558551763791394412">ನಿಮ್ಮ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="456043042661026303">ನಿಮ್ಮ ಪಾವತಿ ವಿವರಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4566017918361049074">ಹೊರಾಂಗಣ</translation>
 <translation id="4567686777917670400">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ದೂರದಿಂದಲೇ ಬದಲಾಯಿಸಬಹುದು. ಈ ಸಾಧನದಲ್ಲಿನ ಚಟುವಟಿಕೆಯನ್ನು Chromium ನ ಹೊರಗೆ ಸಹ ನಿರ್ವಹಿಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">ಪರಿಶೀಲಿಸಲಾಗಿದೆ</translation>
@@ -2656,7 +2658,6 @@
 <translation id="6272088941196661550">ನಿಮ್ಮ Chrome ಇತಿಹಾಸದಲ್ಲಿ ಸಂಬಂಧಿತ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಲು ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="6272383483618007430">Google ಅಪ್‍ಡೇಟ್</translation>
 <translation id="6279183038361895380">ನಿಮ್ಮ ಕರ್ಸರ್ ತೋರಿಸಲು |<ph name="ACCELERATOR" />| ಒತ್ತಿ</translation>
-<translation id="628016388715774955">ಪೂರ್ಣ ವಿಳಾಸವನ್ನು ಭರ್ತಿ ಮಾಡುವ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಲಾಗಿದೆ</translation>
 <translation id="6280223929691119688">ಈ ವಿಳಾಸಕ್ಕೆ ತಲುಪಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ವಿಳಾಸವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
 <translation id="6284292079994426700">26 x 38 ಇಂಚು</translation>
 <translation id="6284517535531159884">ವೇರಿಯೇಶನ್ಸ್ ಸೀಡ್ ಪ್ರಕಾರ</translation>
@@ -2929,7 +2930,6 @@
 <translation id="6807791860691150411">ಶಿಕ್ಷಣ</translation>
 <translation id="681021252041861472">ಅಗತ್ಯವಿರುವ ಕ್ಷೇತ್ರ</translation>
 <translation id="6810899417690483278">ಕಸ್ಟಮೈಸೇಶನ್ ಐಡಿ</translation>
-<translation id="681459028290894216">ಪೂರ್ಣ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="6816109178681043245">ಕ್ರೀಡಾ ಸಾಮಾಗ್ರಿಗಳು</translation>
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">ಸೀರಿಯಲ್ ಪೋರ್ಟ್‌ಗಳು</translation>

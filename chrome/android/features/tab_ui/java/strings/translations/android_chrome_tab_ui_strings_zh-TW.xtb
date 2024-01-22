@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">接收通知</translation>
 <translation id="4133493477912226187">似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要將這些分頁加入群組嗎？</translation>
 <translation id="4212246570487010370">繼續瀏覽</translation>
+<translation id="427987768447457592">新分頁群組</translation>
 <translation id="4648718555153979859">你的分頁都集中顯示在這裡</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> 則評論)}other{(<ph name="REVIEWS_COUNT_MANY" /> 則評論)}}</translation>
 <translation id="4850886885716139402">檢視</translation>

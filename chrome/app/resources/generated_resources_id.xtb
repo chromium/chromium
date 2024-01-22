@@ -1130,7 +1130,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1832848789136765277">Untuk memastikan Anda selalu dapat mengakses data yang disinkronkan, verifikasi diri Anda</translation>
 <translation id="1834503245783133039">Download tidak berhasil: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Mengupgrade Linux</translation>
-<translation id="1835612721186505600">Mengizinkan akses untuk aplikasi dan situs yang memiliki izin kamera</translation>
 <translation id="1838374766361614909">Hapus penelusuran</translation>
 <translation id="1839021455997460752">Alamat email Anda</translation>
 <translation id="1839540115464516994">Tampilkan di <ph name="LOCATION" /></translation>
@@ -4584,7 +4583,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4507128560633489176">Data dihapus.</translation>
 <translation id="4507373251891673233">Anda memblokir semua ekstensi dari <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Klik “Tambahkan Pintasan”</translation>
-<translation id="4508150454272293946">Izinkan aplikasi dan halaman web untuk menggunakan kamera yang terhubung ke perangkat ini. Jika Anda masih mengalami masalah dengan kamera, coba mulai ulang aplikasi atau muat ulang halaman web.</translation>
 <translation id="450867954911715010">Setelan aksesibilitas</translation>
 <translation id="4508765956121923607">Lihat S&amp;umber</translation>
 <translation id="4509277363725254222">Jika Anda membagikan salinan <ph name="BEGIN_BOLD_USERNAME" />nama pengguna<ph name="END_BOLD_USERNAME" /> dan <ph name="BEGIN_BOLD_PASSWORD" />sandi<ph name="END_BOLD_PASSWORD" />, anggota keluarga Anda dapat mengisinya menggunakan Pengelola Sandi Google</translation>
@@ -8476,7 +8474,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7610337976012700501">Untuk menggunakan <ph name="FEATURE_NAME" /> dengan kontak ini, tambahkan alamat email yang ditautkan dengan Akun Google mereka ke kontak Anda.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Semua Ekstensi</translation>
-<translation id="7612401678989660900">Mengizinkan akses untuk aplikasi dan situs yang memiliki izin mikrofon</translation>
 <translation id="7612497353238585898">Situs aktif</translation>
 <translation id="7612655942094160088">Fitur telepon yang terhubung aktif.</translation>
 <translation id="7612989789287281429">Memproses login Anda…</translation>

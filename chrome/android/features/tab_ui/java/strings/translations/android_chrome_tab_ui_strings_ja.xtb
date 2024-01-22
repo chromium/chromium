@@ -39,6 +39,7 @@
 <translation id="3996880007329611795">通知を受け取る</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
 <translation id="4212246570487010370">引き続き閲覧</translation>
+<translation id="427987768447457592">新しいタブグループ</translation>
 <translation id="4648718555153979859">タブはここにグループ化されます</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{（<ph name="REVIEWS_COUNT_ONE" /> 件のクチコミ）}other{（<ph name="REVIEWS_COUNT_MANY" /> 件のクチコミ）}}</translation>
 <translation id="4850886885716139402">表示</translation>

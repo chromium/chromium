@@ -246,7 +246,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="5623402015214259806">{0,plural, =0{Je k dispozícii aktualizácia prehliadača Chromium}=1{Je k dispozícii aktualizácia prehliadača Chromium}few{Aktualizácia prehliadača Chromium je k dispozícii už # dni}many{Aktualizácia prehliadača Chromium je k dispozícii už # dňa}other{Aktualizácia prehliadača Chromium je k dispozícii už # dní}}</translation>
 <translation id="5643865575100044307">Pred zavretím prehliadača Chromium vždy odstraňujte dáta webov zo zariadenia</translation>
 <translation id="5653831366781983928">Reštartujte Chromium</translation>
-<translation id="5675598751761067447">Tento súbor môže byť nebezpečný<ph name="LINE_BREAK" />Ak zadáte heslo, Chromium môže tento stiahnutý súbor skontrolovať (vaše heslo zostane v zariadení)</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Zobraziť Chromium v tomto jazyku</translation>
 <translation id="569897634095159764">Nepodarilo sa pripojiť k internetu. Proxy server vyžaduje overenie.</translation>
