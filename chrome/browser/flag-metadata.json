@@ -5434,7 +5434,7 @@
   {
     "name": "memory-saver-multi-state-mode",
     "owners": [ "chrome-performance-ui-team@google.com" ],
-    "expiry_milestone": 121
+    "expiry_milestone": 125
   },
   {
     "name": "memory-saver-savings-reporting-improvements",
