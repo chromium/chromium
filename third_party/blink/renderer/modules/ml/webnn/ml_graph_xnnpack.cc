@@ -1217,14 +1217,21 @@ xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
 
   // Set window sizes of XNNPACK pooling 2d Node.
   uint32_t input_height, input_width;
+  uint32_t output_height, output_width;
   uint32_t filter_height, filter_width;
   bool global_pooling = false;
   switch (options->layout().AsEnum()) {
     case V8MLInputOperandLayout::Enum::kNhwc: {
       const auto* input = pool2d->Inputs()[0].Get();
-      DCHECK(input);
+      CHECK(input);
       input_height = input->Dimensions()[1];
       input_width = input->Dimensions()[2];
+
+      const auto* output = pool2d->Outputs()[0].Get();
+      CHECK(output);
+      output_height = output->Dimensions()[1];
+      output_width = output->Dimensions()[2];
+
       if (options->hasWindowDimensions()) {
         filter_height = options->windowDimensions()[0];
         filter_width = options->windowDimensions()[1];
@@ -1249,9 +1256,27 @@ xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
   }
 
   // Set or calculate padding sizes of XNNPACK pooling 2d Node.
-  const auto padding = GetXnnPadding2D(
-      options, input_height, input_width, filter_height, filter_width,
-      stride_height, stride_width, dilation_height, dilation_width);
+  auto padding = GetXnnPadding2D(options, input_height, input_width,
+                                 filter_height, filter_width, stride_height,
+                                 stride_width, dilation_height, dilation_width);
+
+  // Since XNNPACK doesn't support ceil rounding, add bottom and right padding
+  // to bring the output to the sizes after ceil rounding.
+  if (options->roundingType().AsEnum() == V8MLRoundingType::Enum::kCeil &&
+      !options->hasOutputSizes()) {
+    auto checked_padding_bottom =
+        base::MakeCheckedNum<uint32_t>(output_height - 1) * stride_height +
+        (filter_height - 1) * dilation_height + 1 - input_height - padding.top;
+    auto checked_padding_right =
+        base::MakeCheckedNum<uint32_t>(output_width - 1) * stride_width +
+        (filter_width - 1) * dilation_width + 1 - input_width - padding.left;
+
+    if (!checked_padding_bottom.AssignIfValid(&padding.bottom) ||
+        !checked_padding_right.AssignIfValid(&padding.right)) {
+      error_message = "The padding size is too large.";
+      return xnn_status_invalid_parameter;
+    }
+  }
 
   // Define XNNPACK average or max pooling 2d Node for the Subgraph object.
   const float output_min = -std::numeric_limits<float>::infinity();

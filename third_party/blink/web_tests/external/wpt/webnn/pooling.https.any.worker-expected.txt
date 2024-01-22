@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] averagePool2d float32 4D constant tensor all positive default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 [FAIL] averagePool2d float32 4D tensor all positive default options / sync
@@ -30,8 +30,6 @@ Found 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 [FAIL] averagePool2d float32 4D tensor options.roundingType=ceil / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=ceil / sync
-  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 50.03894805908203 should be close enough to expected 21.206613540649414 by the acceptable 11 ULP distance, but they have 10387645 ULP distance expected true got false
 [FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 [FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / sync
