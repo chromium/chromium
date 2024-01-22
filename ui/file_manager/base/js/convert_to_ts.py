@@ -19,9 +19,11 @@ IMPORT_ASSERT_JS = re.compile(
 IMPORT_ASSERT_TS = '''import {%s} from 'chrome://resources/js/assert.js';\n'''
 
 TS_IGNORE = re.compile(r'@ts-ignore')
+TS_NOCHECK = re.compile(r'@ts-nocheck')
 
 COMMENT_JSDOC = re.compile(
-    r'@params?|@returns?|@implements?|@type|@extends?|@private|@protected|@override'
+    r'@params?|@returns?|@implements?|@type|@extends?|'
+    r'@private|@protected|@override'
 )
 
 # Matching:` this.bla;``  or `private this.bla;`
@@ -83,6 +85,10 @@ def process_js_file(js_fname):
                 if TS_IGNORE.search(line):
                     ts_ignoring = True
                     continue  # delete the line.
+
+                if TS_NOCHECK.search(line):
+                    continue  # delete the line.
+
             elif ts_ignoring:
                 # End of the @ts-ignore.
                 ts_ignoring = False
@@ -447,6 +453,12 @@ def process_build_file(build_file_name, js_file_name):
             if scope > 0:
                 continue  # continue to delete in the scope.
 
+            # Replace .js with .ts inplace for Image Loader.
+            if f'"{js_file_name.name}",' in line.strip():
+              l = line.replace('.js',  '.ts', 1)
+              new_file.append(l)
+              continue
+
             new_file.append(line)
 
     return new_file
@@ -457,7 +469,7 @@ def process_file_names_gni(js_fname, gni_file):
     file_names.gni."""
     new_file = []
     # All files in file_names.gni a relative to //ui/file_manager.
-    fname = js_fname.relative_to(_FILE_MANAGER_ROOT)
+    fname = js_fname.relative_to(gni_file.parent)
     js_str_name = str(fname)
     ts_str_name = js_str_name.replace('.js', '.ts')
     ts_line = f'  "{ts_str_name}",\n'
@@ -466,6 +478,8 @@ def process_file_names_gni(js_fname, gni_file):
     anchor = 'ts_files = [\n'
     if js_str_name.endswith('unittest.js'):
         anchor = 'ts_test_files = [\n'
+    if 'image_loader/' in js_str_name:
+        anchor = 'image_loader_ts = [\n'
 
     with gni_file.open() as f:
         for line in f.readlines():
@@ -491,8 +505,8 @@ def find_build_files(js_fname):
     sibling_build = to_build_file(js_fname)
     ret = set()
     if sibling_build.exists():
-        ret.add(Path(str(sibling_build)))
-    str_js_path = str(js_fname)
+        ret.add(Path(str(sibling_build)).absolute())
+    str_js_path = str(js_fname.absolute())
 
     # Avoid mixing the BUILD.gn of the Files app, Integration Tests and Image
     # Loader.  If the JS file belongs to one of these, only process BUILD files
@@ -556,9 +570,14 @@ def process_js_files(files):
         for b in bs:
             new_build_file = process_build_file(b, js_path)
             replace_file(b, new_build_file)
+            # Remove the .js file and add it to the `ts_files = ` section.
+            if b == _INTEGRATION_TESTS_ROOT.joinpath('BUILD.gn'):
+              new_build_file = process_file_names_gni(js_path.absolute(), b)
+              replace_file(b, new_build_file)
 
-        # Only process file_names.gni for Files app:
-        if js_path_abs_str.startswith(str(_FILES_APP_ROOT)):
+        # Only process file_names.gni for Files app and Image Loader.
+        if js_path_abs_str.startswith((str(_FILES_APP_ROOT),
+                                       str(_IMAGE_LOADER_ROOT))):
             file_names = _FILE_MANAGER_ROOT.joinpath('file_names.gni')
             new_file_names_gni = process_file_names_gni(
                 js_path.absolute(), file_names)

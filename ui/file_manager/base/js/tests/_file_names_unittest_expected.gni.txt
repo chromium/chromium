@@ -16,7 +16,7 @@ ts_files = [
 ]
 
 ts_test_files = [
-  "base/js/tests/testing_convert_to_ts_unittest.ts",
+  "testing_convert_to_ts_unittest.ts",
   # Common.
   "file_manager/common/js/entry_utils_unittest.ts",
   "file_manager/common/js/file_types_base_unittest.ts",
