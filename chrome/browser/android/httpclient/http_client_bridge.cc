@@ -32,6 +32,7 @@ jlong JNI_SimpleHttpClient_Init(JNIEnv* env,
 }
 
 HttpClientBridge::HttpClientBridge(const JavaParamRef<jobject>& j_profile) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   DCHECK(profile);
   http_client_ = std::make_unique<HttpClient>(profile->GetURLLoaderFactory());
@@ -52,6 +53,7 @@ void HttpClientBridge::SendNetworkRequest(
     const base::android::JavaParamRef<jobjectArray>& j_header_values,
     jint j_network_annotation_hashcode,
     const base::android::JavaParamRef<jobject>& j_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(j_gurl);
   std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
   DCHECK(gurl->is_valid());
@@ -66,20 +68,15 @@ void HttpClientBridge::SendNetworkRequest(
   net::NetworkTrafficAnnotationTag tag =
       net::NetworkTrafficAnnotationTag::FromJavaAnnotation(
           j_network_annotation_hashcode);
-  // base::Unretained is safe because we are an immortal singleton.
-  HttpClient::ResponseCallback callback =
-      base::BindOnce(&HttpClientBridge::OnResult, base::Unretained(this),
-                     ScopedJavaGlobalRef<jobject>(env, j_callback));
 
-  // base::Unretained is safe because we are an immortal singleton.
-  // Post on the UI thread because HttpClient needs to be called on the UI
-  // thread.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&HttpClient::Send, base::Unretained(http_client_.get()),
-                     *gurl, ConvertJavaStringToUTF8(env, j_request_type),
+  HttpClient::ResponseCallback callback = base::BindOnce(
+      &HttpClientBridge::OnResult, weak_ptr_factory_.GetWeakPtr(),
+      ScopedJavaGlobalRef<jobject>(env, j_callback));
+
+  http_client_->Send(*std::move(gurl),
+                     ConvertJavaStringToUTF8(env, j_request_type),
                      std::move(request_body), std::move(header_keys),
-                     std::move(header_values), tag, std::move(callback)));
+                     std::move(header_values), tag, std::move(callback));
 }
 
 void HttpClientBridge::OnResult(
