@@ -634,6 +634,13 @@ chromium-metrics-reviews@google.com.
       label="Admin allowed both managed and unmanaged cellular networks"/>
 </enum>
 
+<enum name="NetworkCAPPORTSupport">
+  <int value="0" label="no CAPPORT support"/>
+  <int value="1" label="DHCPv4 option 114"/>
+  <int value="2" label="ICMP6 RA option 37"/>
+  <int value="3" label="DHCPv4 option 114 and ICMP6 RA option 37"/>
+</enum>
+
 <enum name="NetworkCellular3GPPRegistrationDelayedDrop">
   <int value="0" label="Delayed drop posted">
     A signal loss in the cellular service was detected and a delayed connection

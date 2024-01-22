@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Network.Ash.Cellular.AllowTextMessages.Policy.SuppressionState"
     enum="PolicyTextMessageSuppressionState" expires_after="2024-06-01">
-  <owner>gordonseto@google.cReom</owner>
+  <owner>gordonseto@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records the policy text message suppression state. This is emitted whenever
@@ -2638,6 +2638,69 @@ chromium-metrics-reviews@google.com.
   <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
+<histogram name="Network.Shill.PortalDetector.CAPPORTAdvertised.{Technology}"
+    enum="NetworkCAPPORTSupport" expires_after="2024-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Indicates how the network advertises supports for the CAPPORT protocol
+    (RFC8908) using RFC8908. This metric is recorded once for every network
+    connection where CAPPORT was advertised, even if no captive portal was found
+    with HTTP probes.
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.CAPPORTSupported.{Technology}"
+    enum="NetworkCAPPORTSupport" expires_after="2024-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Indicates if the network advertises supports for the CAPPORT protocol
+    (RFC8908) using RFC8908. This metric is recorded once for every network
+    connection where a captive portal was found with an HTTP redirect.
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.HTTPResponseCode.{Technology}"
+    units="response code" expires_after="2024-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    HTTP response code received by an HTTP probe used for network validation.
+    Response codes received for encrypted HTTPS probes are ignored because it
+    is assumed that HTTPS probes cannot be spoofed and always receive the
+    expected 204 result.
+
+    Possible values are HTTP response codes in the [100, 599] range or one of
+    the three special values: 0 to indicate a bad response with an invalid
+    response code, 1 to indicate a 302 or 307 redirect response without a
+    Location header or with an invalid Location header which was not a URL, 2
+    for a 200 response without a Content-Length header or with an invalid
+    Content-Lenght header.
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
+<histogram
+    name="Network.Shill.PortalDetector.HTTPResponseContentLength.{Technology}"
+    units="bytes" expires_after="2024-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Length in bytes of 200 responses received by a network validation HTTP probe
+    during a network validation attempt. 200 responses with no content or a
+    single byte of content are treated as 204 answers. These events are expected
+    to be recorded only once for a given network connection (network with
+    Internet acess). 200 responses with some actual content are treated as a
+    suspected portal redirect and trigger the portal sign-in flow. These events
+    are expected to be recorded multiple times until the user has signed into
+    the portal.
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
 <histogram name="Network.Shill.PortalDetector.InitialResult.{Technology}"
     enum="PortalDetectorResult" expires_after="2024-12-31">
   <owner>stevenjb@chromium.org</owner>
@@ -2655,7 +2718,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Subsequent result of network validation for a given physical Network
-    connection, recorded after a repeated network validation attempt until
+    connection, recorded after the first network validation result until
     Internet access is confirmed.
   </summary>
   <token key="Technology" variants="PhysicalTechnology"/>
