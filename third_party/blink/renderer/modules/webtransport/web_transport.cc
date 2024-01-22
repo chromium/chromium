@@ -927,7 +927,8 @@ void WebTransport::OnConnectionEstablished(
     mojo::PendingRemote<network::mojom::blink::WebTransport> web_transport,
     mojo::PendingReceiver<network::mojom::blink::WebTransportClient>
         client_receiver,
-    network::mojom::blink::HttpResponseHeadersPtr response_headers) {
+    network::mojom::blink::HttpResponseHeadersPtr response_headers,
+    network::mojom::blink::WebTransportStatsPtr initial_stats) {
   DVLOG(1) << "WebTransport::OnConnectionEstablished() this=" << this;
   connector_.reset();
   handshake_client_receiver_.reset();
@@ -1038,7 +1039,8 @@ void WebTransport::OnReceivedStopSending(uint32_t stream_id,
 }
 
 void WebTransport::OnClosed(
-    network::mojom::blink::WebTransportCloseInfoPtr close_info) {
+    network::mojom::blink::WebTransportCloseInfoPtr close_info,
+    network::mojom::blink::WebTransportStatsPtr final_stats) {
   ScriptState::Scope scope(script_state_);
   v8::Isolate* isolate = script_state_->GetIsolate();
 
