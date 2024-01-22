@@ -3062,8 +3062,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     destIndex = maybeMovePastGroup(offset, curIndex, towardEnd);
                 }
             }
-        } else {
-            // 2.d Tab is not interacting with tab groups. Reorder as normal.
+        } else if (!mTabGroupMarginAnimRunning) {
+            // TODO(https://crbug.com/1520137): Refactor logic to not depend on presence of margins.
+            // 2.d Tab is not interacting with tab groups. Reorder as normal. Unknown if tab drag is
+            // approaching a margin until the associated animation finishes running.
             boolean pastLeftThreshold = offset < -flipThreshold;
             boolean pastRightThreshold = offset > flipThreshold;
             boolean isNotRightMost = curIndex < mStripTabs.length - 1;
