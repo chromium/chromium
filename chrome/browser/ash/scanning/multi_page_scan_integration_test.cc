@@ -124,8 +124,7 @@ class MultiPageScanIntegrationTest : public AshIntegrationTest {
   }
 };
 
-// TODO(b:319899858): Re-enable the test.
-IN_PROC_BROWSER_TEST_F(MultiPageScanIntegrationTest, DISABLED_MultiPageScan) {
+IN_PROC_BROWSER_TEST_F(MultiPageScanIntegrationTest, MultiPageScan) {
   // Set up context for element tracking for InteractiveBrowserTest.
   SetupContextWidget();
 
