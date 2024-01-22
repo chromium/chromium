@@ -443,8 +443,8 @@ class BrowserAutofillManager : public AutofillManager {
     std::optional<FormData> filled_form;
   };
 
-  // Given a `form` (and corresponding `form_structure`) to fill, return a list
-  // of skip reasons for the fields.
+  // Given a `form` (and corresponding `form_structure`) to fill, return a map
+  // from each field's id to the skip reasons for that field.
   // `type_group_originally_filled` denotes, in case of a refill, what groups
   // where filled in the initial filling.
   // It is assumed here that `form` and `form_structure` have the same
@@ -459,7 +459,8 @@ class BrowserAutofillManager : public AutofillManager {
   // experiment resumes.
   // TODO(crbug.com/1481035): Make `optional_type_groups_originally_filled` also
   // a FieldTypeSet.
-  std::vector<FieldFillingSkipReason> GetFieldFillingSkipReasons(
+  base::flat_map<FieldGlobalId, FieldFillingSkipReason>
+  GetFieldFillingSkipReasons(
       const FormData& form,
       const FormStructure& form_structure,
       const FormFieldData& trigger_field,
