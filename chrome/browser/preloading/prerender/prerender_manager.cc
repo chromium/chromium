@@ -11,7 +11,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/page_load_metrics/observers/bookmark_navigation_handle_user_data.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
@@ -43,14 +42,6 @@ const char kHistogramPrerenderPredictionStatusDirectUrlInput[] =
 namespace {
 
 using content::PreloadingTriggeringOutcome;
-
-// Prerendered pages are considered stale after a fixed duration.
-// TODO(https://crbug.com/1295170): Use the search prefetch setting for now. The
-// timedelta should be calculated by SearchPrefetchService after search
-// prerender reuses the prefetched responses.
-base::TimeDelta GetSearchPrerenderExpiryDuration() {
-  return SearchPrefetchCachingLimit();
-}
 
 void MarkPreloadingAttemptAsDuplicate(
     content::PreloadingAttempt* preloading_attempt) {
@@ -84,11 +75,8 @@ class PrerenderManager::SearchPrerenderTask {
       const GURL& canonical_search_url,
       std::unique_ptr<content::PrerenderHandle> search_prerender_handle)
       : search_prerender_handle_(std::move(search_prerender_handle)),
-        prerendered_canonical_search_url_(canonical_search_url) {
-    expiry_timer_.Start(FROM_HERE, GetSearchPrerenderExpiryDuration(),
-                        base::BindOnce(&SearchPrerenderTask::OnTimerTriggered,
-                                       base::Unretained(this)));
-  }
+        task_started_timestamp_(base::TimeTicks::Now()),
+        prerendered_canonical_search_url_(canonical_search_url) {}
 
   ~SearchPrerenderTask() {
     // Record whether or not the prediction is correct when prerendering for
@@ -104,8 +92,9 @@ class PrerenderManager::SearchPrerenderTask {
   }
 
   void SetFailureReason(PrerenderPredictionStatus status) {
-    if (!search_prerender_handle_)
+    if (!search_prerender_handle_) {
       return;
+    }
     switch (status) {
       case PrerenderPredictionStatus::kNotStarted:
       case PrerenderPredictionStatus::kCancelled:
@@ -150,27 +139,21 @@ class PrerenderManager::SearchPrerenderTask {
 
   void RecordTimestampOnDidStartNavigation(
       base::TimeTicks start_navigation_timestamp) {
-    lastest_start_navigation_event_timestamp_ = start_navigation_timestamp;
+    latest_start_navigation_event_timestamp_ = start_navigation_timestamp;
   }
 
   void RecordLifeTimeMetric() {
     // Record the lifetime of this prerender.
-    // |<------------GetSearchPrerenderExpiryDuration()------------>|
-    // @ PrerenderHintReceived    @ Activation/NavigationStarted    @ Expire
+    // @ PrerenderHintReceived    @ Activation/NavigationStarted
     // |<---------delta---------->|
     // where:
-    // expiry_timer_.desired_run_time() = Timestamp@Expire.
-    // lastest_start_navigation_event_timestamp_ =
+    // task_started_timestamp_ = Timestamp@PrerenderHintReceived
+    // latest_start_navigation_event_timestamp_ =
     //   Timestamp@Activation/NavigationStarted
     base::TimeDelta delta =
-        GetSearchPrerenderExpiryDuration() -
-        std::max(base::TimeDelta(),
-                 expiry_timer_.desired_run_time() -
-                     lastest_start_navigation_event_timestamp_);
+        latest_start_navigation_event_timestamp_ - task_started_timestamp_;
     // The upper-bound of this histogram is decided by the default duration of
     // the search prefetch setting. See `prefetch_caching_limit_ms`.
-    // TODO(https://crbug.com/1278634): Reconsider the duration after
-    // PrerenderManager supports to re-prerender the search results.
     base::UmaHistogramCustomTimes(
         "Prerender.Experimental.Search."
         "FirstCorrectPrerenderHintReceivedToRealSearchNavigationStartedDuratio"
@@ -188,22 +171,15 @@ class PrerenderManager::SearchPrerenderTask {
   }
 
  private:
-  // Called by OneShotTimer. Will cancel the ongoing prerender to ensure the
-  // content displayed to users is up-to-date.
-  void OnTimerTriggered() {
-    SetFailureReason(prediction_status_);
-    search_prerender_handle_.reset();
-  }
-
   std::unique_ptr<content::PrerenderHandle> search_prerender_handle_;
 
   // Recorded on OnDidStartNavigation and used on PrimaryPageChanged. Only the
   // latest recorded TimeTicks is meaningful. See the comment in
   // PrerenderManager::DidStartNavigation for more information.
-  base::TimeTicks lastest_start_navigation_event_timestamp_;
+  base::TimeTicks latest_start_navigation_event_timestamp_;
 
-  // Stops the ongoing prerender when the prerendered result is out-of-date.
-  base::OneShotTimer expiry_timer_;
+  // Recorded upon starting the task.
+  const base::TimeTicks task_started_timestamp_;
 
   // A task is associated with a prediction, this tracks the correctness of the
   // prediction.
