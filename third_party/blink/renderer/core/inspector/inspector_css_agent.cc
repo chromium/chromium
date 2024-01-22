@@ -1626,8 +1626,12 @@ protocol::Response InspectorCSSAgent::getComputedStyleForNode(
         "Node is not an element and does not have a parent element");
   }
 
+  TRACE_EVENT1("devtools", "InspectorCSSAgent::getComputedStyleForNode", "node",
+               element->DebugName());
   auto* computed_style_info =
       MakeGarbageCollected<CSSComputedStyleDeclaration>(element, true);
+  CSSComputedStyleDeclaration::ScopedCleanStyleForAllProperties
+      clean_style_scope(computed_style_info);
   *style = std::make_unique<
       protocol::Array<protocol::CSS::CSSComputedStyleProperty>>();
   for (CSSPropertyID property_id : CSSPropertyIDList()) {

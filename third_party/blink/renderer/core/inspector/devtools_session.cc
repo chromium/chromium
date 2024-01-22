@@ -240,6 +240,7 @@ void DevToolsSession::DispatchProtocolCommandImpl(
   TRACE_EVENT_WITH_FLOW1(
       "devtools", "DevToolsSession::DispatchProtocolCommandImpl", call_id,
       TRACE_EVENT_FLAG_FLOW_OUT | TRACE_EVENT_FLAG_FLOW_IN, "call_id", call_id);
+  TRACE_EVENT1("devtools", "api_call", "method_name", method);
 
   // IOSession does not provide ordering guarantees relative to
   // Session, so a command may come to IOSession after Session is detached,
