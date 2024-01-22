@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.magic_stack.CirclePagerIndicatorDecoration.getItemPerScreen;
 
 import android.app.Activity;
 import android.content.Context;
@@ -119,7 +122,7 @@ public class HomeModulesCoordinatorUnitTest {
 
         // Verifies that the snap scroll helper isn't attached to the recyclerview if there are more
         // than one item shown per screen.
-        assertFalse(CirclePagerIndicatorDecoration.showSingleItem(displayStyle));
+        assertEquals(2, getItemPerScreen(displayStyle));
         assertFalse(mCoordinator.getIsSnapHelperAttachedForTesting());
 
         // Verifies that the snap scroll helper is attached to the recyclerview if there is only one
@@ -128,7 +131,7 @@ public class HomeModulesCoordinatorUnitTest {
                 new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
         mDisplayStyleObserver.getValue().onDisplayStyleChanged(newDisplayStyle);
 
-        assertTrue(CirclePagerIndicatorDecoration.showSingleItem(newDisplayStyle));
+        assertEquals(1, getItemPerScreen(newDisplayStyle));
         assertTrue(mCoordinator.getIsSnapHelperAttachedForTesting());
     }
 

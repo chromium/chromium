@@ -52,7 +52,7 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
     /** The start margin of the recyclerview in pixel. */
     private int mStartMarginPx;
 
-    /** The value is updated in {@link getItemOffsetsImpl()} for tablets. */
+    /** The value is updated for tablets when displayStyle is changed. */
     private int mItemPerScreen;
 
     /**
@@ -192,15 +192,17 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
     @VisibleForTesting
     void getItemOffsetsImpl(
             Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-        outRect.bottom = mIndicatorHeightPx;
-        // Don't need to change the width of a child view if:
-        // 1) On phones. This is because we always show one item per screen.
-        // 2) If there is only one item to show on tablets.
-        if (!mIsTablet || parent.getAdapter().getItemCount() == 1) return;
+        int itemCount = parent.getAdapter().getItemCount();
+        // If all of the items can fit in one screen, remove the space for page indicators since
+        // they are hidden.
+        outRect.bottom = itemCount <= mItemPerScreen ? 0 : mIndicatorHeightPx;
 
-        mItemPerScreen = showSingleItem(mUiConfig.getCurrentDisplayStyle()) ? 1 : 2;
+        // Don't need to change the width of a child view on phones since there is only one item
+        // shown per screen, and it never changes.
+        if (!mIsTablet) return;
+
         MarginLayoutParams marginLayoutParams = (MarginLayoutParams) view.getLayoutParams();
-        if (mItemPerScreen == 1) {
+        if (mItemPerScreen == 1 || itemCount == 1) {
             // If showing one item per screen, the view's width should match the parent
             // recyclerview.
             marginLayoutParams.width = MATCH_PARENT;
@@ -217,13 +219,14 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
         marginLayoutParams.width = width;
     }
 
-    void onDisplayStyleChanged(int startMarginPx) {
+    void onDisplayStyleChanged(int startMarginPx, int itemPerScreen) {
         mStartMarginPx = startMarginPx;
+        mItemPerScreen = itemPerScreen;
     }
 
-    /** Returns whether to show a single item per screen. */
-    static boolean showSingleItem(DisplayStyle displayStyle) {
-        return !displayStyle.isWide();
+    /** Returns how many items are shown per screen. */
+    static int getItemPerScreen(DisplayStyle displayStyle) {
+        return displayStyle.isWide() ? 2 : 1;
     }
 
     void setItemPerScreenForTesting(int itemPerScreen) {

@@ -41,6 +41,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private SnapHelper mSnapHelper;
     private boolean mIsSnapHelperAttached;
     private int mCurrentOrientation;
+    private int mItemPerScreen;
     @Nullable private UiConfig mUiConfig;
     @Nullable private DisplayStyleObserver mDisplayStyleObserver;
 
@@ -100,13 +101,16 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
         // Snap scroll is supported by the recyclerview if it shows a single item per screen. This
         // happens on phones or small windows on tablets.
-        if (!isTablet
-                || CirclePagerIndicatorDecoration.showSingleItem(
-                        mUiConfig.getCurrentDisplayStyle())) {
+        if (!isTablet) {
             mSnapHelper.attachToRecyclerView(mRecyclerView);
+            return;
         }
 
-        if (!isTablet) return;
+        mItemPerScreen =
+                CirclePagerIndicatorDecoration.getItemPerScreen(mUiConfig.getCurrentDisplayStyle());
+        if (mItemPerScreen == 1) {
+            mSnapHelper.attachToRecyclerView(mRecyclerView);
+        }
 
         // When the screen is rotated, an event of display style change is also triggered.
         mCurrentOrientation = activity.getResources().getConfiguration().orientation;
@@ -115,7 +119,9 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         mDisplayStyleObserver =
                 newDisplayStyle -> {
                     boolean wasSnapHelperAttached = mIsSnapHelperAttached;
-                    if (!CirclePagerIndicatorDecoration.showSingleItem(newDisplayStyle)) {
+                    mItemPerScreen =
+                            CirclePagerIndicatorDecoration.getItemPerScreen(newDisplayStyle);
+                    if (mItemPerScreen > 1) {
                         // If showing multiple items per screen, we need to detach the snap
                         // scroll helper from the recyclerview.
                         if (mIsSnapHelperAttached) {
@@ -129,7 +135,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
                     // Notifies the CirclePageIndicatorDecoration.
                     mPageIndicatorDecoration.onDisplayStyleChanged(
-                            mModuleDelegateHost.getStartMargin());
+                            mModuleDelegateHost.getStartMargin(), mItemPerScreen);
 
                     int newOrientation = activity.getResources().getConfiguration().orientation;
                     // Redraws the recyclerview when either the screen is rotated or the width
@@ -142,6 +148,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                     }
                 };
         mUiConfig.addObserver(mDisplayStyleObserver);
+        mPageIndicatorDecoration.onDisplayStyleChanged(
+                mModuleDelegateHost.getStartMargin(), mItemPerScreen);
     }
 
     /**
@@ -207,6 +215,10 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     @Override
     public void onHideModuleFromContextMenu(@ModuleType int moduleType) {
         mMediator.remove(moduleType);
+
+        if (mModel.size() < mItemPerScreen) {
+            mRecyclerView.invalidateItemDecorations();
+        }
     }
 
     @Override
