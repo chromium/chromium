@@ -13,12 +13,13 @@ import '../../components/buttons/oobe_text_button.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/throbber_notice.js';
 
-import {assert} from '//resources/ash/common/assert.js';
+import {assert} from '//resources/js/assert.js';
 import {MultiDeviceSetupDelegate} from '//resources/ash/common/multidevice_setup/multidevice_setup_delegate.js';
+import {MultiDeviceSetup} from '//resources/ash/common/multidevice_setup/multidevice_setup.js';
 import {WebUIListenerBehavior} from '//resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// TODO(b/268480781) - Remove chrome scheme.
-import {PrivilegedHostDeviceSetter, PrivilegedHostDeviceSetterRemote} from 'chrome://resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PrivilegedHostDeviceSetter, PrivilegedHostDeviceSetterRemote} from '//resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
@@ -36,156 +37,152 @@ import {getTemplate} from './multidevice_setup.html.js';
 //      screen.
 //  (3) During onboarding, buttons are styled with custom OOBE buttons.
 
-/** @implements {MultiDeviceSetupDelegate} */
-class MultiDeviceSetupScreenDelegate {
+export class MultiDeviceSetupScreenDelegate implements MultiDeviceSetupDelegate{
+
+  private remote: PrivilegedHostDeviceSetterRemote|null;
 
   constructor() {
-    /**
-     * @private {?PrivilegedHostDeviceSetterRemote}
-     */
-    this.remote_ = null;
+    this.remote = null;
   }
 
-  /** @override */
-  isPasswordRequiredToSetHost() {
+  isPasswordRequiredToSetHost(): boolean {
     return false;
   }
 
-  /** @override */
-  setHostDevice(hostInstanceIdOrLegacyDeviceId, opt_authToken) {
+  setHostDevice(hostInstanceIdOrLegacyDeviceId: string,
+      optAuthToken: string|undefined) {
     // An authentication token is not expected since a password is not
     // required.
-    assert(!opt_authToken);
+    assert(!optAuthToken);
 
-    if (!this.remote_) {
-      this.remote_ = PrivilegedHostDeviceSetter.getRemote();
+    if (!this.remote) {
+      this.remote = PrivilegedHostDeviceSetter.getRemote();
     }
 
     return /** @type {!Promise<{success: boolean}>} */ (
-        this.remote_.setHostDevice(hostInstanceIdOrLegacyDeviceId));
+        this.remote.setHostDevice(hostInstanceIdOrLegacyDeviceId));
   }
 
-  /** @override */
-  shouldExitSetupFlowAfterSettingHost() {
+  shouldExitSetupFlowAfterSettingHost(): boolean {
     return true;
   }
 
-  /** @override */
-  getStartSetupCancelButtonTextId() {
+  getStartSetupCancelButtonTextId(): string {
     return 'noThanks';
   }
 }
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- */
 const MultiDeviceSetupScreenBase = mixinBehaviors(
     [OobeI18nBehavior, LoginScreenBehavior, WebUIListenerBehavior],
-    PolymerElement);
+    PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          LoginScreenBehaviorInterface & WebUIListenerBehavior,
+    };
 
-/**
- * @polymer
- */
-class MultiDeviceSetupScreen extends MultiDeviceSetupScreenBase {
+export class MultiDeviceSetupScreen extends MultiDeviceSetupScreenBase {
   static get is() {
-    return 'multidevice-setup-element';
+    return 'multidevice-setup-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
-      /** @private {!MultiDeviceSetupDelegate} */
-      delegate_: Object,
+      delegate: Object,
 
       /**
        * ID of loadTimeData string to be shown on the forward navigation button.
-       * @private {string|undefined}
        */
-      forwardButtonTextId_: {
+      forwardButtonTextId: {
         type: String,
       },
 
       /**
        * Whether the forward button should be disabled.
-       * @private {boolean}
        */
-      forwardButtonDisabled_: {
+      forwardButtonDisabled: {
         type: Boolean,
         value: false,
       },
 
       /**
        * ID of loadTimeData string to be shown on the cancel button.
-       * @private {string|undefined}
        */
-      cancelButtonTextId_: {
+      cancelButtonTextId: {
         type: String,
       },
 
       /** Whether the webview overlay should be hidden. */
-      webviewOverlayHidden_: {
+      webviewOverlayHidden: {
         type: Boolean,
         value: true,
       },
 
       /** Whether the webview is currently loading. */
-      isWebviewLoading_: {
+      isWebviewLoading: {
         type: Boolean,
         value: false,
       },
 
       /**
        * URL for the webview to display.
-       * @private {string|undefined}
        */
-      webviewSrc_: {
+      webviewSrc: {
         type: String,
         value: '',
       },
     };
   }
 
+  private delegate: MultiDeviceSetupDelegate;
+  private forwardButtonTextId: string;
+  private forwardButtonDisabled: boolean;
+  private cancelButtonTextId: string;
+  webviewOverlayHidden: boolean;
+  isWebviewLoading: boolean;
+  private webviewSrc: string;
+
   constructor() {
     super();
-    this.delegate_ = new MultiDeviceSetupScreenDelegate();
+    this.delegate = new MultiDeviceSetupScreenDelegate();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
-    this.$.multideviceHelpOverlayWebview.addEventListener(
-        'contentload', () => {
-          this.isWebviewLoading_ = false;
-        });
+    const webview = this.shadowRoot?.
+      querySelector('#multideviceHelpOverlayWebview');
+    assert(!!webview);
+    (webview as chrome.webviewTag.WebView).addEventListener(
+      'contentload', () => {
+        this.isWebviewLoading = false;
+      });
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
     this.initializeLoginScreen('MultiDeviceSetupScreen');
     this.updateLocalizedContent();
   }
 
-  updateLocalizedContent() {
+  override updateLocalizedContent(): void {
     this.i18nUpdateLocale();
-    this.$.multideviceSetup.updateLocalizedContent();
+    const element = this.shadowRoot?.querySelector('#multideviceSetup');
+    if(element instanceof MultiDeviceSetup) {
+      element.updateLocalizedContent();
+    }
   }
 
-  onForwardButtonFocusRequested_() {
-    this.$.nextButton.focus();
+  onForwardButtonFocusRequested(): void {
+    const nextButton = this.shadowRoot?.querySelector('#nextButton')!;
+    if (nextButton instanceof HTMLElement) {
+      nextButton.focus();
+    }
   }
 
-  /**
-   * @param {!CustomEvent<!{didUserCompleteSetup: boolean}>} event
-   * @private
-   */
-  onExitRequested_(event) {
+  private onExitRequested(
+      event: CustomEvent<{didUserCompleteSetup: boolean}>): void {
     if (event.detail.didUserCompleteSetup) {
       chrome.send(
           'login.MultiDeviceSetupScreen.userActed', ['setup-accepted']);
@@ -195,19 +192,20 @@ class MultiDeviceSetupScreen extends MultiDeviceSetupScreenBase {
     }
   }
 
-  /** @private */
-  hideWebviewOverlay_() {
-    this.webviewOverlayHidden_ = true;
+  private hideWebviewOverlay(): void {
+    this.webviewOverlayHidden = true;
   }
 
-  /**
-   * @param {!CustomEvent<string>} event
-   * @private
-   */
-  onOpenLearnMoreWebviewRequested_(event) {
-    this.isWebviewLoading_ = true;
-    this.webviewSrc_ = event.detail;
-    this.webviewOverlayHidden_ = false;
+  private onOpenLearnMoreWebviewRequested(event: CustomEvent<string>): void {
+    this.isWebviewLoading = true;
+    this.webviewSrc = event.detail;
+    this.webviewOverlayHidden = false;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [MultiDeviceSetupScreen.is]: MultiDeviceSetupScreen;
   }
 }
 

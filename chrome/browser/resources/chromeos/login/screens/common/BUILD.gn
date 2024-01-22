@@ -10,10 +10,7 @@ import("../../login.gni")
 assert(is_chromeos, "OOBE UI is only available on ChromeOS builds")
 
 group("closure_compile") {
-  deps = [
-    ":closure_compile_local",
-    ":closure_compile_multidevice_setup",
-  ]
+  deps = [ ":closure_compile_local" ]
 }
 
 js_type_check("closure_compile_local") {
@@ -35,14 +32,6 @@ js_type_check("closure_compile_local") {
     ":saml_confirm_password",
     ":signin_fatal_error",
   ]
-}
-
-# TODO(crbug.com/1229130) - Figure out why multidevice_setup is requiring its
-# own js_type_check in order not to conflict with chrome externs.
-js_type_check("closure_compile_multidevice_setup") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args
-  deps = [ ":multidevice_setup" ]
 }
 
 ###############################
@@ -93,21 +82,6 @@ js_library("guest_tos") {
     "$externs_path/webview_tag.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
-}
-
-js_library("multidevice_setup") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/multidevice_setup.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "//ash/webui/common/resources/multidevice_setup:mojo_api",
-    "//ash/webui/common/resources/multidevice_setup:multidevice_setup",
-    "//ash/webui/common/resources/multidevice_setup:multidevice_setup_delegate",
-    "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
 }
 
 js_library("offline_ad_login") {

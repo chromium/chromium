@@ -28,7 +28,7 @@ export const PageName = {
   START: 'start-setup-page',
 };
 
-const MultiDeviceSetup = Polymer({
+export const MultiDeviceSetup = Polymer({
   _template: getTemplate(),
   is: 'multidevice-setup',
 

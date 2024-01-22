@@ -9,10 +9,12 @@
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-export class MultiDeviceSetupElement extends PolymerElement {}
+export class MultiDeviceSetup extends PolymerElement {
+  updateLocalizedContent(): void;
+}
 
 declare global {
   interface HTMLElementTagNameMap {
-    'multidevice-setup': MultiDeviceSetupElement;
+    'multidevice-setup': MultiDeviceSetup;
   }
 }
