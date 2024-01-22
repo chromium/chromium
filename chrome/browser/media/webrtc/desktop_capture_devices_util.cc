@@ -26,6 +26,7 @@
 #include "media/audio/audio_device_description.h"
 #include "media/mojo/mojom/capture_handle.mojom.h"
 #include "media/mojo/mojom/display_media_information.mojom.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -103,7 +104,6 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
 }
 
 absl::optional<int> GetZoomLevel(content::WebContents* capturer,
-                                 const url::Origin& capturer_origin,
                                  const content::DesktopMediaID& captured_id) {
   content::RenderFrameHost* const captured_rfh =
       content::RenderFrameHost::FromID(
@@ -158,8 +158,10 @@ DesktopMediaIDToDisplayMediaInformation(
       display_surface = media::mojom::DisplayCaptureSurfaceType::BROWSER;
       cursor = media::mojom::CursorCaptureType::MOTION;
       capture_handle = CreateCaptureHandle(capturer, capturer_origin, media_id);
-      zoom_level =
-          GetZoomLevel(capturer, capturer_origin, media_id).value_or(100);
+      if (base::FeatureList::IsEnabled(
+              blink::features::kCapturedSurfaceControl)) {
+        zoom_level = GetZoomLevel(capturer, media_id).value_or(zoom_level);
+      }
       break;
     case content::DesktopMediaID::TYPE_NONE:
       break;
