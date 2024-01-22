@@ -26,6 +26,8 @@
 			<true/>
 			<key>IsSystemSymbol</key>
 			<true/>
+			<key>IsIphoneOnly</key>
+			<true/>
 			<key>InstructionSteps</key>
 			<array>
 				<string>IDS_IOS_WHATS_NEW_LENSSEARCH_INSTRUCTIONS_STEP_1</string>
@@ -60,6 +62,8 @@
 			<key>IsSymbol</key>
 			<true/>
 			<key>IsSystemSymbol</key>
+			<true/>
+			<key>IsIphoneOnly</key>
 			<true/>
 			<key>InstructionSteps</key>
 			<array>

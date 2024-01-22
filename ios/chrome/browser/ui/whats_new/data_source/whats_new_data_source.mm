@@ -43,6 +43,7 @@ NSString* const kDictionaryBackgroundColorKey = @"IconBackgroundColor";
 NSString* const kDictionaryInstructionsKey = @"InstructionSteps";
 NSString* const kDictionaryPrimaryActionKey = @"PrimaryAction";
 NSString* const kDictionaryLearnMoreURLKey = @"LearnMoreUrlString";
+NSString* const kDictionaryIsIphoneOnlyKey = @"IsIphoneOnly";
 
 // Returns the UIColor corresponding to `color`.
 UIColor* GenerateColor(NSString* color) {
@@ -295,6 +296,10 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
                                 forKey:key];
   }
   whats_new_item.screenshotTextProvider = screenshot_text_provider;
+
+  // Load whether or not the feature is iPhone-only.
+  BOOL is_iphone_only = [entry[kDictionaryIsIphoneOnlyKey] boolValue];
+  whats_new_item.isIphoneOnly = is_iphone_only;
 
   return whats_new_item;
 }
