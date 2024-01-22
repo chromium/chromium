@@ -39,6 +39,7 @@ class TouchToFillCreditCardController
   ~TouchToFillCreditCardController() override;
 
   // content::WebContentsObserver:
+  void WebContentsDestroyed() override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 

@@ -279,7 +279,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       override;
 
   // content::WebContentsObserver implementation.
-  void WebContentsDestroyed() override;
   void OnWebContentsLostFocus(
       content::RenderWidgetHost* render_widget_host) override;
   void OnWebContentsFocused(

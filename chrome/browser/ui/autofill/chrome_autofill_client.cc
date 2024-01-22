@@ -1319,16 +1319,9 @@ ChromeAutofillClient::GetDeviceAuthenticator() {
 #endif
 }
 
-void ChromeAutofillClient::WebContentsDestroyed() {
-  if (IsTouchToFillCreditCardSupported())
-    HideTouchToFillCreditCard();
-}
-
 void ChromeAutofillClient::OnWebContentsLostFocus(
     content::RenderWidgetHost* render_widget_host) {
   has_focus_ = false;
-  // Should not hide the Touch To Fill surface, since it is an overlay UI
-  // which takes the focus.
 }
 
 void ChromeAutofillClient::OnWebContentsFocused(

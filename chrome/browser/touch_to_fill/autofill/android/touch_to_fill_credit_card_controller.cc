@@ -57,6 +57,10 @@ TouchToFillCreditCardController::~TouchToFillCreditCardController() {
   }
 }
 
+void TouchToFillCreditCardController::WebContentsDestroyed() {
+  Hide();
+}
+
 void TouchToFillCreditCardController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted() ||
