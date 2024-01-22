@@ -1264,4 +1264,106 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPagePrinterStatus) {
   RunSettingsTest("os_printing_page/printer_status_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPage) {
+  RunSettingsTest("os_privacy_page/os_privacy_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageManageUsersSubpage) {
+  RunSettingsTest("os_privacy_page/manage_users_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsPrivacyPagePrivacyHubAppPermissionRow) {
+  RunSettingsTest("os_privacy_page/privacy_hub_app_permission_row_test.js");
+}
+
+class OSSettingsPrivacyTestPrivacyHubV0AndPermissionsEnabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsPrivacyTestPrivacyHubV0AndPermissionsEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kCrosPrivacyHubV0,
+            ash::features::kCrosPrivacyHubAppPermissions,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyTestPrivacyHubV0AndPermissionsEnabled,
+                       OsPrivacyPagePrivacyHubCameraSubpage) {
+  RunSettingsTest("os_privacy_page/privacy_hub_camera_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyTestPrivacyHubV0AndPermissionsEnabled,
+                       OsPrivacyPagePrivacyHubMicrophoneSubpage) {
+  RunSettingsTest("os_privacy_page/privacy_hub_microphone_subpage_test.js");
+}
+
+class OSSettingsPrivacyTestPrivacyHubAndV0Enabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsPrivacyTestPrivacyHubAndV0Enabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kCrosPrivacyHubV0,
+            ash::features::kCrosPrivacyHub,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyTestPrivacyHubAndV0Enabled,
+                       OsPrivacyPagePrivacyHubGeolocationSubpage) {
+  RunSettingsTest("os_privacy_page/privacy_hub_geolocation_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageSmartPrivacySubpage) {
+  RunSettingsTest("os_privacy_page/smart_privacy_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsResetPage) {
+  RunSettingsTest("os_reset_page/os_reset_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+                       OsResetPageResetSettingsCard) {
+  RunSettingsTest("os_reset_page/reset_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSearchPage) {
+  RunSettingsTest("os_search_page/os_search_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsSearchPageGoogleAssistantSubpage) {
+  RunSettingsTest("os_search_page/google_assistant_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+                       OsSearchPageSearchAndAssistantSettingsCard) {
+  RunSettingsTest("os_search_page/search_and_assistant_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+                       OsSearchPageSearchEngine) {
+  RunSettingsTest("os_search_page/search_engine_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       OsSearchPageSearchEngineRevamp) {
+  RunSettingsTest("os_search_page/search_engine_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSearchPageSearchSubpage) {
+  RunSettingsTest("os_search_page/search_subpage_test.js");
+}
+
 }  // namespace ash::settings

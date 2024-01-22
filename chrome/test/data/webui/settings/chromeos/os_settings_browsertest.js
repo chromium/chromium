@@ -96,81 +96,11 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
      ]
    }
  ],
- ['OsPrivacyPage', 'os_privacy_page/os_privacy_page_test.js'],
- [
-   'OsPrivacyPageManageUsersSubpage',
-   'os_privacy_page/manage_users_subpage_test.js'
- ],
- [
-   'OsPrivacyPagePrivacyHubAppPermissionRow',
-   'os_privacy_page/privacy_hub_app_permission_row_test.js'
- ],
- [
-   'OsPrivacyPagePrivacyHubCameraSubpage',
-   'os_privacy_page/privacy_hub_camera_subpage_test.js',
-   {
-     enabled: [
-       'ash::features::kCrosPrivacyHubV0',
-       'ash::features::kCrosPrivacyHubAppPermissions'
-     ]
-   },
- ],
- [
-   'OsPrivacyPagePrivacyHubMicrophoneSubpage',
-   'os_privacy_page/privacy_hub_microphone_subpage_test.js',
-   {
-     enabled: [
-       'ash::features::kCrosPrivacyHubV0',
-       'ash::features::kCrosPrivacyHubAppPermissions'
-     ]
-   },
- ],
- [
-   'OsPrivacyPagePrivacyHubGeolocationSubpage',
-   'os_privacy_page/privacy_hub_geolocation_subpage_test.js',
-   {
-     enabled: [
-       'ash::features::kCrosPrivacyHubV0',
-       'ash::features::kCrosPrivacyHub',
-     ]
-   },
- ],
  [
    'OsPrivacyPagePrivacyHubSubpage',
    'os_privacy_page/privacy_hub_subpage_test.js',
    {enabled: ['ash::features::kCrosPrivacyHubV0']},
  ],
- [
-   'OsPrivacyPageSmartPrivacySubpage',
-   'os_privacy_page/smart_privacy_subpage_test.js'
- ],
- ['OsResetPage', 'os_reset_page/os_reset_page_test.js'],
- [
-   'OsResetPageResetSettingsCard',
-   'os_reset_page/reset_settings_card_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- ['OsSearchPage', 'os_search_page/os_search_page_test.js'],
- [
-   'OsSearchPageGoogleAssistantSubpage',
-   'os_search_page/google_assistant_subpage_test.js'
- ],
- [
-   'OsSearchPageSearchAndAssistantSettingsCard',
-   'os_search_page/search_and_assistant_settings_card_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSearchPageSearchEngine',
-   'os_search_page/search_engine_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSearchPageSearchEngineRevamp',
-   'os_search_page/search_engine_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- ['OsSearchPageSearchSubpage', 'os_search_page/search_subpage_test.js'],
  [
    'OsSettingsMain',
    'os_settings_main/os_settings_main_test.js',
