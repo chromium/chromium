@@ -1033,22 +1033,22 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetColorMatrix_Success) {
   }
 }
 
-TEST_P(HardwareDisplayPlaneManagerTest, SetColorMatrix_ErrorEmptyCtm) {
+TEST_P(HardwareDisplayPlaneManagerTest, SetColorMatrix_AllowEmptyCtm) {
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);
   drm_state.crtc_properties[0].properties.push_back(
       {.id = kCtmPropId, .value = 0});
   fake_drm_->InitializeState(drm_state, use_atomic_);
 
-  EXPECT_FALSE(fake_drm_->plane_manager()->SetColorMatrix(
+  EXPECT_TRUE(fake_drm_->plane_manager()->SetColorMatrix(
       fake_drm_->crtc_property(0).id, {}));
   if (use_atomic_) {
     HardwareDisplayPlaneList state;
     PerformPageFlip(/*crtc_idx=*/0, &state);
-    EXPECT_EQ(1, fake_drm_->get_commit_count());
-    EXPECT_EQ(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "CTM"));
+    EXPECT_EQ(2, fake_drm_->get_commit_count());
+    EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "CTM"));
   } else {
-    EXPECT_EQ(0, fake_drm_->get_set_object_property_count());
+    EXPECT_EQ(1, fake_drm_->get_set_object_property_count());
   }
 }
 
