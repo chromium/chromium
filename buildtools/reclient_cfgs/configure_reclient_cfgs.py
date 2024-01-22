@@ -59,14 +59,21 @@ def NaclRevision():
         return None
 
     if os.path.isdir(os.path.join(nacl_dir, ".git")):
-        return subprocess.run(
-            ["git", "log", "-1", "--format=%H"],
-            cwd=nacl_dir,
-            shell=os.name == "nt",
-            text=True,
-            check=True,
-            stdout=subprocess.PIPE,
-        ).stdout.strip()
+        remote_host = subprocess.run(["git", "ls-rmeote", "--get-url"],
+                                     cwd=nacl_dir,
+                                     shell=os.name == "nt",
+                                     text=True,
+                                     stdout=subprocess.PIPE).stdout.strip()
+        # check nacl dir is checkout of native_client.
+        if remote_host == "https://chromium.googlesource.com/native_client/src/native_client.git":
+            return subprocess.run(
+                ["git", "log", "-1", "--format=%H"],
+                cwd=nacl_dir,
+                shell=os.name == "nt",
+                text=True,
+                check=True,
+                stdout=subprocess.PIPE,
+            ).stdout.strip()
 
     # If we're in a work tree without .git directories, we can fallback to
     # the slower method of looking the revision up via `gclient revinfo`.
