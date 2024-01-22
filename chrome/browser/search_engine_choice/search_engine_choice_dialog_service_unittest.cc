@@ -40,13 +40,13 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
         profile(),
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
 
-    PrefService* pref_service = profile()->GetPrefs();
     // The search engine choice feature is only enabled for countries in the
     // EEA region.
     const int kBelgiumCountryId =
         country_codes::CountryCharsToCountryID('B', 'E');
-    pref_service->SetInteger(country_codes::kCountryIDAtInstall,
-                             kBelgiumCountryId);
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kSearchEngineChoiceCountry,
+        country_codes::CountryIDToCountryString(kBelgiumCountryId));
   }
 
   std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
