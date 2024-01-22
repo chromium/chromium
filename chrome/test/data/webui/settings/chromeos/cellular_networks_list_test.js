@@ -120,56 +120,87 @@ suite('CellularNetworksList', function() {
     return new Promise(resolve => setTimeout(resolve));
   }
 
-  [true, false].forEach(shouldEnableSmdsSupport => {
-    test('Tether, cellular and eSIM profiles', async () => {
-      eSimManagerRemote.addEuiccForTest(2);
-      init();
-      browserProxy.setInstantTetheringStateForTest(
-          MultiDeviceFeatureState.ENABLED_BY_USER);
-      setIsSmdsSupportEnabled(shouldEnableSmdsSupport);
+  [{
+    'shouldEnableSmdsSupport': false,
+    'isInstantHotspotRebrandEnabled': false,
+  },
+   {
+     'shouldEnableSmdsSupport': true,
+     'isInstantHotspotRebrandEnabled': false,
+   },
+   {
+     'shouldEnableSmdsSupport': false,
+     'isInstantHotspotRebrandEnabled': true,
+   },
+   {
+     'shouldEnableSmdsSupport': true,
+     'isInstantHotspotRebrandEnabled': true,
+   },
+  ].forEach(({shouldEnableSmdsSupport, isInstantHotspotRebrandEnabled}) => {
+    test(
+        `Tether, cellular and eSIM profiles with smds support enabled: ${
+            shouldEnableSmdsSupport}, instant hotspot rebrand enabled: ${
+            isInstantHotspotRebrandEnabled}`,
+        async () => {
+          eSimManagerRemote.addEuiccForTest(2);
+          loadTimeData.overrideValues({isInstantHotspotRebrandEnabled});
 
-      const eSimNetwork1 = OncMojo.getDefaultManagedProperties(
-          NetworkType.kCellular, 'cellular_esim1');
-      eSimNetwork1.typeProperties.cellular.eid =
-          '11111111111111111111111111111111';
-      const eSimNetwork2 = OncMojo.getDefaultManagedProperties(
-          NetworkType.kCellular, 'cellular_esim2');
-      eSimNetwork2.typeProperties.cellular.eid =
-          '22222222222222222222222222222222';
-      setManagedPropertiesForTest(NetworkType.kCellular, [
-        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular1'),
-        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular2'),
-        eSimNetwork1,
-        eSimNetwork2,
-        OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether1'),
-        OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether2'),
-      ]);
-      addPSimSlot();
-      addESimSlot();
+          await init();
+          browserProxy.setInstantTetheringStateForTest(
+              MultiDeviceFeatureState.ENABLED_BY_USER);
+          setIsSmdsSupportEnabled(shouldEnableSmdsSupport);
 
-      await flushAsync();
+          const eSimNetwork1 = OncMojo.getDefaultManagedProperties(
+              NetworkType.kCellular, 'cellular_esim1');
+          eSimNetwork1.typeProperties.cellular.eid =
+              '11111111111111111111111111111111';
+          const eSimNetwork2 = OncMojo.getDefaultManagedProperties(
+              NetworkType.kCellular, 'cellular_esim2');
+          eSimNetwork2.typeProperties.cellular.eid =
+              '22222222222222222222222222222222';
+          setManagedPropertiesForTest(NetworkType.kCellular, [
+            OncMojo.getDefaultManagedProperties(
+                NetworkType.kCellular, 'cellular1'),
+            OncMojo.getDefaultManagedProperties(
+                NetworkType.kCellular, 'cellular2'),
+            eSimNetwork1,
+            eSimNetwork2,
+            OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether1'),
+            OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether2'),
+          ]);
+          addPSimSlot();
+          addESimSlot();
 
-      const eSimNetworkList =
-          cellularNetworkList.shadowRoot.querySelector('#esimNetworkList');
-      assertTrue(!!eSimNetworkList);
+          await flushAsync();
 
-      const pSimNetworkList =
-          cellularNetworkList.shadowRoot.querySelector('#psimNetworkList');
-      assertTrue(!!pSimNetworkList);
+          const eSimNetworkList =
+              cellularNetworkList.shadowRoot.querySelector('#esimNetworkList');
+          assertTrue(!!eSimNetworkList);
 
-      const tetherNetworkList =
-          cellularNetworkList.shadowRoot.querySelector('#tetherNetworkList');
-      assertTrue(!!tetherNetworkList);
+          const pSimNetworkList =
+              cellularNetworkList.shadowRoot.querySelector('#psimNetworkList');
+          assertTrue(!!pSimNetworkList);
 
-      assertEquals(2, eSimNetworkList.networks.length);
-      assertEquals(2, pSimNetworkList.networks.length);
-      assertEquals(2, tetherNetworkList.networks.length);
-      if (shouldEnableSmdsSupport) {
-        assertEquals(0, eSimNetworkList.customItems.length);
-      } else {
-        assertEquals(2, eSimNetworkList.customItems.length);
-      }
-    });
+          const tetherNetworkList =
+              cellularNetworkList.shadowRoot.querySelector(
+                  '#tetherNetworkList');
+
+          assertEquals(2, eSimNetworkList.networks.length);
+          assertEquals(2, pSimNetworkList.networks.length);
+
+          if (shouldEnableSmdsSupport) {
+            assertEquals(0, eSimNetworkList.customItems.length);
+          } else {
+            assertEquals(2, eSimNetworkList.customItems.length);
+          }
+
+          if (!isInstantHotspotRebrandEnabled) {
+            assertTrue(!!tetherNetworkList);
+            assertEquals(2, tetherNetworkList.networks.length);
+          } else {
+            assertFalse(!!tetherNetworkList);
+          }
+        });
   });
 
   test(
@@ -320,6 +351,11 @@ suite('CellularNetworksList', function() {
       });
 
   test('Hide instant tethering section when not enabled', async () => {
+    // Tether networks should not be shown in the cellular network list when the
+    // instant hotspot rebrand feature flag is enabled.
+    loadTimeData.overrideValues({
+      isInstantHotspotRebrandEnabled: false,
+    });
     init();
     assertFalse(!!cellularNetworkList.shadowRoot.querySelector(
         '#tetherNetworksNotSetup'));
