@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/browser-payment-api/#idl-def-paymentrequestupdateevent
+// https://w3c.github.io/payment-request/#dom-paymentrequestupdateevent
 
 [
     RuntimeEnabled=PaymentRequest,
-    Exposed=Window
+    Exposed=Window,
+    SecureContext
 ] interface PaymentRequestUpdateEvent : Event {
     [CallWith=ExecutionContext] constructor(DOMString type, optional PaymentRequestUpdateEventInit eventInitDict = {});
     [CallWith=ScriptState,RaisesException] void updateWith(Promise<PaymentDetailsUpdate> detailsPromise);
