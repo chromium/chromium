@@ -22,7 +22,7 @@ class ShortcutUpdateTest : public testing::Test {
 TEST_F(ShortcutUpdateTest, StateIsNonNull) {
   Shortcut shortcut = Shortcut(host_app_id_, local_id_);
   shortcut.name = "Name";
-  shortcut.shortcut_source = ShortcutSource::kDeveloper;
+  shortcut.shortcut_source = ShortcutSource::kPolicy;
   shortcut.icon_key = IconKey();
   shortcut.icon_key->update_version = 100;
   shortcut.allow_removal = true;
@@ -35,7 +35,7 @@ TEST_F(ShortcutUpdateTest, StateIsNonNull) {
   EXPECT_EQ(u.Name(), "Name");
   EXPECT_FALSE(u.NameChanged());
 
-  EXPECT_EQ(u.ShortcutSource(), ShortcutSource::kDeveloper);
+  EXPECT_EQ(u.ShortcutSource(), ShortcutSource::kPolicy);
   EXPECT_FALSE(u.ShortcutSourceChanged());
 
   IconKey icon_key;
@@ -52,7 +52,7 @@ TEST_F(ShortcutUpdateTest, StateIsNonNull) {
 TEST_F(ShortcutUpdateTest, DeltaIsNonNull) {
   Shortcut shortcut = Shortcut(host_app_id_, local_id_);
   shortcut.name = "Name";
-  shortcut.shortcut_source = ShortcutSource::kDeveloper;
+  shortcut.shortcut_source = ShortcutSource::kPolicy;
   shortcut.icon_key = IconKey();
   shortcut.icon_key->update_version = false;
   shortcut.allow_removal = true;
@@ -65,7 +65,7 @@ TEST_F(ShortcutUpdateTest, DeltaIsNonNull) {
   EXPECT_EQ(u.Name(), "Name");
   EXPECT_TRUE(u.NameChanged());
 
-  EXPECT_EQ(u.ShortcutSource(), ShortcutSource::kDeveloper);
+  EXPECT_EQ(u.ShortcutSource(), ShortcutSource::kPolicy);
   EXPECT_TRUE(u.ShortcutSourceChanged());
 
   IconKey icon_key;
@@ -82,7 +82,7 @@ TEST_F(ShortcutUpdateTest, DeltaIsNonNull) {
 TEST_F(ShortcutUpdateTest, StateAndDeltaAreNonNull) {
   Shortcut shortcut_state = Shortcut(host_app_id_, local_id_);
   shortcut_state.name = "Name";
-  shortcut_state.shortcut_source = ShortcutSource::kDeveloper;
+  shortcut_state.shortcut_source = ShortcutSource::kPolicy;
   shortcut_state.icon_key = IconKey();
   shortcut_state.icon_key->update_version = 100;
   shortcut_state.allow_removal = true;
@@ -120,7 +120,7 @@ TEST_F(ShortcutUpdateTest, StateAndDeltaAreNonNull) {
 TEST_F(ShortcutUpdateTest, Merge) {
   Shortcut shortcut_state = Shortcut(host_app_id_, local_id_);
   shortcut_state.name = "Name";
-  shortcut_state.shortcut_source = ShortcutSource::kDeveloper;
+  shortcut_state.shortcut_source = ShortcutSource::kPolicy;
   shortcut_state.icon_key = IconKey();
   shortcut_state.icon_key->update_version = 100;
   shortcut_state.allow_removal = true;

@@ -83,6 +83,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "publisher_helper_unittest.cc",
     "web_app_publisher_helper_unittest.cc",
     "web_app_publisher_unittest.cc",
     "web_apps_with_shortcuts_test.cc",

@@ -23,11 +23,14 @@ namespace apps {
 using ShortcutId = base::StrongAlias<class ShortcutIdTag, std::string>;
 
 // Where the shortcut was created from.
-ENUM_FOR_COMPONENT(SHORTCUT,
-                   ShortcutSource,
-                   kUnknown = 0,
-                   kUser = 1,      // Created by the user.
-                   kDeveloper = 2  // Created by the developer. e.g. jumplist
+ENUM_FOR_COMPONENT(
+    SHORTCUT,
+    ShortcutSource,
+    kUnknown = 0,
+    kUser = 1,    // Created by the user and managed by sync. This includes any
+                  // shortcuts created by syncing between devices.
+    kPolicy = 2,  // Created by organization policy.
+    kDefault = 3  // Created by default.
 )
 
 struct COMPONENT_EXPORT(SHORTCUT) Shortcut {
