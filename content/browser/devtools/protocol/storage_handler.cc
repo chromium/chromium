@@ -2188,37 +2188,5 @@ void StorageHandler::NotifyInterestGroupAuctionEventOccurred(
       std::make_unique<base::Value::Dict>(auction_config.Clone()));
 }
 
-void StorageHandler::NotifyInterestGroupAuctionNetworkRequestCreated(
-    content::InterestGroupAuctionFetchType type,
-    const std::string& request_id,
-    const std::vector<std::string>& devtools_auction_ids) {
-  if (!interest_group_auction_tracking_enabled_) {
-    return;
-  }
-  std::string type_enum;
-  switch (type) {
-    case content::InterestGroupAuctionFetchType::kBidderJs:
-      type_enum = Storage::InterestGroupAuctionFetchTypeEnum::BidderJs;
-      break;
-    case content::InterestGroupAuctionFetchType::kBidderWasm:
-      type_enum = Storage::InterestGroupAuctionFetchTypeEnum::BidderWasm;
-      break;
-    case content::InterestGroupAuctionFetchType::kSellerJs:
-      type_enum = Storage::InterestGroupAuctionFetchTypeEnum::SellerJs;
-      break;
-    case content::InterestGroupAuctionFetchType::kBidderTrustedSignals:
-      type_enum =
-          Storage::InterestGroupAuctionFetchTypeEnum::BidderTrustedSignals;
-      break;
-    case content::InterestGroupAuctionFetchType::kSellerTrustedSignals:
-      type_enum =
-          Storage::InterestGroupAuctionFetchTypeEnum::SellerTrustedSignals;
-      break;
-  };
-  frontend_->InterestGroupAuctionNetworkRequestCreated(
-      type_enum, request_id,
-      std::make_unique<std::vector<std::string>>(devtools_auction_ids));
-}
-
 }  // namespace protocol
 }  // namespace content

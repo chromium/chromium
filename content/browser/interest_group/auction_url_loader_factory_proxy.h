@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <optional>
-#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/strings/string_piece.h"
@@ -48,9 +47,6 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
 
   using GetCookieDeprecationLabelCallback =
       base::RepeatingCallback<std::optional<std::string>()>;
-
-  using GetDevtoolsAuctionIdsCallback =
-      base::RepeatingCallback<std::vector<std::string>()>;
 
   // Passed in callbacks must be safe to call at any time during the lifetime of
   // the AuctionURLLoaderFactoryProxy.
@@ -97,7 +93,6 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
       PreconnectSocketCallback preconnect_socket_callback,
       GetCookieDeprecationLabelCallback get_cookie_deprecation_label,
-      GetDevtoolsAuctionIdsCallback get_devtools_auction_ids,
       bool force_reload,
       const url::Origin& top_frame_origin,
       const url::Origin& frame_origin,
@@ -146,7 +141,6 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
   const GetUrlLoaderFactoryCallback get_frame_url_loader_factory_;
   const GetUrlLoaderFactoryCallback get_trusted_url_loader_factory_;
   const GetCookieDeprecationLabelCallback get_cookie_deprecation_label_;
-  const GetDevtoolsAuctionIdsCallback get_devtools_auction_ids_;
 
   // Manages the bundle subresource URLs that may be accessed by the worklet.
   SubresourceUrlAuthorizations subresource_url_authorizations_;
