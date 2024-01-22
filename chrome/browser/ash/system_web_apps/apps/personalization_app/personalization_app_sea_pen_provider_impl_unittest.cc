@@ -383,6 +383,26 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
               testing::HasSubstr(DictToMetadataDescription(expected_metadata)));
 }
 
+TEST_F(PersonalizationAppSeaPenProviderImplTest,
+       ShouldShowSeaPenTermsOfServiceDialog) {
+  test_wallpaper_controller()->ClearCounts();
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kSeaPen}, {});
+
+  base::test::TestFuture<bool> should_show_dialog_future;
+  sea_pen_provider_remote()->ShouldShowSeaPenTermsOfServiceDialog(
+      should_show_dialog_future.GetCallback());
+  // Expects to return true before the terms are accepted.
+  EXPECT_TRUE(should_show_dialog_future.Take());
+
+  sea_pen_provider_remote()->HandleSeaPenTermsOfServiceAccepted();
+
+  sea_pen_provider_remote()->ShouldShowSeaPenTermsOfServiceDialog(
+      should_show_dialog_future.GetCallback());
+  // Expects to return false after the terms are accepted.
+  EXPECT_FALSE(should_show_dialog_future.Take());
+}
+
 }  // namespace
 
 }  // namespace ash::personalization_app

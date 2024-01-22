@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/controls/contextual_tooltip.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
@@ -316,6 +317,33 @@ void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(
       /*category_tag=*/std::string(),
       /*extra_diagnostics=*/std::string(),
       /*autofill_data=*/base::Value::Dict(), std::move(ai_metadata));
+}
+
+void PersonalizationAppSeaPenProviderBase::ShouldShowSeaPenTermsOfServiceDialog(
+    ShouldShowSeaPenTermsOfServiceDialogCallback callback) {
+  if (!features::IsSeaPenEnabled() &&
+      !features::IsVcBackgroundReplaceEnabled()) {
+    sea_pen_receiver_.ReportBadMessage(
+        "Cannot call `ShouldShowSeaPenWallpaperTermsDialog()` without Sea Pen "
+        "feature enabled");
+    return;
+  }
+
+  // TODO(b/315032845): confirm how to store and retrieve the terms of service
+  // records instead of using contextual tooltip.
+  std::move(callback).Run(contextual_tooltip::ShouldShowNudge(
+      profile_->GetPrefs(),
+      contextual_tooltip::TooltipType::kSeaPenWallpaperTermsDialog,
+      /*recheck_delay=*/nullptr));
+}
+
+void PersonalizationAppSeaPenProviderBase::
+    HandleSeaPenTermsOfServiceAccepted() {
+  // TODO(b/315032845): confirm how to store and retrieve the terms of service
+  // records instead of using contextual tooltip.
+  contextual_tooltip::HandleGesturePerformed(
+      profile_->GetPrefs(),
+      contextual_tooltip::TooltipType::kSeaPenWallpaperTermsDialog);
 }
 
 }  // namespace ash::personalization_app
