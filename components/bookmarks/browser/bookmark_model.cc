@@ -1145,7 +1145,7 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
   other_node_ = details->other_folder_node();
   mobile_node_ = details->mobile_folder_node();
 
-  // TODO(crbug.com/1494120): Load nodes for account storage as well and load
+  // TODO(crbug.com/1520418): Load nodes for account storage as well and load
   // UUIDs onto `uuid_index_`.
 
   titled_url_index_->SetNodeSorter(
