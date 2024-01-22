@@ -39,13 +39,13 @@ std::vector<SelectOption> GetYears() {
 
 }  // namespace
 
-class BirthdateFieldTest
-    : public FormFieldTestBase,
+class BirthdateFieldParserTest
+    : public FormFieldParserTestBase,
       public testing::TestWithParam<PatternProviderFeatureState> {
  public:
-  BirthdateFieldTest() : FormFieldTestBase(GetParam()) {}
-  BirthdateFieldTest(const BirthdateFieldTest&) = delete;
-  BirthdateFieldTest& operator=(const BirthdateFieldTest&) = delete;
+  BirthdateFieldParserTest() : FormFieldParserTestBase(GetParam()) {}
+  BirthdateFieldParserTest(const BirthdateFieldParserTest&) = delete;
+  BirthdateFieldParserTest& operator=(const BirthdateFieldParserTest&) = delete;
 
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
@@ -55,25 +55,25 @@ class BirthdateFieldTest
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    BirthdateFieldTest,
-    BirthdateFieldTest,
+    BirthdateFieldParserTest,
+    BirthdateFieldParserTest,
     ::testing::ValuesIn(PatternProviderFeatureState::All()));
 
-TEST_P(BirthdateFieldTest, ParseDMY) {
+TEST_P(BirthdateFieldParserTest, ParseDMY) {
   AddSelectOneFormFieldData("", "", GetDays(), BIRTHDATE_DAY);
   AddSelectOneFormFieldData("", "", GetMonths(), BIRTHDATE_MONTH);
   AddSelectOneFormFieldData("", "", GetYears(), BIRTHDATE_4_DIGIT_YEAR);
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_P(BirthdateFieldTest, ParseYMD) {
+TEST_P(BirthdateFieldParserTest, ParseYMD) {
   AddSelectOneFormFieldData("", "", GetYears(), BIRTHDATE_4_DIGIT_YEAR);
   AddSelectOneFormFieldData("", "", GetMonths(), BIRTHDATE_MONTH);
   AddSelectOneFormFieldData("", "", GetDays(), BIRTHDATE_DAY);
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_P(BirthdateFieldTest, DefaultOptions) {
+TEST_P(BirthdateFieldParserTest, DefaultOptions) {
   auto days = GetDays();
   days.insert(days.begin(), {u"", u"Day"});
   auto months = GetMonths();
@@ -86,7 +86,7 @@ TEST_P(BirthdateFieldTest, DefaultOptions) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_P(BirthdateFieldTest, LeadingZeros) {
+TEST_P(BirthdateFieldParserTest, LeadingZeros) {
   // Replace the first 9 day entries with 01-09.
   auto days = GetDays();
   ASSERT_GE(days.size(), 9u);
@@ -100,7 +100,7 @@ TEST_P(BirthdateFieldTest, LeadingZeros) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_P(BirthdateFieldTest, TooManyOptions) {
+TEST_P(BirthdateFieldParserTest, TooManyOptions) {
   auto days = GetDays();
   days.insert(days.begin(), {u"", u"Hello"});
   days.insert(days.begin(), {u"", u"World"});
@@ -111,13 +111,13 @@ TEST_P(BirthdateFieldTest, TooManyOptions) {
   ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
-TEST_P(BirthdateFieldTest, MissingYear) {
+TEST_P(BirthdateFieldParserTest, MissingYear) {
   AddSelectOneFormFieldData("", "", GetDays(), BIRTHDATE_DAY);
   AddSelectOneFormFieldData("", "", GetMonths(), BIRTHDATE_MONTH);
   ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
-TEST_P(BirthdateFieldTest, IncompleteMonth) {
+TEST_P(BirthdateFieldParserTest, IncompleteMonth) {
   auto months = GetMonths();
   months.resize(5);
   AddSelectOneFormFieldData("", "", GetDays(), BIRTHDATE_DAY);

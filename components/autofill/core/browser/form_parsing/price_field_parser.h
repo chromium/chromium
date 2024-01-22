@@ -34,8 +34,8 @@ class PriceFieldParser : public FormFieldParser {
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(PriceFieldTest, ParsePrice);
-  FRIEND_TEST_ALL_PREFIXES(PriceFieldTest, ParseNonPrice);
+  FRIEND_TEST_ALL_PREFIXES(PriceFieldParserTest, ParsePrice);
+  FRIEND_TEST_ALL_PREFIXES(PriceFieldParserTest, ParseNonPrice);
 
   raw_ptr<const AutofillField> field_;
 };

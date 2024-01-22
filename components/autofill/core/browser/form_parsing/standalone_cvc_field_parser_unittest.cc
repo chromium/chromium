@@ -10,13 +10,14 @@
 
 namespace autofill {
 
-class StandaloneCvcFieldTest
-    : public FormFieldTestBase,
+class StandaloneCvcFieldParserTest
+    : public FormFieldParserTestBase,
       public testing::TestWithParam<PatternProviderFeatureState> {
  public:
-  StandaloneCvcFieldTest() : FormFieldTestBase(GetParam()) {}
-  StandaloneCvcFieldTest(const StandaloneCvcFieldTest&) = delete;
-  StandaloneCvcFieldTest& operator=(const StandaloneCvcFieldTest&) = delete;
+  StandaloneCvcFieldParserTest() : FormFieldParserTestBase(GetParam()) {}
+  StandaloneCvcFieldParserTest(const StandaloneCvcFieldParserTest&) = delete;
+  StandaloneCvcFieldParserTest& operator=(const StandaloneCvcFieldParserTest&) =
+      delete;
 
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
@@ -28,12 +29,12 @@ class StandaloneCvcFieldTest
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    StandaloneCvcFieldTest,
-    StandaloneCvcFieldTest,
+    StandaloneCvcFieldParserTest,
+    StandaloneCvcFieldParserTest,
     ::testing::ValuesIn(PatternProviderFeatureState::All()));
 
 // Match standalone cvc.
-TEST_P(StandaloneCvcFieldTest, ParseStandaloneCvc) {
+TEST_P(StandaloneCvcFieldParserTest, ParseStandaloneCvc) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillParseVcnCardOnFileStandaloneCvcFields);
 
@@ -43,7 +44,7 @@ TEST_P(StandaloneCvcFieldTest, ParseStandaloneCvc) {
 }
 
 // Do not parse non cvc standalone fields.
-TEST_P(StandaloneCvcFieldTest, ParseNonStandaloneCvc) {
+TEST_P(StandaloneCvcFieldParserTest, ParseNonStandaloneCvc) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillParseVcnCardOnFileStandaloneCvcFields);
 
@@ -53,7 +54,7 @@ TEST_P(StandaloneCvcFieldTest, ParseNonStandaloneCvc) {
 }
 
 // Do not parse when standalone cvc flag is disabled.
-TEST_P(StandaloneCvcFieldTest, ParseStandaloneCvcFlagOff) {
+TEST_P(StandaloneCvcFieldParserTest, ParseStandaloneCvcFlagOff) {
   scoped_feature_list_.InitAndDisableFeature(
       features::kAutofillParseVcnCardOnFileStandaloneCvcFields);
 
@@ -63,7 +64,7 @@ TEST_P(StandaloneCvcFieldTest, ParseStandaloneCvcFlagOff) {
 }
 
 // Do not parse gift card as standalone cvc fields.
-TEST_P(StandaloneCvcFieldTest, NotParseGiftCardAsStandaloneCvc) {
+TEST_P(StandaloneCvcFieldParserTest, NotParseGiftCardAsStandaloneCvc) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillParseVcnCardOnFileStandaloneCvcFields);
 

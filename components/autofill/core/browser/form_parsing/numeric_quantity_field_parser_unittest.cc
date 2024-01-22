@@ -8,13 +8,16 @@
 
 namespace autofill {
 
-class NumericQuantityFieldTest
-    : public FormFieldTestBase,
+class NumericQuantityFieldParserTest
+    : public FormFieldParserTestBase,
       public testing::TestWithParam<PatternProviderFeatureState> {
  public:
-  explicit NumericQuantityFieldTest() : FormFieldTestBase(GetParam()) {}
-  NumericQuantityFieldTest(const NumericQuantityFieldTest&) = delete;
-  NumericQuantityFieldTest& operator=(const NumericQuantityFieldTest&) = delete;
+  explicit NumericQuantityFieldParserTest()
+      : FormFieldParserTestBase(GetParam()) {}
+  NumericQuantityFieldParserTest(const NumericQuantityFieldParserTest&) =
+      delete;
+  NumericQuantityFieldParserTest& operator=(
+      const NumericQuantityFieldParserTest&) = delete;
 
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
@@ -24,17 +27,17 @@ class NumericQuantityFieldTest
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    NumericQuantityFieldTest,
-    NumericQuantityFieldTest,
+    NumericQuantityFieldParserTest,
+    NumericQuantityFieldParserTest,
     ::testing::ValuesIn(PatternProviderFeatureState::All()));
 
-TEST_P(NumericQuantityFieldTest, ParseNumericQuantity) {
+TEST_P(NumericQuantityFieldParserTest, ParseNumericQuantity) {
   AddTextFormFieldData("quantity", "quantity", NUMERIC_QUANTITY);
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_P(NumericQuantityFieldTest, ParseNonNumericQuantity) {
+TEST_P(NumericQuantityFieldParserTest, ParseNonNumericQuantity) {
   AddTextFormFieldData("name", "Name", UNKNOWN_TYPE);
 
   ClassifyAndVerify(ParseResult::NOT_PARSED);

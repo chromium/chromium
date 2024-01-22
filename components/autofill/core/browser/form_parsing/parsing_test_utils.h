@@ -41,13 +41,13 @@ struct PatternProviderFeatureState {
   const char* active_source = nullptr;
 };
 
-class FormFieldTestBase {
+class FormFieldParserTestBase {
  public:
-  explicit FormFieldTestBase(
+  explicit FormFieldParserTestBase(
       PatternProviderFeatureState pattern_provider_feature_state);
-  FormFieldTestBase(const FormFieldTestBase&) = delete;
-  FormFieldTestBase& operator=(const FormFieldTestBase&) = delete;
-  ~FormFieldTestBase();
+  FormFieldParserTestBase(const FormFieldParserTestBase&) = delete;
+  FormFieldParserTestBase& operator=(const FormFieldParserTestBase&) = delete;
+  ~FormFieldParserTestBase();
 
  protected:
   // Add a field with |control_type|, the |name|, the |label| the expected

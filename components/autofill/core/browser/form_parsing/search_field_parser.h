@@ -34,8 +34,8 @@ class SearchFieldParser : public FormFieldParser {
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(SearchFieldTest, ParseSearchTerm);
-  FRIEND_TEST_ALL_PREFIXES(SearchFieldTest, ParseNonSearchTerm);
+  FRIEND_TEST_ALL_PREFIXES(SearchFieldParserTest, ParseSearchTerm);
+  FRIEND_TEST_ALL_PREFIXES(SearchFieldParserTest, ParseNonSearchTerm);
 
   raw_ptr<const AutofillField> field_;
 };

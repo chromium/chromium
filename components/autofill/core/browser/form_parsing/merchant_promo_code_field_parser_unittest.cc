@@ -11,14 +11,15 @@ using base::ASCIIToUTF16;
 
 namespace autofill {
 
-class MerchantPromoCodeFieldTest
-    : public FormFieldTestBase,
+class MerchantPromoCodeFieldParserTest
+    : public FormFieldParserTestBase,
       public testing::TestWithParam<PatternProviderFeatureState> {
  public:
-  MerchantPromoCodeFieldTest() : FormFieldTestBase(GetParam()) {}
-  MerchantPromoCodeFieldTest(const MerchantPromoCodeFieldTest&) = delete;
-  MerchantPromoCodeFieldTest& operator=(const MerchantPromoCodeFieldTest&) =
+  MerchantPromoCodeFieldParserTest() : FormFieldParserTestBase(GetParam()) {}
+  MerchantPromoCodeFieldParserTest(const MerchantPromoCodeFieldParserTest&) =
       delete;
+  MerchantPromoCodeFieldParserTest& operator=(
+      const MerchantPromoCodeFieldParserTest&) = delete;
 
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
@@ -28,12 +29,12 @@ class MerchantPromoCodeFieldTest
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    MerchantPromoCodeFieldTest,
-    MerchantPromoCodeFieldTest,
+    MerchantPromoCodeFieldParserTest,
+    MerchantPromoCodeFieldParserTest,
     ::testing::ValuesIn(PatternProviderFeatureState::All()));
 
 // Match promo(tion|tional)?[-_. ]*code
-TEST_P(MerchantPromoCodeFieldTest, ParsePromoCode) {
+TEST_P(MerchantPromoCodeFieldParserTest, ParsePromoCode) {
   AddTextFormFieldData("promoCodeField", "Enter promo code here",
                        MERCHANT_PROMO_CODE);
 
@@ -41,7 +42,7 @@ TEST_P(MerchantPromoCodeFieldTest, ParsePromoCode) {
 }
 
 // Match promo(tion|tional)?[-_. ]*code
-TEST_P(MerchantPromoCodeFieldTest, ParsePromotionalCode) {
+TEST_P(MerchantPromoCodeFieldParserTest, ParsePromotionalCode) {
   AddTextFormFieldData("promoCodeField", "Use the promotional code here",
                        MERCHANT_PROMO_CODE);
 
@@ -49,7 +50,7 @@ TEST_P(MerchantPromoCodeFieldTest, ParsePromotionalCode) {
 }
 
 // Match promo(tion|tional)?[-_. ]*code
-TEST_P(MerchantPromoCodeFieldTest, ParsePromoCodeWithPrefixAndSuffix) {
+TEST_P(MerchantPromoCodeFieldParserTest, ParsePromoCodeWithPrefixAndSuffix) {
   AddTextFormFieldData("mypromocodefield", "promoCodeField",
                        MERCHANT_PROMO_CODE);
 
@@ -57,7 +58,7 @@ TEST_P(MerchantPromoCodeFieldTest, ParsePromoCodeWithPrefixAndSuffix) {
 }
 
 // Match coupon[-_. ]*code
-TEST_P(MerchantPromoCodeFieldTest, ParseCouponCode) {
+TEST_P(MerchantPromoCodeFieldParserTest, ParseCouponCode) {
   AddTextFormFieldData("couponCodeField", "Enter new coupon__code",
                        MERCHANT_PROMO_CODE);
 
@@ -65,7 +66,7 @@ TEST_P(MerchantPromoCodeFieldTest, ParseCouponCode) {
 }
 
 // Match gift[-_. ]*code
-TEST_P(MerchantPromoCodeFieldTest, ParseGiftCode) {
+TEST_P(MerchantPromoCodeFieldParserTest, ParseGiftCode) {
   AddTextFormFieldData("giftCodeField", "Check out with gift.codes",
                        MERCHANT_PROMO_CODE);
 
@@ -73,14 +74,14 @@ TEST_P(MerchantPromoCodeFieldTest, ParseGiftCode) {
 }
 
 // Match discount[-_. ]*code
-TEST_P(MerchantPromoCodeFieldTest, ParseDiscountCode) {
+TEST_P(MerchantPromoCodeFieldParserTest, ParseDiscountCode) {
   AddTextFormFieldData("discountCodeField", "Check out with discount-code",
                        MERCHANT_PROMO_CODE);
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_P(MerchantPromoCodeFieldTest, ParseNonPromoCode) {
+TEST_P(MerchantPromoCodeFieldParserTest, ParseNonPromoCode) {
   // Regex relies on "promo/coupon/gift" + "code" together.
   AddTextFormFieldData("otherField", "Field for gift card or promo details",
                        UNKNOWN_TYPE);

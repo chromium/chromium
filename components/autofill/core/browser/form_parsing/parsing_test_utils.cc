@@ -24,7 +24,7 @@ std::vector<PatternProviderFeatureState> PatternProviderFeatureState::All() {
   };
 }
 
-FormFieldTestBase::FormFieldTestBase(
+FormFieldParserTestBase::FormFieldParserTestBase(
     PatternProviderFeatureState pattern_provider_feature_state) {
   std::vector<base::test::FeatureRefAndParams> enabled;
   std::vector<base::test::FeatureRef> disabled;
@@ -40,21 +40,22 @@ FormFieldTestBase::FormFieldTestBase(
   scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
 }
 
-FormFieldTestBase::~FormFieldTestBase() = default;
+FormFieldParserTestBase::~FormFieldParserTestBase() = default;
 
-void FormFieldTestBase::AddFormFieldData(FormControlType control_type,
-                                         std::string name,
-                                         std::string label,
-                                         FieldType expected_type) {
+void FormFieldParserTestBase::AddFormFieldData(FormControlType control_type,
+                                               std::string name,
+                                               std::string label,
+                                               FieldType expected_type) {
   AddFormFieldDataWithLength(control_type, name, label, /*max_length=*/0,
                              expected_type);
 }
 
-void FormFieldTestBase::AddFormFieldDataWithLength(FormControlType control_type,
-                                                   std::string name,
-                                                   std::string label,
-                                                   int max_length,
-                                                   FieldType expected_type) {
+void FormFieldParserTestBase::AddFormFieldDataWithLength(
+    FormControlType control_type,
+    std::string name,
+    std::string label,
+    int max_length,
+    FieldType expected_type) {
   FormFieldData field_data;
   field_data.form_control_type = control_type;
   field_data.name = base::UTF8ToUTF16(name);
@@ -66,7 +67,7 @@ void FormFieldTestBase::AddFormFieldDataWithLength(FormControlType control_type,
       std::make_pair(field_data.global_id(), expected_type));
 }
 
-void FormFieldTestBase::AddSelectOneFormFieldData(
+void FormFieldParserTestBase::AddSelectOneFormFieldData(
     std::string name,
     std::string label,
     const std::vector<SelectOption>& options,
@@ -77,9 +78,9 @@ void FormFieldTestBase::AddSelectOneFormFieldData(
 }
 
 // Convenience wrapper for text control elements.
-void FormFieldTestBase::AddTextFormFieldData(std::string name,
-                                             std::string label,
-                                             FieldType expected_type) {
+void FormFieldParserTestBase::AddTextFormFieldData(std::string name,
+                                                   std::string label,
+                                                   FieldType expected_type) {
   AddFormFieldData(FormControlType::kInputText, name, label, expected_type);
 }
 
@@ -87,7 +88,7 @@ void FormFieldTestBase::AddTextFormFieldData(std::string name,
 // |parsed| indicates if at least one field could be parsed successfully.
 // |page_language| the language to be used for parsing, default empty value
 // means the language is unknown and patterns of all languages are used.
-void FormFieldTestBase::ClassifyAndVerify(
+void FormFieldParserTestBase::ClassifyAndVerify(
     ParseResult parse_result,
     const GeoIpCountryCode& client_country,
     const LanguageCode& page_language) {
@@ -106,7 +107,7 @@ void FormFieldTestBase::ClassifyAndVerify(
   TestClassificationExpectations();
 }
 
-void FormFieldTestBase::TestClassificationExpectations() {
+void FormFieldParserTestBase::TestClassificationExpectations() {
   size_t num_classifications = 0;
   for (const auto [field_id, expected_field_type] : expected_classifications_) {
     FieldType actual_field_type =
@@ -124,11 +125,11 @@ void FormFieldTestBase::TestClassificationExpectations() {
   EXPECT_EQ(num_classifications, field_candidates_map_.size());
 }
 
-FieldRendererId FormFieldTestBase::MakeFieldRendererId() {
+FieldRendererId FormFieldParserTestBase::MakeFieldRendererId() {
   return FieldRendererId(++id_counter_);
 }
 
-void FormFieldTestBase::ClearFieldsAndExpectations() {
+void FormFieldParserTestBase::ClearFieldsAndExpectations() {
   field_ = nullptr;
   list_.clear();
   expected_classifications_.clear();
