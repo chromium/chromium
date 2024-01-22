@@ -209,8 +209,9 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
   private computeOnOffSubtext_(): string {
     const microphoneAllowed =
         this.getPref<string>('ash.user.microphone_allowed').value;
-    return microphoneAllowed ? this.i18n('microphoneToggleSubtext') :
-                               this.i18n('blockedForAllText');
+    return microphoneAllowed ?
+        this.i18n('microphoneToggleSubtext') :
+        this.i18n('privacyHubMicrophoneAccessBlockedText');
   }
 
   private computeShouldDisableMicrophoneToggle_(): boolean {

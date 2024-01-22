@@ -146,7 +146,8 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
         assertEquals(
             privacyHubMicrophoneSubpage.i18n('deviceOff'), getOnOffText());
         assertEquals(
-            privacyHubMicrophoneSubpage.i18n('blockedForAllText'),
+            privacyHubMicrophoneSubpage.i18n(
+                'privacyHubMicrophoneAccessBlockedText'),
             getOnOffSubtext());
         assertTrue(isMicrophoneListSectionVisible());
         assertTrue(isBlockedSuffixDisplayedAfterMicrophoneName());

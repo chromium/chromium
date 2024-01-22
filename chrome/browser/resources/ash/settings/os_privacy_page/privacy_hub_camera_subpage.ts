@@ -241,7 +241,7 @@ export class SettingsPrivacyHubCameraSubpage extends
           this.i18n('cameraToggleFallbackSubtext') :
           this.i18n('cameraToggleSubtext');
     } else {
-      return this.i18n('blockedForAllText');
+      return this.i18n('privacyHubCameraAccessBlockedText');
     }
   }
 
