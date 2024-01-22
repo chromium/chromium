@@ -233,6 +233,8 @@ chromium-metrics-reviews@google.com.
       summary="showing the Parcel Tracking IPH on the Magic Stack"/>
   <variant name="IPH_iOSPasswordPromoDesktop"
       summary="showing the iOS password promo on desktop"/>
+  <variant name="IPH_iOSPromoAllTabs"
+      summary="showing All Tabs default browser promo"/>
   <variant name="IPH_iOSPromoAppStore"
       summary="showing the App Store Promo on iOS"/>
   <variant name="IPH_iOSPromoCredentialProviderExtension"
@@ -241,12 +243,16 @@ chromium-metrics-reviews@google.com.
       summary="showing the Default Browser Promo on iOS"/>
   <variant name="IPH_iOSPromoDefaultBrowserReminder"
       summary="showing the Default Browser Promo after remind me later on iOS"/>
+  <variant name="IPH_iOSPromoMadeForIOS"
+      summary="showing Made for iOS default browser promo"/>
   <variant name="IPH_iOSPromoPasswordManagerWidget"
       summary="showing the Password Manager widget promo on iOS"/>
   <variant name="IPH_iOSPromoPostRestore"
       summary="showing the Post Restore Promo on iOS"/>
   <variant name="IPH_iOSPromoPostRestoreDefaultBrowser"
       summary="showing the Post Restore Default Browser Promo on iOS"/>
+  <variant name="IPH_iOSPromoStaySafe"
+      summary="showing Stay Safe default browser promo"/>
   <variant name="IPH_iOSPromoWhatsNew"
       summary="showing the Whats New Promo on iOS"/>
   <variant name="IPH_iOSPullToRefreshFeature"

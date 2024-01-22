@@ -551,6 +551,9 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Omnibox Position"/>
   <int value="11" label="Docking Promo"/>
   <int value="12" label="Docking Promo (Remind Me Later)"/>
+  <int value="13" label="All Tabs default browser promo"/>
+  <int value="14" label="Made for iOS default browser promo"/>
+  <int value="15" label="Stay Safe default browser promo"/>
 </enum>
 
 <enum name="IOSPromosManagerPromoImpressionLimitEvaluationType">

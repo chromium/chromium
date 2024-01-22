@@ -20,6 +20,9 @@ BASE_FEATURE(kIPHDummyGroup,
 BASE_FEATURE(kiOSFullscreenPromosGroup,
              "IPH_iOSFullscreenPromosGroup",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kiOSDefaultBrowserPromosGroup,
+             "IPH_iOSDefaultBrowserPromosGroup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace feature_engagement

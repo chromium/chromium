@@ -15,6 +15,7 @@ BASE_DECLARE_FEATURE(kIPHDummyGroup);
 
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kiOSFullscreenPromosGroup);
+BASE_DECLARE_FEATURE(kiOSDefaultBrowserPromosGroup);
 #endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace feature_engagement

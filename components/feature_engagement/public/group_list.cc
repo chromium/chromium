@@ -14,6 +14,7 @@ const base::Feature* const kAllGroups[] = {
     &kIPHDummyGroup,  // Ensures non-empty array for all platforms.
 #if BUILDFLAG(IS_IOS)
     &kiOSFullscreenPromosGroup,
+    &kiOSDefaultBrowserPromosGroup,
 #endif  // BUILDFLAG(IS_IOS)
 };
 }  // namespace

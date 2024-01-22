@@ -60,6 +60,17 @@ std::optional<Promo> PromoForName(base::StringPiece promo) {
     return promos_manager::Promo::DockingPromoRemindMeLater;
   }
 
+  if (promo == "promos_manager::Promo::AllTabsDefaultBrowser") {
+    return promos_manager::Promo::AllTabsDefaultBrowser;
+  }
+
+  if (promo == "promos_manager::Promo::MadeForIOSDefaultBrowser") {
+    return promos_manager::Promo::MadeForIOSDefaultBrowser;
+  }
+
+  if (promo == "promos_manager::Promo::StaySafeDefaultBrowser") {
+    return promos_manager::Promo::StaySafeDefaultBrowser;
+  }
   return std::nullopt;
 }
 
@@ -93,6 +104,12 @@ base::StringPiece ShortNameForPromo(Promo promo) {
       return "DockingPromo";
     case promos_manager::Promo::DockingPromoRemindMeLater:
       return "DockingPromoRemindMeLater";
+    case promos_manager::Promo::AllTabsDefaultBrowser:
+      return "AllTabsDefaultBrowser";
+    case promos_manager::Promo::MadeForIOSDefaultBrowser:
+      return "MadeForIOSDefaultBrowser";
+    case promos_manager::Promo::StaySafeDefaultBrowser:
+      return "StaySafeDefaultBrowser";
   }
 }
 

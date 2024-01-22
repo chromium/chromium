@@ -282,6 +282,9 @@ DEFINE_VARIATION_PARAM(kIPHiOSTabGridSwipeLeftForIncognito,
 DEFINE_VARIATION_PARAM(kIPHiOSDockingPromoFeature, "IPH_iOSDockingPromo");
 DEFINE_VARIATION_PARAM(kIPHiOSDockingPromoRemindMeLaterFeature,
                        "IPH_iOSDockingPromoRemindMeLater");
+DEFINE_VARIATION_PARAM(kIPHiOSPromoAllTabsFeature, "IPH_iOSPromoAllTabs");
+DEFINE_VARIATION_PARAM(kIPHiOSPromoMadeForIOSFeature, "IPH_iOSPromoMadeForIOS");
+DEFINE_VARIATION_PARAM(kIPHiOSPromoStaySafeFeature, "IPH_iOSPromoStaySafe");
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
@@ -608,6 +611,9 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSTabGridSwipeLeftForIncognito),
         VARIATION_ENTRY(kIPHiOSDockingPromoFeature),
         VARIATION_ENTRY(kIPHiOSDockingPromoRemindMeLaterFeature),
+        VARIATION_ENTRY(kIPHiOSPromoAllTabsFeature),
+        VARIATION_ENTRY(kIPHiOSPromoMadeForIOSFeature),
+        VARIATION_ENTRY(kIPHiOSPromoStaySafeFeature),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
         VARIATION_ENTRY(kIPHBatterySaverModeFeature),

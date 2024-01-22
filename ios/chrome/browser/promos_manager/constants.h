@@ -40,7 +40,10 @@ enum class Promo {
   OmniboxPosition = 10,             // Choose between top and bottom omnibox.
   DockingPromo = 11,                // Docking Promo.
   DockingPromoRemindMeLater = 12,   // Docking Promo (Remind Me Later version).
-  kMaxValue = DockingPromoRemindMeLater,
+  AllTabsDefaultBrowser = 13,       // "All Tabs" default browser promo.
+  MadeForIOSDefaultBrowser = 14,    // "Made For iOS" default browser promo.
+  StaySafeDefaultBrowser = 15,      // "Stay Safe" default browser promo.
+  kMaxValue = StaySafeDefaultBrowser,
 };
 // LINT.ThenChange(/ios/chrome/browser/promos_manager/constants.cc)
 // Also update IOSPromosManagerPromo in
