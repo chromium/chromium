@@ -41,8 +41,7 @@ ManagePasswordsListView::ManagePasswordsListView(
             password_manager::features::kButterOnDesktopFollowup)) {
       if (!password_form->IsUsingAccountStore()) {
         store_icon = ui::ImageModel::FromVectorIcon(
-            vector_icons::kNotUploadedIcon, gfx::kPlaceholderColor,
-            gfx::kFaviconSize);
+            vector_icons::kNotUploadedIcon, ui::kColorIcon, gfx::kFaviconSize);
       }
     } else if (password_form->IsUsingAccountStore()) {
       store_icon = ui::ImageModel::FromVectorIcon(
