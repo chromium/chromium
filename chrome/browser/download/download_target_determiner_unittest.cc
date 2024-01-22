@@ -58,6 +58,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -631,7 +632,7 @@ void MockDownloadTargetDeterminerDelegate::NullPromptUser(
     DownloadConfirmationReason reason,
     ConfirmationCallback& callback) {
   std::move(callback).Run(DownloadConfirmationResult::CONFIRMED,
-                          suggested_path);
+                          ui::SelectedFileInfo(suggested_path));
 }
 
 // static
@@ -720,7 +721,7 @@ TEST_F(DownloadTargetDeterminerTest, CancelSaveAs) {
        EXPECT_LOCAL_PATH}};
   ON_CALL(*delegate(), RequestConfirmation_(_, _, _, _))
       .WillByDefault(WithArg<3>(ScheduleCallback2(
-          DownloadConfirmationResult::CANCELED, base::FilePath())));
+          DownloadConfirmationResult::CANCELED, ui::SelectedFileInfo())));
   RunTestCasesWithActiveItem(kCancelSaveAsTestCases,
                              std::size(kCancelSaveAsTestCases));
 }
@@ -995,9 +996,10 @@ TEST_F(DownloadTargetDeterminerTest, DefaultVirtual) {
     EXPECT_CALL(*delegate(), RequestConfirmation_(
                                  _, test_virtual_dir().AppendASCII("bar.txt"),
                                  DownloadConfirmationReason::SAVE_AS, _))
-        .WillOnce(WithArg<3>(
-            ScheduleCallback2(DownloadConfirmationResult::CONFIRMED,
-                              test_virtual_dir().AppendASCII("prompted.txt"))));
+        .WillOnce(WithArg<3>(ScheduleCallback2(
+            DownloadConfirmationResult::CONFIRMED,
+            ui::SelectedFileInfo(
+                test_virtual_dir().AppendASCII("prompted.txt")))));
     RunTestCasesWithActiveItem(&kSaveAsToVirtualDir, 1);
   }
 
@@ -1021,7 +1023,8 @@ TEST_F(DownloadTargetDeterminerTest, DefaultVirtual) {
                                  DownloadConfirmationReason::SAVE_AS, _))
         .WillOnce(WithArg<3>(ScheduleCallback2(
             DownloadConfirmationResult::CONFIRMED,
-            GetPathInDownloadDir(FILE_PATH_LITERAL("foo-x.txt")))));
+            ui::SelectedFileInfo(
+                GetPathInDownloadDir(FILE_PATH_LITERAL("foo-x.txt"))))));
     RunTestCasesWithActiveItem(&kSaveAsToLocalDir, 1);
   }
 
@@ -1506,7 +1509,8 @@ TEST_F(DownloadTargetDeterminerTest, ContinueWithoutConfirmation_SaveAs) {
           DownloadConfirmationReason::SAVE_AS, _))
       .WillOnce(WithArg<3>(ScheduleCallback2(
           DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION,
-          GetPathInDownloadDir(FILE_PATH_LITERAL("foo.kindabad")))));
+          ui::SelectedFileInfo(
+              GetPathInDownloadDir(FILE_PATH_LITERAL("foo.kindabad"))))));
   RunTestCasesWithActiveItem(&kTestCase, 1);
 }
 
@@ -1532,7 +1536,8 @@ TEST_F(DownloadTargetDeterminerTest, ContinueWithConfirmation_SaveAs) {
           DownloadConfirmationReason::SAVE_AS, _))
       .WillOnce(WithArg<3>(ScheduleCallback2(
           DownloadConfirmationResult::CONFIRMED,
-          GetPathInDownloadDir(FILE_PATH_LITERAL("foo.kindabad")))));
+          ui::SelectedFileInfo(
+              GetPathInDownloadDir(FILE_PATH_LITERAL("foo.kindabad"))))));
   RunTestCasesWithActiveItem(&kTestCase, 1);
 }
 

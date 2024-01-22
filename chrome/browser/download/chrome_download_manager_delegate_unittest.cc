@@ -67,6 +67,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -298,7 +299,7 @@ class ChromeDownloadManagerDelegateTest
   void OnConfirmationCallbackComplete(
       DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
       DownloadConfirmationResult result,
-      const base::FilePath& virtual_path);
+      const ui::SelectedFileInfo& selected_file_info);
 
   base::FilePath GetDownloadDirectory() const { return test_download_dir_; }
   TestChromeDownloadManagerDelegate* delegate();
@@ -444,9 +445,9 @@ ChromeDownloadManagerDelegateTest::DetermineDownloadTarget(
 void ChromeDownloadManagerDelegateTest::OnConfirmationCallbackComplete(
     DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
     DownloadConfirmationResult result,
-    const base::FilePath& virtual_path) {
+    const ui::SelectedFileInfo& selected_file_info) {
   delegate_->OnConfirmationCallbackComplete(std::move(callback), result,
-                                            virtual_path);
+                                            selected_file_info);
 }
 
 TestChromeDownloadManagerDelegate*
@@ -581,8 +582,9 @@ TEST_F(ChromeDownloadManagerDelegateTest, LastSavePath) {
     base::FilePath user_selected_path(GetPathInDownloadDir("bar/baz.txt"));
     EXPECT_CALL(*delegate(), RequestConfirmation_(save_as_download.get(),
                                                   expected_prompt_path, _, _))
-        .WillOnce(WithArg<3>(ScheduleCallback2(
-            DownloadConfirmationResult::CONFIRMED, user_selected_path)));
+        .WillOnce(WithArg<3>(
+            ScheduleCallback2(DownloadConfirmationResult::CONFIRMED,
+                              ui::SelectedFileInfo(user_selected_path))));
     download::DownloadTargetInfo target_info =
         DetermineDownloadTarget(save_as_download.get());
     EXPECT_EQ(user_selected_path, target_info.target_path);
@@ -596,7 +598,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, LastSavePath) {
     EXPECT_CALL(*delegate(), RequestConfirmation_(save_as_download.get(),
                                                   expected_prompt_path, _, _))
         .WillOnce(WithArg<3>(ScheduleCallback2(
-            DownloadConfirmationResult::CANCELED, base::FilePath())));
+            DownloadConfirmationResult::CANCELED, ui::SelectedFileInfo())));
     download::DownloadTargetInfo target_info =
         DetermineDownloadTarget(save_as_download.get());
     VerifyAndClearExpectations();
@@ -619,7 +621,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, LastSavePath) {
     EXPECT_CALL(*delegate(), RequestConfirmation_(save_as_download.get(),
                                                   expected_prompt_path, _, _))
         .WillOnce(WithArg<3>(ScheduleCallback2(
-            DownloadConfirmationResult::CANCELED, base::FilePath())));
+            DownloadConfirmationResult::CANCELED, ui::SelectedFileInfo())));
     download::DownloadTargetInfo target_info =
         DetermineDownloadTarget(save_as_download.get());
     VerifyAndClearExpectations();
@@ -644,8 +646,9 @@ TEST_F(ChromeDownloadManagerDelegateTest, ConflictAction) {
   EXPECT_CALL(*delegate(),
               RequestConfirmation_(
                   _, _, DownloadConfirmationReason::TARGET_CONFLICT, _))
-      .WillOnce(WithArg<3>(ScheduleCallback2(
-          DownloadConfirmationResult::CONFIRMED, kExpectedPath)));
+      .WillOnce(
+          WithArg<3>(ScheduleCallback2(DownloadConfirmationResult::CONFIRMED,
+                                       ui::SelectedFileInfo(kExpectedPath))));
   download::DownloadTargetInfo target_info =
       DetermineDownloadTarget(download_item.get());
   EXPECT_EQ(download::DownloadItem::TARGET_DISPOSITION_PROMPT,
@@ -761,8 +764,9 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedByPolicy) {
   EXPECT_CALL(*delegate(),
               RequestConfirmation_(
                   _, _, DownloadConfirmationReason::TARGET_CONFLICT, _))
-      .WillOnce(WithArg<3>(ScheduleCallback2(
-          DownloadConfirmationResult::CONFIRMED, kExpectedPath)));
+      .WillOnce(
+          WithArg<3>(ScheduleCallback2(DownloadConfirmationResult::CONFIRMED,
+                                       ui::SelectedFileInfo(kExpectedPath))));
 
   pref_service()->SetInteger(
       prefs::kDownloadRestrictions,
@@ -797,8 +801,9 @@ TEST_F(ChromeDownloadManagerDelegateTest, NoSafetyChecksNotBlockedByPolicy) {
   EXPECT_CALL(*delegate(),
               RequestConfirmation_(
                   _, _, DownloadConfirmationReason::TARGET_CONFLICT, _))
-      .WillOnce(WithArg<3>(ScheduleCallback2(
-          DownloadConfirmationResult::CONFIRMED, kExpectedPath)));
+      .WillOnce(
+          WithArg<3>(ScheduleCallback2(DownloadConfirmationResult::CONFIRMED,
+                                       ui::SelectedFileInfo(kExpectedPath))));
 
   pref_service()->SetInteger(
       prefs::kDownloadRestrictions,
@@ -1743,10 +1748,11 @@ TEST_F(ChromeDownloadManagerDelegateTest, SanitizeGoogleSearchLink) {
 namespace {
 // Verify the file picker confirmation result matches |expected_result|. Run
 // |completion_closure| on completion.
-void VerifyFilePickerConfirmation(DownloadConfirmationResult expected_result,
-                                  base::RepeatingClosure completion_closure,
-                                  DownloadConfirmationResult result,
-                                  const base::FilePath& virtual_path) {
+void VerifyFilePickerConfirmation(
+    DownloadConfirmationResult expected_result,
+    base::RepeatingClosure completion_closure,
+    DownloadConfirmationResult result,
+    const ui::SelectedFileInfo& selected_file_info) {
   ASSERT_EQ(result, expected_result);
   std::move(completion_closure).Run();
 }
@@ -1803,7 +1809,7 @@ TEST_F(ChromeDownloadManagerDelegateTest,
   // the file picker should be canceled.
   OnConfirmationCallbackComplete(base::DoNothing(),
                                  DownloadConfirmationResult::CONFIRMED,
-                                 expected_prompt_path);
+                                 ui::SelectedFileInfo(expected_prompt_path));
 
   run_loop.Run();
 }
@@ -2420,22 +2426,17 @@ TEST_F(ChromeDownloadManagerDelegateTest, RequestConfirmation_Android) {
     EXPECT_CALL(*download_item, GetURL()).WillRepeatedly(ReturnRef(url));
     dialog_bridge->ResetStoredVariables();
 
-    base::RunLoop loop;
-    const auto callback = base::BindRepeating(
-        [](const base::RepeatingClosure& quit_closure,
-           DownloadConfirmationResult expected_result,
-           const base::FilePath& expected_path,
-           DownloadConfirmationResult actual_result,
-           const base::FilePath& actual_path) {
-          EXPECT_EQ(expected_result, actual_result);
-          EXPECT_EQ(expected_path, actual_path);
-          quit_closure.Run();
-        },
-        loop.QuitClosure(), test_case.expected_result,
-        test_case.path == ExpectPath::FULL ? fake_path : base::FilePath());
+    base::test::TestFuture<DownloadConfirmationResult,
+                           const ui::SelectedFileInfo&>
+        future;
     delegate()->RequestConfirmation(download_item.get(), fake_path,
-                                    test_case.confirmation_reason, callback);
-    loop.Run();
+                                    test_case.confirmation_reason,
+                                    future.GetCallback());
+    EXPECT_EQ(test_case.expected_result, future.Get<0>());
+    EXPECT_EQ(test_case.path == ExpectPath::FULL
+                  ? ui::SelectedFileInfo(fake_path)
+                  : ui::SelectedFileInfo(),
+              future.Get<1>());
 
     EXPECT_EQ(
         test_case.dialog_type != DownloadLocationDialogType::NO_DIALOG ? 1 : 0,

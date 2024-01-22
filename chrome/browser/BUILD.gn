@@ -8380,6 +8380,7 @@ static_library("test_support") {
     "//testing/gtest",
     "//ui/gfx",
     "//ui/gfx:test_support",
+    "//ui/shell_dialogs",
   ]
 
   if (is_android) {

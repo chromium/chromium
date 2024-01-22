@@ -618,10 +618,13 @@ DownloadTargetDeterminer::DoRequestConfirmation() {
 
 void DownloadTargetDeterminer::RequestConfirmationDone(
     DownloadConfirmationResult result,
-    const base::FilePath& virtual_path) {
+    const ui::SelectedFileInfo& selected_file_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!download_->IsTransient());
+
+  base::FilePath virtual_path = selected_file_info.path();
   DVLOG(20) << "User selected path:" << virtual_path.AsUTF8Unsafe();
+
 #if BUILDFLAG(IS_ANDROID)
   is_checking_dialog_confirmed_path_ = false;
 #endif

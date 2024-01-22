@@ -31,6 +31,7 @@
 #include "content/public/browser/download_manager_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/android/download_dialog_bridge.h"
@@ -259,7 +260,7 @@ class ChromeDownloadManagerDelegate
   void OnConfirmationCallbackComplete(
       DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
       DownloadConfirmationResult result,
-      const base::FilePath& virtual_path);
+      const ui::SelectedFileInfo& selected_file_info);
 
   // So that test classes that inherit from this for override purposes
   // can call back into the DownloadManager.

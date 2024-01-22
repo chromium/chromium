@@ -111,31 +111,29 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
 }
 
 DownloadFilePicker::~DownloadFilePicker() {
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     select_file_dialog_->ListenerDestroyed();
+  }
 
-  if (download_item_)
+  if (download_item_) {
     download_item_->RemoveObserver(this);
-}
-
-void DownloadFilePicker::OnFileSelected(const base::FilePath& path) {
-  std::move(file_selected_callback_)
-      .Run(path.empty() ? DownloadConfirmationResult::CANCELED
-                        : DownloadConfirmationResult::CONFIRMED,
-           path);
-  delete this;
+  }
 }
 
 void DownloadFilePicker::FileSelected(const ui::SelectedFileInfo& file,
                                       int index,
                                       void* params) {
-  OnFileSelected(file.path());
-  // Deletes |this|
+  std::move(file_selected_callback_)
+      .Run(DownloadConfirmationResult::CONFIRMED, file);
+
+  delete this;
 }
 
 void DownloadFilePicker::FileSelectionCanceled(void* params) {
-  OnFileSelected(base::FilePath());
-  // Deletes |this|
+  std::move(file_selected_callback_)
+      .Run(DownloadConfirmationResult::CANCELED, ui::SelectedFileInfo());
+
+  delete this;
 }
 
 // static

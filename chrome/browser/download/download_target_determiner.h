@@ -256,7 +256,7 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // Callback invoked after the file picker completes. Cancels the download if
   // the user cancels the file picker.
   void RequestConfirmationDone(DownloadConfirmationResult result,
-                               const base::FilePath& virtual_path);
+                               const ui::SelectedFileInfo& selected_file_info);
 
 #if BUILDFLAG(IS_ANDROID)
   // Callback invoked after the incognito message has been accepted/rejected

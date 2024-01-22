@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace android {
 
@@ -85,7 +86,7 @@ bool ChromeDuplicateDownloadInfoBarDelegate::Cancel() {
     return true;
 
   std::move(file_selected_callback_)
-      .Run(DownloadConfirmationResult::CANCELED, base::FilePath());
+      .Run(DownloadConfirmationResult::CANCELED, ui::SelectedFileInfo());
   return true;
 }
 

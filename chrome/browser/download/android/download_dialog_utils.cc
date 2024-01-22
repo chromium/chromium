@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 // static
 download::DownloadItem* DownloadDialogUtils::FindAndRemoveDownload(
@@ -34,11 +35,11 @@ void DownloadDialogUtils::CreateNewFileDone(
     download::PathValidationResult result,
     const base::FilePath& target_path) {
   if (download::IsPathValidationSuccessful(result)) {
-    std::move(callback).Run(DownloadConfirmationResult::CONFIRMED, target_path);
-
+    std::move(callback).Run(DownloadConfirmationResult::CONFIRMED,
+                            ui::SelectedFileInfo(target_path));
   } else {
     std::move(callback).Run(DownloadConfirmationResult::FAILED,
-                            base::FilePath());
+                            ui::SelectedFileInfo());
   }
 }
 
