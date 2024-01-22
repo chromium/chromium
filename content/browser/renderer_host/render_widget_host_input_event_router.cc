@@ -937,6 +937,8 @@ void RenderWidgetHostInputEventRouter::ProcessAckedTouchEvent(
     const TouchEventWithLatencyInfo& event,
     blink::mojom::InputEventResultState ack_result,
     RenderWidgetHostViewBase* view) {
+  TRACE_EVENT("input",
+              "RenderWidgetHostInputEventRouter::ProcessAckedTouchEvent");
   touch_event_ack_queue_->MarkAcked(event, ack_result, view);
 }
 

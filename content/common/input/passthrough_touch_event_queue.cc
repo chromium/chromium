@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "content/common/input/touch_timeout_handler.h"
 #include "content/common/input/web_touch_event_traits.h"
 #include "ui/events/base_event_utils.h"
@@ -132,8 +133,10 @@ void PassthroughTouchEventQueue::ProcessTouchAck(
     return;
 
   auto touch_event_iter = outstanding_touches_.find(unique_touch_event_id);
-  if (touch_event_iter == outstanding_touches_.end())
+  if (touch_event_iter == outstanding_touches_.end()) {
+    TRACE_EVENT_INSTANT("input", "unique_touch_event_id NotFound");
     return;
+  }
 
   TouchEventWithLatencyInfoAndAckState& event =
       const_cast<TouchEventWithLatencyInfoAndAckState&>(*touch_event_iter);
@@ -216,13 +219,17 @@ void PassthroughTouchEventQueue::StopTimeoutMonitor() {
 void PassthroughTouchEventQueue::AckCompletedEvents() {
   // Don't allow re-entrancy into this method otherwise
   // the ordering of acks won't be preserved.
-  if (processing_acks_)
+  if (processing_acks_) {
+    TRACE_EVENT_INSTANT("input", "ProcessingAcksAlready");
     return;
+  }
   base::AutoReset<bool> process_acks(&processing_acks_, true);
   while (!outstanding_touches_.empty()) {
     auto iter = outstanding_touches_.begin();
-    if (iter->ack_state() == blink::mojom::InputEventResultState::kUnknown)
+    if (iter->ack_state() == blink::mojom::InputEventResultState::kUnknown) {
+      TRACE_EVENT_INSTANT("input", "Unknown InputEventResultState");
       break;
+    }
     TouchEventWithLatencyInfoAndAckState event = *iter;
     outstanding_touches_.erase(iter);
     AckTouchEventToClient(event, event.ack_source(), event.ack_state());

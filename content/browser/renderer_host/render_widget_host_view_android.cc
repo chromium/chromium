@@ -2162,6 +2162,7 @@ gfx::Rect RenderWidgetHostViewAndroid::GetBoundsInRootWindow() {
 void RenderWidgetHostViewAndroid::ProcessAckedTouchEvent(
     const TouchEventWithLatencyInfo& touch,
     blink::mojom::InputEventResultState ack_result) {
+  TRACE_EVENT0("input", "RenderWidgetHostViewAndroid::ProcessAckedTouchEvent");
   const bool event_consumed =
       ack_result == blink::mojom::InputEventResultState::kConsumed;
   // |is_source_touch_event_set_non_blocking| defines a blocking behaviour of

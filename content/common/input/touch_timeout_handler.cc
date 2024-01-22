@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "content/common/input/passthrough_touch_event_queue.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -97,15 +98,18 @@ bool TouchTimeoutHandler::ConfirmTouchEvent(
       return false;
     case PENDING_ACK_ORIGINAL_EVENT:
       if (AckedTimeoutEventRequiresCancel(ack_result)) {
+        TRACE_EVENT_INSTANT("input", "PendingAckOriginalEvent-RequiresCancel");
         SetPendingAckState(PENDING_ACK_CANCEL_EVENT);
         touch_queue_->SendTouchCancelEventForTouchEvent(timeout_event_);
       } else {
+        TRACE_EVENT_INSTANT("input", "PendingAckOriginalEvent");
         SetPendingAckState(PENDING_ACK_NONE);
         touch_queue_->UpdateTouchConsumerStates(timeout_event_.event,
                                                 ack_result);
       }
       return true;
     case PENDING_ACK_CANCEL_EVENT:
+      TRACE_EVENT_INSTANT("input", "PendingAckCancelEvent");
       SetPendingAckState(PENDING_ACK_NONE);
       return true;
   }
