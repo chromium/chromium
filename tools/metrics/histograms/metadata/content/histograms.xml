@@ -362,13 +362,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.{RegularProfileFiltered}DefaultCookiesSetting"
-    enum="ContentSetting" expires_after="2023-02-26">
+    enum="ContentSetting" expires_after="never">
+<!-- expires-never: tracked as an important privacy metric. -->
+
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     The default cookies setting at profile open.
 
     This histogram is only recorded {RegularProfileFiltered}.
+
+    This histogram was allowed to expire between 2023-02-26 and 2024-01-23.
   </summary>
   <token key="RegularProfileFiltered">
     <variant name="RegularProfile."
