@@ -163,10 +163,19 @@
 // Returns `YES` if a context menu was dismissed, otherwise returns `NO`.
 - (BOOL)dismissContextMenuIfPresent;
 
+// Cleans up the view hierarchy after showing the system alert on certain OS
+// versions.
+- (void)cleanupAfterShowingAlert;
+
 // Type `text` in Omnibox and optionally press Enter if `shouldPressEnter` is
 // YES.
 - (void)typeTextInOmnibox:(std::string const&)text
             andPressEnter:(BOOL)shouldPressEnter;
+
+// Dismisses the window of the popover by tapping on the original point.
+// `matcher` can be any view in the popover. Throws if the window is not
+// dismissable by tapping.
+- (void)dismissByTappingOnTheWindowOfPopover:(id<GREYMatcher>)matcher;
 
 @end
 

@@ -16983,21 +16983,6 @@
             ]
         }
     ],
-    "ScreenTimeIntegration": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ScreenTimeIntegration"
-                    ]
-                }
-            ]
-        }
-    ],
     "SeaPen": [
         {
             "platforms": [
