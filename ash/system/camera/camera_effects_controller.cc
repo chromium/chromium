@@ -552,6 +552,14 @@ void CameraEffectsController::OnActiveUserSessionChanged(
 
   camera_background_img_dir_ =
       profile_path.Append(kCameraBackgroundOriginalDir);
+
+  // Initialze camera effects if the `pref_change_registrar_` is set.
+  // TODO(b/321585013): figure out the order of OnActiveUserSessionChanged and
+  // OnActiveUserPrefServiceChanged, and only initialize in one place.
+  if (pref_change_registrar_) {
+    SetCameraEffects(GetEffectsConfigFromPref(), /*is_initialization*/ true,
+                     base::DoNothing());
+  }
 }
 
 void CameraEffectsController::OnActiveUserPrefServiceChanged(
@@ -565,11 +573,13 @@ void CameraEffectsController::OnActiveUserPrefServiceChanged(
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
 
-  // If the camera has started, it won't get the previous setting so call it
-  // here too. If the camera service isn't ready it this call will be ignored.
-  SetCameraEffects(GetEffectsConfigFromPref(), /*is_initialization*/ true,
-                   base::DoNothing());
-
+  // Initialze camera effects if the `camera_background_img_dir_` is set.
+  if (!camera_background_img_dir_.empty()) {
+    // If the camera has started, it won't get the previous setting so call it
+    // here too. If the camera service isn't ready it this call will be ignored.
+    SetCameraEffects(GetEffectsConfigFromPref(), /*is_initialization*/ true,
+                     base::DoNothing());
+  }
   // If any effects have controls the user can access, this will create the
   // effects UI and register `CameraEffectsController`'s `VcEffectsDelegate`
   // interface.
