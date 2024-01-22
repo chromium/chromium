@@ -99,7 +99,7 @@ export class FaceGaze {
       return;
     }
 
-    this.mouseController_.updateMouseLocation(result);
+    this.mouseController_.onFaceLandmarkerResult(result);
     const gestures = GestureDetector.detect(result, this.gestureToConfidence_);
     for (const gesture of gestures) {
       if (gesture === FacialGesture.BROW_DOWN_LEFT ||

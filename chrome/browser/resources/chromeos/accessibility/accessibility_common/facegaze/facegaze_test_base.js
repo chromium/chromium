@@ -105,6 +105,19 @@ FaceGazeTestBase = class extends E2ETestBase {
     this.mockAccessibilityPrivate = new MockAccessibilityPrivate();
     chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
 
+    this.intervalCallbacks_ = {};
+    this.nextCallbackId_ = 1;
+
+    window.setInterval = (callback, timeout) => {
+      const id = this.nextCallbackId_;
+      this.nextCallbackId_++;
+      this.intervalCallbacks_[id] = callback;
+      return id;
+    };
+    window.clearInterval = (id) => {
+      delete this.intervalCallbacks_[id];
+    };
+
     // Re-initialize AccessibilityCommon with mock AccessibilityPrivate API.
     const module =
         await import('/accessibility_common/accessibility_common_loader.js');
@@ -168,7 +181,7 @@ FaceGazeTestBase = class extends E2ETestBase {
     }
 
     if (config.bufferSize !== -1) {
-      faceGaze.mouseController_.bufferSize_ = config.bufferSize;
+      faceGaze.mouseController_.targetBufferSize_ = config.bufferSize;
     }
 
     return new Promise(resolve => {
@@ -176,8 +189,23 @@ FaceGazeTestBase = class extends E2ETestBase {
     });
   }
 
-  /** @param {!MockFaceLandmarkerResult} result */
-  processFaceLandmarkerResult(result) {
+  triggerMouseControllerInterval() {
+    const intervalId = this.getFaceGaze().mouseController_.mouseInterval_;
+    assertNotEquals(-1, intervalId);
+    assertNotNullNorUndefined(this.intervalCallbacks_[intervalId]);
+    this.intervalCallbacks_[intervalId]();
+  }
+
+  /**
+   * @param {!MockFaceLandmarkerResult} result
+   * @param {boolean} triggerMouseControllerInterval
+   */
+  processFaceLandmarkerResult(result, triggerMouseControllerInterval) {
     this.getFaceGaze().processFaceLandmarkerResult_(result);
+
+    if (triggerMouseControllerInterval) {
+      // Manually trigger the mouse interval one time.
+      this.triggerMouseControllerInterval();
+    }
   }
 };
