@@ -1,5 +1,4 @@
 chromium/try/android-10-arm64-rel
-chromium/try/android-12-x64-dbg
 chromium/try/android-12-x64-rel
 chromium/try/android-12l-x64-dbg
 chromium/try/android-arm-compile-dbg
@@ -10,13 +9,10 @@ chromium/try/android-clobber-rel
 chromium/try/android-dawn-arm-rel
 chromium/try/android-dawn-arm64-rel
 chromium/try/android-official
-chromium/try/android-oreo-arm64-dbg
 chromium/try/android-oreo-x86-rel
 chromium/try/android-pie-arm64-dbg
 chromium/try/android-pie-x86-rel
 chromium/try/android-webview-10-x86-rel-tests
-chromium/try/android-webview-12-x64-dbg
-chromium/try/android-webview-13-x64-dbg
 chromium/try/android-webview-oreo-arm64-dbg
 chromium/try/android-webview-pie-arm64-dbg
 chromium/try/android-x64-cast
@@ -132,7 +128,6 @@ chromium/try/mac-asan-media-rel
 chromium/try/mac-asan-rel
 chromium/try/mac-clobber-rel
 chromium/try/mac-dawn-rel
-chromium/try/mac-fieldtrial-tester
 chromium/try/mac-official
 chromium/try/mac-rel
 chromium/try/mac-siso-rel
@@ -146,7 +141,6 @@ chromium/try/mac_chromium_11.0_rel_ng
 chromium/try/mac_chromium_asan_rel_ng
 chromium/try/mac_chromium_compile_dbg_ng
 chromium/try/mac_chromium_compile_rel_ng
-chromium/try/mac_chromium_dbg_ng
 chromium/try/network_service_linux
 chromium/try/win-asan
 chromium/try/win-asan-media-rel
@@ -155,8 +149,6 @@ chromium/try/win-clobber-rel
 chromium/try/win-dawn-rel
 chromium/try/win-official
 chromium/try/win-rel
-chromium/try/win10-dbg
-chromium/try/win11-x64-fyi-rel
 chromium/try/win32-clobber-rel
 chromium/try/win32-official
 chromium/try/win_chromium_compile_dbg_ng

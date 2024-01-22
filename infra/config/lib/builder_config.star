@@ -688,6 +688,7 @@ def _set_builder_config_property(ctx):
             builder_ids = []
             builder_ids_in_scope_for_testing = []
             targets_spec_nodes = []
+            mirrors = []
 
             builder_spec = bc_state.builder_spec(node)
             if builder_spec:
@@ -787,6 +788,7 @@ def _set_builder_config_property(ctx):
 
             builder.description_html = _get_builder_mirror_description(bucket_name, builder, bc_state)
 
+            # Enforce that most gardened CI bots have a matching trybot.
             rotations = get_sheriff_rotations(bucket_name, builder.name)
             excluded_rotations = [
                 # Most/all the clang bots build using clang built from HEAD.
@@ -812,20 +814,44 @@ def _set_builder_config_property(ctx):
             ]
             is_excluded = (
                 builder.name in excluded_builders or
-                any([s.key.id in excluded_rotations for s in rotations]) or
-                json.decode(builder.properties)["recipe"] != "chromium"
+                any([s.key.id in excluded_rotations for s in rotations])
             )
             if rotations and not mirroring_builders and not is_excluded:
                 fail("{} is on a sheriff/gardener rotation, but lacks a matching trybot".format(builder.name))
-            if rotations and not is_excluded:
-                for m in mirroring_builders:
-                    mirror_id = _builder_id(m)
-                    cq_identifier = "{}/{}/{}".format(
-                        mirror_id["project"],
-                        mirror_id["bucket"],
-                        mirror_id["builder"],
-                    )
-                    needs_mega_cq_mode = needs_mega_cq_mode.union([cq_identifier])
+
+            # Put most gardened CI bots' trybots onto the mega CQ. We skip a
+            # trybot if any of the following are true:
+            # - It doesn't run a normal Chromium trybot recipe
+            # - Any of its CI mirrors isn't gardened
+            # - All of its CI mirrors are on an excluded rotation
+            # The last two prevent trybots of un-gardened child testers
+            # triggered by gardened parent builders from getting added to the
+            # mega CQ.
+            if not mirrors:
+                continue
+            is_excluded = False
+            all_mirror_rotations = []
+            for m in mirrors:
+                mirror_id = _builder_id(m)
+                mirror_rotations = get_sheriff_rotations(mirror_id["bucket"], mirror_id["builder"])
+                all_mirror_rotations += mirror_rotations
+                if not mirror_rotations:
+                    is_excluded = True
+                if json.decode(builder.properties)["recipe"] not in ["chromium_trybot", "chromium/orchestrator"]:
+                    is_excluded = True
+                if mirror_id["builder"] in excluded_builders:
+                    is_excluded = True
+                if is_excluded:
+                    break
+            if all([r.key.id in excluded_rotations for r in all_mirror_rotations]):
+                is_excluded = True
+            if not is_excluded:
+                cq_identifier = "{}/{}/{}".format(
+                    settings.project,
+                    bucket_name,
+                    builder.name,
+                )
+                needs_mega_cq_mode = needs_mega_cq_mode.union([cq_identifier])
 
     cq_config_groups = []
     for f in ctx.output:
