@@ -981,6 +981,9 @@ message ClientDownloadRequest {
     // The number of files and directories contained within.
     optional int32 file_count = 2;
     optional int32 directory_count = 3;
+
+    // True if at least one entry is encrypted or headers are encrypted.
+    optional bool is_encrypted = 4;
   }
   optional ArchiveSummary archive_summary = 85;
 

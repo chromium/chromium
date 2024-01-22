@@ -1057,6 +1057,7 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
     dict_archive_summary.Set("file_count", archive_summary.file_count());
     dict_archive_summary.Set("directory_count",
                              archive_summary.directory_count());
+    dict_archive_summary.Set("is_encrypted", archive_summary.is_encrypted());
     dict.Set("archive_summary", std::move(dict_archive_summary));
   }
 
