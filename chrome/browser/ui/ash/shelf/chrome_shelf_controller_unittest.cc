@@ -1485,37 +1485,14 @@ class ChromeShelfControllerLacrosTest : public ChromeShelfControllerTestBase {
     ChromeShelfControllerTestBase::SetUp();
 
     ASSERT_TRUE(ash::ProfileHelper::Get()->IsPrimaryProfile(profile()));
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-};
-
-// TODO(hidehiko): Merge this base class into ChromeShelfControllerLacrosTest.
-class ChromeShelfControllerLacrosOnlyTest
-    : public ChromeShelfControllerLacrosTest {
- public:
-  ChromeShelfControllerLacrosOnlyTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
-        /*disabled_features=*/{});
-  }
-  ChromeShelfControllerLacrosOnlyTest(
-      const ChromeShelfControllerLacrosOnlyTest&) = delete;
-  ChromeShelfControllerLacrosOnlyTest& operator=(
-      const ChromeShelfControllerLacrosOnlyTest&) = delete;
-  ~ChromeShelfControllerLacrosOnlyTest() override = default;
-
-  void SetUp() override {
-    ChromeShelfControllerLacrosTest::SetUp();
-
     proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile());
     ASSERT_TRUE(proxy_);
   }
 
   void TearDown() override {
-    ChromeShelfControllerLacrosTest::TearDown();
+    proxy_ = nullptr;
+    chrome_app_shelf_item_ = nullptr;
+    ChromeShelfControllerTestBase::TearDown();
     // Some test sets this so unsetting.
     ChromeShelfPrefs::SetSkipPinnedAppsFromSyncForTest(false);
   }
@@ -1552,11 +1529,11 @@ class ChromeShelfControllerLacrosOnlyTest
   apps::AppServiceProxy* proxy() { return proxy_; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  raw_ptr<apps::AppServiceProxy> proxy_ = nullptr;
   raw_ptr<StandaloneBrowserExtensionAppShelfItemController, DanglingUntriaged>
       chrome_app_shelf_item_ = nullptr;
-  raw_ptr<apps::AppServiceProxy, DanglingUntriaged> proxy_ = nullptr;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // A V1 windowed application.
@@ -1961,7 +1938,7 @@ TEST_F(ChromeShelfControllerLacrosTest, LacrosPinnedByDefault) {
 
 // Checks that AppService instance is updated appropriately for one Chrome app
 // window.
-TEST_F(ChromeShelfControllerLacrosOnlyTest, ChromeAppWindow) {
+TEST_F(ChromeShelfControllerLacrosTest, ChromeAppWindow) {
   InitShelfController();
 
   auto window = std::make_unique<aura::Window>(nullptr);
@@ -2014,7 +1991,7 @@ TEST_F(ChromeShelfControllerLacrosOnlyTest, ChromeAppWindow) {
 
 // Checks that AppService instance is updated appropriately for multiple Chrome
 // app windows.
-TEST_F(ChromeShelfControllerLacrosOnlyTest, ChromeAppWindows) {
+TEST_F(ChromeShelfControllerLacrosTest, ChromeAppWindows) {
   InitShelfController();
 
   auto window1 = std::make_unique<aura::Window>(nullptr);
@@ -2082,7 +2059,7 @@ TEST_F(ChromeShelfControllerLacrosOnlyTest, ChromeAppWindows) {
 }
 
 // Regression test for crash. crbug.com/1296949
-TEST_F(ChromeShelfControllerLacrosOnlyTest, WithoutAppService) {
+TEST_F(ChromeShelfControllerLacrosTest, WithoutAppService) {
   Profile* const controller_profile = profile()->GetOffTheRecordProfile(
       Profile::OTRProfileID::CreateUniqueForTesting(),
       /*create_if_needed=*/true);
