@@ -75,14 +75,6 @@ class WebSettings {
     kSubtitles
   };
 
-  // Defines the default for 'passive' field used in the AddEventListenerOptions
-  // interface when javascript calls addEventListener.
-  enum class PassiveEventListenerDefault {
-    kFalse,        // Default of false.
-    kTrue,         // Default of true.
-    kForceAllTrue  // Force all values to be true even when specified.
-  };
-
   // Sets value of a setting by its string identifier from Settings.in and
   // string representation of value. An enum's string representation is the
   // string representation of the integer value of the enum.

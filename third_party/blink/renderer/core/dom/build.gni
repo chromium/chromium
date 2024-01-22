@@ -110,7 +110,6 @@ blink_core_sources_dom = [
   "element_traversal.h",
   "empty_node_list.cc",
   "empty_node_list.h",
-  "events/add_event_listener_options_defaults.h",
   "events/add_event_listener_options_resolved.cc",
   "events/add_event_listener_options_resolved.h",
   "events/custom_event.cc",

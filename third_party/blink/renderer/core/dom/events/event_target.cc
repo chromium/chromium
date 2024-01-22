@@ -35,7 +35,6 @@
 
 #include "base/format_macros.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -69,7 +68,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -1164,12 +1162,5 @@ void EventTarget::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(data_);
 }
-
-STATIC_ASSERT_ENUM(WebSettings::PassiveEventListenerDefault::kFalse,
-                   PassiveListenerDefault::kFalse);
-STATIC_ASSERT_ENUM(WebSettings::PassiveEventListenerDefault::kTrue,
-                   PassiveListenerDefault::kTrue);
-STATIC_ASSERT_ENUM(WebSettings::PassiveEventListenerDefault::kForceAllTrue,
-                   PassiveListenerDefault::kForceAllTrue);
 
 }  // namespace blink
