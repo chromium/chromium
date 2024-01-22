@@ -491,19 +491,28 @@ export class RealboxMatchElement extends PolymerElement {
         }, document.createElement('span'));
   }
 
+  // Remove focus from remove and action buttons within a match.
+  removeSelection() {
+    this.$.remove.classList.toggle('selected', false);
+
+    [...this.shadowRoot!.querySelectorAll('cr-realbox-action')].forEach(
+        (action) => {
+          action.classList.toggle('selected', false);
+        });
+  }
+
   updateSelection(selection: OmniboxPopupSelection) {
     this.$.remove.classList.toggle(
         'selected',
         selection.state === SelectionLineState.kFocusedButtonRemoveSuggestion);
 
-    const actions =
-        Array.from(this.shadowRoot!.querySelectorAll('cr-realbox-action'));
-    actions.forEach((action, index) => {
-      action.classList.toggle(
-          'selected',
-          selection.state === SelectionLineState.kFocusedButtonAction &&
-              selection.actionIndex === index);
-    });
+    [...this.shadowRoot!.querySelectorAll('cr-realbox-action')].forEach(
+        (action, index) => {
+          action.classList.toggle(
+              'selected',
+              selection.state === SelectionLineState.kFocusedButtonAction &&
+                  selection.actionIndex === index);
+        });
   }
 }
 

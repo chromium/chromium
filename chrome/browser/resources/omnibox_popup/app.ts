@@ -121,8 +121,9 @@ export class OmniboxPopupAppElement extends PolymerElement {
         .catch(() => {});
   }
 
-  private onUpdateSelection_(selection: OmniboxPopupSelection) {
-    this.$.matches.updateSelection(selection);
+  private onUpdateSelection_(
+      oldSelection: OmniboxPopupSelection, selection: OmniboxPopupSelection) {
+    this.$.matches.updateSelection(oldSelection, selection);
   }
 }
 
