@@ -212,18 +212,26 @@ bool SyncServiceImplHarness::SignInPrimaryAccount(
 
   switch (signin_type_) {
     case SigninType::UI_SIGNIN: {
-      return signin_delegate_->SigninUI(profile_, username_, password_,
-                                        consent_level);
+      if (!signin_delegate_->SigninUI(profile_, username_, password_,
+                                      consent_level)) {
+        return false;
+      }
+      break;
     }
 
     case SigninType::FAKE_SIGNIN: {
       signin_delegate_->SigninFake(profile_, username_, consent_level);
-      return true;
+      break;
     }
   }
 
-  NOTREACHED();
-  return false;
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  CHECK(identity_manager->HasPrimaryAccount(consent_level));
+  CHECK(identity_manager->HasPrimaryAccountWithRefreshToken(consent_level));
+  CHECK(!service()->GetAccountInfo().IsEmpty());
+
+  return true;
 }
 
 void SyncServiceImplHarness::ResetSyncForPrimaryAccount() {
