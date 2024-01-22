@@ -82,12 +82,18 @@ class SimpleContext : public WebContentsFrameTracker::Context {
 
 // The capture device is mostly for interacting with the frame tracker. We do
 // care about the frame tracker pushing back target updates, however.
-class MockCaptureDevice : public WebContentsVideoCaptureDevice,
-                          public base::SupportsWeakPtr<MockCaptureDevice> {
+class MockCaptureDevice : public WebContentsVideoCaptureDevice {
  public:
   MOCK_METHOD2(OnTargetChanged,
                void(const std::optional<viz::VideoCaptureTarget>&, uint32_t));
   MOCK_METHOD0(OnTargetPermanentlyLost, void());
+
+  base::WeakPtr<MockCaptureDevice> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockCaptureDevice> weak_ptr_factory_{this};
 };
 
 // This test class is intentionally quite similar to

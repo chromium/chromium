@@ -112,9 +112,7 @@ MockDownloadManagerDelegate::MockDownloadManagerDelegate() {}
 
 MockDownloadManagerDelegate::~MockDownloadManagerDelegate() {}
 
-class MockDownloadItemFactory
-    : public download::DownloadItemFactory,
-      public base::SupportsWeakPtr<MockDownloadItemFactory> {
+class MockDownloadItemFactory final : public download::DownloadItemFactory {
  public:
   MockDownloadItemFactory();
 
@@ -185,10 +183,15 @@ class MockDownloadItemFactory
     is_download_persistent_ = is_download_persistent;
   }
 
+  base::WeakPtr<MockDownloadItemFactory> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   std::map<uint32_t, download::MockDownloadItemImpl*> items_;
   download::DownloadItemImplDelegate item_delegate_;
   bool is_download_persistent_;
+  base::WeakPtrFactory<MockDownloadItemFactory> weak_ptr_factory_{this};
 };
 
 MockDownloadItemFactory::MockDownloadItemFactory()
