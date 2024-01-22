@@ -18,11 +18,13 @@ namespace {
 bool default_check_active_duration = true;
 }  // namespace
 
-// Do not fail on builds that run slow, such as SANITIZER, debug.
-#if !DCHECK_IS_ON() || defined(ADDRESS_SANITIZER) ||           \
-    defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) ||  \
-    defined(LEAK_SANITIZER) || defined(UNDEFINED_SANITIZER) || \
-    !defined(NDEBUG)
+// This warning should only be fatal on non-official DCHECK builds that are not
+// known to be runtime-slow. Slow builds for this purpose are debug builds
+// (!NDEBUG) and any sanitizer build.
+#if !DCHECK_IS_ON() || defined(OFFICIAL_BUILD) || !defined(NDEBUG) || \
+    defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) ||        \
+    defined(THREAD_SANITIZER) || defined(LEAK_SANITIZER) ||           \
+    defined(UNDEFINED_SANITIZER)
 #define DFATAL_OR_WARNING WARNING
 #else
 #define DFATAL_OR_WARNING DFATAL
