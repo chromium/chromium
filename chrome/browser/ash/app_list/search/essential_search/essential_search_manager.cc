@@ -8,7 +8,9 @@
 #include "chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -21,6 +23,12 @@
 #include "url/url_constants.h"
 
 namespace app_list {
+namespace {
+bool IsEssentialSearchEnabled(PrefService* prefs) {
+  return chromeos::features::IsEssentialSearchEnabled() &&
+         prefs->GetBoolean(prefs::kSearchSuggestEnabled);
+}
+}  // namespace
 
 EssentialSearchManager::EssentialSearchManager(Profile* primary_profile)
     : primary_profile_(primary_profile) {
@@ -40,8 +48,8 @@ std::unique_ptr<EssentialSearchManager> EssentialSearchManager::Create(
 
 void EssentialSearchManager::OnSessionStateChanged(
     session_manager::SessionState state) {
-  if (chromeos::features::IsEssentialSearchEnabled() &&
-      state == session_manager::SessionState::ACTIVE) {
+  if (state == session_manager::SessionState::ACTIVE &&
+      IsEssentialSearchEnabled(primary_profile_->GetPrefs())) {
     FetchSocsCookie();
   }
 }
