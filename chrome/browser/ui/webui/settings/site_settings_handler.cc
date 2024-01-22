@@ -473,12 +473,18 @@ void RemoveMatchingNodes(CookiesTreeModel* model,
     model->DeleteCookieNode(node);
 }
 
-// Returns the registable domain (eTLD+1) for the `origin`. If it doesn't exist,
+// Returns the registrable domain (eTLD+1) for the `host`. If it doesn't exist,
 // returns the host.
-std::string GetEtldPlusOne(const url::Origin& origin) {
+std::string GetEtldPlusOneForHost(const std::string& host) {
   auto eltd_plus_one = net::registry_controlled_domains::GetDomainAndRegistry(
-      origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  return eltd_plus_one.empty() ? origin.host() : eltd_plus_one;
+      host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  return eltd_plus_one.empty() ? host : eltd_plus_one;
+}
+
+// Returns the registrable domain (eTLD+1) for the `origin`. If it doesn't
+// exist, returns the host.
+std::string GetEtldPlusOne(const url::Origin& origin) {
+  return GetEtldPlusOneForHost(origin.host());
 }
 
 // Converts |etld_plus1| into an HTTPS SchemefulSite.
@@ -488,18 +494,20 @@ net::SchemefulSite ConvertEtldToSchemefulSite(const std::string etld_plus1) {
                                  "/"));
 }
 
-// Iterates over host nodes in `tree_model` which contains all sites that have
-// storage set and uses them to retrieve first party set membership information.
-// Returns a map of site eTLD+1 matched with their FPS owner and count of first
-// party set members.
+// Iterates over host nodes in `cookies_tree_model` and data owners in
+// `browsing_data_model` which contains all sites that have storage set and uses
+// them to retrieve first party set membership information. Returns a map of
+// site eTLD+1 matched with their FPS owner and count of first party set
+// members.
 std::map<std::string, std::pair<std::string, int>> GetFpsMap(
     PrivacySandboxService* privacy_sandbox_service,
-    CookiesTreeModel* tree_model) {
+    CookiesTreeModel* cookies_tree_model,
+    BrowsingDataModel* browsing_data_model) {
   // Used to count unique eTLD+1 owned by a FPS owner.
   std::map<std::string, std::set<std::string>> fps_owner_to_members;
 
   // Count members by unique eTLD+1 for each first party set.
-  for (const auto& host_node : tree_model->GetRoot()->children()) {
+  for (const auto& host_node : cookies_tree_model->GetRoot()->children()) {
     std::string etld_plus1 =
         GetEtldPlusOne(host_node->GetDetailedInfo().origin);
     auto schemeful_site = ConvertEtldToSchemefulSite(etld_plus1);
@@ -507,6 +515,19 @@ std::map<std::string, std::pair<std::string, int>> GetFpsMap(
         privacy_sandbox_service->GetFirstPartySetOwner(schemeful_site.GetURL());
     if (fps_owner.has_value()) {
       fps_owner_to_members[fps_owner->GetURL().host()].insert(etld_plus1);
+    }
+  }
+
+  if (browsing_data_model) {
+    for (const auto& entry : *browsing_data_model) {
+      std::string etld_plus1 = GetEtldPlusOneForHost(
+          BrowsingDataModel::GetHost(entry.data_owner.get()));
+      auto schemeful_site = ConvertEtldToSchemefulSite(etld_plus1);
+      auto fps_owner = privacy_sandbox_service->GetFirstPartySetOwner(
+          schemeful_site.GetURL());
+      if (fps_owner.has_value()) {
+        fps_owner_to_members[fps_owner->GetURL().host()].insert(etld_plus1);
+      }
     }
   }
 
@@ -542,11 +563,13 @@ void ConvertSiteGroupMapToList(
     const std::set<url::Origin>& origin_permission_set,
     base::Value::List* list_value,
     Profile* profile,
-    CookiesTreeModel* tree_model) {
+    CookiesTreeModel* tree_model,
+    BrowsingDataModel* browsing_data_model) {
   DCHECK(profile);
   auto* privacy_sandbox_service =
       PrivacySandboxServiceFactory::GetForProfile(profile);
-  auto fps_map = GetFpsMap(privacy_sandbox_service, tree_model);
+  auto fps_map =
+      GetFpsMap(privacy_sandbox_service, tree_model, browsing_data_model);
   base::flat_set<url::Origin> installed_origins =
       GetInstalledAppOrigins(profile);
   site_engagement::SiteEngagementService* engagement_service =
@@ -906,6 +929,7 @@ void SiteSettingsHandler::OnGetUsageInfo() {
   // the browsing data (hostname is insufficient) in CookieTreeModel or the new
   // BrowsingDataModel.
   std::string usage_hostname = GURL(usage_origin_).host();
+  int num_cookies = 0;
   for (const auto& site : root->children()) {
     std::string title = base::UTF16ToUTF8(site->GetTitle());
     if (title != usage_hostname) {
@@ -917,7 +941,6 @@ void SiteSettingsHandler::OnGetUsageInfo() {
     // inspected.
     // TODO (crbug.com/1271155): This is slow, the replacement for the
     // CookiesTreeModel should improve this significantly.
-    int num_cookies = 0;
     for (const auto& site_child : site->children()) {
       if (site_child->GetDetailedInfo().node_type !=
           CookieTreeNode::DetailedInfo::TYPE_COOKIES) {
@@ -934,40 +957,45 @@ void SiteSettingsHandler::OnGetUsageInfo() {
             return !detailed_info.cookie->IsPartitioned();
           });
     }
-    if (num_cookies != 0) {
-      cookie_string = base::UTF16ToUTF8(l10n_util::GetPluralStringFUTF16(
-          IDS_SETTINGS_SITE_SETTINGS_NUM_COOKIES, num_cookies));
-    }
-
-    auto* privacy_sandbox_service =
-        PrivacySandboxServiceFactory::GetForProfile(profile_);
-    auto fps_map =
-        GetFpsMap(privacy_sandbox_service, cookies_tree_model_.get());
-    auto etld_plus1 = GetEtldPlusOne(site->GetDetailedInfo().origin);
-    if (fps_map.count(etld_plus1)) {
-      fps_string =
-          base::UTF16ToUTF8(base::i18n::MessageFormatter::FormatWithNamedArgs(
-              l10n_util::GetStringUTF16(
-                  IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_MEMBERSHIP_LABEL),
-              "MEMBERS", static_cast<int>(fps_map[etld_plus1].second),
-              "FPS_OWNER", fps_map[etld_plus1].first));
-      fpsPolicy = privacy_sandbox_service->IsPartOfManagedFirstPartySet(
-          ConvertEtldToSchemefulSite(etld_plus1));
-    }
     break;
   }
 
+  auto usage_origin = url::Origin::Create(GURL(usage_origin_));
   for (const BrowsingDataModel::BrowsingDataEntryView& entry :
        *browsing_data_model_) {
-    auto usage_origin = url::Origin::Create(GURL(usage_origin_));
     if (!entry.Matches(usage_origin)) {
       continue;
     }
     size += entry.data_details->storage_size;
+    // Display only first party cookies.
+    if (!entry.GetThirdPartyPartitioningSite().has_value()) {
+      num_cookies += entry.data_details->cookie_count;
+    }
+  }
+
+  if (num_cookies > 0) {
+    cookie_string = base::UTF16ToUTF8(l10n_util::GetPluralStringFUTF16(
+        IDS_SETTINGS_SITE_SETTINGS_NUM_COOKIES, num_cookies));
   }
 
   if (size > 0) {
     usage_string = base::UTF16ToUTF8(ui::FormatBytes(size));
+  }
+
+  auto* privacy_sandbox_service =
+      PrivacySandboxServiceFactory::GetForProfile(profile_);
+  auto fps_map = GetFpsMap(privacy_sandbox_service, cookies_tree_model_.get(),
+                           browsing_data_model_.get());
+  auto etld_plus1 = GetEtldPlusOne(usage_origin);
+  if (fps_map.count(etld_plus1)) {
+    fps_string =
+        base::UTF16ToUTF8(base::i18n::MessageFormatter::FormatWithNamedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_MEMBERSHIP_LABEL),
+            "MEMBERS", static_cast<int>(fps_map[etld_plus1].second),
+            "FPS_OWNER", fps_map[etld_plus1].first));
+    fpsPolicy = privacy_sandbox_service->IsPartOfManagedFirstPartySet(
+        ConvertEtldToSchemefulSite(etld_plus1));
   }
 
   FireWebUIListener("usage-total-changed", base::Value(usage_origin_),
@@ -1293,7 +1321,8 @@ void SiteSettingsHandler::HandleGetAllSites(const base::Value::List& args) {
 
   // Respond with currently available data.
   ConvertSiteGroupMapToList(all_sites_map_, origin_permission_set_, &result,
-                            profile, cookies_tree_model_.get());
+                            profile, cookies_tree_model_.get(),
+                            browsing_data_model_.get());
 
   LogAllSitesAction(AllSitesAction2::kLoadPage);
 
@@ -1371,7 +1400,8 @@ base::Value::List SiteSettingsHandler::PopulateCookiesAndUsageData(
   GetOriginStorage(&all_sites_map_, &origin_size_map);
   GetHostCookies(&all_sites_map_, &host_cookie_map);
   ConvertSiteGroupMapToList(all_sites_map_, origin_permission_set_, &list_value,
-                            profile, cookies_tree_model_.get());
+                            profile, cookies_tree_model_.get(),
+                            browsing_data_model_.get());
 
   // Merge the origin usage and cookies number into |list_value|.
   for (base::Value& item : list_value) {

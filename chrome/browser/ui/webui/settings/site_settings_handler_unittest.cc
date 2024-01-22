@@ -6547,11 +6547,6 @@ TEST_P(SiteSettingsHandlerTest, HandleGetFormattedBytes) {
 }
 
 TEST_P(SiteSettingsHandlerTest, HandleGetUsageInfo) {
-  if (IsDeprecateCookiesTreeModelEnabled()) {
-    // TODO(crbug.com/1509434): Re-enable and fix test when browsing data model
-    // extraction for FPS is implemented.
-    return;
-  }
   SetupDefaultFirstPartySets(mock_privacy_sandbox_service());
 
   EXPECT_CALL(*mock_privacy_sandbox_service(), IsPartOfManagedFirstPartySet(_))
@@ -6566,13 +6561,19 @@ TEST_P(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   // Confirm that usage info only returns unpartitioned storage.
   SetupModels();
 
-  EXPECT_EQ(28u, handler()
-                     ->GetCookiesTreeModelForTesting()
-                     ->GetRoot()
-                     ->GetTotalNodeCount());
-  EXPECT_EQ(5,
-            std::distance(handler()->GetBrowsingDataModelForTesting()->begin(),
+  if (IsDeprecateCookiesTreeModelEnabled()) {
+    EXPECT_EQ(
+        17, std::distance(handler()->GetBrowsingDataModelForTesting()->begin(),
                           handler()->GetBrowsingDataModelForTesting()->end()));
+  } else {
+    EXPECT_EQ(28u, handler()
+                       ->GetCookiesTreeModelForTesting()
+                       ->GetRoot()
+                       ->GetTotalNodeCount());
+    EXPECT_EQ(
+        5, std::distance(handler()->GetBrowsingDataModelForTesting()->begin(),
+                         handler()->GetBrowsingDataModelForTesting()->end()));
+  }
 
   base::Value::List args;
   args.Append("http://www.example.com");
@@ -6611,13 +6612,6 @@ TEST_P(SiteSettingsHandlerTest, HandleGetUsageInfo) {
 }
 
 TEST_P(SiteSettingsHandlerTest, FirstPartySetsMembership) {
-  if (IsDeprecateCookiesTreeModelEnabled()) {
-    // Currently first-party sets are not being defined using the browsing data
-    // model. TODO(crbug.com/1509434): Implement BDM FPS list extraction and
-    // re-enable the test.
-    return;
-  }
-
   SetupDefaultFirstPartySets(mock_privacy_sandbox_service());
 
   EXPECT_CALL(*mock_privacy_sandbox_service(), IsPartOfManagedFirstPartySet(_))
