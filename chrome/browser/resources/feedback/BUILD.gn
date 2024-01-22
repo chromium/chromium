@@ -13,7 +13,6 @@ build_webui("build") {
 
   static_files = [
     "css/about_sys.css",
-    "css/common.css",
     "css/feedback.css",
     "css/feedback_shared_styles.css",
     "css/feedback_shared_vars.css",
