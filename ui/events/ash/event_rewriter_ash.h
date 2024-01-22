@@ -87,8 +87,8 @@ class EventRewriterAsh : public EventRewriter {
     virtual bool RewriteModifierKeys() = 0;
 
     // Suppresses all modifier key rewrites and makes |RewriteModifierKeys|
-    // always return false if |should_supress| is true.
-    virtual void SuppressModifierKeyRewrites(bool should_supress) = 0;
+    // always return false if |should_suppress| is true.
+    virtual void SuppressModifierKeyRewrites(bool should_suppress) = 0;
 
     // Returns whether or not Meta + Top Row Keys should be rewritten. Should
     // return correctly with respect to the values set in

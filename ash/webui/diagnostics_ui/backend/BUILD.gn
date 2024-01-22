@@ -135,6 +135,7 @@ source_set("unit_tests") {
     "//services/device/public/cpp:test_support",
     "//testing/gtest",
     "//ui/events/ash",
+    "//ui/events/ash:test_support",
     "//ui/events/devices:devices",
     "//ui/events/devices:test_support",
     "//ui/events/ozone",

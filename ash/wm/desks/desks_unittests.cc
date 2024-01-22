@@ -133,6 +133,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/ash/fake_event_rewriter_ash_delegate.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -5341,8 +5342,7 @@ TEST_F(DesksRestoreMultiUserTest,
 }  // namespace
 
 // Simulates the same behavior of event rewriting that key presses go through.
-class DesksAcceleratorsTest : public DesksTest,
-                              public ui::EventRewriterAsh::Delegate {
+class DesksAcceleratorsTest : public DesksTest {
  public:
   DesksAcceleratorsTest() = default;
 
@@ -5357,62 +5357,9 @@ class DesksAcceleratorsTest : public DesksTest,
 
     auto* event_rewriter_controller = EventRewriterController::Get();
     auto event_rewriter = std::make_unique<ui::EventRewriterAsh>(
-        this, Shell::Get()->keyboard_capability(),
+        &event_rewriter_delegate_, Shell::Get()->keyboard_capability(),
         Shell::Get()->sticky_keys_controller(), false, &fake_ime_keyboard_);
     event_rewriter_controller->AddEventRewriter(std::move(event_rewriter));
-  }
-
-  // ui::EventRewriterAsh::Delegate:
-  bool RewriteModifierKeys() override { return true; }
-  void SuppressModifierKeyRewrites(bool should_supress) override {}
-  bool RewriteMetaTopRowKeyComboEvents(int device_id) const override {
-    return true;
-  }
-  void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
-  std::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
-      int device_id,
-      ui::mojom::ModifierKey modifier_key,
-      const std::string& pref_name) const override {
-    return std::nullopt;
-  }
-  bool TopRowKeysAreFunctionKeys(int device_id) const override { return false; }
-  bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
-                                    int flags) const override {
-    return false;
-  }
-  bool IsSearchKeyAcceleratorReserved() const override { return true; }
-  bool NotifyDeprecatedRightClickRewrite() override { return false; }
-  bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
-    return false;
-  }
-  void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
-  void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
-                                 bool alt_based) override {}
-  std::optional<ui::mojom::SimulateRightClickModifier>
-  GetRemapRightClickModifier(int device_id) override {
-    return std::nullopt;
-  }
-
-  std::optional<ui::mojom::SixPackShortcutModifier>
-  GetShortcutModifierForSixPackKey(int device_id,
-                                   ui::KeyboardCode key_code) override {
-    return std::nullopt;
-  }
-
-  void NotifyRightClickRewriteBlockedBySetting(
-      ui::mojom::SimulateRightClickModifier blocked_modifier,
-      ui::mojom::SimulateRightClickModifier active_modifier) override {}
-
-  void NotifySixPackRewriteBlockedBySetting(
-      ui::KeyboardCode key_code,
-      ui::mojom::SixPackShortcutModifier blocked_modifier,
-      ui::mojom::SixPackShortcutModifier active_modifier,
-      int device_id) override {}
-
-  std::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
-      int device_id,
-      ui::KeyboardCode key_code) override {
-    return std::nullopt;
   }
 
   void SendAccelerator(ui::KeyboardCode key_code, int flags) {
@@ -5427,6 +5374,7 @@ class DesksAcceleratorsTest : public DesksTest,
   }
 
  private:
+  ui::test::FakeEventRewriterAshDelegate event_rewriter_delegate_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
 };
 

@@ -20,6 +20,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
 #include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/ash/fake_event_rewriter_ash_delegate.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
@@ -98,15 +99,14 @@ class TestAccessibilityEventRewriterDelegate
 
 }  // namespace
 
-class ChromeVoxAccessibilityEventRewriterTest
-    : public ash::AshTestBase,
-      public ui::EventRewriterAsh::Delegate {
+class ChromeVoxAccessibilityEventRewriterTest : public ash::AshTestBase {
  public:
   ChromeVoxAccessibilityEventRewriterTest() {
     keyboard_capability_ =
         ui::KeyboardCapability::CreateStubKeyboardCapability();
     event_rewriter_ash_ = std::make_unique<ui::EventRewriterAsh>(
-        this, keyboard_capability_.get(), nullptr, false, &fake_ime_keyboard_);
+        &event_rewriter_delegate_, keyboard_capability_.get(), nullptr, false,
+        &fake_ime_keyboard_);
   }
   ChromeVoxAccessibilityEventRewriterTest(
       const ChromeVoxAccessibilityEventRewriterTest&) = delete;
@@ -160,8 +160,7 @@ class ChromeVoxAccessibilityEventRewriterTest
 
   void SetModifierRemapping(const std::string& pref_name,
                             ui::mojom::ModifierKey value) {
-    DCHECK_NE(ui::mojom::ModifierKey::kIsoLevel5ShiftMod3, value);
-    modifier_remapping_[pref_name] = value;
+    event_rewriter_delegate_.SetModifierRemapping(pref_name, value);
   }
 
   bool RewriteEventForChromeVox(
@@ -192,74 +191,10 @@ class ChromeVoxAccessibilityEventRewriterTest
 
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
 
+  ui::test::FakeEventRewriterAshDelegate event_rewriter_delegate_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   std::unique_ptr<ui::EventRewriterAsh> event_rewriter_ash_;
-
- private:
-  // ui::EventRewriterAsh::Delegate:
-  bool RewriteModifierKeys() override { return true; }
-  void SuppressModifierKeyRewrites(bool should_suppress) override {}
-  bool RewriteMetaTopRowKeyComboEvents(int device_id) const override {
-    return true;
-  }
-  void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
-
-  std::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
-      int device_id,
-      ui::mojom::ModifierKey modifier_key,
-      const std::string& pref_name) const override {
-    auto it = modifier_remapping_.find(pref_name);
-    if (it == modifier_remapping_.end())
-      return std::nullopt;
-
-    return it->second;
-  }
-
-  bool TopRowKeysAreFunctionKeys(int device_id) const override { return false; }
-
-  bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
-                                    int flags) const override {
-    return false;
-  }
-
-  bool IsSearchKeyAcceleratorReserved() const override { return false; }
-
-  bool NotifyDeprecatedRightClickRewrite() override { return false; }
-  bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
-    return false;
-  }
-  void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
-  void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
-                                 bool alt_based) override {}
-  std::optional<ui::mojom::SimulateRightClickModifier>
-  GetRemapRightClickModifier(int device_id) override {
-    return std::nullopt;
-  }
-
-  std::optional<ui::mojom::SixPackShortcutModifier>
-  GetShortcutModifierForSixPackKey(int device_id,
-                                   ui::KeyboardCode key_code) override {
-    return std::nullopt;
-  }
-
-  void NotifyRightClickRewriteBlockedBySetting(
-      ui::mojom::SimulateRightClickModifier blocked_modifier,
-      ui::mojom::SimulateRightClickModifier active_modifier) override {}
-
-  void NotifySixPackRewriteBlockedBySetting(
-      ui::KeyboardCode key_code,
-      ui::mojom::SixPackShortcutModifier blocked_modifier,
-      ui::mojom::SixPackShortcutModifier active_modifier,
-      int device_id) override {}
-
-  std::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
-      int device_id,
-      ui::KeyboardCode key_code) override {
-    return std::nullopt;
-  }
-
-  std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
 };
 
 // The delegate should not intercept events when spoken feedback is disabled.
@@ -518,15 +453,14 @@ class EventCapturer : public ui::EventHandler {
   std::unique_ptr<ui::KeyEvent> last_key_event_;
 };
 
-class SwitchAccessAccessibilityEventRewriterTest
-    : public AshTestBase,
-      public ui::EventRewriterAsh::Delegate {
+class SwitchAccessAccessibilityEventRewriterTest : public AshTestBase {
  public:
   SwitchAccessAccessibilityEventRewriterTest() {
     keyboard_capability_ =
         ui::KeyboardCapability::CreateStubKeyboardCapability();
     event_rewriter_ash_ = std::make_unique<ui::EventRewriterAsh>(
-        this, keyboard_capability_.get(), nullptr, false, &fake_ime_keyboard_);
+        &event_rewriter_delegate_, keyboard_capability_.get(), nullptr, false,
+        &fake_ime_keyboard_);
   }
   ~SwitchAccessAccessibilityEventRewriterTest() override = default;
 
@@ -579,8 +513,7 @@ class SwitchAccessAccessibilityEventRewriterTest
 
   void SetModifierRemapping(const std::string& pref_name,
                             ui::mojom::ModifierKey value) {
-    DCHECK_NE(ui::mojom::ModifierKey::kIsoLevel5ShiftMod3, value);
-    modifier_remapping_[pref_name] = value;
+    event_rewriter_delegate_.SetModifierRemapping(pref_name, value);
   }
 
   const std::map<int, std::set<ui::InputDeviceType>> GetKeyCodesToCapture() {
@@ -599,77 +532,12 @@ class SwitchAccessAccessibilityEventRewriterTest
     return std::map<int, SwitchAccessCommand>();
   }
 
- private:
-  // ui::EventRewriterAsh::Delegate:
-  bool RewriteModifierKeys() override { return true; }
-  void SuppressModifierKeyRewrites(bool should_suppress) override {}
-  bool RewriteMetaTopRowKeyComboEvents(int device_id) const override {
-    return true;
-  }
-  void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
-
-  std::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
-      int device_id,
-      ui::mojom::ModifierKey modifier_key,
-      const std::string& pref_name) const override {
-    auto it = modifier_remapping_.find(pref_name);
-    if (it == modifier_remapping_.end())
-      return std::nullopt;
-
-    return it->second;
-  }
-
-  bool TopRowKeysAreFunctionKeys(int device_id) const override { return false; }
-
-  bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
-                                    int flags) const override {
-    return false;
-  }
-
-  bool IsSearchKeyAcceleratorReserved() const override { return false; }
-
-  bool NotifyDeprecatedRightClickRewrite() override { return false; }
-  bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
-    return false;
-  }
-
-  void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
-  void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
-                                 bool alt_based) override {}
-  std::optional<ui::mojom::SimulateRightClickModifier>
-  GetRemapRightClickModifier(int device_id) override {
-    return std::nullopt;
-  }
-
-  std::optional<ui::mojom::SixPackShortcutModifier>
-  GetShortcutModifierForSixPackKey(int device_id,
-                                   ui::KeyboardCode key_code) override {
-    return std::nullopt;
-  }
-
-  void NotifyRightClickRewriteBlockedBySetting(
-      ui::mojom::SimulateRightClickModifier blocked_modifier,
-      ui::mojom::SimulateRightClickModifier active_modifier) override {}
-
-  void NotifySixPackRewriteBlockedBySetting(
-      ui::KeyboardCode key_code,
-      ui::mojom::SixPackShortcutModifier blocked_modifier,
-      ui::mojom::SixPackShortcutModifier active_modifier,
-      int device_id) override {}
-
-  std::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
-      int device_id,
-      ui::KeyboardCode key_code) override {
-    return std::nullopt;
-  }
-
-  std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
-
  protected:
   raw_ptr<ui::test::EventGenerator> generator_ = nullptr;
   EventCapturer event_capturer_;
   raw_ptr<AccessibilityController> controller_ = nullptr;
   TestAccessibilityEventRewriterDelegate delegate_;
+  ui::test::FakeEventRewriterAshDelegate event_rewriter_delegate_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
   std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
