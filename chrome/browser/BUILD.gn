@@ -6193,8 +6193,6 @@ static_library("browser") {
       "media_galleries/mac/mtp_device_delegate_impl_mac.mm",
       "memory_details_mac.cc",
       "metrics/chrome_browser_main_extra_parts_metrics_mac.mm",
-      "metrics/power/coalition_resource_usage_provider_mac.h",
-      "metrics/power/coalition_resource_usage_provider_mac.mm",
       "metrics/power/power_metrics_provider_mac.h",
       "metrics/power/power_metrics_provider_mac.mm",
       "notifications/mac/mac_notification_provider_factory.cc",

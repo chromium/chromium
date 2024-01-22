@@ -13,11 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/metrics/power/process_monitor.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/metrics/power/coalition_resource_usage_provider_mac.h"
-#include "components/power_metrics/resource_coalition_mac.h"
-#endif
-
 // Report aggregated process metrics to histograms with |suffixes|.
 void ReportAggregatedProcessMetricsHistograms(
     const ProcessMonitor::Metrics& aggregated_process_metrics,
@@ -89,17 +84,5 @@ void ReportBatteryHistogramsTenMinutesInterval(
     base::TimeDelta interval_duration,
     BatteryDischarge battery_discharge);
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_MAC)
-void ReportShortIntervalHistograms(
-    const char* scenario_suffix,
-    const power_metrics::CoalitionResourceUsageRate&
-        coalition_resource_usage_rate);
-
-// Report resource coalition metrics to histograms with |suffixes|.
-void ReportResourceCoalitionHistograms(
-    const power_metrics::CoalitionResourceUsageRate& rate,
-    const std::vector<const char*>& suffixes);
-#endif  // BUILDFLAG(IS_MAC)
 
 #endif  // CHROME_BROWSER_METRICS_POWER_POWER_METRICS_H_
