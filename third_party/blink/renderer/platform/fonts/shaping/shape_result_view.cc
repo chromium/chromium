@@ -181,7 +181,7 @@ struct ShapeResultView::InitData {
 
   // Uses for fast path of constructing |ShapeResultView| from |ShapeResult|.
   void Populate(const ShapeResult& result) {
-    PopulateFromShpaeResult(result);
+    PopulateFromShapeResult(result);
     has_vertical_offsets = result.has_vertical_offsets_;
     num_parts = result.RunsOrParts().size();
   }
@@ -192,10 +192,10 @@ struct ShapeResultView::InitData {
 
     if (first_segment.result) {
       DCHECK(!first_segment.view);
-      PopulateFromShpaeResult(*first_segment.result);
+      PopulateFromShapeResult(*first_segment.result);
     } else if (first_segment.view) {
       DCHECK(!first_segment.result);
-      PopulateFromShpaeResult(*first_segment.view);
+      PopulateFromShapeResult(*first_segment.view);
     } else {
       NOTREACHED();
     }
@@ -236,7 +236,7 @@ struct ShapeResultView::InitData {
   bool IsRtl() const { return blink::IsRtl(Direction()); }
 
   template <typename ShapeResultType>
-  void PopulateFromShpaeResult(const ShapeResultType& result) {
+  void PopulateFromShapeResult(const ShapeResultType& result) {
     primary_font = result.primary_font_;
     direction = result.Direction();
     if (IsLtr()) {

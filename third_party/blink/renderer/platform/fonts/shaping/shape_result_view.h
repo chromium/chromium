@@ -62,8 +62,8 @@ class ShapeResult;
 //  ╚═════════════════════════════════════════════════════╝
 //
 // In this case the beginning of the first line would be represented as a part
-// referecing the a range into the original ShapeResult while the last word wold
-// be a separate result owned by the ShapeResultView instance. The second
+// referencing a range in the original ShapeResult while the last word
+// would be a separate result owned by the ShapeResultView instance. The second
 // and third lines would again be represented as parts.
 class PLATFORM_EXPORT ShapeResultView final
     : public GarbageCollected<ShapeResultView> {
@@ -146,7 +146,8 @@ class PLATFORM_EXPORT ShapeResultView final
                                 void* context) const;
 
   // Computes and returns the ink bounds (or visual overflow rect). This is
-  // quite expensive and involves measuring each glyph accumulating the bounds.
+  // quite expensive and involves measuring each glyph and accumulating the
+  // bounds.
   gfx::RectF ComputeInkBounds() const;
 
   scoped_refptr<const SimpleFontData> PrimaryFont() const {
@@ -211,7 +212,7 @@ class PLATFORM_EXPORT ShapeResultView final
 
   const wtf_size_t num_parts_;
 
-  // TODO(yosin): We should declare |RunInoPart| in this file to avoid using
+  // TODO(yosin): We should declare |RunInfoPart| in this file to avoid using
   // dummy struct.
   // Note: To avoid declaring |RunInfoPart| here, we use dummy struct.
   struct {

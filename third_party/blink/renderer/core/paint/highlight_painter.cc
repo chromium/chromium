@@ -415,21 +415,31 @@ HighlightPainter::HighlightPainter(
       }
     }
     if (!parts_.empty()) {
-      // TODO(schenney) The code here still results in n^2 calculations or,
-      // more precisely, O(num_edges * text_length) because
-      // CaretInlinePositionForOffset ultimately does a linear walk through
-      // the text shaping result looking for the offset while accumulating
-      // character widths. Given the edges are sorted, we should enable
-      // one pass through the text to accumulate all the necessary offset
-      // positions.
-      edges_info_.push_back(
-          HighlightEdgeInfo{parts_[0].range.from,
-                            fragment_item_.CaretInlinePositionForOffset(
-                                cursor_.CurrentText(), parts_[0].range.from)});
-      for (const HighlightPart& part : parts_) {
+      if (const ShapeResultView* shape_result_view =
+              fragment_item_->TextShapeResult()) {
+        scoped_refptr<ShapeResult> shape_result =
+            shape_result_view->CreateShapeResult();
+        unsigned start_offset = fragment_item_->StartOffset();
         edges_info_.push_back(HighlightEdgeInfo{
-            part.range.to, fragment_item_.CaretInlinePositionForOffset(
-                               cursor_.CurrentText(), part.range.to)});
+            parts_[0].range.from,
+            LayoutUnit::FromFloatRound(shape_result->CaretPositionForOffset(
+                parts_[0].range.from - start_offset, cursor_.CurrentText()))});
+        for (const HighlightPart& part : parts_) {
+          edges_info_.push_back(HighlightEdgeInfo{
+              part.range.to,
+              LayoutUnit::FromFloatRound(shape_result->CaretPositionForOffset(
+                  part.range.to - start_offset, cursor_.CurrentText()))});
+        }
+      } else {
+        edges_info_.push_back(HighlightEdgeInfo{
+            parts_[0].range.from,
+            fragment_item_.CaretInlinePositionForOffset(cursor_.CurrentText(),
+                                                        parts_[0].range.from)});
+        for (const HighlightPart& part : parts_) {
+          edges_info_.push_back(HighlightEdgeInfo{
+              part.range.to, fragment_item_.CaretInlinePositionForOffset(
+                                 cursor_.CurrentText(), part.range.to)});
+        }
       }
     }
   }
