@@ -64,7 +64,7 @@ import java.util.Locale;
  */
 public class ChromeBrowserInitializer {
     private static final String TAG = "BrowserInitializer";
-    private static ChromeBrowserInitializer sChromeBrowserInitializer;
+    private static ChromeBrowserInitializer sChromeBrowserInitializer = new ChromeBrowserInitializer();
     private static BrowserStartupController sBrowserStartupController;
     private final Locale mInitialLocale = Locale.getDefault();
     private List<Runnable> mTasksToRunWithFullBrowser;
@@ -80,9 +80,6 @@ public class ChromeBrowserInitializer {
      * @return The singleton instance of {@link ChromeBrowserInitializer}.
      */
     public static ChromeBrowserInitializer getInstance() {
-        if (sChromeBrowserInitializer == null) {
-            sChromeBrowserInitializer = new ChromeBrowserInitializer();
-        }
         return sChromeBrowserInitializer;
     }
 
