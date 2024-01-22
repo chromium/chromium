@@ -402,7 +402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SmsFetcherClientNameIsEmpty" enum="BooleanEmpty"
-    expires_after="2024-03-01">
+    expires_after="2024-07-07">
   <owner>yigu@chromium.org</owner>
   <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
