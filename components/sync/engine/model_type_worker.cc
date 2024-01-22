@@ -6,11 +6,11 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <set>
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
@@ -1142,7 +1142,7 @@ void ModelTypeWorker::MaybeDropPendingUpdatesEncryptedWith(
   }
 
   size_t updates_before_dropping = entries_pending_decryption_.size();
-  base::EraseIf(entries_pending_decryption_, [&](const auto& id_and_update) {
+  std::erase_if(entries_pending_decryption_, [&](const auto& id_and_update) {
     return key_name == GetEncryptionKeyName(id_and_update.second);
   });
 
@@ -1169,7 +1169,7 @@ ModelTypeWorker::RemoveKeysNoLongerUnknown() {
   }
 
   std::vector<ModelTypeWorker::UnknownEncryptionKeyInfo> removed_keys;
-  base::EraseIf(
+  std::erase_if(
       unknown_encryption_keys_by_name_, [&](const auto& key_and_info) {
         if (base::Contains(keys_blocking_updates, key_and_info.first)) {
           return false;

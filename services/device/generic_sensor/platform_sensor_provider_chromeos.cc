@@ -6,10 +6,10 @@
 
 #include <algorithm>
 #include <iterator>
+#include <map>
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
@@ -445,7 +445,7 @@ void PlatformSensorProviderChromeOS::OnSensorDeviceDisconnect(
                      << static_cast<int>(sensors_[id].location.value());
       }
 
-      base::EraseIf(sensor_id_by_type_, [this, &id](const auto& entry) {
+      std::erase_if(sensor_id_by_type_, [this, &id](const auto& entry) {
         if (entry.second == id) {
           ReplaceAndRemoveSensor(entry.first);
           return true;

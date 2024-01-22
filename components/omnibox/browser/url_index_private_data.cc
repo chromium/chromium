@@ -8,13 +8,14 @@
 
 #include <algorithm>
 #include <limits>
+#include <map>
 #include <memory>
 #include <numeric>
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/stack.h"
 #include "base/feature_list.h"
@@ -221,7 +222,7 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
     // It's possible this'll still end up with duplicates as having unique
     // URL IDs does not guarantee having unique `stripped_destination_url`.
     std::set<HistoryID> seen_history_ids;
-    base::EraseIf(scored_items, [&](const auto& scored_item) {
+    std::erase_if(scored_items, [&](const auto& scored_item) {
       HistoryID scored_item_id = scored_item.url_info.id();
       bool duplicate = seen_history_ids.count(scored_item_id);
       seen_history_ids.insert(scored_item_id);
@@ -242,7 +243,7 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
     search_term_cache_.clear();
   } else {
     // Remove any stale SearchTermCacheItems.
-    base::EraseIf(
+    std::erase_if(
         search_term_cache_,
         [](const std::pair<std::u16string, SearchTermCacheItem>& item) {
           return !item.second.used_;
@@ -487,7 +488,7 @@ HistoryIDVector URLIndexPrivateData::HistoryIDsFromWords(
       history_ids = {term_history_set.begin(), term_history_set.end()};
     } else {
       // set-intersection
-      base::EraseIf(history_ids, base::IsNotIn<HistoryIDSet>(term_history_set));
+      std::erase_if(history_ids, base::IsNotIn<HistoryIDSet>(term_history_set));
     }
   }
   return history_ids;
@@ -667,7 +668,7 @@ void URLIndexPrivateData::HistoryIdsToScoredMatches(
   }
 
   // Filter bad matches and other matches we don't want to display.
-  base::EraseIf(history_ids, [&](const HistoryID history_id) {
+  std::erase_if(history_ids, [&](const HistoryID history_id) {
     return ShouldExclude(history_id, host_filter, template_url_service);
   });
 

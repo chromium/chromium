@@ -18,7 +18,6 @@
 #include "ash/system/progress_indicator/progress_icon_animation.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"

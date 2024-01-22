@@ -4,9 +4,10 @@
 
 #include "content/browser/child_process_task_port_provider_mac.h"
 
+#include <map>
+
 #include "base/apple/foundation_util.h"
 #include "base/apple/mach_logging.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -157,7 +158,7 @@ void ChildProcessTaskPortProvider::OnTaskPortDied() {
   base::apple::ScopedMachSendRight dead_port(notification.not_port);
 
   base::AutoLock lock(lock_);
-  base::EraseIf(pid_to_task_port_, [&dead_port](const auto& pair) {
+  std::erase_if(pid_to_task_port_, [&dead_port](const auto& pair) {
     if (pair.second.get() == dead_port.get()) {
       DVLOG(1) << "Task died, PID=" << pair.first
                << ", task port name=" << dead_port.get();

@@ -9,11 +9,11 @@
 #include <algorithm>
 #include <map>
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -1120,7 +1120,7 @@ void SurfaceAggregator::EmitSurfaceContent(
     quad_visible_rect.Intersect(quad_rect);
     auto remapped_pass_id = resolved_root_pass.remapped_id();
     if (quad_visible_rect.IsEmpty()) {
-      base::EraseIf(*dest_pass_list_,
+      std::erase_if(*dest_pass_list_,
                     [&remapped_pass_id](
                         const std::unique_ptr<AggregatedRenderPass>& pass) {
                       return pass->id == remapped_pass_id;
@@ -1736,7 +1736,7 @@ void SurfaceAggregator::SetRenderPassDamageRect(
 void SurfaceAggregator::ProcessAddedAndRemovedSurfaces() {
   // Delete resolved frame data that wasn't used this aggregation. This releases
   // resources associated with those resolved frames.
-  base::EraseIf(resolved_frames_, [](auto& entry) {
+  std::erase_if(resolved_frames_, [](auto& entry) {
     return !entry.second.WasUsedInAggregation();
   });
 }

@@ -4,12 +4,12 @@
 
 #include "components/performance_manager/worker_watcher.h"
 
+#include <map>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_map.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -435,7 +435,7 @@ void WorkerWatcher::OnVersionStoppedRunning(int64_t version_id) {
   PerformanceManagerImpl::DeleteNode(std::move(service_worker_node));
 
   service_worker_nodes_.erase(it);
-  size_t erased = base::EraseIf(
+  size_t erased = std::erase_if(
       service_worker_ids_by_token_,
       [version_id](const auto& entry) { return entry.second == version_id; });
   CHECK_EQ(erased, 1u);

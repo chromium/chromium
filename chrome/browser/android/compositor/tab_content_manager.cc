@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <utility>
 
@@ -17,7 +18,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -170,7 +170,7 @@ ThumbnailLayer* TabContentManager::GetStaticLayer(int tab_id) {
 void TabContentManager::UpdateVisibleIds(const std::vector<int>& priority_ids,
                                          int primary_tab_id) {
   thumbnail_cache_->UpdateVisibleIds(priority_ids, primary_tab_id);
-  base::EraseIf(static_layer_cache_, [&priority_ids](const auto& pair) {
+  std::erase_if(static_layer_cache_, [&priority_ids](const auto& pair) {
     bool not_priority = !base::Contains(priority_ids, pair.first);
     if (not_priority && pair.second) {
       pair.second->layer()->RemoveFromParent();
@@ -383,12 +383,7 @@ void TabContentManager::OnTabReadback(
     bool return_bitmap,
     float thumbnail_scale,
     const SkBitmap& bitmap) {
-  TabReadbackRequestMap::iterator readback_iter =
-      pending_tab_readbacks_.find(tab_id);
-
-  if (readback_iter != pending_tab_readbacks_.end()) {
-    pending_tab_readbacks_.erase(tab_id);
-  }
+  pending_tab_readbacks_.erase(tab_id);
 
   if (j_callback) {
     SendThumbnailToJava(j_callback, write_to_cache, return_bitmap, bitmap);

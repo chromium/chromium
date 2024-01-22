@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 
-#include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
+#include <map>
+
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -162,7 +162,7 @@ void CastMediaNotificationProducer::OnRoutesUpdated(
     const std::vector<media_router::MediaRoute>& routes) {
   const bool had_items = HasActiveItems();
 
-  base::EraseIf(items_, [&routes](const auto& item) {
+  std::erase_if(items_, [&routes](const auto& item) {
     return !base::Contains(routes, item.first,
                            &media_router::MediaRoute::media_route_id);
   });

@@ -4,7 +4,8 @@
 
 #include "chromeos/ui/frame/highlight_border_overlay.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <map>
+
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -187,7 +188,7 @@ void HighlightBorderOverlay::UpdateNinePatchLayer() {
   auto iter = image_source_map->find(key);
   if (iter == image_source_map->end()) {
     // Evict the image source which has no owners.
-    base::EraseIf(*image_source_map, [](auto& key_and_image_source) {
+    std::erase_if(*image_source_map, [](auto& key_and_image_source) {
       return key_and_image_source.second.IsUniquelyOwned();
     });
     // Create a new image.

@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 
+#include <map>
 #include <ostream>
 
 #include "base/base64.h"

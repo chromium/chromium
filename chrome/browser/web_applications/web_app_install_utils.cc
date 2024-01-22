@@ -18,7 +18,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_map.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -845,7 +844,7 @@ IconUrlSizeSet RemoveDuplicates(std::vector<IconUrlsWithSizes> from_urls) {
 }
 
 void RemoveInvalidUrls(std::vector<IconUrlsWithSizes>& urls) {
-  base::EraseIf(urls, [](const std::tuple<GURL, gfx::Size>& url) {
+  std::erase_if(urls, [](const std::tuple<GURL, gfx::Size>& url) {
     return !get<GURL>(url).is_valid();
   });
 }

@@ -4,10 +4,10 @@
 
 #include "ash/session/session_activation_observer_holder.h"
 
+#include <map>
 #include <utility>
 
 #include "ash/public/cpp/session/session_activation_observer.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/notreached.h"
 
 namespace ash {
@@ -66,7 +66,7 @@ void SessionActivationObserverHolder::NotifyLockStateChanged(bool locked) {
 }
 
 void SessionActivationObserverHolder::PruneObserverMap() {
-  base::EraseIf(observer_map_, [](auto& item) { return item.second->empty(); });
+  std::erase_if(observer_map_, [](auto& item) { return item.second->empty(); });
 }
 
 }  // namespace ash

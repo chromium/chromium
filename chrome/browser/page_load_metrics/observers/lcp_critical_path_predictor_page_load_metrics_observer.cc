@@ -4,7 +4,6 @@
 
 #include "chrome/browser/page_load_metrics/observers/lcp_critical_path_predictor_page_load_metrics_observer.h"
 
-#include "base/containers/cxx20_erase_map.h"
 #include "base/trace_event/base_tracing.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"

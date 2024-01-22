@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <map>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -255,7 +256,7 @@ void TrustSafetySentimentService::OpenedNewTabPage() {
   // trigger which occurred more than the maximum prompt time ago, or the
   // trigger for the kIneligible area if it is no longer blocking
   // eligibility.
-  base::EraseIf(pending_triggers_,
+  std::erase_if(pending_triggers_,
                 [](const std::pair<FeatureArea, PendingTrigger>& area_trigger) {
                   return base::Time::Now() - area_trigger.second.occurred_time >
                              GetMaxTimeToPrompt() ||

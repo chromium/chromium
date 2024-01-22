@@ -270,7 +270,6 @@ component("base") {
     "containers/contains.h",
     "containers/cxx20_erase.h",
     "containers/cxx20_erase_internal.h",
-    "containers/cxx20_erase_map.h",
     "containers/cxx20_erase_vector.h",
     "containers/enum_set.h",
     "containers/extend.h",

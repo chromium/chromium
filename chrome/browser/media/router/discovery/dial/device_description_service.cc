@@ -13,7 +13,6 @@
 #include <sstream>
 #endif
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
@@ -116,7 +115,7 @@ void DeviceDescriptionService::GetDeviceDescriptions(
 void DeviceDescriptionService::CleanUpCacheEntries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Time now = GetNow();
-  base::EraseIf(description_cache_,
+  std::erase_if(description_cache_,
                 [&now](const std::pair<std::string, CacheEntry>& cache_pair) {
                   return cache_pair.second.expire_time < now;
                 });
