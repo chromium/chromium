@@ -32,12 +32,9 @@ constexpr CGFloat kLineWidth = 1.;
 constexpr CGFloat kHorizontalInsets = -48.;
 // Space between the Chrome logo and the top of the screen.
 constexpr CGFloat kTopSpacing = 40.;
-// Spacing between the elements of the top stack view.
-constexpr CGFloat kTopStackViewSpacing = 16.;
-// Space above and below the primary button.
-constexpr CGFloat kPrimaryButtonPadding = 14.;
-// Primary button height.
-constexpr CGFloat kPrimaryButtonHeight = 50.;
+// Space between the elements of the top stack view and around the primary
+// button.
+constexpr CGFloat kDefaultMargin = 16.;
 // Logo dimensions.
 constexpr CGFloat kLogoSize = 50.;
 // The minimum height of the search engines table.
@@ -119,7 +116,7 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
   _topZoneStackView = [[UIStackView alloc] init];
   [_scrollContentView addSubview:_topZoneStackView];
   _topZoneStackView.axis = UILayoutConstraintAxisVertical;
-  _topZoneStackView.spacing = kTopStackViewSpacing;
+  _topZoneStackView.spacing = kDefaultMargin;
   _topZoneStackView.distribution = UIStackViewDistributionEqualSpacing;
   _topZoneStackView.alignment = UIStackViewAlignmentCenter;
   _topZoneStackView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -266,17 +263,15 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
 
     [_primaryButton.bottomAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
-                       constant:-kPrimaryButtonPadding],
+                       constant:-kDefaultMargin],
     [_primaryButton.widthAnchor constraintEqualToAnchor:self.view.widthAnchor
                                                constant:kHorizontalInsets],
-    [_primaryButton.heightAnchor
-        constraintEqualToConstant:kPrimaryButtonHeight],
 
     [_separatorView.widthAnchor constraintEqualToAnchor:self.view.widthAnchor],
     [_separatorView.heightAnchor constraintEqualToConstant:kLineWidth],
     [_separatorView.bottomAnchor
         constraintEqualToAnchor:_primaryButton.topAnchor
-                       constant:-kPrimaryButtonPadding],
+                       constant:-kDefaultMargin],
 
     [searchEngineTableView.widthAnchor
         constraintEqualToAnchor:_scrollContentView.widthAnchor],
