@@ -6060,6 +6060,26 @@
             ]
         }
     ],
+    "DevToolsStructuredMetrics": [
+        {
+            "platforms": [
+                "windows",
+                "linux",
+                "mac",
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeStructuredMetrics",
+                        "DevToolsVeLogging"
+                    ]
+                }
+            ]
+        }
+    ],
     "DevToolsTabTarget": [
         {
             "platforms": [
