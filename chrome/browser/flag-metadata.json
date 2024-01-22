@@ -6735,10 +6735,10 @@
   {
     "name": "privacy-sandbox-proactive-topics-blocking",
     "owners": [
-      "sauski@chromium.org",
-      "olesiamarukhno@chromium.org",
+      "sauski@google.com",
+      "olesiamarukhno@google.com",
       "tommasin@chromium.org",
-      "alimariam@chromium.org"],
+      "alimariam@google.com"],
     "expiry_milestone": 122
   },
   {
