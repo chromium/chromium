@@ -22,6 +22,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -220,10 +221,12 @@ SupportPacketDetails::~SupportPacketDetails() = default;
 
 enterprise_management::RemoteCommand_Type
 DeviceCommandFetchSupportPacketJob::GetType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return enterprise_management::RemoteCommand_Type_FETCH_SUPPORT_PACKET;
 }
 
 const base::FilePath DeviceCommandFetchSupportPacketJob::GetTargetDir() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (g_target_directory_for_testing) {
     CHECK_IS_TEST();
     return *g_target_directory_for_testing;
@@ -233,6 +236,7 @@ const base::FilePath DeviceCommandFetchSupportPacketJob::GetTargetDir() {
 
 bool DeviceCommandFetchSupportPacketJob::ParseCommandPayload(
     const std::string& command_payload) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool parse_success = ParseCommandPayloadImpl(command_payload);
   if (!parse_success) {
     base::UmaHistogramEnumeration(
@@ -247,6 +251,7 @@ bool DeviceCommandFetchSupportPacketJob::ParseCommandPayload(
 
 bool DeviceCommandFetchSupportPacketJob::ParseCommandPayloadImpl(
     const std::string& command_payload) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::optional<base::Value> value = base::JSONReader::Read(command_payload);
   if (!value.has_value() || !value->is_dict()) {
     return false;
@@ -295,6 +300,7 @@ bool DeviceCommandFetchSupportPacketJob::ParseCommandPayloadImpl(
 }
 
 bool DeviceCommandFetchSupportPacketJob::IsCommandEnabled() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool log_upload_enabled;
   if (!ash::CrosSettings::IsInitialized() ||
       !ash::CrosSettings::Get()->GetBoolean(ash::kSystemLogUploadEnabled,
@@ -306,6 +312,7 @@ bool DeviceCommandFetchSupportPacketJob::IsCommandEnabled() const {
 
 void DeviceCommandFetchSupportPacketJob::RunImpl(
     CallbackWithResult result_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   result_callback_ = std::move(result_callback);
   // Check if the command is enabled for the user.
   if (!IsCommandEnabled()) {
@@ -328,6 +335,7 @@ void DeviceCommandFetchSupportPacketJob::RunImpl(
 }
 
 bool DeviceCommandFetchSupportPacketJob::IsPiiAllowed() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (current_session_type_) {
     case UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION:
     case UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION:
@@ -345,6 +353,7 @@ bool DeviceCommandFetchSupportPacketJob::IsPiiAllowed() const {
 }
 
 void DeviceCommandFetchSupportPacketJob::StartJobExecution() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_session_type_ = GetCurrentUserSessionType();
 
   // Get sign-in profile on sign-in screen.
@@ -373,6 +382,7 @@ void DeviceCommandFetchSupportPacketJob::StartJobExecution() {
 void DeviceCommandFetchSupportPacketJob::OnDataCollected(
     const PIIMap& detected_pii,
     std::set<SupportToolError> errors) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Log the errors for information. We don't return any error for the command
   // job, we just continue the operation with as much data as we could collect.
   if (!errors.empty()) {
@@ -401,6 +411,7 @@ void DeviceCommandFetchSupportPacketJob::OnDataCollected(
 void DeviceCommandFetchSupportPacketJob::OnDataExported(
     base::FilePath exported_path,
     std::set<SupportToolError> errors) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto export_error =
       base::ranges::find(errors, SupportToolErrorCode::kDataExportError,
                          &SupportToolError::error_code);
@@ -434,12 +445,14 @@ void DeviceCommandFetchSupportPacketJob::OnDataExported(
 
 void DeviceCommandFetchSupportPacketJob::OnReportQueueCreated(
     std::unique_ptr<reporting::ReportQueue> report_queue) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SYSLOG(INFO) << "ReportQueue is created for LogUploadEvent.";
   report_queue_ = std::move(report_queue);
   EnqueueEvent();
 }
 
 void DeviceCommandFetchSupportPacketJob::EnqueueEvent() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto log_upload_event = std::make_unique<ash::reporting::LogUploadEvent>();
   log_upload_event->mutable_upload_settings()->set_origin_path(
       exported_path_.value());
@@ -457,6 +470,7 @@ void DeviceCommandFetchSupportPacketJob::EnqueueEvent() {
 
 void DeviceCommandFetchSupportPacketJob::OnEventEnqueued(
     reporting::Status status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status.ok()) {
     base::UmaHistogramEnumeration(
         kFetchSupportPacketFailureHistogramName,
