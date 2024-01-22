@@ -105,7 +105,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "content/browser/renderer_host/media/captured_surface_controller.h"
+#include "content/browser/media/captured_surface_controller.h"
 #endif
 
 using ::blink::mojom::MediaDeviceType;

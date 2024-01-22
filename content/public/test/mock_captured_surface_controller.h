@@ -6,7 +6,7 @@
 #define CONTENT_PUBLIC_TEST_MOCK_CAPTURED_SURFACE_CONTROLLER_H_
 
 #include "base/functional/callback.h"
-#include "content/browser/renderer_host/media/captured_surface_controller.h"
+#include "content/browser/media/captured_surface_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 

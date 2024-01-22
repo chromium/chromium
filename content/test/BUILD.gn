@@ -3179,8 +3179,8 @@ test("content_unittests") {
       ]
       sources += [
         "../browser/media/capture/desktop_capture_device_unittest.cc",
-        "../browser/renderer_host/media/captured_surface_controller_permission_manager_unittest.cc",
-        "../browser/renderer_host/media/captured_surface_controller_unittest.cc",
+        "../browser/media/captured_surface_controller_permission_manager_unittest.cc",
+        "../browser/media/captured_surface_controller_unittest.cc",
         "../browser/renderer_host/media/sub_capture_target_id_web_contents_helper_unittest.cc",
       ]
     }

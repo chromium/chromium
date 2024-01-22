@@ -2742,10 +2742,10 @@ source_set("browser") {
         "media/capture/desktop_capture_device.h",
         "media/capture/mouse_cursor_overlay_controller.cc",
         "media/capture/mouse_cursor_overlay_controller.h",
-        "renderer_host/media/captured_surface_control_permission_manager.cc",
-        "renderer_host/media/captured_surface_control_permission_manager.h",
-        "renderer_host/media/captured_surface_controller.cc",
-        "renderer_host/media/captured_surface_controller.h",
+        "media/captured_surface_control_permission_manager.cc",
+        "media/captured_surface_control_permission_manager.h",
+        "media/captured_surface_controller.cc",
+        "media/captured_surface_controller.h",
       ]
       public_deps += [ "//ui/base/cursor" ]
       deps += [ "//third_party/webrtc_overrides:webrtc_component" ]

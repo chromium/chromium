@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/media/captured_surface_controller.h"
+#include "content/browser/media/captured_surface_controller.h"
 
 #include <list>
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "content/browser/renderer_host/media/captured_surface_control_permission_manager.h"
+#include "content/browser/media/captured_surface_control_permission_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/test/browser_task_environment.h"

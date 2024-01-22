@@ -50,7 +50,7 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-#include "content/browser/renderer_host/media/captured_surface_controller.h"
+#include "content/browser/media/captured_surface_controller.h"
 #endif
 
 namespace media {

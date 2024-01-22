@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/media/captured_surface_control_permission_manager.h"
+#include "content/browser/media/captured_surface_control_permission_manager.h"
 
 #include <memory>
 

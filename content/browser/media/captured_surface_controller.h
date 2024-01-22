@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_CAPTURED_SURFACE_CONTROLLER_H_
-#define CONTENT_BROWSER_RENDERER_HOST_MEDIA_CAPTURED_SURFACE_CONTROLLER_H_
+#ifndef CONTENT_BROWSER_MEDIA_CAPTURED_SURFACE_CONTROLLER_H_
+#define CONTENT_BROWSER_MEDIA_CAPTURED_SURFACE_CONTROLLER_H_
 
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "content/browser/renderer_host/media/captured_surface_control_permission_manager.h"
+#include "content/browser/media/captured_surface_control_permission_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
@@ -81,4 +81,4 @@ class CONTENT_EXPORT CapturedSurfaceController {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_MEDIA_CAPTURED_SURFACE_CONTROLLER_H_
+#endif  // CONTENT_BROWSER_MEDIA_CAPTURED_SURFACE_CONTROLLER_H_

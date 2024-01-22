@@ -4,7 +4,7 @@
 
 #include "content/public/test/mock_captured_surface_controller.h"
 
-#include "content/browser/renderer_host/media/captured_surface_control_permission_manager.h"
+#include "content/browser/media/captured_surface_control_permission_manager.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace content {

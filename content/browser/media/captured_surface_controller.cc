@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/media/captured_surface_controller.h"
+#include "content/browser/media/captured_surface_controller.h"
 
 #include <cmath>
 
 #include "base/task/bind_post_task.h"
 #include "content/browser/media/media_stream_web_contents_observer.h"
-#include "content/browser/renderer_host/media/captured_surface_control_permission_manager.h"
+#include "content/browser/media/captured_surface_control_permission_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/public/browser/browser_thread.h"

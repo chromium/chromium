@@ -137,7 +137,7 @@
 #include "ui/latency/latency_info.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "content/browser/renderer_host/media/captured_surface_controller.h"
+#include "content/browser/media/captured_surface_controller.h"
 #include "content/public/test/mock_captured_surface_controller.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 

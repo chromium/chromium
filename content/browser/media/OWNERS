@@ -3,6 +3,7 @@ olka@chromium.org
 mfoltz@chromium.org
 
 per-file capture_handle_manager*=eladalon@chromium.org
+per-file captured_surface_control*=eladalon@chromium.org
 per-file media_devices_*=guidou@chromium.org
 per-file midi_*=toyoshim@chromium.org
 per-file midi_*=mjwilson@chromium.org
