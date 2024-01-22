@@ -949,7 +949,7 @@ class AutofillChildrenSuggestionGeneratorTest
   const AutofillProfile profile_ = test::GetFullProfile();
 };
 
-// Test that only "Fill full address" is added when the target field is
+// Test that only "Fill address" is added when the target field is
 // `ADDRESS_HOME_LINE1` and no other suggestion exist with the same
 // `Suggestion::main_text` and `ADDRESS_HOME_LINE1`.
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
@@ -962,9 +962,8 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
       /*field_types=*/{ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2});
 
   ASSERT_EQ(suggestions.size(), 1u);
-  EXPECT_EQ(suggestions[0].labels,
-            std::vector<std::vector<Suggestion::Text>>(
-                {{Suggestion::Text(u"Fill full address")}}));
+  EXPECT_EQ(suggestions[0].labels, std::vector<std::vector<Suggestion::Text>>(
+                                       {{Suggestion::Text(u"Fill address")}}));
 }
 
 // Test that a differentiating label is added when the `Suggestion::main_text`
@@ -989,7 +988,7 @@ TEST_F(
   ASSERT_EQ(suggestions.size(), 2u);
   EXPECT_EQ(suggestions[0].labels,
             std::vector<std::vector<Suggestion::Text>>(
-                {{Suggestion::Text(u"Fill full address - John Doe")}}));
+                {{Suggestion::Text(u"Fill address - John Doe")}}));
 }
 
 // Test similar to the one above. However also makes sure that
@@ -1019,13 +1018,13 @@ TEST_F(
       suggestions[0].labels,
       std::vector<std::vector<Suggestion::Text>>(
           {{Suggestion::Text(
-                u"Fill full address - " +
+                u"Fill address - " +
                 profile_1.GetInfo(ADDRESS_HOME_LINE1, app_locale()) + u", "),
             Suggestion::Text(u"John H. Doe, a@gmail.com")}}));
 }
 
 // When there is no need to detailing or differentiating label, we add only the
-// granular filling label, either "Fill full name" or "Fill full address".
+// granular filling label, either "Fill full name" or "Fill address".
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_GroupFillingLabels_AddOnlyFillName) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
@@ -1535,7 +1534,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
 }
 
 // Tests that a non-address field suggestion has all the profile fields as
-// children, and doesn't have children like "Fill full address" or "Fill full
+// children, and doesn't have children like "Fill address" or "Fill full
 // name".
 TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
        SuggestionHasCorrectChildren) {
