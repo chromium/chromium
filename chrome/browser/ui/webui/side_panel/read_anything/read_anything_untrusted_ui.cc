@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "read_anything_untrusted_ui.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_resources.h"
@@ -155,6 +156,10 @@ void ReadAnythingUntrustedUI::CreateUntrustedPageHandler(
   read_anything_untrusted_page_handler_ =
       std::make_unique<ReadAnythingUntrustedPageHandler>(
           std::move(page), std::move(receiver), web_ui());
+}
+
+void ReadAnythingUntrustedUI::ShouldShowUI() {
+  // Show the UI after the Side Panel content has loaded.
   if (embedder()) {
     embedder()->ShowUI();
   }

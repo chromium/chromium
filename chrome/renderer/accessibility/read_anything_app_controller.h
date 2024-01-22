@@ -277,6 +277,10 @@ class ReadAnythingAppController
 
   void PostProcessSelection();
 
+  // Signals that the side panel has finished loading and it's safe to show
+  // the UI to avoid loading artifacts.
+  void ShouldShowUI();
+
   // Inits the AXPosition with a starting node.
   // TODO(crbug.com/1474951): We should be able to use AXPosition in a way
   // where this isn't needed.

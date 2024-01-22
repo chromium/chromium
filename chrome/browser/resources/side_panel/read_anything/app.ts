@@ -13,6 +13,7 @@ import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.
 import {assert} from '//resources/js/assert.js';
 import {rgbToSkColor, skColorToRgba} from '//resources/js/color_utils.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {listenOnce} from '//resources/js/util.js';
 import {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -149,6 +150,7 @@ if (chrome.readingMode) {
 export interface ReadAnythingElement {
   $: {
     toolbar: ReadAnythingToolbarElement,
+    flexParent: HTMLElement,
   };
 }
 
@@ -229,6 +231,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+
+    // Wait until the side panel is fully rendered before showing the side
+    // panel. This follows Side Panel best practices and prevents loading
+    // artifacts from showing if the side panel is shown before content is
+    // ready.
+    listenOnce(this.$.flexParent, 'dom-change', () => {
+      setTimeout(() => chrome.readingMode.shouldShowUI(), 0);
+    });
+
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
     if (chrome.readingMode) {
       chrome.readingMode.onConnected();

@@ -212,6 +212,10 @@ declare namespace chrome {
     // Sets the default language. Used by tests only.
     function setLanguageForTesting(code: string): void;
 
+    // Called when the side panel has finished loading and it's safe to call
+    // SidePanelWebUIView::ShowUI
+    function shouldShowUI(): boolean;
+
     ////////////////////////////////////////////////////////////////
     // Implemented in read_anything/app.ts and called by native c++.
     ////////////////////////////////////////////////////////////////

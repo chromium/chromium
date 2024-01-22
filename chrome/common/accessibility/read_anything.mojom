@@ -41,6 +41,11 @@ interface UntrustedPageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
   CreateUntrustedPageHandler(pending_remote<UntrustedPage> page,
                              pending_receiver<UntrustedPageHandler> handler);
+
+  // Signals that the side panel content has finished loading and it is now
+  // safe to show the UI. This is to avoid loading artifacts if the side panel
+  // is shown before ready.
+  ShouldShowUI();
 };
 
 // Used as identifiers for the Read Anything theme options.

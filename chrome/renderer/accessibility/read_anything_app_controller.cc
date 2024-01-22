@@ -778,8 +778,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getNextTextEndIndex",
                  &ReadAnythingAppController::GetNextTextEndIndex)
       .SetMethod("getNextText", &ReadAnythingAppController::GetNextText)
-      .SetMethod("getPreviousText",
-                 &ReadAnythingAppController::GetPreviousText);
+      .SetMethod("getPreviousText", &ReadAnythingAppController::GetPreviousText)
+      .SetMethod("shouldShowUI", &ReadAnythingAppController::ShouldShowUI);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -1825,4 +1825,8 @@ content::RenderFrame* ReadAnythingAppController::GetRenderFrame() {
     return nullptr;
   }
   return content::RenderFrame::FromWebFrame(web_frame);
+}
+
+void ReadAnythingAppController::ShouldShowUI() {
+  page_handler_factory_->ShouldShowUI();
 }
