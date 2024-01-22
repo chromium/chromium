@@ -11108,30 +11108,6 @@
             ]
         }
     ],
-    "MemoryCacheStrongReference": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "FilterImageAllPages_20240115",
-                    "enable_features": [
-                        "MemoryCacheStrongReference",
-                        "MemoryCacheStrongReferenceFilterImages"
-                    ],
-                    "disable_features": [
-                        "MemoryCacheStrongReferenceFilterScripts"
-                    ]
-                }
-            ]
-        }
-    ],
     "MerchantWidePromotion": [
         {
             "platforms": [
