@@ -1732,8 +1732,8 @@ void BluetoothAdapterFloss::OnRegisterScanner(
         << "Scan session removed before registration completed.";
     return;
   }
-  if (!ret.has_value()) {
-    BLUETOOTH_LOG(ERROR) << "Failed RegisterScanner: " << ret.error();
+  if (!ret.has_value() || ret.value().canonical_value() == kEmptyUuidStr) {
+    BLUETOOTH_LOG(ERROR) << "Failed RegisterScanner.";
     scan_session->OnRelease();
     return;
   }

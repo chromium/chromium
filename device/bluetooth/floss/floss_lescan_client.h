@@ -35,6 +35,7 @@ const char kScannerCallbackPath[] =
 #endif
 const char kScannerCallbackInterfaceName[] =
     "org.chromium.bluetooth.ScannerCallback";
+const char kEmptyUuidStr[] = "00000000-0000-0000-0000-000000000000";
 
 // Represents type of a scan.
 enum class ScanType {
