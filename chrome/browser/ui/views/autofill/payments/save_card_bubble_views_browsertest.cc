@@ -2295,9 +2295,59 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
             l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CREDIT_CARD));
 }
 
-// TODO(crbug.com/1346433): Add new browser tests for save card bubble view
-// where it check for user label information based on experiment conditions.
-// These aren't being added at the current time because of issues with the Sync
-// setup that makes them flaky.
+// Param of SaveCardBubbleViewsAccountChipFooterBrowserTest:
+// -- bool AccountChipFooterIsEnabled(): returns if the flag to show account
+// chip footer is enabled or not.
+class SaveCardBubbleViewsAccountChipFooterBrowserTest
+    : public SaveCardBubbleViewsFullFormBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  SaveCardBubbleViewsAccountChipFooterBrowserTest() = default;
+  ~SaveCardBubbleViewsAccountChipFooterBrowserTest() override = default;
+
+  void SetUp() override {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kAutofillUpstream};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kAutofillEnableNewSaveCardBubbleUi};
+    if (AccountChipFooterIsEnabled()) {
+      enabled_features.push_back(
+          features::kAutofillEnableUserAvatarInSaveCardFooter);
+    } else {
+      disabled_features.push_back(
+          features::kAutofillEnableUserAvatarInSaveCardFooter);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    SaveCardBubbleViewsFullFormBrowserTest::SetUp();
+  }
+
+  static bool AccountChipFooterIsEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test to verify the account chip footer is displayed correctly on the upload
+// save bubble. User label information contains the user avatar and email. It's
+// visible if `kAutofillEnableUserAvatarInSaveCardFooter` is enabled.
+IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsAccountChipFooterBrowserTest,
+                       UploadBubble_CheckForAccountChipFooter) {
+  ASSERT_TRUE(SetupSync());
+
+  FillForm();
+  SubmitFormAndWaitForCardUploadSaveBubble();
+
+  views::View* view = FindViewInBubbleById(DialogViewId::USER_INFORMATION_VIEW);
+  if (AccountChipFooterIsEnabled()) {
+    ASSERT_NE(nullptr, view);
+    EXPECT_TRUE(view->GetVisible());
+  } else {
+    ASSERT_EQ(nullptr, view);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SaveCardBubbleViewsAccountChipFooterBrowserTest,
+                         ::testing::Bool());
 
 }  // namespace autofill
