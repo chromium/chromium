@@ -5,3 +5,4 @@ per-file enums.xml=file://components/compose/OWNERS
 # Use chromium-metrics-reviews@google.com as a backup.
 dewittj@chromium.org
 jeffreycohen@chromium.org
+perrier@chromium.org
