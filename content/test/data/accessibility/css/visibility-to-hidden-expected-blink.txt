@@ -7,8 +7,9 @@ rootWebArea
 ++++++++genericContainer ignored invisible
 ++++++++++checkBox ignored invisible
 ++++++++genericContainer
-++++++++++staticText name='done'
-++++++++++++inlineTextBox name='done'
+++++++++++code
+++++++++++++staticText name='done'
+++++++++++++++inlineTextBox name='done'
 ++++++group ignored invisible
 ++++++++mark ignored invisible
 ++++++++++staticText ignored invisible name='text'

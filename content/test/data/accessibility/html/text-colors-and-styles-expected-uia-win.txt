@@ -6,7 +6,8 @@ Document
 ++Text Name='text style'
 ++++Text Name='text style' IsControlElement=false
 ++Group IsControlElement=false
-++++Text Name='strong'
+++++Text IsControlElement=false
+++++++Text Name='strong'
 ++Text Name='italic'
 ++Text Name=' '
 ++Text Name='bold'

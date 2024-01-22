@@ -4,8 +4,9 @@ rootWebArea
 ++++++strong
 ++++++++staticText name='role'
 ++++++++++inlineTextBox name='role'
-++++++staticText name='element (no name)'
-++++++++inlineTextBox name='element (no name)'
+++++++strong
+++++++++staticText name='element (no name)'
+++++++++++inlineTextBox name='element (no name)'
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
 ++++++strong name='include me'

@@ -1,3 +1,4 @@
 [document web]
 ++[section]
-++++[static] name='Strong text'
+++++[static]
+++++++[static] name='Strong text'

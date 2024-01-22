@@ -6,7 +6,8 @@
 ++[heading] name='text style'
 ++++[static] name='text style'
 ++[paragraph]
-++++[static] name='strong'
+++++[static]
+++++++[static] name='strong'
 ++[static] name='italic'
 ++[static] name=' '
 ++[static] name='bold'

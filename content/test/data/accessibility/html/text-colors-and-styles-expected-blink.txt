@@ -11,8 +11,9 @@ rootWebArea
 ++++++++staticText name='text style'
 ++++++++++inlineTextBox name='text style'
 ++++++paragraph
-++++++++staticText name='strong'
-++++++++++inlineTextBox name='strong'
+++++++++strong
+++++++++++staticText name='strong'
+++++++++++++inlineTextBox name='strong'
 ++++++staticText name='italic'
 ++++++++inlineTextBox name='italic'
 ++++++staticText name=' '

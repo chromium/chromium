@@ -3,7 +3,8 @@ rootWebArea
 ++++genericContainer
 ++++++staticText name='One word is '
 ++++++++inlineTextBox name='One word is '
-++++++staticText name='emphasized'
-++++++++inlineTextBox name='emphasized'
+++++++emphasis
+++++++++staticText name='emphasized'
+++++++++++inlineTextBox name='emphasized'
 ++++++staticText name='.'
 ++++++++inlineTextBox name='.'
