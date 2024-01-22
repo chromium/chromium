@@ -576,6 +576,9 @@ void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
       base::BindOnce(&ServiceWorkerTaskQueue::DidStartWorkerFail,
                      weak_factory_.GetWeakPtr(), context_id,
                      base::Time::Now()));
+  if (g_test_observer) {
+    g_test_observer->RequestedWorkerStart(context_id.extension_id);
+  }
 }
 
 void ServiceWorkerTaskQueue::DidRegisterServiceWorker(

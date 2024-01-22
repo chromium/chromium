@@ -174,6 +174,11 @@ class ServiceWorkerTaskQueue : public KeyedService,
     // registered.
     virtual void OnActivateExtension(const ExtensionId& extension_id,
                                      bool will_register_service_worker) {}
+
+    // Called immediately after we send a request to start the worker (whether
+    // it ultimately succeeds or fails).
+    virtual void RequestedWorkerStart(const ExtensionId& extension_id) {}
+
     virtual void DidStartWorkerFail(
         const ExtensionId& extension_id,
         size_t num_pending_tasks,
