@@ -232,11 +232,7 @@
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
             wantsToStartDownload:(web::DownloadTask*)download {
   DCHECK_EQ(_downloadTask, download);
-  // TODO(crbug.com/1495353): Only record this action if there is a Drive upload
-  // task associated with `download`.
-  base::RecordAction(
-      base::UserMetricsAction("IOSDownloadStartDownloadToDrive"));
-  _mediator.StartDownloading();
+  [self tryDownload];
 }
 
 #pragma mark - ContainedPresenterDelegate
@@ -291,7 +287,13 @@
 
 - (void)downloadManagerViewControllerDidStartDownload:
     (UIViewController*)controller {
-  [self tryDownload];
+  if (!_mediator.IsSaveToDriveAvailable()) {
+    [self tryDownload];
+    return;
+  }
+  id<SaveToDriveCommands> saveToDriveHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SaveToDriveCommands);
+  [saveToDriveHandler showSaveToDriveForDownload:_downloadTask];
 }
 
 - (void)downloadManagerViewControllerDidRetry:(UIViewController*)controller {
@@ -304,14 +306,6 @@
   }
   // Otherwise retry download.
   [self tryDownload];
-}
-
-- (void)downloadManagerViewControllerDidStartDownloadToDrive:
-    (UIViewController*)controller {
-  CHECK(base::FeatureList::IsEnabled(kIOSSaveToDrive));
-  id<SaveToDriveCommands> saveToDriveHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SaveToDriveCommands);
-  [saveToDriveHandler showSaveToDriveForDownload:_downloadTask];
 }
 
 - (void)downloadManagerViewControllerDidOpenInDriveApp:
@@ -364,6 +358,9 @@
 - (void)tryDownload {
   if (_downloadTask->GetErrorCode() != net::OK) {
     base::RecordAction(base::UserMetricsAction("MobileDownloadRetryDownload"));
+  } else if (_mediator.GetUploadTask() != nullptr) {
+    base::RecordAction(
+        base::UserMetricsAction("IOSDownloadStartDownloadToDrive"));
   } else {
     base::RecordAction(base::UserMetricsAction("IOSDownloadStartDownload"));
     _unopenedDownloads.Add(_downloadTask);

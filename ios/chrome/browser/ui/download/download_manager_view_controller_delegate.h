@@ -23,11 +23,6 @@
 // the download or the upload step depending on which step failed.
 - (void)downloadManagerViewControllerDidRetry:(UIViewController*)controller;
 
-// Called when Download (to Drive) button was tapped. Delegate should show the
-// Save to Drive UI.
-- (void)downloadManagerViewControllerDidStartDownloadToDrive:
-    (UIViewController*)controller;
-
 // Called when "Open" button was tapped. Delegate open the uploaded file in the
 // Drive app.
 - (void)downloadManagerViewControllerDidOpenInDriveApp:

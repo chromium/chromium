@@ -22,12 +22,11 @@
 
 namespace {
 
-// Matcher for "Drive" button on Download Manager UI.
-// TODO(crbug.com/1495352): When "Drive" button is removed, change the
-// accessibility identifier to that of the "SAVE..." button.
+// Matcher for "SAVE..." button on Download Manager UI, which is presented
+// instead of the "DOWNLOAD" button when multiple destinations are available for
+// downloads.
 id<GREYMatcher> DownloadButton() {
-  return grey_accessibilityID(
-      kDownloadManagerDownloadToDriveAccessibilityIdentifier);
+  return grey_accessibilityID(kDownloadManagerDownloadAccessibilityIdentifier);
 }
 
 // Matcher for "Files" destination button in File destination picker UI.

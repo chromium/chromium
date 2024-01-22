@@ -32,8 +32,7 @@ namespace {
 
 // Matcher for "Download" button on Download Manager UI.
 id<GREYMatcher> DownloadButton() {
-  return grey_accessibilityID(
-      kDownloadManagerDownloadToFilesAccessibilityIdentifier);
+  return grey_accessibilityID(kDownloadManagerDownloadAccessibilityIdentifier);
 }
 
 // Provides downloads landing page with download link.

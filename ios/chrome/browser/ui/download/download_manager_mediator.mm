@@ -124,22 +124,22 @@ DownloadManagerState DownloadManagerMediator::GetDownloadManagerState() const {
   }
 }
 
+bool DownloadManagerMediator::IsSaveToDriveAvailable() const {
+  return drive::IsSaveToDriveAvailable(is_incognito_, identity_manager_,
+                                       drive_service_);
+}
+
 #pragma mark - Private
 
 void DownloadManagerMediator::UpdateConsumer() {
   DownloadManagerState state = GetDownloadManagerState();
-
-  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
-    bool is_save_to_drive_available = drive::IsSaveToDriveAvailable(
-        is_incognito_, identity_manager_, drive_service_);
-    [consumer_ setDownloadToDriveButtonVisible:is_save_to_drive_available];
-  }
 
   if (state == kDownloadManagerStateSucceeded && !IsGoogleDriveAppInstalled()) {
     [consumer_ setInstallDriveButtonVisible:YES animated:YES];
   }
 
   if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+    [consumer_ setMultipleDestinationsAvailable:IsSaveToDriveAvailable()];
     DownloadFileDestination destination = upload_task_ == nullptr
                                               ? DownloadFileDestination::kFiles
                                               : DownloadFileDestination::kDrive;

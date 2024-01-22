@@ -46,9 +46,6 @@ constexpr CGFloat kLeadingIconSize = 24;
 constexpr CGFloat kLeadingIconBorderWidth = 1;
 constexpr CGFloat kLeadingIconCornerRadius = 3.5;
 constexpr CGFloat kTextStackSpacing = 2;
-constexpr CGFloat kDownloadButtonHorizontalInset = 8;
-constexpr CGFloat kDownloadButtonVerticalInset = 4;
-constexpr CGFloat kDownloadButtonImagePadding = 4;
 constexpr CGFloat kProgressViewLineWidth = 2.5;
 constexpr CGFloat kCloseButtonIconSize = 30;
 
@@ -85,43 +82,27 @@ UIImage* GetDownloadFileDestinationImage(DownloadFileDestination destination,
   return image_name ? [UIImage imageNamed:image_name] : nil;
 }
 
-// Creates a button configuration for a download button.
-UIButtonConfiguration* CreateDownloadButtonConfiguration(
-    NSString* title,
-    DownloadFileDestination destination,
-    bool use_image,
-    bool use_image_background) {
-  UIButtonConfiguration* conf = [UIButtonConfiguration grayButtonConfiguration];
-  conf.contentInsets = NSDirectionalEdgeInsetsMake(
-      kDownloadButtonVerticalInset, kDownloadButtonHorizontalInset,
-      kDownloadButtonVerticalInset, kDownloadButtonHorizontalInset);
-  conf.imagePlacement = NSDirectionalRectEdgeTop;
-  conf.imagePadding = kDownloadButtonImagePadding;
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  if (use_image) {
-    conf.image =
-        GetDownloadFileDestinationImage(destination, use_image_background);
-  }
-#endif
-  if (title) {
-    NSMutableParagraphStyle* centered_style =
-        [[NSMutableParagraphStyle alloc] init];
-    centered_style.alignment = NSTextAlignmentCenter;
-    conf.attributedTitle = [[NSAttributedString alloc]
-        initWithString:title
-            attributes:@{NSParagraphStyleAttributeName : centered_style}];
-  }
-  return conf;
+// Creates the title for an action button ("DOWNLOAD", "SAVE...", "OPEN", "GET
+// THE APP" or "TRY AGAIN").
+NSAttributedString* CreateActionButtonTitle(NSString* title) {
+  UIFont* font = [UIFont systemFontOfSize:15 weight:UIFontWeightSemibold];
+  font = [[UIFontMetrics defaultMetrics] scaledFontForFont:font];
+  return
+      [[NSAttributedString alloc] initWithString:title
+                                      attributes:@{NSFontAttributeName : font}];
 }
 
-// Creates a button for an action button ("OPEN", "GET THE APP" or "TRY AGAIN")
+// Creates an action button ("DOWNLOAD", "SAVE...", "OPEN", "GET THE APP" or
+// "TRY AGAIN").
 UIButton* CreateActionButton(NSString* title,
                              NSString* accessibility_identifier,
                              UIAction* action) {
   UIButtonConfiguration* conf =
       [UIButtonConfiguration plainButtonConfiguration];
-  conf.buttonSize = UIButtonConfigurationSizeSmall;
-  conf.title = title;
+  conf.attributedTitle = CreateActionButtonTitle(title);
+  NSDirectionalEdgeInsets insets = conf.contentInsets;
+  insets.leading = insets.trailing = 0;
+  conf.contentInsets = insets;
   UIButton* button = [UIButton buttonWithConfiguration:conf
                                          primaryAction:action];
   [button setContentHuggingPriority:UILayoutPriorityRequired
@@ -156,41 +137,27 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   float _progress;
   DownloadManagerState _state;
   BOOL _installDriveButtonVisible;
-  BOOL _downloadToDriveButtonVisible;
+  BOOL _multipleDestinationsAvailable;
   DownloadFileDestination _downloadFileDestination;
   NSString* _saveToDriveUserEmail;
   BOOL _addedConstraints;  // YES if NSLayoutConstraits were added.
-
-  // UI elements.
-  UIImageView* _leadingIcon;
-  UILabel* _statusLabel;
-  UILabel* _detailLabel;
-  UIStackView* _textStack;
-  UIButton* _downloadToFilesButton;
-  UIButton* _downloadToDriveButton;
-  RadialProgressView* _progressView;
-  UIImageView* _filesProgressIcon;
-  UIImageView* _driveProgressIcon;
-  UIButton* _openInButton;
-  UIButton* _openInDriveButton;
-  UIButton* _installAppButton;
-  UIButton* _tryAgainButton;
-  UIButton* _closeButton;
-  UIStackView* _downloadControlsRow;
 }
 
-@property(nonatomic, readonly) UIImageView* leadingIcon;
-@property(nonatomic, readonly) UILabel* statusLabel;
-@property(nonatomic, readonly) UILabel* detailLabel;
-@property(nonatomic, readonly) UIStackView* textStack;
-@property(nonatomic, readonly) UIButton* downloadToFilesButton;
-@property(nonatomic, readonly) UIButton* downloadToDriveButton;
-@property(nonatomic, readonly) RadialProgressView* progressView;
-@property(nonatomic, readonly) UIImageView* filesProgressIcon;
-@property(nonatomic, readonly) UIButton* openInButton;
-@property(nonatomic, readonly) UIButton* tryAgainButton;
-@property(nonatomic, readonly) UIButton* closeButton;
-@property(nonatomic, readonly) UIStackView* downloadControlsRow;
+@property(nonatomic, strong) UIImageView* leadingIcon;
+@property(nonatomic, strong) UIImageView* leadingIconNotStarted;
+@property(nonatomic, strong) UILabel* statusLabel;
+@property(nonatomic, strong) UILabel* detailLabel;
+@property(nonatomic, strong) UIStackView* textStack;
+@property(nonatomic, strong) RadialProgressView* progressView;
+@property(nonatomic, strong) UIImageView* filesProgressIcon;
+@property(nonatomic, strong) UIImageView* driveProgressIcon;
+@property(nonatomic, strong) UIButton* downloadButton;
+@property(nonatomic, strong) UIButton* openInButton;
+@property(nonatomic, strong) UIButton* openInDriveButton;
+@property(nonatomic, strong) UIButton* installAppButton;
+@property(nonatomic, strong) UIButton* tryAgainButton;
+@property(nonatomic, strong) UIButton* closeButton;
+@property(nonatomic, strong) UIStackView* downloadControlsRow;
 
 // Represents constraint for self.view.widthAnchor, which is anchored to
 // superview with different multipliers depending on size class. Stored in a
@@ -220,14 +187,14 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 
   // Create hierarchy of subviews.
   [self.downloadControlsRow addArrangedSubview:self.leadingIcon];
+  [self.downloadControlsRow addArrangedSubview:self.leadingIconNotStarted];
   [self.textStack addArrangedSubview:self.statusLabel];
   [self.textStack addArrangedSubview:self.detailLabel];
   [self.downloadControlsRow addArrangedSubview:self.textStack];
-  [self.downloadControlsRow addArrangedSubview:self.downloadToFilesButton];
-  [self.downloadControlsRow addArrangedSubview:self.downloadToDriveButton];
   [self.progressView addSubview:self.filesProgressIcon];
   [self.progressView addSubview:self.driveProgressIcon];
   [self.downloadControlsRow addArrangedSubview:self.progressView];
+  [self.downloadControlsRow addArrangedSubview:self.downloadButton];
   [self.downloadControlsRow addArrangedSubview:self.openInButton];
   [self.downloadControlsRow addArrangedSubview:self.openInDriveButton];
   [self.downloadControlsRow addArrangedSubview:self.installAppButton];
@@ -277,9 +244,14 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 
   // Leading icon contraints.
   UIView* leadingIcon = self.leadingIcon;
+  UIView* leadingIconNotStarted = self.leadingIconNotStarted;
   [NSLayoutConstraint activateConstraints:@[
     [leadingIcon.widthAnchor constraintEqualToConstant:kLeadingIconSize],
     [leadingIcon.heightAnchor constraintEqualToConstant:kLeadingIconSize],
+    [leadingIconNotStarted.widthAnchor
+        constraintEqualToConstant:kLeadingIconSize],
+    [leadingIconNotStarted.heightAnchor
+        constraintEqualToConstant:kLeadingIconSize],
   ]];
 
   // Progress view constraints.
@@ -292,14 +264,6 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   ]];
   AddSameCenterConstraints(self.filesProgressIcon, progressView);
   AddSameCenterConstraints(self.driveProgressIcon, progressView);
-
-  // Download buttons constraints.
-  UIView* downloadToFilesButton = self.downloadToFilesButton;
-  UIView* downloadToDriveButton = self.downloadToDriveButton;
-  [NSLayoutConstraint activateConstraints:@[
-    [downloadToFilesButton.heightAnchor
-        constraintEqualToAnchor:downloadToDriveButton.heightAnchor],
-  ]];
 
   [self updateConstraintsForTraitCollection:self.traitCollection];
 
@@ -325,11 +289,10 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 #pragma mark - DownloadManagerConsumer
 
 - (void)setIncognito:(BOOL)incognito {
-  _incognito = incognito;
-  self.overrideUserInterfaceStyle =
-      incognito && base::FeatureList::IsEnabled(kIOSIncognitoDownloadsWarning)
-          ? UIUserInterfaceStyleDark
-          : UIUserInterfaceStyleUnspecified;
+  if (_incognito != incognito) {
+    _incognito = incognito;
+    [self updateViews];
+  }
 }
 
 - (void)setFileName:(NSString*)fileName {
@@ -374,9 +337,9 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   }
 }
 
-- (void)setDownloadToDriveButtonVisible:(BOOL)visible {
-  if (_downloadToDriveButtonVisible != visible) {
-    _downloadToDriveButtonVisible = visible;
+- (void)setMultipleDestinationsAvailable:(BOOL)multipleDestinationsAvailable {
+  if (_multipleDestinationsAvailable != multipleDestinationsAvailable) {
+    _multipleDestinationsAvailable = multipleDestinationsAvailable;
     [self updateViews];
   }
 }
@@ -423,6 +386,21 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   return _leadingIcon;
 }
 
+- (UIImageView*)leadingIconNotStarted {
+  if (!_leadingIconNotStarted) {
+    _leadingIconNotStarted = [[UIImageView alloc] init];
+    _leadingIconNotStarted.translatesAutoresizingMaskIntoConstraints = NO;
+    _leadingIconNotStarted.contentMode = UIViewContentModeCenter;
+    [_leadingIconNotStarted
+        setContentHuggingPriority:UILayoutPriorityRequired
+                          forAxis:UILayoutConstraintAxisHorizontal];
+    _leadingIconNotStarted.image = DefaultSymbolTemplateWithPointSize(
+        kOpenInDownloadsSymbol, kSymbolDownloadInfobarPointSize);
+  }
+
+  return _leadingIconNotStarted;
+}
+
 - (UILabel*)statusLabel {
   if (!_statusLabel) {
     _statusLabel = [[UILabel alloc] init];
@@ -467,60 +445,20 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   return _textStack;
 }
 
-- (UIButton*)downloadToFilesButton {
-  if (!_downloadToFilesButton) {
-    UIButtonConfiguration* downloadToFilesButtonConf =
-        CreateDownloadButtonConfiguration(nil, DownloadFileDestination::kFiles,
-                                          false, false);
+- (UIButton*)downloadButton {
+  if (!_downloadButton) {
     __weak __typeof(self) weakSelf = self;
-    UIAction* downloadToFilesAction =
+    _downloadButton = CreateActionButton(
+        [l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD)
+            localizedUppercaseString],
+        kDownloadManagerDownloadAccessibilityIdentifier,
         [UIAction actionWithHandler:^(UIAction* action) {
           [weakSelf.delegate
               downloadManagerViewControllerDidStartDownload:weakSelf];
-        }];
-    _downloadToFilesButton =
-        [UIButton buttonWithConfiguration:downloadToFilesButtonConf
-                            primaryAction:downloadToFilesAction];
-    [_downloadToFilesButton
-        setContentHuggingPriority:UILayoutPriorityRequired
-                          forAxis:UILayoutConstraintAxisHorizontal];
-    [_downloadToFilesButton
-        setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
-                                        forAxis:
-                                            UILayoutConstraintAxisHorizontal];
-    _downloadToFilesButton.accessibilityIdentifier =
-        kDownloadManagerDownloadToFilesAccessibilityIdentifier;
+        }]);
   }
 
-  return _downloadToFilesButton;
-}
-
-- (UIButton*)downloadToDriveButton {
-  if (!_downloadToDriveButton) {
-    UIButtonConfiguration* downloadToDriveButtonConf =
-        CreateDownloadButtonConfiguration(nil, DownloadFileDestination::kDrive,
-                                          false, false);
-    __weak __typeof(self) weakSelf = self;
-    UIAction* downloadToDriveAction =
-        [UIAction actionWithHandler:^(UIAction* action) {
-          [weakSelf.delegate
-              downloadManagerViewControllerDidStartDownloadToDrive:weakSelf];
-        }];
-    _downloadToDriveButton =
-        [UIButton buttonWithConfiguration:downloadToDriveButtonConf
-                            primaryAction:downloadToDriveAction];
-    [_downloadToDriveButton
-        setContentHuggingPriority:UILayoutPriorityRequired
-                          forAxis:UILayoutConstraintAxisHorizontal];
-    [_downloadToDriveButton
-        setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
-                                        forAxis:
-                                            UILayoutConstraintAxisHorizontal];
-    _downloadToDriveButton.accessibilityIdentifier =
-        kDownloadManagerDownloadToDriveAccessibilityIdentifier;
-  }
-
-  return _downloadToDriveButton;
+  return _downloadButton;
 }
 
 - (RadialProgressView*)progressView {
@@ -709,6 +647,8 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   const bool destinationIsDrive =
       _downloadFileDestination == DownloadFileDestination::kDrive;
 
+  self.leadingIconNotStarted.hidden = !taskNotStarted;
+
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   self.leadingIcon.hidden = taskNotStarted;
 #else
@@ -716,9 +656,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 #endif
 
   // Views only shown when task has not started.
-  self.downloadToFilesButton.hidden = !taskNotStarted;
-  self.downloadToDriveButton.hidden =
-      !taskNotStarted || !_downloadToDriveButtonVisible;
+  self.downloadButton.hidden = !taskNotStarted;
 
   // Views only shown when task is in progress.
   self.progressView.hidden = !taskInProgress;
@@ -738,15 +676,9 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 
 // Sets up views for the state `kDownloadManagerStateNotStarted`.
 - (void)updateViewsForStateNotStarted {
-  self.statusLabel.text =
-      _countOfBytesExpectedToReceive == -1
-          ? l10n_util::GetNSString(
-                IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_FILE_WITHOUT_SIZE)
-          : l10n_util::GetNSStringF(
-                IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_FILE_WITH_SIZE,
-                base::SysNSStringToUTF16(
-                    GetSizeString(_countOfBytesExpectedToReceive)));
-
+  // Update status label text.
+  self.statusLabel.text = [self localizedFileNameAndSizeWithPeriod:NO];
+  // Update detail label text.
   if (base::FeatureList::IsEnabled(kIOSIncognitoDownloadsWarning) &&
       self.incognito) {
     self.detailLabel.text =
@@ -754,24 +686,19 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
     // Set to '0' to ensure the entire incognito warning is visible.
     self.detailLabel.numberOfLines = 0;
   } else {
-    self.detailLabel.text = _fileName;
-    self.detailLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-    self.detailLabel.numberOfLines = 1;
+    // The detail label has no text to display.
+    self.detailLabel.text = nil;
   }
 
-  NSString* downloadToFilesButtonText =
-      _downloadToDriveButtonVisible
-          ? l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_FILES)
+  // Update title of download button.
+  UIButtonConfiguration* downloadButtonConfiguration =
+      self.downloadButton.configuration;
+  downloadButtonConfiguration.attributedTitle = CreateActionButtonTitle(
+      _multipleDestinationsAvailable
+          ? l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_SAVE_ELLIPSIS)
           : [l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD)
-                localizedUppercaseString];
-  self.downloadToFilesButton.configuration = CreateDownloadButtonConfiguration(
-      downloadToFilesButtonText, DownloadFileDestination::kFiles,
-      _downloadToDriveButtonVisible,
-      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
-  self.downloadToDriveButton.configuration = CreateDownloadButtonConfiguration(
-      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_DRIVE),
-      DownloadFileDestination::kDrive, true,
-      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+                localizedUppercaseString]);
+  self.downloadButton.configuration = downloadButtonConfiguration;
 }
 
 // Sets up views for the state `kDownloadManagerStateInProgress`.
@@ -793,17 +720,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
     }
     // File is being downloaded, then uploaded to Drive.
     case DownloadFileDestination::kDrive: {
-      if (_countOfBytesExpectedToReceive == -1) {
-        self.statusLabel.text = _fileName;
-        self.statusLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-      } else {
-        NSString* size = GetSizeString(_countOfBytesExpectedToReceive);
-        self.statusLabel.text =
-            l10n_util::GetNSStringF(IDS_IOS_DOWNLOAD_MANAGER_FILENAME_WITH_SIZE,
-                                    base::SysNSStringToUTF16(_fileName),
-                                    base::SysNSStringToUTF16(size));
-        self.statusLabel.numberOfLines = 0;
-      }
+      self.statusLabel.text = [self localizedFileNameAndSizeWithPeriod:YES];
       self.detailLabel.text = l10n_util::GetNSStringF(
           IDS_IOS_DOWNLOAD_MANAGER_SAVING_TO_DRIVE,
           base::SysNSStringToUTF16(_saveToDriveUserEmail));
@@ -829,17 +746,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
       break;
     // File was downloaded, then uploaded to Drive.
     case DownloadFileDestination::kDrive:
-      if (_countOfBytesExpectedToReceive == -1) {
-        self.statusLabel.text = _fileName;
-        self.statusLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-      } else {
-        NSString* size = GetSizeString(_countOfBytesExpectedToReceive);
-        self.statusLabel.text =
-            l10n_util::GetNSStringF(IDS_IOS_DOWNLOAD_MANAGER_FILENAME_WITH_SIZE,
-                                    base::SysNSStringToUTF16(_fileName),
-                                    base::SysNSStringToUTF16(size));
-        self.statusLabel.numberOfLines = 0;
-      }
+      self.statusLabel.text = [self localizedFileNameAndSizeWithPeriod:YES];
       self.detailLabel.text = l10n_util::GetNSStringF(
           IDS_IOS_DOWNLOAD_MANAGER_SAVED_TO_DRIVE,
           base::SysNSStringToUTF16(_saveToDriveUserEmail));
@@ -866,6 +773,24 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
       l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_CANNOT_BE_RETRIED);
   self.detailLabel.text = _fileName;
   self.detailLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+}
+
+#pragma mark - Private
+
+// Returns a localized string with the file name as well as its size if it is
+// available. If `period` is YES, then a period is appended at the end.
+- (NSString*)localizedFileNameAndSizeWithPeriod:(BOOL)period {
+  if (_countOfBytesExpectedToReceive == -1) {
+    return period ? l10n_util::GetNSStringF(
+                        IDS_IOS_DOWNLOAD_MANAGER_FILENAME_PERIOD,
+                        base::SysNSStringToUTF16(_fileName))
+                  : _fileName;
+  }
+  NSString* fileSize = GetSizeString(_countOfBytesExpectedToReceive);
+  return l10n_util::GetNSStringF(
+      period ? IDS_IOS_DOWNLOAD_MANAGER_FILENAME_WITH_SIZE_PERIOD
+             : IDS_IOS_DOWNLOAD_MANAGER_FILENAME_WITH_SIZE,
+      base::SysNSStringToUTF16(_fileName), base::SysNSStringToUTF16(fileSize));
 }
 
 @end

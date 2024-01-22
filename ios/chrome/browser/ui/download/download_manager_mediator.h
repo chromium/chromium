@@ -67,6 +67,9 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   // Converts web::DownloadTask::State to DownloadManagerState.
   DownloadManagerState GetDownloadManagerState() const;
 
+  // Returns whether Drive should be presented as a destination for downloads.
+  bool IsSaveToDriveAvailable() const;
+
  private:
   // Updates consumer from web::DownloadTask.
   void UpdateConsumer();

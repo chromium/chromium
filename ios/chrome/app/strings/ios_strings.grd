@@ -1380,11 +1380,17 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DOWNLOAD_MANAGER_FILENAME_WITH_SIZE" desc="Label for the download manager when the download has completed. It includes the size of the downloaded file. [iOS only]" meaning="Label for the download manager when the download has completed. It includes the size of the downloaded file. [iOS only]">
         <ph name="FILENAME">$1<ex>image.jpeg</ex></ph> (<ph name="FILESIZE">$2<ex>4 MB</ex></ph>)
       </message>
+      <message name="IDS_IOS_DOWNLOAD_MANAGER_FILENAME_WITH_SIZE_PERIOD" desc="Label for the download manager when the download has completed. It includes the size of the downloaded file. It ends with a period since it is followed with another sentence. [iOS only]" meaning="Label for the download manager when the download has completed. It includes the size of the downloaded file. [iOS only]">
+        <ph name="FILENAME">$1<ex>image.jpeg</ex></ph> (<ph name="FILESIZE">$2<ex>4 MB</ex></ph>).
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_MANAGER_FILENAME_PERIOD" desc="Label for the download manager when the download has completed. It ends with a period since it is followed with another sentence. [iOS only]" meaning="Label for the download manager when the download has completed. [iOS only]">
+        <ph name="FILENAME">$1<ex>image.jpeg</ex></ph>.
+      </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_SAVED_TO_DRIVE" desc="Label for the file having been downloaded to Drive. [iOS only]" meaning="Label for the file having been downloaded to Drive. [iOS only]">
-        saved in Drive for <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>.
+        Saved in Drive for <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>.
       </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_SAVING_TO_DRIVE" desc="Label for the file being downloaded to Drive. [iOS only]" meaning="Label for the file being downloaded to Drive. [iOS only]">
-        saving in Drive for <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>.
+        Saving in Drive for <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>.
       </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_FAILED_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement read by Voice Over when the download has failed. [Length: unlimited] [iOS only]">
         Download failed
@@ -1421,6 +1427,9 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_RETRY_DOWNLOAD" desc="Button to retry downloading a file once a previous attempt to download the file failed. [Length: 25em] [iOS only]">
         Retry Download
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_MANAGER_SAVE_ELLIPSIS" desc="The title of the SAVE... button in the download manager when multiple destinations are available for a download. Tapping the 'SAVE...' button presents the file destination picker. [30em]" meaning="The title of the SAVE... button in the download manager when multiple destinations are available for a download. Tapping the 'SAVE...' button presents the file destination picker. [30em]">
+        SAVE...
       </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_STOP" desc="The title of Stop button in the Stop Download? confirmation dialog [30em]">
         Stop
