@@ -24,14 +24,15 @@ bool FeaturePromoRegistry::IsFeatureRegistered(
 
 const FeaturePromoSpecification* FeaturePromoRegistry::GetParamsForFeature(
     const base::Feature& iph_feature) const {
-  auto data_it = feature_promo_data_.find(&iph_feature);
-  DCHECK(data_it != feature_promo_data_.end());
-  return &data_it->second;
+  const auto data_it = feature_promo_data_.find(&iph_feature);
+  return data_it != feature_promo_data_.end() ? &data_it->second : nullptr;
 }
 
 void FeaturePromoRegistry::RegisterFeature(FeaturePromoSpecification spec) {
   const base::Feature* const iph_feature = spec.feature();
   CHECK(iph_feature);
+  CHECK_NE(FeaturePromoSpecification::PromoType::kUnspecified,
+           spec.promo_type());
   const auto result = feature_promo_data_.emplace(iph_feature, std::move(spec));
   DCHECK(result.second) << "Duplicate IPH feature registered: "
                         << iph_feature->name;

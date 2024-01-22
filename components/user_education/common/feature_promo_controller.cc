@@ -269,7 +269,7 @@ FeaturePromoControllerCommon::GetCurrentPromoSpecificationForAnchor(
     ui::ElementIdentifier menu_element_id) const {
   auto* iph_feature = current_promo_ ? current_promo_->iph_feature() : nullptr;
   if (iph_feature && registry_) {
-    auto* spec = registry_->GetParamsForFeature(*iph_feature);
+    auto* const spec = registry_->GetParamsForFeature(*iph_feature);
     if (spec->anchor_element_id() == menu_element_id) {
       return spec;
     }
@@ -280,7 +280,7 @@ FeaturePromoControllerCommon::GetCurrentPromoSpecificationForAnchor(
 bool FeaturePromoControllerCommon::HasPromoBeenDismissed(
     const base::Feature& iph_feature,
     FeaturePromoClosedReason* last_close_reason) const {
-  const FeaturePromoSpecification* spec =
+  const FeaturePromoSpecification* const spec =
       registry()->GetParamsForFeature(iph_feature);
   if (!spec) {
     return false;
@@ -455,7 +455,7 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
     return FeaturePromoResult::kBlockedByPromo;
   }
 
-  const FeaturePromoSpecification* spec =
+  const FeaturePromoSpecification* const spec =
       registry()->GetParamsForFeature(iph_feature);
   if (!spec) {
     return FeaturePromoResult::kError;
