@@ -79,7 +79,7 @@ class ExecutableTestRunner(TestRunner):
         if not self._test_args:
             self._test_args = []
         self._test_name = test_name
-        self._code_coverage_dir = os.path.basename(code_coverage_dir)
+        self._code_coverage_dir = code_coverage_dir
         self._custom_artifact_directory = None
         self._isolated_script_test_output = None
         self._isolated_script_test_perf_output = None
@@ -197,7 +197,9 @@ class ExecutableTestRunner(TestRunner):
                 test_runner,
                 os.path.basename(self._isolated_script_test_perf_output),
                 self._isolated_script_test_perf_output)
-        _copy_coverage_files(test_runner, self._code_coverage_dir)
+        if self._code_coverage_dir:
+            _copy_coverage_files(test_runner,
+                                 os.path.basename(self._code_coverage_dir))
 
     def run_test(self) -> subprocess.Popen:
         test_args = self._get_args()
@@ -242,11 +244,10 @@ def register_executable_test_args(parser: argparse.ArgumentParser) -> None:
 
     test_args = parser.add_argument_group('test', 'arguments for test running')
     test_args.add_argument('--code-coverage-dir',
-                           default=os.getcwd(),
+                           default=None,
                            help='Directory to place code coverage '
                            'information. Only relevant when the target was '
-                           'built with |fuchsia_code_coverage| set to true. '
-                           'Defaults to current directory.')
+                           'built with |fuchsia_code_coverage| set to true.')
     test_args.add_argument('--test-name',
                            dest='test_type',
                            help='Name of the test package (e.g. '
