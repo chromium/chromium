@@ -247,13 +247,14 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
     if (!is_available ||
         game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty)) {
       // Add setup button.
-      // TODO(b/274690042): Replace it with localized strings.
       sub_title_->SetText(l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_GC_SET_UP_SUB_TITLE));
       setup_button_ = container->AddChildView(std::make_unique<PillButton>(
           base::BindRepeating(&GameControlsDetailsRow::OnSetUpButtonPressed,
                               base::Unretained(this)),
-          u"Set up", PillButton::Type::kPrimaryWithoutIcon,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_GAME_DASHBOARD_GC_SET_UP_BUTTON_LABEL),
+          PillButton::Type::kPrimaryWithoutIcon,
           /*icon=*/nullptr));
       setup_button_->SetProperty(views::kMarginsKey,
                                  gfx::Insets::TLBR(0, 20, 0, 0));
@@ -334,9 +335,12 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
   }
 
   void UpdateSubtitle(bool is_feature_enabled) {
-    // TODO(b/274690042): Replace the strings with localized strings.
-    sub_title_->SetText((is_feature_enabled ? u"On for " : u"Off for ") +
-                        base::UTF8ToUTF16(app_name_));
+    const auto string_id =
+        is_feature_enabled
+            ? IDS_ASH_GAME_DASHBOARD_GC_DETAILS_SUB_TITLE_ON_TEMPLATE
+            : IDS_ASH_GAME_DASHBOARD_GC_DETAILS_SUB_TITLE_OFF_TEMPLATE;
+    sub_title_->SetText(
+        l10n_util::GetStringFUTF16(string_id, base::UTF8ToUTF16(app_name_)));
   }
 
   void CacheAppName() {
@@ -794,15 +798,16 @@ void GameDashboardMainMenuView::PerformPulseAnimationForSetupButton(
 void GameDashboardMainMenuView::ShowNudgeForSetupButton() {
   DCHECK(GetGameControlsSetupButton());
 
-  // TODO(b/274690042): Replace it with localized strings.
   auto nudge_data = AnchoredNudgeData(
       kSetupNudgeId, NudgeCatalogName::kGameDashboardControlsNudge,
-      u"Set up to play with your keyboard", game_controls_details_);
+      l10n_util::GetStringUTF16(
+          IDS_ASH_GAME_DASHBOARD_GC_KEYBOARD_SETUP_NUDGE_SUB_TITLE),
+      game_controls_details_);
   nudge_data.image_model =
       ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
           IDR_GAME_DASHBOARD_CONTROLS_SETUP_NUDGE);
-  // TODO(b/274690042): Replace it with localized strings.
-  nudge_data.title_text = u"This game uses your touchscreen";
+  nudge_data.title_text = l10n_util::GetStringUTF16(
+      IDS_ASH_GAME_DASHBOARD_GC_KEYBOARD_SETUP_NUDGE_TITLE);
   nudge_data.arrow = views::BubbleBorder::LEFT_CENTER;
   nudge_data.background_color_id = cros_tokens::kCrosSysBaseHighlight;
   nudge_data.image_background_color_id = cros_tokens::kCrosSysOnBaseHighlight;

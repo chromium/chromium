@@ -7307,7 +7307,7 @@ To shut down the device, press and hold the power button on the device again.
         Send feedback
       </message>
       <message name="IDS_ASH_GAME_DASHBOARD_SETTINGS_TOOLTIP" translateable="false" desc="Tooltip for the Game Dashboard settings icon button.">
-        Dashboard settings
+        Game dashboard settings
       </message>
       <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard toolbar tile.">
         Toolbar
@@ -7340,6 +7340,21 @@ To shut down the device, press and hold the power button on the device again.
       </message>
       <message name="IDS_ASH_GAME_DASHBOARD_GC_SET_UP_SUB_TITLE" desc="The subtitle on the menu details row of Game Controls when no action is set up and Setup button shows up.">
         Keys, buttons, and more
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_DETAILS_SUB_TITLE_ON_TEMPLATE" translateable="false" desc="The subtitle on the Controls row of the Game Dashboard when the controls have been toggled on and the feature is enabled.">
+        On for <ph name="GAME_APP_NAME">$1<ex>app name</ex></ph>
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_DETAILS_SUB_TITLE_OFF_TEMPLATE" translateable="false" desc="The subtitle on the Controls row of the Game Dashboard when the controls have been toggled off and the feature is disabled.">
+        Off for <ph name="GAME_APP_NAME">$1<ex>app name</ex></ph>
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_SET_UP_BUTTON_LABEL" translateable="false" desc="The label on the Setup button in the Controls row of the Game Dashboard when no buttons have been assigned.">
+        Set up
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_KEYBOARD_SETUP_NUDGE_TITLE" translateable="false" desc="The label on the Nudge next to the Controls row of the Game Dashboard when no buttons have been assigned.">
+        This is a touch game
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_KEYBOARD_SETUP_NUDGE_SUB_TITLE" translateable="false" desc="The subtitle on the Nudge next to the Controls row of the Game Dashboard when no buttons have been assigned.">
+        Set up to play with your keyboard
       </message>
 
       <!-- Input device settings notifications -->
