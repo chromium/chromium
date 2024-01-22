@@ -647,33 +647,38 @@ ResultCode PolicyBase::ApplyToTarget(std::unique_ptr<TargetProcess> target) {
   if (ret != SBOX_ALL_OK)
     return ret;
 
-  g_shared_delayed_integrity_level = config()->delayed_integrity_level();
+  IntegrityLevel delayed_integrity_level = config()->delayed_integrity_level();
+  static_assert(sizeof(g_shared_delayed_integrity_level) ==
+                sizeof(delayed_integrity_level));
   ret = target->TransferVariable("g_shared_delayed_integrity_level",
+                                 &delayed_integrity_level,
                                  &g_shared_delayed_integrity_level,
                                  sizeof(g_shared_delayed_integrity_level));
-  g_shared_delayed_integrity_level = INTEGRITY_LEVEL_LAST;
   if (SBOX_ALL_OK != ret)
     return ret;
 
   // Add in delayed mitigations and pseudo-mitigations enforced at startup.
-  g_shared_delayed_mitigations =
+  MitigationFlags delayed_mitigations =
       config()->GetDelayedProcessMitigations() |
       FilterPostStartupProcessMitigations(config()->GetProcessMitigations());
-  if (!CanSetProcessMitigationsPostStartup(g_shared_delayed_mitigations))
+  if (!CanSetProcessMitigationsPostStartup(delayed_mitigations)) {
     return SBOX_ERROR_BAD_PARAMS;
+  }
 
-  ret = target->TransferVariable("g_shared_delayed_mitigations",
-                                 &g_shared_delayed_mitigations,
-                                 sizeof(g_shared_delayed_mitigations));
-  g_shared_delayed_mitigations = 0;
+  static_assert(sizeof(g_shared_delayed_mitigations) ==
+                sizeof(delayed_mitigations));
+  ret = target->TransferVariable(
+      "g_shared_delayed_mitigations", &delayed_mitigations,
+      &g_shared_delayed_mitigations, sizeof(g_shared_delayed_mitigations));
   if (SBOX_ALL_OK != ret)
     return ret;
 
-  g_shared_startup_mitigations = config()->GetProcessMitigations();
-  ret = target->TransferVariable("g_shared_startup_mitigations",
-                                 &g_shared_startup_mitigations,
-                                 sizeof(g_shared_startup_mitigations));
-  g_shared_startup_mitigations = 0;
+  MitigationFlags startup_mitigations = config()->GetProcessMitigations();
+  static_assert(sizeof(g_shared_startup_mitigations) ==
+                sizeof(startup_mitigations));
+  ret = target->TransferVariable(
+      "g_shared_startup_mitigations", &startup_mitigations,
+      &g_shared_startup_mitigations, sizeof(g_shared_startup_mitigations));
   if (SBOX_ALL_OK != ret)
     return ret;
 

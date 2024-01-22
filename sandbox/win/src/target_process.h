@@ -82,9 +82,11 @@ class TargetProcess {
   // Returns the handle to the main thread.
   HANDLE MainThread() const { return sandbox_process_info_.thread_handle(); }
 
-  // Transfers variable at |address| of |size| bytes from broker to target.
+  // Transfers variable at `local_address` of `size` bytes from broker to
+  // `target_address` of target.
   ResultCode TransferVariable(const char* name,
-                              const void* address,
+                              const void* local_address,
+                              void* target_address,
                               size_t size);
 
   // Creates a mock TargetProcess used for testing interceptions.

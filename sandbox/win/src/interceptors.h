@@ -49,7 +49,9 @@ enum InterceptorId {
   INTERCEPTOR_MAX_ID
 };
 
-typedef void* OriginalFunctions[INTERCEPTOR_MAX_ID];
+struct OriginalFunctions {
+  void* functions[INTERCEPTOR_MAX_ID];
+};
 
 }  // namespace sandbox
 
