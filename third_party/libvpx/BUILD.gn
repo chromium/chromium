@@ -329,23 +329,6 @@ if (current_cpu == "arm64") {
       deps = [ ":libvpx_arm64_highbd_headers" ]
     }
   }
-
-  source_set("libvpx_intrinsics_sve") {
-    check_includes = false
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ ":libvpx_config" ]
-    if (!is_win || is_clang) {
-      cflags = [ "-march=armv8.2-a+dotprod+i8mm+sve" ]
-    }
-    if (cpu_arch_full == "arm64") {
-      sources = libvpx_srcs_arm64_sve
-      deps = [ ":libvpx_arm64_headers" ]
-    } else if (cpu_arch_full == "arm64-highbd") {
-      sources = libvpx_srcs_arm64_highbd_sve
-      deps = [ ":libvpx_arm64_highbd_headers" ]
-    }
-  }
 }
 
 if (current_cpu == "arm") {
@@ -529,7 +512,6 @@ static_library("libvpx") {
   if (current_cpu == "arm64") {
     deps += [ ":libvpx_intrinsics_neon_dotprod" ]
     deps += [ ":libvpx_intrinsics_neon_i8mm" ]
-    deps += [ ":libvpx_intrinsics_sve" ]
   }
   if (is_android) {
     deps += [ "//third_party/cpu_features:ndk_compat" ]
