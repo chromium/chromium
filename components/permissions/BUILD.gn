@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(crbug.com/1327384): Make `permissions_common` source_set.
-component("permissions_common") {
+source_set("permissions_common") {
   sources = [
     "constants.cc",
     "constants.h",
