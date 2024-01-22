@@ -101,6 +101,11 @@ BASE_FEATURE(kDataControlsFileAccessDefaultDeny,
              "DataControlsFileAccessDefaultDeny",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables data migration.
+BASE_FEATURE(kDataMigration,
+             "DataMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the desk profiles feature.
 BASE_FEATURE(kDeskProfiles, "DeskProfiles", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -275,6 +280,10 @@ bool IsCrosWebAppShortcutUiUpdateEnabled() {
 
 bool IsDataControlsFileAccessDefaultDenyEnabled() {
   return base::FeatureList::IsEnabled(kDataControlsFileAccessDefaultDeny);
+}
+
+bool IsDataMigrationEnabled() {
+  return base::FeatureList::IsEnabled(kDataMigration);
 }
 
 bool IsDeskProfilesEnabled() {
