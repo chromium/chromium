@@ -334,7 +334,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   // Preferences related to the browser state manager.
   registry->RegisterStringPref(prefs::kBrowserStateLastUsed, std::string());
-  registry->RegisterIntegerPref(prefs::kBrowserStatesNumCreated, 1);
+  registry->RegisterIntegerPref(prefs::kBrowserStatesNumCreated, 0);
   registry->RegisterListPref(prefs::kBrowserStatesLastActive);
 
   [MemoryDebuggerManager registerLocalState:registry];
