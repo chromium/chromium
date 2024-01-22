@@ -72,6 +72,7 @@ class H264EncoderFixture : public ::testing::Test {
                                              profile_,
                                              level_),
             bitrate_,
+            /*is_screencast=*/false,
             base::BindRepeating(&H264EncoderFixture::OnError,
                                 CrossThreadUnretained(this))) {
     auto metrics_provider =

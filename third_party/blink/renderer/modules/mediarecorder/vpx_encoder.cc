@@ -41,11 +41,13 @@ VpxEncoder::VpxEncoder(
     bool use_vp9,
     const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
     uint32_t bits_per_second,
+    bool is_screencast,
     const VideoTrackRecorder::OnErrorCB on_error_cb)
     : Encoder(std::move(encoding_task_runner),
               on_encoded_video_cb,
               bits_per_second),
       use_vp9_(use_vp9),
+      is_screencast_(is_screencast),
       on_error_cb_(on_error_cb) {
   std::memset(&codec_config_, 0, sizeof(codec_config_));
   std::memset(&alpha_codec_config_, 0, sizeof(alpha_codec_config_));
@@ -331,6 +333,22 @@ bool VpxEncoder::ConfigureEncoder(const gfx::Size& size,
     result = vpx_codec_control(encoder->get(), VP8E_SET_CPUUSED, kCpuUsed);
     DLOG_IF(WARNING, VPX_CODEC_OK != result) << "VP8E_SET_CPUUSED failed";
   }
+
+  // Tune configs for screen sharing. The values are the same as WebRTC
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/modules/video_coding/codecs/vp8/libvpx_vp8_encoder.cc
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/modules/video_coding/codecs/vp9/libvpx_vp9_encoder.cc
+  vpx_codec_control(encoder->get(), VP8E_SET_STATIC_THRESHOLD,
+                    (is_screencast_ && !use_vp9_) ? 100 : 1);
+  if (is_screencast_) {
+    if (use_vp9_) {
+      vpx_codec_control(encoder->get(), VP9E_SET_TUNE_CONTENT,
+                        VP9E_CONTENT_SCREEN);
+    } else {
+      // Setting 1, not 2, so the libvpx encoder doesn't drop a frame.
+      vpx_codec_control(encoder->get(), VP8E_SET_SCREEN_CONTENT_MODE, 1 /*On*/);
+    }
+  }
+
   return true;
 }
 

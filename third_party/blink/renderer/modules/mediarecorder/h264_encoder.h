@@ -30,6 +30,7 @@ class MODULES_EXPORT H264Encoder final : public VideoTrackRecorder::Encoder {
               const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
               VideoTrackRecorder::CodecProfile codec_profile,
               uint32_t bits_per_second,
+              bool is_screencast,
               const VideoTrackRecorder::OnErrorCB on_error_cb);
   ~H264Encoder() override;
 
@@ -54,6 +55,7 @@ class MODULES_EXPORT H264Encoder final : public VideoTrackRecorder::Encoder {
 
   // TODO(inker): Move this field into VideoTrackRecorder::Encoder.
   const VideoTrackRecorder::CodecProfile codec_profile_;
+  const bool is_screencast_;
 
   const VideoTrackRecorder::OnErrorCB on_error_cb_;
 
