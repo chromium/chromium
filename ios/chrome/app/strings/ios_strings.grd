@@ -4977,7 +4977,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Last Tab Used on <ph name="SOURCE_DEVICE">$1<ex>iPad</ex></ph>
       </message>
       <message name="IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_DESCRIPTION" desc="Descripiton for the long-press context menu of the module that presents the last opened tab, on the new tab page.">
-        Hide "Continue Browsing"
+        Hide "Continue with This Tab"
       </message>
       <message name="IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_TITLE" desc="Title for the long-press context menu of the module that presents the last opened tab, on the new tab page.">
           This card shows your last used open tab across all your synced devices within the last 24 hours.
@@ -4991,8 +4991,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_RESUMPTION_TILE_HOST_LABEL" desc="Label that displays the name of the last synced device. This module presents the last open tab, on the new tab page.">
         From "<ph name="SOURCE_DEVICE">$1<ex>iPad</ex></ph>"
       </message>
-      <message name="IDS_IOS_TAB_RESUMPTION_TITLE" desc="Title for the module that presents the last opened tab, on the new tab page.">
-        Continue Browsing
+      <message name="IDS_IOS_TAB_RESUMPTION_TITLE" desc="Title for the module that presents the last opened tab, on the new tab page." meaning="This is mostly in title case, iOS only.">
+    Continue with This Tab
       </message>
       <message name="IDS_IOS_TAB_STRIP_ENTER_TAB_SWITCHER" desc="The accessibility label of the tab strip button to enter the tab switcher. The tab switcher is a view showing the opened tabs, and allows users to switch, close, and open new tabs. [iOS only]">
         Enter Tab Switcher

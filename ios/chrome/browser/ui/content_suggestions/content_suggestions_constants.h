@@ -76,7 +76,7 @@ extern NSString* const kMagicStackEditButtonAccessibilityIdentifier;
 extern NSString* const
     kMagicStackEditHalfSheetDoneButtonAccessibilityIdentifier;
 
-// Represents the "Continue Browsing" module in the magic stack.
+// Represents the "Continue with This Tab" module in the magic stack.
 extern NSString* const
     kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier;
 
