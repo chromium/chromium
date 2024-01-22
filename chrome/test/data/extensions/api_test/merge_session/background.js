@@ -15,9 +15,9 @@ function initGlobals() {
 }
 
 // Starts XHR requests - one for google.com and one later for non-google.
-function startXHRRequests(googlePageUrl, googlePageCheckCallback,
-                          nonGooglePageUrl, nonGooglePageCheckCallback,
-                          async, should_throttle) {
+function startXHRRequests(
+    googlePageUrl, googlePageCheckCallback, nonGooglePageUrl,
+    nonGooglePageCheckCallback, is_async, should_throttle) {
   // Kick off google XHR first.
   var xhr = new XMLHttpRequest();
 
@@ -34,8 +34,9 @@ function startXHRRequests(googlePageUrl, googlePageCheckCallback,
     console.warn("xhr.onreadystatechange: " + xhr.readyState);
     switch (xhr.readyState) {
       case XMLHttpRequest.OPENED:
-        startNonGoogleXHRRequests(nonGooglePageUrl, nonGooglePageCheckCallback,
-                                  async, should_throttle);
+        startNonGoogleXHRRequests(
+            nonGooglePageUrl, nonGooglePageCheckCallback, is_async,
+            should_throttle);
         break;
       case XMLHttpRequest.DONE:
         validateResponse();
@@ -43,17 +44,16 @@ function startXHRRequests(googlePageUrl, googlePageCheckCallback,
     }
   };
   chrome.test.sendMessage("opening " + googlePageUrl);
-  xhr.open("GET", googlePageUrl, async);
+  xhr.open('GET', googlePageUrl, is_async);
   xhr.send();
   googleRequestSent = true;
-  if (!async) {
+  if (!is_async) {
     validateResponse();
   }
 }
 
-function startNonGoogleXHRRequests(nonGooglePageUrl,
-                                   nonGooglePageCheckCallback,
-                                   async, should_throttle) {
+function startNonGoogleXHRRequests(
+    nonGooglePageUrl, nonGooglePageCheckCallback, is_async, should_throttle) {
   // Kick off non-google XHR next.
   var xhr = new XMLHttpRequest();
 
@@ -78,10 +78,10 @@ function startNonGoogleXHRRequests(nonGooglePageUrl,
         break;
     }
   };
-  xhr.open("GET", nonGooglePageUrl, async);
+  xhr.open('GET', nonGooglePageUrl, is_async);
   xhr.send();
   nonGoogleRequestSent = true;
-  if (!async) {
+  if (!is_async) {
     validateResponse();
   }
 }
@@ -103,13 +103,13 @@ function nonGooglePageCheck() {
 }
 
 // Performs test that will verify if XHR request had completed prematurely.
-function startThrottledTests(googlePageUrl, nonGooglePageUrl, async,
-                             should_throttle) {
+function startThrottledTests(
+    googlePageUrl, nonGooglePageUrl, is_async, should_throttle) {
   chrome.test.runTests([function testXHRThrottle() {
     initGlobals();
-    startXHRRequests(googlePageUrl, googlePageCheck,
-                     nonGooglePageUrl, nonGooglePageCheck, async,
-                     should_throttle);
+    startXHRRequests(
+        googlePageUrl, googlePageCheck, nonGooglePageUrl, nonGooglePageCheck,
+        is_async, should_throttle);
   }]);
   return true;
 }
