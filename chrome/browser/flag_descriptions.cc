@@ -5070,6 +5070,22 @@ const char kWebAppManifestImmediateUpdatingDescription[] =
     "soon as a change has been detected instead of waiting for all app windows "
     "to be closed.";
 
+const char kWebAppSeparateUserDisplayModeForCrosName[] =
+    "Web App separate UserDisplayMode for CrOS";
+const char kWebAppSeparateUserDisplayModeForCrosDescription[] =
+    "Adds and uses a new web app field that records and syncs the User Display "
+    "Mode of web apps between CrOS devices separately from the existing User "
+    "Display Mode field (which syncs between non-CrOS devices and devices with "
+    "this flag disabled).";
+
+const char kWebAppSyncOnlySeparateUserDisplayModeForCrosName[] =
+    "Web App sync only separate UserDisplayMode for CrOS";
+const char kWebAppSyncOnlySeparateUserDisplayModeForCrosDescription[] =
+    "Adds and handles but does not use a new web app field that records and "
+    "syncs the User Display Mode of web apps between CrOS devices separately "
+    "from the existing User Display Mode field (which syncs between non-CrOS "
+    "devices and devices with this flag disabled).";
+
 const char kWebAppSyncGeneratedIconBackgroundFixName[] =
     "Web App Sync Generated Icon Background Fix";
 const char kWebAppSyncGeneratedIconBackgroundFixDescription[] =

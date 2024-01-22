@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/browser/unexpire_flags_gen.h"
+#include "chrome/browser/web_applications/features.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -4922,6 +4923,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebAppManifestImmediateUpdatingName,
      flag_descriptions::kWebAppManifestImmediateUpdatingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebAppManifestImmediateUpdating)},
+    {"web-app-separate-user-display-mode-for-cros",
+     flag_descriptions::kWebAppSeparateUserDisplayModeForCrosName,
+     flag_descriptions::kWebAppSeparateUserDisplayModeForCrosDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(web_app::kSeparateUserDisplayModeForCrOS)},
+    {"web-app-sync-only-separate-user-display-mode-for-cros",
+     flag_descriptions::kWebAppSyncOnlySeparateUserDisplayModeForCrosName,
+     flag_descriptions::
+         kWebAppSyncOnlySeparateUserDisplayModeForCrosDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(web_app::kSyncOnlySeparateUserDisplayModeForCrOS)},
     {"web-app-sync-generated-icon-background-fix",
      flag_descriptions::kWebAppSyncGeneratedIconBackgroundFixName,
      flag_descriptions::kWebAppSyncGeneratedIconBackgroundFixDescription,

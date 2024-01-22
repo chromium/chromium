@@ -24387,6 +24387,8 @@ from previous Chrome versions.
   <int value="98134240" label="material-design-ink-drop-animation-speed"/>
   <int value="98218116" label="ContextualSearchLongpressResolve:disabled"/>
   <int value="98773632" label="DesktopPWAsTabStripCustomizations:enabled"/>
+  <int value="99128921"
+      label="SyncOnlySeparateUserDisplayModeForCrOS:disabled"/>
   <int value="99177659" label="OmniboxUICuesForSearchHistoryMatches:disabled"/>
   <int value="99660832" label="DockedMagnifierResizing:enabled"/>
   <int value="101253756" label="RequestDesktopSiteDefaults:disabled"/>
@@ -25358,6 +25360,7 @@ from previous Chrome versions.
   <int value="552421509" label="AssistMultiWordExpanded:enabled"/>
   <int value="552724079" label="NotifierCollision:enabled"/>
   <int value="553197994" label="FedCmMetricsEndpoint:enabled"/>
+  <int value="554454443" label="SeparateUserDisplayModeForCrOS:enabled"/>
   <int value="555959995" label="ChromeSharingHub:enabled"/>
   <int value="556555487"
       label="AutofillDoNotUploadSaveUnsupportedCards:disabled"/>
@@ -25613,6 +25616,7 @@ from previous Chrome versions.
   <int value="674788251" label="EnableNewBadgeOnMenuItems:enabled"/>
   <int value="675427884" label="EnableFakeMouseHeuristic:enabled"/>
   <int value="676353150" label="OmniboxRetainSuggestionsWithHeaders:disabled"/>
+  <int value="676922235" label="SeparateUserDisplayModeForCrOS:disabled"/>
   <int value="677866592" label="ClickToCallUI:disabled"/>
   <int value="677883800" label="DiagnosticsAppNavigation:disabled"/>
   <int value="678752544" label="VcWebApi:enabled"/>
@@ -26466,6 +26470,8 @@ from previous Chrome versions.
       label="OmniboxMostVisitedTilesHorizontalRenderGroup:enabled"/>
   <int value="1084365949" label="ReleaseNotesNotification:disabled"/>
   <int value="1084484359" label="ContextualTriggersSelectionSize:disabled"/>
+  <int value="1084768575"
+      label="SyncOnlySeparateUserDisplayModeForCrOS:enabled"/>
   <int value="1084972292" label="WebXRAnchors:enabled"/>
   <int value="1085130793" label="LongPressBackForHistory:disabled"/>
   <int value="1085260595" label="WebAuthenticationAndroidCredMan:disabled"/>

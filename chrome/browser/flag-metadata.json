@@ -8404,6 +8404,11 @@
     "expiry_milestone": 120
   },
   {
+    "name":  "web-app-separate-user-display-mode-for-cros",
+    "owners": [ "glenrob@chromium.org", "cros-web-apps-core@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "web-app-sync-generated-icon-background-fix",
     "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 130
@@ -8416,6 +8421,11 @@
   {
     "name": "web-app-sync-generated-icon-update-fix",
     "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
+    "name":   "web-app-sync-only-separate-user-display-mode-for-cros",
+    "owners": [ "glenrob@chromium.org", "cros-web-apps-core@google.com" ],
     "expiry_milestone": 130
   },
   {
