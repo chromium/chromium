@@ -30,6 +30,8 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
     private SafetyCheckMediator mMediator;
     private SyncService mSyncService;
     private PrefService mPrefService;
+    private PropertyModel mPasswordCheckLocalModel;
+    private PropertyModel mPasswordCheckAccountModel;
 
     /**
      * Creates a new instance given a settings fragment, an updates client, and a settings launcher.
@@ -99,19 +101,12 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                                     // and Mediator.
                                     PropertyModel safetyCheckModel =
                                             createSafetyCheckModelAndBind(mSettingsFragment);
-                                    String preferenceViewId =
-                                            isLocalPasswordStorageUsed()
-                                                    ? SafetyCheckViewBinder.PASSWORDS_KEY_LOCAL
-                                                    : SafetyCheckViewBinder.PASSWORDS_KEY_ACCOUNT;
-                                    PropertyModel passwordsCheckPreferenceModel =
-                                            createPasswordCheckPreferenceModelAndBind(
-                                                    mSettingsFragment,
-                                                    safetyCheckModel,
-                                                    preferenceViewId);
+                                    createPasswordCheckModels(mSettingsFragment, safetyCheckModel);
                                     mMediator =
                                             new SafetyCheckMediator(
                                                     safetyCheckModel,
-                                                    passwordsCheckPreferenceModel,
+                                                    mPasswordCheckAccountModel,
+                                                    mPasswordCheckLocalModel,
                                                     mUpdatesClient,
                                                     settingsLauncher,
                                                     signinLauncher,
@@ -146,6 +141,24 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
         return model;
     }
 
+    private void createPasswordCheckModels(
+            SafetyCheckSettingsFragment settingsFragment, PropertyModel safetyCheckModel) {
+        if (isAccountPasswordStorageUsed()) {
+            mPasswordCheckAccountModel =
+                    createPasswordCheckPreferenceModelAndBind(
+                            settingsFragment,
+                            safetyCheckModel,
+                            SafetyCheckViewBinder.PASSWORDS_KEY_ACCOUNT);
+        }
+        if (isLocalPasswordStorageUsed()) {
+            mPasswordCheckLocalModel =
+                    createPasswordCheckPreferenceModelAndBind(
+                            settingsFragment,
+                            safetyCheckModel,
+                            SafetyCheckViewBinder.PASSWORDS_KEY_LOCAL);
+        }
+    }
+
     static PropertyModel createPasswordCheckPreferenceModelAndBind(
             SafetyCheckSettingsFragment settingsFragment,
             PropertyModel safetyCheckModel,
@@ -156,7 +169,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                 passwordSafetyCheckModel,
                 settingsFragment,
                 (model, fragment, key) ->
-                        SafetyCheckViewBinder.bindPasswordSafetyCheck(
+                        SafetyCheckViewBinder.bindPasswordCheckPreferenceModel(
                                 safetyCheckModel, model, fragment, key, preferenceViewId));
         return passwordSafetyCheckModel;
     }

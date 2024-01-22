@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_check_wrapper.FakePasswordCheckControllerFactory;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordCheckResult;
+import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordStorageType;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckNativeException;
 import org.chromium.chrome.browser.safety_check.PasswordsCheckPreferenceProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckMediator.SafetyCheckInteractions;
@@ -113,7 +114,7 @@ public class SafetyCheckMediatorTest {
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     private PropertyModel mSafetyCheckModel;
-    private PropertyModel mPasswordCheckPreferenceModel;
+    private PropertyModel mPasswordCheckModel;
 
     @Mock private SafetyCheckBridge.Natives mSafetyCheckBridge;
     @Mock private Profile mProfile;
@@ -156,17 +157,20 @@ public class SafetyCheckMediatorTest {
         ContextUtils.initApplicationContextForTests(ApplicationProvider.getApplicationContext());
     }
 
-    private void setUpPasswordCheckToReturnError(Exception error) {
+    private void setUpPasswordCheckToReturnError(
+            @PasswordStorageType int passwordStorageType, Exception error) {
         mPasswordCheckControllerFactory
                 .getLastCreatedController()
-                .setPasswordCheckResult(new PasswordCheckResult(error));
+                .setPasswordCheckResult(passwordStorageType, new PasswordCheckResult(error));
     }
 
-    private void setUpPasswordCheckToReturnNoPasswords() {
+    private void setUpPasswordCheckToReturnNoPasswords(
+            @PasswordStorageType int passwordStorageType) {
         if (mUseGmsApi) {
             mPasswordCheckControllerFactory
                     .getLastCreatedController()
                     .setPasswordCheckResult(
+                            passwordStorageType,
                             new PasswordCheckResult(
                                     /* totalPasswordsCount= */ 0, /* breachedCount= */ 00));
         } else {
@@ -175,12 +179,16 @@ public class SafetyCheckMediatorTest {
                             "Test exception", PasswordCheckUIStatus.ERROR_NO_PASSWORDS);
             mPasswordCheckControllerFactory
                     .getLastCreatedController()
-                    .setPasswordCheckResult(new PasswordCheckResult(noPasswordsError));
+                    .setPasswordCheckResult(
+                            passwordStorageType, new PasswordCheckResult(noPasswordsError));
         }
     }
 
-    private void setUpPasswordCheckToReturnResult(PasswordCheckResult result) {
-        mPasswordCheckControllerFactory.getLastCreatedController().setPasswordCheckResult(result);
+    private void setUpPasswordCheckToReturnResult(
+            @PasswordStorageType int passwordStorageType, PasswordCheckResult result) {
+        mPasswordCheckControllerFactory
+                .getLastCreatedController()
+                .setPasswordCheckResult(passwordStorageType, result);
     }
 
     private void configureMockSyncService() {
@@ -230,8 +238,7 @@ public class SafetyCheckMediatorTest {
                 .thenReturn(false);
 
         mSafetyCheckModel = SafetyCheckProperties.createSafetyCheckModel();
-        mPasswordCheckPreferenceModel =
-                PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel();
+        mPasswordCheckModel = PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel();
         mPasswordCheckControllerFactory = new FakePasswordCheckControllerFactory();
         if (mUseGmsApi) {
             // TODO(crbug.com/1346235): Use existing fake instead of mocking
@@ -242,7 +249,8 @@ public class SafetyCheckMediatorTest {
             mMediator =
                     new SafetyCheckMediator(
                             mSafetyCheckModel,
-                            mPasswordCheckPreferenceModel,
+                            mPasswordCheckModel,
+                            /* passwordCheckLocalModel */ null,
                             mUpdatesDelegate,
                             mSettingsLauncher,
                             mSigninLauncher,
@@ -257,7 +265,8 @@ public class SafetyCheckMediatorTest {
             mMediator =
                     new SafetyCheckMediator(
                             mSafetyCheckModel,
-                            mPasswordCheckPreferenceModel,
+                            mPasswordCheckModel,
+                            /* passwordCheckLocalModel */ null,
                             mUpdatesDelegate,
                             mSettingsLauncher,
                             mSigninLauncher,
@@ -383,9 +392,10 @@ public class SafetyCheckMediatorTest {
     @Test
     public void testPasswordsCheckError() {
         mMediator.performSafetyCheck();
-        setUpPasswordCheckToReturnError(new Exception("Test exception"));
+        setUpPasswordCheckToReturnError(
+                PasswordStorageType.ACCOUNT_STORAGE, new Exception("Test exception"));
 
-        assertEquals(PasswordsState.ERROR, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.ERROR, mPasswordCheckModel.get(PASSWORDS_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -398,12 +408,13 @@ public class SafetyCheckMediatorTest {
 
         mMediator.performSafetyCheck();
         setUpPasswordCheckToReturnError(
+                PasswordStorageType.ACCOUNT_STORAGE,
                 new PasswordCheckBackendException(
                         "test", CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED));
 
         assertEquals(
                 PasswordsState.BACKEND_VERSION_NOT_SUPPORTED,
-                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+                mPasswordCheckModel.get(PASSWORDS_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -413,10 +424,9 @@ public class SafetyCheckMediatorTest {
     @Test
     public void testPasswordsCheckNoPasswords() {
         mMediator.performSafetyCheck();
-        setUpPasswordCheckToReturnNoPasswords();
+        setUpPasswordCheckToReturnNoPasswords(PasswordStorageType.ACCOUNT_STORAGE);
 
-        assertEquals(
-                PasswordsState.NO_PASSWORDS, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.NO_PASSWORDS, mPasswordCheckModel.get(PASSWORDS_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -427,9 +437,10 @@ public class SafetyCheckMediatorTest {
     public void testPasswordsCheckNoLeaks() {
         mMediator.performSafetyCheck();
         setUpPasswordCheckToReturnResult(
+                PasswordStorageType.ACCOUNT_STORAGE,
                 new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 0));
 
-        assertEquals(PasswordsState.SAFE, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.SAFE, mPasswordCheckModel.get(PASSWORDS_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -442,12 +453,11 @@ public class SafetyCheckMediatorTest {
 
         mMediator.performSafetyCheck();
         setUpPasswordCheckToReturnResult(
+                PasswordStorageType.ACCOUNT_STORAGE,
                 new PasswordCheckResult(/* totalPasswordsCount= */ 199, numLeaks));
 
-        assertEquals(
-                PasswordsState.COMPROMISED_EXIST,
-                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
-        assertEquals(numLeaks, mPasswordCheckPreferenceModel.get(COMPROMISED_PASSWORDS_COUNT));
+        assertEquals(PasswordsState.COMPROMISED_EXIST, mPasswordCheckModel.get(PASSWORDS_STATE));
+        assertEquals(numLeaks, mPasswordCheckModel.get(COMPROMISED_PASSWORDS_COUNT));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -482,12 +492,13 @@ public class SafetyCheckMediatorTest {
         mMediator.setInitialState();
         // Passwords: safe state.
         setUpPasswordCheckToReturnResult(
+                PasswordStorageType.ACCOUNT_STORAGE,
                 new PasswordCheckResult(/* totalPasswordsCount= */ 12, /* breachedCount= */ 0));
 
         // Verify the states.
         assertEquals(
                 SafeBrowsingState.ENABLED_STANDARD, mSafetyCheckModel.get(SAFE_BROWSING_STATE));
-        assertEquals(PasswordsState.SAFE, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.SAFE, mPasswordCheckModel.get(PASSWORDS_STATE));
         assertEquals(UpdatesState.OUTDATED, mSafetyCheckModel.get(UPDATES_STATE));
     }
 
@@ -518,13 +529,13 @@ public class SafetyCheckMediatorTest {
         mMediator.setInitialState();
         // Passwords: no passwords.
         setUpPasswordCheckToReturnResult(
+                PasswordStorageType.ACCOUNT_STORAGE,
                 new PasswordCheckResult(/* totalPasswordsCount= */ 0, /* breachedCount= */ 0));
 
         // Verify the states.
         assertEquals(
                 SafeBrowsingState.DISABLED_BY_ADMIN, mSafetyCheckModel.get(SAFE_BROWSING_STATE));
-        assertEquals(
-                PasswordsState.NO_PASSWORDS, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.NO_PASSWORDS, mPasswordCheckModel.get(PASSWORDS_STATE));
         assertEquals(UpdatesState.OFFLINE, mSafetyCheckModel.get(UPDATES_STATE));
     }
 
@@ -555,13 +566,12 @@ public class SafetyCheckMediatorTest {
         mMediator.setInitialState();
         // Passwords: compromised state.
         setUpPasswordCheckToReturnResult(
+                PasswordStorageType.ACCOUNT_STORAGE,
                 new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 18));
 
         // Verify the states.
         assertEquals(SafeBrowsingState.DISABLED, mSafetyCheckModel.get(SAFE_BROWSING_STATE));
-        assertEquals(
-                PasswordsState.COMPROMISED_EXIST,
-                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.COMPROMISED_EXIST, mPasswordCheckModel.get(PASSWORDS_STATE));
         assertEquals(UpdatesState.UPDATED, mSafetyCheckModel.get(UPDATES_STATE));
     }
 
@@ -592,11 +602,12 @@ public class SafetyCheckMediatorTest {
         mMediator.setInitialState();
         // Passwords: safe state.
         setUpPasswordCheckToReturnResult(
+                PasswordStorageType.ACCOUNT_STORAGE,
                 new PasswordCheckResult(/* totalPasswordsCount= */ 13, /* breachedCount= */ 0));
 
         // Verify the states.
         assertEquals(SafeBrowsingState.UNCHECKED, mSafetyCheckModel.get(SAFE_BROWSING_STATE));
-        assertEquals(PasswordsState.UNCHECKED, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.UNCHECKED, mPasswordCheckModel.get(PASSWORDS_STATE));
         assertEquals(UpdatesState.UNCHECKED, mSafetyCheckModel.get(UPDATES_STATE));
     }
 
@@ -627,13 +638,12 @@ public class SafetyCheckMediatorTest {
         mMediator.setInitialState();
         // Passwords: compromised state.
         setUpPasswordCheckToReturnResult(
+                PasswordStorageType.ACCOUNT_STORAGE,
                 new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 18));
 
         // Verify the states.
         assertEquals(SafeBrowsingState.UNCHECKED, mSafetyCheckModel.get(SAFE_BROWSING_STATE));
-        assertEquals(
-                PasswordsState.COMPROMISED_EXIST,
-                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.COMPROMISED_EXIST, mPasswordCheckModel.get(PASSWORDS_STATE));
         assertEquals(UpdatesState.UNCHECKED, mSafetyCheckModel.get(UPDATES_STATE));
     }
 
@@ -641,29 +651,27 @@ public class SafetyCheckMediatorTest {
     public void testPasswordsInitialLoadDuringInitialState() {
         // Order: setting initial state -> showing CHECK while the check is still running -> done.
         mMediator.setInitialState();
-        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckModel.get(PASSWORDS_STATE));
 
         setUpPasswordCheckToReturnResult(
+                PasswordStorageType.ACCOUNT_STORAGE,
                 new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 18));
-        assertEquals(
-                PasswordsState.COMPROMISED_EXIST,
-                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.COMPROMISED_EXIST, mPasswordCheckModel.get(PASSWORDS_STATE));
     }
 
     @Test
     public void testPasswordsInitialLoadDuringRunningCheck() {
         // Order: initial state -> safety check triggered -> load completed -> check done.
         mMediator.setInitialState();
-        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckModel.get(PASSWORDS_STATE));
 
         mMediator.performSafetyCheck();
-        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckModel.get(PASSWORDS_STATE));
 
         setUpPasswordCheckToReturnResult(
+                PasswordStorageType.ACCOUNT_STORAGE,
                 new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 18));
-        assertEquals(
-                PasswordsState.COMPROMISED_EXIST,
-                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.COMPROMISED_EXIST, mPasswordCheckModel.get(PASSWORDS_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -674,26 +682,26 @@ public class SafetyCheckMediatorTest {
     @Test
     public void testPasswordCheckWhenRanImmediately() {
         mMediator.performSafetyCheck();
-        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckModel.get(PASSWORDS_STATE));
 
         setUpPasswordCheckToReturnResult(
+                PasswordStorageType.ACCOUNT_STORAGE,
                 new PasswordCheckResult(/* totalPasswordsCount= */ 6, /* breachedCount= */ 3));
-        assertEquals(
-                PasswordsState.COMPROMISED_EXIST,
-                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.COMPROMISED_EXIST, mPasswordCheckModel.get(PASSWORDS_STATE));
     }
 
     @Test
     public void testPasswordsInitialLoadCheckReturnsError() {
         // Order: initial state -> safety check triggered -> check error -> load ignored.
         mMediator.setInitialState();
-        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckModel.get(PASSWORDS_STATE));
 
         mMediator.performSafetyCheck();
-        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckModel.get(PASSWORDS_STATE));
 
-        setUpPasswordCheckToReturnError(new Exception("Test exception"));
-        assertEquals(PasswordsState.ERROR, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        setUpPasswordCheckToReturnError(
+                PasswordStorageType.ACCOUNT_STORAGE, new Exception("Test exception"));
+        assertEquals(PasswordsState.ERROR, mPasswordCheckModel.get(PASSWORDS_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -706,12 +714,13 @@ public class SafetyCheckMediatorTest {
         doReturn(false).when(mSafetyCheckBridge).userSignedIn(any(BrowserContextHandle.class));
         mMediator.setInitialState();
 
-        assertEquals(PasswordsState.SIGNED_OUT, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.SIGNED_OUT, mPasswordCheckModel.get(PASSWORDS_STATE));
         // Check that there was no password check results fetch operation started.
         assertNull(
                 mPasswordCheckControllerFactory
                         .getLastCreatedController()
-                        .getFuturePasswordCheckResult());
+                        .getFuturePasswordCheckResultForStorageType(
+                                PasswordStorageType.ACCOUNT_STORAGE));
         // The results of the previous check should be ignored.
         assertEquals(
                 1,
@@ -723,33 +732,33 @@ public class SafetyCheckMediatorTest {
     public void testPasswordCheckFinishedAfterDestroy() {
         mMediator.performSafetyCheck();
 
-        @PasswordsState int stateBeforeDestroy = mPasswordCheckPreferenceModel.get(PASSWORDS_STATE);
+        @PasswordsState int stateBeforeDestroy = mPasswordCheckModel.get(PASSWORDS_STATE);
         mMediator.destroy();
         setUpPasswordCheckToReturnResult(
+                PasswordStorageType.ACCOUNT_STORAGE,
                 new PasswordCheckResult(/* totalPasswordsCount= */ 20, /* breachedCount= */ 0));
 
         // After calling destroy() on mediator, the model is not expected to change any more.
-        assertEquals(stateBeforeDestroy, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(stateBeforeDestroy, mPasswordCheckModel.get(PASSWORDS_STATE));
     }
 
     @Test
     public void testClickListenerLeadsToUPMAccountPasswordCheckup() {
         // Order: initial state -> safety check triggered -> check done -> load completed.
         mMediator.setInitialState();
-        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckModel.get(PASSWORDS_STATE));
 
         mMediator.performSafetyCheck();
-        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckModel.get(PASSWORDS_STATE));
 
         setUpPasswordCheckToReturnResult(
+                PasswordStorageType.ACCOUNT_STORAGE,
                 new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 18));
-        assertEquals(
-                PasswordsState.COMPROMISED_EXIST,
-                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.COMPROMISED_EXIST, mPasswordCheckModel.get(PASSWORDS_STATE));
 
         Preference.OnPreferenceClickListener listener =
                 (Preference.OnPreferenceClickListener)
-                        mPasswordCheckPreferenceModel.get(
+                        mPasswordCheckModel.get(
                                 PasswordsCheckPreferenceProperties.PASSWORDS_CLICK_LISTENER);
         listener.onPreferenceClick(new Preference(ContextUtils.getApplicationContext()));
 
@@ -764,30 +773,105 @@ public class SafetyCheckMediatorTest {
         // account storage.
         // These behaviours are set here again because the tests are currently not parametrised in
         // a way to support UPM for non password syncing users.
+        PropertyModel passwordCheckLocalModel =
+                PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel();
+        mMediator =
+                new SafetyCheckMediator(
+                        mSafetyCheckModel,
+                        /* passwordCheckAccountModel= */ null,
+                        passwordCheckLocalModel,
+                        mUpdatesDelegate,
+                        mSettingsLauncher,
+                        mSigninLauncher,
+                        mSyncService,
+                        mPrefService,
+                        mPasswordStoreBridge,
+                        mPasswordCheckControllerFactory,
+                        mHandler,
+                        mModalDialogManagerSupplier);
+
         when(mPasswordManagerUtilBridgeNativeMock.canUseUPMBackend(false, mPrefService))
                 .thenReturn(mUseGmsApi);
         when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
 
         // Order: initial state -> safety check triggered -> check done -> load completed.
         mMediator.setInitialState();
-        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, passwordCheckLocalModel.get(PASSWORDS_STATE));
 
         mMediator.performSafetyCheck();
-        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, passwordCheckLocalModel.get(PASSWORDS_STATE));
 
         setUpPasswordCheckToReturnResult(
+                PasswordStorageType.LOCAL_STORAGE,
                 new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 18));
         assertEquals(
-                PasswordsState.COMPROMISED_EXIST,
-                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+                PasswordsState.COMPROMISED_EXIST, passwordCheckLocalModel.get(PASSWORDS_STATE));
 
         Preference.OnPreferenceClickListener listener =
                 (Preference.OnPreferenceClickListener)
-                        mPasswordCheckPreferenceModel.get(
+                        passwordCheckLocalModel.get(
                                 PasswordsCheckPreferenceProperties.PASSWORDS_CLICK_LISTENER);
         listener.onPreferenceClick(new Preference(ContextUtils.getApplicationContext()));
 
         verify(mPasswordCheckupHelper, times(mUseGmsApi ? 1 : 0))
                 .getPasswordCheckupIntent(eq(SAFETY_CHECK), eq(Optional.empty()), any(), any());
+    }
+
+    @Test
+    public void testPasswordCheckCompletesForTwoStorages() {
+        // Set up both local and account models
+        PropertyModel passwordCheckAccountModel =
+                PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel();
+        PropertyModel passwordCheckLocalModel =
+                PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel();
+        mMediator =
+                new SafetyCheckMediator(
+                        mSafetyCheckModel,
+                        passwordCheckAccountModel,
+                        passwordCheckLocalModel,
+                        mUpdatesDelegate,
+                        mSettingsLauncher,
+                        mSigninLauncher,
+                        mSyncService,
+                        mPrefService,
+                        mPasswordStoreBridge,
+                        mPasswordCheckControllerFactory,
+                        mHandler,
+                        mModalDialogManagerSupplier);
+
+        // Order: initial state -> set result of the initial check -> password check -> set result
+        // of the password check.
+        mMediator.setInitialState();
+        assertEquals(PasswordsState.CHECKING, passwordCheckAccountModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, passwordCheckLocalModel.get(PASSWORDS_STATE));
+
+        setUpPasswordCheckToReturnResult(
+                PasswordStorageType.ACCOUNT_STORAGE,
+                new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 18));
+        assertEquals(
+                PasswordsState.COMPROMISED_EXIST, passwordCheckAccountModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, passwordCheckLocalModel.get(PASSWORDS_STATE));
+
+        setUpPasswordCheckToReturnResult(
+                PasswordStorageType.LOCAL_STORAGE,
+                new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 0));
+        assertEquals(PasswordsState.UNCHECKED, passwordCheckLocalModel.get(PASSWORDS_STATE));
+
+        mMediator.performSafetyCheck();
+        assertEquals(PasswordsState.CHECKING, passwordCheckAccountModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, passwordCheckLocalModel.get(PASSWORDS_STATE));
+
+        setUpPasswordCheckToReturnResult(
+                PasswordStorageType.LOCAL_STORAGE,
+                new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 18));
+        assertEquals(
+                PasswordsState.COMPROMISED_EXIST, passwordCheckLocalModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, passwordCheckAccountModel.get(PASSWORDS_STATE));
+
+        setUpPasswordCheckToReturnResult(
+                PasswordStorageType.ACCOUNT_STORAGE,
+                new PasswordCheckResult(/* passwordsTotalCount= */ 20, /* breachedCount= */ 18));
+        assertEquals(
+                PasswordsState.COMPROMISED_EXIST, passwordCheckAccountModel.get(PASSWORDS_STATE));
     }
 }

@@ -4,30 +4,35 @@
 
 package org.chromium.chrome.browser.pwd_check_wrapper;
 
+import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
 public class FakePasswordCheckController implements PasswordCheckController {
-    private CompletableFuture<PasswordCheckResult> mPasswordCheckResult;
+    private HashMap<Integer, CompletableFuture<PasswordCheckResult>> mPasswordCheckResults =
+            new HashMap<>();
 
-    public void setPasswordCheckResult(PasswordCheckResult result) {
-        mPasswordCheckResult.complete(result);
+    public void setPasswordCheckResult(
+            @PasswordStorageType int passwordStorageType, PasswordCheckResult result) {
+        mPasswordCheckResults.get(passwordStorageType).complete(result);
     }
 
-    public CompletableFuture<PasswordCheckResult> getFuturePasswordCheckResult() {
-        return mPasswordCheckResult;
+    public CompletableFuture<PasswordCheckResult> getFuturePasswordCheckResultForStorageType(
+            @PasswordStorageType int passwordStorageType) {
+        return mPasswordCheckResults.get(passwordStorageType);
     }
 
     @Override
-    public CompletableFuture<PasswordCheckResult> checkPasswords(int passwordStoreType) {
-        mPasswordCheckResult = new CompletableFuture<>();
-        return mPasswordCheckResult;
+    public CompletableFuture<PasswordCheckResult> checkPasswords(
+            @PasswordStorageType int passwordStoreType) {
+        mPasswordCheckResults.put(passwordStoreType, new CompletableFuture<>());
+        return mPasswordCheckResults.get(passwordStoreType);
     }
 
     @Override
     public CompletableFuture<PasswordCheckResult> getBreachedCredentialsCount(
-            int passwordStoreType) {
-        mPasswordCheckResult = new CompletableFuture<>();
-        return mPasswordCheckResult;
+            @PasswordStorageType int passwordStoreType) {
+        mPasswordCheckResults.put(passwordStoreType, new CompletableFuture<>());
+        return mPasswordCheckResults.get(passwordStoreType);
     }
 
     @Override

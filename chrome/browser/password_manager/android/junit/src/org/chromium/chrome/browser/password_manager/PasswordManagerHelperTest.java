@@ -1028,7 +1028,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 mock(Callback.class));
         checkPasswordCheckupSuccessHistogramsForOperation(
@@ -1043,7 +1043,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 mock(Callback.class));
         checkPasswordCheckupFailureHistogramsForOperation(
@@ -1060,7 +1060,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 mock(Callback.class));
         checkPasswordCheckupFailureHistogramsForOperation(
@@ -1076,7 +1076,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 mock(Callback.class));
         checkPasswordCheckupSuccessHistogramsForOperation(
@@ -1091,7 +1091,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 mock(Callback.class));
         checkPasswordCheckupFailureHistogramsForOperation(
@@ -1108,7 +1108,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 mock(Callback.class));
         checkPasswordCheckupFailureHistogramsForOperation(
@@ -1722,7 +1722,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 mock(Callback.class));
     }
@@ -1736,7 +1736,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_EMAIL_ADDRESS),
+                TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
                 mock(Callback.class));
     }
@@ -2047,10 +2047,7 @@ public class PasswordManagerHelperTest {
                         })
                 .when(mPasswordCheckupClientHelperMock)
                 .runPasswordCheckupInBackground(
-                        anyInt(),
-                        eq(Optional.of(TEST_EMAIL_ADDRESS)),
-                        any(Callback.class),
-                        any(Callback.class));
+                        anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 
     private void setUpSuccessfulGetBreachedCredentialsCount() {
@@ -2062,10 +2059,7 @@ public class PasswordManagerHelperTest {
                         })
                 .when(mPasswordCheckupClientHelperMock)
                 .getBreachedCredentialsCount(
-                        anyInt(),
-                        eq(Optional.of(TEST_EMAIL_ADDRESS)),
-                        any(Callback.class),
-                        any(Callback.class));
+                        anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 
     private void returnErrorWhenRunningPasswordCheckup(Exception error) {
@@ -2077,10 +2071,7 @@ public class PasswordManagerHelperTest {
                         })
                 .when(mPasswordCheckupClientHelperMock)
                 .runPasswordCheckupInBackground(
-                        anyInt(),
-                        eq(Optional.of(TEST_EMAIL_ADDRESS)),
-                        any(Callback.class),
-                        any(Callback.class));
+                        anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 
     private void returnErrorWhenGettingBreachedCredentialsCount(Exception error) {
@@ -2092,10 +2083,7 @@ public class PasswordManagerHelperTest {
                         })
                 .when(mPasswordCheckupClientHelperMock)
                 .getBreachedCredentialsCount(
-                        anyInt(),
-                        eq(Optional.of(TEST_EMAIL_ADDRESS)),
-                        any(Callback.class),
-                        any(Callback.class));
+                        anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 
     private void checkPasswordCheckupSuccessHistogramsForOperation(

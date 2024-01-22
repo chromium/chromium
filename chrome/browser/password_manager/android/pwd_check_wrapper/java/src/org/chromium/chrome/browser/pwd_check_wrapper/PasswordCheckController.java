@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.pwd_check_wrapper;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.sync.SyncService;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.OptionalInt;
@@ -53,6 +57,20 @@ public interface PasswordCheckController {
         public Exception getError() {
             return mError;
         }
+    }
+
+    static String getAccountNameForPasswordStorageType(
+            @PasswordStorageType int passwordStorageType, SyncService syncService) {
+        switch (passwordStorageType) {
+            case PasswordStorageType.LOCAL_STORAGE:
+                return null;
+            case PasswordStorageType.ACCOUNT_STORAGE:
+                assert PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
+                        : "The account storage is only available if password sync is on.";
+                return CoreAccountInfo.getEmailFrom(syncService.getAccountInfo());
+        }
+        assert false : "Unknown PasswordStorageType: " + passwordStorageType;
+        return null;
     }
 
     /** Triggers the password check. */

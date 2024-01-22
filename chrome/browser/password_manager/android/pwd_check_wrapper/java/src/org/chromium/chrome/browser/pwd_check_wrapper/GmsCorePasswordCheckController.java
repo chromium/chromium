@@ -11,11 +11,9 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
 
 import java.lang.ref.WeakReference;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -49,7 +47,8 @@ class GmsCorePasswordCheckController
         CompletableFuture<PasswordCheckResult> passwordCheckResult = new CompletableFuture<>();
         PasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                getAccountNameForStorageType(passwordStorageType),
+                PasswordCheckController.getAccountNameForPasswordStorageType(
+                        passwordStorageType, mSyncService),
                 unused -> {
                     GmsCorePasswordCheckController controller = weakRef.get();
                     if (controller == null) return;
@@ -78,7 +77,8 @@ class GmsCorePasswordCheckController
         WeakReference<GmsCorePasswordCheckController> weakRef = new WeakReference(this);
         PasswordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                getAccountNameForStorageType(passwordStorageType),
+                PasswordCheckController.getAccountNameForPasswordStorageType(
+                        passwordStorageType, mSyncService),
                 count -> {
                     GmsCorePasswordCheckController controller = weakRef.get();
                     if (controller == null) return;
@@ -125,18 +125,6 @@ class GmsCorePasswordCheckController
     private void onPasswordCheckFailed(
             Exception error, CompletableFuture<PasswordCheckResult> passwordCheckResult) {
         passwordCheckResult.complete(new PasswordCheckResult(error));
-    }
-
-    private Optional<String> getAccountNameForStorageType(
-            @PasswordStorageType int passwordStoreType) {
-        switch (passwordStoreType) {
-            case PasswordStorageType.LOCAL_STORAGE:
-                return Optional.empty();
-            case PasswordStorageType.ACCOUNT_STORAGE:
-                return Optional.of(CoreAccountInfo.getEmailFrom(mSyncService.getAccountInfo()));
-        }
-        assert false : "Unknown PasswordStorageType: " + passwordStoreType;
-        return null;
     }
 
     @Override

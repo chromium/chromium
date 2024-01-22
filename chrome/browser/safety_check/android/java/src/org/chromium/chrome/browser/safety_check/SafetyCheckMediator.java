@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.safety_check;
 
+import static org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.getAccountNameForPasswordStorageType;
 import static org.chromium.chrome.browser.safety_check.PasswordsCheckPreferenceProperties.passwordsStateFromPasswordCheckResult;
 import static org.chromium.chrome.browser.safety_check.PasswordsCheckPreferenceProperties.passwordsStateToNative;
 
@@ -46,7 +47,6 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesSta
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -74,8 +74,17 @@ class SafetyCheckMediator {
     /** Model representing the current state of the update and safe browsing checks. */
     private PropertyModel mSafetyCheckModel;
 
-    /** Model representing the current state of the password check. */
-    private PropertyModel mPasswordsSafetyCheckPreferenceModel;
+    /**
+     * Model representing the current state of the password check of passwords from the account
+     * storage.
+     */
+    private PropertyModel mPasswordsCheckAccountStorageModel;
+
+    /**
+     * Model representing the current state of the password check of passwords from the local
+     * storage.
+     */
+    private PropertyModel mPasswordsCheckLocalStorageModel;
 
     /** Client to interact with Omaha for the updates check. */
     private SafetyCheckUpdatesDelegate mUpdatesClient;
@@ -177,7 +186,8 @@ class SafetyCheckMediator {
      */
     public SafetyCheckMediator(
             PropertyModel safetyCheckModel,
-            PropertyModel passwordsSafetyCheckPreferenceModel,
+            PropertyModel passwordsCheckAccountModel,
+            PropertyModel passwordsCheckLocalModel,
             SafetyCheckUpdatesDelegate client,
             SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
@@ -186,7 +196,8 @@ class SafetyCheckMediator {
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         this(
                 safetyCheckModel,
-                passwordsSafetyCheckPreferenceModel,
+                passwordsCheckAccountModel,
+                passwordsCheckLocalModel,
                 client,
                 settingsLauncher,
                 signinLauncher,
@@ -201,7 +212,8 @@ class SafetyCheckMediator {
     @VisibleForTesting
     SafetyCheckMediator(
             PropertyModel safetyCheckModel,
-            PropertyModel passwordsSafetyCheckPreferenceModel,
+            PropertyModel passwordsCheckAccountModel,
+            PropertyModel passwordsCheckLocalModel,
             SafetyCheckUpdatesDelegate client,
             SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
@@ -213,7 +225,8 @@ class SafetyCheckMediator {
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         this(
                 safetyCheckModel,
-                passwordsSafetyCheckPreferenceModel,
+                passwordsCheckAccountModel,
+                passwordsCheckLocalModel,
                 client,
                 settingsLauncher,
                 signinLauncher,
@@ -227,7 +240,8 @@ class SafetyCheckMediator {
 
     SafetyCheckMediator(
             PropertyModel safetyCheckModel,
-            PropertyModel passwordsSafetyCheckPreferenceModel,
+            PropertyModel passwordsCheckAccountModel,
+            PropertyModel passwordsCheckLocalModel,
             SafetyCheckUpdatesDelegate client,
             SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
@@ -237,7 +251,8 @@ class SafetyCheckMediator {
             PasswordStoreBridge passwordStoreBridge,
             PasswordCheckControllerFactory passwordCheckControllerFactory) {
         mSafetyCheckModel = safetyCheckModel;
-        mPasswordsSafetyCheckPreferenceModel = passwordsSafetyCheckPreferenceModel;
+        mPasswordsCheckAccountStorageModel = passwordsCheckAccountModel;
+        mPasswordsCheckLocalStorageModel = passwordsCheckLocalModel;
         mUpdatesClient = client;
         mSettingsLauncher = settingsLauncher;
         mSigninLauncher = signinLauncher;
@@ -284,7 +299,8 @@ class SafetyCheckMediator {
                             return true;
                         });
         // Set the listener for clicking the passwords element.
-        updatePasswordElementClickDestination();
+        updatePasswordElementClickDestination(PasswordStorageType.ACCOUNT_STORAGE);
+        updatePasswordElementClickDestination(PasswordStorageType.LOCAL_STORAGE);
         // Set the listener for clicking the Check button.
         mSafetyCheckModel.set(
                 SafetyCheckProperties.SAFETY_CHECK_BUTTON_CLICK_LISTENER,
@@ -332,35 +348,46 @@ class SafetyCheckMediator {
             // recently). For this case, breached credential fetch is skipped.
             if (PasswordManagerHelper.canUseUpm()
                     && PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
-                mPasswordsSafetyCheckPreferenceModel.set(
-                        PasswordsCheckPreferenceProperties.PASSWORDS_STATE,
-                        PasswordsState.UNCHECKED);
+                setPasswordsState(mPasswordsCheckAccountStorageModel, PasswordsState.UNCHECKED);
+                setPasswordsState(mPasswordsCheckLocalStorageModel, PasswordsState.UNCHECKED);
                 return;
             }
         }
-        mPasswordsSafetyCheckPreferenceModel.set(
-                PasswordsCheckPreferenceProperties.PASSWORDS_STATE, PasswordsState.CHECKING);
+        setPasswordsState(mPasswordsCheckAccountStorageModel, PasswordsState.CHECKING);
+        setPasswordsState(mPasswordsCheckLocalStorageModel, PasswordsState.CHECKING);
+
         // If the user is not signed in, immediately set the state and do not block on disk loads.
+        // TODO(b/321686503): When using UPM, the check may be available if the user is signed out
+        // of Chrome profile, but signed into Google account. This should be handled differently
+        // when using GMS core local storage.
         if (!SafetyCheckBridge.userSignedIn()) {
-            mPasswordsSafetyCheckPreferenceModel.set(
-                    PasswordsCheckPreferenceProperties.PASSWORDS_STATE, PasswordsState.SIGNED_OUT);
+            setPasswordsState(mPasswordsCheckAccountStorageModel, PasswordsState.SIGNED_OUT);
+            setPasswordsState(mPasswordsCheckLocalStorageModel, PasswordsState.SIGNED_OUT);
             // Record the value in UMA.
             RecordHistogram.recordEnumeratedHistogram(
                     "Settings.SafetyCheck.PasswordsResult2",
                     PasswordsStatus.SIGNED_OUT,
                     PasswordsStatus.MAX_VALUE + 1);
-            updatePasswordElementClickDestination();
+            updatePasswordElementClickDestination(PasswordStorageType.ACCOUNT_STORAGE);
+            updatePasswordElementClickDestination(PasswordStorageType.LOCAL_STORAGE);
             return;
         }
+        fetchPasswordsAndBreachedCredentials(PasswordStorageType.ACCOUNT_STORAGE);
+        fetchPasswordsAndBreachedCredentials(PasswordStorageType.LOCAL_STORAGE);
+    }
 
-        fetchPasswordsAndBreachedCredentials();
+    private void setPasswordsState(
+            PropertyModel passwordsCheckModel, @PasswordsState int passwordsState) {
+        if (passwordsCheckModel == null) return;
+
+        passwordsCheckModel.set(PasswordsCheckPreferenceProperties.PASSWORDS_STATE, passwordsState);
     }
 
     /** Triggers all safety check child checks. */
     public void performSafetyCheck() {
         // Cancel pending delayed show callbacks if a new check is starting while any existing
         // elements are pending.
-        cancelCallbacks();
+        mHandler.removeCallbacksAndMessages(null);
         // Record the start action in UMA.
         RecordUserAction.record("Settings.SafetyCheck.Start");
         // Record the start interaction in the histogram.
@@ -378,51 +405,33 @@ class SafetyCheckMediator {
         // Increment the stored number of Safety check starts.
         mPreferenceManager.incrementInt(ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_RUN_COUNTER);
         // Set the checking state for all elements.
-        mPasswordsSafetyCheckPreferenceModel.set(
-                PasswordsCheckPreferenceProperties.PASSWORDS_STATE, PasswordsState.CHECKING);
+        setPasswordsState(mPasswordsCheckAccountStorageModel, PasswordsState.CHECKING);
+        setPasswordsState(mPasswordsCheckLocalStorageModel, PasswordsState.CHECKING);
         mSafetyCheckModel.set(
                 SafetyCheckProperties.SAFE_BROWSING_STATE, SafeBrowsingState.CHECKING);
         mSafetyCheckModel.set(SafetyCheckProperties.UPDATES_STATE, UpdatesState.CHECKING);
         // Start all the checks.
         checkSafeBrowsing();
-        checkPasswords();
+        checkPasswords(PasswordStorageType.ACCOUNT_STORAGE);
+        checkPasswords(PasswordStorageType.LOCAL_STORAGE);
         mUpdatesClient.checkForUpdates(new WeakReference(mUpdatesCheckCallback));
     }
 
     /** Cancels any pending callbacks and registered observers.  */
     public void destroy() {
-        cancelCallbacks();
+        // Removes all the callbacks from handler
+        mHandler.removeCallbacksAndMessages(null);
         mUpdatesClient = null;
         mSafetyCheckModel = null;
-        mPasswordsSafetyCheckPreferenceModel = null;
+        mPasswordsCheckAccountStorageModel = null;
+        mPasswordsCheckLocalStorageModel = null;
         mHandler = null;
         mPasswordCheckController.destroy();
     }
 
-    /** Cancels any delayed show callbacks. */
-    private void cancelCallbacks() {
-        setRunnablePasswords(null);
-        setRunnableSafeBrowsing(null);
-        setRunnableUpdates(null);
-    }
-
     /**
-     * Sets {@link mRunnablePasswords} and, if non-null, runs it with a delay. Will cancel any
+     * Sets {@link mRunnableSafeBrowsing} and, if non-null, runs it with a delay. Will cancel any
      * outstanding callbacks set by previous calls to this method.
-     */
-    private void setRunnablePasswords(Runnable runnable) {
-        if (mRunnablePasswords != null) {
-            mHandler.removeCallbacks(mRunnablePasswords);
-        }
-        mRunnablePasswords = runnable;
-        if (mRunnablePasswords == null) return;
-
-        mHandler.postDelayed(runnable, getModelUpdateDelay());
-    }
-
-    /**
-     * Sets {@link mRunnableSafeBrowsing} and, if non-null, runs it with a delay.
-     * Will cancel any outstanding callbacks set by previous calls to this method.
      */
     private void setRunnableSafeBrowsing(Runnable r) {
         if (mRunnableSafeBrowsing != null) {
@@ -466,27 +475,37 @@ class SafetyCheckMediator {
 
     /** Called when all data is loaded. Determines if it needs to update the model. */
     private void determinePasswordStateOnLoadComplete(
-            PasswordCheckResult passwordSafetyCheckResult, boolean isInitialLoad) {
+            PasswordCheckResult passwordSafetyCheckResult,
+            @PasswordStorageType int passwordStorageType,
+            boolean isInitialLoad) {
         // Only delay updating the UI on the user-triggered check and not initially.
-        if (!isInitialLoad) {
-            updatePasswordsStateOnDataLoaded(passwordSafetyCheckResult, false);
-        } else {
-            setRunnablePasswords(
-                    () -> updatePasswordsStateOnDataLoaded(passwordSafetyCheckResult, true));
+        if (isInitialLoad) {
+            updatePasswordsStateOnDataLoaded(passwordSafetyCheckResult, passwordStorageType, true);
+            return;
         }
+        mHandler.postDelayed(
+                () ->
+                        updatePasswordsStateOnDataLoaded(
+                                passwordSafetyCheckResult, passwordStorageType, false),
+                getModelUpdateDelay());
     }
 
     /** Applies the results of the password check to the model. Only called when data is loaded. */
     private void updatePasswordsStateOnDataLoaded(
-            PasswordCheckResult passwordSafetyCheckResult, boolean isInitialLoad) {
+            PasswordCheckResult passwordSafetyCheckResult,
+            @PasswordStorageType int passwordStorageType,
+            boolean isInitialLoad) {
+        PropertyModel passwordsCheckModel = getPasswordsCheckModelForStoreType(passwordStorageType);
+        if (passwordsCheckModel == null) return;
+
         if (passwordSafetyCheckResult.getBreachedCount().isPresent()) {
-            mPasswordsSafetyCheckPreferenceModel.set(
+            passwordsCheckModel.set(
                     PasswordsCheckPreferenceProperties.COMPROMISED_PASSWORDS_COUNT,
                     passwordSafetyCheckResult.getBreachedCount().getAsInt());
         }
 
         @PasswordsState int passwordsState;
-        if (!isInitialLoad) {
+        if (isInitialLoad) {
             // Cannot show the safe state at the initial load if last run is older than 10 mins.
             passwordsState = getPasswordStateWhenInitialLoad(passwordSafetyCheckResult);
         } else {
@@ -497,9 +516,8 @@ class SafetyCheckMediator {
                     PasswordsStatus.MAX_VALUE + 1);
         }
 
-        mPasswordsSafetyCheckPreferenceModel.set(
-                PasswordsCheckPreferenceProperties.PASSWORDS_STATE, passwordsState);
-        updatePasswordElementClickDestination();
+        passwordsCheckModel.set(PasswordsCheckPreferenceProperties.PASSWORDS_STATE, passwordsState);
+        updatePasswordElementClickDestination(passwordStorageType);
     }
 
     private @PasswordsState int getPasswordStateWhenInitialLoad(
@@ -523,11 +541,13 @@ class SafetyCheckMediator {
     }
 
     /** Sets the destination of the click on the passwords element based on the current state. */
-    private void updatePasswordElementClickDestination() {
+    private void updatePasswordElementClickDestination(
+            @PasswordStorageType int passwordStorageType) {
+        PropertyModel passwordsCheckModel = getPasswordsCheckModelForStoreType(passwordStorageType);
+        if (passwordsCheckModel == null) return;
+
         @PasswordsState
-        int state =
-                mPasswordsSafetyCheckPreferenceModel.get(
-                        PasswordsCheckPreferenceProperties.PASSWORDS_STATE);
+        int state = passwordsCheckModel.get(PasswordsCheckPreferenceProperties.PASSWORDS_STATE);
         Preference.OnPreferenceClickListener listener = null;
         if (state == PasswordsState.SIGNED_OUT) {
             listener =
@@ -552,10 +572,8 @@ class SafetyCheckMediator {
                                     .showUi(p.getContext(), PasswordCheckReferrer.SAFETY_CHECK);
                         } else {
                             String account =
-                                    PasswordManagerHelper.hasChosenToSyncPasswords(mSyncService)
-                                            ? CoreAccountInfo.getEmailFrom(
-                                                    mSyncService.getAccountInfo())
-                                            : null;
+                                    getAccountNameForPasswordStorageType(
+                                            passwordStorageType, mSyncService);
                             PasswordManagerHelper.showPasswordCheckup(
                                     p.getContext(),
                                     PasswordCheckReferrer.SAFETY_CHECK,
@@ -584,65 +602,72 @@ class SafetyCheckMediator {
                         return true;
                     };
         }
-        mPasswordsSafetyCheckPreferenceModel.set(
+        passwordsCheckModel.set(
                 PasswordsCheckPreferenceProperties.PASSWORDS_CLICK_LISTENER, listener);
     }
 
-    private void fetchPasswordsAndBreachedCredentials() {
+    private void fetchPasswordsAndBreachedCredentials(
+            @PasswordStorageType int passwordStorageType) {
+        PropertyModel passwordCheckModel = getPasswordsCheckModelForStoreType(passwordStorageType);
+        if (passwordCheckModel == null) return;
+
         WeakReference<SafetyCheckMediator> weakRef = new WeakReference(this);
         mPasswordCheckController
-                .getBreachedCredentialsCount(PasswordStorageType.ACCOUNT_STORAGE)
+                .getBreachedCredentialsCount(passwordStorageType)
                 .whenComplete(
                         (result, error) -> {
                             SafetyCheckMediator mediator = weakRef.get();
                             if (mediator == null) return;
 
                             if (error != null) {
-                                mediator.onPasswordCheckFailed(error, false);
+                                mediator.onPasswordCheckFailed(error, passwordStorageType, true);
                             } else {
-                                mediator.onPasswordCheckSucceeded(result, false);
+                                mediator.determinePasswordStateOnLoadComplete(
+                                        result, passwordStorageType, true);
                             }
                         });
     }
 
-    private void checkPasswords() {
+    private void checkPasswords(@PasswordStorageType int passwordStorageType) {
+        PropertyModel passwordCheckModel = getPasswordsCheckModelForStoreType(passwordStorageType);
+        if (passwordCheckModel == null) return;
+
         WeakReference<SafetyCheckMediator> weakRef = new WeakReference(this);
         mPasswordCheckController
-                .checkPasswords(PasswordStorageType.ACCOUNT_STORAGE)
+                .checkPasswords(passwordStorageType)
                 .whenComplete(
                         (result, error) -> {
                             SafetyCheckMediator mediator = weakRef.get();
                             if (mediator == null) return;
 
                             if (error != null) {
-                                mediator.onPasswordCheckFailed(error, true);
+                                mediator.onPasswordCheckFailed(error, passwordStorageType, false);
                             } else {
-                                mediator.onPasswordCheckSucceeded(result, true);
+                                mediator.determinePasswordStateOnLoadComplete(
+                                        result, passwordStorageType, false);
                             }
                         });
     }
 
-    private void onPasswordCheckSucceeded(
-            PasswordCheckResult passwordCheckResult, boolean isInitialLoad) {
-        if (mPasswordsSafetyCheckPreferenceModel == null) return;
-
-        determinePasswordStateOnLoadComplete(passwordCheckResult, isInitialLoad);
+    private PropertyModel getPasswordsCheckModelForStoreType(
+            @PasswordStorageType int passwordStoreType) {
+        if (passwordStoreType == PasswordStorageType.ACCOUNT_STORAGE) {
+            return mPasswordsCheckAccountStorageModel;
+        }
+        if (passwordStoreType == PasswordStorageType.LOCAL_STORAGE) {
+            return mPasswordsCheckLocalStorageModel;
+        }
+        assert false : "Unknown password storage type";
+        return null;
     }
 
-    private void onPasswordCheckFailed(Throwable error, boolean isInitialLoad) {
-        if (mPasswordsSafetyCheckPreferenceModel == null) return;
-
-        setRunnablePasswords(
-                () -> {
-                    if (mPasswordsSafetyCheckPreferenceModel == null) return;
-
-                    RecordHistogram.recordEnumeratedHistogram(
-                            "Settings.SafetyCheck.PasswordsResult2",
-                            PasswordsCheckPreferenceProperties.passwordsStateToNative(
-                                    PasswordsState.ERROR),
-                            PasswordsStatus.MAX_VALUE + 1);
-                    determinePasswordStateOnLoadComplete(
-                            new PasswordCheckResult(new Exception(error)), isInitialLoad);
-                });
+    private void onPasswordCheckFailed(
+            Throwable error, @PasswordStorageType int passwordStorageType, boolean isInitialLoad) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Settings.SafetyCheck.PasswordsResult2",
+                PasswordsCheckPreferenceProperties.passwordsStateToNative(PasswordsState.ERROR),
+                PasswordsStatus.MAX_VALUE + 1);
+        determinePasswordStateOnLoadComplete(
+                new PasswordCheckResult(new Exception(error)), passwordStorageType, isInitialLoad);
     }
 }

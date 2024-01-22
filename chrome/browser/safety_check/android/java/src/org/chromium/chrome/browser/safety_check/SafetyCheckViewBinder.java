@@ -269,7 +269,7 @@ class SafetyCheckViewBinder {
         }
     }
 
-    static void bindPasswordSafetyCheck(
+    static void bindPasswordCheckPreferenceModel(
             PropertyModel safetyCheckModel,
             PropertyModel model,
             SafetyCheckSettingsFragment fragment,
