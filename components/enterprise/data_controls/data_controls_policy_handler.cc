@@ -4,6 +4,7 @@
 
 #include "components/enterprise/data_controls/data_controls_policy_handler.h"
 
+#include "components/enterprise/data_controls/rule.h"
 #include "components/prefs/pref_value_map.h"
 
 namespace data_controls {
@@ -24,11 +25,37 @@ void DataControlsPolicyHandler::ApplyPolicySettings(
   if (!pref_path_) {
     return;
   }
+
   // It is safe to use `GetValueUnsafe()` as multiple policy types are handled.
   const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (value) {
     prefs->SetValue(pref_path_, value->Clone());
   }
+}
+
+bool DataControlsPolicyHandler::CheckPolicySettings(
+    const policy::PolicyMap& policies,
+    policy::PolicyErrorMap* errors) {
+  if (!policy::CloudOnlyPolicyHandler::CheckPolicySettings(policies, errors)) {
+    return false;
+  }
+
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::LIST);
+  if (!value) {
+    return true;
+  }
+
+  DCHECK(value->is_list());
+  const auto& rules_list = value->GetList();
+
+  bool valid = true;
+  for (size_t i = 0; i < rules_list.size(); ++i) {
+    DCHECK(rules_list[i].is_dict());
+    valid &= Rule::ValidateRuleValue(policy_name(), rules_list[i].GetDict(),
+                                     {i}, errors);
+  }
+  return valid;
 }
 
 }  // namespace data_controls
