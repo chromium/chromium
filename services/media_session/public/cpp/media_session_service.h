@@ -12,7 +12,9 @@
 
 namespace media_session {
 
+namespace mojom {
 class AudioFocusManager;
+}  // namespace mojom
 
 class COMPONENT_EXPORT(MEDIA_SESSION_CPP) MediaSessionService {
  public:

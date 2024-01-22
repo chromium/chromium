@@ -35,7 +35,6 @@ class AecdumpRecordingManager;
 class AudioBus;
 class AudioInputStream;
 class AudioManager;
-class Snoopable;
 class UserInputMonitor;
 struct AudioGlitchInfo;
 }  // namespace media
@@ -43,9 +42,13 @@ struct AudioGlitchInfo;
 namespace audio {
 class AudioProcessorHandler;
 class AudioCallback;
-class OutputTapper;
 class DeviceOutputListener;
+class OutputTapper;
+class Snoopable;
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 class ProcessingAudioFifo;
+#endif
 
 // Only do power monitoring for non-mobile platforms to save resources.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

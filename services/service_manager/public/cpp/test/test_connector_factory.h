@@ -20,7 +20,9 @@
 
 namespace service_manager {
 
+namespace mojom {
 class Service;
+}  // namespace mojom
 
 // Creates Connector instances which route BindInterface requests directly to
 // manually registered Service implementations. Useful for testing production
