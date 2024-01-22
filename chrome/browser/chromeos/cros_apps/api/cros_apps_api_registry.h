@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_frame_context.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_info.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom-forward.h"
@@ -27,16 +28,29 @@ class CrosAppsApiRegistry {
   // returned registry is valid until `profile` destructs.
   static const CrosAppsApiRegistry& GetInstance(Profile* profile);
 
+  // Returns whether the API identified by `api_feature` can be enabled in the
+  // profile where `this` registry was retrieved from.
+  //
+  // This performs JavaScript context independent checks that doesn't require
+  // frame information. For example, base::Feature flags and Profile types.
+  virtual bool CanEnableApi(
+      const blink::mojom::RuntimeFeature api_feature) const = 0;
+
   // Return a list of functions that should be called on
   // RuntimeFeatureStateContext to enable the blink runtime features for a given
-  // `navigation_handle`.
+  // frame that belongs to a ChromeOS App.
   //
-  // Calling the returned functions on the RuntimeFeatureStateContext associated
-  // with `navigation_handle` will enable the ChromeOS Apps APIs that should be
-  // enabled for the navigation_handle`.
+  // The returned function should be called on RuntimeFeatureStateContext of a
+  // NavigationHandle.
   virtual std::vector<CrosAppsApiInfo::EnableBlinkRuntimeFeatureFunction>
-  GetBlinkFeatureEnablementFunctionsFor(
-      content::NavigationHandle* navigation_handle) const = 0;
+  GetBlinkFeatureEnablementFunctionsForFrame(
+      const CrosAppsApiFrameContext& api_context) const = 0;
+
+  // Returns whether the given API identified by `api_feature` should be enabled
+  // for `api_context`.
+  virtual bool IsApiEnabledForFrame(
+      const blink::mojom::RuntimeFeature api_feature,
+      const CrosAppsApiFrameContext& api_context) const = 0;
 };
 
 #endif  // CHROME_BROWSER_CHROMEOS_CROS_APPS_API_CROS_APPS_API_REGISTRY_H_

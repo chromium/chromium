@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_frame_context.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_info.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_registry.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,9 +41,9 @@ void CrosAppsTabHelper::ReadyToCommitNavigation(
   Profile* profile = Profile::FromBrowserContext(
       navigation_handle->GetWebContents()->GetBrowserContext());
 
-  auto enable_fns =
-      CrosAppsApiRegistry::GetInstance(profile)
-          .GetBlinkFeatureEnablementFunctionsFor(navigation_handle);
+  auto enable_fns = CrosAppsApiRegistry::GetInstance(profile)
+                        .GetBlinkFeatureEnablementFunctionsForFrame(
+                            CrosAppsApiFrameContext(*navigation_handle));
 
   if (enable_fns.empty()) {
     return;

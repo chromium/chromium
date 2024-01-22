@@ -25,7 +25,8 @@ CrosAppsApiMutableRegistry& CrosAppsApiMutableRegistry::GetInstance(
     Profile* profile) {
   if (!profile->GetUserData(&kUserDataKey)) {
     profile->SetUserData(
-        kUserDataKey, std::make_unique<CrosAppsApiMutableRegistry>(PassKey()));
+        kUserDataKey,
+        std::make_unique<CrosAppsApiMutableRegistry>(PassKey(), profile));
   }
 
   return *static_cast<CrosAppsApiMutableRegistry*>(
@@ -34,29 +35,50 @@ CrosAppsApiMutableRegistry& CrosAppsApiMutableRegistry::GetInstance(
 
 CrosAppsApiMutableRegistry::~CrosAppsApiMutableRegistry() = default;
 
-CrosAppsApiMutableRegistry::CrosAppsApiMutableRegistry(PassKey)
-    : apis_(CreateDefaultCrosAppsApiInfo()) {}
+CrosAppsApiMutableRegistry::CrosAppsApiMutableRegistry(PassKey,
+                                                       Profile* profile)
+    : profile_(profile), api_infos_(CreateDefaultCrosAppsApiInfo()) {}
 
-bool CrosAppsApiMutableRegistry::IsApiEnabledFor(
-    const CrosAppsApiInfo& api_info,
-    content::NavigationHandle* navigation_handle) const {
-  if (!navigation_handle->IsInPrimaryMainFrame()) {
-    // Only main frames can have access to APIs.
-    return false;
-  }
+bool CrosAppsApiMutableRegistry::CanEnableApi(
+    const blink::mojom::RuntimeFeature api_feature) const {
+  const auto iter = api_infos_.find(api_feature);
+  CHECK(iter != api_infos_.end());
+  return CanEnableApi(iter->second);
+}
 
-  const auto& url = navigation_handle->GetURL();
-
-  if (!IsUrlEligibleForCrosAppsApis(url)) {
-    return false;
-  }
-
+bool CrosAppsApiMutableRegistry::CanEnableApi(
+    const CrosAppsApiInfo& api_info) const {
   const bool are_required_features_enabled = base::ranges::all_of(
       api_info.required_features(), [](const auto& base_feature) {
         return base::FeatureList::IsEnabled(base_feature);
       });
 
   if (!are_required_features_enabled) {
+    return false;
+  }
+
+  return true;
+}
+
+bool CrosAppsApiMutableRegistry::IsApiEnabledForFrame(
+    const CrosAppsApiInfo& api_info,
+    const CrosAppsApiFrameContext& api_context) const {
+  // The API enablement check must be performed on the Profile which `this`
+  // registry was created for. See CrosAppsApiRegistry::GetInstance().
+  CHECK_EQ(profile_, api_context.Profile());
+
+  if (!CanEnableApi(api_info)) {
+    return false;
+  }
+
+  const auto& url = api_context.GetUrl();
+
+  if (!IsUrlEligibleForCrosAppsApis(url)) {
+    return false;
+  }
+
+  if (!api_context.IsPrimaryMainFrame()) {
+    // Only primary main frames can access the APIs.
     return false;
   }
 
@@ -72,18 +94,26 @@ bool CrosAppsApiMutableRegistry::IsApiEnabledFor(
 }
 
 std::vector<CrosAppsApiInfo::EnableBlinkRuntimeFeatureFunction>
-CrosAppsApiMutableRegistry::GetBlinkFeatureEnablementFunctionsFor(
-    content::NavigationHandle* navigation_handle) const {
+CrosAppsApiMutableRegistry::GetBlinkFeatureEnablementFunctionsForFrame(
+    const CrosAppsApiFrameContext& api_context) const {
   std::vector<CrosAppsApiInfo::EnableBlinkRuntimeFeatureFunction> fns;
-  fns.reserve(apis_.size());
+  fns.reserve(api_infos_.size());
 
-  for (const auto& [_, api] : apis_) {
-    if (IsApiEnabledFor(api, navigation_handle)) {
-      fns.push_back(api.enable_blink_runtime_feature_fn());
+  for (const auto& [_, api_info] : api_infos_) {
+    if (IsApiEnabledForFrame(api_info, api_context)) {
+      fns.push_back(api_info.enable_blink_runtime_feature_fn());
     }
   }
 
   return fns;
+}
+
+bool CrosAppsApiMutableRegistry::IsApiEnabledForFrame(
+    const blink::mojom::RuntimeFeature api_feature,
+    const CrosAppsApiFrameContext& api_context) const {
+  const auto iter = api_infos_.find(api_feature);
+  CHECK(iter != api_infos_.end());
+  return IsApiEnabledForFrame(iter->second, api_context);
 }
 
 void CrosAppsApiMutableRegistry::AddOrReplaceForTesting(
@@ -91,5 +121,5 @@ void CrosAppsApiMutableRegistry::AddOrReplaceForTesting(
   CHECK_IS_TEST();
 
   auto key = api_info.blink_feature();
-  apis_.insert_or_assign(key, std::move(api_info));
+  api_infos_.insert_or_assign(key, std::move(api_info));
 }

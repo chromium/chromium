@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
@@ -90,6 +91,7 @@
 #include "components/translate/content/common/translate.mojom.h"
 #include "components/user_notes/user_notes_features.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/browser/web_ui_controller_interface_binder.h"
@@ -378,6 +380,8 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/apps/digital_goods/digital_goods_factory_stub.h"
 #include "chrome/browser/apps/digital_goods/digital_goods_lacros.h"
+#include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_frame_context.h"
+#include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_registry.h"
 #include "chrome/browser/lacros/cros_apps/api/diagnostics/cros_diagnostics_impl.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -838,6 +842,60 @@ void BindVisualSuggestionsModelProvider(
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// A helper class to register ChromeOS Apps API binders. This includes the logic
+// that checks that the feature is allowed on Profile before registering a
+// binder, and wraps the binder with per-frame feature enablement checks before
+// binding the Mojo pipe.
+class CrosAppsApiFrameBinderMap {
+  STACK_ALLOCATED();
+
+ public:
+  CrosAppsApiFrameBinderMap(
+      content::RenderFrameHost* rfh,
+      mojo::BinderMapWithContext<content::RenderFrameHost*>& map)
+      : api_registry_(CrosAppsApiRegistry::GetInstance(
+            Profile::FromBrowserContext(rfh->GetBrowserContext()))),
+        map_(map) {}
+  ~CrosAppsApiFrameBinderMap() = default;
+
+  // If `api_feature` is enabled (e.g. base::Feature is enabled), and it can be
+  // enabled on the profile, registers a binder that performs context dependent
+  // checks (e.g. whether the frame's last committed URL is in the allowlist)
+  // before calling `binder_func`.
+  template <typename Interface,
+            auto binder_func,
+            blink::mojom::RuntimeFeature api_feature>
+  void MaybeAdd() {
+    if (!api_registry_->CanEnableApi(api_feature)) {
+      return;
+    }
+
+    map_->template Add<Interface>(
+        base::BindRepeating([](content::RenderFrameHost* rfh,
+                               mojo::PendingReceiver<Interface> receiver) {
+          auto* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
+          const auto& api_registry = CrosAppsApiRegistry::GetInstance(profile);
+
+          if (!api_registry.IsApiEnabledForFrame(
+                  api_feature, CrosAppsApiFrameContext(*rfh))) {
+            mojo::ReportBadMessage(base::StringPrintf(
+                "The requesting context isn't allowed to access interface %s "
+                "because it isn't allowed to access the corresponding API: %s",
+                Interface::Name_, base::ToString(api_feature).c_str()));
+            return;
+          }
+
+          binder_func(rfh, std::move(receiver));
+        }));
+  }
+
+ private:
+  const raw_ref<const CrosAppsApiRegistry> api_registry_;
+  raw_ref<mojo::BinderMapWithContext<content::RenderFrameHost*>> map_;
+};
+#endif
+
 void PopulateChromeFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
     content::RenderFrameHost* render_frame_host) {
@@ -927,9 +985,12 @@ void PopulateChromeFrameBinders(
         base::BindRepeating(&apps::DigitalGoodsFactoryStub::Bind));
   }
 
-  if (chromeos::features::IsBlinkExtensionDiagnosticsEnabled()) {
-    map->Add<blink::mojom::CrosDiagnostics>(
-        base::BindRepeating(&CrosDiagnosticsImpl::Create));
+  if (chromeos::features::IsBlinkExtensionEnabled()) {
+    // Add frame binders for ChromeOS Apps APIs here using `binder_map_wrapper`.
+    CrosAppsApiFrameBinderMap binder_map_wrapper(render_frame_host, *map);
+    binder_map_wrapper
+        .MaybeAdd<blink::mojom::CrosDiagnostics, &CrosDiagnosticsImpl::Create,
+                  blink::mojom::RuntimeFeature::kBlinkExtensionDiagnostics>();
   }
 #endif
 

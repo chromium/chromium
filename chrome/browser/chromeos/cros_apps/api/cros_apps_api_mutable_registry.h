@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/supports_user_data.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_frame_context.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_info.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_registry.h"
 
@@ -27,21 +28,30 @@ class CrosAppsApiMutableRegistry : public CrosAppsApiRegistry,
   static CrosAppsApiMutableRegistry& GetInstance(Profile* profile);
 
   using PassKey = base::PassKey<CrosAppsApiMutableRegistry>;
-  explicit CrosAppsApiMutableRegistry(PassKey passkey);
+  explicit CrosAppsApiMutableRegistry(PassKey passkey, Profile* profile);
   ~CrosAppsApiMutableRegistry() override;
 
   void AddOrReplaceForTesting(CrosAppsApiInfo api_info);
 
   // CrosAppsApiRegistry:
+  bool CanEnableApi(
+      const blink::mojom::RuntimeFeature api_feature) const override;
   std::vector<CrosAppsApiInfo::EnableBlinkRuntimeFeatureFunction>
-  GetBlinkFeatureEnablementFunctionsFor(
-      content::NavigationHandle* navigation_handle) const override;
+  GetBlinkFeatureEnablementFunctionsForFrame(
+      const CrosAppsApiFrameContext& api_context) const override;
+  bool IsApiEnabledForFrame(
+      const blink::mojom::RuntimeFeature api_feature,
+      const CrosAppsApiFrameContext& api_context) const override;
 
  private:
-  bool IsApiEnabledFor(const CrosAppsApiInfo& api_info,
-                       content::NavigationHandle* navigation_handle) const;
+  bool CanEnableApi(const CrosAppsApiInfo& api_info) const;
+  bool IsApiEnabledForFrame(const CrosAppsApiInfo& api_info,
+                            const CrosAppsApiFrameContext& api_context) const;
 
-  base::flat_map<blink::mojom::RuntimeFeature, CrosAppsApiInfo> apis_;
+  // The profile `this` is attached to. Safe to retain profile because `this` is
+  // owned by the profile.
+  const raw_ptr<Profile> profile_;
+  base::flat_map<blink::mojom::RuntimeFeature, CrosAppsApiInfo> api_infos_;
 };
 
 #endif  // CHROME_BROWSER_CHROMEOS_CROS_APPS_API_CROS_APPS_API_MUTABLE_REGISTRY_H_
