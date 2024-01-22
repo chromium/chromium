@@ -21,6 +21,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -469,6 +470,91 @@ TEST_F(ArcAppsPublisherManagedProfileTest, SetSupportedLinksByDefault) {
 
   ASSERT_EQ(app_id, preferred_apps().FindPreferredAppForUrl(
                         GURL("https://www.example.com/foo")));
+}
+
+TEST_F(ArcAppsPublisherManagedProfileTest,
+       SetSupportedLinksIgnoresWorkspaceInstall) {
+  constexpr char kTestAuthority[] = "drive.google.com";
+  std::string package_name = "com.google.android.apps.docs";
+  std::string activity_name = base::StrCat({package_name, ".MainActivity"});
+  std::string app_id = ArcAppListPrefs::GetAppId(package_name, activity_name);
+
+  arc::mojom::AppInfoPtr app =
+      arc::mojom::AppInfo::New("Google Drive", package_name, activity_name);
+  std::vector<arc::mojom::AppInfoPtr> app_list;
+  app_list.push_back(std::move(app));
+
+  arc_test()->app_instance()->SendRefreshAppList(std::move(app_list));
+
+  // Update intent filters and supported links for the app, as if it was just
+  // installed.
+  intent_helper()->OnIntentFiltersUpdatedForPackage(
+      package_name, CreateFilterList(package_name, {kTestAuthority}));
+  VerifyIntentFilters(app_id, {kTestAuthority});
+  intent_helper()->OnSupportedLinksChanged(
+      CreateSupportedLinks(package_name), {},
+      arc::mojom::SupportedLinkChangeSource::kArcSystem);
+
+  ASSERT_EQ(std::nullopt, preferred_apps().FindPreferredAppForUrl(
+                              GURL("https://drive.google.com/foo")));
+}
+
+TEST_F(ArcAppsPublisherManagedProfileTest,
+       SetSupportedLinksAllowsWorkspaceUserChange) {
+  constexpr char kTestAuthority[] = "docs.google.com";
+  std::string package_name = "com.google.android.apps.docs.editor.docs";
+  std::string activity_name = base::StrCat({package_name, ".MainActivity"});
+  std::string app_id = ArcAppListPrefs::GetAppId(package_name, activity_name);
+
+  arc::mojom::AppInfoPtr app =
+      arc::mojom::AppInfo::New("Google Docs", package_name, activity_name);
+  std::vector<arc::mojom::AppInfoPtr> app_list;
+  app_list.push_back(std::move(app));
+
+  arc_test()->app_instance()->SendRefreshAppList(std::move(app_list));
+  intent_helper()->OnIntentFiltersUpdatedForPackage(
+      package_name, CreateFilterList(package_name, {kTestAuthority}));
+
+  intent_helper()->OnSupportedLinksChanged(
+      CreateSupportedLinks(package_name), {},
+      arc::mojom::SupportedLinkChangeSource::kUserPreference);
+
+  ASSERT_EQ(app_id, preferred_apps().FindPreferredAppForUrl(
+                        GURL("https://docs.google.com/document/")));
+}
+
+TEST_F(ArcAppsPublisherManagedProfileTest,
+       SetSupportedLinksAllowsWorkspaceUpdate) {
+  constexpr char kDriveAuthority[] = "drive.google.com";
+  constexpr char kDocsAuthority[] = "docs.google.com";
+  std::string package_name = "com.google.android.apps.docs";
+  std::string activity_name = base::StrCat({package_name, ".MainActivity"});
+  std::string app_id = ArcAppListPrefs::GetAppId(package_name, activity_name);
+
+  arc::mojom::AppInfoPtr app =
+      arc::mojom::AppInfo::New("Google Drive", package_name, activity_name);
+  std::vector<arc::mojom::AppInfoPtr> app_list;
+  app_list.push_back(std::move(app));
+  arc_test()->app_instance()->SendRefreshAppList(std::move(app_list));
+  intent_helper()->OnIntentFiltersUpdatedForPackage(
+      package_name, CreateFilterList(package_name, {kDriveAuthority}));
+
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->SetSupportedLinksPreference(app_id);
+  ASSERT_EQ(app_id, preferred_apps().FindPreferredAppForUrl(
+                        GURL("https://drive.google.com/foo")));
+
+  // Simulate the app being updated to add a new intent filter.
+  intent_helper()->OnIntentFiltersUpdatedForPackage(
+      package_name,
+      CreateFilterList(package_name, {kDriveAuthority, kDocsAuthority}));
+  intent_helper()->OnSupportedLinksChanged(
+      CreateSupportedLinks(package_name), {},
+      arc::mojom::SupportedLinkChangeSource::kArcSystem);
+
+  // Verify that the new intent filter is also marked as preferred.
+  ASSERT_EQ(app_id, preferred_apps().FindPreferredAppForUrl(
+                        GURL("https://docs.google.com/document")));
 }
 
 // Verifies that ARC permissions are published to App Service correctly.
