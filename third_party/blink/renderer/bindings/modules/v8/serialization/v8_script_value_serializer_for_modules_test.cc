@@ -1694,7 +1694,8 @@ TEST(V8ScriptValueSerializerForModulesTest,
   device.display_media_info = media::mojom::DisplayMediaInformation::New(
       media::mojom::DisplayCaptureSurfaceType::MONITOR,
       /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
-      /*capture_handle=*/nullptr);
+      /*capture_handle=*/nullptr,
+      /*initial_zoom_level=*/100);
   mock_source->SetDevice(device);
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
       "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
@@ -1748,7 +1749,8 @@ TEST(V8ScriptValueSerializerForModulesTest,
   device.display_media_info = media::mojom::DisplayMediaInformation::New(
       media::mojom::DisplayCaptureSurfaceType::WINDOW,
       /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
-      /*capture_handle=*/nullptr);
+      /*capture_handle=*/nullptr,
+      /*zoom_level=*/100);
   mock_source->SetDevice(device);
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
       "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
@@ -1872,7 +1874,8 @@ TEST(V8ScriptValueSerializerForModulesTest,
   device.display_media_info = media::mojom::DisplayMediaInformation::New(
       media::mojom::DisplayCaptureSurfaceType::BROWSER,
       /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
-      /*capture_handle=*/nullptr);
+      /*capture_handle=*/nullptr,
+      /*zoom_level=*/100);
   mock_source->SetDevice(device);
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
       "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",

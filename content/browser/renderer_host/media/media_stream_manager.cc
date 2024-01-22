@@ -459,7 +459,8 @@ MediaStreamDevices DisplayMediaDevicesFromFakeDeviceConfig(
                            media_id.ToString());
   device.display_media_info = media::mojom::DisplayMediaInformation::New(
       display_surface, /*logical_surface=*/true,
-      media::mojom::CursorCaptureType::NEVER, /*capture_handle=*/nullptr);
+      media::mojom::CursorCaptureType::NEVER, /*capture_handle=*/nullptr,
+      /*initial_zoom_level=*/100);
   devices.push_back(device);
   if (!request_audio) {
     return devices;
@@ -470,7 +471,8 @@ MediaStreamDevices DisplayMediaDevicesFromFakeDeviceConfig(
       media::AudioDeviceDescription::kDefaultDeviceId, "Fake audio");
   audio_device.display_media_info = media::mojom::DisplayMediaInformation::New(
       display_surface, /*logical_surface=*/true,
-      media::mojom::CursorCaptureType::NEVER, /*capture_handle=*/nullptr);
+      media::mojom::CursorCaptureType::NEVER, /*capture_handle=*/nullptr,
+      /*initial_zoom_level=*/100);
   devices.emplace_back(audio_device);
   return devices;
 }

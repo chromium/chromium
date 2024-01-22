@@ -25,4 +25,5 @@ struct DisplayMediaInformation {
   bool logical_surface;
   CursorCaptureType cursor;
   CaptureHandle? capture_handle;
+  int32 initial_zoom_level;
 };

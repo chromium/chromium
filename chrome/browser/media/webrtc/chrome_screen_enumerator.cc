@@ -70,7 +70,8 @@ blink::mojom::StreamDevicesSetPtr EnumerateScreens(
         /*display_surface=*/media::mojom::DisplayCaptureSurfaceType::MONITOR,
         /*logical_surface=*/true,
         /*cursor=*/media::mojom::CursorCaptureType::NEVER,
-        /*capture_handle=*/nullptr);
+        /*capture_handle=*/nullptr,
+        /*initial_zoom_level=*/100);
     stream_devices_set->stream_devices.push_back(
         blink::mojom::StreamDevices::New(/*audio_device=*/std::nullopt,
                                          /*video_device=*/device));
