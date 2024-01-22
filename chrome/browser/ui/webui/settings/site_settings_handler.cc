@@ -308,7 +308,9 @@ void InsertOriginIntoGroup(
     }
   }
   group->second.insert({origin, is_partitioned});
-  auto placeholder = group->second.find({placeholder_origin, is_partitioned});
+  // Find the placeholder with unpartitioned state as it's no longer needed.
+  auto placeholder =
+      group->second.find({placeholder_origin, /*is_partitioned=*/false});
   if (placeholder != group->second.end()) {
     group->second.erase(placeholder);
   }

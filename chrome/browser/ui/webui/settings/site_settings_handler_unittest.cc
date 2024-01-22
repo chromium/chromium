@@ -2085,9 +2085,7 @@ TEST_P(SiteSettingsHandlerTest, OnStorageFetched) {
         unpartitioned_origin_info.FindBool("isPartitioned").value_or(true));
   }
 
-  // TODO(crbug.com/1518460): Re-enable section after fixing how groups are
-  // created in the all sites map based on scheme and order of insertion.
-  if (!IsDeprecateCookiesTreeModelEnabled()) {
+  {
     const base::Value& site_group_val = storage_and_cookie_list[2];
     ASSERT_TRUE(site_group_val.is_dict());
     const base::Value::Dict& site_group = site_group_val.GetDict();
