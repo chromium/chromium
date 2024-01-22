@@ -40,6 +40,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadAloud.DurationListened.LockedScreen" units="ms"
+    expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Record user's cumulative duration spent listening to a single playback with
+    the screen locked. Emitted when playback is reset. Max value is 1 hour. Any
+    listening durations longer than 1 hour will be recorded as 1 hour.
+  </summary>
+</histogram>
+
 <histogram name="ReadAloud.Eligibility.IneligiblityReason"
     enum="ReadAloudIneligibilityReason" expires_after="2024-06-02">
   <owner>andreaxg@google.com</owner>

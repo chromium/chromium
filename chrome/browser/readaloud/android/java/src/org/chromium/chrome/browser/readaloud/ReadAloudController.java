@@ -927,10 +927,10 @@ public class ReadAloudController
 
     @Override
     public void onApplicationStateChange(@ApplicationState int newState) {
+        boolean isScreenLocked =
+                DeviceConditions.isCurrentlyScreenOnAndUnlocked(mActivity.getApplicationContext());
         // stop any playback if user left Chrome while screen is on and unlocked
-        if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES
-                && DeviceConditions.isCurrentlyScreenOnAndUnlocked(
-                        mActivity.getApplicationContext())) {
+        if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES && isScreenLocked) {
             if (mCurrentlyPlayingTab != null) {
                 mStateToRestoreOnBringingToForeground =
                         new RestoreState(
@@ -944,6 +944,13 @@ public class ReadAloudController
                 && mStateToRestoreOnBringingToForeground != null) {
             mStateToRestoreOnBringingToForeground.restore();
             mStateToRestoreOnBringingToForeground = null;
+        }
+        if (mPlayerCoordinator != null) {
+            if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES && !isScreenLocked) {
+                mPlayerCoordinator.onScreenStatusChanged(/* isLocked= */ true);
+            } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES && isScreenLocked) {
+                mPlayerCoordinator.onScreenStatusChanged(/* isLocked= */ false);
+            }
         }
     }
 

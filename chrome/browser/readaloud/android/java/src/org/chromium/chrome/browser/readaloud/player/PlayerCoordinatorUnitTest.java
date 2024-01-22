@@ -295,6 +295,12 @@ public class PlayerCoordinatorUnitTest {
     }
 
     @Test
+    public void testOnScreenStatusChanged() {
+        mPlayerCoordinator.onScreenStatusChanged(true);
+        verify(mMediator).onScreenStatusChanged(true);
+    }
+
+    @Test
     public void testCloseClicked() {
         mPlayerCoordinator =
                 new PlayerCoordinator(mMiniPlayer, mMediator, mDelegate, mExpandedPlayer);

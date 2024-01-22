@@ -44,6 +44,11 @@ class PlayerMediator implements InteractionHandler {
     private long mLastStartTimeMillis;
     private long mTotalTimeMillis;
 
+    // members to record total duration listened to playback with the screen locked
+    private boolean mScreenLocked;
+    private long mLastStartTimeMillisLockedScreen;
+    private long mTotalTimeMillisLockedScreen;
+
     private final PlaybackListener mPlaybackListener =
             new PlaybackListener() {
                 @Override
@@ -63,8 +68,18 @@ class PlayerMediator implements InteractionHandler {
                         setPlaybackState(data.state());
                         if (data.state() == PlaybackListener.State.PLAYING) {
                             mLastStartTimeMillis = mClock.currentTimeMillis();
+                            if (mScreenLocked) {
+                                assert mLastStartTimeMillisLockedScreen == 0;
+                                mLastStartTimeMillisLockedScreen = mClock.currentTimeMillis();
+                            }
                         } else {
                             mTotalTimeMillis += mClock.currentTimeMillis() - mLastStartTimeMillis;
+                            if (mScreenLocked && mLastStartTimeMillisLockedScreen != 0) {
+                                mTotalTimeMillisLockedScreen +=
+                                        mClock.currentTimeMillis()
+                                                - mLastStartTimeMillisLockedScreen;
+                                mLastStartTimeMillisLockedScreen = 0;
+                            }
                         }
 
                         mLastState = data.state();
@@ -164,6 +179,27 @@ class PlayerMediator implements InteractionHandler {
         ReadAloudMetrics.recordDurationMsListened(mTotalTimeMillis);
         mTotalTimeMillis = 0;
         mLastStartTimeMillis = 0;
+        ReadAloudMetrics.recordDurationMsListenedLockedScreen(mTotalTimeMillisLockedScreen);
+        mTotalTimeMillisLockedScreen = 0;
+        mLastStartTimeMillisLockedScreen = 0;
+    }
+
+    public void onScreenStatusChanged(boolean isScreenLocked) {
+        mScreenLocked = isScreenLocked;
+        // Screen locked
+        if (isScreenLocked) {
+            if (mModel.get(PlayerProperties.PLAYBACK_STATE) == PLAYING) {
+                assert mLastStartTimeMillisLockedScreen == 0;
+                mLastStartTimeMillisLockedScreen = mClock.currentTimeMillis();
+            }
+        } else {
+            if (mModel.get(PlayerProperties.PLAYBACK_STATE) == PLAYING
+                    && mLastStartTimeMillisLockedScreen != 0) {
+                mTotalTimeMillisLockedScreen +=
+                        mClock.currentTimeMillis() - mLastStartTimeMillisLockedScreen;
+                mLastStartTimeMillisLockedScreen = 0;
+            }
+        }
     }
 
     // InteractionHandler implementation

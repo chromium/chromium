@@ -280,6 +280,78 @@ public class PlayerMediatorUnitTest {
     }
 
     @Test
+    public void testLockedPlaybackDurationRecorded() {
+        final String histogramName = ReadAloudMetrics.TIME_SPENT_LISTENING_LOCKED_SCREEN;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, 240);
+
+        mMediator.setPlayback(mPlayback);
+        verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
+        // this time shouldn't be added since the screen hasn't been set to locked
+        mClock.advanceCurrentTimeMillis(2000);
+        mMediator.onScreenStatusChanged(true);
+
+        mPlaybackData.mState = PLAYING;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+        mClock.advanceCurrentTimeMillis(100);
+        mPlaybackData.mState = PAUSED;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+        // this time shouldn't be added since playback is paused
+        mClock.advanceCurrentTimeMillis(2000);
+
+        mPlaybackData.mState = PLAYING;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+        mClock.advanceCurrentTimeMillis(140);
+
+        mMediator.onScreenStatusChanged(false);
+        // this time shouldn't be added since the screen was set to unlocked
+        mClock.advanceCurrentTimeMillis(2000);
+
+        mPlaybackData.mState = STOPPED;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+
+        mMediator.recordPlaybackDuration();
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testLockedPlaybackDurationRecorded_NeverPlayed() {
+        final String histogramName = ReadAloudMetrics.TIME_SPENT_LISTENING_LOCKED_SCREEN;
+
+        var histogram = HistogramWatcher.newBuilder().expectNoRecords(histogramName).build();
+
+        mMediator.setPlayback(mPlayback);
+        verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
+        mPlaybackData.mState = PLAYING;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+        // this time shouldn't be added since the screen hasn't been set to locked
+        mClock.advanceCurrentTimeMillis(2000);
+
+        // Pause first then lock screen
+        mPlaybackData.mState = PAUSED;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+        mMediator.onScreenStatusChanged(true);
+
+        // this time shouldn't be added since the playback is paused
+        mClock.advanceCurrentTimeMillis(360);
+
+        // unlock screen then play
+        mMediator.onScreenStatusChanged(false);
+        mPlaybackData.mState = PLAYING;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+        // this time shouldn't be added since the screen was set to unlocked
+        mClock.advanceCurrentTimeMillis(2000);
+
+        mPlaybackData.mState = STOPPED;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+
+        mMediator.recordPlaybackDuration();
+
+        histogram.assertExpected();
+    }
+
+    @Test
     public void testPlayClicked() {
         mMediator.setPlayback(mPlayback);
         mMediator.setPlaybackState(PAUSED);

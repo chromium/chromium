@@ -192,6 +192,11 @@ public class PlayerCoordinator implements Player {
         }
     }
 
+    @Override
+    public void onScreenStatusChanged(boolean isScreenLocked) {
+        mMediator.onScreenStatusChanged(isScreenLocked);
+    }
+
     /** To be called when the close button is clicked. */
     void closeClicked() {
         for (Observer o : mObserverList) {

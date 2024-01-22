@@ -31,6 +31,8 @@ public class ReadAloudMetrics {
     public static String VOICE_CHANGED = "ReadAloud.VoiceChanged.";
     public static String VOICE_PREVIEWED = "ReadAloud.VoicePreviewed.";
     public static String TIME_SPENT_LISTENING = "ReadAloud.DurationListened";
+    public static String TIME_SPENT_LISTENING_LOCKED_SCREEN =
+            "ReadAloud.DurationListened.LockedScreen";
 
     /**
      * The reason why we clear the prepared message.
@@ -97,6 +99,13 @@ public class ReadAloudMetrics {
     public static void recordDurationMsListened(long durationMs) {
         if (durationMs != 0) {
             RecordHistogram.recordLongTimesHistogram(TIME_SPENT_LISTENING, durationMs);
+        }
+    }
+
+    public static void recordDurationMsListenedLockedScreen(long durationMs) {
+        if (durationMs != 0) {
+            RecordHistogram.recordLongTimesHistogram(
+                    TIME_SPENT_LISTENING_LOCKED_SCREEN, durationMs);
         }
     }
 

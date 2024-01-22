@@ -142,4 +142,11 @@ public interface Player {
 
     /** Show back whatever player was shown last. Assumes the playback is running. */
     default void restorePlayers() {}
+
+    /**
+     * Called when the Application state changes.
+     *
+     * @param boolean isScreenLocked
+     */
+    default void onScreenStatusChanged(boolean isScreenLocked) {}
 }
