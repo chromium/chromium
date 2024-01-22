@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/android/build_info.h"
 #include "base/barrier_callback.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -49,6 +50,8 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/android/explicit_passphrase_platform_client.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
 
@@ -68,6 +71,7 @@ constexpr base::TimeDelta kTaskRetryTimeout = base::Seconds(16);
 // should be delayed.
 constexpr base::TimeDelta kPasswordStoreCallDelaySeconds = base::Seconds(5);
 constexpr int kMaxReportedRetryAttempts = 10;
+constexpr int kMinGmsVersionCodeWithCustomPassphraseApi = 235204000;
 
 using base::UTF8ToUTF16;
 using password_manager::GetExpressionForFederatedMatching;
@@ -327,6 +331,8 @@ enum class ActionOnApiError {
   kEvict,
   // See prefs::kSavePasswordsSuspendedByError.
   kDisableSaving,
+  // See PasswordStoreAndroidBackend::TryFixPassphraseErrorCb.
+  kTryFixPassphraseError,
   kRetry,
   kNone,
 };
@@ -334,18 +340,16 @@ enum class ActionOnApiError {
 ActionOnApiError GetActionOnApiError(AndroidBackendAPIErrorCode api_error_code,
                                      PasswordStoreOperation operation,
                                      base::TimeDelta delay,
-                                     bool can_remove_unenrollment) {
+                                     bool can_remove_unenrollment,
+                                     bool supports_passphrase_error_fix) {
   switch (api_error_code) {
     case AndroidBackendAPIErrorCode::kAuthErrorResolvable:
     case AndroidBackendAPIErrorCode::kAuthErrorUnresolvable:
       return ActionOnApiError::kDisableSaving;
     case AndroidBackendAPIErrorCode::kPassphraseRequired: {
-      // kPassphraseRequired is treated separately from most errors leading to
-      // eviction - CanRemoveUnenrollment() branch below - to allow a rollout
-      // independent of kRemoveUPMUnenrollment.
-      // TODO(crbug.com/1511304): Send passphrase to platform client if flag
-      // enabled.
-      return ActionOnApiError::kEvict;
+      return supports_passphrase_error_fix
+                 ? ActionOnApiError::kTryFixPassphraseError
+                 : ActionOnApiError::kEvict;
     }
     case AndroidBackendAPIErrorCode::kNetworkError:
     case AndroidBackendAPIErrorCode::kApiNotConnected:
@@ -431,7 +435,8 @@ PasswordStoreBackendError BackendErrorFromAndroidBackendError(
     const AndroidBackendError& error,
     PasswordStoreOperation operation,
     base::TimeDelta delay,
-    bool can_remove_unenrollment) {
+    bool can_remove_unenrollment,
+    bool supports_passphrase_error_fix) {
   if (error.type != AndroidBackendErrorType::kExternalError) {
     return PasswordStoreBackendError(
         PasswordStoreBackendErrorType::kUncategorized,
@@ -452,7 +457,8 @@ PasswordStoreBackendError BackendErrorFromAndroidBackendError(
       APIErrorCodeToErrorType(api_error_code, can_remove_unenrollment);
 
   switch (GetActionOnApiError(api_error_code, operation, delay,
-                              can_remove_unenrollment)) {
+                              can_remove_unenrollment,
+                              supports_passphrase_error_fix)) {
     case ActionOnApiError::kRetry:
       return PasswordStoreBackendError(
           error_type, PasswordStoreBackendErrorRecoveryType::kRetriable);
@@ -463,6 +469,7 @@ PasswordStoreBackendError BackendErrorFromAndroidBackendError(
     // reserved for eviction.
     case ActionOnApiError::kDisableSaving:
     case ActionOnApiError::kNone:
+    case ActionOnApiError::kTryFixPassphraseError:
       return PasswordStoreBackendError(
           error_type, PasswordStoreBackendErrorRecoveryType::kRecoverable);
   }
@@ -518,11 +525,30 @@ PasswordStoreAndroidBackend::JobReturnHandler::GetOperation() {
   return operation_;
 }
 
+bool IsExplicitPassphrasePlatformClientSupported() {
+  // TODO(crbug.com/1511304): Don't duplicate these checks. Instead, have
+  // SyncService::GetExplicitPassphraseClient() which returns null if they are
+  // not satisfied. Then try_fix_passphrase_error_cb_ can also be replaced with
+  // faking a ExplicitPassphraseClient method.
+  std::string version_code_str =
+      base::android::BuildInfo::GetInstance()->gms_version_code();
+  int version_code = 0;
+  return base::StringToInt(version_code_str, &version_code) &&
+         version_code >= kMinGmsVersionCodeWithCustomPassphraseApi &&
+         base::FeatureList::IsEnabled(
+             syncer::kPassExplicitSyncPassphraseToGmsCore);
+}
+
 PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     PrefService* prefs,
     AffiliationsPrefetcher* affiliations_prefetcher)
     : lifecycle_helper_(std::make_unique<PasswordManagerLifecycleHelperImpl>()),
       bridge_helper_(PasswordStoreAndroidBackendBridgeHelper::Create()),
+      try_fix_passphrase_error_cb_(
+          IsExplicitPassphrasePlatformClientSupported()
+              ? base::BindRepeating(
+                    &syncer::SendExplicitPassphraseToJavaPlatformClient)
+              : base::NullCallback()),
       affiliations_prefetcher_(affiliations_prefetcher) {
   DCHECK(bridge_helper_);
   prefs_ = prefs;
@@ -542,10 +568,12 @@ PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     std::unique_ptr<PasswordSyncControllerDelegateAndroid>
         sync_controller_delegate,
     PrefService* prefs,
+    const TryFixPassphraseErrorCb& try_fix_passphrase_error_cb,
     AffiliationsPrefetcher* affiliations_prefetcher)
     : lifecycle_helper_(std::move(lifecycle_helper)),
       bridge_helper_(std::move(bridge_helper)),
       sync_controller_delegate_(std::move(sync_controller_delegate)),
+      try_fix_passphrase_error_cb_(try_fix_passphrase_error_cb),
       affiliations_prefetcher_(affiliations_prefetcher) {
   DCHECK(bridge_helper_);
   prefs_ = prefs;
@@ -969,7 +997,8 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   base::TimeDelta delay = reply->GetDelay();
   PasswordStoreBackendError reported_error =
       BackendErrorFromAndroidBackendError(
-          error, operation, delay, bridge_helper_->CanRemoveUnenrollment());
+          error, operation, delay, bridge_helper_->CanRemoveUnenrollment(),
+          !!try_fix_passphrase_error_cb_);
 
   if (error.api_error_code.has_value() && sync_service_) {
     // TODO(crbug.com/1324588): DCHECK_EQ(api_error_code,
@@ -984,7 +1013,8 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
     // Retry the call if the performed operation in combination with the error
     // was retriable and the time limit was not reached.
     switch (GetActionOnApiError(api_error_code, operation, delay,
-                                bridge_helper_->CanRemoveUnenrollment())) {
+                                bridge_helper_->CanRemoveUnenrollment(),
+                                !!try_fix_passphrase_error_cb_)) {
       case ActionOnApiError::kRetry: {
         RecordRetryHistograms(operation, api_error_code, delay);
         CHECK(operation == PasswordStoreOperation::kGetAllLoginsAsync ||
@@ -1009,6 +1039,10 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
       }
       case ActionOnApiError::kDisableSaving:
         prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);
+        break;
+      case ActionOnApiError::kTryFixPassphraseError:
+        CHECK(try_fix_passphrase_error_cb_);
+        try_fix_passphrase_error_cb_.Run(sync_service_);
         break;
       case ActionOnApiError::kNone:
         break;
@@ -1218,8 +1252,8 @@ void PasswordStoreAndroidBackend::ClearZombieTasks() {
   }
   // Erase each timed out job and record that it was cleaned up.
   base::ranges::for_each(timed_out_job_ids, [&](const JobId& job_id) {
-    GetAndEraseJob(job_id)->RecordMetrics(AndroidBackendError(
-        AndroidBackendErrorType::kCleanedUpWithoutResponse));
+    GetAndEraseJob(job_id)->RecordMetrics(AndroidBackendError{
+        .type = AndroidBackendErrorType::kCleanedUpWithoutResponse});
   });
 }
 

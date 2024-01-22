@@ -69,6 +69,8 @@ constexpr const char kTestAndroidRealm[] =
     "android://hash@com.example.android/";
 constexpr char kBackendErrorCodeMetric[] =
     "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
+constexpr char kBackendApiErrorMetric[] =
+    "PasswordManager.PasswordStoreAndroidBackend.APIError";
 constexpr char kUnenrollmentHistogram[] =
     "PasswordManager.UnenrolledFromUPMDueToErrors";
 constexpr char kUPMActiveHistogram[] =
@@ -213,11 +215,7 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
     prefs_.registry()->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt,
                                           20.22);
 
-    backend_ = std::make_unique<PasswordStoreAndroidBackend>(
-        base::PassKey<class PasswordStoreAndroidBackendTest>(),
-        CreateMockBridgeHelper(), CreateFakeLifecycleHelper(),
-        CreatePasswordSyncControllerDelegate(), &prefs_,
-        affiliations_prefetcher_.get());
+    ResetBackend(/*try_fix_passphrase_error_cb=*/base::NullCallback());
   }
 
   ~PasswordStoreAndroidBackendTest() override {
@@ -262,6 +260,16 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  // Prefer using the already created `backend()` when possible.
+  void ResetBackend(const PasswordStoreAndroidBackend::TryFixPassphraseErrorCb&
+                        try_fix_passphrase_error_cb) {
+    backend_ = std::make_unique<PasswordStoreAndroidBackend>(
+        base::PassKey<class PasswordStoreAndroidBackendTest>(),
+        CreateMockBridgeHelper(), CreateFakeLifecycleHelper(),
+        CreatePasswordSyncControllerDelegate(), &prefs_,
+        try_fix_passphrase_error_cb, affiliations_prefetcher_.get());
+  }
 
  private:
   std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper>
@@ -773,13 +781,9 @@ TEST_F(PasswordStoreAndroidBackendTest,
             0);
   EXPECT_EQ(prefs()->GetDouble(prefs::kTimeOfLastMigrationAttempt), 0.0);
 
-  const char kErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
-  const char kAPIErrorMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.APIError";
-
-  histogram_tester.ExpectBucketCount(kErrorCodeMetric, 7, 1);
-  histogram_tester.ExpectBucketCount(kAPIErrorMetric, kInternalErrorCode, 1);
+  histogram_tester.ExpectBucketCount(kBackendErrorCodeMetric, 7, 1);
+  histogram_tester.ExpectBucketCount(kBackendApiErrorMetric, kInternalErrorCode,
+                                     1);
   histogram_tester.ExpectBucketCount(kUnenrollmentHistogram, true, 1);
 }
 
@@ -817,14 +821,9 @@ TEST_F(PasswordStoreAndroidBackendTest,
             0);
   EXPECT_NE(prefs()->GetDouble(prefs::kTimeOfLastMigrationAttempt), 0.0);
 
-  const char kErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
-  const char kAPIErrorMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.APIError";
-
-  histogram_tester.ExpectBucketCount(kErrorCodeMetric, 7, 1);
-  histogram_tester.ExpectBucketCount(kAPIErrorMetric, kAuthErrorResolvableCode,
-                                     1);
+  histogram_tester.ExpectBucketCount(kBackendErrorCodeMetric, 7, 1);
+  histogram_tester.ExpectBucketCount(kBackendApiErrorMetric,
+                                     kAuthErrorResolvableCode, 1);
 }
 
 TEST_F(
@@ -870,14 +869,10 @@ TEST_F(
             0);
   EXPECT_EQ(prefs()->GetDouble(prefs::kTimeOfLastMigrationAttempt), 0.0);
 
-  const char kErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
-  const char kAPIErrorMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.APIError";
-
   histogram_tester.ExpectBucketCount(
-      kErrorCodeMetric, AndroidBackendErrorType::kExternalError, 1);
-  histogram_tester.ExpectBucketCount(kAPIErrorMetric, kNetworkErrorCode, 1);
+      kBackendErrorCodeMetric, AndroidBackendErrorType::kExternalError, 1);
+  histogram_tester.ExpectBucketCount(kBackendApiErrorMetric, kNetworkErrorCode,
+                                     1);
   histogram_tester.ExpectBucketCount(kUnenrollmentHistogram, true, 1);
 
   // Per-operation retry histograms
@@ -938,14 +933,9 @@ TEST_F(PasswordStoreAndroidBackendTest,
             0);
   EXPECT_NE(prefs()->GetDouble(prefs::kTimeOfLastMigrationAttempt), 0.0);
 
-  const char kErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
-  const char kAPIErrorMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.APIError";
-
-  histogram_tester.ExpectBucketCount(kErrorCodeMetric, 7, 1);
+  histogram_tester.ExpectBucketCount(kBackendErrorCodeMetric, 7, 1);
   histogram_tester.ExpectBucketCount(
-      kAPIErrorMetric,
+      kBackendApiErrorMetric,
       static_cast<int>(AndroidBackendAPIErrorCode::kNetworkError), 1);
 
   // Per-operation retry histograms
@@ -1085,7 +1075,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
 }
 
 TEST_F(PasswordStoreAndroidBackendTest,
-       OnExternalPassphraseRequiredCausingExperimentUnenrollment) {
+       PassphraseRequiredErrorCausesUnenrollmentIfFixUnsupported) {
   base::HistogramTester histogram_tester;
 
   backend().InitBackend(/*affiliated_match_helper=*/nullptr,
@@ -1100,12 +1090,11 @@ TEST_F(PasswordStoreAndroidBackendTest,
       mock_reply,
       Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
                       PasswordStoreBackendErrorRecoveryType::kUnrecoverable)));
-  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
   // Simulate receiving PASSPHRASE_REQUIRED code.
   int kPassphraseRequiredErrorCode =
       static_cast<int>(AndroidBackendAPIErrorCode::kPassphraseRequired);
-  error.api_error_code = std::optional<int>(kPassphraseRequiredErrorCode);
-  consumer().OnError(kJobId, std::move(error));
+  consumer().OnError(kJobId, {.type = AndroidBackendErrorType::kExternalError,
+                              .api_error_code = kPassphraseRequiredErrorCode});
   RunUntilIdle();
 
   EXPECT_TRUE(prefs()->GetBoolean(
@@ -1116,17 +1105,55 @@ TEST_F(PasswordStoreAndroidBackendTest,
   EXPECT_EQ(prefs()->GetInteger(
                 prefs::kCurrentMigrationVersionToGoogleMobileServices),
             0);
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
   EXPECT_EQ(prefs()->GetDouble(prefs::kTimeOfLastMigrationAttempt), 0.0);
-
-  const char kErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
-  const char kAPIErrorMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.APIError";
-
-  histogram_tester.ExpectBucketCount(kErrorCodeMetric, 7, 1);
-  histogram_tester.ExpectBucketCount(kAPIErrorMetric,
+  histogram_tester.ExpectBucketCount(kBackendErrorCodeMetric, 7, 1);
+  histogram_tester.ExpectBucketCount(kBackendApiErrorMetric,
                                      kPassphraseRequiredErrorCode, 1);
   histogram_tester.ExpectBucketCount(kUnenrollmentHistogram, true, 1);
+}
+
+TEST_F(PasswordStoreAndroidBackendTest,
+       PassphraseRequiredErrorCausesNoUnenrollmentIfFixSupported) {
+  base::HistogramTester histogram_tester;
+
+  base::MockCallback<PasswordStoreAndroidBackend::TryFixPassphraseErrorCb>
+      try_fix_passphrase_error_cb;
+  ResetBackend(try_fix_passphrase_error_cb.Get());
+  backend().InitBackend(/*affiliated_match_helper=*/nullptr,
+                        PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::NullCallback(), base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+  EXPECT_CALL(
+      mock_reply,
+      Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
+                      PasswordStoreBackendErrorRecoveryType::kRecoverable)));
+  EXPECT_CALL(try_fix_passphrase_error_cb, Run);
+  // Simulate receiving PASSPHRASE_REQUIRED code.
+  int kPassphraseRequiredErrorCode =
+      static_cast<int>(AndroidBackendAPIErrorCode::kPassphraseRequired);
+  consumer().OnError(kJobId, {.type = AndroidBackendErrorType::kExternalError,
+                              .api_error_code = kPassphraseRequiredErrorCode});
+  RunUntilIdle();
+
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
+  EXPECT_EQ(prefs()->GetInteger(
+                prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode),
+            0);
+  EXPECT_NE(prefs()->GetInteger(
+                prefs::kCurrentMigrationVersionToGoogleMobileServices),
+            0);
+  EXPECT_NE(prefs()->GetDouble(prefs::kTimeOfLastMigrationAttempt), 0.0);
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  histogram_tester.ExpectBucketCount(kBackendErrorCodeMetric, 7, 1);
+  histogram_tester.ExpectBucketCount(kBackendApiErrorMetric,
+                                     kPassphraseRequiredErrorCode, 1);
+  histogram_tester.ExpectTotalCount(kUnenrollmentHistogram, 0);
 }
 
 TEST_F(PasswordStoreAndroidBackendTest,

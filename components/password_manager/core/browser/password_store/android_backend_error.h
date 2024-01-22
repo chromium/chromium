@@ -42,13 +42,6 @@ enum class AndroidBackendErrorType {
 };
 
 struct AndroidBackendError {
-  explicit AndroidBackendError(AndroidBackendErrorType error_type);
-
-  AndroidBackendError(const AndroidBackendError&) = delete;
-  AndroidBackendError(AndroidBackendError&&);
-  AndroidBackendError& operator=(const AndroidBackendError&) = delete;
-  AndroidBackendError& operator=(AndroidBackendError&&) = delete;
-
   // Type of the error returned by the bridge.
   AndroidBackendErrorType type;
 

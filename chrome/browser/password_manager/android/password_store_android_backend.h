@@ -98,6 +98,11 @@ class PasswordStoreAndroidBackend
     : public PasswordStoreBackend,
       public PasswordStoreAndroidBackendReceiverBridge::Consumer {
  public:
+  // Can be invoked upon AndroidBackendAPIErrorCode::kPassphraseRequired errors
+  // to attempt to resolve the error.
+  using TryFixPassphraseErrorCb =
+      base::RepeatingCallback<void(const syncer::SyncService*)>;
+
   PasswordStoreAndroidBackend(
       PrefService* prefs,
       AffiliationsPrefetcher* affiliations_prefetcher);
@@ -108,6 +113,7 @@ class PasswordStoreAndroidBackend
       std::unique_ptr<PasswordSyncControllerDelegateAndroid>
           sync_controller_delegate,
       PrefService* prefs,
+      const TryFixPassphraseErrorCb& try_fix_passphrase_error_cb,
       AffiliationsPrefetcher* affiliations_prefetcher);
   ~PasswordStoreAndroidBackend() override;
 
@@ -376,6 +382,9 @@ class PasswordStoreAndroidBackend
       sync_controller_delegate_;
 
   raw_ptr<PrefService> prefs_ = nullptr;
+
+  // Nullable.
+  const TryFixPassphraseErrorCb try_fix_passphrase_error_cb_;
 
   raw_ptr<AffiliationsPrefetcher> affiliations_prefetcher_ = nullptr;
 
