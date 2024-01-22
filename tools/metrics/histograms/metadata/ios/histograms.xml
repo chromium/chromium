@@ -3997,17 +3997,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UserInterfaceStyle.CurrentlyUsed" enum="IOSUserInterfaceStyle"
-    expires_after="2021-12-11">
-  <owner>rkgibson@google.com</owner>
-  <owner>bling-team@google.com</owner>
-  <summary>
-    [iOS Only] Used on iOS 13+ to report the usage of Light and Dark mode. This
-    is logged at startup and on each user interface style change. Can be caused
-    by the system automatic switch or by the user manually changing the style.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

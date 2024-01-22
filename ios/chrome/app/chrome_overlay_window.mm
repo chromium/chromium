@@ -58,16 +58,6 @@
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (previousTraitCollection.horizontalSizeClass !=
-      self.traitCollection.horizontalSizeClass) {
-    [self updateCrashKeys];
-  }
-  if ([self.traitCollection
-          hasDifferentColorAppearanceComparedToTraitCollection:
-              previousTraitCollection]) {
-    [self.userInterfaceStyleRecorder
-        userInterfaceStyleDidChange:self.traitCollection.userInterfaceStyle];
-  }
   [self updateCrashKeys];
 }
 

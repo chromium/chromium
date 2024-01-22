@@ -15,8 +15,6 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Call this method to report the new user interface to UMA.
-- (void)userInterfaceStyleDidChange:(UIUserInterfaceStyle)newUserInterfaceStyle;
 
 @end
 
