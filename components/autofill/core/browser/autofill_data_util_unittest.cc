@@ -19,8 +19,7 @@ using data_util::bit_field_type_groups::kName;
 using data_util::bit_field_type_groups::kPhone;
 
 TEST(AutofillDataUtilTest, DetermineGroupsForHomeNameAndAddress) {
-  const FieldTypeSet field_types{NAME_HONORIFIC_PREFIX,
-                                 NAME_FULL,
+  const FieldTypeSet field_types{NAME_FULL,
                                  NAME_FIRST,
                                  NAME_MIDDLE,
                                  NAME_MIDDLE_INITIAL,

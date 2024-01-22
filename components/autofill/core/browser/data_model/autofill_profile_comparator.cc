@@ -187,7 +187,6 @@ int32_t NormalizingIterator::GetNextChar() {
 FieldTypeSet GetUserVisibleTypes() {
   static const FieldTypeSet user_visible_type = {
       NAME_FULL,
-      NAME_HONORIFIC_PREFIX,
       ADDRESS_HOME_STREET_ADDRESS,
       ADDRESS_HOME_CITY,
       ADDRESS_HOME_DEPENDENT_LOCALITY,

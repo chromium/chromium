@@ -30,7 +30,6 @@ namespace {
 // A test record that contains all entries of the hybrid-structure name tree.
 struct NameParserTestRecord {
   std::string full;
-  std::string honorific;
   std::string first;
   std::string middle;
   std::string last;
@@ -51,7 +50,6 @@ struct LastNameParserTestRecord {
 // Function to test the parsing of a name from the full (unstructured)
 // representation into its subcomponents.
 void TestNameParsing(const std::u16string& full,
-                     const std::u16string& honorific,
                      const std::u16string& first,
                      const std::u16string& middle,
                      const std::u16string& last,
@@ -133,115 +131,107 @@ TEST(AutofillStructuredName, ParseFullName) {
   NameParserTestRecord name_tests[] = {
       // Name starting with a last name, followed by a comma and the first and
       // middle name.
-      {"Mueller, Hans Peter", "", "Hans", "Peter", "Mueller", "", "",
+      {"Mueller, Hans Peter", "Hans", "Peter", "Mueller", "", "", "Mueller"},
+      // Same with multiple middle names.
+      {"Mueller, Hans Walter Peter", "Hans", "Walter Peter", "Mueller", "", "",
        "Mueller"},
-      // Same with an honorific prefix an multiple middle names.
-      // middle name.
-      {"Prof. Mueller, Hans Walter Peter", "Prof.", "Hans", "Walter Peter",
-       "Mueller", "", "", "Mueller"},
       // Name that includes a hyphen.
-      {"Dr. Hans-Peter Mueller", "Dr.", "Hans-Peter", "", "Mueller", "", "",
-       "Mueller"},
-      // Name with honorific prefix but without a middle name.
-      {"Prof. Albert Einstein", "Prof.", "Albert", "", "Einstein", "", "",
-       "Einstein"},
-      // Name with honorific prefix and a middle name.
-      {"Dr. Richard Phillips Feynman", "Dr.", "Richard", "Phillips", "Feynman",
+      {"Hans-Peter Mueller", "Hans-Peter", "", "Mueller", "", "", "Mueller"},
+      // Name but without a middle name.
+      {"Albert Einstein", "Albert", "", "Einstein", "", "", "Einstein"},
+      // Name and a middle name.
+      {"Richard Phillips Feynman", "Richard", "Phillips", "Feynman", "", "",
+       "Feynman"},
+      // Name and multiple middle names.
+      {"Richard Phillips Isaac Feynman", "Richard", "Phillips Isaac", "Feynman",
        "", "", "Feynman"},
-      // Name with honorific prefix and multiple middle name.
-      {"Dr. Richard Phillips Isaac Feynman", "Dr.", "Richard", "Phillips Isaac",
-       "Feynman", "", "", "Feynman"},
       // Hispanic/Latinx name with two surname and a conjunction.
-      {"Pablo Diego Ruiz y Picasso", "", "Pablo Diego", "", "Ruiz y Picasso",
+      {"Pablo Diego Ruiz y Picasso", "Pablo Diego", "", "Ruiz y Picasso",
        "Ruiz", "y", "Picasso"},
-      // Hispanic/Latinx name with two surname and a conjunction with an
-      // honorific prefix.
-      {"Mr. Pablo Ruiz y Picasso", "Mr.", "Pablo", "", "Ruiz y Picasso", "Ruiz",
-       "y", "Picasso"},
+      // Hispanic/Latinx name with two surname and a conjunction.
+      {"Pablo Ruiz y Picasso", "Pablo", "", "Ruiz y Picasso", "Ruiz", "y",
+       "Picasso"},
       // Name with multiple middle names.
-      {"George Walker Junior Bush", "", "George", "Walker Junior", "Bush", "",
-       "", "Bush"},
+      {"George Walker Junior Bush", "George", "Walker Junior", "Bush", "", "",
+       "Bush"},
       // Name with a middle name initial.
-      {"George W Bush", "", "George", "W", "Bush", "", "", "Bush"},
+      {"George W Bush", "George", "W", "Bush", "", "", "Bush"},
       // Name with a middle name initial.
-      {"George W. Bush", "", "George", "W.", "Bush", "", "", "Bush"},
+      {"George W. Bush", "George", "W.", "Bush", "", "", "Bush"},
       // Name with a single middle name.
-      {"George Walker Bush", "", "George", "Walker", "Bush", "", "", "Bush"},
+      {"George Walker Bush", "George", "Walker", "Bush", "", "", "Bush"},
       // Name without names.
-      {"George Bush", "", "George", "", "Bush", "", "", "Bush"},
+      {"George Bush", "George", "", "Bush", "", "", "Bush"},
       // Three character Korean name wit two-character surname.
-      {"欧阳龙", "", "龙", "", "欧阳", "", "", "欧阳"},
+      {"欧阳龙", "龙", "", "欧阳", "", "", "欧阳"},
       // Four character Korean name wit two-character surname.
-      {"欧阳龙龙", "", "龙龙", "", "欧阳", "", "", "欧阳"},
+      {"欧阳龙龙", "龙龙", "", "欧阳", "", "", "欧阳"},
       // Full name including given, middle and family names.
-      {"Homer Jay Simpson", "", "Homer", "Jay", "Simpson", "", "", "Simpson"},
+      {"Homer Jay Simpson", "Homer", "Jay", "Simpson", "", "", "Simpson"},
       // No middle name.
-      {"Moe Szyslak", "", "Moe", "", "Szyslak", "", "", "Szyslak"},
-      // Common name prefixes parsed into the honorific prefix.
-      {"Reverend Timothy Lovejoy", "Reverend", "Timothy", "", "Lovejoy", "", "",
-       "Lovejoy"},
+      {"Moe Szyslak", "Moe", "", "Szyslak", "", "", "Szyslak"},
+      // Common name.
+      {"Timothy Lovejoy", "Timothy", "", "Lovejoy", "", "", "Lovejoy"},
       // Only a last name with a preposition.
-      {"von Gutenberg", "", "", "", "von Gutenberg", "", "", "von Gutenberg"},
+      {"von Gutenberg", "", "", "von Gutenberg", "", "", "von Gutenberg"},
       // Common name suffixes removed.
-      {"John Frink Phd", "", "John", "", "Frink", "", "", "Frink"},
+      {"John Frink Phd", "John", "", "Frink", "", "", "Frink"},
       // Only lase name with common name suffixes removed.
-      {"Frink Phd", "", "", "", "Frink", "", "", "Frink"},
+      {"Frink Phd", "", "", "Frink", "", "", "Frink"},
       // Since "Ma" is a common last name, "Ma" was removed from the suffixes.
-      {"John Ma", "", "John", "", "Ma", "", "", "Ma"},
+      {"John Ma", "John", "", "Ma", "", "", "Ma"},
       // Common family name prefixes not considered a middle name.
-      {"Milhouse Van Houten", "", "Milhouse", "", "Van Houten", "", "",
+      {"Milhouse Van Houten", "Milhouse", "", "Van Houten", "", "",
        "Van Houten"},
       // Chinese name, Unihan
-      {"孫 德明", "", "德明", "", "孫", "", "", "孫"},
+      {"孫 德明", "德明", "", "孫", "", "", "孫"},
       // Chinese name, Unihan, 'IDEOGRAPHIC SPACE'
-      {"孫　德明", "", "德明", "", "孫", "", "", "孫"},
+      {"孫　德明", "德明", "", "孫", "", "", "孫"},
       // Korean name, Hangul
-      {"홍 길동", "", "길동", "", "홍", "", "", "홍"},
+      {"홍 길동", "길동", "", "홍", "", "", "홍"},
       // Japanese name, Unihan
-      {"山田 貴洋", "", "貴洋", "", "山田", "", "", "山田"},
+      {"山田 貴洋", "貴洋", "", "山田", "", "", "山田"},
       // In Japanese, foreign names use 'KATAKANA MIDDLE DOT' (U+30FB) as a
       // separator. There is no consensus for the ordering. For now, we use
       // the same ordering as regular Japanese names ("last・first").
       // Foreign name in Japanese, Katakana
-      {"ゲイツ・ビル", "", "ビル", "", "ゲイツ", "", "", "ゲイツ"},
+      {"ゲイツ・ビル", "ビル", "", "ゲイツ", "", "", "ゲイツ"},
       // 'KATAKANA MIDDLE DOT' is occasionally typo-ed as 'MIDDLE DOT' (U+00B7).
-      {"ゲイツ·ビル", "", "ビル", "", "ゲイツ", "", "", "ゲイツ"},
+      {"ゲイツ·ビル", "ビル", "", "ゲイツ", "", "", "ゲイツ"},
       // CJK names don't usually have a space in the middle, but most of the
       // time, the surname is only one character (in Chinese & Korean).
-      {"최성훈", "", "성훈", "", "최", "", "", "최"},  // Korean name, Hangul
+      {"최성훈", "성훈", "", "최", "", "", "최"},  // Korean name, Hangul
       // (Simplified) Chinese name, Unihan
-      {"刘翔", "", "翔", "", "刘", "", "", "刘"},
+      {"刘翔", "翔", "", "刘", "", "", "刘"},
       // (Traditional) Chinese name, Unihan
-      {"劉翔", "", "翔", "", "劉", "", "", "劉"},
+      {"劉翔", "翔", "", "劉", "", "", "劉"},
       // Korean name, Hangul
-      {"남궁도", "", "도", "", "남궁", "", "", "남궁"},
+      {"남궁도", "도", "", "남궁", "", "", "남궁"},
       // Korean name, Hangul
-      {"황보혜정", "", "혜정", "", "황보", "", "", "황보"},
+      {"황보혜정", "혜정", "", "황보", "", "", "황보"},
       // (Traditional) Chinese name, Unihan
-      {"歐陽靖", "", "靖", "", "歐陽", "", "", "歐陽"},
+      {"歐陽靖", "靖", "", "歐陽", "", "", "歐陽"},
       // In Korean, some 2-character surnames are rare/ambiguous, like "강전":
       // "강" is a common surname, and "전" can be part of a given name. In
       // those cases, we assume it's 1/2 for 3-character names, or 2/2 for
       // 4-character names.
       // Korean name, Hangul
-      {"강전희", "", "전희", "", "강", "", "", "강"},
+      {"강전희", "전희", "", "강", "", "", "강"},
       // Korean name, Hangul
-      {"황목치승", "", "치승", "", "황목", "", "", "황목"},
+      {"황목치승", "치승", "", "황목", "", "", "황목"},
       // It occasionally happens that a full name is 2 characters, 1/1.
       // Korean name, Hangul
-      {"이도", "", "도", "", "이", "", "", "이"},
+      {"이도", "도", "", "이", "", "", "이"},
       // Chinese name, Unihan
-      {"孫文", "", "文", "", "孫", "", "", "孫"}};
+      {"孫文", "文", "", "孫", "", "", "孫"}};
 
   for (const auto& name_test : name_tests) {
-    TestNameParsing(base::UTF8ToUTF16(name_test.full),
-                    base::UTF8ToUTF16(name_test.honorific),
-                    base::UTF8ToUTF16(name_test.first),
-                    base::UTF8ToUTF16(name_test.middle),
-                    base::UTF8ToUTF16(name_test.last),
-                    base::UTF8ToUTF16(name_test.last_first),
-                    base::UTF8ToUTF16(name_test.last_conjunction),
-                    base::UTF8ToUTF16(name_test.last_second));
+    TestNameParsing(
+        base::UTF8ToUTF16(name_test.full), base::UTF8ToUTF16(name_test.first),
+        base::UTF8ToUTF16(name_test.middle), base::UTF8ToUTF16(name_test.last),
+        base::UTF8ToUTF16(name_test.last_first),
+        base::UTF8ToUTF16(name_test.last_conjunction),
+        base::UTF8ToUTF16(name_test.last_second));
   }
 }
 
@@ -554,8 +544,6 @@ TEST(AutofillStructuredName, TestCopyConstructor) {
   // a correctly observed structure of title, first, middle, last.
   original.SetValueForType(NAME_FULL, u"Mr Pablo Diego Ruiz y Picasso",
                            VerificationStatus::kUserVerified);
-  original.SetValueForType(NAME_HONORIFIC_PREFIX, u"Mr",
-                           VerificationStatus::kObserved);
   original.SetValueForType(NAME_FIRST, u"Pablo Diego",
                            VerificationStatus::kObserved);
   original.SetValueForType(NAME_MIDDLE, u"", VerificationStatus::kObserved);
