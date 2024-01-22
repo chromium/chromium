@@ -25,6 +25,7 @@
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webauthn/authenticator_request_bubble.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_window.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
@@ -383,6 +384,10 @@ StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
 
     case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
       return StepUIType::WINDOW;
+
+    case AuthenticatorRequestDialogModel::Step::kGPMCreate:
+    case AuthenticatorRequestDialogModel::Step::kTrustThisComputer:
+      return StepUIType::BUBBLE;
 
     default:
       return StepUIType::DIALOG;
@@ -1648,8 +1653,7 @@ void AuthenticatorRequestDialogModel::SetCurrentStep(Step step) {
         break;
 
       case StepUIType::BUBBLE:
-        // TODO(enclave): build this.
-        // ShowAuthenticatorRequestBubble(web_contents, this);
+        ShowAuthenticatorRequestBubble(web_contents, this);
         break;
 
       case StepUIType::WINDOW:

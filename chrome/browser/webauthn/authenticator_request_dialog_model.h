@@ -159,6 +159,9 @@ class AuthenticatorRequestDialogModel
 
     kCreatePasskey,
     kRecoverSecurityDomain,
+    kTrustThisComputer,
+    kGPMCreate,
+    kWaitingForEnclave,
   };
 
   // Implemented by the dialog to observe this model and show the UI panels
@@ -519,6 +522,10 @@ class AuthenticatorRequestDialogModel
   // OnAttestationPermissionResponse is called when the user either allows or
   // disallows an attestation permission request.
   void OnAttestationPermissionResponse(bool attestation_permission_granted);
+
+  // These functions are currently placeholders.
+  void OnGPMCreate() {}
+  void OnTrustThisComputer() {}
 
   // Adds or removes an authenticator to the list of known authenticators. The
   // first authenticator added with transport `kInternal` (or without a

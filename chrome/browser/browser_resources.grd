@@ -19,6 +19,8 @@
         <!-- WebAuthn Lottie resources -->
         <structure type="lottie" name="IDR_WEBAUTHN_HYBRID_CONNECTING_LIGHT" file="resources/webauthn/hybrid_connecting_light.json" compress="brotli" />
         <structure type="lottie" name="IDR_WEBAUTHN_HYBRID_CONNECTING_DARK" file="resources/webauthn/hybrid_connecting_dark.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_GPM_FINGERPRINT_LIGHT" file="resources/webauthn/gpm_fingerprint_light.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_GPM_LAPTOP_LIGHT" file="resources/webauthn/gpm_laptop_light.json" compress="brotli" />
       </if>
     </structures>
     <includes>
