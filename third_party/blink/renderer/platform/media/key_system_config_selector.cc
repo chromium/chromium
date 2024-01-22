@@ -166,7 +166,7 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
       !codec_vector.empty()) {
     std::vector<std::string> filtered_codec_vector;
     for (const auto& codec : codec_vector) {
-      if (media::ParseDolbyVisionCodecId(codec)) {
+      if (!media::ParseDolbyVisionCodecId(codec)) {
         filtered_codec_vector.push_back(codec);
       }
     }
