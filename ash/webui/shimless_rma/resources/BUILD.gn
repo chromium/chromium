@@ -67,7 +67,7 @@ build_webui("build") {
   ]
 
   non_web_component_files = [
-    "data.js",
+    "data.ts",
     "events.ts",
     "fake_data.js",
     "fake_shimless_rma_service.ts",

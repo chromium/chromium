@@ -4,10 +4,7 @@
 
 import {ComponentType} from './shimless_rma.mojom-webui.js';
 
-/**
- * @type {!Object<!ComponentType, string>}
- */
-export const ComponentTypeToId = {
+export const ComponentTypeToId: {[key in ComponentType]: string} = {
   [ComponentType.kAudioCodec]: 'componentAudio',
   [ComponentType.kBattery]: 'componentBattery',
   [ComponentType.kStorage]: 'componentStorage',
