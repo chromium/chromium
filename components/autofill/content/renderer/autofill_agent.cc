@@ -778,8 +778,10 @@ void AutofillAgent::ClearPreviewedForm() {
       previewed_elements;
   for (const auto& [previewed_element, prior_autofill_state] :
        previewed_elements_) {
-    previewed_elements.emplace_back(previewed_element.GetField(),
-                                    prior_autofill_state);
+    if (WebFormControlElement field = previewed_element.GetField();
+        !field.IsNull()) {
+      previewed_elements.emplace_back(field, prior_autofill_state);
+    }
   }
   form_util::ClearPreviewedElements(last_action_type_, previewed_elements,
                                     last_queried_element);
