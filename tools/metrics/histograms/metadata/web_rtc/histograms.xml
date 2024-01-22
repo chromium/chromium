@@ -977,7 +977,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.FrameIsRefresh.{CapturerType}"
-    units="boolean" expires_after="2024-04-04">
+    enum="Boolean" expires_after="2024-04-04">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1222,7 +1222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.DtlsFingerprintLegacySha1"
-    units="boolean" expires_after="2024-07-01">
+    enum="Boolean" expires_after="2024-07-01">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <owner>phancke@microsoft.com</owner>
@@ -1485,7 +1485,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.ThermalThrottling" units="boolean"
+<histogram name="WebRTC.PeerConnection.ThermalThrottling" enum="Boolean"
     expires_after="2024-06-30">
   <owner>handellm@google.com</owner>
   <owner>hbos@chromium.org</owner>
@@ -1517,8 +1517,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.ValidBundledPayloadTypes"
-    units="boolean" expires_after="2024-06-30">
+<histogram name="WebRTC.PeerConnection.ValidBundledPayloadTypes" enum="Boolean"
+    expires_after="2024-06-30">
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <owner>phancke@microsoft.com</owner>
@@ -1530,7 +1530,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.ValidIceChars" units="boolean"
+<histogram name="WebRTC.PeerConnection.ValidIceChars" enum="Boolean"
     expires_after="2024-02-04">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
@@ -1590,7 +1590,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Screenshare.DesktopCapturerFullscreenDetector"
-    units="boolean" expires_after="2024-06-30">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -1616,7 +1616,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Screenshare.ZeroHz.QueueOverload" units="boolean"
+<histogram name="WebRTC.Screenshare.ZeroHz.QueueOverload" enum="Boolean"
     expires_after="2024-03-30">
   <owner>henrika@chromium.org</owner>
   <owner>handellm@google.com</owner>

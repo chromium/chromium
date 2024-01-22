@@ -123,7 +123,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.PerformanceInterventions.CPU.SystemCPUError.{Timing}"
-    units="BooleanError" expires_after="2024-04-28">
+    enum="BooleanError" expires_after="2024-04-28">
   <owner>agale@chromium.org</owner>
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>

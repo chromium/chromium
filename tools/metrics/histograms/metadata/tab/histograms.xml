@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Tab.HasCustomUnderPageBackgroundColor" units="BooleanPresent"
+<histogram name="Tab.HasCustomUnderPageBackgroundColor" enum="BooleanPresent"
     expires_after="2024-11-29">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -257,7 +257,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.HasThemeColor" units="BooleanPresent"
+<histogram name="Tab.HasThemeColor" enum="BooleanPresent"
     expires_after="2024-11-29">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -2191,7 +2191,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.Tasks.OrderValidOnStartup" units="boolean"
+<histogram name="Tabs.Tasks.OrderValidOnStartup" enum="Boolean"
     expires_after="2024-03-24">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -2201,7 +2201,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.Tasks.TabAddedWithValidProposedPosition" units="boolean"
+<histogram name="Tabs.Tasks.TabAddedWithValidProposedPosition" enum="Boolean"
     expires_after="2024-05-19">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>

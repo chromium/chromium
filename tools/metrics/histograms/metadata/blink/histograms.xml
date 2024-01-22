@@ -2934,7 +2934,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LocalFrameRoot.DidReachFirstContentfulPaint"
-    units="Boolean" expires_after="2024-06-30">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -2944,7 +2944,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LocalFrameRoot.DidReachFirstContentfulPaint.MainFrame"
-    units="Boolean" expires_after="2024-06-30">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -3092,7 +3092,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.MobileMetrics.BadTapTargetRatioExtractionSucceed"
-    units="Boolean" expires_after="2023-05-07">
+    enum="Boolean" expires_after="2023-05-07">
   <owner>kumagi@google.com</owner>
   <owner>gaul@google.com</owner>
   <owner>paint-dev@google.com</owner>

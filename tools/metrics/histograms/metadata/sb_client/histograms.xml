@@ -554,7 +554,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.CSDPhishingCachedDataAvailable"
-    units="BooleanAvailable" expires_after="2024-10-09">
+    enum="BooleanAvailable" expires_after="2024-10-09">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

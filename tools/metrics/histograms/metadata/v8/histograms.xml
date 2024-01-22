@@ -56,7 +56,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.CFIPageSizeMismatch" units="BooleanOccurred"
+<histogram name="V8.CFIPageSizeMismatch" enum="BooleanOccurred"
     expires_after="2024-06-01">
   <owner>sroettger@google.com</owner>
   <owner>v8-security@google.com</owner>
@@ -1601,8 +1601,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.UnhandledExceptionCountInMainThread"
-    units="BooleanOccurred" expires_after="2024-05-26">
+<histogram name="V8.UnhandledExceptionCountInMainThread" enum="BooleanOccurred"
+    expires_after="2024-05-26">
   <owner>chikamune@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
@@ -1616,7 +1616,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.UnhandledExceptionCountInWorker" units="BooleanOccurred"
+<histogram name="V8.UnhandledExceptionCountInWorker" enum="BooleanOccurred"
     expires_after="2024-06-30">
   <owner>chikamune@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>

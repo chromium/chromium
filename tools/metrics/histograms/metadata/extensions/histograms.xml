@@ -1266,7 +1266,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.Events.DidDispatchToAckSucceed.{BackgroundContextType}"
-    units="Boolean" expires_after="never">
+    enum="Boolean" expires_after="never">
 <!-- expires-never: Monitors core extension system health. -->
 
   <owner>jlulejian@chromium.org</owner>

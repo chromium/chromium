@@ -311,7 +311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL"
-    units="Boolean" expires_after="2024-01-14">
+    enum="Boolean" expires_after="2024-01-14">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>

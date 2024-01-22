@@ -1454,7 +1454,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.RichAutocompletion.Triggered.Any" units="Boolean"
+<histogram name="Omnibox.RichAutocompletion.Triggered.Any" enum="Boolean"
     expires_after="2024-06-30">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -1559,7 +1559,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested.{HistoryOrSuggest}"
-    units="boolean" expires_after="2023-05-02">
+    enum="Boolean" expires_after="2023-05-02">
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>

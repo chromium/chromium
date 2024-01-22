@@ -4232,7 +4232,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.TabSwitcher.TabHidden" units="boolean"
+<histogram name="Android.TabSwitcher.TabHidden" enum="Boolean"
     expires_after="2024-06-23">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-isochron-team@google.com</owner>

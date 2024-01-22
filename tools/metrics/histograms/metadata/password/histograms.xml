@@ -1538,7 +1538,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.Import.FileDeletionSelected" units="Boolean"
+<histogram name="PasswordManager.Import.FileDeletionSelected" enum="Boolean"
     expires_after="2024-06-30">
   <owner>eliaskh@chromium.org</owner>
   <owner>natiahlyi@google.com</owner>
@@ -1548,7 +1548,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.Import.Only{ErrorType}" units="Boolean"
+<histogram name="PasswordManager.Import.Only{ErrorType}" enum="Boolean"
     expires_after="2024-06-30">
   <owner>eliaskh@chromium.org</owner>
   <owner>natiahlyi@google.com</owner>

@@ -2297,6 +2297,11 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Deprecated enum name"/>
 </enum>
 
+<enum name="BooleanDestroyed">
+  <int value="0" label="Not destroyed"/>
+  <int value="1" label="Destroyed"/>
+</enum>
+
 <enum name="BooleanDetected">
   <int value="0" label="Not detected"/>
   <int value="1" label="Detected"/>
@@ -2411,6 +2416,11 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Dark"/>
 </enum>
 
+<enum name="BooleanIsFileBacked">
+  <int value="0" label="Not file backed"/>
+  <int value="1" label="File backed"/>
+</enum>
+
 <enum name="BooleanIsProductDetailPage">
   <int value="0" label="Is not a product detail page"/>
   <int value="1" label="Is a product detail page"/>
@@ -2454,6 +2464,11 @@ Called by update_autofill_enums.py.-->
 <enum name="BooleanMatched">
   <int value="0" label="Not matched"/>
   <int value="1" label="Matched"/>
+</enum>
+
+<enum name="BooleanOccurred">
+  <int value="0" label="Did not occur"/>
+  <int value="1" label="Occurred"/>
 </enum>
 
 <enum name="BooleanOnBattery">

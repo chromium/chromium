@@ -1199,7 +1199,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Navigation.PendingCommit.DidBlockGetFrameHostForNavigation.{RegularOrMHTMLType}"
-    units="Boolean" expires_after="2023-12-31">
+    enum="Boolean" expires_after="2023-12-31">
   <owner>dcheng@chromium.org</owner>
   <owner>rakina@chromium.org</owner>
   <summary>

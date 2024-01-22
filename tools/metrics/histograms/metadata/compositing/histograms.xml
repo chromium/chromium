@@ -428,7 +428,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.FramesAttemptingRequiredOverlays"
-    units="boolean" expires_after="2024-05-26">
+    enum="Boolean" expires_after="2024-05-26">
   <owner>zoraiznaeem@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -439,7 +439,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.FramesScalingRequiredOverlays"
-    units="boolean" expires_after="2024-06-30">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>zoraiznaeem@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -602,7 +602,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.AnimationUpdateOnMissingPropertyNode"
-    units="boolean" expires_after="2024-12-02">
+    enum="Boolean" expires_after="2024-12-02">
   <owner>awogbemila@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -698,7 +698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.SkiaRenderer.DirectlyDrawableRenderPassWithRPDQ"
-    units="boolean" expires_after="2024-06-30">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>khushalsagar@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -710,7 +710,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.SkiaRenderer.DrawTileDrawQuad.UsingRawDraw"
-    units="boolean" expires_after="2023-06-11">
+    enum="Boolean" expires_after="2023-06-11">
   <owner>penghuang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>Records if the TileDrawQuad is rendered with RawDraw.</summary>
@@ -869,7 +869,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.TileManager.EnoughMemory" units="boolean"
+<histogram name="Compositing.TileManager.EnoughMemory" enum="Boolean"
     expires_after="2024-06-30">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-gpu-memory@google.com</owner>

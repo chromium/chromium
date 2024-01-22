@@ -2460,7 +2460,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ComponentUpdater.AndroidComponentLoader.LoadStatus.{Component}"
-    units="BooleanSuccess" expires_after="2024-11-28">
+    enum="BooleanSuccess" expires_after="2024-11-28">
   <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <owner>src/components/component_updater/android/OWNERS</owner>
@@ -5095,7 +5095,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.GetBigFeedbackLogs.Success"
-    units="boolean" expires_after="2024-08-30">
+    enum="Boolean" expires_after="2024-08-30">
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-feedback-app@google.com</owner>
   <summary>
@@ -5141,7 +5141,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Feedback.ChromeOSApp.IncludedEmail" units="boolean"
+<histogram name="Feedback.ChromeOSApp.IncludedEmail" enum="Boolean"
     expires_after="2024-08-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
@@ -5152,7 +5152,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Feedback.ChromeOSApp.IncludedFile" units="boolean"
+<histogram name="Feedback.ChromeOSApp.IncludedFile" enum="Boolean"
     expires_after="2024-08-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
@@ -5163,7 +5163,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Feedback.ChromeOSApp.IncludedScreenshot" units="boolean"
+<histogram name="Feedback.ChromeOSApp.IncludedScreenshot" enum="Boolean"
     expires_after="2024-08-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
@@ -5174,7 +5174,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Feedback.ChromeOSApp.IncludedSystemInfo" units="boolean"
+<histogram name="Feedback.ChromeOSApp.IncludedSystemInfo" enum="Boolean"
     expires_after="2024-08-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
@@ -5185,7 +5185,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Feedback.ChromeOSApp.IncludedUrl" units="boolean"
+<histogram name="Feedback.ChromeOSApp.IncludedUrl" enum="Boolean"
     expires_after="2024-08-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
@@ -5236,7 +5236,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Feedback.ChromeOSApp.ViewedHelpContent" units="boolean"
+<histogram name="Feedback.ChromeOSApp.ViewedHelpContent" enum="Boolean"
     expires_after="2024-08-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
@@ -5247,7 +5247,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Feedback.ChromeOSApp.ViewedImage" units="boolean"
+<histogram name="Feedback.ChromeOSApp.ViewedImage" enum="Boolean"
     expires_after="2024-08-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
@@ -5258,7 +5258,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Feedback.ChromeOSApp.ViewedMetrics" units="boolean"
+<histogram name="Feedback.ChromeOSApp.ViewedMetrics" enum="Boolean"
     expires_after="2024-08-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
@@ -5269,7 +5269,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Feedback.ChromeOSApp.ViewedScreenshot" units="boolean"
+<histogram name="Feedback.ChromeOSApp.ViewedScreenshot" enum="Boolean"
     expires_after="2024-08-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
@@ -5280,7 +5280,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Feedback.ChromeOSApp.ViewedSystemAndAppInfo" units="boolean"
+<histogram name="Feedback.ChromeOSApp.ViewedSystemAndAppInfo" enum="Boolean"
     expires_after="2024-08-30">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
@@ -5413,7 +5413,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Feedback.ReportSending.Online" units="boolean"
+<histogram name="Feedback.ReportSending.Online" enum="Boolean"
     expires_after="2024-05-19">
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-feedback-app@google.com</owner>
@@ -7733,7 +7733,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ozone.TouchEventConverterEvdev.RepeatedTouchCount"
-    units="BooleanDetected" expires_after="2024-06-01">
+    enum="BooleanDetected" expires_after="2024-06-01">
   <owner>jiwan@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <summary>
@@ -7745,7 +7745,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ozone.TouchEventConverterEvdev.StylusSessionCount"
-    units="BooleanDetected" expires_after="2024-06-01">
+    enum="BooleanDetected" expires_after="2024-06-01">
   <owner>jiwan@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <summary>
@@ -7792,7 +7792,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ozone.TouchEventConverterEvdev.TouchSessionCount"
-    units="BooleanDetected" expires_after="2024-06-01">
+    enum="BooleanDetected" expires_after="2024-06-01">
   <owner>jiwan@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <summary>
@@ -9571,7 +9571,7 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="SiteIsolatedCodeCache.JS.Hit" units="Boolean"
+<histogram name="SiteIsolatedCodeCache.JS.Hit" enum="Boolean"
     expires_after="2023-10-08">
   <owner>yhirano@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
@@ -11554,7 +11554,7 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebUICodeCache.FeatureEnabled" units="Boolean"
+<histogram name="WebUICodeCache.FeatureEnabled" enum="Boolean"
     expires_after="2024-07-14">
   <owner>temao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>

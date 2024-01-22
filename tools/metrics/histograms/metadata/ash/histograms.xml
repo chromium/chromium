@@ -2065,7 +2065,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.DeskApi.{Method}.Result" units="BooleanSuccess"
+<histogram name="Ash.DeskApi.{Method}.Result" enum="BooleanSuccess"
     expires_after="2024-04-07">
   <owner>aprilzhou@google.com</owner>
   <owner>janetmac@chromium.org</owner>
@@ -2256,7 +2256,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Desks.DeskButton.HiddenByUser" units="BooleanHit"
+<histogram name="Ash.Desks.DeskButton.HiddenByUser" enum="BooleanHit"
     expires_after="2024-07-07">
   <owner>yongshun@google.com</owner>
   <owner>benbecker@google.com</owner>
@@ -2267,7 +2267,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Desks.DeskButton.Presses" units="BooleanHit"
+<histogram name="Ash.Desks.DeskButton.Presses" enum="BooleanHit"
     expires_after="2024-06-30">
   <owner>yongshun@google.com</owner>
   <owner>benbecker@google.com</owner>
@@ -2302,7 +2302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.DeskProfiles.AvatarView.ButtonPressed"
-    units="BooleanHit" expires_after="2024-12-21">
+    enum="BooleanHit" expires_after="2024-12-21">
   <owner>shidi@chromium.org</owner>
   <owner>dandersson@chromium.org</owner>
   <owner>yongshun@chromium.org</owner>
@@ -2635,7 +2635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.{EntryPoint}.BarAction.{BarAction}"
-    units="BooleanHit" expires_after="2024-07-05">
+    enum="BooleanHit" expires_after="2024-07-05">
   <owner>benbecker@google.com</owner>
   <owner>yongshun@google.com</owner>
   <owner>nupurjain@google.com</owner>
@@ -2700,7 +2700,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.DeskTemplate.DeleteSaveAndRecall" units="BooleanHit"
+<histogram name="Ash.DeskTemplate.DeleteSaveAndRecall" enum="BooleanHit"
     expires_after="2024-09-27">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
@@ -2776,7 +2776,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.DeskTemplate.NewSaveAndRecall" units="BooleanHit"
+<histogram name="Ash.DeskTemplate.NewSaveAndRecall" enum="BooleanHit"
     expires_after="2024-09-27">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
@@ -4353,7 +4353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.MultiDisplay.WindowsMovedAfterRemap.DisplayRotated"
-    units="Boolean" expires_after="2024-05-26">
+    enum="Boolean" expires_after="2024-05-26">
   <owner>sammiequon@chromium.org</owner>
   <owner>yunchengs@google.com</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -4368,7 +4368,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.MultiDisplay.WindowsMovedAfterRemap.DisplayWorkAreaChanged"
-    units="Boolean" expires_after="2024-05-26">
+    enum="Boolean" expires_after="2024-05-26">
   <owner>sammiequon@chromium.org</owner>
   <owner>yunchengs@google.com</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -5412,7 +5412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Personalization.KeyboardBacklight.OpenZoneCustomization"
-    units="BooleanHit" expires_after="2024-05-19">
+    enum="BooleanHit" expires_after="2024-05-19">
   <owner>thuongphan@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>

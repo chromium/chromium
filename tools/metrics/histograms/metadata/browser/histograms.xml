@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Browser.ERP.FilteredOutEvents" units="BooleanFiltered"
+<histogram name="Browser.ERP.FilteredOutEvents" enum="BooleanFiltered"
     expires_after="2024-05-23">
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -215,7 +215,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Browser.ERP.RateLimitedEvents" units="BooleanAccepted"
+<histogram name="Browser.ERP.RateLimitedEvents" enum="BooleanAccepted"
     expires_after="2024-05-23">
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>

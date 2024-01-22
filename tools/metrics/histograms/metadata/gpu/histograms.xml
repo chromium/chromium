@@ -903,7 +903,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.Graphite.GraphiteImageProviderAccessHitInCache"
-    units="Boolean" expires_after="2024-06-01">
+    enum="Boolean" expires_after="2024-06-01">
   <owner>blundell@chromium.org</owner>
   <owner>sunnyps@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -1227,7 +1227,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.Sandboxed" units="Boolean" expires_after="2024-12-19">
+<histogram name="GPU.Sandboxed" enum="Boolean" expires_after="2024-12-19">
   <owner>akhna@google.com</owner>
   <owner>chromeos-hardening@google.com</owner>
   <summary>
@@ -1281,7 +1281,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.SharedImage.IsNewMultiplanarFormat" units="Boolean"
+<histogram name="GPU.SharedImage.IsNewMultiplanarFormat" enum="Boolean"
     expires_after="2024-06-30">
   <owner>hitawala@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
@@ -1293,7 +1293,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.SharedImage.IsRG88HardwareGMBSupported" units="Boolean"
+<histogram name="GPU.SharedImage.IsRG88HardwareGMBSupported" enum="Boolean"
     expires_after="2024-06-04">
   <owner>hitawala@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -1399,7 +1399,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="GPU.Vulkan.ExtMemoryBudgetSupported" units="BooleanSupported"
+<histogram name="GPU.Vulkan.ExtMemoryBudgetSupported" enum="BooleanSupported"
     expires_after="2024-06-30">
   <owner>vikassoni@chromium.org</owner>
   <owner>penghuang@chromium.org</owner>
@@ -1479,7 +1479,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Gpu.{CacheType}LoadHitInCache" units="Boolean"
+<histogram name="Gpu.{CacheType}LoadHitInCache" enum="Boolean"
     expires_after="2024-06-01">
   <owner>blundell@chromium.org</owner>
   <owner>geofflang@chromium.org</owner>

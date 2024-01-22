@@ -823,7 +823,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SiteIsolation.NewProcessUsedForNavigationWhenSameSiteProcessExists"
-    units="Boolean" expires_after="2024-04-20">
+    enum="Boolean" expires_after="2024-04-20">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

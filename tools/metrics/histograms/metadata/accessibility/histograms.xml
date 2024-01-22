@@ -315,7 +315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.UpdateAccessibilityServices.DidPoll"
-    units="BooleanHit" expires_after="2024-06-30">
+    enum="BooleanHit" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -338,7 +338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.UpdateAccessibilityServices.PollTimeout"
-    units="BooleanHit" expires_after="2024-06-30">
+    enum="BooleanHit" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -455,7 +455,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.AriaLabelledBy.HasMultipleIds" units="Boolean"
+<histogram name="Accessibility.AriaLabelledBy.HasMultipleIds" enum="Boolean"
     expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>

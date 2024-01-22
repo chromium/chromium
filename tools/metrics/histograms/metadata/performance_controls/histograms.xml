@@ -29,7 +29,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.BatterySaver.IPHOpenSettings"
-    units="BooleanSettingsOpened" expires_after="2024-05-19">
+    enum="BooleanOpened" expires_after="2024-05-19">
   <owner>agale@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -77,7 +77,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.MemorySaver.IPHEnableMode"
-    units="BooleanEnableMode" expires_after="2024-05-26">
+    enum="BooleanEnabled" expires_after="2024-05-26">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>

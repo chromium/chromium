@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.Database.WriteResult" units="boolean"
+<histogram name="WebApk.Database.WriteResult" enum="Boolean"
     expires_after="2024-06-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
