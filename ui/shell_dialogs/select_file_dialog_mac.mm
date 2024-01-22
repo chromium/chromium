@@ -48,7 +48,8 @@ void SelectFileDialogImpl::FileWasSelected(
     bool is_multi,
     bool was_cancelled,
     const std::vector<base::FilePath>& files,
-    int index) {
+    int index,
+    const std::vector<std::string>& file_tags) {
   auto it = base::ranges::find(dialog_data_list_, dialog_data,
                                [](const DialogData& d) { return &d; });
   DCHECK(it != dialog_data_list_.end());
@@ -68,7 +69,9 @@ void SelectFileDialogImpl::FileWasSelected(
       listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files),
                                     params);
     } else {
-      listener_->FileSelected(SelectedFileInfo(files[0]), index, params);
+      SelectedFileInfo file(files[0]);
+      file.file_tags = file_tags;
+      listener_->FileSelected(file, index, params);
     }
   }
 }

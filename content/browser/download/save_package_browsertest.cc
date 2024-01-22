@@ -40,7 +40,10 @@ class TestShellDownloadManagerDelegate : public ShellDownloadManagerDelegate {
                       const base::FilePath::StringType& default_extension,
                       bool can_save_as_complete,
                       SavePackagePathPickedCallback callback) override {
-    std::move(callback).Run(suggested_path, save_page_type_,
+    content::SavePackagePathPickedParams params;
+    params.file_path = suggested_path;
+    params.save_type = save_page_type_;
+    std::move(callback).Run(std::move(params),
                             SavePackageDownloadCreatedCallback());
   }
 

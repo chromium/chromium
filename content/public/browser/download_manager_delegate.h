@@ -37,9 +37,24 @@ using SavePackageDownloadCreatedCallback =
 // operation.  If the delegate wants notification of the download item created
 // in response to this operation, the SavePackageDownloadCreatedCallback will be
 // non-null.
+struct CONTENT_EXPORT SavePackagePathPickedParams {
+  SavePackagePathPickedParams();
+  ~SavePackagePathPickedParams();
+
+  SavePackagePathPickedParams(const SavePackagePathPickedParams& other);
+  SavePackagePathPickedParams& operator=(
+      const SavePackagePathPickedParams& other);
+  SavePackagePathPickedParams(SavePackagePathPickedParams&& other);
+  SavePackagePathPickedParams& operator=(SavePackagePathPickedParams&& other);
+
+  base::FilePath file_path;
+  SavePageType save_type;
+#if BUILDFLAG(IS_MAC)
+  std::vector<std::string> file_tags;
+#endif
+};
 using SavePackagePathPickedCallback =
-    base::OnceCallback<void(const base::FilePath&,
-                            SavePageType,
+    base::OnceCallback<void(SavePackagePathPickedParams,
                             SavePackageDownloadCreatedCallback)>;
 
 // Called when a download delayed by the delegate has completed.

@@ -69,6 +69,10 @@
 #include "components/download/internal/common/android/download_collection_bridge.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace download {
 
 namespace {
@@ -1759,6 +1763,9 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
   if (!target_info.mime_type.empty()) {
     mime_type_ = target_info.mime_type;
   }
+#if BUILDFLAG(IS_MAC)
+  file_tags_ = target_info.file_tags;
+#endif
 
   // This was an interrupted download that was looking for a filename. Resolve
   // early without performing the intermediate rename. If there is a
@@ -1968,6 +1975,10 @@ void DownloadItemImpl::OnDownloadRenamedToFinalName(
     DCHECK(!full_path.empty());
     SetFullPath(full_path);
   }
+
+#if BUILDFLAG(IS_MAC)
+  base::mac::SetFileTags(full_path, file_tags_);
+#endif
 
   // Complete the download and release the DownloadFile.
   DCHECK(download_file_);

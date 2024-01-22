@@ -644,6 +644,9 @@ void DownloadTargetDeterminer::RequestConfirmationDone(
     confirmation_reason_ = DownloadConfirmationReason::NONE;
 
   virtual_path_ = virtual_path;
+#if BUILDFLAG(IS_MAC)
+  file_tags_ = selected_file_info.file_tags;
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   if (result == DownloadConfirmationResult::CONFIRMED_WITH_DIALOG) {
@@ -1103,7 +1106,7 @@ DownloadTargetDeterminer::Result
 }
 
 void DownloadTargetDeterminer::ScheduleCallbackAndDeleteSelf(
-    download::DownloadInterruptReason result) {
+    download::DownloadInterruptReason interrupt_reason) {
   DCHECK(download_);
   DVLOG(20) << "Scheduling callback. Virtual:" << virtual_path_.AsUTF8Unsafe()
             << " Local:" << local_path_.AsUTF8Unsafe()
@@ -1111,12 +1114,21 @@ void DownloadTargetDeterminer::ScheduleCallbackAndDeleteSelf(
             << " Confirmation reason:" << static_cast<int>(confirmation_reason_)
             << " Danger type:" << danger_type_
             << " Danger level:" << danger_level_
-            << " Result:" << static_cast<int>(result);
+            << " Interrupt reason:" << static_cast<int>(interrupt_reason);
   download::DownloadTargetInfo target_info;
 
   target_info.target_path = local_path_;
   target_info.intermediate_path = intermediate_path_;
+#if BUILDFLAG(IS_ANDROID)
+  // If |virtual_path_| is content URI, there is no need to prompt the user.
+  if (local_path_.IsContentUri() && !virtual_path_.IsContentUri()) {
+    target_info.display_name = virtual_path_.BaseName();
+  }
+#endif
   target_info.mime_type = mime_type_;
+#if BUILDFLAG(IS_MAC)
+  target_info.file_tags = file_tags_;
+#endif
   target_info.is_filetype_handled_safely = is_filetype_handled_safely_;
   target_info.target_disposition =
       (HasPromptedForPath() ||
@@ -1124,14 +1136,8 @@ void DownloadTargetDeterminer::ScheduleCallbackAndDeleteSelf(
            ? DownloadItem::TARGET_DISPOSITION_PROMPT
            : DownloadItem::TARGET_DISPOSITION_OVERWRITE);
   target_info.danger_type = danger_type_;
-  target_info.interrupt_reason = result;
+  target_info.interrupt_reason = interrupt_reason;
   target_info.insecure_download_status = insecure_download_status_;
-#if BUILDFLAG(IS_ANDROID)
-  // If |virtual_path_| is content URI, there is no need to prompt the user.
-  if (local_path_.IsContentUri() && !virtual_path_.IsContentUri()) {
-    target_info.display_name = virtual_path_.BaseName();
-  }
-#endif
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(completion_callback_),

@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "components/download/public/common/download_danger_type.h"
@@ -45,6 +46,12 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadTargetInfo {
   // response, and this one is based on the filename. If empty, the existing
   // MIME type will be kept.
   std::string mime_type;
+
+#if BUILDFLAG(IS_MAC)
+  // A list of tags specified by the user to be set on the file upon the
+  // completion of it being written to disk.
+  std::vector<std::string> file_tags;
+#endif
 
   // Whether the |target_path| would be handled safely by the browser if it were
   // to be opened with a file:// URL. This can be used later to decide how file

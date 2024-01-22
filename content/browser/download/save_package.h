@@ -333,8 +333,7 @@ class CONTENT_EXPORT SavePackage
       const base::FilePath& download_save_dir);
   void ContinueGetSaveInfo(bool can_save_as_complete,
                            const base::FilePath& suggested_path);
-  void OnPathPicked(const base::FilePath& final_name,
-                    SavePageType type,
+  void OnPathPicked(SavePackagePathPickedParams params,
                     SavePackageDownloadCreatedCallback cb);
 
   // The number of in process SaveItems.
@@ -441,6 +440,12 @@ class CONTENT_EXPORT SavePackage
 
   // Type about saving page as only-html or complete-html.
   SavePageType save_type_ = SAVE_PAGE_TYPE_UNKNOWN;
+
+#if BUILDFLAG(IS_MAC)
+  // A list of tags specified by the user to be set on the file upon the
+  // completion of it being written to disk.
+  std::vector<std::string> file_tags_;
+#endif
 
   // Number of all need to be saved resources.
   size_t all_save_items_count_ = 0;

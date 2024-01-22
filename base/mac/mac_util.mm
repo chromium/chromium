@@ -273,6 +273,21 @@ bool RemoveQuarantineAttribute(const FilePath& file_path) {
   return status == 0 || errno == ENOATTR;
 }
 
+void SetFileTags(const FilePath& file_path,
+                 const std::vector<std::string>& file_tags) {
+  if (file_tags.empty()) {
+    return;
+  }
+
+  NSMutableArray* tag_array = [NSMutableArray array];
+  for (const auto& tag : file_tags) {
+    [tag_array addObject:SysUTF8ToNSString(tag)];
+  }
+
+  NSURL* file_url = apple::FilePathToNSURL(file_path);
+  [file_url setResourceValue:tag_array forKey:NSURLTagNamesKey error:nil];
+}
+
 namespace {
 
 int ParseOSProductVersion(const std::string_view& version) {

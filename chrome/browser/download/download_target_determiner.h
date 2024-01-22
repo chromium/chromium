@@ -349,7 +349,8 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // this object. The determined target info will be passed into the callback
   // if |interrupt_reason| is NONE. Otherwise, only the interrupt reason will be
   // passed on.
-  void ScheduleCallbackAndDeleteSelf(download::DownloadInterruptReason result);
+  void ScheduleCallbackAndDeleteSelf(
+      download::DownloadInterruptReason interrupt_reason);
 
   Profile* GetProfile() const;
 
@@ -412,6 +413,11 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   download::DownloadItem::InsecureDownloadStatus insecure_download_status_;
 #if BUILDFLAG(IS_ANDROID)
   bool is_checking_dialog_confirmed_path_;
+#endif
+#if BUILDFLAG(IS_MAC)
+  // A list of tags specified by the user to be set on the file upon the
+  // completion of it being written to disk.
+  std::vector<std::string> file_tags_;
 #endif
 
   raw_ptr<download::DownloadItem> download_;

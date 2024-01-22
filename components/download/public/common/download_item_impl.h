@@ -743,6 +743,12 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // which may look at the file extension and first few bytes of the file.
   std::string original_mime_type_;
 
+#if BUILDFLAG(IS_MAC)
+  // A list of tags specified by the user to be set on the file upon the
+  // completion of it being written to disk.
+  std::vector<std::string> file_tags_;
+#endif
+
   // Total bytes expected.
   int64_t total_bytes_ = 0;
 
