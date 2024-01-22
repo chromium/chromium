@@ -34,6 +34,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.ContextMenu.OpenComposeDialogResult"
+    enum="OpenComposeDialogResult" expires_after="2024-06-02">
+  <owner>carlosk@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Tracks situations when the user requested to open the Compose dialog but it
+    was impossible to do so. Recorded whenever a situation is detected that
+    causes the dialog opening to be aborted, or when it succeeds.
+  </summary>
+</histogram>
+
 <histogram name="Compose.ContextMenu.ShowStatus" enum="ComposeShowStatus"
     expires_after="2024-06-02">
   <owner>sophey@chromium.org</owner>

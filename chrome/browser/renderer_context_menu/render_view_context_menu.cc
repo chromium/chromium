@@ -3978,10 +3978,14 @@ void RenderViewContextMenu::ExecOpenLinkInProfile(int profile_index) {
 void RenderViewContextMenu::ExecOpenCompose() {
   ChromeComposeClient* client = GetChromeComposeClient();
   if (!client) {
+    compose::LogOpenComposeDialogResult(
+        compose::OpenComposeDialogResult::kNoChromeComposeClient);
     return;
   }
   RenderFrameHost* render_frame_host = GetRenderFrameHost();
   if (!render_frame_host) {
+    compose::LogOpenComposeDialogResult(
+        compose::OpenComposeDialogResult::kNoRenderFrameHost);
     return;
   }
   if (auto* driver = autofill::ContentAutofillDriver::GetForRenderFrameHost(
@@ -3995,6 +3999,9 @@ void RenderViewContextMenu::ExecOpenCompose() {
             frame_token, autofill::FieldRendererId(params_.field_renderer_id)),
         compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);
     new_badge_tracker_.ActionPerformed("compose_menu_item_activated");
+  } else {
+    compose::LogOpenComposeDialogResult(
+        compose::OpenComposeDialogResult::kNoContentAutofillDriver);
   }
 }
 #endif

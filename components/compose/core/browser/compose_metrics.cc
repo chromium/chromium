@@ -39,6 +39,8 @@ const char kComposeFirstRunSessionCloseReason[] =
     "Compose.Session.FRE.Disclaimer.CloseReason";
 const char kComposeFirstRunSessionDialogShownCount[] =
     "Compose.Session.FRE.Disclaimer.DialogShownCount";
+const char kOpenComposeDialogResult[] =
+    "Compose.ContextMenu.OpenComposeDialogResult";
 
 PageUkmTracker::PageUkmTracker(ukm::SourceId source_id)
     : source_id(source_id) {}
@@ -81,6 +83,10 @@ void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event) {
 
 void LogComposeContextMenuShowStatus(ComposeShowStatus status) {
   UMA_HISTOGRAM_ENUMERATION(kComposeShowStatus, status);
+}
+
+void LogOpenComposeDialogResult(OpenComposeDialogResult result) {
+  UMA_HISTOGRAM_ENUMERATION(kOpenComposeDialogResult, result);
 }
 
 void LogComposeRequestReason(ComposeRequestReason reason) {

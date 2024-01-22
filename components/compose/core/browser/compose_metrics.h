@@ -30,6 +30,7 @@ extern const char kComposeFirstRunSessionCloseReason[];
 extern const char kComposeFirstRunSessionDialogShownCount[];
 extern const char kComposeMSBBSessionCloseReason[];
 extern const char kComposeMSBBSessionDialogShownCount[];
+extern const char kOpenComposeDialogResult[];
 
 // Enum for calculating the CTR of the Compose context menu item.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -119,6 +120,22 @@ struct ComposeSessionEvents {
   unsigned int update_input_count = 0;
 };
 
+// Enum with the possible reasons for it being impossible to open the Compose
+// dialog after the user requested it.
+// Keep in sync with OpenComposeDialogResult in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
+enum class OpenComposeDialogResult {
+  kSuccess = 0,
+  kNoChromeComposeClient = 1,
+  kNoRenderFrameHost = 2,
+  kNoContentAutofillDriver = 3,
+  kAutofillFormDataNotFound = 4,
+  kAutofillFormFieldDataNotFound = 5,
+  kNoWebContents = 6,
+  kFailedCreatingComposeDialogView = 7,
+  kMaxValue = kFailedCreatingComposeDialogView
+};
+
 // Class that automatically reports any UKM metrics for the page-level Compose
 // UKM as defined in go/ukm-collection-chrome-compose.
 class PageUkmTracker {
@@ -151,6 +168,8 @@ class PageUkmTracker {
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event);
 
 void LogComposeContextMenuShowStatus(ComposeShowStatus status);
+
+void LogOpenComposeDialogResult(OpenComposeDialogResult result);
 
 void LogComposeRequestReason(ComposeRequestReason reason);
 

@@ -113,6 +113,17 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Blocked for element appearing inside a fenced frame"/>
 </enum>
 
+<enum name="OpenComposeDialogResult">
+  <int value="0" label="Success (dialog opened)"/>
+  <int value="1" label="No ChromeComposeClient instance"/>
+  <int value="2" label="No RenderFrameHost instance"/>
+  <int value="3" label="No ContentAutofillDriver instance"/>
+  <int value="4" label="autofill::FormData not found"/>
+  <int value="5" label="autofill::FormFieldData not found"/>
+  <int value="6" label="No WebContents instance"/>
+  <int value="7" label="Failed creating ComposeDialogView"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

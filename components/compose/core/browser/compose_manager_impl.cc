@@ -65,15 +65,15 @@ void ComposeManagerImpl::GetBrowserFormHandler(
     autofill::AutofillDriver* driver,
     const std::optional<autofill::FormData>& form_data) {
   if (!form_data) {
-    // TODO(b/305798770): replace with assert once form_data is always
-    // populated.
+    compose::LogOpenComposeDialogResult(
+        compose::OpenComposeDialogResult::kAutofillFormDataNotFound);
     return;
   }
   const autofill::FormFieldData* form_field_data =
       form_data->FindFieldByGlobalId(field_id);
   if (!form_field_data) {
-    // TODO(b/305798770): replace with assert once form_data is always
-    // populated.
+    compose::LogOpenComposeDialogResult(
+        compose::OpenComposeDialogResult::kAutofillFormFieldDataNotFound);
     return;
   }
   autofill::AutofillManager& manager = driver->GetAutofillManager();
