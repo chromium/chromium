@@ -488,6 +488,7 @@ void PasswordReuseManagerImpl::OnPrimaryAccountChanged(
             saved_creds_entry->FindDouble(kLoginHashedPassword).value());
         password_hash_data.force_update = true;
         hash_password_manager_.SavePasswordHash(password_hash_data);
+        SchedulePasswordHashUpdate(/*sign_in_state_for_metrics=*/std::nullopt);
         metrics_util::LogGaiaPasswordHashChange(
             metrics_util::GaiaPasswordHashChange::SAVED_ON_CHROME_SIGNIN,
             /*is_sync_password=*/true);

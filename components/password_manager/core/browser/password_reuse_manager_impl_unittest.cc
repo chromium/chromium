@@ -104,6 +104,46 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
  private:
   testing::NiceMock<MockStoreResultFilter> filter_;
 };
+
+class MockPasswordReuseDetector : public PasswordReuseDetector {
+ public:
+  MOCK_METHOD(void,
+              OnGetPasswordStoreResults,
+              (std::vector<std::unique_ptr<PasswordForm>>),
+              (override));
+  MOCK_METHOD(void,
+              OnLoginsChanged,
+              (const password_manager::PasswordStoreChangeList&),
+              (override));
+  MOCK_METHOD(void,
+              OnLoginsRetained,
+              (const std::vector<PasswordForm>&),
+              (override));
+  MOCK_METHOD(void, ClearCachedAccountStorePasswords, (), (override));
+  MOCK_METHOD(void,
+              CheckReuse,
+              (const std::u16string&,
+               const std::string&,
+               PasswordReuseDetectorConsumer*),
+              (override));
+  MOCK_METHOD(void,
+              UseGaiaPasswordHash,
+              (std::optional<std::vector<PasswordHashData>>),
+              (override));
+  MOCK_METHOD(void,
+              UseNonGaiaEnterprisePasswordHash,
+              (std::optional<std::vector<PasswordHashData>>),
+              (override));
+  MOCK_METHOD(void,
+              UseEnterprisePasswordURLs,
+              (std::optional<std::vector<GURL>>, std::optional<GURL>),
+              (override));
+  MOCK_METHOD(void, ClearGaiaPasswordHash, (const std::string&), (override));
+  MOCK_METHOD(void, ClearAllGaiaPasswordHash, (), (override));
+  MOCK_METHOD(void, ClearAllEnterprisePasswordHash, (), (override));
+  MOCK_METHOD(void, ClearAllNonGmailPasswordHash, (), (override));
+};
+
 class PasswordReuseManagerImplTest : public testing::Test {
  public:
   PasswordReuseManagerImplTest() = default;
@@ -126,19 +166,31 @@ class PasswordReuseManagerImplTest : public testing::Test {
     profile_store_->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
     account_store_ = base::MakeRefCounted<TestPasswordStore>();
     account_store_->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
-    signin::IdentityManager* identity_manager = nullptr;
+  }
+
+  void Initialize(bool should_mock_password_reuse_detector = false) {
     std::unique_ptr<MockSharedPreferencesDelegateAndroid>
         mock_shared_pref_delegate_android;
+    std::unique_ptr<MockPasswordReuseDetector> mock_password_reuse_detector;
 #if BUILDFLAG(IS_ANDROID)
-    identity_manager = identity_test_env_.identity_manager();
     mock_shared_pref_delegate_android =
         std::make_unique<MockSharedPreferencesDelegateAndroid>();
     shared_pref_delegate_android_ = mock_shared_pref_delegate_android.get();
+    mock_password_reuse_detector =
+        std::make_unique<MockPasswordReuseDetector>();
+    password_reuse_detector_ = mock_password_reuse_detector.get();
 #endif
-    reuse_manager_.Init(&prefs(), profile_store(), account_store(),
-                        std::make_unique<PasswordReuseDetectorImpl>(),
-                        identity_manager,
-                        std::move(mock_shared_pref_delegate_android));
+    if (should_mock_password_reuse_detector) {
+      reuse_manager_.Init(&prefs(), profile_store(), account_store(),
+                          std::move(mock_password_reuse_detector),
+                          identity_test_env_.identity_manager(),
+                          std::move(mock_shared_pref_delegate_android));
+    } else {
+      reuse_manager_.Init(&prefs(), profile_store(), account_store(),
+                          std::make_unique<PasswordReuseDetectorImpl>(),
+                          identity_test_env_.identity_manager(),
+                          std::move(mock_shared_pref_delegate_android));
+    }
     FastForwardUntilNoTasksRemain();
   }
 
@@ -164,6 +216,9 @@ class PasswordReuseManagerImplTest : public testing::Test {
   MockSharedPreferencesDelegateAndroid* shared_pref_delegate_android() {
     return shared_pref_delegate_android_;
   }
+  MockPasswordReuseDetector* password_reuse_detector() {
+    return password_reuse_detector_;
+  }
 
  private:
   base::test::TaskEnvironment task_environment_{
@@ -174,10 +229,12 @@ class PasswordReuseManagerImplTest : public testing::Test {
   scoped_refptr<TestPasswordStore> account_store_;
   signin::IdentityTestEnvironment identity_test_env_;
   raw_ptr<MockSharedPreferencesDelegateAndroid> shared_pref_delegate_android_;
+  raw_ptr<MockPasswordReuseDetector> password_reuse_detector_;
   PasswordReuseManagerImpl reuse_manager_;
 };
 
 TEST_F(PasswordReuseManagerImplTest, CheckPasswordReuse) {
+  Initialize();
   std::vector<PasswordForm> forms = {
       CreateForm("https://www.google.com", u"username1", u"password"),
       CreateForm("https://facebook.com", u"username2", u"topsecret")};
@@ -219,6 +276,7 @@ TEST_F(PasswordReuseManagerImplTest, CheckPasswordReuse) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, BasicSynced) {
+  Initialize();
   ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string sync_password = u"password";
@@ -244,6 +302,7 @@ TEST_F(PasswordReuseManagerImplTest, BasicSynced) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, BasicUnsynced) {
+  Initialize();
   ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string gaia_password = u"3password";
@@ -267,6 +326,7 @@ TEST_F(PasswordReuseManagerImplTest, BasicUnsynced) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, ClearGaiaPasswordHash) {
+  Initialize();
   ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string gaia_password = u"3password";
@@ -291,6 +351,7 @@ TEST_F(PasswordReuseManagerImplTest, ClearGaiaPasswordHash) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, ClearAllGaiaPasswordHash) {
+  Initialize();
   ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string gaia_password = u"3password";
@@ -316,6 +377,7 @@ TEST_F(PasswordReuseManagerImplTest, ClearAllGaiaPasswordHash) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, SaveEnterprisePasswordHash) {
+  Initialize();
   ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string input = u"123password";
@@ -337,6 +399,7 @@ TEST_F(PasswordReuseManagerImplTest, SaveEnterprisePasswordHash) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, ClearAllEnterprisePasswordHash) {
+  Initialize();
   ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string input = u"123password";
@@ -359,6 +422,7 @@ TEST_F(PasswordReuseManagerImplTest, ClearAllEnterprisePasswordHash) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, ClearAllNonGmailPasswordHash) {
+  Initialize();
   const std::u16string non_sync_gaia_password = u"3password";
   const std::u16string gmail_password = u"gmailpass";
 
@@ -404,6 +468,7 @@ TEST_F(PasswordReuseManagerImplTest, ClearAllNonGmailPasswordHash) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, ReportMetrics) {
+  Initialize();
   // Hash does not exist yet.
   base::HistogramTester histogram_tester;
   reuse_manager()->ReportMetrics("not_sync_username");
@@ -431,6 +496,7 @@ TEST_F(PasswordReuseManagerImplTest, ReportMetrics) {
 
 TEST_F(PasswordReuseManagerImplTest,
        SubscriptionAndUnsubscriptionFromSignInEvents) {
+  Initialize();
   std::unique_ptr<MockPasswordStoreSigninNotifier> notifier =
       std::make_unique<MockPasswordStoreSigninNotifier>();
   MockPasswordStoreSigninNotifier* notifier_weak = notifier.get();
@@ -446,6 +512,7 @@ TEST_F(PasswordReuseManagerImplTest,
 
 TEST_F(PasswordReuseManagerImplTest,
        CheckReuseCalledOnPasteReuseExistsInBothStores) {
+  Initialize();
   std::vector<PasswordForm> profile_forms = {
       CreateForm("https://www.google.com", u"username1", u"password"),
       CreateForm("https://www.google.com", u"username2", u"secretword")};
@@ -478,6 +545,7 @@ TEST_F(PasswordReuseManagerImplTest,
 }
 
 TEST_F(PasswordReuseManagerImplTest, NoReuseFoundAfterClearingAccountStorage) {
+  Initialize();
   std::vector<PasswordForm> account_forms = {
       CreateForm("https://www.google.com", u"username1", u"password",
                  PasswordForm::Store::kAccountStore),
@@ -501,6 +569,7 @@ TEST_F(PasswordReuseManagerImplTest, NoReuseFoundAfterClearingAccountStorage) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, MaybeSavePasswordHashNoHashSaved) {
+  Initialize();
   PasswordForm submitted_form =
       CreateForm("http://yahoo.com", u"user@yahoo.com", u"password",
                  PasswordForm::Store::kAccountStore);
@@ -512,6 +581,7 @@ TEST_F(PasswordReuseManagerImplTest, MaybeSavePasswordHashNoHashSaved) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, MaybeSavePasswordHashGaiaHashSaved) {
+  Initialize();
   PasswordForm submitted_form =
       CreateForm("http://google.com", u"user@gmail.com", u"password",
                  PasswordForm::Store::kAccountStore);
@@ -530,6 +600,7 @@ TEST_F(PasswordReuseManagerImplTest, MaybeSavePasswordHashGaiaHashSaved) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, MaybeSavePasswordHashEnterpriseHashSaved) {
+  Initialize();
   PasswordForm submitted_form =
       CreateForm("http://somecorp.com", u"user@somecorp.com", u"password",
                  PasswordForm::Store::kAccountStore);
@@ -549,11 +620,13 @@ TEST_F(PasswordReuseManagerImplTest, MaybeSavePasswordHashEnterpriseHashSaved) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordReuseManagerImplTest, GaiaPasswordSavedFromSharedPref) {
+  Initialize(/*should_mock_password_reuse_detector=*/true);
   ON_CALL(*shared_pref_delegate_android(), GetCredentials(_))
       .WillByDefault(Return(
           "[{\"Login.accountIdentifier\": \"test_user@gmail.com\", "
           "\"Login.hashedPassword\": 23423423432, \"Login.salt\": \"salt\"}]"));
   EXPECT_CALL(*shared_pref_delegate_android(), SetCredentials("[]"));
+  EXPECT_CALL(*password_reuse_detector(), UseGaiaPasswordHash(_));
   identity_test_env().SetPrimaryAccount("test_user@gmail.com",
                                         signin::ConsentLevel::kSignin);
 
@@ -572,6 +645,7 @@ TEST_F(PasswordReuseManagerImplTest, GaiaPasswordSavedFromSharedPref) {
 
 TEST_F(PasswordReuseManagerImplTest,
        NoPasswordSavedFromEmptyJsonArraySharedPref) {
+  Initialize();
   ON_CALL(*shared_pref_delegate_android(), GetCredentials(_))
       .WillByDefault(Return("[]"));
   identity_test_env().SetPrimaryAccount("test_user@gmail.com",
@@ -583,6 +657,7 @@ TEST_F(PasswordReuseManagerImplTest,
 }
 
 TEST_F(PasswordReuseManagerImplTest, NoPasswordSavedFromEmptySharedPref) {
+  Initialize();
   ON_CALL(*shared_pref_delegate_android(), GetCredentials(_))
       .WillByDefault(Return(""));
   identity_test_env().SetPrimaryAccount("test_user@gmail.com",
@@ -594,6 +669,7 @@ TEST_F(PasswordReuseManagerImplTest, NoPasswordSavedFromEmptySharedPref) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, NoPasswordSavedFromDifferentUsernames) {
+  Initialize();
   ON_CALL(*shared_pref_delegate_android(), GetCredentials(_))
       .WillByDefault(Return(
           "[{\"Login.accountIdentifier\": \"test_user@gmail.com\", "
