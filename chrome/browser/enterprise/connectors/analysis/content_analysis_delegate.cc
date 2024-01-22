@@ -139,7 +139,8 @@ void ContentAnalysisDelegate::BypassWarnings(
     ReportAnalysisConnectorWarningBypass(
         profile_, url_, url_, "", "", "Text data", std::string(), "text/plain",
         extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
-        access_point_, content_size, text_response_, user_justification);
+        GetContentTransferMethod(), access_point_, content_size, text_response_,
+        user_justification);
   }
 
   // Mark the full image as complying and report a warning bypass.
@@ -150,7 +151,8 @@ void ContentAnalysisDelegate::BypassWarnings(
         profile_, url_, url_, "", "", "Image data", std::string(),
         /*mime_type*/ std::string(),
         extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
-        access_point_, data_.image.size(), image_response_, user_justification);
+        GetContentTransferMethod(), access_point_, data_.image.size(),
+        image_response_, user_justification);
   }
 
   if (!warned_file_indices_.empty()) {
@@ -170,7 +172,8 @@ void ContentAnalysisDelegate::BypassWarnings(
         /*sha256*/ std::string(),
         /*mime_type*/ std::string(),
         extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
-        access_point_, /*content_size*/ -1, page_response_, user_justification);
+        GetContentTransferMethod(), access_point_, /*content_size*/ -1,
+        page_response_, user_justification);
   }
 
   RunCallback();
@@ -464,7 +467,7 @@ void ContentAnalysisDelegate::StringRequestCallback(
   MaybeReportDeepScanningVerdict(
       profile_, url_, url_, "", "", "Text data", std::string(), "text/plain",
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
-      access_point_, content_size, result, response,
+      GetContentTransferMethod(), access_point_, content_size, result, response,
       CalculateEventResult(data_.settings, text_complies, should_warn));
 
   UpdateFinalResult(string_request_result_.final_result,
@@ -508,7 +511,8 @@ void ContentAnalysisDelegate::ImageRequestCallback(
       profile_, url_, url_, "", "", "Image data", std::string(),
       /*mime_type*/ std::string(),
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
-      access_point_, data_.image.size(), result, response,
+      GetContentTransferMethod(), access_point_, data_.image.size(), result,
+      response,
       CalculateEventResult(data_.settings, image_complies, should_warn));
 
   UpdateFinalResult(image_request_result_.final_result,
@@ -594,7 +598,8 @@ void ContentAnalysisDelegate::PageRequestCallback(
       /*sha256*/ std::string(),
       /*mime_type*/ std::string(),
       extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
-      access_point_, /*content_size*/ -1, result, response,
+      GetContentTransferMethod(), access_point_, /*content_size*/ -1, result,
+      response,
       CalculateEventResult(data_.settings, result_.page_result, should_warn));
 
   UpdateFinalResult(request_handler_result.final_result,
@@ -641,7 +646,8 @@ ContentAnalysisDelegate::UploadData() {
     // MultiFileRequestHandler is owned by this class.
     files_request_handler_ = FilesRequestHandler::Create(
         GetBinaryUploadService(), profile_, data_.settings, url_, "", "",
-        user_action_id_, title_, access_point_, data_.reason, data_.paths,
+        user_action_id_, title_, GetContentTransferMethod(), access_point_,
+        data_.reason, data_.paths,
         base::BindOnce(&ContentAnalysisDelegate::FilesRequestCallback,
                        GetWeakPtr()));
     files_request_complete_ = !files_request_handler_->UploadData();
@@ -951,6 +957,29 @@ void ContentAnalysisDelegate::AckAllRequests() {
       upload_service->MaybeAcknowledge(std::move(ack));
     }
   }
+}
+
+std::string ContentAnalysisDelegate::GetContentTransferMethod() const {
+  switch (data_.reason) {
+    case enterprise_connectors::ContentAnalysisRequest::UNKNOWN:
+    case enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT:
+    case enterprise_connectors::ContentAnalysisRequest::SYSTEM_DIALOG_PRINT:
+    case enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD:
+    case enterprise_connectors::ContentAnalysisRequest::SAVE_AS_DOWNLOAD:
+      return "";
+
+    case enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE:
+      if (!data_.paths.empty()) {
+        return "CONTENT_TRANSFER_METHOD_FILE_PASTE";
+      }
+      break;
+    case enterprise_connectors::ContentAnalysisRequest::DRAG_AND_DROP:
+      return "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP";
+    case enterprise_connectors::ContentAnalysisRequest::FILE_PICKER_DIALOG:
+      return "CONTENT_TRANSFER_METHOD_FILE_PICKER";
+  }
+
+  return "";
 }
 
 }  // namespace enterprise_connectors

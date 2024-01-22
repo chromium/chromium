@@ -203,6 +203,7 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
             GURL(kUrl), GURL(kTabUrl), kSource, kDestination,
             "sensitive_data.txt", "sha256_of_data", "text/plain",
             SafeBrowsingPrivateEventRouter::kTriggerFileUpload, "scan_id",
+            "content_transfer_method",
             safe_browsing::DeepScanAccessPoint::UPLOAD, result, 12345,
             event_result);
   }
@@ -236,7 +237,7 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
             "sensitive_data.txt", "sha256_of_data", "text/plain",
             SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
             safe_browsing::DeepScanAccessPoint::DOWNLOAD,
-            "filePasswordProtected", 12345, result);
+            "filePasswordProtected", "content_transfer_method", 12345, result);
   }
 
   void TriggerOnLoginEvent(

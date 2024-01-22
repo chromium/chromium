@@ -447,7 +447,8 @@ void FileTransferAnalysisDelegate::OnGotFileURLs(
       // User action id and tab title are only needed for local content
       // analysis, leave them empty here.
       /*user_action_id=*/std::string(), /*tab_title=*/std::string(),
-      access_point_, ContentAnalysisRequest::UNKNOWN, std::move(paths),
+      /*content_transfer_method=*/std::string(), access_point_,
+      ContentAnalysisRequest::UNKNOWN, std::move(paths),
       base::BindOnce(&FileTransferAnalysisDelegate::ContentAnalysisCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
   request_handler_->UploadData();

@@ -455,7 +455,8 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyReportOnly) {
       safe_browsing::EventResultToString(safe_browsing::EventResult::ALLOWED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-      /*scan_id*/ kScanId);
+      /*scan_id*/ kScanId,
+      /*content_transfer_method*/ absl::nullopt);
 
   auto data = CreateData();
   base::RunLoop run_loop;
@@ -518,7 +519,8 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnThenCancel) {
       safe_browsing::EventResultToString(safe_browsing::EventResult::WARNED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-      /*scan_id*/ kScanId);
+      /*scan_id*/ kScanId,
+      /*content_transfer_method*/ absl::nullopt);
 
   auto data = CreateData();
   base::RunLoop run_loop;
@@ -584,7 +586,8 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
               safe_browsing::EventResult::BYPASSED),
           /*username*/ kUserName,
           /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-          /*scan_id*/ kScanId);
+          /*scan_id*/ kScanId,
+          /*content_transfer_method*/ absl::nullopt);
       ASSERT_TRUE(test_delegate_);
       test_delegate_->SetPageWarningForTesting(
           CreateResponse(ContentAnalysisResponse::Result::TriggeredRule::WARN));
@@ -609,7 +612,8 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
       safe_browsing::EventResultToString(safe_browsing::EventResult::WARNED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-      /*scan_id*/ kScanId);
+      /*scan_id*/ kScanId,
+      /*content_transfer_method*/ absl::nullopt);
 
   auto data = CreateData();
   base::RunLoop run_loop;
@@ -666,7 +670,8 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyBlocked) {
       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-      /*scan_id*/ kScanId);
+      /*scan_id*/ kScanId,
+      /*content_transfer_method*/ absl::nullopt);
 
   auto data = CreateData();
   base::RunLoop run_loop;

@@ -371,6 +371,11 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // Virtual to override in tests.
   virtual safe_browsing::BinaryUploadService* GetBinaryUploadService();
 
+  // Returns the content transfer method for the action. This is only used for
+  // reporting and can be empty if the exact transfer method isn't supported in
+  // reporting.
+  std::string GetContentTransferMethod() const;
+
   // The Profile corresponding to the pending scan request(s).
   raw_ptr<Profile> profile_ = nullptr;
 

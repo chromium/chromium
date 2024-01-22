@@ -49,6 +49,7 @@ namespace {
 constexpr char kDmToken[] = "dm_token";
 constexpr char kUserActionId[] = "123";
 constexpr char kTabTitle[] = "tab_title";
+constexpr char kContentTransferMethod[] = "content_transfer_method";
 constexpr char kTestUrl[] = "http://example.com/";
 base::TimeDelta kResponseDelay = base::Seconds(0);
 
@@ -218,7 +219,7 @@ class FilesRequestHandlerTest : public BaseTest {
                 weak_ptr_factory_.GetWeakPtr(),
                 settings->cloud_or_local_settings.is_cloud_analysis()),
             /*upload_service=*/nullptr, profile_, *settings, GURL(kTestUrl), "",
-            "", kUserActionId, kTabTitle,
+            "", kUserActionId, kTabTitle, kContentTransferMethod,
             safe_browsing::DeepScanAccessPoint::UPLOAD,
             ContentAnalysisRequest::FILE_PICKER_DIALOG, paths,
             future.GetCallback());

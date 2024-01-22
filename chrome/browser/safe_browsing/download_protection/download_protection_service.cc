@@ -739,7 +739,7 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
             item->GetURL(), item->GetTabUrl(), "", "", metadata.filename,
             metadata.sha256, metadata.mime_type,
             extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-            metadata.scan_response.request_token(),
+            metadata.scan_response.request_token(), "",
             DeepScanAccessPoint::DOWNLOAD, result, metadata.size,
             /*user_justification=*/std::nullopt);
 

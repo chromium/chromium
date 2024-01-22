@@ -682,7 +682,7 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
         &MaybeReportDeepScanningVerdict, profile, item_->GetURL(),
         item_->GetTabUrl(), "", "", file_metadata.filename,
         file_metadata.sha256, file_metadata.mime_type,
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload, "",
         DeepScanAccessPoint::DOWNLOAD, file_metadata.size, result,
         file_metadata.scan_response));
 
