@@ -6337,10 +6337,10 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
     Camera access
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_SUBTEXT" desc="Sub-label for the camera access toggle in the Privacy controls (aka Privacy Hub) os-settings page.">
-    Allow access for apps, websites, and system services with the camera permission
+    Allow access for apps and websites with the camera permission and system services
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_FALLBACK_CAMERA_TOGGLE_SUBTEXT" desc="Sub-label for the camera access toggle in the Privacy controls (aka Privacy Hub) os-settings page.">
-    Allow access for apps, websites, and system services with the camera permission. To use the camera, you may need to restart the app or refresh the page.
+    Allow access for apps and websites with the camera permission and system services. To use the camera, you may need to restart the app or refresh the page.
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_CAMERA_CONNECTED_TEXT" desc="Text to display in the Privacy Hub subpage when no camera is connected to the device.">
     No camera
@@ -6349,7 +6349,7 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
     Microphone access
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_SUBTEXT" desc="Sub-label for the microphone access toggle in the Privacy controls (aka Privacy Hub) os-settings page.">
-    Allow access for apps, websites, and system services with the microphone permission
+    Allow access for apps and websites with the microphone permission and system services
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_MICROPHONE_CONNECTED_TEXT" desc="Text to display in the Privacy Hub subpage when no microphone is connected to the device.">
     No microphone
