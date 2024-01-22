@@ -304,7 +304,7 @@ void SmartCardContext::OnListReadersDone(
     // error. In web API we want to return an empty list of readers instead.
     if (mojom_error ==
         device::mojom::blink::SmartCardError::kNoReadersAvailable) {
-      resolver->Resolve(Vector<String>());
+      resolver->Resolve<IDLSequence<IDLString>>(Vector<String>());
       return;
     }
 
@@ -312,7 +312,7 @@ void SmartCardContext::OnListReadersDone(
     return;
   }
 
-  resolver->Resolve(std::move(result->get_readers()));
+  resolver->Resolve<IDLSequence<IDLString>>(std::move(result->get_readers()));
 }
 
 void SmartCardContext::OnGetStatusChangeDone(

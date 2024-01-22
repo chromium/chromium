@@ -264,7 +264,7 @@ ScriptPromise FileSystemDirectoryHandle::resolve(
               resolver->Resolve(static_cast<ScriptWrappable*>(nullptr));
               return;
             }
-            resolver->Resolve(*path);
+            resolver->Resolve<IDLSequence<IDLNullable<IDLUSVString>>>(*path);
           },
           WrapPersistent(this), WrapPersistent(resolver)));
 

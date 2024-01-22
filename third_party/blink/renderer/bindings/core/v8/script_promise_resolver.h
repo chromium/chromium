@@ -405,96 +405,9 @@ class CORE_EXPORT ScriptPromiseResolver
   }
 
   // Array
-  template <typename T, size_t Extent>
-  static v8::Local<v8::Array> ToV8(base::span<T, Extent> value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    return ToV8SequenceInternal(value, creation_context, isolate);
-  }
-
-  template <typename T>
-  static v8::Local<v8::Array> ToV8(v8::LocalVector<T> value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    return ToV8SequenceInternal(value, creation_context, isolate);
-  }
-
   template <typename T, wtf_size_t inlineCapacity>
-  static v8::Local<v8::Array> ToV8(const Vector<T, inlineCapacity>& value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    return ToV8SequenceInternal(value, creation_context, isolate);
-  }
-
-  template <typename T, wtf_size_t inlineCapacity>
-  static v8::Local<v8::Array> ToV8(const HeapVector<T, inlineCapacity>& value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    return ToV8SequenceInternal(value, creation_context, isolate);
-  }
-
-  // The following two overloads are also used to convert record<K,V> IDL types
-  // back into ECMAScript Objects.
-  template <typename T>
-  static v8::Local<v8::Value> ToV8(const Vector<std::pair<String, T>>& value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    v8::Local<v8::Object> object;
-    {
-      v8::Context::Scope context_scope(
-          creation_context->GetCreationContextChecked());
-      object = v8::Object::New(isolate);
-    }
-    v8::Local<v8::Context> context = isolate->GetCurrentContext();
-    for (unsigned i = 0; i < value.size(); ++i) {
-      v8::Local<v8::Value> v8_value = ToV8(value[i].second, object, isolate);
-      if (v8_value.IsEmpty()) {
-        v8_value = v8::Undefined(isolate);
-      }
-      bool created_property;
-      if (!object
-               ->CreateDataProperty(
-                   context, V8AtomicString(isolate, value[i].first), v8_value)
-               .To(&created_property) ||
-          !created_property) {
-        return v8::Local<v8::Value>();
-      }
-    }
-    return object;
-  }
-
-  template <typename T>
-  static v8::Local<v8::Value> ToV8(
-      const HeapVector<std::pair<String, T>>& value,
-      v8::Local<v8::Object> creation_context,
-      v8::Isolate* isolate) {
-    v8::Local<v8::Object> object;
-    {
-      v8::Context::Scope context_scope(
-          creation_context->GetCreationContextChecked());
-      object = v8::Object::New(isolate);
-    }
-    v8::Local<v8::Context> context = isolate->GetCurrentContext();
-    for (unsigned i = 0; i < value.size(); ++i) {
-      v8::Local<v8::Value> v8_value = ToV8(value[i].second, object, isolate);
-      if (v8_value.IsEmpty()) {
-        v8_value = v8::Undefined(isolate);
-      }
-      bool created_property;
-      if (!object
-               ->CreateDataProperty(
-                   context, V8AtomicString(isolate, value[i].first), v8_value)
-               .To(&created_property) ||
-          !created_property) {
-        return v8::Local<v8::Value>();
-      }
-    }
-    return object;
-  }
-
-  template <typename Sequence>
-  static v8::Local<v8::Array> ToV8SequenceInternal(
-      const Sequence& sequence,
+  static v8::Local<v8::Array> ToV8(
+      const HeapVector<T, inlineCapacity>& sequence,
       v8::Local<v8::Object> creation_context,
       v8::Isolate* isolate) {
     RUNTIME_CALL_TIMER_SCOPE(

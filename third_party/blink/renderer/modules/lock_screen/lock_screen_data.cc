@@ -48,7 +48,7 @@ ScriptPromise LockScreenData::getKeys(ScriptState* script_state) {
   for (const auto& it : fake_data_store_) {
     keys.push_back(it.key);
   }
-  resolver->Resolve(std::move(keys));
+  resolver->Resolve<IDLSequence<IDLString>>(std::move(keys));
   return promise;
 }
 
