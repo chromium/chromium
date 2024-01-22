@@ -163,7 +163,9 @@ def main():
           'granted the permission yet.')
   for product in new_products:
     prod, board = product.split('.', 1)
-    if prod.startswith('smart_display'):
+    if prod.startswith('smart_display_') and board in [
+        'astro', 'sherlock', 'nelson'
+    ]:
       # This is a hacky way of keeping the files into the folders matching
       # the original image name, since the definition is unfortunately in
       # src-internal. Likely we can download two copies for a smooth
