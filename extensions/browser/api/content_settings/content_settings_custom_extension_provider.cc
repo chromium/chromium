@@ -53,7 +53,7 @@ void CustomExtensionProvider::OnContentSettingChanged(
   // changed.
   NotifyObservers(ContentSettingsPattern::Wildcard(),
                   ContentSettingsPattern::Wildcard(),
-                  ContentSettingsType::DEFAULT);
+                  ContentSettingsType::DEFAULT, /*partition_key=*/nullptr);
 }
 
 }  // namespace content_settings

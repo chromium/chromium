@@ -38,7 +38,8 @@ class ContentSettingsPref {
  public:
   typedef base::RepeatingCallback<void(const ContentSettingsPattern&,
                                        const ContentSettingsPattern&,
-                                       ContentSettingsType)>
+                                       ContentSettingsType,
+                                       const PartitionKey*)>
       NotifyObserversCallback;
 
   ContentSettingsPref(ContentSettingsType content_type,

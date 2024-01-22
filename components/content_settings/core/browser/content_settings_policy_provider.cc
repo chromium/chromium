@@ -603,7 +603,7 @@ void PolicyProvider::OnPreferenceChanged(const std::string& name) {
 
   NotifyObservers(ContentSettingsPattern::Wildcard(),
                   ContentSettingsPattern::Wildcard(),
-                  ContentSettingsType::DEFAULT);
+                  ContentSettingsType::DEFAULT, /*partition_key=*/nullptr);
 }
 
 }  // namespace content_settings

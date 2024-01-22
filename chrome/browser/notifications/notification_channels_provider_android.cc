@@ -299,7 +299,8 @@ NotificationChannelsProviderAndroid::UpdateCachedChannels() const {
                        provider->weak_factory_.GetWeakPtr(),
                        ContentSettingsPattern::Wildcard(),
                        ContentSettingsPattern::Wildcard(),
-                       ContentSettingsType::NOTIFICATIONS));
+                       ContentSettingsType::NOTIFICATIONS,
+                       /*partition_key=*/nullptr));
     provider->cached_channels_ = std::move(updated_channels_map);
     provider->initialized_cached_channels_ = true;
   }
@@ -350,7 +351,8 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
       if (channel_to_delete != cached_channels_.end()) {
         bridge_->DeleteChannel(channel_to_delete->second.id);
         cached_channels_.erase(channel_to_delete);
-        NotifyObservers(primary_pattern, secondary_pattern, content_type);
+        NotifyObservers(primary_pattern, secondary_pattern, content_type,
+                        /*partition_key=*/nullptr);
       }
       return false;
     }
@@ -377,7 +379,8 @@ void NotificationChannelsProviderAndroid::ClearAllContentSettingsRules(
 
   if (channels.size() > 0) {
     NotifyObservers(ContentSettingsPattern::Wildcard(),
-                    ContentSettingsPattern::Wildcard(), content_type);
+                    ContentSettingsPattern::Wildcard(), content_type,
+                    /*partition_key=*/nullptr);
   }
 }
 
@@ -442,9 +445,9 @@ void NotificationChannelsProviderAndroid::CreateChannelIfRequired(
         new_channel_status == NotificationChannelStatus::ENABLED);
     cached_channels_.emplace(origin_string, std::move(channel));
 
-    NotifyObservers(ContentSettingsPattern::Wildcard(),
-                    ContentSettingsPattern::Wildcard(),
-                    ContentSettingsType::NOTIFICATIONS);
+    NotifyObservers(
+        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+        ContentSettingsType::NOTIFICATIONS, /*partition_key=*/nullptr);
   } else {
     auto old_channel_status =
         bridge_->GetChannelStatus(channel_entry->second.id);

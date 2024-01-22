@@ -169,7 +169,8 @@ DefaultProvider::DefaultProvider(PrefService* prefs,
 
 DefaultProvider::~DefaultProvider() = default;
 
-// TODO(b/307193732): handle the PartitionKey in all relevant methods.
+// TODO(b/307193732): handle the PartitionKey in all relevant methods, including
+// when we call NotifyObservers().
 bool DefaultProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
@@ -209,7 +210,8 @@ bool DefaultProvider::SetWebsiteSetting(
   }
 
   NotifyObservers(ContentSettingsPattern::Wildcard(),
-                  ContentSettingsPattern::Wildcard(), content_type);
+                  ContentSettingsPattern::Wildcard(), content_type,
+                  /*partition_key=*/nullptr);
 
   return true;
 }
@@ -347,7 +349,8 @@ void DefaultProvider::OnPreferenceChanged(const std::string& name) {
   }
 
   NotifyObservers(ContentSettingsPattern::Wildcard(),
-                  ContentSettingsPattern::Wildcard(), content_type);
+                  ContentSettingsPattern::Wildcard(), content_type,
+                  /*partition_key=*/nullptr);
 }
 
 base::Value DefaultProvider::ReadFromPref(ContentSettingsType content_type) {

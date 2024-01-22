@@ -96,7 +96,8 @@ class PrefProvider : public UserModifiableProvider {
 
   void Notify(const ContentSettingsPattern& primary_pattern,
               const ContentSettingsPattern& secondary_pattern,
-              ContentSettingsType content_type);
+              ContentSettingsType content_type,
+              const PartitionKey* partition_key);
 
   bool SetLastVisitTime(const ContentSettingsPattern& primary_pattern,
                         const ContentSettingsPattern& secondary_pattern,

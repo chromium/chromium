@@ -251,7 +251,8 @@ void ContentSettingsPref::SetWebsiteSetting(
                partition_key);
   }
 
-  notify_callback_.Run(primary_pattern, secondary_pattern, content_type_);
+  notify_callback_.Run(primary_pattern, secondary_pattern, content_type_,
+                       &partition_key);
 }
 
 void ContentSettingsPref::ClearAllContentSettingsRules(
@@ -281,7 +282,8 @@ void ContentSettingsPref::ClearAllContentSettingsRules(
   }
 
   notify_callback_.Run(ContentSettingsPattern::Wildcard(),
-                       ContentSettingsPattern::Wildcard(), content_type_);
+                       ContentSettingsPattern::Wildcard(), content_type_,
+                       &partition_key);
 }
 
 void ContentSettingsPref::OnShutdown() {
@@ -513,7 +515,8 @@ void ContentSettingsPref::OnPrefChanged() {
   ReadContentSettingsFromPref();
 
   notify_callback_.Run(ContentSettingsPattern::Wildcard(),
-                       ContentSettingsPattern::Wildcard(), content_type_);
+                       ContentSettingsPattern::Wildcard(), content_type_,
+                       nullptr);
 }
 
 void ContentSettingsPref::UpdatePref(

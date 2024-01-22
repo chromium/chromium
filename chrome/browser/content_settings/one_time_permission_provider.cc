@@ -46,7 +46,8 @@ OneTimePermissionProvider::~OneTimePermissionProvider() {
   base::PowerMonitor::RemovePowerSuspendObserver(this);
 }
 
-// TODO(b/307193732): handle the PartitionKey in all relevant methods.
+// TODO(b/307193732): handle the PartitionKey in all relevant methods, including
+// when we call NotifyObservers().
 std::unique_ptr<content_settings::RuleIterator>
 OneTimePermissionProvider::GetRuleIterator(
     ContentSettingsType content_type,
@@ -236,7 +237,8 @@ void OneTimePermissionProvider::ExpireWebsiteSetting(
   permissions::PermissionUmaUtil::RecordOneTimePermissionEvent(
       content_settings_type,
       permissions::OneTimePermissionEvent::EXPIRED_AFTER_MAXIMUM_LIFETIME);
-  NotifyObservers(primary_pattern, secondary_pattern, content_settings_type);
+  NotifyObservers(primary_pattern, secondary_pattern, content_settings_type,
+                  /*partition_key=*/nullptr);
 }
 
 void OneTimePermissionProvider::OnSuspend() {
@@ -338,7 +340,7 @@ void OneTimePermissionProvider::DeleteEntriesAndNotify(
 
   for (const auto& pattern : entries_to_delete) {
     NotifyObservers(pattern.primary_pattern, pattern.secondary_pattern,
-                    pattern.type);
+                    pattern.type, /*partition_key=*/nullptr);
   }
 }
 

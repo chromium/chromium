@@ -409,8 +409,10 @@ ContentSettingsPref* PrefProvider::GetPref(ContentSettingsType type) const {
 
 void PrefProvider::Notify(const ContentSettingsPattern& primary_pattern,
                           const ContentSettingsPattern& secondary_pattern,
-                          ContentSettingsType content_type) {
-  NotifyObservers(primary_pattern, secondary_pattern, content_type);
+                          ContentSettingsType content_type,
+                          const PartitionKey* partition_key) {
+  NotifyObservers(primary_pattern, secondary_pattern, content_type,
+                  partition_key);
 }
 
 void PrefProvider::DiscardOrMigrateObsoletePreferences() {
