@@ -12,6 +12,7 @@ android_library("java") {
 
     # For access to resource IDs and view names for test code.
     "//chrome/android/features/tab_ui:test_support_javalib",
+    "//chrome/browser/incognito:incognito_java_tests",
     "//chrome/test/android:chrome_java_transit",
   ]
   sources = [

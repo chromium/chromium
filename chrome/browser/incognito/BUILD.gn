@@ -101,6 +101,8 @@ android_library("incognito_java_tests") {
     "//chrome/android/features/tab_ui:test_support_javalib",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/hub/internal:java",
+    "//chrome/browser/hub/internal:java_resources",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:test_support_java",
