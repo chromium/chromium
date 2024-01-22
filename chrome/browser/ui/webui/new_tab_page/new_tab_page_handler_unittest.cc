@@ -1028,7 +1028,7 @@ TEST_F(NewTabPageHandlerTest, SurveyLaunchedEligibleModulesCriteria) {
       {});
 
   EXPECT_CALL(*mock_hats_service(),
-              LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _, _))
+              LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _, _, _))
       .Times(1);
   const std::vector<std::string> module_ids = {"recipe_tasks", "cart"};
   handler_->OnModulesLoadedWithData(module_ids);
@@ -1051,7 +1051,7 @@ TEST_F(NewTabPageHandlerTest, SurveyLaunchSkippedEligibleModulesCriteria) {
       {});
 
   EXPECT_CALL(*mock_hats_service(),
-              LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _, _))
+              LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _, _, _))
       .Times(0);
   const std::vector<std::string> module_ids = {"recipe_tasks"};
   handler_->OnModulesLoadedWithData(module_ids);
@@ -1357,11 +1357,11 @@ TEST_F(NewTabPageHandlerHaTSTest, ModuleInteractionTriggersHaTS) {
                                                       "use"};
   for (const auto& interaction : kInteractionNames) {
     int timeout_ms;
-    std::optional<std::string_view> supplied_trigger_id;
+    std::optional<std::string> supplied_trigger_id;
     EXPECT_CALL(*mock_hats_service(),
                 LaunchDelayedSurveyForWebContents(kHatsSurveyTriggerNtpModules,
                                                   web_contents_.get(), _, _, _,
-                                                  _, _, _, _))
+                                                  _, _, _, _, _))
         .Times(1)
         .WillOnce(DoAll(SaveArg<2>(&timeout_ms),
                         SaveArg<8>(&supplied_trigger_id),
@@ -1398,11 +1398,11 @@ TEST_F(NewTabPageHandlerHaTSTest, IgnoredModuleTriggersHaTS) {
       base::Value::Dict().Set(NewTabPageHandlerHaTSTest::kSampleModuleId, 0));
 
   int timeout_ms;
-  std::optional<std::string_view> supplied_trigger_id;
+  std::optional<std::string> supplied_trigger_id;
   EXPECT_CALL(*mock_hats_service(),
               LaunchDelayedSurveyForWebContents(kHatsSurveyTriggerNtpModules,
                                                 web_contents_.get(), _, _, _, _,
-                                                _, _, _))
+                                                _, _, _, _))
       .Times(1)
       .WillOnce(DoAll(SaveArg<2>(&timeout_ms), SaveArg<8>(&supplied_trigger_id),
                       testing::Return(true)));
@@ -1427,7 +1427,7 @@ TEST_F(NewTabPageHandlerHaTSTest, InteractedModuleDoesNotTriggerIgnoredHaTS) {
   EXPECT_CALL(*mock_hats_service(),
               LaunchDelayedSurveyForWebContents(kHatsSurveyTriggerNtpModules,
                                                 web_contents_.get(), _, _, _, _,
-                                                _, _, _))
+                                                _, _, _, _))
       .Times(0);
   const std::vector<std::string> module_ids = {
       NewTabPageHandlerHaTSTest::kSampleModuleId};

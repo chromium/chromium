@@ -6,9 +6,11 @@
 #define COMPONENTS_PERMISSIONS_PERMISSION_HATS_TRIGGER_HELPER_H_
 
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/messages/android/message_enums.h"
 #include "components/permissions/permission_util.h"
 #include "constants.h"
 
@@ -44,32 +46,48 @@ class PermissionHatsTriggerHelper {
     BUCKET_GT20    // >20
   };
 
-  struct PromptParametersForHaTS {
-    PromptParametersForHaTS(
+  struct PromptParametersForHats {
+    PromptParametersForHats(
         permissions::RequestType request_type,
-        absl::optional<permissions::PermissionAction> action,
+        std::optional<permissions::PermissionAction> action,
         permissions::PermissionPromptDisposition prompt_disposition,
         permissions::PermissionPromptDispositionReason
             prompt_disposition_reason,
         permissions::PermissionRequestGestureType gesture_type,
         const std::string& channel,
         const std::string& survey_display_time,
-        absl::optional<base::TimeDelta> prompt_display_duration,
+        std::optional<base::TimeDelta> prompt_display_duration,
         OneTimePermissionPromptsDecidedBucket one_time_prompts_decided_bucket,
-        absl::optional<GURL> gurl);
-    PromptParametersForHaTS(const PromptParametersForHaTS& other);
-    ~PromptParametersForHaTS();
+        std::optional<GURL> gurl);
+    PromptParametersForHats(const PromptParametersForHats& other);
+    ~PromptParametersForHats();
 
     permissions::RequestType request_type;
-    absl::optional<permissions::PermissionAction> action;
+    std::optional<permissions::PermissionAction> action;
     permissions::PermissionPromptDisposition prompt_disposition;
     permissions::PermissionPromptDispositionReason prompt_disposition_reason;
     permissions::PermissionRequestGestureType gesture_type;
     std::string channel;
     std::string survey_display_time;
-    absl::optional<base::TimeDelta> prompt_display_duration;
+    std::optional<base::TimeDelta> prompt_display_duration;
     OneTimePermissionPromptsDecidedBucket one_time_prompts_decided_bucket;
     std::string url;
+  };
+
+  struct SurveyParametersForHats {
+    explicit SurveyParametersForHats(
+        double trigger_probability,
+        std::optional<std::string> supplied_trigger_id = std::nullopt,
+        std::optional<std::u16string> custom_survey_invitation = std::nullopt,
+        std::optional<messages::MessageIdentifier> message_identifier =
+            std::nullopt);
+    SurveyParametersForHats(const SurveyParametersForHats& other);
+    ~SurveyParametersForHats();
+
+    double trigger_probability;
+    std::optional<std::string> supplied_trigger_id;
+    std::optional<std::u16string> custom_survey_invitation;
+    std::optional<messages::MessageIdentifier> message_identifier;
   };
 
   struct SurveyProductSpecificData {
@@ -77,7 +95,7 @@ class PermissionHatsTriggerHelper {
     ~SurveyProductSpecificData();
 
     static SurveyProductSpecificData PopulateFrom(
-        PromptParametersForHaTS prompt_parameters);
+        PromptParametersForHats prompt_parameters);
 
     const SurveyBitsData survey_bits_data;
     const SurveyStringData survey_string_data;
@@ -95,8 +113,7 @@ class PermissionHatsTriggerHelper {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   static bool ArePromptTriggerCriteriaSatisfied(
-      PromptParametersForHaTS prompt_parameters,
-      const std::string& trigger_name_base);
+      PromptParametersForHats prompt_parameters);
 
   static OneTimePermissionPromptsDecidedBucket GetOneTimePromptsDecidedBucket(
       PrefService* pref_service);
@@ -112,19 +129,11 @@ class PermissionHatsTriggerHelper {
   static std::string GetOneTimePromptsDecidedBucketString(
       OneTimePermissionPromptsDecidedBucket bucket);
 
-  // Returns a vector containing pairs of <trigger_name, trigger_id>
-  // The trigger_name is a unique name used by the HaTS service integration, and
-  // the trigger_id is an ID that specifies a survey in the Listnr backend.
-  static std::vector<std::pair<std::string, std::string>>&
-  GetPermissionPromptTriggerIdPairs(const std::string& trigger_name_base);
-
-  // Returns the trigger name and probability corresponding to a specific
+  // Returns the survey parameters corresponding to a specific
   // request type. Returns empty value if there is a configuration error or the
   // passed request type is not configured.
-  static absl::optional<std::pair<std::string, double>>
-  GetPermissionPromptTriggerNameAndProbabilityForRequestType(
-      const std::string& trigger_name_base,
-      const std::string& request_type);
+  static std::optional<SurveyParametersForHats>
+  GetSurveyParametersForRequestType(RequestType request_type);
 
   static void SetIsTest();
 };

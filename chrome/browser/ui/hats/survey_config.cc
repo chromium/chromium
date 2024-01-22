@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "survey_config.h"
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/features.h"
@@ -139,28 +140,22 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   default_survey.product_specific_string_data_fields = {"Test Field 3"};
   survey_configs.emplace_back(default_survey);
 
-  // Permissions surveys.
-  for (auto& trigger_id_pair : permissions::PermissionHatsTriggerHelper::
-           GetPermissionPromptTriggerIdPairs(
-               kHatsSurveyTriggerPermissionsPrompt)) {
-    // trigger_id_pair has structure <trigger_name, trigger_id>. trigger_name is
-    // a unique name used by the HaTS service integration, and trigger_id is an
-    // ID that specifies a survey in the Listnr backend.
-    survey_configs.emplace_back(
-        &permissions::features::kPermissionsPromptSurvey, trigger_id_pair.first,
-        trigger_id_pair.second,
-        std::vector<std::string>{
-            permissions::kPermissionsPromptSurveyHadGestureKey},
-        std::vector<std::string>{
-            permissions::kPermissionsPromptSurveyPromptDispositionKey,
-            permissions::kPermissionsPromptSurveyPromptDispositionReasonKey,
-            permissions::kPermissionsPromptSurveyActionKey,
-            permissions::kPermissionsPromptSurveyRequestTypeKey,
-            permissions::kPermissionsPromptSurveyReleaseChannelKey,
-            permissions::kPermissionsPromptSurveyDisplayTimeKey,
-            permissions::kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
-            permissions::kPermissionPromptSurveyUrlKey});
-  }
+  // Permission prompt survey
+  survey_configs.emplace_back(
+      &permissions::features::kPermissionsPromptSurvey,
+      kHatsSurveyTriggerPermissionsPrompt,
+      /*presupplied_trigger_id=*/std::nullopt,
+      std::vector<std::string>{
+          permissions::kPermissionsPromptSurveyHadGestureKey},
+      std::vector<std::string>{
+          permissions::kPermissionsPromptSurveyPromptDispositionKey,
+          permissions::kPermissionsPromptSurveyPromptDispositionReasonKey,
+          permissions::kPermissionsPromptSurveyActionKey,
+          permissions::kPermissionsPromptSurveyRequestTypeKey,
+          permissions::kPermissionsPromptSurveyReleaseChannelKey,
+          permissions::kPermissionsPromptSurveyDisplayTimeKey,
+          permissions::kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
+          permissions::kPermissionPromptSurveyUrlKey});
 
 #if !BUILDFLAG(IS_ANDROID)
   // Dev tools surveys.

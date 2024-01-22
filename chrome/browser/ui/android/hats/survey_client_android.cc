@@ -23,16 +23,23 @@ using base::android::ScopedJavaLocalRef;
 namespace hats {
 
 // static
-SurveyClientAndroid::SurveyClientAndroid(const std::string& trigger,
-                                         SurveyUiDelegateAndroid* ui_delegate,
-                                         Profile* profile) {
+SurveyClientAndroid::SurveyClientAndroid(
+    const std::string& trigger,
+    SurveyUiDelegateAndroid* ui_delegate,
+    Profile* profile,
+    const std::optional<std::string>& supplied_trigger_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> java_trigger =
       ConvertUTF8ToJavaString(env, trigger);
+  ScopedJavaLocalRef<jstring> java_supplied_trigger_id =
+      ConvertUTF8ToJavaString(env, supplied_trigger_id.has_value()
+                                       ? supplied_trigger_id.value()
+                                       : base::StringPiece());
   jobj_ = Java_SurveyClientBridge_create(
       env, reinterpret_cast<int64_t>(this), java_trigger,
       ui_delegate->GetJavaObject(env),
-      ProfileAndroid::FromProfile(profile)->GetJavaObject());
+      ProfileAndroid::FromProfile(profile)->GetJavaObject(),
+      java_supplied_trigger_id);
 }
 
 SurveyClientAndroid::~SurveyClientAndroid() = default;

@@ -395,6 +395,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name ="IDS_PERMISSION_CHROME_NEEDS_PERMISSION" desc="Text informing the user in the background that Chrome needs a permission in order to use it on the site the user is visiting">
       To use your <ph name="permission">$1<ex>camera</ex></ph> on this site, you need to give Chrome access
   </message>
+    <message name="IDS_GEOLOCATION_NAME_FRAGMENT" desc="Text fragment identifying the geolocation permission">
+    location
+  </message>
   <message name="IDS_CAMERA_PERMISSION_NAME_FRAGMENT" desc="Text fragment identifying the camera permission">
     camera
   </message>
@@ -422,5 +425,8 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   </message>
   <message name="IDS_EMBEDDED_PROMPT_CONTINUE_NOT_ALLOWING" desc="Label used on a button that to continue not allowing a permission prompt that the user has previously also not allowed for the site.">
     Continue not allowing
+  </message>
+  <message name ="IDS_PERMISSION_PROMPT_SURVEY_CUSTOM_INVITATION" desc="The invitation shown to a user, which allows the user to accept taking a survey.">
+      A website just asked for access to your <ph name="request_type">$1<ex>camera</ex></ph>. Help us improve how websites ask for access by taking this 1-minute survey.
   </message>
 </grit-part>

@@ -235,7 +235,7 @@ TEST_F(ChromeAutofillClientTest, TriggerUserPerceptionOfAutofillSurvey) {
   EXPECT_CALL(*mock_hats_service,
               LaunchDelayedSurveyForWebContents(
                   kHatsSurveyTriggerAutofillAddressUserPerception, _, _,
-                  expected_bits, Ref(field_filling_stats_data), _, _, _, _));
+                  expected_bits, Ref(field_filling_stats_data), _, _, _, _, _));
 
   client()->TriggerUserPerceptionOfAutofillSurvey(field_filling_stats_data);
 }

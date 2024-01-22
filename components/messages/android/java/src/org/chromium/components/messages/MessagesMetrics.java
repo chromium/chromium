@@ -396,6 +396,18 @@ public class MessagesMetrics {
                 return "TrackingProtectionNotice";
             case MessageIdentifier.DESKTOP_SITE_WINDOW_SETTING:
                 return "DesktopSiteWindowSetting";
+            case MessageIdentifier.PROMPT_HATS_LOCATION_CUSTOM_INVITATION:
+                return "PromptHatsLocationCustomInvitation";
+            case MessageIdentifier.PROMPT_HATS_LOCATION_GENERIC_INVITATION:
+                return "PromptHatsLocationGenericInvitation";
+            case MessageIdentifier.PROMPT_HATS_CAMERA_CUSTOM_INVITATION:
+                return "PromptHatsCameraCustomInvitation";
+            case MessageIdentifier.PROMPT_HATS_CAMERA_GENERIC_INVITATION:
+                return "PromptHatsCameraGenericInvitation";
+            case MessageIdentifier.PROMPT_HATS_MICROPHONE_CUSTOM_INVITATION:
+                return "PromptHatsMicrophoneCustomInvitation";
+            case MessageIdentifier.PROMPT_HATS_MICROPHONE_GENERIC_INVITATION:
+                return "PromptHatsMicrophoneGenericInvitation";
             default:
                 return "Unknown";
         }

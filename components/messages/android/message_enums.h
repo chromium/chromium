@@ -69,7 +69,8 @@ enum class MessageScopeType {
 //
 // When adding a new message identifier, make corresponding changes in the
 // following locations:
-// - tools/metrics/histograms/enums.xml: <enum name="MessageIdentifier">
+// - tools/metrics/histograms/metadata/android/enums.xml:
+//       <enum name="MessageIdentifier">
 // - tools/metrics/histograms/metadata/android/histograms.xml:
 //       <variants name="MessageIdentifiers">
 // - MessagesMetrics.java: #messageIdentifierToHistogramSuffix()
@@ -119,6 +120,12 @@ enum class MessageIdentifier {
   CVC_SAVE = 39,
   TRACKING_PROTECTION_NOTICE = 40,
   DESKTOP_SITE_WINDOW_SETTING = 41,
+  PROMPT_HATS_LOCATION_CUSTOM_INVITATION = 42,
+  PROMPT_HATS_LOCATION_GENERIC_INVITATION = 43,
+  PROMPT_HATS_CAMERA_CUSTOM_INVITATION = 44,
+  PROMPT_HATS_CAMERA_GENERIC_INVITATION = 45,
+  PROMPT_HATS_MICROPHONE_CUSTOM_INVITATION = 46,
+  PROMPT_HATS_MICROPHONE_GENERIC_INVITATION = 47,
   // Insert new values before this line.
   COUNT
 };

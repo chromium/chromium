@@ -290,7 +290,7 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
           : std::nullopt;
 
   auto prompt_parameters =
-      permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
+      permissions::PermissionHatsTriggerHelper::PromptParametersForHats(
           request_type, action, prompt_disposition, prompt_disposition_reason,
           gesture_type,
           std::string(version_info::GetChannelString(chrome::GetChannel())),
@@ -302,20 +302,19 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
           recorded_gurl);
 
   if (!permissions::PermissionHatsTriggerHelper::
-          ArePromptTriggerCriteriaSatisfied(
-              prompt_parameters, kHatsSurveyTriggerPermissionsPrompt)) {
+          ArePromptTriggerCriteriaSatisfied(prompt_parameters)) {
     return;
   }
 
-  auto trigger_and_probability = permissions::PermissionHatsTriggerHelper::
-      GetPermissionPromptTriggerNameAndProbabilityForRequestType(
-          kHatsSurveyTriggerPermissionsPrompt,
-          permissions::PermissionUmaUtil::GetRequestTypeString(request_type));
+  std::optional<
+      permissions::PermissionHatsTriggerHelper::SurveyParametersForHats>
+      survey_parameters = permissions::PermissionHatsTriggerHelper::
+          GetSurveyParametersForRequestType(request_type);
 
   auto* hats_service =
       HatsServiceFactory::GetForProfile(profile,
                                         /*create_if_necessary=*/true);
-  if (!hats_service || !trigger_and_probability.has_value()) {
+  if (!hats_service || !survey_parameters.has_value()) {
     return;
   }
 
@@ -323,9 +322,12 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
       SurveyProductSpecificData::PopulateFrom(prompt_parameters);
 
   hats_service->LaunchSurveyForWebContents(
-      trigger_and_probability->first, web_contents,
+      kHatsSurveyTriggerPermissionsPrompt, web_contents,
       survey_data.survey_bits_data, survey_data.survey_string_data,
-      std::move(hats_shown_callback), base::DoNothing());
+      std::move(hats_shown_callback), base::DoNothing(),
+      survey_parameters->supplied_trigger_id,
+      HatsService::SurveyOptions(survey_parameters->custom_survey_invitation,
+                                 survey_parameters->message_identifier));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

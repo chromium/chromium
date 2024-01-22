@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/messages/android/message_enums.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -50,6 +51,18 @@ class HatsService : public KeyedService {
 
     // Metadata affecting all triggers.
     std::optional<base::Time> any_last_survey_started_time;
+  };
+
+  struct SurveyOptions {
+    explicit SurveyOptions(
+        std::optional<std::u16string> custom_invitation = std::nullopt,
+        std::optional<messages::MessageIdentifier> message_identifier =
+            std::nullopt);
+    SurveyOptions(const SurveyOptions& other);
+    ~SurveyOptions();
+
+    std::optional<std::u16string> custom_invitation;
+    std::optional<messages::MessageIdentifier> message_identifier;
   };
 
   enum NavigationBehaviour {
@@ -93,8 +106,8 @@ class HatsService : public KeyedService {
       const SurveyStringData& product_specific_string_data,
       base::OnceClosure success_callback = base::DoNothing(),
       base::OnceClosure failure_callback = base::DoNothing(),
-      const std::optional<std::string_view>& supplied_trigger_id =
-          std::nullopt) = 0;
+      const std::optional<std::string>& supplied_trigger_id = std::nullopt,
+      const SurveyOptions& survey_options = SurveyOptions()) = 0;
 
   // Launches survey (with id |trigger|) with a timeout |timeout_ms| if
   // appropriate.
@@ -127,8 +140,8 @@ class HatsService : public KeyedService {
       NavigationBehaviour navigation_behaviour = NavigationBehaviour::ALLOW_ANY,
       base::OnceClosure success_callback = base::DoNothing(),
       base::OnceClosure failure_callback = base::DoNothing(),
-      const std::optional<std::string_view>& supplied_trigger_id =
-          std::nullopt) = 0;
+      const std::optional<std::string>& supplied_trigger_id = std::nullopt,
+      const SurveyOptions& survey_options = SurveyOptions()) = 0;
 
   // Whether the user is eligible for any survey (of the type |user_prompted|
   // or not) to be shown. A return value of false is always a true-negative,
