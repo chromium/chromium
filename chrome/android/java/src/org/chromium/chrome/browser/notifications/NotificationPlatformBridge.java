@@ -42,7 +42,7 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.usage_stats.NotificationSuspender;
+import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.chrome.browser.webapps.WebApkServiceClient;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
@@ -58,6 +58,8 @@ import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
+import org.chromium.content_public.browser.BrowserStartupController;
+import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
 import org.chromium.url.URI;
 import org.chromium.webapk.lib.client.WebApkIdentityServiceClient;
 
@@ -667,34 +669,33 @@ public class NotificationPlatformBridge {
                         actions,
                         image);
 
-        Callback<Boolean> suspendedCallback =
-                (suspended) -> {
-                    // We will call displayNotification() again after the suspension is over.
-                    if (suspended) return;
+        // Either display the notification right away; or, if this kind of notification is currently
+        // under suspension, store the notification's resources back into the NotificationDatabase.
+        // Once the suspension is over, displayNotification() will be called again.
+        storeNotificationResourcesIfSuspended(notificationType, notification)
+                .then(
+                        (suspended) -> {
+                            if (suspended) {
+                                return;
+                            }
 
-                    // Display notification as Chrome.
-                    // Android may throw an exception on
-                    // INotificationManager.enqueueNotificationWithTag,
-                    // see crbug.com/1077027.
-                    try {
-                        mNotificationManager.notify(notification);
-                        NotificationUmaTracker.getInstance()
-                                .onNotificationShown(
-                                        NotificationUmaTracker.SystemNotificationType.SITES,
-                                        notification.getNotification());
-                    } catch (RuntimeException e) {
-                        Log.e(
-                                TAG,
-                                "Failed to send notification, the IPC message might be corrupted.");
-                    }
-                };
-
-        // Temporarily suspend web notifications if the origin is suspended.
-        if (notificationType == NotificationType.WEB_PERSISTENT) {
-            NotificationSuspender.maybeSuspendNotification(notification).then(suspendedCallback);
-        } else {
-            suspendedCallback.onResult(/* suspended= */ false);
-        }
+                            // Display notification as Chrome.
+                            // Android may throw an exception on
+                            // INotificationManager.enqueueNotificationWithTag,
+                            // see crbug.com/1077027.
+                            try {
+                                mNotificationManager.notify(notification);
+                                NotificationUmaTracker.getInstance()
+                                        .onNotificationShown(
+                                                NotificationUmaTracker.SystemNotificationType.SITES,
+                                                notification.getNotification());
+                            } catch (RuntimeException e) {
+                                Log.e(
+                                        TAG,
+                                        "Failed to send notification, the IPC message might be"
+                                                + " corrupted.");
+                            }
+                        });
 
         // If Chrome has no app-level notifications permission, check if an origin-level permission
         // should be revoked.
@@ -705,6 +706,28 @@ public class NotificationPlatformBridge {
             PushMessagingServiceBridge.getInstance()
                     .verify(origin, profileId, manager.areNotificationsEnabled());
         }
+    }
+
+    private Promise<Boolean> storeNotificationResourcesIfSuspended(
+            @NotificationType int notificationType, NotificationWrapper notification) {
+        if (notificationType != NotificationType.WEB_PERSISTENT) {
+            return Promise.fulfilled(false);
+        }
+
+        if (!UsageStatsService.isEnabled()) {
+            return Promise.fulfilled(false);
+        }
+
+        // Need to `waitForChromeStartup` because if we lazily end up constructing the
+        // `UsageStatsService` here, that constructor can call JNI.
+        // TODO(crbug.com/1520479): The only caller to `displayNotification` is native code, so we
+        // could be more confident here that native is running and remove this logic.
+        return waitForChromeStartup()
+                .then(
+                        (Void v) ->
+                                UsageStatsService.getInstance()
+                                        .getSuspensionTracker()
+                                        .storeNotificationResourcesIfSuspended(notification));
     }
 
     private NotificationBuilderBase prepareNotificationBuilder(
@@ -1051,6 +1074,25 @@ public class NotificationPlatformBridge {
             mTwaClient = ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient();
         }
         return mTwaClient;
+    }
+
+    private static Promise<Void> waitForChromeStartup() {
+        BrowserStartupController browserStartup = BrowserStartupController.getInstance();
+        if (browserStartup.isFullBrowserStarted()) return Promise.fulfilled(null);
+        Promise<Void> promise = new Promise<>();
+        browserStartup.addStartupCompletedObserver(
+                new StartupCallback() {
+                    @Override
+                    public void onSuccess() {
+                        promise.fulfill(null);
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        promise.reject(null);
+                    }
+                });
+        return promise;
     }
 
     @NativeMethods

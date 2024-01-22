@@ -66,8 +66,6 @@ PlatformNotificationContext* GetContext(Profile* profile, const GURL& origin) {
 
 }  // namespace
 
-namespace usage_stats {
-
 // Stores the given |j_resources| to be displayed later again. Note that
 // |j_resources| is expected to have 3 entries (icon, badge, image in that
 // order) for each notification id in |j_notification_ids|. If a notification
@@ -140,5 +138,3 @@ static void JNI_NotificationSuspender_ReDisplayNotifications(
                                         base::DoNothing());
   }
 }
-
-}  // namespace usage_stats

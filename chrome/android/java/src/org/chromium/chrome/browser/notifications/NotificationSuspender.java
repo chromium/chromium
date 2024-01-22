@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.usage_stats;
+package org.chromium.chrome.browser.notifications;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -18,59 +18,27 @@ import android.webkit.URLUtil;
 
 import androidx.annotation.RequiresApi;
 
-import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Promise;
-import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
-import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
-import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- * Class that suspends and revives notifications for suspended websites. All calls must be made on
- * the UI thread.
+ * Class that suspends and revives notifications.
+ *
+ * All calls must be made on the UI thread, and the full browser must be started before using this
+ * class.
  */
-@JNINamespace("usage_stats")
 public class NotificationSuspender {
     private final Profile mProfile;
     private final Context mContext;
     private final NotificationManager mNotificationManager;
-
-    private static boolean isEnabled() {
-        return UsageStatsService.isEnabled();
-    }
-
-    /**
-     * Suspends the given notification if it originates from a suspended domain.
-     * @param notification The notification to suspend.
-     * @return A {@link Promise} that resolves to whether the given notification got suspended.
-     */
-    public static Promise<Boolean> maybeSuspendNotification(NotificationWrapper notification) {
-        // No need to initialize UsageStatsService if it is disabled.
-        if (!isEnabled()) return Promise.fulfilled(false);
-        return waitForChromeStartup()
-                .then((Void v) -> UsageStatsService.getInstance().getAllSuspendedWebsitesAsync())
-                .then(
-                        (List<String> fqdns) -> {
-                            if (!fqdns.contains(getValidFqdnOrEmptyString(notification))) {
-                                return false;
-                            }
-                            UsageStatsService.getInstance()
-                                    .getNotificationSuspender()
-                                    .storeNotificationResources(
-                                            Collections.singletonList(notification));
-                            return true;
-                        });
-    }
 
     public NotificationSuspender(Profile profile) {
         mProfile = profile;
@@ -79,39 +47,65 @@ public class NotificationSuspender {
                 (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
-    public void setWebsitesSuspended(List<String> fqdns, boolean suspended) {
-        if (fqdns.isEmpty() || !isEnabled()) return;
-        if (suspended) {
-            storeNotificationResources(getActiveNotificationsForFqdns(fqdns));
-        } else {
-            unsuspendWebsites(fqdns);
-        }
+    /**
+     * Suspends notifications from the given domains.
+     *
+     * Suspending means storing the notification resources and canceling the Android notifications
+     * themselves, so that they can be re-displayed later.
+     *
+     * @param fqdns The list of domain strings to suspend notifications from.
+     */
+    public void suspendNotificationsFromDomains(List<String> fqdns) {
+        List<String> storedNotificationIds =
+                storeNotificationResources(getActiveNotificationsForFqdns(fqdns));
+        cancelNotificationsWithIds(storedNotificationIds);
     }
 
-    private void storeNotificationResources(List<NotificationWrapper> notifications) {
-        if (notifications.isEmpty()) return;
+    /**
+     * Stores resources for the given notifications back into the native NotificationDatabase.
+     *
+     * This allows re-displaying these notification later.
+     *
+     * @param notifications The list of notifications whose resources to store.
+     */
+    public List<String> storeNotificationResources(List<NotificationWrapper> notifications) {
+        if (notifications.isEmpty()) {
+            return new ArrayList<String>();
+        }
 
-        String[] ids = new String[notifications.size()];
+        String[] notificationIds = new String[notifications.size()];
         String[] origins = new String[notifications.size()];
         Bitmap[] resources = new Bitmap[notifications.size() * 3];
 
         for (int i = 0; i < notifications.size(); ++i) {
             Notification notification = notifications.get(i).getNotification();
             String tag = notifications.get(i).getMetadata().tag;
-            ids[i] = tag;
+            // Chromium's `notificationId` is used as the Android notification's tag.
+            notificationIds[i] = tag;
             origins[i] = NotificationPlatformBridge.getOriginFromNotificationTag(tag);
             resources[i * 3 + 0] = getNotificationIcon(notification);
             resources[i * 3 + 1] = getNotificationBadge(notification);
             resources[i * 3 + 2] = getNotificationImage(notification);
-            mNotificationManager.cancel(tag, NotificationPlatformBridge.PLATFORM_ID);
         }
 
         NotificationSuspenderJni.get()
-                .storeNotificationResources(mProfile, ids, origins, resources);
+                .storeNotificationResources(mProfile, notificationIds, origins, resources);
+        return new ArrayList<String>(Arrays.asList(notificationIds));
     }
 
-    private void unsuspendWebsites(List<String> fqdns) {
-        if (fqdns.isEmpty()) return;
+
+    /**
+     * Unsuspends notifications from the given domains.
+     *
+     * This means re-displaying the notification using the prevously stored resources.
+     *
+     * @param fqdns The list of domain strings to unsuspend notifications from.
+     */
+    public void unsuspendNotificationsFromDomains(List<String> fqdns) {
+        if (fqdns.isEmpty()) {
+            return;
+        }
+
         // Handle both http and https schemes as native expects origins.
         String[] origins = new String[fqdns.size() * 2];
         for (int i = 0; i < fqdns.size(); ++i) {
@@ -121,8 +115,32 @@ public class NotificationSuspender {
         NotificationSuspenderJni.get().reDisplayNotifications(mProfile, origins);
     }
 
+    /**
+     * Retrieves the fully-qualified domain name of the website that displayed a notification.
+     *
+     * @param notification The notification whose originating domain to return.
+     */
+    public static String getValidFqdnOrEmptyString(NotificationWrapper notification) {
+        String tag = notification.getMetadata().tag;
+        String origin = NotificationPlatformBridge.getOriginFromNotificationTag(tag);
+        if (TextUtils.isEmpty(origin)) return "";
+        String host = Uri.parse(origin).getHost();
+        return host == null ? "" : host;
+    }
+
+    private void cancelNotificationsWithIds(List<String> notificationIds) {
+        for (String notificationId : notificationIds) {
+            mNotificationManager.cancel(
+                    /* tag= */ notificationId, NotificationPlatformBridge.PLATFORM_ID);
+        }
+    }
+
     private List<NotificationWrapper> getActiveNotificationsForFqdns(List<String> fqdns) {
         List<NotificationWrapper> notifications = new ArrayList<>();
+
+        if (fqdns.isEmpty()) {
+            return notifications;
+        }
 
         for (StatusBarNotification notification : mNotificationManager.getActiveNotifications()) {
             if (notification.getId() != NotificationPlatformBridge.PLATFORM_ID) continue;
@@ -157,33 +175,6 @@ public class NotificationSuspender {
 
     private Bitmap getNotificationImage(Notification notification) {
         return (Bitmap) notification.extras.get(Notification.EXTRA_PICTURE);
-    }
-
-    private static String getValidFqdnOrEmptyString(NotificationWrapper notification) {
-        String tag = notification.getMetadata().tag;
-        String origin = NotificationPlatformBridge.getOriginFromNotificationTag(tag);
-        if (TextUtils.isEmpty(origin)) return "";
-        String host = Uri.parse(origin).getHost();
-        return host == null ? "" : host;
-    }
-
-    private static Promise<Void> waitForChromeStartup() {
-        BrowserStartupController browserStartup = BrowserStartupController.getInstance();
-        if (browserStartup.isFullBrowserStarted()) return Promise.fulfilled(null);
-        Promise<Void> promise = new Promise<>();
-        browserStartup.addStartupCompletedObserver(
-                new StartupCallback() {
-                    @Override
-                    public void onSuccess() {
-                        promise.fulfill(null);
-                    }
-
-                    @Override
-                    public void onFailure() {
-                        promise.reject(null);
-                    }
-                });
-        return promise;
     }
 
     @NativeMethods
