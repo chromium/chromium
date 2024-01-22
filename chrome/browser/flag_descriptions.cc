@@ -5114,6 +5114,18 @@ const char kWebAppSyncGeneratedIconUpdateFixDescription[] =
     "during a manifest update if the icons were generated, indictative of"
     "network errors during the sync install.";
 
+const char kUserDisplayModeSyncBrowserMitigationName[] =
+    "Web App User Display Mode Sync Browser Mitigation";
+const char kUserDisplayModeSyncBrowserMitigationDescription[] =
+    "Enables a mitigation during web app install on CrOS for syncing "
+    "user_display_mode: kBrowser to non-CrOS devices.";
+
+const char kUserDisplayModeSyncStandaloneMitigationName[] =
+    "Web App User Display Mode Sync Standalone Mitigation";
+const char kUserDisplayModeSyncStandaloneMitigationDescription[] =
+    "Enables a mitigation during web app install on CrOS for syncing "
+    "user_display_mode: kStandalone to non-CrOS devices.";
+
 const char kWebAppSystemMediaControlsWinName[] =
     "Web App System Media Controls on Windows";
 const char kWebAppSystemMediaControlsWinDescription[] =

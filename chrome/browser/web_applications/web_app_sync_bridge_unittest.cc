@@ -1430,13 +1430,15 @@ class WebAppSyncBridgeTest_UserDisplayModeSplit
   }
 
   WebAppSyncBridgeTest_UserDisplayModeSplit() {
-    if (flag_enabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          kSeparateUserDisplayModeForCrOS);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kSeparateUserDisplayModeForCrOS);
-    }
+    scoped_feature_list_.InitWithFeatureStates({
+        {kSeparateUserDisplayModeForCrOS, flag_enabled()},
+#if BUILDFLAG(IS_CHROMEOS)
+        // UDM mitigations mess with the installed local state, disable them so
+        // the state matches the intention of the test.
+        {kUserDisplayModeSyncBrowserMitigation, false},
+        {kUserDisplayModeSyncStandaloneMitigation, false},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    });
   }
 
   ~WebAppSyncBridgeTest_UserDisplayModeSplit() override = default;

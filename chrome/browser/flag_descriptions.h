@@ -2958,6 +2958,12 @@ extern const char kWebAppSyncGeneratedIconRetroactiveFixDescription[];
 extern const char kWebAppSyncGeneratedIconUpdateFixName[];
 extern const char kWebAppSyncGeneratedIconUpdateFixDescription[];
 
+extern const char kUserDisplayModeSyncBrowserMitigationName[];
+extern const char kUserDisplayModeSyncBrowserMitigationDescription[];
+
+extern const char kUserDisplayModeSyncStandaloneMitigationName[];
+extern const char kUserDisplayModeSyncStandaloneMitigationDescription[];
+
 extern const char kWebAppSystemMediaControlsWinName[];
 extern const char kWebAppSystemMediaControlsWinDescription[];
 

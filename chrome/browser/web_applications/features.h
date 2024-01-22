@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace web_app {
 
@@ -20,6 +22,12 @@ BASE_DECLARE_FEATURE(kSeparateUserDisplayModeForCrOS);
 // kSeparateUserDisplayModeForCrOS above), but doesn't actually use it. This
 // prevents the field from being inadvertently cleared by the client.
 BASE_DECLARE_FEATURE(kSyncOnlySeparateUserDisplayModeForCrOS);
+
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_DECLARE_FEATURE(kUserDisplayModeSyncBrowserMitigation);
+
+BASE_DECLARE_FEATURE(kUserDisplayModeSyncStandaloneMitigation);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app
 

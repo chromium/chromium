@@ -4949,6 +4949,18 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebAppSyncGeneratedIconUpdateFix)},
 #endif  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS)
+    {"web-app-user-display-mode-sync-browser-mitigation",
+     flag_descriptions::kUserDisplayModeSyncBrowserMitigationName,
+     flag_descriptions::kUserDisplayModeSyncBrowserMitigationDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(web_app::kUserDisplayModeSyncBrowserMitigation)},
+    {"web-app-user-display-mode-sync-standalone-mitigation",
+     flag_descriptions::kUserDisplayModeSyncStandaloneMitigationName,
+     flag_descriptions::kUserDisplayModeSyncStandaloneMitigationDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(web_app::kUserDisplayModeSyncStandaloneMitigation)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
     {"use-sync-sandbox", flag_descriptions::kSyncSandboxName,
      flag_descriptions::kSyncSandboxDescription, kOsAll,
      SINGLE_VALUE_TYPE_AND_VALUE(

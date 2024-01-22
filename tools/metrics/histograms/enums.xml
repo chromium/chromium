@@ -21144,6 +21144,8 @@ from previous Chrome versions.
   <int value="-1414699084" label="CameraAppLowStorageWarning:enabled"/>
   <int value="-1414531531" label="NtpModulesRedesignedLayout:disabled"/>
   <int value="-1414207639" label="RequestDesktopSiteDefaultsLogging:enabled"/>
+  <int value="-1412920508"
+      label="UserDisplayModeSyncStandaloneMitigation:enabled"/>
   <int value="-1412230070" label="query-tiles-instant-background-task"/>
   <int value="-1411980923" label="LinkCapturingUiUpdate:enabled"/>
   <int value="-1411777757" label="WebRtcSendPacketBatch:enabled"/>
@@ -21169,6 +21171,8 @@ from previous Chrome versions.
   <int value="-1405048637" label="OfflinePagesResourceBasedSnapshot:enabled"/>
   <int value="-1404469375" label="RemoteCopyProgressNotification:enabled"/>
   <int value="-1404088616" label="TetheringExperimentalFunctionality:enabled"/>
+  <int value="-1404072922"
+      label="UserDisplayModeSyncBrowserMitigation:enabled"/>
   <int value="-1401308932" label="CaptureModeEducation:disabled"/>
   <int value="-1400745093" label="SystemEmojiPickerSearchExtension:enabled"/>
   <int value="-1400693146" label="LauncherImageSearchIca:enabled"/>
@@ -26507,6 +26511,8 @@ from previous Chrome versions.
   <int value="1095166532" label="PasspointARCSupport:disabled"/>
   <int value="1095706700" label="NavigationPredictor:enabled"/>
   <int value="1096477444" label="AssistantVoiceMatch:enabled"/>
+  <int value="1097339521"
+      label="UserDisplayModeSyncStandaloneMitigation:disabled"/>
   <int value="1097935876" label="CrostiniShowMicSetting:enabled"/>
   <int value="1097981222" label="OneGoogleBarModalOverlays:disabled"/>
   <int value="1098461149" label="AppToAppLinkCapturing:disabled"/>
@@ -27385,6 +27391,8 @@ from previous Chrome versions.
   <int value="1506372577" label="NearbySharingSelfShare:disabled"/>
   <int value="1507233295" label="FilesTrash:disabled"/>
   <int value="1508761653" label="disable-site-isolation-trials"/>
+  <int value="1509300278"
+      label="UserDisplayModeSyncBrowserMitigation:disabled"/>
   <int value="1509482104"
       label="SupervisedPrefsControlledBySupervisedStore:disabled"/>
   <int value="1509586356" label="CrossOriginOpenerPolicy:disabled"/>
