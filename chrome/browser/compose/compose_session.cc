@@ -106,8 +106,8 @@ void LogComposeRewriteReason(const compose::mojom::StyleModifiersPtr& style) {
   }
 }
 
-void LogComposeResponseStatus(compose::mojom::ComposeStatus status) {
-  UMA_HISTOGRAM_ENUMERATION(compose::kComposeResponseStatus, status);
+void LogComposeRequestStatus(compose::mojom::ComposeStatus status) {
+  UMA_HISTOGRAM_ENUMERATION(compose::kComposeRequestStatus, status);
 }
 
 }  // namespace
@@ -438,7 +438,7 @@ void ComposeSession::ModelExecutionComplete(
   current_state_->response = ui_response->Clone();
 
   // Log successful response status.
-  LogComposeResponseStatus(compose::mojom::ComposeStatus::kOk);
+  LogComposeRequestStatus(compose::mojom::ComposeStatus::kOk);
   compose::LogComposeRequestDuration(request_delta, /* is_valid */ true);
 
   SaveMostRecentOkStateToUndoStack();
@@ -474,7 +474,7 @@ void ComposeSession::ModelExecutionComplete(
 }
 
 void ComposeSession::ProcessError(compose::mojom::ComposeStatus error) {
-  LogComposeResponseStatus(error);
+  LogComposeRequestStatus(error);
 
   current_state_->has_pending_request = false;
   current_state_->response = compose::mojom::ComposeResponse::New();

@@ -393,13 +393,13 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
   histograms().ExpectUniqueSample(compose::kComposeRequestReason,
                                   compose::ComposeRequestReason::kFirstRequest,
                                   1);
-  // Check that a response result OK metric was emitted.
-  histograms().ExpectUniqueSample(compose::kComposeResponseStatus,
+  // Check that a request result OK metric was emitted.
+  histograms().ExpectUniqueSample(compose::kComposeRequestStatus,
                                   compose::mojom::ComposeStatus::kOk, 1);
-  // Check that a response duration OK metric was emitted.
-  histograms().ExpectTotalCount(compose::kComposeResponseDurationOk, 1);
-  // Check that a no response duration Error metric was emitted.
-  histograms().ExpectTotalCount(compose::kComposeResponseDurationError, 0);
+  // Check that a request duration OK metric was emitted.
+  histograms().ExpectTotalCount(compose::kComposeRequestDurationOk, 1);
+  // Check that a no request duration Error metric was emitted.
+  histograms().ExpectTotalCount(compose::kComposeRequestDurationError, 0);
 
   // Simulate insert call from Compose dialog.
   page_handler()->AcceptComposeResult(base::NullCallback());
@@ -573,13 +573,13 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
   EXPECT_EQ("Cucumbers", complete_result->result);
   EXPECT_TRUE(complete_result->on_device_evaluation_used);
 
-  // Check that a single response result OK metric was emitted.
-  histogram_tester.ExpectUniqueSample(compose::kComposeResponseStatus,
+  // Check that a single request result OK metric was emitted.
+  histogram_tester.ExpectUniqueSample(compose::kComposeRequestStatus,
                                       compose::mojom::ComposeStatus::kOk, 1);
-  // Check that a single response duration OK metric was emitted.
-  histogram_tester.ExpectTotalCount(compose::kComposeResponseDurationOk, 1);
-  // Check that no response duration Error metric was emitted.
-  histogram_tester.ExpectTotalCount(compose::kComposeResponseDurationError, 0);
+  // Check that a single request duration OK metric was emitted.
+  histogram_tester.ExpectTotalCount(compose::kComposeRequestDurationOk, 1);
+  // Check that no request duration Error metric was emitted.
+  histogram_tester.ExpectTotalCount(compose::kComposeRequestDurationError, 0);
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
@@ -647,13 +647,13 @@ TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
             complete_response.Get()->status);
   EXPECT_EQ("Cucumbers", complete_response.Get()->result);
 
-  // Check that a single response result OK metric was emitted.
-  histogram_tester.ExpectUniqueSample(compose::kComposeResponseStatus,
+  // Check that a single request result OK metric was emitted.
+  histogram_tester.ExpectUniqueSample(compose::kComposeRequestStatus,
                                       compose::mojom::ComposeStatus::kOk, 1);
-  // Check that a single response duration OK metric was emitted.
-  histogram_tester.ExpectTotalCount(compose::kComposeResponseDurationOk, 1);
-  // Check that no response duration Error metric was emitted.
-  histogram_tester.ExpectTotalCount(compose::kComposeResponseDurationError, 0);
+  // Check that a single request duration OK metric was emitted.
+  histogram_tester.ExpectTotalCount(compose::kComposeRequestDurationOk, 1);
+  // Check that no request duration Error metric was emitted.
+  histogram_tester.ExpectTotalCount(compose::kComposeRequestDurationError, 0);
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeParams) {
@@ -772,14 +772,14 @@ TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kNoResponse, result->status);
 
-  // Check that a response result No Response metric was emitted.
-  histograms().ExpectUniqueSample(compose::kComposeResponseStatus,
+  // Check that a request result No Response metric was emitted.
+  histograms().ExpectUniqueSample(compose::kComposeRequestStatus,
                                   compose::mojom::ComposeStatus::kNoResponse,
                                   1);
-  // Check that a response duration Error metric was emitted.
-  histograms().ExpectTotalCount(compose::kComposeResponseDurationError, 1);
-  // Check that a no response duration OK metric was emitted.
-  histograms().ExpectTotalCount(compose::kComposeResponseDurationOk, 0);
+  // Check that a request duration Error metric was emitted.
+  histograms().ExpectTotalCount(compose::kComposeRequestDurationError, 1);
+  // Check that a no request duration OK metric was emitted.
+  histograms().ExpectTotalCount(compose::kComposeRequestDurationOk, 0);
 }
 
 TEST_F(ChromeComposeClientTest, TestOptimizationGuideDisabled) {

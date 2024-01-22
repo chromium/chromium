@@ -17,9 +17,9 @@ namespace compose {
 extern const char kComposeDialogOpenLatency[];
 extern const char kComposeDialogSelectionLength[];
 extern const char kComposeRequestReason[];
-extern const char kComposeResponseDurationOk[];
-extern const char kComposeResponseDurationError[];
-extern const char kComposeResponseStatus[];
+extern const char kComposeRequestDurationOk[];
+extern const char kComposeRequestDurationError[];
+extern const char kComposeRequestStatus[];
 extern const char kComposeSessionComposeCount[];
 extern const char kComposeSessionCloseReason[];
 extern const char kComposeSessionDialogShownCount[];

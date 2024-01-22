@@ -88,6 +88,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.Request.Duration.Error" units="ms"
+    expires_after="2024-06-02">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Time in milliseconds for an invalid Compose request to complete. Logged each
+    time a request receives a response status not equal to OK.
+  </summary>
+</histogram>
+
+<histogram name="Compose.Request.Duration.Ok" units="ms"
+    expires_after="2024-06-02">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Time in milliseconds for a valid Compose request to complete. Logged each
+    time a request receives a response OK status.
+  </summary>
+</histogram>
+
 <histogram name="Compose.Request.Reason" enum="ComposeRequestReason"
     expires_after="2024-07-02">
   <owner>cuianthony@chromium.org</owner>
@@ -100,33 +120,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compose.Response.Duration.Error" units="ms"
-    expires_after="2024-06-02">
-  <owner>perrier@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    Time in milliseconds for an invalid response from the Compose service.
-    Logged each time a response with status not equal to OK is received.
-  </summary>
-</histogram>
-
-<histogram name="Compose.Response.Duration.Ok" units="ms"
-    expires_after="2024-06-02">
-  <owner>perrier@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    Time in milliseconds for a valid response from the Compose service. Logged
-    each time a response with status OK is received.
-  </summary>
-</histogram>
-
-<histogram name="Compose.Response.Status" enum="ComposeResponseStatus"
+<histogram name="Compose.Request.Status" enum="ComposeResponseStatus"
     expires_after="2024-06-02">
   <owner>cuianthony@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
-    Histogram for recording the Compose server response status. Logged each time
-    a response from the server is received.
+    Histogram for recording the Compose server request status. Logged each time
+    a Compose request receives a response.
   </summary>
 </histogram>
 

@@ -20,9 +20,9 @@ const char kComposeDialogInnerTextSize[] = "Compose.Dialog.InnerTextSize";
 const char kComposeDialogOpenLatency[] = "Compose.Dialog.OpenLatency";
 const char kComposeDialogSelectionLength[] = "Compose.Dialog.SelectionLength";
 const char kComposeRequestReason[] = "Compose.Request.Reason";
-const char kComposeResponseDurationOk[] = "Compose.Response.Duration.Ok";
-const char kComposeResponseDurationError[] = "Compose.Response.Duration.Error";
-const char kComposeResponseStatus[] = "Compose.Response.Status";
+const char kComposeRequestDurationOk[] = "Compose.Request.Duration.Ok";
+const char kComposeRequestDurationError[] = "Compose.Request.Duration.Error";
+const char kComposeRequestStatus[] = "Compose.Request.Status";
 const char kComposeSessionComposeCount[] = "Compose.Session.ComposeCount";
 const char kComposeSessionCloseReason[] = "Compose.Session.CloseReason";
 const char kComposeSessionDialogShownCount[] =
@@ -89,7 +89,7 @@ void LogComposeRequestReason(ComposeRequestReason reason) {
 
 void LogComposeRequestDuration(base::TimeDelta duration, bool is_valid) {
   base::UmaHistogramMediumTimes(
-      is_valid ? kComposeResponseDurationOk : kComposeResponseDurationError,
+      is_valid ? kComposeRequestDurationOk : kComposeRequestDurationError,
       duration);
 }
 
