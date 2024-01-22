@@ -25,6 +25,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "ui/gfx/geometry/size.h"
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "components/plus_addresses/resources/vector_icons.h"
 #endif
@@ -328,6 +329,18 @@ std::unique_ptr<views::ImageView> GetIconImageView(
       GetIconImageViewFromIcon(suggestion.icon);
   base::UmaHistogramTimes(kHistogramGetImageViewByName,
                           base::TimeTicks::Now() - start_time);
+
+  if (icon_image_view && ShouldApplyNewAutofillPopupStyle()) {
+    // It is possible to have icons of different sizes (kChromeRefreshIconSize
+    // and kIconSize) on the same popup. Setting the icon view width to
+    // the largest value ensures that the icon occupies consistent horizontal
+    // space and makes icons (and the text after them) aligned. It expands
+    // the area of kIconSize icons only and doesn't change those that are bigger
+    // by design (e.g. payment card icons) and have no alignment issues.
+    gfx::Size size = icon_image_view->GetPreferredSize();
+    size.set_width(std::max(kChromeRefreshIconSize, size.width()));
+    icon_image_view->SetPreferredSize(size);
+  }
 
   return icon_image_view;
 }
