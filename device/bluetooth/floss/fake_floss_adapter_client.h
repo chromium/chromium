@@ -113,10 +113,14 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   // Fake discovery failure on next call.
   void FailNextDiscovery();
 
+  // Fake bonding failure on next CreateBond call.
+  void FailNextBonding();
+
  private:
   std::unordered_set<std::string> bonded_addresses_;
   std::unordered_set<std::string> connected_addresses_;
   absl::optional<bool> fail_discovery_;
+  absl::optional<bool> fail_bonding_;
   base::WeakPtrFactory<FakeFlossAdapterClient> weak_ptr_factory_{this};
 };
 

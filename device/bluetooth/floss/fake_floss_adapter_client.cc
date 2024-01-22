@@ -187,6 +187,14 @@ void FakeFlossAdapterClient::CancelDiscovery(ResponseCallback<Void> callback) {
 void FakeFlossAdapterClient::CreateBond(ResponseCallback<bool> callback,
                                         FlossDeviceId device,
                                         BluetoothTransport transport) {
+  if (fail_bonding_) {
+    fail_bonding_ = absl::nullopt;
+
+    std::move(callback).Run(base::unexpected(
+        Error("org.chromium.Error.Failed", "Bonding failed by request")));
+    return;
+  }
+
   for (auto& observer : observers_) {
     observer.DeviceBondStateChanged(
         device, /*status=*/0,
@@ -394,6 +402,10 @@ void FakeFlossAdapterClient::NotifyObservers(
 
 void FakeFlossAdapterClient::FailNextDiscovery() {
   fail_discovery_ = absl::make_optional(true);
+}
+
+void FakeFlossAdapterClient::FailNextBonding() {
+  fail_bonding_ = absl::make_optional(true);
 }
 
 void FakeFlossAdapterClient::SetPairingConfirmation(

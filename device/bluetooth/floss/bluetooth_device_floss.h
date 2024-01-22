@@ -236,6 +236,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   void OnSetConnectionLatency(base::OnceClosure callback,
                               ErrorCallback error_callback,
                               DBusResult<Void> ret);
+  void OnCreateBond(DBusResult<bool> ret);
 
 #if BUILDFLAG(IS_CHROMEOS)
   void OnExecuteWrite(base::OnceClosure callback,

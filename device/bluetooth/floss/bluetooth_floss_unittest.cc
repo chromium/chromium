@@ -220,6 +220,31 @@ class BluetoothFlossTest : public testing::Test {
   std::vector<std::unique_ptr<BluetoothDiscoverySession>> discovery_sessions_;
 };
 
+TEST_F(BluetoothFlossTest, BondFailureTriggersCallbacks) {
+  InitializeAndEnableAdapter();
+  DiscoverDevices();
+
+  GetFakeAdapterClient()->FailNextBonding();
+  BluetoothDevice* device =
+      adapter_->GetDevice(FakeFlossAdapterClient::kJustWorksAddress);
+  ASSERT_TRUE(device != nullptr);
+  ASSERT_FALSE(device->IsPaired());
+  ASSERT_FALSE(device->IsConnecting());
+
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_TRUE(error.has_value());
+            run_loop.Quit();
+          }));
+  EXPECT_FALSE(device->IsPaired());
+  EXPECT_FALSE(device->IsConnected());
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(BluetoothFlossTest, PairJustWorks) {
   InitializeAndEnableAdapter();
   DiscoverDevices();

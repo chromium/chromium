@@ -51,16 +51,6 @@ const int32_t kMaxMtuSize = 517;
 // Timeout for connection response after Connect() method is called.
 constexpr base::TimeDelta kDefaultConnectTimeout = base::Seconds(10);
 
-void OnCreateBond(DBusResult<bool> ret) {
-  if (ret.has_value() && !*ret) {
-    BLUETOOTH_LOG(ERROR) << "CreateBond returned failure";
-  }
-
-  if (!ret.has_value()) {
-    BLUETOOTH_LOG(ERROR) << "Failed to create bond: " << ret.error();
-  }
-}
-
 void OnRemoveBond(base::OnceClosure callback, DBusResult<bool> ret) {
   if (!ret.has_value()) {
     BLUETOOTH_LOG(ERROR) << "Failed to remove bond: " << ret.error();
@@ -291,8 +281,9 @@ void BluetoothDeviceFloss::Connect(
   }
 
   // To simulate BlueZ API behavior, we don't reply the callback as soon as
-  // Floss CreateBond API returns, but rather we trigger the callback later
-  // after pairing is done and profiles are connected.
+  // Floss CreateBond API returns success, but rather we trigger the callback
+  // later after pairing is done and profiles are connected. In the event of
+  // immediate failure OnCreateBond will handle invoking the callback.
   pending_callback_on_connect_profiles_ = std::move(callback);
 
   if (IsPaired() || !pairing_delegate) {
@@ -301,8 +292,19 @@ void BluetoothDeviceFloss::Connect(
   } else {
     pairing_ = std::make_unique<BluetoothPairingFloss>(pairing_delegate);
     FlossDBusManager::Get()->GetAdapterClient()->CreateBond(
-        base::BindOnce(&OnCreateBond), AsFlossDeviceId(),
-        FlossAdapterClient::BluetoothTransport::kAuto);
+        base::BindOnce(&BluetoothDeviceFloss::OnCreateBond,
+                       weak_ptr_factory_.GetWeakPtr()),
+        AsFlossDeviceId(), FlossAdapterClient::BluetoothTransport::kAuto);
+  }
+}
+
+void BluetoothDeviceFloss::OnCreateBond(DBusResult<bool> ret) {
+  if (ret.has_value() && !*ret) {
+    BLUETOOTH_LOG(ERROR) << "CreateBond returned failure";
+    TriggerConnectCallback(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+  } else if (!ret.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "Failed to create bond: " << ret.error();
+    TriggerConnectCallback(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
   }
 }
 
