@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -111,6 +112,8 @@ void BrowserCommandHandler::CanExecuteCommand(
     case Command::kStartPasswordManagerTutorial:
       can_execute = TutorialServiceExists();
       break;
+    case Command::kStartSavedTabGroupTutorial:
+      can_execute = TutorialServiceExists() && BrowserSupportsSavedTabGroups();
   }
   std::move(callback).Run(can_execute);
 }
@@ -181,6 +184,9 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
     case Command::kStartPasswordManagerTutorial:
       StartPasswordManagerTutorial();
       break;
+    case Command::kStartSavedTabGroupTutorial:
+      StartSavedTabGroupTutorial();
+      break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << id;
       break;
@@ -242,6 +248,15 @@ bool BrowserCommandHandler::DefaultSearchProviderIsGoogle() {
   return search::DefaultSearchProviderIsGoogle(profile_);
 }
 
+bool BrowserCommandHandler::BrowserSupportsSavedTabGroups() {
+  Browser* browser = chrome::FindBrowserWithProfile(profile_);
+
+  // Duplicated from chrome/browser/ui/views/bookmarks/bookmark_bar_view.cc
+  // Which cannot be included here
+  return base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
+         browser->profile()->IsRegularProfile();
+}
+
 void BrowserCommandHandler::OpenNTPAndStartCustomizeChromeTutorial() {
   auto* tutorial_id = kSidePanelCustomizeChromeTutorialId;
 
@@ -258,6 +273,16 @@ void BrowserCommandHandler::OpenNTPAndStartCustomizeChromeTutorial() {
 
 void BrowserCommandHandler::StartPasswordManagerTutorial() {
   auto* tutorial_id = kPasswordManagerTutorialId;
+
+  StartTutorialInPage::Params params;
+  params.tutorial_id = tutorial_id;
+  params.callback = base::BindOnce(&BrowserCommandHandler::OnTutorialStarted,
+                                   base::Unretained(this), tutorial_id);
+  StartTutorial(std::move(params));
+}
+
+void BrowserCommandHandler::StartSavedTabGroupTutorial() {
+  auto* tutorial_id = kSavedTabGroupTutorialId;
 
   StartTutorialInPage::Params params;
   params.tutorial_id = tutorial_id;
