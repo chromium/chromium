@@ -164,7 +164,7 @@ class WebSocketBasicStreamSocketTest : public TestWithTaskEnvironment {
     ClientSocketPool::GroupId group_id(
         url::SchemeHostPort(url::kHttpScheme, "a", 80),
         PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-        SecureDnsPolicy::kAllow);
+        SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
     transport_socket->Init(
         group_id, null_params, absl::nullopt /* proxy_annotation_tag */, MEDIUM,
         SocketTag(), ClientSocketPool::RespectLimits::ENABLED,

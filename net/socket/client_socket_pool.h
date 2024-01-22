@@ -100,7 +100,8 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
     GroupId(url::SchemeHostPort destination,
             PrivacyMode privacy_mode,
             NetworkAnonymizationKey network_anonymization_key,
-            SecureDnsPolicy secure_dns_policy);
+            SecureDnsPolicy secure_dns_policy,
+            bool disable_cert_network_fetches);
     GroupId(const GroupId& group_id);
 
     ~GroupId();
@@ -118,23 +119,29 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
 
     SecureDnsPolicy secure_dns_policy() const { return secure_dns_policy_; }
 
+    bool disable_cert_network_fetches() const {
+      return disable_cert_network_fetches_;
+    }
+
     // Returns the group ID as a string, for logging.
     std::string ToString() const;
 
     bool operator==(const GroupId& other) const {
       return std::tie(destination_, privacy_mode_, network_anonymization_key_,
-                      secure_dns_policy_) ==
+                      secure_dns_policy_, disable_cert_network_fetches_) ==
              std::tie(other.destination_, other.privacy_mode_,
                       other.network_anonymization_key_,
-                      other.secure_dns_policy_);
+                      other.secure_dns_policy_,
+                      other.disable_cert_network_fetches_);
     }
 
     bool operator<(const GroupId& other) const {
       return std::tie(destination_, privacy_mode_, network_anonymization_key_,
-                      secure_dns_policy_) <
+                      secure_dns_policy_, disable_cert_network_fetches_) <
              std::tie(other.destination_, other.privacy_mode_,
                       other.network_anonymization_key_,
-                      other.secure_dns_policy_);
+                      other.secure_dns_policy_,
+                      other.disable_cert_network_fetches_);
     }
 
    private:
@@ -149,6 +156,11 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
 
     // Controls the Secure DNS behavior to use when creating this socket.
     SecureDnsPolicy secure_dns_policy_;
+
+    // Whether cert validation-related network fetches are allowed. Should only
+    // be true for a very limited number of network-configuration related
+    // scripts (e.g., PAC fetches).
+    bool disable_cert_network_fetches_;
   };
 
   // Parameters that, in combination with GroupId, proxy, websocket information,

@@ -181,14 +181,15 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     SocketTag socket_tag,
     const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
+    bool disable_cert_network_fetches,
     const CommonConnectJobParams* common_connect_job_params,
     ConnectJob::Delegate* delegate) const {
-  return CreateConnectJob(Endpoint(std::move(endpoint)), proxy_chain,
-                          proxy_annotation_tag, ssl_config_for_origin,
-                          alpn_mode, force_tunnel, privacy_mode,
-                          resolution_callback, request_priority, socket_tag,
-                          network_anonymization_key, secure_dns_policy,
-                          common_connect_job_params, delegate);
+  return CreateConnectJob(
+      Endpoint(std::move(endpoint)), proxy_chain, proxy_annotation_tag,
+      ssl_config_for_origin, alpn_mode, force_tunnel, privacy_mode,
+      resolution_callback, request_priority, socket_tag,
+      network_anonymization_key, secure_dns_policy,
+      disable_cert_network_fetches, common_connect_job_params, delegate);
 }
 
 std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
@@ -212,7 +213,8 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
       ssl_config_for_origin, ConnectJobFactory::AlpnMode::kDisabled,
       force_tunnel, privacy_mode, resolution_callback, request_priority,
       socket_tag, network_anonymization_key, secure_dns_policy,
-      common_connect_job_params, delegate);
+      /*disable_cert_network_fetches=*/false, common_connect_job_params,
+      delegate);
 }
 
 std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
@@ -228,6 +230,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     SocketTag socket_tag,
     const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
+    bool disable_cert_network_fetches,
     const CommonConnectJobParams* common_connect_job_params,
     ConnectJob::Delegate* delegate) const {
   scoped_refptr<HttpProxySocketParams> http_proxy_params;
@@ -354,6 +357,9 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     ConfigureAlpn(endpoint, alpn_mode, network_anonymization_key,
                   *common_connect_job_params, ssl_config,
                   /*renego_allowed=*/true);
+
+    ssl_config.disable_cert_verification_network_fetches =
+        disable_cert_network_fetches;
 
     // TODO(https://crbug.com/964642): Also enable 0-RTT for TLS proxies.
     ssl_config.early_data_enabled =

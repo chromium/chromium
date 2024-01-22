@@ -354,7 +354,8 @@ bool HttpStreamFactory::Job::TargettedSocketGroupHasActiveSocket() const {
   DCHECK(pool);
   ClientSocketPool::GroupId connection_group(
       destination_, request_info_.privacy_mode,
-      request_info_.network_anonymization_key, request_info_.secure_dns_policy);
+      request_info_.network_anonymization_key, request_info_.secure_dns_policy,
+      disable_cert_verification_network_fetches());
   return pool->HasActiveSocket(connection_group);
 }
 
@@ -364,6 +365,10 @@ NextProto HttpStreamFactory::Job::negotiated_protocol() const {
 
 bool HttpStreamFactory::Job::using_spdy() const {
   return negotiated_protocol_ == kProtoHTTP2;
+}
+
+bool HttpStreamFactory::Job::disable_cert_verification_network_fetches() const {
+  return !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
 }
 
 const ProxyInfo& HttpStreamFactory::Job::proxy_info() const {
@@ -772,20 +777,18 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
   DCHECK(proxy_info_.proxy_chain().IsValid());
   next_state_ = STATE_INIT_CONNECTION_COMPLETE;
 
-  SSLConfig server_ssl_config;
-  // TODO(https://crbug.com/1498285):  Remove this and move
-  // `disable_cert_verification_network_fetches` handling down to the socket
-  // layer.
-  bool disable_cert_verification_network_fetches =
-      !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
-  server_ssl_config.disable_cert_verification_network_fetches =
-      disable_cert_verification_network_fetches;
-
-  server_ssl_config.allowed_bad_certs = allowed_bad_certs_;
-
   if (using_quic_) {
+    // TODO(mmenke): Clean this up. `disable_cert_verification_network_fetches`
+    // is enabled in ConnectJobFactory for H1/H2 connections. Also need to add
+    // it to the SpdySessionKey for H2 connections.
+    SSLConfig server_ssl_config;
+    server_ssl_config.disable_cert_verification_network_fetches =
+        disable_cert_verification_network_fetches();
     return DoInitConnectionImplQuic(server_ssl_config.GetCertVerifyFlags());
   }
+
+  SSLConfig server_ssl_config;
+  server_ssl_config.allowed_bad_certs = allowed_bad_certs_;
 
   // Check first if there is a pushed stream matching the request, or an HTTP/2
   // connection this request can pool to.  If so, then go straight to using

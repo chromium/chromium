@@ -169,7 +169,7 @@ class MockClientSocketHandleFactory {
         ClientSocketPool::GroupId(
             url::SchemeHostPort(url::kHttpScheme, "a", 80),
             PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-            SecureDnsPolicy::kAllow),
+            SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
         scoped_refptr<ClientSocketPool::SocketParams>(),
         absl::nullopt /* proxy_annotation_tag */, MEDIUM, SocketTag(),
         ClientSocketPool::RespectLimits::ENABLED, CompletionOnceCallback(),

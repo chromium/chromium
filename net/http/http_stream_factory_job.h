@@ -370,6 +370,8 @@ class HttpStreamFactory::Job
   // proxy. This differs from `using_ssl_`, which only describes the origin.
   bool using_spdy() const;
 
+  bool disable_cert_verification_network_fetches() const;
+
   const HttpRequestInfo request_info_;
   RequestPriority priority_;
   const ProxyInfo proxy_info_;

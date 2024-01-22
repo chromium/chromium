@@ -94,6 +94,7 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
       SocketTag socket_tag,
       const NetworkAnonymizationKey& network_anonymization_key,
       SecureDnsPolicy secure_dns_policy,
+      bool disable_cert_network_fetches,
       const CommonConnectJobParams* common_connect_job_params,
       ConnectJob::Delegate* delegate) const;
 
@@ -129,6 +130,7 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
       SocketTag socket_tag,
       const NetworkAnonymizationKey& network_anonymization_key,
       SecureDnsPolicy secure_dns_policy,
+      bool disable_cert_network_fetches,
       const CommonConnectJobParams* common_connect_job_params,
       ConnectJob::Delegate* delegate) const;
 

@@ -453,7 +453,7 @@ base::WeakPtr<SpdySession> CreateSpdySessionHelper(
                               key.host_port_pair().HostForURL(),
                               key.host_port_pair().port()),
           key.privacy_mode(), NetworkAnonymizationKey(),
-          SecureDnsPolicy::kAllow),
+          SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
       socket_params, /*proxy_annotation_tag=*/absl::nullopt, MEDIUM,
       key.socket_tag(), ClientSocketPool::RespectLimits::ENABLED,
       callback.callback(), ClientSocketPool::ProxyAuthCallback(),

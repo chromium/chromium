@@ -3346,17 +3346,18 @@ TEST_F(SpdySessionTest, CloseOneIdleConnection) {
   // post a task asynchronously to try and close the session.
   TestCompletionCallback callback2;
   auto connection2 = std::make_unique<ClientSocketHandle>();
-  EXPECT_EQ(ERR_IO_PENDING,
-            connection2->Init(
-                ClientSocketPool::GroupId(
-                    url::SchemeHostPort(url::kHttpScheme, "2.com", 80),
-                    PrivacyMode::PRIVACY_MODE_DISABLED,
-                    NetworkAnonymizationKey(), SecureDnsPolicy::kAllow),
-                ClientSocketPool::SocketParams::CreateForHttpForTesting(),
-                absl::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
-                SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-                callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
-                pool, NetLogWithSource()));
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      connection2->Init(
+          ClientSocketPool::GroupId(
+              url::SchemeHostPort(url::kHttpScheme, "2.com", 80),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          ClientSocketPool::SocketParams::CreateForHttpForTesting(),
+          absl::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
+          SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+          callback2.callback(), ClientSocketPool::ProxyAuthCallback(), pool,
+          NetLogWithSource()));
   EXPECT_TRUE(pool->IsStalled());
 
   // The socket pool should close the connection asynchronously and establish a
@@ -3437,17 +3438,18 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
   // post a task asynchronously to try and close the session.
   TestCompletionCallback callback3;
   auto connection3 = std::make_unique<ClientSocketHandle>();
-  EXPECT_EQ(ERR_IO_PENDING,
-            connection3->Init(
-                ClientSocketPool::GroupId(
-                    url::SchemeHostPort(url::kHttpScheme, "3.com", 80),
-                    PrivacyMode::PRIVACY_MODE_DISABLED,
-                    NetworkAnonymizationKey(), SecureDnsPolicy::kAllow),
-                ClientSocketPool::SocketParams::CreateForHttpForTesting(),
-                absl::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
-                SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-                callback3.callback(), ClientSocketPool::ProxyAuthCallback(),
-                pool, NetLogWithSource()));
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      connection3->Init(
+          ClientSocketPool::GroupId(
+              url::SchemeHostPort(url::kHttpScheme, "3.com", 80),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          ClientSocketPool::SocketParams::CreateForHttpForTesting(),
+          absl::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
+          SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+          callback3.callback(), ClientSocketPool::ProxyAuthCallback(), pool,
+          NetLogWithSource()));
   EXPECT_TRUE(pool->IsStalled());
 
   // The socket pool should close the connection asynchronously and establish a
@@ -3517,17 +3519,18 @@ TEST_F(SpdySessionTest, CloseSessionOnIdleWhenPoolStalled) {
   // post a task asynchronously to try and close the session.
   TestCompletionCallback callback2;
   auto connection2 = std::make_unique<ClientSocketHandle>();
-  EXPECT_EQ(ERR_IO_PENDING,
-            connection2->Init(
-                ClientSocketPool::GroupId(
-                    url::SchemeHostPort(url::kHttpScheme, "2.com", 80),
-                    PrivacyMode::PRIVACY_MODE_DISABLED,
-                    NetworkAnonymizationKey(), SecureDnsPolicy::kAllow),
-                ClientSocketPool::SocketParams::CreateForHttpForTesting(),
-                absl::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
-                SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-                callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
-                pool, NetLogWithSource()));
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      connection2->Init(
+          ClientSocketPool::GroupId(
+              url::SchemeHostPort(url::kHttpScheme, "2.com", 80),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          ClientSocketPool::SocketParams::CreateForHttpForTesting(),
+          absl::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
+          SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+          callback2.callback(), ClientSocketPool::ProxyAuthCallback(), pool,
+          NetLogWithSource()));
   EXPECT_TRUE(pool->IsStalled());
 
   // Running the message loop should cause the socket pool to ask the SPDY

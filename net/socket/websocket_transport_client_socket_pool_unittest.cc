@@ -82,7 +82,8 @@ class WebSocketTransportClientSocketPoolTest : public TestWithTaskEnvironment {
       : group_id_(url::SchemeHostPort(url::kHttpScheme, "www.google.com", 80),
                   PrivacyMode::PRIVACY_MODE_DISABLED,
                   NetworkAnonymizationKey(),
-                  SecureDnsPolicy::kAllow),
+                  SecureDnsPolicy::kAllow,
+                  /*disable_cert_network_fetches=*/false),
         params_(ClientSocketPool::SocketParams::CreateForHttpForTesting()),
         host_resolver_(std::make_unique<
                        MockHostResolver>(/*default_result=*/
@@ -213,7 +214,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest, InitHostResolutionFailure) {
       ERR_IO_PENDING,
       handle.Init(ClientSocketPool::GroupId(
                       std::move(endpoint), PRIVACY_MODE_DISABLED,
-                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow),
+                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                      /*disable_cert_network_fetches=*/false),
                   ClientSocketPool::SocketParams::CreateForHttpForTesting(),
                   absl::nullopt /* proxy_annotation_tag */, kDefaultPriority,
                   SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
@@ -1270,7 +1272,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, NetworkAnonymizationKey) {
   ClientSocketPool::GroupId group_id(
       url::SchemeHostPort(url::kHttpScheme, "www.google.com", 80),
       PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkAnonymizationKey,
-      SecureDnsPolicy::kAllow);
+      SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
   EXPECT_THAT(
       handle.Init(group_id, params_, absl::nullopt /* proxy_annotation_tag */,
                   kDefaultPriority, SocketTag(),

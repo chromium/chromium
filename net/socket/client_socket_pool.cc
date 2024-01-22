@@ -78,14 +78,16 @@ ClientSocketPool::GroupId::GroupId(
     url::SchemeHostPort destination,
     PrivacyMode privacy_mode,
     NetworkAnonymizationKey network_anonymization_key,
-    SecureDnsPolicy secure_dns_policy)
+    SecureDnsPolicy secure_dns_policy,
+    bool disable_cert_network_fetches)
     : destination_(std::move(destination)),
       privacy_mode_(privacy_mode),
       network_anonymization_key_(
           NetworkAnonymizationKey::IsPartitioningEnabled()
               ? std::move(network_anonymization_key)
               : NetworkAnonymizationKey()),
-      secure_dns_policy_(secure_dns_policy) {
+      secure_dns_policy_(secure_dns_policy),
+      disable_cert_network_fetches_(disable_cert_network_fetches) {
   DCHECK(destination_.IsValid());
 
   // ClientSocketPool only expected to be used for HTTP/HTTPS/WS/WSS cases, and
@@ -125,6 +127,10 @@ std::string ClientSocketPool::GroupId::ToString() const {
     case SecureDnsPolicy::kBootstrap:
       result = "dns_bootstrap/" + result;
       break;
+  }
+
+  if (disable_cert_network_fetches_) {
+    result = "disable_cert_network_fetches/" + result;
   }
 
   return result;
@@ -212,7 +218,8 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
       socket_params->ssl_config_for_origin(), alpn_mode, force_tunnel,
       group_id.privacy_mode(), resolution_callback, request_priority,
       socket_tag, group_id.network_anonymization_key(),
-      group_id.secure_dns_policy(), common_connect_job_params_, delegate);
+      group_id.secure_dns_policy(), group_id.disable_cert_network_fetches(),
+      common_connect_job_params_, delegate);
 }
 
 }  // namespace net

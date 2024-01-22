@@ -109,9 +109,11 @@ int InitSocketPoolHelper(
                                    session->params().testing_fixed_https_port);
   }
 
+  bool disable_cert_network_fetches =
+      !!(request_load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
   ClientSocketPool::GroupId connection_group(
       std::move(endpoint), privacy_mode, std::move(network_anonymization_key),
-      secure_dns_policy);
+      secure_dns_policy, disable_cert_network_fetches);
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       CreateSocketParams(connection_group, ssl_config_for_origin);
 

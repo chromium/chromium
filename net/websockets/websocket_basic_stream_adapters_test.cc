@@ -141,7 +141,7 @@ class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
         ClientSocketPool::GroupId(
             url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
             PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-            SecureDnsPolicy::kAllow),
+            SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
         socks_params, /*proxy_annotation_tag=*/TRAFFIC_ANNOTATION_FOR_TESTS,
         MEDIUM, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
         callback.callback(), ClientSocketPool::ProxyAuthCallback(),

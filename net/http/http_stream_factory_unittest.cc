@@ -407,12 +407,12 @@ ClientSocketPool::GroupId GetGroupId(const TestCase& test) {
     return ClientSocketPool::GroupId(
         url::SchemeHostPort(url::kHttpsScheme, "www.google.com", 443),
         PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-        SecureDnsPolicy::kAllow);
+        SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
   }
   return ClientSocketPool::GroupId(
       url::SchemeHostPort(url::kHttpScheme, "www.google.com", 80),
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-      SecureDnsPolicy::kAllow);
+      SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
 }
 
 class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
@@ -439,7 +439,7 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
         url::SchemeHostPort(url::kHttpsScheme,
                             "unexpected.to.conflict.with.anything.test", 9999),
         PrivacyMode::PRIVACY_MODE_ENABLED, NetworkAnonymizationKey(),
-        SecureDnsPolicy::kAllow);
+        SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
   }
 
   int RequestSocket(
@@ -1782,7 +1782,8 @@ TEST_F(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
             std::move(ssl_config_for_origin));
     ClientSocketPool::GroupId group_id(
         destination, PrivacyMode::PRIVACY_MODE_DISABLED,
-        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        /*disable_cert_network_fetches=*/false);
     int rv = connection->Init(
         group_id, socket_params, absl::nullopt /* proxy_annotation_tag */,
         MEDIUM, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,

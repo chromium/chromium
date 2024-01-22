@@ -293,7 +293,8 @@ TEST_F(HttpsWithDnsOverHttpsTest, EndToEnd) {
 
   ClientSocketPool::GroupId group_id(
       url::SchemeHostPort(request_info.url), PrivacyMode::PRIVACY_MODE_DISABLED,
-      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/false);
   EXPECT_EQ(network_session
                 ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
                                 ProxyChain::Direct())

@@ -15221,7 +15221,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           false,
       },
       {
@@ -15230,7 +15230,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpScheme, "[2001:1418:13:1::25]", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           false,
       },
 
@@ -15241,7 +15241,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           true,
       },
       {
@@ -15251,7 +15251,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "[2001:1418:13:1::25]",
                                   443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           true,
       },
       {
@@ -15261,7 +15261,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "host.with.alternate",
                                   443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           true,
       },
   };
@@ -15299,7 +15299,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           false,
       },
 
@@ -15310,7 +15310,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           true,
       },
 
@@ -15321,7 +15321,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "host.with.alternate",
                                   443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           true,
       },
   };
@@ -15359,7 +15359,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           false,
       },
       {
@@ -15368,7 +15368,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           false,
       },
 
@@ -15379,7 +15379,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           true,
       },
       {
@@ -15388,7 +15388,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           true,
       },
 
@@ -15399,7 +15399,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "host.with.alternate",
                                   443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-              SecureDnsPolicy::kAllow),
+              SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
           true,
       },
   };
@@ -18602,7 +18602,7 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   const ClientSocketPool::GroupId kSocketGroup(
       url::SchemeHostPort(url::kHttpScheme, "www.example.com", 80),
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-      SecureDnsPolicy::kAllow);
+      SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
 
   // First round of authentication.
   auth_handler_ptr->SetGenerateExpectation(false, OK);
