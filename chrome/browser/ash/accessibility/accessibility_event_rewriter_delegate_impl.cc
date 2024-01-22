@@ -20,7 +20,6 @@
 #include "extensions/common/constants.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/event.h"
-#include "ui/events/event_constants.h"
 
 namespace ash {
 namespace {
@@ -93,9 +92,6 @@ void AccessibilityEventRewriterDelegateImpl::DispatchMouseEvent(
     std::unique_ptr<ui::Event> event) {
   ax::mojom::Event event_type;
 
-  bool is_synthesized = event->IsSynthesized() ||
-                        event->source_device_id() == ui::ED_UNKNOWN_DEVICE;
-
   switch (event->type()) {
     case ui::ET_MOUSE_MOVED:
       event_type = ax::mojom::Event::kMouseMoved;
@@ -108,8 +104,7 @@ void AccessibilityEventRewriterDelegateImpl::DispatchMouseEvent(
       return;
   }
 
-  AutomationManagerAura::GetInstance()->HandleEvent(
-      event_type, /*from_user=*/!is_synthesized);
+  AutomationManagerAura::GetInstance()->HandleEvent(event_type);
 }
 
 void AccessibilityEventRewriterDelegateImpl::SendSwitchAccessCommand(

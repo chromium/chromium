@@ -661,7 +661,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
   AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
 
   // Call some methods while disabled, before the first enable.
-  manager->HandleEvent(ax::mojom::Event::kFocus, /*from_user=*/true);
+  manager->HandleEvent(ax::mojom::Event::kFocus);
   manager->HandleAlert("hello");
   manager->PerformAction(ui::AXActionData());
   manager->OnChildWindowRemoved(nullptr);
@@ -671,12 +671,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
   manager->Disable();
 
   // Make the same calls again. We should never crash.
-  manager->HandleEvent(ax::mojom::Event::kFocus, /*from_user=*/true);
-  manager->HandleAlert("hello");
-  manager->PerformAction(ui::AXActionData());
-  manager->OnChildWindowRemoved(nullptr);
-
-  manager->HandleEvent(ax::mojom::Event::kMouseMoved, /*from_user=*/false);
+  manager->HandleEvent(ax::mojom::Event::kFocus);
   manager->HandleAlert("hello");
   manager->PerformAction(ui::AXActionData());
   manager->OnChildWindowRemoved(nullptr);

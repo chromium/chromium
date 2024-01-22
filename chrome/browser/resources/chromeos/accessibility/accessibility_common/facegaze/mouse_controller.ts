@@ -43,7 +43,6 @@ export class MouseController {
   private lastLandmarkLocation_: FloatingPoint2D|undefined;
 
   private mouseInterval_: number = -1;
-  private lastMouseMovedTime_: number = 0;
 
   constructor() {
     this.onMouseMovedHandler_ = new EventHandler(
@@ -175,12 +174,7 @@ export class MouseController {
           this.screenBounds_.top),
     };
 
-    // Only update if it's been long enough since the last time the user
-    // touched their physical mouse or trackpad.
-    if (new Date().getTime() - this.lastMouseMovedTime_ >
-        MouseController.IGNORE_UPDATES_AFTER_MOUSE_MOVE_MS) {
-      chrome.accessibilityPrivate.setCursorPosition(this.mouseLocation_);
-    }
+    chrome.accessibilityPrivate.setCursorPosition(this.mouseLocation_);
   }
 
   private addPointToBuffer_(point: FloatingPoint2D): void {
@@ -237,12 +231,7 @@ export class MouseController {
   /** Listener for when the mouse position changes. */
   private onMouseMovedOrDragged_(event: chrome.automation.AutomationEvent):
       void {
-    if (event.eventFrom === 'user') {
-      // Mouse changes that aren't synthesized should actually move the mouse.
-      // Assume all synthesized mouse movements come from within FaceGaze.
-      this.mouseLocation_ = {x: event.mouseX, y: event.mouseY};
-      this.lastMouseMovedTime_ = new Date().getTime();
-    }
+    this.mouseLocation_ = {x: event.mouseX, y: event.mouseY};
   }
 
   /**
@@ -303,9 +292,7 @@ export namespace MouseController {
   export const FOREHEAD_LANDMARK_INDEX = 8;
 
   /** How frequently to run the mouse movement logic. */
-  export const MOUSE_INTERVAL_MS = 16;
-
-  // TODO(b/309121742): These constants could become prefs.
+  export const MOUSE_INTERVAL_MS = 30;
 
   /**
    * How long to wait after the user moves the mouse with a physical device
@@ -313,6 +300,7 @@ export namespace MouseController {
    */
   export const IGNORE_UPDATES_AFTER_MOUSE_MOVE_MS = 500;
 
+  // TODO(b/309121742): These constants should become prefs.
   export const BUFFER_SIZE = 6;
   export const SPD_RIGHT = 20;
   export const SPD_LEFT = 20;
