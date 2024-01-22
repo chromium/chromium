@@ -2907,7 +2907,10 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
     // because we don't need to communicate the actual ordering as the code all
     // assumes the native skia format.
     raster_caps_.tile_format = viz::SinglePlaneFormat::kRGBA_8888;
-    raster_caps_.ui_rgba_format = viz::SinglePlaneFormat::kRGBA_8888;
+    raster_caps_.ui_rgba_format =
+        layer_tree_frame_sink_->shared_image_interface()
+            ? viz::SinglePlaneFormat::kBGRA_8888
+            : viz::SinglePlaneFormat::kRGBA_8888;
     return;
   }
 
@@ -4666,8 +4669,8 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping;
   viz::SharedBitmapId shared_bitmap_id;
   bool overlay_candidate = false;
-  bool use_shared_image =
-      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
+  // Use sharedImage for software composition;
+  bool use_shared_image = layer_tree_frame_sink_->shared_image_interface();
 
   if (layer_tree_frame_sink_->context_provider()) {
     viz::RasterContextProvider* context_provider =
