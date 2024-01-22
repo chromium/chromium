@@ -913,8 +913,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ServiceWorker.LoadTiming.Subresource.
-          AutoPreloadResponseReceivedToFetchHandlerEnd.{ServiceWorkerFetchResponseFromName}"
+    name="ServiceWorker.LoadTiming.Subresource.AutoPreloadResponseReceivedToFetchHandlerEnd.{ServiceWorkerFetchResponseFromName}"
     units="ms" expires_after="2024-06-01">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
