@@ -124,6 +124,7 @@ public class ChromeCachedFlags {
                         TabUiFeatureUtilities.DISABLE_DRAG_TO_NEW_INSTANCE_DD,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                         ToolbarFeatures.DTC_TRANSITION_THRESHOLD_DP,
+                        ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM,
                         VersionNumberGetter.MIN_SDK_VERSION,
                         MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK,
                         MinimizedFeatureUtils.ICON_VARIANT,

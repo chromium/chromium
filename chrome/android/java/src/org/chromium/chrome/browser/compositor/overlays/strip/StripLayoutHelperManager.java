@@ -64,6 +64,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -124,6 +126,7 @@ public class StripLayoutHelperManager
     private static final float MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP = 12.f;
     private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
 
+    // Tab strip transition constants.
     @VisibleForTesting
     static final Interpolator TAB_STRIP_TRANSITION_INTERPOLATOR =
             Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR;
@@ -157,11 +160,13 @@ public class StripLayoutHelperManager
     private boolean mBrowserScrimShowing;
     private boolean mIsHidden;
     private boolean mIsTransitioning;
+    private final ToolbarManager mToolbarManager;
     private TabStripSceneLayer mTabStripTreeProvider;
     private TabStripEventHandler mTabStripEventHandler;
     private TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
     private final ViewStub mTabHoverCardViewStub;
     private float mModelSelectorWidth;
+
     // 3-dots menu button with tab strip end padding
     private float mStripEndPadding;
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
@@ -323,7 +328,7 @@ public class StripLayoutHelperManager
      * @param tabHoverCardViewStub The {@link ViewStub} representing the strip tab hover card.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param browserControlsStateProvider @{@link BrowserControlsStateProvider} for drag drop.
-     * @param tabStripHeightSupplier Supplier for the tab strip height.
+     * @param toolbarManager The {@link ToolbarManager} instance.
      */
     public StripLayoutHelperManager(
             Context context,
@@ -340,7 +345,9 @@ public class StripLayoutHelperManager
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull WindowAndroid windowAndroid,
-            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
+            // TODO(crbug.com/1498252): Avoid passing the ToolbarManager instance. Potentially
+            // implement an interface to manage strip transition states.
+            @NonNull ToolbarManager toolbarManager) {
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mTabStripTreeProvider = new TabStripSceneLayer(context);
@@ -439,8 +446,10 @@ public class StripLayoutHelperManager
                             dragDropDelegate,
                             browserControlsStateProvider,
                             windowAndroid,
-                            tabStripHeightSupplier);
+                            toolbarManager.getTabStripHeightSupplier());
         }
+
+        mToolbarManager = toolbarManager;
 
         mNormalHelper =
                 new StripLayoutHelper(
@@ -610,10 +619,16 @@ public class StripLayoutHelperManager
                 yOffset,
                 selectedTabId,
                 hoveredTabId,
-                // TODO(crbug.com/1498252): Use the toolbar background color for scrim.
-                getBackgroundColor(),
+                getStripTransitionScrimColor(),
                 scrimOpacity);
         return mTabStripTreeProvider;
+    }
+
+    private int getStripTransitionScrimColor() {
+        if (!ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM.getValue()) {
+            return getBackgroundColor();
+        }
+        return mToolbarManager.getPrimaryColor();
     }
 
     @Override

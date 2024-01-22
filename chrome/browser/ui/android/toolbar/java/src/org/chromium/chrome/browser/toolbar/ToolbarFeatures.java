@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
@@ -22,6 +23,19 @@ public final class ToolbarFeatures {
                     ChromeFeatureList.DYNAMIC_TOP_CHROME,
                     DTC_TRANSITION_THRESHOLD_DP_PARAM_NAME,
                     DEFAULT_DTC_THRESHOLD_DP);
+
+    private static final String USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM_PARAM =
+            "use_toolbar_bg_color_for_strip_transition_scrim";
+
+    /**
+     * Whether the toolbar bg color will be used as the scrim overlay during a tab strip transition.
+     */
+    public static final BooleanCachedFieldTrialParameter
+            USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM =
+                    ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                            ChromeFeatureList.DYNAMIC_TOP_CHROME,
+                            USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM_PARAM,
+                            false);
 
     /** Private constructor to avoid instantiation. */
     private ToolbarFeatures() {}

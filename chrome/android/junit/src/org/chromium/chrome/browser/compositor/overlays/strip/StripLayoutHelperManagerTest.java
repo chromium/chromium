@@ -70,6 +70,8 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
@@ -105,11 +107,13 @@ public class StripLayoutHelperManagerTest {
     @Mock private ObservableSupplierImpl<TabContentManager> mTabContentManagerSupplier;
     @Mock private BrowserControlsStateProvider mBrowserControlStateProvider;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ToolbarManager mToolbarManager;
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
     private Context mContext;
     private ObservableSupplierImpl<TabModelStartupInfo> mTabModelStartupInfoSupplier;
     private ObservableSupplierImpl<Integer> mTabStripHeightSupplier;
+    private int mToolbarPrimaryColor;
     private static final float SCREEN_WIDTH = 800.f;
     private static final float SCREEN_HEIGHT = 1600.f;
     private static final float VISIBLE_VIEWPORT_Y = 200.f;
@@ -127,6 +131,8 @@ public class StripLayoutHelperManagerTest {
                         R.style.Theme_BrowserUI_DayNight);
         when(mToolbarContainerView.getContext()).thenReturn(mContext);
         TabStripSceneLayer.setTestFlag(true);
+        ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM.setForTesting(true);
+
         initializeTest();
     }
 
@@ -143,6 +149,9 @@ public class StripLayoutHelperManagerTest {
 
         mTabStripHeightSupplier = new ObservableSupplierImpl<>();
         mTabStripHeightSupplier.set(TAB_STRIP_HEIGHT_PX);
+        mToolbarPrimaryColor = SemanticColorUtils.getToolbarBackgroundPrimary(mContext);
+        when(mToolbarManager.getTabStripHeightSupplier()).thenReturn(mTabStripHeightSupplier);
+        when(mToolbarManager.getPrimaryColor()).thenReturn(mToolbarPrimaryColor);
 
         mStripLayoutHelperManager =
                 new StripLayoutHelperManager(
@@ -160,7 +169,7 @@ public class StripLayoutHelperManagerTest {
                         mTabContentManagerSupplier,
                         mBrowserControlStateProvider,
                         mWindowAndroid,
-                        mTabStripHeightSupplier);
+                        mToolbarManager);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
     }
 
@@ -495,7 +504,7 @@ public class StripLayoutHelperManagerTest {
                         0f,
                         selectedTabId,
                         hoveredTabId,
-                        mStripLayoutHelperManager.getBackgroundColor(),
+                        mToolbarPrimaryColor,
                         0.f);
     }
 
@@ -559,8 +568,8 @@ public class StripLayoutHelperManagerTest {
                         /* yOffset= */ eq(yOffset),
                         anyInt(),
                         anyInt(),
-                        /* scrimOpacity= */ eq(mStripLayoutHelperManager.getBackgroundColor()),
-                        eq(0f));
+                        eq(mToolbarPrimaryColor),
+                        /* scrimOpacity= */ eq(0f));
 
         // With tab strip transition, the yOffset will be forced to be 0.
         mTabStripHeightSupplier.set(0);
@@ -580,8 +589,8 @@ public class StripLayoutHelperManagerTest {
                         /* yOffset= */ eq(0f),
                         anyInt(),
                         anyInt(),
-                        /* scrimOpacity= */ eq(mStripLayoutHelperManager.getBackgroundColor()),
-                        eq(expectedOpacity));
+                        eq(mToolbarPrimaryColor),
+                        /* scrimOpacity= */ eq(expectedOpacity));
 
         // With tab strip transition finished, the yOffset will be forced to be the negative of the
         // tab strip height.
@@ -597,72 +606,19 @@ public class StripLayoutHelperManagerTest {
                         /* yOffset= */ eq(yOffset - TAB_STRIP_HEIGHT_PX),
                         anyInt(),
                         anyInt(),
-                        /* scrimOpacity= */ eq(mStripLayoutHelperManager.getBackgroundColor()),
-                        eq(0f));
+                        eq(mToolbarPrimaryColor),
+                        /* scrimOpacity= */ eq(0f));
     }
 
     @Test
-    public void testTabStripTransition_Show() {
-        // Assume tab strip is hidden from the beginning.
-        mTabStripHeightSupplier.set(0);
-        mStripLayoutHelperManager.onHeightChanged(0);
-        mStripLayoutHelperManager.onTransitionFinished();
-        mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
+    public void testTabStripTransition_Show_ScrimUsesToolbarBgColor() {
+        doTestTabStripTransition_Show(mToolbarPrimaryColor);
+    }
 
-        // The yOffset will be forced to be reduced by the tab strip height to be kept invisible.
-        float yOffset = -10;
-        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
-        verify(mTabStripTreeProvider)
-                .pushAndUpdateStrip(
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        /* yOffset= */ eq(yOffset - TAB_STRIP_HEIGHT_PX),
-                        anyInt(),
-                        anyInt(),
-                        /* scrimOpacity= */ eq(mStripLayoutHelperManager.getBackgroundColor()),
-                        eq(0f));
-
-        // With tab strip transition, the yOffset will be forced to be 0.
-        mTabStripHeightSupplier.set(TAB_STRIP_HEIGHT_PX);
-        mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX);
-        float progress =
-                0.25f; // 1 - (TAB_STRIP_HEIGHT+yOffset) / TAB_STRIP_HEIGHT = 1 - 30 / 40 = 0.25f
-        float expectedOpacity =
-                StripLayoutHelperManager.TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(
-                        progress);
-        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
-        verify(mTabStripTreeProvider)
-                .pushAndUpdateStrip(
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        /* yOffset= */ eq(0f),
-                        anyInt(),
-                        anyInt(),
-                        /* scrimOpacity= */ eq(mStripLayoutHelperManager.getBackgroundColor()),
-                        eq(expectedOpacity));
-
-        // When transition finished while tabs strip showing, yOffset will be forwarded to cc
-        // correctly.
-        mStripLayoutHelperManager.onTransitionFinished();
-        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
-        verify(mTabStripTreeProvider)
-                .pushAndUpdateStrip(
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        /* yOffset= */ eq(yOffset),
-                        anyInt(),
-                        anyInt(),
-                        /* scrimOpacity= */ eq(mStripLayoutHelperManager.getBackgroundColor()),
-                        eq(0f));
+    @Test
+    public void testTabStripTransition_Show_ScrimUsesStripBgColor() {
+        ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM.setForTesting(false);
+        doTestTabStripTransition_Show(mStripLayoutHelperManager.getBackgroundColor());
     }
 
     @Test
@@ -709,5 +665,68 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onTransitionFinished();
         mStripLayoutHelperManager.getVirtualViews(views);
         assertFalse("Views are not empty after tab strip transition.", views.isEmpty());
+    }
+
+    private void doTestTabStripTransition_Show(int scrimColor) {
+        // Assume tab strip is hidden from the beginning.
+        mTabStripHeightSupplier.set(0);
+        mStripLayoutHelperManager.onHeightChanged(0);
+        mStripLayoutHelperManager.onTransitionFinished();
+        mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
+
+        // The yOffset will be forced to be reduced by the tab strip height to be kept invisible.
+        float yOffset = -10;
+        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
+                new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
+        verify(mTabStripTreeProvider)
+                .pushAndUpdateStrip(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        /* yOffset= */ eq(yOffset - TAB_STRIP_HEIGHT_PX),
+                        anyInt(),
+                        anyInt(),
+                        eq(scrimColor),
+                        /* scrimOpacity= */ eq(0f));
+
+        // With tab strip transition, the yOffset will be forced to be 0.
+        mTabStripHeightSupplier.set(TAB_STRIP_HEIGHT_PX);
+        mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX);
+        float progress =
+                0.25f; // 1 - (TAB_STRIP_HEIGHT+yOffset) / TAB_STRIP_HEIGHT = 1 - 30 / 40 = 0.25f
+        float expectedOpacity =
+                StripLayoutHelperManager.TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(
+                        progress);
+        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
+                new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
+        verify(mTabStripTreeProvider)
+                .pushAndUpdateStrip(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        /* yOffset= */ eq(0f),
+                        anyInt(),
+                        anyInt(),
+                        eq(scrimColor),
+                        /* scrimOpacity= */ eq(expectedOpacity));
+
+        // When transition finished while tabs strip showing, yOffset will be forwarded to cc
+        // correctly.
+        mStripLayoutHelperManager.onTransitionFinished();
+        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
+                new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
+        verify(mTabStripTreeProvider)
+                .pushAndUpdateStrip(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        /* yOffset= */ eq(yOffset),
+                        anyInt(),
+                        anyInt(),
+                        eq(scrimColor),
+                        /* scrimOpacity= */ eq(0f));
     }
 }
