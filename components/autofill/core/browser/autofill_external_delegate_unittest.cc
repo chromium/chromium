@@ -263,7 +263,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
   MOCK_METHOD(void,
               UndoAutofill,
               (mojom::ActionPersistence action_persistence,
-               FormData form,
+               const FormData& form,
                const FormFieldData& trigger_field),
               (override));
   MOCK_METHOD(void,

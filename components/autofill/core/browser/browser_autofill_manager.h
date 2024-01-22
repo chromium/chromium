@@ -155,11 +155,9 @@ class BrowserAutofillManager : public AutofillManager {
                                   const std::u16string& value,
                                   PopupItemId popup_item_id);
 
-  // Reverts the last autofill operation on `form` that affected
-  // `trigger_field`, virtual for testing. `renderer_action` denotes whether
-  // this is an actual filling or a preview operation on the renderer side.
+  // Calls UndoAutofillImpl and logs metrics. Virtual for testing.
   virtual void UndoAutofill(mojom::ActionPersistence action_persistence,
-                            FormData form,
+                            const FormData& form,
                             const FormFieldData& trigger_field);
   // Virtual for testing
   virtual void DidShowSuggestions(
@@ -499,6 +497,14 @@ class BrowserAutofillManager : public AutofillManager {
   // Gets the profile referred to by the guid |unique_id|. Returns |nullptr| if
   // profile does not exist.
   AutofillProfile* GetProfile(Suggestion::BackendId unique_id);
+
+  // Reverts the last autofill operation on `form` that affected
+  // `trigger_field`. `renderer_action` denotes whether this is an actual
+  // filling or a preview operation on the renderer side. Returns the filling
+  // product of the operation being undone.
+  FillingProduct UndoAutofillImpl(mojom::ActionPersistence action_persistence,
+                                  FormData form,
+                                  const FormFieldData& trigger_field);
 
   // Fills or previews |data_model| in the |form|.
   // TODO(crbug.com/1330108): Clean up the API.
