@@ -471356,6 +471356,13 @@
        {}
       ]
      ],
+     "no-crash-view-transition-in-massive-iframe.html": [
+      "c004a94dcbb62f1147f02342f61d4a3baaf516e6",
+      [
+       null,
+       {}
+      ]
+     ],
      "no-css-animation-while-render-blocked.html": [
       "ae9cfda9bb079da8ea298a43b939b286c93ad3c4",
       [
@@ -604935,6 +604942,15 @@
      ],
      [
       "pointerevents/pointerup_after_pointerdown_target_removed.html?touch",
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointerup_button_value_matches_corresponding_pointerdown.html": [
+     "1fb13f37d40f7aae9d5afa042f41fb517b8f3879",
+     [
+      null,
       {
        "testdriver": true
       }
