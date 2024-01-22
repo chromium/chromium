@@ -83,8 +83,17 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
-                       PreventCloseEnforedByPolicyTabbedAppShallBeClosable) {
+// TODO(b/321593065): enable this flaky test.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable \
+  DISABLED_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
+#else
+#define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable \
+  PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
+#endif
+IN_PROC_BROWSER_TEST_F(
+    UnloadControllerPreventCloseTest,
+    MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable) {
 #if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::features::IsCrosShortstandEnabled()) {
     GTEST_SKIP()
