@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/data_model/autofill_address_component_store.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component_store.h"
 
 namespace autofill {
 
