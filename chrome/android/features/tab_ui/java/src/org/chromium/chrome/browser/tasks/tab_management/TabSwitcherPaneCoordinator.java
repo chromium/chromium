@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.PANE_KEYS;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.util.Size;
 import android.view.View;
@@ -89,6 +90,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param isAnimatingSupplier Whether the pane is animating into or out of view.
      * @param onTabClickCallback Callback to invoke when a tab is clicked.
      * @param mode The {@link TabListMode} to use.
+     * @param supportsEmptyState Whether empty state UI should be shown when the model is empty.
      */
     public TabSwitcherPaneCoordinator(
             @NonNull Activity activity,
@@ -109,7 +111,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             @NonNull ObservableSupplier<Boolean> isVisibleSupplier,
             @NonNull ObservableSupplier<Boolean> isAnimatingSupplier,
             @NonNull Callback<Integer> onTabClickCallback,
-            @TabListMode int mode) {
+            @TabListMode int mode,
+            boolean supportsEmptyState) {
         mProfileProviderSupplier = profileProviderSupplier;
         mIsVisibleSupplier = isVisibleSupplier;
         isVisibleSupplier.addObserver(mOnVisibilityChanged);
@@ -191,10 +194,14 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                         COMPONENT_NAME,
                         /* rootView= */ parentView,
                         /* onModelTokenChange= */ null,
-                        /* hasEmptyView= */ true,
-                        emptyImageResId,
-                        R.string.tabswitcher_no_tabs_empty_state,
-                        R.string.tabswitcher_no_tabs_open_to_visit_different_pages);
+                        /* hasEmptyView= */ supportsEmptyState,
+                        supportsEmptyState ? emptyImageResId : Resources.ID_NULL,
+                        supportsEmptyState
+                                ? R.string.tabswitcher_no_tabs_empty_state
+                                : Resources.ID_NULL,
+                        supportsEmptyState
+                                ? R.string.tabswitcher_no_tabs_open_to_visit_different_pages
+                                : Resources.ID_NULL);
         mTabListCoordinator = tabListCoordinator;
 
         TabListRecyclerView recyclerView = tabListCoordinator.getContainerView();

@@ -176,7 +176,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         mIsVisibleSupplier,
                         mIsAnimatingSupplier,
                         mOnTabClickedCallback,
-                        TabListMode.GRID);
+                        TabListMode.GRID,
+                        /* supportsEmptyState= */ true);
 
         mCoordinator.initWithNative();
 

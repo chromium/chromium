@@ -135,7 +135,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                 isVisibleSupplier,
                 isAnimatingSupplier,
                 onTabClickCallback,
-                mMode);
+                mMode,
+                /* supportsEmptyState= */ !isIncognito);
     }
 
     /** Returns the {@link TabListMode} of the produced {@link TabListCoordinator}s. */
