@@ -1368,8 +1368,8 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   if (ash::features::IsPeripheralCustomizationEnabled() ||
       ::features::IsShortcutCustomizationEnabled()) {
     Shell::Get()->shortcut_input_handler()->Initialize();
-    Shell::Get()->modifier_key_combo_recorder()->Initialize();
   }
+  Shell::Get()->modifier_key_combo_recorder()->Initialize();
 
   // Enable the KeyboardDrivenEventRewriter if the OEM manifest flag is on.
   if (system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation()) {

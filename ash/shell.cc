@@ -1373,10 +1373,7 @@ void Shell::Init(
   keyboard_modifier_metrics_recorder_ =
       std::make_unique<KeyboardModifierMetricsRecorder>();
   event_rewriter_controller_ = std::make_unique<EventRewriterControllerImpl>();
-  if (features::IsPeripheralCustomizationEnabled() ||
-      ::features::IsShortcutCustomizationEnabled()) {
-    modifier_key_combo_recorder_ = std::make_unique<ModifierKeyComboRecorder>();
-  }
+  modifier_key_combo_recorder_ = std::make_unique<ModifierKeyComboRecorder>();
 
   env_filter_ = std::make_unique<::wm::CompoundEventFilter>();
   AddPreTargetHandler(env_filter_.get());

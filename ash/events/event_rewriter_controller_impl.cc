@@ -85,13 +85,9 @@ void EventRewriterControllerImpl::Initialize(
         peripheral_customization_event_rewriter.get();
   }
 
-  std::unique_ptr<PrerewrittenEventForwarder> prerewritten_event_forwarder;
-  if (features::IsPeripheralCustomizationEnabled() ||
-      ::features::IsShortcutCustomizationEnabled()) {
-    prerewritten_event_forwarder =
-        std::make_unique<PrerewrittenEventForwarder>();
-    prerewritten_event_forwarder_ = prerewritten_event_forwarder.get();
-  }
+  std::unique_ptr<PrerewrittenEventForwarder> prerewritten_event_forwarder =
+      std::make_unique<PrerewrittenEventForwarder>();
+  prerewritten_event_forwarder_ = prerewritten_event_forwarder.get();
 
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter =
       std::make_unique<AccessibilityEventRewriter>(
@@ -102,8 +98,8 @@ void EventRewriterControllerImpl::Initialize(
   if (features::IsPeripheralCustomizationEnabled() ||
       ::features::IsShortcutCustomizationEnabled()) {
     AddEventRewriter(std::move(peripheral_customization_event_rewriter));
-    AddEventRewriter(std::move(prerewritten_event_forwarder));
   }
+  AddEventRewriter(std::move(prerewritten_event_forwarder));
   AddEventRewriter(std::move(accessibility_event_rewriter));
   AddEventRewriter(std::move(keyboard_driven_event_rewriter));
   AddEventRewriter(std::move(keyboard_device_id_event_rewriter));
