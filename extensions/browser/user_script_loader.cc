@@ -507,10 +507,28 @@ UserScriptLoader::SendUpdateResult UserScriptLoader::SendUpdate(
     std::string owner_host;
     bool found_owner = WebViewRendererState::GetInstance()->GetOwnerInfo(
         process->GetID(), /*owner_process_id=*/nullptr, &owner_host);
-
     DCHECK(found_owner);
-    if (owner_host != host_id().id) {
-      return SendUpdateResult::kNoActionTaken;
+
+    // Keep this check in sync with the approach and formatting in:
+    // - UserScriptLoader's HostID, created in |GenerateHostIDFromEmbedder()|
+    // - ScriptContextSet's HostID, created in |ScriptContextSet::Register()|
+    // - GuestView's owner host, set in |GuestViewBase::SetOwnerHost()|
+    switch (host_id().type) {
+      case mojom::HostID::HostType::kExtensions:
+      case mojom::HostID::HostType::kWebUi:
+      case mojom::HostID::HostType::kControlledFrameEmbedder:
+        // For extensions, |owner_host| will be the extension ID.
+        // For WebUI, |owner_host| will be the full owning RFH's URL spec,
+        // including trailing slash.
+        // For Controlled Frame embedders, |owner_host| will be a serialized
+        // form of the embedder's origin, using scheme, host, port [if
+        // applicable] tuple in origin form. No trailing slash.
+        // TODO(crbug.com/1517391): Use an actual Origin object in the
+        // Controlled Frame comparison rather than a serialized Origin.
+        if (owner_host != host_id().id) {
+          return SendUpdateResult::kNoActionTaken;
+        }
+        break;
     }
   }
 
