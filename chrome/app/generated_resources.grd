@@ -3956,9 +3956,6 @@ are declared in tools/grit/grit_rule.gni.
       </message>
 
       <!-- User Bypass Bubble -->
-      <message name="IDS_COOKIE_CONTROLS_TOOLTIP" desc="Tooltip shown on a page action icon that is shown when cookie blocking is enabled.">
-        Third-party cookie blocking
-      </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are blocked.">
         Third-party cookies blocked
       </message>

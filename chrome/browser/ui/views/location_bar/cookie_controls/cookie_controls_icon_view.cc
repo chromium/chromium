@@ -98,10 +98,6 @@ CookieControlsIconView::CookieControlsIconView(
   CHECK(browser_);
   SetUpForInOutAnimation(/*duration=*/base::Seconds(12));
   SetPaintLabelOverSolidBackground(true);
-  // TODO(b/320544982): Remove this call.
-  SetAccessibilityProperties(
-      /*role*/ std::nullopt,
-      l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP));
   SetProperty(views::kElementIdentifierKey, kCookieControlsIconElementId);
 
   bubble_coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
