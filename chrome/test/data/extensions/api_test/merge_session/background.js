@@ -17,7 +17,7 @@ function initGlobals() {
 // Starts XHR requests - one for google.com and one later for non-google.
 function startXHRRequests(
     googlePageUrl, googlePageCheckCallback, nonGooglePageUrl,
-    nonGooglePageCheckCallback, is_async, should_throttle) {
+    nonGooglePageCheckCallback, is_async) {
   // Kick off google XHR first.
   var xhr = new XMLHttpRequest();
 
@@ -35,8 +35,7 @@ function startXHRRequests(
     switch (xhr.readyState) {
       case XMLHttpRequest.OPENED:
         startNonGoogleXHRRequests(
-            nonGooglePageUrl, nonGooglePageCheckCallback, is_async,
-            should_throttle);
+            nonGooglePageUrl, nonGooglePageCheckCallback, is_async);
         break;
       case XMLHttpRequest.DONE:
         validateResponse();
@@ -53,7 +52,7 @@ function startXHRRequests(
 }
 
 function startNonGoogleXHRRequests(
-    nonGooglePageUrl, nonGooglePageCheckCallback, is_async, should_throttle) {
+    nonGooglePageUrl, nonGooglePageCheckCallback, is_async) {
   // Kick off non-google XHR next.
   var xhr = new XMLHttpRequest();
 
@@ -103,13 +102,12 @@ function nonGooglePageCheck() {
 }
 
 // Performs test that will verify if XHR request had completed prematurely.
-function startThrottledTests(
-    googlePageUrl, nonGooglePageUrl, is_async, should_throttle) {
+function startThrottledTests(googlePageUrl, nonGooglePageUrl, is_async) {
   chrome.test.runTests([function testXHRThrottle() {
     initGlobals();
     startXHRRequests(
         googlePageUrl, googlePageCheck, nonGooglePageUrl, nonGooglePageCheck,
-        is_async, should_throttle);
+        is_async);
   }]);
   return true;
 }

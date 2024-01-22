@@ -984,11 +984,10 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, Throttle) {
 
   // Kick off XHR request from the extension.
   JsExpectOnBackgroundPageAsync(
-      ext->id(), base::StringPrintf("startThrottledTests('%s', '%s', %s, %s)",
+      ext->id(), base::StringPrintf("startThrottledTests('%s', '%s', %s)",
                                     fake_google_page_url_.spec().c_str(),
                                     non_google_page_url_.spec().c_str(),
-                                    BoolToString(do_async_xhr()),
-                                    BoolToString(/*should_throttle=*/true)));
+                                    BoolToString(do_async_xhr())));
   ExtensionTestMessageListener listener("Both XHR's Opened");
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
@@ -1053,11 +1052,10 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, MAYBE_XHRNotThrottled) {
 
   // Kick off XHR request from the extension.
   JsExpectOnBackgroundPage(
-      ext->id(),
-      base::StringPrintf("startThrottledTests('%s', '%s', %s, %s)",
-                         fake_google_page_url_.spec().c_str(),
-                         non_google_page_url_.spec().c_str(),
-                         BoolToString(do_async_xhr()), BoolToString(false)));
+      ext->id(), base::StringPrintf("startThrottledTests('%s', '%s', %s)",
+                                    fake_google_page_url_.spec().c_str(),
+                                    non_google_page_url_.spec().c_str(),
+                                    BoolToString(do_async_xhr())));
 
   if (do_async_xhr()) {
     // Verify that we've sent XHR request from the extension side...
@@ -1136,11 +1134,10 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTimeoutTest, XHRMergeTimeout) {
 
   // Kick off XHR request from the extension.
   JsExpectOnBackgroundPageAsync(
-      ext->id(),
-      base::StringPrintf("startThrottledTests('%s', '%s', %s, %s)",
-                         fake_google_page_url_.spec().c_str(),
-                         non_google_page_url_.spec().c_str(),
-                         BoolToString(do_async_xhr()), BoolToString(true)));
+      ext->id(), base::StringPrintf("startThrottledTests('%s', '%s', %s)",
+                                    fake_google_page_url_.spec().c_str(),
+                                    non_google_page_url_.spec().c_str(),
+                                    BoolToString(do_async_xhr())));
 
   if (do_async_xhr()) {
     // Verify that we've sent XHR requests from the extension side...
