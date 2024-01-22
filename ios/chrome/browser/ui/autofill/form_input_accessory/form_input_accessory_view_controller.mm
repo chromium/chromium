@@ -371,6 +371,8 @@
 
 - (void)formSuggestionViewShouldResetFromPull:
     (FormSuggestionView*)formSuggestionView {
+  DCHECK(!IsKeyboardAccessoryUpgradeEnabled());
+
   base::RecordAction(base::UserMetricsAction("ManualFallback_ClosePull"));
   // The pull gesture has the same effect as when the keyboard button is
   // pressed.
