@@ -151,16 +151,6 @@ SplitViewMetricsController::DeviceOrientation GetDeviceOrientation(
              : SplitViewMetricsController::DeviceOrientation::kPortrait;
 }
 
-chromeos::WindowStateType GetOppositeSnapType(aura::Window* window) {
-  CHECK(window);
-  WindowState* window_state = WindowState::Get(window);
-  CHECK(window_state->IsSnapped());
-  return window_state->GetStateType() ==
-                 chromeos::WindowStateType::kPrimarySnapped
-             ? chromeos::WindowStateType::kSecondarySnapped
-             : chromeos::WindowStateType::kPrimarySnapped;
-}
-
 }  // namespace
 
 // static
@@ -680,7 +670,7 @@ void SplitViewMetricsController::MaybeStartOrEndRecordSnapTwoWindowsDuration(
     if (first_snapped_window_ && !first_snapped_time_.is_null() &&
         window_state->window() != first_snapped_window_ &&
         window_state->GetStateType() ==
-            GetOppositeSnapType(first_snapped_window_)) {
+            window_util::GetOppositeSnapType(first_snapped_window_)) {
       // If this is a different window that got snapped on the opposite side,
       // record the duration since `first_snapped_time_`.
       RecordSnapTwoWindowsDuration(base::TimeTicks::Now() -
@@ -733,7 +723,7 @@ void SplitViewMetricsController::MaybeStartOrEndRecordCloseTwoWindowsDuration(
     }
     // If `window` has the opposite state type of `first_closed_state_type_`,
     // record the duration.
-    if (GetOppositeSnapType(window) == first_closed_state_type_ &&
+    if (window_util::GetOppositeSnapType(window) == first_closed_state_type_ &&
         !first_closed_time_.is_null()) {
       RecordCloseTwoWindowsDuration(base::TimeTicks::Now() -
                                     first_closed_time_);

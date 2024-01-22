@@ -6,12 +6,14 @@
 #define ASH_WM_WINDOW_UTIL_H_
 
 #include <stdint.h>
+
 #include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_util.h"
 
@@ -208,7 +210,13 @@ float GetSnapRatioForWindow(aura::Window* window);
 // SplitViewOverviewSession.
 bool IsFasterSplitScreenOrSnapGroupEnabledInClamshell();
 
-// Starts `SplitViewOverviewSession` for `window`, if it wasn't already active.
+// Returns the opposite snap type of a snapped `window`. This will be
+// `kPrimarySnapped` if `window` is `kSecondarySnapped`, or `kSecondarySnapped`
+// if `window` is `kPrimarySnapped`.
+chromeos::WindowStateType GetOppositeSnapType(aura::Window* window);
+
+// Decides whether to start `SplitViewOverviewSession` for `window`, if it
+// wasn't already active, or end Overview if it was.
 void MaybeStartSplitViewOverview(aura::Window* window,
                                  WindowSnapActionSource snap_action_source);
 
