@@ -8,8 +8,11 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/threading/platform_thread.h"
+#include "components/country_codes/country_codes.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -25,6 +28,10 @@ class TemplateURLServiceUnitTest : public testing::Test {
     search_engine_choice_service_ =
         std::make_unique<search_engines::SearchEngineChoiceService>(
             pref_service_);
+    // Bypass the country checks.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kSearchEngineChoiceCountry,
+        country_codes::kCountryCodeUnknown);
 
     template_url_service_ = std::make_unique<TemplateURLService>(
         &pref_service_, search_engine_choice_service_.get(),

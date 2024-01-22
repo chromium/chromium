@@ -4,21 +4,35 @@
 
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 
+#include <memory>
+
+#include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "components/country_codes/country_codes.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/version_info/version_info.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
+#include "components/search_engines/android/jni_headers/SearchEngineChoiceService_jni.h"
+#endif
 
 namespace search_engines {
 namespace {
@@ -101,6 +115,8 @@ void LogSearchRepromptKeyHistograms(RepromptResult result, bool is_wildcard) {
         kSearchEngineChoiceRepromptSpecificCountryHistogram, result);
   }
 }
+
+using NativeCallbackType = base::OnceCallback<void(int)>;
 
 }  // namespace
 
@@ -243,11 +259,11 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
 }
 
 int SearchEngineChoiceService::GetCountryId() {
-  int command_line_country = country_codes::CountryStringToCountryID(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kSearchEngineChoiceCountry));
-  if (command_line_country != country_codes::kCountryIDUnknown) {
-    return command_line_country;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSearchEngineChoiceCountry)) {
+    return country_codes::CountryStringToCountryID(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kSearchEngineChoiceCountry));
   }
 
   bool force_eea_country =
@@ -258,7 +274,10 @@ int SearchEngineChoiceService::GetCountryId() {
     return country_codes::CountryStringToCountryID("BE");
   }
 
-  return country_codes::GetCountryIDFromPrefs(&profile_prefs_.get());
+  if (!country_id_cache_.has_value()) {
+    country_id_cache_ = GetCountryIdInternal();
+  }
+  return *country_id_cache_;
 }
 
 void SearchEngineChoiceService::RecordChoiceMade(
@@ -376,4 +395,67 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
   }
 }
 
+int SearchEngineChoiceService::GetCountryIdInternal() {
+#if BUILDFLAG(IS_ANDROID)
+  if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
+    return country_codes::GetCountryIDFromPrefs(&profile_prefs_.get());
+  }
+
+  if (profile_prefs_->HasPrefPath(country_codes::kCountryIDAtInstall)) {
+    return profile_prefs_->GetInteger(country_codes::kCountryIDAtInstall);
+  }
+
+  // Usage of `WeakPtr` is crucial here, as `SearchEngineChoiceService` is not
+  // guaranteed to be alive when the response from Java arrives.
+  auto heap_callback = std::make_unique<NativeCallbackType>(base::BindOnce(
+      &SearchEngineChoiceService::ProcessGetCountryResponseFromPlayApi,
+      weak_ptr_factory_.GetWeakPtr()));
+  // The ownership of the callback on the heap is passed to Java. It will be
+  // deleted by JNI_SearchEngineChoiceService_ProcessCountryFromPlayApi.
+  Java_SearchEngineChoiceService_requestCountryFromPlayApi(
+      base::android::AttachCurrentThread(),
+      reinterpret_cast<intptr_t>(heap_callback.release()));
+  // Java call above might save the preference, so we need to re-check.
+  if (!profile_prefs_->HasPrefPath(country_codes::kCountryIDAtInstall)) {
+    // Couldn't get the value from the Play API, fallback to locale.
+    return country_codes::GetCurrentCountryID();
+  }
+  return profile_prefs_->GetInteger(country_codes::kCountryIDAtInstall);
+#else
+  return country_codes::GetCountryIDFromPrefs(&profile_prefs_.get());
+#endif
+}
+
+#if BUILDFLAG(IS_ANDROID)
+void SearchEngineChoiceService::ProcessGetCountryResponseFromPlayApi(
+    int country_id) {
+  profile_prefs_->SetInteger(country_codes::kCountryIDAtInstall, country_id);
+}
+#endif
+
 }  // namespace search_engines
+
+#if BUILDFLAG(IS_ANDROID)
+void JNI_SearchEngineChoiceService_ProcessCountryFromPlayApi(
+    JNIEnv* env,
+    jlong ptr_to_native_callback,
+    const base::android::JavaParamRef<jstring>& j_device_country) {
+  // Using base::WrapUnique ensures that the callback is deleted when this goes
+  // out of scope.
+  std::unique_ptr<search_engines::NativeCallbackType> heap_callback =
+      base::WrapUnique(reinterpret_cast<search_engines::NativeCallbackType*>(
+          ptr_to_native_callback));
+  CHECK(heap_callback);
+  if (!j_device_country) {
+    return;
+  }
+  std::string device_country =
+      base::android::ConvertJavaStringToUTF8(env, j_device_country);
+  int device_country_id =
+      country_codes::CountryStringToCountryID(device_country);
+  if (device_country_id == country_codes::kCountryIDUnknown) {
+    return;
+  }
+  std::move(*heap_callback).Run(device_country_id);
+}
+#endif

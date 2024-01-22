@@ -6,6 +6,7 @@
 #define COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 
@@ -77,7 +78,19 @@ class SearchEngineChoiceService : public KeyedService {
   void PreprocessPrefsForReprompt();
 
  private:
+  int GetCountryIdInternal();
+
+#if BUILDFLAG(IS_ANDROID)
+  void ProcessGetCountryResponseFromPlayApi(int country_id);
+#endif
+
   const raw_ref<PrefService> profile_prefs_;
+
+  // Used to ensure that the value returned from `GetCountryId` never changes
+  // in runtime (different runs can still return different values, though).
+  std::optional<int> country_id_cache_;
+
+  base::WeakPtrFactory<SearchEngineChoiceService> weak_ptr_factory_{this};
 };
 
 }  // namespace search_engines
