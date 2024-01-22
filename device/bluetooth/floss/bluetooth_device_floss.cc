@@ -279,7 +279,8 @@ void BluetoothDeviceFloss::Connect(
   BLUETOOTH_LOG(EVENT) << "Connecting to " << address_;
 
   if ((connecting_state_ == ConnectingState::kACLConnecting) ||
-      (connecting_state_ == ConnectingState::kProfilesConnecting)) {
+      (connecting_state_ == ConnectingState::kProfilesConnecting) ||
+      (pending_callback_on_connect_profiles_ != absl::nullopt)) {
     std::move(callback).Run(
         BluetoothDevice::ConnectErrorCode::ERROR_INPROGRESS);
     return;
