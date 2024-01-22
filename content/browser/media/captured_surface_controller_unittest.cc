@@ -721,7 +721,8 @@ TEST_P(CapturedSurfaceControllerSelfCaptureTest, SelfCaptureDisallowed) {
   permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
 
   base::RunLoop run_loop;
-  RunTestedActionAndExpect(&run_loop, CSCResult::kUnknownError);
+  RunTestedActionAndExpect(&run_loop,
+                           CSCResult::kDisallowedForSelfCaptureError);
   run_loop.Run();
 }
 
@@ -755,7 +756,8 @@ TEST_P(CapturedSurfaceControllerSelfCaptureTest,
   AwaitWebContentsResolution();
 
   base::RunLoop run_loop;
-  RunTestedActionAndExpect(&run_loop, CSCResult::kUnknownError);
+  RunTestedActionAndExpect(&run_loop,
+                           CSCResult::kDisallowedForSelfCaptureError);
   run_loop.Run();
 }
 

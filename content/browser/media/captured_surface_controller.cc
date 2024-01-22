@@ -69,7 +69,7 @@ CapturedSurfaceControlResult DoSendWheel(
   if (WebContentsImpl::FromRenderFrameHostID(capturer_rfh_id) ==
       captured_wc.get()) {
     // TODO(crbug.com/1466247): Use a dedicated error for self-capture.
-    return CapturedSurfaceControlResult::kUnknownError;
+    return CapturedSurfaceControlResult::kDisallowedForSelfCaptureError;
   }
 
   RenderFrameHostImpl* const rfhi =
@@ -133,7 +133,7 @@ CapturedSurfaceControlResult DoSetZoomLevel(
   if (WebContentsImpl::FromRenderFrameHostID(capturer_rfh_id) ==
       captured_wc.get()) {
     // TODO(crbug.com/1466247): Use a dedicated error for self-capture.
-    return CapturedSurfaceControlResult::kUnknownError;
+    return CapturedSurfaceControlResult::kDisallowedForSelfCaptureError;
   }
 
   content::HostZoomMap::SetZoomLevel(
@@ -159,8 +159,9 @@ std::pair<std::optional<int>, CapturedSurfaceControlResult> DoGetZoomLevel(
   if (WebContentsImpl::FromRenderFrameHostID(capturer_rfh_id) ==
       captured_wc.get()) {
     // TODO(crbug.com/1466247): Use a dedicated error for self-capture.
-    return std::make_pair(std::nullopt,
-                          CapturedSurfaceControlResult::kUnknownError);
+    return std::make_pair(
+        std::nullopt,
+        CapturedSurfaceControlResult::kDisallowedForSelfCaptureError);
   }
 
   double zoom_level = blink::PageZoomLevelToZoomFactor(
