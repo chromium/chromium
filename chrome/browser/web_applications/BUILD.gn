@@ -3,8 +3,10 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/sanitizers/sanitizers.gni")
 import("//chrome/browser/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//testing/test.gni")
 
 source_set("web_applications") {
   sources = [
@@ -687,6 +689,23 @@ source_set("prevent_close_test_support") {
     "//components/webapps/common:common",
     "//ui/base:types",
   ]
+}
+
+if (fuzztest_supported) {
+  test("web_application_fuzztests") {
+    testonly = true
+    enable_fuzztest = true
+
+    sources = [ "isolated_web_apps/update_manifest/update_manifest_fuzzer.cc" ]
+
+    deps = [
+      ":web_applications",
+      ":web_applications_test_support",
+      "//chrome/test:test_support",
+      "//components/webapps/common:common",
+      "//third_party/fuzztest:fuzztest_gtest_main",
+    ]
+  }
 }
 
 source_set("web_applications_unit_tests") {
