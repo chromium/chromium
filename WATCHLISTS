@@ -868,6 +868,9 @@
     'chromevox': {
       'filepath': 'chromevox|spoken_feedback',
     },
+    'clang': {
+      'filepath': 'tools/clang/'
+    },
     'clang_update': {
       'filepath': 'tools/clang/scripts/update.py'
     },
@@ -2748,6 +2751,7 @@
                   'dtseng+chromevox@chromium.org',
                   'josiahk+watch@chromium.org',
                   'katie+watch@chromium.org'],
+    'clang': ['hans@chromium.org'],
     'clang_update': ['chromium-toolchains@engflow.com',
                      'dcheng@chromium.org',
                      'eugenis+clang@chromium.org',
