@@ -37,7 +37,9 @@ const char KeywordTable::kDefaultSearchProviderKey[] =
 namespace {
 
 // Keys used in the meta table.
-const char kBuiltinKeywordVersion[] = "Builtin Keyword Version";
+const char kBuiltinKeywordDataVersion[] = "Builtin Keyword Version";
+const char kBuiltinKeywordMilestone[] = "Builtin Keyword Milestone";
+const char kBuiltinKeywordCountry[] = "Builtin Keyword Country";
 const char kStarterPackKeywordVersion[] = "Starter Pack Keyword Version";
 
 const std::string ColumnsForVersion(int version, bool concatenated) {
@@ -326,13 +328,34 @@ int64_t KeywordTable::GetDefaultSearchProviderID() {
   return value;
 }
 
-bool KeywordTable::SetBuiltinKeywordVersion(int version) {
-  return meta_table_->SetValue(kBuiltinKeywordVersion, version);
+bool KeywordTable::SetBuiltinKeywordDataVersion(int version) {
+  return meta_table_->SetValue(kBuiltinKeywordDataVersion, version);
 }
 
-int KeywordTable::GetBuiltinKeywordVersion() {
+int KeywordTable::GetBuiltinKeywordDataVersion() {
   int version = 0;
-  return meta_table_->GetValue(kBuiltinKeywordVersion, &version) ? version : 0;
+  return meta_table_->GetValue(kBuiltinKeywordDataVersion, &version) ? version
+                                                                     : 0;
+}
+
+bool KeywordTable::SetBuiltinKeywordMilestone(int milestone) {
+  return meta_table_->SetValue(kBuiltinKeywordMilestone, milestone);
+}
+
+int KeywordTable::GetBuiltinKeywordMilestone() {
+  int milestone = 0;
+  return meta_table_->GetValue(kBuiltinKeywordMilestone, &milestone) ? milestone
+                                                                     : 0;
+}
+
+bool KeywordTable::SetBuiltinKeywordCountry(int country_id) {
+  return meta_table_->SetValue(kBuiltinKeywordCountry, country_id);
+}
+
+int KeywordTable::GetBuiltinKeywordCountry() {
+  int country_id = 0;
+  return meta_table_->GetValue(kBuiltinKeywordCountry, &country_id) ? country_id
+                                                                    : 0;
 }
 
 bool KeywordTable::SetStarterPackKeywordVersion(int version) {

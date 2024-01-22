@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "base/version_info/version_info.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
@@ -68,16 +69,25 @@ MergeEngineRequirements ComputeMergeEnginesRequirements(
       search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kAny) &&
       search_engines::IsEeaChoiceCountry(country_id);
+  const int milestone = version_info::GetMajorVersionNumberAsInt();
 
   bool update_builtin_keywords;
-  if (keywords_metadata.builtin_keyword_version >
+  if (keywords_metadata.builtin_keyword_data_version >
       prepopulate_resource_keyword_version) {
     // The version in the database is more recent than the version in the Chrome
     // binary. Downgrades are not supported, so don't update it.
     update_builtin_keywords = false;
-  } else if (keywords_metadata.builtin_keyword_version <
+  } else if (keywords_metadata.builtin_keyword_data_version <
              prepopulate_resource_keyword_version) {
     // The built-in data from `prepopulated_engines.json` has been updated.
+    update_builtin_keywords = true;
+  } else if (keywords_metadata.builtin_keyword_country != 0 &&
+             keywords_metadata.builtin_keyword_country != country_id) {
+    // The country associated with the profile has changed.
+    // We skip cases where the country was not previously set to avoid
+    // unnecessary churn. We expect that by the time this might matter, the
+    // client will have this data populated when the search engine choice
+    // feature gets enabled.
     update_builtin_keywords = true;
   } else if (prefs->GetBoolean(
                  prefs::kDefaultSearchProviderKeywordsUseExtendedList) !=
@@ -86,6 +96,16 @@ MergeEngineRequirements ComputeMergeEnginesRequirements(
     // We started writing the pref while we were not checking the country
     // before. Once the feature flag is removed, we can clean up this pref.
     update_builtin_keywords = true;
+  } else if (should_keywords_use_extended_list &&
+             keywords_metadata.builtin_keyword_milestone != 0 &&
+             keywords_metadata.builtin_keyword_milestone < milestone) {
+    // The milestone changed and we need to recompute the list of visible search
+    // engines. This is needed only in the EEA.
+    // We skip cases where the milestone was not previously set to avoid
+    // unnecessary churn. We expect that by the time this might matter, the
+    // client will have this data populated when the search engine choice
+    // feature gets enabled.
+    update_builtin_keywords = true;
   } else {
     update_builtin_keywords = false;
   }
@@ -93,8 +113,10 @@ MergeEngineRequirements ComputeMergeEnginesRequirements(
   MergeEngineRequirements merge_requirements;
 
   if (update_builtin_keywords) {
-    merge_requirements.metadata.builtin_keyword_version =
+    merge_requirements.metadata.builtin_keyword_data_version =
         prepopulate_resource_keyword_version;
+    merge_requirements.metadata.builtin_keyword_milestone = milestone;
+    merge_requirements.metadata.builtin_keyword_country = country_id;
     merge_requirements.should_keywords_use_extended_list =
         should_keywords_use_extended_list
             ? MergeEngineRequirements::ShouldKeywordsUseExtendedList::kYes
@@ -593,8 +615,8 @@ void GetSearchProvidersUsingKeywordResult(
   // Upgrades (builtin > new) or feature-related merges (builtin == new) only
   // are expected.
   DCHECK(!out_updated_keywords_metadata.HasBuiltinKeywordData() ||
-         out_updated_keywords_metadata.builtin_keyword_version >=
-             keyword_result.metadata.builtin_keyword_version);
+         out_updated_keywords_metadata.builtin_keyword_data_version >=
+             keyword_result.metadata.builtin_keyword_data_version);
 }
 
 void GetSearchProvidersUsingLoadedEngines(

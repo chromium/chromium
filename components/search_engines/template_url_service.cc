@@ -1313,8 +1313,12 @@ void TemplateURLService::OnWebDataServiceRequestDone(
     visits_to_add_.clear();
 
     if (updated_keywords_metadata.HasBuiltinKeywordData()) {
-      web_data_service_->SetBuiltinKeywordVersion(
-          updated_keywords_metadata.builtin_keyword_version);
+      web_data_service_->SetBuiltinKeywordDataVersion(
+          updated_keywords_metadata.builtin_keyword_data_version);
+      web_data_service_->SetBuiltinKeywordMilestone(
+          updated_keywords_metadata.builtin_keyword_milestone);
+      web_data_service_->SetBuiltinKeywordCountry(
+          updated_keywords_metadata.builtin_keyword_country);
     }
 
     if (updated_keywords_metadata.HasStarterPackData()) {
