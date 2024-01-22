@@ -3183,7 +3183,6 @@ WebLocalFrameImpl::ConvertNotRestoredReasons(
   if (!reasons_to_copy.is_null()) {
     not_restored_reasons =
         mojom::blink::BackForwardCacheNotRestoredReasons::New();
-    not_restored_reasons->blocked = reasons_to_copy->blocked;
     if (reasons_to_copy->id) {
       not_restored_reasons->id = reasons_to_copy->id.value().c_str();
     }
@@ -3193,12 +3192,12 @@ WebLocalFrameImpl::ConvertNotRestoredReasons(
     if (reasons_to_copy->src) {
       not_restored_reasons->src = reasons_to_copy->src.value().c_str();
     }
+    for (const auto& reason : reasons_to_copy->reasons) {
+      not_restored_reasons->reasons.push_back(reason.c_str());
+    }
     if (reasons_to_copy->same_origin_details) {
       auto details = mojom::blink::SameOriginBfcacheNotRestoredDetails::New();
       details->url = reasons_to_copy->same_origin_details->url.c_str();
-      for (const auto& reason : reasons_to_copy->same_origin_details->reasons) {
-        details->reasons.push_back(reason.c_str());
-      }
       for (const auto& child : reasons_to_copy->same_origin_details->children) {
         details->children.push_back(ConvertNotRestoredReasons(child));
       }

@@ -24,19 +24,21 @@ class BackForwardCacheImplTest : public RenderViewHostImplTestHarness {
 
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> SetUpTree() {
     //     (a-1)
-    //     /   |
-    //  (b-1) (a-2)
+    //     /   |    \
+    //  (b-1) (a-2) (b-4)
     //    |    |
     //  (b-2) (b-3)
     auto tree_a_1 = CreateSameOriginTree();
     auto tree_a_2 = CreateSameOriginTree();
-    auto tree_b_1 = CreateCrossOriginTree();
-    auto tree_b_2 = CreateCrossOriginTree();
-    auto tree_b_3 = CreateCrossOriginTree();
+    auto tree_b_1 = CreateCrossOriginTree(/*block=*/false);
+    auto tree_b_2 = CreateCrossOriginTree(/*block=*/false);
+    auto tree_b_3 = CreateCrossOriginTree(/*block=*/true);
+    auto tree_b_4 = CreateCrossOriginTree(/*block=*/true);
     tree_b_1->AppendChild(std::move(tree_b_2));
     tree_a_2->AppendChild(std::move(tree_b_3));
     tree_a_1->AppendChild(std::move(tree_b_1));
     tree_a_1->AppendChild(std::move(tree_a_2));
+    tree_a_1->AppendChild(std::move(tree_b_4));
     return tree_a_1;
   }
 
@@ -48,11 +50,18 @@ class BackForwardCacheImplTest : public RenderViewHostImplTestHarness {
     return tree;
   }
 
-  std::unique_ptr<BackForwardCacheCanStoreTreeResult> CreateCrossOriginTree() {
+  std::unique_ptr<BackForwardCacheCanStoreTreeResult> CreateCrossOriginTree(
+      bool block) {
     BackForwardCacheCanStoreDocumentResult result;
     std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree(
         new BackForwardCacheCanStoreTreeResult(/*is_same_origin=*/false,
                                                GURL("https://b.com/test")));
+    if (block) {
+      BackForwardCacheCanStoreDocumentResult can_store;
+      // Test blocking from cross-origin subframes.
+      can_store.No(BackForwardCacheMetrics::NotRestoredReason::kErrorDocument);
+      tree->AddReasonsToSubtreeRootFrom(std::move(can_store));
+    }
     return tree;
   }
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -60,9 +69,9 @@ class BackForwardCacheImplTest : public RenderViewHostImplTestHarness {
 
 TEST_F(BackForwardCacheImplTest, CrossOriginReachableFrameCount) {
   auto tree_root = SetUpTree();
-  // The reachable cross-origin frames are b-1 and b-3.
+  // The reachable cross-origin frames are b-1 and b-3 and b-4.
   EXPECT_EQ(static_cast<int>(tree_root->GetCrossOriginReachableFrameCount()),
-            2);
+            3);
 }
 
 TEST_F(BackForwardCacheImplTest, CrossOriginAllMasked) {
@@ -71,14 +80,18 @@ TEST_F(BackForwardCacheImplTest, CrossOriginAllMasked) {
   // All cross origin iframe information should be masked regardless of the
   // index.
   auto result = tree_root->GetWebExposedNotRestoredReasonsInternal(index);
+  // Main frame has "masked" as a reason.
+  EXPECT_EQ(static_cast<int>(result->reasons.size()), 1);
+  EXPECT_EQ(result->reasons[0], "masked");
+
   // b-1 is masked.
-  EXPECT_EQ(result->same_origin_details->children[0]->blocked,
-            blink::mojom::BFCacheBlocked::kMasked);
+  EXPECT_TRUE(result->same_origin_details->children[0]->reasons.empty());
   // b-3 is masked.
-  EXPECT_EQ(result->same_origin_details->children[1]
-                ->same_origin_details->children[0]
-                ->blocked,
-            blink::mojom::BFCacheBlocked::kMasked);
+  EXPECT_TRUE(result->same_origin_details->children[1]
+                  ->same_origin_details->children[0]
+                  ->reasons.empty());
+  // b-4 is masked.
+  EXPECT_TRUE(result->same_origin_details->children[2]->reasons.empty());
 }
 
 class BackForwardCacheImplTestExposeCrossOrigin
@@ -100,14 +113,18 @@ TEST_F(BackForwardCacheImplTestExposeCrossOrigin, FirstCrossOriginReachable) {
   int index = 0;
   // First cross-origin reachable frame (b-1) should be unmasked.
   auto result = tree_root->GetWebExposedNotRestoredReasonsInternal(index);
-  // b-1 is unmasked.
-  EXPECT_EQ(result->same_origin_details->children[0]->blocked,
-            blink::mojom::BFCacheBlocked::kNo);
+  // Main frame has "masked" as a reason.
+  EXPECT_EQ(static_cast<int>(result->reasons.size()), 1);
+  EXPECT_EQ(result->reasons[0], "masked");
+  // b-1 is unmasked, but reasons are empty because it does not have any
+  // blocking reasons.
+  EXPECT_TRUE(result->same_origin_details->children[0]->reasons.empty());
   // b-3 is masked.
-  EXPECT_EQ(result->same_origin_details->children[1]
-                ->same_origin_details->children[0]
-                ->blocked,
-            blink::mojom::BFCacheBlocked::kMasked);
+  EXPECT_TRUE(result->same_origin_details->children[1]
+                  ->same_origin_details->children[0]
+                  ->reasons.empty());
+  // b-4 is masked.
+  EXPECT_TRUE(result->same_origin_details->children[2]->reasons.empty());
 }
 
 TEST_F(BackForwardCacheImplTestExposeCrossOrigin, SecondCrossOriginReachable) {
@@ -115,14 +132,23 @@ TEST_F(BackForwardCacheImplTestExposeCrossOrigin, SecondCrossOriginReachable) {
   int index = 1;
   // Second cross-origin reachable frame (b-3) should be unmasked.
   auto result = tree_root->GetWebExposedNotRestoredReasonsInternal(index);
-  // b-1 is unmasked.
-  EXPECT_EQ(result->same_origin_details->children[0]->blocked,
-            blink::mojom::BFCacheBlocked::kMasked);
-  // b-3 is masked.
+  // Main frame has "masked" as a reason.
+  EXPECT_EQ(static_cast<int>(result->reasons.size()), 1);
+  EXPECT_EQ(result->reasons[0], "masked");
+
+  // b-1 is masked.
+  EXPECT_TRUE(result->same_origin_details->children[0]->reasons.empty());
+  // b-3 is unmasked and has reasons {"masked"}.
+  EXPECT_EQ(static_cast<int>(result->same_origin_details->children[1]
+                                 ->same_origin_details->children[0]
+                                 ->reasons.size()),
+            1);
   EXPECT_EQ(result->same_origin_details->children[1]
                 ->same_origin_details->children[0]
-                ->blocked,
-            blink::mojom::BFCacheBlocked::kNo);
+                ->reasons[0],
+            "masked");
+  // b-4 is masked.
+  EXPECT_TRUE(result->same_origin_details->children[2]->reasons.empty());
 }
 
 // Covers BackForwardCache's cache size-related values used in Stable.

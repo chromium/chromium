@@ -423,14 +423,14 @@ base::TimeDelta GetCacheControlNoStoreTTL() {
 }
 
 bool IsSameOriginForTreeResult(RenderFrameHostImpl* rfh,
-                               const GURL& url,
                                const url::Origin& main_document_origin) {
   // Treat any frame inside a fenced frame as cross origin so we don't leak
   // any information.
   if (rfh->IsNestedWithinFencedFrame()) {
     return false;
   }
-  return url::Origin::Create(url).IsSameOriginWith(main_document_origin);
+
+  return rfh->GetLastCommittedOrigin().IsSameOriginWith(main_document_origin);
 }
 
 // Mark the result with No due to a single feature without JavaScript details.
@@ -1697,8 +1697,7 @@ BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(
     const GURL& url,
     BackForwardCacheCanStoreDocumentResult& result_for_this_document)
     : document_result_(std::move(result_for_this_document)),
-      is_same_origin_(
-          IsSameOriginForTreeResult(rfh, url, main_document_origin)),
+      is_same_origin_(IsSameOriginForTreeResult(rfh, main_document_origin)),
       is_root_outermost_main_frame_(rfh->IsOutermostMainFrame()),
       id_(rfh->frame_tree_node()->html_id()),
       name_(rfh->frame_tree_node()->html_name()),
@@ -1769,51 +1768,58 @@ blink::mojom::BackForwardCacheNotRestoredReasonsPtr
 BackForwardCacheCanStoreTreeResult::GetWebExposedNotRestoredReasons() {
   DCHECK(is_root_outermost_main_frame_);
   uint32_t count = GetCrossOriginReachableFrameCount();
-  int index = count == 0 ? 0 : base::RandInt(0, count - 1);
-  return GetWebExposedNotRestoredReasonsInternal(index);
+  int exposed_cross_origin_iframe_index =
+      count == 0 ? 0 : base::RandInt(0, count - 1);
+  return GetWebExposedNotRestoredReasonsInternal(
+      exposed_cross_origin_iframe_index);
 }
 
 blink::mojom::BackForwardCacheNotRestoredReasonsPtr
 BackForwardCacheCanStoreTreeResult::GetWebExposedNotRestoredReasonsInternal(
-    int& index) {
+    int& exposed_cross_origin_iframe_index) {
   blink::mojom::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons =
       blink::mojom::BackForwardCacheNotRestoredReasons::New();
   if (IsSameOrigin()) {
-    // Only include same_origin_details for documents that are same-origin with
+    // Add same_origin_details for documents that are same-origin with
     // the main document. Stop recursion as soon as we hit a cross-origin
     // document.
     not_restored_reasons->same_origin_details =
         blink::mojom::SameOriginBfcacheNotRestoredDetails::New();
     not_restored_reasons->same_origin_details->url = url_.spec();
-    not_restored_reasons->same_origin_details->reasons =
-        GetDocumentResult().GetStringReasons();
-
-    not_restored_reasons->blocked = GetDocumentResult().CanRestore()
-                                        ? blink::mojom::BFCacheBlocked::kNo
-                                        : blink::mojom::BFCacheBlocked::kYes;
+    // Populate the reasons for same-origin frames.
+    not_restored_reasons->reasons = GetDocumentResult().GetStringReasons();
+    if (is_root_outermost_main_frame_) {
+      int index_copy = exposed_cross_origin_iframe_index;
+      if (HasUnexposedCrossOriginBlockingIframe(index_copy) &&
+          std::find(not_restored_reasons->reasons.begin(),
+                    not_restored_reasons->reasons.end(),
+                    "masked") == not_restored_reasons->reasons.end()) {
+        // If any cross-origin iframe is blocking and does not have "masked" in
+        // its own reasons, we need to add "masked" to the outermost main
+        // frame's reasons. Note that we need to add "masked" only when the
+        // reasons do not have it yet.
+        not_restored_reasons->reasons.push_back("masked");
+      }
+    }
     for (const auto& subtree : GetChildren()) {
       not_restored_reasons->same_origin_details->children.push_back(
-          subtree->GetWebExposedNotRestoredReasonsInternal(index));
+          subtree->GetWebExposedNotRestoredReasonsInternal(
+              exposed_cross_origin_iframe_index));
     }
   } else {
-    // If the subtree's root document is cross-origin from the main frame
-    // document, and if this is the randomly selected cross-origin iframe,
-    // report whether or not this entire subtree is blocking back/forward cache.
-    // If `kAllowCrossOriginNotRestoredReasons` is disabled, always mask the
-    // blocked value.
-    if (index == 0) {
-      not_restored_reasons->blocked =
-          base::FeatureList::IsEnabled(kAllowCrossOriginNotRestoredReasons)
-              ? (!GetDocumentResult().CanRestore() ||
-                 !FlattenTree().CanRestore())
-                    ? blink::mojom::BFCacheBlocked::kYes
-                    : blink::mojom::BFCacheBlocked::kNo
-              : blink::mojom::BFCacheBlocked::kMasked;
-    } else {
-      not_restored_reasons->blocked = blink::mojom::BFCacheBlocked::kMasked;
+    // This is a cross-origin document. This might or might not be the randomly
+    // selected document that is going to be exposed.
+    if (!FlattenTree().CanRestore() && exposed_cross_origin_iframe_index == 0 &&
+        base::FeatureList::IsEnabled(kAllowCrossOriginNotRestoredReasons)) {
+      // This is the randomly selected cross-origin iframe / subtree
+      // blocking bfcache.
+      // Note that we need to flatten the tree in order to check the eligibility
+      // of the cross-origin subtree. Add "masked" to this frame to signal that
+      // this is the blocking frame.
+      not_restored_reasons->reasons.push_back("masked");
     }
     // Decrease the index now that we saw a cross-origin iframe.
-    index--;
+    exposed_cross_origin_iframe_index--;
     // Do not iterate through the children now that we have encountered a
     // cross-origin iframe.
   }
@@ -1826,6 +1832,38 @@ BackForwardCacheCanStoreTreeResult::GetWebExposedNotRestoredReasonsInternal(
   not_restored_reasons->id = id_;
   not_restored_reasons->name = name_;
   return not_restored_reasons;
+}
+
+bool BackForwardCacheCanStoreTreeResult::HasUnexposedCrossOriginBlockingIframe(
+    int& exposed_cross_origin_iframe_index) {
+  if (!IsSameOrigin()) {
+    // This is a cross-origin subtree.
+    // Check if this document is the randomly selected one.
+    bool randomly_selected =
+        exposed_cross_origin_iframe_index == 0 &&
+        base::FeatureList::IsEnabled(kAllowCrossOriginNotRestoredReasons);
+    exposed_cross_origin_iframe_index--;
+    if (!FlattenTree().CanRestore() && !randomly_selected) {
+      // When this cross-origin subtree is blocking and is not randomly
+      // selected, this is an unexposed cross-origin blocking iframe.
+      return true;
+    } else {
+      // We do not have unexposed blocking frame in this cross-origin subtree.
+      return false;
+    }
+    // Note that we do not go into cross-origin iframe's subframes.
+  } else {
+    // Recursively check the subtrees for the same origin iframes.
+    for (const auto& subtree : GetChildren()) {
+      if (subtree->HasUnexposedCrossOriginBlockingIframe(
+              exposed_cross_origin_iframe_index)) {
+        return true;
+      }
+    }
+    // If none of the subtree has unexposed cross-origin blocking iframe, return
+    // false.
+    return false;
+  }
 }
 
 uint32_t

@@ -4,22 +4,22 @@
 
 // https://github.com/WICG/bfcache-not-restored-reason/blob/main/NotRestoredReason.md
 
-enum PreventedBackForwardCache {
-    "yes",
-    "no",
-    "masked"
+[
+    Exposed=Window,
+    RuntimeEnabled=BackForwardCacheNotRestoredReasons
+] interface NotRestoredReasonDetails {
+  readonly attribute DOMString reason;
+  [CallWith=ScriptState] object toJSON();
 };
-
 [
     Exposed=Window,
     RuntimeEnabled=BackForwardCacheNotRestoredReasons
 ] interface NotRestoredReasons {
-  readonly attribute PreventedBackForwardCache preventedBackForwardCache;
   readonly attribute DOMString? src;
   readonly attribute DOMString? id;
   readonly attribute DOMString? name;
   readonly attribute DOMString? url;
-  readonly attribute FrozenArray<DOMString>? reasons;
+  readonly attribute FrozenArray<NotRestoredReasonDetails>? reasons;
   readonly attribute FrozenArray<NotRestoredReasons>? children;
   [CallWith=ScriptState] object toJSON();
 };

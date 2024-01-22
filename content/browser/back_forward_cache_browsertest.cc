@@ -445,15 +445,12 @@ void BackForwardCacheBrowserTest::NavigateAndBlock(GURL url,
 }
 
 ReasonsMatcher BackForwardCacheBrowserTest::MatchesNotRestoredReasons(
-    const testing::Matcher<blink::mojom::BFCacheBlocked>& blocked,
     const std::optional<testing::Matcher<std::string>>& id,
     const std::optional<testing::Matcher<std::string>>& name,
     const std::optional<testing::Matcher<std::string>>& src,
+    const std::vector<testing::Matcher<std::string>>& reasons,
     const std::optional<SameOriginMatcher>& same_origin_details) {
   return testing::Pointee(testing::AllOf(
-      testing::Field("blocked",
-                     &blink::mojom::BackForwardCacheNotRestoredReasons::blocked,
-                     blocked),
       id.has_value()
           ? testing::Field(
                 "id", &blink::mojom::BackForwardCacheNotRestoredReasons::id,
@@ -475,6 +472,9 @@ ReasonsMatcher BackForwardCacheBrowserTest::MatchesNotRestoredReasons(
           : testing::Field(
                 "src", &blink::mojom::BackForwardCacheNotRestoredReasons::src,
                 std::optional<std::string>(std::nullopt)),
+      testing::Field("reasons",
+                     &blink::mojom::BackForwardCacheNotRestoredReasons::reasons,
+                     testing::UnorderedElementsAreArray(reasons)),
       testing::Field(
           "same_origin_details",
           &blink::mojom::BackForwardCacheNotRestoredReasons::
@@ -490,15 +490,10 @@ ReasonsMatcher BackForwardCacheBrowserTest::MatchesNotRestoredReasons(
 
 SameOriginMatcher BackForwardCacheBrowserTest::MatchesSameOriginDetails(
     const testing::Matcher<std::string>& url,
-    const std::vector<testing::Matcher<std::string>>& reasons,
     const std::vector<ReasonsMatcher>& children) {
   return testing::Pointee(testing::AllOf(
       testing::Field(
           "url", &blink::mojom::SameOriginBfcacheNotRestoredDetails::url, url),
-      testing::Field(
-          "reasons",
-          &blink::mojom::SameOriginBfcacheNotRestoredDetails::reasons,
-          testing::UnorderedElementsAreArray(reasons)),
       testing::Field(
           "children",
           &blink::mojom::SameOriginBfcacheNotRestoredDetails::children,
