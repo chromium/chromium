@@ -28,6 +28,8 @@ chromium-metrics-reviews@google.com.
   <variant name="CachedImageFetcherDatabase"
       summary="Database for CachedImageFetcher metadata."/>
   <variant name="CartDatabase" summary="Database for chrome cart."/>
+  <variant name="ClientCertificatesDatabase"
+      summary="Database for client certificates owned by Chrome."/>
   <variant name="CommerceParcelTrackingDatabase"
       summary="Database for Chrome commerce parcel tracking."/>
   <variant name="CommerceSubscriptionDatabase"
