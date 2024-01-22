@@ -682,6 +682,10 @@ const char kFailFastQuietChipDescription[] =
     "Enables fast finalization of a permission request if it is displayed as a "
     "quiet chip.";
 
+const char kBackgroundListeningName[] = "BackgroundListening";
+const char kBackgroundListeningDescription[] =
+    "Enables the new media player features optimized for background listening.";
+
 const char kBorealisBigGlName[] = "Borealis Big GL";
 const char kBorealisBigGlDescription[] = "Enable Big GL when running Borealis.";
 

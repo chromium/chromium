@@ -74,6 +74,7 @@ BASE_DECLARE_FEATURE(kAutocorrectUseReplaceSurroundingText);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kAutozoomNudgeSessionReset);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kAvatarsCloudMigration);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBackgroundListening);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBatterySaver);
 enum BatterySaverNotificationBehavior { kBSMAutoEnable, kBSMOptIn };
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -937,6 +938,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAsynchronousScannerDiscoveryEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAutoNightLightEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAudioHFPMicSRToggleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBackgroundBlurEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBackgroundListeningEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBatterySaverAvailable();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBatterySaverAlwaysOn();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBirchFeatureEnabled();

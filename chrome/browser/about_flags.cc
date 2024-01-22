@@ -2993,9 +2993,7 @@ constexpr char kGlanceablesV2InternalName[] = "glanceables-v2";
 constexpr char kGlanceablesV2KeyName[] = "glanceables-v2-key";
 constexpr char kGlanceablesV2CalendarViewInternalName[] =
     "glanceables-v2-calendar-view";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kBackgroundListeningName[] = "background-listening";
 constexpr char kBorealisBigGlInternalName[] = "borealis-big-gl";
 constexpr char kBorealisDGPUInternalName[] = "borealis-dgpu";
 constexpr char kBorealisEnableUnsupportedHardwareInternalName[] =
@@ -9149,6 +9147,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kDIPS)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {kBackgroundListeningName, flag_descriptions::kBackgroundListeningName,
+     flag_descriptions::kBackgroundListeningDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kBackgroundListening)},
     {kBorealisBigGlInternalName, flag_descriptions::kBorealisBigGlName,
      flag_descriptions::kBorealisBigGlDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBorealisBigGl)},
@@ -11318,6 +11319,15 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     }
 
     return false;
+  }
+
+  // Only show the Background Listening flag if channel is one of
+  // Beta/Dev/Canary/Unknown (non-stable).
+  if (!strcmp(kBackgroundListeningName, entry.internal_name)) {
+    return channel != version_info::Channel::BETA &&
+           channel != version_info::Channel::DEV &&
+           channel != version_info::Channel::CANARY &&
+           channel != version_info::Channel::UNKNOWN;
   }
 
   // Only show Borealis flags on enabled devices.

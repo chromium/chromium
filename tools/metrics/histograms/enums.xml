@@ -19143,6 +19143,7 @@ from previous Chrome versions.
   <int value="-1989024058" label="SystemEmojiPickerSearchExtension:disabled"/>
   <int value="-1988840552" label="WebViewExtraHeadersSameOriginOnly:disabled"/>
   <int value="-1988567154" label="ObservableAPI:enabled"/>
+  <int value="-1988415440" label="BackgroundListening:enabled"/>
   <int value="-1988127107" label="UseNotificationCompatBuilder:enabled"/>
   <int value="-1987939098"
       label="AutofillEnablePasswordInfoBarAccountIndicationFooter:enabled"/>
@@ -22216,6 +22217,7 @@ from previous Chrome versions.
   <int value="-561563844"
       label="ReduceUserAgentAndroidVersionDeviceModel:disabled"/>
   <int value="-561194974" label="AutofillExpandedPopupViews:enabled"/>
+  <int value="-560818413" label="BackgroundListening:disabled"/>
   <int value="-560750110"
       label="ClearingCookiesKeepsSupervisedUsersSignedIn:enabled"/>
   <int value="-560719609" label="AccessibilityOSSettingsVisibility:disabled"/>

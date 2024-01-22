@@ -383,6 +383,9 @@ extern const char kBackForwardCacheDescription[];
 extern const char kBackForwardTransitionsName[];
 extern const char kBackForwardTransitionsDescription[];
 
+extern const char kBackgroundListeningName[];
+extern const char kBackgroundListeningDescription[];
+
 extern const char kBiometricReauthForPasswordFillingName[];
 extern const char kBiometricReauthForPasswordFillingDescription[];
 
