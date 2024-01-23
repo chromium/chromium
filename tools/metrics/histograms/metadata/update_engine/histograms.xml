@@ -775,7 +775,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.TimeToRebootMinutes" units="minutes"
-    expires_after="2024-04-01">
+    expires_after="2024-07-21">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>

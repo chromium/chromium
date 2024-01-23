@@ -124,7 +124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.PrematureTermination.{Daemon}" enum="DaemonError"
-    expires_after="2024-04-01">
+    expires_after="2024-07-21">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

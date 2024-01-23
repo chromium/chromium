@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.SidePanel.ShowUiSuccess" enum="BooleanSuccess"
-    expires_after="2024-05-19">
+    expires_after="2024-07-21">
   <owner>mercerd@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>

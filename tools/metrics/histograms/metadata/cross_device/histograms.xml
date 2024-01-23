@@ -2356,7 +2356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.Toggle" enum="SmartLockToggle"
-    expires_after="2024-05-05">
+    expires_after="2024-07-21">
   <owner>cclem@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
