@@ -4139,6 +4139,8 @@ enum WebFeature {
   kUserFeatureNgOptimizedImage = 4775,
   kCSSAtRulePageMargin = 4776,
   kThirdPartyCookieDeprecation_AllowByEnterprisePolicyCookieAllowedForUrls = 4777,
+  kUserFeatureNgAfterRender = 4778,
+  kUserFeatureNgHydration = 4779,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

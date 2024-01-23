@@ -11148,6 +11148,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4776" label="CSSAtRulePageMargin"/>
   <int value="4777"
       label="ThirdPartyCookieDeprecation_AllowByEnterprisePolicyCookieAllowedForUrls"/>
+  <int value="4778" label="UserFeatureNgAfterRender"/>
+  <int value="4779" label="UserFeatureNgHydration"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

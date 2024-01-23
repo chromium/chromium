@@ -144,6 +144,8 @@ PerformanceMark::GetUseCounterMapping() {
   if (!map.IsSet()) {
     *map = {
         {"NgOptimizedImage", WebFeature::kUserFeatureNgOptimizedImage},
+        {"NgAfterRender", WebFeature::kUserFeatureNgAfterRender},
+        {"NgHydration", WebFeature::kUserFeatureNgHydration},
     };
   }
   return *map;
