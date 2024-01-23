@@ -1306,6 +1306,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Use Android picker"/>
 </enum>
 
+<enum name="PreAssignedActivityState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not in app task, is Finishing"/>
+  <int value="2" label="Not in app task, not Finishing"/>
+  <int value="3" label="In app task, same task, is Finishing"/>
+  <int value="4" label="In app task, same task, not Finishing"/>
+  <int value="5" label="In app task, different task, is Finishing"/>
+  <int value="6" label="In app task, different task, not Finishing"/>
+</enum>
+
 <enum name="PrimaryCpuAbiBitness">
   <int value="0" label="Unknown"/>
   <int value="1" label="32-bit"/>

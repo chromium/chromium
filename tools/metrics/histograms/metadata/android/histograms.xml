@@ -2242,6 +2242,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiWindowMode.AssertIndicesMatch"
+    enum="PreAssignedActivityState" expires_after="2024-06-30">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    When the TabWindowManager allocates a different tab model index than the
+    window Id selected by MultiInstanceManagerApi31, it means the requested tab
+    model Id was assigned to a different Activity.
+
+    When this mismatch happened, record whether the activity at the requested
+    index is finishing, whether it is in the same task as the new activity, and
+    if it's still visible in ActivityManager#getAppTasks. Record
+    &quot;Unknown&quot; if the activity cannot be found.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.MultiWindowMode.AssertIndicesMatch.PreExistingActivityDestroyed"
+    enum="PreAssignedActivityState" expires_after="2024-06-30">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    When the TabWindowManager allocates a different tab model index than the
+    window Id selected by MultiInstanceManagerApi31, it means the requested tab
+    model Id was assigned to a different Activity.
+
+    When this mismatch happened, if the an activity is found at the requested
+    index, track the state recorded in
+    &quot;Android.MultiWindowMode.AssertIndicesMatch&quot;, and attach a
+    ActivityStateListener. When the observed Activity's #onDestroy is called,
+    record the tracked state at the time the observer is attached.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiWindowMode.TotalDuration" units="ms"
     expires_after="2024-06-30">
   <owner>skavuluru@google.com</owner>
