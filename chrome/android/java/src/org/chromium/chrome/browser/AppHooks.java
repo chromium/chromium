@@ -197,5 +197,7 @@ public abstract class AppHooks {
         return "";
     }
 
+    public void registerProtoExtensions() {}
+
     // Stop! Do not add new methods to AppHooks anymore. Follow go/apphooks-migration instead.
 }
