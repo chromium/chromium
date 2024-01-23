@@ -6868,6 +6868,21 @@
             ]
         }
     ],
+    "EnableSessionSerializationOptimizations": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableSessionSerializationOptimizations"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableShoppingListDesktop": [
         {
             "platforms": [
