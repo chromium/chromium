@@ -2220,6 +2220,7 @@ void HistoryBackend::SetOnCloseContextAnnotationsForVisit(
 std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
     const QueryOptions& options,
     bool compute_redirect_chain_start_properties,
+    bool get_unclustered_visits_only,
     bool* limited_by_max_count) {
   // Gets `VisitVector` matching `options`, then for each visit, gets the
   // associated `URLRow`, `VisitContextAnnotations`, and
@@ -2239,6 +2240,15 @@ std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
   bool limited = db_->GetVisibleVisitsInRange(options, &visit_rows);
   if (limited_by_max_count) {
     *limited_by_max_count = limited;
+  }
+
+  if (get_unclustered_visits_only) {
+    auto remove_it = base::ranges::remove_if(
+        visit_rows.begin(), visit_rows.end(), [&](auto& visit) {
+          // This may seem slow, but it's an indexed lookup.
+          return db_->GetClusterIdContainingVisit(visit.visit_id) > 0;
+        });
+    visit_rows.erase(remove_it, visit_rows.end());
   }
 
   DCHECK_LE(static_cast<int>(visit_rows.size()), options.EffectiveMaxCount());

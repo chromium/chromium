@@ -36,6 +36,7 @@ class HistoryClustersServiceTestApi {
     history_service_->GetAnnotatedVisits(
         options,
         /*compute_redirect_chain_start_properties=*/true,
+        /*get_unclustered_visits_only=*/false,
         base::BindLambdaForTesting(
             [&](std::vector<history::AnnotatedVisit> visits) {
               annotated_visits = std::move(visits);
