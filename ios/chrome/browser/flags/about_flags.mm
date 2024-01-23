@@ -89,7 +89,6 @@
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/browser/text_selection/model/text_selection_util.h"
-#import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -1163,9 +1162,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxKeyboardPasteButtonName,
      flag_descriptions::kOmniboxKeyboardPasteButtonDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kOmniboxKeyboardPasteButton)},
-    {"app-store-rating", flag_descriptions::kAppStoreRatingName,
-     flag_descriptions::kAppStoreRatingDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kAppStoreRating)},
     {"enable-tflite-language-detection-ignore",
      flag_descriptions::kTFLiteLanguageDetectionIgnoreName,
      flag_descriptions::kTFLiteLanguageDetectionIgnoreDescription,

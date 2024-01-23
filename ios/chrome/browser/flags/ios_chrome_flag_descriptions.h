@@ -13,10 +13,6 @@
 
 namespace flag_descriptions {
 
-// Title and description for the flag to enable the App Store Rating promo.
-extern const char kAppStoreRatingName[];
-extern const char kAppStoreRatingDescription[];
-
 // Title and description for the flag to control upstreaming credit cards.
 extern const char kAutofillCreditCardUploadName[];
 extern const char kAutofillCreditCardUploadDescription[];

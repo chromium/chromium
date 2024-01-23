@@ -11,11 +11,6 @@
 
 namespace flag_descriptions {
 
-const char kAppStoreRatingName[] = "Enable the App Store Rating promo.";
-const char kAppStoreRatingDescription[] =
-    "When enabled, App Store Rating promo will be presented to eligible "
-    "users.";
-
 const char kAutofillCreditCardUploadName[] =
     "Offers uploading Autofilled credit cards";
 const char kAutofillCreditCardUploadDescription[] =
