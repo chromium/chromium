@@ -166,8 +166,16 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
           blink::mojom::WebFeature::
               kThirdPartyCookieDeprecation_AllowByTopLevelStorageAccess);
       break;
-    default:
-      // No feature usage recorded for unknow mechanism values.
+    case ThirdPartyCookieAllowMechanism::
+        kAllowByEnterprisePolicyCookieAllowedForUrls:
+      third_party_cookie_features.push_back(
+          blink::mojom::WebFeature::
+              kThirdPartyCookieDeprecation_AllowByEnterprisePolicyCookieAllowedForUrls);
+      break;
+    // No feature usage recorded for the following mechanism values.
+    case ThirdPartyCookieAllowMechanism::kNone:
+    case ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
+    case ThirdPartyCookieAllowMechanism::kAllowByCORSException:
       break;
   }
 

@@ -81,16 +81,24 @@ class CookieSettingsBase {
   // should not be renumbered and numeric values should never be reused.
   enum class ThirdPartyCookieAllowMechanism {
     kNone = 0,
+    // Allow by explicit cookie content setting (e.g. UserBypass).
     kAllowByExplicitSetting = 1,
+    // Allow by global 3p cookie setting setting (e.g. Enterperise Policy:
+    // BlockThirdPartyCookies, UX).
     kAllowByGlobalSetting = 2,
+    // Allow by 3PCD metadata grants content settings.
     kAllowBy3PCDMetadata = 3,
+    // Allow by third-party deprecation trial.
     kAllowBy3PCD = 4,
     kAllowBy3PCDHeuristics = 5,
     kAllowByStorageAccess = 6,
     kAllowByTopLevelStorageAccess = 7,
     kAllowByCORSException = 8,
     kAllowByTopLevel3PCD = 9,
-    kMaxValue = kAllowByTopLevel3PCD,
+    // Allow by Enterperise Policy: CookiesAllowedForUrls.
+    kAllowByEnterprisePolicyCookieAllowedForUrls = 10,
+
+    kMaxValue = kAllowByEnterprisePolicyCookieAllowedForUrls,
   };
 
   class CookieSettingWithMetadata {
@@ -335,6 +343,7 @@ class CookieSettingsBase {
                bool is_third_party_request,
                net::CookieSettingOverrides overrides,
                const ContentSetting& setting,
+               const SettingSource& setting_source,
                bool is_explicit_setting) const;
 
   // Returns whether requests for |url| and |first_party_url| should always

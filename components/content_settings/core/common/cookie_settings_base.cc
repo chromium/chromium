@@ -53,6 +53,8 @@ constexpr StorageAccessResult GetStorageAccessResult(
       return StorageAccessResult::ACCESS_BLOCKED;
     case ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting:
     case ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting:
+    case ThirdPartyCookieAllowMechanism::
+        kAllowByEnterprisePolicyCookieAllowedForUrls:
       return StorageAccessResult::ACCESS_ALLOWED;
     case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadata:
       return StorageAccessResult::ACCESS_ALLOWED_3PCD_METADATA_GRANT;
@@ -84,6 +86,8 @@ constexpr std::optional<SettingSource> GetSettingSource(
     case ThirdPartyCookieAllowMechanism::kNone:
     case ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting:
     case ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting:
+    case ThirdPartyCookieAllowMechanism::
+        kAllowByEnterprisePolicyCookieAllowedForUrls:
     case ThirdPartyCookieAllowMechanism::kAllowByStorageAccess:
     case ThirdPartyCookieAllowMechanism::kAllowByTopLevelStorageAccess:
     case ThirdPartyCookieAllowMechanism::kAllowByCORSException:
@@ -341,6 +345,7 @@ CookieSettingsBase::DecideAccess(const GURL& url,
                                  bool is_third_party_request,
                                  net::CookieSettingOverrides overrides,
                                  const ContentSetting& setting,
+                                 const SettingSource& setting_source,
                                  bool is_explicit_setting) const {
   CHECK(!url.SchemeIsWSOrWSS());
 
@@ -348,6 +353,10 @@ CookieSettingsBase::DecideAccess(const GURL& url,
     return BlockAllCookies{};
   }
   if (is_explicit_setting) {
+    if (setting_source == SettingSource::SETTING_SOURCE_POLICY) {
+      return AllowAllCookies{ThirdPartyCookieAllowMechanism::
+                                 kAllowByEnterprisePolicyCookieAllowedForUrls};
+    }
     return AllowAllCookies{
         ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting};
   }
@@ -457,7 +466,8 @@ CookieSettingsBase::GetCookieSettingInternal(
 
   const absl::variant<AllowAllCookies, AllowPartitionedCookies, BlockAllCookies>
       choice = DecideAccess(url, first_party_url, is_third_party_request,
-                            overrides, cookie_setting, is_explicit_setting);
+                            overrides, cookie_setting, setting_info.source,
+                            is_explicit_setting);
 
   if (const AllowAllCookies* allow_cookies =
           absl::get_if<AllowAllCookies>(&choice)) {

@@ -13051,6 +13051,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4774" label="EffectiveAlignContentForTableCell"/>
   <int value="4775" label="UserFeatureNgOptimizedImage"/>
   <int value="4776" label="CSSAtRulePageMargin"/>
+  <int value="4777"
+      label="ThirdPartyCookieDeprecation_AllowByEnterprisePolicyCookieAllowedForUrls"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

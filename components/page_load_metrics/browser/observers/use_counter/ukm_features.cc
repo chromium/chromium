@@ -375,6 +375,8 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kKeyboardApiLock,
           WebFeature::kLCPImageWasLazy,
           WebFeature::kUserFeatureNgOptimizedImage,
+          WebFeature::
+              kThirdPartyCookieDeprecation_AllowByEnterprisePolicyCookieAllowedForUrls,
       }));
   return *opt_in_features;
 }
