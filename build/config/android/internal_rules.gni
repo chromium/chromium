@@ -2177,6 +2177,34 @@ if (enable_java_templates) {
       invoker.build_config,
       android_sdk_tools_bundle_aapt2,
       android_sdk_jar,
+
+      # TODO(b/315080809#comment4): remove these files after fixing
+      # build/print_python_deps.py.
+      "//third_party/protobuf/python/google/__init__.py",
+      "//third_party/protobuf/python/google/protobuf/__init__.py",
+      "//third_party/protobuf/python/google/protobuf/descriptor.py",
+      "//third_party/protobuf/python/google/protobuf/descriptor_database.py",
+      "//third_party/protobuf/python/google/protobuf/descriptor_pb2.py",
+      "//third_party/protobuf/python/google/protobuf/descriptor_pool.py",
+      "//third_party/protobuf/python/google/protobuf/internal/__init__.py",
+      "//third_party/protobuf/python/google/protobuf/internal/api_implementation.py",
+      "//third_party/protobuf/python/google/protobuf/internal/builder.py",
+      "//third_party/protobuf/python/google/protobuf/internal/containers.py",
+      "//third_party/protobuf/python/google/protobuf/internal/decoder.py",
+      "//third_party/protobuf/python/google/protobuf/internal/encoder.py",
+      "//third_party/protobuf/python/google/protobuf/internal/enum_type_wrapper.py",
+      "//third_party/protobuf/python/google/protobuf/internal/extension_dict.py",
+      "//third_party/protobuf/python/google/protobuf/internal/message_listener.py",
+      "//third_party/protobuf/python/google/protobuf/internal/python_message.py",
+      "//third_party/protobuf/python/google/protobuf/internal/type_checkers.py",
+      "//third_party/protobuf/python/google/protobuf/internal/well_known_types.py",
+      "//third_party/protobuf/python/google/protobuf/internal/wire_format.py",
+      "//third_party/protobuf/python/google/protobuf/message.py",
+      "//third_party/protobuf/python/google/protobuf/message_factory.py",
+      "//third_party/protobuf/python/google/protobuf/reflection.py",
+      "//third_party/protobuf/python/google/protobuf/symbol_database.py",
+      "//third_party/protobuf/python/google/protobuf/text_encoding.py",
+      "//third_party/protobuf/python/google/protobuf/text_format.py",
     ]
 
     _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
@@ -3133,6 +3161,11 @@ if (enable_java_templates) {
         args += [
           "--processorpath=@FileArg($_rebased_errorprone_buildconfig:deps_info:host_classpath)",
           "--enable-errorprone",
+        ]
+        inputs += [
+          # errorprone requires the plugin directory to detect src dir.
+          # https://source.chromium.org/chromium/chromium/src/+/main:tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/UseNetworkAnnotations.java;l=84;drc=dfd88085261b662a5c0a1abea1a3b120b08e8e48
+          "//tools/android/errorprone_plugin/OWNERS",
         ]
       }
       if (defined(invoker.skip_build_server) && invoker.skip_build_server) {
