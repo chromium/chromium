@@ -606,8 +606,8 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                               &chrome::ShowWebStore, browser_,
                               extension_urls::kExtensionsMenuUtmSource),
                           vector_icons::kGoogleChromeWebstoreIcon, icon_size))
-                      .SetAccessibleName(l10n_util::GetStringUTF16(
-                          IDS_EXTENSIONS_MENU_MAIN_PAGE_OPEN_CHROME_WEBSTORE_ACCESSIBLE_NAME))
+                      .SetTooltipText(l10n_util::GetStringUTF16(
+                          IDS_EXTENSIONS_MENU_MAIN_PAGE_OPEN_CHROME_WEBSTORE_TOOLTIP))
                       .CustomConfigure(
                           base::BindOnce([](views::ImageButton* view) {
                             view->SizeToPreferredSize();
