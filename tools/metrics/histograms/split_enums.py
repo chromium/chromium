@@ -28,7 +28,7 @@ import merge_xml
 import path_util
 
 ENUMS_XML_TEMPLATE = """<!--
-Copyright 2023 The Chromium Authors
+Copyright 2024 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->

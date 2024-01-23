@@ -419,7 +419,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ChromeElf.Beacon.SetupStatus" enum="BlacklistSetup"
+<histogram name="ChromeElf.Beacon.SetupStatus" enum="BlocklistSetup"
     expires_after="M121">
   <owner>pmonette@chromium.org</owner>
   <owner>kristianm@chromium.org</owner>

@@ -1,0 +1,1816 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="CDPCommands">
+<!-- Generated from *.pdl files.
+Called by update_protocol_commands_enum.py.-->
+
+  <int value="-2145122747" label="CSS.getMatchedStylesForNode"/>
+  <int value="-2144344672" label="Accessibility.getRootAXNode"/>
+  <int value="-2140450778" label="Network.enableReportingApi"/>
+  <int value="-2121617772" label="Page.getAdScriptId"/>
+  <int value="-2120702918" label="Network.enable"/>
+  <int value="-2114426720" label="Target.getTargetInfo"/>
+  <int value="-2090524743" label="Performance.disable"/>
+  <int value="-2085416813" label="Page.reload"/>
+  <int value="-2077791758" label="CSS.setEffectivePropertyValueForNode"/>
+  <int value="-2074309237" label="DOMSnapshot.disable"/>
+  <int value="-2071198138" label="WebAuthn.removeVirtualAuthenticator"/>
+  <int value="-2061665068" label="Runtime.releaseObjectGroup"/>
+  <int value="-2054641626" label="Network.setBlockedURLs"/>
+  <int value="-2048050381" label="CSS.getStyleSheetText"/>
+  <int value="-2043283578" label="HeapProfiler.getObjectByHeapObjectId"/>
+  <int value="-2037885365" label="Debugger.continueToLocation"/>
+  <int value="-2019499730" label="WebAuthn.clearCredentials"/>
+  <int value="-2017292277" label="EventBreakpoints.disable"/>
+  <int value="-2013503780" label="Target.setAutoAttach"/>
+  <int value="-2006455913" label="Autofill.setAddresses"/>
+  <int value="-1984361426" label="Page.setWebLifecycleState"/>
+  <int value="-1972839374" label="Input.cancelDragging"/>
+  <int value="-1965623020" label="Overlay.setShowLayoutShiftRegions"/>
+  <int value="-1965057034" label="ServiceWorker.startWorker"/>
+  <int value="-1964329099" label="Debugger.setScriptSource"/>
+  <int value="-1956576013" label="Storage.getSharedStorageMetadata"/>
+  <int value="-1949001185" label="Page.setDeviceOrientationOverride"/>
+  <int value="-1921205276" label="CSS.setRuleSelector"/>
+  <int value="-1884786444" label="CSS.setContainerQueryText"/>
+  <int value="-1880887647" label="Browser.resetPermissions"/>
+  <int value="-1858038350" label="LayerTree.profileSnapshot"/>
+  <int value="-1851961771" label="Overlay.setShowGridOverlays"/>
+  <int value="-1841547092" label="DOM.setInspectedNode"/>
+  <int value="-1837335741" label="WebAuthn.setResponseOverrideBits"/>
+  <int value="-1826914751" label="CSS.enable"/>
+  <int value="-1821623837" label="DOM.getNodesForSubtreeByStyle"/>
+  <int value="-1812700715" label="Network.setCacheDisabled"/>
+  <int value="-1805700735" label="Debugger.setPauseOnExceptions"/>
+  <int value="-1803793450" label="DOMDebugger.removeInstrumentationBreakpoint"/>
+  <int value="-1787839645" label="Animation.setPlaybackRate"/>
+  <int value="-1784328782" label="Page.setFontFamilies"/>
+  <int value="-1781466156" label="ServiceWorker.deliverPushMessage"/>
+  <int value="-1777331751" label="Memory.setPressureNotificationsSuppressed"/>
+  <int value="-1755290507" label="Page.addScriptToEvaluateOnLoad"/>
+  <int value="-1748219543" label="Cast.startTabMirroring"/>
+  <int value="-1741977375" label="Input.synthesizePinchGesture"/>
+  <int value="-1703305710" label="CSS.getMediaQueries"/>
+  <int value="-1702182004" label="HeapProfiler.startSampling"/>
+  <int value="-1699153796" label="Debugger.setBlackboxedRanges"/>
+  <int value="-1691104224" label="RunTextInputUpdatePostLifecycle:disabled"/>
+  <int value="-1689725215" label="Emulation.setHardwareConcurrencyOverride"/>
+  <int value="-1688287057" label="Browser.getBrowserCommandLine"/>
+  <int value="-1679779501" label="Profiler.getBestEffortCoverage"/>
+  <int value="-1678649390" label="Overlay.highlightSourceOrder"/>
+  <int value="-1673966787" label="Page.removeScriptToEvaluateOnNewDocument"/>
+  <int value="-1667233417" label="VisualDebugger.startStream"/>
+  <int value="-1658779077" label="Debugger.pause"/>
+  <int value="-1652028774" label="Security.setIgnoreCertificateErrors"/>
+  <int value="-1647185655" label="Storage.resetSharedStorageBudget"/>
+  <int value="-1644991671" label="BackgroundService.stopObserving"/>
+  <int value="-1644184365" label="Runtime.awaitPromise"/>
+  <int value="-1624825298" label="PerformanceTimeline.enable"/>
+  <int value="-1588454944" label="Autofill.enable"/>
+  <int value="-1585273540" label="Network.canClearBrowserCache"/>
+  <int value="-1569586139" label="Network.canEmulateNetworkConditions"/>
+  <int value="-1563030253" label="Runtime.terminateExecution"/>
+  <int value="-1544247768" label="Profiler.stop"/>
+  <int value="-1527727763" label="WindowManager.enterOverviewMode"/>
+  <int value="-1526812044" label="DOM.highlightNode"/>
+  <int value="-1526317261" label="SystemInfo.getFeatureState"/>
+  <int value="-1525750288" label="CacheStorage.deleteCache"/>
+  <int value="-1519947305" label="DOM.getContentQuads"/>
+  <int value="-1515300649" label="Emulation.setDefaultBackgroundColorOverride"/>
+  <int value="-1492666567" label="Accessibility.disable"/>
+  <int value="-1485363493" label="DeviceAccess.enable"/>
+  <int value="-1470297258" label="Emulation.setEmulatedVisionDeficiency"/>
+  <int value="-1465858972" label="Fetch.getResponseBody"/>
+  <int value="-1455930618" label="Target.createTarget"/>
+  <int value="-1451540405" label="Input.emulateTouchFromMouseEvent"/>
+  <int value="-1451369472" label="Storage.setStorageBucketTracking"/>
+  <int value="-1446883163" label="Console.clearMessages"/>
+  <int value="-1442526576" label="Storage.untrackCacheStorageForOrigin"/>
+  <int value="-1432964347" label="Page.getCookies"/>
+  <int value="-1431697196" label="DOM.getNodeForLocation"/>
+  <int value="-1420317579" label="Security.setOverrideCertificateErrors"/>
+  <int value="-1404493910" label="Storage.untrackCacheStorageForStorageKey"/>
+  <int value="-1395942554" label="Page.getManifestIcons"/>
+  <int value="-1392081818" label="Storage.setAttributionReportingTracking"/>
+  <int value="-1371094883" label="DOM.collectClassNamesFromSubtree"/>
+  <int value="-1369223898" label="Page.createIsolatedWorld"/>
+  <int value="-1368526920" label="DOM.getAttributes"/>
+  <int value="-1367872962" label="DOMStorage.clear"/>
+  <int value="-1357267098" label="Runtime.evaluate"/>
+  <int value="-1355571742" label="Tracing.recordClockSyncMarker"/>
+  <int value="-1355120895" label="Storage.clearCookies"/>
+  <int value="-1351903301" label="IO.close"/>
+  <int value="-1346825537" label="DOM.requestChildNodes"/>
+  <int value="-1345093649" label="Emulation.clearDeviceMetricsOverride"/>
+  <int value="-1343392079" label="Overlay.highlightNode"/>
+  <int value="-1342513878" label="Animation.getCurrentTime"/>
+  <int value="-1324576626" label="Emulation.setAutoDarkModeOverride"/>
+  <int value="-1323887873" label="FedCm.clickDialogButton"/>
+  <int value="-1322277271" label="HeapProfiler.startTrackingHeapObjects"/>
+  <int value="-1302835117" label="Network.clearBrowserCache"/>
+  <int value="-1295808105" label="Runtime.getHeapUsage"/>
+  <int value="-1293169951" label="Overlay.setShowContainerQueryOverlays"/>
+  <int value="-1288191555" label="Audits.enable"/>
+  <int value="-1284949359" label="Emulation.setDeviceMetricsOverride"/>
+  <int value="-1270083411" label="CSS.setPropertyRulePropertyName"/>
+  <int value="-1258931033" label="Emulation.setVirtualTimePolicy"/>
+  <int value="-1257736881" label="Page.getAppManifest"/>
+  <int value="-1250238276" label="LayerTree.releaseSnapshot"/>
+  <int value="-1244378441" label="Target.getBrowserContexts"/>
+  <int value="-1243666767" label="Security.handleCertificateError"/>
+  <int value="-1234598244" label="Runtime.getExceptionDetails"/>
+  <int value="-1231855102" label="Page.captureSnapshot"/>
+  <int value="-1225935188" label="Accessibility.getChildAXNodes"/>
+  <int value="-1216493428" label="Runtime.removeBinding"/>
+  <int value="-1213122281" label="Cast.enable"/>
+  <int value="-1209043890" label="Animation.setPaused"/>
+  <int value="-1208897686" label="LayerTree.enable"/>
+  <int value="-1199243217" label="Security.enable"/>
+  <int value="-1197428003" label="DOMDebugger.setXHRBreakpoint"/>
+  <int value="-1173968788" label="Accessibility.queryAXTree"/>
+  <int value="-1173653183" label="Page.setLifecycleEventsEnabled"/>
+  <int value="-1173634427" label="Profiler.takePreciseCoverage"/>
+  <int value="-1158992641" label="IndexedDB.enable"/>
+  <int value="-1158254608" label="Page.generateTestReport"/>
+  <int value="-1151367351" label="Emulation.clearIdleOverride"/>
+  <int value="-1145539007" label="Runtime.releaseObject"/>
+  <int value="-1145265485" label="Accessibility.enable"/>
+  <int value="-1144692665" label="WebAudio.enable"/>
+  <int value="-1137656432" label="Emulation.setFocusEmulationEnabled"/>
+  <int value="-1127032472" label="Browser.addPrivacySandboxEnrollmentOverride"/>
+  <int value="-1112688989" label="Debugger.getScriptSource"/>
+  <int value="-1101830280" label="Runtime.queryObjects"/>
+  <int value="-1086562894" label="DOM.markUndoableState"/>
+  <int value="-1079235489" label="Target.exposeDevToolsProtocol"/>
+  <int value="-1029638029"
+      label="DeviceOrientation.setDeviceOrientationOverride"/>
+  <int value="-1029220989" label="Emulation.setUserAgentOverride"/>
+  <int value="-1022705504" label="DOM.getQueryingDescendantsForContainer"/>
+  <int value="-1007644344" label="Tracing.end"/>
+  <int value="-1002264197" label="Page.getResourceTree"/>
+  <int value="-990115402" label="Page.getFrameTree"/>
+  <int value="-988085333" label="Page.searchInResource"/>
+  <int value="-986068555" label="Target.closeTarget"/>
+  <int value="-970451323" label="Network.deleteCookies"/>
+  <int value="-960596835" label="LayerTree.makeSnapshot"/>
+  <int value="-958796925" label="Network.searchInResponseBody"/>
+  <int value="-955928342" label="Browser.getWindowBounds"/>
+  <int value="-953162206" label="Debugger.removeBreakpoint"/>
+  <int value="-948475012" label="WebAuthn.getCredential"/>
+  <int value="-945591029" label="Overlay.highlightRect"/>
+  <int value="-944411795" label="LayerTree.compositingReasons"/>
+  <int value="-911207405" label="Emulation.setTouchEmulationEnabled"/>
+  <int value="-907457147" label="Tethering.bind"/>
+  <int value="-901272541" label="Debugger.setSkipAllPauses"/>
+  <int value="-891040737" label="Performance.enable"/>
+  <int value="-890778350" label="Target.getTargets"/>
+  <int value="-886232028" label="Preload.enable"/>
+  <int value="-875190713" label="Console.enable"/>
+  <int value="-871086928" label="Page.setFontSizes"/>
+  <int value="-867479607" label="Storage.setSharedStorageEntry"/>
+  <int value="-867245446" label="Overlay.setShowIsolatedElements"/>
+  <int value="-866676444" label="Input.insertText"/>
+  <int value="-858293734" label="Input.setInterceptDrags"/>
+  <int value="-858191539" label="FedCm.selectAccount"/>
+  <int value="-858025699" label="ServiceWorker.updateRegistration"/>
+  <int value="-854072406" label="Runtime.compileScript"/>
+  <int value="-848915045" label="Debugger.searchInContent"/>
+  <int value="-846072986" label="Storage.trackIndexedDBForOrigin"/>
+  <int value="-838401229" label="CSS.takeComputedStyleUpdates"/>
+  <int value="-829268123" label="Browser.setDownloadBehavior"/>
+  <int value="-818356867" label="Input.setIgnoreInputEvents"/>
+  <int value="-816796286" label="Animation.releaseAnimations"/>
+  <int value="-800701259"
+      label="EventBreakpoints.removeInstrumentationBreakpoint"/>
+  <int value="-789619680" label="DOMStorage.getDOMStorageItems"/>
+  <int value="-781301357" label="HeadlessExperimental.enable"/>
+  <int value="-775886564" label="DOM.discardSearchResults"/>
+  <int value="-774038059" label="Browser.crash"/>
+  <int value="-772306428" label="Fetch.continueWithAuth"/>
+  <int value="-763358578" label="Animation.enable"/>
+  <int value="-762202899" label="Runtime.setCustomObjectFormatterEnabled"/>
+  <int value="-755375693" label="Accessibility.getAXNodeAndAncestors"/>
+  <int value="-744282770" label="Log.disable"/>
+  <int value="-739815822" label="Overlay.setPausedInDebuggerMessage"/>
+  <int value="-738488878" label="DOMDebugger.removeXHRBreakpoint"/>
+  <int value="-721034032" label="Runtime.setAsyncCallStackDepth"/>
+  <int value="-711908380" label="Page.screencastFrameAck"/>
+  <int value="-707727729" label="Debugger.pauseOnAsyncCall"/>
+  <int value="-695222613" label="Target.sendMessageToTarget"/>
+  <int value="-695128668" label="FedCm.enable"/>
+  <int value="-691754282" label="Debugger.getPossibleBreakpoints"/>
+  <int value="-688213769" label="Emulation.canEmulate"/>
+  <int value="-681199137" label="DOM.setNodeValue"/>
+  <int value="-673814370" label="Overlay.setShowViewportSizeOnResize"/>
+  <int value="-665789240" label="Cast.startDesktopMirroring"/>
+  <int value="-664387516" label="CSS.addRule"/>
+  <int value="-662080232" label="DOM.getFileInfo"/>
+  <int value="-639662723" label="Page.printToPDF"/>
+  <int value="-633993067" label="DeviceAccess.disable"/>
+  <int value="-631715272" label="Page.navigateToHistoryEntry"/>
+  <int value="-629408737" label="Tracing.start"/>
+  <int value="-626460204" label="ServiceWorker.disable"/>
+  <int value="-617191394" label="Debugger.setBreakpointOnFunctionCall"/>
+  <int value="-609229118" label="Target.detachFromTarget"/>
+  <int value="-604953317" label="DOM.describeNode"/>
+  <int value="-603976241" label="Runtime.enable"/>
+  <int value="-603062504" label="Overlay.disable"/>
+  <int value="-600097863" label="Cast.setSinkToUse"/>
+  <int value="-590920088" label="Debugger.setReturnValue"/>
+  <int value="-590804334" label="Input.imeSetComposition"/>
+  <int value="-578519885" label="Overlay.setShowFlexOverlays"/>
+  <int value="-573285176" label="CSS.setLocalFontsEnabled"/>
+  <int value="-568907586" label="DOM.getFlattenedDocument"/>
+  <int value="-568009441" label="Animation.getPlaybackRate"/>
+  <int value="-559198953" label="DOM.removeAttribute"/>
+  <int value="-551218294" label="Emulation.setVisibleSize"/>
+  <int value="-540007950" label="Autofill.disable"/>
+  <int value="-535671266" label="Memory.simulatePressureNotification"/>
+  <int value="-531544830" label="Debugger.restartFrame"/>
+  <int value="-530334410" label="Page.setDeviceMetricsOverride"/>
+  <int value="-500426075" label="DOMStorage.enable"/>
+  <int value="-485414095" label="DOM.getTopLayerElements"/>
+  <int value="-459969447" label="Runtime.callFunctionOn"/>
+  <int value="-459625210" label="SystemInfo.getProcessInfo"/>
+  <int value="-437962397" label="DOM.getRelayoutBoundary"/>
+  <int value="-436119998" label="HeapProfiler.collectGarbage"/>
+  <int value="-427019446" label="Fetch.failRequest"/>
+  <int value="-423918421" label="Network.setAttachDebugStack"/>
+  <int value="-417003470" label="CSS.setMediaText"/>
+  <int value="-404755282" label="Page.clearDeviceOrientationOverride"/>
+  <int value="-396596692" label="DOM.querySelector"/>
+  <int value="-394047025" label="DOMSnapshot.captureSnapshot"/>
+  <int value="-389389859" label="Security.disable"/>
+  <int value="-377338474" label="Runtime.disable"/>
+  <int value="-362386202" label="Overlay.setShowFPSCounter"/>
+  <int value="-361464467" label="Browser.getHistogram"/>
+  <int value="-358355062" label="Preload.disable"/>
+  <int value="-348531350" label="CSS.getPlatformFontsForNode"/>
+  <int value="-331795539" label="Runtime.setMaxCallStackSizeToCapture"/>
+  <int value="-331277996" label="Emulation.setSensorOverrideEnabled"/>
+  <int value="-310372475" label="Page.setDocumentContent"/>
+  <int value="-302864521" label="Target.createBrowserContext"/>
+  <int value="-297759119" label="Profiler.stopTypeProfile"/>
+  <int value="-289149939" label="IndexedDB.clearObjectStore"/>
+  <int value="-277117129" label="Browser.getVersion"/>
+  <int value="-275022964" label="Page.enable"/>
+  <int value="-267746267" label="DOM.getFrameOwner"/>
+  <int value="-266984094" label="Fetch.fulfillRequest"/>
+  <int value="-249710131" label="Page.getAppId"/>
+  <int value="-247806539" label="WindowManager.exitOverviewMode"/>
+  <int value="-247683435" label="DOM.pushNodeByPathToFrontend"/>
+  <int value="-242754535" label="Target.autoAttachRelated"/>
+  <int value="-242721628" label="Overlay.getGridHighlightObjectsForTest"/>
+  <int value="-242161447" label="Media.enable"/>
+  <int value="-234690229" label="Runtime.getIsolateId"/>
+  <int value="-222268748" label="Browser.close"/>
+  <int value="-220986582" label="DOMDebugger.setBreakOnCSPViolation"/>
+  <int value="-211237482" label="Input.synthesizeTapGesture"/>
+  <int value="-208652542" label="DOM.setFileInputFiles"/>
+  <int value="-202100275" label="CSS.createStyleSheet"/>
+  <int value="-195833656" label="BackgroundService.clearEvents"/>
+  <int value="-190386215" label="Page.clearDeviceMetricsOverride"/>
+  <int value="-181158610" label="DOM.copyTo"/>
+  <int value="-177013498" label="IndexedDB.deleteObjectStoreEntries"/>
+  <int value="-175944980" label="Runtime.runScript"/>
+  <int value="-170317319" label="Storage.getInterestGroupDetails"/>
+  <int value="-166036459" label="Storage.getUsageAndQuota"/>
+  <int value="-151644927" label="Runtime.discardConsoleEntries"/>
+  <int value="-150266330" label="DOM.disable"/>
+  <int value="-145467037" label="WebAuthn.disable"/>
+  <int value="-141740484" label="Network.setRequestInterception"/>
+  <int value="-94534758" label="Browser.grantPermissions"/>
+  <int value="-80583668" label="HeapProfiler.takeHeapSnapshot"/>
+  <int value="-76190083" label="DOM.getOuterHTML"/>
+  <int value="-75081120" label="Accessibility.getFullAXTree"/>
+  <int value="-67509677" label="DOMDebugger.setDOMBreakpoint"/>
+  <int value="-66426073" label="Overlay.enable"/>
+  <int value="-52351725" label="Debugger.disable"/>
+  <int value="-48195242" label="LayerTree.snapshotCommandLog"/>
+  <int value="-25801263" label="Fetch.enable"/>
+  <int value="-16024274" label="ServiceWorker.dispatchSyncEvent"/>
+  <int value="-9686684" label="Target.activateTarget"/>
+  <int value="21859521" label="Profiler.disable"/>
+  <int value="23568337" label="Inspector.enable"/>
+  <int value="24052971" label="Network.getRequestPostData"/>
+  <int value="26373409" label="Fetch.disable"/>
+  <int value="27874304" label="Storage.getSharedStorageEntries"/>
+  <int value="30791492" label="Log.stopViolationsReport"/>
+  <int value="40689946" label="FedCm.disable"/>
+  <int value="53114292" label="Browser.crashGpuProcess"/>
+  <int value="86737553" label="BackgroundService.startObserving"/>
+  <int value="90550342" label="DOM.resolveNode"/>
+  <int value="91566930" label="CSS.setStyleSheetText"/>
+  <int value="93360860" label="DOMDebugger.setEventListenerBreakpoint"/>
+  <int value="108724892" label="Overlay.setShowWindowControlsOverlay"/>
+  <int value="111383160" label="Page.setDownloadBehavior"/>
+  <int value="139177156" label="Network.getCertificate"/>
+  <int value="149170295" label="Overlay.getHighlightObjectForTest"/>
+  <int value="150799963" label="HeapProfiler.getSamplingProfile"/>
+  <int value="155326200" label="HeapProfiler.enable"/>
+  <int value="158774237" label="WebAuthn.removeCredential"/>
+  <int value="159066111" label="WebAudio.getRealtimeData"/>
+  <int value="169232265" label="Storage.clearTrustTokens"/>
+  <int value="174855927" label="DOMStorage.removeDOMStorageItem"/>
+  <int value="177653395" label="Browser.setPermission"/>
+  <int value="187560850" label="Emulation.setEmulatedMedia"/>
+  <int value="191621771" label="Storage.setSharedStorageTracking"/>
+  <int value="196328412" label="WebAuthn.enable"/>
+  <int value="196370490" label="Network.getSecurityIsolationStatus"/>
+  <int value="208235261" label="Memory.startSampling"/>
+  <int value="224604091" label="CSS.setSupportsText"/>
+  <int value="246064052" label="Debugger.stepOver"/>
+  <int value="262694304" label="Page.setSPCTransactionMode"/>
+  <int value="263187585" label="IO.read"/>
+  <int value="270144535" label="CacheStorage.requestCachedResponse"/>
+  <int value="270317478" label="Page.setPrerenderingAllowed"/>
+  <int value="271867211" label="Memory.getSamplingProfile"/>
+  <int value="290135457" label="Network.disable"/>
+  <int value="290409213" label="Page.setTouchEmulationEnabled"/>
+  <int value="292481558" label="Storage.trackCacheStorageForOrigin"/>
+  <int value="292528027" label="CSS.takeCoverageDelta"/>
+  <int value="295531820" label="Page.clearCompilationCache"/>
+  <int value="308700671" label="DOM.setAttributeValue"/>
+  <int value="327696792" label="DOM.pushNodesByBackendIdsToFrontend"/>
+  <int value="335437143" label="Performance.setTimeDomain"/>
+  <int value="336021010" label="Browser.getWindowForTarget"/>
+  <int value="341273323" label="DOM.performSearch"/>
+  <int value="348034141" label="Fetch.continueResponse"/>
+  <int value="353032180" label="Page.getInstallabilityErrors"/>
+  <int value="358972747" label="Emulation.setCPUThrottlingRate"/>
+  <int value="359715705" label="Storage.deleteStorageBucket"/>
+  <int value="379234119" label="Browser.cancelDownload"/>
+  <int value="379903893" label="Log.enable"/>
+  <int value="382066135" label="Autofill.trigger"/>
+  <int value="388031835" label="Profiler.startTypeProfile"/>
+  <int value="389992603" label="Page.waitForDebugger"/>
+  <int value="393843097" label="Debugger.setInstrumentationBreakpoint"/>
+  <int value="399273851"
+      label="Network.takeResponseBodyForInterceptionAsStream"/>
+  <int value="399689316" label="DOMSnapshot.enable"/>
+  <int value="408966355" label="Memory.getAllTimeSamplingProfile"/>
+  <int value="411573731" label="DOM.getSearchResults"/>
+  <int value="421675002" label="Page.addCompilationCache"/>
+  <int value="429566559" label="DOM.removeNode"/>
+  <int value="430311216" label="Page.stopLoading"/>
+  <int value="430414061" label="Database.disable"/>
+  <int value="445282012" label="CSS.disable"/>
+  <int value="446273824" label="IndexedDB.disable"/>
+  <int value="456715942" label="Network.setAcceptedEncodings"/>
+  <int value="457119051" label="ServiceWorker.stopAllWorkers"/>
+  <int value="458783544" label="Emulation.setLocaleOverride"/>
+  <int value="466229462" label="ServiceWorker.skipWaiting"/>
+  <int value="479774670" label="Page.setGeolocationOverride"/>
+  <int value="480396934" label="Emulation.setSensorOverrideReadings"/>
+  <int value="497546749" label="Animation.resolveAnimation"/>
+  <int value="508794131" label="DOM.focus"/>
+  <int value="529971716" label="Network.emulateNetworkConditions"/>
+  <int value="530494361" label="WebAuthn.addCredential"/>
+  <int value="536921420" label="Debugger.setBreakpointsActive"/>
+  <int value="547099718" label="FedCm.dismissDialog"/>
+  <int value="559429465" label="DOMDebugger.getEventListeners"/>
+  <int value="565557320" label="Overlay.setShowPaintRects"/>
+  <int value="582901199" label="Page.crash"/>
+  <int value="599262407" label="DOM.setNodeName"/>
+  <int value="618183074" label="Browser.getHistograms"/>
+  <int value="618382475" label="Page.getOriginTrials"/>
+  <int value="622147841" label="Cast.stopCasting"/>
+  <int value="626600378" label="Input.dispatchDragEvent"/>
+  <int value="632939937" label="Page.setInterceptFileChooserDialog"/>
+  <int value="641086326" label="HeapProfiler.getHeapObjectId"/>
+  <int value="645220257" label="Debugger.setBreakpoint"/>
+  <int value="649541695" label="Network.setExtraHTTPHeaders"/>
+  <int value="651945695" label="Network.canClearBrowserCookies"/>
+  <int value="652630036" label="Emulation.setDisabledImageTypes"/>
+  <int value="670149526" label="Page.disable"/>
+  <int value="671757807" label="SystemInfo.getInfo"/>
+  <int value="677171630" label="Page.deleteCookie"/>
+  <int value="683635159" label="Network.setCookie"/>
+  <int value="692020211" label="Debugger.evaluateOnCallFrame"/>
+  <int value="709278881" label="EventBreakpoints.setInstrumentationBreakpoint"/>
+  <int value="724549002" label="Runtime.getProperties"/>
+  <int value="729059492" label="CSS.setStyleTexts"/>
+  <int value="738767691" label="LayerTree.disable"/>
+  <int value="746599172" label="CSS.collectClassNames"/>
+  <int value="759146008" label="Storage.getCookies"/>
+  <int value="769039661" label="DeviceAccess.cancelPrompt"/>
+  <int value="771075180" label="Page.close"/>
+  <int value="786912412" label="Emulation.setDocumentCookieDisabled"/>
+  <int value="808174994" label="Storage.getStorageKeyForFrame"/>
+  <int value="813176426" label="Emulation.setIdleOverride"/>
+  <int value="814261671" label="VisualDebugger.stopStream"/>
+  <int value="814946914" label="Console.disable"/>
+  <int value="818686559" label="Target.setRemoteLocations"/>
+  <int value="834356206" label="Page.addScriptToEvaluateOnNewDocument"/>
+  <int value="837103377" label="Browser.setWindowBounds"/>
+  <int value="869257715" label="DOM.moveTo"/>
+  <int value="878415823" label="Target.disposeBrowserContext"/>
+  <int value="904716405" label="LayerTree.loadSnapshot"/>
+  <int value="907569144" label="Accessibility.getPartialAXTree"/>
+  <int value="913559015" label="DOM.undo"/>
+  <int value="915465516" label="Page.stopScreencast"/>
+  <int value="916698928" label="Target.attachToTarget"/>
+  <int value="935769253" label="CSS.setKeyframeKey"/>
+  <int value="942566208" label="Emulation.resetPageScaleFactor"/>
+  <int value="945359169" label="Storage.setCookies"/>
+  <int value="953030097" label="Fetch.takeResponseBodyAsStream"/>
+  <int value="967272576" label="Tracing.requestMemoryDump"/>
+  <int value="974680650" label="Media.disable"/>
+  <int value="978448179" label="BackgroundService.setRecording"/>
+  <int value="984040144" label="WebAuthn.addVirtualAuthenticator"/>
+  <int value="986343566" label="Browser.executeBrowserCommand"/>
+  <int value="992337635" label="Storage.clearDataForStorageKey"/>
+  <int value="993405240" label="Page.getResourceContent"/>
+  <int value="1000056561" label="Inspector.disable"/>
+  <int value="1004564198" label="DOMDebugger.removeEventListenerBreakpoint"/>
+  <int value="1016614774" label="ServiceWorker.setForceUpdateOnPageLoad"/>
+  <int value="1017434616" label="HeapProfiler.stopSampling"/>
+  <int value="1017704054" label="Network.clearAcceptedEncodingsOverride"/>
+  <int value="1024855010" label="Profiler.stopPreciseCoverage"/>
+  <int value="1025285501" label="Audits.checkFormsIssues"/>
+  <int value="1026383861" label="Network.getCookies"/>
+  <int value="1026634223" label="Page.getNavigationHistory"/>
+  <int value="1060710637" label="CSS.trackComputedStyleUpdates"/>
+  <int value="1062782810" label="Network.getResponseBodyForInterception"/>
+  <int value="1070168037" label="CacheStorage.requestEntries"/>
+  <int value="1081462702" label="Performance.getMetrics"/>
+  <int value="1096155281" label="Overlay.highlightQuad"/>
+  <int value="1099637962" label="ServiceWorker.inspectWorker"/>
+  <int value="1101014906" label="Page.startScreencast"/>
+  <int value="1105205243" label="Tracing.getCategories"/>
+  <int value="1106495234" label="Input.synthesizeScrollGesture"/>
+  <int value="1107583474" label="Overlay.setShowScrollSnapOverlays"/>
+  <int value="1116221178" label="Page.removeScriptToEvaluateOnLoad"/>
+  <int value="1127653211" label="ServiceWorker.enable"/>
+  <int value="1145030905" label="ServiceWorker.dispatchPeriodicSyncEvent"/>
+  <int value="1152826264" label="DOM.getBoxModel"/>
+  <int value="1153980310" label="Audits.checkContrast"/>
+  <int value="1167544831" label="WebAuthn.setUserVerified"/>
+  <int value="1168280422" label="CSS.forcePseudoState"/>
+  <int value="1168863074" label="Network.setBypassServiceWorker"/>
+  <int value="1169680273" label="DOM.hideHighlight"/>
+  <int value="1198496813" label="CSS.getInlineStylesForNode"/>
+  <int value="1200442441" label="CacheStorage.deleteEntry"/>
+  <int value="1212265609" label="Storage.deleteSharedStorageEntry"/>
+  <int value="1214187445" label="VisualDebugger.filterStream"/>
+  <int value="1219893432"
+      label="DeviceOrientation.clearDeviceOrientationOverride"/>
+  <int value="1221113372" label="LayerTree.replaySnapshot"/>
+  <int value="1229328408" label="HeapProfiler.addInspectedHeapObject"/>
+  <int value="1234956974" label="Input.dispatchKeyEvent"/>
+  <int value="1247381184" label="Emulation.setScriptExecutionDisabled"/>
+  <int value="1254672336" label="Page.setAdBlockingEnabled"/>
+  <int value="1259032272" label="Emulation.setEmitTouchEventsForMouse"/>
+  <int value="1262636987" label="Target.attachToBrowserTarget"/>
+  <int value="1266700733" label="Memory.getBrowserSamplingProfile"/>
+  <int value="1266719444" label="Page.getLayoutMetrics"/>
+  <int value="1281437313" label="Profiler.startPreciseCoverage"/>
+  <int value="1281996484" label="Debugger.setBreakpointByUrl"/>
+  <int value="1294247175" label="Page.getPermissionsPolicyState"/>
+  <int value="1296142212" label="Storage.runBounceTrackingMitigations"/>
+  <int value="1297774021" label="HeapProfiler.disable"/>
+  <int value="1339457799" label="Page.produceCompilationCache"/>
+  <int value="1347864180" label="Storage.clearDataForOrigin"/>
+  <int value="1349483767" label="Emulation.setPageScaleFactor"/>
+  <int value="1355114541" label="Overlay.setShowAdHighlights"/>
+  <int value="1360040284" label="DOM.scrollIntoViewIfNeeded"/>
+  <int value="1367459250" label="Storage.untrackIndexedDBForOrigin"/>
+  <int value="1385622633" label="Memory.getDOMCounters"/>
+  <int value="1386253892" label="Emulation.setScrollbarsHidden"/>
+  <int value="1396206961" label="DOM.requestNode"/>
+  <int value="1400965131" label="Profiler.start"/>
+  <int value="1403028249" label="Page.clearGeolocationOverride"/>
+  <int value="1410125738" label="WebAuthn.getCredentials"/>
+  <int value="1425296098" label="Page.handleJavaScriptDialog"/>
+  <int value="1425370388" label="FedCm.resetCooldown"/>
+  <int value="1428875463" label="Emulation.setTimezoneOverride"/>
+  <int value="1430753789" label="CSS.stopRuleUsageTracking"/>
+  <int value="1437117511" label="Database.getDatabaseTableNames"/>
+  <int value="1447498492" label="IndexedDB.requestData"/>
+  <int value="1465527659" label="Network.clearBrowserCookies"/>
+  <int value="1468513664" label="HeadlessExperimental.beginFrame"/>
+  <int value="1473981969" label="Debugger.stepOut"/>
+  <int value="1481738191" label="DOM.setOuterHTML"/>
+  <int value="1491688128" label="Schema.getDomains"/>
+  <int value="1496745411" label="ServiceWorker.unregister"/>
+  <int value="1501336388" label="Network.getAllCookies"/>
+  <int value="1507998313" label="DOMDebugger.removeDOMBreakpoint"/>
+  <int value="1508208490" label="Cast.disable"/>
+  <int value="1510866078" label="Page.navigate"/>
+  <int value="1519789940" label="Debugger.getStackTrace"/>
+  <int value="1524679055" label="DOM.setNodeStackTracesEnabled"/>
+  <int value="1531241679" label="Animation.seekAnimations"/>
+  <int value="1534099552" label="HeapProfiler.stopTrackingHeapObjects"/>
+  <int value="1536244161" label="Overlay.setInspectMode"/>
+  <int value="1536817350" label="DOM.enable"/>
+  <int value="1539904595" label="Overlay.hideHighlight"/>
+  <int value="1543359405" label="CSS.getComputedStyleForNode"/>
+  <int value="1545930972" label="Storage.trackIndexedDBForStorageKey"/>
+  <int value="1549510961" label="Network.setUserAgentOverride"/>
+  <int value="1574924337" label="Emulation.setNavigatorOverrides"/>
+  <int value="1595549274" label="Emulation.setAutomationOverride"/>
+  <int value="1607170407" label="Page.resetNavigationHistory"/>
+  <int value="1620885255" label="Animation.disable"/>
+  <int value="1624827784" label="Debugger.disassembleWasmModule"/>
+  <int value="1637824156" label="Storage.overrideQuotaForOrigin"/>
+  <int value="1646836806" label="Log.clear"/>
+  <int value="1646926369" label="Browser.setDockTile"/>
+  <int value="1650959940" label="Tethering.unbind"/>
+  <int value="1653770998" label="Debugger.getWasmBytecode"/>
+  <int value="1660003527" label="Network.getResponseBody"/>
+  <int value="1667461816" label="CSS.getLayersForNode"/>
+  <int value="1667715250" label="Storage.untrackIndexedDBForStorageKey"/>
+  <int value="1667959673" label="DOMDebugger.setInstrumentationBreakpoint"/>
+  <int value="1670672931" label="Network.loadNetworkResource"/>
+  <int value="1672195472" label="DOM.setAttributesAsText"/>
+  <int value="1680515953" label="DeviceAccess.selectPrompt"/>
+  <int value="1682337559" label="FedCm.openUrl"/>
+  <int value="1686844117"
+      label="Storage.setAttributionReportingLocalTestingMode"/>
+  <int value="1691295897" label="Network.setCookies"/>
+  <int value="1703748832" label="Debugger.setVariableValue"/>
+  <int value="1718688528" label="IndexedDB.requestDatabase"/>
+  <int value="1721800289" label="Overlay.setShowScrollBottleneckRects"/>
+  <int value="1722263252" label="Page.captureScreenshot"/>
+  <int value="1745507914" label="Overlay.getSourceOrderHighlightObjectForTest"/>
+  <int value="1755113609" label="Storage.setInterestGroupTracking"/>
+  <int value="1771888696" label="Debugger.setBlackboxPatterns"/>
+  <int value="1773320382" label="CSS.getBackgroundColors"/>
+  <int value="1781595469" label="CacheStorage.requestCacheNames"/>
+  <int value="1789526457" label="Emulation.setGeolocationOverride"/>
+  <int value="1818737395" label="Runtime.addBinding"/>
+  <int value="1818996990" label="CSS.setScopeText"/>
+  <int value="1821949345" label="DOMStorage.disable"/>
+  <int value="1832339238" label="Network.continueInterceptedRequest"/>
+  <int value="1841408581" label="DOM.getNodeStackTraces"/>
+  <int value="1845967999" label="Animation.setTiming"/>
+  <int value="1852597165" label="Debugger.setAsyncCallStackDepth"/>
+  <int value="1862437443" label="Debugger.stepInto"/>
+  <int value="1863511163" label="Log.startViolationsReport"/>
+  <int value="1866482138" label="Emulation.clearGeolocationOverride"/>
+  <int value="1867970052" label="Runtime.runIfWaitingForDebugger"/>
+  <int value="1871531173" label="Audits.disable"/>
+  <int value="1872799439" label="Runtime.globalLexicalScopeNames"/>
+  <int value="1875498006" label="Input.dispatchTouchEvent"/>
+  <int value="1879140248" label="Database.enable"/>
+  <int value="1880013258" label="Debugger.resume"/>
+  <int value="1880557781" label="Storage.getTrustTokens"/>
+  <int value="1895140764" label="WebAuthn.setAutomaticPresenceSimulation"/>
+  <int value="1899140242" label="Debugger.nextWasmDisassemblyChunk"/>
+  <int value="1906105120" label="ServiceWorker.stopWorker"/>
+  <int value="1909294407" label="Profiler.enable"/>
+  <int value="1909383483" label="Audits.getEncodedResponse"/>
+  <int value="1909880687" label="Overlay.setShowWebVitals"/>
+  <int value="1916354122" label="Memory.prepareForLeakDetection"/>
+  <int value="1921901308" label="Overlay.setShowDebugBorders"/>
+  <int value="1923312798" label="IO.resolveBlob"/>
+  <int value="1925128188" label="DOM.querySelectorAll"/>
+  <int value="1930515882" label="Fetch.continueRequest"/>
+  <int value="1932914604" label="Profiler.takeTypeProfile"/>
+  <int value="1949917369" label="Storage.trackCacheStorageForStorageKey"/>
+  <int value="1953833269" label="Overlay.highlightFrame"/>
+  <int value="1958287755"
+      label="NativeProfiling.dumpProfilingDataOfAllProcesses"/>
+  <int value="1963490718" label="Emulation.getOverriddenSensorInformation"/>
+  <int value="1967103016" label="Network.streamResourceContent"/>
+  <int value="1969160702" label="WebAudio.disable"/>
+  <int value="1983891430" label="HeadlessExperimental.disable"/>
+  <int value="1985400723" label="Page.setRPHRegistrationMode"/>
+  <int value="1994321687" label="DOMSnapshot.getSnapshot"/>
+  <int value="1998509423" label="Page.setBypassCSP"/>
+  <int value="2000633710" label="Page.bringToFront"/>
+  <int value="2003699669" label="DOM.redo"/>
+  <int value="2033808144" label="DOM.highlightRect"/>
+  <int value="2035842032" label="Input.dispatchMouseEvent"/>
+  <int value="2038753303" label="Target.setDiscoverTargets"/>
+  <int value="2039405317" label="IndexedDB.deleteDatabase"/>
+  <int value="2043481114" label="Storage.clearSharedStorageEntries"/>
+  <int value="2045011463" label="Memory.forciblyPurgeJavaScriptMemory"/>
+  <int value="2052331271" label="IndexedDB.requestDatabaseNames"/>
+  <int value="2056602650" label="Overlay.setShowHinge"/>
+  <int value="2057401477" label="Profiler.setSamplingInterval"/>
+  <int value="2069838873" label="IndexedDB.getMetadata"/>
+  <int value="2090828476" label="Network.replayXHR"/>
+  <int value="2099191527" label="DOM.getDocument"/>
+  <int value="2099947942" label="Memory.stopSampling"/>
+  <int value="2106705522" label="Overlay.setShowHitTestBorders"/>
+  <int value="2107929699" label="Storage.setInterestGroupAuctionTracking"/>
+  <int value="2122626183" label="DOM.getContainerForNode"/>
+  <int value="2125009876" label="Database.executeSQL"/>
+  <int value="2127469544" label="DOMStorage.setDOMStorageItem"/>
+  <int value="2129092570" label="Debugger.enable"/>
+  <int value="2140268492" label="CSS.startRuleUsageTracking"/>
+</enum>
+
+<enum name="DevToolsAction">
+  <int value="1" label="Window docked"/>
+  <int value="2" label="Window undocked"/>
+  <int value="3" label="Scripts breakpoint set"/>
+  <int value="4" label="Timeline started"/>
+  <int value="5" label="CPU profile taken"/>
+  <int value="6" label="Heap profile taken"/>
+  <int value="7" label="Legacy Audits started"/>
+  <int value="8" label="Console evaluated"/>
+  <int value="9" label="File saved in workspace"/>
+  <int value="10" label="Device mode enabled"/>
+  <int value="11" label="Animations playback rate changed"/>
+  <int value="12" label="Revision applied"/>
+  <int value="13" label="File system directory content received"/>
+  <int value="14" label="Style rule edited"/>
+  <int value="15" label="Command evaluated in console panel"/>
+  <int value="16" label="DOM properties expanded"/>
+  <int value="17" label="Resized view in responsive mode"/>
+  <int value="18" label="Timeline started (page reload)"/>
+  <int value="19" label="Connect to node.js from frontend"/>
+  <int value="20" label="Connect to node.js directly (paste link from CLI)"/>
+  <int value="21" label="CPU throttling enabled"/>
+  <int value="22" label="CPU profile node focused"/>
+  <int value="23" label="CPU profile node excluded"/>
+  <int value="24" label="File picker file selected"/>
+  <int value="25" label="Command menu command executed"/>
+  <int value="26" label="Change inspected node in elements panel"/>
+  <int value="27" label="Style rule copied"/>
+  <int value="28" label="Coverage started"/>
+  <int value="29" label="Audits started"/>
+  <int value="30" label="Audits finished"/>
+  <int value="31" label="Showed third party badges"/>
+  <int value="32" label="Audits' view trace clicked"/>
+  <int value="33" label="Network panel film strip started recording"/>
+  <int value="34" label="Coverage report was filtered"/>
+  <int value="35" label="Coverage started (per block)"/>
+  <int value="36" label="Settings opened via gear icon"/>
+  <int value="37" label="Settings opened via menu"/>
+  <int value="38" label="Settings opened via command menu"/>
+  <int value="39" label="Tab moved to drawer"/>
+  <int value="40" label="Tab moved to main panel"/>
+  <int value="41" label="Capture CSS Overview clicked"/>
+  <int value="42" label="Virtual authenticator environment enabled"/>
+  <int value="43" label="Source Order Overlay Activated"/>
+  <int value="44" label="User keyboard shortcut added"/>
+  <int value="45" label="Keyboard shortcut removed"/>
+  <int value="46" label="Keyboard shortcut modified"/>
+  <int value="47" label="Link to custom property in var() clicked"/>
+  <int value="48" label="Custom property value edited"/>
+  <int value="49" label="Service worker network request button clicked"/>
+  <int value="50" label="Service worker network request panel closed quickly"/>
+  <int value="51" label="Network panel timing tab SW respondWith clicked"/>
+  <int value="52" label="Copy value in network request panel"/>
+  <int value="53" label="Console Sidebar opened"/>
+  <int value="54" label="User imported a trace into the performance panel"/>
+  <int value="55" label="User exported a trace from the performance panel"/>
+  <int value="56" label="Stack frame restarted"/>
+  <int value="57" label="Capture test protocol button clicked"/>
+  <int value="58" label="Breakpoint removed from remove button"/>
+  <int value="59" label="Breakpoint group expanded state changed"/>
+  <int value="60" label="Header overrides '.headers' file created"/>
+  <int value="61" label="Header overrides enable editing clicked"/>
+  <int value="62" label="Header overrides header added"/>
+  <int value="63" label="Header overrides header edited"/>
+  <int value="64" label="Header overrides header removed"/>
+  <int value="65" label="Header overrides '.headers' file edited"/>
+  <int value="66" label="Local overrides enabled"/>
+  <int value="67" label="Local overrides disabled"/>
+  <int value="68" label="Breakpoint removed from context menu"/>
+  <int value="69" label="Breakpoints in file removed from remove button"/>
+  <int value="70" label="Breakpoints in file removed from context menu"/>
+  <int value="71"
+      label="Breakpoints in file enabled or disabled from checkbox"/>
+  <int value="72"
+      label="Breakpoints in file enabled or disabled form context menu"/>
+  <int value="73" label="Breakpoint condition edited from sidebar"/>
+  <int value="74" label="Add Workspace folder via button in sidebar"/>
+  <int value="75" label="Sources - Workspace Tab - Remove folder"/>
+  <int value="76" label="Sources - Override Tab - Add Folder"/>
+  <int value="77" label="Sources - Override Tab - Remove Folder"/>
+  <int value="78" label="Workspace source selected"/>
+  <int value="79" label="Overrides source selected"/>
+  <int value="80" label="Stylesheet request initiator link clicked"/>
+  <int value="81" label="Breakpoint removed from gutter context menu"/>
+  <int value="82" label="Breakpoint removed from gutter toggle"/>
+  <int value="83" label="Style property inside a keyframe rule edited"/>
+  <int value="84" label="Override Content From Sources Context Menu"/>
+  <int value="85" label="Override Content From Network Context Menu"/>
+  <int value="86" label="Override resource type - Script"/>
+  <int value="87" label="Override resource type - StyleSheet"/>
+  <int value="88" label="Override resource type - Document"/>
+  <int value="89" label="Override resource type - Fetch and XHR"/>
+  <int value="90" label="Override resource type - Image"/>
+  <int value="91" label="Override resource type - Font"/>
+  <int value="92" label="Override Content Context Menu Setup"/>
+  <int value="93" label="Override Content Context Menu Abandon Setup"/>
+  <int value="94" label="Override Content Context Menu Activate Disabled"/>
+  <int value="95" label="Override Content Context Menu Open Existing File"/>
+  <int value="96" label="Override Content Context Menu Save New File"/>
+  <int value="97" label="Show All Overrides From Sources Context Menu"/>
+  <int value="98" label="Show All Overrides From Network Context Menu"/>
+  <int value="99" label="Animations panel - Animation groups are cleared"/>
+  <int value="100" label="Animations panel - Animations are paused"/>
+  <int value="101" label="Animations panel - Animations are resumed"/>
+  <int value="102"
+      label="Animations panel - Animated node description is clicked"/>
+  <int value="103" label="Animations panel - Animation group is scrubbed"/>
+  <int value="104" label="Animations panel - Animation group is replayed"/>
+  <int value="105" label="Sources - Override Tab - Delete Folder Context Menu"/>
+  <int value="107" label="Add Workspace folder via drag-drop"/>
+  <int value="108" label="Add Workspace folder via select in placeholder"/>
+  <int value="109" label="Override Content Context Menu Source Mapped Warning"/>
+  <int value="110"
+      label="Override Content Context Menu Redirect To Deployed File"/>
+  <int value="111" label="Add a new style rule in the styles pane"/>
+  <int value="112" label="Expand a console stack trace"/>
+  <int value="113" label="Console message with a possible insight shown"/>
+  <int value="114" label="Console insight requested using the context menu"/>
+  <int value="115" label="Console insight requested using the hover button"/>
+  <int value="116" label="Original insight has been refined"/>
+  <int value="117" label="Console insight rated positive"/>
+  <int value="118" label="Console insight rated negative"/>
+  <int value="119" label="Console insight closed"/>
+  <int value="120" label="Console insight generation errored"/>
+  <int value="121" label="Console insight hover button was shown"/>
+  <int value="122" label="Self-XSS warning shown in console"/>
+  <int value="123" label="Self-XSS warning dialog shown"/>
+  <int value="124" label="Self-XSS pasting allowed in console"/>
+  <int value="125" label="Self-XSS pasting allowed in dialog"/>
+</enum>
+
+<enum name="DevToolsAnimationPlaybackRateChanged">
+  <int value="0" label="100%"/>
+  <int value="1" label="25%"/>
+  <int value="2" label="10%"/>
+  <int value="3" label="Other"/>
+</enum>
+
+<enum name="DevToolsAnimationPointDragged">
+  <int value="0" label="Animation is dragged as a whole"/>
+  <int value="1" label="Keyframe is moved"/>
+  <int value="2" label="Animation start point is moved"/>
+  <int value="3" label="Animation finish point is moved"/>
+  <int value="4" label="Other"/>
+</enum>
+
+<enum name="DevToolsBadgeActivated">
+  <int value="0" label="Grid"/>
+  <int value="1" label="Subgrid"/>
+  <int value="2" label="Flex"/>
+  <int value="3" label="Ad"/>
+  <int value="4" label="Scroll snap"/>
+  <int value="5" label="Container"/>
+  <int value="6" label="Slot"/>
+  <int value="7" label="Top layer"/>
+  <int value="8" label="Reveal"/>
+</enum>
+
+<enum name="DevToolsBreakpointEditDialogRevealedFrom">
+  <int value="0" label="Breakpoint sidebar context menu"/>
+  <int value="1" label="Breakpoint sidebar edit button"/>
+  <int value="2" label="Breakpoint marker context menu"/>
+  <int value="3" label="Line gutter context menu"/>
+  <int value="4" label="Keyboard Shortcut"/>
+  <int value="5" label="Linkifier"/>
+  <int value="6" label="Mouse click"/>
+</enum>
+
+<enum name="DevToolsBreakpointsRestoredFromStorageCount">
+  <int value="0" label="Less than 100"/>
+  <int value="1" label="Less than 300"/>
+  <int value="2" label="Less than 1000"/>
+  <int value="3" label="Less than 3000"/>
+  <int value="4" label="Less than 10000"/>
+  <int value="5" label="Less than 30000"/>
+  <int value="6" label="Less than 100000"/>
+  <int value="7" label="Less than 300000"/>
+  <int value="8" label="Less than 1000000"/>
+  <int value="9" label="Above 1000000"/>
+</enum>
+
+<enum name="DevToolsBreakpointWithConditionAdded">
+  <int value="0" label="Logpoint"/>
+  <int value="1" label="Conditional Breakpoint"/>
+</enum>
+
+<enum name="DevToolsColorConvertedFrom">
+  <int value="0" label="Color Swatch (Shift + Click menu)"/>
+  <int value="1" label="Color Picker"/>
+</enum>
+
+<enum name="DevToolsColorPickerOpenedFrom">
+  <int value="0" label="Sources panel"/>
+  <int value="1" label="Styles pane"/>
+</enum>
+
+<enum name="DevToolsCSSHintShown">
+  <int value="0" label="Other"/>
+  <int value="1" label="AlignContent"/>
+  <int value="2" label="FlexItem"/>
+  <int value="3" label="FlexContainer"/>
+  <int value="4" label="GridContainer"/>
+  <int value="5" label="GridItem"/>
+  <int value="6" label="FlexGrid"/>
+  <int value="7" label="MulticolFlexGrid"/>
+  <int value="8" label="Padding"/>
+  <int value="9" label="Position"/>
+  <int value="10" label="ZIndex"/>
+  <int value="11" label="Sizing"/>
+  <int value="12" label="FlexOrGridItem"/>
+  <int value="13" label="FontVariationSettings"/>
+</enum>
+
+<enum name="DevToolsCSSPropertyDocumentation">
+  <int value="0" label="Documentation shown"/>
+  <int value="1" label="Feature toggled on"/>
+  <int value="2" label="Feature toggled off"/>
+</enum>
+
+<enum name="DevToolsDeveloperResourceLoaded">
+  <int value="0" label="LoadThroughPageViaTarget"/>
+  <int value="1" label="LoadThroughPageViaFrame"/>
+  <int value="2" label="LoadThroughPageFailure"/>
+  <int value="3" label="LoadThroughPageFallback"/>
+  <int value="4" label="FallbackAfterFailure"/>
+  <int value="5" label="FallbackPerOverride"/>
+  <int value="6" label="FallbackPerProtocol"/>
+  <int value="7" label="FallbackFailure"/>
+</enum>
+
+<enum name="DevToolsDeveloperResourceScheme">
+  <int value="0" label="SchemeOther"/>
+  <int value="1" label="SchemeUnknown"/>
+  <int value="2" label="SchemeHttp"/>
+  <int value="3" label="SchemeHttps"/>
+  <int value="4" label="SchemeHttpLocalhost"/>
+  <int value="5" label="SchemeHttpsLocalhost"/>
+  <int value="6" label="SchemeData"/>
+  <int value="7" label="SchemeFile"/>
+  <int value="8" label="SchemeBlob"/>
+</enum>
+
+<enum name="DevToolsElementsSidebarTab">
+  <int value="0" label="Other sidebar pane"/>
+  <int value="1" label="Elements - Styles"/>
+  <int value="2" label="Elements - Computed"/>
+  <int value="3" label="Elements - Layout"/>
+  <int value="4" label="Elements - Event Listeners"/>
+  <int value="5" label="Elements - DOM Breakpoints"/>
+  <int value="6" label="Elements - Properties"/>
+  <int value="7" label="Elements - Accessibility"/>
+</enum>
+
+<enum name="DevtoolsExperiments">
+  <int value="0" label="applyCustomStylesheet"/>
+  <int value="1" label="captureNodeCreationStacks"/>
+  <int value="2" label="sourcesPrettyPrint"/>
+  <int value="3" label="backgroundServices"/>
+  <int value="4" label="backgroundServicesNotifications"/>
+  <int value="5" label="backgroundServicesPaymentHandler"/>
+  <int value="6" label="backgroundServicesPushMessaging"/>
+  <int value="7" label="blackboxJSFramesOnTimeline"/>
+  <int value="8" label="cssOverview"/>
+  <int value="9" label="emptySourceMapAutoStepping"/>
+  <int value="10" label="inputEventsOnTimelineOverview"/>
+  <int value="11" label="liveHeapProfile"/>
+  <int value="12" label="nativeHeapProfiler"/>
+  <int value="13" label="protocolMonitor"/>
+  <int value="14" label="issuesPane"/>
+  <int value="15" label="developerResourcesView"/>
+  <int value="16" label="recordCoverageWithPerformanceTracing"/>
+  <int value="17" label="samplingHeapProfilerTimeline"/>
+  <int value="18" label="showOptionToNotTreatGlobalObjectsAsRoots"/>
+  <int value="19" label="sourceDiff"/>
+  <int value="20" label="sourceOrderViewer"/>
+  <int value="21" label="spotlight"/>
+  <int value="22" label="webauthnPane"/>
+  <int value="23" label="customKeyboardShortcuts"/>
+  <int value="24" label="timelineEventInitiators"/>
+  <int value="25" label="timelineFlowEvents"/>
+  <int value="26" label="timelineInvalidationTracking"/>
+  <int value="27" label="timelineShowAllEvents"/>
+  <int value="28" label="timelineV8RuntimeCallStats"/>
+  <int value="29" label="timelineWebGL"/>
+  <int value="30" label="timelineReplayEvent"/>
+  <int value="31" label="wasmDWARFDebugging"/>
+  <int value="32" label="dualScreenSupport"/>
+  <int value="33" label="cssGridFeatures"/>
+  <int value="34" label="movableTabs"/>
+  <int value="35" label="keyboardShortcutEditor"/>
+  <int value="36" label="cssFlexboxFeatures"/>
+  <int value="37" label="showWebVitalsInPerformancePanel"/>
+  <int value="38" label="recorder"/>
+  <int value="39" label="APCA"/>
+  <int value="40" label="cspViolationsView"/>
+  <int value="41" label="fontEditor"/>
+  <int value="42" label="fullAccessibilityTree"/>
+  <int value="43" label="ignoreListJSFramesOnTimeline"/>
+  <int value="44" label="contrastIssues"/>
+  <int value="45" label="experimentalCookieFeatures"/>
+  <int value="46" label="localizedDevTools"/>
+  <int value="47" label="bfcacheDebugging"/>
+  <int value="48" label="hideIssuesFeature"/>
+  <int value="49" label="reportingApiDebugging"/>
+  <int value="50" label="syncSettings"/>
+  <int value="51" label="groupAndHideIssuesByKind"/>
+  <int value="52" label="cssTypeComponentLength"/>
+  <int value="53" label="preciseChanges"/>
+  <int value="54" label="bfcacheDisplayTree"/>
+  <int value="55" label="stylesPaneCSSChanges"/>
+  <int value="56" label="headerOverrides"/>
+  <int value="57" label="lighthousePanelFR"/>
+  <int value="58" label="evaluateExpressionsWithSourceMaps"/>
+  <int value="59" label="cssLayers"/>
+  <int value="60" label="eyedropperColorPicker"/>
+  <int value="61" label="instrumentationBreakpoints"/>
+  <int value="62" label="cssAuthoringHints"/>
+  <int value="63" label="authoredDeployedGrouping"/>
+  <int value="64" label="importantDOMProperties"/>
+  <int value="65" label="justMyCode"/>
+  <int value="66" label="breakpointView"/>
+  <int value="67" label="timelineAsConsoleProfileResultPanel"/>
+  <int value="68" label="preloadingStatusPanel"/>
+  <int value="69" label="disableColorFormatSetting"/>
+  <int value="71" label="outermostTargetSelector"/>
+  <int value="72" label="jsProfilerTemporarilyEnable"/>
+  <int value="73" label="highlightErrorsElementsPanel"/>
+  <int value="74" label="setAllBreakpointsEagerly"/>
+  <int value="75" label="selfXssWarning"/>
+  <int value="76" label="useSourceMapScopes"/>
+  <int value="77" label="storageBucketsTree"/>
+  <int value="79" label="networkPanelFilterBarRedesign"/>
+  <int value="80" label="breadcrumbsPerformancePanel"/>
+  <int value="81" label="trackContextMenu"/>
+  <int value="82" label="autofillView"/>
+  <int value="83" label="sourcesFrameIndentationMarkersTemporarilyDisable"/>
+</enum>
+
+<enum name="DevToolsIssueCreated">
+  <int value="0" label="MixedContentIssue"/>
+  <int value="1" label="ContentSecurityPolicyIssue::kInlineViolation"/>
+  <int value="2" label="ContentSecurityPolicyIssue::kEvalViolation"/>
+  <int value="3" label="ContentSecurityPolicyIssue::kURLViolation"/>
+  <int value="4"
+      label="ContentSecurityPolicyIssue::kTrustedTypesSinkViolation"/>
+  <int value="5"
+      label="ContentSecurityPolicyIssue::kTrustedTypesPolicyViolation"/>
+  <int value="6" label="HeavyAdIssue::NetworkTotalLimit"/>
+  <int value="7" label="HeavyAdIssue::CpuTotalLimit"/>
+  <int value="8" label="HeavyAdIssue::CpuPeakLimit"/>
+  <int value="9"
+      label="CrossOriginEmbedderPolicyIssue::CoepFrameResourceNeedsCoepHeader"/>
+  <int value="10"
+      label="CrossOriginEmbedderPolicyIssue::CoopSandboxedIFrameCannotNavigateToCoopPage"/>
+  <int value="11" label="CrossOriginEmbedderPolicyIssue::CorpNotSameOrigin"/>
+  <int value="12"
+      label="CrossOriginEmbedderPolicyIssue::CorpNotSameOriginAfterDefaultedToSameOriginByCoep"/>
+  <int value="13" label="CrossOriginEmbedderPolicyIssue::CorpNotSameSite"/>
+  <int value="14" label="CookieIssue::ExcludeSameSiteNoneInsecure::ReadCookie"/>
+  <int value="15" label="CookieIssue::ExcludeSameSiteNoneInsecure::SetCookie"/>
+  <int value="16" label="CookieIssue::WarnSameSiteNoneInsecure::ReadCookie"/>
+  <int value="17" label="CookieIssue::WarnSameSiteNoneInsecure::SetCookie"/>
+  <int value="18"
+      label="CookieIssue::WarnSameSiteStrictLaxDowngradeStrict::Secure"/>
+  <int value="19"
+      label="CookieIssue::WarnSameSiteStrictLaxDowngradeStrict::Insecure"/>
+  <int value="20" label="CookieIssue::WarnCrossDowngrade::ReadCookie::Secure"/>
+  <int value="21"
+      label="CookieIssue::WarnCrossDowngrade::ReadCookie::Insecure"/>
+  <int value="22" label="CookieIssue::WarnCrossDowngrade::SetCookie::Secure"/>
+  <int value="23" label="CookieIssue::WarnCrossDowngrade::SetCookie::Insecure"/>
+  <int value="24"
+      label="CookieIssue::ExcludeNavigationContextDowngrade::Secure"/>
+  <int value="25"
+      label="CookieIssue::ExcludeNavigationContextDowngrade::Insecure"/>
+  <int value="26"
+      label="CookieIssue::ExcludeContextDowngrade::ReadCookie::Secure"/>
+  <int value="27"
+      label="CookieIssue::ExcludeContextDowngrade::ReadCookie::Insecure"/>
+  <int value="28"
+      label="CookieIssue::ExcludeContextDowngrade::SetCookie::Secure"/>
+  <int value="29"
+      label="CookieIssue::ExcludeContextDowngrade::SetCookie::Insecure"/>
+  <int value="30"
+      label="CookieIssue::ExcludeSameSiteUnspecifiedTreatedAsLax::ReadCookie"/>
+  <int value="31"
+      label="CookieIssue::ExcludeSameSiteUnspecifiedTreatedAsLax::SetCookie"/>
+  <int value="32"
+      label="CookieIssue::WarnSameSiteUnspecifiedLaxAllowUnsafe::ReadCookie"/>
+  <int value="33"
+      label="CookieIssue::WarnSameSiteUnspecifiedLaxAllowUnsafe::SetCookie"/>
+  <int value="34"
+      label="CookieIssue::WarnSameSiteUnspecifiedCrossSiteContext::ReadCookie"/>
+  <int value="35"
+      label="CookieIssue::WarnSameSiteUnspecifiedCrossSiteContext::SetCookie"/>
+  <int value="36" label="SharedArrayBufferIssue::TransferIssue"/>
+  <int value="37" label="SharedArrayBufferIssue::CreationIssue"/>
+  <int value="38" label="TrustedWebActivityIssue::kHttpError"/>
+  <int value="39" label="TrustedWebActivityIssue::kUnavailableOffline"/>
+  <int value="40" label="TrustedWebActivityIssue::kDigitalAssetLinks"/>
+  <int value="41" label="LowTextContrastIssue"/>
+  <int value="42" label="CorsIssue::InsecurePrivateNetwork"/>
+  <int value="43" label="CorsIssue::InsecurePrivateNetworkPreflight"/>
+  <int value="44" label="CorsIssue::InvalidHeaders"/>
+  <int value="45" label="CorsIssue::WildcardOriginWithCredentials"/>
+  <int value="46" label="CorsIssue::PreflightResponseInvalid"/>
+  <int value="47" label="CorsIssue::OriginMismatch"/>
+  <int value="48" label="CorsIssue::AllowCredentialsRequired"/>
+  <int value="49" label="CorsIssue::MethodDisallowedByPreflightResponse"/>
+  <int value="50" label="CorsIssue::HeaderDisallowedByPreflightResponse"/>
+  <int value="51" label="CorsIssue::RedirectContainsCredentials"/>
+  <int value="52" label="CorsIssue::DisallowedByMode"/>
+  <int value="53" label="CorsIssue::CorsDisabledScheme"/>
+  <int value="54" label="CorsIssue::PreflightMissingAllowExternal"/>
+  <int value="55" label="CorsIssue::PreflightInvalidAllowExternal"/>
+  <int value="56" label="CorsIssue::InvalidResponse"/>
+  <int value="57" label="CorsIssue::NoCorsRedirectModeNotFollow"/>
+  <int value="58" label="QuirksModeIssue::QuirksMode"/>
+  <int value="59" label="QuirksModeIssue::LimitedQuirksMode"/>
+  <int value="60" label="DeprecationIssue"/>
+  <int value="61" label="ClientHintIssue::MetaTagAllowListInvalidOrigin"/>
+  <int value="62" label="ClientHintIssue::MetaTagModifiedHTML"/>
+  <int value="64" label="GenericIssue::CrossOriginPortalPostMessageError"/>
+  <int value="65" label="GenericIssue::FormLabelForNameError"/>
+  <int value="66" label="GenericIssue::FormDuplicateIdForInputError"/>
+  <int value="67" label="GenericIssue::FormInputWithNoLabelError"/>
+  <int value="68" label="GenericIssue::FormAutocompleteAttributeEmptyError"/>
+  <int value="69"
+      label="GenericIssue::FormEmptyIdAndNameAttributesForInputError"/>
+  <int value="70" label="GenericIssue::FormAriaLabelledByToNonExistingId"/>
+  <int value="71"
+      label="GenericIssue::FormInputAssignedAutocompleteValueToIdOrNameAttributeError"/>
+  <int value="72" label="GenericIssue::FormLabelHasNeitherForNorNestedInput"/>
+  <int value="73" label="GenericIssue::FormLabelForMatchesNonExistingIdError"/>
+  <int value="74"
+      label="GenericIssue::FormHasPasswordFieldWithoutUsernameFieldError"/>
+  <int value="75"
+      label="GenericIssue::FormInputHasWrongButWellIntendedAutocompleteValueError"/>
+  <int value="76" label="StylesheetLoadingIssue::LateImportRule"/>
+  <int value="77" label="StylesheetLoadingIssue::RequestFailed"/>
+  <int value="78" label="CorsIssue::PreflightMissingPrivateNetworkAccessId"/>
+  <int value="79" label="CorsIssue::PreflightMissingPrivateNetworkAccessName"/>
+  <int value="80" label="CorsIssue::PrivateNetworkAccessPermissionUnavailable"/>
+  <int value="81" label="CorsIssue::PrivateNetworkAccessPermissionDenied"/>
+  <int value="82" label="CookieIssue::WarnThirdPartyPhaseout::ReadCookie"/>
+  <int value="83" label="CookieIssue::WarnThirdPartyPhaseout::SetCookie"/>
+  <int value="84" label="CookieIssue::ExcludeThirdPartyPhaseout::ReadCookie"/>
+  <int value="85" label="CookieIssue::ExcludeThirdPartyPhaseout::SetCookie"/>
+</enum>
+
+<enum name="DevToolsIssuesPanelIssueExpanded">
+  <int value="0" label="CrossOriginEmbedderPolicy"/>
+  <int value="1" label="MixedContent"/>
+  <int value="2" label="SameSiteCookie"/>
+  <int value="3" label="HeavyAd"/>
+  <int value="4" label="ContentSecurityPolicy"/>
+  <int value="5" label="Other"/>
+  <int value="6" label="Generic"/>
+  <int value="7" label="3pcdCookie"/>
+  <int value="8" label="GenericCookie"/>
+</enum>
+
+<enum name="DevToolsIssuesPanelOpenedFrom">
+  <int value="0" label="Console Info Bar"/>
+  <int value="1" label="Learn More Link COEP"/>
+  <int value="2" label="Status Bar Issues Counter"/>
+  <int value="3" label="Hamburger Menu"/>
+  <int value="4" label="Adorner"/>
+  <int value="5" label="Command Menu"/>
+</enum>
+
+<enum name="DevToolsIssuesPanelResourceOpened">
+  <int value="0" label="CrossOriginEmbedderPolicy Cookie opened"/>
+  <int value="1" label="CrossOriginEmbedderPolicy Element opened"/>
+  <int value="2" label="MixedContent Request opened"/>
+  <int value="3" label="SameSiteCookie Cookie opened"/>
+  <int value="4" label="SameSiteCookie Request opened"/>
+  <int value="5" label="HeavyAd Element opened"/>
+  <int value="6" label="ContentSecurityPolicy Directive opened"/>
+  <int value="7" label="ContentSecurityPolicy Element opened"/>
+  <int value="8" label="CrossOriginEmbedderPolicy LearnMore opened"/>
+  <int value="9" label="MixedContent LearnMore opened"/>
+  <int value="10" label="SameSiteCookie LearnMore opened"/>
+  <int value="11" label="HeavyAd LearnMore opened"/>
+  <int value="12" label="ContentSecurityPolicy LearnMore opened"/>
+</enum>
+
+<enum name="DevToolsKeybindSets">
+  <int value="0" label="devToolsDefault"/>
+  <int value="1" label="vsCode"/>
+</enum>
+
+<enum name="DevToolsKeyboardShortcutAction">
+  <int value="0" label="Other shortcut"/>
+  <int value="1" label="quick-open.show-command-menu"/>
+  <int value="2" label="console.clear"/>
+  <int value="3" label="console.show"/>
+  <int value="4" label="debugger.step"/>
+  <int value="5" label="debugger.step-into"/>
+  <int value="6" label="debugger.step-out"/>
+  <int value="7" label="debugger.step-over"/>
+  <int value="8" label="debugger.toggle-breakpoint"/>
+  <int value="9" label="debugger.toggle-breakpoint-enabled"/>
+  <int value="10" label="debugger.toggle-pause"/>
+  <int value="11" label="elements.edit-as-html"/>
+  <int value="12" label="elements.hide-element"/>
+  <int value="13" label="elements.redo"/>
+  <int value="14" label="elements.toggle-element-search"/>
+  <int value="15" label="elements.undo"/>
+  <int value="16" label="main.search-in-panel.find"/>
+  <int value="17" label="main.toggle-drawer"/>
+  <int value="18" label="network.hide-request-details"/>
+  <int value="19" label="network.search"/>
+  <int value="20" label="network.toggle-recording"/>
+  <int value="21" label="quick-open.show"/>
+  <int value="22" label="settings.show"/>
+  <int value="23" label="sources.search"/>
+  <int value="24" label="background-service.toggle-recording"/>
+  <int value="25" label="components.collect-garbage"/>
+  <int value="26" label="console.clear.history"/>
+  <int value="27" label="console.create-pin"/>
+  <int value="28" label="coverage.start-with-reload"/>
+  <int value="29" label="coverage.toggle-recording"/>
+  <int value="30" label="debugger.breakpoint-input-window"/>
+  <int value="31" label="debugger.evaluate-selection"/>
+  <int value="32" label="debugger.next-call-frame"/>
+  <int value="33" label="debugger.previous-call-frame"/>
+  <int value="34" label="debugger.run-snippet"/>
+  <int value="35" label="debugger.toggle-breakpoints-active"/>
+  <int value="36" label="elements.capture-area-screenshot"/>
+  <int value="37" label="emulation.capture-full-height-screenshot"/>
+  <int value="38" label="emulation.capture-node-screenshot"/>
+  <int value="39" label="emulation.capture-screenshot"/>
+  <int value="40" label="emulation.show-sensors"/>
+  <int value="41" label="emulation.toggle-device-mode"/>
+  <int value="42" label="help.release-notes"/>
+  <int value="43" label="help.report-issue"/>
+  <int value="44" label="input.start-replaying"/>
+  <int value="45" label="input.toggle-pause"/>
+  <int value="46" label="input.toggle-recording"/>
+  <int value="47" label="inspector-main.focus-debuggee"/>
+  <int value="48" label="inspector-main.hard-reload"/>
+  <int value="49" label="inspector-main.reload"/>
+  <int value="50" label="live-heap-profile.start-with-reload"/>
+  <int value="51" label="live-heap-profile.toggle-recording"/>
+  <int value="52" label="main.debug-reload"/>
+  <int value="53" label="main.next-tab"/>
+  <int value="54" label="main.previous-tab"/>
+  <int value="55" label="main.search-in-panel.cancel"/>
+  <int value="56" label="main.search-in-panel.find-next"/>
+  <int value="57" label="main.search-in-panel.find-previous"/>
+  <int value="58" label="main.toggle-dock"/>
+  <int value="59" label="main.zoom-in"/>
+  <int value="60" label="main.zoom-out"/>
+  <int value="61" label="main.zoom-reset"/>
+  <int value="62" label="network-conditions.network-low-end-mobile"/>
+  <int value="63" label="network-conditions.network-mid-tier-mobile"/>
+  <int value="64" label="network-conditions.network-offline"/>
+  <int value="65" label="network-conditions.network-online"/>
+  <int value="66" label="profiler.heap-toggle-recording"/>
+  <int value="67" label="profiler.js-toggle-recording"/>
+  <int value="68" label="resources.clear"/>
+  <int value="69" label="settings.documentation"/>
+  <int value="70" label="settings.shortcuts"/>
+  <int value="71" label="sources.add-folder-to-workspace"/>
+  <int value="72" label="sources.add-to-watch"/>
+  <int value="73" label="sources.close-all"/>
+  <int value="74" label="sources.close-editor-tab"/>
+  <int value="75" label="sources.create-snippet"/>
+  <int value="76" label="sources.go-to-line"/>
+  <int value="77" label="sources.go-to-member"/>
+  <int value="78" label="sources.jump-to-next-location"/>
+  <int value="79" label="sources.jump-to-previous-location"/>
+  <int value="80" label="sources.rename"/>
+  <int value="81" label="sources.save"/>
+  <int value="82" label="sources.save-all"/>
+  <int value="83" label="sources.switch-file"/>
+  <int value="84" label="timeline.jump-to-next-frame"/>
+  <int value="85" label="timeline.jump-to-previous-frame"/>
+  <int value="86" label="timeline.load-from-file"/>
+  <int value="87" label="timeline.next-recording"/>
+  <int value="88" label="timeline.previous-recording"/>
+  <int value="89" label="timeline.record-reload"/>
+  <int value="90" label="timeline.save-to-file"/>
+  <int value="91" label="timeline.show-history"/>
+  <int value="92" label="timeline.toggle-recording"/>
+  <int value="93" label="sources.increment-css"/>
+  <int value="94" label="sources.increment-css-by-ten"/>
+  <int value="95" label="sources.decrement-css"/>
+  <int value="96" label="sources.decrement-css-by-ten"/>
+  <int value="97" label="layers.reset-view"/>
+  <int value="98" label="layers.pan-mode"/>
+  <int value="99" label="layers.rotate-mode"/>
+  <int value="100" label="layers.zoom-in"/>
+  <int value="101" label="layers.zoom-out"/>
+  <int value="102" label="layers.up"/>
+  <int value="103" label="layers.down"/>
+  <int value="104" label="layers.left"/>
+  <int value="105" label="layers.right"/>
+  <int value="106" label="help.report-translation-issue"/>
+  <int value="107" label="rendering.toggle-prefers-color-scheme"/>
+  <int value="108" label="chrome-recorder.start-recording"/>
+  <int value="109" label="chrome-recorder.replay-recording"/>
+  <int value="110" label="chrome-recorder.toggle-code-view"/>
+  <int value="111" label="chrome-recorder.copy-recording-or-step"/>
+  <int value="112" label="changes.revert"/>
+  <int value="113" label="changes.copy"/>
+  <int value="114" label="elements.new-style-rule"/>
+  <int value="115" label="elements.refresh-event-listeners"/>
+  <int value="116" label="coverage.clear"/>
+  <int value="117" label="coverage.export"/>
+</enum>
+
+<enum name="DevToolsLanguage">
+  <int value="1" label="af - Afrikaans"/>
+  <int value="2" label="am - Amharic"/>
+  <int value="3" label="ar - Arabic"/>
+  <int value="4" label="as - Assamese"/>
+  <int value="5" label="az - Azerbaijani"/>
+  <int value="6" label="be - Belarusian"/>
+  <int value="7" label="bg - Bulgarian"/>
+  <int value="8" label="bn - Bangla"/>
+  <int value="9" label="bs - Bosnian"/>
+  <int value="10" label="ca - Catalan"/>
+  <int value="11" label="cs - Czech"/>
+  <int value="12" label="cy - Welsh"/>
+  <int value="13" label="da - Danish"/>
+  <int value="14" label="de - German"/>
+  <int value="15" label="el - Greek"/>
+  <int value="16" label="en-GB - British English"/>
+  <int value="17" label="en-US - American English"/>
+  <int value="18" label="es-419 - Latin American Spanish"/>
+  <int value="19" label="es - Spanish"/>
+  <int value="20" label="et - Estonian"/>
+  <int value="21" label="eu - Basque"/>
+  <int value="22" label="fa - Persian"/>
+  <int value="23" label="fi - Finnish"/>
+  <int value="24" label="fil - Filipino"/>
+  <int value="25" label="fr-CA - Canadian French"/>
+  <int value="26" label="fr - French"/>
+  <int value="27" label="gl - Galician"/>
+  <int value="28" label="gu - Gujarati"/>
+  <int value="29" label="he - Hebrew"/>
+  <int value="30" label="hi - Hindi"/>
+  <int value="31" label="hr - Croatian"/>
+  <int value="32" label="hu - Hungarian"/>
+  <int value="33" label="hy - Armenian"/>
+  <int value="34" label="id - Indonesian"/>
+  <int value="35" label="is - Icelandic"/>
+  <int value="36" label="it - Italian"/>
+  <int value="37" label="ja - Japanese"/>
+  <int value="38" label="ka - Georgian"/>
+  <int value="39" label="kk - Kazakh"/>
+  <int value="40" label="km - Khmer"/>
+  <int value="41" label="kn - Kannada"/>
+  <int value="42" label="ko - Korean"/>
+  <int value="43" label="ky - Kyrgyz"/>
+  <int value="44" label="lo - Lao"/>
+  <int value="45" label="lt - Lithuanian"/>
+  <int value="46" label="lv - Latvian"/>
+  <int value="47" label="mk - Macedonian"/>
+  <int value="48" label="ml - Malayalam"/>
+  <int value="49" label="mn - Mongolian"/>
+  <int value="50" label="mr - Marathi"/>
+  <int value="51" label="ms - Malay"/>
+  <int value="52" label="my - Burmese"/>
+  <int value="53" label="ne - Nepali"/>
+  <int value="54" label="nl - Dutch"/>
+  <int value="55" label="no - Norwegian"/>
+  <int value="56" label="or - Odia"/>
+  <int value="57" label="pa - Punjabi"/>
+  <int value="58" label="pl - Polish"/>
+  <int value="59" label="pt-PT - European Portuguese"/>
+  <int value="60" label="pt - Portuguese"/>
+  <int value="61" label="ro - Romanian"/>
+  <int value="62" label="ru - Russian"/>
+  <int value="63" label="si - Sinhala"/>
+  <int value="64" label="sk - Slovak"/>
+  <int value="65" label="sl - Slovenian"/>
+  <int value="66" label="sq - Albanian"/>
+  <int value="67" label="sr-Latn - Serbian (Latin)"/>
+  <int value="68" label="sr - Serbian"/>
+  <int value="69" label="sv - Swedish"/>
+  <int value="70" label="sw - Swahili"/>
+  <int value="71" label="ta - Tamil"/>
+  <int value="72" label="te - Telugu"/>
+  <int value="73" label="th - Thai"/>
+  <int value="74" label="tr - Turkish"/>
+  <int value="75" label="uk - Ukrainian"/>
+  <int value="76" label="ur - Urdu"/>
+  <int value="77" label="uz - Uzbek"/>
+  <int value="78" label="vi - Vietnamese"/>
+  <int value="79" label="zh - Chinese"/>
+  <int value="80" label="zh-HK - Chinese (Hong Kong)"/>
+  <int value="81" label="zh-TW - Chinese (Taiwan)"/>
+  <int value="82" label="zu - Zulu"/>
+</enum>
+
+<enum name="DevToolsLegacyResourceTypeFilterItemSelected">
+  <int value="0" label="All"/>
+  <int value="1" label="Documents"/>
+  <int value="2" label="Scripts"/>
+  <int value="3" label="XHR and Fetch"/>
+  <int value="4" label="Stylesheets"/>
+  <int value="5" label="Fonts"/>
+  <int value="6" label="Images"/>
+  <int value="7" label="Media"/>
+  <int value="8" label="Manifest"/>
+  <int value="9" label="WebSockets"/>
+  <int value="10" label="WebAssembly"/>
+  <int value="11" label="Other"/>
+</enum>
+
+<enum name="DevToolsLegacyResourceTypeFilterNumberOfSelectedChanged">
+  <int value="0" label="0"/>
+  <int value="1" label="1"/>
+  <int value="2" label="2"/>
+  <int value="3" label="3"/>
+  <int value="4" label="4"/>
+  <int value="5" label="5"/>
+  <int value="6" label="6"/>
+  <int value="7" label="7"/>
+  <int value="8" label="8"/>
+  <int value="9" label="9"/>
+  <int value="10" label="10"/>
+  <int value="11" label="11"/>
+</enum>
+
+<enum name="DevToolsLighthouseCategoryUsed">
+  <int value="0" label="Performance"/>
+  <int value="1" label="Accessibility"/>
+  <int value="2" label="BestPractices"/>
+  <int value="3" label="SEO"/>
+  <int value="4" label="PWA"/>
+  <int value="5" label="PubAds"/>
+</enum>
+
+<enum name="DevToolsLighthouseModeRun">
+  <int value="0" label="Navigation"/>
+  <int value="1" label="Timespan"/>
+  <int value="2" label="Snapshot"/>
+  <int value="3" label="LegacyNavigation"/>
+</enum>
+
+<enum name="DevToolsManifestSection">
+  <int value="0" label="Other section selected"/>
+  <int value="1" label="Identity section selected"/>
+  <int value="2" label="Presentation section selected"/>
+  <int value="3" label="Protocol Handlers section selected"/>
+  <int value="4" label="Icons section selected"/>
+  <int value="5" label="Window Controls Overlay section selected"/>
+</enum>
+
+<enum name="DevToolsMediaType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="text/javascript (Deprecated)"/>
+  <int value="2" label="text/css"/>
+  <int value="3" label="text/html"/>
+  <int value="4" label="application/xml"/>
+  <int value="5" label="application/wasm"/>
+  <int value="6" label="application/manifest+json"/>
+  <int value="7" label="application/x-aspx"/>
+  <int value="8" label="application/jsp"/>
+  <int value="9" label="text/x-c++src"/>
+  <int value="10" label="text/x-coffeescript"/>
+  <int value="11" label="application/vnd.dart"/>
+  <int value="12" label="text/typescript"/>
+  <int value="13" label="text/typescript-jsx"/>
+  <int value="14" label="application/json"/>
+  <int value="15" label="text/x-csharp"/>
+  <int value="16" label="text/x-java"/>
+  <int value="17" label="text/x-less"/>
+  <int value="18" label="application/x-httpd-php"/>
+  <int value="19" label="text/x-python"/>
+  <int value="20" label="text/x-sh"/>
+  <int value="21" label="text/x-gss"/>
+  <int value="22" label="text/x-sass"/>
+  <int value="23" label="text/x-scss"/>
+  <int value="24" label="text/markdown"/>
+  <int value="25" label="text/x-clojure"/>
+  <int value="26" label="text/jsx"/>
+  <int value="27" label="text/x-go"/>
+  <int value="28" label="text/x-kotlin"/>
+  <int value="29" label="text/x-scala"/>
+  <int value="30" label="text/x.svelte"/>
+  <int value="31" label="text/javascript+plain"/>
+  <int value="32" label="text/javascript+minified"/>
+  <int value="33" label="text/javascript+sourcemapped"/>
+  <int value="34" label="text/x.angular"/>
+  <int value="35" label="text/x.vue"/>
+</enum>
+
+<enum name="DevToolsNetworkPanelMoreFiltersItemSelected">
+  <int value="0" label="Hide data URLs"/>
+  <int value="1" label="Hide extension URLs"/>
+  <int value="2" label="Blocked response cookies"/>
+  <int value="3" label="Blocked requests"/>
+  <int value="4" label="3rd-party requests"/>
+</enum>
+
+<enum name="DevToolsNetworkPanelMoreFiltersNumberOfSelectedChanged">
+  <int value="0" label="0"/>
+  <int value="1" label="1"/>
+  <int value="2" label="2"/>
+  <int value="3" label="3"/>
+  <int value="4" label="4"/>
+  <int value="5" label="5"/>
+</enum>
+
+<enum name="DevToolsOpenedByAction">
+  <int value="1" label="Main menu or main shortcut"/>
+  <int value="2" label="Console tab shortcut"/>
+  <int value="3" label="Context menu inspect"/>
+  <int value="4" label="Inspect mode shortcut"/>
+  <int value="5" label="Toggle shortcut"/>
+</enum>
+
+<enum name="DevToolsPanel">
+  <int value="1" label="Elements"/>
+  <int value="2" label="Resources"/>
+  <int value="3" label="Network"/>
+  <int value="4" label="Sources"/>
+  <int value="5" label="Performance"/>
+  <int value="6" label="Memory"/>
+  <int value="7" label="Legacy Audits"/>
+  <int value="8" label="Console"/>
+  <int value="9" label="Layers"/>
+  <int value="10" label="Drawer - Console"/>
+  <int value="11" label="Drawer - Animations"/>
+  <int value="12" label="Drawer - Network config"/>
+  <int value="13" label="Drawer - Rendering"/>
+  <int value="14" label="Drawer - Sensors"/>
+  <int value="15" label="Drawer - Search"/>
+  <int value="16" label="Security"/>
+  <int value="17" label="JavaScript Profiler"/>
+  <int value="18" label="Lighthouse"/>
+  <int value="19" label="Drawer - Coverage"/>
+  <int value="20" label="Drawer - Protocol monitor"/>
+  <int value="21" label="Drawer - Remote devices"/>
+  <int value="22" label="Drawer - WebAudio"/>
+  <int value="23" label="Drawer - Changes"/>
+  <int value="24" label="Drawer - Performance monitor"/>
+  <int value="25" label="Drawer - What's New"/>
+  <int value="26" label="Drawer - Live Heap Profile"/>
+  <int value="27" label="Drawer - Quick source"/>
+  <int value="28" label="Drawer - Request blocking"/>
+  <int value="29" label="Settings - Preferences"/>
+  <int value="30" label="Settings - Workspace"/>
+  <int value="31" label="Settings - Experiments"/>
+  <int value="32" label="Settings - Blackbox"/>
+  <int value="33" label="Settings - Devices"/>
+  <int value="34" label="Settings - Throttling Conditions"/>
+  <int value="35" label="Settings - Emulation Geolocations"/>
+  <int value="36" label="Settings - Shortcuts"/>
+  <int value="37" label="Drawer - Issues"/>
+  <int value="38" label="Settings - Shortcuts (custom)"/>
+  <int value="39" label="CSS Overview"/>
+  <int value="40" label="Recorder"/>
+  <int value="41" label="Application - Trust Tokens"/>
+  <int value="42" label="Application - Reporting API"/>
+  <int value="43" label="Application - Interest Groups"/>
+  <int value="44" label="Application - Back/forward cache"/>
+  <int value="45" label="Application - Cache Storage"/>
+  <int value="46" label="Application - Background Fetch"/>
+  <int value="47" label="Application - Background Sync"/>
+  <int value="48" label="Application - Push Messaging"/>
+  <int value="49" label="Application - Notifications"/>
+  <int value="50" label="Application - Payment Handler"/>
+  <int value="51" label="Application - Periodic Background Sync"/>
+  <int value="52" label="Application - Service Workers"/>
+  <int value="53" label="Application - Manifest"/>
+  <int value="54" label="Application - Storage"/>
+  <int value="55" label="Application - Cookies"/>
+  <int value="56" label="Application - Frame Details"/>
+  <int value="57" label="Application - Frame Resource"/>
+  <int value="58" label="Application - Frame Window"/>
+  <int value="59" label="Application - Frame Worker"/>
+  <int value="60" label="Application - Local/Session Storage"/>
+  <int value="61" label="Application - IndexedDB"/>
+  <int value="62" label="Application - Web SQL"/>
+  <int value="63" label="Performance Insights"/>
+  <int value="64" label="Application - Preloading"/>
+  <int value="65" label="Application - Bounce Tracking Mitigations"/>
+  <int value="66" label="Drawer - Resource Loading"/>
+  <int value="67" label="Drawer - Autofill"/>
+</enum>
+
+<enum name="DevToolsPanelWithLocation">
+  <int value="1" label="Elements - Main"/>
+  <int value="2" label="Elements - Drawer"/>
+  <int value="3" label="Resources - Main"/>
+  <int value="4" label="Resources - Drawer"/>
+  <int value="5" label="Network - Main"/>
+  <int value="6" label="Network - Drawer"/>
+  <int value="7" label="Sources - Main"/>
+  <int value="8" label="Sources - Drawer"/>
+  <int value="9" label="Performance - Main"/>
+  <int value="10" label="Performance - Drawer"/>
+  <int value="11" label="Memory - Main"/>
+  <int value="12" label="Memory - Drawer"/>
+  <int value="13" label="Console - Main"/>
+  <int value="14" label="Console - Drawer"/>
+  <int value="15" label="Layers - Main"/>
+  <int value="16" label="Layers - Drawer"/>
+  <int value="17" label="Console View - Main"/>
+  <int value="18" label="Console View - Drawer"/>
+  <int value="19" label="Animations - Main"/>
+  <int value="20" label="Animations - Drawer"/>
+  <int value="21" label="Network config - Main"/>
+  <int value="22" label="Network config - Drawer"/>
+  <int value="23" label="Rendering - Main"/>
+  <int value="24" label="Rendering - Drawer"/>
+  <int value="25" label="Sensors - Main"/>
+  <int value="26" label="Sensors - Drawer"/>
+  <int value="27" label="Search - Main"/>
+  <int value="28" label="Search - Drawer"/>
+  <int value="29" label="Security - Main"/>
+  <int value="30" label="Security - Drawer"/>
+  <int value="31" label="JavaScript Profiler - Main"/>
+  <int value="32" label="JavaScript Profiler - Drawer"/>
+  <int value="33" label="Lighthouse - Main"/>
+  <int value="34" label="Lighthouse - Drawer"/>
+  <int value="35" label="Coverage - Main"/>
+  <int value="36" label="Coverage - Drawer"/>
+  <int value="37" label="Protocol monitor - Main"/>
+  <int value="38" label="Protocol monitor - Drawer"/>
+  <int value="39" label="Remote devices - Main"/>
+  <int value="40" label="Remote devices - Drawer"/>
+  <int value="41" label="WebAudio - Main"/>
+  <int value="42" label="WebAudio - Drawer"/>
+  <int value="43" label="Changes - Main"/>
+  <int value="44" label="Changes - Drawer"/>
+  <int value="45" label="Performance monitor - Main"/>
+  <int value="46" label="Performance monitor - Drawer"/>
+  <int value="47" label="What's New - Main"/>
+  <int value="48" label="What's New - Drawer"/>
+  <int value="49" label="Live Heap Profile - Main"/>
+  <int value="50" label="Live Heap Profile - Drawer"/>
+  <int value="51" label="Quick source - Main"/>
+  <int value="52" label="Quick source - Drawer"/>
+  <int value="53" label="Request blocking - Main"/>
+  <int value="54" label="Request blocking - Drawer"/>
+  <int value="55" label="Settings - Preferences - Main"/>
+  <int value="56" label="Settings - Preferences - Drawer"/>
+  <int value="57" label="Settings - Workspace - Main"/>
+  <int value="58" label="Settings - Workspace - Drawer"/>
+  <int value="59" label="Settings - Experiments - Main"/>
+  <int value="60" label="Settings - Experiments - Drawer"/>
+  <int value="61" label="Settings - Blackbox - Main"/>
+  <int value="62" label="Settings - Blackbox - Drawer"/>
+  <int value="63" label="Settings - Devices - Main"/>
+  <int value="64" label="Settings - Devices - Drawer"/>
+  <int value="65" label="Settings - Throttling Conditions - Main"/>
+  <int value="66" label="Settings - Throttling Conditions - Drawer"/>
+  <int value="67" label="Settings - Emulation Geolocations - Main"/>
+  <int value="68" label="Settings - Emulation Geolocations - Drawer"/>
+  <int value="69" label="Settings - Shortcuts - Main"/>
+  <int value="70" label="Settings - Shortcuts - Drawer"/>
+  <int value="71" label="Issues - Main"/>
+  <int value="72" label="Issues - Drawer"/>
+  <int value="73" label="Settings - Shortcuts (custom) - Main"/>
+  <int value="74" label="Settings - Shortcuts (custom) - Drawer"/>
+  <int value="75" label="CSS Overview - Main"/>
+  <int value="76" label="CSS Overview - Drawer"/>
+  <int value="77" label="Recorder - Main"/>
+  <int value="78" label="Recorder - Drawer"/>
+  <int value="79" label="Application - Trust Tokens - Main"/>
+  <int value="80" label="Application - Trust Tokens - Drawer"/>
+  <int value="81" label="Application - Reporting API - Main"/>
+  <int value="82" label="Application - Reporting API - Drawer"/>
+  <int value="83" label="Application - Interest Groups - Main"/>
+  <int value="84" label="Application - Interest Groups - Drawer"/>
+  <int value="85" label="Application - Back/forward cache - Main"/>
+  <int value="86" label="Application - Back/forward cache - Drawer"/>
+  <int value="87" label="Application - Cache Storage - Main"/>
+  <int value="88" label="Application - Cache Storage - Drawer"/>
+  <int value="89" label="Application - Background Fetch - Main"/>
+  <int value="90" label="Application - Background Fetch - Drawer"/>
+  <int value="91" label="Application - Background Sync - Main"/>
+  <int value="92" label="Application - Background Sync - Drawer"/>
+  <int value="93" label="Application - Push Messaging - Main"/>
+  <int value="94" label="Application - Push Messaging - Drawer"/>
+  <int value="95" label="Application - Notifications - Main"/>
+  <int value="96" label="Application - Notifications - Drawer"/>
+  <int value="97" label="Application - Payment Handler - Main"/>
+  <int value="98" label="Application - Payment Handler - Drawer"/>
+  <int value="99" label="Application - Periodic Background Sync - Main"/>
+  <int value="100" label="Application - Periodic Background Sync - Drawer"/>
+  <int value="101" label="Application - Service Workers - Main"/>
+  <int value="102" label="Application - Service Workers - Drawer"/>
+  <int value="103" label="Application - Manifest - Main"/>
+  <int value="104" label="Application - Manifest - Drawer"/>
+  <int value="105" label="Application - Storage - Main"/>
+  <int value="106" label="Application - Storage - Drawer"/>
+  <int value="107" label="Application - Cookies - Main"/>
+  <int value="108" label="Application - Cookies - Drawer"/>
+  <int value="109" label="Application - Frame Details - Main"/>
+  <int value="110" label="Application - Frame Details - Drawer"/>
+  <int value="111" label="Application - Frame Resource - Main"/>
+  <int value="112" label="Application - Frame Resource - Drawer"/>
+  <int value="113" label="Application - Frame Window - Main"/>
+  <int value="114" label="Application - Frame Window - Drawer"/>
+  <int value="115" label="Application - Frame Worker - Main"/>
+  <int value="116" label="Application - Frame Worker - Drawer"/>
+  <int value="117" label="Application - Local/Session Storage - Main"/>
+  <int value="118" label="Application - Local/Session Storage - Drawer"/>
+  <int value="119" label="Application - IndexedDB - Main"/>
+  <int value="120" label="Application - IndexedDB - Drawer"/>
+  <int value="121" label="Application - Web SQL - Main"/>
+  <int value="122" label="Application - Web SQL - Drawer"/>
+  <int value="123" label="Performance Insights - Main"/>
+  <int value="124" label="Performance Insights - Drawer"/>
+  <int value="125" label="Application - Preloading - Main"/>
+  <int value="126" label="Application - Preloading - Drawer"/>
+  <int value="127" label="Application - Bounce Tracking Mitigations - Main"/>
+  <int value="128" label="Application - Bounce Tracking Mitigations - Drawer"/>
+  <int value="129" label="Resource Loading - Main"/>
+  <int value="130" label="Resource Loading - Drawer"/>
+  <int value="131" label="Autofill - Main"/>
+  <int value="132" label="Autofill - Drawer"/>
+</enum>
+
+<enum name="DevToolsRecordingAssertion">
+  <int value="1" label="Assertion added"/>
+  <int value="2" label="Property assertion edited"/>
+  <int value="3" label="Attribute assertion edited"/>
+</enum>
+
+<enum name="DevToolsRecordingCodeToggled">
+  <int value="1" label="Recording showing code view"/>
+  <int value="2" label="Recording hiding code view"/>
+</enum>
+
+<enum name="DevToolsRecordingCopiedToClipboard">
+  <int value="1" label="Recording copied with Puppeteer"/>
+  <int value="2" label="Recording copied with JSON"/>
+  <int value="3" label="Recording copied with @puppeteer/replay"/>
+  <int value="4" label="Recording copied with extension"/>
+  <int value="5" label="Step copied with Puppeteer"/>
+  <int value="6" label="Step copied with JSON"/>
+  <int value="7" label="Step copied with @puppeteer/replay"/>
+  <int value="8" label="Step copied with extension"/>
+</enum>
+
+<enum name="DevToolsRecordingEdited">
+  <int value="1" label="Selector picker used"/>
+  <int value="2" label="Step added"/>
+  <int value="3" label="Step removed"/>
+  <int value="4" label="Selector added"/>
+  <int value="5" label="Selector removed"/>
+  <int value="6" label="Selector part added"/>
+  <int value="7" label="Selector part edited"/>
+  <int value="8" label="Selector part removed"/>
+  <int value="9" label="Type changed"/>
+  <int value="10" label="Other editing"/>
+</enum>
+
+<enum name="DevToolsRecordingExported">
+  <int value="1" label="To Puppeteer"/>
+  <int value="2" label="To JSON"/>
+  <int value="3" label="To @puppeteer/replay"/>
+  <int value="4" label="To extension"/>
+  <int value="5" label="To Lighthouse"/>
+</enum>
+
+<enum name="DevToolsRecordingReplayFinished">
+  <int value="1" label="Success"/>
+  <int value="2" label="Timeout error - Selectors"/>
+  <int value="3" label="Timeout error - Target"/>
+  <int value="4" label="Other error"/>
+</enum>
+
+<enum name="DevToolsRecordingReplaySpeed">
+  <int value="1" label="Replay normal"/>
+  <int value="2" label="Replay slow"/>
+  <int value="3" label="Replay very slow"/>
+  <int value="4" label="Replay extremely slow"/>
+</enum>
+
+<enum name="DevToolsRecordingReplayStarted">
+  <int value="1" label="Replay only"/>
+  <int value="2" label="Replay with performance tracing"/>
+  <int value="3" label="Replay via an extension"/>
+</enum>
+
+<enum name="DevToolsRecordingToggled">
+  <int value="1" label="Recording started"/>
+  <int value="2" label="Recording finished"/>
+</enum>
+
+<enum name="DevToolsResourceTypeFilterItemSelected">
+  <int value="0" label="All"/>
+  <int value="1" label="Documents"/>
+  <int value="2" label="Scripts"/>
+  <int value="3" label="XHR and Fetch"/>
+  <int value="4" label="Stylesheets"/>
+  <int value="5" label="Fonts"/>
+  <int value="6" label="Images"/>
+  <int value="7" label="Media"/>
+  <int value="8" label="Manifest"/>
+  <int value="9" label="WebSockets"/>
+  <int value="10" label="WebAssembly"/>
+  <int value="11" label="Other"/>
+</enum>
+
+<enum name="DevToolsResourceTypeFilterNumberOfSelectedChanged">
+  <int value="0" label="0"/>
+  <int value="1" label="1"/>
+  <int value="2" label="2"/>
+  <int value="3" label="3"/>
+  <int value="4" label="4"/>
+  <int value="5" label="5"/>
+  <int value="6" label="6"/>
+  <int value="7" label="7"/>
+  <int value="8" label="8"/>
+  <int value="9" label="9"/>
+  <int value="10" label="10"/>
+  <int value="11" label="11"/>
+</enum>
+
+<enum name="DevToolsSidebarPane">
+  <int value="0" label="Other sidebar pane"/>
+  <int value="1" label="Elements - Styles"/>
+  <int value="2" label="Elements - Computed"/>
+  <int value="3" label="Elements - Layout"/>
+  <int value="4" label="Elements - Event Listeners"/>
+  <int value="5" label="Elements - DOM Breakpoints"/>
+  <int value="6" label="Elements - Properties"/>
+  <int value="7" label="Elements - Accessibility"/>
+  <int value="8" label="Sources - Page"/>
+  <int value="9" label="Sources - Workspace"/>
+  <int value="10" label="Sources - Overrides"/>
+  <int value="11" label="Sources - Content Scripts"/>
+  <int value="12" label="Sources - Snippets"/>
+</enum>
+
+<enum name="DevToolsSourcesSidebarTab">
+  <int value="0" label="Other sidebar pane"/>
+  <int value="1" label="Sources - Page"/>
+  <int value="2" label="Sources - Workspace"/>
+  <int value="3" label="Sources - Overrides"/>
+  <int value="4" label="Sources - Content Scripts"/>
+  <int value="5" label="Sources - Snippets"/>
+</enum>
+
+<enum name="DevToolsStyleTextCopied">
+  <int value="1" label="Declaration from changed line"/>
+  <int value="2" label="All changes from Styles pane"/>
+  <int value="3" label="Declaration from context menu"/>
+  <int value="4" label="Property from context menu"/>
+  <int value="5" label="Value from context menu"/>
+  <int value="6" label="Declaration as JS from context menu"/>
+  <int value="7" label="Rule from context menu"/>
+  <int value="8" label="All declarations from context menu"/>
+  <int value="9" label="All declarations as JS from context menu"/>
+  <int value="10" label="Selector from context menu"/>
+</enum>
+
+<enum name="DevToolsSwatchActivated">
+  <int value="0" label="Variable link"/>
+  <int value="1" label="Animation name link"/>
+  <int value="2" label="Color"/>
+  <int value="3" label="Animation timing"/>
+  <int value="4" label="Shadow"/>
+  <int value="5" label="Grid editor"/>
+  <int value="6" label="Flex editor"/>
+  <int value="7" label="Angle"/>
+  <int value="8" label="Length"/>
+  <int value="9" label="Position fallback link"/>
+</enum>
+
+<enum name="DevToolsSyncSetting">
+  <int value="1" label="Chrome Sync disabled"/>
+  <int value="2" label="Chrome Sync 'Settings' ModelType disabled"/>
+  <int value="3" label="DevTools settings sync disabled"/>
+  <int value="4" label="DevTools settings sync enabled"/>
+</enum>
+
+<enum name="DevToolsVMInlineScriptType">
+  <int value="0" label="Module Script"/>
+  <int value="1" label="Classic Script"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
