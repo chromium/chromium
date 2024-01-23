@@ -22,35 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="BackgroundContextType">
-  <variant name="ExtensionEventPage3"
-      summary="event page. Emitted when extensions browser code receives
-               receives an ack from the renderer that it fired the event in
-               the event page. It only counts events that ran in a event page
-               background script, other listeners in the extension renderer
-               that can receive the event are not counted. Replaced previous
-               version because values were inaccurate due to a bug where we
-               recorded this metric for all events for an extension, rather
-               that just for those that ran in the lazy background page
-               script 2023-10"/>
-  <variant name="ExtensionPersistentBackgroundPage"
-      summary="persistent background page. Emitted shortly after extensions
-               browser code receives the ack from the renderer that it fired
-               the event in the persistent background page.
-               &quot;shortly&quot; because there is an IPC call between
-               dispatching the event in the renderer and the acknowledgement
-               by the browser side that emits the value"/>
-  <variant name="ExtensionServiceWorker2"
-      summary="service worker. Emitted shortly after extensions browser code
-               receives the ack from the renderer that it fired the event in
-               the service worker. &quot;shortly&quot; because there is a
-               function call between the receipt by the browser and recording
-               the value. Note: this may include some amount of execution
-               time of the extension service worker JS listener. Replaced
-               previous version because values were inaccurate due to a bug
-               with recording the dispatch start time 2023-08"/>
-</variants>
-
 <variants name="ExtensionFunctionExecutionTime">
   <variant name=".1msTo5ms"
       summary="Execution took between 1ms and 5ms (tolerable)."/>
@@ -1351,6 +1322,35 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram
+    name="Extensions.Events.DispatchToAckTime.ExtensionPersistentBackgroundPage"
+    units="microseconds" expires_after="never">
+<!-- expires-never: Monitors core extension system health. -->
+
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Note: Separate from
+    Extensions.Events.DispatchToAckTime.{BackgroundContextType}{ContextActive}
+    because PersistentBackgroundPages are always active (and thus don't need a
+    ContextActive variant).
+
+    Records the time it took for the event to be sent to the event router for
+    dispatch for background page of type persistent background page. Emitted
+    shortly after extensions browser code receives the ack from the renderer
+    that it fired the event in the persistent background page.
+    &quot;shortly&quot; because there is an IPC call between dispatching the
+    event in the renderer and the acknowledgement by the browser side that emits
+    the value. Reports samples at microseconds granualarity up to 5 minutes.
+    Values over 5 minutes are bucketed together since no ack is expected to take
+    longer than that. 5 minutes was decided since that is the maximum for
+    extension service worker event lifetime. This is recorded only for clients
+    with high-resolution clocks. It does not include any requests that utilize
+    the EventRouter::DispatchEventToSender() event routing flow (some web
+    request API, and web view API events).
+  </summary>
+</histogram>
+
+<histogram
     name="Extensions.Events.DispatchToAckTime.{BackgroundContextType}{ContextActive}"
     units="microseconds" expires_after="never">
 <!-- expires-never: Monitors core extension system health. -->
@@ -1368,7 +1368,28 @@ of interesting buckets, such as "internal + external".
     EventRouter::DispatchEventToSender() event routing flow (some web request
     API, and web view API events).
   </summary>
-  <token key="BackgroundContextType" variants="BackgroundContextType"/>
+  <token key="BackgroundContextType">
+    <variant name="ExtensionEventPage3"
+        summary="event page. Emitted when extensions browser code receives
+                 receives an ack from the renderer that it fired the event in
+                 the event page. It only counts events that ran in a event
+                 page background script, other listeners in the extension
+                 renderer that can receive the event are not counted.
+                 Replaced previous version because values were inaccurate due
+                 to a bug where we recorded this metric for all events for an
+                 extension, rather that just for those that ran in the lazy
+                 background page script 2023-10"/>
+    <variant name="ExtensionServiceWorker2"
+        summary="service worker. Emitted shortly after extensions browser
+                 code receives the ack from the renderer that it fired the
+                 event in the service worker. &quot;shortly&quot; because
+                 there is a function call between the receipt by the browser
+                 and recording the value. Note: this may include some amount
+                 of execution time of the extension service worker JS
+                 listener. Replaced previous version because values were
+                 inaccurate due to a bug with recording the dispatch start
+                 time 2023-08"/>
+  </token>
   <token key="ContextActive">
     <variant name="" summary=""/>
     <variant name=".Active"
