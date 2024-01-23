@@ -34,7 +34,6 @@ js_files = [
   "iron-selector/iron-selection.js",
   "iron-selector/iron-selector.js",
   "iron-test-helpers/mock-interactions.js",
-  "paper-behaviors/paper-ripple-behavior.js",
   "paper-behaviors/paper-ripple-mixin.js",
   "paper-progress/paper-progress.js",
   "paper-ripple/paper-ripple.js",
@@ -62,6 +61,7 @@ if (is_chromeos_ash) {
     "neon-animation/neon-animated-pages.js",
     "neon-animation/neon-animation-behavior.js",
     "neon-animation/neon-animation-runner-behavior.js",
+    "paper-behaviors/paper-ripple-behavior.js",
   ]
 }
 
@@ -117,9 +117,6 @@ ts_library("library") {
     "components-chromium/iron-selector/iron-selection.d.ts",
     "components-chromium/iron-selector/iron-selector.d.ts",
     "components-chromium/iron-test-helpers/mock-interactions.d.ts",
-
-    # TODO(dpapad): Ignore until a proper paper-ripple.d.ts is added.
-    #"components-chromium/paper-behaviors/paper-ripple-behavior.d.ts",
     "components-chromium/paper-behaviors/paper-ripple-mixin.d.ts",
     "components-chromium/paper-progress/paper-progress.d.ts",
     "components-chromium/paper-ripple/paper-ripple.d.ts",
