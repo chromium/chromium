@@ -1,6 +1,6 @@
 {
-  "version": "29.27",
-  "log_list_timestamp": "2024-01-15T13:01:48Z",
+  "version": "30.7",
+  "log_list_timestamp": "2024-01-23T12:54:35Z",
   "operators": [
     {
       "name": "Google",
@@ -386,8 +386,8 @@
           "url": "https://mammoth2024h1.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2023-11-26T12:00:00Z"
+            "retired": {
+              "timestamp": "2024-01-29T00:00:00Z"
             }
           },
           "temporal_interval": {
