@@ -58,4 +58,12 @@ found in the LICENSE file.
 
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/alert_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_error"
+        android:visibility="gone"/>
+
 </LinearLayout>
