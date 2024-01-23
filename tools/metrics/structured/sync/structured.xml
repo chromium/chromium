@@ -409,13 +409,13 @@
     </summary>
     <metric name="App" type="hmac-string">
       <summary>
-        App ID of the most-recently-opened app when this launch occured. This can be
+        App ID of the most-recently-opened app when this launch occurred. This can be
         an app ID of a Chrome app, Arc++ app, or PWA.
       </summary>
     </metric>
     <metric name="Domain" type="hmac-string">
       <summary>
-        The most-recently-visited domain when this launch ocurred.
+        The most-recently-visited domain when this launch occurred.
       </summary>
     </metric>
     <metric name="Hour" type="int">
@@ -557,7 +557,7 @@
     </metric>
     <metric name="FileType" type="int">
       <summary>
-        The file type of of this attachment.
+        The file type of this attachment.
       </summary>
     </metric>
     <metric name="Size" type="int">
@@ -594,7 +594,7 @@
     </metric>
     <metric name="TextType" type="int">
       <summary>
-        The text type of of this attachment.
+        The text type of this attachment.
       </summary>
     </metric>
     <metric name="Size" type="int">
@@ -1318,7 +1318,7 @@
 
   <event name="OOBE.PageLeft" force_record="true">
     <summary>
-      Recorded after a screeen was exited.
+      Recorded after a screen was exited.
     </summary>
     <metric name="PageId" type="raw-string">
       <summary>
