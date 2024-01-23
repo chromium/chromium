@@ -648,8 +648,7 @@ void AutofillAgent::UserGestureObserved() {
 // mojom::AutofillAgent:
 void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
                                     mojom::ActionPersistence action_persistence,
-                                    FormRendererId form_renderer_id,
-                                    const std::vector<FormFieldData>& fields) {
+                                    const FormData::FillData& form) {
   WebFormControlElement last_queried_element = last_queried_element_.GetField();
   // If `last_queried_element_` is null or not focused, Autofill was either
   // triggered from another frame or the `last_queried_element_` has been
@@ -663,15 +662,15 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
   // In these cases, we set `last_queried_element_` to some form field as if
   // Autofill had been triggered from that field. This is necessary because
   // currently AutofillAgent relies on `last_queried_element_` in many places.
-  if (!fields.empty() &&
+  if (!form.fields.empty() &&
       (last_queried_element.IsNull() || !last_queried_element.Focused() ||
        form_util::GetFormRendererId(form_util::GetOwningForm(
-           last_queried_element)) != form_renderer_id)) {
+           last_queried_element)) != form.unique_renderer_id)) {
     if (!unsafe_render_frame()) {
       return;
     }
     WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
-    for (const FormFieldData& field : fields) {
+    for (const FormFieldData::FillData& field : form.fields) {
       last_queried_element = form_util::FindFormControlByRendererId(
           document, field.unique_renderer_id);
       if (!last_queried_element.IsNull()) {
@@ -688,15 +687,16 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
   ClearPreviewedForm();
 
   if (action_persistence == mojom::ActionPersistence::kPreview) {
-    previewed_elements_ =
-        form_util::ApplyFormAction(fields, last_queried_element, action_type,
-                                   action_persistence, field_data_manager());
+    previewed_elements_ = form_util::ApplyFormAction(
+        form.fields, last_queried_element, action_type, action_persistence,
+        field_data_manager());
   } else {
     was_last_action_fill_ = true;
 
     std::vector<std::pair<FieldRef, blink::WebAutofillState>> filled_fields =
-        form_util::ApplyFormAction(fields, last_queried_element, action_type,
-                                   action_persistence, field_data_manager());
+        form_util::ApplyFormAction(form.fields, last_queried_element,
+                                   action_type, action_persistence,
+                                   field_data_manager());
 
     // Notify Password Manager of filled fields.
     for (const auto& [filled_field, field_autofill_state] : filled_fields) {
@@ -718,7 +718,7 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
     if (auto* render_frame = unsafe_render_frame()) {
       WebDocument document = render_frame->GetWebFrame()->GetDocument();
       WebFormElement updated_form_element =
-          form_util::FindFormByRendererId(document, form_renderer_id);
+          form_util::FindFormByRendererId(document, form.unique_renderer_id);
       std::optional<FormData> updated_form_data = form_util::ExtractFormData(
           document, updated_form_element, field_data_manager());
       if (auto* autofill_driver = unsafe_autofill_driver();

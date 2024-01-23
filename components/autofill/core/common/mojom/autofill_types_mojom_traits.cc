@@ -253,6 +253,25 @@ bool StructTraits<
 }
 
 // static
+bool StructTraits<autofill::mojom::FormFieldData_FillDataDataView,
+                  autofill::FormFieldData::FillData>::
+    Read(autofill::mojom::FormFieldData_FillDataDataView data,
+         autofill::FormFieldData::FillData* out) {
+  if (!data.ReadValue(&out->value)) {
+    return false;
+  }
+  if (!data.ReadSection(&out->section)) {
+    return false;
+  }
+  if (!data.ReadUniqueRendererId(&out->unique_renderer_id)) {
+    return false;
+  }
+  out->is_autofilled = data.is_autofilled();
+  out->force_override = data.force_override();
+  return true;
+}
+
+// static
 bool StructTraits<autofill::mojom::ButtonTitleInfoDataView,
                   autofill::ButtonTitleInfo>::
     Read(autofill::mojom::ButtonTitleInfoDataView data,
@@ -303,6 +322,20 @@ bool StructTraits<autofill::mojom::FormDataDataView, autofill::FormData>::Read(
                base::checked_cast<size_t>(predecessor) < out->fields.size();
       },
       &autofill::FrameTokenWithPredecessor::predecessor);
+}
+
+// static
+bool StructTraits<autofill::mojom::FormData_FillDataDataView,
+                  autofill::FormData::FillData>::
+    Read(autofill::mojom::FormData_FillDataDataView data,
+         autofill::FormData::FillData* out) {
+  if (!data.ReadUniqueRendererId(&out->unique_renderer_id)) {
+    return false;
+  }
+  if (!data.ReadFields(&out->fields)) {
+    return false;
+  }
+  return true;
 }
 
 // static

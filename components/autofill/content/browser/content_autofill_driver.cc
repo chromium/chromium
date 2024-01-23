@@ -237,10 +237,9 @@ base::flat_set<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
       field_type_map,
       [](autofill::AutofillDriver* target, mojom::ActionType action_type,
          mojom::ActionPersistence action_persistence,
-         FormRendererId form_renderer_id,
-         const std::vector<FormFieldData>& fields) {
+         const FormData::FillData& form) {
         cast(target)->GetAutofillAgent()->ApplyFormAction(
-            action_type, action_persistence, form_renderer_id, fields);
+            action_type, action_persistence, form);
       });
 }
 

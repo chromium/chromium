@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/format_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -285,10 +286,17 @@ FormCache::UpdateFormCacheResult UpdateFormCache(FormCache& form_cache) {
   return form_cache.UpdateFormCache(*base::MakeRefCounted<FieldDataManager>());
 }
 
-void ApplyFillFormAction(base::span<const FormFieldData> fields,
-                         const blink::WebFormControlElement& initiating_element,
-                         mojom::ActionPersistence action_persistence) {
-  ApplyFormAction(fields, initiating_element, mojom::ActionType::kFill,
+void ApplyFillFormAction(
+    base::span<const FormFieldData> fields,
+    const blink::WebFormControlElement& initiating_element,
+    mojom::ActionPersistence action_persistence,
+    mojom::ActionType action_type = mojom::ActionType::kFill) {
+  std::vector<FormFieldData::FillData> filling_fields;
+  filling_fields.reserve(fields.size());
+  for (const FormFieldData& field : fields) {
+    filling_fields.emplace_back(field);
+  }
+  ApplyFormAction(filling_fields, initiating_element, action_type,
                   action_persistence,
                   *base::MakeRefCounted<FieldDataManager>());
 }
@@ -5136,11 +5144,10 @@ TEST_F(FormAutofillTest, UndoAutofill) {
     undo_fields.push_back(form.fields[i]);
   }
 
-  scoped_refptr<FieldDataManager> field_data_manager(new FieldDataManager);
-
   form.fields = undo_fields;
-  ApplyFormAction(form.fields, text_element_1, mojom::ActionType::kUndo,
-                  mojom::ActionPersistence::kFill, *field_data_manager);
+  ApplyFillFormAction(form.fields, text_element_1,
+                      mojom::ActionPersistence::kFill,
+                      mojom::ActionType::kUndo);
   EXPECT_THAT(text_element_1,
               HasAutofillValue("undo_text_1", WebAutofillState::kNotFilled));
   EXPECT_THAT(text_element_2, HasAutofillValue("autofill_text_2",

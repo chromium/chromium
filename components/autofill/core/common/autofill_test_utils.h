@@ -223,18 +223,6 @@ MATCHER_P(DeepEqualsFormData,
   return FormData::DeepEqual(arg, form_data);
 }
 
-MATCHER_P(SameFieldsAs, fields, negation ? "does not equal" : "equals") {
-  if (fields.size() != arg.fields.size()) {
-    return false;
-  }
-  for (size_t i = 0; i < arg.fields.size(); ++i) {
-    if (!arg.fields[i].SameFieldAs(fields[i])) {
-      return false;
-    }
-  }
-  return true;
-}
-
 }  // namespace test
 
 }  // namespace autofill

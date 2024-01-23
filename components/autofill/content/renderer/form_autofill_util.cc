@@ -1006,7 +1006,7 @@ void SortByFieldRendererIds(std::vector<WebFormControlElement>& elements) {
 }
 
 std::vector<WebFormControlElement>::iterator SearchInSortedVector(
-    const FormFieldData& field,
+    const FormFieldData::FillData& field,
     std::vector<WebFormControlElement>& sorted_elements) {
   auto get_field_renderer_id = [](const WebFormControlElement& e) {
     return GetFieldRendererId(e);
@@ -1023,7 +1023,7 @@ std::vector<WebFormControlElement>::iterator SearchInSortedVector(
   return it;
 }
 
-bool ShouldSkipFillField(const FormFieldData& field,
+bool ShouldSkipFillField(const FormFieldData::FillData& field,
                          const WebFormControlElement& element,
                          const WebFormControlElement& trigger_element) {
   // Skip all checkable or non-modifiable elements, except select fields because
@@ -1092,7 +1092,7 @@ bool ShouldSkipFillField(const FormFieldData& field,
 // Sets the |field|'s value to the value in |data|, and specifies the section
 // for filled fields.  Also sets the "autofilled" attribute,
 // causing the background to be blue.
-void FillFormField(const FormFieldData& data,
+void FillFormField(const FormFieldData::FillData& data,
                    bool is_initiating_node,
                    blink::WebFormControlElement* field,
                    FieldDataManager& field_data_manager) {
@@ -1137,7 +1137,7 @@ void FillFormField(const FormFieldData& data,
 
 // Sets the |field|'s "suggested" (non JS visible) value to the value in |data|.
 // Also sets the "autofilled" attribute, causing the background to be blue.
-void PreviewFormField(const FormFieldData& data,
+void PreviewFormField(const FormFieldData::FillData& data,
                       bool is_initiating_node,
                       blink::WebFormControlElement* field,
                       FieldDataManager& field_data_manager) {
@@ -2225,7 +2225,7 @@ std::optional<FormData> FindFormForContentEditable(
 }
 
 std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
-    base::span<const FormFieldData> fields,
+    base::span<const FormFieldData::FillData> fields,
     const WebFormControlElement& initiating_element,
     mojom::ActionType action_type,
     mojom::ActionPersistence action_persistence,
@@ -2252,7 +2252,7 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
   // This container stores the pairs of autofillable WebFormControlElement* and
   // the corresponding FormFieldData* of `form.fields` that are used to fill
   // this element.
-  std::vector<std::pair<WebFormControlElement*, const FormFieldData*>>
+  std::vector<std::pair<WebFormControlElement*, const FormFieldData::FillData*>>
       autofillable_elements_index_pairs;
 
   std::vector<std::pair<FieldRef, blink::WebAutofillState>> filled_fields;
@@ -2282,7 +2282,7 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
   // * Send the blur event.
   // * For each other element, focus -> autofill -> blur.
   // * Send the focus event for the initially focused element.
-  for (const FormFieldData& field : fields) {
+  for (const FormFieldData::FillData& field : fields) {
     auto it = SearchInSortedVector(field, control_elements);
     if (it == control_elements.end()) {
       continue;

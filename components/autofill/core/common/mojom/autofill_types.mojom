@@ -387,6 +387,16 @@ struct FormFieldData {
   bool force_override;
 };
 
+// autofill::FormFieldData::FillData
+// (components/autofill/core/common/form_field_filling_data.h)
+struct FormFieldData_FillData {
+  mojo_base.mojom.String16 value;
+  FieldRendererId unique_renderer_id;
+  bool is_autofilled;
+  Section section;
+  bool force_override;
+};
+
 // autofill::ButtonTitleInfo (components/autofill/core/common/form_data.h)
 struct ButtonTitleInfo {
   mojo_base.mojom.String16 title;
@@ -408,6 +418,13 @@ struct FormData {
   array<FormFieldData> fields;
   array<FieldRendererId> username_predictions;
   bool is_gaia_with_skip_save_password_form;
+};
+
+// autofill::FormData::FillData
+// (components/autofill/core/common/form_filling_data.h)
+struct FormData_FillData {
+  FormRendererId unique_renderer_id;
+  array<FormFieldData_FillData> fields;
 };
 
 // autofill::FormFieldDataPredictions

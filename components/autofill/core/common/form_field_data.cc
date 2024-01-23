@@ -351,6 +351,17 @@ bool FormFieldData::DeepEqual(const FormFieldData& a, const FormFieldData& b) {
          IdentityTuple(a) == IdentityTuple(b);
 }
 
+FormFieldData::FillData::FillData() = default;
+
+FormFieldData::FillData::~FillData() = default;
+
+FormFieldData::FillData::FillData(const FormFieldData& field)
+    : value(field.value),
+      unique_renderer_id(field.unique_renderer_id),
+      section(field.section),
+      is_autofilled(field.is_autofilled),
+      force_override(field.force_override) {}
+
 std::string_view FormControlTypeToString(FormControlType type) {
   switch (type) {
     case FormControlType::kContentEditable:
