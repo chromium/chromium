@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
+import org.chromium.chrome.browser.page_insights.proto.IntentParams.PageInsightsIntentParams;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
@@ -357,6 +358,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                 ? null
                                 : mCompositorViewHolderSupplier.get().getInMotionSupplier(),
                         mWindowAndroid.getApplicationBottomInsetSupplier(),
+                        getPageInsightsIntentParams(),
                         this::isPageInsightsHubEnabled,
                         this::getPageInsightsConfig);
 
@@ -388,6 +390,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         return PageInsightsCoordinator.isFeatureEnabled()
                 && CustomTabsConnection.getInstance()
                         .shouldEnablePageInsightsForIntent(intentDataProvider);
+    }
+
+    private PageInsightsIntentParams getPageInsightsIntentParams() {
+        return CustomTabsConnection.getInstance()
+                .getPageInsightsIntentParams(mIntentDataProvider.get());
     }
 
     private PageInsightsConfig getPageInsightsConfig(NavigationHandle navigationHandle) {

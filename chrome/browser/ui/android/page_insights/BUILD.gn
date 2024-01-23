@@ -76,6 +76,7 @@ proto_java_library("proto_java") {
   proto_path = "java/src/org/chromium/chrome/browser/page_insights/proto"
   sources = [
     "$proto_path/config.proto",
+    "$proto_path/intent_params.proto",
     "$proto_path/page_insights.proto",
   ]
 }
