@@ -169,7 +169,7 @@ public class RestoreTabsMetricsHelper {
                 RecordUserAction.record("RestoreTabsOnFRE.PromoResultDismissedByScrim");
                 break;
             case RestoreTabsOnFREResultAction.DISMISSED_BACKPRESS:
-                RecordUserAction.record("RestoreTabsOnFRE.PromoResultDismissedByBackPress");
+                RecordUserAction.record("RestoreTabsOnFRE.PromoResultDismissedByBackpress");
                 break;
             case RestoreTabsOnFREResultAction.DISMISSED_SWIPE:
                 RecordUserAction.record("RestoreTabsOnFRE.PromoResultDismissedBySwipe");
