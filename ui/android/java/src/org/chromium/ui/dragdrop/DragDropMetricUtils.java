@@ -101,4 +101,24 @@ public class DragDropMetricUtils {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.DragDrop.Tab.FromStrip.Result", result, DragDropTabResult.NUM_ENTRIES);
     }
+
+    /**
+     * Record boolean histogram Android.DragDrop.Tab.ReorderStripWithDragDrop.
+     *
+     * @param leavingStrip Whether the tab drag has left the source strip.
+     */
+    public static void recordTabReorderStripWithDragDrop(boolean leavingStrip) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.DragDrop.Tab.ReorderStripWithDragDrop", leavingStrip);
+    }
+
+    /**
+     * Record times histogram Android.DragDrop.Tab.Duration.WithinDestStrip.
+     *
+     * @param duration scrolling on a destination strip.
+     */
+    public static void recordTabDurationWithinDestStrip(long duration) {
+        RecordHistogram.recordMediumTimesHistogram(
+                "Android.DragDrop.Tab.Duration.WithinDestStrip", duration);
+    }
 }

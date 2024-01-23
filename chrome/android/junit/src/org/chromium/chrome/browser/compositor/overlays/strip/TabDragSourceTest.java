@@ -420,6 +420,8 @@ public class TabDragSourceTest {
                         .expectIntRecord(
                                 "Android.DragDrop.Tab.FromStrip.Result", DragDropTabResult.SUCCESS)
                         .expectNoRecords("Android.DragDrop.Tab.Type")
+                        .expectBooleanRecord("Android.DragDrop.Tab.ReorderStripWithDragDrop", false)
+                        .expectNoRecords("Android.DragDrop.Tab.Duration.WithinDestStrip")
                         .build();
         new DragEventInvoker().drop(mSourceInstance).end(true);
 
@@ -448,6 +450,8 @@ public class TabDragSourceTest {
                                 "Android.DragDrop.Tab.FromStrip.Result",
                                 DragDropTabResult.IGNORED_TOOLBAR)
                         .expectNoRecords("Android.DragDrop.Tab.Type")
+                        .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
+                        .expectNoRecords("Android.DragDrop.Tab.Duration.WithinDestStrip")
                         .build();
         new DragEventInvoker()
                 // Drag our of strip but within toolbar container.
@@ -481,6 +485,8 @@ public class TabDragSourceTest {
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Android.DragDrop.Tab.FromStrip.Result")
                         .expectNoRecords("Android.DragDrop.Tab.Type")
+                        .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
+                        .expectNoRecords("Android.DragDrop.Tab.Duration.WithinDestStrip")
                         .build();
         new DragEventInvoker().dragExit(mSourceInstance).verifyShadowVisibility(true).end(false);
 
@@ -533,6 +539,8 @@ public class TabDragSourceTest {
                                 "Android.DragDrop.Tab.FromStrip.Result", DragDropTabResult.SUCCESS)
                         .expectIntRecord(
                                 "Android.DragDrop.Tab.Type", DragDropType.TAB_STRIP_TO_TAB_STRIP)
+                        .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
+                        .expectAnyRecord("Android.DragDrop.Tab.Duration.WithinDestStrip")
                         .build();
         when(mDestStripLayoutHelper.getTabIndexForTabDrop(anyFloat())).thenReturn(TAB_INDEX);
 
@@ -561,6 +569,8 @@ public class TabDragSourceTest {
                                 "Android.DragDrop.Tab.FromStrip.Result", DragDropTabResult.SUCCESS)
                         .expectIntRecord(
                                 "Android.DragDrop.Tab.Type", DragDropType.TAB_STRIP_TO_TAB_STRIP)
+                        .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
+                        .expectAnyRecord("Android.DragDrop.Tab.Duration.WithinDestStrip")
                         .build();
         // Destination tab model is incognito.
         when(mTabModel.isIncognito()).thenReturn(true);
@@ -610,6 +620,8 @@ public class TabDragSourceTest {
                                 "Android.DragDrop.Tab.FromStrip.Result",
                                 DragDropTabResult.IGNORED_TOOLBAR)
                         .expectNoRecords("Android.DragDrop.Tab.Type")
+                        .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
+                        .expectAnyRecord("Android.DragDrop.Tab.Duration.WithinDestStrip")
                         .build();
         new DragEventInvoker()
                 .dragExit(mSourceInstance)
@@ -650,6 +662,8 @@ public class TabDragSourceTest {
                         .expectIntRecord(
                                 "Android.DragDrop.Tab.FromStrip.Result", DragDropTabResult.SUCCESS)
                         .expectNoRecords("Android.DragDrop.Tab.Type")
+                        .expectBooleanRecord("Android.DragDrop.Tab.ReorderStripWithDragDrop", true)
+                        .expectNoRecords("Android.DragDrop.Tab.Duration.WithinDestStrip")
                         .build();
         new DragEventInvoker()
                 .dragLocationY(mSourceInstance, 3 * DRAG_MOVE_DISTANCE) // move to toolbar
@@ -728,6 +742,8 @@ public class TabDragSourceTest {
                                 "Android.DragDrop.Tab.FromStrip.Result",
                                 DragDropTabResult.IGNORED_DIFF_MODEL_NOT_SUPPORTED)
                         .expectNoRecords("Android.DragDrop.Tab.Type")
+                        .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
+                        .expectNoRecords("Android.DragDrop.Tab.Duration.WithinDestStrip")
                         .build();
 
         // Destination tab model is incognito.
