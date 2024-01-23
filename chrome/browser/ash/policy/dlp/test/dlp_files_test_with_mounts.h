@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_event_storage.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -42,6 +43,8 @@ class DlpFilesTestWithMounts : public DlpFilesTestBase {
   raw_ptr<MockFilesPolicyNotificationManager, DanglingUntriaged> fpnm_ =
       nullptr;
   std::unique_ptr<DlpFilesControllerAsh> files_controller_;
+  std::unique_ptr<reporting::ReportingClient::TestEnvironment>
+      reporting_test_enviroment_;
   std::unique_ptr<data_controls::DlpReportingManager> reporting_manager_;
   std::vector<DlpPolicyEvent> events_;
   raw_ptr<DlpFilesEventStorage> event_storage_ = nullptr;

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/reporting/client/report_queue_configuration.h"
@@ -30,25 +29,26 @@ class ReportingClient : public ReportQueueProvider {
   // builder to return given client. Resets client when destructed.
   class TestEnvironment;
 
+  // Factory method creates client to be deletable on the provided task runner.
+  // It also registers it as current `ReportQueueProvider`.
+  // This registration is reset when the client is deleted.
+  static SmartPtr<ReportingClient> Create(
+      scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
+
   ~ReportingClient() override;
   ReportingClient(const ReportingClient& other) = delete;
   ReportingClient& operator=(const ReportingClient& other) = delete;
-
-  // Accesses singleton ReportingClient instance.
-  // Separate from ReportQueueProvider::GetInstance, because
-  // Singleton<ReportingClient>::get() can only be used inside ReportingClient
-  // class.
-  static ReportingClient* GetInstance();
 
  private:
 #if !BUILDFLAG(IS_CHROMEOS)
   class Uploader;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   friend class ReportQueueProvider;
-  friend struct base::DefaultSingletonTraits<ReportingClient>;
+  friend class TestEnvironment;
 
-  // Constructor to be used by singleton only.
-  ReportingClient();
+  // Constructor to be used by factory only.
+  explicit ReportingClient(
+      scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
 
   // Configures the report queue config with an appropriate DM token after its
   // retrieval for downstream processing, and triggers the corresponding

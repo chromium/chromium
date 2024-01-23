@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -53,9 +54,7 @@ const int64_t kInitialCommandId = (1LL << 35) + 1;
 class DeviceCommandFetchSupportPacketBrowserTest
     : public DevicePolicyCrosBrowserTest {
  protected:
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    DevicePolicyCrosBrowserTest::CreatedBrowserMainParts(browser_main_parts);
+  void SetUpOnMainThread() override {
     // Reporting test environment needs to be created before the browser
     // creation is completed.
     reporting_test_storage_ =
@@ -64,6 +63,17 @@ class DeviceCommandFetchSupportPacketBrowserTest
     reporting_test_enviroment_ =
         reporting::ReportingClient::TestEnvironment::CreateWithStorageModule(
             reporting_test_storage_);
+
+    DevicePolicyCrosBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    DevicePolicyCrosBrowserTest::TearDownOnMainThread();
+
+    reporting_test_enviroment_.reset();
+    reporting_test_storage_.reset();
+    // Let `reporting_test_enviroment_` shut down.
+    base::RunLoop().RunUntilIdle();
   }
 
   void SetUpInProcessBrowserTestFixture() override {

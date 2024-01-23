@@ -393,7 +393,7 @@ class RecordHandlerImpl::ReportUploader
   void StartUpload();
   void LogNumRecordsInUpload(size_t num_records);
   void ResumeUpload(size_t next_record);
-  void FinalizeUpload();
+  void FinalizeUpload(size_t next_record);
   void OnUploadComplete(StatusOr<base::Value::Dict> response);
   void HandleFailedUpload(Status status);
   void HandleSuccessfulUpload(base::Value::Dict last_response);
@@ -536,7 +536,7 @@ void RecordHandlerImpl::ReportUploader::ResumeUpload(size_t next_record) {
           if (!processed_status.ok()) {
             // Event not processed, stop before it.
             // Do not add the current event and any later ones.
-            self->FinalizeUpload();
+            self->FinalizeUpload(next_record);
             return;
           }
           // Event processed (next upload tracking event posted, if needed),
@@ -555,11 +555,12 @@ void RecordHandlerImpl::ReportUploader::ResumeUpload(size_t next_record) {
     return;  // We will resume on `resume_cb`
   }
 
-  FinalizeUpload();
+  FinalizeUpload(next_record);
 }
 
-void RecordHandlerImpl::ReportUploader::FinalizeUpload() {
+void RecordHandlerImpl::ReportUploader::FinalizeUpload(size_t next_record) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_LE(next_record, records_.size());
   // Records have been captured in the request, safe to clear the vector.
   records_.clear();
 

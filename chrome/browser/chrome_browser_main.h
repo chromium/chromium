@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/browser_main_parts.h"
@@ -34,7 +35,7 @@ class WebUsbDetector;
 namespace base {
 class CommandLine;
 class RunLoop;
-}
+}  // namespace base
 
 namespace content {
 class SyntheticTrialSyncer;
@@ -180,6 +181,10 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
       trace_event_system_stats_monitor_;
 
   std::unique_ptr<content::SyntheticTrialSyncer> synthetic_trial_syncer_;
+
+  // ERP client instance, serving all reporting needs in the browser.
+  reporting::ReportQueueProvider::SmartPtr<reporting::ReportingClient>
+      reporting_client_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
 
   // Members initialized after / released before main_message_loop_ ------------
 

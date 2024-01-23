@@ -39,19 +39,18 @@ constexpr char kTestMessage[] = "TEST MESSAGE";
 class ReportQueueProviderTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    provider_ = std::make_unique<NiceMock<MockReportQueueProvider>>();
-    report_queue_provider_test_helper::SetForTesting(provider_.get());
+    helper_ = std::make_unique<test::ReportQueueProviderTestHelper>();
   }
 
   void TearDown() override {
+    helper_.reset();
     task_environment_.RunUntilIdle();  // Drain remaining scheduled tasks.
-    report_queue_provider_test_helper::SetForTesting(nullptr);
   }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  std::unique_ptr<MockReportQueueProvider> provider_;
+  std::unique_ptr<test::ReportQueueProviderTestHelper> helper_;
   const Destination destination_ = Destination::UPLOAD_EVENTS;
 };
 
@@ -145,8 +144,8 @@ TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
           {.event_type = EventType::kDevice, .destination = destination_})
           .Build();
   ASSERT_TRUE(config_result.has_value());
-  EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
-  provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
+  EXPECT_CALL(*helper_->mock_provider(), OnInitCompletedMock()).Times(1);
+  helper_->mock_provider()->ExpectCreateNewQueueAndReturnNewMockQueue(1);
   // Use it to asynchronously create ReportingQueue and then asynchronously
   // send the message.
   test::TestEvent<Status> e;
@@ -174,9 +173,10 @@ TEST_F(ReportQueueProviderTest, CreateMultipleQueues) {
   test::TestCallbackAutoWaiter waiter;
   waiter.Attach(send_as.size());
   // Expect only one InitCompleted callback.
-  EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
+  EXPECT_CALL(*helper_->mock_provider(), OnInitCompletedMock()).Times(1);
   // ... even though we create multiple queues.
-  provider_->ExpectCreateNewQueueAndReturnNewMockQueue(send_as.size());
+  helper_->mock_provider()->ExpectCreateNewQueueAndReturnNewMockQueue(
+      send_as.size());
   for (const auto& s : send_as) {
     // Create configuration.
     auto config_result =
@@ -223,10 +223,10 @@ TEST_F(ReportQueueProviderTest, CreateMultipleSpeculativeQueues) {
   test::TestCallbackAutoWaiter waiter;
   waiter.Attach(send_as.size());
   // Expect only one InitCompleted callback.
-  EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
+  EXPECT_CALL(*helper_->mock_provider(), OnInitCompletedMock()).Times(1);
   // ... even though we create multiple queues.
-  provider_->ExpectCreateNewSpeculativeQueueAndReturnNewMockQueue(
-      send_as.size());
+  helper_->mock_provider()
+      ->ExpectCreateNewSpeculativeQueueAndReturnNewMockQueue(send_as.size());
   for (const auto& s : send_as) {
     // Create configuration.
     auto config_result =
