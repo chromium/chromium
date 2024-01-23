@@ -65,33 +65,20 @@ class WebAppInstaller : public crosapi::WebAppServiceAsh::Observer {
                   WebAppInstalledCallback callback);
 
  private:
-  struct InstallRequest {
-    InstallRequest(AppInstallSurface surface,
-                   AppInstallData data,
-                   WebAppInstalledCallback callback);
-    InstallRequest(InstallRequest&&);
-    ~InstallRequest();
-    AppInstallSurface surface;
-    AppInstallData data;
-    WebAppInstalledCallback callback;
-  };
-
   // croapi::WebAppServiceAsh::Observer overrides:
   void OnWebAppProviderBridgeConnected() override;
   void OnWebAppServiceAshDestroyed() override;
 
-  // Called when the environment is ready to perform app installation. When
-  // lacros is enabled, this means lacros is ready. In ash, this means the
-  // WebAppProvider is ready.
-  void InstallPendingRequests();
-
-  void InstallAppImpl(InstallRequest request);
-  void OnManifestRetrieved(InstallRequest request,
+  void OnManifestRetrieved(AppInstallSurface surface,
+                           AppInstallData data,
+                           WebAppInstalledCallback callback,
                            std::unique_ptr<network::SimpleURLLoader> url_loader,
                            std::unique_ptr<std::string> response);
+
+  void MaybeSendPendingCrosapiRequests();
+
   void OnAppInstalled(AppInstallSurface surface,
                       WebAppInstalledCallback callback,
-
                       const webapps::AppId& app_id,
                       webapps::InstallResultCode code);
 
@@ -99,8 +86,18 @@ class WebAppInstaller : public crosapi::WebAppServiceAsh::Observer {
                           crosapi::WebAppServiceAsh::Observer>
       web_app_service_observer_{this};
 
-  bool lacros_is_connected_;
-  std::vector<InstallRequest> pending_requests_;
+  struct PendingCrosapiRequest {
+    PendingCrosapiRequest(
+        crosapi::mojom::PreloadWebAppInstallInfoPtr info,
+        crosapi::mojom::WebAppProviderBridge::InstallPreloadWebAppCallback
+            callback);
+    PendingCrosapiRequest(PendingCrosapiRequest&&);
+    ~PendingCrosapiRequest();
+
+    crosapi::mojom::PreloadWebAppInstallInfoPtr info;
+    crosapi::mojom::WebAppProviderBridge::InstallPreloadWebAppCallback callback;
+  };
+  std::vector<PendingCrosapiRequest> pending_crosapi_requests_;
 
   raw_ptr<Profile> profile_;
 
