@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.url.GURL;
 
 /** Utilities for the tab resumption module. */
@@ -17,10 +20,34 @@ public class TabResumptionModuleUtils {
         void onSuggestionClick(GURL gurl);
     }
 
-    /** Returns whether to show the tab resumption module. */
-    static boolean shouldShowTabResumptionModule(Profile profile) {
-        // TODO(crbug.com/1515325): Check user is signed in with sync enabled.
-        return ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled();
+    /**
+     * Returns whether to show the tab resumption module. Only shows if the following are met:
+     *
+     * <pre>
+     * 1. Feature flags TAB_RESUMPTION_MODULE_ANDROID is enabled;
+     * 2. The user has signed in;
+     * 3. The user has turned on sync.
+     * </pre>
+     */
+    public static boolean shouldShowTabResumptionModule(Profile profile) {
+        if (!ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled()) {
+            // TODO(crbug.com/1515325): Record metrics here.
+            return false;
+        }
+
+        if (!IdentityServicesProvider.get()
+                .getIdentityManager(profile)
+                .hasPrimaryAccount(ConsentLevel.SYNC)) {
+            // TODO(crbug.com/1515325): Record metrics here.
+            return false;
+        }
+
+        if (!SyncServiceFactory.getForProfile(profile).hasKeepEverythingSynced()) {
+            // TODO(crbug.com/1515325): Record metrics here.
+            return false;
+        }
+
+        return true;
     }
 
     /**

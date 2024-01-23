@@ -61,6 +61,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/tab_resumption/ForeignSessionTabResumptionDataProviderTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleSuggestionsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleViewUnitTest.java",
   ]
 
@@ -70,8 +71,11 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/recent_tabs:java",
     "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/favicon/android:java",
     "//components/sync/android:sync_java",
