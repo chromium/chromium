@@ -1,4 +1,7 @@
-monorail {
+monorail: {
   component: "Upboarding"
 }
 team_email: "chrome-upboarding-eng@google.com"
+buganizer_public: {
+  component_id: 1457203
+}

@@ -1,5 +1,7 @@
-monorail {
+monorail: {
   component: "Mobile>WebAPKs"
 }
-
 team_email: "webapk-team@chromium.org"
+buganizer_public: {
+  component_id: 1456868
+}

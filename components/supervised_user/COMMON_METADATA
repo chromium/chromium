@@ -1,5 +1,7 @@
-# Chrome Kids team
-monorail {
+monorail: {
   component: "FamilyExperiences>Browser"
 }
 team_email: "chrome-kids-eng@google.com"
+buganizer_public: {
+  component_id: 1456907
+}
