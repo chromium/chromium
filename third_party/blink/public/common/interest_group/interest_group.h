@@ -107,7 +107,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   InterestGroup();
   ~InterestGroup();
 
-  // Checks for validity. Performs same checks as IsBlinkInterestGroupValid().
+  // Checks for validity. Performs same checks as ValidateBlinkInterestGroup().
   // Automatically checked when passing InterestGroups over Mojo.
   bool IsValid() const;
 
