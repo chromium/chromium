@@ -3569,29 +3569,6 @@
             ]
         }
     ],
-    "ChangeExtensionEventPageSuspendDelay": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ChangeExtensionEventPageSuspendDelay",
-                    "params": {
-                        "event-page-suspend-delay-ms": "61000"
-                    },
-                    "enable_features": [
-                        "ChangeExtensionEventPageSuspendDelay"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChannelIndicator": [
         {
             "platforms": [
