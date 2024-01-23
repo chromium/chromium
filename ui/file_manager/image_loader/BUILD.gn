@@ -38,7 +38,7 @@ copy("from_files_app") {
 copy("copy_src") {
   sources = [
     "background.ts",
-    "cache.js",
+    "cache.ts",
     "image_loader.js",
     "image_loader_client.js",
     "image_loader_util.js",
