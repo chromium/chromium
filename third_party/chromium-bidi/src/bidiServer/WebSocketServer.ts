@@ -55,333 +55,337 @@ type SessionOptions = {
 };
 
 export class WebSocketServer {
-  static #sessions = new Map<string, Session>();
+  #sessions = new Map<string, Session>();
+  #port: number;
+  #channel: ChromeReleaseChannel;
+  #headless: boolean;
+  #verbose: boolean;
 
-  /**
-   * @param bidiPort Port to start ws server on.
-   * @param channel
-   * @param headless
-   * @param verbose
-   */
-  static run(
-    bidiPort: number,
+  #server: http.Server;
+  #wsServer: websocket.server;
+
+  constructor(
+    port: number,
     channel: ChromeReleaseChannel,
     headless: boolean,
     verbose: boolean
   ) {
-    const server = http.createServer(
-      async (request: http.IncomingMessage, response: http.ServerResponse) => {
-        debugInternal(
-          `${new Date().toString()} Received HTTP ${JSON.stringify(
-            request.method
-          )} request for ${JSON.stringify(request.url)}`
-        );
-        if (!request.url) {
-          return response.end(404);
-        }
+    this.#port = port;
+    this.#channel = channel;
+    this.#headless = headless;
+    this.#verbose = verbose;
 
-        // https://w3c.github.io/webdriver-bidi/#transport, step 2.
-        if (request.url === '/session') {
-          const body: Uint8Array[] = [];
-          request
-            .on('data', (chunk) => {
-              body.push(chunk);
-            })
-            .on('end', () => {
-              const jsonBody = JSON.parse(Buffer.concat(body).toString());
-              response.writeHead(200, {
-                'Content-Type': 'application/json;charset=utf-8',
-                'Cache-Control': 'no-cache',
-              });
-              const sessionId = uuidv4();
-              const session: Session = {
-                sessionId,
-                // TODO: launch browser instance and set it to the session after WPT
-                //  tests clean up is switched to pure BiDi.
-                browserInstancePromise: undefined,
-                sessionOptions: {
-                  chromeOptions: this.#getChromeOptions(
-                    jsonBody.capabilities,
-                    channel,
-                    headless
-                  ),
-                  mapperOptions: this.#getMapperOptions(jsonBody.capabilities),
-                  verbose,
-                },
-              };
-              this.#sessions.set(sessionId, session);
-
-              const webSocketUrl = `ws://localhost:${bidiPort}/session/${sessionId}`;
-              debugInternal(
-                `Session created. WebSocket URL: ${JSON.stringify(
-                  webSocketUrl
-                )}.`
-              );
-
-              response.write(
-                JSON.stringify({
-                  value: {
-                    sessionId,
-                    capabilities: {
-                      webSocketUrl,
-                    },
-                  },
-                })
-              );
-              return response.end();
-            });
-          return;
-        } else if (request.url.startsWith('/session')) {
-          debugInternal(
-            `Unknown session command ${
-              request.method ?? 'UNKNOWN METHOD'
-            } request for ${
-              request.url
-            } with payload ${await WebSocketServer.#getHttpRequestPayload(
-              request
-            )}. 200 returned.`
-          );
-
-          response.writeHead(200, {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Cache-Control': 'no-cache',
-          });
-          response.write(
-            JSON.stringify({
-              value: {},
-            })
-          );
-        } else {
-          debugInternal(
-            `Unknown ${JSON.stringify(
-              request.method
-            )} request for ${JSON.stringify(
-              request.url
-            )} with payload ${JSON.stringify(
-              await WebSocketServer.#getHttpRequestPayload(request)
-            )}. 404 returned.`
-          );
-          response.writeHead(404);
-        }
-        return response.end();
-      }
-    );
-    server.listen(bidiPort, () => {
-      debugInfo('BiDi server is listening on port', bidiPort);
-    });
-
-    const wsServer: websocket.server = new websocket.server({
-      httpServer: server,
+    this.#server = http.createServer(this.#onRequest.bind(this));
+    this.#wsServer = new websocket.server({
+      httpServer: this.#server,
       autoAcceptConnections: false,
     });
+    this.#wsServer.on('request', this.#onWsRequest.bind(this));
 
-    wsServer.on('request', (request: websocket.request) => {
-      // Session is set either by Classic or BiDi commands.
-      let session: Session | undefined;
-
-      const requestSessionId = (request.resource ?? '').split('/').pop();
-      debugInternal(
-        `new WS request received. Path: ${JSON.stringify(
-          request.resourceURL.path
-        )}, sessionId: ${JSON.stringify(requestSessionId)}`
-      );
-
-      if (
-        requestSessionId !== '' &&
-        requestSessionId !== undefined &&
-        !this.#sessions.has(requestSessionId)
-      ) {
-        debugInternal('Unknown session id:', requestSessionId);
-        request.reject();
-        return;
-      }
-
-      const connection = request.accept();
-
-      session = this.#sessions.get(requestSessionId ?? '');
-      if (session !== undefined) {
-        // BrowserInstance is created for each new WS connection, even for the
-        // same SessionId. This is because WPT uses a single session for all the
-        // tests, but cleans up tests using WebDriver Classic commands, which is
-        // not implemented in this Mapper runner.
-        // TODO: connect to an existing BrowserInstance instead.
-        const sessionOptions = session.sessionOptions;
-        session.browserInstancePromise = this.#closeBrowserInstanceIfLaunched(
-          session
-        )
-          .then(
-            async () =>
-              await this.#launchBrowserInstance(connection, sessionOptions)
-          )
-          .catch((e) => {
-            debugInfo('Error while creating session', e);
-            connection.close(500, 'cannot create browser instance');
-            throw e;
-          });
-      }
-
-      connection.on('message', async (message) => {
-        // If type is not text, return error.
-        if (message.type !== 'utf8') {
-          this.#respondWithError(
-            connection,
-            {},
-            ErrorCode.InvalidArgument,
-            `not supported type (${message.type})`
-          );
-          return;
-        }
-
-        const plainCommandData = message.utf8Data;
-
-        if (debugRecv.enabled) {
-          try {
-            debugRecv(JSON.parse(plainCommandData));
-          } catch {
-            debugRecv(plainCommandData);
-          }
-        }
-
-        // Try to parse the message to handle some of BiDi commands.
-        let parsedCommandData: {id: number; method: string; params?: any};
-        try {
-          parsedCommandData = JSON.parse(plainCommandData);
-        } catch (e) {
-          this.#respondWithError(
-            connection,
-            {},
-            ErrorCode.InvalidArgument,
-            `Cannot parse data as JSON`
-          );
-          return;
-        }
-
-        // Handle creating new session.
-        if (parsedCommandData.method === 'session.new') {
-          if (session !== undefined) {
-            debugInfo('WS connection already have an associated session.');
-
-            this.#respondWithError(
-              connection,
-              plainCommandData,
-              ErrorCode.SessionNotCreated,
-              'WS connection already have an associated session.'
-            );
-            return;
-          }
-
-          try {
-            const sessionOptions = {
-              chromeOptions: this.#getChromeOptions(
-                parsedCommandData.params?.capabilities,
-                channel,
-                headless
-              ),
-              mapperOptions: this.#getMapperOptions(
-                parsedCommandData.params?.capabilities
-              ),
-              verbose,
-            };
-
-            const browserInstance = await this.#launchBrowserInstance(
-              connection,
-              sessionOptions
-            );
-
-            const sessionId = uuidv4();
-            session = {
-              sessionId,
-              browserInstancePromise: Promise.resolve(browserInstance),
-              sessionOptions,
-            };
-            this.#sessions.set(sessionId, session);
-          } catch (e: any) {
-            debugInfo('Error while creating session', e);
-
-            this.#respondWithError(
-              connection,
-              plainCommandData,
-              ErrorCode.SessionNotCreated,
-              e?.message ?? 'Unknown error'
-            );
-            return;
-          }
-
-          // TODO: extend with capabilities.
-          this.#sendClientMessage(
-            {
-              id: parsedCommandData.id,
-              type: 'success',
-              result: {
-                sessionId: session.sessionId,
-                capabilities: {},
-              },
-            },
-            connection
-          );
-          return;
-        }
-
-        if (session === undefined) {
-          debugInfo('Session is not yet initialized.');
-
-          this.#respondWithError(
-            connection,
-            plainCommandData,
-            ErrorCode.InvalidSessionId,
-            'Session is not yet initialized.'
-          );
-          return;
-        }
-
-        if (session.browserInstancePromise === undefined) {
-          debugInfo('Browser instance is not launched.');
-
-          this.#respondWithError(
-            connection,
-            plainCommandData,
-            ErrorCode.InvalidSessionId,
-            'Browser instance is not launched.'
-          );
-          return;
-        }
-
-        const browserInstance = await session.browserInstancePromise;
-
-        // Handle `browser.close` command.
-        if (parsedCommandData.method === 'browser.close') {
-          await browserInstance.close();
-          this.#sendClientMessage(
-            {
-              id: parsedCommandData.id,
-              type: 'success',
-              result: {},
-            },
-            connection
-          );
-          return;
-        }
-
-        // Forward all other commands to BiDi Mapper.
-        await browserInstance.bidiSession().sendCommand(plainCommandData);
-      });
-
-      connection.on('close', async () => {
-        debugInternal(
-          `${new Date().toString()} Peer ${
-            connection.remoteAddress
-          } disconnected.`
-        );
-
-        // TODO: don't close Browser instance to allow re-connecting to the session.
-        await this.#closeBrowserInstanceIfLaunched(session);
-      });
+    this.#server.listen(this.#port, () => {
+      debugInfo('BiDi server is listening on port', this.#port);
     });
   }
 
-  static async #closeBrowserInstanceIfLaunched(
-    session?: Session
-  ): Promise<void> {
+  async #onRequest(
+    request: http.IncomingMessage,
+    response: http.ServerResponse
+  ) {
+    debugInternal(
+      `Received HTTP ${JSON.stringify(
+        request.method
+      )} request for ${JSON.stringify(request.url)}`
+    );
+    if (!request.url) {
+      return response.end(404);
+    }
+
+    // https://w3c.github.io/webdriver-bidi/#transport, step 2.
+    if (request.url === '/session') {
+      const body = await new Promise<Buffer>((resolve, reject) => {
+        const bodyArray: Uint8Array[] = [];
+        request.on('data', (chunk) => {
+          bodyArray.push(chunk);
+        });
+        request.on('error', reject);
+        request.on('end', () => {
+          resolve(Buffer.concat(bodyArray));
+        });
+      });
+
+      // https://w3c.github.io/webdriver-bidi/#transport, step 3.
+      const jsonBody = JSON.parse(body.toString());
+      response.writeHead(200, {
+        'Content-Type': 'application/json;charset=utf-8',
+        'Cache-Control': 'no-cache',
+      });
+      const sessionId = uuidv4();
+      const session: Session = {
+        sessionId,
+        // TODO: launch browser instance and set it to the session after WPT
+        //  tests clean up is switched to pure BiDi.
+        browserInstancePromise: undefined,
+        sessionOptions: {
+          chromeOptions: this.#getChromeOptions(
+            jsonBody.capabilities,
+            this.#channel,
+            this.#headless
+          ),
+          mapperOptions: this.#getMapperOptions(jsonBody.capabilities),
+          verbose: this.#verbose,
+        },
+      };
+      this.#sessions.set(sessionId, session);
+
+      const webSocketUrl = `ws://localhost:${this.#port}/session/${sessionId}`;
+      debugInternal(
+        `Session created. WebSocket URL: ${JSON.stringify(webSocketUrl)}.`
+      );
+
+      response.write(
+        JSON.stringify({
+          value: {
+            sessionId,
+            capabilities: {
+              webSocketUrl,
+            },
+          },
+        })
+      );
+      return response.end();
+    } else if (request.url.startsWith('/session')) {
+      debugInternal(
+        `Unknown session command ${
+          request.method ?? 'UNKNOWN METHOD'
+        } request for ${
+          request.url
+        } with payload ${await this.#getHttpRequestPayload(
+          request
+        )}. 200 returned.`
+      );
+
+      response.writeHead(200, {
+        'Content-Type': 'application/json;charset=utf-8',
+        'Cache-Control': 'no-cache',
+      });
+      response.write(
+        JSON.stringify({
+          value: {},
+        })
+      );
+      return response.end();
+    }
+
+    debugInternal(
+      `Unknown ${request.method} request for ${JSON.stringify(
+        request.url
+      )} with payload ${await this.#getHttpRequestPayload(
+        request
+      )}. 404 returned.`
+    );
+    return response.end(404);
+  }
+
+  #onWsRequest(request: websocket.request) {
+    // Session is set either by Classic or BiDi commands.
+    let session: Session | undefined;
+
+    const requestSessionId = (request.resource ?? '').split('/').pop();
+    debugInternal(
+      `new WS request received. Path: ${JSON.stringify(
+        request.resourceURL.path
+      )}, sessionId: ${JSON.stringify(requestSessionId)}`
+    );
+
+    if (
+      requestSessionId !== '' &&
+      requestSessionId !== undefined &&
+      !this.#sessions.has(requestSessionId)
+    ) {
+      debugInternal('Unknown session id:', requestSessionId);
+      request.reject();
+      return;
+    }
+
+    const connection = request.accept();
+
+    session = this.#sessions.get(requestSessionId ?? '');
+    if (session !== undefined) {
+      // BrowserInstance is created for each new WS connection, even for the
+      // same SessionId. This is because WPT uses a single session for all the
+      // tests, but cleans up tests using WebDriver Classic commands, which is
+      // not implemented in this Mapper runner.
+      // TODO: connect to an existing BrowserInstance instead.
+      const sessionOptions = session.sessionOptions;
+      session.browserInstancePromise = this.#closeBrowserInstanceIfLaunched(
+        session
+      )
+        .then(
+          async () =>
+            await this.#launchBrowserInstance(connection, sessionOptions)
+        )
+        .catch((e) => {
+          debugInfo('Error while creating session', e);
+          connection.close(500, 'cannot create browser instance');
+          throw e;
+        });
+    }
+
+    connection.on('message', async (message) => {
+      // If type is not text, return error.
+      if (message.type !== 'utf8') {
+        this.#respondWithError(
+          connection,
+          {},
+          ErrorCode.InvalidArgument,
+          `not supported type (${message.type})`
+        );
+        return;
+      }
+
+      const plainCommandData = message.utf8Data;
+
+      if (debugRecv.enabled) {
+        try {
+          debugRecv(JSON.parse(plainCommandData));
+        } catch {
+          debugRecv(plainCommandData);
+        }
+      }
+
+      // Try to parse the message to handle some of BiDi commands.
+      let parsedCommandData: {id: number; method: string; params?: any};
+      try {
+        parsedCommandData = JSON.parse(plainCommandData);
+      } catch (e) {
+        this.#respondWithError(
+          connection,
+          {},
+          ErrorCode.InvalidArgument,
+          `Cannot parse data as JSON`
+        );
+        return;
+      }
+
+      // Handle creating new session.
+      if (parsedCommandData.method === 'session.new') {
+        if (session !== undefined) {
+          debugInfo('WS connection already have an associated session.');
+
+          this.#respondWithError(
+            connection,
+            plainCommandData,
+            ErrorCode.SessionNotCreated,
+            'WS connection already have an associated session.'
+          );
+          return;
+        }
+
+        try {
+          const sessionOptions = {
+            chromeOptions: this.#getChromeOptions(
+              parsedCommandData.params?.capabilities,
+              this.#channel,
+              this.#headless
+            ),
+            mapperOptions: this.#getMapperOptions(
+              parsedCommandData.params?.capabilities
+            ),
+            verbose: this.#verbose,
+          };
+
+          const browserInstance = await this.#launchBrowserInstance(
+            connection,
+            sessionOptions
+          );
+
+          const sessionId = uuidv4();
+          session = {
+            sessionId,
+            browserInstancePromise: Promise.resolve(browserInstance),
+            sessionOptions,
+          };
+          this.#sessions.set(sessionId, session);
+        } catch (e: any) {
+          debugInfo('Error while creating session', e);
+
+          this.#respondWithError(
+            connection,
+            plainCommandData,
+            ErrorCode.SessionNotCreated,
+            e?.message ?? 'Unknown error'
+          );
+          return;
+        }
+
+        // TODO: extend with capabilities.
+        this.#sendClientMessage(
+          {
+            id: parsedCommandData.id,
+            type: 'success',
+            result: {
+              sessionId: session.sessionId,
+              capabilities: {},
+            },
+          },
+          connection
+        );
+        return;
+      }
+
+      if (session === undefined) {
+        debugInfo('Session is not yet initialized.');
+
+        this.#respondWithError(
+          connection,
+          plainCommandData,
+          ErrorCode.InvalidSessionId,
+          'Session is not yet initialized.'
+        );
+        return;
+      }
+
+      if (session.browserInstancePromise === undefined) {
+        debugInfo('Browser instance is not launched.');
+
+        this.#respondWithError(
+          connection,
+          plainCommandData,
+          ErrorCode.InvalidSessionId,
+          'Browser instance is not launched.'
+        );
+        return;
+      }
+
+      const browserInstance = await session.browserInstancePromise;
+
+      // Handle `browser.close` command.
+      if (parsedCommandData.method === 'browser.close') {
+        await browserInstance.close();
+        this.#sendClientMessage(
+          {
+            id: parsedCommandData.id,
+            type: 'success',
+            result: {},
+          },
+          connection
+        );
+        return;
+      }
+
+      // Forward all other commands to BiDi Mapper.
+      await browserInstance.bidiSession().sendCommand(plainCommandData);
+    });
+
+    connection.on('close', async () => {
+      debugInternal(`Peer ${connection.remoteAddress} disconnected.`);
+
+      // TODO: don't close Browser instance to allow re-connecting to the session.
+      await this.#closeBrowserInstanceIfLaunched(session);
+    });
+  }
+
+  async #closeBrowserInstanceIfLaunched(session?: Session): Promise<void> {
     if (session === undefined || session.browserInstancePromise === undefined) {
       return;
     }
@@ -391,7 +395,7 @@ export class WebSocketServer {
     void browserInstance.close();
   }
 
-  static #getMapperOptions(capabilities: any): MapperOptions {
+  #getMapperOptions(capabilities: any): MapperOptions {
     const acceptInsecureCerts =
       capabilities?.alwaysMatch?.acceptInsecureCerts ?? false;
     const sharedIdWithFrame =
@@ -399,7 +403,7 @@ export class WebSocketServer {
     return {acceptInsecureCerts, sharedIdWithFrame};
   }
 
-  static #getChromeOptions(
+  #getChromeOptions(
     capabilities: any,
     channel: ChromeReleaseChannel,
     headless: boolean
@@ -414,7 +418,7 @@ export class WebSocketServer {
     };
   }
 
-  static async #launchBrowserInstance(
+  async #launchBrowserInstance(
     connection: websocket.connection,
     sessionOptions: SessionOptions
   ): Promise<BrowserInstance> {
@@ -434,7 +438,7 @@ export class WebSocketServer {
     return browserInstance;
   }
 
-  static #sendClientMessageString(
+  #sendClientMessageString(
     message: string,
     connection: websocket.connection
   ): void {
@@ -448,15 +452,12 @@ export class WebSocketServer {
     connection.sendUTF(message);
   }
 
-  static #sendClientMessage(
-    object: unknown,
-    connection: websocket.connection
-  ): void {
+  #sendClientMessage(object: unknown, connection: websocket.connection): void {
     const json = JSON.stringify(object);
     return this.#sendClientMessageString(json, connection);
   }
 
-  static #respondWithError(
+  #respondWithError(
     connection: websocket.connection,
     plainCommandData: unknown,
     errorCode: string,
@@ -470,7 +471,7 @@ export class WebSocketServer {
     void this.#sendClientMessage(errorResponse, connection);
   }
 
-  static #getErrorResponse(
+  #getErrorResponse(
     plainCommandData: any,
     errorCode: string,
     errorMessage: string
@@ -494,9 +495,7 @@ export class WebSocketServer {
     };
   }
 
-  static #getHttpRequestPayload(
-    request: http.IncomingMessage
-  ): Promise<string> {
+  #getHttpRequestPayload(request: http.IncomingMessage): Promise<string> {
     return new Promise((resolve, reject) => {
       let data = '';
       request.on('data', (chunk) => {
