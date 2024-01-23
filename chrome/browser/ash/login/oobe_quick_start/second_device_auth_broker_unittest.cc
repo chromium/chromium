@@ -686,6 +686,64 @@ TEST_F(SecondDeviceAuthBrokerTest,
   EXPECT_THAT(response, VariantWith<AuthCodeRejectionResponse>(_));
 }
 
+// If Gaia doesn't fully trust the Chromebook's Remote Attestation certificate,
+// they will consider it to be a "less_secure_device" and reject the request.
+TEST_F(SecondDeviceAuthBrokerTest,
+       FetchAuthCodeReturnsRejectionResponseForLessSecureDevices) {
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "sessionStatus": "REJECTED",
+        "email": "fake-user@example.com",
+        "rejectionReason": "LESS_SECURE_DEVICE"
+      }
+    )"));
+  AuthCodeRejectionResponse expected_response;
+  expected_response.email = "fake-user@example.com";
+  expected_response.reason =
+      AuthCodeRejectionResponse::Reason::kLessSecureDevice;
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  EXPECT_THAT(response, VariantWith<AuthCodeRejectionResponse>(
+                            AuthCodeRejectionResponseEq(expected_response)));
+}
+
+TEST_F(
+    SecondDeviceAuthBrokerTest,
+    FetchAuthCodeReturnsRejectionResponseWithUnknownReasonForMissingRejectionReason) {
+  // Do not provide a "rejectionReason".
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "sessionStatus": "REJECTED"
+      }
+    )"));
+  AuthCodeRejectionResponse expected_response{
+      .reason = AuthCodeRejectionResponse::Reason::kUnknownReason};
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  EXPECT_THAT(response, VariantWith<AuthCodeRejectionResponse>(
+                            AuthCodeRejectionResponseEq(expected_response)));
+}
+
+TEST_F(
+    SecondDeviceAuthBrokerTest,
+    FetchAuthCodeReturnsRejectionResponseWithUnknownReasonForMalformedRejectionReason) {
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "sessionStatus": "REJECTED",
+        "rejectionReason": "Malformed rejection reason"
+      }
+    )"));
+  AuthCodeRejectionResponse expected_response{
+      .reason = AuthCodeRejectionResponse::Reason::kUnknownReason};
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  EXPECT_THAT(response, VariantWith<AuthCodeRejectionResponse>(
+                            AuthCodeRejectionResponseEq(expected_response)));
+}
+
 TEST_F(
     SecondDeviceAuthBrokerTest,
     FetchAuthCodeReturnsAdditionalChallengesOnSourceResponseForSourceChallenges) {
@@ -882,6 +940,21 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForParsingErrors) {
       "QuickStart.GaiaAuthentication.Result",
       /*sample=*/
       QuickStartMetrics::GaiaAuthenticationResult::kResponseParsingError, 1);
+}
+
+TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForRejectionErrors) {
+  base::HistogramTester histogram_tester;
+
+  SimulateAuthError(kStartSessionUrl);
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  ASSERT_THAT(response, VariantWith<AuthCodeRejectionResponse>(_));
+
+  histogram_tester.ExpectBucketCount(
+      "QuickStart.GaiaAuthentication.Result",
+      /*sample=*/
+      QuickStartMetrics::GaiaAuthenticationResult::kRejection, 1);
 }
 
 }  //  namespace ash::quick_start

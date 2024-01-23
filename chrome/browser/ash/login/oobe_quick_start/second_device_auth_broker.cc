@@ -294,6 +294,15 @@ void HandleGaiaAuthenticationParsingError(
   std::move(callback).Run(response);
 }
 
+void HandleGaiaAuthenticationRejectionError(
+    QuickStartMetrics& metrics,
+    SecondDeviceAuthBroker::AuthCodeCallback callback,
+    const SecondDeviceAuthBroker::AuthCodeRejectionResponse& response) {
+  metrics.RecordGaiaAuthenticationRequestEnded(
+      QuickStartMetrics::GaiaAuthenticationResult::kRejection);
+  std::move(callback).Run(response);
+}
+
 std::string CreateStartSessionRequestData(
     const FidoAssertionInfo& fido_assertion_info,
     const PEMCertChain& certificate) {
@@ -381,12 +390,14 @@ std::string CreateStartSessionRequestData(
 }
 
 void RunAuthCodeCallbackWithRejectionResponse(
+    QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
     base::Value::Dict* response) {
   SecondDeviceAuthBroker::AuthCodeRejectionResponse rejection_response;
 
+  std::string* email_ptr = response->FindString(kEmailKey);
   // Note that email may be empty.
-  rejection_response.email = *response->FindString(kEmailKey);
+  rejection_response.email = email_ptr ? *email_ptr : std::string();
   rejection_response.reason =
       SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::kUnknownReason;
   std::string* rejection_reason = response->FindString(kRejectionReasonKey);
@@ -394,7 +405,8 @@ void RunAuthCodeCallbackWithRejectionResponse(
     QS_LOG(ERROR)
         << "Could not fetch OAuth authorization code. Request rejected "
            "without providing a reason";
-    std::move(auth_code_callback).Run(rejection_response);
+    HandleGaiaAuthenticationRejectionError(
+        metrics, std::move(auth_code_callback), rejection_response);
     return;
   }
 
@@ -404,12 +416,14 @@ void RunAuthCodeCallbackWithRejectionResponse(
     QS_LOG(ERROR)
         << "Could not fetch OAuth authorization code. Request rejected "
            "with unknown reason";
-    std::move(auth_code_callback).Run(rejection_response);
+    HandleGaiaAuthenticationRejectionError(
+        metrics, std::move(auth_code_callback), rejection_response);
     return;
   }
   rejection_response.reason =
       kRejectionReasonErrorMap.at(rejection_reason_lowercase);
-  std::move(auth_code_callback).Run(rejection_response);
+  HandleGaiaAuthenticationRejectionError(metrics, std::move(auth_code_callback),
+                                         rejection_response);
 }
 
 void RunAuthCodeCallbackWithAdditionalChallengesOnTargetResponse(
@@ -738,7 +752,8 @@ void SecondDeviceAuthBroker::RunAuthCodeCallbackFromParsedResponse(
           AuthCodeRejectionResponse::Reason::kUnknownReason;
       QS_LOG(ERROR) << "Could not fetch OAuth authorization code. Received an "
                        "auth error from server";
-      std::move(auth_code_callback).Run(rejection_response);
+      HandleGaiaAuthenticationRejectionError(
+          metrics_, std::move(auth_code_callback), rejection_response);
       return;
     }
 
@@ -763,8 +778,8 @@ void SecondDeviceAuthBroker::RunAuthCodeCallbackFromParsedResponse(
   }
 
   if (base::ToLowerASCII(*session_status) == "rejected") {
-    RunAuthCodeCallbackWithRejectionResponse(std::move(auth_code_callback),
-                                             &response->GetDict());
+    RunAuthCodeCallbackWithRejectionResponse(
+        metrics_, std::move(auth_code_callback), &response->GetDict());
     return;
   } else if (base::ToLowerASCII(*session_status) == "continue_on_target") {
     RunAuthCodeCallbackWithAdditionalChallengesOnTargetResponse(
