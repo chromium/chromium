@@ -2002,9 +2002,17 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Test to ensure crbug.com/1513330 won't reproduce.
+// TODO(crbug.com/1519307): Enable once the flake is fixed.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_WindowSetResizableDoesntBlockMoveToAndMoveByApis \
+  DISABLED_WindowSetResizableDoesntBlockMoveToAndMoveByApis
+#else
+#define MAYBE_WindowSetResizableDoesntBlockMoveToAndMoveByApis \
+  WindowSetResizableDoesntBlockMoveToAndMoveByApis
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    WindowSetResizableDoesntBlockMoveToAndMoveByApis) {
+    MAYBE_WindowSetResizableDoesntBlockMoveToAndMoveByApis) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
 
