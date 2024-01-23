@@ -32,28 +32,28 @@ class PersonalDataManagerCleaner {
   PersonalDataManagerCleaner& operator=(const PersonalDataManagerCleaner&) =
       delete;
 
-  // Applies address and credit card fixes and cleanups if sync is disabled.
-  void CleanupData();
+  // Applies address cleanups if sync is disabled.
+  void MaybeCleanupAddressData();
 
-  // Applies address/credit card fixes and cleanups depending on the
-  // |model_type|.
-  void ApplyAddressAndCardFixesAndCleanups(syncer::ModelType model_type);
+  // Applies address cleanups if all address Autofill `model_type`s are enabled.
+  void MaybeCleanupAddressDataAfterSyncChange(syncer::ModelType model_type);
+
+  // Applies credit card cleanups.
+  void CleanupCreditCardData();
 
  protected:
   friend class PersonalDataManagerCleanerTest;
 
  private:
-  // Applies various fixes and cleanups on autofill addresses.
+  // Shared implementation of `MaybeCleanupAddressData()` and
+  // `MaybeCleanupAddressDataAfterSyncChange()`
   void ApplyAddressFixesAndCleanups();
-
-  // Applies various fixes and cleanups on autofill credit cards.
-  void ApplyCardFixesAndCleanups();
 
   // Applies the deduping routine once per major version. Calls DedupeProfiles()
   // with the content of `PersonalDataManager::GetProfiles()` as a parameter.
   // Removes the profiles to delete from the database and updates the others.
   // Returns true if the routine was run.
-  bool ApplyDedupingRoutine();
+  bool ApplyAddressDedupingRoutine();
 
   // Goes through all the `existing_profiles` and merges all similar profiles
   // together. All the profiles except the results of the merges will be
@@ -66,7 +66,7 @@ class PersonalDataManagerCleaner {
       std::vector<std::unique_ptr<AutofillProfile>>* existing_profiles,
       std::unordered_set<std::string>* profile_guids_to_delete) const;
 
-  // Tries to delete disused addresses once per major version.
+  // Tries to delete disused addresses on startup.
   bool DeleteDisusedAddresses();
 
   // Tries to delete disused credit cards on startup.
@@ -79,9 +79,8 @@ class PersonalDataManagerCleaner {
   // True if autofill profile dedupe needs to be performed.
   bool is_autofill_profile_dedupe_pending_ = true;
 
-  // True if the profile or credit card cleanups need to be performed.
+  // True if the profile cleanups need to be performed.
   bool is_profile_cleanup_pending_ = true;
-  bool is_credit_card_cleanup_pending_ = true;
 
   // The personal data manager, used to load and update the personal data
   // from/to the web database.

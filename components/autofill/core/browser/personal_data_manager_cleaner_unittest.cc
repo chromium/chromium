@@ -108,8 +108,8 @@ class PersonalDataManagerCleanerTest : public PersonalDataManagerTestBase,
         server_cards);
   }
 
-  bool ApplyDedupingRoutine() {
-    return personal_data_manager_cleaner_->ApplyDedupingRoutine();
+  bool ApplyAddressDedupingRoutine() {
+    return personal_data_manager_cleaner_->ApplyAddressDedupingRoutine();
   }
 
   void DedupeProfiles(
@@ -138,11 +138,11 @@ class PersonalDataManagerCleanerTest : public PersonalDataManagerTestBase,
   std::unique_ptr<PersonalDataManagerCleaner> personal_data_manager_cleaner_;
 };
 
-// Tests that ApplyDedupingRoutine merges the profile values correctly, i.e.
-// never lose information and keep the syntax of the profile with the higher
-// ranking score.
+// Tests that ApplyAddressDedupingRoutine merges the profile values correctly,
+// i.e. never lose information and keep the syntax of the profile with the
+// higher ranking score.
 TEST_F(PersonalDataManagerCleanerTest,
-       ApplyDedupingRoutine_MergedProfileValues) {
+       ApplyAddressDedupingRoutine_MergedProfileValues) {
   // Create a profile with a higher ranking score.
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
@@ -176,7 +176,7 @@ TEST_F(PersonalDataManagerCleanerTest,
 
   base::HistogramTester histogram_tester;
 
-  EXPECT_TRUE(ApplyDedupingRoutine());
+  EXPECT_TRUE(ApplyAddressDedupingRoutine());
   PersonalDataProfileTaskWaiter(personal_data()).Wait();
 
   std::vector<AutofillProfile*> profiles = personal_data().GetProfiles();
@@ -220,11 +220,12 @@ TEST_F(PersonalDataManagerCleanerTest,
   EXPECT_LT(profile1.use_date() - base::Seconds(10), profiles[0]->use_date());
 }
 
-// Tests that ApplyDedupingRoutine works as expected in a realistic scenario.
-// Tests that it merges the different set of similar profiles independently and
-// that the resulting profiles have the right values. It has no effect on the
-// other profiles.
-TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_MultipleDedupes) {
+// Tests that ApplyAddressDedupingRoutine works as expected in a realistic
+// scenario. Tests that it merges the different set of similar profiles
+// independently and that the resulting profiles have the right values. It has
+// no effect on the other profiles.
+TEST_F(PersonalDataManagerCleanerTest,
+       ApplyAddressDedupingRoutine_MultipleDedupes) {
   // Create a Homer home profile with a higher ranking score than other Homer
   // profiles.
   AutofillProfile Homer1(i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -282,7 +283,7 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_MultipleDedupes) {
 
   // |Homer1| should get merged into |Homer2| which should then be merged into
   // |Homer3|. |Homer4| and |Barney| should not be deduped at all.
-  EXPECT_TRUE(ApplyDedupingRoutine());
+  EXPECT_TRUE(ApplyAddressDedupingRoutine());
   PersonalDataProfileTaskWaiter(personal_data()).Wait();
 
   // Get the profiles, sorted by ranking score to have a deterministic order.
@@ -331,12 +332,14 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_MultipleDedupes) {
   EXPECT_TRUE(Barney == *profiles[2]);
 }
 
-TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_NopIfZeroProfiles) {
+TEST_F(PersonalDataManagerCleanerTest,
+       ApplyAddressDedupingRoutine_NopIfZeroProfiles) {
   EXPECT_TRUE(personal_data().GetProfiles().empty());
-  EXPECT_FALSE(ApplyDedupingRoutine());
+  EXPECT_FALSE(ApplyAddressDedupingRoutine());
 }
 
-TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_NopIfOneProfile) {
+TEST_F(PersonalDataManagerCleanerTest,
+       ApplyAddressDedupingRoutine_NopIfOneProfile) {
   // Create a profile to dedupe.
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Homer", "J", "Simpson",
@@ -346,12 +349,13 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_NopIfOneProfile) {
   AddProfileToPersonalDataManager(profile);
 
   EXPECT_EQ(1U, personal_data().GetProfiles().size());
-  EXPECT_FALSE(ApplyDedupingRoutine());
+  EXPECT_FALSE(ApplyAddressDedupingRoutine());
 }
 
-// Tests that ApplyDedupingRoutine is not run a second time on the same major
-// version.
-TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_OncePerVersion) {
+// Tests that ApplyAddressDedupingRoutine is not run a second time on the same
+// major version.
+TEST_F(PersonalDataManagerCleanerTest,
+       ApplyAddressDedupingRoutine_OncePerVersion) {
   // Create a profile to dedupe.
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
@@ -370,7 +374,7 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_OncePerVersion) {
   EXPECT_EQ(2U, personal_data().GetProfiles().size());
 
   // The deduping routine should be run a first time.
-  EXPECT_TRUE(ApplyDedupingRoutine());
+  EXPECT_TRUE(ApplyAddressDedupingRoutine());
   PersonalDataProfileTaskWaiter(personal_data()).Wait();
 
   std::vector<AutofillProfile*> profiles = personal_data().GetProfiles();
@@ -390,7 +394,7 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_OncePerVersion) {
   EXPECT_EQ(2U, personal_data().GetProfiles().size());
 
   // The deduping routine should not be run.
-  EXPECT_FALSE(ApplyDedupingRoutine());
+  EXPECT_FALSE(ApplyAddressDedupingRoutine());
 
   // The two duplicate profiles should still be present.
   EXPECT_EQ(2U, personal_data().GetProfiles().size());

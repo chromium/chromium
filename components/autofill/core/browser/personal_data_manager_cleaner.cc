@@ -34,7 +34,7 @@ PersonalDataManagerCleaner::PersonalDataManagerCleaner(
 
 PersonalDataManagerCleaner::~PersonalDataManagerCleaner() = default;
 
-void PersonalDataManagerCleaner::CleanupData() {
+void PersonalDataManagerCleaner::MaybeCleanupAddressData() {
   // The profile de-duplication is run once every major chrome version. If the
   // profile de-duplication has not run for the |CHROME_VERSION_MAJOR| yet,
   // |AlternativeStateNameMap| needs to be populated first. Otherwise,
@@ -43,7 +43,7 @@ void PersonalDataManagerCleaner::CleanupData() {
            ->is_alternative_state_name_map_populated() &&
       is_autofill_profile_dedupe_pending_) {
     alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
-        base::BindOnce(&PersonalDataManagerCleaner::CleanupData,
+        base::BindOnce(&PersonalDataManagerCleaner::MaybeCleanupAddressData,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
   }
@@ -54,15 +54,9 @@ void PersonalDataManagerCleaner::CleanupData() {
           syncer::UserSelectableType::kAutofill)) {
     ApplyAddressFixesAndCleanups();
   }
-  // If the user has chosen to sync payments, wait for sync to start before
-  // performing cleanups. Otherwise do them now.
-  if (!personal_data_manager_->IsUserSelectableTypeEnabled(
-          syncer::UserSelectableType::kPayments)) {
-    ApplyCardFixesAndCleanups();
-  }
 }
 
-void PersonalDataManagerCleaner::ApplyAddressAndCardFixesAndCleanups(
+void PersonalDataManagerCleaner::MaybeCleanupAddressDataAfterSyncChange(
     syncer::ModelType model_type) {
   // The profile de-duplication is run once every major chrome version. If the
   // profile de-duplication has not run for the |CHROME_VERSION_MAJOR| yet,
@@ -81,7 +75,7 @@ void PersonalDataManagerCleaner::ApplyAddressAndCardFixesAndCleanups(
       is_autofill_profile_dedupe_pending_) {
     alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
         base::BindOnce(
-            &PersonalDataManagerCleaner::ApplyAddressAndCardFixesAndCleanups,
+            &PersonalDataManagerCleaner::MaybeCleanupAddressDataAfterSyncChange,
             weak_ptr_factory_.GetWeakPtr(), model_type));
     return;
   }
@@ -92,11 +86,6 @@ void PersonalDataManagerCleaner::ApplyAddressAndCardFixesAndCleanups(
        model_type == syncer::CONTACT_INFO)) {
     ApplyAddressFixesAndCleanups();
   }
-
-  // Run deferred credit card startup code.
-  if (model_type == syncer::AUTOFILL_WALLET_DATA) {
-    ApplyCardFixesAndCleanups();
-  }
 }
 
 void PersonalDataManagerCleaner::ApplyAddressFixesAndCleanups() {
@@ -105,7 +94,7 @@ void PersonalDataManagerCleaner::ApplyAddressFixesAndCleanups() {
   }
 
   // Once per major version, otherwise NOP.
-  ApplyDedupingRoutine();
+  ApplyAddressDedupingRoutine();
 
   // Ran once on browser startup.
   DeleteDisusedAddresses();
@@ -113,21 +102,12 @@ void PersonalDataManagerCleaner::ApplyAddressFixesAndCleanups() {
   is_profile_cleanup_pending_ = false;
 }
 
-void PersonalDataManagerCleaner::ApplyCardFixesAndCleanups() {
-  if (!is_credit_card_cleanup_pending_) {
-    return;
-  }
-
-  // Ran once on browser startup.
+void PersonalDataManagerCleaner::CleanupCreditCardData() {
   DeleteDisusedCreditCards();
-
-  // Ran once on browser startup.
   ClearCreditCardNonSettingsOrigins();
-
-  is_credit_card_cleanup_pending_ = true;
 }
 
-bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
+bool PersonalDataManagerCleaner::ApplyAddressDedupingRoutine() {
   // Check if de-duplication has already been performed on this major version.
   if (!is_autofill_profile_dedupe_pending_) {
     return false;

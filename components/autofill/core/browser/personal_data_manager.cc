@@ -635,7 +635,8 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
   if (!is_data_loaded_) {
     is_data_loaded_ = true;
     LogStoredDataMetrics();
-    personal_data_manager_cleaner_->CleanupData();
+    personal_data_manager_cleaner_->MaybeCleanupAddressData();
+    personal_data_manager_cleaner_->CleanupCreditCardData();
   }
   NotifyPersonalDataObserver();
 }
@@ -647,7 +648,7 @@ void PersonalDataManager::OnAutofillChangedBySync(
   // Note, it's possible that the cleanups are run on the stale data since
   // `Refresh` is an async operation. But, since the cleanups happen over the
   // local data, it should be fine.
-  personal_data_manager_cleaner_->ApplyAddressAndCardFixesAndCleanups(
+  personal_data_manager_cleaner_->MaybeCleanupAddressDataAfterSyncChange(
       model_type);
 }
 
