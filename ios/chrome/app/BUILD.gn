@@ -39,14 +39,6 @@ buildflag_header("fast_app_terminate_buildflags") {
   flags = [ "FAST_APP_TERMINATE_ENABLED=$fast_app_terminate_enabled" ]
 }
 
-buildflag_header("chrome_main_module_buildflags") {
-  header = "chrome_main_module_buildflags.h"
-  flags = [
-    "USE_CHROME_MAIN_MODULE=$ios_use_chrome_main_module",
-    "USE_CHROME_BLINK_MAIN_MODULE=$ios_use_chrome_blink_main_module",
-  ]
-}
-
 source_set("app") {
   sources = [
     "app_startup_parameters.h",
@@ -640,7 +632,6 @@ source_set("main") {
 
   deps = [
     ":app_internal",
-    ":chrome_main_module_buildflags",
     "//base",
     "//build:blink_buildflags",
     "//components/component_updater",
@@ -691,7 +682,7 @@ if (ios_partition_alloc_enabled) {
   ios_framework_bundle("early_partition_alloc_framework") {
     output_name = "EarlyMallocZoneRegistration"
     sources = [ "early_pa_registration.cc" ]
-    info_plist = "//ios/chrome/app/resources/ChromeMainInfo.plist"
+    info_plist = "//ios/chrome/app/resources/EarlyPAFrameworkInfo.plist"
     extra_substitutions =
         [ "BUNDLE_IDENTIFIER=$ios_app_bundle_id_prefix.$output_name" ]
 
@@ -861,24 +852,5 @@ if (current_toolchain == default_toolchain) {
       extension_target =
           "//ios/chrome/intents_extension/appex(${_extension_toolchain})"
     }
-  }
-}
-
-if (!ios_use_chrome_main_module) {
-  ios_framework_bundle("chrome_main_framework") {
-    info_plist = "resources/Info.plist"
-    output_name = "ChromeMain"
-    extra_substitutions = [
-      "CONTENT_WIDGET_EXTENSION_BUNDLE_ID=$chromium_bundle_id.ContentTodayExtension",
-      "CHROMIUM_BUNDLE_ID=$chromium_bundle_id.chrome_main",
-      "CHROMIUM_HANDOFF_ID=$chromium_handoff_id",
-      "CHROMIUM_SHORT_NAME=ChromeMain",
-      "CHROMIUM_URL_SCHEME_1=$url_unsecure_scheme",
-      "CHROMIUM_URL_SCHEME_2=$url_secure_scheme",
-      "CHROMIUM_URL_SCHEME_3=$url_x_callback_scheme",
-      "CHROMIUM_URL_CHANNEL_SCHEME=$url_channel_scheme",
-      "SSOAUTH_URL_SCHEME=$url_ssoauth_scheme",
-      "IOS_MOVE_TAB_ACTIVITY_TYPE=$ios_move_tab_activity_type",
-    ]
   }
 }
