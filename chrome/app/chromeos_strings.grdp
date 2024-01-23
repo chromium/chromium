@@ -1643,9 +1643,6 @@
   <message name="IDS_LOGIN_PASSWORD_CHANGED_INCORRECT_OLD_PASSWORD" desc="Error that is shown when incorrect old password was supplied for user cryptohome migration.">
     Incorrect password
   </message>
-  <message name="IDS_LOGIN_PASSWORD_CHANGED_PROCEED_ANYWAY_BUTTON" desc="Button to proceed without providing old password on the password changed dialog.">
-    Proceed anyway
-  </message>
   <message name="IDS_LOGIN_PASSWORD_CHANGED_TITLE" desc="Title for the password changed dialog box">
     To unlock and restore your local data, please enter your old <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password.
   </message>
