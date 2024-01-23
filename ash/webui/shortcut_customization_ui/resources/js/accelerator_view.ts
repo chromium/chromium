@@ -26,7 +26,7 @@ import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {getShortcutInputProvider} from './shortcut_input_mojo_interface_provider.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, EditAction, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {areAcceleratorsEqual, canBypassErrorWithRetry, getAccelerator, getKeyDisplay, getModifiersForAcceleratorInfo, isCustomizationAllowed, isStandardAcceleratorInfo, isValidDefaultAccelerator, keyEventToAccelerator, LWIN_KEY, META_KEY, resetKeyEvent} from './shortcut_utils.js';
+import {areAcceleratorsEqual, canBypassErrorWithRetry, containsAccelerator, getAccelerator, getKeyDisplay, getModifiersForAcceleratorInfo, isCustomizationAllowed, isStandardAcceleratorInfo, isValidAccelerator, keyEventToAccelerator, LWIN_KEY, META_KEY, resetKeyEvent} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
   $: {
@@ -164,6 +164,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   hasLauncherButton: boolean;
   pendingKeyEvent: KeyEvent|null = null;
   shortcutInput: ShortcutInputElement|null;
+  defaultAccelerators: Accelerator[];
   protected isCapturing: boolean;
   protected lastAccelerator: Accelerator;
   protected lastResult: AcceleratorConfigResult;
@@ -174,12 +175,15 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   private eventTracker: EventTracker = new EventTracker();
   private editAction: EditAction = EditAction.NONE;
 
-  override connectedCallback(): void {
+  override async connectedCallback(): Promise<void> {
     super.connectedCallback();
 
     this.categoryIsLocked = this.lookupManager.isCategoryLocked(
         this.lookupManager.getAcceleratorCategory(this.source, this.action));
     this.hasLauncherButton = this.lookupManager.getHasLauncherButton();
+    this.defaultAccelerators =
+        (await this.shortcutProvider.getDefaultAcceleratorsForId(this.action))
+            .accelerators;
   }
 
   override disconnectedCallback(): void {
@@ -310,7 +314,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     }
 
     // Only process valid accelerators.
-    if (isValidDefaultAccelerator(pendingAccelerator)) {
+    if (isValidAccelerator(pendingAccelerator) ||
+        containsAccelerator(this.defaultAccelerators, pendingAccelerator)) {
       // Store the pending key event.
       this.lastPendingKeyEvent = rewrittenKeyEvent;
       this.processPendingAccelerator(pendingAccelerator);

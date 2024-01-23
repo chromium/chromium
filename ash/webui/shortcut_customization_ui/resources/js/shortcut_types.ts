@@ -216,6 +216,8 @@ export interface ShortcutProviderInterface extends
     AcceleratorConfigurationProviderInterface {
   getAccelerators(): Promise<{config: MojoAcceleratorConfig}>;
   getAcceleratorLayoutInfos(): Promise<{layoutInfos: MojoLayoutInfo[]}>;
+  getDefaultAcceleratorsForId(action: number):
+      Promise<{accelerators: Accelerator[]}>;
   isMutable(source: AcceleratorSource): Promise<{isMutable: boolean}>;
   hasLauncherButton(): Promise<{hasLauncherButton: boolean}>;
   addAccelerator(

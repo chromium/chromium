@@ -1697,6 +1697,99 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorExceedsMaximum) {
             result->result);
 }
 
+TEST_F(AcceleratorConfigurationProviderTest, ReAddDefaultAccelerator) {
+  // Initialize default accelerators.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_Z, ui::EF_NONE,
+       AcceleratorAction::kTakeScreenshot},
+      {/*trigger_on_press=*/true, ui::VKEY_D,
+       ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+       AcceleratorAction::kTakeScreenshot},
+  };
+
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  // Verify accelerators are populated.
+  EXPECT_EQ(sizeof(test_data) / sizeof(AcceleratorData),
+            config->GetAllAccelerators().size());
+
+  AcceleratorResultDataPtr result;
+  // Remove first accelerator 'z'.
+  const ui::Accelerator removed_accelerator(ui::VKEY_Z, ui::EF_NONE);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .RemoveAccelerator(mojom::AcceleratorSource::kAsh,
+                             AcceleratorAction::kTakeScreenshot,
+                             removed_accelerator, &result);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kSuccess, result->result);
+
+  // Remove second accelerator 'alt+shift+ctrl+d'.
+  const ui::Accelerator removed_accelerator2(
+      ui::VKEY_D, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .RemoveAccelerator(mojom::AcceleratorSource::kAsh,
+                             AcceleratorAction::kTakeScreenshot,
+                             removed_accelerator2, &result);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kSuccess, result->result);
+
+  // Re-add a default accelerator 'z' and expect a successful operation.
+  const ui::Accelerator accelerator(ui::VKEY_Z, ui::EF_NONE);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh,
+                          AcceleratorAction::kTakeScreenshot, accelerator,
+                          &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kSuccess, result->result);
+
+  // Add non-default accelerator 'y' and expect a 'missing modifier' error.
+  const ui::Accelerator accelerator2(ui::VKEY_Y, ui::EF_NONE);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh,
+                          AcceleratorAction::kTakeScreenshot, accelerator2,
+                          &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kMissingModifier, result->result);
+
+  // Re-add a default accelerator 'ctrl+alt+shift+d' and expect successful
+  // addition without any warnings.
+  const ui::Accelerator accelerator3(
+      ui::VKEY_D, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh,
+                          AcceleratorAction::kTakeScreenshot, accelerator3,
+                          &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kSuccess, result->result);
+
+  // Add 'ctrl+alt+shift+d' and expect a 'conflict' error.
+  const ui::Accelerator accelerator4(
+      ui::VKEY_D, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh,
+                          AcceleratorAction::kTakeScreenshot, accelerator4,
+                          &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kConflict, result->result);
+
+  // Add non-default accelerator 'ctrl+alt+shift+e', expect a non search
+  // accelerator warning.
+  const ui::Accelerator accelerator5(
+      ui::VKEY_E, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh,
+                          AcceleratorAction::kTakeScreenshot, accelerator5,
+                          &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kNonSearchAcceleratorWarning,
+            result->result);
+}
+
 TEST_F(AcceleratorConfigurationProviderTest,
        MaximumAcceleratorsWithDisabledDefault) {
   // Initialize default accelerators.
