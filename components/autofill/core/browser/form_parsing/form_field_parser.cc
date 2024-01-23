@@ -10,6 +10,7 @@
 #include <numeric>
 
 #include "base/auto_reset.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -355,38 +356,54 @@ bool FormFieldParser::FieldMatchesMatchPatternRef(
     const AutofillField& field,
     const char* regex_name,
     MatchingPattern (*projection)(const MatchingPattern&)) {
+  // Calling the regex engine with multiple smaller regexes is less efficient
+  // than calling it with one larger regex. For this reasons, positive_patterns
+  // are batched by OR-ing them together. Since matching further depends on the
+  // MatchAttributes of the pattern, `batched_patterns` is used to group them by
+  // MatchAttributes.
+  base::flat_map<DenseSet<MatchAttribute>, std::vector<std::u16string_view>>
+      batched_patterns;
+
   for (MatchPatternRef pattern_ref : patterns) {
     MatchingPattern pattern =
         projection ? (*projection)(*pattern_ref) : *pattern_ref;
+    CHECK(!IsEmpty(pattern.positive_pattern));
     if (!MatchesFormControlType(field.form_control_type,
                                 pattern.form_control_types)) {
       continue;
     }
 
-    // For each of the two match field attributes, kName and kLabel, that are
-    // active for the current pattern, test if the attribute matches the
-    // negative pattern. If yes, remove it from the attributes that are
-    // considered for positive matching.
-    MatchParams match_type(pattern.match_field_attributes,
-                           pattern.form_control_types);
+    DenseSet<MatchAttribute> attributes = pattern.match_field_attributes;
 
     if (!IsEmpty(pattern.negative_pattern)) {
+      // For each attribute that is active for the current pattern, test if it
+      // matches the negative pattern. If so, remove it from the attributes that
+      // are considered for positive matching.
       for (MatchAttribute attribute : pattern.match_field_attributes) {
-        if (Match(context, &field, pattern.negative_pattern,
-                  MatchParams({attribute}, match_type.field_types),
+        if (Match(context, &field, pattern.negative_pattern, {attribute},
                   regex_name)) {
-          match_type.attributes.erase(attribute);
+          attributes.erase(attribute);
         }
+      }
+      if (attributes.empty()) {
+        continue;
       }
     }
 
-    if (match_type.attributes.empty()) {
-      continue;
+    auto it = batched_patterns.lower_bound(attributes);
+    // Since the `projection` should never modify the positive_pattern, store
+    // a pointer to the original positive_pattern in `batched_patterns`. This
+    // avoids a string copy.
+    if (it != batched_patterns.end() && it->first == attributes) {
+      it->second.push_back((*pattern_ref).positive_pattern);
+    } else {
+      batched_patterns.insert(it,
+                              {attributes, {(*pattern_ref).positive_pattern}});
     }
-
-    if (!IsEmpty(pattern.positive_pattern) &&
-        Match(context, &field, pattern.positive_pattern, match_type,
-              regex_name)) {
+  }
+  for (const auto& [attributes, positive_patterns] : batched_patterns) {
+    if (Match(context, &field, base::JoinString(positive_patterns, u"|"),
+              attributes, regex_name)) {
       return true;
     }
   }
@@ -420,7 +437,7 @@ bool FormFieldParser::ParseFieldSpecificsWithLegacyPattern(
                               match_type.field_types)) {
     return false;
   }
-  if (Match(context, field, pattern, match_type, regex_name)) {
+  if (Match(context, field, pattern, match_type.attributes, regex_name)) {
     if (match) {
       *match = field;
     }
@@ -572,7 +589,7 @@ FormFieldParser::RemoveCheckableFields(
 bool FormFieldParser::Match(ParsingContext& context,
                             const AutofillField* field,
                             base::StringPiece16 pattern,
-                            MatchParams match_type,
+                            DenseSet<MatchAttribute> match_attributes,
                             const char* regex_name) {
   bool found_match = false;
   std::string_view match_type_string;
@@ -590,14 +607,13 @@ bool FormFieldParser::Match(ParsingContext& context,
 
   const std::u16string& name = field->parseable_name();
 
-  const bool match_label =
-      match_type.attributes.contains(MatchAttribute::kLabel);
+  const bool match_label = match_attributes.contains(MatchAttribute::kLabel);
   if (match_label &&
       MatchesRegexWithCache(context, label, pattern, capture_destination)) {
     found_match = true;
     match_type_string = "Match in label";
     value = label;
-  } else if (match_type.attributes.contains(MatchAttribute::kName) &&
+  } else if (match_attributes.contains(MatchAttribute::kName) &&
              MatchesRegexWithCache(context, name, pattern,
                                    capture_destination)) {
     found_match = true;

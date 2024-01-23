@@ -182,9 +182,9 @@ class FormFieldParser {
   static bool MatchForTesting(ParsingContext& context,
                               const AutofillField* field,
                               base::StringPiece16 pattern,
-                              MatchParams match_type,
+                              DenseSet<MatchAttribute> match_attributes,
                               const char* regex_name = "") {
-    return FormFieldParser::Match(context, field, pattern, match_type,
+    return FormFieldParser::Match(context, field, pattern, match_attributes,
                                   regex_name);
   }
 
@@ -352,7 +352,7 @@ class FormFieldParser {
   static bool Match(ParsingContext& context,
                     const AutofillField* field,
                     base::StringPiece16 pattern,
-                    MatchParams match_type,
+                    DenseSet<MatchAttribute> match_attributes,
                     const char* regex_name = "");
 
   // Perform a "pass" over the |fields| where each pass uses the supplied
