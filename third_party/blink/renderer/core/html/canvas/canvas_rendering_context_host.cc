@@ -337,6 +337,13 @@ ScriptPromise CanvasRenderingContextHost::convertToBlob(
     return ScriptPromise();
   }
 
+  if (ContextHasOpenLayers(context)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "`convertToBlob()` cannot be called with open layers.");
+    return ScriptPromise();
+  }
+
   if (!OriginClean()) {
     error_msg << "Tainted " << object_name << " may not be exported.";
     exception_state.ThrowSecurityError(error_msg.str().c_str());
@@ -429,6 +436,12 @@ void CanvasRenderingContextHost::PageVisibilityChanged() {
   if (!page_visible && (IsWebGL() || IsWebGPU())) {
     DiscardResourceProvider();
   }
+}
+
+bool CanvasRenderingContextHost::ContextHasOpenLayers(
+    const CanvasRenderingContext* context) const {
+  return context != nullptr && context->IsRenderingContext2D() &&
+         context->LayerCount() != 0;
 }
 
 }  // namespace blink

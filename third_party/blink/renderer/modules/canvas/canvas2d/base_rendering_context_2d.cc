@@ -34,6 +34,8 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -1818,6 +1820,13 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
           DOMExceptionCode::kInvalidStateError,
           "The HTMLImageElement provided is in the 'broken' state.");
     }
+    if (source_image_status == kLayersOpenInCanvasSource) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "`drawImage()` with a canvas as a source cannot be called while "
+          "layers are open in the the source canvas.");
+      return;
+    }
     if (!image || !image->width() || !image->height())
       return;
   } else {
@@ -2038,6 +2047,12 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
       break;
     case kIncompleteSourceImageStatus:
       return nullptr;
+    case kLayersOpenInCanvasSource:
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "`createPattern()` with a canvas as a source cannot be called while "
+          "layers are open in the source canvas.");
+      return nullptr;
     default:
       NOTREACHED();
       return nullptr;
@@ -2208,6 +2223,13 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
     ExceptionState& exception_state) {
   if (!base::CheckMul(sw, sh).IsValid<int>()) {
     exception_state.ThrowRangeError("Out of memory at ImageData creation");
+    return nullptr;
+  }
+
+  if (layer_count_ != 0) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "`getImageData()` cannot be called with open layers.");
     return nullptr;
   }
 
@@ -2391,7 +2413,7 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   if (layer_count_ != 0) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "`putImageData()` cannot be called while layers are opened.");
+        "`putImageData()` cannot be called with open layers.");
     return;
   }
 

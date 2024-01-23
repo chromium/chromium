@@ -126,6 +126,8 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   void CreateCanvasResourceProviderWebGL();
   void CreateCanvasResourceProviderWebGPU();
 
+  bool ContextHasOpenLayers(const CanvasRenderingContext*) const;
+
   // Computes the digest that corresponds to the "input" of this canvas,
   // including the context type, and if applicable, canvas digest, and taint
   // bits.

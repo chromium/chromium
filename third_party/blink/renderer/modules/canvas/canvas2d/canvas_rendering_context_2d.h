@@ -212,6 +212,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     return identifiability_study_helper_.encountered_partially_digested_image();
   }
 
+  int LayerCount() const override;
+
  protected:
   HTMLCanvasElement* HostAsHTMLCanvasElement() const final;
   FontSelector* GetFontSelector() const final;

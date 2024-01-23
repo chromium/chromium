@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
 #include "third_party/blink/renderer/modules/formatted_text/formatted_text.h"
@@ -846,6 +847,10 @@ HTMLCanvasElement* CanvasRenderingContext2D::HostAsHTMLCanvasElement() const {
 
 FontSelector* CanvasRenderingContext2D::GetFontSelector() const {
   return canvas()->GetFontSelector();
+}
+
+int CanvasRenderingContext2D::LayerCount() const {
+  return BaseRenderingContext2D::LayerCount();
 }
 
 }  // namespace blink

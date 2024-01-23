@@ -48,6 +48,7 @@ enum SourceImageStatus {
   kZeroSizeImageSourceStatus,    // Image element with width or height of zero
   kIncompleteSourceImageStatus,  // Image element with no source media
   kInvalidSourceImageStatus,
+  kLayersOpenInCanvasSource,  // Source is a canvas with open layers
 };
 
 // This is the helper function to get the canvas image with a

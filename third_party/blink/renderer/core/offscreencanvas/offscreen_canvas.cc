@@ -223,6 +223,12 @@ ImageBitmap* OffscreenCanvas::transferToImageBitmap(
                                       "OffscreenCanvas with no context");
     return nullptr;
   }
+  if (ContextHasOpenLayers(context_)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "`transferToImageBitmap()` cannot be called with open layers.");
+    return nullptr;
+  }
 
   ImageBitmap* image =
       context_->TransferToImageBitmap(script_state, exception_state);
@@ -262,6 +268,10 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
                          surface->makeImageSnapshot())
                    : nullptr;
   }
+  if (ContextHasOpenLayers(context_)) {
+    *status = kLayersOpenInCanvasSource;
+    return nullptr;
+  }
   if (!size.width() || !size.height()) {
     *status = kZeroSizeCanvasSourceImageStatus;
     return nullptr;
@@ -287,6 +297,12 @@ ScriptPromise OffscreenCanvas::CreateImageBitmap(
     absl::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
+  if (ContextHasOpenLayers(context_)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "`createImageBitmap()` cannot be called with open layers.");
+    return ScriptPromise();
+  }
   if (context_) {
     context_->FinalizeFrame(FlushReason::kCreateImageBitmap);
   }

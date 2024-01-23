@@ -147,6 +147,8 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   absl::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
 
+  int LayerCount() const override;
+
  protected:
   OffscreenCanvas* HostAsOffscreenCanvas() const final;
   FontSelector* GetFontSelector() const final;

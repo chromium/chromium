@@ -491,4 +491,8 @@ FontSelector* OffscreenCanvasRenderingContext2D::GetFontSelector() const {
   return Host()->GetFontSelector();
 }
 
+int OffscreenCanvasRenderingContext2D::LayerCount() const {
+  return BaseRenderingContext2D::LayerCount();
+}
+
 }  // namespace blink
