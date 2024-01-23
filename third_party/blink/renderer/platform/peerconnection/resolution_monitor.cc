@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/resolution_monitor.h"
 
+#include <bitset>
+
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
