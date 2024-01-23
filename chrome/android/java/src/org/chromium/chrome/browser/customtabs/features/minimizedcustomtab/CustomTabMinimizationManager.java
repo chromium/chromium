@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
+import static org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter.reportJavaException;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.FAVICON;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.TITLE;
@@ -26,6 +27,7 @@ import androidx.core.app.PictureInPictureModeChangedInfo;
 import androidx.core.util.Consumer;
 import androidx.lifecycle.Lifecycle.State;
 
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
@@ -45,6 +47,10 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /** Class that manages minimizing a Custom Tab into picture-in-picture. */
@@ -80,6 +86,22 @@ public class CustomTabMinimizationManager
 
     @VisibleForTesting
     static final String KEY_CCT_MINIMIZATION_SYSTEM_TIME = "cctMinimizationSystemTime";
+
+    // --- For debugging
+    private static final String TAG = "CTMinimizationMgr";
+    private static final String SUCCESS_AFTER_EXCEPTION_HISTOGRAM_NAME =
+            "CustomTabs.MinimizeSuccessAfterException.";
+    private static final String TASK_DISPLAY_AREA_NPE_STR =
+            "com.android.server.wm.TaskDisplayArea.positionStackAtTop";
+    private static final String DEVICE_DOES_NOT_SUPPORT_ISE_STR =
+            "Device doesn't support picture-in-picture mode";
+    private static final String ACTIVITY_DOES_NOT_SUPPORT_ISE_STR =
+            "Current activity does not support picture-in-picture";
+    private static final String ROOT_TASK_IAE_STR = "addRootTaskReferenceIfNeeded: root pinned";
+
+    private final Map<String, Integer> mExceptionImpressions = new HashMap<>();
+    private final Set<String> mMinimizeSuccessAfterException = new HashSet<>();
+    // ---
 
     private final AppCompatActivity mActivity;
     private final ActivityTabProvider mTabProvider;
@@ -142,6 +164,7 @@ public class CustomTabMinimizationManager
     /** Minimize the Custom Tab into picture-in-picture. */
     @Override
     public void minimize() {
+        if (mMinimized) return;
         if (!mTabProvider.hasValue()) return;
         mFeatureEngagementDelegate.notifyUserEngaged();
         var builder = new PictureInPictureParams.Builder().setAspectRatio(ASPECT_RATIO);
@@ -151,8 +174,40 @@ public class CustomTabMinimizationManager
 
         maybeDismissLastMinimizedTab();
 
-        mMinimized = mActivity.enterPictureInPictureMode(builder.build());
+        // Sometimes an exception may be thrown by the framework code. If it's something we've seen
+        // before, catch it and report with extra debug information without crashing. Otherwise,
+        // rethrow so we don't inadvertently hide other crashes.
+        try {
+            mMinimized = mActivity.enterPictureInPictureMode(builder.build());
+        } catch (NullPointerException e) {
+            if (doesExceptionMatch(e, TASK_DISPLAY_AREA_NPE_STR)) {
+                String msg = "NullPointerException";
+                incrementExceptionImpressionAndReport(TASK_DISPLAY_AREA_NPE_STR, msg, e);
+            } else {
+                throw e;
+            }
+        } catch (IllegalStateException e) {
+            if (doesExceptionMatch(e, DEVICE_DOES_NOT_SUPPORT_ISE_STR)) {
+                String msg = "Device doesn't support picture-in-picture mode.";
+                incrementExceptionImpressionAndReport(DEVICE_DOES_NOT_SUPPORT_ISE_STR, msg, e);
+            } else if (doesExceptionMatch(e, ACTIVITY_DOES_NOT_SUPPORT_ISE_STR)) {
+                String msg =
+                        "Current activity does not support picture-in-picture. Activity class: "
+                                + mActivity.getLocalClassName();
+                incrementExceptionImpressionAndReport(ACTIVITY_DOES_NOT_SUPPORT_ISE_STR, msg, e);
+            } else {
+                throw e;
+            }
+        } catch (IllegalArgumentException e) {
+            if (doesExceptionMatch(e, ROOT_TASK_IAE_STR)) {
+                String msg = "IllegalArgumentException";
+                incrementExceptionImpressionAndReport(ROOT_TASK_IAE_STR, msg, e);
+            } else {
+                throw e;
+            }
+        }
         if (!mMinimized) return;
+        recordMinimizeSuccessAfterException();
 
         maybeSaveLastMinimizeDelegate();
 
@@ -186,7 +241,20 @@ public class CustomTabMinimizationManager
         if (!mMinimized) return;
 
         Tab tab = mTabProvider.get();
-        assert tab != null;
+
+        if (tab == null) {
+            boolean wasInitializedMinimized =
+                    mSavedInstanceStateSupplier.hasValue()
+                            && mSavedInstanceStateSupplier.get().getBoolean(KEY_IS_CCT_MINIMIZED);
+            String msg =
+                    "Tab is null. Activity state is "
+                            + mActivity.getLifecycle().getCurrentState()
+                            + ". wasInitializedMinimized: "
+                            + wasInitializedMinimized;
+            Log.e(TAG, msg);
+            reportJavaException(new Exception(msg));
+        }
+
         if (pictureInPictureModeChangedInfo.isInPictureInPictureMode()) {
             showMinimizedCard(/* fromSavedState= */ false);
             updateTabForMinimization(tab);
@@ -369,5 +437,66 @@ public class CustomTabMinimizationManager
                 .with(URL, bundle.getString(URL.toString()))
                 .with(FAVICON, bundle.getParcelable(FAVICON.toString()))
                 .build();
+    }
+
+    private boolean doesExceptionMatch(Exception e, String subString) {
+        return e.getMessage() != null && e.getMessage().contains(subString);
+    }
+
+    private void incrementExceptionImpression(String key) {
+        mExceptionImpressions.compute(key, (k, v) -> v == null ? 1 : v + 1);
+    }
+
+    private void incrementExceptionImpressionAndReport(String key, String msg, Exception e) {
+        incrementExceptionImpression(key);
+        Log.e(TAG, msg, e);
+        reportJavaException(new Exception(msg, e));
+    }
+
+    private void recordMinimizeSuccessAfterException() {
+        if (shouldRecordSuccessAfterException(TASK_DISPLAY_AREA_NPE_STR)) {
+            mMinimizeSuccessAfterException.add(TASK_DISPLAY_AREA_NPE_STR);
+            RecordHistogram.recordCustomCountHistogram(
+                    SUCCESS_AFTER_EXCEPTION_HISTOGRAM_NAME + "NPE",
+                    mExceptionImpressions.get(TASK_DISPLAY_AREA_NPE_STR),
+                    1,
+                    10,
+                    10);
+        }
+        if (shouldRecordSuccessAfterException(DEVICE_DOES_NOT_SUPPORT_ISE_STR)) {
+            mMinimizeSuccessAfterException.add(DEVICE_DOES_NOT_SUPPORT_ISE_STR);
+            RecordHistogram.recordCustomCountHistogram(
+                    SUCCESS_AFTER_EXCEPTION_HISTOGRAM_NAME + "ISE_DEVICE",
+                    mExceptionImpressions.get(DEVICE_DOES_NOT_SUPPORT_ISE_STR),
+                    1,
+                    10,
+                    10);
+        }
+        if (shouldRecordSuccessAfterException(ACTIVITY_DOES_NOT_SUPPORT_ISE_STR)) {
+            mMinimizeSuccessAfterException.add(ACTIVITY_DOES_NOT_SUPPORT_ISE_STR);
+            RecordHistogram.recordCustomCountHistogram(
+                    SUCCESS_AFTER_EXCEPTION_HISTOGRAM_NAME + "ISE_ACTIVITY",
+                    mExceptionImpressions.get(ACTIVITY_DOES_NOT_SUPPORT_ISE_STR),
+                    1,
+                    10,
+                    10);
+        }
+        if (shouldRecordSuccessAfterException(ROOT_TASK_IAE_STR)) {
+            mMinimizeSuccessAfterException.add(ROOT_TASK_IAE_STR);
+            RecordHistogram.recordCustomCountHistogram(
+                    SUCCESS_AFTER_EXCEPTION_HISTOGRAM_NAME + "IAE",
+                    mExceptionImpressions.get(ROOT_TASK_IAE_STR),
+                    1,
+                    10,
+                    10);
+        }
+
+        // We should count the exceptions since the last successful minimize event.
+        mExceptionImpressions.clear();
+    }
+
+    private boolean shouldRecordSuccessAfterException(String key) {
+        return !mMinimizeSuccessAfterException.contains(key)
+                && mExceptionImpressions.containsKey(key);
     }
 }

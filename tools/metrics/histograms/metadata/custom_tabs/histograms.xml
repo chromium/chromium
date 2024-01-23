@@ -384,6 +384,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.MinimizeSuccessAfterException.{Exception}"
+    units="count" expires_after="2024-06-02">
+  <owner>sinansahin@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Records the number of times {Exception} was thrown by
+    `Activity#enterPictureInPictureMode` when the said method succeeds. The
+    count includes exceptions seen since the last successful minimize event or
+    since the `CustomTabMinimizationManager` was created. This is recorded at
+    most once per CCT. Android only.
+  </summary>
+  <token key="Exception">
+    <variant name="IAE"
+        summary="IllegalStateException for addRootTaskReferenceIfNeeded"/>
+    <variant name="ISE_ACTIVITY" summary="IllegalStateException for Activity"/>
+    <variant name="ISE_DEVICE" summary="IllegalStateException for device"/>
+    <variant name="NPE" summary="NullPointerException for TaskDisplayArea"/>
+  </token>
+</histogram>
+
 <histogram name="CustomTabs.PageInsights.Event" enum="PageInsightsEvent"
     expires_after="2024-06-02">
   <owner>jinsukkim@chromium.org</owner>
