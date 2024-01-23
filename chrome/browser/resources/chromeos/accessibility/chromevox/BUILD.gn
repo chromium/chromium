@@ -311,7 +311,7 @@ template("generate_deps_js") {
     if (defined(invoker.testonly)) {
       testonly = invoker.testonly
     }
-    script = "tools/generate_deps.py"
+    script = "//chrome/browser/resources/chromeos/accessibility/tools/generate_deps.py"
     inputs = jsbundler_modules
     sources = invoker.sources
     outputs = [ invoker.output_file ]
@@ -333,7 +333,7 @@ template("generate_deps_js") {
 }
 
 action("chromevox_phonetic_dictionaries_js") {
-  script = "tools/phonetic_dictionaries.py"
+  script = "//chrome/browser/resources/chromeos/accessibility/tools/phonetic_dictionaries.py"
   src_dir = [ "$root_out_dir/resources/chromeos/accessibility/_locales" ]
   output_file = "$chromevox_out_dir/phonetic_dictionaries.js"
   outputs = [ output_file ]
@@ -393,7 +393,7 @@ if (is_chromeos_ash) {
   }
 
   action("chromevox_test_messages_js") {
-    script = "tools/generate_test_messages.py"
+    script = "//chrome/browser/resources/chromeos/accessibility/tools/generate_test_messages.py"
     sources = [ "$root_out_dir/resources/chromeos/accessibility/_locales/en/messages.json.gz" ]
     output_file = "$root_out_dir/test_data/chrome/browser/resources/chromeos/accessibility/chromevox/host/testing/test_messages.js"
     outputs = [ output_file ]

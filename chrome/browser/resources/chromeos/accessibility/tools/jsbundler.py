@@ -37,7 +37,7 @@ import sys
 
 _SCRIPT_DIR = os.path.realpath(os.path.dirname(__file__))
 _CHROME_SOURCE = os.path.realpath(
-    os.path.join(_SCRIPT_DIR, *[os.path.pardir] * 7))
+    os.path.join(_SCRIPT_DIR, *[os.path.pardir] * 6))
 sys.path.insert(
     0,
     os.path.join(_CHROME_SOURCE,

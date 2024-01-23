@@ -26,7 +26,7 @@ from zipfile import ZipFile
 _CHROMEVOX_ID = 'kgejglhpjiefppelpmljglcjbhoiplfn'
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 _CHROME_SOURCE_DIR = os.path.normpath(
-    os.path.join(_SCRIPT_DIR, *[os.path.pardir] * 7))
+    os.path.join(_SCRIPT_DIR, *[os.path.pardir] * 3))
 
 sys.path.insert(0, os.path.join(_CHROME_SOURCE_DIR, 'build', 'util'))
 import version
