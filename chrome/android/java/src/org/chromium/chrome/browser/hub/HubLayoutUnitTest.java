@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -47,6 +48,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -322,16 +324,13 @@ public class HubLayoutUnitTest {
     @Config(qualifiers = "sw600dp")
     public void testShowTablet() {
         show(LayoutType.BROWSING, true, HubLayoutAnimationType.TRANSLATE_UP);
-        verify(mTabContentManager).cacheTabThumbnail(any());
-        verify(mTabContentManager, never())
-                .cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
+        verify(mTabContentManager).cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
     }
 
     @Test
     @SmallTest
     public void testShowFromStartSurface() {
         show(LayoutType.START_SURFACE, true, HubLayoutAnimationType.FADE_IN);
-        verify(mTabContentManager, never()).cacheTabThumbnail(any());
         verify(mTabContentManager, never())
                 .cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
         verify(mTabSwitcherPane, never()).createShowHubLayoutAnimatorProvider(any());
@@ -343,7 +342,7 @@ public class HubLayoutUnitTest {
         setupHubLayoutAnimatorAndProvider(HubLayoutAnimationType.SHRINK_TAB);
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
         show(LayoutType.BROWSING, true, HubLayoutAnimationType.SHRINK_TAB);
-        verify(mTabContentManager).cacheTabThumbnail(any());
+        verify(mTabContentManager).cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
 
         verify(mSolidColorSceneLayerJni).setBackgroundColor(FAKE_NATIVE_ADDRESS_2, DEFAULT_COLOR);
@@ -355,7 +354,7 @@ public class HubLayoutUnitTest {
         setupHubLayoutAnimatorAndProvider(HubLayoutAnimationType.SHRINK_TAB);
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
         show(LayoutType.BROWSING, true, HubLayoutAnimationType.SHRINK_TAB);
-        verify(mTabContentManager).cacheTabThumbnail(any());
+        verify(mTabContentManager).cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
         verify(mPaneManager).focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
 
         verify(mSolidColorSceneLayerJni).setBackgroundColor(FAKE_NATIVE_ADDRESS_2, INCOGNITO_COLOR);
@@ -378,8 +377,11 @@ public class HubLayoutUnitTest {
 
         show(LayoutType.BROWSING, true, HubLayoutAnimationType.SHRINK_TAB);
 
-        verify(mThumbnailCallback).onResult(isNotNull());
-        verify(mTabContentManager, never()).cacheTabThumbnail(any());
+        InOrder inOrder = inOrder(mTabContentManager, mHubController);
+        inOrder.verify(mTabContentManager).cacheTabThumbnailWithCallback(any(), eq(true), any());
+        inOrder.verify(mHubController).onHubLayoutShow();
+
+        verify(mThumbnailCallback).bind(isNotNull());
     }
 
     @Test
@@ -409,8 +411,11 @@ public class HubLayoutUnitTest {
 
         show(LayoutType.BROWSING, true, HubLayoutAnimationType.SHRINK_TAB);
 
-        verify(mThumbnailCallback).onResult(isNotNull());
-        verify(mTabContentManager, never()).cacheTabThumbnail(any());
+        InOrder inOrder = inOrder(mTabContentManager, mHubController);
+        inOrder.verify(mTabContentManager).cacheTabThumbnailWithCallback(any(), eq(true), any());
+        inOrder.verify(mHubController).onHubLayoutShow();
+
+        verify(mThumbnailCallback).bind(isNotNull());
     }
 
     @Test
@@ -430,9 +435,12 @@ public class HubLayoutUnitTest {
 
         show(LayoutType.BROWSING, true, HubLayoutAnimationType.SHRINK_TAB);
 
-        verify(mThumbnailCallback).onResult(isNull());
+        InOrder inOrder = inOrder(mTabContentManager, mHubController);
+        inOrder.verify(mTabContentManager).cacheTabThumbnailWithCallback(any(), eq(true), any());
+        inOrder.verify(mHubController).onHubLayoutShow();
+
+        verify(mThumbnailCallback).bind(isNull());
         verify(mTabContentManager, never()).getEtc1TabThumbnailWithCallback(anyInt(), any());
-        verify(mTabContentManager, never()).cacheTabThumbnail(any());
     }
 
     @Test
@@ -446,8 +454,7 @@ public class HubLayoutUnitTest {
 
         // No TabContentManager callbacks will be invoked because there is no tab to capture.
         // This will still invoke the callback with a null result.
-        verify(mThumbnailCallback).onResult(isNull());
-        verify(mTabContentManager, never()).cacheTabThumbnail(any());
+        verify(mThumbnailCallback).bind(isNull());
         verify(mTabContentManager, never())
                 .cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
         verify(mTabContentManager, never()).getEtc1TabThumbnailWithCallback(anyInt(), any());
