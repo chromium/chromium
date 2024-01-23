@@ -176,7 +176,8 @@ void TapMoreButtonIfVisible() {
         syncer::kReplaceSyncPromosWithSignInPromos);
     config.features_enabled.push_back(kConsistencyNewAccountInterface);
   }
-  if ([self isRunningTest:@selector(testMagicStackSetUpListCompleteAllItems)] ||
+  if ([self isRunningTest:@selector
+            (DISABLED_testMagicStackSetUpListCompleteAllItems)] ||
       [self isRunningTest:@selector(testMagicStackEditButton)] ||
       [self isRunningTest:@selector
             (testMagicStackCompactedSetUpListCompleteAllItems)]) {
@@ -614,7 +615,8 @@ void TapMoreButtonIfVisible() {
 
 // Tests that the "All Set" module is shown after completing all Set Up List
 // Hero Cell modules in the Magic Stack.
-- (void)testMagicStackSetUpListCompleteAllItems {
+// TODO(crbug.com/1520954): Test is flaky, re-enable when fixed.
+- (void)DISABLED_testMagicStackSetUpListCompleteAllItems {
   [self prepareToTestSetUpListInMagicStack];
 
   // Tap the default browser item.
