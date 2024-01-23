@@ -265680,6 +265680,19 @@
          {}
         ]
        ],
+       "2d.layer.flush-on-frame-presentation.html": [
+        "c8a118f8a2e860e4110f8b254fe08408930173ff",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.flush-on-frame-presentation-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "2d.layer.global-filter.html": [
         "cf46f41b974947839f6f69e028b6dc51ba4ec62d",
         [
@@ -266044,84 +266057,6 @@
          {}
         ]
        ],
-       "2d.layer.render-opportunities.createImageBitmap.html": [
-        "9b3d79c9f92954af1a067fc561b586e7ddd4448b",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.render-opportunities.createImageBitmap-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.render-opportunities.drawImage.html": [
-        "ea669f304f26c31469040c1b9192438fd0383fbb",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.render-opportunities.drawImage-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.render-opportunities.getImageData.html": [
-        "fce2e368a219824fbd0224cbcefcdd6f3b2cf4b2",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.render-opportunities.getImageData-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.render-opportunities.requestAnimationFrame.html": [
-        "b2b2605123b35e89d8fd555a7e678693ba08188a",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.render-opportunities.requestAnimationFrame-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.render-opportunities.toBlob.html": [
-        "f3d5fe904ee03e9e371be08eac483d29759d1595",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.render-opportunities.toBlob-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.render-opportunities.toDataURL.html": [
-        "d9f433344d55896a6a3e269d7a5e072c53c20114",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.render-opportunities.toDataURL-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
        "2d.layer.reset.html": [
         "9ad779abfddabe221d600b4cc48f69954ee1aa4f",
         [
@@ -266239,32 +266174,6 @@
          [
           [
            "/html/canvas/element/layers/2d.layer.shadow-from-outside-canvas.short-distance-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.unclosed-nested.html": [
-        "c02aae4af116be203af40610444db1cf7b91624b",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.unclosed-nested-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.unclosed.html": [
-        "3d4530860f3dd053258dcbe38a6cfaa4332df1ac",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.unclosed-expected.html",
            "=="
           ]
          ],
@@ -266933,6 +266842,34 @@
           [
            [
             "/html/canvas/element/manual/imagebitmap/imageBitmapRendering-transferFromImageBitmap-expected.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ]
+       },
+       "layers": {
+        "unclosed-layers.html": [
+         "4ae110d4a679f64e2c70680400805556bcbd2365",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/layers/unclosed-layers-expected.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "unclosed-nested-layers.html": [
+         "beb1cf9aa1f924105b6fa9e79cb2e9b4048f78ff",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/layers/unclosed-nested-layers-expected.html",
             "=="
            ]
           ],
@@ -268772,110 +268709,6 @@
          {}
         ]
        ],
-       "2d.layer.render-opportunities.convertToBlob.html": [
-        "c9367532018adffa4cfe38f4d5e3789ebbee2522",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.render-opportunities.convertToBlob-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.render-opportunities.convertToBlob.w.html": [
-        "c1f9c1e2c0b4412bf905c431c0c41b7f408d12c2",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.render-opportunities.convertToBlob-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.render-opportunities.createImageBitmap.html": [
-        "1523f9f3bb0108f583291d85709e2071495cf679",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.render-opportunities.createImageBitmap-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.render-opportunities.createImageBitmap.w.html": [
-        "600287782b135e16ae6035c4a83316274b75bcaa",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.render-opportunities.createImageBitmap-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.render-opportunities.drawImage.html": [
-        "d7eae8ddd7dfe7307a03ab1f356c97b2035ba7aa",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.render-opportunities.drawImage-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.render-opportunities.drawImage.w.html": [
-        "457e84d56e00890ff5e43336466119477154bbb5",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.render-opportunities.drawImage-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.render-opportunities.getImageData.html": [
-        "fe29b4be1a51c430c5c0afdd56ee69e13fe89dcd",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.render-opportunities.getImageData-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.render-opportunities.getImageData.w.html": [
-        "9eceff91dafdd5c7850992c900366110c48cb45b",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.render-opportunities.getImageData-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
        "2d.layer.reset.html": [
         "3254c0a0489094feee414f868bdd59da81e11729",
         [
@@ -269121,59 +268954,63 @@
          ],
          {}
         ]
-       ],
-       "2d.layer.unclosed-nested.html": [
-        "b7be6d82423805c7d138ea3ee53561a2a9cc9433",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.unclosed-nested-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.unclosed-nested.w.html": [
-        "e330e1710cf488f6cb31a8dd032f87ad2ae07905",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.unclosed-nested-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.unclosed.html": [
-        "d2e599b2b99ffa63825295d8880e4aae0f2b49a1",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.unclosed-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.unclosed.w.html": [
-        "1da44c26c8661b2deaa9747d704acc52610debc7",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.unclosed-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
        ]
+      },
+      "manual": {
+       "layers": {
+        "unclosed-layers.html": [
+         "6046f0f5780f7ef091f0adce72ed8b920d6d048d",
+         [
+          null,
+          [
+           [
+            "/html/canvas/offscreen/manual/layers/unclosed-layers-expected.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "unclosed-layers.w.html": [
+         "4616843a11a5aeac56b015d2fcd914c46e852112",
+         [
+          null,
+          [
+           [
+            "/html/canvas/offscreen/manual/layers/unclosed-layers-expected.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "unclosed-nested-layers.html": [
+         "eb9936c36206efd1430584bfb7923d71b9f487f9",
+         [
+          null,
+          [
+           [
+            "/html/canvas/offscreen/manual/layers/unclosed-nested-layers-expected.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "unclosed-nested-layers.w.html": [
+         "8c6a69d87cc8e947283313b48bd0a2f63eed2c6b",
+         [
+          null,
+          [
+           [
+            "/html/canvas/offscreen/manual/layers/unclosed-nested-layers-expected.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ]
+       }
       },
       "path-objects": {
        "2d.path.stroke.prune.closePath.arc.html": [
@@ -356958,7 +356795,7 @@
       []
      ],
      "message-target.js": [
-      "ac5fa63e1372a1422439f072c8a5fe170c18d548",
+      "a59fa6bec2b41cf9ba9bb580ce6fc580edac47ad",
       []
      ],
      "messaging-blob-helpers.js": [
@@ -357073,6 +356910,10 @@
      ],
      "FileSystemFileHandle-move.js": [
       "c5d08f305d0612376a3641798d0a6b3b909cf404",
+      []
+     ],
+     "FileSystemObserver.js": [
+      "2c8fd57f7c95dff2cd23de02dcaa1c9d71003526",
       []
      ],
      "FileSystemSyncAccessHandle-flush.js": [
@@ -357356,12 +357197,20 @@
     }
    },
    "graphics-aam": {
+    "DIR_METADATA": [
+     "44396ee85cd0abfe885866f20a0f64d5b61eb8c5",
+     []
+    ],
     "META.yml": [
      "197263836e7695882d4d1fb533c1e043a70ff234",
      []
     ]
    },
    "graphics-aria": {
+    "DIR_METADATA": [
+     "44396ee85cd0abfe885866f20a0f64d5b61eb8c5",
+     []
+    ],
     "META.yml": [
      "692db91315ef759184fa1e4b7e259a9af40f3686",
      []
@@ -360639,6 +360488,10 @@
         "60f78d80965fd0dec9ea11bc21d3652fc3d7bad1",
         []
        ],
+       "2d.layer.flush-on-frame-presentation-expected.html": [
+        "34c92ca27f2b5ea5e9250425e8ed0d4b43316702",
+        []
+       ],
        "2d.layer.global-filter-expected.html": [
         "88057fc354a4e593191a4b3d5c94cdfa7d466126",
         []
@@ -360751,30 +360604,6 @@
         "89c85de1e5cbad6bccef23a88e9de78de94293c4",
         []
        ],
-       "2d.layer.render-opportunities.createImageBitmap-expected.html": [
-        "de03ea6392a5db71e0cf80e4cc503882de9e98b0",
-        []
-       ],
-       "2d.layer.render-opportunities.drawImage-expected.html": [
-        "378f85636b8aec917ba57317a8a30ac0aee4cdc2",
-        []
-       ],
-       "2d.layer.render-opportunities.getImageData-expected.html": [
-        "919a75911e701d4fef5508a51f3c5966e3b7745f",
-        []
-       ],
-       "2d.layer.render-opportunities.requestAnimationFrame-expected.html": [
-        "9ec5b605154b6285aee119ff77a8f857fda8fc4f",
-        []
-       ],
-       "2d.layer.render-opportunities.toBlob-expected.html": [
-        "bc4cc28560d6e7840ac276a316d9a296eaa6c293",
-        []
-       ],
-       "2d.layer.render-opportunities.toDataURL-expected.html": [
-        "49309991cb52fc7073c0153fe34cbf0b9cd0243b",
-        []
-       ],
        "2d.layer.reset-expected.html": [
         "93131dca9cfee5953e4a06cee99ec1429d8f062d",
         []
@@ -360801,14 +360630,6 @@
        ],
        "2d.layer.shadow-from-outside-canvas.short-distance-with-clipping-expected.html": [
         "024fc8c9a4aafd32d125bb50a6a2a02f1879fa76",
-        []
-       ],
-       "2d.layer.unclosed-expected.html": [
-        "625630f5e6b1d09adffc4fcbb151da2b1fbe0032",
-        []
-       ],
-       "2d.layer.unclosed-nested-expected.html": [
-        "5e90134a2505d39da1285122f2df86fe05c8f027",
         []
        ]
       },
@@ -361070,6 +360891,16 @@
         ],
         "worker-onmessage-noop.js": [
          "c0a352b4d9e5b21865fcb88a54cdca6b1c13819f",
+         []
+        ]
+       },
+       "layers": {
+        "unclosed-layers-expected.html": [
+         "04a6d07fdabb51288c09cd1d997ca3666b4d51af",
+         []
+        ],
+        "unclosed-nested-layers-expected.html": [
+         "9a848b46d718dde59ac53c59aa0298ff4a786b2d",
          []
         ]
        },
@@ -361909,22 +361740,6 @@
         "89c85de1e5cbad6bccef23a88e9de78de94293c4",
         []
        ],
-       "2d.layer.render-opportunities.convertToBlob-expected.html": [
-        "12b12519f16c7e908140ae920086aedcff5707e1",
-        []
-       ],
-       "2d.layer.render-opportunities.createImageBitmap-expected.html": [
-        "de03ea6392a5db71e0cf80e4cc503882de9e98b0",
-        []
-       ],
-       "2d.layer.render-opportunities.drawImage-expected.html": [
-        "378f85636b8aec917ba57317a8a30ac0aee4cdc2",
-        []
-       ],
-       "2d.layer.render-opportunities.getImageData-expected.html": [
-        "919a75911e701d4fef5508a51f3c5966e3b7745f",
-        []
-       ],
        "2d.layer.reset-expected.html": [
         "93131dca9cfee5953e4a06cee99ec1429d8f062d",
         []
@@ -361952,20 +361767,22 @@
        "2d.layer.shadow-from-outside-canvas.short-distance-with-clipping-expected.html": [
         "024fc8c9a4aafd32d125bb50a6a2a02f1879fa76",
         []
-       ],
-       "2d.layer.unclosed-expected.html": [
-        "625630f5e6b1d09adffc4fcbb151da2b1fbe0032",
-        []
-       ],
-       "2d.layer.unclosed-nested-expected.html": [
-        "5e90134a2505d39da1285122f2df86fe05c8f027",
-        []
        ]
       },
       "manual": {
        "filter": {
         "offscreencanvas.filter.js": [
          "cb2e2458030f53ddbe1d66bf3115284733c68519",
+         []
+        ]
+       },
+       "layers": {
+        "unclosed-layers-expected.html": [
+         "f6b05fc3f2b02fddb16bc6dc430401528ea3339b",
+         []
+        ],
+        "unclosed-nested-layers-expected.html": [
+         "9a848b46d718dde59ac53c59aa0298ff4a786b2d",
          []
         ]
        }
@@ -362298,7 +362115,7 @@
         []
        ],
        "layers.yaml": [
-        "d255a834f6c5534c066ce85cd8ca5d087a7de600",
+        "3e26a670d8acf74136ffd217f63d2d2340477744",
         []
        ],
        "line-styles.yaml": [
@@ -375386,6 +375203,10 @@
     }
    },
    "html-aam": {
+    "DIR_METADATA": [
+     "44396ee85cd0abfe885866f20a0f64d5b61eb8c5",
+     []
+    ],
     "META.yml": [
      "212cae7fa52e95b820d11e7ca8e2eed7d36bf112",
      []
@@ -526360,6 +526181,28 @@
       {}
      ]
     ],
+    "FileSystemObserver.https.tentative.window.js": [
+     "2b9f7ca7c78471c001222d57e9daa1e6cce68508",
+     [
+      "fs/FileSystemObserver.https.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "resources/messaging-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemObserver.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "FileSystemSyncAccessHandle-close.https.worker.js": [
      "1c6aaf38a32a8341085ff83580dc874c3624c29a",
      [
@@ -539469,8 +539312,43 @@
          {}
         ]
        ],
-       "2d.layer.putImageData.html": [
-        "1e4d3331d8f0f7cbdcbe2ac0f045d0882fbcfc00",
+       "2d.layer.malformed-operations-with-promises.createImageBitmap.html": [
+        "f1204aa61becde477e8cdd58a466166f09fb16ba",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.malformed-operations-with-promises.toBlob.html": [
+        "6c69bb3784237eed86e070ba6067577599768268",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.malformed-operations.drawImage.html": [
+        "8bcc89d38e5b154d1954686d6453b1a1c7dd7a16",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.malformed-operations.getImageData.html": [
+        "5dc3fcc017c3f0f03b343ac7b59d8657d3c5af0b",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.malformed-operations.putImageData.html": [
+        "fd4fc262c205cc43c4bb42200499b5b2e77abc7d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.malformed-operations.toDataURL.html": [
+        "c9bb4f38750ac521f823f7556356117e8f007118",
         [
          null,
          {}
@@ -549985,31 +549863,87 @@
          {}
         ]
        ],
-       "2d.layer.putImageData.html": [
-        "b46b80c1f46e39b5078b0440a360fbcc7c93822b",
+       "2d.layer.malformed-operations-with-promises.convertToBlob.html": [
+        "0b3854c31d0877239e191565a6f956b9e0696582",
         [
          null,
          {}
         ]
        ],
-       "2d.layer.putImageData.worker.js": [
-        "dd4b3576f66e7803534d657cc23e0fd11ceb40db",
+       "2d.layer.malformed-operations-with-promises.convertToBlob.worker.js": [
+        "be0f4f2cdee527831618bda6cb641e40dc93eeb1",
         [
-         "html/canvas/offscreen/layers/2d.layer.putImageData.worker.html",
+         "html/canvas/offscreen/layers/2d.layer.malformed-operations-with-promises.convertToBlob.worker.html",
          {}
         ]
        ],
-       "2d.layer.transferToImageBitmap.html": [
-        "5e5d6d16c6b11d2ee5b05797ad72aca21656da96",
+       "2d.layer.malformed-operations-with-promises.createImageBitmap.html": [
+        "085554d9f5bfdb4171cda6a9bfef83731a83dac3",
         [
          null,
          {}
         ]
        ],
-       "2d.layer.transferToImageBitmap.worker.js": [
-        "073a3e84a486ac7ae6d95090cbce67661dbf7a7b",
+       "2d.layer.malformed-operations-with-promises.createImageBitmap.worker.js": [
+        "b286b7a9e754b3bf71380cb260a408f42999ff60",
         [
-         "html/canvas/offscreen/layers/2d.layer.transferToImageBitmap.worker.html",
+         "html/canvas/offscreen/layers/2d.layer.malformed-operations-with-promises.createImageBitmap.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.malformed-operations.drawImage.html": [
+        "e6a98721000483a7a6b4f0ba1ead58de03182a4f",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.malformed-operations.drawImage.worker.js": [
+        "b66cdee62e7d4635989de3cdee8df3b4a0016203",
+        [
+         "html/canvas/offscreen/layers/2d.layer.malformed-operations.drawImage.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.malformed-operations.getImageData.html": [
+        "87bc8c6ede5e958a3b032719c29c0ff988198bcc",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.malformed-operations.getImageData.worker.js": [
+        "6a1a16fccb17963692fc1c87e36c60ec995ae69e",
+        [
+         "html/canvas/offscreen/layers/2d.layer.malformed-operations.getImageData.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.malformed-operations.putImageData.html": [
+        "e8059076bb0a068d5e85f3d4732966be6c5e024a",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.malformed-operations.putImageData.worker.js": [
+        "8810c3a73cd362a8a8233e5b02ceeca7f11fdf8f",
+        [
+         "html/canvas/offscreen/layers/2d.layer.malformed-operations.putImageData.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.malformed-operations.transferToImageBitmap.html": [
+        "79c216421f608e97ce02b3c1611be6b46367b370",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.malformed-operations.transferToImageBitmap.worker.js": [
+        "be0b43665a59224cc1558d6941192ae6e2be5b27",
+        [
+         "html/canvas/offscreen/layers/2d.layer.malformed-operations.transferToImageBitmap.worker.html",
          {}
         ]
        ],
@@ -709502,7 +709436,7 @@
         ]
        ],
        "new_window.py": [
-        "a3fce364ccc8ac8e7de942d4718a6eda151464f9",
+        "d47dacdc083a45f30895f9b59cd58eadcf5bac0e",
         [
          null,
          {}
