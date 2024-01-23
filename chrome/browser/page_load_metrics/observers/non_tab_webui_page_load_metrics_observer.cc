@@ -6,6 +6,7 @@
 
 #include "base/strings/strcat.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "content/public/browser/background_tracing_manager.h"
 
 namespace chrome {
 
@@ -25,7 +26,9 @@ std::string GetSuffixedFCPHistogram(const std::string& webui_name) {
 
 NonTabPageLoadMetricsObserver::NonTabPageLoadMetricsObserver(
     const std::string& webui_name)
-    : page_load_metrics::PageLoadMetricsObserver(), webui_name_(webui_name) {}
+    : page_load_metrics::PageLoadMetricsObserver(), webui_name_(webui_name) {
+  content::BackgroundTracingManager::EmitNamedTrigger("non-tab-webui-creation");
+}
 
 void NonTabPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
