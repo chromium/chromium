@@ -24,8 +24,6 @@ public interface LayoutStateProvider {
          */
         default void onFinishedShowing(@LayoutType int layoutType) {}
 
-        // TODO(crbug.com/1108496): Reiterate to see whether the showToolbar and delayAnimation
-        // param is needed.
         /**
          * Called when Layout starts hiding.
          * @param layoutType LayoutType of the started hiding Layout.
