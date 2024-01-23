@@ -10,6 +10,46 @@ import "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.m
 // with each connection request.
 const string kServiceId = "secure_channel";
 
+enum NearbyConnectionStep {
+  kDiscoveringEndpointStarted,
+  kDiscoveringEndpointEnded,
+  kRequestingConnectionStarted,
+  kRequestingConnectionEnded,
+  kWaitingForConnectionToBeAcceptedByRemoteDeviceStarted,
+  kWaitingForConnectionToBeAcceptedByRemoteDeviceEnded,
+  kConnected,
+  kUpgradedToWebRtc,
+  kDisconnectionStarted,
+  kDisconnectionFinished
+};
+
+enum NearbyConnectionStepResult {
+  kSuccess,
+  // The operation to transition to another NearbyConnectionState timeout.
+  kTimeoutTransitionState,
+
+  // The error codes below map to error status of
+  // nearby.connections.mojom::Status
+  kError,
+  kOutOfOrderApiCall,
+  kAlreadyHaveActiveStrategy,
+  kAlreadyAdvertising,
+  kAlreadyDiscovering,
+  kEndpointIOError,
+  kEndpointUnknown,
+  kConnectionRejected,
+  kAlreadyConnectedToEndpoint,
+  kNotConnectedToEndpoint,
+  kBluetoothError,
+  kBleError,
+  kWifiLanError,
+  kPayloadUnknown,
+  kAlreadyListening,
+  kReset,
+  kTimeout,
+  kUnknown,
+};
+
 // Sends messages over a Nearby Connection.
 interface NearbyMessageSender {
   // Sends |message|, returning whether the message was sent successfully.

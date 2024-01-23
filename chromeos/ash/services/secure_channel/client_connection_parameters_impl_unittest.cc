@@ -11,6 +11,7 @@
 #include "chromeos/ash/services/secure_channel/fake_channel.h"
 #include "chromeos/ash/services/secure_channel/fake_client_connection_parameters.h"
 #include "chromeos/ash/services/secure_channel/fake_connection_delegate.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_structured_metrics_logger.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::secure_channel {
@@ -35,12 +36,17 @@ class SecureChannelClientConnectionParametersImplTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     fake_connection_delegate_ = std::make_unique<FakeConnectionDelegate>();
+    fake_secure_channel_structured_metrics_logger_ =
+        std::make_unique<FakeSecureChannelStructuredMetricsLogger>();
     auto fake_connection_delegate_remote =
         fake_connection_delegate_->GenerateRemote();
+    auto fake_secure_channel_structured_metrics_logger_remote =
+        fake_secure_channel_structured_metrics_logger_->GenerateRemote();
 
     client_connection_parameters_ =
         ClientConnectionParametersImpl::Factory::Create(
-            kTestFeature, std::move(fake_connection_delegate_remote));
+            kTestFeature, std::move(fake_connection_delegate_remote),
+            std::move(fake_secure_channel_structured_metrics_logger_remote));
 
     fake_observer_ = std::make_unique<FakeClientConnectionParametersObserver>();
     client_connection_parameters_->AddObserver(fake_observer_.get());
@@ -54,6 +60,7 @@ class SecureChannelClientConnectionParametersImplTest : public testing::Test {
     base::RunLoop run_loop;
     fake_observer_->set_closure_for_next_callback(run_loop.QuitClosure());
     fake_connection_delegate_->DisconnectGeneratedRemotes();
+    fake_secure_channel_structured_metrics_logger_->UnbindReceiver();
     run_loop.Run();
   }
 
@@ -93,6 +100,9 @@ class SecureChannelClientConnectionParametersImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<FakeConnectionDelegate> fake_connection_delegate_;
+
+  std::unique_ptr<FakeSecureChannelStructuredMetricsLogger>
+      fake_secure_channel_structured_metrics_logger_;
 
   std::unique_ptr<FakeClientConnectionParametersObserver> fake_observer_;
 

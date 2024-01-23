@@ -5,6 +5,14 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_PHONE_HUB_STRUCTURED_METRICS_LOGGER_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_PHONE_HUB_STRUCTURED_METRICS_LOGGER_H_
 
+#include <optional>
+
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_structured_metrics_logger.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+
 namespace ash::phonehub {
 
 enum class DiscoveryEntryPoint {
@@ -20,10 +28,11 @@ enum class DiscoveryEntryPoint {
   kUserOnboardedToFeature = 9
 };
 
-class PhoneHubStructuredMetricsLogger {
+class PhoneHubStructuredMetricsLogger
+    : public ash::secure_channel::SecureChannelStructuredMetricsLogger {
  public:
   PhoneHubStructuredMetricsLogger();
-  ~PhoneHubStructuredMetricsLogger();
+  ~PhoneHubStructuredMetricsLogger() override;
 
   PhoneHubStructuredMetricsLogger(const PhoneHubStructuredMetricsLogger&) =
       delete;
@@ -31,6 +40,17 @@ class PhoneHubStructuredMetricsLogger {
       const PhoneHubStructuredMetricsLogger&) = delete;
 
   void LogPhoneHubDiscoveryStarted(DiscoveryEntryPoint entry_point);
+
+  // secure_channel::mojom::SecureChannelStructuredMetricsLogger
+  void LogDiscoveryAttempt(
+      secure_channel::mojom::DiscoveryResult result,
+      std::optional<secure_channel::mojom::DiscoveryErrorCode> error_code)
+      override;
+  void LogNearbyConnectionState(
+      secure_channel::mojom::NearbyConnectionStep step,
+      secure_channel::mojom::NearbyConnectionStepResult result) override;
+  void LogSecureChannelState(
+      secure_channel::mojom::SecureChannelState state) override;
 };
 
 }  // namespace ash::phonehub

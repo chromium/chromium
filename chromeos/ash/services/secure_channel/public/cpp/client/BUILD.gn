@@ -30,6 +30,8 @@ source_set("client") {
     "secure_channel_client.h",
     "secure_channel_client_impl.cc",
     "secure_channel_client_impl.h",
+    "secure_channel_structured_metrics_logger.cc",
+    "secure_channel_structured_metrics_logger.h",
   ]
 
   deps = [
@@ -60,6 +62,8 @@ static_library("test_support") {
     "fake_nearby_connector.h",
     "fake_secure_channel_client.cc",
     "fake_secure_channel_client.h",
+    "fake_secure_channel_structured_metrics_logger.cc",
+    "fake_secure_channel_structured_metrics_logger.h",
   ]
 
   deps = [

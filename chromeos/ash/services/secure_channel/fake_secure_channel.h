@@ -51,7 +51,9 @@ class FakeSecureChannel : public SecureChannelBase {
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
+      mojo::PendingRemote<mojom::ConnectionDelegate> delegate,
+      mojo::PendingRemote<mojom::SecureChannelStructuredMetricsLogger>
+          secure_channel_structured_metrics_logger) override;
   void SetNearbyConnector(
       mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) override {}
   void GetLastSeenTimestamp(const std::string& remote_device_id,
@@ -59,6 +61,8 @@ class FakeSecureChannel : public SecureChannelBase {
 
   mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_listen_call_;
   mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_initiate_call_;
+  mojo::Remote<mojom::SecureChannelStructuredMetricsLogger>
+      secure_channel_structured_metrics_logger_;
 };
 
 }  // namespace ash::secure_channel

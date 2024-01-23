@@ -14,6 +14,8 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/nearby_metrics_recorder.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_structured_metrics_logger.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
 namespace base {
 class Clock;
@@ -45,7 +47,9 @@ class ConnectionManagerImpl : public ConnectionManager,
       device_sync::DeviceSyncClient* device_sync_client,
       SecureChannelClient* secure_channel_client,
       const std::string& feature_name,
-      std::unique_ptr<NearbyMetricsRecorder> metrics_recorder);
+      std::unique_ptr<NearbyMetricsRecorder> metrics_recorder,
+      SecureChannelStructuredMetricsLogger*
+          secure_channel_structured_metrics_logger);
   ~ConnectionManagerImpl() override;
 
   // ConnectionManager:
@@ -72,6 +76,8 @@ class ConnectionManagerImpl : public ConnectionManager,
       std::unique_ptr<base::OneShotTimer> timer,
       const std::string& feature_name,
       std::unique_ptr<NearbyMetricsRecorder> metrics_recorder,
+      SecureChannelStructuredMetricsLogger*
+          secure_channel_structured_metrics_logger,
       base::Clock* clock);
 
   // ConnectionAttempt::Delegate:
@@ -97,6 +103,8 @@ class ConnectionManagerImpl : public ConnectionManager,
   std::unique_ptr<base::OneShotTimer> timer_;
   const std::string feature_name_;
   std::unique_ptr<NearbyMetricsRecorder> metrics_recorder_;
+  raw_ptr<SecureChannelStructuredMetricsLogger>
+      secure_channel_structured_metrics_logger_ = nullptr;
   Status last_status_;
   base::Time status_change_timestamp_;
   raw_ptr<base::Clock, DanglingUntriaged> clock_;

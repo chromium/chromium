@@ -32,13 +32,16 @@ ConnectionManagerImpl::ConnectionManagerImpl(
     device_sync::DeviceSyncClient* device_sync_client,
     SecureChannelClient* secure_channel_client,
     const std::string& feature_name,
-    std::unique_ptr<NearbyMetricsRecorder> metrics_recorder)
+    std::unique_ptr<NearbyMetricsRecorder> metrics_recorder,
+    SecureChannelStructuredMetricsLogger*
+        secure_channel_structured_metrics_logger)
     : ConnectionManagerImpl(multidevice_setup_client,
                             device_sync_client,
                             secure_channel_client,
                             std::make_unique<base::OneShotTimer>(),
                             feature_name,
                             std::move(metrics_recorder),
+                            secure_channel_structured_metrics_logger,
                             base::DefaultClock::GetInstance()) {}
 
 ConnectionManagerImpl::ConnectionManagerImpl(
@@ -48,6 +51,8 @@ ConnectionManagerImpl::ConnectionManagerImpl(
     std::unique_ptr<base::OneShotTimer> timer,
     const std::string& feature_name,
     std::unique_ptr<NearbyMetricsRecorder> metrics_recorder,
+    SecureChannelStructuredMetricsLogger*
+        secure_channel_structured_metrics_logger,
     base::Clock* clock)
     : multidevice_setup_client_(multidevice_setup_client),
       device_sync_client_(device_sync_client),
@@ -55,6 +60,8 @@ ConnectionManagerImpl::ConnectionManagerImpl(
       timer_(std::move(timer)),
       feature_name_(feature_name),
       metrics_recorder_(std::move(metrics_recorder)),
+      secure_channel_structured_metrics_logger_(
+          secure_channel_structured_metrics_logger),
       last_status_(Status::kDisconnected),
       status_change_timestamp_(clock->Now()),
       clock_(clock) {
@@ -107,7 +114,8 @@ bool ConnectionManagerImpl::AttemptNearbyConnection() {
 
   connection_attempt_ = secure_channel_client_->InitiateConnectionToDevice(
       *remote_device, *local_device, feature_name_,
-      ConnectionMedium::kNearbyConnections, ConnectionPriority::kMedium);
+      ConnectionMedium::kNearbyConnections, ConnectionPriority::kMedium,
+      secure_channel_structured_metrics_logger_);
   connection_attempt_->SetDelegate(this);
 
   PA_LOG(INFO) << "ConnectionManager status updated to: " << GetStatus();
@@ -173,6 +181,9 @@ void ConnectionManagerImpl::OnConnectionAttemptFailure(
                   << "error: " << reason << ".";
   timer_->Stop();
   connection_attempt_.reset();
+  if (secure_channel_structured_metrics_logger_) {
+    secure_channel_structured_metrics_logger_->UnbindReceiver();
+  }
   metrics_recorder_->RecordConnectionFailure(reason);
   OnStatusChanged();
 }
@@ -212,6 +223,9 @@ void ConnectionManagerImpl::TearDownConnection() {
   // Stop timer in case we are disconnected before the connection timed out.
   timer_->Stop();
   connection_attempt_.reset();
+  if (secure_channel_structured_metrics_logger_) {
+    secure_channel_structured_metrics_logger_->UnbindReceiver();
+  }
   if (channel_)
     channel_->RemoveObserver(this);
   channel_.reset();

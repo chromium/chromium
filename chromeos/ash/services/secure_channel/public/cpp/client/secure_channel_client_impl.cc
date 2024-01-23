@@ -10,7 +10,9 @@
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt_impl.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/nearby_connector.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace ash::secure_channel {
 
@@ -52,7 +54,9 @@ SecureChannelClientImpl::InitiateConnectionToDevice(
     multidevice::RemoteDeviceRef local_device,
     const std::string& feature,
     ConnectionMedium connection_medium,
-    ConnectionPriority connection_priority) {
+    ConnectionPriority connection_priority,
+    SecureChannelStructuredMetricsLogger*
+        secure_channel_structured_metrics_logger) {
   auto connection_attempt = ConnectionAttemptImpl::Factory::Create();
 
   // Delay directly calling mojom::SecureChannel::InitiateConnectionToDevice()
@@ -63,7 +67,10 @@ SecureChannelClientImpl::InitiateConnectionToDevice(
           &SecureChannelClientImpl::PerformInitiateConnectionToDevice,
           weak_ptr_factory_.GetWeakPtr(), device_to_connect, local_device,
           feature, connection_medium, connection_priority,
-          connection_attempt->GenerateRemote()));
+          connection_attempt->GenerateRemote(),
+          secure_channel_structured_metrics_logger
+              ? secure_channel_structured_metrics_logger->GenerateRemote()
+              : mojo::NullRemote()));
 
   return connection_attempt;
 }
@@ -103,11 +110,14 @@ void SecureChannelClientImpl::PerformInitiateConnectionToDevice(
     const std::string& feature,
     ConnectionMedium connection_medium,
     ConnectionPriority connection_priority,
-    mojo::PendingRemote<mojom::ConnectionDelegate> connection_delegate_remote) {
+    mojo::PendingRemote<mojom::ConnectionDelegate> connection_delegate_remote,
+    mojo::PendingRemote<mojom::SecureChannelStructuredMetricsLogger>
+        secure_channel_structured_metrics_logger_remote) {
   secure_channel_remote_->InitiateConnectionToDevice(
       device_to_connect.GetRemoteDevice(), local_device.GetRemoteDevice(),
       feature, connection_medium, connection_priority,
-      std::move(connection_delegate_remote));
+      std::move(connection_delegate_remote),
+      std::move(secure_channel_structured_metrics_logger_remote));
 }
 
 void SecureChannelClientImpl::PerformListenForConnectionFromDevice(

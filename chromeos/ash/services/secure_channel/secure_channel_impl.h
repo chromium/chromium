@@ -121,7 +121,9 @@ class SecureChannelImpl : public mojom::SecureChannel,
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
+      mojo::PendingRemote<mojom::ConnectionDelegate> delegate,
+      mojo::PendingRemote<mojom::SecureChannelStructuredMetricsLogger>
+          secure_channel_structured_metrics_logger) override;
   void SetNearbyConnector(
       mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) override;
   void GetLastSeenTimestamp(const std::string& remote_device_id,

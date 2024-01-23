@@ -36,6 +36,7 @@
 #include "chromeos/ash/services/secure_channel/nearby_connection_manager_impl.h"
 #include "chromeos/ash/services/secure_channel/pending_connection_manager_impl.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_nearby_connector.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_structured_metrics_logger.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/secure_channel_disconnector_impl.h"
@@ -454,8 +455,9 @@ class FakeClientConnectionParametersFactory
   // ClientConnectionParametersImpl::Factory:
   std::unique_ptr<ClientConnectionParameters> CreateInstance(
       const std::string& feature,
-      mojo::PendingRemote<mojom::ConnectionDelegate> connection_delegate_remote)
-      override {
+      mojo::PendingRemote<mojom::ConnectionDelegate> connection_delegate_remote,
+      mojo::PendingRemote<mojom::SecureChannelStructuredMetricsLogger>
+          secure_channel_structured_metrics_logger) override {
     auto instance = std::make_unique<FakeClientConnectionParameters>(
         feature, base::BindOnce(
                      &FakeClientConnectionParametersFactory::OnInstanceDeleted,
@@ -1047,6 +1049,8 @@ class SecureChannelServiceTest : public testing::Test {
                          ConnectionPriority connection_priority,
                          bool is_listener) {
     FakeConnectionDelegate fake_connection_delegate;
+    FakeSecureChannelStructuredMetricsLogger
+        fake_secure_channel_structured_metrics_logger;
 
     if (is_listener) {
       secure_channel_remote_->ListenForConnectionFromDevice(
@@ -1055,7 +1059,8 @@ class SecureChannelServiceTest : public testing::Test {
     } else {
       secure_channel_remote_->InitiateConnectionToDevice(
           device_to_connect, local_device, feature, connection_medium,
-          connection_priority, fake_connection_delegate.GenerateRemote());
+          connection_priority, fake_connection_delegate.GenerateRemote(),
+          fake_secure_channel_structured_metrics_logger.GenerateRemote());
     }
 
     secure_channel_remote_.FlushForTesting();

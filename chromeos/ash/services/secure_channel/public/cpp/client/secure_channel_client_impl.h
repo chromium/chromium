@@ -62,7 +62,9 @@ class SecureChannelClientImpl : public SecureChannelClient {
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
       ConnectionMedium connection_medium,
-      ConnectionPriority connection_priority) override;
+      ConnectionPriority connection_priority,
+      SecureChannelStructuredMetricsLogger*
+          secure_channel_structure_metrics_logger) override;
   std::unique_ptr<ConnectionAttempt> ListenForConnectionFromDevice(
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
@@ -80,8 +82,9 @@ class SecureChannelClientImpl : public SecureChannelClient {
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<mojom::ConnectionDelegate>
-          connection_delegate_remote);
+      mojo::PendingRemote<mojom::ConnectionDelegate> connection_delegate_remote,
+      mojo::PendingRemote<mojom::SecureChannelStructuredMetricsLogger>
+          secure_channel_structured_metrics_logger_remote);
   void PerformListenForConnectionFromDevice(
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,

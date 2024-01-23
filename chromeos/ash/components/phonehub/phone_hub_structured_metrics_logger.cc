@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
+
 #include "base/notreached.h"
 
 namespace ash::phonehub {
@@ -15,4 +16,20 @@ void PhoneHubStructuredMetricsLogger::LogPhoneHubDiscoveryStarted(
   NOTIMPLEMENTED();
 }
 
+void PhoneHubStructuredMetricsLogger::LogDiscoveryAttempt(
+    secure_channel::mojom::DiscoveryResult result,
+    std::optional<secure_channel::mojom::DiscoveryErrorCode> error_code) {
+  NOTIMPLEMENTED();
+}
+
+void PhoneHubStructuredMetricsLogger::LogNearbyConnectionState(
+    secure_channel::mojom::NearbyConnectionStep step,
+    secure_channel::mojom::NearbyConnectionStepResult result) {
+  NOTIMPLEMENTED();
+}
+
+void PhoneHubStructuredMetricsLogger::LogSecureChannelState(
+    secure_channel::mojom::SecureChannelState state) {
+  NOTIMPLEMENTED();
+}
 }  // namespace ash::phonehub
