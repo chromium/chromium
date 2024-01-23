@@ -4,13 +4,14 @@
 
 #include "components/desks_storage/core/desk_template_conversion.h"
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_set.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -151,15 +152,15 @@ constexpr char kWindowStateFloated[] = "FLOATED";
 constexpr char kZIndex[] = "z_index";
 
 // Valid value sets.
-constexpr auto kValidDeskTypes = base::MakeFixedFlatSet<base::StringPiece>(
+constexpr auto kValidDeskTypes = base::MakeFixedFlatSet<std::string_view>(
     {kDeskTypeTemplate, kDeskTypeSaveAndRecall, kDeskTypeFloatingWorkspace});
 constexpr auto kValidLaunchContainers =
-    base::MakeFixedFlatSet<base::StringPiece>(
+    base::MakeFixedFlatSet<std::string_view>(
         {kLaunchContainerWindow, kLaunchContainerPanelDeprecated,
          kLaunchContainerTab, kLaunchContainerNone,
          kLaunchContainerUnspecified});
 constexpr auto kValidWindowOpenDispositions =
-    base::MakeFixedFlatSet<base::StringPiece>(
+    base::MakeFixedFlatSet<std::string_view>(
         {kWindowOpenDispositionUnknown, kWindowOpenDispositionCurrentTab,
          kWindowOpenDispositionSingletonTab,
          kWindowOpenDispositionNewForegroundTab,
@@ -168,11 +169,11 @@ constexpr auto kValidWindowOpenDispositions =
          kWindowOpenDispositionOffTheRecord, kWindowOpenDispositionIgnoreAction,
          kWindowOpenDispositionSwitchToTab,
          kWindowOpenDispositionNewPictureInPicture});
-constexpr auto kValidWindowStates = base::MakeFixedFlatSet<base::StringPiece>(
+constexpr auto kValidWindowStates = base::MakeFixedFlatSet<std::string_view>(
     {kWindowStateNormal, kWindowStateMinimized, kWindowStateMaximized,
      kWindowStateFullscreen, kWindowStatePrimarySnapped,
      kWindowStateSecondarySnapped, kWindowStateFloated, kZIndex});
-constexpr auto kValidTabGroupColors = base::MakeFixedFlatSet<base::StringPiece>(
+constexpr auto kValidTabGroupColors = base::MakeFixedFlatSet<std::string_view>(
     {tab_groups::kTabGroupColorUnknown, tab_groups::kTabGroupColorGrey,
      tab_groups::kTabGroupColorBlue, tab_groups::kTabGroupColorRed,
      tab_groups::kTabGroupColorYellow, tab_groups::kTabGroupColorGreen,

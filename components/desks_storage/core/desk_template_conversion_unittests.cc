@@ -5,6 +5,7 @@
 #include "components/desks_storage/core/desk_template_conversion.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/desk_template.h"
 #include "base/json/json_reader.h"
@@ -76,7 +77,7 @@ class DeskTemplateConversionTest : public testing::Test {
 
 TEST_F(DeskTemplateConversionTest, ParseAdminTemplatePolicy) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      base::StringPiece(desk_test_util::kAdminTemplatePolicy));
+      std::string_view(desk_test_util::kAdminTemplatePolicy));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_list());
@@ -181,7 +182,7 @@ TEST_F(DeskTemplateConversionTest, ParseAdminTemplatePolicy) {
 
 TEST_F(DeskTemplateConversionTest, AdminTemplateConvertsCorrectly) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      base::StringPiece(desk_test_util::kAdminTemplatePolicyWithOneTemplate));
+      std::string_view(desk_test_util::kAdminTemplatePolicyWithOneTemplate));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_list());
@@ -249,7 +250,7 @@ TEST_F(DeskTemplateConversionTest, AdminTemplateConvertsCorrectly) {
 
 TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      base::StringPiece(desk_test_util::kValidPolicyTemplateBrowser));
+      std::string_view(desk_test_util::kValidPolicyTemplateBrowser));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -306,7 +307,7 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
 
 TEST_F(DeskTemplateConversionTest, ParseBrowserTemplateMinimized) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      base::StringPiece(desk_test_util::kValidPolicyTemplateBrowserMinimized));
+      std::string_view(desk_test_util::kValidPolicyTemplateBrowserMinimized));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -367,7 +368,7 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplateMinimized) {
 
 TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
   auto parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(base::StringPiece(
+      base::JSONReader::ReadAndReturnValueWithError(std::string_view(
           desk_test_util::kValidPolicyTemplateChromeAndProgressive));
 
   EXPECT_TRUE(parsed_json.has_value());
@@ -451,7 +452,7 @@ TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
 
 TEST_F(DeskTemplateConversionTest, EmptyJsonTest) {
   auto parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(base::StringPiece("{}"));
+      base::JSONReader::ReadAndReturnValueWithError(std::string_view("{}"));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -466,7 +467,7 @@ TEST_F(DeskTemplateConversionTest, EmptyJsonTest) {
 
 TEST_F(DeskTemplateConversionTest, ParsesWithDefaultValueSetToTemplates) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      base::StringPiece(desk_test_util::kPolicyTemplateWithoutType));
+      std::string_view(desk_test_util::kPolicyTemplateWithoutType));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -479,7 +480,7 @@ TEST_F(DeskTemplateConversionTest, ParsesWithDefaultValueSetToTemplates) {
 
 TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonBrowserTest) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      base::StringPiece(desk_test_util::kValidPolicyTemplateBrowser));
+      std::string_view(desk_test_util::kValidPolicyTemplateBrowser));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -498,7 +499,7 @@ TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonBrowserTest) {
 TEST_F(DeskTemplateConversionTest, ToJsonIgnoreUnsupportedApp) {
   constexpr int32_t kTestWindowId = 1234567;
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      base::StringPiece(desk_test_util::kValidPolicyTemplateBrowser));
+      std::string_view(desk_test_util::kValidPolicyTemplateBrowser));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -520,7 +521,7 @@ TEST_F(DeskTemplateConversionTest, ToJsonIgnoreUnsupportedApp) {
 
 TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonAppTest) {
   auto parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(base::StringPiece(
+      base::JSONReader::ReadAndReturnValueWithError(std::string_view(
           desk_test_util::kValidPolicyTemplateChromeAndProgressive));
 
   EXPECT_TRUE(parsed_json.has_value());
@@ -602,7 +603,7 @@ TEST_F(DeskTemplateConversionTest, EnsureLacrosBrowserWindowsSavedProperly) {
 TEST_F(DeskTemplateConversionTest,
        DeskTemplateFromFloatingWorkspaceJsonAppTest) {
   base::expected<base::Value, base::JSONReader::Error> parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(base::StringPiece(
+      base::JSONReader::ReadAndReturnValueWithError(std::string_view(
           desk_test_util::kValidPolicyTemplateChromeForFloatingWorkspace));
 
   ASSERT_TRUE(parsed_json.has_value());

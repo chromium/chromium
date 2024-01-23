@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
 
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/desk_template.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1097,7 +1098,7 @@ TEST_F(LocalDeskDataManagerTest, IngoresUpdateForNonExistantTemplate) {
 
 TEST_F(LocalDeskDataManagerTest, DoesNotUpdateWhenRestoreContentIsTheSame) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      base::StringPiece(desk_test_util::kAdminTemplatePolicyWithOneTemplate));
+      std::string_view(desk_test_util::kAdminTemplatePolicyWithOneTemplate));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_list());
@@ -1117,7 +1118,7 @@ TEST_F(LocalDeskDataManagerTest, DoesNotUpdateWhenRestoreContentIsTheSame) {
 
 TEST_F(LocalDeskDataManagerTest, DoesNotOverwriteOnDifferentPolicy) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      base::StringPiece(desk_test_util::kAdminTemplatePolicyWithOneTemplate));
+      std::string_view(desk_test_util::kAdminTemplatePolicyWithOneTemplate));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_list());
