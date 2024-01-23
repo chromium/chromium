@@ -16,8 +16,6 @@ found in the LICENSE file.
     android:orientation="vertical"
     android:animateLayoutChanges="true"
     android:visibility="gone"
-    android:clickable="true"
-    android:focusable="true"
     android:contentDescription="@string/readaloud_player_name">
 
     <!-- Shadow -->
