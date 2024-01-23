@@ -1,0 +1,6 @@
+use_goma = true # if using engflow, false otherwise
+is_debug = false # we can't really use most debugging symbols right now
+dcheck_always_on = false # disable dchecks
+enable_nacl = false  # no native targets
+use_allocator = "none"
+use_allocator_shim = false
