@@ -11,6 +11,13 @@ namespace features {
 
 // Alphabetical:
 
+// Enable back/forward cache support in WebView. Note that this will only take
+// effect iff both this feature flag and the content/public kBackForwardCache
+// flag is enabled.
+BASE_FEATURE(kWebViewBackForwardCache,
+             "WebViewBackForwardCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable brotli compression support in WebView.
 BASE_FEATURE(kWebViewBrotliSupport,
              "WebViewBrotliSupport",

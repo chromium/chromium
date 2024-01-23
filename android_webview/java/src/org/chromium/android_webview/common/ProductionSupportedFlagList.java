@@ -829,7 +829,8 @@ public final class ProductionSupportedFlagList {
                 "Uses a thread pool job implementation which leverages atomics to minimize lock"
                         + " contention."),
         Flag.baseFeature(
-                ContentFeatures.BACK_FORWARD_CACHE, "Controls if back/forward cache is enabled."),
+                AwFeatures.WEBVIEW_BACK_FORWARD_CACHE,
+                "Controls if back/forward cache is enabled."),
         Flag.baseFeature(
                 ContentFeatures.WEBVIEW_SUPPRESS_TAP_DURING_FLING, "Supress tap during fling."),
         Flag.baseFeature(

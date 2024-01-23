@@ -142,12 +142,6 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
   // isn't much point in having the crash dumps there.
   cl->AppendSwitch(switches::kDisableOoprDebugCrashDump);
 
-  // Disable BackForwardCache for Android WebView as it is not supported.
-  // WebView-specific code hasn't been audited and fixed to ensure compliance
-  // with the changed API contracts around new navigation types and changes to
-  // the document lifecycle.
-  cl->AppendSwitch(switches::kDisableBackForwardCache);
-
   // Deemed that performance benefit is not worth the stability cost.
   // See crbug.com/1309151.
   cl->AppendSwitch(switches::kDisableGpuShaderDiskCache);
