@@ -2460,6 +2460,33 @@ class RebaselineTest(unittest.TestCase, StreamTestingMixin):
                               'failures/unexpected/text-image-checksum',
                               expected_extensions=[])
 
+    def test_reset_results_no_output_generated(self):
+        host = MockHost()
+        baseline_filename = (
+            test.MOCK_WEB_TESTS + 'platform/test-mac-mac10.10/'
+            'failures/unexpected/no-text-generated-expected.txt')
+        # Overrides the generic baseline.
+        host.filesystem.write_text_file(baseline_filename, 'not empty')
+        details, log_stream, _ = logging_run([
+            '--reset-results',
+            'failures/unexpected/no-text-generated.html',
+        ],
+                                             tests_included=True,
+                                             host=host)
+        written_files = host.filesystem.written_files
+
+        self.assertEqual(details.exit_code, 0)
+        # The empty baseline is removed, but written back to override the
+        # generic baseline.
+        self.assert_contains(
+            log_stream,
+            'Removing the current baseline "platform/test-mac-mac10.10/'
+            'failures/unexpected/no-text-generated-expected.txt"')
+        self.assert_baselines(
+            written_files, log_stream,
+            'platform/test-mac-mac10.10/failures/unexpected/no-text-generated',
+            ['.txt'])
+
     def test_reset_results_missing_results(self):
         # Test that we create new baselines at the generic location for
         # if we are missing baselines.

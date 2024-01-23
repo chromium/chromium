@@ -264,7 +264,7 @@ class SingleTestRunner(object):
         # Note that current_expected_path may change because of the above file removal.
         current_expected_path = port.expected_filename(
             self._test_name, extension, return_default=False)
-        data = data or ''
+        data = data or b''
         if (current_expected_path and fs.sha1(current_expected_path) ==
                 hashlib.sha1(data).hexdigest()):
             if self._options.reset_results:
