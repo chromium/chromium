@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
@@ -540,6 +541,7 @@ enum class ToolbarKind {
   BookmarksCoordinator* _bookmarksCoordinator;
   std::optional<ToolbarKind> _nextToolbarToPresent;
   CredentialProviderPromoCoordinator* _credentialProviderPromoCoordinator;
+  DockingPromoCoordinator* _dockingPromoCoordinator;
   // Used to display the Voice Search UI.  Nil if not visible.
   id<VoiceSearchController> _voiceSearchController;
   UrlLoadingNotifierBrowserAgent* _urlLoadingNotifierBrowserAgent;
@@ -1297,6 +1299,12 @@ enum class ToolbarKind {
   _credentialProviderPromoCoordinator.promosUIHandler =
       _promosManagerCoordinator;
   [_credentialProviderPromoCoordinator start];
+
+  _dockingPromoCoordinator = [[DockingPromoCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  _dockingPromoCoordinator.promosUIHandler = _promosManagerCoordinator;
+  [_dockingPromoCoordinator start];
 }
 
 // Stops child coordinators.
@@ -1418,6 +1426,9 @@ enum class ToolbarKind {
 
   [_credentialProviderPromoCoordinator stop];
   _credentialProviderPromoCoordinator = nil;
+
+  [_dockingPromoCoordinator stop];
+  _dockingPromoCoordinator = nil;
 
   [self.defaultBrowserPromoManager stop];
   self.defaultBrowserPromoManager = nil;
@@ -2068,15 +2079,23 @@ enum class ToolbarKind {
     id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
         HandlerForProtocol(self.browser->GetCommandDispatcher(),
                            CredentialProviderPromoCommands);
+    id<DockingPromoCommands> dockingPromoHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), DockingPromoCommands);
+
     self.promosManagerCoordinator = [[PromosManagerCoordinator alloc]
             initWithBaseViewController:self.viewController
                                browser:self.browser
-        credentialProviderPromoHandler:credentialProviderPromoHandler];
+        credentialProviderPromoHandler:credentialProviderPromoHandler
+                   dockingPromoHandler:dockingPromoHandler];
 
     // CredentialProviderPromoCoordinator is initialized earlier than this, so
     // make sure to set its UI handler.
     _credentialProviderPromoCoordinator.promosUIHandler =
         self.promosManagerCoordinator;
+
+    // _dockingPromoCoordinator is initialized earlier than this, so
+    // make sure to set its UI handler.
+    _dockingPromoCoordinator.promosUIHandler = self.promosManagerCoordinator;
 
     [self.promosManagerCoordinator start];
   } else {

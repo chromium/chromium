@@ -67,6 +67,7 @@ source_set("promos_manager") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/credential_provider_promo/model:features",
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/docking_promo/ui",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",

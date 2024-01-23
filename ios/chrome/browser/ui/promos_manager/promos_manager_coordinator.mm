@@ -22,6 +22,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/docking_promo/ui/docking_promo_display_handler.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -87,6 +89,9 @@
 
   // The handler for the CredentialProviderPromoCommands.
   id<CredentialProviderPromoCommands> _credentialProviderPromoCommandHandler;
+
+  // The handler for the DockingPromoCommands.
+  id<DockingPromoCommands> _dockingPromoCommandHandler;
 }
 
 // A mediator that observes when it's a good time to display a promo.
@@ -112,11 +117,15 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-            credentialProviderPromoHandler:
-                (id<CredentialProviderPromoCommands>)handler {
+            credentialProviderPromoHandler:(id<CredentialProviderPromoCommands>)
+                                               credentialProviderPromoHandler
+                       dockingPromoHandler:
+                           (id<DockingPromoCommands>)dockingPromoHandler {
   if (self = [super initWithBaseViewController:viewController
                                        browser:browser]) {
-    _credentialProviderPromoCommandHandler = handler;
+    _credentialProviderPromoCommandHandler = credentialProviderPromoHandler;
+    _dockingPromoCommandHandler = dockingPromoHandler;
+
     [self registerPromos];
 
     BOOL promosExist = _displayHandlerPromos.size() > 0 ||
@@ -568,6 +577,14 @@
   _displayHandlerPromos[promos_manager::Promo::CredentialProviderExtension] =
       [[CredentialProviderPromoDisplayHandler alloc]
           initWithHandler:_credentialProviderPromoCommandHandler];
+
+  // Docking Promo handler
+  _displayHandlerPromos[promos_manager::Promo::DockingPromo] =
+      [[DockingPromoDisplayHandler alloc]
+          initWithHandler:_dockingPromoCommandHandler];
+  _displayHandlerPromos[promos_manager::Promo::DockingPromoRemindMeLater] =
+      [[DockingPromoDisplayHandler alloc]
+          initWithHandler:_dockingPromoCommandHandler];
 
   // DefaultBrowser Promo handler
   _displayHandlerPromos[promos_manager::Promo::DefaultBrowser] =

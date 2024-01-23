@@ -15,6 +15,7 @@ source_set("commands") {
     "command_dispatcher.h",
     "command_dispatcher.mm",
     "credential_provider_promo_commands.h",
+    "docking_promo_commands.h",
     "feed_commands.h",
     "find_in_page_commands.h",
     "generate_qr_code_command.h",
