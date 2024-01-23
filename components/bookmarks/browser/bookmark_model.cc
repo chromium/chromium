@@ -178,7 +178,7 @@ void BookmarkModel::Load(const base::FilePath& profile_path,
   store_ = std::make_unique<BookmarkStorage>(this, file_path);
   // Creating ModelLoader schedules the load on a backend task runner.
   model_loader_ = ModelLoader::Create(
-      file_path, std::make_unique<BookmarkLoadDetails>(client_.get()),
+      file_path, client_->GetLoadManagedNodeCallback(),
       base::BindOnce(&BookmarkModel::DoneLoading, AsWeakPtr()));
 }
 
@@ -1067,8 +1067,9 @@ void BookmarkModel::ClearStore() {
 }
 
 void BookmarkModel::LoadEmptyForTest() {
-  auto details = std::make_unique<BookmarkLoadDetails>(client_.get());
-  model_loader_ = ModelLoader::CreateForTest(details.get());
+  auto details = std::make_unique<BookmarkLoadDetails>();
+  model_loader_ = ModelLoader::CreateForTest(
+      client_->GetLoadManagedNodeCallback(), details.get());
   DoneLoading(std::move(details));
   CHECK(loaded_);
 }

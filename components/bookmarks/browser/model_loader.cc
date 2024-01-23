@@ -25,10 +25,12 @@ namespace bookmarks {
 
 namespace {
 
-// Loads the bookmarks. This is intended to be called on the background thread.
-// Updates state in |details| based on the load.
-void LoadBookmarks(const base::FilePath& path,
-                   BookmarkLoadDetails* details) {
+// Loads the bookmarks from a file determined by `path`. This is intended to be
+// called on the background thread. Returns the loaded BookmarkLoadDetails.
+std::unique_ptr<BookmarkLoadDetails> LoadBookmarksFromFile(
+    const base::FilePath& path) {
+  auto details = std::make_unique<BookmarkLoadDetails>();
+
   bool bookmark_file_exists = base::PathExists(path);
   if (bookmark_file_exists) {
     // Titles may end up containing invalid utf and we shouldn't throw away
@@ -57,17 +59,31 @@ void LoadBookmarks(const base::FilePath& path,
     }
   }
 
-  details->LoadManagedNode();
+  return details;
+}
 
-  // Building the indices can take a while so it's done on the background
-  // thread.
-  details->CreateIndices();
+void LoadManagedNode(LoadManagedNodeCallback load_managed_node_callback,
+                     BookmarkLoadDetails& details) {
+  if (!load_managed_node_callback) {
+    return;
+  }
 
-  UrlLoadStats stats = details->url_index()->ComputeStats();
+  int64_t max_node_id = details.max_id();
+  std::unique_ptr<BookmarkPermanentNode> managed_node =
+      std::move(load_managed_node_callback).Run(&max_node_id);
+  if (managed_node) {
+    details.root_node()->Add(std::move(managed_node));
+    details.set_max_id(std::max(max_node_id, details.max_id()));
+  }
+}
+
+void RecordLoadMetrics(const BookmarkLoadDetails& details,
+                       const base::FilePath& file_path) {
+  UrlLoadStats stats = details.url_index()->ComputeStats();
   metrics::RecordUrlLoadStatsOnProfileLoad(stats);
 
   int64_t file_size_bytes;
-  if (bookmark_file_exists && base::GetFileSize(path, &file_size_bytes)) {
+  if (base::GetFileSize(file_path, &file_size_bytes)) {
     metrics::RecordFileSizeAtStartup(file_size_bytes);
     metrics::RecordAverageNodeSizeAtStartup(
         stats.total_url_bookmark_count == 0
@@ -81,7 +97,7 @@ void LoadBookmarks(const base::FilePath& path,
 // static
 scoped_refptr<ModelLoader> ModelLoader::Create(
     const base::FilePath& file_path,
-    std::unique_ptr<BookmarkLoadDetails> details,
+    LoadManagedNodeCallback load_managed_node_callback,
     LoadCallback callback) {
   // Note: base::MakeRefCounted is not available here, as ModelLoader's
   // constructor is private.
@@ -94,7 +110,7 @@ scoped_refptr<ModelLoader> ModelLoader::Create(
   model_loader->backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ModelLoader::DoLoadOnBackgroundThread, model_loader,
-                     file_path, std::move(details)),
+                     file_path, std::move(load_managed_node_callback)),
       std::move(callback));
   return model_loader;
 }
@@ -111,8 +127,19 @@ ModelLoader::~ModelLoader() = default;
 
 std::unique_ptr<BookmarkLoadDetails> ModelLoader::DoLoadOnBackgroundThread(
     const base::FilePath& file_path,
-    std::unique_ptr<BookmarkLoadDetails> details) {
-  LoadBookmarks(file_path, details.get());
+    LoadManagedNodeCallback load_managed_node_callback) {
+  std::unique_ptr<BookmarkLoadDetails> details =
+      LoadBookmarksFromFile(file_path);
+  CHECK(details);
+
+  LoadManagedNode(std::move(load_managed_node_callback), *details);
+
+  // Building the indices can take a while so it's done on the background
+  // thread.
+  details->CreateIndices();
+
+  RecordLoadMetrics(*details, file_path);
+
   history_bookmark_model_ = details->url_index();
   loaded_signal_.Signal();
   return details;
@@ -120,13 +147,14 @@ std::unique_ptr<BookmarkLoadDetails> ModelLoader::DoLoadOnBackgroundThread(
 
 // static
 scoped_refptr<ModelLoader> ModelLoader::CreateForTest(
+    LoadManagedNodeCallback load_managed_node_callback,
     BookmarkLoadDetails* details) {
   CHECK(details);
-  // Note: base::MakeRefCounted is not available here, as ModelLoader's
-  // constructor is private.
-  details->LoadManagedNode();
+  LoadManagedNode(std::move(load_managed_node_callback), *details);
   details->CreateIndices();
 
+  // Note: base::MakeRefCounted is not available here, as ModelLoader's
+  // constructor is private.
   auto model_loader = base::WrapRefCounted(new ModelLoader());
   model_loader->history_bookmark_model_ = details->url_index();
   model_loader->loaded_signal_.Signal();
