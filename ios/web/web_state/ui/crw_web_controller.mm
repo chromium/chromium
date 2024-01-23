@@ -770,17 +770,16 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
     }
   }
 
-  if (@available(iOS 15, *)) {
-    [self.webView requestMediaPlaybackStateWithCompletionHandler:^(
-                      WKMediaPlaybackState mediaPlaybackState) {
-      if (mediaPlaybackState == WKMediaPlaybackStateNone)
-        return;
+  [self.webView requestMediaPlaybackStateWithCompletionHandler:^(
+                    WKMediaPlaybackState mediaPlaybackState) {
+    if (mediaPlaybackState == WKMediaPlaybackStateNone) {
+      return;
+    }
 
-      // Completion handler is needed to avoid a crash when called.
-      [self.webView closeAllMediaPresentationsWithCompletionHandler:^{
-      }];
+    // Completion handler is needed to avoid a crash when called.
+    [self.webView closeAllMediaPresentationsWithCompletionHandler:^{
     }];
-  }
+  }];
 }
 
 - (void)removeWebViewFromViewHierarchyForShutdown:(BOOL)shutdown {
@@ -792,40 +791,37 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 }
 
 - (BOOL)setSessionStateData:(NSData*)data {
-  if (@available(iOS 15, *)) {
-    NSData* interactionState = data;
+  NSData* interactionState = data;
 
-    // Old versions of chrome wrapped interactionState in a keyed unarchiver.
-    // This step was unnecessary. Rather than migrate all blobs over, simply
-    // check for an unarchiver here. NSKeyed data will start with 'bplist00',
-    // which differs from the header of a WebKit session coding (0x00000002).
-    // This logic can be removed after this change has gone live for a while.
-    constexpr char kArchiveHeader[] = "bplist00";
-    if (data.length > strlen(kArchiveHeader) &&
-        memcmp(data.bytes, kArchiveHeader, strlen(kArchiveHeader)) == 0) {
-      NSError* error = nil;
-      NSKeyedUnarchiver* unarchiver =
-          [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
-      if (!unarchiver || error) {
-        DLOG(WARNING) << "Error creating unarchiver for session state data: "
-                      << base::SysNSStringToUTF8([error description]);
-        return NO;
-      }
-      unarchiver.requiresSecureCoding = NO;
-      interactionState =
-          [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
-      if (!interactionState) {
-        DLOG(WARNING) << "Error decoding interactionState.";
-        return NO;
-      }
+  // Old versions of chrome wrapped interactionState in a keyed unarchiver.
+  // This step was unnecessary. Rather than migrate all blobs over, simply
+  // check for an unarchiver here. NSKeyed data will start with 'bplist00',
+  // which differs from the header of a WebKit session coding (0x00000002).
+  // This logic can be removed after this change has gone live for a while.
+  constexpr char kArchiveHeader[] = "bplist00";
+  if (data.length > strlen(kArchiveHeader) &&
+      memcmp(data.bytes, kArchiveHeader, strlen(kArchiveHeader)) == 0) {
+    NSError* error = nil;
+    NSKeyedUnarchiver* unarchiver =
+        [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
+    if (!unarchiver || error) {
+      DLOG(WARNING) << "Error creating unarchiver for session state data: "
+                    << base::SysNSStringToUTF8([error description]);
+      return NO;
     }
-    [self ensureWebViewCreated];
-    DCHECK_EQ(self.webView.backForwardList.currentItem, nil);
-    self.navigationHandler.blockUniversalLinksOnNextDecidePolicy = true;
-    [self.webView setInteractionState:interactionState];
-    return YES;
+    unarchiver.requiresSecureCoding = NO;
+    interactionState =
+        [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+    if (!interactionState) {
+      DLOG(WARNING) << "Error decoding interactionState.";
+      return NO;
+    }
   }
-  return NO;
+  [self ensureWebViewCreated];
+  DCHECK_EQ(self.webView.backForwardList.currentItem, nil);
+  self.navigationHandler.blockUniversalLinksOnNextDecidePolicy = true;
+  [self.webView setInteractionState:interactionState];
+  return YES;
 }
 
 - (web::PermissionState)stateForPermission:(web::Permission)permission {
@@ -883,10 +879,7 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 }
 
 - (NSData*)sessionStateData {
-  if (@available(iOS 15, *)) {
-    return self.webView.interactionState;
-  }
-  return nil;
+  return self.webView.interactionState;
 }
 
 - (void)handleNavigationHashChange {

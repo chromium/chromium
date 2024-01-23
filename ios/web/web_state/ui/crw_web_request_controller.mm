@@ -501,33 +501,18 @@ enum class BackForwardNavigationType {
   }
 
   WKNavigation* navigation = nil;
-#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
-  if (@available(iOS 15, *)) {
-    if (base::FeatureList::IsEnabled(web::features::kSetRequestAttribution)) {
-      request.attribution = NSURLRequestAttributionUser;
-    }
+  if (base::FeatureList::IsEnabled(web::features::kSetRequestAttribution)) {
+    request.attribution = NSURLRequestAttributionUser;
   }
-#endif
 
   if (navigationURL.SchemeIsFile() &&
       web::GetWebClient()->IsAppSpecificURL(virtualURL)) {
     // file:// URL navigations are allowed for app-specific URLs, which
     // already have elevated privileges.
-    // TODO(crbug.com/1267899): Remove this #if once Xcode 13 is required for
-    // building iOS-related code.
-#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
-    if (@available(iOS 15, *)) {
-      [request.URL startAccessingSecurityScopedResource];
-      navigation = [self.webView loadFileRequest:request
-                         allowingReadAccessToURL:request.URL];
-      [request.URL stopAccessingSecurityScopedResource];
-    } else
-#endif
-    {
-      NSURL* navigationNSURL = net::NSURLWithGURL(navigationURL);
-      navigation = [self.webView loadFileURL:navigationNSURL
-                     allowingReadAccessToURL:navigationNSURL];
-    }
+    [request.URL startAccessingSecurityScopedResource];
+    navigation = [self.webView loadFileRequest:request
+                       allowingReadAccessToURL:request.URL];
+    [request.URL stopAccessingSecurityScopedResource];
   } else {
     navigation = [self.webView loadRequest:request];
   }
