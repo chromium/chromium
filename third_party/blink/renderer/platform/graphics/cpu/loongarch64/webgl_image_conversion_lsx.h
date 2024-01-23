@@ -168,7 +168,6 @@ ALWAYS_INLINE void PackOneRowOfRGBA8LittleToRGBA8(const uint8_t*& source,
                                                   unsigned& pixels_per_row) {
   unsigned pixels_per_row_trunc = (pixels_per_row / 4) * 4;
   v16u8 mask_zero = __lsx_vldi(0);
-  v4u32 mask_halpha = __lsx_vreplgr2vr_w(0xff000000);
   v4u32 mask_lalpha = __lsx_vreplgr2vr_w(0x0ff);
   v4f32 mask_falpha = __lsx_vffint_s_w(mask_lalpha);
   v16u8 rgba_index = {0,1,2,19, 4,5,6,23, 8,9,10,27, 12,13,14,31};
