@@ -72,9 +72,15 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
   mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
   EXPECT_TRUE(create_graph_result->is_graph_remote());
 
+  // Reset the remote to ensure `WebNNGraphImpl` is released.
+  if (create_graph_result->is_graph_remote()) {
+    create_graph_result->get_graph_remote().reset();
+  }
+
   // Ensure `WebNNContextImpl::OnConnectionError()` is called and
   // `WebNNContextImpl` is released.
   webnn_context_remote.reset();
+  provider_remote.reset();
   base::RunLoop().RunUntilIdle();
 }
 
