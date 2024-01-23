@@ -109,6 +109,7 @@ class GPUCanvasContext : public CanvasRenderingContext,
 
   // WebGPUSwapBufferProvider::Client implementation
   void OnTextureTransferred() override;
+  void SetNeedsCompositingUpdate() override;
 
  private:
   void DetachSwapBuffers();

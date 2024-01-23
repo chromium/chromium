@@ -98,6 +98,8 @@ class FakeProviderClient : public WebGPUSwapBufferProvider::Client {
     texture = nullptr;
   }
 
+  void SetNeedsCompositingUpdate() override {}
+
   scoped_refptr<WebGPUMailboxTexture> texture;
 };
 
