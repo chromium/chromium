@@ -65,6 +65,7 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
   friend class WifiHotspotConnectorTest;
 
   static const int64_t kConnectionTimeoutSeconds = 20;
+  static const int64_t kMaxWifiConnectionAttempts = 3;
 
   void UpdateWaitingForWifi();
   void InitiateConnectionToCurrentNetwork();
@@ -94,6 +95,7 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
   std::string tether_network_guid_;
   std::string wifi_network_guid_;
   WifiConnectionCallback callback_;
+  int current_connection_attempt_count_ = 1;
   bool has_requested_wifi_scan_ = false;
   bool is_waiting_for_wifi_to_enable_ = false;
   bool has_initiated_connection_to_current_network_ = false;

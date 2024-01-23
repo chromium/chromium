@@ -200,6 +200,8 @@ void WifiHotspotConnector::InitiateConnectionToCurrentNetwork() {
   // If the network is now connectable, associate it with a Tether network
   // ASAP so that the correct icon will be displayed in the tray while the
   // network is connecting.
+  // NOTE: AssociateTetherNetworkStateWithWifiNetwork() is idempotent, so
+  // calling it on each retry is safe.
   bool successful_association =
       network_handler_->network_state_handler()
           ->AssociateTetherNetworkStateWithWifiNetwork(tether_network_guid_,
@@ -227,6 +229,12 @@ void WifiHotspotConnector::InitiateConnectionToCurrentNetwork() {
     CompleteActiveConnectionAttempt(false);
   }
 
+  PA_LOG(INFO) << "Current connection attempt is #"
+               << current_connection_attempt_count_
+               << ". Attempting to connect...";
+
+  ++current_connection_attempt_count_;
+
   network_handler_->network_connection_handler()->ConnectToNetwork(
       network_state->path(),
       base::BindOnce(&WifiHotspotConnector::OnWifiConnectionSucceeded,
@@ -236,6 +244,8 @@ void WifiHotspotConnector::InitiateConnectionToCurrentNetwork() {
       /*check_error_state=*/false, ConnectCallbackMode::ON_COMPLETED);
 }
 
+// TODO(b/318534727): Record the number of attempts before completion in a
+// metric.
 void WifiHotspotConnector::CompleteActiveConnectionAttempt(bool success) {
   if (wifi_network_guid_.empty()) {
     PA_LOG(WARNING) << "CompleteActiveConnectionAttempt(" << success << ") "
@@ -274,6 +284,7 @@ void WifiHotspotConnector::CompleteActiveConnectionAttempt(bool success) {
   has_initiated_connection_to_current_network_ = false;
   is_waiting_for_wifi_to_enable_ = false;
   has_requested_wifi_scan_ = false;
+  current_connection_attempt_count_ = 0;
 
   timer_->Stop();
 
@@ -342,16 +353,29 @@ void WifiHotspotConnector::OnWifiConnectionSucceeded() {
 
 void WifiHotspotConnector::OnWifiConnectionFailed(
     const std::string& error_name) {
+  PA_LOG(ERROR) << "Failed to connect to Wifi Network. Error: [" << error_name
+                << "]";
+  if (current_connection_attempt_count_ <= kMaxWifiConnectionAttempts) {
+    PA_LOG(INFO) << "Current connection attempt is #"
+                 << current_connection_attempt_count_ << ". Maximum is "
+                 << kMaxWifiConnectionAttempts << ". Retrying Connection...";
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &WifiHotspotConnector::InitiateConnectionToCurrentNetwork,
+            weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   // The network connect has failed, so complete the connection attempt. Because
   // this is a NetworkStateHandlerObserver callback, complete the attempt in
   // a new task to ensure that NetworkStateHandler is not modified while it is
   // notifying observers. See https://crbug.com/800370.
-  PA_LOG(ERROR) << "Failed to connect to Wifi Network. Error: [" << error_name
-                << "]";
+  PA_LOG(ERROR) << "Hit maximum allowed connection attempts. Failing.";
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&WifiHotspotConnector::CompleteActiveConnectionAttempt,
-                     weak_ptr_factory_.GetWeakPtr(), /*success=*/false));
+                     weak_ptr_factory_.GetWeakPtr(), false /* success */));
 }
 
 void WifiHotspotConnector::SetTestDoubles(
