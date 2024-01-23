@@ -17,15 +17,16 @@
     'identifier': 'BRYA_RELEASE_BETA',
     'skylab': {
       'cros_board': 'brya',
-      'cros_img': 'brya-release/R120-15662.57.0',
+      'cros_img': 'brya-release/R121-15699.40.0',
       'dut_pool': 'chrome',
     },
   },
   'CROS_BRYA_RELEASE_DEV': {
     'identifier': 'BRYA_RELEASE_DEV',
+    'enabled': False,
     'skylab': {
       'cros_board': 'brya',
-      'cros_img': 'brya-release/R121-15699.25.0',
+      'cros_img': 'brya-release/R122-15748.0.0',
       'dut_pool': 'chrome',
     },
   },
@@ -41,7 +42,7 @@
     'identifier': 'BRYA_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'brya',
-      'cros_img': 'brya-release/R120-15662.64.0',
+      'cros_img': 'brya-release/R120-15662.76.0',
       'dut_pool': 'chrome',
     },
   },
@@ -49,14 +50,15 @@
     'identifier': 'DEDEDE_RELEASE_BETA',
     'skylab': {
       'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R120-15662.57.0',
+      'cros_img': 'dedede-release/R121-15699.40.0',
     },
   },
   'CROS_DEDEDE_RELEASE_DEV': {
     'identifier': 'DEDEDE_RELEASE_DEV',
+    'enabled': False,
     'skylab': {
       'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R121-15699.25.0',
+      'cros_img': 'dedede-release/R122-15748.0.0',
     },
   },
   'CROS_DEDEDE_RELEASE_LKGM': {
@@ -70,7 +72,7 @@
     'identifier': 'DEDEDE_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R120-15662.64.0',
+      'cros_img': 'dedede-release/R120-15662.76.0',
     },
   },
   'CROS_EVE_PUBLIC_LKGM': {
@@ -88,15 +90,16 @@
     'identifier': 'FIZZ_RELEASE_BETA',
     'skylab': {
       'cros_board': 'fizz',
-      'cros_img': 'fizz-release/R120-15662.57.0',
+      'cros_img': 'fizz-release/R121-15699.40.0',
       'dut_pool': 'chrome',
     },
   },
   'CROS_FIZZ_RELEASE_DEV': {
     'identifier': 'FIZZ_RELEASE_DEV',
+    'enabled': False,
     'skylab': {
       'cros_board': 'fizz',
-      'cros_img': 'fizz-release/R121-15699.25.0',
+      'cros_img': 'fizz-release/R122-15748.0.0',
       'dut_pool': 'chrome',
     },
   },
@@ -112,7 +115,7 @@
     'identifier': 'FIZZ_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'fizz',
-      'cros_img': 'fizz-release/R120-15662.64.0',
+      'cros_img': 'fizz-release/R120-15662.76.0',
       'dut_pool': 'chrome',
     },
   },
@@ -120,15 +123,16 @@
     'identifier': 'GUYBRUSH_RELEASE_BETA',
     'skylab': {
       'cros_board': 'guybrush',
-      'cros_img': 'guybrush-release/R120-15662.57.0',
+      'cros_img': 'guybrush-release/R121-15699.40.0',
       'dut_pool': 'chrome',
     },
   },
   'CROS_GUYBRUSH_RELEASE_DEV': {
     'identifier': 'GUYBRUSH_RELEASE_DEV',
+    'enabled': False,
     'skylab': {
       'cros_board': 'guybrush',
-      'cros_img': 'guybrush-release/R121-15694.0.0',
+      'cros_img': 'guybrush-release/R122-15748.0.0',
       'dut_pool': 'chrome',
     },
   },
@@ -144,7 +148,7 @@
     'identifier': 'GUYBRUSH_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'guybrush',
-      'cros_img': 'guybrush-release/R120-15662.64.0',
+      'cros_img': 'guybrush-release/R120-15662.76.0',
       'dut_pool': 'chrome',
     },
   },
@@ -152,14 +156,15 @@
     'identifier': 'HANA_RELEASE_BETA',
     'skylab': {
       'cros_board': 'hana',
-      'cros_img': 'hana-release/R120-15662.57.0',
+      'cros_img': 'hana-release/R121-15699.40.0',
     },
   },
   'CROS_HANA_RELEASE_DEV': {
     'identifier': 'HANA_RELEASE_DEV',
+    'enabled': False,
     'skylab': {
       'cros_board': 'hana',
-      'cros_img': 'hana-release/R121-15699.25.0',
+      'cros_img': 'hana-release/R122-15739.0.0',
     },
   },
   'CROS_HANA_RELEASE_LKGM': {
@@ -173,7 +178,7 @@
     'identifier': 'HANA_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'hana',
-      'cros_img': 'hana-release/R120-15662.64.0',
+      'cros_img': 'hana-release/R120-15662.80.0',
     },
   },
   'CROS_JACUZZI_CQ_PUBLIC_LKGM': {
@@ -198,7 +203,7 @@
     'identifier': 'JACUZZI_RELEASE_BETA',
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_img': 'jacuzzi-release/R120-15662.57.0',
+      'cros_img': 'jacuzzi-release/R121-15699.40.0',
     },
   },
   'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM': {
@@ -210,9 +215,10 @@
   },
   'CROS_JACUZZI_RELEASE_DEV': {
     'identifier': 'JACUZZI_RELEASE_DEV',
+    'enabled': False,
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_img': 'jacuzzi-release/R121-15699.25.0',
+      'cros_img': 'jacuzzi-release/R122-15748.0.0',
     },
   },
   'CROS_JACUZZI_RELEASE_LKGM': {
@@ -226,7 +232,7 @@
     'identifier': 'JACUZZI_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_img': 'jacuzzi-release/R120-15662.64.0',
+      'cros_img': 'jacuzzi-release/R120-15662.76.0',
     },
   },
   'CROS_OCTOPUS_PUBLIC_LKGM': {
@@ -241,7 +247,7 @@
     'identifier': 'OCTOPUS_RELEASE_BETA',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R120-15662.57.0',
+      'cros_img': 'octopus-release/R121-15699.40.0',
     },
   },
   'CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS_ASH_LKGM': {
@@ -254,9 +260,10 @@
   },
   'CROS_OCTOPUS_RELEASE_DEV': {
     'identifier': 'OCTOPUS_RELEASE_DEV',
+    'enabled': False,
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R121-15699.25.0',
+      'cros_img': 'octopus-release/R122-15748.0.0',
     },
   },
   'CROS_OCTOPUS_RELEASE_LKGM': {
@@ -270,22 +277,23 @@
     'identifier': 'OCTOPUS_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R120-15662.64.0',
+      'cros_img': 'octopus-release/R120-15662.76.0',
     },
   },
   'CROS_PUFF_RELEASE_BETA': {
     'identifier': 'PUFF_RELEASE_BETA',
     'skylab': {
       'cros_board': 'puff',
-      'cros_img': 'puff-release/R120-15662.57.0',
+      'cros_img': 'puff-release/R121-15699.40.0',
       'dut_pool': 'chrome',
     },
   },
   'CROS_PUFF_RELEASE_DEV': {
     'identifier': 'PUFF_RELEASE_DEV',
+    'enabled': False,
     'skylab': {
       'cros_board': 'puff',
-      'cros_img': 'puff-release/R121-15699.25.0',
+      'cros_img': 'puff-release/R122-15748.0.0',
       'dut_pool': 'chrome',
     },
   },
@@ -301,7 +309,7 @@
     'identifier': 'PUFF_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'puff',
-      'cros_img': 'puff-release/R120-15662.64.0',
+      'cros_img': 'puff-release/R120-15662.76.0',
       'dut_pool': 'chrome',
     },
   },
@@ -309,14 +317,15 @@
     'identifier': 'STRONGBAD_RELEASE_BETA',
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_img': 'strongbad-release/R120-15662.57.0',
+      'cros_img': 'strongbad-release/R121-15699.40.0',
     },
   },
   'CROS_STRONGBAD_RELEASE_DEV': {
     'identifier': 'strongbad_RELEASE_DEV',
+    'enabled': False,
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_img': 'strongbad-release/R121-15699.25.0',
+      'cros_img': 'strongbad-release/R122-15748.0.0',
     },
   },
   'CROS_STRONGBAD_RELEASE_LKGM': {
@@ -330,7 +339,7 @@
     'identifier': 'STRONGBAD_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_img': 'strongbad-release/R120-15662.64.0',
+      'cros_img': 'strongbad-release/R120-15662.76.0',
     },
   },
   'CROS_TROGDOR_PUBLIC_LKGM': {

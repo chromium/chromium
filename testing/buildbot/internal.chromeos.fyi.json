@@ -1315,24 +1315,13 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R120-15662.57.0",
+        "cros_img": "octopus-release/R121-15699.40.0",
         "name": "lacros_fyi_tast_tests OCTOPUS_RELEASE_BETA",
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_fyi_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
         "timeout_sec": 10800,
         "variant_id": "OCTOPUS_RELEASE_BETA"
-      },
-      {
-        "autotest_name": "tast.lacros-from-gcs",
-        "cros_board": "octopus",
-        "cros_img": "octopus-release/R121-15699.25.0",
-        "name": "lacros_fyi_tast_tests OCTOPUS_RELEASE_DEV",
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_fyi_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "OCTOPUS_RELEASE_DEV"
       },
       {
         "autotest_name": "tast.lacros-from-gcs",
@@ -1348,7 +1337,7 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R120-15662.64.0",
+        "cros_img": "octopus-release/R120-15662.76.0",
         "name": "lacros_fyi_tast_tests OCTOPUS_RELEASE_STABLE",
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_fyi_tast_tests",
@@ -1359,22 +1348,12 @@
       {
         "autotest_name": "chromium",
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R120-15662.57.0",
+        "cros_img": "octopus-release/R121-15699.40.0",
         "name": "ozone_unittests OCTOPUS_RELEASE_BETA",
         "test": "ozone_unittests",
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
         "timeout_sec": 3600,
         "variant_id": "OCTOPUS_RELEASE_BETA"
-      },
-      {
-        "autotest_name": "chromium",
-        "cros_board": "octopus",
-        "cros_img": "octopus-release/R121-15699.25.0",
-        "name": "ozone_unittests OCTOPUS_RELEASE_DEV",
-        "test": "ozone_unittests",
-        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
-        "timeout_sec": 3600,
-        "variant_id": "OCTOPUS_RELEASE_DEV"
       },
       {
         "autotest_name": "chromium",
@@ -1389,7 +1368,7 @@
       {
         "autotest_name": "chromium",
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R120-15662.64.0",
+        "cros_img": "octopus-release/R120-15662.76.0",
         "name": "ozone_unittests OCTOPUS_RELEASE_STABLE",
         "test": "ozone_unittests",
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
@@ -1406,24 +1385,13 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "hana",
-        "cros_img": "hana-release/R120-15662.57.0",
+        "cros_img": "hana-release/R121-15699.40.0",
         "name": "lacros_all_tast_tests HANA_RELEASE_BETA",
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
         "variant_id": "HANA_RELEASE_BETA"
-      },
-      {
-        "autotest_name": "tast.lacros-from-gcs",
-        "cros_board": "hana",
-        "cros_img": "hana-release/R121-15699.25.0",
-        "name": "lacros_all_tast_tests HANA_RELEASE_DEV",
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "HANA_RELEASE_DEV"
       },
       {
         "autotest_name": "tast.lacros-from-gcs",
@@ -1439,7 +1407,7 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "hana",
-        "cros_img": "hana-release/R120-15662.64.0",
+        "cros_img": "hana-release/R120-15662.80.0",
         "name": "lacros_all_tast_tests HANA_RELEASE_STABLE",
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_all_tast_tests",
@@ -1450,7 +1418,7 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R120-15662.57.0",
+        "cros_img": "strongbad-release/R121-15699.40.0",
         "name": "lacros_all_tast_tests STRONGBAD_RELEASE_BETA",
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_all_tast_tests",
@@ -1472,7 +1440,7 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R120-15662.64.0",
+        "cros_img": "strongbad-release/R120-15662.76.0",
         "name": "lacros_all_tast_tests STRONGBAD_RELEASE_STABLE",
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_all_tast_tests",
@@ -1481,35 +1449,14 @@
         "variant_id": "STRONGBAD_RELEASE_STABLE"
       },
       {
-        "autotest_name": "tast.lacros-from-gcs",
-        "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R121-15699.25.0",
-        "name": "lacros_all_tast_tests strongbad_RELEASE_DEV",
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "strongbad_RELEASE_DEV"
-      },
-      {
         "autotest_name": "chromium",
         "cros_board": "hana",
-        "cros_img": "hana-release/R120-15662.57.0",
+        "cros_img": "hana-release/R121-15699.40.0",
         "name": "ozone_unittests HANA_RELEASE_BETA",
         "test": "ozone_unittests",
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
         "timeout_sec": 3600,
         "variant_id": "HANA_RELEASE_BETA"
-      },
-      {
-        "autotest_name": "chromium",
-        "cros_board": "hana",
-        "cros_img": "hana-release/R121-15699.25.0",
-        "name": "ozone_unittests HANA_RELEASE_DEV",
-        "test": "ozone_unittests",
-        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
-        "timeout_sec": 3600,
-        "variant_id": "HANA_RELEASE_DEV"
       },
       {
         "autotest_name": "chromium",
@@ -1524,7 +1471,7 @@
       {
         "autotest_name": "chromium",
         "cros_board": "hana",
-        "cros_img": "hana-release/R120-15662.64.0",
+        "cros_img": "hana-release/R120-15662.80.0",
         "name": "ozone_unittests HANA_RELEASE_STABLE",
         "test": "ozone_unittests",
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
@@ -1534,7 +1481,7 @@
       {
         "autotest_name": "chromium",
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R120-15662.57.0",
+        "cros_img": "strongbad-release/R121-15699.40.0",
         "name": "ozone_unittests STRONGBAD_RELEASE_BETA",
         "test": "ozone_unittests",
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
@@ -1554,7 +1501,7 @@
       {
         "autotest_name": "chromium",
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R120-15662.64.0",
+        "cros_img": "strongbad-release/R120-15662.76.0",
         "name": "ozone_unittests STRONGBAD_RELEASE_STABLE",
         "test": "ozone_unittests",
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
@@ -1563,33 +1510,13 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R121-15699.25.0",
-        "name": "ozone_unittests strongbad_RELEASE_DEV",
-        "test": "ozone_unittests",
-        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
-        "timeout_sec": 3600,
-        "variant_id": "strongbad_RELEASE_DEV"
-      },
-      {
-        "autotest_name": "chromium",
         "cros_board": "hana",
-        "cros_img": "hana-release/R120-15662.57.0",
+        "cros_img": "hana-release/R121-15699.40.0",
         "name": "viz_unittests HANA_RELEASE_BETA",
         "test": "viz_unittests",
         "test_id_prefix": "ninja://components/viz:viz_unittests/",
         "timeout_sec": 3600,
         "variant_id": "HANA_RELEASE_BETA"
-      },
-      {
-        "autotest_name": "chromium",
-        "cros_board": "hana",
-        "cros_img": "hana-release/R121-15699.25.0",
-        "name": "viz_unittests HANA_RELEASE_DEV",
-        "test": "viz_unittests",
-        "test_id_prefix": "ninja://components/viz:viz_unittests/",
-        "timeout_sec": 3600,
-        "variant_id": "HANA_RELEASE_DEV"
       },
       {
         "autotest_name": "chromium",
@@ -1604,7 +1531,7 @@
       {
         "autotest_name": "chromium",
         "cros_board": "hana",
-        "cros_img": "hana-release/R120-15662.64.0",
+        "cros_img": "hana-release/R120-15662.80.0",
         "name": "viz_unittests HANA_RELEASE_STABLE",
         "test": "viz_unittests",
         "test_id_prefix": "ninja://components/viz:viz_unittests/",
@@ -1614,7 +1541,7 @@
       {
         "autotest_name": "chromium",
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R120-15662.57.0",
+        "cros_img": "strongbad-release/R121-15699.40.0",
         "name": "viz_unittests STRONGBAD_RELEASE_BETA",
         "test": "viz_unittests",
         "test_id_prefix": "ninja://components/viz:viz_unittests/",
@@ -1634,22 +1561,12 @@
       {
         "autotest_name": "chromium",
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R120-15662.64.0",
+        "cros_img": "strongbad-release/R120-15662.76.0",
         "name": "viz_unittests STRONGBAD_RELEASE_STABLE",
         "test": "viz_unittests",
         "test_id_prefix": "ninja://components/viz:viz_unittests/",
         "timeout_sec": 3600,
         "variant_id": "STRONGBAD_RELEASE_STABLE"
-      },
-      {
-        "autotest_name": "chromium",
-        "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R121-15699.25.0",
-        "name": "viz_unittests strongbad_RELEASE_DEV",
-        "test": "viz_unittests",
-        "test_id_prefix": "ninja://components/viz:viz_unittests/",
-        "timeout_sec": 3600,
-        "variant_id": "strongbad_RELEASE_DEV"
       }
     ]
   }
