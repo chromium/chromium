@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -64,17 +65,16 @@ std::vector<std::string> ConcatResponses(
 constexpr proto::ModelExecutionFeature kFeature =
     proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE;
 
-class FakeOnDeviceSession : public base::SupportsWeakPtr<FakeOnDeviceSession>,
-                            public on_device_model::mojom::Session {
+class FakeOnDeviceSession final : public on_device_model::mojom::Session {
  public:
   // on_device_model::mojom::Session:
   void AddContext(on_device_model::mojom::InputOptionsPtr input,
                   mojo::PendingRemote<on_device_model::mojom::ContextClient>
                       client) override {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&FakeOnDeviceSession::AddContextInternal, AsWeakPtr(),
-                       std::move(input), std::move(client)));
+        FROM_HERE, base::BindOnce(&FakeOnDeviceSession::AddContextInternal,
+                                  weak_factory_.GetWeakPtr(), std::move(input),
+                                  std::move(client)));
   }
 
   void Execute(on_device_model::mojom::InputOptionsPtr input,
@@ -86,8 +86,9 @@ class FakeOnDeviceSession : public base::SupportsWeakPtr<FakeOnDeviceSession>,
     }
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&FakeOnDeviceSession::ExecuteImpl, AsWeakPtr(),
-                       std::move(input), std::move(response)),
+        base::BindOnce(&FakeOnDeviceSession::ExecuteImpl,
+                       weak_factory_.GetWeakPtr(), std::move(input),
+                       std::move(response)),
         g_execute_delay);
   }
 
@@ -155,6 +156,7 @@ class FakeOnDeviceSession : public base::SupportsWeakPtr<FakeOnDeviceSession>,
   }
 
   std::vector<std::string> context_;
+  base::WeakPtrFactory<FakeOnDeviceSession> weak_factory_{this};
 };
 
 class FakeOnDeviceModel : public on_device_model::mojom::OnDeviceModel {
