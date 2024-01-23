@@ -1191,6 +1191,12 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
 
   Node* parent_node = GetParentNodeForComputeParent(cache, current_node);
 
+  // If the tree is not currently mutable, then new AXObjects cannot be created.
+  // Return the AXObject for the parent only if it is already part of the tree.
+  if (!cache.IsProcessingDeferredEvents()) {
+    return cache.Get(parent_node);
+  }
+
   // Will not create an object if no valid parent node is found. This occurs
   // when a DOM child isn't visited by LayoutTreeBuilderTraversal, such as an
   // element child of a <textarea>, which only supports plain text.
@@ -5718,7 +5724,6 @@ bool AXObject::NeedsToUpdateChildren() const {
 void AXObject::SetNeedsToUpdateChildren() const {
   CHECK(!IsDetached()) << "Cannot update children on a detached node: "
                        << ToString(true, true);
-  CHECK(!AXObjectCache().IsFrozen());
   CHECK(!AXObjectCache().HasBeenDisposed());
 #if defined(AX_FAIL_FAST_BUILD)
   SANITIZER_CHECK(!is_adding_children_)
@@ -5742,8 +5747,6 @@ void AXObject::SetNeedsToUpdateChildren() const {
 #endif
     return;
   }
-
-  CHECK(!AXObjectCache().UpdatingTree());
 
   children_dirty_ = true;
   SetAncestorsHaveDirtyDescendants();

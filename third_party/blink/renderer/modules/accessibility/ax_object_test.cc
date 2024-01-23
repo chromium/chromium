@@ -1163,7 +1163,7 @@ TEST_F(AccessibilityTest, CheckNoDuplicateChildren) {
 
   AXObject* ax_select = GetAXObjectByElementId("sel");
   ax_select->SetNeedsToUpdateChildren();
-  ax_select->UpdateChildrenIfNecessary();
+  GetAXObjectCache().UpdateAXForAllDocuments();
 
   ASSERT_EQ(
       ax_select->FirstChildIncludingIgnored()->ChildCountIncludingIgnored(), 1);

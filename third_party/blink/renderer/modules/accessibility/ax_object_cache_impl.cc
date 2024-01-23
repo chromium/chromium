@@ -1362,6 +1362,10 @@ AXObject* AXObjectCacheImpl::GetOrCreate(const Node* node,
 
 AXObject* AXObjectCacheImpl::GetOrCreate(Node* node,
                                          AXObject* parent_if_known) {
+  if (!IsProcessingDeferredEvents()) {
+    return Get(node);
+  }
+
   if (!node)
     return nullptr;
 
