@@ -5400,8 +5400,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.NonEmbeddedMetrics.HistogramRecordAge"
-    units="minutes" expires_after="2024-03-03">
-  <owner>hazems@chromium.org</owner>
+    units="minutes" expires_after="2024-07-23">
+  <owner>avvall@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -5414,9 +5414,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.NonEmbeddedMetrics.NumHistograms"
-    units="histograms" expires_after="2024-07-07">
+    units="histograms" expires_after="2024-07-23">
   <owner>ntfschr@chromium.org</owner>
-  <owner>hazems@chromium.org</owner>
+  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the number of histograms received from WebView's non-embedded
@@ -5427,7 +5427,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.NonEmbeddedMetrics.ParsingLogResult"
     enum="AndroidWebViewNonEmbeddedMetricsParsingLogResult"
-    expires_after="2024-06-16">
+    expires_after="2024-07-23">
   <owner>avvall@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -5441,7 +5441,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.NonEmbeddedMetrics.RetrieveMetricsTaskStatus"
     enum="AndroidWebViewNonEmbeddedMetricsRetrieveMetricsTaskStatus"
-    expires_after="2024-06-16">
+    expires_after="2024-07-23">
   <owner>avvall@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -5455,7 +5455,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.WebView.NonEmbeddedMetrics.TransmissionResult"
     enum="AndroidWebViewDevUiMetricsTransmission" expires_after="2024-07-21">
   <owner>ntfschr@chromium.org</owner>
-  <owner>hazems@chromium.org</owner>
+  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records whether metrics transmission from the non-embedded histogram service
