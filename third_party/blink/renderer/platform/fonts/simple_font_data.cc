@@ -210,11 +210,6 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
   }
 #endif
 
-  SkTypeface* face = font_.getTypeface();
-  DCHECK(face);
-  if (int units_per_em = face->getUnitsPerEm())
-    font_metrics_.SetUnitsPerEm(units_per_em);
-
   // Read baselines value from OpenType Table.
   OpenTypeBaselineMetrics m(PlatformData().GetHarfBuzzFace(),
                             PlatformData().Orientation());

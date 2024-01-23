@@ -33,7 +33,6 @@ class SkFont;
 
 namespace blink {
 
-const unsigned kGDefaultUnitsPerEm = 1000;
 class FontPlatformData;
 
 class FontMetrics {
@@ -42,9 +41,6 @@ class FontMetrics {
  public:
   using ApplyBaselineTable =
       base::StrongAlias<class ApplyBaselineTableTag, bool>;
-
-  unsigned UnitsPerEm() const { return units_per_em_; }
-  void SetUnitsPerEm(unsigned units_per_em) { units_per_em_ = units_per_em; }
 
   float FloatAscent(FontBaseline baseline_type = kAlphabeticBaseline,
                     ApplyBaselineTable apply_baseline_table =
@@ -207,7 +203,6 @@ class FontMetrics {
   friend class SimpleFontData;
 
   void Reset() {
-    units_per_em_ = kGDefaultUnitsPerEm;
     cap_height_ = 0;
     float_ascent_ = 0;
     float_descent_ = 0;
@@ -231,7 +226,6 @@ class FontMetrics {
       FontBaseline baseline_type,
       ApplyBaselineTable apply_baseline_table) const;
 
-  unsigned units_per_em_ = kGDefaultUnitsPerEm;
   float cap_height_ = 0;
   float float_ascent_ = 0;
   float float_descent_ = 0;

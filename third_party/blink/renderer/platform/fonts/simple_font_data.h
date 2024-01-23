@@ -98,10 +98,6 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
 
   FontMetrics& GetFontMetrics() { return font_metrics_; }
   const FontMetrics& GetFontMetrics() const { return font_metrics_; }
-  float SizePerUnit() const {
-    return PlatformData().size() /
-           (GetFontMetrics().UnitsPerEm() ? GetFontMetrics().UnitsPerEm() : 1);
-  }
   float InternalLeading() const {
     return GetFontMetrics().FloatHeight() - PlatformData().size();
   }
