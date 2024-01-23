@@ -136,7 +136,13 @@ static constexpr auto kTypeNameToFieldType =
           ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK},
          {"SINGLE_USERNAME_FORGOT_PASSWORD", SINGLE_USERNAME_FORGOT_PASSWORD},
          {"SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES",
-          SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES}});
+          SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES},
+         {"ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY",
+          ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY},
+         {"ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK",
+          ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK},
+         {"ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK",
+          ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK}});
 
 bool IsFillableFieldType(FieldType field_type) {
   switch (field_type) {
@@ -192,6 +198,9 @@ bool IsFillableFieldType(FieldType field_type) {
     case ADDRESS_HOME_OVERFLOW:
     case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
     case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
+    case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
+    case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
+    case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
     case DELIVERY_INSTRUCTIONS:
       return true;
 
@@ -416,6 +425,12 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
       return "Address overflow and landmark";
     case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
       return "Address between-streets and landmark";
+    case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
+      return "Address street location and locality";
+    case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
+      return "Address street location and landmark";
+    case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
+      return "Address locality and landmark";
     case DELIVERY_INSTRUCTIONS:
       return "Delivery instructions";
     case BIRTHDATE_DAY:
@@ -526,6 +541,9 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case ADDRESS_HOME_OVERFLOW:
     case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
     case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
+    case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
+    case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
+    case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
     case DELIVERY_INSTRUCTIONS:
       return FieldTypeGroup::kAddress;
 
