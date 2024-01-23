@@ -24,9 +24,7 @@ class BluetoothInternalsTest : public WebUIMochaBrowserTest {
   }
 };
 
-// TODO(crbug.com/1399475): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(BluetoothInternalsTest,
-                       DISABLED_Startup_BluetoothInternals) {
+IN_PROC_BROWSER_TEST_F(BluetoothInternalsTest, Startup_BluetoothInternals) {
   RunTestWithoutTestLoader("bluetooth_internals/bluetooth_internals_test.js",
                            "mocha.run()");
 }
