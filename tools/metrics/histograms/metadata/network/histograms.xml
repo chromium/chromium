@@ -2588,6 +2588,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.PortalDector.CAPPORTAdvertised.{Technology}"
+    enum="NetworkCAPPORTSupport" expires_after="2024-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Indicates how the network advertises supports for the CAPPORT protocol
+    (RFC8908) using RFC8908. This metric is recorded once for every network
+    connection where CAPPORT was advertised, even if no captive portal was found
+    with HTTP probes.
+
+    This metric is a redefinition of the same portal detection metric
+    (&quot;Network.Shill.PortalDetector.CAPPORTAdvertised&quot;), but with a
+    name matching the typo existing in the platform for m121 and m122 and fixed
+    in crrev/c/5223768. This metric can be removed once captive portal metrics
+    data on m121 and m121 is not needed anymore.
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
+<histogram name="Network.Shill.PortalDector.CAPPORTSupported.{Technology}"
+    enum="NetworkCAPPORTSupport" expires_after="2024-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Indicates if the network advertises supports for the CAPPORT protocol
+    (RFC8908) using RFC8908. This metric is recorded once for every network
+    connection where a captive portal was found with an HTTP redirect.
+
+    This metric is a redefinition of the same portal detection metric
+    (&quot;Network.Shill.PortalDetector.CAPPORTAdvertised&quot;), but with a
+    name matching the typo existing in the platform for m121 and m122 and fixed
+    in crrev/c/5223768. This metric can be removed once captive portal metrics
+    data on m121 and m121 is not needed anymore.
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
 <histogram name="Network.Shill.PortalDetector.AggregateResult.{Technology}"
     enum="PortalDetectorAggregateResult" expires_after="2024-12-31">
   <owner>hugobenichi@google.com</owner>
