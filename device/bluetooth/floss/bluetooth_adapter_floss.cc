@@ -861,10 +861,11 @@ void BluetoothAdapterFloss::AdapterClearedDevice(
     // Only remove devices from devices_ that are not paired or connected.
     if (!found_ptr || (!found_ptr->IsPaired() && !found_ptr->IsConnected())) {
       devices_.erase(canonical_address);
-    }
 
-    for (auto& observer : observers_)
-      observer.DeviceRemoved(this, device_ptr);
+      for (auto& observer : observers_) {
+        observer.DeviceRemoved(this, device_ptr);
+      }
+    }
   }
 
   BLUETOOTH_LOG(EVENT) << __func__ << ": " << device_cleared;
