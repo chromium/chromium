@@ -55,7 +55,7 @@ java_cpp_strings("java_pref_names_srcjar") {
     "//components/safe_browsing/core/common/safe_browsing_prefs.h",
     "//components/signin/public/base/signin_pref_names.cc",
     "//components/supervised_user/core/common/pref_names.h",
-    "//components/translate/core/browser/translate_pref_names.cc",
+    "//components/translate/core/browser/translate_pref_names.h",
   ]
 
   template = "android/java_templates/Pref.java.tmpl"

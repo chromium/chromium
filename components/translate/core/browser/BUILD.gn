@@ -103,10 +103,7 @@ static_library("translate_model_service") {
 }
 
 source_set("translate_pref_names") {
-  sources = [
-    "translate_pref_names.cc",
-    "translate_pref_names.h",
-  ]
+  sources = [ "translate_pref_names.h" ]
 }
 
 source_set("unit_tests") {
