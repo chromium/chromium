@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DATA_SHARING_PUBLIC_DATA_SHARING_NETWORK_LOADER_H_
 #define COMPONENTS_DATA_SHARING_PUBLIC_DATA_SHARING_NETWORK_LOADER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
