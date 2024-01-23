@@ -141,9 +141,9 @@ bool PersonalDataManagerCleaner::ApplyAddressDedupingRoutine() {
     // If the profile was set to be deleted, remove it from the database,
     // otherwise update it.
     if (profiles_to_delete.contains(profile->guid())) {
-      personal_data_manager_->RemoveProfileFromDB(profile->guid());
+      personal_data_manager_->RemoveByGUID(profile->guid());
     } else {
-      personal_data_manager_->UpdateProfileInDB(*profile);
+      personal_data_manager_->UpdateProfile(*profile);
     }
   }
 

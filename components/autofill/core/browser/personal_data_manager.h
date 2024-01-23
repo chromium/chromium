@@ -269,6 +269,7 @@ class PersonalDataManager : public KeyedService,
 
   // Removes the profile, credit card or IBAN identified by `guid`.
   virtual void RemoveByGUID(const std::string& guid);
+  void RemoveProfile(const std::string& guid);
 
   // Returns the profile with the specified |guid|, or nullptr if there is no
   // profile with the specified |guid|.
@@ -913,10 +914,9 @@ class PersonalDataManager : public KeyedService,
   // prefs::kAutofillProfileEnabled changes.
   void EnableAutofillPrefChanged();
 
-  // Add/Update/Removes a profile in AutofillTable asynchronously. The changes
-  // only surface in the PDM after the task on the DB sequence has finished.
+  // Update a profile in AutofillTable asynchronously. The change only surfaces
+  // in the PDM after the task on the DB sequence has finished.
   void UpdateProfileInDB(const AutofillProfile& profile);
-  void RemoveProfileFromDB(const std::string& guid);
 
   // Triggered when a profile is added/updated/removed on db.
   void OnAutofillProfileChanged(const AutofillProfileChange& change);

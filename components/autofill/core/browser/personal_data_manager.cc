@@ -877,7 +877,7 @@ void PersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
 
   // If the profile is empty, remove it unconditionally.
   if (profile.IsEmpty(app_locale_)) {
-    RemoveByGUID(profile.guid());
+    RemoveProfile(profile.guid());
     return;
   }
 
@@ -898,9 +898,9 @@ void PersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
     // Keep the more recently used version of the profile.
     if (profile.use_date() > duplicate_profile_iter->get()->use_date()) {
       UpdateProfileInDB(profile);
-      RemoveByGUID(duplicate_profile_iter->get()->guid());
+      RemoveProfile(duplicate_profile_iter->get()->guid());
     } else {
-      RemoveByGUID(profile.guid());
+      RemoveProfile(profile.guid());
     }
     return;
   }
@@ -1298,7 +1298,7 @@ void PersonalDataManager::RemoveByGUID(const std::string& guid) {
     // Refresh our local cache and send notifications to observers.
     Refresh();
   } else {
-    RemoveProfileFromDB(guid);
+    RemoveProfile(guid);
   }
 }
 
@@ -2611,7 +2611,7 @@ void PersonalDataManager::UpdateProfileInDB(const AutofillProfile& profile) {
   HandleNextProfileChange(profile.guid());
 }
 
-void PersonalDataManager::RemoveProfileFromDB(const std::string& guid) {
+void PersonalDataManager::RemoveProfile(const std::string& guid) {
   // Find the profile to remove.
   // TODO(crbug.com/1420547): This shouldn't be necessary. Providing a `guid`
   // to the `AutofillProfileChange()` should suffice for removals.
