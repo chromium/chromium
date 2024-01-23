@@ -103,8 +103,8 @@ class MockPersonalDataManager : public TestPersonalDataManager {
               (const CreditCard& credit_card),
               (override));
   MOCK_METHOD(void,
-              UpdateServerCreditCard,
-              (const CreditCard& credit_card),
+              MaskFullServerCreditCard,
+              (const std::string& server_id),
               (override));
 };
 
@@ -359,7 +359,7 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredFullServerCard) {
                               "12", "2051"),
                   testing::Eq(u"123")));
   EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
-  EXPECT_CALL(*personal_data(), UpdateServerCreditCard(_)).Times(0);
+  EXPECT_CALL(*personal_data(), MaskFullServerCreditCard(_)).Times(0);
   EXPECT_CALL(*ui_delegate(), OnUnmaskVerificationResult(
                                   AutofillClient::PaymentsRpcResult::kSuccess));
 
@@ -390,7 +390,7 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredMaskedServerCard) {
                               "12", "2051"),
                   testing::Eq(u"123")));
   EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
-  EXPECT_CALL(*personal_data(), UpdateServerCreditCard(_)).Times(0);
+  EXPECT_CALL(*personal_data(), MaskFullServerCreditCard(_)).Times(0);
   EXPECT_CALL(*ui_delegate(), OnUnmaskVerificationResult(
                                   AutofillClient::PaymentsRpcResult::kSuccess));
 

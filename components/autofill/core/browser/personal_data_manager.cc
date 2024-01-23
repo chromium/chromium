@@ -1090,37 +1090,22 @@ void PersonalDataManager::UpdateLocalCvc(const std::string& guid,
   Refresh();
 }
 
-void PersonalDataManager::UpdateServerCreditCard(
-    const CreditCard& credit_card) {
-  DCHECK_NE(CreditCard::RecordType::kLocalCard, credit_card.record_type());
-
+void PersonalDataManager::MaskFullServerCreditCard(
+    const std::string& server_id) {
   if (!database_helper_->GetServerDatabase()) {
     return;
   }
 
   // Look up by server id, not GUID.
-  const CreditCard* existing_credit_card = nullptr;
   for (const auto& server_card : server_credit_cards_) {
-    if (credit_card.server_id() == server_card->server_id()) {
-      existing_credit_card = server_card.get();
-      break;
+    if (server_id == server_card->server_id()) {
+      DCHECK_EQ(CreditCard::RecordType::kFullServerCard,
+                server_card->record_type());
+      database_helper_->GetServerDatabase()->MaskServerCreditCard(server_id);
+      Refresh();
+      return;
     }
   }
-  if (!existing_credit_card)
-    return;
-
-  DCHECK_NE(existing_credit_card->record_type(), credit_card.record_type());
-  DCHECK_EQ(existing_credit_card->Label(), credit_card.Label());
-  if (existing_credit_card->record_type() ==
-      CreditCard::RecordType::kMaskedServerCard) {
-    database_helper_->GetServerDatabase()->UnmaskServerCreditCard(
-        credit_card, credit_card.number());
-  } else {
-    database_helper_->GetServerDatabase()->MaskServerCreditCard(
-        credit_card.server_id());
-  }
-
-  Refresh();
 }
 
 void PersonalDataManager::UpdateServerCardsMetadata(
@@ -1212,10 +1197,7 @@ void PersonalDataManager::ResetFullServerCard(const std::string& guid) {
   for (const auto& card : server_credit_cards_) {
     if (card->guid() == guid) {
       DCHECK_EQ(card->record_type(), CreditCard::RecordType::kFullServerCard);
-      CreditCard card_copy = *card;
-      card_copy.set_record_type(CreditCard::RecordType::kMaskedServerCard);
-      card_copy.SetNumber(card->LastFourDigits());
-      UpdateServerCreditCard(card_copy);
+      MaskFullServerCreditCard(card->server_id());
       break;
     }
   }
@@ -1224,10 +1206,7 @@ void PersonalDataManager::ResetFullServerCard(const std::string& guid) {
 void PersonalDataManager::ResetFullServerCards() {
   for (const auto& card : server_credit_cards_) {
     if (card->record_type() == CreditCard::RecordType::kFullServerCard) {
-      CreditCard card_copy = *card;
-      card_copy.set_record_type(CreditCard::RecordType::kMaskedServerCard);
-      card_copy.SetNumber(card->LastFourDigits());
-      UpdateServerCreditCard(card_copy);
+      MaskFullServerCreditCard(card->server_id());
     }
   }
 }

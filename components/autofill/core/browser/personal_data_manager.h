@@ -327,9 +327,8 @@ class PersonalDataManager : public KeyedService,
   virtual void UpdateLocalCvc(const std::string& guid,
                               const std::u16string& cvc);
 
-  // Update a server card. Only the full number and masked/unmasked
-  // status can be changed. Looks up the card by server ID.
-  virtual void UpdateServerCreditCard(const CreditCard& credit_card);
+  // Masks a full server card in the database.
+  virtual void MaskFullServerCreditCard(const std::string& server_id);
 
   // Updates the use stats and billing address id for the server |credit_cards|.
   // Looks up the cards by server_id.
