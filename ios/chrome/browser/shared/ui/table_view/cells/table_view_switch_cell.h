@@ -38,7 +38,8 @@
 - (void)setIconImage:(UIImage*)image
            tintColor:(UIColor*)tintColor
      backgroundColor:(UIColor*)backgroundColor
-        cornerRadius:(CGFloat)cornerRadius;
+        cornerRadius:(CGFloat)cornerRadius
+         borderWidth:(CGFloat)borderWidth;
 
 @end
 

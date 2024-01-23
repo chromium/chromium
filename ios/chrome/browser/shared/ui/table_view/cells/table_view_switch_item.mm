@@ -30,7 +30,8 @@
   [cell setIconImage:self.iconImage
             tintColor:self.iconTintColor
       backgroundColor:self.iconBackgroundColor
-         cornerRadius:self.iconCornerRadius];
+         cornerRadius:self.iconCornerRadius
+          borderWidth:self.iconBorderWidth];
 }
 
 @end
