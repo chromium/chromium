@@ -12,7 +12,7 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"

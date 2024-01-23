@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_mediator.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent_observing.h"

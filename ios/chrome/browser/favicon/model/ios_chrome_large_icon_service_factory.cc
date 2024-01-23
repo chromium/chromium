@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#include "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -11,7 +11,7 @@
 #include "components/image_fetcher/ios/ios_image_decoder_impl.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "ios/chrome/browser/favicon/favicon_service_factory.h"
+#include "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

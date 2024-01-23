@@ -133,7 +133,7 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:model_utils",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/intents:intents_donation_helper",

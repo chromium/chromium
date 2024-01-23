@@ -321,7 +321,7 @@ source_set("unit_tests") {
     "//components/variations/service",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
-    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

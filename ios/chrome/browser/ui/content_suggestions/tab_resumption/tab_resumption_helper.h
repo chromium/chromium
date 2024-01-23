@@ -10,7 +10,7 @@
 
 #import "base/ios/block_types.h"
 #import "components/sessions/core/session_id.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "url/gurl.h"
 
 class Browser;

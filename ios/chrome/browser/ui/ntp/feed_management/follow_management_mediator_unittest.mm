@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_mediator.h"
 
 #import "components/favicon/core/large_icon_service_impl.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"

@@ -87,7 +87,7 @@ source_set("model") {
     "//ios/chrome/browser/download/model/background_service",
     "//ios/chrome/browser/drive/model:drive_service_factory",
     "//ios/chrome/browser/enterprise/model/idle",
-    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/follow/model:service_factory",
     "//ios/chrome/browser/gcm/model",

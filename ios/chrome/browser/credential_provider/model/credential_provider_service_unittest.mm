@@ -25,7 +25,7 @@
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/test/test_sync_service.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"

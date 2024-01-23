@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_coordinator.h"
 
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_coordinator_delegate.h"

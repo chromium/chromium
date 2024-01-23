@@ -34,7 +34,7 @@ source_set("model") {
     "//components/prefs",
     "//components/sync_bookmarks",
     "//components/undo",
-    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",

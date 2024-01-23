@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FAVICON_FAVICON_BROWSER_AGENT_H_
-#define IOS_CHROME_BROWSER_FAVICON_FAVICON_BROWSER_AGENT_H_
+#ifndef IOS_CHROME_BROWSER_FAVICON_MODEL_FAVICON_BROWSER_AGENT_H_
+#define IOS_CHROME_BROWSER_FAVICON_MODEL_FAVICON_BROWSER_AGENT_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -40,4 +40,4 @@ class FaviconBrowserAgent final : public BrowserUserData<FaviconBrowserAgent>,
   BROWSER_USER_DATA_KEY_DECL();
 };
 
-#endif  // IOS_CHROME_BROWSER_FAVICON_FAVICON_BROWSER_AGENT_H_
+#endif  // IOS_CHROME_BROWSER_FAVICON_MODEL_FAVICON_BROWSER_AGENT_H_

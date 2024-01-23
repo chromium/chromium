@@ -12,7 +12,7 @@
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/webui/ntp_tiles_internals_message_handler.h"
 #include "components/ntp_tiles/webui/ntp_tiles_internals_message_handler_client.h"
-#include "ios/chrome/browser/favicon/favicon_service_factory.h"
+#include "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #include "ios/chrome/browser/ntp_tiles/model/ios_most_visited_sites_factory.h"
 #include "ios/chrome/browser/ntp_tiles/model/ios_popular_sites_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"

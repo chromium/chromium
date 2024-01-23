@@ -18,7 +18,7 @@
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/undo/bookmark_undo_service.h"
-#include "ios/chrome/browser/favicon/favicon_service_factory.h"
+#include "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
 
 BookmarkClientImpl::BookmarkClientImpl(

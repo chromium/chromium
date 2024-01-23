@@ -153,7 +153,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/default_browser/model:test_support",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/prerender/model",

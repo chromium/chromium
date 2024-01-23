@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/favicon/favicon_client_impl.h"
+#import "ios/chrome/browser/favicon/model/favicon_client_impl.h"
 
 #import <memory>
 

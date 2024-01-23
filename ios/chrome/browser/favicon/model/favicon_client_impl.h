@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FAVICON_FAVICON_CLIENT_IMPL_H_
-#define IOS_CHROME_BROWSER_FAVICON_FAVICON_CLIENT_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_FAVICON_MODEL_FAVICON_CLIENT_IMPL_H_
+#define IOS_CHROME_BROWSER_FAVICON_MODEL_FAVICON_CLIENT_IMPL_H_
 
 #include <vector>
 
@@ -35,4 +35,4 @@ class FaviconClientImpl : public favicon::FaviconClient {
       base::CancelableTaskTracker* tracker) override;
 };
 
-#endif  // IOS_CHROME_BROWSER_FAVICON_FAVICON_CLIENT_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_FAVICON_MODEL_FAVICON_CLIENT_IMPL_H_

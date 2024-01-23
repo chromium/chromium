@@ -18,7 +18,7 @@ source_set("model") {
     "//components/image_fetcher/ios",
     "//components/keyed_service/core",
     "//components/ntp_tiles",
-    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",

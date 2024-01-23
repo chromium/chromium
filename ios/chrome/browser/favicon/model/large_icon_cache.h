@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FAVICON_LARGE_ICON_CACHE_H_
-#define IOS_CHROME_BROWSER_FAVICON_LARGE_ICON_CACHE_H_
+#ifndef IOS_CHROME_BROWSER_FAVICON_MODEL_LARGE_ICON_CACHE_H_
+#define IOS_CHROME_BROWSER_FAVICON_MODEL_LARGE_ICON_CACHE_H_
 
 #include <memory>
 
@@ -51,4 +51,4 @@ class LargeIconCache : public KeyedService {
   base::LRUCache<GURL, std::unique_ptr<LargeIconCacheEntry>> cache_;
 };
 
-#endif  // IOS_CHROME_BROWSER_FAVICON_LARGE_ICON_CACHE_H_
+#endif  // IOS_CHROME_BROWSER_FAVICON_MODEL_LARGE_ICON_CACHE_H_

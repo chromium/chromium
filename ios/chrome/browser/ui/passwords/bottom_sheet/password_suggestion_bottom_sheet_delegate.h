@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
 
 // Delegate for the passwords bottom sheet.
 @protocol PasswordSuggestionBottomSheetDelegate

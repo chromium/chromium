@@ -37,7 +37,7 @@ source_set("helper") {
     "//base",
     "//components/sync/service",
     "//components/sync_sessions",
-    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/sessions:session_util",
     "//ios/chrome/browser/shared/model/browser",

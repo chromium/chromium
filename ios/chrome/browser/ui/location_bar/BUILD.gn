@@ -156,7 +156,7 @@ source_set("unit_tests") {
     "//components/variations:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autocomplete/model",
-    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",

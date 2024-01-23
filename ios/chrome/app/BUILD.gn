@@ -527,7 +527,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/download/model/background_service:background_service",
     "//ios/chrome/browser/enterprise/model/idle",
     "//ios/chrome/browser/external_files/model",
-    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/geolocation/model",
