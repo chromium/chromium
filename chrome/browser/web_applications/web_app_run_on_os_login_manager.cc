@@ -129,8 +129,6 @@ void WebAppRunOnOsLoginManager::OnConnectionChanged(
   // If there is a connection, schedule ROOL and stop listening to the network
   // status. Otherwise, keep listening.
   if (type != network::mojom::ConnectionType::CONNECTION_NONE) {
-    content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(
-        this);
     RunOsLoginAppsAndMaybeUnregisterObserver();
   }
 }
