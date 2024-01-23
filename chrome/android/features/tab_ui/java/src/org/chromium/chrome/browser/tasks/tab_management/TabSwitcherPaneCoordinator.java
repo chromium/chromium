@@ -286,7 +286,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     public void resetWithTabList(@Nullable TabList tabList) {
         var pseudoTabList = PseudoTab.getListOfPseudoTab(tabList);
         mMessageManager.beforeReset();
-        mTabListCoordinator.resetWithListOfTabs(pseudoTabList, /* quickMode= */ true);
+        // Quick mode being false here ensures the selected tab's thumbnail gets updated. With Hub
+        // the TabListCoordinator no longer triggers thumbnail captures so this shouldn't guard
+        // against the large amount of work that is used to.
+        mTabListCoordinator.resetWithListOfTabs(pseudoTabList, /* quickMode= */ false);
         mMessageManager.afterReset(pseudoTabList == null ? 0 : pseudoTabList.size());
     }
 
