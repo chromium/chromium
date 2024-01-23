@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/timezone.h"
 #include "base/logging.h"
@@ -664,6 +665,20 @@ void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   database_helper_->SetUseAccountStorageForServerData(
       sync_service && !sync_service->IsSyncFeatureEnabled());
+
+  if (identity_manager_ && sync_service_ &&
+      !sync_service_->GetAccountInfo().IsEmpty()) {
+    const CoreAccountInfo account = sync_service_->GetAccountInfo();
+    if (!account_status_finder_ ||
+        account_status_finder_->GetAccountInfo().account_id !=
+            account.account_id) {
+      account_status_finder_ =
+          std::make_unique<const signin::AccountManagedStatusFinder>(
+              identity_manager_, account, base::DoNothing());
+    }
+  } else {
+    account_status_finder_.reset();
+  }
 }
 
 void PersonalDataManager::OnSyncPaymentsIntegrationEnabledChanged(
@@ -2015,6 +2030,13 @@ void PersonalDataManager::AddFullServerCreditCardForTesting(
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
+}
+
+std::optional<signin::AccountManagedStatusFinder::Outcome>
+PersonalDataManager::GetAccountStatusForTesting() const {
+  return account_status_finder_
+             ? account_status_finder_->GetOutcome()
+             : std::optional<signin::AccountManagedStatusFinder::Outcome>();
 }
 
 AutofillProfileMigrationStrikeDatabase*

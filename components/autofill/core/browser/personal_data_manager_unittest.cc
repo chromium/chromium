@@ -9,6 +9,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -51,6 +52,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -4115,6 +4117,21 @@ TEST_F(PersonalDataManagerTest, ClearAllCvcs) {
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
   EXPECT_TRUE(personal_data_->GetServerCreditCards()[0]->cvc().empty());
   EXPECT_TRUE(personal_data_->GetLocalCreditCards()[0]->cvc().empty());
+}
+
+TEST_F(PersonalDataManagerTest, AccountStatusSyncRetrieval) {
+  EXPECT_NE(personal_data_->GetAccountStatusForTesting(), std::nullopt);
+
+  // Login with a non-enterprise account (the status is expected to be available
+  // immediately, with no async calls).
+  AccountInfo account = identity_test_env_.MakeAccountAvailable("ab@gmail.com");
+  sync_service_.SetAccountInfo(account);
+  sync_service_.FireStateChanged();
+  EXPECT_EQ(personal_data_->GetAccountStatusForTesting(),
+            signin::AccountManagedStatusFinder::Outcome::kNonEnterprise);
+
+  personal_data_->SetSyncServiceForTest(nullptr);
+  EXPECT_EQ(personal_data_->GetAccountStatusForTesting(), std::nullopt);
 }
 
 }  // namespace autofill

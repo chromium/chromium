@@ -49,6 +49,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -718,6 +719,9 @@ class PersonalDataManager : public KeyedService,
     return alternative_state_name_map_updater_.get();
   }
 
+  std::optional<signin::AccountManagedStatusFinder::Outcome>
+  GetAccountStatusForTesting() const;
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            AddAndGetCreditCardArtImage);
@@ -981,6 +985,12 @@ class PersonalDataManager : public KeyedService,
 
   // The identity manager that this instance uses. Must outlive this instance.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+
+  // Used for the Autofill sync toggle visibility calculation only.
+  // TODO(crbug.com/1502843): Remove when toggle becomes available on the Sync
+  // page for non-syncing users.
+  std::unique_ptr<const signin::AccountManagedStatusFinder>
+      account_status_finder_;
 
   // The sync service this instances uses. Must outlive this instance.
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
