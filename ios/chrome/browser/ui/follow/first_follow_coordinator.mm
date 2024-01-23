@@ -85,23 +85,17 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   self.faviconLoader = IOSChromeFaviconLoaderFactory::GetForBrowserState(
       self.browser->GetBrowserState());
 
-  if (@available(iOS 15, *)) {
-    firstFollowViewController.modalPresentationStyle =
-        UIModalPresentationPageSheet;
-    UISheetPresentationController* presentationController =
-        firstFollowViewController.sheetPresentationController;
-    presentationController.prefersEdgeAttachedInCompactHeight = YES;
-    presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached =
-        YES;
-    presentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-    presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
-  } else {
-    firstFollowViewController.modalPresentationStyle =
-        UIModalPresentationFormSheet;
-  }
+  firstFollowViewController.modalPresentationStyle =
+      UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      firstFollowViewController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 
   [self.baseViewController
       presentViewController:firstFollowViewController
