@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -144,27 +145,36 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
     private void createPasswordCheckModels(
             SafetyCheckSettingsFragment settingsFragment, PropertyModel safetyCheckModel) {
         if (isAccountPasswordStorageUsed()) {
+            String title =
+                    usesSplitStoresAndUPMForLocal(mPrefService)
+                            ? mSettingsFragment.getString(
+                                    R.string.safety_check_passwords_account_title,
+                                    CoreAccountInfo.getEmailFrom(mSyncService.getAccountInfo()))
+                            : mSettingsFragment.getString(R.string.safety_check_passwords_title);
             mPasswordCheckAccountModel =
                     createPasswordCheckPreferenceModelAndBind(
                             settingsFragment,
                             safetyCheckModel,
-                            SafetyCheckViewBinder.PASSWORDS_KEY_ACCOUNT);
+                            SafetyCheckViewBinder.PASSWORDS_KEY_ACCOUNT,
+                            title);
         }
         if (isLocalPasswordStorageUsed()) {
             mPasswordCheckLocalModel =
                     createPasswordCheckPreferenceModelAndBind(
                             settingsFragment,
                             safetyCheckModel,
-                            SafetyCheckViewBinder.PASSWORDS_KEY_LOCAL);
+                            SafetyCheckViewBinder.PASSWORDS_KEY_LOCAL,
+                            mSettingsFragment.getString(R.string.safety_check_passwords_title));
         }
     }
 
     static PropertyModel createPasswordCheckPreferenceModelAndBind(
             SafetyCheckSettingsFragment settingsFragment,
             PropertyModel safetyCheckModel,
-            String preferenceViewId) {
+            String preferenceViewId,
+            String preferenceTitle) {
         PropertyModel passwordSafetyCheckModel =
-                PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel();
+                PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel(preferenceTitle);
         PropertyModelChangeProcessor.create(
                 passwordSafetyCheckModel,
                 settingsFragment,

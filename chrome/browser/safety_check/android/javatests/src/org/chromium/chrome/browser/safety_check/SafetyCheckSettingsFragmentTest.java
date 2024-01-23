@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesSta
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -52,6 +53,7 @@ import org.chromium.ui.modelutil.PropertyModel;
                 "The activity should be restarted for each test to not share saved user preferences"
                         + " between tests.")
 public class SafetyCheckSettingsFragmentTest {
+    private static final String TEST_EMAIL_ADDRESS = "test@example.com";
     private static final String PASSWORDS_LOCAL = "passwords_local";
     private static final String PASSWORDS_ACCOUNT = "passwords_account";
     private static final String SAFE_BROWSING = "safe_browsing";
@@ -131,7 +133,8 @@ public class SafetyCheckSettingsFragmentTest {
                             SafetyCheckCoordinator.createPasswordCheckPreferenceModelAndBind(
                                     mFragment,
                                     mSafetyCheckModel,
-                                    SafetyCheckViewBinder.PASSWORDS_KEY_LOCAL);
+                                    SafetyCheckViewBinder.PASSWORDS_KEY_LOCAL,
+                                    "Passwords");
                 });
     }
 
@@ -147,7 +150,8 @@ public class SafetyCheckSettingsFragmentTest {
                             SafetyCheckCoordinator.createPasswordCheckPreferenceModelAndBind(
                                     mFragment,
                                     mSafetyCheckModel,
-                                    SafetyCheckViewBinder.PASSWORDS_KEY_LOCAL);
+                                    SafetyCheckViewBinder.PASSWORDS_KEY_LOCAL,
+                                    "Passwords");
                 });
     }
 
@@ -155,6 +159,8 @@ public class SafetyCheckSettingsFragmentTest {
         when(mSyncService.isSyncFeatureEnabled()).thenReturn(isSyncFeatureEnabled);
         when(mSyncService.getSelectedTypes())
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
+        when(mSyncService.getAccountInfo())
+                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
     }
 
     private void configurePasswordManagerUtilBridge(boolean usesSplitStores) {
@@ -168,7 +174,10 @@ public class SafetyCheckSettingsFragmentTest {
         createFragmentAndModel();
         // Binds the account model.
         SafetyCheckCoordinator.createPasswordCheckPreferenceModelAndBind(
-                mFragment, mSafetyCheckModel, SafetyCheckViewBinder.PASSWORDS_KEY_ACCOUNT);
+                mFragment,
+                mSafetyCheckModel,
+                SafetyCheckViewBinder.PASSWORDS_KEY_ACCOUNT,
+                "Passwords for test account");
 
         Preference passwordsLocal = mFragment.findPreference(PASSWORDS_LOCAL);
         Preference passwordsAccount = mFragment.findPreference(PASSWORDS_ACCOUNT);
@@ -205,6 +214,26 @@ public class SafetyCheckSettingsFragmentTest {
     @MediumTest
     public void testNullStateDisplayedCorrectlySyncOnUsingSplitStores() {
         verifyNullStateDisplayedCorrectly(true, true);
+    }
+
+    @Test
+    @MediumTest
+    public void testPasswordsCheckTitlesAreCorrect() {
+        configureMockSyncService(true);
+        configurePasswordManagerUtilBridge(true);
+        mSettingsActivityTestRule.startSettingsActivity();
+        mFragment = (SafetyCheckSettingsFragment) mSettingsActivityTestRule.getFragment();
+
+        Preference passwordsLocal = mFragment.findPreference(PASSWORDS_LOCAL);
+        Preference passwordsAccount = mFragment.findPreference(PASSWORDS_ACCOUNT);
+
+        assertEquals(
+                passwordsLocal.getTitle(),
+                mFragment.getString(R.string.safety_check_passwords_title));
+        assertEquals(
+                passwordsAccount.getTitle(),
+                mFragment.getString(
+                        R.string.safety_check_passwords_account_title, TEST_EMAIL_ADDRESS));
     }
 
     @Test

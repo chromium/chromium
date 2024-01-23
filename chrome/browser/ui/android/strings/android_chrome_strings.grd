@@ -1476,8 +1476,11 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_CHECK_UPDATES_TITLE" desc="Title for the updates section.">
         Updates
       </message>
-      <message name="IDS_SAFETY_CHECK_PASSWORDS_TITLE" desc="Title for the passwords section.">
+      <message name="IDS_SAFETY_CHECK_PASSWORDS_TITLE" desc="Title for the passwords check for the local passwords stored on user's device only.">
         Passwords
+      </message>
+      <message name="IDS_SAFETY_CHECK_PASSWORDS_ACCOUNT_TITLE" desc="Title for the passwords check for the synced passwords stored in the user's account store.">
+        Passwords saved on <ph name="USERNAME">%1$s<ex>elisa.becket@gmail.com</ex></ph>.
       </message>
       <message name="IDS_SAFETY_CHECK_BUTTON" desc="Text for the button to start Safety check.">
         Check now

@@ -304,6 +304,9 @@ class SafetyCheckViewBinder {
         } else if (PasswordsCheckPreferenceProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey) {
             // Do nothing - this is handled by the PASSWORDS_STATE update.
             return;
+        } else if (PasswordsCheckPreferenceProperties.PASSWORDS_TITLE == propertyKey) {
+            SafetyCheckElementPreference preference = fragment.findPreference(preferenceViewId);
+            preference.setTitle(model.get(PasswordsCheckPreferenceProperties.PASSWORDS_TITLE));
         } else {
             assert false : "Unhandled property detected in SafetyCheckViewBinder!";
         }

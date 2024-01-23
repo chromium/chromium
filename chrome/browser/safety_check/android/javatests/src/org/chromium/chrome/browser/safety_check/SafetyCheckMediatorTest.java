@@ -238,7 +238,8 @@ public class SafetyCheckMediatorTest {
                 .thenReturn(false);
 
         mSafetyCheckModel = SafetyCheckProperties.createSafetyCheckModel();
-        mPasswordCheckModel = PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel();
+        mPasswordCheckModel =
+                PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel("Passwords");
         mPasswordCheckControllerFactory = new FakePasswordCheckControllerFactory();
         if (mUseGmsApi) {
             // TODO(crbug.com/1346235): Use existing fake instead of mocking
@@ -774,7 +775,7 @@ public class SafetyCheckMediatorTest {
         // These behaviours are set here again because the tests are currently not parametrised in
         // a way to support UPM for non password syncing users.
         PropertyModel passwordCheckLocalModel =
-                PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel();
+                PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel("Passwords");
         mMediator =
                 new SafetyCheckMediator(
                         mSafetyCheckModel,
@@ -821,9 +822,10 @@ public class SafetyCheckMediatorTest {
     public void testPasswordCheckCompletesForTwoStorages() {
         // Set up both local and account models
         PropertyModel passwordCheckAccountModel =
-                PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel();
+                PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel(
+                        "Passwords saved on " + TEST_EMAIL_ADDRESS);
         PropertyModel passwordCheckLocalModel =
-                PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel();
+                PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel("Passwords");
         mMediator =
                 new SafetyCheckMediator(
                         mSafetyCheckModel,

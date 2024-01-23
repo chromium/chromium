@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.safety_check;
 
 import android.content.Context;
+import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.preference.PreferenceViewHolder;
@@ -45,6 +47,12 @@ public class SafetyCheckElementPreference extends ChromeBasePreference {
         super.onBindViewHolder(holder);
         mProgressBar = holder.findViewById(R.id.progress);
         mStatusView = (ImageView) holder.findViewById(R.id.status_view);
+
+        // Title should be max 3 lines length and ellipsized if it doesn't fit into 3 lines.
+        TextView titleTextView = (TextView) holder.findViewById(android.R.id.title);
+        titleTextView.setMaxLines(3);
+        titleTextView.setEllipsize(TruncateAt.END);
+
         // If there is a delayed action - take it.
         if (mDelayedAction != null) {
             mDelayedAction.onResult(null);

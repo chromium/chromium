@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.Pas
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckNativeException;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -29,6 +30,10 @@ class PasswordsCheckPreferenceProperties {
     /** Listener for the passwords element click events. */
     static final WritableObjectPropertyKey PASSWORDS_CLICK_LISTENER =
             new WritableObjectPropertyKey();
+
+    /** The title for the password check preference. */
+    static final ReadableObjectPropertyKey<String> PASSWORDS_TITLE =
+            new ReadableObjectPropertyKey<>();
 
     @IntDef({
         PasswordsState.UNCHECKED,
@@ -151,13 +156,17 @@ class PasswordsCheckPreferenceProperties {
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                PASSWORDS_STATE, COMPROMISED_PASSWORDS_COUNT, PASSWORDS_CLICK_LISTENER
+                PASSWORDS_STATE,
+                COMPROMISED_PASSWORDS_COUNT,
+                PASSWORDS_CLICK_LISTENER,
+                PASSWORDS_TITLE
             };
 
-    static PropertyModel createPasswordSafetyCheckModel() {
+    static PropertyModel createPasswordSafetyCheckModel(String title) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(PASSWORDS_STATE, PasswordsState.UNCHECKED)
                 .with(COMPROMISED_PASSWORDS_COUNT, 0)
+                .with(PASSWORDS_TITLE, title)
                 .build();
     }
 }
