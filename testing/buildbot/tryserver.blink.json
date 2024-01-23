@@ -666,6 +666,7 @@
         "args": [
           "--flag-specific=enable-skia-graphite",
           "--skipped=always",
+          "--timeout-ms=20000",
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
@@ -696,6 +697,7 @@
         "args": [
           "--flag-specific=enable-skia-graphite",
           "--skipped=always",
+          "--timeout-ms=20000",
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],

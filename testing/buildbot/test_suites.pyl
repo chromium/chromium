@@ -1402,6 +1402,7 @@
         'args': [
           '--flag-specific=enable-skia-graphite',
           '--skipped=always',
+          '--timeout-ms=20000',
           '--num-retries=3',
         ],
         'swarming': {
@@ -1424,6 +1425,7 @@
         'args': [
           '--flag-specific=enable-skia-graphite',
           '--skipped=always',
+          '--timeout-ms=20000',
           '--num-retries=3',
         ],
         'swarming': {

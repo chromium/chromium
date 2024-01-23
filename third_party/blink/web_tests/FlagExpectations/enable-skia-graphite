@@ -2,6 +2,35 @@
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
+# ==== Tests failed due to Graphite rendering zero length gradient incorrectly =====
+crbug.com/1517553 virtual/gpu/fast/canvas/canvas-fillRect-zeroSizeGradient.html [ Failure ]
+crbug.com/1517553 virtual/gpu/fast/canvas/canvas-stroke-zeroSizeGradient.html [ Failure ]
+crbug.com/1517553 virtual/gpu/fast/canvas/canvas-strokeRect-zeroSizeGradient.html [ Failure ]
+crbug.com/1517553 virtual/oopr-canvas2d/fast/canvas/canvas-fillRect-zeroSizeGradient.html [ Failure ]
+crbug.com/1517553 virtual/oopr-canvas2d/fast/canvas/canvas-stroke-zeroSizeGradient.html [ Failure ]
+crbug.com/1517553 virtual/oopr-canvas2d/fast/canvas/canvas-strokeRect-zeroSizeGradient.html [ Failure ]
+
+# === Tests failed due to reference mismatches ==========
+crbug.com/1517878 compositing/scrollbars/overlay-scrollbar-paint-phase-order.html [ Failure ]
+crbug.com/1517878 virtual/off-main-thread-css-paint/http/tests/csspaint/paint2d-zoom.html [ Failure ]
+crbug.com/1517878 virtual/off-main-thread-css-paint/http/tests/csspaint/shadow-scale-with-page-zoom.html [ Failure ]
+crbug.com/1517878 virtual/off-main-thread-css-paint/http/tests/csspaint/transform-with-page-zoom-003.html [ Failure ]
+
+# ==== Timeouts =======
+crbug.com/1517847 virtual/scalefactor200/css3/filters/effect-reference-composite-hw.html [ Timeout Pass ]
+crbug.com/1517847 compositing/reflections/animation-inside-reflection.html [ Timeout Pass ]
+crbug.com/1517847 paint/invalidation/filters/filter-invalidation-positioned-child.html [ Timeout Pass ]
+crbug.com/1517847 virtual/gpu/fast/canvas/OffscreenCanvas-filter.html [ Timeout Pass ]
+crbug.com/1517847 virtual/gpu/fast/canvas/canvas-filter-svg-inline.html [ Timeout Pass ]
+crbug.com/1517847 virtual/gpu/fast/canvas/canvas-incremental-repaint.html [ Timeout Pass ]
+crbug.com/1517847 virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-filter.html [ Timeout Pass ]
+crbug.com/1517847 virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Timeout Pass ]
+crbug.com/1517847 virtual/oopr-canvas2d/fast/canvas/canvas-composite-transformclip.html [ Timeout Pass ]
+crbug.com/1517847 virtual/oopr-canvas2d/fast/canvas/fillrect_gradient.html [ Timeout Pass ]
+
+# WPT failures
+crbug.com/1518086 external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Failure ]
+
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 virtual/force-eager/external/wpt/measure-memory/redirect.client.https.window.html [ Timeout ]
 crbug.com/626703 virtual/force-eager/external/wpt/measure-memory/redirect.server.https.window.html [ Timeout ]
