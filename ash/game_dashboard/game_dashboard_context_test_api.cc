@@ -137,6 +137,10 @@ AnchoredNudge* GameDashboardContextTestApi::GetGameControlsSetupNudge() {
   return nullptr;
 }
 
+views::Widget* GameDashboardContextTestApi::GetWelcomeDialogWidget() {
+  return context_->welcome_dialog_widget_.get();
+}
+
 void GameDashboardContextTestApi::OpenTheMainMenu() {
   ASSERT_FALSE(GetMainMenuView()) << "The main menu view is already open.";
   ASSERT_FALSE(GetMainMenuWidget()) << "The main menu widget is already open.";

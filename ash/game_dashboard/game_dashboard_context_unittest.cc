@@ -12,6 +12,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/game_dashboard/game_dashboard_button.h"
+#include "ash/game_dashboard/game_dashboard_constants.h"
 #include "ash/game_dashboard/game_dashboard_context_test_api.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
@@ -51,10 +52,6 @@ namespace ash {
 
 using ToolbarSnapLocation = GameDashboardContext::ToolbarSnapLocation;
 
-// Toolbar padding copied from `GameDashboardContext`.
-static const int kToolbarEdgePadding = 10;
-static constexpr gfx::Rect kAppBounds = gfx::Rect(50, 50, 800, 400);
-
 // Sub-label strings.
 const std::u16string& hidden_label = u"Hidden";
 const std::u16string& visible_label = u"Visible";
@@ -69,9 +66,22 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   ~GameDashboardContextTest() override = default;
 
   void TearDown() override {
+    CloseGameWindow();
+    GameDashboardTestBase::TearDown();
+  }
+
+  void CloseGameWindow() {
     game_window_.reset();
     test_api_.reset();
-    GameDashboardTestBase::TearDown();
+  }
+
+  const gfx::Rect app_bounds() const { return app_bounds_; }
+
+  void SetAppBounds(gfx::Rect app_bounds) {
+    CHECK(!game_window_)
+        << "App bounds cannot be changed after creating window. To set the app "
+           "bounds, call CloseWindow() and re-call this function.";
+    app_bounds_ = app_bounds;
   }
 
   int GetToolbarHeight() {
@@ -94,17 +104,23 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   // game window. Otherwise, it creates the window as a GeForceNow window.
   // For ARC game windows, if `set_arc_game_controls_flags_prop` is true, then
   // the `kArcGameControlsFlagsKey` window property will be set to
-  // `ArcGameControlsFlag::kKnown`, otherwise the property will not be set.
+  // `ArcGameControlsFlag::kKnown`, otherwise the property will not be set. If
+  // `show_welcome_dialog` is true, the welcome dialog displays when the Game
+  // Window first opens.
   void CreateGameWindow(bool is_arc_window,
-                        bool set_arc_game_controls_flags_prop = true) {
+                        bool set_arc_game_controls_flags_prop = true,
+                        bool show_welcome_dialog = false) {
     ASSERT_FALSE(game_window_);
     ASSERT_FALSE(test_api_);
     game_window_ = CreateAppWindow(
         (is_arc_window ? TestGameDashboardDelegate::kGameAppId
                        : extension_misc::kGeForceNowAppId),
-        (is_arc_window ? AppType::ARC_APP : AppType::NON_APP), kAppBounds);
+        (is_arc_window ? AppType::ARC_APP : AppType::NON_APP), app_bounds());
     auto* context = GameDashboardController::Get()->GetGameDashboardContext(
         game_window_.get());
+    // TODO(b/316141148): Update test logic to set `show_welcome_dialog_` to
+    // false via a property instead of directly.
+    context->SetShowWelcomeDialogForTesting(show_welcome_dialog);
     ASSERT_TRUE(context);
     test_api_ = std::make_unique<GameDashboardContextTestApi>(
         context, GetEventGenerator());
@@ -436,6 +452,9 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     // completes before proceeding.
     base::RunLoop().RunUntilIdle();
   }
+
+ private:
+  gfx::Rect app_bounds_ = gfx::Rect(50, 50, 800, 400);
 };
 
 // Verifies Game Controls tile state.
@@ -796,6 +815,64 @@ TEST_F(GameDashboardContextTest, RecordingTimerStringFormat) {
   EXPECT_EQ(u"24:00:30", test_api_->GetRecordingDuration());
 }
 
+// Verifies the welcome dialog displays when the game window first opens and
+// disappears after 4 seconds.
+TEST_F(GameDashboardContextTest, WelcomeDialogAutoDismisses) {
+  // Open the game window with the welcome dialog enabled.
+  CreateGameWindow(/*is_arc_window=*/true,
+                   /*set_arc_game_controls_flags_prop=*/true,
+                   /*show_welcome_dialog=*/true);
+
+  // Verify the welcome dialog is initially shown and is right aligned in the
+  // app window.
+  ASSERT_TRUE(test_api_->GetWelcomeDialogWidget());
+  gfx::Rect welcome_dialog_bounds =
+      test_api_->GetWelcomeDialogWidget()->GetWindowBoundsInScreen();
+  EXPECT_EQ(welcome_dialog_bounds.x(),
+            (game_window_->GetBoundsInScreen().right() -
+             game_dashboard::kWelcomeDialogEdgePadding -
+             game_dashboard::kWelcomeDialogFixedWidth));
+
+  // Dismiss welcome dialog after 4 seconds and verify the dialog is no longer
+  // visible.
+  task_environment()->FastForwardBy(base::Seconds(4));
+  EXPECT_FALSE(test_api_->GetWelcomeDialogWidget());
+}
+
+// Verifies the welcome dialog disappears when the main menu view is opened.
+TEST_F(GameDashboardContextTest, WelcomeDialogDismissOnMainMenuOpening) {
+  // Open the game window with the welcome dialog enabled.
+  // CloseGameWindow();
+  CreateGameWindow(/*is_arc_window=*/true,
+                   /*set_arc_game_controls_flags_prop=*/true,
+                   /*show_welcome_dialog=*/true);
+  ASSERT_TRUE(test_api_->GetWelcomeDialogWidget());
+
+  // Open the main menu and verify the welcome dialog dismisses.
+  test_api_->OpenTheMainMenu();
+  EXPECT_FALSE(test_api_->GetWelcomeDialogWidget());
+}
+
+// Verifies the welcome dialog is centered when the app window width is small
+// enough.
+TEST_F(GameDashboardContextTest, WelcomeDialogWithSmallWindow) {
+  // Open a new game window with a width of 450.
+  SetAppBounds(gfx::Rect(50, 50, 450, 400));
+  CreateGameWindow(/*is_arc_window=*/true,
+                   /*set_arc_game_controls_flags_prop=*/true,
+                   /*show_welcome_dialog=*/true);
+  ASSERT_TRUE(test_api_->GetWelcomeDialogWidget());
+
+  // Verify the welcome dialog is centered.
+  gfx::Rect welcome_dialog_bounds =
+      test_api_->GetWelcomeDialogWidget()->GetWindowBoundsInScreen();
+  EXPECT_EQ(welcome_dialog_bounds.x(),
+            (game_window_->GetBoundsInScreen().x() +
+             (game_window_->GetBoundsInScreen().width() -
+              game_dashboard::kWelcomeDialogFixedWidth) /
+                 2));
+}
+
 // -----------------------------------------------------------------------------
 // GameTypeGameDashboardContextTest:
 // Test fixture to test both ARC and GeForceNow game window depending on the
@@ -825,7 +902,7 @@ TEST_P(GameTypeGameDashboardContextTest,
        GameDashboardButtonWidget_InitialLocation) {
   const gfx::Point expected_button_center_point(
       game_window_->GetBoundsInScreen().top_center().x(),
-      kAppBounds.y() + frame_header_->GetHeaderHeight() / 2);
+      app_bounds().y() + frame_header_->GetHeaderHeight() / 2);
   EXPECT_EQ(expected_button_center_point,
             test_api_->GetGameDashboardButtonWidget()
                 ->GetNativeWindow()
@@ -853,8 +930,7 @@ TEST_P(GameTypeGameDashboardContextTest,
 TEST_P(GameTypeGameDashboardContextTest, OpenGameDashboardButtonWidget) {
   // Close the window and create a new game window without setting the
   // `kArcGameControlsFlagsKey` property.
-  game_window_.reset();
-  test_api_.reset();
+  CloseGameWindow();
   CreateGameWindow(IsArcGame(), /*set_arc_game_controls_flags_prop=*/false);
 
   // Verifies the main menu is closed.
@@ -913,8 +989,9 @@ TEST_P(GameTypeGameDashboardContextTest, CloseMainMenuOutsideButtonWidget) {
 
   // Close the main menu dialog by clicking outside the main menu view bounds.
   auto* event_generator = GetEventGenerator();
-  const gfx::Point& new_location = {kAppBounds.x() + kAppBounds.width(),
-                                    kAppBounds.y() + kAppBounds.height()};
+  gfx::Rect game_bounds = app_bounds();
+  const gfx::Point& new_location = {game_bounds.x() + game_bounds.width(),
+                                    game_bounds.y() + game_bounds.height()};
   event_generator->set_current_screen_location(new_location);
   event_generator->ClickLeftButton();
 
@@ -1185,10 +1262,11 @@ TEST_P(GameTypeGameDashboardContextTest, MoveToolbarOutOfBounds) {
   const int screen_point_bottom = screen_point_y + kScreenBounds.height();
 
   // Verify the screen bounds are larger than the game bounds.
-  ASSERT_LT(screen_point_x, kAppBounds.x());
-  ASSERT_LT(screen_point_y, kAppBounds.y());
-  ASSERT_GT(screen_point_right, kAppBounds.x() + kAppBounds.width());
-  ASSERT_GT(screen_point_bottom, kAppBounds.y() + kAppBounds.height());
+  auto game_bounds = app_bounds();
+  ASSERT_LT(screen_point_x, game_bounds.x());
+  ASSERT_LT(screen_point_y, game_bounds.y());
+  ASSERT_GT(screen_point_right, game_bounds.x() + game_bounds.width());
+  ASSERT_GT(screen_point_bottom, game_bounds.y() + game_bounds.height());
 
   // Drag toolbar, moving the mouse past the game window to the top right corner
   // of the screen bounds, and verify the toolbar doesn't go past the game
@@ -1296,6 +1374,7 @@ TEST_P(GameTypeGameDashboardContextTest, VerifyToolbarPlacementInQuadrants) {
   const int y_offset = window_bounds.height() / 4;
 
   // Verify initial placement in top right quadrant.
+  auto game_bounds = app_bounds();
   const auto* native_window = test_api_->GetToolbarWidget()->GetNativeWindow();
   auto toolbar_bounds = native_window->GetBoundsInScreen();
   const auto toolbar_size =
@@ -1303,36 +1382,44 @@ TEST_P(GameTypeGameDashboardContextTest, VerifyToolbarPlacementInQuadrants) {
   const int frame_header_height = frame_header_->GetHeaderHeight();
   EXPECT_EQ(test_api_->GetToolbarSnapLocation(),
             ToolbarSnapLocation::kTopRight);
-  EXPECT_EQ(toolbar_bounds.x(),
-            kAppBounds.right() - kToolbarEdgePadding - toolbar_size.width());
-  EXPECT_EQ(toolbar_bounds.y(),
-            kAppBounds.y() + kToolbarEdgePadding + frame_header_height);
+  EXPECT_EQ(toolbar_bounds.x(), game_bounds.right() -
+                                    game_dashboard::kToolbarEdgePadding -
+                                    toolbar_size.width());
+  EXPECT_EQ(toolbar_bounds.y(), game_bounds.y() +
+                                    game_dashboard::kToolbarEdgePadding +
+                                    frame_header_height);
 
   // Move toolbar to top left quadrant and verify toolbar placement.
   DragToolbarToPoint(Movement::kMouse, {window_center_point.x() - x_offset,
                                         window_center_point.y() - y_offset});
   EXPECT_EQ(test_api_->GetToolbarSnapLocation(), ToolbarSnapLocation::kTopLeft);
   toolbar_bounds = native_window->GetBoundsInScreen();
-  EXPECT_EQ(toolbar_bounds.x(), kAppBounds.x() + kToolbarEdgePadding);
-  EXPECT_EQ(toolbar_bounds.y(),
-            kAppBounds.y() + kToolbarEdgePadding + frame_header_height);
+  EXPECT_EQ(toolbar_bounds.x(),
+            game_bounds.x() + game_dashboard::kToolbarEdgePadding);
+  EXPECT_EQ(toolbar_bounds.y(), game_bounds.y() +
+                                    game_dashboard::kToolbarEdgePadding +
+                                    frame_header_height);
 
   // Move toolbar to bottom right quadrant and verify toolbar placement.
   DragToolbarToPoint(Movement::kMouse, {window_center_point.x() + x_offset,
                                         window_center_point.y() + y_offset});
   toolbar_bounds = native_window->GetBoundsInScreen();
-  EXPECT_EQ(toolbar_bounds.x(),
-            kAppBounds.right() - kToolbarEdgePadding - toolbar_size.width());
-  EXPECT_EQ(toolbar_bounds.y(),
-            kAppBounds.bottom() - kToolbarEdgePadding - toolbar_size.height());
+  EXPECT_EQ(toolbar_bounds.x(), game_bounds.right() -
+                                    game_dashboard::kToolbarEdgePadding -
+                                    toolbar_size.width());
+  EXPECT_EQ(toolbar_bounds.y(), game_bounds.bottom() -
+                                    game_dashboard::kToolbarEdgePadding -
+                                    toolbar_size.height());
 
   // Move toolbar to bottom left quadrant and verify toolbar placement.
   DragToolbarToPoint(Movement::kMouse, {window_center_point.x() - x_offset,
                                         window_center_point.y() + y_offset});
   toolbar_bounds = native_window->GetBoundsInScreen();
-  EXPECT_EQ(toolbar_bounds.x(), kAppBounds.x() + kToolbarEdgePadding);
-  EXPECT_EQ(toolbar_bounds.y(),
-            kAppBounds.bottom() - kToolbarEdgePadding - toolbar_size.height());
+  EXPECT_EQ(toolbar_bounds.x(),
+            game_bounds.x() + game_dashboard::kToolbarEdgePadding);
+  EXPECT_EQ(toolbar_bounds.y(), game_bounds.bottom() -
+                                    game_dashboard::kToolbarEdgePadding -
+                                    toolbar_size.height());
 }
 
 // Verifies the toolbar's snap location is preserved even after the visibility

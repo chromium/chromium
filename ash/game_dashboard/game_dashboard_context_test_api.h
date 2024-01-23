@@ -75,6 +75,9 @@ class GameDashboardContextTestApi {
   // Returns the Game Controls setup nudge.
   AnchoredNudge* GetGameControlsSetupNudge();
 
+  // Returns the Game Dashboard welcome dialog widget.
+  views::Widget* GetWelcomeDialogWidget();
+
   // Opens the main menu.
   // Before opening the main menu, verifies that the main menu is closed.
   // After opening the main menu, verifies it opened and waits for the thread to

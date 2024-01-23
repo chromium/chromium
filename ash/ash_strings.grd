@@ -7315,6 +7315,12 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_GAME_DASHBOARD_VISIBLE_STATUS" translateable="false" desc="The visible state for compact Game Dashboard tile sub-labels.">
         Visible
       </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_WELCOME_DIALOG_SHORTCUT" translateable="false" desc="The text displayed in the welcome dialog to show how to toggle the Game Dashboard.">
+        Press <ph name="LAUNCHER_KEY_NAME">$1<ex>Launcher</ex></ph> + g at anytime
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_WELCOME_DIALOG_SUB_LABEL" translateable="false" desc="The additional context added to the welcome dialog about the Game Dashboard.">
+        Customize your gaming experience
+      </message>
 
       <!-- Game Dashboard / Game Controls strings -->
       <message name="IDS_ASH_GAME_DASHBOARD_GC_TILE_VISIBLE" desc="The sub-label for Game Controls tile when input mapping hint is visible.">

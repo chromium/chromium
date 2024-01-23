@@ -757,6 +757,9 @@ TEST_F(GameDashboardCaptureModeTest, CursorAndClickBehaviorWhenAnchored) {
 
   // The game window should be the top most active window.
   wm::ActivateWindow(game_window());
+  // TODO(b/316141148): Remove this call once the welcome dialog is disabled by
+  // default for tests.
+  WaitForSeconds(/*seconds=*/4);
   auto* controller = StartGameCaptureModeSession();
 
   // Hover over empty space where there is no window.
