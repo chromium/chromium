@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
-#include "third_party/blink/renderer/platform/bindings/frozen_array_base.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
@@ -21,6 +20,9 @@ namespace blink {
 class CallbackFunctionBase;
 class CallbackInterfaceBase;
 class ScriptWrappable;
+
+template <typename IDLType>
+class FrozenArray;
 
 namespace bindings {
 
@@ -567,17 +569,8 @@ struct ToV8Traits<
 // IDLArray
 template <typename T>
 struct ToV8Traits<IDLArray<T>> {
-  // TODO(yukishiino): Make the signature of this function
-  //   ToV8(ScriptState*, const bindings::FrozenArrayBase&)
-  // and make this de-templated.
-  //
-  // This function is templated only in order to have a priority over the
-  // other function template (without 'requires'). Once we remove the other
-  // function template, we can make this de-templated.
-  template <typename ContainerType>
-    requires std::derived_from<ContainerType, bindings::FrozenArrayBase>
   [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
-                                                 const ContainerType& value) {
+                                                 const FrozenArray<T>& value) {
     return value.ToV8(script_state);
   }
 
@@ -829,6 +822,19 @@ struct ToV8Traits<IDLNullable<IDLSequence<T>>> {
 // Nullable Frozen Array
 template <typename T>
 struct ToV8Traits<IDLNullable<IDLArray<T>>> {
+  [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
+                                                 const FrozenArray<T>* value) {
+    if (!value) {
+      return v8::Null(script_state->GetIsolate());
+    }
+    return ToV8Traits<IDLArray<T>>::ToV8(script_state, *value);
+  }
+
+  // TODO(yukishiino): Remove this overload as IDL FrozenArray should be
+  // implemented as FrozenArray<T> rather than (Heap)Vector<T>.
+  //
+  // Note that IDLArray<T>::ImplType is not FrozenArray<T>. See also
+  // IDLArray<T>::ImplType's comment.
   [[nodiscard]] static v8::Local<v8::Value> ToV8(
       ScriptState* script_state,
       const absl::optional<typename IDLArray<T>::ImplType>& value) {
@@ -837,6 +843,11 @@ struct ToV8Traits<IDLNullable<IDLArray<T>>> {
     return ToV8Traits<IDLArray<T>>::ToV8(script_state, *value);
   }
 
+  // TODO(yukishiino): Remove this overload as IDL FrozenArray should be
+  // implemented as FrozenArray<T> rather than (Heap)Vector<T>.
+  //
+  // Note that IDLArray<T>::ImplType is not FrozenArray<T>. See also
+  // IDLArray<T>::ImplType's comment.
   [[nodiscard]] static v8::Local<v8::Value> ToV8(
       ScriptState* script_state,
       const typename IDLArray<T>::ImplType* value) {
