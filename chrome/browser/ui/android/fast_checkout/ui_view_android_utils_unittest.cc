@@ -30,7 +30,6 @@ TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutAutofillProfile) {
       autofill::NAME_FULL,
       autofill::NAME_FIRST,
       autofill::NAME_MIDDLE,
-      autofill::NAME_HONORIFIC_PREFIX,
       autofill::NAME_LAST,
       autofill::NAME_LAST_FIRST,
       autofill::NAME_LAST_SECOND,
