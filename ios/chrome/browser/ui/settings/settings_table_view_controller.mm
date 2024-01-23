@@ -765,12 +765,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   defaultBrowser.text =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
 
-  if (@available(iOS 15, *)) {
-    defaultBrowser.iconImage = DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
-  } else {
-    defaultBrowser.iconImage =
-        DefaultSettingsRootSymbol(kDefaultBrowseriOS14Symbol);
-  }
+  defaultBrowser.iconImage = DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
   defaultBrowser.iconBackgroundColor = [UIColor colorNamed:kPurple500Color];
   defaultBrowser.iconTintColor = UIColor.whiteColor;
   defaultBrowser.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
