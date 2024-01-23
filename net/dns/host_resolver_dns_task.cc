@@ -170,7 +170,7 @@ void HostResolverDnsTask::StartNextTransaction() {
   DCHECK_GE(num_additional_transactions_needed(), 1);
 
   if (!any_transaction_started_) {
-    net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK,
+    net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_DNS_TASK,
                         [&] { return NetLogDnsTaskCreationParams(); });
   }
   any_transaction_started_ = true;
@@ -322,7 +322,7 @@ void HostResolverDnsTask::CreateAndStartTransaction(
 }
 
 void HostResolverDnsTask::OnTimeout() {
-  net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK_TIMEOUT,
+  net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_DNS_TASK_TIMEOUT,
                     [&] { return NetLogDnsTaskTimeoutParams(); });
 
   for (const TransactionInfo& transaction : transactions_in_progress_) {
@@ -429,8 +429,7 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
 
   if (!results.has_value()) {
     net_log_.AddEvent(
-        NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK_EXTRACTION_FAILURE,
-        [&] {
+        NetLogEventType::HOST_RESOLVER_DNS_TASK_EXTRACTION_FAILURE, [&] {
           return NetLogDnsTaskExtractionFailureParams(results.error(),
                                                       transaction_info.type);
         });
@@ -451,6 +450,17 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
     }
   }
   CHECK(results.has_value());
+  net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_DNS_TASK_EXTRACTION_RESULTS,
+                    [&] {
+                      base::Value::List list;
+                      list.reserve(results.value().size());
+                      for (const auto& result : results.value()) {
+                        list.Append(result->ToValue());
+                      }
+                      base::Value::Dict dict;
+                      dict.Set("results", std::move(list));
+                      return dict;
+                    });
 
   if (httpssvc_metrics_) {
     if (transaction_info.type == DnsQueryType::HTTPS) {
@@ -709,7 +719,7 @@ void HostResolverDnsTask::OnFailure(
     return;
   }
 
-  net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK, [&] {
+  net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_DNS_TASK, [&] {
     return NetLogDnsTaskFailedParams(net_error, failed_transaction_type, ttl,
                                      base::OptionalToPtr(saved_results_));
   });
@@ -721,7 +731,7 @@ void HostResolverDnsTask::OnFailure(
 }
 
 void HostResolverDnsTask::OnSuccess(HostCache::Entry results) {
-  net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK,
+  net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_DNS_TASK,
                     [&] { return NetLogResults(results); });
   delegate_->OnDnsTaskComplete(task_start_time_, /*allow_fallback=*/true,
                                std::move(results), secure_);
