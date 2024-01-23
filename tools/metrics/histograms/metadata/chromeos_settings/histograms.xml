@@ -213,6 +213,20 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Display.{DisplayType}.Orientation"
+    enum="DisplaySettingsOrientationOption" expires_after="2024-06-28">
+  <owner>zhangwenyu@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records each time a user changes the display orientation of an {DisplayType}
+    display via the ChromeOS Settings app.
+  </summary>
+  <token key="DisplayType">
+    <variant name="External" summary="external"/>
+    <variant name="Internal" summary="internal"/>
+  </token>
+</histogram>
+
 <histogram
     name="ChromeOS.Settings.Display.{DisplayType}.UserOverrideDisplayDefaultSettingsTimeElapsed.{DisplaySettings}"
     units="minutes" expires_after="2024-06-28">

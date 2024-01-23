@@ -26,6 +26,14 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="DisplaySettingsOrientationOption">
+  <int value="0" label="Auto"/>
+  <int value="1" label="0 degree"/>
+  <int value="2" label="90 degree"/>
+  <int value="3" label="180 degree"/>
+  <int value="4" label="270 degree"/>
+</enum>
+
 <enum name="DisplaySettingsType">
   <int value="0" label="Resolution"/>
   <int value="1" label="RefreshRate"/>

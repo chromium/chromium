@@ -137,6 +137,13 @@ void DisplaySettingsProvider::RecordChangingDisplaySettings(
   }
   base::UmaHistogramEnumeration(histogram_name, type);
 
+  // Record detailed orientation settings change.
+  if (type == mojom::DisplaySettingsType::kOrientation) {
+    CHECK(value->orientation.has_value());
+    histogram_name.append(".Orientation");
+    base::UmaHistogramEnumeration(histogram_name, value->orientation.value());
+  }
+
   // Record default display settings performance metrics.
   if (value->display_id.has_value() &&
       (type == mojom::DisplaySettingsType::kResolution ||

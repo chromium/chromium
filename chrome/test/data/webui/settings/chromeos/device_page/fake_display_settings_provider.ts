@@ -18,6 +18,8 @@ type DisplayConfigurationObserverInterface =
     displaySettingsProviderMojom.DisplayConfigurationObserverInterface;
 type DisplaySettingsType = displaySettingsProviderMojom.DisplaySettingsType;
 type DisplaySettingsValue = displaySettingsProviderMojom.DisplaySettingsValue;
+type DisplaySettingsOrientationOption =
+    displaySettingsProviderMojom.DisplaySettingsOrientationOption;
 
 export class FakeDisplaySettingsProvider implements
     DisplaySettingsProviderInterface {
@@ -28,6 +30,10 @@ export class FakeDisplaySettingsProvider implements
   private internalDisplayHistogram = new Map<DisplaySettingsType, number>();
   private externalDisplayHistogram = new Map<DisplaySettingsType, number>();
   private displayHistogram = new Map<DisplaySettingsType, number>();
+  // First key indicates internal or external display. Second key indicates the
+  // orientation. The value indicates the histogram count.
+  private displayOrientationHistogram =
+      new Map<boolean, Map<DisplaySettingsOrientationOption, number>>();
 
   // Implement DisplaySettingsProviderInterface.
   observeTabletMode(observer: TabletModeObserverInterface):
@@ -73,6 +79,19 @@ export class FakeDisplaySettingsProvider implements
       histogram = this.externalDisplayHistogram;
     }
     histogram.set(type, (histogram.get(type) || 0) + 1);
+
+    if (type ===
+            displaySettingsProviderMojom.DisplaySettingsType.kOrientation &&
+        value.isInternalDisplay !== undefined &&
+        value.orientation !== undefined) {
+      const orientationHistogram =
+          this.getDisplayOrientationHistogram(value.isInternalDisplay);
+      orientationHistogram.set(
+          value.orientation,
+          (orientationHistogram.get(value.orientation) || 0) + 1);
+      this.displayOrientationHistogram.set(
+          value.isInternalDisplay, orientationHistogram);
+    }
   }
 
   getInternalDisplayHistogram(): Map<DisplaySettingsType, number> {
@@ -85,5 +104,11 @@ export class FakeDisplaySettingsProvider implements
 
   getDisplayHistogram(): Map<DisplaySettingsType, number> {
     return this.displayHistogram;
+  }
+
+  getDisplayOrientationHistogram(isInternalDisplay: boolean):
+      Map<DisplaySettingsOrientationOption, number> {
+    return this.displayOrientationHistogram.get(isInternalDisplay) ||
+        new Map<DisplaySettingsOrientationOption, number>();
   }
 }

@@ -38,7 +38,7 @@ import {assertExists, cast, castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {DisplayConfigurationObserverReceiver, DisplaySettingsProviderInterface, DisplaySettingsType, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import {DisplayConfigurationObserverReceiver, DisplaySettingsOrientationOption, DisplaySettingsProviderInterface, DisplaySettingsType, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, routes} from '../router.js';
 
@@ -1253,9 +1253,20 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     getDisplayApi()
         .setDisplayProperties(this.selectedDisplay.id, properties)
         .then(() => this.setPropertiesCallback_());
+
+    let orientation = DisplaySettingsOrientationOption.k0Degree;
+    if (value === -1) {
+      orientation = DisplaySettingsOrientationOption.kAuto;
+    } else if (value === 90) {
+      orientation = DisplaySettingsOrientationOption.k90Degree;
+    } else if (value === 180) {
+      orientation = DisplaySettingsOrientationOption.k180Degree;
+    } else if (value === 270) {
+      orientation = DisplaySettingsOrientationOption.k270Degree;
+    }
     this.displaySettingsProvider.recordChangingDisplaySettings(
         DisplaySettingsType.kOrientation,
-        {isInternalDisplay: this.selectedDisplay.isInternal});
+        {isInternalDisplay: this.selectedDisplay.isInternal, orientation});
   }
 
   private onMirroredClick_(event: Event): void {

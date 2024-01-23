@@ -336,6 +336,15 @@ suite('<settings-display>', () => {
           1,
           externalDisplayHistogram.get(
               displaySettingsProviderMojom.DisplaySettingsType.kOrientation));
+
+      const externalDisplayOrientationHistogram =
+          displaySettingsProvider.getDisplayOrientationHistogram(
+              /*is_internal=*/ false);
+      assertEquals(
+          1,
+          externalDisplayOrientationHistogram.get(
+              displaySettingsProviderMojom.DisplaySettingsOrientationOption
+                  .k90Degree));
     });
 
     test('overscan', () => {
