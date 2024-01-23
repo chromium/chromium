@@ -77,7 +77,7 @@ class ViewEventTestBase : public ChromeViewsTestBase {
   ViewEventTestBase& operator=(const ViewEventTestBase&) = delete;
   ~ViewEventTestBase() override;
 
-  static void SetUpTestCase();
+  static void SetUpTestSuite();
 
   // ChromeViewsTestBase:
   void SetUp() override;

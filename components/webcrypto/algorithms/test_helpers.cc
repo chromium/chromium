@@ -59,7 +59,7 @@ absl::optional<base::Value> ReadJsonTestFile(const char* test_file_name) {
 }  // namespace
 
 // static
-void WebCryptoTestBase::SetUpTestCase() {}
+void WebCryptoTestBase::SetUpTestSuite() {}
 
 void PrintTo(const Status& status, ::std::ostream* os) {
   *os << StatusToString(status);

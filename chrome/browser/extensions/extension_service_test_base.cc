@@ -405,7 +405,7 @@ void ExtensionServiceTestBase::TearDown() {
 #endif
 }
 
-void ExtensionServiceTestBase::SetUpTestCase() {
+void ExtensionServiceTestBase::SetUpTestSuite() {
   // Safe to call multiple times.
   LoadErrorReporter::Init(false);  // no noisy errors.
 }

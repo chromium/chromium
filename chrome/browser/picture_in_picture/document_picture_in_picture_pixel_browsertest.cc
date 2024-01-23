@@ -141,7 +141,7 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
 
     const auto* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
-    return VerifyPixelUi(pip_frame_view, test_info->test_case_name(),
+    return VerifyPixelUi(pip_frame_view, test_info->test_suite_name(),
                          test_info->name()) != ui::test::ActionResult::kFailed;
   }
 

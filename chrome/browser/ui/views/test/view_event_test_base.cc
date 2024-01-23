@@ -114,7 +114,7 @@ ViewEventTestBase::~ViewEventTestBase() {
   TestingBrowserProcess::DeleteInstance();
 }
 
-void ViewEventTestBase::SetUpTestCase() {
+void ViewEventTestBase::SetUpTestSuite() {
   ChromeUnitTestSuite::InitializeProviders();
   ChromeUnitTestSuite::InitializeResourceBundle();
 }

@@ -103,7 +103,7 @@ class ExtensionServiceTestBase : public testing::Test {
 
   // Public because parameterized test cases need it to be, or else the compiler
   // barfs.
-  static void SetUpTestCase();  // faux-verride (static override).
+  static void SetUpTestSuite();  // faux-verride (static override).
 
  protected:
   ExtensionServiceTestBase();
