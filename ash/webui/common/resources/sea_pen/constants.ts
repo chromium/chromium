@@ -1910,18 +1910,6 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureVillage,
               translation: 'village',
             },
-            {
-              value: SeaPenTemplateOption.kVcBackgroundArtFeatureAnime,
-              translation: 'anime',
-            },
-            {
-              value: SeaPenTemplateOption.kVcBackgroundArtFeaturePixelArt,
-              translation: 'pixel art',
-            },
-            {
-              value: SeaPenTemplateOption.kVcBackgroundArtFeatureCyberpunk,
-              translation: 'cyberpunk',
-            },
           ],
         ],
         [
@@ -1983,6 +1971,18 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementModernArt,
               translation: 'modern art',
+            },
+            {
+              value: SeaPenTemplateOption.kVcBackgroundArtMovementAnime,
+              translation: 'anime',
+            },
+            {
+              value: SeaPenTemplateOption.kVcBackgroundArtMovementPixelArt,
+              translation: 'pixel art',
+            },
+            {
+              value: SeaPenTemplateOption.kVcBackgroundArtMovementCyberpunk,
+              translation: 'cyberpunk',
             },
           ],
         ],

@@ -1318,15 +1318,6 @@ std::string TemplateOptionToString(
         kVcBackgroundArtFeatureVillage:
       return "village";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kVcBackgroundArtFeatureAnime:
-      return "anime";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kVcBackgroundArtFeaturePixelArt:
-      return "pixel_art";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kVcBackgroundArtFeatureCyberpunk:
-      return "cyberpunk";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kVcBackgroundArtMovementAvantGarde:
       return "avant_garde";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
@@ -1368,6 +1359,15 @@ std::string TemplateOptionToString(
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kVcBackgroundArtMovementModernArt:
       return "modern_art";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementAnime:
+      return "anime";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementPixelArt:
+      return "pixel_art";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kVcBackgroundArtMovementCyberpunk:
+      return "cyberpunk";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kVcBackgroundDreamscapesObjectBicycle:
       return "bicycle";
@@ -2071,7 +2071,7 @@ bool IsValidTemplateQuery(
       if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
                       kVcBackgroundArtFeatureCanyon ||
           enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kVcBackgroundArtFeatureCyberpunk) {
+                      kVcBackgroundArtFeatureVillage) {
         return false;
       }
       auto enum2 = options
@@ -2081,7 +2081,7 @@ bool IsValidTemplateQuery(
       if (enum2 < ash::personalization_app::mojom::SeaPenTemplateOption::
                       kVcBackgroundArtMovementAvantGarde ||
           enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kVcBackgroundArtMovementModernArt) {
+                      kVcBackgroundArtMovementCyberpunk) {
         return false;
       }
       return true;

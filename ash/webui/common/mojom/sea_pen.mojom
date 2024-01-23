@@ -491,9 +491,6 @@ enum SeaPenTemplateOption {
   kVcBackgroundArtFeatureField,
   kVcBackgroundArtFeatureCityscape,
   kVcBackgroundArtFeatureVillage,
-  kVcBackgroundArtFeatureAnime,
-  kVcBackgroundArtFeaturePixelArt,
-  kVcBackgroundArtFeatureCyberpunk,
   // <art_movement>
   kVcBackgroundArtMovementAvantGarde,
   kVcBackgroundArtMovementRealist,
@@ -509,6 +506,9 @@ enum SeaPenTemplateOption {
   kVcBackgroundArtMovementPointillist,
   kVcBackgroundArtMovementGraphicDesign,
   kVcBackgroundArtMovementModernArt,
+  kVcBackgroundArtMovementAnime,
+  kVcBackgroundArtMovementPixelArt,
+  kVcBackgroundArtMovementCyberpunk,
   // <dreamscapes_object>
   kVcBackgroundDreamscapesObjectBicycle,
   kVcBackgroundDreamscapesObjectCastle,
