@@ -15,6 +15,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
@@ -295,5 +296,48 @@ public class HomeModulesMediatorUnitTest {
         // Verifies that the existing module is removed from the RecyclerView.
         verify(mModel, times(1)).removeAt(eq(0));
         verify(moduleProvider).hideModule();
+    }
+
+    @Test
+    @SmallTest
+    public void testTimeOut() {
+        List<Integer> moduleList =
+                List.of(mModuleTypeList[2], mModuleTypeList[1], mModuleTypeList[0]);
+        // Registers three modules to the ModuleRegistry.
+        for (int i = 0; i < 3; i++) {
+            doReturn(true)
+                    .when(mModuleRegistry)
+                    .build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any());
+        }
+        assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
+
+        // Calls buildModulesAndShow() to initialize ranking index map.
+        mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
+        Boolean[] moduleFetchResultsIndicator =
+                mMediator.getModuleFetchResultsIndicatorForTesting();
+        SimpleRecyclerViewAdapter.ListItem[] moduleFetchResultsCache =
+                mMediator.getModuleFetchResultsCacheForTesting();
+        verify(mModel, never()).add(any());
+
+        // The second highest ranking module returns a failed result.
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[1], null);
+        assertFalse(moduleFetchResultsIndicator[1]);
+        verify(mModel, never()).add(any());
+        verify(mSetVisibilityCallback, never()).onResult(true);
+
+        // The third ranking module returns a successful result.
+        PropertyModel propertyModel0 = Mockito.mock(PropertyModel.class);
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[0], propertyModel0);
+        assertTrue(moduleFetchResultsIndicator[2]);
+        assertEquals(propertyModel0, moduleFetchResultsCache[2].model);
+        assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
+        verify(mModel, never()).add(any());
+        verify(mSetVisibilityCallback, never()).onResult(true);
+
+        when(mModel.size()).thenReturn(1);
+        mMediator.onModuleFetchTimeOut();
+        verify(mModel, times(1)).add(any());
+        assertEquals(3, mMediator.getModuleResultsWaitingIndexForTesting());
+        verify(mSetVisibilityCallback).onResult(true);
     }
 }

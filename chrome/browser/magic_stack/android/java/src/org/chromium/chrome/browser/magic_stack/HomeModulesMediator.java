@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import android.os.Handler;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -21,6 +23,10 @@ import java.util.Map;
 /** The mediator which implements the logic to add, update and remove modules. */
 public class HomeModulesMediator {
     private static final int INVALID_INDEX = -1;
+
+    /** Time to wait before rejecting any module response in milliseconds. */
+    public static final long MODULE_FETCHING_TIMEOUT_MS = 5000L;
+
     private final ModelList mModel;
     private final ModuleRegistry mModuleRegistry;
 
@@ -29,6 +35,8 @@ public class HomeModulesMediator {
 
     /** A map of <ModuleType, the ranking of this module from segmentation service>. */
     private final Map<Integer, Integer> mModuleTypeToRankingIndexMap = new HashMap<>();
+
+    private final Handler mHandler = new Handler();
 
     /**
      * An array of cached responses (data) from modules. The size of the array is the number of
@@ -46,6 +54,10 @@ public class HomeModulesMediator {
 
     /** The ranking index of the module whose response that the magic stack is waiting for. */
     private int mModuleResultsWaitingIndex;
+
+    /** Whether a fetch of modules is in progress. */
+    private boolean mIsFetchingModules;
+
     private boolean mIsShown;
     private Callback<Boolean> mSetVisibilityCallback;
 
@@ -67,8 +79,11 @@ public class HomeModulesMediator {
             @NonNull @ModuleType List<Integer> moduleList,
             @NonNull ModuleDelegate moduleDelegate,
             @NonNull Callback<Boolean> setVisibilityCallback) {
+        if (mIsShown) return;
+
         mSetVisibilityCallback = setVisibilityCallback;
         assert mModel.size() == 0;
+        mIsFetchingModules = true;
         mIsShown = true;
         cacheRanking(moduleList);
 
@@ -97,6 +112,7 @@ public class HomeModulesMediator {
                 }
             }
         }
+        mHandler.postDelayed(this::onModuleFetchTimeOut, MODULE_FETCHING_TIMEOUT_MS);
     }
 
     /**
@@ -135,7 +151,7 @@ public class HomeModulesMediator {
     @VisibleForTesting
     void addToRecyclerViewOrCache(
             @ModuleType int moduleType, @Nullable PropertyModel propertyModel) {
-        if (!mIsShown) return;
+        if (!mIsFetchingModules) return;
 
         int index = mModuleTypeToRankingIndexMap.get(moduleType);
         // If this module has responded before, update its data on the RecyclerView.
@@ -210,6 +226,25 @@ public class HomeModulesMediator {
         }
     }
 
+    /** Adds all of the cached responses to the RecyclerView after time out. */
+    @VisibleForTesting
+    void onModuleFetchTimeOut() {
+        // Will reject any late responses from modules.
+        mIsFetchingModules = false;
+
+        mModuleResultsWaitingIndex++;
+        while (mModuleResultsWaitingIndex < mModuleFetchResultsIndicator.length) {
+            if (Boolean.TRUE.equals(mModuleFetchResultsIndicator[mModuleResultsWaitingIndex])) {
+                var cachedResponse = mModuleFetchResultsCache[mModuleResultsWaitingIndex];
+                assert cachedResponse != null;
+                // append() will change the visibility of the recyclerview if there isn't any module
+                // added before time out.
+                append(cachedResponse);
+            }
+            mModuleResultsWaitingIndex++;
+        }
+    }
+
     /**
      * Appends the item to the end of the RecyclerView. If it is the first module of the
      * RecyclerView, change the RecyclerView to be visible.
@@ -264,6 +299,7 @@ public class HomeModulesMediator {
      * stack.
      */
     void hide() {
+        mIsFetchingModules = false;
         mIsShown = false;
         for (int i = 0; i < mModel.size(); i++) {
             int moduleType = mModel.get(i).type;
