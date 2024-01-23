@@ -4,7 +4,6 @@
 
 import SwiftUI
 
-@available(iOS 15, *)
 struct OverflowMenuView: View {
   @ObservedObject var model: OverflowMenuModel
 

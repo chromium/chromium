@@ -29,7 +29,6 @@ struct IconFramePreferenceKey: PreferenceKey {
 }
 
 /// A view displaying a single destination.
-@available(iOS 15, *)
 struct OverflowMenuDestinationView: View {
   /// Parameters providing any necessary data to layout the view.
   enum LayoutParameters {

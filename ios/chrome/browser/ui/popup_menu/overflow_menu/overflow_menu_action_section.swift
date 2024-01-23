@@ -5,7 +5,6 @@
 import SwiftUI
 
 /// A SwiftUI view for the overflow menu displaying a subsection of the actions list.
-@available(iOS 15, *)
 struct OverflowMenuActionSection<FooterBackground: View>: View {
 
   // Default height if no other header or footer. This spaces the sections

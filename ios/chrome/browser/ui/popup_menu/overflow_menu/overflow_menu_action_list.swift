@@ -5,7 +5,6 @@
 import SwiftUI
 
 /// A view that displays a list of actions in the overflow menu.
-@available(iOS 15, *)
 struct OverflowMenuActionList: View {
   /// The list of action groups for this view.
   var actionGroups: [OverflowMenuActionGroup]

@@ -19,7 +19,6 @@ import SwiftUI
   /// The destination list's frame in screen coordinates.
   public var destinationListScreenFrame: CGRect = .zero
 
-  @available(iOS 15, *)
   static public func numDestinationsVisibleWithoutHorizontalScrolling(
     forScreenWidth width: CGFloat, forContentSizeCategory sizeCategory: UIContentSizeCategory
   ) -> CGFloat {

@@ -26,7 +26,6 @@ extension View {
 }
 
 /// A view displaying a list of destinations.
-@available(iOS 15, *)
 struct OverflowMenuDestinationList: View {
   enum Constants {
     /// Padding breakpoints for each width. The ranges should be inclusive of
