@@ -91,10 +91,8 @@ void WebIntTest::TearDown() {
           ->GetWebViewNavigationProxy());
   [web_view performSelector:@selector(_close)];
 
-  if (@available(iOS 15, *)) {
-    [[WKWebsiteDataStore defaultDataStore]
-        performSelector:@selector(_terminateNetworkProcess)];
-  }
+  [[WKWebsiteDataStore defaultDataStore]
+      performSelector:@selector(_terminateNetworkProcess)];
 #pragma clang diagnostic pop
 
   RemoveWKWebViewCreatedData([WKWebsiteDataStore defaultDataStore],
