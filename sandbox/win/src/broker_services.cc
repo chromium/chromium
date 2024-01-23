@@ -372,7 +372,9 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   // This code should only be called from the exe, ensure that this is always
   // the case.
   HMODULE exe_module = nullptr;
-  CHECK(::GetModuleHandleEx(NULL, exe_path, &exe_module));
+  CHECK(::GetModuleHandleEx(
+      /*dwFlags=*/GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, nullptr,
+      &exe_module));
   if (CURRENT_MODULE() != exe_module)
     return SBOX_ERROR_INVALID_LINK_STATE;
 
