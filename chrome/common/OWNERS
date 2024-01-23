@@ -11,22 +11,20 @@ per-file url_constants.h=*
 # structural changes, use usual OWNERS rules.
 per-file BUILD.gn=*
 
-per-file *_messages*.h=set noparent
-per-file *_messages*.h=file://ipc/SECURITY_OWNERS
-
-per-file *_messages.cc=set noparent
-per-file *_messages.cc=file://ipc/SECURITY_OWNERS
-
-per-file *_param_traits*.*=set noparent
-per-file *_param_traits*.*=file://ipc/SECURITY_OWNERS
+# Changes to Mojo interfaces and related traits require a security review to
+# avoid introducing new sandbox escapes.
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
 
 per-file *_mojom_traits*.*=set noparent
 per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
 
-# Changes to Mojo interfaces require a security review to avoid
-# introducing new sandbox escapes.
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS
+per-file *_param_traits*.*=set noparent
+per-file *_param_traits*.*=file://ipc/SECURITY_OWNERS
+
+# Same goes for legacy IPC messages.
+per-file *_messages*.h=set noparent
+per-file *_messages*.h=file://ipc/SECURITY_OWNERS
 
 # Content client.
 per-file chrome_content_client.cc=*
@@ -40,12 +38,12 @@ per-file *_lacros*=file://chromeos/LACROS_OWNERS
 # Pepper files.
 per-file pepper_*=file://ppapi/OWNERS
 
+# WebUI. See also chrome/browser/ui/webui/OWNERS.
+per-file webui_url_constants.cc=file://ui/webui/PLATFORM_OWNERS
+per-file webui_url_constants.h=file://ui/webui/PLATFORM_OWNERS
+
 # Other stuff.
 per-file autocomplete_match_type.*=mpearson@chromium.org
 per-file autocomplete_match_type.*=pkasting@chromium.org
 per-file autocomplete_match_type.*=sky@chromium.org
 per-file crash_keys*=rsesek@chromium.org
-
-# WebUI. See also chrome/browser/ui/webui/OWNERS.
-per-file webui_url_constants.cc=file://ui/webui/PLATFORM_OWNERS
-per-file webui_url_constants.h=file://ui/webui/PLATFORM_OWNERS
