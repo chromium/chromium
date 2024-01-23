@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/bubble/bubble_constants.h"
-#import "ios/chrome/browser/ui/bubble/side_swipe_bubble/side_swipe_bubble_view.h"
+#import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_view.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
@@ -154,7 +154,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // The in-product help view to instruct the user to swipe to incognito, and its
 // bottom constraint.
-@property(nonatomic, strong) SideSwipeBubbleView* swipeToIncognitoIPH;
+@property(nonatomic, strong) GestureInProductHelpView* swipeToIncognitoIPH;
 @property(nonatomic, strong)
     NSLayoutConstraint* swipeToIncognitoIPHBottomConstraint;
 
@@ -1495,8 +1495,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // to view the incognito tab grid. If the delegate determines that the user
 // supposed to see this tip, and the IPH fits on the current screen both
 // contextually and visually, then it initializes `swipeToIncognitoIPH` and
-// presents a SideSwipeBubbleView. Otherwise, it keeps `swipeToIncognitoIPH` to
-// `nil` and no gestural tip is shown.
+// presents a GestureInProductHelpView. Otherwise, it keeps
+// `swipeToIncognitoIPH` to `nil` and no gestural tip is shown.
 - (void)maybeShowSwipeToIncognitoIPH {
   // Return if the regular tabs are visible.
   if (!self.viewVisible || self.currentPage != TabGridPageRegularTabs) {
@@ -1526,17 +1526,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     expectedSize.height -= self.bottomToolbar.bounds.size.height;
   }
   expectedSize.width = regularGridView.bounds.size.width;
-  SideSwipeBubbleView* sideSwipeBubbleView = [[SideSwipeBubbleView alloc]
+  GestureInProductHelpView* gestureIPHView = [[GestureInProductHelpView alloc]
             initWithText:l10n_util::GetNSString(
                              UseRTLLayout()
                                  ? IDS_IOS_SWIPE_LEFT_TO_INCOGNITO_IPH
                                  : IDS_IOS_SWIPE_RIGHT_TO_INCOGNITO_IPH)
       bubbleBoundingSize:expectedSize
           arrowDirection:BubbleArrowDirectionLeading];
-  [sideSwipeBubbleView setTranslatesAutoresizingMaskIntoConstraints:NO];
+  [gestureIPHView setTranslatesAutoresizingMaskIntoConstraints:NO];
 
   // Return if the view does NOT fit in the regular tab grid.
-  CGSize smallestPossibleSizeOfIPH = [sideSwipeBubbleView
+  CGSize smallestPossibleSizeOfIPH = [gestureIPHView
       systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
   if (smallestPossibleSizeOfIPH.width > expectedSize.width ||
       smallestPossibleSizeOfIPH.height > expectedSize.height) {
@@ -1545,7 +1545,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   // Coast is clear. Show the message!
   id<TabGridViewControllerDelegate> delegate = self.delegate;
-  sideSwipeBubbleView.dismissCallback =
+  gestureIPHView.dismissCallback =
       ^(IPHDismissalReasonType IPHDismissalReasonType,
         feature_engagement::Tracker::SnoozeAction snoozeAction) {
         [delegate tabGridDidDismissSwipeToIncognitoIPH];
@@ -1553,18 +1553,18 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (![delegate tabGridShouldPresentSwipeToIncognitoIPH]) {
     return;
   }
-  self.swipeToIncognitoIPH = sideSwipeBubbleView;
+  self.swipeToIncognitoIPH = gestureIPHView;
   [self.view addSubview:self.swipeToIncognitoIPH];
-  self.swipeToIncognitoIPHBottomConstraint = [sideSwipeBubbleView.bottomAnchor
+  self.swipeToIncognitoIPHBottomConstraint = [gestureIPHView.bottomAnchor
       constraintEqualToAnchor:[self shouldUseCompactLayout]
                                   ? self.bottomToolbar.topAnchor
                                   : regularGridView.bottomAnchor];
   [NSLayoutConstraint activateConstraints:@[
-    [sideSwipeBubbleView.leadingAnchor
+    [gestureIPHView.leadingAnchor
         constraintEqualToAnchor:regularGridView.leadingAnchor],
-    [sideSwipeBubbleView.trailingAnchor
+    [gestureIPHView.trailingAnchor
         constraintEqualToAnchor:regularGridView.trailingAnchor],
-    [sideSwipeBubbleView.topAnchor
+    [gestureIPHView.topAnchor
         constraintEqualToAnchor:self.topToolbar.bottomAnchor],
     self.swipeToIncognitoIPHBottomConstraint
   ]];

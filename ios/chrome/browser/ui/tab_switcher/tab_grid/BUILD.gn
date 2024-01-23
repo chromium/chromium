@@ -164,7 +164,7 @@ source_set("tab_grid_ui") {
     "//ios/chrome/browser/tabs/model:features",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/bubble:constants",
-    "//ios/chrome/browser/ui/bubble/side_swipe_bubble/",
+    "//ios/chrome/browser/ui/bubble/gesture_iph/",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/menu",

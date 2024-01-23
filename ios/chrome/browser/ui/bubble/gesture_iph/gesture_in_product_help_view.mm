@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/bubble/side_swipe_bubble/side_swipe_bubble_view.h"
+#import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_view.h"
 
 #import "base/i18n/rtl.h"
 #import "base/ios/block_types.h"
@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
-#import "ios/chrome/browser/ui/bubble/side_swipe_bubble/side_swipe_bubble_constants.h"
+#import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -170,7 +170,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
                                         primaryAction:primaryAction];
   dismiss_button.configuration = button_config;
   dismiss_button.accessibilityIdentifier =
-      kSideSwipeBubbleViewDismissButtonAXId;
+      kGestureInProductHelpViewDismissButtonAXId;
   dismiss_button.alpha =
       UIAccessibilityIsReduceTransparencyEnabled() ? 1.0f : 0.65f;
   dismiss_button.translatesAutoresizingMaskIntoConstraints = NO;
@@ -184,7 +184,7 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
 
 }  // namespace
 
-@implementation SideSwipeBubbleView {
+@implementation GestureInProductHelpView {
   // Bubble view.
   BubbleView* _bubbleView;
   // Ellipsis that instructs the user's finger movement.
@@ -224,7 +224,8 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
 
     // Background view.
     UIView* backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
-    backgroundView.accessibilityIdentifier = kSideSwipeBubbleViewBackgroundAXId;
+    backgroundView.accessibilityIdentifier =
+        kGestureInProductHelpViewBackgroundAXId;
     backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
     backgroundView.backgroundColor = UIColor.blackColor;
     backgroundView.alpha = 0.65f;
@@ -239,7 +240,7 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
     _bubbleView.frame =
         GetInitialBubbleFrameForView(bubbleBoundingSize, _bubbleView);
     _bubbleView.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
-    _bubbleView.accessibilityIdentifier = kSideSwipeBubbleViewBubbleAXId;
+    _bubbleView.accessibilityIdentifier = kGestureInProductHelpViewBubbleAXId;
     [self addSubview:_bubbleView];
     [_bubbleView setArrowHidden:!UIAccessibilityIsReduceMotionEnabled()
                        animated:NO];
@@ -256,7 +257,7 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
     [NSLayoutConstraint activateConstraints:_gestureIndicatorSizeConstraints];
 
     // Dismiss button.
-    __weak SideSwipeBubbleView* weakSelf = self;
+    __weak GestureInProductHelpView* weakSelf = self;
     UIAction* dismissButtonAction = [UIAction actionWithHandler:^(UIAction* _) {
       [weakSelf dismissWithReason:IPHDismissalReasonType::kTappedClose];
     }];
@@ -331,7 +332,7 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
 
 - (void)startAnimationAfterDelay:(base::TimeDelta)delay {
   CHECK(self.superview);
-  __weak SideSwipeBubbleView* weakSelf = self;
+  __weak GestureInProductHelpView* weakSelf = self;
 
   if (UIAccessibilityIsReduceMotionEnabled()) {
     // Dismiss after the same timeout as with animation enabled.

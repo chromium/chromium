@@ -35,7 +35,7 @@ source_set("bubble") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/bubble/side_swipe_bubble",
+    "//ios/chrome/browser/ui/bubble/gesture_iph",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/common/ui/util",
     "//net",

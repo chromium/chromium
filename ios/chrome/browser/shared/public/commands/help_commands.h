@@ -32,18 +32,19 @@
 // is not NULL.
 - (void)presentNewTabToolbarItemBubble;
 
-// Optionally presents a full screen IPH associated with
+// Optionally presents a gesture IPH associated with
 // the pull-to-refresh feature. If the feature engagement tracker determines the
 // pull-to-refresh tip should be shown, then it initializes
-// `pullToRefreshSideSwipeBubble` and presents a SideSwipeBubbleView, otherwise
-// it sets `pullToRefreshSideSwipeBubble` to `nil` and no gestural tip is shown.
-- (void)presentPullToRefreshSideSwipeBubble;
+// `pullToRefreshGesturalIPH` and presents a GestureInProductHelpView,
+// otherwise it sets `pullToRefreshGesturalIPH` to `nil` and no gestural tip
+// is shown.
+- (void)presentPullToRefreshGestureInProductHelp;
 
-// Removes the IPH shown by `presentPullToRefreshSideSwipeBubble` if it exists,
-// but does nothing otherwise. The presenter of the pull-to-refresh IPH should
-// make sure it's called when the user leaves the refreshed website, especially
-// while the IPH is still visible.
-- (void)removePullToRefreshSideSwipeBubble;
+// Removes the IPH shown by `presentPullToRefreshGestureInProductHelp` if it
+// exists, but does nothing otherwise. The presenter of the pull-to-refresh IPH
+// should make sure it's called when the user leaves the refreshed website,
+// especially while the IPH is still visible.
+- (void)removePullToRefreshGestureInProductHelp;
 
 @end
 

@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("side_swipe_bubble") {
+source_set("gesture_iph") {
   sources = [
-    "side_swipe_bubble_view.h",
-    "side_swipe_bubble_view.mm",
+    "gesture_in_product_help_view.h",
+    "gesture_in_product_help_view.mm",
   ]
   deps = [
     ":constants",
@@ -23,7 +23,7 @@ source_set("side_swipe_bubble") {
 
 source_set("constants") {
   sources = [
-    "side_swipe_bubble_constants.h",
-    "side_swipe_bubble_constants.mm",
+    "gesture_in_product_help_constants.h",
+    "gesture_in_product_help_constants.mm",
   ]
 }

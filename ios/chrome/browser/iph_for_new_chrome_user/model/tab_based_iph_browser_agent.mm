@@ -92,14 +92,14 @@ void TabBasedIPHBrowserAgent::DidStartNavigation(
   // here. In case the user navigates away when `multi_gesture_refresh_` is
   // called, it would be handled by `DidStopLoading`.
   if (!multi_gesture_refresh_) {
-    [HelpHandler() removePullToRefreshSideSwipeBubble];
+    [HelpHandler() removePullToRefreshGestureInProductHelp];
   }
 }
 
 void TabBasedIPHBrowserAgent::DidStopLoading(web::WebState* web_state) {
   if (multi_gesture_refresh_) {
     if (web_state->GetLoadingProgress() == 1) {
-      [HelpHandler() presentPullToRefreshSideSwipeBubble];
+      [HelpHandler() presentPullToRefreshGestureInProductHelp];
       multi_gesture_refresh_ = false;
       return;
     }
@@ -122,7 +122,7 @@ void TabBasedIPHBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
 
 void TabBasedIPHBrowserAgent::ResetMultiGestureRefreshStateAndRemoveIPH() {
   multi_gesture_refresh_ = false;
-  [HelpHandler() removePullToRefreshSideSwipeBubble];
+  [HelpHandler() removePullToRefreshGestureInProductHelp];
 }
 
 id<HelpCommands> TabBasedIPHBrowserAgent::HelpHandler() {
