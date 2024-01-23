@@ -6,10 +6,13 @@
 
 #include <tuple>
 
+#include "base/containers/flat_set.h"
+#include "base/no_destructor.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/mojom/pose.h"
+#include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
@@ -242,6 +245,41 @@ OpenXrAnchorManager::GetXrLocationFromReferenceSpace(
 
   return XrLocation{GfxTransformToXrPose(native_origin_from_anchor),
                     openxr->GetReferenceSpace(type)};
+}
+
+OpenXrAnchorManagerFactory::OpenXrAnchorManagerFactory() = default;
+OpenXrAnchorManagerFactory::~OpenXrAnchorManagerFactory() = default;
+
+const base::flat_set<std::string_view>&
+OpenXrAnchorManagerFactory::GetRequestedExtensions() const {
+  static base::NoDestructor<base::flat_set<std::string_view>> kExtensions(
+      {XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME});
+  return *kExtensions;
+}
+
+std::set<device::mojom::XRSessionFeature>
+OpenXrAnchorManagerFactory::GetSupportedFeatures(
+    const OpenXrExtensionEnumeration* extension_enum) const {
+  if (!IsEnabled(extension_enum)) {
+    return {};
+  }
+
+  return {device::mojom::XRSessionFeature::ANCHORS};
+}
+
+std::unique_ptr<OpenXrAnchorManager>
+OpenXrAnchorManagerFactory::CreateAnchorManager(
+    const OpenXrExtensionHelper& extension_helper,
+    XrSession session,
+    XrSpace mojo_space) const {
+  bool is_supported = IsEnabled(extension_helper.ExtensionEnumeration());
+  DVLOG(2) << __func__ << " is_supported=" << is_supported;
+  if (is_supported) {
+    return std::make_unique<OpenXrAnchorManager>(extension_helper, session,
+                                                 mojo_space);
+  }
+
+  return nullptr;
 }
 
 }  // namespace device

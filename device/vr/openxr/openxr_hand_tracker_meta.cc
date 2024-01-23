@@ -6,12 +6,15 @@
 
 #include <optional>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
+#include "base/no_destructor.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/mojom/openxr_interaction_profile_type.mojom.h"
+#include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -83,6 +86,42 @@ std::optional<GamepadButton> OpenXrHandTrackerMeta::GetButton(
 void OpenXrHandTrackerMeta::AppendToLocationStruct(
     XrHandJointLocationsEXT& locations) {
   locations.next = &aim_state_;
+}
+
+OpenXrHandTrackerMetaFactory::OpenXrHandTrackerMetaFactory() = default;
+OpenXrHandTrackerMetaFactory::~OpenXrHandTrackerMetaFactory() = default;
+
+const base::flat_set<std::string_view>&
+OpenXrHandTrackerMetaFactory::GetRequestedExtensions() const {
+  static base::NoDestructor<base::flat_set<std::string_view>> kExtensions(
+      {XR_EXT_HAND_TRACKING_EXTENSION_NAME,
+       XR_FB_HAND_TRACKING_AIM_EXTENSION_NAME});
+  return *kExtensions;
+}
+
+std::set<device::mojom::XRSessionFeature>
+OpenXrHandTrackerMetaFactory::GetSupportedFeatures(
+    const OpenXrExtensionEnumeration* extension_enum) const {
+  if (!IsEnabled(extension_enum)) {
+    return {};
+  }
+
+  return {device::mojom::XRSessionFeature::HAND_INPUT};
+}
+
+std::unique_ptr<OpenXrHandTracker>
+OpenXrHandTrackerMetaFactory::CreateHandTracker(
+    const OpenXrExtensionHelper& extension_helper,
+    XrSession session,
+    OpenXrHandednessType type) const {
+  bool is_supported = IsEnabled(extension_helper.ExtensionEnumeration());
+  DVLOG(2) << __func__ << " is_supported=" << is_supported;
+  if (is_supported) {
+    return std::make_unique<OpenXrHandTrackerMeta>(extension_helper, session,
+                                                   type);
+  }
+
+  return nullptr;
 }
 
 }  // namespace device

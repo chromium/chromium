@@ -10,8 +10,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
+#include "base/no_destructor.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace {
@@ -211,5 +214,42 @@ OpenXRSceneUnderstandingManagerMSFT::RequestHitTest(
 
   DVLOG(2) << __func__ << ": hit_results->size()=" << hit_results.size();
   return hit_results;
+}
+
+OpenXrSceneUnderstandingManagerMSFTFactory::
+    OpenXrSceneUnderstandingManagerMSFTFactory() = default;
+OpenXrSceneUnderstandingManagerMSFTFactory::
+    ~OpenXrSceneUnderstandingManagerMSFTFactory() = default;
+
+const base::flat_set<std::string_view>&
+OpenXrSceneUnderstandingManagerMSFTFactory::GetRequestedExtensions() const {
+  static base::NoDestructor<base::flat_set<std::string_view>> kExtensions(
+      {XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME});
+  return *kExtensions;
+}
+
+std::set<device::mojom::XRSessionFeature>
+OpenXrSceneUnderstandingManagerMSFTFactory::GetSupportedFeatures(
+    const OpenXrExtensionEnumeration* extension_enum) const {
+  if (!IsEnabled(extension_enum)) {
+    return {};
+  }
+
+  return {device::mojom::XRSessionFeature::HIT_TEST};
+}
+
+std::unique_ptr<OpenXRSceneUnderstandingManager>
+OpenXrSceneUnderstandingManagerMSFTFactory::CreateSceneUnderstandingManager(
+    const OpenXrExtensionHelper& extension_helper,
+    XrSession session,
+    XrSpace mojo_space) const {
+  bool is_supported = IsEnabled(extension_helper.ExtensionEnumeration());
+  DVLOG(2) << __func__ << " is_supported=" << is_supported;
+  if (is_supported) {
+    return std::make_unique<OpenXRSceneUnderstandingManagerMSFT>(
+        extension_helper, session, mojo_space);
+  }
+
+  return nullptr;
 }
 }  // namespace device

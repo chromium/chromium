@@ -7,6 +7,7 @@
 
 #include "device/vr/openxr/openxr_stage_bounds_provider.h"
 
+#include "device/vr/openxr/openxr_extension_handler_factory.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
@@ -22,6 +23,27 @@ class OpenXrStageBoundsProviderBasic : public OpenXrStageBoundsProvider {
 
  private:
   XrSession session_;
+};
+
+// We create an ExtensionHandler for this class even though it doesn't leverage
+// extensions because it serves as a fallback since we *do* have
+// ExtensionHandlers for this type of data.
+class OpenXrStageBoundsProviderBasicFactory
+    : public OpenXrExtensionHandlerFactory {
+ public:
+  OpenXrStageBoundsProviderBasicFactory();
+  ~OpenXrStageBoundsProviderBasicFactory() override;
+
+  const base::flat_set<std::string_view>& GetRequestedExtensions()
+      const override;
+  std::set<device::mojom::XRSessionFeature> GetSupportedFeatures(
+      const OpenXrExtensionEnumeration* extension_enum) const override;
+
+  bool IsEnabled(
+      const OpenXrExtensionEnumeration* extension_enum) const override;
+  std::unique_ptr<OpenXrStageBoundsProvider> CreateStageBoundsProvider(
+      const OpenXrExtensionHelper& extension_helper,
+      XrSession session) const override;
 };
 }  // namespace device
 

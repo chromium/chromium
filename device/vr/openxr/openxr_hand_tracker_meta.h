@@ -8,6 +8,7 @@
 #include "device/vr/openxr/openxr_hand_tracker.h"
 
 #include "base/memory/raw_ref.h"
+#include "device/vr/openxr/openxr_extension_handler_factory.h"
 #include "device/vr/public/mojom/vr_service.mojom-forward.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
@@ -34,6 +35,22 @@ class OpenXrHandTrackerMeta : public OpenXrHandTracker,
   void AppendToLocationStruct(XrHandJointLocationsEXT& locations) override;
 
   XrHandTrackingAimStateFB aim_state_ = {XR_TYPE_HAND_TRACKING_AIM_STATE_FB};
+};
+
+class OpenXrHandTrackerMetaFactory : public OpenXrExtensionHandlerFactory {
+ public:
+  OpenXrHandTrackerMetaFactory();
+  ~OpenXrHandTrackerMetaFactory() override;
+
+  const base::flat_set<std::string_view>& GetRequestedExtensions()
+      const override;
+  std::set<device::mojom::XRSessionFeature> GetSupportedFeatures(
+      const OpenXrExtensionEnumeration* extension_enum) const override;
+
+  std::unique_ptr<OpenXrHandTracker> CreateHandTracker(
+      const OpenXrExtensionHelper& extension_helper,
+      XrSession session,
+      OpenXrHandednessType type) const override;
 };
 
 }  // namespace device

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "device/vr/openxr/openxr_extension_handler_factory.h"
 #include "device/vr/openxr/openxr_scene.h"
 #include "device/vr/openxr/openxr_scene_bounds.h"
 #include "device/vr/openxr/openxr_scene_observer.h"
@@ -76,6 +77,23 @@ class OpenXRSceneUnderstandingManagerMSFT
   SceneComputeState scene_compute_state_{SceneComputeState::Off};
 
   std::vector<OpenXrScenePlane> planes_;
+};
+
+class OpenXrSceneUnderstandingManagerMSFTFactory
+    : public OpenXrExtensionHandlerFactory {
+ public:
+  OpenXrSceneUnderstandingManagerMSFTFactory();
+  ~OpenXrSceneUnderstandingManagerMSFTFactory() override;
+
+  const base::flat_set<std::string_view>& GetRequestedExtensions()
+      const override;
+  std::set<device::mojom::XRSessionFeature> GetSupportedFeatures(
+      const OpenXrExtensionEnumeration* extension_enum) const override;
+
+  std::unique_ptr<OpenXRSceneUnderstandingManager>
+  CreateSceneUnderstandingManager(const OpenXrExtensionHelper& extension_helper,
+                                  XrSession session,
+                                  XrSpace mojo_space) const override;
 };
 
 }  // namespace device

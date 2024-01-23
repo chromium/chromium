@@ -12,6 +12,7 @@
 #include "base/numerics/math_constants.h"
 #include "base/types/id_type.h"
 #include "device/vr/create_anchor_request.h"
+#include "device/vr/openxr/openxr_extension_handler_factory.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -19,6 +20,7 @@
 namespace device {
 
 class OpenXrApiWrapper;
+class OpenXrExtensionEnumeration;
 class OpenXrExtensionHelper;
 
 using AnchorId = base::IdTypeU64<class AnchorTag>;
@@ -99,6 +101,22 @@ class OpenXrAnchorManager {
 
   AnchorId::Generator anchor_id_generator_;  // 0 is not a valid anchor ID
   std::map<AnchorId, AnchorData> openxr_anchors_;
+};
+
+class OpenXrAnchorManagerFactory : public OpenXrExtensionHandlerFactory {
+ public:
+  OpenXrAnchorManagerFactory();
+  ~OpenXrAnchorManagerFactory() override;
+
+  const base::flat_set<std::string_view>& GetRequestedExtensions()
+      const override;
+  std::set<device::mojom::XRSessionFeature> GetSupportedFeatures(
+      const OpenXrExtensionEnumeration* extension_enum) const override;
+
+  std::unique_ptr<OpenXrAnchorManager> CreateAnchorManager(
+      const OpenXrExtensionHelper& extension_helper,
+      XrSession session,
+      XrSpace mojo_space) const override;
 };
 
 }  // namespace device
