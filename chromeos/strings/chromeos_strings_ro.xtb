@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">înainte</translation>
 <translation id="1615335640928990664">Utilizarea datelor începând de <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Rulează testul Încărcare</translation>
+<translation id="1626590945318984973">Comanda rapidă nu este disponibilă. Introdu o nouă comandă rapidă fără să folosești tastele de funcții și <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
 <translation id="1641857168437328880">Alimentator de documente (o singură față)</translation>
 <translation id="1643449475550628585">Schimbă zilnic imaginea de fundal</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">Acum ai acces la noi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imagini de fundal<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Modul întunecat</translation>
 <translation id="4130035430755296270">Plasează cursorul pentru mai multe opțiuni de aspect</translation>
+<translation id="4130750466177569591">Sunt de acord</translation>
 <translation id="4131410914670010031">Alb-negru</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Dezactivează</translation>
 <translation id="439429847087949098">Se repornește <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">personalizarea tastaturii</translation>
+<translation id="4403262788869804671">Comanda rapidă fără <ph name="META_KEY" /> poate intra în conflict cu comanda rapidă a unei aplicații. Introdu din nou comanda rapidă ca să o folosești în continuare sau introdu o nouă comandă rapidă care folosește tasta <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Avatarul actual</translation>
+<translation id="4417830657741848074">Administratorul a configurat unele aplicații pentru a porni automat. Este posibil ca unele dintre aceste aplicații să nu fie închise.</translation>
 <translation id="4422041425070339732">săgeată în jos</translation>
 <translation id="4425149324548788773">Contul meu Drive</translation>
 <translation id="4428374560396076622">Rețeaua <ph name="NETWORK_NAME" /> este dezactivată</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">Screensaver Earth Flow</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nu s-a putut da ping către gateway-ul de rețea care nu este prestabilit</translation>
+<translation id="4500722292849917410">Comanda rapidă nu este disponibilă. Introdu o nouă comandă rapidă folosind o tastă de modificare (Ctrl, Alt, Shift sau <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Culoarea interfeței</translation>
 <translation id="4503223151711056411">Săgeată spre stânga</translation>
 <translation id="4507392511610824664">mărește luminozitatea</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Selectează dosarul în aplicația Fișiere...</translation>
 <translation id="4835901797422965222">Nu există rețele active</translation>
 <translation id="4839698083503556542">Creează propriul film</translation>
+<translation id="48409034532829769">Administratorul a configurat <ph name="APP_NAME" /> pentru pornire automată. Această aplicație nu poate fi închisă.</translation>
 <translation id="484462545196658690">Automat</translation>
 <translation id="4847902821209177679">S-a selectat <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, apasă pe Enter pentru a selecta albumele <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Rezolvare DNS</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">Împărțit</translation>
 <translation id="4972592110715526173">schimbarea modului</translation>
 <translation id="498186245079027698">Verifică scanerul și încearcă din nou. Asigură-te că există spațiu suficient la nivel local pentru a salva fișierele scanate.</translation>
+<translation id="4982627662315910959">Comanda rapidă nu este disponibilă. Introdu o nouă comandă rapidă folosind Shift și o altă tastă de modificare (Ctrl, Alt sau <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Rulează</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Pagini</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Furnizor de date mobile</translation>
 <translation id="725133483556299729">Selectează adresa de e-mail</translation>
 <translation id="7271040990581020067">Scanerul este în uz. Încearcă din nou mai târziu.</translation>
+<translation id="7271932918253517778">Comenzile rapide cu taste de pe rândul de sus trebuie să includă tasta <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">Colecții de imagini de fundal</translation>

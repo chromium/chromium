@@ -379,6 +379,7 @@
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{파일을 열 수 없음}other{파일을 열 수 없음}}</translation>
 <translation id="1282311502488501110">로그인 안함</translation>
 <translation id="1282465000333679776">시스템 오디오 공유</translation>
+<translation id="1283126956823499975">기기를 설정하는 중에 문제가 발생했습니다</translation>
 <translation id="1284277788676816155">데이터 저장 허용 안 함</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
 <translation id="1285484354230578868">Google Drive 계정에 데이터 저장</translation>
@@ -4644,7 +4645,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4546345569117159016">오른쪽 버튼</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" />님이 다음 확장 프로그램을 사용하려고 함</translation>
 <translation id="4546692474302123343">Google 어시스턴트 음성 입력</translation>
-<translation id="4547538408998421970">오늘의 한도에 도달했습니다.</translation>
 <translation id="4547659257713117923">다른 기기의 탭 없음</translation>
 <translation id="4547672827276975204">자동 설정</translation>
 <translation id="4548858987594081919">Google 비밀번호 관리자에서 로그인 정보를 저장하도록 이 사이트의 사용자 이름을 추가하세요.</translation>
@@ -5041,6 +5041,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4863769717153320198"><ph name="WIDTH" />x<ph name="HEIGHT" />(권장)처럼 보입니다.</translation>
 <translation id="4864369630010738180">로그인 중...</translation>
 <translation id="4864805589453749318">학교 계정을 추가할 수 있도록 권한을 부여할 부모님을 선택하세요.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" />(차단됨)</translation>
 <translation id="486505726797718946">메모리 저장됨</translation>
 <translation id="486635084936119914">다운로드 후에 특정 파일 형식을 자동으로 열기</translation>
 <translation id="4867272607148176509">부모님은 앱을 승인 또는 차단하고, 시간제한을 설정하고, 웹 탐색을 제어할 수 있습니다. 나중에 학교 계정을 추가하여 대부분의 학교 리소스에 액세스할 수 있습니다.</translation>
@@ -5254,7 +5255,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5032430150487044192">QR 코드를 만들 수 없음</translation>
 <translation id="5033137252639132982">움직임 감지 센서 사용이 허용되지 않음</translation>
 <translation id="5033266061063942743">기하학적 모양</translation>
-<translation id="5033646801355533305">내일 다시 시도해 주세요.</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 자세한 정보를 확인하려면 아래의 '세부정보 더보기'를 선택하세요.</translation>
 <translation id="5037676449506322593">모두 선택</translation>
 <translation id="5038818366306248416">이전에 <ph name="ORIGIN" />의 확장 프로그램을 일체 허용하지 않았습니다.</translation>
@@ -5534,6 +5534,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5261619498868361045">컨테이너 이름은 비워 둘 수 없습니다.</translation>
 <translation id="5261683757250193089">웹 스토어에서 열기</translation>
 <translation id="5261799091118902550">바이러스 또는 멀웨어일 수 있는 파일입니다. Google에 전송하여 안전한 파일인지 확인할 수 있습니다.</translation>
+<translation id="5262334727506665688">Google 계정에 계속 비밀번호 저장</translation>
 <translation id="5262784498883614021">자동으로 네트워크에 연결</translation>
 <translation id="5263656105659419083">측면 패널로 손쉽게 돌아가려면 오른쪽 상단의 고정을 클릭하세요</translation>
 <translation id="5264148714798105376">1분 정도 소요될 수 있습니다.</translation>
@@ -6049,7 +6050,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5667546120811588575">Google Play 설정 중...</translation>
 <translation id="5668351004957198136">실패</translation>
 <translation id="5669863904928111203">ChromeOS가 이전 버전입니다</translation>
-<translation id="56702779821643359">주변의 사람들과 파일을 공유하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5671641761787789573">이미지가 차단됨</translation>
 <translation id="5671658447180261823"><ph name="SUGGESTION_NAME" /> 추천 검색어를 삭제합니다.</translation>
 <translation id="567210741546439261">북마크 및 목록</translation>
@@ -7075,6 +7075,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="649396225532207613">이 파일로 인해 개인 및 소셜 네트워크 계정이 손상될 수 있습니다.</translation>
 <translation id="6494327278868541139">향상된 보안 세부정보 표시</translation>
 <translation id="6494445798847293442">인증 기관이 아닙니다.</translation>
+<translation id="6494483173119160146">기기에 복구 불가 오류가 발생했습니다. 기기를 재설정하고(모든 사용자 데이터가 삭제됨) 다시 시도하세요.</translation>
 <translation id="6497784818439587832">화면에 표시되는 항목을 축소하거나 확대하려면 디스플레이 크기를 변경하세요.</translation>
 <translation id="6497789971060331894">마우스 역방향 스크롤</translation>
 <translation id="6498249116389603658">모든 언어(&amp;A)</translation>
@@ -8387,7 +8388,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="752098910262610337">바로가기 표시</translation>
 <translation id="7521430434164837205">Microsoft 365 파일</translation>
 <translation id="7522255036471229694">"Ok Google"이라고 말하세요.</translation>
-<translation id="7523112275619538890">근처 기기와 파일 등 여러 가지 항목을 공유하세요.</translation>
 <translation id="7523117833414447032">대문자 읽는 방식</translation>
 <translation id="7523585675576642403">프로필 이름 바꾸기</translation>
 <translation id="7525067979554623046">만들기</translation>
@@ -9555,6 +9555,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8397825320644530257">연결된 휴대전화 연결 해제</translation>
 <translation id="8398877366907290961">무시하고 계속하기</translation>
 <translation id="8399282673057829204">비밀번호 보기</translation>
+<translation id="839949601275221554">기기에 오류가 발생했습니다. 기기를 재시작한 후 다시 시도하세요.</translation>
 <translation id="8401432541486058167">스마트 카드와 연결된 PIN을 입력하세요.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{오늘 Chrome에서 쿠키를 다시 차단합니다}=1{내일 Chrome에서 다시 쿠키를 차단합니다}other{#일 후 Chrome에서 다시 쿠키를 차단합니다}}</translation>
 <translation id="8403618281196981152">Chrome의 내 데이터</translation>
@@ -9985,7 +9986,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8732212173949624846">로그인한 모든 기기의 인터넷 사용 기록 조회 및 변경</translation>
 <translation id="8732844209475700754">개인 정보 보호, 보안, 데이터 수집과 관련된 설정 더보기</translation>
 <translation id="8734073480934656039">이 설정을 사용하면 시작 시 키오스크 애플리케이션이 자동으로 실행됩니다.</translation>
-<translation id="8734674662128056360">타사 쿠키 차단</translation>
 <translation id="8734755021067981851">연결된 USB 기기가 없습니다.</translation>
 <translation id="8736288397686080465">이 사이트는 백그라운드에서 업데이트되었습니다.</translation>
 <translation id="8737709691285775803">Shill</translation>

@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">алға</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> бергі дерек трафигі</translation>
 <translation id="1621067168122174824">Заряд тексерісін іске қосу</translation>
+<translation id="1626590945318984973">Пернелер тіркесімі қолжетімді емес. Функциялық және <ph name="META_KEY" /> пернелерін пайдаланбай, жаңа пернелер тіркесімін басыңыз.</translation>
 <translation id="1639239467298939599">Жүктелуде</translation>
 <translation id="1641857168437328880">Құжат беруші (бір жақты)</translation>
 <translation id="1643449475550628585">Тұсқағаз суретін күн сайын өзгерту</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">Енді жаңа <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тұсқағаздар<ph name="END_LINK_WALLPAPER_SUBPAGE" /> пайдалана алатын боласыз</translation>
 <translation id="4117637339509843559">Қараңғы режим</translation>
 <translation id="4130035430755296270">Тағы басқа формат опцияларын көру үшін курсорды апарыңыз.</translation>
+<translation id="4130750466177569591">Мен келісемін</translation>
 <translation id="4131410914670010031">Қара мен ақ</translation>
 <translation id="4145784616224233563">HTTP брандмауэрі</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Өшіру</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> қайта қосылуда</translation>
 <translation id="4395835743215824109">пернетақтаны бейімдеу</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> пернесі жоқ пернелер тіркесімі кейбір қолданбаның пернелер тіркесіміне қайшы келуі мүмкін. Осы пернелер тіркесімін пайдалануды жалғастыру үшін қайта басыңыз немесе <ph name="KEY" /> пернесін пайдаланып, жаңа пернелер тіркесімін басыңыз.</translation>
 <translation id="4415951057168511744">Қазіргі аватар</translation>
+<translation id="4417830657741848074">Әкімшіңіз кейбір қолданбаларды автоматты түрде іске қосылатындай етіп орнатты. Бұл қолданбалардың кейбіреуін жабу мүмкін емес.</translation>
 <translation id="4422041425070339732">төмен жақ көрсеткісі</translation>
 <translation id="4425149324548788773">Менің Drive дискім</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> өшірулі</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">Жер қозғалысы бейнеленген скринсейвер</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Әдепкі емес желі шлюзінің байланысы тексерілмеді.</translation>
+<translation id="4500722292849917410">Пернелер тіркесімі қолжетімді емес. Өзгерткіш пернені (ctrl, alt, shift немесе <ph name="META_KEY" />) пайдаланып, жаңа тіркесімді басыңыз.</translation>
 <translation id="4500966230243561393">Интерфейс түсі</translation>
 <translation id="4503223151711056411">Сол бағыт пернесі</translation>
 <translation id="4507392511610824664">жарықтық деңгейін арттыру</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Files қолданбасында қалта таңдау...</translation>
 <translation id="4835901797422965222">Ешқандай белсенді желі жоқ.</translation>
 <translation id="4839698083503556542">Жеке фильміңізді түсіріңіз</translation>
+<translation id="48409034532829769">Әкімшіңіз "<ph name="APP_NAME" />" қолданбасын автоматты түрде іске қосылатындай етіп орнатты. Бұл қолданбаны жабу мүмкін емес.</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> таңдалды, <ph name="TOPIC_SOURCE" /> альбомдарын таңдау үшін Enter пернесін басыңыз.</translation>
 <translation id="484790837831576105">DNS ажыратымдылығы (Android)</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">Бөлу</translation>
 <translation id="4972592110715526173">режимді өзгерту</translation>
 <translation id="498186245079027698">Сканерді тексеріп, әрекетті қайталаңыз. Сканерленген файлдарды сақтайтын орынның жеткілікті екенін тексеріңіз.</translation>
+<translation id="4982627662315910959">Пернелер тіркесімі қолжетімді емес. Shift пен 1 өзгерткіш пернені (ctrl, alt немесе <ph name="META_KEY" />) пайдаланып, жаңа пернелер тіркесімін басыңыз.</translation>
 <translation id="4985509611418653372">Іске қосу</translation>
 <translation id="4987769320337599931">Брандмауэр</translation>
 <translation id="4988526792673242964">Беттер</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Ұялы байланыс провайдері</translation>
 <translation id="725133483556299729">Электрондық поштаны таңдау</translation>
 <translation id="7271040990581020067">Сканер пайдаланылуда. Кейінірек қайталап көріңіз.</translation>
+<translation id="7271932918253517778">Жоғарғы жол пернелері бар пернелер тіркесімі <ph name="META_KEY" /> пернесін қамтуы керек.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Самал жел</translation>
 <translation id="7287310195820267359">Тұсқағаз жинақтары</translation>

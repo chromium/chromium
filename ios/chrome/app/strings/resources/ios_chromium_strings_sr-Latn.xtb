@@ -102,6 +102,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chromium 
 <translation id="3955621079070267756">Otvorite Chromium iz bilo koje aplikacije</translation>
 <translation id="4005283307739974863">Otvara i pokreće Proveru bezbednosti u Chromium-u.</translation>
 <translation id="4043291146360695975">Lozinke se čuvaju u Menadžeru lozinki samo na ovom uređaju.</translation>
+<translation id="4076589763479456892">Ako ste zaboravili pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chromium podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Nije podržano u verziji Chromium beta</translation>
 <translation id="4106512142782407609">Prijavljeni ste kao <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@ Podaci se šifruju pomoću pristupne fraze. Unesite je da biste koristili i sa�
 <translation id="5534584691915394889">Ovo će se koristiti za pravljenje događaja u Apple Calendar-u iz Chromium-a i Google objektiva.</translation>
 <translation id="5571094606370987472">Otvara Chromium nedavne kartice.</translation>
 <translation id="5623083843656850677">Zaključajte kartice bez arhiviranja kada napustite Chromium ili pređete na drugu aplikaciju.</translation>
+<translation id="5671188105328420281">Saveti za Chromium</translation>
 <translation id="5688047395118852662">Ova kartica vam prikazuje predloge o tome kako da iskoristite Chromium-a na najbolji način.</translation>
 <translation id="5700709190537129682">Chromium ne može da vam proverava lozinke</translation>
 <translation id="5777187867430702742">Chromium stranica</translation>

@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">adiante</translation>
 <translation id="1615335640928990664">Uso de datos desde o <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Realizar proba de carga</translation>
+<translation id="1626590945318984973">O atallo non está dispoñible. Preme un novo atallo sen usar as teclas de función nin <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1641857168437328880">Alimentador de documentos (a unha cara)</translation>
 <translation id="1643449475550628585">Cambiar imaxe de fondo de pantalla todos os días</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">Xa tes acceso aos novos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fondos de pantalla<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Modo escuro</translation>
 <translation id="4130035430755296270">Pasa o cursor por enriba para ver máis opcións de deseño</translation>
+<translation id="4130750466177569591">Acepto</translation>
 <translation id="4131410914670010031">Branco e negro</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Desactivar</translation>
 <translation id="439429847087949098">Reiniciando dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="4395835743215824109">personalización do teclado</translation>
+<translation id="4403262788869804671">Un atallo sen a tecla <ph name="META_KEY" /> podería entrar en conflito co atallo dalgunha aplicación. Preme este atallo de novo para seguir usándoo ou preme un novo que inclúa a tecla <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Avatar actual</translation>
+<translation id="4417830657741848074">A persoa administradora configurou algunhas aplicacións para que se inicien automaticamente. Varias non se poden pechar.</translation>
 <translation id="4422041425070339732">frecha cara abaixo</translation>
 <translation id="4425149324548788773">A miña unidade</translation>
 <translation id="4428374560396076622">A rede <ph name="NETWORK_NAME" /> está desactivada</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">Protector de pantalla Fluxo da Terra</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Produciuse un erro ao facer ping na pasarela de rede non predeterminada</translation>
+<translation id="4500722292849917410">O atallo non está dispoñible. Preme un novo atallo usando unha tecla modificadora (Control, Alt, Maiúsculas ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Cor da interface</translation>
 <translation id="4503223151711056411">Frecha esquerda</translation>
 <translation id="4507392511610824664">aumentar o brillo</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Seleccionar cartafol na aplicación Ficheiros…</translation>
 <translation id="4835901797422965222">Non hai ningunha rede activa</translation>
 <translation id="4839698083503556542">Crea a túa película</translation>
+<translation id="48409034532829769">A persoa administradora configurou <ph name="APP_NAME" /> para que se inicie automaticamente. Esta aplicación non se pode pechar.</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> seleccionado. Preme Intro para seleccionar álbums de <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) resolución de DNS</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">Dividida</translation>
 <translation id="4972592110715526173">cambio de modo</translation>
 <translation id="498186245079027698">Comproba o escáner e téntao de novo. Asegúrate de que exista espazo local suficiente para gardar os ficheiros escaneados.</translation>
+<translation id="4982627662315910959">O atallo non está dispoñible. Preme un novo atallo usando Maiúsculas e outra tecla modificadora (Control, Alt ou <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Executar</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Páxinas</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Provedor de rede móbil</translation>
 <translation id="725133483556299729">Seleccionar correo electrónico</translation>
 <translation id="7271040990581020067">Nestes momentos, o escáner está en uso. Téntao de novo máis tarde.</translation>
+<translation id="7271932918253517778">Os atallos con teclas da fila superior deben incluír a tecla <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Brisa</translation>
 <translation id="7287310195820267359">Colección de fondos de pantalla</translation>

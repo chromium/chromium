@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">irəli</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> tarixindən bəri data istifadəsi</translation>
 <translation id="1621067168122174824">Şarj testini icra edin</translation>
+<translation id="1626590945318984973">Qısayol əlçatan deyil. Funksiya və <ph name="META_KEY" /> düymələrindən istifadə etmədən yeni qısayola basın.</translation>
 <translation id="1639239467298939599">Yüklənir</translation>
 <translation id="1641857168437328880">Sənəd Bəsləyici (Bir tərəfli)</translation>
 <translation id="1643449475550628585">Hər gün divar kağızı şəklini dəyişdirin</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">Yeni <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />divar kağızlarına<ph name="END_LINK_WALLPAPER_SUBPAGE" /> giriş imkanınız var</translation>
 <translation id="4117637339509843559">Qaranlıq rejim</translation>
 <translation id="4130035430755296270">Digər düzən seçimləri üçün mausla tuşlamağa davam edin</translation>
+<translation id="4130750466177569591">Razıyam</translation>
 <translation id="4131410914670010031">Ağ və qara</translation>
 <translation id="4145784616224233563">HTTP Qoruyucu divarı</translation>
 <translation id="4147897805161313378">Google Foto</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Deaktiv edin</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> yenidən başladılır</translation>
 <translation id="4395835743215824109">klaviatura fərdiləşdirməsi</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> düyməsi olmayan qısayol bəzi tətbiq qısayolları ilə ziddiyyətli ola bilər. Bu qısayoldan istifadəyə davam etmək üçün ona yenidən basın, yaxud <ph name="KEY" /> düyməsindən istifadə edərək yeni qısayola basın.</translation>
 <translation id="4415951057168511744">Cari Avatar</translation>
+<translation id="4417830657741848074">Administrator bəzi tətbiqləri avtomatik başlamağa ayarlayıb. Bu tətbiqlərin bəziləri bağlanmaya bilər.</translation>
 <translation id="4422041425070339732">aşağı ox</translation>
 <translation id="4425149324548788773">Diskim</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> deaktivdir</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">"Torpaq axını" ekran qoruyucusu</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Qeyri-defolt şəbəkə girişini yoxlamaq alınmadı</translation>
+<translation id="4500722292849917410">Qısayol əlçatan deyil. Dəyişdirici düymədən (ctrl, alt, shift və ya <ph name="META_KEY" />) istifadə edərək yeni qısayola basın.</translation>
 <translation id="4500966230243561393">İnterfeys rəngi</translation>
 <translation id="4503223151711056411">Sol ox</translation>
 <translation id="4507392511610824664">parlaqlığı artırın</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Fayllar tətbiqində qovluq seçin...</translation>
 <translation id="4835901797422965222">Aktiv şəbəkə yoxdur</translation>
 <translation id="4839698083503556542">Öz filminizi yaradın</translation>
+<translation id="48409034532829769">Administrator "<ph name="APP_NAME" />" tətbiqini avtomatik başlamağa ayarlayıb. Bu tətbiq bağlanmaya bilər.</translation>
 <translation id="484462545196658690">Avtomatik</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> seçilib, <ph name="TOPIC_SOURCE" /> albomlarını seçmək üçün Enter düyməsinə basın</translation>
 <translation id="484790837831576105">(Android) DNS ayırdetmə dəqiqliyi</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">Bölünmüş</translation>
 <translation id="4972592110715526173">rejim dəyişikliyi</translation>
 <translation id="498186245079027698">Skaneri yoxlayın və yenidən cəhd edin. Skan edilmiş faylları saxlamaq üçün diskdə kifayət qədər yer olduğuna əmin olun.</translation>
+<translation id="4982627662315910959">Qısayol əlçatan deyil. Shift və daha 1 dəyişdirici düymədən (ctrl, alt və ya <ph name="META_KEY" />) istifadə edərək yeni qısayola basın.</translation>
 <translation id="4985509611418653372">İşə salın</translation>
 <translation id="4987769320337599931">Qoruyucu divar</translation>
 <translation id="4988526792673242964">Səhifələr</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Mobil provayder</translation>
 <translation id="725133483556299729">E-poçt seçin</translation>
 <translation id="7271040990581020067">Skaner hazırda istifadə olunur. Sonra cəhd edin.</translation>
+<translation id="7271932918253517778">Üst sıra düymələri olan qısayolda <ph name="META_KEY" /> düyməsi olmalıdır.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Mehi hiss edin</translation>
 <translation id="7287310195820267359">Divar kağızı kolleksiyaları</translation>

@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">вперед</translation>
 <translation id="1615335640928990664">Передача данных с <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Запустить проверку зарядки</translation>
+<translation id="1626590945318984973">Недопустимое сочетание клавиш. Выберите новое без функциональных клавиш и клавиши <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Загрузка…</translation>
 <translation id="1641857168437328880">Автоподатчик документов (односторонний)</translation>
 <translation id="1643449475550628585">Менять обои ежедневно</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">Вам доступны новые <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />обои<ph name="END_LINK_WALLPAPER_SUBPAGE" />.</translation>
 <translation id="4117637339509843559">Тёмная тема</translation>
 <translation id="4130035430755296270">Наведите указатель, чтобы увидеть больше вариантов показа</translation>
+<translation id="4130750466177569591">Принимаю</translation>
 <translation id="4131410914670010031">Черно-белая печать</translation>
 <translation id="4145784616224233563">Брандмауэр HTTP</translation>
 <translation id="4147897805161313378">Google Фото</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Отключить</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" />: перезапуск…</translation>
 <translation id="4395835743215824109">настроить клавиатуру</translation>
+<translation id="4403262788869804671">Сочетание без клавиши <ph name="META_KEY" /> может конфликтовать с сочетаниями клавиш некоторых приложений. Нажмите это сочетание клавиш ещё раз, чтобы продолжить его использовать, или выберите новое с клавишей <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Текущий аватар</translation>
+<translation id="4417830657741848074">Администратор настроил автоматический запуск для нескольких приложений. Некоторые из них нельзя закрыть.</translation>
 <translation id="4422041425070339732">стрелка вниз</translation>
 <translation id="4425149324548788773">Мой диск</translation>
 <translation id="4428374560396076622">Сеть "<ph name="NETWORK_NAME" />" отключена.</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">Динамическая заставка с Землей</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не удалось выполнить проверку ping сетевого шлюза, не заданного по умолчанию.</translation>
+<translation id="4500722292849917410">Недопустимое сочетание клавиш. Выберите новое с клавишей-модификатором: Ctrl, Alt, Shift или <ph name="META_KEY" />.</translation>
 <translation id="4500966230243561393">Цвет интерфейса</translation>
 <translation id="4503223151711056411">Стрелка влево</translation>
 <translation id="4507392511610824664">увеличить яркость</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Выбрать папку в приложении Files…</translation>
 <translation id="4835901797422965222">Нет активных сетей.</translation>
 <translation id="4839698083503556542">Создайте свой фильм</translation>
+<translation id="48409034532829769">Администратор настроил автоматический запуск приложения "<ph name="APP_NAME" />". Его нельзя закрыть.</translation>
 <translation id="484462545196658690">Выбрать автоматически</translation>
 <translation id="4847902821209177679">Выбран вариант "<ph name="TOPIC_SOURCE" />" (<ph name="TOPIC_SOURCE_DESC" />). Нажмите Ввод, чтобы выбрать альбомы отсюда: <ph name="TOPIC_SOURCE" />.</translation>
 <translation id="484790837831576105">DNS-преобразование (Android)</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">Разделить</translation>
 <translation id="4972592110715526173">сменить режим</translation>
 <translation id="498186245079027698">Проверьте сканер и повторите попытку. Убедитесь, что на диске достаточно свободного места для хранения отсканированных файлов.</translation>
+<translation id="4982627662315910959">Недопустимое сочетание клавиш. Выберите новое с клавишей Shift и ещё одним модификатором: Ctrl, Alt или <ph name="META_KEY" />.</translation>
 <translation id="4985509611418653372">Проверить</translation>
 <translation id="4987769320337599931">Брандмауэр</translation>
 <translation id="4988526792673242964">Страницы</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Оператор сотовой связи</translation>
 <translation id="725133483556299729">Выбор адреса электронной почты</translation>
 <translation id="7271040990581020067">Сканер уже используется. Повторите попытку позже.</translation>
+<translation id="7271932918253517778">В сочетании с клавишами верхнего ряда необходимо использовать клавишу <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Легкий бриз</translation>
 <translation id="7287310195820267359">Коллекция обоев</translation>

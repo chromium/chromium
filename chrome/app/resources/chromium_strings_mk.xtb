@@ -90,6 +90,7 @@
 <translation id="2583187216237139145">Податоците на Chromium што се генерирани при користењето на овој профил (како на пример, создавање обележувачи, историја, лозинки и други поставки) може да се отстранат од страна на администраторот на работниот профил. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Продолжете да користите Chromium</translation>
 <translation id="259935314519650377">Преземениот инсталатор не можеше да се кешира. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium работи побрзо, а функциите што користат JavaScript треба да функционираат според очекувањата (препорачано)</translation>
 <translation id="2648074677641340862">Настана грешка на оперативен систем при инсталација. Преземете го Chromium повторно.</translation>
 <translation id="2661879430930417727">Ако споделувате уред, пријателите и членовите на семејството може одделно да прелистуваат и да го поставуваат Chromium како што сакаат</translation>
 <translation id="268602741124540128">Добре дојдовте во Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -125,6 +126,7 @@
 <translation id="3258596308407688501">Chromium не може да чита и да пишува во директориумот за податоци:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 е пребарувач на JavaScript и WebAssembly во Chromium што се користи за подобрување на изведбата на сајтот</translation>
 <translation id="3283186697780795848">Инсталирана е верзијата <ph name="PRODUCT_VERSION" /> на Chromium</translation>
 <translation id="3286538390144397061">Рестартирај веднаш</translation>
 <translation id="328888136576916638">Клучевите Google API недостасуваат. Некои функции на Chromium ќе бидат оневозможени.</translation>
@@ -218,6 +220,7 @@
 <translation id="4814736265800133385">Користи Chromium без сметка</translation>
 <translation id="4888717733111232871">Дојдовно правило за Chromium да дозволи mDNS сообраќај.</translation>
 <translation id="4893347770495441059">Рестартирајте за да се ажурира &amp;Chromium</translation>
+<translation id="4942295735032723435">За да добивате идни ажурирања на Chromium, потребен ви е macOS 11 или понова верзија. Компјутеров користи macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium е во заднински режим.</translation>
 <translation id="4987820182225656817">Гостите може да го користат Chromium без оставање никакви траги зад нив.</translation>
 <translation id="4994636714258228724">Додај се себеси на Chromium</translation>
@@ -406,6 +409,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8105840573057009683">На Chromium му треба дозвола за локација за сајтов</translation>
 <translation id="8133124826068723441">Chromium OS не може да ги синхронизира податоците бидејќи синхронизацијата не е достапна за вашиот домен.</translation>
 <translation id="813913629614996137">Се иницијализира…</translation>
+<translation id="8166782796394721554">Вклучување дополнителна заштита во пребарувачот на JavaScript и WebAssembly во Chromium</translation>
 <translation id="81770708095080097">Датотекава е опасна, па затоа Chromium ја блокираше.</translation>
 <translation id="8213374284266571500">Chromium ја блокираше датотекава бидејќи типот на датотека е опасен</translation>
 <translation id="8248265253516264921">Ако сликата нема корисен опис, Chromium ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google. Ова може да го исклучите во „Поставки“ во секое време.</translation>

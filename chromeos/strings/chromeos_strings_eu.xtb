@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">aurrera</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ezkeroko datu-erabilera</translation>
 <translation id="1621067168122174824">Abiarazi kargatzeko prozesuaren proba</translation>
+<translation id="1626590945318984973">Lasterbidea ez dago erabilgarri. Sakatu beste lasterbide bat funtzio- eta <ph name="META_KEY" /> teklarik erabili gabe.</translation>
 <translation id="1639239467298939599">Kargatzen</translation>
 <translation id="1641857168437328880">Dokumentu-elikatzailea (alde bakarrekoa)</translation>
 <translation id="1643449475550628585">Aldatu egunero horma-paperaren irudia</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">Orain, <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />horma-paper<ph name="END_LINK_WALLPAPER_SUBPAGE" /> berriak erabil ditzakezu</translation>
 <translation id="4117637339509843559">Modu iluna</translation>
 <translation id="4130035430755296270">Diseinu-aukera gehiago ikusteko, jarraitu gainetik pasatzen</translation>
+<translation id="4130750466177569591">Ados nago</translation>
 <translation id="4131410914670010031">Zuri-beltzez</translation>
 <translation id="4145784616224233563">HTTP protokolorako suebakia</translation>
 <translation id="4147897805161313378">Google Argazkiak</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Desgaitu</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> berrabiarazten</translation>
 <translation id="4395835743215824109">teklatua pertsonalizatzea</translation>
+<translation id="4403262788869804671">Baliteke <ph name="META_KEY" /> teklarik gabeko lasterbideak gatazkan egotea aplikazioren baten lasterbidearekin. Lasterbide hau erabiltzen jarraitzeko, saka ezazu berriro; bestela, sakatu beste lasterbide bat <ph name="KEY" /> tekla erabilita.</translation>
 <translation id="4415951057168511744">Oraingo abatarra</translation>
+<translation id="4417830657741848074">Aplikazio batzuk automatikoki abiarazteko ezarri ditu administratzaileak. Aplikazio horietako batzuk ezin dira itxi.</translation>
 <translation id="4422041425070339732">behera egiteko gezi-tekla</translation>
 <translation id="4425149324548788773">Nire unitatea</translation>
 <translation id="4428374560396076622">Desaktibatuta dago <ph name="NETWORK_NAME" /></translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">Lurraren fluxua erakusten duen pantaila-babeslea</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ezin izan da egin ping lehenetsia ez den sarerako atebidean</translation>
+<translation id="4500722292849917410">Lasterbidea ez dago erabilgarri. Sakatu beste lasterbide bat tekla aldatzaile bat erabilita (Ktrl, Alt, Maius edo <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Interfazearen kolorea</translation>
 <translation id="4503223151711056411">Ezkerrera gezi-tekla</translation>
 <translation id="4507392511610824664">handitu distira</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Hautatu karpeta Fitxategiak aplikazioan…</translation>
 <translation id="4835901797422965222">Ez dago sare aktiborik</translation>
 <translation id="4839698083503556542">Sortu zeure filma</translation>
+<translation id="48409034532829769">"<ph name="APP_NAME" />" automatikoki abiarazteko ezarri du administratzaileak. Aplikazioa ezin da itxi.</translation>
 <translation id="484462545196658690">Automatikoa</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> hautatuta daukazula, sakatu Sartu <ph name="TOPIC_SOURCE" /> zerbitzuko albumak hautatzeko</translation>
 <translation id="484790837831576105">DNS bidezko ebazpena (Android)</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">Zatitu</translation>
 <translation id="4972592110715526173">modu-aldaketa</translation>
 <translation id="498186245079027698">Eman begirada bat eskanerrari eta saiatu berriro. Ziurtatu eskaneatutako fitxategiak gordetzeko behar beste toki dagoela gailuan.</translation>
+<translation id="4982627662315910959">Lasterbidea ez dago erabilgarri. Sakatu beste lasterbide bat Maius eta beste tekla aldatzaile bat erabilita (Ktrl, Alt edo <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Exekutatu</translation>
 <translation id="4987769320337599931">Suebakia</translation>
 <translation id="4988526792673242964">Orriak</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Zerbitzu mugikorraren hornitzailea</translation>
 <translation id="725133483556299729">Hautatu helbide elektroniko bat</translation>
 <translation id="7271040990581020067">Eskanerra erabiltzen ari zara. Saiatu berriro geroago.</translation>
+<translation id="7271932918253517778">Goiko errenkadako teklak darabiltzaten lasterbideetan <ph name="META_KEY" /> tekla ere erabili behar da.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Sentitu haize gozoa</translation>
 <translation id="7287310195820267359">Horma-paperen bildumak</translation>

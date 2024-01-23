@@ -102,6 +102,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chromium datus 
 <translation id="3955621079070267756">Atveriet Chromium jebkurā lietotnē</translation>
 <translation id="4005283307739974863">Tiek atvērta un veikta drošības pārbaude pārlūkā Chromium.</translation>
 <translation id="4043291146360695975">Paroles tiek saglabātas tikai šīs ierīces paroļu pārvaldniekā</translation>
+<translation id="4076589763479456892">Ja esat aizmirsis ieejas frāzi vai vēlaties mainīt šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chromium datus savā kontā<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Netiek atbalstīta pārlūkā Chromium Beta.</translation>
 <translation id="4106512142782407609">Jūs esat pierakstījies kā lietotājs <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@ Jūsu dati ir šifrēti, izmantojot ieejas frāzi. Ievadiet ieejas frāzi, lai i
 <translation id="5534584691915394889">Piekļuve tiks izmantota, lai jūsu Apple kalendārā veidotu pasākumus no pārlūka Chromium un funkcijas Google Lens.</translation>
 <translation id="5571094606370987472">Pārlūkā Chromium atver nesen atvērtās cilnes.</translation>
 <translation id="5623083843656850677">Bloķējiet savas inkognito cilnes, izejot no pārlūka Chromium vai pārslēdzoties uz citu lietotni.</translation>
+<translation id="5671188105328420281">Chromium padomi</translation>
 <translation id="5688047395118852662">Šajā kartītē tiek rādīti ieteikumi par to, kā pilnvērtīgi izmantot pārlūku Chromium.</translation>
 <translation id="5700709190537129682">Pārlūkprogrammā Chromium nevar pārbaudīt jūsu paroles.</translation>
 <translation id="5777187867430702742">Chromium lapa</translation>
@@ -283,6 +285,7 @@ Svarīga informācija
 <translation id="8776843108004031667">Šis konts un visi nesaglabātie dati tiks noņemti no pārlūka Chromium.</translation>
 <translation id="88376265765385899">Tiek atvērtas Chromium grāmatzīmes.</translation>
 <translation id="8860548555286245440">Vietrāžu URL atvēršana inkognito režīmā pārlūkā Chromium</translation>
+<translation id="8866191443434488382">Pārlūkā Chromium jūsu apmeklētajās vietnēs tiks noteikti izsekošanas numuri un jaunas cilnes lapā tiks parādīti jaunumi par sūtījumiem. Pakas izsekošanas numurs un vietnes nosaukums tiks nosūtīts uz pārlūku Chromium, lai nodrošinātu šo funkciju un uzlabotu iepirkšanās funkcijas visiem lietotājiem. Šo informāciju varat jebkurā laikā atjaunināt <ph name="BEGIN_LINK" />pakas izsekošanas iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium operētājsistēmai iOS</translation>
 <translation id="8924617840944134898">Chromium inkognito cilnes atvēršana</translation>
 <translation id="894437814105052438">Ja izrakstīsieties, jaunie dati pārlūkā Chromium netiks sinhronizēti ar jūsu Google kontu. Iepriekš sinhronizētie dati kontā saglabājas.</translation>

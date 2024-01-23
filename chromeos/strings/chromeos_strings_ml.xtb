@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">കൈമാറുക</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> മുതലുള്ള ഡാറ്റാ ഉപയോഗം</translation>
 <translation id="1621067168122174824">ചാർജ് ടെസ്റ്റ് റൺ ചെയ്യുക</translation>
+<translation id="1626590945318984973">കുറുക്കുവഴി ലഭ്യമല്ല. ഫംഗ്‌ഷനും <ph name="META_KEY" /> കീകളും ഉപയോഗിക്കാതെ ഒരു പുതിയ കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="1639239467298939599">ലോഡുചെയ്യുന്നു</translation>
 <translation id="1641857168437328880">ഡോക്യുമെന്റ് ഫീഡർ (ഒരു വശമുള്ളത്)</translation>
 <translation id="1643449475550628585">വാൾപേപ്പർ ചിത്രം ദിവസേന മാറ്റുക</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">നിങ്ങൾക്ക് ഇപ്പോൾ പുതിയ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />വാൾപേപ്പറുകളിലേക്ക്<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ആക്സസ് ഉണ്ട്</translation>
 <translation id="4117637339509843559">ഡാർക്ക് മോഡ്</translation>
 <translation id="4130035430755296270">കൂടുതൽ ലേഔട്ട് ഓപ്ഷനുകൾക്ക് ഹോവർ ചെയ്യുന്നത് തുടരുക</translation>
+<translation id="4130750466177569591">ഞാന്‍ അംഗീകരിക്കുന്നു</translation>
 <translation id="4131410914670010031">കറുപ്പും വെള്ളയും</translation>
 <translation id="4145784616224233563">HTTP ഫയര്‍വാള്‍</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">അപ്രാപ്‌തമാക്കുക</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> റീസ്റ്റാർട്ട് ചെയ്യുന്നു</translation>
 <translation id="4395835743215824109">കീബോർഡ് ഇഷ്‌ടാനുസൃതമാക്കൽ</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> കീ ഇല്ലാത്ത കുറുക്കുവഴിയും മറ്റേതെങ്കിലും ആപ്പിന്റെ കുറുക്കുവഴികളും തമ്മിൽ മാറിപ്പോകാൻ ഇടയുണ്ട്. തുടർന്നും ഉപയോഗിക്കാൻ ഈ കുറുക്കുവഴിയിൽ അമർത്തുക, അല്ലെങ്കിൽ <ph name="KEY" /> കീ ഉപയോഗിക്കുന്ന പുതിയൊരു കുറുക്കുവഴിയിൽ അമർത്തുക.</translation>
 <translation id="4415951057168511744">നിലവിലെ അവതാർ</translation>
+<translation id="4417830657741848074">സ്വയമേവ ആരംഭിക്കുന്നതിന് നിങ്ങളുടെ അഡ്‌മിൻ ചില ആപ്പുകൾ സജ്ജീകരിച്ചിരിക്കുന്നു. ഈ ആപ്പുകളിൽ ചിലത് അടച്ചേക്കില്ല.</translation>
 <translation id="4422041425070339732">താഴേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="4425149324548788773">എന്റെ ഡ്രൈവ്</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ഓഫാണ്</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">എർത്ത് ഫ്ലോ സ്ക്രീൻ സേവർ</translation>
 <translation id="4479639480957787382">എതെര്‍‌നെറ്റ്</translation>
 <translation id="4483049906298469269">നോൺ-ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് ഗേറ്റ്‍വേ പിംഗ് ചെയ്യാനായില്ല</translation>
+<translation id="4500722292849917410">കുറുക്കുവഴി ലഭ്യമല്ല. മോഡിഫയർ കീ (ctrl, alt, shift അല്ലെങ്കിൽ <ph name="META_KEY" />) ഉപയോഗിച്ച് പുതിയൊരു കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="4500966230243561393">ഇന്റര്‍ഫേസ് നിറം</translation>
 <translation id="4503223151711056411">ഇടത്തേയ്‌ക്കുള്ള അമ്പടയാളം</translation>
 <translation id="4507392511610824664">തെളിച്ചം കൂട്ടുക</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Files ആപ്പിൽ ഫോൾഡർ തിരഞ്ഞെടുക്കുക...</translation>
 <translation id="4835901797422965222">സജീവമായ നെറ്റ്‌വർക്കുകളൊന്നുമില്ല</translation>
 <translation id="4839698083503556542">സ്വന്തം സിനിമ സൃഷ്ടിക്കൂ</translation>
+<translation id="48409034532829769">സ്വയമേവ ആരംഭിക്കുന്നതിന് നിങ്ങളുടെ അഡ്‌മിൻ "<ph name="APP_NAME" />" സജ്ജീകരിച്ചിരിക്കുന്നു. ഈ ആപ്പ് അടച്ചേക്കില്ല.</translation>
 <translation id="484462545196658690">സ്വയമേവ</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> തിരഞ്ഞെടുത്തു, <ph name="TOPIC_SOURCE" /> ആൽബങ്ങൾ തിരഞ്ഞെടുക്കാൻ 'Enter' അമർത്തുക</translation>
 <translation id="484790837831576105">(Android) DNS റെസല്യൂഷൻ</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">വിഭജിക്കുക</translation>
 <translation id="4972592110715526173">മോഡ് മാറ്റം</translation>
 <translation id="498186245079027698">സ്കാനർ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക. സ്കാൻ ചെയ്ത ഫയലുകൾ സംരക്ഷിക്കാൻ മതിയായ ലോക്കൽ സ്പെയ്‍സ് ഉണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
+<translation id="4982627662315910959">കുറുക്കുവഴി ലഭ്യമല്ല. shift-ഉം ഒരു മോഡിഫയർ കീയും (ctrl, alt അല്ലെങ്കിൽ <ph name="META_KEY" />) ഉപയോഗിച്ച് പുതിയൊരു കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="4985509611418653372">റൺ ചെയ്യുക</translation>
 <translation id="4987769320337599931">ഫയർവാൾ</translation>
 <translation id="4988526792673242964">പേജുകള്‍</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">സെല്ലുലാര്‍‌ സേവനദാതാവ്</translation>
 <translation id="725133483556299729">ഇമെയിൽ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7271040990581020067">സ്‌കാനർ നിലവിൽ ഉപയോഗത്തിലാണ്. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="7271932918253517778">മുകൾ വരിയിലെ കീകൾ ഉള്ള കുറുക്കുവഴിയിൽ <ph name="META_KEY" /> കീ ഉൾപ്പെടുത്തേണ്ടതുണ്ട്.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ഇളം കാറ്റ് അനുഭവിക്കൂ</translation>
 <translation id="7287310195820267359">വാൾപേപ്പർ ശേഖരങ്ങൾ</translation>

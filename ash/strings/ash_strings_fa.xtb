@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">عدم وجود شبکه تلفن همراه</translation>
 <translation id="1882897271359938046">بازتاب به <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">قفل‌گشایی با اثر انگشت</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> از <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> هرتز) پشتیبانی نمی‌کند. وضوح به <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) تغییر کرده است. برای حفظ تغییرات، روی تأیید کلیک کنید. تنظیمات قبلی <ph name="TIMEOUT_SECONDS" /> دیگر بازیابی خواهد شد.</translation>
 <translation id="1908992311423394684">نصب جدید</translation>
 <translation id="1915307458270490472">قطع تماس</translation>
 <translation id="1918022425394817322">دوربین به گوشه بالا سمت راست چسبید</translation>
@@ -622,6 +621,7 @@
 <translation id="3577473026931028326">مشکلی پیش آمد. دوباره امتحان کنید.</translation>
 <translation id="3580650856351781466">درحال بارگیری فایل‌های گفتار</translation>
 <translation id="3585296979871889131">مشاهده عکس‌ها، رسانه‌ها، اعلان‌ها، و برنامه‌های جدید تلفن</translation>
+<translation id="3590441166907930941">دکمه کناری</translation>
 <translation id="3593039967545720377">‏برای دسترسی به سابقه بریده‌دان، <ph name="SHORTCUT_KEY_NAME" /> + V را فشار دهید تا بریده‌دان را مشاهده کنید. برای شروع کار، موردی را کپی کنید.</translation>
 <translation id="3593646411856133110">برای دیدن برنامه‌های باز، تند به‌بالا بکشید و نگه دارید</translation>
 <translation id="3595596368722241419">باتری پر است</translation>
@@ -1034,6 +1034,7 @@
 <translation id="5163434717504750796">سلامت باتری <ph name="BATTERY_HEALTH_PERCENTAGE" />٪ | تعداد چرخه <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">ذخیره میزکار به‌عنوان الگو</translation>
 <translation id="5168181903108465623">دستگاه‌های فرستادن موجود هستند</translation>
+<translation id="5168753792967365150">‏ویرایش در Google Tasks</translation>
 <translation id="5170568018924773124">نمایش در پوشه</translation>
 <translation id="5176318573511391780">ضبط کردن نیم‌صفحه</translation>
 <translation id="5187627942836026988">نمایش جزئیات نقطه اتصال. سرپرست نقطه اتصال را مسدود کرده است.</translation>
@@ -1303,6 +1304,8 @@
 <translation id="6168622430237609329">برنامه‌های نصب‌شده شما</translation>
 <translation id="6173151025443907148">‏اگر Lacros فعال باشد، از ورود به سیستم کاربر دوم پشتیبانی نمی‌شود. لطفاً به‌جای آن از نمایه مرورگر دیگری در Lacros استفاده کنید یا Lacros را غیرفعال کنید و دوباره امتحان کنید.</translation>
 <translation id="6179832488876878285">‏می‌توانید فایل‌های مهم را اینجا پین کنید. برای شروع کار، برنامه Files را باز کنید.</translation>
+<translation id="6180193585172850042">دکمه برگشت</translation>
+<translation id="6180651297859206670">دکمه جلو بردن</translation>
 <translation id="6182592640011875895">باز کردن میزکار</translation>
 <translation id="6185696379715117369">صفحه بالا</translation>
 <translation id="619335566042889110">اکنون کامل شارژ شود</translation>

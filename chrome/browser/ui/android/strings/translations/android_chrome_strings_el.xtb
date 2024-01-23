@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">Αλλάξτε την προεπιλεγμένη τοποθεσία λήψης ανά πάσα στιγμή</translation>
 <translation id="1796666869097395659">Ελαχιστοποιήστε την καρτέλα για να την επισκεφτείτε ξανά αργότερα</translation>
 <translation id="1807246157184219062">Ανοιχτόχρωμο</translation>
+<translation id="1807709131360304325">Άνοιγμα νέου παραθύρου</translation>
 <translation id="1810845389119482123">Η αρχική ρύθμιση συγχρονισμού δεν ολοκληρώθηκε</translation>
 <translation id="1812027881030482584">Το <ph name="SITE_ETLD_PLUS_ONE" /> δεν μπορεί να συνεχίσει να χρησιμοποιεί το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Εύρεση στη σελίδα</translation>
@@ -959,7 +960,6 @@
 <translation id="6192907950379606605">Λήψη περιγραφών εικόνων</translation>
 <translation id="6193448654517602979">Επιλογή καρτελών</translation>
 <translation id="6196315980958524839">Οι κωδικοί πρόσβασης αποθηκεύονται στον Διαχειριστή κωδικών πρόσβασης Google σε αυτήν τη συσκευή.</translation>
-<translation id="6202514376968366382">Το Chrome μπορεί να ανοίξει το PDF που κατεβάσατε</translation>
 <translation id="6202812185118613467">Συνδεθείτε ξανά για να ξεκινήσετε τον συγχρονισμό</translation>
 <translation id="6205314730813004066">Απόρρητο διαφημίσεων</translation>
 <translation id="6210748933810148297">Δεν είστε ο χρήστης <ph name="EMAIL" />;</translation>
@@ -1328,6 +1328,7 @@
 <translation id="7942131818088350342">Το <ph name="PRODUCT_NAME" /> δεν είναι ενημερωμένο.</translation>
 <translation id="7944772052836377867">Ο συγχρονισμός πρέπει να επαληθεύσει την ταυτότητά σας</translation>
 <translation id="7947953824732555851">Αποδοχή και σύνδεση</translation>
+<translation id="7951102827450076904">Να ανοίγουν πάντα τα ληφθέντα PDF</translation>
 <translation id="7957413488482743710">Μια εικονική κάρτα κρύβει την πραγματική κάρτα, προκειμένου να σας προστατεύσει από πιθανή απάτη. <ph name="BEGIN_LINK1" />Μάθετε περισσότερα σχετικά με τις εικονικές κάρτες<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Κουμπί πίσω των insight σελίδας</translation>
 <translation id="7961926449547174351">Έχετε απενεργοποιήσει την πρόσβαση αποθηκευτικού χώρου. Μεταβείτε στις Ρυθμίσεις για να την ενεργοποιήσετε.</translation>

@@ -228,7 +228,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1882814835921407042">Ez dago sare mugikorrik</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> pantailan islatzen</translation>
 <translation id="1885785240814121742">Desblokeatu hatz-marka bidez</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> pantailak ez du onartzen <ph name="SPECIFIED_RESOLUTION" /> bereizmena (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). <ph name="FALLBACK_RESOLUTION" /> bereizmena ezarri da pantailaren bereizmen gisa (<ph name="FALLBACK_REFRESH_RATE" />). Aldaketak gordetzeko, sakatu berresteko botoia. <ph name="TIMEOUT_SECONDS" /> barru leheneratuko dira aurreko ezarpenak.</translation>
 <translation id="1908992311423394684">Berriki instalatu da</translation>
 <translation id="1915307458270490472">Amaitu deia</translation>
 <translation id="1918022425394817322">Atxiki egin da kamera goiko eskuinaldeko izkinan</translation>
@@ -622,6 +621,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3577473026931028326">Arazo bat izan da. Saiatu berriro.</translation>
 <translation id="3580650856351781466">Hizketa-fitxategiak deskargatzen</translation>
 <translation id="3585296979871889131">Ikusi telefonoko azken argazkiak, multimedia-elementuak, jakinarazpenak eta aplikazioak</translation>
+<translation id="3590441166907930941">Alboko botoia</translation>
 <translation id="3593039967545720377">Arbeleko historia atzitzeko, sakatu <ph name="SHORTCUT_KEY_NAME" /> + V. Hasteko, kopiatu elementu bat.</translation>
 <translation id="3593646411856133110">Pasatu hatza gora eta eduki sakatuta irekitako aplikazioak ikusteko</translation>
 <translation id="3595596368722241419">Bateria beteta dago</translation>
@@ -1035,6 +1035,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="5163434717504750796">Bateriaren egoera: % <ph name="BATTERY_HEALTH_PERCENTAGE" /> | Ziklo kopurua: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Gorde lan-eremua txantiloi gisa</translation>
 <translation id="5168181903108465623">Igorpen-gailuak erabilgarri</translation>
+<translation id="5168753792967365150">Editatu Google Zereginak zerbitzuan</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
 <translation id="5176318573511391780">Grabatu pantailaren zati bat</translation>
 <translation id="5187627942836026988">Erakutsi wifi-gunearen xehetasunak. Administratzaileak wifi-gunea blokeatu du.</translation>
@@ -1304,6 +1305,8 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="6168622430237609329">Instalatutako aplikazioak</translation>
 <translation id="6173151025443907148">Lacros gaituta badago, ezin da hasi saiorik beste erabiltzaile batekin. Horren ordez, erabili arakatzaileko beste profil bat Lacros-en bertan, edo desgaitu Lacros eta saiatu berriro.</translation>
 <translation id="6179832488876878285">Hemen aingura ditzakezu fitxategi garrantzitsuak. Hasteko, erabili Fitxategiak aplikazioa.</translation>
+<translation id="6180193585172850042">Atzera botoia</translation>
+<translation id="6180651297859206670">Aurrera botoia</translation>
 <translation id="6182592640011875895">Ireki lan-eremua</translation>
 <translation id="6185696379715117369">Orrian gora</translation>
 <translation id="619335566042889110">Kargatu guztiz</translation>

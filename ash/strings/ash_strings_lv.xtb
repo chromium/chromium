@@ -228,7 +228,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1882814835921407042">Nav mobilā tīkla</translation>
 <translation id="1882897271359938046">Spoguļo šeit: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Atbloķēšana ar pirksta nospiedumu</translation>
-<translation id="1888656773939766144">Displejā “<ph name="DISPLAY_NAME" />” netiek atbalstīta izšķirtspēja <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Izšķirtspēja tika mainīta uz <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Lai saglabātu izmaiņas, noklikšķiniet uz “Apstiprināt”. Iepriekšējie iestatījumi tiks atjaunoti pēc šāda laika: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Jauna instalācija</translation>
 <translation id="1915307458270490472">Pārtraukt</translation>
 <translation id="1918022425394817322">Kamera pārnesta uz labo augšējo stūri</translation>
@@ -622,6 +621,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3577473026931028326">Radās kļūda. Mēģiniet vēlreiz.</translation>
 <translation id="3580650856351781466">Notiek subtitru failu lejupielāde</translation>
 <translation id="3585296979871889131">Skatīt tālruņa jaunākos fotoattēlus, multivides saturu, paziņojumus un lietotnes</translation>
+<translation id="3590441166907930941">Sānu poga</translation>
 <translation id="3593039967545720377">Lai skatītu starpliktuvi un piekļūtu starpliktuves vēsturei, nospiediet taustiņu kombināciju <ph name="SHORTCUT_KEY_NAME" />+V. Lai sāktu darbu, kopējiet kādu vienumu.</translation>
 <translation id="3593646411856133110">Velciet augšup un turiet, lai skatītu atvērtās lietotnes.</translation>
 <translation id="3595596368722241419">Akumulators pilns</translation>
@@ -1034,6 +1034,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="5163434717504750796">Akumulatora stāvoklis: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Ciklu skaits: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Saglabāt darbvietu kā veidni</translation>
 <translation id="5168181903108465623">Pieejamas apraides ierīces</translation>
+<translation id="5168753792967365150">Rediģēt pakalpojumā Google uzdevumi</translation>
 <translation id="5170568018924773124">Rādīt mapē</translation>
 <translation id="5176318573511391780">Ierakstīt daļu ekrāna</translation>
 <translation id="5187627942836026988">Tīklāja informācijas rādīšana. Tīklāju bloķēja jūsu administrators.</translation>
@@ -1303,6 +1304,8 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="6168622430237609329">Instalētās lietotnes</translation>
 <translation id="6173151025443907148">Otra lietotāja pierakstīšanās netiek atbalstīta, kamēr ir iespējots pārlūks Lacros. Izmantojiet otru pārlūka profilu vai atspējojiet pārlūku Lacros un mēģiniet vēlreiz.</translation>
 <translation id="6179832488876878285">Šeit varat piespraust svarīgos failus. Lai sāktu, atveriet lietotni Faili.</translation>
+<translation id="6180193585172850042">Poga Atpakaļ</translation>
+<translation id="6180651297859206670">Poga Tālāk</translation>
 <translation id="6182592640011875895">Atvērt darbvietu</translation>
 <translation id="6185696379715117369">Augšup</translation>
 <translation id="619335566042889110">Pilnībā uzlādēt</translation>

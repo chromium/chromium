@@ -1034,7 +1034,7 @@
 <translation id="178092663238929451">तपाईं आफू वरपरका मान्छेले पठाएका फाइल प्राप्त गर्न र ती मान्छेलाई फाइल पठाउन चाहनुहुन्छ भने नजिकैका डिभाइससँग सेयर गर्ने सुविधा सेटअप गर्नुहोस्</translation>
 <translation id="1781291988450150470">हालको PIN</translation>
 <translation id="1781502536226964113">नयाँ ट्याब पेज खोल्नुहोस्</translation>
-<translation id="1781553166608855614">पाठ पढेर सुनाइने भाषा</translation>
+<translation id="1781553166608855614">पढेर सुनाइने भाषा</translation>
 <translation id="1781771911845953849">खाता र सिंक सुविधा</translation>
 <translation id="1781979858217752599">विन्डोमा बजिरहेको अडियो सेयर गर्नुहोस्</translation>
 <translation id="1782101999402987960">तपाईंका एड्मिनले अपडेट गर्न नमिल्ने बनाएका छन्</translation>
@@ -4625,7 +4625,6 @@
 <translation id="4546345569117159016">दायाँतिरको बटन</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> यो एक्स्टेन्सन प्रयोग गर्न चाहनुहुन्छ:</translation>
 <translation id="4546692474302123343">Google सहायकमा बोलेर टाइप गर्ने सुविधा</translation>
-<translation id="4547538408998421970">तपाईंले आज जति वटा वालपेपर खोज्न सक्नुहुन्छ त्यति वटा वालपेपर खोज्न सक्नुहुन्छ।</translation>
 <translation id="4547659257713117923">अन्य यन्त्रहरूबाट कुनै ट्याबहरू छैनन्</translation>
 <translation id="4547672827276975204">स्वतः सेट गर्नुहोस्</translation>
 <translation id="4548858987594081919">Google पासवर्ड म्यानेजरलाई साइन इन गर्न प्रयोग गरिने तपाईंको जानकारी सेभ गर्न दिन यो साइटको युजरनेम हाल्नुहोस्</translation>
@@ -5235,7 +5234,6 @@
 <translation id="5032430150487044192">QR कोड सिर्जना गर्न सकिएन</translation>
 <translation id="5033137252639132982">मोसन सेन्सरहरू प्रयोग गर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="5033266061063942743">ज्यामितीय आकृतिहरू</translation>
-<translation id="5033646801355533305">कृपया भोलि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> बाट थप जानकारी प्राप्त गर्न तल "थप विवरणहरू" नामक बटनमा क्लिक गर्नुहोस्।</translation>
 <translation id="5037676449506322593">सबै चयन गर्नुहोस्</translation>
 <translation id="5038818366306248416">तपाईंले यसअघि <ph name="ORIGIN" /> मा कुनै पनि एक्स्टेन्सनलाई अनुमति दिनुभएको थिएन</translation>
@@ -6030,7 +6028,6 @@
 <translation id="5667546120811588575">Google Play सेटअप गरिँदै छ…</translation>
 <translation id="5668351004957198136">सफ्टवेयर चलाउनका निम्ति आवश्यक पर्ने जाँच पूरा गर्न सकिएन</translation>
 <translation id="5669863904928111203">ChromeOS को संस्करण पुरानो भइसकेको छ</translation>
-<translation id="56702779821643359">आफू वरपरका मान्छेहरूसँग फाइल सेयर गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="5671641761787789573">छविहरूमाथि रोक लगाइएको छ</translation>
 <translation id="5671658447180261823">सुझाव <ph name="SUGGESTION_NAME" /> हटाउनुहोस्</translation>
 <translation id="567210741546439261">बुकमार्क तथा सूचीहरू</translation>
@@ -8367,7 +8364,6 @@
 <translation id="752098910262610337">सर्टकटहरू देखाइयोस्</translation>
 <translation id="7521430434164837205">Microsoft 365 फाइलहरू</translation>
 <translation id="7522255036471229694">"Ok Google" भन्नुहोस्</translation>
-<translation id="7523112275619538890">नजिकैका डिभाइसहरूसँग फाइल तथा अन्य सामग्री सेयर गर्नुहोस्</translation>
 <translation id="7523117833414447032">ठुला अक्षरहरू पढ्दा</translation>
 <translation id="7523585675576642403">प्रोफाइलको नाम बदल्नुहोस्</translation>
 <translation id="7525067979554623046">सिर्जना गर्नुहोस्</translation>
@@ -9963,7 +9959,6 @@
 <translation id="8732212173949624846">तपाईंको सबै साइन-इन गरिएका यन्त्रहरूमा रहेका आफ्ना ब्राउजिङ इतिहास पढेर परिवर्तन गर्नुहोस्</translation>
 <translation id="8732844209475700754">गोपनीयता, सुरक्षा र डेटा सङ्कलनसँग सम्बन्धित थप सेटिङहरू</translation>
 <translation id="8734073480934656039">यस सेटिङ सक्षम गर्नाले किअस्क अनुप्रयोगहजरू सुरुवातमा स्वचालित रूपमा सुरु गर्न अनुमति दिन्छ।</translation>
-<translation id="8734674662128056360">तेस्रो पक्षीय कुकीलाई रोक लगाउने कार्य</translation>
 <translation id="8734755021067981851">कुनै पनि USB डिभाइस एट्याच गरिएको छैन।</translation>
 <translation id="8736288397686080465">यो साइट पृष्ठभूमिमा अद्यावधिक गरिएको छ।</translation>
 <translation id="8737709691285775803">Shill</translation>

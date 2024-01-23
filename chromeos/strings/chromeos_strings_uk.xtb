@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">уперед</translation>
 <translation id="1615335640928990664">Використання трафіку з <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Почати перевірку заряджання</translation>
+<translation id="1626590945318984973">Комбінація клавіш недоступна. Натисніть нову комбінацію клавіш, не використовуючи функціональні клавіші й клавіші <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Завантаження</translation>
 <translation id="1641857168437328880">Пристрій автоподачі документів (односторонній)</translation>
 <translation id="1643449475550628585">Змінювати фоновий малюнок щодня</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">Тепер ви маєте доступ до нових <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />фонових малюнків<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Темний режим</translation>
 <translation id="4130035430755296270">Продовжуйте наводити курсор на варіанти макета</translation>
+<translation id="4130750466177569591">Прийняти</translation>
 <translation id="4131410914670010031">Чорно-білий</translation>
 <translation id="4145784616224233563">Брандмауер HTTP</translation>
 <translation id="4147897805161313378">Google Фото</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Вимкнути</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> перезапускається</translation>
 <translation id="4395835743215824109">налаштування клавіатури</translation>
+<translation id="4403262788869804671">Комбінація клавіш без клавіші <ph name="META_KEY" /> може конфліктувати з налаштуваннями деяких додатків. Натисніть цю комбінацію ще раз, щоб продовжити її використання, або створіть новий варіант із клавішею <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Поточний аватар</translation>
+<translation id="4417830657741848074">Ваш адміністратор налаштував автоматичний запуск певних додатків. Деякі з них не можна закрити.</translation>
 <translation id="4422041425070339732">стрілка вниз</translation>
 <translation id="4425149324548788773">Мій диск</translation>
 <translation id="4428374560396076622">Мережу <ph name="NETWORK_NAME" /> вимкнено</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">Заставка "Поверхня землі"</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не вдалося надіслати запит ping шлюзу мережі не за умовчанням</translation>
+<translation id="4500722292849917410">Комбінація клавіш недоступна. Натисніть нову комбінацію з використанням клавіші-модифікатора (Ctrl, Alt, Shift або клавіша <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Колір інтерфейсу</translation>
 <translation id="4503223151711056411">Стрілка вліво</translation>
 <translation id="4507392511610824664">збільшити яскравість</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Вибрати папку в додатку "Файли"…</translation>
 <translation id="4835901797422965222">Немає активних мереж</translation>
 <translation id="4839698083503556542">Створюйте власний фільм</translation>
+<translation id="48409034532829769">Ваш адміністратор налаштував автоматичний запуск додатка <ph name="APP_NAME" />. Цей додаток не можна закрити.</translation>
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="4847902821209177679">Вибрано тему "<ph name="TOPIC_SOURCE" />" з описом "<ph name="TOPIC_SOURCE_DESC" />". Натисніть Enter, щоб вибрати альбоми для теми "<ph name="TOPIC_SOURCE" />"</translation>
 <translation id="484790837831576105">Перетворення DNS (Android)</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">Розділити</translation>
 <translation id="4972592110715526173">змінити режим</translation>
 <translation id="498186245079027698">Перевірте сканер і повторіть спробу. Переконайтеся, що на пристрої достатньо вільного місця для зберігання відсканованих файлів.</translation>
+<translation id="4982627662315910959">Комбінація клавіш недоступна. Натисніть нову комбінацію з використанням клавіші Shift і ще однієї клавіші-модифікатора (Ctrl, Alt або клавіша <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Виконати</translation>
 <translation id="4987769320337599931">Брандмауер</translation>
 <translation id="4988526792673242964">Сторінки</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Постачальник мобільного зв’язку</translation>
 <translation id="725133483556299729">Вибрати електронну адресу</translation>
 <translation id="7271040990581020067">Cканер використовується. Повторіть спробу пізніше.</translation>
+<translation id="7271932918253517778">Комбінація з клавішами верхнього рядка має містити клавішу <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Бриз</translation>
 <translation id="7287310195820267359">Колекції фонових малюнків</translation>

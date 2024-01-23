@@ -6554,6 +6554,11 @@ Origin-Agent-Cluster: 헤더가 설정되지 않았을 때 M111의 기본값은 
       '<ph name="CLEAR_BROWSING_HISTORY_ACTION" />', '<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />', '<ph name="CLEAR_AUTOFILL_ACTION" />', '<ph name="CLEAR_SITE_SETTINGS_ACTION" />'를 설정하면 <ph name="SYNC_DISABLED_POLICY_NAME" /> 정책을 설정하여 '<ph name="CHROME_SYNC_NAME" />`를 사용 중지하지 않거나 <ph name="BROWSER_SIGNIN_POLICY_NAME" /> 정책을 사용 중지하지 않으면 각 데이터 유형의 동기화가 사용 중지됩니다.</translation>
 <translation id="6462604655173570082">정책을 설정하지 않거나 '사용'으로 설정하면 사용자가 새 탭 페이지의 검색창에서 <ph name="GOOGLE_LENS_PRODUCT_NAME" /> 버튼을 보고 사용할 수 있습니다. 정책을 '사용 안함'으로 설정하면 새 탭 페이지의 검색창에 <ph name="GOOGLE_LENS_PRODUCT_NAME" /> 버튼이 표시되지 않습니다.</translation>
 <translation id="6464074037294098618">주소 자동 완성 사용</translation>
+<translation id="6464564464230511695">정책을 사용으로 설정하거나 설정하지 않으면 모든 웹페이지에서 <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" />이 허용됩니다.
+
+사용 안함으로 설정하면 어떤 웹페이지에서도 <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" />을 사용할 수 없습니다.
+
+Education 또는 Enterprise 계정에서는 이 기능에 속한 생성형 AI 기능을 사용할 수 없습니다.</translation>
 <translation id="6467613372414922590">관리자 권한 없이 설치된 사용자 수준의 기본 메시지 호스트를 허용합니다.</translation>
 <translation id="6467707081687600148"><ph name="PRODUCT_OS_NAME" /> 업데이트 적용 후 자동 재부팅을 예약합니다.
 

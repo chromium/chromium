@@ -4645,7 +4645,6 @@
 <translation id="4546345569117159016">ប៊ូតុងស្ដាំ</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> ចង់​ប្រើ​កម្មវិធីបន្ថែម​​នេះ៖</translation>
 <translation id="4546692474302123343">ការ​បញ្ចូល​ដោយប្រើសំឡេងរបស់ Google ជំនួយការ</translation>
-<translation id="4547538408998421970">អ្នកបាន​ឈានដល់​ដែនកំណត់​របស់អ្នក​នៅថ្ងៃនេះ​ហើយ។</translation>
 <translation id="4547659257713117923">គ្មានផ្ទាំងពីឧបករណ៍ដ៏ទៃទេ</translation>
 <translation id="4547672827276975204">កំណត់ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="4548858987594081919">ដើម្បី​ជួយ​កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់​រក្សាទុក​ព័ត៌មាន​ចូលគណនី​របស់​អ្នក សូម​បញ្ចូល​ឈ្មោះអ្នកប្រើប្រាស់​របស់​អ្នក​សម្រាប់​គេហទំព័រ​នេះ</translation>
@@ -5256,7 +5255,6 @@
 <translation id="5032430150487044192">មិនអាចបង្កើតកូដ QR បានទេ</translation>
 <translation id="5033137252639132982">មិនអនុញ្ញាតឱ្យប្រើឧបករណ៍​ចាប់​ចលនាទេ</translation>
 <translation id="5033266061063942743">ទម្រង់​ធរណីមាត្រ</translation>
-<translation id="5033646801355533305">សូម​ព្យាយាម​ម្ដង​ទៀត​នៅ​ថ្ងៃ​ស្អែក។</translation>
 <translation id="5035846135112863536">ជ្រើសរើស "ព័ត៌មាន​លម្អិត​បន្ថែម" ខាងក្រោម ដើម្បី​ទទួលបាន​ព័ត៌មាន​បន្ថែមពី <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />។</translation>
 <translation id="5037676449506322593">ជ្រើសរើសទាំងអស់</translation>
 <translation id="5038818366306248416">ពីមុន​អ្នកបានជ្រើសរើស​មិនអនុញ្ញាត​កម្មវិធីបន្ថែម​ណាមួយ​នៅលើ <ph name="ORIGIN" /></translation>
@@ -6053,7 +6051,6 @@
 <translation id="5667546120811588575">កំពុង​រៀបចំ Google Play...</translation>
 <translation id="5668351004957198136">បរាជ័យ</translation>
 <translation id="5669863904928111203">ChromeOS ហួសសម័យហើយ</translation>
-<translation id="56702779821643359">ចែករំលែកឯកសារ​ជាមួយ​មនុស្សនៅជុំវិញអ្នក។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="5671641761787789573">បានទប់ស្កាត់រូបភាព</translation>
 <translation id="5671658447180261823">លុបការ​ណែនាំ <ph name="SUGGESTION_NAME" /></translation>
 <translation id="567210741546439261">&amp;ចំណាំ និង​បញ្ជី</translation>
@@ -8392,7 +8389,6 @@
 <translation id="752098910262610337">បង្ហាញផ្លូវកាត់</translation>
 <translation id="7521430434164837205">ឯកសារ Microsoft 365</translation>
 <translation id="7522255036471229694">និយាយថា "Ok Google"</translation>
-<translation id="7523112275619538890">ចែករំលែកឯកសារ និងអ្វីៗជាច្រើនទៀតជាមួយនឹងឧបករណ៍នៅជិត</translation>
 <translation id="7523117833414447032">នៅពេល​អាន​អក្សរធំ</translation>
 <translation id="7523585675576642403">ប្ដូរឈ្មោះ​កម្រងព័ត៌មាន</translation>
 <translation id="7525067979554623046">បង្កើត</translation>
@@ -9990,7 +9986,6 @@
 <translation id="8732212173949624846">អាន និងប្តូរប្រវត្តិរុករករបស់អ្នកនៅលើឧបករណ៍ដែលអ្នកបានចូលទាំងអស់</translation>
 <translation id="8732844209475700754">ការកំណត់​ច្រើនទៀតដែលពាក់ព័ន្ធនឹង​ឯកជន​ភាព សុវត្ថិភាព និង​ការ​ប្រមូល​ទិន្នន័យ</translation>
 <translation id="8734073480934656039">ការបើកដំណើរការការកំណត់នេះអនុញ្ញាតឲ្យកម្មវិធីបញ្ជបើកដំណើរដោយស្វ័យប្រវត្តិនៅពេលចាប់ផ្តើមដំណើរការ។</translation>
-<translation id="8734674662128056360">ការទប់ស្កាត់​ខូគី​ភាគីទីបី</translation>
 <translation id="8734755021067981851">គ្មាន​ឧបករណ៍ USB ត្រូវបាន​ភ្ជាប់ទេ។</translation>
 <translation id="8736288397686080465">គេហទំព័រនេះបានធ្វើបច្ចុប្បន្នភាពនៅផ្ទៃខាងក្រោយ។</translation>
 <translation id="8737709691285775803">Shill</translation>

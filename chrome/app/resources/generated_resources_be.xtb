@@ -4627,7 +4627,6 @@
 <translation id="4546345569117159016">Правая кнопка</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> хоча выкарыстоўваць пашырэнне:</translation>
 <translation id="4546692474302123343">Галасавы ўвод з дапамогай Памочніка Google</translation>
-<translation id="4547538408998421970">Вы дасягнулі дзённага ліміту.</translation>
 <translation id="4547659257713117923">Няма ўкладак з іншых прылад</translation>
 <translation id="4547672827276975204">Вызначаць аўтаматычна</translation>
 <translation id="4548858987594081919">Укажыце сваё імя карыстальніка для гэтага сайта, каб даныя для ўваходу можна было захаваць у Менеджары пароляў Google</translation>
@@ -5237,7 +5236,6 @@
 <translation id="5032430150487044192">Не ўдалося стварыць QR-код</translation>
 <translation id="5033137252639132982">Не дазволена выкарыстоўваць датчыкі руху</translation>
 <translation id="5033266061063942743">Геаметрычныя фігуры</translation>
-<translation id="5033646801355533305">Паўтарыце спробу заўтра.</translation>
 <translation id="5035846135112863536">Каб атрымаць больш звестак пра памылку ад сэрвісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />", націсніце на кнопку "Дадатковая інфармацыя" ўнізе.</translation>
 <translation id="5037676449506322593">Выбраць усё</translation>
 <translation id="5038818366306248416">Раней вы забаранілі пашырэнні на старонцы <ph name="ORIGIN" /></translation>
@@ -6032,7 +6030,6 @@
 <translation id="5667546120811588575">Наладжваецца Google Play...</translation>
 <translation id="5668351004957198136">Збой</translation>
 <translation id="5669863904928111203">Састарэлая версія ChromeOS</translation>
-<translation id="56702779821643359">Абагульвайце файлы з карыстальнікамі паблізу. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="5671641761787789573">Выявы заблакіраваны</translation>
 <translation id="5671658447180261823">Выдаліць прапанову "<ph name="SUGGESTION_NAME" />"</translation>
 <translation id="567210741546439261">&amp;Закладкі і спісы</translation>
@@ -8374,7 +8371,6 @@
 <translation id="752098910262610337">Паказаць спалучэнні клавіш</translation>
 <translation id="7521430434164837205">Файлы Microsoft 365</translation>
 <translation id="7522255036471229694">Скажыце "Ok Google"</translation>
-<translation id="7523112275619538890">Абагульвайце файлы і іншае змесціва з прыладамі паблізу</translation>
 <translation id="7523117833414447032">Пры агучванні загалоўных літар</translation>
 <translation id="7523585675576642403">Пераймянуйце профіль</translation>
 <translation id="7525067979554623046">Стварыць</translation>
@@ -9970,7 +9966,6 @@
 <translation id="8732212173949624846">Доступ да вашай гісторыі прагляду сайтаў і яе змяненне з усіх прылад, з якіх вы ўвайшлі ва ўліковы запіс</translation>
 <translation id="8732844209475700754">Дадатковыя налады прыватнасці, бяспекі і збору даных</translation>
 <translation id="8734073480934656039">Калі гэта налада будзе ўключана, праграмы-кіёскі будуць аўтаматычна запускацца пры запуску АС.</translation>
-<translation id="8734674662128056360">Блакіроўка старонніх файлаў cookie</translation>
 <translation id="8734755021067981851">Няма падключаных USB-прылад.</translation>
 <translation id="8736288397686080465">Гэты сайт быў абноўлены ў фоне.</translation>
 <translation id="8737709691285775803">Фіктыўныя</translation>

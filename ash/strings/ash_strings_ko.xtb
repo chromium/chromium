@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">모바일 네트워크 없음</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />에 미러링</translation>
 <translation id="1885785240814121742">지문으로 잠금 해제</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" />에서 <ph name="SPECIFIED_RESOLUTION" />(<ph name="SPECIFIED_REFRESH_RATE" />Hz) 해상도를 지원하지 않습니다. <ph name="FALLBACK_RESOLUTION" />(<ph name="FALLBACK_REFRESH_RATE" />) 해상도로 변경되었습니다. 변경사항을 적용하려면 확인을 클릭하세요. <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
 <translation id="1908992311423394684">새로 설치됨</translation>
 <translation id="1915307458270490472">종료</translation>
 <translation id="1918022425394817322">카메라 미리보기가 오른쪽 상단으로 맞춰졌습니다</translation>
@@ -622,6 +621,7 @@
 <translation id="3577473026931028326">문제가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="3580650856351781466">음성 파일 다운로드 중</translation>
 <translation id="3585296979871889131">휴대전화의 최근 사진, 미디어, 알림, 앱 보기</translation>
+<translation id="3590441166907930941">측면 버튼</translation>
 <translation id="3593039967545720377"><ph name="SHORTCUT_KEY_NAME" /> + V 키를 눌러 클립보드를 열면 클립보드 기록에 액세스할 수 있습니다. 시작하려면 항목을 복사하세요.</translation>
 <translation id="3593646411856133110">위로 스와이프한 후 눌러 열려 있는 앱 보기</translation>
 <translation id="3595596368722241419">배터리 충전 완료</translation>
@@ -1034,6 +1034,7 @@
 <translation id="5163434717504750796">배터리 상태 <ph name="BATTERY_HEALTH_PERCENTAGE" />% | 사이클 수 <ph name="CYCLE_COUNT" />회</translation>
 <translation id="5166007464919321363">데스크를 템플릿으로 저장</translation>
 <translation id="5168181903108465623">전송 기기를 사용할 수 있음</translation>
+<translation id="5168753792967365150">Google Tasks에서 수정</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="5176318573511391780">화면 일부 녹화</translation>
 <translation id="5187627942836026988">핫스팟 세부정보를 표시합니다. 관리자가 핫스팟을 차단했습니다.</translation>
@@ -1303,6 +1304,8 @@
 <translation id="6168622430237609329">내 설치된 앱</translation>
 <translation id="6173151025443907148">Lacros가 사용 설정된 경우에는 두 번째 사용자 로그인이 지원되지 않습니다. 대신 Lacros에서 두 번째 브라우저 프로필을 사용하거나 Lacros를 사용 안함으로 설정했다가 다시 시도해 보세요.</translation>
 <translation id="6179832488876878285">여기에 중요한 파일을 고정할 수 있습니다. 시작하려면 파일 앱을 여세요.</translation>
+<translation id="6180193585172850042">뒤로 버튼</translation>
+<translation id="6180651297859206670">앞으로 버튼</translation>
 <translation id="6182592640011875895">데스크 열기</translation>
 <translation id="6185696379715117369">페이지 위로</translation>
 <translation id="619335566042889110">지금 완전히 충전하기</translation>

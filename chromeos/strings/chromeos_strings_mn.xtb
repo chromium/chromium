@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">цааш</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />-с хойших дата ашиглалт</translation>
 <translation id="1621067168122174824">Цэнэглэх туршилтыг ажиллуулах</translation>
+<translation id="1626590945318984973">Товчлол боломжгүй байна. Функц болон <ph name="META_KEY" /> товчнуудыг ашиглалгүйгээр шинэ товчлолыг дарна уу.</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
 <translation id="1641857168437328880">Документыг дамжуулах тавиур (Нэг талаар нь)</translation>
 <translation id="1643449475550628585">Дэлгэцийн зургийг өдөр бүр өөрчлөх</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">Та одоо шинэ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />дэлгэцийн зургуудад<ph name="END_LINK_WALLPAPER_SUBPAGE" /> хандах эрхтэй</translation>
 <translation id="4117637339509843559">Бараан горим</translation>
 <translation id="4130035430755296270">Бүдүүвчийн илүү олон сонголтыг харахын тулд үргэлжлүүлэн зөөгөөрэй</translation>
+<translation id="4130750466177569591">Би зөвшөөрч байна.</translation>
 <translation id="4131410914670010031">Хар ба цагаан</translation>
 <translation id="4145784616224233563">HTTP галт хана</translation>
 <translation id="4147897805161313378">Google Зураг</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Идэвхгүй болгох</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" />-г дахин эхлүүлж байна</translation>
 <translation id="4395835743215824109">гар өөрчлөх</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> товчгүй товчлол нь зарим аппын товчлолтой зөрчилдөж магадгүй. Энэ товчлолыг үргэлжлүүлэн ашиглахын тулд үүнийг дахин дарах эсвэл <ph name="KEY" /> товчийг ашиглан шинэ товчлол дарна уу.</translation>
 <translation id="4415951057168511744">Одоогийн аватар</translation>
+<translation id="4417830657741848074">Танай администратор зарим аппыг автоматаар эхлүүлэхээр тохируулсан. Эдгээр аппын заримыг нь хааж болохгүй байж магадгүй.</translation>
 <translation id="4422041425070339732">доош заасан сум</translation>
 <translation id="4425149324548788773">Миний Драйв</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> унтраалттай байна</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">Хөрсний нуралтыг харуулсан дэлгэц амраагч</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Сүлжээний өгөгдмөл бус гэйтвэйд пин илгээж чадсангүй</translation>
+<translation id="4500722292849917410">Товчлол боломжгүй байна. Тохируулагч товчийг (ctrl, alt, shift эсвэл <ph name="META_KEY" />) ашиглан шинэ товчлолыг дарна уу.</translation>
 <translation id="4500966230243561393">Интерфейсийн өнгө</translation>
 <translation id="4503223151711056411">Зүүн сум</translation>
 <translation id="4507392511610824664">гэрэлтүүлгийг нэмэх</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Файлс аппаас фолдер сонгох...</translation>
 <translation id="4835901797422965222">Идэвхтэй сүлжээ байхгүй байна</translation>
 <translation id="4839698083503556542">Өөрийн киног үүсгэх</translation>
+<translation id="48409034532829769">Танай администратор "<ph name="APP_NAME" />"-г автоматаар эхлүүлэхээр тохируулсан. Энэ аппыг хааж болохгүй байж магадгүй.</translation>
 <translation id="484462545196658690">Автомат</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />-г сонгосон, <ph name="TOPIC_SOURCE" /> цомгуудыг сонгохын тулд Enter дарна уу</translation>
 <translation id="484790837831576105">(Android) DNS нягтрал</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">Хуваах</translation>
 <translation id="4972592110715526173">горим өөрчлөх</translation>
 <translation id="498186245079027698">Сканнерыг шалгаад дахин оролдоно уу. Скан хийсэн файлуудыг хадгалах хангалттай дотоод зай байгаа эсэхийг шалгана уу.</translation>
+<translation id="4982627662315910959">Товчлол боломжгүй байна. Shift болон өөр 1 тохируулагч товчийг (ctrl, alt эсвэл <ph name="META_KEY" />) ашиглан шинэ товчлолыг дарна уу.</translation>
 <translation id="4985509611418653372">Ажиллуулах</translation>
 <translation id="4987769320337599931">Галт хана</translation>
 <translation id="4988526792673242964">Хуудас</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Үүрэн холбооны үйлчилгээ үзүүлэгч</translation>
 <translation id="725133483556299729">Имэйл сонгох</translation>
 <translation id="7271040990581020067">Сканнерыг одоогоор ашиглаж байна. Дараа дахин оролдоно уу.</translation>
+<translation id="7271932918253517778">Дээд талын мөрийн товчнуудтай товчлол нь <ph name="META_KEY" /> товчийг оруулах шаардлагатай.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Сэвшээ салхийг мэдэр</translation>
 <translation id="7287310195820267359">Дэлгэцийн зургийн цуглуулга</translation>

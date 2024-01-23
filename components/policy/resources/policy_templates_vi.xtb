@@ -2977,6 +2977,17 @@ Nếu bạn không đặt chính sách này, thì hệ thống sẽ ngăn mọi 
 <translation id="3423703250826790403">Ứng dụng Android</translation>
 <translation id="3426434797050451264">Chính sách này cũng có thể được dùng để chỉ định các ứng dụng Android làm trình xử lý tệp mặc định.</translation>
 <translation id="3428247105888806363">Bật dự đoán mạng</translation>
+<translation id="3430198032663063246">Giúp tôi viết là tính năng trợ lý viết dựa trên AI dành cho nội dung dạng ngắn trên web. Nội dung đề xuất dựa trên các câu lệnh do người dùng nhập và nội dung của trang web.
+
+0 = Bật tính năng này cho người dùng và gửi dữ liệu liên quan cho Google để giúp đào tạo hoặc cải tiến mô hình AI. Dữ liệu liên quan có thể bao gồm câu lệnh, dữ liệu đầu vào, đầu ra và tài liệu nguồn, tuỳ thuộc vào tính năng. Dữ liệu này có thể được các nhân viên xem xét nhằm mục đích duy nhất là cải tiến mô hình AI.
+
+0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
+
+1 = Bật tính năng này cho người dùng nhưng không gửi dữ liệu cho Google để đào tạo hoặc cải tiến mô hình AI. 1 là giá trị mặc định cho người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý.
+
+2 = Vô hiệu hoá tính năng. 2 là giá trị mặc định cho tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
+
+Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3432863169147125747">Kiểm soát các tùy chọn cài đặt in.</translation>
 <translation id="3434053014926283175">Chuyển nút chuột chính thành nút phải trên màn hình đăng nhập.
 
@@ -8787,6 +8798,17 @@ Chính sách này được áp dụng cho Chế độ ẩn danh. Nói cách khá
 <translation id="822055204938220476">Danh sách URL được phép tiếp tục hoạt động ở chế độ toàn màn hình mà không cần hiện thông báo</translation>
 <translation id="8225579382697740712">Kiểm soát hoạt động sử dụng API WebHID</translation>
 <translation id="8229912067600517877">Bật Công cụ cho nhà phát triển</translation>
+<translation id="8234565689501421293">Tính năng Tạo giao diện bằng AI cho phép người dùng tạo giao diện/hình nền tuỳ chỉnh bằng cách chọn trước trong danh sách lựa chọn.
+
+0 = Bật tính năng này cho người dùng và gửi dữ liệu liên quan cho Google để giúp đào tạo hoặc cải tiến mô hình AI. Dữ liệu liên quan có thể bao gồm câu lệnh, dữ liệu đầu vào, đầu ra và tài liệu nguồn, tuỳ thuộc vào tính năng. Dữ liệu này có thể được các nhân viên xem xét nhằm mục đích duy nhất là cải tiến mô hình AI.
+
+0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
+
+1 = Bật tính năng này cho người dùng nhưng không gửi dữ liệu cho Google để đào tạo hoặc cải tiến mô hình AI. 1 là giá trị mặc định cho người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý.
+
+2 = Vô hiệu hoá tính năng. 2 là giá trị mặc định cho tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
+
+Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8238421250255592181">Một cờ boolean cho biết liệu bàn phím ảo có thể cung cấp tính năng tự động hoàn thành hay không.</translation>
 <translation id="8239109177194627162">Tắt tính năng Tự động điền đối với thẻ tín dụng</translation>
 <translation id="8239143983379015783">Buộc bật hạn mức cố định</translation>
@@ -10008,6 +10030,17 @@ Giá trị mặc định là RollbackDisabled.</translation>
 <translation id="943865157632139008">Cho phép bạn định cấu hình trình hiển thị HTML mặc định khi <ph name="PRODUCT_FRAME_NAME" /> được cài đặt.
       Tùy chọn cài đặt mặc định này cho phép trình duyệt máy chủ thực hiện chức năng hiển thị nhưng bạn có thể tùy ý ghi đè tùy chọn cài đặt này và yêu cầu <ph name="PRODUCT_FRAME_NAME" /> hiển thị các trang HTML theo mặc định.</translation>
 <translation id="944817693306670849">Đặt kích thước bộ nhớ đệm của đĩa</translation>
+<translation id="946458935955389273">Trình sắp xếp thẻ là một công cụ dựa trên AI, có thể tự động tạo các nhóm thẻ dựa trên các thẻ mà người dùng đang mở. Nội dung đề xuất dựa trên các thẻ đang mở (chứ không phải nội dung trang).
+
+0 = Bật tính năng này cho người dùng và gửi dữ liệu liên quan cho Google để giúp đào tạo hoặc cải tiến mô hình AI. Dữ liệu liên quan có thể bao gồm câu lệnh, dữ liệu đầu vào, đầu ra và tài liệu nguồn, tuỳ thuộc vào tính năng. Dữ liệu này có thể được các nhân viên xem xét nhằm mục đích duy nhất là cải tiến mô hình AI.
+
+0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
+
+1 = Bật tính năng này cho người dùng nhưng không gửi dữ liệu cho Google để đào tạo hoặc cải tiến mô hình AI. 1 là giá trị mặc định cho người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý.
+
+2 = Vô hiệu hoá tính năng. 2 là giá trị mặc định cho tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
+
+Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="957322141096206402">Quá trình phân giải DNS của hệ thống có thể chạy trong hoặc ngoài quy trình mạng, tuỳ vào cấu hình hệ thống và cờ tính năng.</translation>
 <translation id="957778406002650056">URL mà từ đó có thể tải hình ảnh <ph name="PLUGIN_VM_NAME" /> xuống.</translation>
 <translation id="957920984193041197">Cho phép các trang hiển thị cửa sổ bật lên trong khi huỷ tải</translation>

@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">Не подключено к мобильной сети</translation>
 <translation id="1882897271359938046">Дублирование экрана в <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Используйте разблокировку по отпечатку пальца</translation>
-<translation id="1888656773939766144">Экран "<ph name="DISPLAY_NAME" />" не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц). Установлено разрешение <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц). Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Недавно установленное приложение</translation>
 <translation id="1915307458270490472">Закрыть</translation>
 <translation id="1918022425394817322">Окно предварительного просмотра камеры привязано к правому верхнему углу</translation>
@@ -622,6 +621,7 @@
 <translation id="3577473026931028326">Произошла ошибка. Повторите попытку.</translation>
 <translation id="3580650856351781466">Скачивание файлов с записью речи</translation>
 <translation id="3585296979871889131">Просматривайте недавние фотографии, медиафайлы, уведомления и приложения с телефона.</translation>
+<translation id="3590441166907930941">Боковая кнопка</translation>
 <translation id="3593039967545720377">Чтобы посмотреть историю буфера обмена, нажмите клавиши <ph name="SHORTCUT_KEY_NAME" /> + V. Чтобы начать, скопируйте объект.</translation>
 <translation id="3593646411856133110">Чтобы увидеть открытые приложения, проведите по экрану вверх и удерживайте палец.</translation>
 <translation id="3595596368722241419">Аккумулятор заряжен</translation>
@@ -995,7 +995,7 @@
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4981175556418720939">Изменено <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Рабочий стол 16</translation>
-<translation id="4989163558385430922">Показать все</translation>
+<translation id="4989163558385430922">Посмотреть все</translation>
 <translation id="5003993274120026347">К следующему предложению</translation>
 <translation id="5004607513195820459">Сетью управляет администратор</translation>
 <translation id="5009463889040999939">Профиль переименовывается. Это может занять несколько минут.</translation>
@@ -1034,6 +1034,7 @@
 <translation id="5163434717504750796">Состояние батареи: <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | Количество циклов: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Сохранить рабочий стол как шаблон</translation>
 <translation id="5168181903108465623">Доступны устройства для трансляции</translation>
+<translation id="5168753792967365150">Изменить в Google Задачах</translation>
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="5176318573511391780">Запись видео с части экрана</translation>
 <translation id="5187627942836026988">Показать сведения о точке доступа. Точка доступа заблокирована администратором.</translation>
@@ -1303,6 +1304,8 @@
 <translation id="6168622430237609329">Установленные приложения</translation>
 <translation id="6173151025443907148">Во время работы Lacros не поддерживается вход в несколько аккаунтов. Вы можете использовать второй профиль браузера или закрыть Lacros и повторить попытку.</translation>
 <translation id="6179832488876878285">Вы можете закрепить здесь важные документы. Чтобы начать, откройте приложение "Файлы".</translation>
+<translation id="6180193585172850042">Кнопка "Назад"</translation>
+<translation id="6180651297859206670">Кнопка "Вперед"</translation>
 <translation id="6182592640011875895">Открыть рабочий стол</translation>
 <translation id="6185696379715117369">На страницу вверх</translation>
 <translation id="619335566042889110">Зарядить до конца сейчас</translation>

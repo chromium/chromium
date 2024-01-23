@@ -4,9 +4,12 @@
 <translation id="1173075331199604451">Menu Voce</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1246424317317450637">Grassetto</translation>
+<translation id="1586836055630070874">Riposante</translation>
+<translation id="1741047078107369903">Calda</translation>
 <translation id="1921351128855867012">Avanti di <ph name="NUMBER_OF_SECONDS" /> secondi</translation>
 <translation id="1984328900355667246">Riproduzione non disponibile</translation>
 <translation id="2224347680315897176">Seria</translation>
+<translation id="2611765907167846862">Serena</translation>
 <translation id="3023502830214299618">Purtroppo al momento la riproduzione di questa pagina non è disponibile. Riprova più tardi.</translation>
 <translation id="3807208219231826020">Esegui lo scrubbing della riproduzione</translation>
 <translation id="385051799172605136">Indietro</translation>
@@ -15,7 +18,9 @@
 <translation id="4431240646217225907">Evidenzia il testo e scorri automaticamente</translation>
 <translation id="4494605076346185630">Tonalità intermedia</translation>
 <translation id="4710974520964166851">Rilassata</translation>
+<translation id="4773921449011281499">Tranquilla</translation>
 <translation id="4872475766448853257">Torna indietro di <ph name="NUMBER_OF_SECONDS" /> secondi</translation>
+<translation id="5026371835667036198">Alta</translation>
 <translation id="5234971936051226002">Player "Ascolta questa pagina" ridotto a icona.</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5694491020339060116">Menu Velocità di riproduzione</translation>
@@ -26,6 +31,8 @@
 <translation id="6831043979455480757">Traduci</translation>
 <translation id="6846298663435243399">Caricamento in corso…</translation>
 <translation id="6889157801232138307">Player "Ascolta questa pagina"</translation>
+<translation id="7221920857098237570">Dolce</translation>
+<translation id="7237590978482584900">Vivace</translation>
 <translation id="7282547042039404307">Fluido</translation>
 <translation id="7587250070160020374">Chrome ora in riproduzione</translation>
 <translation id="8136852699834914183">Riproduzione non disponibile per questa pagina.</translation>

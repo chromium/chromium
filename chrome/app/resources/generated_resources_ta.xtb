@@ -4644,7 +4644,6 @@
 <translation id="4546345569117159016">வலது பட்டன்</translation>
 <translation id="4546509872654834602">இந்த நீடிப்பை <ph name="SUPERVISED_USER_NAME" /> பயன்படுத்த விரும்புகிறார்:</translation>
 <translation id="4546692474302123343">Google Assistant குரல் உள்ளீடு</translation>
-<translation id="4547538408998421970">இன்றைய வரம்பை அடைந்துவிட்டீர்கள்.</translation>
 <translation id="4547659257713117923">பிற சாதனங்களின் தாவல்கள் எதுவுமில்லை</translation>
 <translation id="4547672827276975204">தானாக அமை</translation>
 <translation id="4548858987594081919">உங்கள் உள்நுழைவுத் தகவலை Google Password Manager சேமிக்க உதவும் வகையில் இந்தத் தளத்திற்கான உங்கள் பயனர்பெயரைச் சேர்க்கவும்</translation>
@@ -5254,7 +5253,6 @@
 <translation id="5032430150487044192">QR குறியீட்டை உருவாக்க முடியவில்லை</translation>
 <translation id="5033137252639132982">மோஷன் சென்சார்களைப் பயன்படுத்த அனுமதி இல்லாத தளங்கள்</translation>
 <translation id="5033266061063942743">வடிவியல் வடிவங்கள்</translation>
-<translation id="5033646801355533305">நாளை மீண்டும் முயலவும்.</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> இடமிருந்து கூடுதல் தகவல்களைப் பெற, கீழே உள்ள "கூடுதல் விவரங்கள்" என்பதைத் தேர்வுசெய்யுங்கள்.</translation>
 <translation id="5037676449506322593">எல்லாம் தேர்ந்தெடு</translation>
 <translation id="5038818366306248416"><ph name="ORIGIN" /> இல் உள்ள நீட்டிப்புகள் எதையும் அனுமதிக்க வேண்டாம் என முன்பே தேர்வுசெய்துள்ளீர்கள்</translation>
@@ -6050,7 +6048,6 @@
 <translation id="5667546120811588575">Google Playஐ அமைக்கிறது...</translation>
 <translation id="5668351004957198136">சரிபார்க்க முடியவில்லை</translation>
 <translation id="5669863904928111203">ChromeOS சமீபத்தியதாக இல்லை</translation>
-<translation id="56702779821643359">உங்களுக்கு அருகிலுள்ளவர்களுடன் ஃபைல்களைப் பகிருங்கள். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="5671641761787789573">படங்கள் தடுக்கப்பட்டன</translation>
 <translation id="5671658447180261823"><ph name="SUGGESTION_NAME" /> பரிந்துரையை அகற்றும்</translation>
 <translation id="567210741546439261">&amp;புக்மார்க்குகள் மற்றும் பட்டியல்கள்</translation>
@@ -8389,7 +8386,6 @@
 <translation id="752098910262610337">ஷார்ட்கட்களைக் காட்டு</translation>
 <translation id="7521430434164837205">Microsoft 365 ஃபைல்கள்</translation>
 <translation id="7522255036471229694">"Ok Google" என்று கூறவும்</translation>
-<translation id="7523112275619538890">அருகிலுள்ள சாதனங்களுடன் ஃபைல்களையும் மேலும் பலவற்றையும் பகிரலாம்</translation>
 <translation id="7523117833414447032">பேரெழுத்துகளைப் படிக்கும்போது:</translation>
 <translation id="7523585675576642403">சுயவிவரத்தின் பெயரை மாற்றுதல்</translation>
 <translation id="7525067979554623046">உருவாக்கு</translation>
@@ -9986,7 +9982,6 @@
 <translation id="8732212173949624846">நீங்கள் உள்நுழைந்துள்ள எல்லா சாதனங்களிலிருக்கும் உலாவல் வரலாற்றைப் படிக்கலாம் மற்றும் மாற்றலாம்</translation>
 <translation id="8732844209475700754">தனியுரிமை, பாதுகாப்பு, தரவுச் சேகரிப்பு ஆகியவை தொடர்பான மேலும் அமைப்புகள்</translation>
 <translation id="8734073480934656039">இந்த அமைப்பை இயக்குவது, தொடக்கத்தில் கியோஸ்க் ஆப்ஸ் தானாக தொடங்குவதை அனுமதிக்கும்.</translation>
-<translation id="8734674662128056360">மூன்றாம் தரப்பினரின் குக்கீயைத் தடை செய்யும்</translation>
 <translation id="8734755021067981851">USB சாதனங்கள் எதுவும் இணைக்கப்படவில்லை.</translation>
 <translation id="8736288397686080465">இந்தத் தளம் பின்புலத்தில் புதுப்பிக்கப்படும்.</translation>
 <translation id="8737709691285775803">Shill</translation>

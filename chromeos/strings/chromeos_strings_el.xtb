@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">προώθηση</translation>
 <translation id="1615335640928990664">Χρήση δεδομένων από τις <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Εκτέλεση δοκιμής φόρτισης</translation>
+<translation id="1626590945318984973">Η συντόμευση δεν είναι διαθέσιμη. Πατήστε μια νέα συντόμευση χωρίς να χρησιμοποιήσετε τα πλήκτρα λειτουργιών και <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Φόρτωση</translation>
 <translation id="1641857168437328880">Τροφοδότης εγγράφων (Μίας όψης)</translation>
 <translation id="1643449475550628585">Καθημερινή αλλαγή εικόνας ταπετσαρίας</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">Έχετε πλέον πρόσβαση σε νέες <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ταπετσαρίες<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Λειτουργία χαμηλού φωτισμού</translation>
 <translation id="4130035430755296270">Κρατήστε τον δείκτη πάνω από το στοιχείο για περισσότερες επιλογές διάταξης</translation>
+<translation id="4130750466177569591">Συμφωνώ</translation>
 <translation id="4131410914670010031">Ασπρόμαυρο</translation>
 <translation id="4145784616224233563">Τείχος προστασίας HTTP</translation>
 <translation id="4147897805161313378">Φωτογραφίες Google</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Απενεργοποίηση</translation>
 <translation id="439429847087949098">Επανεκκίνηση <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">προσαρμογή πληκτρολογίου</translation>
+<translation id="4403262788869804671">Η συντόμευση χωρίς πλήκτρο <ph name="META_KEY" /> ενδέχεται να δημιουργήσει διένεξη με τη συντόμευση μιας άλλης εφαρμογής. Πατήστε ξανά αυτή τη συντόμευση για να συνεχίσετε να τη χρησιμοποιείτε ή πατήστε μια νέα συντόμευση χρησιμοποιώντας το πλήκτρο <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Τρέχον avatar</translation>
+<translation id="4417830657741848074">Ο διαχειριστής έχει ρυθμίσει ορισμένες εφαρμογές έτσι ώστε να ξεκινούν αυτόματα. Δεν μπορείτε να κλείσετε ορισμένες από αυτές τις εφαρμογές.</translation>
 <translation id="4422041425070339732">κάτω βέλος</translation>
 <translation id="4425149324548788773">Το Drive μου</translation>
 <translation id="4428374560396076622">Το δίκτυο <ph name="NETWORK_NAME" /> είναι εκτός λειτουργίας.</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">Προστασία οθόνης Κίνηση της Γης</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Αποτυχία ping της μη προεπιλεγμένης πύλης δικτύου.</translation>
+<translation id="4500722292849917410">Η συντόμευση δεν είναι διαθέσιμη. Πατήστε μια νέα συντόμευση χρησιμοποιώντας ένα πλήκτρο τροποποίησης (ctrl, alt, shift ή <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Χρώμα διεπαφής</translation>
 <translation id="4503223151711056411">Αριστερό βέλος</translation>
 <translation id="4507392511610824664">αύξηση φωτεινότητας</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Επιλογή φακέλου στην εφαρμογή Αρχεία…</translation>
 <translation id="4835901797422965222">Δεν υπάρχουν ενεργά δίκτυα</translation>
 <translation id="4839698083503556542">Κάντε τη δική σας ταινία</translation>
+<translation id="48409034532829769">Ο διαχειριστής έχει ρυθμίσει την εφαρμογή <ph name="APP_NAME" /> έτσι ώστε να ξεκινάει αυτόματα. Δεν μπορείτε να κλείσετε τη συγκεκριμένη εφαρμογή.</translation>
 <translation id="484462545196658690">Αυτόματα</translation>
 <translation id="4847902821209177679">Επιλέχθηκε το στοιχείο <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />. Πατήστε Enter για να επιλέξετε λευκώματα από <ph name="TOPIC_SOURCE" />.</translation>
 <translation id="484790837831576105">(Android) Επίλυση DNS</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">Διαχωρισμός</translation>
 <translation id="4972592110715526173">αλλαγή λειτουργίας</translation>
 <translation id="498186245079027698">Ελέγξτε τον σαρωτή και δοκιμάστε ξανά. Βεβαιωθείτε ότι υπάρχει αρκετός τοπικός αποθηκευτικός χώρος για την αποθήκευση των αρχείων που σαρώνονται.</translation>
+<translation id="4982627662315910959">Η συντόμευση δεν είναι διαθέσιμη. Πατήστε μια νέα συντόμευση χρησιμοποιώντας το shift και 1 ακόμα πλήκτρο τροποποίησης (ctrl, alt ή <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Εκτέλεση</translation>
 <translation id="4987769320337599931">Τείχος προστασίας</translation>
 <translation id="4988526792673242964">Σελίδες</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Πάροχος δικτύου κινητής τηλεφωνίας</translation>
 <translation id="725133483556299729">Επιλογή διεύθυνσης ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="7271040990581020067">Ο σαρωτής χρησιμοποιείται αυτήν τη στιγμή. Δοκιμάστε ξανά αργότερα.</translation>
+<translation id="7271932918253517778">Η συντόμευση με πλήκτρα επάνω σειράς πρέπει να περιλαμβάνει το πλήκτρο <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Νιώστε το αεράκι</translation>
 <translation id="7287310195820267359">Συλλογές ταπετσαρίας</translation>

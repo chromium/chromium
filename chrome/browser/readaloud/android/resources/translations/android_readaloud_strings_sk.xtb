@@ -4,9 +4,12 @@
 <translation id="1173075331199604451">Ponuka hlasu</translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
 <translation id="1246424317317450637">Tučné</translation>
+<translation id="1586836055630070874">Upokojujúci</translation>
+<translation id="1741047078107369903">Srdečný</translation>
 <translation id="1921351128855867012">Pretočiť dopredu o <ph name="NUMBER_OF_SECONDS" /> s</translation>
 <translation id="1984328900355667246">Prehrávanie nie je k dispozícii</translation>
 <translation id="2224347680315897176">Vyrovnaný</translation>
+<translation id="2611765907167846862">Pokojný</translation>
 <translation id="3023502830214299618">Ľutujeme, ale prehrávanie nie je momentálne k dispozícii pre túto stránku. Skúste to znova neskôr.</translation>
 <translation id="3807208219231826020">Prehľadávanie prehrávania</translation>
 <translation id="385051799172605136">Späť</translation>
@@ -15,7 +18,9 @@
 <translation id="4431240646217225907">Zvýrazňovať text a automaticky posúvať</translation>
 <translation id="4494605076346185630">Stredne vysoký</translation>
 <translation id="4710974520964166851">Uvoľnený</translation>
+<translation id="4773921449011281499">Vyrovnaný</translation>
 <translation id="4872475766448853257">Pretočiť späť o <ph name="NUMBER_OF_SECONDS" /> s</translation>
+<translation id="5026371835667036198">Jasný</translation>
 <translation id="5234971936051226002">Prehrávač „Vypočuť obsah tejto stránky“ bol minimalizovaný.</translation>
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
 <translation id="5694491020339060116">Ponuka rýchlosti prehrávania</translation>
@@ -26,6 +31,8 @@
 <translation id="6831043979455480757">Preložiť</translation>
 <translation id="6846298663435243399">Načítava sa…</translation>
 <translation id="6889157801232138307">Prehrávač „Vypočuť obsah tejto stránky“</translation>
+<translation id="7221920857098237570">Jemný</translation>
+<translation id="7237590978482584900">Uvoľnený</translation>
 <translation id="7282547042039404307">Plynulá</translation>
 <translation id="7587250070160020374">V Chrome teraz hrá</translation>
 <translation id="8136852699834914183">Prehrávanie nie je pre túto stránku k dispozícii.</translation>

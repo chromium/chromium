@@ -90,6 +90,7 @@
 <translation id="2583187216237139145">Жұмыс профилінің әкімшісі осы профильді пайдалану кезінде құрылатын Chromium браузерінің кез келген дерегін (бетбелгілер, тарих, құпия сөздер жасау және басқа параметрлер сияқты) жоя алады. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium-ді пайдалана беру</translation>
 <translation id="259935314519650377">Жүктеп алынған орнату құралы кэштелмеді. Қате: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium жылдам жұмыс істейді және JavaScript қолданатын функциялар тиісті түрде жұмыс істеуі керек (ұсынылады).</translation>
 <translation id="2648074677641340862">Орнату барысында операциялық жүйе қатесі орын алды. Chromium қайта жүктеңіз.</translation>
 <translation id="2661879430930417727">Құрылғыңызды басқа адамдар да пайдаланатын болса, достарыңыз және отбасыңыздың мүшелері интернетке бөлек кіріп, Chromium параметрлерін өздері қалағандай орната алады.</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />, Chromium браузеріне қош келдіңіз!</translation>
@@ -125,6 +126,7 @@
 <translation id="3258596308407688501">Chromium өзінің деректер каталогін оқи және оған жаза алмайды:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 — сайт өнімділігін арттыру үшін қолданылатын Chromium-нің JavaScript және WebAssembly жүйесі.</translation>
 <translation id="3283186697780795848">Chromium браузерінің <ph name="PRODUCT_VERSION" /> нұсқасы орнатылды.</translation>
 <translation id="3286538390144397061">Қазір қайта іске қосу</translation>
 <translation id="328888136576916638">Google API пернелері жоқ. Кейбір Chromium функциялары өшіріледі.</translation>
@@ -218,6 +220,7 @@
 <translation id="4814736265800133385">Chromium-ді аккаунтсыз қолдану</translation>
 <translation id="4888717733111232871">mDNS трафигіне рұқсат беретін Chromium кіріс ережесі.</translation>
 <translation id="4893347770495441059">&amp;Chromium-ді жаңарту үшін қайта іске қосу</translation>
+<translation id="4942295735032723435">Chromium-нің жаңа нұсқаларын алып тұру үшін macOS 11 не одан кейінгі операциялық жүйе керек болады. Бұл компьютерде macOS 10.15 нұсқасы орнатылған.</translation>
 <translation id="4943838377383847465">Chromium фондық режимде.</translation>
 <translation id="4987820182225656817">Қонақтар Chromium қолданбасын ешқандай дерек қалдырмай пайдалана алады.</translation>
 <translation id="4994636714258228724">Chromium жүйесіне өзіңізді қосу</translation>
@@ -405,6 +408,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="8105840573057009683">Chromium бұл сайт үшін локацияны пайдалануға рұқсат сұрайды.</translation>
 <translation id="8133124826068723441">ChromiumOS деректеріңізді синхрондай алмады, себебі синхрондау функциясы доменіңіз үшін қолжетімді емес.</translation>
 <translation id="813913629614996137">Дайындауда…</translation>
+<translation id="8166782796394721554">Chromium-нің JavaScript және WebAssembly жүйелерінде қосымша қорғанысты қосу</translation>
 <translation id="81770708095080097">Бұл файл қауіпті болғандықтан, Chromium оны бөгеді.</translation>
 <translation id="8213374284266571500">Файлдың бұл түрі қауіпті болғандықтан, Chromium оны бөгеді.</translation>
 <translation id="8248265253516264921">Егер суреттің пайдалы сипаттамасы болмаса, Chromium оны өзі ұсынып көреді. Сипаттамалар жасау үшін суреттер Google-ға жіберіледі. Бұл функцияны кез келген уақытта параметрлерден өшіріп қоюға болады.</translation>

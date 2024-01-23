@@ -228,7 +228,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1882814835921407042">Nema mobilne mreže</translation>
 <translation id="1882897271359938046">Preslikavanje u <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Otključajte otiskom prsta</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> ne podržava rezoluciju <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Rezolucija je promenjena u <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Da biste zadržali promene, kliknite na Potvrdi. Prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Novo instaliranje</translation>
 <translation id="1915307458270490472">Prekini vezu</translation>
 <translation id="1918022425394817322">Kamera je uklopljena u gornji desni ugao</translation>
@@ -622,6 +621,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3577473026931028326">Došlo je do greške. Probajte ponovo.</translation>
 <translation id="3580650856351781466">Preuzimaju se fajlovi govora</translation>
 <translation id="3585296979871889131">Pregledajte nedavne slike, medije, obaveštenja i aplikacije na telefonu</translation>
+<translation id="3590441166907930941">Bočno dugme</translation>
 <translation id="3593039967545720377">Pritisnite <ph name="SHORTCUT_KEY_NAME" /> + V da biste pristupili istoriji privremene memorije. Kopirajte neku stavku da biste započeli.</translation>
 <translation id="3593646411856133110">Prevucite nagore i zadržite da biste videli otvorene aplikacije</translation>
 <translation id="3595596368722241419">Baterija je puna</translation>
@@ -1035,6 +1035,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5163434717504750796">Stanje baterije <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Broj ciklusa <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Sačuvaj radnu površinu kao šablon</translation>
 <translation id="5168181903108465623">Dostupni su uređaji za prebacivanje</translation>
+<translation id="5168753792967365150">Izmeni u Google zadacima</translation>
 <translation id="5170568018924773124">Prikaži u direktorijumu</translation>
 <translation id="5176318573511391780">Snimi deo ekrana</translation>
 <translation id="5187627942836026988">Pregledajte detalje hotspota. Administrator je blokirao hotspot.</translation>
@@ -1304,6 +1305,8 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="6168622430237609329">Instalirane aplikacije</translation>
 <translation id="6173151025443907148">Prijavljivanje drugog korisnika nije podržano dok je Lacros omogućen. Koristite drugi profil za pregledač u Lacros-u ili onemogućite Lacros i probajte ponovo.</translation>
 <translation id="6179832488876878285">Ovde možete da zakačite najvažnije fajlove. Otvorite aplikaciju Fajlovi da biste započeli.</translation>
+<translation id="6180193585172850042">Dugme Nazad</translation>
+<translation id="6180651297859206670">Dugme za napred</translation>
 <translation id="6182592640011875895">Otvori radnu površinu</translation>
 <translation id="6185696379715117369">Stranica nagore</translation>
 <translation id="619335566042889110">Odmah napunite do kraja</translation>

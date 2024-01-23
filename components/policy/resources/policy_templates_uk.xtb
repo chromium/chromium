@@ -6582,6 +6582,11 @@ HTTP-заголовок Origin-Agent-Cluster визначає, як ізолюв
       У разі налаштування дій <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> і <ph name="CLEAR_SITE_SETTINGS_ACTION" /> синхронізацію буде деактивовано для відповідних типів даних за умови, що функцію <ph name="CHROME_SYNC_NAME" /> не вимкнути за допомогою правила <ph name="SYNC_DISABLED_POLICY_NAME" /> і правило <ph name="BROWSER_SIGNIN_POLICY_NAME" /> також не вимкнути.</translation>
 <translation id="6462604655173570082">Якщо це правило не налаштувати або ввімкнути, користувачі зможуть бачити й використовувати кнопку сервісу <ph name="GOOGLE_LENS_PRODUCT_NAME" /> у полі пошуку на сторінці нової вкладки. Якщо правило вимкнути, користувачі не бачитимуть кнопку сервісу <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="6464074037294098618">Увімкнути функцію автозаповнення адрес</translation>
+<translation id="6464564464230511695">Якщо правило не налаштувати або ввімкнути, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> зможе показуватися на всіх веб-сторінках.
+
+Якщо його вимкнути, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> не відображатиметься на жодній веб-сторінці.
+
+Можливості генеративного ШІ, які входять до цієї функції, недоступні для облікових записів Education і Enterprise.</translation>
 <translation id="6467613372414922590">Дозволити хости на рівні користувача для обміну повідомленнями з оригінальними додатками (установлені без дозволів адміністратора)</translation>
 <translation id="6467707081687600148">Заплануйте автоматичний перезапуск після оновлення <ph name="PRODUCT_OS_NAME" />.
 

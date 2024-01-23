@@ -283,6 +283,7 @@ Pour modifier ce réglage, <ph name="BEGIN_LINK" />effacez les données Chromium
 <translation id="8776843108004031667">Ce compte et toutes les données non enregistrées seront supprimés de Chromium.</translation>
 <translation id="88376265765385899">Ouvre les favoris Chromium.</translation>
 <translation id="8860548555286245440">Ouvrir les URL dans Chromium en Navigation privée</translation>
+<translation id="8866191443434488382">Chromium détectera les numéros de suivi sur les sites que vous visitez et vous montrera les mises à jour des colis sur la page Nouvel onglet. Le numéro de suivi du colis et le nom du site Web seront envoyés à Chromium pour fournir cette fonctionnalité et améliorer les fonctionnalités d'achat pour tous. Vous pouvez mettre à jour cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium pour iOS</translation>
 <translation id="8924617840944134898">Ouvrir un onglet de navigation privée dans Chromium</translation>
 <translation id="894437814105052438">Lorsque vous vous déconnectez, Chromium ne synchronise aucune nouvelle donnée avec votre compte Google. Les données précédemment synchronisées demeurent dans le compte.</translation>
