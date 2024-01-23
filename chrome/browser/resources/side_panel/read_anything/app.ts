@@ -797,6 +797,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private onSpeechFinished() {
     this.speechStarted = false;
+    this.paused = true;
     this.previousHighlight_ = [];
     this.$.toolbar.updateUiForPausing();
   }

@@ -18,7 +18,7 @@
   const granularity_container =
       toolbar.shadowRoot.getElementById('granularity-container');
 
-  toolbar.updateUiForPlaying();
+  toolbar.paused = false;
 
   const expected = false;
   const actual = granularity_container.hidden;

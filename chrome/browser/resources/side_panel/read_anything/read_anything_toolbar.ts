@@ -93,6 +93,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       colorOptions_: Array,
       rateOptions_: Array,
       textStyleOptions_: Array,
+      paused: Boolean,
     };
   }
 
@@ -263,8 +264,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private isHighlightOn_: boolean = true;
   private activeButton_: HTMLElement|null;
 
-  // If Read Aloud is in the paused state.
-  private isPaused_: boolean = true;
+  // If Read Aloud is in the paused state. This is set from the parent element
+  // via one way data binding.
+  private readonly paused: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -386,7 +388,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     assert(button);
     button.setAttribute('iron-icon', 'read-anything-20:pause');
     button.setAttribute('aria-label', loadTimeData.getString('pauseLabel'));
-    this.isPaused_ = false;
 
     this.updateStyles({
       '--audio-controls-background': 'var(--color-sys-tonal-container)',
@@ -433,7 +434,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     assert(button);
     button.setAttribute('iron-icon', 'read-anything-20:play');
     button.setAttribute('aria-label', loadTimeData.getString('playLabel'));
-    this.isPaused_ = true;
 
     this.updateStyles({
       '--audio-controls-background': 'transparent',
@@ -734,7 +734,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   onPlayPauseClick() {
-    if (this.isPaused_) {
+    if (this.paused) {
       this.updateUiForPlaying();
       if (this.contentPage) {
         this.contentPage.playSpeech();
