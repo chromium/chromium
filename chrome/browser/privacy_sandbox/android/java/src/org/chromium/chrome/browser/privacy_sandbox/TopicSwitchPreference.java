@@ -24,6 +24,10 @@ public class TopicSwitchPreference extends ChromeSwitchPreference {
         updateIcon();
     }
 
+    public Topic getTopic() {
+        return mTopic;
+    }
+
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);

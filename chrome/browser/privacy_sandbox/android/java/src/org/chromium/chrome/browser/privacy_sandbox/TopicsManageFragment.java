@@ -8,12 +8,14 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
+import java.util.HashSet;
 import java.util.List;
 
 /** Fragment for managing all the topics. */
@@ -44,10 +46,20 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
 
     private void populateTopics() {
         mTopicsCategory.removeAll();
-        List<Topic> topics = PrivacySandboxBridge.getFirstLevelTopics();
-        for (Topic topic : topics) {
-            mTopicsCategory.addPreference(new TopicSwitchPreference(getContext(), topic));
+        List<Topic> firstLevelTopics = PrivacySandboxBridge.getFirstLevelTopics();
+        var blockedTopics = new HashSet<Topic>(PrivacySandboxBridge.getBlockedTopics());
+        for (Topic topic : firstLevelTopics) {
+            var preference = new TopicSwitchPreference(getContext(), topic);
+            preference.setChecked(!blockedTopics.contains(topic));
+            preference.setOnPreferenceChangeListener(this::onToggleChange);
+            mTopicsCategory.addPreference(preference);
         }
+    }
+
+    private boolean onToggleChange(Preference preference, Object newValue) {
+        var topicPreference = (TopicSwitchPreference) (preference);
+        PrivacySandboxBridge.setTopicAllowed(topicPreference.getTopic(), (boolean) newValue);
+        return true;
     }
 
     private void onLearnMoreClicked(View view) {
