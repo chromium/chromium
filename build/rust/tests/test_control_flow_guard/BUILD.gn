@@ -8,7 +8,4 @@ rust_executable("test_control_flow_guard") {
   allow_unsafe = true
   crate_root = "test_control_flow_guard.rs"
   sources = [ crate_root ]
-
-  # Used as a data dep by base_unittests.
-  is_data_dep = true
 }

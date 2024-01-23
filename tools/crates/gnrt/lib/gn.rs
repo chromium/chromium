@@ -200,7 +200,7 @@ pub fn build_rule_from_std_dep(
         for dep in &normal_deps {
             let target_name = NormalizedName::from_crate_name(&dep.package_name).to_string();
             if target_name != dep.use_name {
-                aliases.push((dep.use_name.clone(), format!(":{target_name}__rlib")));
+                aliases.push((dep.use_name.clone(), format!(":{target_name}")));
             }
         }
         aliases.sort_unstable();
