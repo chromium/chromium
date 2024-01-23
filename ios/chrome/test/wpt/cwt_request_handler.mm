@@ -101,6 +101,7 @@ const char kWebDriverScriptTimeoutRequestField[] = "script";
 const char kWebDriverPageLoadTimeoutRequestField[] = "pageLoad";
 const char kWebDriverWindowHandleRequestField[] = "handle";
 const char kWebDriverScriptRequestField[] = "script";
+const char kWebDriverArgsRequestField[] = "args";
 
 // Non-standard request field names, used only for testing Chrome.
 // The additional time (in seconds) to wait for a crash after a successful page
@@ -235,13 +236,15 @@ std::optional<base::Value> CWTRequestHandler::ProcessCommand(
     if (command == kWebDriverSyncScriptCommand) {
       return ExecuteScript(
           content_dict.FindString(kWebDriverScriptRequestField),
-          /*is_async_function=*/false);
+          /*is_async_function=*/false,
+          content_dict.FindList(kWebDriverArgsRequestField));
     }
 
     if (command == kWebDriverAsyncScriptCommand) {
       return ExecuteScript(
           content_dict.FindString(kWebDriverScriptRequestField),
-          /*is_async_function=*/true);
+          /*is_async_function=*/true,
+          content_dict.FindList(kWebDriverArgsRequestField));
     }
 
     if (command == kWebDriverWindowRectCommand)
@@ -510,7 +513,8 @@ base::Value CWTRequestHandler::CloseTargetTab() {
 }
 
 base::Value CWTRequestHandler::ExecuteScript(const std::string* script,
-                                             bool is_async_function) {
+                                             bool is_async_function,
+                                             const base::Value::List* args) {
   if (!script) {
     return CreateErrorValue(kWebDriverInvalidArgumentError,
                             kWebDriverMissingScriptMessage);
@@ -520,9 +524,18 @@ base::Value CWTRequestHandler::ExecuteScript(const std::string* script,
   if (is_async_function) {
     // The provided `script` is a function body that already calls its last
     // argument with the result of its computation.
+    NSString* updated_script = base::SysUTF8ToNSString(*script);
+    // Update the url if exists in the args
+    if (args && args->size() > 0) {
+      NSString* script_url = [NSString
+          stringWithFormat:@"\"%s\"", args->front().GetString().c_str()];
+      updated_script =
+          [updated_script stringByReplacingOccurrencesOfString:@"arguments[0]"
+                                                    withString:script_url];
+    }
     function_to_execute =
-        [NSString stringWithFormat:@"function f(completionHandler) { %s }",
-                                   script->c_str()];
+        [NSString stringWithFormat:@"function f(completionHandler) { %@ }",
+                                   updated_script];
   } else {
     // The provided `script` directly computes a result. Convert to a function
     // that calls a completion handler with the result of its computation.
