@@ -16,6 +16,9 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 
+extern const char kHistoryClusterSeenEventName[];
+extern const char kHistoryClusterUsedEventName[];
+
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
 }  // namespace optimization_guide

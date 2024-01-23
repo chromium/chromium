@@ -5,13 +5,15 @@
 #include "components/segmentation_platform/public/database_client.h"
 #include "base/metrics/metrics_hashes.h"
 
+#include <string>
+
 namespace segmentation_platform {
 
 DatabaseClient::StructuredEvent::StructuredEvent() = default;
 
 DatabaseClient::StructuredEvent::StructuredEvent(
     base::StringPiece event_name,
-    const std::map<base::StringPiece, uint64_t> values) {
+    const std::map<std::string, uint64_t> values) {
   event_id = UkmEventHash::FromUnsafeValue(base::HashMetricName(event_name));
   for (const auto& it : values) {
     metric_hash_to_value[UkmMetricHash::FromUnsafeValue(

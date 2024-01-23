@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/metrics/metrics_hashes.h"
 #include "base/supports_user_data.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/gmock_callback_support.h"
@@ -20,8 +21,10 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_test_support.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranker.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -36,6 +39,9 @@
 #include "components/history_clusters/core/test_history_clusters_service.h"
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
 #include "components/search/ntp_features.h"
+#include "components/segmentation_platform/public/database_client.h"
+#include "components/segmentation_platform/public/testing/mock_database_client.h"
+#include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
@@ -46,6 +52,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+using segmentation_platform::MockSegmentationPlatformService;
 
 class MockCartService : public CartService {
  public:
@@ -103,6 +111,12 @@ class HistoryClustersPageHandlerV2Test : public BrowserWithTestWindowTest {
     return *mock_shopping_service_;
   }
 
+  MockSegmentationPlatformService* mock_segmentation_platform_service() {
+    return static_cast<MockSegmentationPlatformService*>(
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetForProfile(profile()));
+  }
+
   HistoryClustersPageHandlerV2& handler() { return *handler_; }
 
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
@@ -133,6 +147,12 @@ class HistoryClustersPageHandlerV2Test : public BrowserWithTestWindowTest {
             {commerce::ShoppingServiceFactory::GetInstance(),
              base::BindRepeating([](content::BrowserContext* context) {
                return commerce::MockShoppingService::Build();
+             })},
+            {segmentation_platform::SegmentationPlatformServiceFactory::
+                 GetInstance(),
+             base::BindRepeating([](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+               return std::make_unique<MockSegmentationPlatformService>();
              })}};
   }
 
@@ -344,6 +364,63 @@ TEST_F(HistoryClustersPageHandlerV2Test, ShowJourneysSidePanel) {
   handler().ShowJourneysSidePanel(kSampleQuery);
 
   EXPECT_EQ(kSampleQuery, query);
+}
+
+TEST_F(HistoryClustersPageHandlerV2Test, EventsRecorded) {
+  base::HistogramTester histogram_tester;
+
+  const int64_t kSampleClusterId = 123;
+  EXPECT_CALL(mock_history_clusters_module_service(),
+              GetClusters(testing::_, testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [&kSampleClusterId](
+              const history_clusters::QueryClustersFilterParams filter_params,
+              size_t min_required_related_searches,
+              base::OnceCallback<void(
+                  std::vector<history::Cluster>,
+                  base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
+                  callback) {
+            std::vector<history::Cluster> sample_clusters = {
+                SampleCluster(kSampleClusterId, 1, 2)};
+            base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
+                ranking_signals = {
+                    {kSampleClusterId, HistoryClustersModuleRankingSignals()}};
+            std::move(callback).Run(sample_clusters, ranking_signals);
+          }));
+
+  auto mock_database_client =
+      std::make_unique<segmentation_platform::MockDatabaseClient>();
+  EXPECT_CALL(*mock_segmentation_platform_service(), GetDatabaseClient())
+      .WillRepeatedly(testing::Return(mock_database_client.get()));
+
+  std::vector<segmentation_platform::UkmEventHash> event_ids;
+  EXPECT_CALL(*mock_database_client, AddEvent(testing::_))
+      .Times(2)
+      .WillRepeatedly(testing::Invoke(
+          [&event_ids](
+              const segmentation_platform::DatabaseClient::StructuredEvent&
+                  event) { event_ids.push_back(event.event_id); }));
+
+  base::MockCallback<HistoryClustersPageHandlerV2::GetClustersCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_));
+  handler().GetClusters(callback.Get());
+
+  // Simulate a click and layout type.
+  handler().RecordLayoutTypeShown(
+      ntp::history_clusters::mojom::LayoutType::kImages, kSampleClusterId);
+  handler().RecordClick(kSampleClusterId);
+
+  ResetHandler();
+
+  ASSERT_EQ(segmentation_platform::UkmEventHash::FromUnsafeValue(
+                base::HashMetricName(kHistoryClusterSeenEventName)),
+            event_ids.at(0));
+  ASSERT_EQ(segmentation_platform::UkmEventHash::FromUnsafeValue(
+                base::HashMetricName(kHistoryClusterUsedEventName)),
+            event_ids.at(1));
+  histogram_tester.ExpectTotalCount(
+      "NewTabPage.Modules.SegmentationPlatformClientReady", 2);
 }
 
 TEST_F(HistoryClustersPageHandlerV2Test, RecordClick) {
