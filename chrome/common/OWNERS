@@ -35,6 +35,9 @@ per-file chrome_content_client_unittest.cc=*
 # Lacros
 per-file *_lacros*=file://chromeos/LACROS_OWNERS
 
+# PDF files.
+per-file pdf_*=file://pdf/OWNERS
+
 # Pepper files.
 per-file pepper_*=file://ppapi/OWNERS
 
