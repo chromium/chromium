@@ -35,6 +35,7 @@ js_files = [
   "iron-selector/iron-selector.js",
   "iron-test-helpers/mock-interactions.js",
   "paper-behaviors/paper-ripple-behavior.js",
+  "paper-behaviors/paper-ripple-mixin.js",
   "paper-progress/paper-progress.js",
   "paper-ripple/paper-ripple.js",
   "paper-spinner/paper-spinner-behavior.js",
@@ -119,6 +120,7 @@ ts_library("library") {
 
     # TODO(dpapad): Ignore until a proper paper-ripple.d.ts is added.
     #"components-chromium/paper-behaviors/paper-ripple-behavior.d.ts",
+    "components-chromium/paper-behaviors/paper-ripple-mixin.d.ts",
     "components-chromium/paper-progress/paper-progress.d.ts",
     "components-chromium/paper-ripple/paper-ripple.d.ts",
     "components-chromium/paper-spinner/paper-spinner-behavior.d.ts",

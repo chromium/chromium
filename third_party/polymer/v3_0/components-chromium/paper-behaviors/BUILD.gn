@@ -13,3 +13,11 @@ js_library("paper-ripple-behavior") {
     "../polymer:polymer_bundled",
   ]
 }
+
+js_library("paper-ripple-mixin") {
+  deps = [
+    "../iron-behaviors:iron-button-state",
+    "../paper-ripple:paper-ripple",
+    "../polymer:polymer_bundled",
+  ]
+}
