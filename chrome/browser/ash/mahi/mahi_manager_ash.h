@@ -22,6 +22,7 @@ class MahiManagerAsh : public chromeos::MahiManager {
 
   // chromeos::MahiManager:
   void OpenMahiPanel(int64_t display_id) override;
+  void GetSummary(MahiSummaryCallback callback) override;
 
  private:
   friend class MahiManagerAshTest;

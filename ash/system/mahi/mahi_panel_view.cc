@@ -5,8 +5,13 @@
 #include "ash/system/mahi/mahi_panel_view.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/public/cpp/style/color_provider.h"
+#include "base/check_is_test.h"
+#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -29,6 +34,8 @@ BEGIN_METADATA(MahiPanelView, views::BoxLayoutView)
 END_METADATA
 
 MahiPanelView::MahiPanelView() {
+  SetOrientation(views::BoxLayout::Orientation::kVertical);
+  SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
   SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kPanelCornerRadius));
 
@@ -46,6 +53,24 @@ MahiPanelView::MahiPanelView() {
 
   auto header = std::make_unique<views::Label>(u"Mahi Panel");
   AddChildView(std::move(header));
+
+  summary_label_ = AddChildView(std::make_unique<views::Label>());
+
+  auto* manager = chromeos::MahiManager::Get();
+  if (manager) {
+    manager->GetSummary(base::BindOnce(
+        [](base::WeakPtr<MahiPanelView> parent, views::Label* summary_label,
+           std::u16string summary_text) {
+          if (!parent) {
+            return;
+          }
+
+          summary_label->SetText(summary_text);
+        },
+        weak_ptr_factory_.GetWeakPtr(), summary_label_));
+  } else {
+    CHECK_IS_TEST();
+  }
 }
 
 MahiPanelView::~MahiPanelView() = default;
