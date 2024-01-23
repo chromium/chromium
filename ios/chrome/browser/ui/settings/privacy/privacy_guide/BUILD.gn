@@ -10,6 +10,8 @@ source_set("privacy_guide") {
     "privacy_guide_url_usage_coordinator.h",
     "privacy_guide_url_usage_coordinator.mm",
     "privacy_guide_url_usage_coordinator_delegate.h",
+    "privacy_guide_url_usage_mediator.h",
+    "privacy_guide_url_usage_mediator.mm",
     "privacy_guide_welcome_coordinator.h",
     "privacy_guide_welcome_coordinator.mm",
   ]
@@ -17,8 +19,11 @@ source_set("privacy_guide") {
     ":privacy_guide_constants",
     ":privacy_guide_ui",
     "//base",
+    "//components/unified_consent",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/common/ui/promo_style",
   ]
@@ -27,8 +32,10 @@ source_set("privacy_guide") {
 source_set("privacy_guide_ui") {
   sources = [
     "privacy_guide_commands.h",
+    "privacy_guide_url_usage_consumer.h",
     "privacy_guide_url_usage_view_controller.h",
     "privacy_guide_url_usage_view_controller.mm",
+    "privacy_guide_url_usage_view_controller_delegate.h",
     "privacy_guide_url_usage_view_controller_presentation_delegate.h",
     "privacy_guide_welcome_view_controller.h",
     "privacy_guide_welcome_view_controller.mm",
@@ -77,6 +84,7 @@ source_set("eg2_tests") {
   deps = [
     ":features",
     ":privacy_guide_constants",
+    "//components/unified_consent",
     "//ios/chrome/app/strings",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

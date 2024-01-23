@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_constants.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_view_controller_presentation_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -47,6 +48,7 @@ enum ItemIdentifier {
 @implementation PrivacyGuideURLUsageViewController {
   SelfSizingTableView* _tableView;
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
+  BOOL _URLUsageEnabled;
 }
 
 #pragma mark - UIViewController
@@ -109,6 +111,17 @@ enum ItemIdentifier {
       return header;
     }
   }
+}
+
+#pragma mark - PrivacyGuideURLUsageConsumer
+
+- (void)setURLUsageEnabled:(BOOL)enabled {
+  _URLUsageEnabled = enabled;
+
+  NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
+      [_dataSource snapshot];
+  [snapshot reconfigureItemsWithIdentifiers:@[ @(kItemIdentifierSwitch) ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 #pragma mark - Private
@@ -191,9 +204,10 @@ enum ItemIdentifier {
           DequeueTableViewCell<TableViewSwitchCell>(tableView);
       NSString* title = l10n_util::GetNSString(
           IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_TEXT);
-      // TODO(crbug.com/1509830): Initial state of the switch should be queried
-      // from the mediator.
-      [cell configureCellWithTitle:title subtitle:nil switchEnabled:YES on:YES];
+      [cell configureCellWithTitle:title
+                          subtitle:nil
+                     switchEnabled:YES
+                                on:_URLUsageEnabled];
       [cell setUseCustomSeparator:NO];
       cell.textLabel.font =
           [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
@@ -202,6 +216,9 @@ enum ItemIdentifier {
       cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
       cell.layer.cornerRadius = kSwitchCellCornerRadius;
       cell.accessibilityIdentifier = kPrivacyGuideURLUsageSwitchID;
+      [cell.switchView addTarget:self
+                          action:@selector(URLUsageSwitchChanged:)
+                forControlEvents:UIControlEventValueChanged];
       return cell;
     }
     case kItemIdentifierBrowseFaster: {
@@ -243,6 +260,11 @@ enum ItemIdentifier {
   [cell alignImageWithFirstLineOfText:YES];
   [cell setUseCustomSeparator:NO];
   return cell;
+}
+
+// Called when the switch is tapped.
+- (void)URLUsageSwitchChanged:(UISwitch*)sender {
+  [self.modelDelegate didEnableURLUsage:sender.isOn];
 }
 
 @end

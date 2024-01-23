@@ -7,7 +7,10 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check_op.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_mediator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_view_controller.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_view_controller_presentation_delegate.h"
 
@@ -17,6 +20,7 @@
 
 @implementation PrivacyGuideURLUsageCoordinator {
   PrivacyGuideURLUsageViewController* _viewController;
+  PrivacyGuideURLUsageMediator* _mediator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -38,6 +42,10 @@
 - (void)start {
   _viewController = [[PrivacyGuideURLUsageViewController alloc] init];
   _viewController.presentationDelegate = self;
+  _mediator = [[PrivacyGuideURLUsageMediator alloc]
+      initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()];
+  _mediator.consumer = _viewController;
+  _viewController.modelDelegate = _mediator;
 
   CHECK(self.baseNavigationController);
   [self.baseNavigationController pushViewController:_viewController
@@ -45,8 +53,10 @@
 }
 
 - (void)stop {
-  _viewController.presentationDelegate = nil;
   _viewController = nil;
+
+  [_mediator disconnect];
+  _mediator = nil;
 }
 
 #pragma mark - PrivacyGuideURLUsageViewControllerPresentationDelegate
