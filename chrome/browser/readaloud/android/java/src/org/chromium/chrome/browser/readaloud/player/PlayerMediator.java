@@ -255,9 +255,8 @@ class PlayerMediator implements InteractionHandler {
                         mModel.get(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE));
                 return;
             }
-            // Otherwise prepare for the new preview.
-            cleanUpVoicePreview();
         }
+        cleanUpVoicePreview();
 
         mModel.set(PlayerProperties.PREVIEWING_VOICE_ID, voice.getVoiceId());
         mModel.set(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE, PlaybackListener.State.BUFFERING);

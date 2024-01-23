@@ -148,6 +148,14 @@ public class ExpandedPlayerCoordinatorUnitTest {
     }
 
     @Test
+    public void testShowPlayer_resumePlaybackUpdates() {
+        mModel.set(PlayerProperties.HIDDEN_AND_PLAYING, true);
+        mBottomSheetObserver.onSheetContentChanged(mOptionsMenuSheetContent);
+        mBottomSheetObserver.onSheetContentChanged(mSheetContent);
+        verify(mMediator).setHiddenAndPlaying(eq(false));
+    }
+
+    @Test
     public void testBindVisibility() {
         mModel.set(PlayerProperties.EXPANDED_PLAYER_VISIBILITY, VisibilityState.HIDING);
         verify(mSheetContent).hide();

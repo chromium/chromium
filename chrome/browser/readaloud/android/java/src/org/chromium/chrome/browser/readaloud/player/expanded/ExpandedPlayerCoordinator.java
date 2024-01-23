@@ -41,19 +41,26 @@ public class ExpandedPlayerCoordinator {
                         mMediator.setShowMiniPlayerOnDismiss(true);
                     }
 
+                    // If showing the player again, resume player UI updates.
+                    if (newContent == mSheetContent) {
+                        mMediator.setHiddenAndPlaying(false);
+                    }
+
                     mTrackedContent = newContent;
                 }
 
                 @Override
                 public void onSheetOpened(@StateChangeReason int reason) {
                     mSheetVisible = true;
-                    if (mTrackedContent == mSheetContent) {
-                        mMediator.setVisibility(VisibilityState.VISIBLE);
-                    }
 
                     InteractionHandler handler = mModel.get(PlayerProperties.INTERACTION_HANDLER);
                     if (handler != null) {
                         handler.onShouldHideMiniPlayer();
+                    }
+
+                    if (mTrackedContent == mSheetContent) {
+                        mMediator.setVisibility(VisibilityState.VISIBLE);
+                        mMediator.setHiddenAndPlaying(false);
                     }
                 }
 
