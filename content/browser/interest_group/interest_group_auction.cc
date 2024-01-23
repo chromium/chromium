@@ -85,6 +85,7 @@
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -3142,6 +3143,31 @@ bool InterestGroupAuction::ReportPaBuyersValueIfAllowed(
     return false;
   }
 
+  std::optional<
+      blink::AuctionConfig::NonSharedParams::AuctionReportBuyerDebugModeConfig>
+      debug_mode_config;
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::
+              kPrivateAggregationAuctionReportBuyerDebugModeConfig)) {
+    debug_mode_config =
+        config_->non_shared_params.auction_report_buyer_debug_mode_config;
+  }
+
+  blink::mojom::DebugModeDetailsPtr debug_mode_details;
+  if (debug_mode_config) {
+    blink::mojom::DebugKeyPtr debug_key = nullptr;
+    if (debug_mode_config->debug_key) {
+      CHECK(debug_mode_config->is_enabled);
+      debug_key = blink::mojom::DebugKey::New(*debug_mode_config->debug_key);
+    }
+    debug_mode_details = blink::mojom::DebugModeDetails::New(
+        debug_mode_config->is_enabled, std::move(debug_key));
+  } else {
+    // If the debug mode is not provided, use the default (debug mode disabled).
+    debug_mode_details = blink::mojom::DebugModeDetails::New();
+  }
+
   // TODO(caraitto): Consider adding renderer and Mojo validation to ensure that
   // bucket sums can't be out of range, and scales can't be negative, infinite,
   // or NaN.
@@ -3157,9 +3183,9 @@ bool InterestGroupAuction::ReportPaBuyersValueIfAllowed(
                       *bucket_base + report_buyers_config->bucket,
                       base::saturated_cast<int32_t>(
                           std::max(0.0, value * report_buyers_config->scale)))),
-          // TODO(caraitto): Consider allowing these to be set.
+          // TODO(caraitto): Consider allowing this to be set.
           blink::mojom::AggregationServiceMode::kDefault,
-          blink::mojom::DebugModeDetails::New()));
+          std::move(debug_mode_details)));
   return true;
 }
 

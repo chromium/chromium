@@ -51,6 +51,7 @@
 #include "components/aggregation_service/features.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/web_package/web_bundle_builder.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
@@ -107,6 +108,8 @@
 #include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -7382,6 +7385,513 @@ IN_PROC_BROWSER_TEST_F(
                          embedded_https_test_server().GetURL(
                              "a.test", "/interest_group/decision_logic.js"))));
   WaitForAccessObserved({});
+}
+
+class InterestGroupAuctionReportBuyersEnableDebugModeTest
+    : public InterestGroupBrowserTest {
+ public:
+  explicit InterestGroupAuctionReportBuyersEnableDebugModeTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kPrivateAggregationAuctionReportBuyerDebugModeConfig);
+  }
+
+  void SetUpOnMainThread() override {
+    InterestGroupBrowserTest::SetUpOnMainThread();
+
+    class TestPrivateAggregationManagerImpl
+        : public PrivateAggregationManagerImpl {
+     public:
+      TestPrivateAggregationManagerImpl(
+          std::unique_ptr<PrivateAggregationBudgeter> budgeter,
+          std::unique_ptr<PrivateAggregationHost> host)
+          : PrivateAggregationManagerImpl(std::move(budgeter),
+                                          std::move(host),
+                                          /*storage_partition=*/nullptr) {}
+    };
+
+    auto* storage_partition_impl =
+        static_cast<StoragePartitionImpl*>(shell()
+                                               ->web_contents()
+                                               ->GetBrowserContext()
+                                               ->GetDefaultStoragePartition());
+    storage_partition_impl->OverridePrivateAggregationManagerForTesting(
+        std::make_unique<TestPrivateAggregationManagerImpl>(
+            std::make_unique<MockPrivateAggregationBudgeter>(),
+            std::make_unique<PrivateAggregationHost>(
+                /*on_report_request_received=*/mock_private_aggregation_cb_
+                    .Get(),
+                /*browser_context=*/storage_partition_impl
+                    ->browser_context())));
+  }
+
+  void TearDownOnMainThread() override {
+    if (run_loop_) {
+      run_loop_->Run();
+    }
+    InterestGroupBrowserTest::TearDownOnMainThread();
+  }
+
+  void SetUpTestWithOneInterestGroup() {
+    test_url_ =
+        embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+    ASSERT_TRUE(NavigateToURL(shell(), test_url_));
+    test_origin_ = url::Origin::Create(test_url_);
+
+    ad_url_ = embedded_https_test_server().GetURL(
+        "c.test", "/set-header?Supports-Loading-Mode: fenced-frame");
+    EXPECT_EQ(
+        kSuccess,
+        JoinInterestGroupAndVerify(
+            blink::TestInterestGroupBuilder(
+                /*owner=*/test_origin_,
+                /*name=*/"cars")
+                .SetBiddingUrl(embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/bidding_logic.js"))
+                .SetTrustedBiddingSignalsUrl(
+                    embedded_https_test_server().GetURL(
+                        "a.test",
+                        "/interest_group/trusted_bidding_signals.json"))
+                .SetTrustedBiddingSignalsKeys({{"key1"}})
+                .SetAds({{{ad_url_, R"({"ad":"metadata","here":[1,2]})"}}})
+                .SetAllSellerCapabilities(
+                    {blink::SellerCapabilities::kInterestGroupCounts,
+                     blink::SellerCapabilities::kLatencyStats})
+                .Build()));
+  }
+
+  void ExpectPrivateAggregationCall(
+      int bucket,
+      int value,
+      AggregatableReportSharedInfo::DebugMode debug_mode,
+      absl::optional<uint64_t> debug_key = absl::nullopt) {
+    ASSERT_FALSE(run_loop_);
+    run_loop_ = std::make_unique<base::RunLoop>();
+
+    // We only need to test that a request was made in PrivateAggregationHost,
+    // so we mock out the callback and check that it was called. The callback
+    // will only run *after* the ad auction finishes and the winner is rendered,
+    // but we register it beforehand so that it is guaranteed to detect when the
+    // private aggregation event is sent.
+    EXPECT_CALL(mock_private_aggregation_cb_, Run)
+        .WillRepeatedly(testing::Invoke(
+            [=](PrivateAggregationHost::ReportRequestGenerator generator,
+                std::vector<
+                    blink::mojom::AggregatableReportHistogramContribution>
+                    contributions,
+                PrivateAggregationBudgetKey budget_key,
+                PrivateAggregationBudgeter::BudgetDeniedBehavior
+                    budget_denied_behavior) {
+              AggregatableReportRequest request =
+                  std::move(generator).Run(contributions);
+              ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
+              EXPECT_EQ(request.payload_contents().contributions[0].bucket,
+                        bucket);
+              EXPECT_EQ(request.payload_contents().contributions[0].value,
+                        value);
+              EXPECT_EQ(request.shared_info().reporting_origin, test_origin_);
+
+              EXPECT_EQ(request.shared_info().debug_mode, debug_mode);
+              EXPECT_EQ(request.debug_key(), debug_key);
+
+              EXPECT_EQ(budget_key.api(),
+                        PrivateAggregationBudgetKey::Api::kProtectedAudience);
+              EXPECT_EQ(budget_key.origin(), test_origin_);
+              EXPECT_EQ(budget_denied_behavior,
+                        PrivateAggregationBudgeter::BudgetDeniedBehavior::
+                            kDontSendReport);
+              run_loop_->Quit();
+            }));
+  }
+
+  void ExpectNoPrivateAggregationCall() {
+    EXPECT_CALL(mock_private_aggregation_cb_, Run).Times(0);
+  }
+
+ protected:
+  GURL test_url_;
+  url::Origin test_origin_;
+  GURL ad_url_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  base::MockRepeatingCallback<void(
+      PrivateAggregationHost::ReportRequestGenerator,
+      std::vector<blink::mojom::AggregatableReportHistogramContribution>,
+      PrivateAggregationBudgetKey,
+      PrivateAggregationBudgeter::BudgetDeniedBehavior)>
+      mock_private_aggregation_cb_;
+
+ private:
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
+class InterestGroupAuctionReportBuyersEnableDebugModeFeatureDisabledTest
+    : public InterestGroupAuctionReportBuyersEnableDebugModeTest {
+ public:
+  InterestGroupAuctionReportBuyersEnableDebugModeFeatureDisabledTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kPrivateAggregationAuctionReportBuyerDebugModeConfig);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
+                       NegativeDebugKey_Error) {
+  SetUpTestWithOneInterestGroup();
+  ExpectNoPrivateAggregationCall();
+  EXPECT_EQ(base::StringPrintf(
+                "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+                "auctionReportBuyerDebugModeConfig for AuctionAdConfig with "
+                "seller '%s': Negative BigInt cannot be converted to uint64",
+                test_origin_.Serialize().c_str()),
+            RunAuctionAndWait(JsReplace(
+                R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    auctionReportBuyerKeys: [1n],
+    auctionReportBuyers: {
+      bidCount: { bucket: 0n, scale: 1 },
+    },
+    auctionReportBuyerDebugModeConfig: { enabled: true, debugKey: -1n }
+                         })",
+                test_origin_,
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/decision_logic.js"))));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
+                       TooLargeBigInt_Error) {
+  SetUpTestWithOneInterestGroup();
+  ExpectNoPrivateAggregationCall();
+  EXPECT_EQ(base::StringPrintf(
+                "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+                "auctionReportBuyerDebugModeConfig for AuctionAdConfig with "
+                "seller '%s': Too large BigInt; Must fit in 64 bits",
+                test_origin_.Serialize().c_str()),
+            RunAuctionAndWait(JsReplace(
+                R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    auctionReportBuyerKeys: [1n],
+    auctionReportBuyers: {
+      bidCount: { bucket: 0n, scale: 1 },
+    },
+    auctionReportBuyerDebugModeConfig: { enabled: true, debugKey: 1n << 64n }
+                         })",
+                test_origin_,
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/decision_logic.js"))));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
+                       DebugKeySetWithEnabledFalse_Error) {
+  SetUpTestWithOneInterestGroup();
+  ExpectNoPrivateAggregationCall();
+  EXPECT_EQ(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+          "auctionReportBuyerDebugModeConfig for AuctionAdConfig with seller "
+          "'%s': debugKey can only be specified when debug mode is enabled.",
+          test_origin_.Serialize().c_str()),
+      RunAuctionAndWait(JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    auctionReportBuyerKeys: [1n],
+    auctionReportBuyers: {
+      bidCount: { bucket: 0n, scale: 1 },
+    },
+    auctionReportBuyerDebugModeConfig: { enabled: false, debugKey: 1234n }
+                         })",
+          test_origin_,
+          embedded_https_test_server().GetURL(
+              "a.test", "/interest_group/decision_logic.js"))));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
+                       DebugModeConfigNotADictionary_Error) {
+  SetUpTestWithOneInterestGroup();
+  ExpectNoPrivateAggregationCall();
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Failed to "
+      "read the 'auctionReportBuyerDebugModeConfig' property from "
+      "'AuctionAdConfig': The provided value is not of type "
+      "'AuctionReportBuyerDebugModeConfig'.",
+      RunAuctionAndWait(JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    auctionReportBuyerKeys: [1n],
+    auctionReportBuyers: {
+      bidCount: { bucket: 0n, scale: 1 },
+    },
+    auctionReportBuyerDebugModeConfig: 1
+                         })",
+          test_origin_,
+          embedded_https_test_server().GetURL(
+              "a.test", "/interest_group/decision_logic.js"))));
+  ExpectNoPrivateAggregationCall();
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
+                       DebugModeWithoutDebugKey_Success) {
+  SetUpTestWithOneInterestGroup();
+  ExpectPrivateAggregationCall(
+      /*bucket=*/101, /*value=*/10,
+      AggregatableReportSharedInfo::DebugMode::kEnabled);
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    auctionReportBuyerKeys: [1n],
+    auctionReportBuyers: {
+      bidCount: { bucket: 100n, scale: 10 },
+    },
+    auctionReportBuyerDebugModeConfig: { enabled: true }
+                         })",
+          test_origin_,
+          embedded_https_test_server().GetURL(
+              "a.test", "/interest_group/decision_logic.js")),
+      /*expected_url=*/ad_url_);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
+                       DebugModeWithDebugKey_Success) {
+  SetUpTestWithOneInterestGroup();
+  ExpectPrivateAggregationCall(
+      /*bucket=*/101, /*value=*/10,
+      AggregatableReportSharedInfo::DebugMode::kEnabled, /*debug_key=*/1234);
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    auctionReportBuyerKeys: [1n],
+    auctionReportBuyers: {
+      bidCount: { bucket: 100n, scale: 10 },
+    },
+    auctionReportBuyerDebugModeConfig: { enabled: true, debugKey: 1234n }
+                         })",
+          test_origin_,
+          embedded_https_test_server().GetURL(
+              "a.test", "/interest_group/decision_logic.js")),
+      /*expected_url=*/ad_url_);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
+                       DebugModeDisabled_Success) {
+  SetUpTestWithOneInterestGroup();
+  ExpectPrivateAggregationCall(
+      /*bucket=*/101, /*value=*/10,
+      AggregatableReportSharedInfo::DebugMode::kDisabled);
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    auctionReportBuyerKeys: [1n],
+    auctionReportBuyers: {
+      bidCount: { bucket: 100n, scale: 10 },
+    },
+    auctionReportBuyerDebugModeConfig: { enabled: false }
+                         })",
+          test_origin_,
+          embedded_https_test_server().GetURL(
+              "a.test", "/interest_group/decision_logic.js")),
+      /*expected_url=*/ad_url_);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
+                       DebugModeDisabledImplicity_Success) {
+  SetUpTestWithOneInterestGroup();
+  ExpectPrivateAggregationCall(
+      /*bucket=*/101, /*value=*/10,
+      AggregatableReportSharedInfo::DebugMode::kDisabled);
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    auctionReportBuyerKeys: [1n],
+    auctionReportBuyers: {
+      bidCount: { bucket: 100n, scale: 10 },
+    },
+    auctionReportBuyerDebugModeConfig: {}
+                         })",
+          test_origin_,
+          embedded_https_test_server().GetURL(
+              "a.test", "/interest_group/decision_logic.js")),
+      /*expected_url=*/ad_url_);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
+                       DebugConfigMissing_Disabled) {
+  SetUpTestWithOneInterestGroup();
+  ExpectPrivateAggregationCall(
+      /*bucket=*/101, /*value=*/10,
+      AggregatableReportSharedInfo::DebugMode::kDisabled);
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    auctionReportBuyerKeys: [1n],
+    auctionReportBuyers: {
+      bidCount: { bucket: 100n, scale: 10 },
+    },
+                         })",
+          test_origin_,
+          embedded_https_test_server().GetURL(
+              "a.test", "/interest_group/decision_logic.js")),
+      /*expected_url=*/ad_url_);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
+                       MultipleBuyersDebugConfig) {
+  SetUpTestWithOneInterestGroup();
+
+  // Navigate to a new advertiser page and join another interest group, which
+  // will win the auction.
+  GURL test_url_2 =
+      embedded_https_test_server().GetURL("b.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_2));
+  url::Origin test_origin_2 = url::Origin::Create(test_url_2);
+
+  GURL ad_url_2 = embedded_https_test_server().GetURL(
+      "d.test", "/set-header?Supports-Loading-Mode: fenced-frame");
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin_2,
+              /*name=*/"winner")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  "b.test",
+                  "/interest_group/bidding_logic_with_debugging_report.js"))
+              .SetTrustedBiddingSignalsUrl(embedded_https_test_server().GetURL(
+                  "b.test", "/interest_group/trusted_bidding_signals.json"))
+              .SetTrustedBiddingSignalsKeys({{"key1"}})
+              .SetAds({{{ad_url_2, /*metadata=*/std::nullopt}}})
+              .SetAllSellerCapabilities(
+                  {blink::SellerCapabilities::kInterestGroupCounts,
+                   blink::SellerCapabilities::kLatencyStats})
+              .Build()));
+
+  base::RunLoop run_loop;
+
+  std::optional<AggregatableReportRequest> request_returned;
+
+  EXPECT_CALL(mock_private_aggregation_cb_, Run)
+      .WillOnce(testing::Invoke(
+          [&](PrivateAggregationHost::ReportRequestGenerator generator,
+              std::vector<blink::mojom::AggregatableReportHistogramContribution>
+                  contributions,
+              PrivateAggregationBudgetKey budget_key,
+              PrivateAggregationBudgeter::BudgetDeniedBehavior
+                  budget_denied_behavior) {
+            request_returned = std::move(generator).Run(contributions);
+
+            EXPECT_EQ(budget_key.api(),
+                      PrivateAggregationBudgetKey::Api::kProtectedAudience);
+            EXPECT_EQ(budget_key.origin(), test_origin_);
+            EXPECT_EQ(budget_denied_behavior,
+                      PrivateAggregationBudgeter::BudgetDeniedBehavior::
+                          kDontSendReport);
+
+            run_loop.Quit();
+          }));
+
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1, $3],
+    auctionReportBuyerKeys: [1n, 2n],
+    auctionReportBuyers: {
+      bidCount: { bucket: 100n, scale: 10 },
+    },
+    auctionReportBuyerDebugModeConfig: { enabled: true, debugKey: 1234n }
+                         })",
+          test_origin_,
+          embedded_https_test_server().GetURL(
+              "a.test", "/interest_group/decision_logic.js"),
+          test_origin_2),
+      ad_url_2);
+
+  run_loop.Run();
+
+  ASSERT_TRUE(request_returned.has_value());
+
+  EXPECT_THAT(request_returned->payload_contents().contributions,
+              testing::UnorderedElementsAre(
+                  blink::mojom::AggregatableReportHistogramContribution(
+                      /*bucket=*/101, /*value=*/10),
+                  blink::mojom::AggregatableReportHistogramContribution(
+                      /*bucket=*/102, /*value=*/10)));
+
+  EXPECT_EQ(request_returned->shared_info().reporting_origin, test_origin_);
+  EXPECT_EQ(request_returned->shared_info().debug_mode,
+            AggregatableReportSharedInfo::DebugMode::kEnabled);
+  EXPECT_EQ(request_returned->debug_key(), 1234);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupAuctionReportBuyersEnableDebugModeFeatureDisabledTest,
+    DebugMode_Ignored) {
+  SetUpTestWithOneInterestGroup();
+  ExpectPrivateAggregationCall(
+      /*bucket=*/101, /*value=*/10,
+      AggregatableReportSharedInfo::DebugMode::kDisabled);
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    auctionReportBuyerKeys: [1n],
+    auctionReportBuyers: {
+      bidCount: { bucket: 100n, scale: 10 },
+    },
+    auctionReportBuyerDebugModeConfig: { enabled: true, debugKey: 1234n }
+                         })",
+          test_origin_,
+          embedded_https_test_server().GetURL(
+              "a.test", "/interest_group/decision_logic.js")),
+      /*expected_url=*/ad_url_);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupAuctionReportBuyersEnableDebugModeFeatureDisabledTest,
+    InvalidInput_Ignored) {
+  SetUpTestWithOneInterestGroup();
+  ExpectPrivateAggregationCall(
+      /*bucket=*/101, /*value=*/10,
+      AggregatableReportSharedInfo::DebugMode::kDisabled);
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    auctionReportBuyerKeys: [1n],
+    auctionReportBuyers: {
+      bidCount: { bucket: 100n, scale: 10 },
+    },
+    auctionReportBuyerDebugModeConfig: 1
+                         })",
+          test_origin_,
+          embedded_https_test_server().GetURL(
+              "a.test", "/interest_group/decision_logic.js")),
+      /*expected_url=*/ad_url_);
 }
 
 // Run an auction with 2 interest groups. One of the interest groups will
