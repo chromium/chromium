@@ -1740,6 +1740,10 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetLocationDE) {
        .street_location = "Implerstr. 73 a",
        .street_name = "Implerstr.",
        .house_number = "73 a"},
+      {.country_code = "DE",
+       .street_location = "Implerstr Nr 8",
+       .street_name = "Implerstr",
+       .house_number = "8"},
   };
 
   for (const auto& test_case : test_cases) {
