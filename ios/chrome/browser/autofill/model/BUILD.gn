@@ -91,6 +91,7 @@ source_set("model_shared") {
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
