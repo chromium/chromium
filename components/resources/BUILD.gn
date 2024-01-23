@@ -107,6 +107,10 @@ action("about_credits") {
     "--target-os=$target_os",
     "--depfile",
     rebase_path(depfile, root_build_dir),
+    "--gn-out-dir",
+    ".",
+    "--gn-target",
+    "//chrome", # TODO(toshok) can't imagine we want this, but I'm not sure how else to do it?
     "credits",
     rebase_path(about_credits_file, root_build_dir),
   ]

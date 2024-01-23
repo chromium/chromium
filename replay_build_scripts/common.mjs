@@ -117,7 +117,7 @@ function gclient() {
 }
 
 function runGclientSync() {
-  spawnChecked(gclient(), ["sync"], { stdio: "inherit" });
+  spawnChecked(gclient(), ["sync", "-D"], { stdio: "inherit" });
 }
 
 function updateRepo(repo, treeish) {

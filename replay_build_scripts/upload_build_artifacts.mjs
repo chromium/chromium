@@ -245,13 +245,21 @@ async function main(options) {
 
   // Perform all buildkite-specific stuff
   if (process.env["BUILDKITE"]) {
+    const pakSizesFile = recordPAKSizes(options);
+    const entriesFile = recordGClientEntries(options);
+
     buildkiteStuff(
       downloadUris,
       platform,
       buildId,
       buildArm ? "arm64" : "x86_64",
-      symbolsArchiveFile
+      symbolsArchiveFile,
+      pakSizesFile,
+      entriesFile
     );
+
+    fs.unlinkSync(pakSizesFile);
+    fs.unlinkSync(entriesFile);
   }
   fs.unlinkSync(symbolsArchiveFile);
 }
@@ -261,7 +269,9 @@ function buildkiteStuff(
   platform,
   buildId,
   arch,
-  symbolsArchiveFile
+  symbolsArchiveFile,
+  pakSizesFile,
+  entriesFile
 ) {
   const markdownDownloadList = downloadUris
     .map((uri) =>
@@ -303,6 +313,8 @@ function buildkiteStuff(
     symbolsArchiveFile,
     path.join(BUILDKITE_ARTIFACT_DIRECTORY, symbolsArchiveFile)
   );
+  fs.cpSync(pakSizesFile, path.join(BUILDKITE_ARTIFACT_DIRECTORY, "pak-sizes"));
+  fs.cpSync(entriesFile, path.join(BUILDKITE_ARTIFACT_DIRECTORY, "entries"));
 
   log(
     `Wrote build_id to ${BUILDKITE_ARTIFACT_DIRECTORY}/${BUILDKITE_BUILD_ID_ARTIFACT}`
@@ -491,6 +503,72 @@ function computeBuildId(
       : driverDate;
 
   return `${currentPlatform()}-${runtimeName}-${date}-${runtimeRevision}-${driverRevision}${buildIdExtension}`;
+}
+
+function recordPAKSizes(options) {
+  // Record the size of each pak file we care about.
+  const pakFiles = ["resources.pak"];
+
+  const releaseDir = options.useARM ? "Release-ARM" : "Release";
+  // the containing directory (a subdir of releaseDir) of these files varies by Platform
+  let pakDir;
+  switch (currentPlatform()) {
+    case Platform.macOS:
+      pakDir = path.join(
+        "out",
+        releaseDir,
+        "Chromium Framework.framework/Versions/Current/Resources"
+      );
+      break;
+    case Platform.linux:
+      pakDir = path.join("out", releaseDir);
+      break;
+    case Platform.windows:
+      throw new Error("No Clue Yet");
+      break;
+    default:
+      throw new Error("NYI");
+  }
+
+  let pakSizes = "";
+  for (const pakFile of pakFiles) {
+    const file = path.join(pakDir, pakFile);
+    const size = fs.statSync(file).size;
+    pakSizes += `${pakFile} ${size}\n`;
+  }
+
+  const archSuffix = options.useArm ? "-arm" : "";
+  const pakSizesFile = `pak-sizes${archSuffix}`;
+  fs.writeFileSync(pakSizesFile, pakSizes);
+  return pakSizesFile;
+}
+
+function recordGClientEntries(options) {
+  // TODO(toshok) this is probably broken on windows.  need to look what the filename is there.
+  let gclient_entries_contents = fs.readFileSync("../.gclient_entries", "utf8");
+
+  let third_party_entries = {};
+  gclient_entries_contents.split("\n").forEach((line) => {
+    if (!line.includes("src/third_party/")) {
+      // we skip all non-third_party lines
+      return;
+    }
+    const match = line.match(/\'src\/third_party\/([^\']+)\': \'([^\']+)\'/);
+    if (!match) {
+      throw new Error(`Unexpected line format: ${line}`);
+    }
+    third_party_entries[match[1]] = match[2];
+  });
+
+  const keys = Object.keys(third_party_entries);
+  keys.sort();
+  const output = keys.map((k) => `${k} ${third_party_entries[k]}`).join("\n");
+
+  const archSuffix = options.useArm ? "-arm" : "";
+  const entriesFile = `entries${archSuffix}`;
+  fs.writeFileSync(entriesFile, output);
+
+  return entriesFile;
 }
 
 async function buildSymbolsArchive(

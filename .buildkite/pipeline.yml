@@ -87,7 +87,6 @@ steps:
     agents:
       - "runtimeType=chromiumbuild"
       - "os=macos"
-      - "arch=x86_64"
       - "queue=runtime"
     artifact_paths:
       - "build_id/macOS/x86_64/**"
@@ -120,7 +119,6 @@ steps:
     agents:
       - "runtimeType=chromiumbuild"
       - "os=macos"
-      - "arch=x86_64"
       - "queue=runtime"
     artifact_paths:
       - "build_id/macOS/arm64/**"
@@ -141,6 +139,33 @@ steps:
       - "queue=runtime"
     artifact_paths:
       - "build_id/windows/x86_64/**"
+
+  - label: ":sleuth_or_spy: Verify cross-arch `.pak` sizes and dep hashes"
+    key: "verify-cross-arch-pak-sizes"
+    commands:
+      - "be_cmd download-macos-arm64-gclient_entries -- buildkite-agent artifact download build_id/macOS/arm64/entries ."
+      - "be_cmd download-macos-x86_64-gclient_entries -- buildkite-agent artifact download build_id/macOS/x86_64/entries ."
+      - "be_cmd macos-diff-gclient-entries -- diff -u build_id/macOS/arm64/entries build_id/macOS/x86_64/entries"
+      - "be_cmd download-macos-arm64-pak-sizes -- buildkite-agent artifact download build_id/macOS/arm64/pak-sizes ."
+      - "be_cmd download-macos-x86_64-pak-sizes -- buildkite-agent artifact download build_id/macOS/x86_64/pak-sizes ."
+      - "be_cmd macos-diff-pak-sizes -- diff -u build_id/macOS/arm64/pak-sizes build_id/macOS/x86_64/pak-sizes || true"
+    depends_on:
+      - "build-chromium-mac-x86_64"
+      - "build-chromium-mac-arm64"
+    plugins:
+      - thedyrt/skip-checkout#v0.1.1:
+          cd: /home/ubuntu/chromium/src
+      - seek-oss/aws-sm#v2.3.1:
+          region: us-east-2
+          env:
+            BUILDEVENT_APIKEY: honeycomb-api-key
+            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
+      - replayio/buildevents#adb8a05: ~
+    agents:
+      - "runtimeType=chromiumbuild"
+      - "os=linux"
+      - "queue=runtime"
+
   - label: ":hammer: Trigger Runtime Tests"
     trigger: "testing-runtime-e2e"
     depends_on:
