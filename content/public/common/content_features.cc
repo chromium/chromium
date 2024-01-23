@@ -777,7 +777,7 @@ BASE_FEATURE(kPushSubscriptionChangeEvent,
 // See https://crbug.com/838348 and https://crbug.com/1220337.
 BASE_FEATURE(kQueueNavigationsWhileWaitingForCommit,
              "QueueNavigationsWhileWaitingForCommit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, sends SubresourceResponseStarted IPC only when the user has
 // allowed any HTTPS-related warning exceptions. From field data, (see
