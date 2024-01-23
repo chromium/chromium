@@ -237,7 +237,7 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   // Indicates if the connection was able to successfully sync with the
   // window manager.
-  bool CanSyncWithWm() const;
+  bool synced_with_wm() const { return synced_with_wm_; }
 
   // Returns the underlying socket's FD if the connection is valid, or -1
   // otherwise.

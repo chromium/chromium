@@ -384,13 +384,6 @@ bool Connection::HasNextEvent() {
   return false;
 }
 
-bool Connection::CanSyncWithWm() const {
-  if (GetWmName() == "Openbox") {
-    return true;
-  }
-  return synced_with_wm_;
-}
-
 int Connection::GetFd() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return Ready() ? xcb_get_file_descriptor(XcbConnection()) : -1;
