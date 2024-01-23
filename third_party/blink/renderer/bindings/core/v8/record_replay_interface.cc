@@ -178,7 +178,7 @@ const {
   warning: warning_,
   fromJsIsReplayScriptAlive: isReplayScriptAlive,
   setCDPMessageCallback,
-  sendCDPMessage,
+  sendCDPMessage: sendCDPMessageRaw,
   setCommandCallback,
   setClearPauseDataCallback,
   addNewScriptHandler,
@@ -254,8 +254,6 @@ function assert(v, msg = "") {
 }
 
 const gSourceMapData = new Map();
-
-try {
 
 /** ###########################################################################
  * Use JS injection prevention:
@@ -346,13 +344,15 @@ class CDPMessageError extends Error {
   }
 }
 
-function sendMessage(method, params) {
+function sendCDPMessage(method, params) {
+  CHECK_ALIVE(`sendCDPMessage ${method}`);
+
   const id = gNextMessageId++;
   const cdpRequest = new CdpRequest(id);
   Array_push.call(gCdpRequestStack, cdpRequest);
   const cdpArgs = JSON_stringify({ method, params, id });
   try {
-    sendCDPMessage(cdpArgs);
+    sendCDPMessageRaw(cdpArgs);
   } catch (err) {
     if (!cdpRequest.result) {
       throw err;
@@ -379,6 +379,13 @@ function sendMessage(method, params) {
   }
   return undefined;
 }
+
+/**
+ * [RUN-3160] We have dependencies on this in the backend, via Target.evaluatePrivileged.
+ * @deprecated Use {@link sendCDPMessage} instead.
+ */
+// eslint-disable-next-line
+const sendMessage = sendCDPMessage;
 
 
 function addEventListener(method, callback) {
@@ -462,8 +469,6 @@ function getAliveLabel() {
 }
 
 function executeCommand(method, params) {
-  CHECK_ALIVE(`executeCommand ${method}`);
-
   VerboseCommands && log(`[Command ${method}] Handling command, params=${JSON_stringify(params)}...`);
   const result = CommandCallbacks[method](params);
   VerboseCommands && log(`[Command ${method}] Handled command, result=${JSON_stringify(result)}`);
@@ -614,7 +619,7 @@ function Target_getCurrentNetworkStreamData(params) {
 
 function Target_topFrameLocation() {
   try {
-    const { location } = sendMessage("Debugger.getTopFrameLocation");
+    const { location } = sendCDPMessage("Debugger.getTopFrameLocation");
     if (!location) {
       return {};
     }
@@ -642,7 +647,7 @@ function Target_topFrameLocation() {
 function getStackFrames() {
   // NOTE: this is a custom command we added in `src/inspector/v8-debugger-agent-impl.cc`
   try {
-    const { callFrames } = sendMessage("Debugger.getCallFrames", {
+    const { callFrames } = sendCDPMessage("Debugger.getCallFrames", {
       objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
     });
     return callFrames;
@@ -746,7 +751,7 @@ function Pause_evaluateInFrame({ frameId: frameIndexStr, expression }) {
     // the stack frames in the first place. The debugger agent extracts a frame
     // index from the ID it is given and uses that to walk the stack to the
     // frame where it will do the evaluation (see DebugStackTraceIterator).
-    return sendMessage(
+    return sendCDPMessage(
       "Debugger.evaluateOnCallFrame",
       {
         callFrameId: frame.callFrameId,
@@ -761,7 +766,7 @@ function Pause_evaluateInGlobal({ expression }) {
   let rv;
   try {
     onBeforeEval();
-    rv = sendMessage(
+    rv = sendCDPMessage(
       "Runtime.evaluate",
       {
         expression,
@@ -800,7 +805,7 @@ function Pause_getAllFrames() {
 }
 
 function Pause_getExceptionValue() {
-  const rv = sendMessage("Debugger.getPendingException", {
+  const rv = sendCDPMessage("Debugger.getPendingException", {
     objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
   });
   return { exception: rv.exception ? buildRrpObjectFromCdpObject(rv.exception) : undefined, data: {} };
@@ -813,7 +818,7 @@ function Pause_getObjectPreview({ object, level = "full" }) {
 
 function Pause_getObjectProperty({ object, name }) {
   const cdpObj = getCdpObjectByRrpId(object);
-  const rv = sendMessage(
+  const rv = sendCDPMessage(
     "Runtime.callFunctionOn",
     {
       functionDeclaration: `function() { return this["${name}"] }`,
@@ -963,7 +968,7 @@ function clearPauseDataCallback() {
     gLastRrpId = 0;
 
     // RUN-1832
-    sendMessage("Runtime.releaseObjectGroup", {
+    sendCDPMessage("Runtime.releaseObjectGroup", {
       objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP,
     });
   } catch (e) {
@@ -1447,7 +1452,7 @@ ProtocolObjectPreview.prototype = {
       //    in V8's |doesAttributeHaveObservableSideEffectOnGet|.
       //    see: https://github.com/replayio/chromium-v8/pull/115/files#diff-72ee0a91d32565577bd78ed94b034ae3b4bf51676c5d42165e9363cad18dccf9R1328
       try {
-        cdpProperties = sendMessage("Runtime.getProperties", {
+        cdpProperties = sendCDPMessage("Runtime.getProperties", {
           objectId: this.cdpObj.objectId,
           ownProperties: false,
           generatePreview: false,
@@ -1712,7 +1717,7 @@ function previewSetMap(cdpProperties) {
     this.extra.containerEntryCount = this.raw.size;
   }
 
-  const entries = sendMessage("Runtime.getProperties", {
+  const entries = sendCDPMessage("Runtime.getProperties", {
     objectId: internal.value.objectId,
     ownProperties: true,
     generatePreview: false,
@@ -1723,7 +1728,7 @@ function previewSetMap(cdpProperties) {
 
   for (const entry of entries) {
     if (entry?.value?.subtype == "internal#entry") {
-      const entryProperties = sendMessage("Runtime.getProperties", {
+      const entryProperties = sendCDPMessage("Runtime.getProperties", {
         objectId: entry.value.objectId,
         ownProperties: true,
         generatePreview: false,
@@ -1929,7 +1934,7 @@ function createRrpScope(scopeId) {
   } else {
     bindings = [];
 
-    const properties = sendMessage("Runtime.getProperties", {
+    const properties = sendCDPMessage("Runtime.getProperties", {
       objectId: cdpScope.object.objectId,
       ownProperties: true,
       generatePreview: false,
@@ -2428,7 +2433,7 @@ function CSS_getAppliedRules({ node: nodeRrpId }) {
     const nodeId = getBlinkNodeIdByRrpId(nodeRrpId);
 
     // NOTE: CDP CSS domain commands are not enabled, so we have to get the data indirectly.
-    // const cdpMatchedStyles = sendMessage('CSS.getMatchedStylesForNode', { nodeId });
+    // const cdpMatchedStyles = sendCDPMessage('CSS.getMatchedStylesForNode', { nodeId });
     if (isBlinkInstanceOf(nodeObj, Element)) {
       const cdpMatchedStyles = fromJsGetMatchedStylesForElement(nodeId) || { };
       rules = convertCdpToRrpCssRules(nodeObj, cdpMatchedStyles);
@@ -3054,7 +3059,7 @@ __RECORD_REPLAY_ARGUMENTS__.internal = {
   getPlainObjectByRrpId,
   registerPlainObject,
   gLastBoundingClientRectsByNodeRrpId,
-  sendCDPMessage: sendMessage,
+  sendCDPMessage,
   getNextStackingContextId: () => gNextStackingContextId,
   setNextStackingContextId: (id) => { gNextStackingContextId = id; },
   updateNextStackingContextId: (f) => { gNextStackingContextId = f(gNextStackingContextId); },
@@ -3175,11 +3180,7 @@ addEventListener("Runtime.executionContextsCleared", () => {
   }
   gExecutionContexts.clear();
 });
-sendMessage("Runtime.enable");
-
-} catch (e) {
-  warning(`JS_ERROR Initialization: ${e?.stack || e}`);
-}
+sendCDPMessage("Runtime.enable");
 
 })();
 
@@ -3200,7 +3201,6 @@ sendMessage("Runtime.enable");
 const char* gSourceMapScript = R""""(
 //js
 (() => {
-
 const {
   log,
   warning,
@@ -3445,7 +3445,6 @@ function isValidBaseURL(url) {
 }
 
 })();
-
 )"""";
 
 // Script that injects React DevTools "stub" functions to capture
@@ -5658,10 +5657,9 @@ void OnRootFrameInit(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8:
   recordreplay::DoResetPaintSurface();
 
   // 2. Initialize sourcemap worker, command handlers etc.
-  InitializeReplayScripts(isolate, localFrame, context);
-  
   gReplayScriptsAlive = true;
   recordreplay::Print("ReplayScript STATUS_CHANGE_ALIVE");
+  InitializeReplayScripts(isolate, localFrame, context);
 }
 
 void OnRootFrameInitAfterCheckpoint(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context) {
