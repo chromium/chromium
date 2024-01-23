@@ -182,7 +182,7 @@ bool HighlightEdge::operator!=(const HighlightEdge& other) const {
 
 HighlightDecoration::HighlightDecoration(HighlightLayer layer,
                                          HighlightRange range)
-    : layer(layer), range(range) {}
+    : layer(std::move(layer)), range(range) {}
 
 String HighlightDecoration::ToString() const {
   StringBuilder result{};
@@ -202,7 +202,9 @@ bool HighlightDecoration::operator!=(const HighlightDecoration& other) const {
 HighlightPart::HighlightPart(HighlightLayer layer,
                              HighlightRange range,
                              Vector<HighlightDecoration> decorations)
-    : layer(layer), range(range), decorations(decorations) {}
+    : layer(std::move(layer)),
+      range(range),
+      decorations(std::move(decorations)) {}
 
 HighlightPart::HighlightPart(HighlightLayer layer, HighlightRange range)
     : HighlightPart(layer, range, Vector<HighlightDecoration>{}) {}
