@@ -29,6 +29,10 @@
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
 
+namespace ui {
+class Event;
+}  // namespace ui
+
 namespace views {
 
 namespace test {
@@ -37,7 +41,6 @@ class ButtonTestApi;
 
 class Button;
 class ButtonController;
-class Event;
 
 // A View representing a button. A Button is focusable by default and will
 // be part of the focus chain.

@@ -32,7 +32,6 @@ class Layer;
 }
 
 namespace gfx {
-class Animation;
 class AnimationCurve;
 class Rect;
 class Transform;
@@ -41,7 +40,6 @@ class Transform;
 namespace ui {
 class Compositor;
 class ImplicitAnimationObserver;
-class Layer;
 class LayerAnimationSequence;
 class LayerAnimationDelegate;
 class LayerAnimationObserver;

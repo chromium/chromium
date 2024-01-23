@@ -25,8 +25,6 @@ using ui::OSExchangeData;
 
 namespace views {
 
-class RootView;
-
 // DropHelper provides support for managing the view a drop is going to occur
 // at during dnd as well as sending the view the appropriate dnd methods.
 // DropHelper is intended to be used by a class that interacts with the system

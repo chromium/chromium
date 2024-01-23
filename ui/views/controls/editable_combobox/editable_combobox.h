@@ -38,8 +38,6 @@ class MenuModel;
 
 namespace views {
 class Button;
-class EditableComboboxMenuModel;
-class EditableComboboxPreTargetHandler;
 class MenuRunner;
 class Textfield;
 
