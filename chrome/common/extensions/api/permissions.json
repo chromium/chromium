@@ -5,7 +5,7 @@
 [
   {
     "namespace": "permissions",
-    "description": "Use the <code>chrome.permissions</code> API to request <a href='/docs/extensions/mv3/declare_permissions/'>declared optional permissions</a> at run time rather than install time, so users understand why the permissions are needed and grant only those that are necessary.",
+    "description": "Use the <code>chrome.permissions</code> API to request <a href='/docs/extensions/develop/concepts/declare-permissions'>declared optional permissions</a> at run time rather than install time, so users understand why the permissions are needed and grant only those that are necessary.",
     "types": [
       {
         "id": "Permissions",
@@ -21,7 +21,7 @@
             "type": "array",
             "items": {"type": "string"},
             "optional": true,
-            "description": "The list of host permissions, including those specified in the <code>optional_permissions</code> or <code>permissions</code> keys in the manifest, and those associated with <a href='content_scripts'>Content Scripts</a>."
+            "description": "The list of host permissions, including those specified in the <code>optional_permissions</code> or <code>permissions</code> keys in the manifest, and those associated with <a href='/docs/extensions/develop/concepts/content-scripts'>Content Scripts</a>."
           }
         }
       }
