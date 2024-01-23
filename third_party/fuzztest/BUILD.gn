@@ -224,7 +224,6 @@ source_set("fuzztest_internal") {
   sources = [
     "src/fuzztest/domain.h",
     "src/fuzztest/domain_core.h",
-    "src/fuzztest/fuzztest.cc",
     "src/fuzztest/fuzztest.h",
     "src/fuzztest/googletest_fixture_adapter.h",
     "src/fuzztest/internal/any.h",
