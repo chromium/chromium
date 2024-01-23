@@ -2947,6 +2947,17 @@ Bu politika, Devre Dışı değerine ayarlanırsa fiziksel klavyede tahmine daya
 <translation id="3423703250826790403">Android uygulamaları</translation>
 <translation id="3426434797050451264">Bu politika, Android uygulamalarını varsayılan dosya işleyicileri olarak belirtmek için de kullanılabilir.</translation>
 <translation id="3428247105888806363">Ağ tahminini etkinleştir</translation>
+<translation id="3430198032663063246">Yazmama yardım et, web'deki kısa içerikler için yapay zekadan yararlanarak yazım konusunda destek sunar. Önerilen içerikler, kullanıcının girdiği istemlere ve web sayfasındaki içeriklere göre belirlenir.
+
+0 = Özelliği kullanıcılar için etkinleştirin ve Google'a alakalı verileri göndererek yapay zeka modellerini eğitmesine ya da iyileştirmesine yardımcı olun. Alakalı veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar ve kaynak materyalleri yer alabilir. Bu bilgiler, gerçek kişiler tarafından yalnızca yapay zeka modellerini iyileştirmek amacıyla incelenebilir.
+
+Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
+
+1 = Özelliği kullanıcılar için etkinleştirin ancak yapay zeka modellerini eğitmesi veya iyileştirmesi için Google'a veri göndermeyin. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar için varsayılan değer 1'dir.
+
+2 = Özelliği devre dışı bırakın. <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen Education hesapları için varsayılan değer 2'dir.
+
+Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="3432863169147125747">Yazdırma ayarlarını kontrol eder.</translation>
 <translation id="3434053014926283175">Giriş ekranında birincil fare düğmesini sağ düğme yapın.
 
@@ -8707,6 +8718,17 @@ Bu politika, Gizli moda uygulanır. Dolayısıyla, tarayıcıda Gizli mod etkinl
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez.</translation>
 <translation id="8225579382697740712">WebHID API'nin kullanımını kontrol et</translation>
 <translation id="8229912067600517877">Geliştirici Araçları'nı etkinleştir</translation>
+<translation id="8234565689501421293">Yapay Zeka ile Tema Oluştur özelliği, kullanıcıların bir seçenek listesinden önceden seçim yaparak özel temalar/duvar kağıtları oluşturmasına olanak tanır.
+
+0 = Özelliği kullanıcılar için etkinleştirin ve Google'a alakalı verileri göndererek yapay zeka modellerini eğitmesine ya da iyileştirmesine yardımcı olun. Alakalı veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar ve kaynak materyalleri yer alabilir. Bu bilgiler, gerçek kişiler tarafından yalnızca yapay zeka modellerini iyileştirmek amacıyla incelenebilir.
+
+Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
+
+1 = Özelliği kullanıcılar için etkinleştirin ancak yapay zeka modellerini eğitmesi veya iyileştirmesi için Google'a veri göndermeyin. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar için varsayılan değer 1'dir.
+
+2 = Özelliği devre dışı bırakın. <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen Education hesapları için varsayılan değer 2'dir.
+
+Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="8238421250255592181">Dokunmatik klavyede otomatik tamamlama özelliği sunulup sunulamayacağını gösteren bir boole flag'i.</translation>
 <translation id="8239109177194627162">Kredi kartlarını otomatik doldurmayı devre dışı bırak</translation>
 <translation id="8239143983379015783">Kalıcı kotanın etkinleştirilmesini zorunlu tut</translation>
@@ -9902,6 +9924,17 @@ Bu politika, Devre Dışı değerine ayarlanırsa kullanıcılara ürün içi an
 <translation id="942977875497446094">Başlangıçta tarayıcıyı otomatik başlat</translation>
 <translation id="943865157632139008"><ph name="PRODUCT_FRAME_NAME" /> yüklendiğinde varsayılan HTML oluşturucusunu yapılandırmanıza olanak verir. Varsayılan ayar, oluşturmayı ana makinenin tarayıcısının yapmasına izin vermektir, ancak isteğe bağlı olarak bunu geçersiz kılabilir ve HTML sayfalarının varsayılan olarak <ph name="PRODUCT_FRAME_NAME" /> tarafından oluşturulmasını sağlayabilirsiniz.</translation>
 <translation id="944817693306670849">Disk önbellek boyutunu ayarla</translation>
+<translation id="946458935955389273">Sekme Düzenleyici, kullanıcının açık sekmelerine göre otomatik olarak sekme grupları oluşturan yapay zeka destekli bir araçtır. Öneriler, sayfa içeriklerine göre değil, açık sekmelere göre belirlenir.
+
+0 = Özelliği kullanıcılar için etkinleştirin ve Google'a alakalı verileri göndererek yapay zeka modellerini eğitmesine ya da iyileştirmesine yardımcı olun. Alakalı veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar ve kaynak materyalleri yer alabilir. Bu bilgiler, gerçek kişiler tarafından yalnızca yapay zeka modellerini iyileştirmek amacıyla incelenebilir.
+
+Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
+
+1 = Özelliği kullanıcılar için etkinleştirin ancak yapay zeka modellerini eğitmesi veya iyileştirmesi için Google'a veri göndermeyin. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar için varsayılan değer 1'dir.
+
+2 = Özelliği devre dışı bırakın. <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen Education hesapları için varsayılan değer 2'dir.
+
+Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="957322141096206402">Sistem DNS çözümlemesi, sistem yapılandırmasına ve özellik bayraklarına bağlı olarak ağ işleminin içinde veya dışında çalıştırılabilir.</translation>
 <translation id="957778406002650056"><ph name="PLUGIN_VM_NAME" /> resminin indirilebileceği URL.</translation>
 <translation id="957920984193041197">Sayfaların yüklemesi kaldırılırken pop-up göstermesine izin ver</translation>

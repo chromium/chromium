@@ -4223,7 +4223,7 @@
 <translation id="4268025649754414643">キーの暗号化</translation>
 <translation id="4268516942564021145">お使いのアカウントではこの設定は使用できません。</translation>
 <translation id="4270393598798225102">バージョン <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">グループを保存する</translation>
+<translation id="4274604968379621964">グループを保存</translation>
 <translation id="4274667386947315930">ログインデータ</translation>
 <translation id="4274673989874969668">ユーザーがサイトから離れた後も、サイトは同期を継続して、写真のアップロードやチャット メッセージの送信などのタスクを完了することがあります</translation>
 <translation id="4275291496240508082">起動音</translation>
@@ -6911,7 +6911,7 @@
 <translation id="6438234780621650381">設定のリセット</translation>
 <translation id="6438475350605608554">すでに別のタブにパスワードをインポートしています</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - オーディオ再生中です</translation>
-<translation id="6440291723980579689">ページは開いてから読み込まれます</translation>
+<translation id="6440291723980579689">ページは開いてから読み込まれます。</translation>
 <translation id="6441377161852435370">タブをリーディング リストに追加</translation>
 <translation id="6442187272350399447">ビックリ</translation>
 <translation id="6442445294758185945">アップデートをダウンロードできませんでした。しばらくしてからもう一度お試しください。</translation>

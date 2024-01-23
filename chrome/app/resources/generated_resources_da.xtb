@@ -320,7 +320,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1236009322878349843">Rediger telefon</translation>
 <translation id="1239594683407221485">Udforsk enhedens indhold i appen Filer.</translation>
 <translation id="1239841552505950173">Åbn appen</translation>
-<translation id="1240903469550363138">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse, og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />servicevilkår<ph name="END_LINK2" />.</translation>
+<translation id="1240903469550363138">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />servicevilkår<ph name="END_LINK2" />.</translation>
 <translation id="1241066500170667906">Vælg eksperimenttilstand for <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Flere sprog</translation>
 <translation id="1241381048229838873">Vis alle bogmærker</translation>
@@ -2459,7 +2459,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2835177225987815960">Din aktuelle konfiguration af scanning nulstilles, herunder præferencerne for tildelte kontakter og hastigheden ved automatisk scanning.</translation>
 <translation id="2835547721736623118">Tjeneste til talegenkendelse</translation>
 <translation id="2835761321523638096">Læs og rediger poster på læselisten</translation>
-<translation id="2836232638504556905">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse, og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK" />privatlivspolitik<ph name="END_LINK" />.</translation>
+<translation id="2836232638504556905">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK" />privatlivspolitik<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Nedbrud</translation>
 <translation id="283669119850230892">Hvis du vil bruge netværket <ph name="NETWORK_ID" />, skal du først oprette forbindelse til internettet nedenfor.</translation>
 <translation id="2838379631617906747">Installerer</translation>
@@ -4420,7 +4420,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4405224443901389797">Flyt til…</translation>
 <translation id="4405781821077215583">Forstør eller formindsk elementer på din skærm, inklusive tekst</translation>
 <translation id="4406883609789734330">Livetekstning</translation>
-<translation id="4407039574263172582">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse, og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK" />servicevilkår<ph name="END_LINK" />.</translation>
+<translation id="4407039574263172582">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK" />servicevilkår<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">H&amp;jælp</translation>
 <translation id="4408965460206576430">Denne fil indeholder malware eller stammer fra et mistænkeligt website</translation>
 <translation id="4409271659088619928">Dine standardsøgemaskine er <ph name="DSE" />. Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
@@ -5639,7 +5639,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5398572795982417028">Sidereferencen er ugyldig. Grænsen er <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400836586163650660">Grå</translation>
 <translation id="5401426944298678474">Følg ikke website</translation>
-<translation id="5401851137404501592">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse, og dit profilbillede med dette website.</translation>
+<translation id="5401851137404501592">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse og dit profilbillede med dette website.</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402815541704507626">Download opdateringen ved brug af mobildata</translation>
 <translation id="5404740137318486384">Tryk på en kontakt eller en tastaturtast for at tildele den handlingen "<ph name="ACTION" />".

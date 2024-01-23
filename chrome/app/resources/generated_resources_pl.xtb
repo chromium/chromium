@@ -3193,7 +3193,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3473241910002674503">Przechodź do strony głównej i wstecz oraz przełączaj się między aplikacjami, korzystając z przycisków w trybie tabletu.</translation>
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">Możesz użyć maksymalnie 99 liter</translation>
-<translation id="3474624961160222204">Nadal używaj konta użytkownika <ph name="NAME" /></translation>
+<translation id="3474624961160222204">Kontynuuj jako <ph name="NAME" /></translation>
 <translation id="3475843873335999118">Odcisk palca nie został rozpoznany. Podaj hasło.</translation>
 <translation id="3476303763173086583">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. Pomóż ulepszyć działanie Androida na urządzeniu dziecka, automatycznie wysyłając do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To <ph name="BEGIN_LINK1" />ustawienie<ph name="END_LINK1" /> jest wymuszone przez właściciela. Właściciel może ustawić wysyłanie do Google danych diagnostycznych i informacji o używaniu tego urządzenia. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na tym koncie. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Ups. System nie mógł pobrać zasad dotyczących Twojego urządzenia.</translation>
@@ -3519,7 +3519,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3729957991398443677">Aby wyświetlić hasło lub dodać notatkę na jego temat, na pasku wyszukiwania i adresu wybierz Zarządzaj hasłami</translation>
 <translation id="3730076362938942381">Aplikacja do pisania rysikiem</translation>
 <translation id="3732078975418297900">Błąd w wierszu <ph name="ERROR_LINE" /></translation>
-<translation id="3732414796052961578">Nadal używaj konta użytkownika <ph name="ACCOUNT_NAME" /></translation>
+<translation id="3732414796052961578">Kontynuuj jako <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">Kod PIN może mieć maksymalnie 63 znaki</translation>
 <translation id="3732857534841813090">Informacje powiązane z Asystentem Google</translation>
 <translation id="3733296813637058299">Zainstalujemy te aplikacje dla Ciebie. Więcej aplikacji na swoje urządzenie <ph name="DEVICE_TYPE" /> znajdziesz w Sklepie Play.</translation>
@@ -9431,7 +9431,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8413795581997394485">Chroni przed stronami, pobieranymi plikami i rozszerzeniami, o których wiadomo, że są niebezpieczne. Gdy wchodzisz na stronę, Chrome wysyła zaciemniony fragment adresu URL do Google przez serwer prywatności, który ukrywa Twój adres IP. Jeśli strona robi coś podejrzanego, wysyłane są też pełne adresy URL i fragmenty zawartości strony.</translation>
 <translation id="8413956290606243087">Czy chcesz włączyć ChromeVoksa, czyli wbudowany czytnik ekranu w Chrome OS?</translation>
 <translation id="8414249071344507766">Wspomnienia zostały ukryte na 2 dni</translation>
-<translation id="8414396119627470038">Zaloguj się w <ph name="SITE_ETLD_PLUS_ONE" /> za pomocą <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8414396119627470038">Zaloguj się w witrynie <ph name="SITE_ETLD_PLUS_ONE" /> za pomocą konta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Notatki</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (obudowa)</translation>
 <translation id="8417065541337558100">Podgląd z kamery</translation>

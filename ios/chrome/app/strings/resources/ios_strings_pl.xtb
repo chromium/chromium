@@ -88,7 +88,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="1377508275003315939">Hasła</translation>
 <translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> może teraz korzystać z Twojej nazwy użytkownika i Twojego hasła podczas logowania się na stronie <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> za pomocą Menedżera haseł Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Szukaj</translation>
-<translation id="138618066238211776">Nadal używaj konta użytkownika <ph name="USER_NAME" /></translation>
+<translation id="138618066238211776">Kontynuuj jako <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Ostatnie cztery tygodnie</translation>
 <translation id="1404330357948037222">Nie korzystasz teraz z konta</translation>
 <translation id="1407135791313364759">Otwórz wszystkie</translation>
@@ -476,7 +476,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3469166899695866866">Czy zatrzymać pobieranie?</translation>
 <translation id="3470502288861289375">Kopiuję...</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{do {COUNT} witryny lub aplikacji}few{do {COUNT} witryn i aplikacji}many{do {COUNT} witryn i aplikacji}other{do {COUNT} witryny i aplikacji}}</translation>
-<translation id="3474624961160222204">Nadal używaj konta użytkownika <ph name="NAME" /></translation>
+<translation id="3474624961160222204">Kontynuuj jako <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Uzyskaj dostęp do swoich haseł w innych aplikacjach.</translation>
 <translation id="3478058380795961209">Miesiąc utraty ważności</translation>
 <translation id="3482959374254649722">Synchronizuję karty...</translation>
@@ -684,7 +684,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4636930964841734540">Informacje</translation>
 <translation id="4642472735733036929">Śledzenie cen zostało zatrzymane</translation>
 <translation id="4645575059429386691">Zarządzany przez Twojego rodzica</translation>
-<translation id="4650125387981512669">Nadal używaj konta użytkownika <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4650125387981512669">Kontynuuj jako <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Upewnij się, że Twoje hasła są bezpieczne, dowiedz się, czy nie zostały przejęte, i poznaj porady, jak lepiej chronić się online. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Zapisz</translation>
 <translation id="4659194143325814340">{count,plural, =1{{count} strona na Twojej liście Do przeczytania}few{{count} strony na Twojej liście Do przeczytania}many{{count} stron na Twojej liście Do przeczytania}other{{count} strony na Twojej liście Do przeczytania}}</translation>

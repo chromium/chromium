@@ -2988,6 +2988,17 @@ Jika disetel ke Nonaktif, fitur penulisan prediktif tidak akan diizinkan di keyb
 <translation id="3423703250826790403">Aplikasi Android</translation>
 <translation id="3426434797050451264">Kebijakan ini juga dapat digunakan untuk menentukan aplikasi Android sebagai pengendali file default.</translation>
 <translation id="3428247105888806363">Aktifkan prediksi jaringan</translation>
+<translation id="3430198032663063246">Bantu Menulis adalah asisten menulis berbasis AI untuk konten berdurasi singkat di web. Konten yang disarankan didasarkan pada perintah yang dimasukkan oleh pengguna dan konten halaman web.
+
+Nilai 0 = Mengaktifkan fitur bagi pengguna, dan mengirim data yang relevan ke Google untuk membantu melatih atau meningkatkan kualitas model AI. Data yang relevan dapat mencakup perintah, input, output, dan materi sumber, bergantung pada fiturnya. Data ini dapat ditinjau oleh manusia dengan tujuan meningkatkan kualitas model AI.
+
+Nilai 0 adalah nilai default, kecuali jika dinyatakan di bawah.
+
+Nilai 1 = Mengaktifkan fitur bagi pengguna, tetapi tidak mengirim data ke Google untuk melatih atau meningkatkan kualitas model AI. Nilai 1 adalah nilai default bagi pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Nilai 2 = Menonaktifkan fitur. Nilai 2 adalah nilai default untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3432863169147125747">Mengontrol setelan pencetakan.</translation>
 <translation id="3434053014926283175">Mengalihkan tombol mouse utama ke kanan pada layar login.
 
@@ -8863,6 +8874,17 @@ Kebijakan ini diterapkan dalam mode Samaran. Artinya, mode Samaran harus diaktif
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya.</translation>
 <translation id="8225579382697740712">Mengontrol penggunaan WebHID API</translation>
 <translation id="8229912067600517877">Aktifkan Developer Tools</translation>
+<translation id="8234565689501421293">Buat Tema dengan AI memungkinkan pengguna membuat tema/wallpaper kustom dengan memilih berbagai pilihan dari daftar opsi.
+
+Nilai 0 = Mengaktifkan fitur bagi pengguna, dan mengirim data yang relevan ke Google untuk membantu melatih atau meningkatkan kualitas model AI. Data yang relevan dapat mencakup perintah, input, output, dan materi sumber, bergantung pada fiturnya. Data ini dapat ditinjau oleh manusia dengan tujuan meningkatkan kualitas model AI.
+
+Nilai 0 adalah nilai default, kecuali jika dinyatakan di bawah.
+
+Nilai 1 = Mengaktifkan fitur bagi pengguna, tetapi tidak mengirim data ke Google untuk melatih atau meningkatkan kualitas model AI. Nilai 1 adalah nilai default bagi pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Nilai 2 = Menonaktifkan fitur. Nilai 2 adalah nilai default untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8238421250255592181">Tanda boolean menunjukkan apakah keyboard virtual dapat memberikan pelengkapan otomatis.</translation>
 <translation id="8239109177194627162">Nonaktifkan Isi Otomatis untuk kartu kredit</translation>
 <translation id="8239143983379015783">Memaksa pengaktifan kuota persisten</translation>
@@ -10083,6 +10105,17 @@ Nilai defaultnya adalah RollbackDisabled.</translation>
 <translation id="942977875497446094">Luncurkan browser secara otomatis saat memulai</translation>
 <translation id="943865157632139008">Memungkinkan Anda mengonfigurasi perender HTML default jika <ph name="PRODUCT_FRAME_NAME" /> diinstal. Setelan defaultnya adalah mengizinkan browser host melakukan rendering, tetapi Anda dapat mengganti ini secara opsional dan memerintahkan <ph name="PRODUCT_FRAME_NAME" /> me-render halaman HTML secara default.</translation>
 <translation id="944817693306670849">Setel ukuran cache disk</translation>
+<translation id="946458935955389273">Pengelola Tab adalah alat berbasis AI yang otomatis membuat grup tab berdasarkan tab terbuka milik pengguna. Saran didasarkan pada tab terbuka (bukan konten halaman).
+
+Nilai 0 = Mengaktifkan fitur bagi pengguna, dan mengirim data yang relevan ke Google untuk membantu melatih atau meningkatkan kualitas model AI. Data yang relevan dapat mencakup perintah, input, output, dan materi sumber, bergantung pada fiturnya. Data ini dapat ditinjau oleh manusia dengan tujuan meningkatkan kualitas model AI.
+
+Nilai 0 adalah nilai default, kecuali jika dinyatakan di bawah.
+
+Nilai 1 = Mengaktifkan fitur bagi pengguna, tetapi tidak mengirim data ke Google untuk melatih atau meningkatkan kualitas model AI. Nilai 1 adalah nilai default bagi pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Nilai 2 = Menonaktifkan fitur. Nilai 2 adalah nilai default untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="957322141096206402">Resolusi DNS sistem dapat berjalan di dalam atau di luar proses jaringan, bergantung pada konfigurasi sistem dan tombol fitur.</translation>
 <translation id="957778406002650056">URL tempat gambar <ph name="PLUGIN_VM_NAME" /> dapat didownload.</translation>
 <translation id="957920984193041197">Izinkan halaman menampilkan pop-up selama penghapusan muatan</translation>

@@ -2985,6 +2985,17 @@ Si la inhabilitas, no se permitirá la escritura predictiva en el teclado físic
 <translation id="3423703250826790403">Aplicaciones para Android</translation>
 <translation id="3426434797050451264">Esta política también se puede usar para especificar apps para Android como controladores de archivos estándar.</translation>
 <translation id="3428247105888806363">Habilitar la predicción de red</translation>
+<translation id="3430198032663063246">Ayúdame a escribir es un asistente de escritura basado en IA para contenido de formato corto en la Web. El contenido sugerido se basa en las instrucciones que ingresa el usuario y en el contenido de la página web.
+
+0 = Habilita la función para los usuarios y envía datos relevantes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos relevantes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que lo revisen personas con el único propósito de mejorar los modelos de IA.
+
+0 es el valor predeterminado, excepto en los siguientes casos.
+
+1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+2 = Inhabilita la función 2 es el valor predeterminado de las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Para obtener más información sobre el manejo de datos de las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3432863169147125747">Controla la configuración de impresión.</translation>
 <translation id="3434053014926283175">Cambia el botón principal del mouse al botón derecho en la pantalla de acceso.
 
@@ -8855,6 +8866,17 @@ Esta política se aplica al modo Incógnito. Esto significa que debes habilitar 
       Si estableces la política, los usuarios no podrán cambiarla.</translation>
 <translation id="8225579382697740712">Controlar el uso de la API de WebHID</translation>
 <translation id="8229912067600517877">Habilitar las Herramientas para desarrolladores</translation>
+<translation id="8234565689501421293">Crear temas con IA les permite a los usuarios crear temas y fondos de pantalla personalizados con una selección previa de una lista de opciones.
+
+0 = Habilita la función para los usuarios y envía datos relevantes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos relevantes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que lo revisen personas con el único propósito de mejorar los modelos de IA.
+
+0 es el valor predeterminado, excepto en los siguientes casos.
+
+1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+2 = Inhabilita la función 2 es el valor predeterminado de las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Para obtener más información sobre el manejo de datos de las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8238421250255592181">Función experimental booleana que indica si el teclado en pantalla puede proporcionar la función de autocompletar.</translation>
 <translation id="8239109177194627162">Inhabilitar Autocompletar para las tarjetas de crédito</translation>
 <translation id="8239143983379015783">Forzar la habilitación de la cuota persistente</translation>
@@ -10098,6 +10120,17 @@ El valor predeterminado es RollbackDisabled.</translation>
 <translation id="943865157632139008">Te permite configurar el procesador de HTML predeterminado cuando <ph name="PRODUCT_FRAME_NAME" /> está instalado.
       La configuración predeterminada permite al navegador del host realizar el procesamiento, pero puedes anularlo de manera opcional y tener las páginas HTML del procesador de <ph name="PRODUCT_FRAME_NAME" /> de forma predeterminada.</translation>
 <translation id="944817693306670849">Configurar el tamaño de caché de disco</translation>
+<translation id="946458935955389273">El Organizador de pestañas es una herramienta basada en IA que crea automáticamente grupos de pestañas en función de las pestañas abiertas de un usuario. Las sugerencias se basan en pestañas abiertas (pero no en el contenido de la página).
+
+0 = Habilita la función para los usuarios y envía datos relevantes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos relevantes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que lo revisen personas con el único propósito de mejorar los modelos de IA.
+
+0 es el valor predeterminado, excepto en los siguientes casos.
+
+1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+2 = Inhabilita la función 2 es el valor predeterminado de las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Para obtener más información sobre el manejo de datos de las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="957322141096206402">Ejecutar la resolución de DNS del sistema dentro o fuera del proceso de red según la configuración del sistema y las marcas de función</translation>
 <translation id="957778406002650056">La URL desde la cual se puede descargar la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="957920984193041197">Permitir que las páginas muestren ventanas emergentes durante las descargas</translation>

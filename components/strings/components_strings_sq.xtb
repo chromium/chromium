@@ -1989,7 +1989,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4960068118612257147">Mund të bësh ndryshime te cilësimet e privatësisë së reklamave të Chrome</translation>
 <translation id="4960203958361543136">Zgjidh motorin e kërkimit</translation>
 <translation id="4964505745997821360">Sigurimi shëndetësor</translation>
-<translation id="4967366744630699583">Modifiko adresën</translation>
+<translation id="4967366744630699583">Redakto adresën</translation>
 <translation id="4968522289500246572">Ky aplikacion është projektuar për celular dhe përmasat mund të mos ndryshohen si duhet. Aplikacioni mund të ketë probleme ose të riniset.</translation>
 <translation id="4968665849807487749">Mund të kërkojë të menaxhojë dritaret në të gjitha ekranet e tua</translation>
 <translation id="4969341057194253438">Fshi regjistrimin</translation>
@@ -3081,7 +3081,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7163295244162773898">{0,plural, =1{Të kopjohet skedari konfidencial?}other{Të kopjohen skedarët konfidencialë?}}</translation>
 <translation id="717330890047184534">ID-ja e Gaia:</translation>
 <translation id="7174545416324379297">E shkrirë</translation>
-<translation id="7175097078723125014">Është zgjedhur opsioni i modifikimit të adresës</translation>
+<translation id="7175097078723125014">Është zgjedhur opsioni i redaktimit të adresës</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tjetër}other{<ph name="SHIPPING_OPTION_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> të tjera}}</translation>
 <translation id="7179323680825933600">Ruaj dhe plotëso mënyrat e pagesës</translation>
 <translation id="7180611975245234373">Rifresko</translation>

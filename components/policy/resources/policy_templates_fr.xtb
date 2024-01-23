@@ -2917,6 +2917,17 @@ Si elle est désactivée, la fonctionnalité d'écriture prédictive est désact
 <translation id="3423703250826790403">Applis Android</translation>
 <translation id="3426434797050451264">Cette règle peut également être utilisée pour spécifier des applis Android comme gestionnaires de fichiers par défaut.</translation>
 <translation id="3428247105888806363">Activer la prédiction réseau</translation>
+<translation id="3430198032663063246">M'aider à écrire est un assistant de rédaction basé sur l'IA pour les contenus courts sur le Web. Le contenu suggéré dépend des requêtes saisies par l'utilisateur et du contenu de la page Web.
+
+0 = Activer la fonctionnalité pour les utilisateurs et envoyer des données pertinentes à Google afin d'entraîner ou d'améliorer les modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties et des documents source. Elles pourront être examinées par des réviseurs dans le seul but d'améliorer les modèles d'IA.
+
+0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Activer la fonctionnalité pour les utilisateurs, mais ne pas envoyer de données à Google afin d'entraîner ou d'améliorer les modèles d'IA. 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+2 = Désactiver la fonctionnalité. 2 est la valeur par défaut pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3432863169147125747">Contrôle les paramètres d'impression.</translation>
 <translation id="3434053014926283175">Permet de définir le bouton droit de la souris comme bouton principal sur l'écran de connexion.
 
@@ -8584,6 +8595,17 @@ Cette règle s'applique au mode navigation privée. Cela signifie que la navigat
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier.</translation>
 <translation id="8225579382697740712">Contrôler l'utilisation de l'API WebHID</translation>
 <translation id="8229912067600517877">Activer les Outils pour les développeurs</translation>
+<translation id="8234565689501421293">Créer des thèmes avec l'IA permet aux utilisateurs de créer des thèmes/fonds d'écran personnalisés en présélectionnant des options depuis une liste.
+
+0 = Activer la fonctionnalité pour les utilisateurs et envoyer des données pertinentes à Google afin d'entraîner ou d'améliorer les modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties et des documents source. Elles pourront être examinées par des réviseurs dans le seul but d'améliorer les modèles d'IA.
+
+0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Activer la fonctionnalité pour les utilisateurs, mais ne pas envoyer de données à Google afin d'entraîner ou d'améliorer les modèles d'IA. 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+2 = Désactiver la fonctionnalité. 2 est la valeur par défaut pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8238421250255592181">Flag booléen spécifiant si la saisie semi-automatique est disponible ou non avec le clavier à l'écran.</translation>
 <translation id="8239109177194627162">Désactiver la saisie automatique pour les cartes de crédit</translation>
 <translation id="8239143983379015783">Forcer l'activation du quota persistant</translation>
@@ -9777,6 +9799,17 @@ La valeur par défaut est "RollbackDisabled".</translation>
 <translation id="943865157632139008">Permet de configurer le moteur de rendu HTML par défaut lorsque <ph name="PRODUCT_FRAME_NAME" /> est installé.
       Le paramétrage par défaut de cette stratégie autorise le navigateur hôte à effectuer le rendu. Toutefois, vous pouvez remplacer ce paramétrage pour que <ph name="PRODUCT_FRAME_NAME" /> assure le rendu des pages HTML par défaut.</translation>
 <translation id="944817693306670849">Définir la taille du cache disque</translation>
+<translation id="946458935955389273">L'organisateur d'onglets est un outil basé sur l'IA qui crée automatiquement des groupes d'onglets en fonction des onglets ouverts par un utilisateur. Les suggestions dépendent des onglets ouverts (mais pas du contenu des pages).
+
+0 = Activer la fonctionnalité pour les utilisateurs et envoyer des données pertinentes à Google afin d'entraîner ou d'améliorer les modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties et des documents source. Elles pourront être examinées par des réviseurs dans le seul but d'améliorer les modèles d'IA.
+
+0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Activer la fonctionnalité pour les utilisateurs, mais ne pas envoyer de données à Google afin d'entraîner ou d'améliorer les modèles d'IA. 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+2 = Désactiver la fonctionnalité. 2 est la valeur par défaut pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="957322141096206402">La résolution DNS du système peut être exécutée dans le processus réseau ou en dehors de celui-ci, en fonction de la configuration système et des flags de fonctionnalité.</translation>
 <translation id="957778406002650056">URL depuis laquelle l'image de <ph name="PLUGIN_VM_NAME" /> peut être téléchargée.</translation>
 <translation id="957920984193041197">Autoriser les pages à afficher des pop-ups pendant le déchargement</translation>
