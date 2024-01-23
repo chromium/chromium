@@ -53,9 +53,7 @@ def install(out_dir):
       'PATH': os.environ.get('PATH', ''),
       'HOME': os.environ.get('HOME', '')
   }
-  return run(cmd + ['CronetTestInstrumentation.apk'], env=env) or \
-      run(cmd + ['ChromiumNetTestSupport.apk'], env=env)
-
+  return run(cmd + ['CronetTestInstrumentation.apk'], env=env)
 
 def test(out_dir, extra_options):
   # Ideally we would fetch this path from somewhere. Though, that's not trivial
