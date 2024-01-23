@@ -74,8 +74,7 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(web_contents()->IsLoading());
-    CHECK_EQ(loading_state_, LoadingState::kNotLoading,
-             base::NotFatalUntil::M123);
+    DCHECK_EQ(loading_state_, LoadingState::kNotLoading);
 
     // Only observe top-level navigation to a different document.
     if (!web_contents()->ShouldShowLoadingUI())
