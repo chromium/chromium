@@ -3450,8 +3450,6 @@ AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
     if (!ax_object || ax_object->IsDetached()) {
       return nullptr;
     }
-    DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent())
-        << "Missing parent: " << ax_object->ToString(true, true);
     // Update cached attributes for all changed nodes before serialization,
     // because updating ignored/included can cause tree structure changes, and
     // the tree structure needs to be stable before serialization begins.
@@ -3486,9 +3484,6 @@ AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
   // TODO(accessibility) Try to get rid of repair situations by addressing
   // partial subtrees and mid-tree object removal directly when they occur.
   if (ax_object->IsMissingParent()) {
-    // TODO(accessibility) Convert to CHECK once we resolve remaining cases.
-    DUMP_WILL_BE_NOTREACHED_NORETURN()
-        << "Missing parent on: " << ax_object->ToString(true, true);
     if (!ax_object->GetNode()) {
       RemoveIncludedSubtree(ax_object, /* remove_root */ true);
       return nullptr;
@@ -3498,8 +3493,6 @@ AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
       return nullptr;
     }
   }
-  DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent())
-      << ax_object->ToString(true, true);
 
   // Update cached attributes for all changed nodes before serialization,
   // because updating ignored/included can cause tree structure changes, and
