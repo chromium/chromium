@@ -3487,9 +3487,6 @@ extern const char kFastPairHandshakeLongTermRefactorDescription[];
 extern const char kFastPairHIDName[];
 extern const char kFastPairHIDDescription[];
 
-extern const char kFastPairLowPowerName[];
-extern const char kFastPairLowPowerDescription[];
-
 extern const char kFastPairPwaCompanionName[];
 extern const char kFastPairPwaCompanionDescription[];
 

@@ -4110,14 +4110,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "fast-pair-low-power",
-    "owners": [
-      "//ash/quick_pair/OWNERS",
-      "jackshira@google.com"
-    ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "fast-pair-pwa-companion",
     "owners": [
       "//ash/quick_pair/OWNERS",

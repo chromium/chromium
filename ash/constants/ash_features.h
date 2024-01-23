@@ -309,16 +309,11 @@ extern const base::FeatureParam<std::string> kFastPairPwaCompanionPlayStoreUri;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<double>
     kFastPairDeviceLostNotificationTimeoutMinutes;
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFastPairLowPower);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnterpriseReportingUI);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEphemeralNetworkPolicies);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEphemeralNetworkPoliciesEnabledPolicy);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<double> kFastPairLowPowerActiveSeconds;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<double> kFastPairLowPowerInactiveSeconds;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFastPairSoftwareScanning);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFastPairSoftwareScanningSupport);
@@ -998,7 +993,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFastPairHandshakeLongTermRefactorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairHIDEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSavedDevicesNicknamesEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairLowPowerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFastPairPreventNotificationsForRecentlyLostDeviceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairPwaCompanionEnabled();
