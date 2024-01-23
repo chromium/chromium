@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,7 +31,7 @@ std::string HexToDecimal(std::string hex_str) {
 }
 
 std::string FindStringOrEmpty(const base::Value::Dict& dict,
-                              const base::StringPiece key) {
+                              const std::string_view key) {
   const std::string* val = dict.FindString(key);
   return val ? *val : std::string();
 }

@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -100,7 +101,7 @@ base::Value::Dict GetEditableFlags(const base::Value::Dict& policy) {
 // If `dict` doesn't have key `key` yet, set it to `value`.
 template <typename ValueType>
 void SetIfNotSet(base::Value::Dict& dict,
-                 base::StringPiece key,
+                 std::string_view key,
                  ValueType value) {
   if (dict.Find(key)) {
     return;

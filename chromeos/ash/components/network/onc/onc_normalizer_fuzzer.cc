@@ -6,9 +6,9 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string_view>
 
 #include "base/json/json_reader.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/onc/onc_normalizer.h"
 #include "chromeos/components/onc/onc_signature.h"
@@ -18,7 +18,7 @@ namespace ash::onc {
 // Fuzzer for methods of the `Normalizer` class.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::optional<base::Value> parsed_json = base::JSONReader::Read(
-      base::StringPiece(reinterpret_cast<const char*>(data), size));
+      std::string_view(reinterpret_cast<const char*>(data), size));
   if (!parsed_json || !parsed_json->is_dict())
     return 0;
 
