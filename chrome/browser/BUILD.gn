@@ -1896,6 +1896,8 @@ static_library("browser") {
       "picture_in_picture/auto_pip_setting_view.h",
       "preloading/preview/preview_manager.cc",
       "preloading/preview/preview_manager.h",
+      "preloading/preview/preview_navigation_throttle.cc",
+      "preloading/preview/preview_navigation_throttle.h",
       "preloading/preview/preview_tab.cc",
       "preloading/preview/preview_tab.h",
       "preloading/preview/preview_zoom_controller.cc",

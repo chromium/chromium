@@ -30,10 +30,15 @@ class PreviewPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
-    ASSERT_TRUE(embedded_test_server()->Start());
+    https_server_->SetSSLConfig(
+        net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_->Start());
 
     histogram_tester_.emplace();
   }
@@ -62,7 +67,7 @@ class PreviewPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
   }
 
   GURL GetTestURL(const std::string& path) {
-    return embedded_test_server()->GetURL("example.com", path);
+    return https_server_->GetURL("a.test", path);
   }
 
   void DisableBackForwardCache() {
@@ -77,6 +82,8 @@ class PreviewPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
   content::WebContents* GetWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
+
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
   std::optional<base::HistogramTester> histogram_tester_;
   test::PreviewTestHelper helper_;

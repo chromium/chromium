@@ -20,6 +20,7 @@
 #include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/preview_cancel_reason.h"
 #include "content/public/browser/serial_chooser.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/window_container_type.mojom-forward.h"
@@ -772,10 +773,8 @@ class CONTENT_EXPORT WebContentsDelegate {
   // Whether the WebContents is running in preview mode.
   virtual bool IsInPreviewMode() const;
 
-  // Notify the page uses a forbidden powerful API and cannot be shown in
-  // preview mode.
-  virtual void CancelPreviewByMojoBinderPolicy(
-      const std::string& interface_name) {}
+  // Report that cancellation occurred in preview navigation.
+  virtual void CancelPreview(PreviewCancelReason reason) {}
 
   // Notify the previewed page is activated.
   virtual void DidActivatePreviewedPage() {}

@@ -496,6 +496,10 @@
 #include "chrome/browser/fuchsia/chrome_browser_main_parts_fuchsia.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/preloading/preview/preview_navigation_throttle.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/debug/leak_annotations.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_navigation_throttle.h"
@@ -5210,6 +5214,11 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   MaybeAddThrottle(apps::AppInstallNavigationThrottle::MaybeCreate(handle),
                    &throttles);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+  MaybeAddThrottle(PreviewNavigationThrottle::MaybeCreateThrottleFor(handle),
+                   &throttles);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   return throttles;
 }

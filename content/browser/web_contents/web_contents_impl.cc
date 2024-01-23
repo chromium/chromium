@@ -134,6 +134,7 @@
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/browser/preview_cancel_reason.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/restore_type.h"
@@ -10262,7 +10263,8 @@ bool WebContentsImpl::IsInPreviewMode() const {
 void WebContentsImpl::CancelPreviewByMojoBinderPolicy(
     const std::string& interface_name) {
   if (delegate_) {
-    delegate_->CancelPreviewByMojoBinderPolicy(interface_name);
+    delegate_->CancelPreview(
+        PreviewCancelReason::BlockedByMojoBinderPolicy(interface_name));
   }
 }
 

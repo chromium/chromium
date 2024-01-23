@@ -16,6 +16,10 @@ class GURL;
 class PreviewTab;
 class PreviewZoomController;
 
+namespace content {
+class PreviewCancelReason;
+}  // namespace content
+
 // Handles requests of preview and manages ongoing previews.
 class PreviewManager final
     : public content::WebContentsObserver,
@@ -30,7 +34,7 @@ class PreviewManager final
   void PrimaryPageChanged(content::Page& page) override;
 
   void InitiatePreview(const GURL& url);
-  void Cancel();
+  void Cancel(content::PreviewCancelReason reason);
   void PromoteToNewTab();
 
   base::WeakPtr<content::WebContents> GetWebContentsForPreviewTab();

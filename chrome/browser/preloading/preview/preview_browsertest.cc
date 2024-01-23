@@ -37,18 +37,33 @@ class PreviewBrowserTest : public PlatformBrowserTest {
   void SetUp() override { PlatformBrowserTest::SetUp(); }
 
   void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->ServeFilesFromDirectory(
-        base::PathService::CheckedGet(chrome::DIR_TEST_DATA));
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+
     embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
         &PreviewBrowserTest::MonitorResourceRequest, base::Unretained(this)));
+    https_server_->RegisterRequestMonitor(base::BindRepeating(
+        &PreviewBrowserTest::MonitorResourceRequest, base::Unretained(this)));
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    embedded_test_server()->AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    histogram_tester_ = std::make_unique<base::HistogramTester>();
+    https_server_->SetSSLConfig(
+        net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_->AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_->Start());
   }
 
   void TearDownOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    ASSERT_TRUE(https_server_->ShutdownAndWaitUntilComplete());
+  }
+
+  GURL GetURL(const std::string& path) {
+    return https_server_->GetURL("a.test", path);
   }
 
   net::test_server::HttpRequest::HeaderMap GetObservedRequestHeadersFor(
@@ -57,6 +72,8 @@ class PreviewBrowserTest : public PlatformBrowserTest {
     std::string path = url.PathForRequest();
     return request_headers_by_path_[path];
   }
+
+  net::EmbeddedTestServer& https_server() { return *https_server_.get(); }
 
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
@@ -74,6 +91,8 @@ class PreviewBrowserTest : public PlatformBrowserTest {
                                      request.headers);
   }
 
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
+
   base::Lock lock_;
   std::map<std::string, net::test_server::HttpRequest::HeaderMap>
       request_headers_by_path_ GUARDED_BY(lock_);
@@ -83,10 +102,9 @@ class PreviewBrowserTest : public PlatformBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, SecPurposeHeader) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("/title1.html")));
 
-  GURL preview_url = embedded_test_server()->GetURL("/title2.html");
+  GURL preview_url = GetURL("/title2.html");
   helper().InitiatePreview(preview_url);
   helper().WaitUntilLoadFinished();
 
@@ -100,10 +118,9 @@ IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, SecPurposeHeader) {
 IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, CancelWhenPrimaryPageChanged) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("/title1.html")));
 
-  helper().InitiatePreview(embedded_test_server()->GetURL("/title2.html"));
+  helper().InitiatePreview(GetURL("/title2.html"));
   helper().WaitUntilLoadFinished();
 
   base::WeakPtr<content::WebContents> preview_web_contents =
@@ -114,8 +131,7 @@ IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, CancelWhenPrimaryPageChanged) {
   EXPECT_EQ(true,
             content::EvalJs(preview_web_contents, "document.prerendering"));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("/title1.html")));
 
   ASSERT_FALSE(preview_web_contents);
 }
@@ -123,10 +139,9 @@ IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, CancelWhenPrimaryPageChanged) {
 IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, PromoteToNewTab) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("/title1.html")));
 
-  helper().InitiatePreview(embedded_test_server()->GetURL("/title2.html"));
+  helper().InitiatePreview(GetURL("/title2.html"));
   helper().WaitUntilLoadFinished();
 
   base::WeakPtr<content::WebContents> preview_web_contents =
@@ -146,8 +161,8 @@ IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, PromoteToNewTab) {
 
 IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, TrivialSessionHistory) {
   const std::string title1_path = "/title1.html";
-  const GURL title1_url = embedded_test_server()->GetURL(title1_path);
-  const GURL title2_url = embedded_test_server()->GetURL("/title2.html");
+  const GURL title1_url = GetURL(title1_path);
+  const GURL title2_url = GetURL("/title2.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), title1_url));
 
   helper().InitiatePreview(title2_url);
@@ -209,9 +224,8 @@ class MojoCapabilityControlTestContentBrowserClient
 IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, MojoCapabilityControl) {
   MojoCapabilityControlTestContentBrowserClient test_browser_client;
 
-  const GURL kInitialUrl = embedded_test_server()->GetURL("/title1.html");
-  const GURL kPreviewUrl =
-      embedded_test_server()->GetURL("/page_with_iframe.html");
+  const GURL kInitialUrl = GetURL("/title1.html");
+  const GURL kPreviewUrl = GetURL("/page_with_iframe.html");
 
   // Navigate to an initial page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
@@ -269,15 +283,47 @@ IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, MojoCapabilityControl) {
   EXPECT_EQ(test_browser_client.GetDeferReceiverSetSize(), frames.size());
 }
 
-IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, ZoomUsageRecordedOnCancel) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/title1.html")));
+IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, ErrorOnNonHttpsUrl) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("/title1.html")));
 
   helper().InitiatePreview(embedded_test_server()->GetURL("/title2.html"));
   helper().WaitUntilLoadFinished();
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/title1.html")));
+  base::WeakPtr<content::WebContents> preview_web_contents =
+      helper().GetWebContentsForPreviewTab();
+  ASSERT_TRUE(preview_web_contents);
+
+  EXPECT_EQ("Can't preview non-HTTPS URL",
+            content::EvalJs(preview_web_contents,
+                            "document.querySelector('h1 span').textContent")
+                .ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, ErrorOnRedirectionToNonHttpsUrl) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("/title1.html")));
+
+  GURL http_url = embedded_test_server()->GetURL("/title2.html");
+  GURL preview_url = GetURL("/server-redirect?" + http_url.spec());
+  helper().InitiatePreview(preview_url);
+  helper().WaitUntilLoadFinished();
+
+  base::WeakPtr<content::WebContents> preview_web_contents =
+      helper().GetWebContentsForPreviewTab();
+  ASSERT_TRUE(preview_web_contents);
+
+  EXPECT_EQ("Can't preview non-HTTPS URL",
+            content::EvalJs(preview_web_contents,
+                            "document.querySelector('h1 span').textContent")
+                .ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, ZoomUsageRecordedOnCancel) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("/title1.html")));
+
+  helper().InitiatePreview(GetURL("/title2.html"));
+  helper().WaitUntilLoadFinished();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("/title1.html")));
 
   histogram_tester().ExpectTotalCount("LinkPreview.Experimental.ZoomUsage", 1);
   histogram_tester().ExpectBucketCount(
@@ -286,10 +332,9 @@ IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, ZoomUsageRecordedOnCancel) {
 }
 
 IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, ZoomUsageRecordedOnPromoteToNewTab) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("/title1.html")));
 
-  helper().InitiatePreview(embedded_test_server()->GetURL("/title2.html"));
+  helper().InitiatePreview(GetURL("/title2.html"));
   helper().WaitUntilLoadFinished();
 
   helper().PromoteToNewTab();
@@ -303,8 +348,8 @@ IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, ZoomUsageRecordedOnPromoteToNewTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, ZoomIsDurableForHost) {
-  GURL url_a = embedded_test_server()->GetURL("a.example.com", "/title1.html");
-  GURL url_b = embedded_test_server()->GetURL("b.example.com", "/title1.html");
+  GURL url_a = https_server().GetURL("a.test", "/title1.html");
+  GURL url_b = https_server().GetURL("b.test", "/title1.html");
 
   auto expect = [this](int x, int y) {
     histogram_tester().ExpectTotalCount("LinkPreview.Experimental.ZoomUsage",
