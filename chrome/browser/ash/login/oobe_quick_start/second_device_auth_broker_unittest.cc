@@ -868,4 +868,20 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForSuccess) {
       /*sample=*/QuickStartMetrics::GaiaAuthenticationResult::kSuccess, 1);
 }
 
+TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForParsingErrors) {
+  base::HistogramTester histogram_tester;
+
+  // Add an invalid response.
+  AddFakeResponse(kStartSessionUrl, std::string());
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  ASSERT_THAT(response, VariantWith<AuthCodeParsingErrorResponse>(_));
+
+  histogram_tester.ExpectBucketCount(
+      "QuickStart.GaiaAuthentication.Result",
+      /*sample=*/
+      QuickStartMetrics::GaiaAuthenticationResult::kResponseParsingError, 1);
+}
+
 }  //  namespace ash::quick_start
