@@ -436,7 +436,7 @@ struct RawPtrBackupRefImpl {
       return;
     }
 
-    InstanceTracer::Trace(owner_id, address);
+    InstanceTracer::Trace(owner_id, AllowDangling, address);
   }
 
   static constexpr void Untrace(uint64_t owner_id) {

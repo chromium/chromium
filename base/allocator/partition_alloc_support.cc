@@ -669,7 +669,7 @@ void CheckDanglingRawPtrBufferEmpty() {
     std::vector<std::array<const void*, 32>> stack_traces =
         internal::InstanceTracer::GetStackTracesForDanglingRefs(entry->id);
     for (const auto& raw_stack_trace : stack_traces) {
-      LOG(ERROR) << "Live reference from:\n";
+      LOG(ERROR) << "Dangling reference from:\n";
       LOG(ERROR) << debug::StackTrace(raw_stack_trace.data(),
                                       raw_stack_trace.size() -
                                           static_cast<size_t>(ranges::count(
