@@ -6,5 +6,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
   sources = [ "browser_command.mojom" ]
-  webui_module_path = "chrome://resources/js/browser_command"
+
+  # The generated mojo bindings are part of the ui/webui/resources/js
+  # build_webui() target, so are served from chrome://resources/js/
+  webui_module_path = "chrome://resources/js/"
 }
