@@ -188,15 +188,13 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
     return;
   }
 
-  // TODO(b/301301447): Set LoggingMetadata fields during upload.
   // Set the client id for logging if non-zero.
-  proto::LoggingMetadata logging_metadata;
+  proto::LoggingMetadata* logging_metadata =
+      log_ai_data_request->mutable_logging_metadata();
   int64_t client_id = GetOrCreateModelQualityClientId(feature, pref_service_);
   if (client_id != 0) {
-    logging_metadata.set_client_id(client_id);
+    logging_metadata->set_client_id(client_id);
   }
-
-  *(log_ai_data_request->mutable_logging_metadata()) = logging_metadata;
 
   std::string serialized_logs;
   log_ai_data_request->SerializeToString(&serialized_logs);
