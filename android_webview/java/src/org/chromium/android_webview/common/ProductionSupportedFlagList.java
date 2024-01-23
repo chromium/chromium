@@ -607,6 +607,12 @@ public final class ProductionSupportedFlagList {
                 SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES,
                 "When enabled, Safe Browsing will skip subresources"),
         Flag.baseFeature(
+                SafeBrowsingFeatures.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK,
+                "When enabled, Safe Browsing traffic will route through the new SafeBrowsing API"),
+        Flag.baseFeature(
+                SafeBrowsingFeatures.HASH_PREFIX_REAL_TIME_LOOKUPS,
+                "When enabled, Safe Browsing checks will happen in real time"),
+        Flag.baseFeature(
                 "SafeBrowsingSkipSubResources2",
                 "When enabled, Safe Browsing will skip WebTransport and WebSockets"),
         Flag.baseFeature(
