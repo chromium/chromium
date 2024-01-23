@@ -7788,6 +7788,31 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
                      self._https_server.GetUrl("localhost") +
                      "/chromedriver/fedcm/more_details.html", error)
 
+
+  def testClickPrivacyPolicy(self):
+    self._driver.Load(self._https_server.GetUrl() + "/fedcm.html")
+
+    self._driver.SetDelayEnabled(False)
+    self._driver.ResetCooldown()
+
+    self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
+    self._driver.ExecuteScript("callFedCm()")
+    self.assertTrue(self.WaitForCondition(self.FedCmDialogCondition))
+
+    accounts = self._driver.GetAccounts()
+    self.assertEqual('AccountChooser', self._driver.GetDialogType())
+    self.assertEqual(2, len(accounts))
+
+    self._driver.ClickFedCmDialogButton("PrivacyPolicy", 1)
+    # The dialog should not have closed.
+    self.assertEqual('AccountChooser', self._driver.GetDialogType())
+
+    # Make sure that a popup actually opened.
+    self.assertTrue(self.WaitForCondition(self.FedCmPopupWindowCondition))
+
+    self._driver.CancelFedCmDialog()
+
+
 # 'Z' in the beginning is to make test executed in the end of suite.
 class ZChromeStartRetryCountTest(unittest.TestCase):
 

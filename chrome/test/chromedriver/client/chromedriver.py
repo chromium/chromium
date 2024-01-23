@@ -748,8 +748,10 @@ class ChromeDriver(object):
     params = {'accountIndex': index}
     return self.ExecuteCommand(Command.SELECT_ACCOUNT, params)
 
-  def ClickFedCmDialogButton(self, dialogButton):
+  def ClickFedCmDialogButton(self, dialogButton, index=None):
     params = {'dialogButton': dialogButton}
+    if index is not None:
+      params['index'] = index
     return self.ExecuteCommand(Command.CLICK_FEDCM_DIALOG_BUTTON, params)
 
   def GetAccounts(self):
