@@ -5379,6 +5379,12 @@ const char kScreenTimeDescription[] =
     "Integrate with the macOS Screen Time system. Only enabled on macOS 12.1 "
     "and later.";
 
+const char kSonomaAccessibilityActivationRefinementsName[] =
+    "Sonoma Accessibility Activation Refinements";
+const char kSonomaAccessibilityActivationRefinementsDescription[] =
+    "Refines how Chrome responds to accessibility activation signals on macOS "
+    "Sonoma.";
+
 const char kUseAngleDescriptionMac[] =
     "Choose the graphics backend for ANGLE. The OpenGL backend is soon to be "
     "deprecated on Mac, and may contain driver bugs that are not planned to be "

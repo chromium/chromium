@@ -832,6 +832,13 @@ BASE_FEATURE(kImmersiveFullscreenTabs,
 BASE_FEATURE(kImmersiveFullscreenPWAs,
              "ImmersiveFullscreenPWAs",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Changes how Chrome responds to accessibility activation signals on macOS
+// Sonoma, to avoid unnecessary changes to the screen reader state.
+BASE_FEATURE(kSonomaAccessibilityActivationRefinements,
+             "SonomaAccessibilityActivationRefinements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

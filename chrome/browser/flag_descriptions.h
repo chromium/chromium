@@ -3102,6 +3102,9 @@ extern const char kRetryGetVideoCaptureDeviceInfosDescription[];
 extern const char kScreenTimeName[];
 extern const char kScreenTimeDescription[];
 
+extern const char kSonomaAccessibilityActivationRefinementsName[];
+extern const char kSonomaAccessibilityActivationRefinementsDescription[];
+
 extern const char kUseAngleDescriptionMac[];
 extern const char kUseAngleMetal[];
 
