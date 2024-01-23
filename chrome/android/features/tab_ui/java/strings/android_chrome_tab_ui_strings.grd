@@ -269,7 +269,7 @@
           other {Bookmark tabs}
         }
       </message>
-      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_BOOKMARK_TABS_ACTION_BUTTON" desc="The accessibility string for the share button in the Tab Selection Editor Toolbar. Tap this button to bookmark all selected tabs.">
+      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_BOOKMARK_TABS_ACTION_BUTTON" desc="The accessibility string for the bookmark button in the Tab Selection Editor Toolbar. Tap this button to bookmark all selected tabs.">
         {TABS_COUNT, plural,
           =1 {Bookmark <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
           other {Bookmark <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
