@@ -176,15 +176,10 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
           configurationWithPointSize:kIncognitoSymbolImagePointSize
                               weight:UIImageSymbolWeightLight
                                scale:UIImageSymbolScaleMedium];
-      if (@available(iOS 15, *)) {
-        incognitoImage =
-            SymbolWithPalette(CustomSymbolWithConfiguration(
-                                  kIncognitoCircleFillSymbol, configuration),
-                              LargeIncognitoPalette());
-      } else {
-        incognitoImage = CustomSymbolWithConfiguration(
-            kIncognitoCircleFilliOS14Symbol, configuration);
-      }
+      incognitoImage =
+          SymbolWithPalette(CustomSymbolWithConfiguration(
+                                kIncognitoCircleFillSymbol, configuration),
+                            LargeIncognitoPalette());
 
       UIImageView* incognitoImageView =
           [[UIImageView alloc] initWithImage:incognitoImage];
