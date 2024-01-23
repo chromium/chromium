@@ -863,6 +863,8 @@ def CheckDevicePolicies(input_api, output_api):
 
   # Check that the proto field is equal to the policy name for new policies
   for policy_change in policy_changelist:
+    if not policy_change['new_policy'].get('device_only', False):
+      continue
     if ('old_policy' in policy_change and
         policy_change['old_policy'] is not None):
       # Ignore existing policies
