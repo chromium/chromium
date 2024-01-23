@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 
 #include <memory>
 #include <vector>
 
 #include "base/strings/string_piece.h"
 #include "base/version.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkStream.h"
+
 
 namespace web_app {
 
@@ -35,6 +37,18 @@ constexpr base::StringPiece kTestManifest = R"({
       ]
     })";
 }  // namespace
+
+namespace test {
+
+std::string EncodeAsPng(const SkBitmap& bitmap) {
+  SkDynamicMemoryWStream stream;
+  CHECK(SkPngEncoder::Encode(&stream, bitmap.pixmap(), {}));
+  sk_sp<SkData> icon_skdata = stream.detachAsData();
+  return std::string(static_cast<const char*>(icon_skdata->data()),
+                     icon_skdata->size());
+}
+
+}  // namespace test
 
 TestSignedWebBundle::TestSignedWebBundle(
     std::vector<uint8_t> data,
@@ -123,7 +137,7 @@ TestSignedWebBundle TestSignedWebBundleBuilder::BuildDefault(
       build_options.base_url_.has_value()
           ? build_options.base_url_.value().Resolve(kTestIconUrl).spec()
           : kTestIconUrl,
-      test::BitmapAsPng(CreateSquareIcon(256, SK_ColorGREEN)));
+      test::EncodeAsPng(CreateSquareIcon(256, SK_ColorGREEN)));
 
   if (build_options.index_html_content_.has_value()) {
     builder.AddHtml(

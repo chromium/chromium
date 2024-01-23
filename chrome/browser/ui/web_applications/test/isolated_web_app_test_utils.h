@@ -16,7 +16,6 @@
 #include "components/version_info/channel.h"
 #include "extensions/common/features/feature_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
@@ -151,8 +150,6 @@ MATCHER_P2(PendingUpdateInfoIs, location, version, "") {
                 version))),
       arg, result_listener);
 }
-
-std::string BitmapAsPng(const SkBitmap& bitmap);
 
 }  // namespace test
 

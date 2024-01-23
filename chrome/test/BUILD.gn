@@ -997,8 +997,6 @@ static_library("test_support") {
       "../browser/extensions/test_extension_prefs.h",
       "../browser/policy/extension_force_install_mixin.cc",
       "../browser/policy/extension_force_install_mixin.h",
-      "../browser/ui/web_applications/test/isolated_web_app_builder.cc",
-      "../browser/ui/web_applications/test/isolated_web_app_builder.h",
       "../browser/ui/web_applications/test/isolated_web_app_test_utils.cc",
       "../browser/ui/web_applications/test/isolated_web_app_test_utils.h",
       "../browser/ui/web_applications/test/ssl_test_utils.cc",

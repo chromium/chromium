@@ -20,12 +20,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -133,7 +133,7 @@ class IsolatedWebAppUpdateManagerBrowserTest
         /*offsets=*/nullptr));
     builder.AddPngImage(
         "/256x256-green.png",
-        test::BitmapAsPng(CreateSquareIcon(256, SK_ColorGREEN)));
+        test::EncodeAsPng(CreateSquareIcon(256, SK_ColorGREEN)));
     builder.AddHtml("/index.html", R"(
       <head>
         <link rel="manifest" href="/manifest.webmanifest">

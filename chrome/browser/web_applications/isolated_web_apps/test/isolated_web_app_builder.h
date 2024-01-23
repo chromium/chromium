@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_WEB_APP_BUILDER_H_
-#define CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_WEB_APP_BUILDER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_ISOLATED_WEB_APP_BUILDER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_ISOLATED_WEB_APP_BUILDER_H_
 
 #include <vector>
 
@@ -14,7 +14,12 @@
 #include "components/web_package/web_bundle_builder.h"
 #include "url/gurl.h"
 
+class SkBitmap;
+
 namespace web_app {
+namespace test {
+  std::string EncodeAsPng(const SkBitmap& bitmap);
+}
 
 inline constexpr uint8_t kTestPublicKey[] = {
     0xE4, 0xD5, 0x16, 0xC9, 0x85, 0x9A, 0xF8, 0x63, 0x56, 0xA3, 0x51,
@@ -140,4 +145,4 @@ class TestSignedWebBundleBuilder {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_WEB_APP_BUILDER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_ISOLATED_WEB_APP_BUILDER_H_
