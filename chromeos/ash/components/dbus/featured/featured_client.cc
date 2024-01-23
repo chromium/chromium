@@ -58,14 +58,27 @@ bool RecordEarlyBootTrialInChrome(
   return true;
 }
 
-void RecordEarlyBootTrialAfterChromeStartup(const FileWatchOptions& opts,
-                                            const base::FilePath& path,
-                                            bool error) {
+void RecordEarlyBootTrialAfterChromeStartup(
+    const FileWatchOptions& opts,
+    const base::FilePathWatcher::ChangeInfo& change_info,
+    const base::FilePath& path,
+    bool error) {
   if (error || path.DirName() != opts.expected_dir) {
     // TODO(b/296394808): Add UMA metric if we enter this code path since it
     // is not expected.
     return;
   }
+
+  if (change_info.file_path_type !=
+          base::FilePathWatcher::FilePathType::kFile ||
+      change_info.change_type != base::FilePathWatcher::ChangeType::kCreated) {
+    // Only record field trial files that were just created. We do not want to
+    // record a field trial on any of the other change options like
+    // base::FilePathWatcher::ChangeType::kModified or
+    // base::FilePathWatcher::ChangeType::kDeleted.
+    return;
+  }
+
   // TODO(b/296394808): Add UMA metric if unable to record trial due to parse
   // error.
   RecordEarlyBootTrialInChrome(opts.listen_callback, path);
@@ -79,7 +92,7 @@ void ListenForActiveEarlyBootTrials(base::FilePathWatcher* watcher,
       // Reports the path of modified files in the directory.
       .report_modified_path = true};
 
-  watcher->WatchWithOptions(
+  watcher->WatchWithChangeInfo(
       opts.expected_dir, options,
       base::BindRepeating(&RecordEarlyBootTrialAfterChromeStartup, opts));
 }
