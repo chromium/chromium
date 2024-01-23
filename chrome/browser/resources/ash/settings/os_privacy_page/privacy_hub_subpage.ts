@@ -363,18 +363,20 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   }
 
   private computeCameraRowSubtext_(): string {
-    try {
-      const cameraAllowed =
-          this.getPref<string>('ash.user.camera_allowed').value;
-      if (cameraAllowed) {
-        return this.cameraFallbackMechanismEnabled_ ?
-            this.i18n('privacyHubPageCameraRowFallbackSubtext') :
-            this.i18n('privacyHubPageCameraRowSubtext');
-      }
-      return this.i18n('privacyHubCameraAccessBlockedText');
-    } catch (err) {
+    // Note: `this.getPref()` will assert the queried pref exists, but the prefs
+    // property may not be initialized yet when this element runs the first
+    // computation of this method. Ensure prefs is initialized first.
+    if (!this.prefs) {
       return '';
     }
+
+    const cameraAllowed = this.getPref<string>('ash.user.camera_allowed').value;
+    if (cameraAllowed) {
+      return this.cameraFallbackMechanismEnabled_ ?
+          this.i18n('privacyHubPageCameraRowFallbackSubtext') :
+          this.i18n('privacyHubPageCameraRowSubtext');
+    }
+    return this.i18n('privacyHubCameraAccessBlockedText');
   }
 
   private computeMicrophoneRowSubtext_(): string {
