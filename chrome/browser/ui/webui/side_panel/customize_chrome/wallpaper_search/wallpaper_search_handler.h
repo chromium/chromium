@@ -14,13 +14,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
+#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager_observer.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_data.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -45,7 +46,8 @@ using ImageDecodedCallback = base::OnceCallback<void(const gfx::Image&)>;
 }  // namespace image_fetcher
 
 class WallpaperSearchHandler
-    : public side_panel::customize_chrome::mojom::WallpaperSearchHandler {
+    : public side_panel::customize_chrome::mojom::WallpaperSearchHandler,
+      public WallpaperSearchBackgroundManagerObserver {
  public:
   WallpaperSearchHandler(
       mojo::PendingReceiver<
@@ -95,6 +97,9 @@ class WallpaperSearchHandler
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  // WallpaperSearchBackgroundManagerObserver:
+  void OnHistoryUpdated() override;
+
  private:
   void ShowFeedbackPage();
   void DecodeHistoryImage(image_fetcher::ImageDecodedCallback callback,
@@ -134,7 +139,6 @@ class WallpaperSearchHandler
   void LaunchDelayedHatsSurvey();
 
   raw_ptr<Profile> profile_;
-  PrefChangeRegistrar pref_change_registrar_;
   std::unique_ptr<network::SimpleURLLoader> descriptors_simple_url_loader_;
   std::unique_ptr<data_decoder::DataDecoder> data_decoder_;
   const raw_ref<image_fetcher::ImageDecoder> image_decoder_;
@@ -142,6 +146,9 @@ class WallpaperSearchHandler
   std::unique_ptr<network::SimpleURLLoader> image_download_simple_url_loader_;
   const raw_ref<WallpaperSearchBackgroundManager>
       wallpaper_search_background_manager_;
+  base::ScopedObservation<WallpaperSearchBackgroundManager,
+                          WallpaperSearchBackgroundManagerObserver>
+      wallpaper_search_background_manager_observation_{this};
   // We keep all log entries alive until the session closes because whether and
   // which image was selected will only be known then.
   std::vector<
