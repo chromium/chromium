@@ -20,12 +20,15 @@ build_webui("build") {
     "cr_expand_button/cr_expand_button.ts",
     "cr_icon_button/cr_icon_button.ts",
     "cr_input/cr_input.ts",
+    "cr_link_row/cr_link_row.ts",
+    "cr_lottie/cr_lottie.ts",
     "cr_radio_button/cr_card_radio_button.ts",
     "cr_radio_button/cr_radio_button.ts",
     "cr_radio_group/cr_radio_group.ts",
     "cr_search_field/cr_search_field.ts",
     "cr_searchable_drop_down/cr_searchable_drop_down.ts",
     "cr_slider/cr_slider.ts",
+    "cr_tab_box/cr_tab_box.ts",
     "cr_tabs/cr_tabs.ts",
     "cr_textarea/cr_textarea.ts",
     "cr_toast/cr_toast.ts",
@@ -35,15 +38,20 @@ build_webui("build") {
     "cr_toolbar/cr_toolbar_search_field.ts",
     "cr_toolbar/cr_toolbar_selection_overlay.ts",
     "cr_view_manager/cr_view_manager.ts",
+    "policy/cr_policy_indicator.ts",
+    "policy/cr_policy_pref_indicator.ts",
+    "policy/cr_tooltip_icon.ts",
   ]
 
   non_web_component_files = [
     "cr_container_shadow_mixin.ts",
     "cr_lazy_render/cr_lazy_render.ts",
+    "cr_menu_selector/cr_menu_selector.ts",
     "focus_row_mixin.ts",
     "i18n_mixin.ts",
     "cr_radio_button/cr_radio_button_mixin.ts",
     "cr_search_field/cr_search_field_mixin.ts",
+    "policy/cr_policy_indicator_mixin.ts",
   ]
 
   icons_html_files = [ "icons.html" ]
@@ -60,6 +68,7 @@ build_webui("build") {
     "cr_shared_vars.css",
     "md_select.css",
   ]
+  html_to_wrapper_template = "detect"
 
   ts_out_dir =
       "$root_gen_dir/ash/webui/common/resources/preprocessed/cr_elements"
@@ -69,7 +78,10 @@ build_webui("build") {
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
-  ts_definitions = [ "//tools/typescript/definitions/pending.d.ts" ]
+  ts_definitions = [
+    "//tools/typescript/definitions/pending.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
+  ]
 
   generate_grdp = true
   grd_resource_path_prefix = "ash/common/cr_elements"
