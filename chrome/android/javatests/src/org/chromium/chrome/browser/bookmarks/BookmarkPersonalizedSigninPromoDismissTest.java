@@ -46,6 +46,7 @@ import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.common.ContentUrlConstants;
 
 /** Tests different scenarios when the bookmark personalized signin promo is not shown. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -183,6 +184,12 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
                     (ChromeTabbedActivity) mSyncTestRule.getActivity();
             ChromeTabUtils.closeCurrentTab(
                     InstrumentationRegistry.getInstrumentation(), chromeTabbedActivity);
+            // Open a new tab so chrome://bookmarks can be re-loaded within the same test.
+            ChromeTabUtils.fullyLoadUrlInNewTab(
+                    InstrumentationRegistry.getInstrumentation(),
+                    chromeTabbedActivity,
+                    ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
+                    false);
         } else {
             // This is not within the RecyclerView, don't need to verify active.
             onView(withId(R.id.close_menu_id)).perform(click());
