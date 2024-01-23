@@ -23,7 +23,9 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/installer/util/install_service_work_item.h"
@@ -37,6 +39,7 @@
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/task_scheduler.h"
+#include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/win_constants.h"
 
 namespace updater {
@@ -472,6 +475,55 @@ std::wstring GetComIidRegistryPath(REFIID iid) {
 std::wstring GetComTypeLibRegistryPath(REFIID iid) {
   return base::StrCat(
       {L"Software\\Classes\\TypeLib\\", base::win::WStringFromGUID(iid)});
+}
+
+HRESULT RegisterTypeLibs(UpdaterScope scope, bool is_internal) {
+  VLOG(1) << __func__ << ": scope: " << scope
+          << ": is_internal: " << is_internal;
+
+  base::FilePath exe_path;
+  if (!base::PathService::Get(base::DIR_EXE, &exe_path)) {
+    return E_UNEXPECTED;
+  }
+  exe_path = exe_path.Append(GetExecutableRelativePath());
+
+  for (const auto& typelib_resource_index : [&]() -> std::vector<int> {
+         if (IsSystemInstall(scope)) {
+           if (is_internal) {
+             return {TYPELIB_UPDATER_INTERNAL_IDL_SYSTEM};
+           }
+           return {TYPELIB_UPDATER_IDL_SYSTEM,
+                   TYPELIB_UPDATER_LEGACY_IDL_SYSTEM};
+         }
+         if (is_internal) {
+           return {TYPELIB_UPDATER_INTERNAL_IDL_USER};
+         }
+         return {TYPELIB_UPDATER_IDL_USER, TYPELIB_UPDATER_LEGACY_IDL_USER};
+       }()) {
+    const base::FilePath typelib_path =
+        exe_path.AppendASCII(base::NumberToString(typelib_resource_index));
+
+    Microsoft::WRL::ComPtr<ITypeLib> type_lib;
+    if (HRESULT hr = ::LoadTypeLib(typelib_path.value().c_str(), &type_lib);
+        FAILED(hr)) {
+      LOG(ERROR) << __func__ << " ::LoadTypeLib failed, " << typelib_path
+                 << ", " << std::hex << hr;
+      return hr;
+    }
+
+    std::wstring typelib_path_str = typelib_path.value().c_str();
+    const HRESULT hr =
+        IsSystemInstall(scope)
+            ? ::RegisterTypeLib(type_lib.Get(), &typelib_path_str[0], nullptr)
+            : ::RegisterTypeLibForUser(type_lib.Get(), &typelib_path_str[0],
+                                       nullptr);
+    if (FAILED(hr)) {
+      LOG(ERROR) << __func__ << " ::GetTypeInfoOfGuid failed" << ", "
+                 << typelib_path << ", " << std::hex << hr;
+      return hr;
+    }
+  }
+  return S_OK;
 }
 
 std::wstring GetComTypeLibResourceIndex(REFIID iid) {

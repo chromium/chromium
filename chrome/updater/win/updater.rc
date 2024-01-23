@@ -6,10 +6,10 @@
 
 // Language-neutral resources.
 
-1 TYPELIB "chrome/updater/app/server/win/updater_idl_user.tlb"
-2 TYPELIB "chrome/updater/app/server/win/updater_internal_idl_user.tlb"
-3 TYPELIB "chrome/updater/app/server/win/updater_legacy_idl_user.tlb"
-4 TYPELIB "chrome/updater/app/server/win/updater_idl_system.tlb"
-5 TYPELIB "chrome/updater/app/server/win/updater_internal_idl_system.tlb"
-6 TYPELIB "chrome/updater/app/server/win/updater_legacy_idl_system.tlb"
+TYPELIB_UPDATER_IDL_USER              TYPELIB "chrome/updater/app/server/win/updater_idl_user.tlb"
+TYPELIB_UPDATER_INTERNAL_IDL_USER     TYPELIB "chrome/updater/app/server/win/updater_internal_idl_user.tlb"
+TYPELIB_UPDATER_LEGACY_IDL_USER       TYPELIB "chrome/updater/app/server/win/updater_legacy_idl_user.tlb"
+TYPELIB_UPDATER_IDL_SYSTEM            TYPELIB "chrome/updater/app/server/win/updater_idl_system.tlb"
+TYPELIB_UPDATER_INTERNAL_IDL_SYSTEM   TYPELIB "chrome/updater/app/server/win/updater_internal_idl_system.tlb"
+TYPELIB_UPDATER_LEGACY_IDL_SYSTEM     TYPELIB "chrome/updater/app/server/win/updater_legacy_idl_system.tlb"
 

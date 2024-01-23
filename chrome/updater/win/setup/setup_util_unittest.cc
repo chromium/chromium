@@ -45,6 +45,11 @@ TEST(SetupUtilTest, DeleteLegacyEntriesPerUser) {
   ASSERT_TRUE(DeleteLegacyEntriesPerUser());
 }
 
+TEST(SetupUtilTest, RegisterTypeLibs) {
+  ASSERT_HRESULT_SUCCEEDED(RegisterTypeLibs(GetTestScope(), true));
+  ASSERT_HRESULT_SUCCEEDED(RegisterTypeLibs(GetTestScope(), false));
+}
+
 class SetupUtilRegisterWakeTaskWorkItemTests : public ::testing::Test {
  public:
   void SetUp() override {

@@ -36,6 +36,10 @@ std::wstring GetComServerAppidRegistryPath(REFGUID appid);
 std::wstring GetComIidRegistryPath(REFIID iid);
 std::wstring GetComTypeLibRegistryPath(REFIID iid);
 
+// Registers the typelibs for the given `scope` and `is_internal` using
+// `::RegisterTypeLib{ForUser}`.
+HRESULT RegisterTypeLibs(UpdaterScope scope, bool is_internal);
+
 // Returns the resource index for the type library where the interface specified
 // by the `iid` is defined. For encapsulation reasons, the updater interfaces
 // are segregated in multiple IDL files, which get compiled to multiple type
