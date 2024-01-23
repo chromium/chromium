@@ -71,230 +71,218 @@ class PermissionsTabHelperTest : public PlatformTest {
 // Tests that an infobar is setup with the correct acceptance state when the
 // status of a single permission changes.
 TEST_F(PermissionsTabHelperTest, CheckInfobarCountForSinglePermission) {
-  if (@available(iOS 15, *)) {
-    // Allowed permission.
-    web_state_.SetStateForPermission(web::PermissionStateAllowed,
-                                     web::PermissionCamera);
-    EXPECT_EQ(0U, infobar_manager()->infobars().size());
-    task_environment_.FastForwardBy(kTimeoutDelay);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_TRUE(infobar()->accepted());
-    EXPECT_EQ(1U, [recently_accessible_permissions() count]);
-    EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
-              web::PermissionCamera);
-    // Blocked permission.
-    web_state_.SetStateForPermission(web::PermissionStateBlocked,
-                                     web::PermissionCamera);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_FALSE(infobar()->accepted());
-    // Permission not accessible.
-    web_state_.SetStateForPermission(web::PermissionStateNotAccessible,
-                                     web::PermissionCamera);
-    EXPECT_EQ(0U, infobar_manager()->infobars().size());
-    EXPECT_EQ(0U, [recently_accessible_permissions() count]);
-  }
+  // Allowed permission.
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionCamera);
+  EXPECT_EQ(0U, infobar_manager()->infobars().size());
+  task_environment_.FastForwardBy(kTimeoutDelay);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_TRUE(infobar()->accepted());
+  EXPECT_EQ(1U, [recently_accessible_permissions() count]);
+  EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
+            web::PermissionCamera);
+  // Blocked permission.
+  web_state_.SetStateForPermission(web::PermissionStateBlocked,
+                                   web::PermissionCamera);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_FALSE(infobar()->accepted());
+  // Permission not accessible.
+  web_state_.SetStateForPermission(web::PermissionStateNotAccessible,
+                                   web::PermissionCamera);
+  EXPECT_EQ(0U, infobar_manager()->infobars().size());
+  EXPECT_EQ(0U, [recently_accessible_permissions() count]);
 }
 
 // Tests that blocking a permission and allowing it again correctly resets
 // infobar and acceptance state.
 TEST_F(PermissionsTabHelperTest, BlockingAndAllowingSinglePermission) {
-  if (@available(iOS 15, *)) {
-    // Allowed permission.
-    web_state_.SetStateForPermission(web::PermissionStateAllowed,
-                                     web::PermissionMicrophone);
-    EXPECT_EQ(0U, infobar_manager()->infobars().size());
-    task_environment_.FastForwardBy(kTimeoutDelay);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_TRUE(infobar()->accepted());
-    EXPECT_EQ(1U, [recently_accessible_permissions() count]);
-    EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
-              web::PermissionMicrophone);
-    // Block this permission.
-    web_state_.SetStateForPermission(web::PermissionStateBlocked,
-                                     web::PermissionMicrophone);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_FALSE(infobar()->accepted());
-    EXPECT_EQ(1U, [recently_accessible_permissions() count]);
-    EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
-              web::PermissionMicrophone);
-    // Allow it again.
-    web_state_.SetStateForPermission(web::PermissionStateAllowed,
-                                     web::PermissionMicrophone);
-    // The tab helper should not have to wait for the timeout.
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_TRUE(infobar()->accepted());
-    EXPECT_EQ(1U, [recently_accessible_permissions() count]);
-    EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
-              web::PermissionMicrophone);
-  }
+  // Allowed permission.
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionMicrophone);
+  EXPECT_EQ(0U, infobar_manager()->infobars().size());
+  task_environment_.FastForwardBy(kTimeoutDelay);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_TRUE(infobar()->accepted());
+  EXPECT_EQ(1U, [recently_accessible_permissions() count]);
+  EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
+            web::PermissionMicrophone);
+  // Block this permission.
+  web_state_.SetStateForPermission(web::PermissionStateBlocked,
+                                   web::PermissionMicrophone);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_FALSE(infobar()->accepted());
+  EXPECT_EQ(1U, [recently_accessible_permissions() count]);
+  EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
+            web::PermissionMicrophone);
+  // Allow it again.
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionMicrophone);
+  // The tab helper should not have to wait for the timeout.
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_TRUE(infobar()->accepted());
+  EXPECT_EQ(1U, [recently_accessible_permissions() count]);
+  EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
+            web::PermissionMicrophone);
 }
 
 // Tests that making a permission inaccessible and allowing it again correctly
 // resets infobar and acceptance state.
 TEST_F(PermissionsTabHelperTest,
        MakingPermissionNotAccessibleAndAllowingItAgain) {
-  if (@available(iOS 15, *)) {
-    // Allowed permission.
-    web_state_.SetStateForPermission(web::PermissionStateAllowed,
-                                     web::PermissionCamera);
-    EXPECT_EQ(0U, infobar_manager()->infobars().size());
-    task_environment_.FastForwardBy(kTimeoutDelay);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_TRUE(infobar()->accepted());
-    EXPECT_EQ(1U, [recently_accessible_permissions() count]);
-    EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
-              web::PermissionCamera);
-    // Make this permission inaccessible.
-    web_state_.SetStateForPermission(web::PermissionStateNotAccessible,
-                                     web::PermissionCamera);
-    EXPECT_EQ(0U, infobar_manager()->infobars().size());
-    // Access it again.
-    web_state_.SetStateForPermission(web::PermissionStateAllowed,
-                                     web::PermissionCamera);
-    // The tab helper should wait for the timeout again to create the infobar.
-    EXPECT_EQ(0U, infobar_manager()->infobars().size());
-    task_environment_.FastForwardBy(kTimeoutDelay);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_TRUE(infobar()->accepted());
-    EXPECT_EQ(1U, [recently_accessible_permissions() count]);
-    EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
-              web::PermissionCamera);
-  }
+  // Allowed permission.
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionCamera);
+  EXPECT_EQ(0U, infobar_manager()->infobars().size());
+  task_environment_.FastForwardBy(kTimeoutDelay);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_TRUE(infobar()->accepted());
+  EXPECT_EQ(1U, [recently_accessible_permissions() count]);
+  EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
+            web::PermissionCamera);
+  // Make this permission inaccessible.
+  web_state_.SetStateForPermission(web::PermissionStateNotAccessible,
+                                   web::PermissionCamera);
+  EXPECT_EQ(0U, infobar_manager()->infobars().size());
+  // Access it again.
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionCamera);
+  // The tab helper should wait for the timeout again to create the infobar.
+  EXPECT_EQ(0U, infobar_manager()->infobars().size());
+  task_environment_.FastForwardBy(kTimeoutDelay);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_TRUE(infobar()->accepted());
+  EXPECT_EQ(1U, [recently_accessible_permissions() count]);
+  EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
+            web::PermissionCamera);
 }
 
 // Tests that an infobar is setup with the correct acceptance state when the
 // status of both permission are allowed simultaneously.
 TEST_F(PermissionsTabHelperTest,
        CheckInfobarCountForSimultaneouslyAllowedPermissions) {
-  if (@available(iOS 15, *)) {
-    // Allow both permissions.
-    web_state_.SetStateForPermission(web::PermissionStateAllowed,
-                                     web::PermissionCamera);
-    web_state_.SetStateForPermission(web::PermissionStateAllowed,
-                                     web::PermissionMicrophone);
-    EXPECT_EQ(0U, infobar_manager()->infobars().size());
-    task_environment_.FastForwardBy(kTimeoutDelay);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_TRUE(infobar()->accepted());
-    EXPECT_EQ(2U, [recently_accessible_permissions() count]);
-    EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
-              web::PermissionCamera);
-    EXPECT_EQ(recently_accessible_permissions()[1].unsignedIntegerValue,
-              web::PermissionMicrophone);
-    // Blocked one of the permissions.
-    web_state_.SetStateForPermission(web::PermissionStateBlocked,
-                                     web::PermissionCamera);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_TRUE(infobar()->accepted());
-    // Now block the other.
-    web_state_.SetStateForPermission(web::PermissionStateBlocked,
-                                     web::PermissionMicrophone);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_FALSE(infobar()->accepted());
-    // Make one of the permissions not accessible. Infobar should still exist.
-    web_state_.SetStateForPermission(web::PermissionStateNotAccessible,
-                                     web::PermissionMicrophone);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_FALSE(infobar()->accepted());
-    // Make the other not accessible too. Infobar should be removed.
-    web_state_.SetStateForPermission(web::PermissionStateNotAccessible,
-                                     web::PermissionCamera);
-    EXPECT_EQ(0U, infobar_manager()->infobars().size());
-  }
+  // Allow both permissions.
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionCamera);
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionMicrophone);
+  EXPECT_EQ(0U, infobar_manager()->infobars().size());
+  task_environment_.FastForwardBy(kTimeoutDelay);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_TRUE(infobar()->accepted());
+  EXPECT_EQ(2U, [recently_accessible_permissions() count]);
+  EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
+            web::PermissionCamera);
+  EXPECT_EQ(recently_accessible_permissions()[1].unsignedIntegerValue,
+            web::PermissionMicrophone);
+  // Blocked one of the permissions.
+  web_state_.SetStateForPermission(web::PermissionStateBlocked,
+                                   web::PermissionCamera);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_TRUE(infobar()->accepted());
+  // Now block the other.
+  web_state_.SetStateForPermission(web::PermissionStateBlocked,
+                                   web::PermissionMicrophone);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_FALSE(infobar()->accepted());
+  // Make one of the permissions not accessible. Infobar should still exist.
+  web_state_.SetStateForPermission(web::PermissionStateNotAccessible,
+                                   web::PermissionMicrophone);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_FALSE(infobar()->accepted());
+  // Make the other not accessible too. Infobar should be removed.
+  web_state_.SetStateForPermission(web::PermissionStateNotAccessible,
+                                   web::PermissionCamera);
+  EXPECT_EQ(0U, infobar_manager()->infobars().size());
 }
 
 // Tests that an infobar is setup and replaced with the correct acceptance
 // state when the status of both permission are allowed one by one.
 TEST_F(PermissionsTabHelperTest,
        CheckInfobarCountForSeparatelyAllowedPermissions) {
-  if (@available(iOS 15, *)) {
-    // Allow one permission.
-    web_state_.SetStateForPermission(web::PermissionStateAllowed,
-                                     web::PermissionCamera);
-    task_environment_.FastForwardBy(kTimeoutDelay);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_EQ(1U, [recently_accessible_permissions() count]);
-    EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
-              web::PermissionCamera);
-    InfoBarIOS* first_infobar = infobar();
-    // Now allow the other.
-    web_state_.SetStateForPermission(web::PermissionStateAllowed,
-                                     web::PermissionMicrophone);
-    task_environment_.FastForwardBy(kTimeoutDelay);
-    // Check that infobar is properly replaced.
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_NE(infobar(), first_infobar);
-    EXPECT_TRUE(infobar()->accepted());
-    EXPECT_EQ(1U, [recently_accessible_permissions() count]);
-    EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
-              web::PermissionMicrophone);
-    // Blocked one of the permissions.
-    web_state_.SetStateForPermission(web::PermissionStateBlocked,
-                                     web::PermissionMicrophone);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_TRUE(infobar()->accepted());
-    // Now block the other.
-    web_state_.SetStateForPermission(web::PermissionStateBlocked,
-                                     web::PermissionCamera);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_FALSE(infobar()->accepted());
-    // Make one of the permissions not accessible. Infobar should still exist.
-    web_state_.SetStateForPermission(web::PermissionStateNotAccessible,
-                                     web::PermissionMicrophone);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_FALSE(infobar()->accepted());
-    // Make the other not accessible too. Infobar should be removed.
-    web_state_.SetStateForPermission(web::PermissionStateNotAccessible,
-                                     web::PermissionCamera);
-    EXPECT_EQ(0U, infobar_manager()->infobars().size());
-  }
+  // Allow one permission.
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionCamera);
+  task_environment_.FastForwardBy(kTimeoutDelay);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_EQ(1U, [recently_accessible_permissions() count]);
+  EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
+            web::PermissionCamera);
+  InfoBarIOS* first_infobar = infobar();
+  // Now allow the other.
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionMicrophone);
+  task_environment_.FastForwardBy(kTimeoutDelay);
+  // Check that infobar is properly replaced.
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_NE(infobar(), first_infobar);
+  EXPECT_TRUE(infobar()->accepted());
+  EXPECT_EQ(1U, [recently_accessible_permissions() count]);
+  EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
+            web::PermissionMicrophone);
+  // Blocked one of the permissions.
+  web_state_.SetStateForPermission(web::PermissionStateBlocked,
+                                   web::PermissionMicrophone);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_TRUE(infobar()->accepted());
+  // Now block the other.
+  web_state_.SetStateForPermission(web::PermissionStateBlocked,
+                                   web::PermissionCamera);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_FALSE(infobar()->accepted());
+  // Make one of the permissions not accessible. Infobar should still exist.
+  web_state_.SetStateForPermission(web::PermissionStateNotAccessible,
+                                   web::PermissionMicrophone);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_FALSE(infobar()->accepted());
+  // Make the other not accessible too. Infobar should be removed.
+  web_state_.SetStateForPermission(web::PermissionStateNotAccessible,
+                                   web::PermissionCamera);
+  EXPECT_EQ(0U, infobar_manager()->infobars().size());
 }
 
 // Tests that infobar and acceptance state would be handled correctly when one
 // permission is blocked while the other permission changes states.
 TEST_F(PermissionsTabHelperTest,
        CheckInfobarAndAcceptanceStateWhenOnePermissionIsBlocked) {
-  if (@available(iOS 15, *)) {
-    // Allow one permission.
-    web_state_.SetStateForPermission(web::PermissionStateAllowed,
-                                     web::PermissionCamera);
-    web_state_.SetStateForPermission(web::PermissionStateAllowed,
-                                     web::PermissionMicrophone);
-    task_environment_.FastForwardBy(kTimeoutDelay);
-    ASSERT_EQ(2U, [recently_accessible_permissions() count]);
-    EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
-              web::PermissionCamera);
-    EXPECT_EQ(recently_accessible_permissions()[1].unsignedIntegerValue,
-              web::PermissionMicrophone);
-    // Now block one. The other one is still allowed, so infobar should still be
-    // accepted.
-    web_state_.SetStateForPermission(web::PermissionStateBlocked,
-                                     web::PermissionMicrophone);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_TRUE(infobar()->accepted());
-    // Now make the other one inaccessible. Infobar should still exist, but its
-    // acceptance state should be false.
-    web_state_.SetStateForPermission(web::PermissionStateNotAccessible,
-                                     web::PermissionCamera);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_FALSE(infobar()->accepted());
-    // Now make the other one "allowed" again. The acceptance state would be
-    // changed immediately, but the infobar would not be replaced until timeout
-    // is reached.
-    InfoBarIOS* first_infobar = infobar();
-    web_state_.SetStateForPermission(web::PermissionStateAllowed,
-                                     web::PermissionCamera);
-    ASSERT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_EQ(first_infobar, infobar());
-    EXPECT_TRUE(infobar()->accepted());
-    // But after the timeout, the infobar should be replaced and have the right
-    // acceptance state.
-    task_environment_.FastForwardBy(kTimeoutDelay);
-    EXPECT_EQ(1U, infobar_manager()->infobars().size());
-    EXPECT_NE(first_infobar, infobar());
-    EXPECT_TRUE(infobar()->accepted());
-    EXPECT_EQ(1U, [recently_accessible_permissions() count]);
-    EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
-              web::PermissionCamera);
-  }
+  // Allow one permission.
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionCamera);
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionMicrophone);
+  task_environment_.FastForwardBy(kTimeoutDelay);
+  ASSERT_EQ(2U, [recently_accessible_permissions() count]);
+  EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
+            web::PermissionCamera);
+  EXPECT_EQ(recently_accessible_permissions()[1].unsignedIntegerValue,
+            web::PermissionMicrophone);
+  // Now block one. The other one is still allowed, so infobar should still be
+  // accepted.
+  web_state_.SetStateForPermission(web::PermissionStateBlocked,
+                                   web::PermissionMicrophone);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_TRUE(infobar()->accepted());
+  // Now make the other one inaccessible. Infobar should still exist, but its
+  // acceptance state should be false.
+  web_state_.SetStateForPermission(web::PermissionStateNotAccessible,
+                                   web::PermissionCamera);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_FALSE(infobar()->accepted());
+  // Now make the other one "allowed" again. The acceptance state would be
+  // changed immediately, but the infobar would not be replaced until timeout
+  // is reached.
+  InfoBarIOS* first_infobar = infobar();
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionCamera);
+  ASSERT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_EQ(first_infobar, infobar());
+  EXPECT_TRUE(infobar()->accepted());
+  // But after the timeout, the infobar should be replaced and have the right
+  // acceptance state.
+  task_environment_.FastForwardBy(kTimeoutDelay);
+  EXPECT_EQ(1U, infobar_manager()->infobars().size());
+  EXPECT_NE(first_infobar, infobar());
+  EXPECT_TRUE(infobar()->accepted());
+  EXPECT_EQ(1U, [recently_accessible_permissions() count]);
+  EXPECT_EQ(recently_accessible_permissions()[0].unsignedIntegerValue,
+            web::PermissionCamera);
 }
