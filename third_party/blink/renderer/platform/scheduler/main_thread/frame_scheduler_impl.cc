@@ -968,8 +968,6 @@ bool FrameSchedulerImpl::IsOrdinary() const {
 bool FrameSchedulerImpl::ShouldThrottleTaskQueues() const {
   DCHECK(parent_page_scheduler_);
 
-  if (parent_page_scheduler_->ThrottleForegroundTimers())
-    return true;
   if (parent_page_scheduler_->ThrottleUnimportantFrameTimers() &&
       IsCrossOriginToNearestMainFrame() && frame_visible_ &&
       !IsVisibleAreaLarge() && !HadUserActivation()) {

@@ -1364,8 +1364,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedPreloadScanner);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThrottleForegroundTimers);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThrottleInstallingServiceWorker);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kInstallingServiceWorkerOutstandingThrottledLimit;

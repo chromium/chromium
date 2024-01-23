@@ -2068,12 +2068,6 @@ BASE_FEATURE(kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes,
              "ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Throttles Javascript timer wake ups (both same origin and cross origin) on
-// foreground pages.
-BASE_FEATURE(kThrottleForegroundTimers,
-             "ThrottleForegroundTimers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable throttling of fetch() requests from service workers in the
 // installing state.  The limit of 3 was chosen to match the limit
 // in background main frames.  In addition, trials showed that this

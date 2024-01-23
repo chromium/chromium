@@ -91,17 +91,6 @@ base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod(bool loading) {
   return base::Seconds(seconds);
 }
 
-base::TimeDelta GetForegroundTimersThrottledWakeUpInterval() {
-  constexpr int kForegroundTimersThrottling_WakeUpIntervalMillis_Default = 32;
-  static const base::FeatureParam<int>
-      kForegroundTimersThrottledWakeUpIntervalMills{
-          &features::kThrottleForegroundTimers,
-          "ForegroundTimersThrottledWakeUpIntervalMills",
-          kForegroundTimersThrottling_WakeUpIntervalMillis_Default};
-  return base::Milliseconds(
-      kForegroundTimersThrottledWakeUpIntervalMills.Get());
-}
-
 // TODO(crbug.com/1475915): convert this param value to TimeDelta instead of int
 // after the experiment.
 MIRACLE_PARAMETER_FOR_INT(

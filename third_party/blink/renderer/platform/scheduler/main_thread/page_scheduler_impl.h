@@ -130,8 +130,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // frame it not a local one.
   FrameSchedulerImpl* SelectFrameForUkmAttribution();
 
-  bool ThrottleForegroundTimers() const { return throttle_foreground_timers_; }
-
   bool ThrottleUnimportantFrameTimers() const {
     return throttle_unimportant_frame_timers_;
   }
@@ -239,7 +237,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   void UpdateFrozenState(NotificationPolicy notification_policy);
 
   // Returns all WakeUpBudgetPools owned by this PageSchedulerImpl.
-  static constexpr int kNumWakeUpBudgetPools = 5;
+  static constexpr int kNumWakeUpBudgetPools = 4;
   std::array<WakeUpBudgetPool*, kNumWakeUpBudgetPools> AllWakeUpBudgetPools();
 
   TraceableVariableController tracing_controller_;
@@ -264,14 +262,12 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   //
   // For background pages:
   //                                    Same-origin frame    Cross-origin frame
-  //   Normal throttling only           3                    3
-  //   Normal and intensive throttling  4                    5
+  //   Normal throttling only           2                    2
+  //   Normal and intensive throttling  3                    4
   //
   // For foreground pages:
-  //   Same-origin frame                                                      1
-  //   Visible large size or user activated cross-origin frame                1
-  //   Visible small & non user activated cross-origin frame (unimportant)    2
-  //   Hidden cross-origin frame                                              3
+  //   Visible small & non user activated cross-origin frame (unimportant)    1
+  //   Hidden cross-origin frame                                              2
   //
   // Task queues attched to these pools will be updated when:
   //    * Page background state changes
@@ -280,21 +276,18 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   //    * Cross-origin frame size proportion of page's visible area changes
   //    * Cross-origin frame user activation state changes
   //
-  // 1: This pool allows |foreground_timers_throttled_wake_up_interval_| aligned
-  //    wake ups when the page is foregrounded.
-  std::unique_ptr<WakeUpBudgetPool> foreground_wake_up_budget_pool_;
-  // 2: This pool allows |unimportant_timers_throttled_wake_up_interval_|
+  // 1: This pool allows |unimportant_timers_throttled_wake_up_interval_|
   //    aligned wake ups for unimportant frames (visible small and no user
   //    activated cross-origin frames) in foreground pages.
   std::unique_ptr<WakeUpBudgetPool> unimportant_wake_up_budget_pool_;
-  // 3: This pool allows 1-second aligned wake ups for hidden cross-origin
+  // 2: This pool allows 1-second aligned wake ups for hidden cross-origin
   //    frames in foreground pages, or when the page is backgrounded.
   std::unique_ptr<WakeUpBudgetPool> hidden_wake_up_budget_pool_;
-  // 4: This pool allows 1-second aligned wake ups if the page is not
+  // 3: This pool allows 1-second aligned wake ups if the page is not
   //    intensively throttled of if there hasn't been a wake up in the last
   //    minute. Otherwise, it allows 1-minute aligned wake ups.
   std::unique_ptr<WakeUpBudgetPool> same_origin_intensive_wake_up_budget_pool_;
-  // 5: This pool allows 1-second aligned wake ups if the page is not
+  // 4: This pool allows 1-second aligned wake ups if the page is not
   //    intensively throttled. Otherwise, it allows 1-minute aligned wake ups.
   //
   //    Unlike |same_origin_intensive_wake_up_budget_pool_|, this pool does not
@@ -313,13 +306,9 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   CancelableClosureHolder update_frozen_state_callback_;
   const base::TimeDelta delay_for_background_tab_freezing_;
 
-  // Whether foreground timers should be always throttled.
-  const bool throttle_foreground_timers_;
   // Whether timers of foreground unimportant frames (visible small and non user
   // activated cross-origin frames) should be always throttled.
   const bool throttle_unimportant_frame_timers_;
-  // Interval between throttled wake ups on a foreground page.
-  const base::TimeDelta foreground_timers_throttled_wake_up_interval_;
   // Interval between throttled wake ups for unimportant frames (visible, small
   // and non user activated cross origin frames) on a foreground page.
   const base::TimeDelta unimportant_timers_throttled_wake_up_interval_;
