@@ -39,8 +39,10 @@ String CscResultToString(CapturedSurfaceControlResult result) {
       return "Unknown error.";
     case CapturedSurfaceControlResult::kNoPermissionError:
       return "No permission.";
+    case CapturedSurfaceControlResult::kCapturerNotFoundError:
+      return "Capturer not found (likely stopped asynchronously).";
     case CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError:
-      return "Captured surface not found (likely stopped asynchronously.)";
+      return "Captured surface not found (likely stopped asynchronously).";
     case CapturedSurfaceControlResult::kDisallowedForSelfCaptureError:
       return "API not supported for self-capture.";
   }

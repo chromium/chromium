@@ -560,8 +560,7 @@ TEST_P(CapturedSurfaceControllerInterfaceTest,
   base::RunLoop run_loop;
   permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
   capturer_.reset();
-  // TODO(crbug.com/1466247): Use kCapturerNotFoundError after introducing it.
-  RunTestedActionAndExpect(&run_loop, CSCResult::kUnknownError);
+  RunTestedActionAndExpect(&run_loop, CSCResult::kCapturerNotFoundError);
   run_loop.Run();
 }
 

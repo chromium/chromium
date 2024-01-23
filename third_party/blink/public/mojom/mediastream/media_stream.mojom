@@ -175,6 +175,7 @@ enum CapturedSurfaceControlResult {
   kSuccess,
   kUnknownError,
   kNoPermissionError,
+  kCapturerNotFoundError,
   kCapturedSurfaceNotFoundError,
   kDisallowedForSelfCaptureError,
 };

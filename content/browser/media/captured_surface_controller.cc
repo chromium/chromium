@@ -64,8 +64,7 @@ CapturedSurfaceControlResult DoSendWheel(
       RenderFrameHostImpl::FromID(capturer_rfh_id));
   if (!capturer_wc) {
     // The capturing frame or tab appears to have closed asynchronously.
-    // TODO(crbug.com/1466247): Use a dedicated error.
-    return CapturedSurfaceControlResult::kUnknownError;
+    return CapturedSurfaceControlResult::kCapturerNotFoundError;
   }
 
   RenderFrameHost* const captured_rfh =
@@ -137,8 +136,7 @@ CapturedSurfaceControlResult DoSetZoomLevel(
       RenderFrameHostImpl::FromID(capturer_rfh_id));
   if (!capturer_wc) {
     // The capturing frame or tab appears to have closed asynchronously.
-    // TODO(crbug.com/1466247): Use a dedicated error.
-    return CapturedSurfaceControlResult::kUnknownError;
+    return CapturedSurfaceControlResult::kCapturerNotFoundError;
   }
 
   if (!captured_wc) {
@@ -167,9 +165,8 @@ std::pair<std::optional<int>, CapturedSurfaceControlResult> DoGetZoomLevel(
       RenderFrameHostImpl::FromID(capturer_rfh_id));
   if (!capturer_wc) {
     // The capturing frame or tab appears to have closed asynchronously.
-    // TODO(crbug.com/1466247): Use a dedicated error.
     return std::make_pair(std::nullopt,
-                          CapturedSurfaceControlResult::kUnknownError);
+                          CapturedSurfaceControlResult::kCapturerNotFoundError);
   }
 
   if (!captured_wc) {
