@@ -37,6 +37,8 @@ bool IsConversionSupported(VideoPixelFormat src, VideoPixelFormat dest) {
   switch (src) {
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_I420A:
+    case PIXEL_FORMAT_I444:
+    case PIXEL_FORMAT_I444A:
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV12A:
     case PIXEL_FORMAT_XBGR:
@@ -52,6 +54,8 @@ bool IsConversionSupported(VideoPixelFormat src, VideoPixelFormat dest) {
   switch (dest) {
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_I420A:
+    case PIXEL_FORMAT_I444:
+    case PIXEL_FORMAT_I444A:
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV12A:
       break;
@@ -253,6 +257,34 @@ void FillFourColorsFrameARGB(VideoFrame& dest_frame) {
   }
 }
 
+// SSIM/PSNR mismatch debugging function. Writes a VideoFrame into a packed
+// plane by plane layout that can be used with ffplay or ffmpeg to view the raw
+// output or convert to png. E.g.,
+//
+//   ffplay -f rawvideo -pixel_format yuv444p -video_size 64x64 -framerate 1
+//       expected_PIXEL_FORMAT_I444_64x64.bin
+//
+//   ffmpeg -f rawvideo -pixel_format yuv444p -video_size 64x64 -framerate 1
+//       -i expected_PIXEL_FORMAT_I444_64x64.bin expected.png
+//
+[[maybe_unused]] void DumpFrame(const VideoFrame& frame, const char* prefix) {
+  FILE* f =
+      fopen(base::StringPrintf("/tmp/%s_%s_%s.bin", prefix,
+                               VideoPixelFormatToString(frame.format()).c_str(),
+                               frame.visible_rect().size().ToString().c_str())
+                .c_str(),
+            "wc");
+  for (size_t i = 0; i < VideoFrame::NumPlanes(frame.format()); ++i) {
+    auto plane_size =
+        VideoFrame::PlaneSize(frame.format(), i, frame.visible_rect().size());
+    for (int y = 0; y < plane_size.height(); ++y) {
+      fwrite(frame.visible_data(i) + y * frame.stride(i), 1, plane_size.width(),
+             f);
+    }
+  }
+  fclose(f);
+}
+
 }  // namespace
 
 using TestParams = testing::tuple<VideoPixelFormat, VideoPixelFormat, bool>;
@@ -336,6 +368,8 @@ INSTANTIATE_TEST_SUITE_P(,
                                                           PIXEL_FORMAT_ARGB,
                                                           PIXEL_FORMAT_I420,
                                                           PIXEL_FORMAT_I420A,
+                                                          PIXEL_FORMAT_I444,
+                                                          PIXEL_FORMAT_I444A,
                                                           PIXEL_FORMAT_NV12,
                                                           PIXEL_FORMAT_NV12A),
                                           testing::Values(PIXEL_FORMAT_XBGR,
@@ -344,6 +378,8 @@ INSTANTIATE_TEST_SUITE_P(,
                                                           PIXEL_FORMAT_ARGB,
                                                           PIXEL_FORMAT_I420,
                                                           PIXEL_FORMAT_I420A,
+                                                          PIXEL_FORMAT_I444,
+                                                          PIXEL_FORMAT_I444A,
                                                           PIXEL_FORMAT_NV12,
                                                           PIXEL_FORMAT_NV12A),
                                           testing::Bool()));

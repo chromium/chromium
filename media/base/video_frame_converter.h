@@ -30,12 +30,16 @@ class MEDIA_EXPORT VideoFrameConverter {
   //   * PIXEL_FORMAT_ARGB
   //   * PIXEL_FORMAT_I420
   //   * PIXEL_FORMAT_I420A
+  //   * PIXEL_FORMAT_I444
+  //   * PIXEL_FORMAT_I444A
   //   * PIXEL_FORMAT_NV12
   //   * PIXEL_FORMAT_NV12A
   //
   // Output formats:
   //   * PIXEL_FORMAT_I420
   //   * PIXEL_FORMAT_I420A
+  //   * PIXEL_FORMAT_I444
+  //   * PIXEL_FORMAT_I444A
   //   * PIXEL_FORMAT_NV12
   //   * PIXEL_FORMAT_NV12A
   EncoderStatus ConvertAndScale(const VideoFrame& src_frame,

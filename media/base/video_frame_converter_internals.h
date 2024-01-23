@@ -25,23 +25,22 @@ bool ARGBScale(const VideoFrame& src_frame,
                VideoFrame& dst_frame,
                libyuv::FilterMode filter);
 
-bool ARGBToI420x(const VideoFrame& src_frame,
-                 VideoFrame& dst_frame,
-                 libyuv::FilterMode filter);
+bool ARGBToI420x(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
-bool ARGBToNV12x(const VideoFrame& src_frame,
-                 VideoFrame& dst_frame,
-                 libyuv::FilterMode filter);
+bool ARGBToI444x(const VideoFrame& src_frame, VideoFrame& dst_frame);
+
+bool ARGBToNV12x(const VideoFrame& src_frame, VideoFrame& dst_frame);
+
+bool ABGRToARGB(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 // Also converts between I420, I422, I444 and vice versa.
-void I4xxxScale(const VideoFrame& src_frame,
-                VideoFrame& dst_frame,
-                libyuv::FilterMode filter);
+void I4xxxScale(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 // Scaling not supported.
-bool I420xToNV12x(const VideoFrame& src_frame,
-                  VideoFrame& dst_frame,
-                  libyuv::FilterMode filter);
+bool I420xToNV12x(const VideoFrame& src_frame, VideoFrame& dst_frame);
+
+// Scaling not supported.
+bool I444xToNV12x(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 // Scaling not supported.
 void MergeUV(const VideoFrame& src_frame, VideoFrame& dst_frame);
@@ -54,9 +53,7 @@ bool NV12xScale(const VideoFrame& src_frame,
                 libyuv::FilterMode filter);
 
 // Scaling not supported.
-bool NV12xToI420x(const VideoFrame& src_frame,
-                  VideoFrame& dst_frame,
-                  libyuv::FilterMode filter);
+bool NV12xToI420x(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 }  // namespace media::internals
 
