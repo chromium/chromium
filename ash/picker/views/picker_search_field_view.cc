@@ -36,16 +36,18 @@ PickerSearchFieldView::PickerSearchFieldView(
       session_metrics_(session_metrics) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  textfield_ = AddChildView(std::make_unique<views::Textfield>());
-  textfield_->set_controller(this);
-  textfield_->SetBorder(views::CreateEmptyBorder(kSearchFieldBorderInsets));
-  textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  textfield_->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
-      TypographyToken::kCrosBody2));
-  textfield_->SetPlaceholderText(
-      l10n_util::GetStringUTF16(IDS_PICKER_SEARCH_FIELD_PLACEHOLDER_TEXT));
-  // TODO(b/309706053): Replace this once the strings are finalized.
-  textfield_->SetAccessibleName(u"placeholder");
+  textfield_ = AddChildView(
+      views::Builder<views::Textfield>()
+          .SetController(this)
+          .SetBorder(views::CreateEmptyBorder(kSearchFieldBorderInsets))
+          .SetBackgroundColor(SK_ColorTRANSPARENT)
+          .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+              TypographyToken::kCrosBody2))
+          .SetPlaceholderText(l10n_util::GetStringUTF16(
+              IDS_PICKER_SEARCH_FIELD_PLACEHOLDER_TEXT))
+          // TODO(b/309706053): Replace this once the strings are finalized.
+          .SetAccessibleName(u"placeholder")
+          .Build());
 
   SetProperty(views::kMarginsKey, kSearchFieldVerticalPadding);
 }
