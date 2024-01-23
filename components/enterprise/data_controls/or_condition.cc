@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/data_controls/and_condition.h"
+#include "components/enterprise/data_controls/or_condition.h"
 
 #include <algorithm>
 
@@ -11,26 +11,26 @@
 namespace data_controls {
 
 // static
-std::unique_ptr<Condition> AndCondition::Create(
+std::unique_ptr<Condition> OrCondition::Create(
     std::vector<std::unique_ptr<const Condition>> conditions) {
   if (conditions.empty()) {
     return nullptr;
   }
 
-  return base::WrapUnique(new AndCondition(std::move(conditions)));
+  return base::WrapUnique(new OrCondition(std::move(conditions)));
 }
 
-AndCondition::~AndCondition() = default;
+OrCondition::~OrCondition() = default;
 
-bool AndCondition::IsTriggered(const ActionContext& action_context) const {
-  return std::all_of(
+bool OrCondition::IsTriggered(const ActionContext& action_context) const {
+  return std::any_of(
       conditions_.begin(), conditions_.end(),
       [&action_context](const std::unique_ptr<const Condition>& condition) {
         return condition->IsTriggered(action_context);
       });
 }
 
-AndCondition::AndCondition(
+OrCondition::OrCondition(
     std::vector<std::unique_ptr<const Condition>> conditions)
     : conditions_(std::move(conditions)) {}
 

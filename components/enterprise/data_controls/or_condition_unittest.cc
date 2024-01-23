@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/data_controls/and_condition.h"
+#include "components/enterprise/data_controls/or_condition.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,44 +30,44 @@ class FalseCondition : public Condition {
 
 }  // namespace
 
-TEST(DataControlsAndConditionTest, InvalidValues) {
-  ASSERT_FALSE(AndCondition::Create({}));
+TEST(DataControlsOrConditionTest, InvalidValues) {
+  ASSERT_FALSE(OrCondition::Create({}));
 }
 
-TEST(DataControlsAndConditionTest, BasicTests) {
+TEST(DataControlsOrConditionTest, BasicTests) {
   const std::tuple<std::vector<bool>, bool> kTestValues[] = {
-      // The following cases evaluate to true because all sub-conditions
-      // evaluate to true.
-      {{true}, true},
-      {{true, true}, true},
-      {{true, true, true}, true},
-
-      // The following cases evaluate to false because at least one
-      // sub-condition evaluates to false.
+      // The following cases evaluate to false because all sub-conditions
+      // evaluate to false.
       {{false}, false},
       {{false, false}, false},
-      {{false, true}, false},
-      {{true, false}, false},
       {{false, false, false}, false},
-      {{false, false, true}, false},
-      {{false, true, false}, false},
-      {{false, true, true}, false},
-      {{true, false, false}, false},
-      {{true, false, true}, false},
-      {{true, true, false}, false},
+
+      // The following cases evaluate to true because at least one
+      // sub-condition evaluates to true.
+      {{true}, true},
+      {{false, true}, true},
+      {{true, false}, true},
+      {{true, true}, true},
+      {{false, false, true}, true},
+      {{false, true, false}, true},
+      {{false, true, true}, true},
+      {{true, false, false}, true},
+      {{true, false, true}, true},
+      {{true, true, false}, true},
+      {{true, true, true}, true},
   };
-  for (auto [and_conditions, expected] : kTestValues) {
+  for (auto [or_conditions, expected] : kTestValues) {
     std::vector<std::unique_ptr<const Condition>> conditions;
-    for (bool value : and_conditions) {
+    for (bool value : or_conditions) {
       if (value) {
         conditions.push_back(std::make_unique<TrueCondition>());
       } else {
         conditions.push_back(std::make_unique<FalseCondition>());
       }
     }
-    auto and_condition = AndCondition::Create(std::move(conditions));
-    ASSERT_TRUE(and_condition);
-    ASSERT_EQ(and_condition->IsTriggered({}), expected);
+    auto or_condition = OrCondition::Create(std::move(conditions));
+    ASSERT_TRUE(or_condition);
+    ASSERT_EQ(or_condition->IsTriggered({}), expected);
   }
 }
 

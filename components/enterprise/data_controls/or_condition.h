@@ -1,32 +1,29 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_AND_CONDITION_H_
-#define COMPONENTS_ENTERPRISE_DATA_CONTROLS_AND_CONDITION_H_
-
-#include <memory>
-#include <vector>
+#ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_OR_CONDITION_H_
+#define COMPONENTS_ENTERPRISE_DATA_CONTROLS_OR_CONDITION_H_
 
 #include "components/enterprise/data_controls/condition.h"
 
 namespace data_controls {
 
-// Implementation of an abstract "and" condition, which evaluates to true if all
+// Implementation of an abstract "and" condition, which evaluates to true if one
 // of its sub-conditions are true.
-class AndCondition : public Condition {
+class OrCondition : public Condition {
  public:
   // Returns nullptr if the passed vector is empty.
   static std::unique_ptr<Condition> Create(
       std::vector<std::unique_ptr<const Condition>> conditions);
 
-  ~AndCondition() override;
+  ~OrCondition() override;
 
   // Condition:
   bool IsTriggered(const ActionContext& action_context) const override;
 
  private:
-  explicit AndCondition(
+  explicit OrCondition(
       std::vector<std::unique_ptr<const Condition>> conditions);
 
   const std::vector<std::unique_ptr<const Condition>> conditions_;
@@ -34,4 +31,4 @@ class AndCondition : public Condition {
 
 }  // namespace data_controls
 
-#endif  // COMPONENTS_ENTERPRISE_DATA_CONTROLS_AND_CONDITION_H_
+#endif  // COMPONENTS_ENTERPRISE_DATA_CONTROLS_OR_CONDITION_H_

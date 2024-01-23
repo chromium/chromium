@@ -193,7 +193,7 @@ std::unique_ptr<const Condition> Rule::GetSourcesAndDestinationsCondition(
   // - "destinations"
   // Then combine them into an `AndCondition` to make an overall condition for
   // the rule being constructed.
-  std::vector<std::unique_ptr<Condition>> conditions;
+  std::vector<std::unique_ptr<const Condition>> conditions;
 
   const base::Value* sources_value = value.Find(kKeySources);
   if (sources_value) {
