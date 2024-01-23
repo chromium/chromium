@@ -462,12 +462,6 @@ BASE_FEATURE(kAutofillPopupDoesNotOverlapWithContextMenu,
              "AutofillPopupDoesNotOverlapWithContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If the feature is enabled, then custom cursor exceeding the (24 dips)
-// dimension limit are disallowed in extension-hosted content.
-BASE_FEATURE(kAutofillPopupExtensionCursorSuppression,
-             "AutofillPopupExtensionCursorSuppression",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If the feature is enabled, then the time when the Autofill popup is
 // considered to have been shown is measured only once the UI thread has become
 // idle. The intent behind this is to avoid situations in which the OS message

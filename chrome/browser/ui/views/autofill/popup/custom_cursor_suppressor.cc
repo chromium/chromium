@@ -9,12 +9,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -60,10 +58,7 @@ void CustomCursorSuppressor::Start(int max_dimension_dips) {
       MaybeObserveNavigationsInWebContents(*active_contents);
       SuppressForWebContents(*active_contents);
     }
-    if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillPopupExtensionCursorSuppression)) {
-      ObserveAndSuppressExtensionsForProfile(*browser->profile());
-    }
+    ObserveAndSuppressExtensionsForProfile(*browser->profile());
   }
 }
 
