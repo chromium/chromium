@@ -65,7 +65,9 @@ void ScrollJankUkmReporter::EmitScrollJankUkm() {
 }
 
 void ScrollJankUkmReporter::EmitPredictorJankUkm() {
-  if (ukm_manager_) {
+  bool should_report =
+      frame_with_missed_vsync_ != 0 || frame_with_no_missed_vsync_ != 0;
+  if (ukm_manager_ && should_report) {
     ukm::builders::Event_ScrollJank_PredictorJank builder(
         ukm_manager_->source_id());
     builder.SetMaxDelta(ukm::GetExponentialBucketMinForCounts1000(max_delta_));

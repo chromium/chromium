@@ -284,21 +284,7 @@ TEST_F(ScrollJankUkmReporterTest, NoPredictorJank) {
 
   auto predictor_entries = test_ukm_recorder_->GetEntriesByName(
       ukm::builders::Event_ScrollJank_PredictorJank::kEntryName);
-  EXPECT_EQ(1u, predictor_entries.size());
-
-  test_ukm_recorder_->ExpectEntryMetric(
-      predictor_entries.back(),
-      ukm::builders::Event_ScrollJank_PredictorJank::kMaxDeltaName, 0);
-  test_ukm_recorder_->ExpectEntryMetric(
-      predictor_entries.back(),
-      ukm::builders::Event_ScrollJank_PredictorJank::
-          kScrollUpdate_MissedVsync_FrameAboveJankyThreshold2Name,
-      0);
-  test_ukm_recorder_->ExpectEntryMetric(
-      predictor_entries.back(),
-      ukm::builders::Event_ScrollJank_PredictorJank::
-          kScrollUpdate_NoMissedVsync_FrameAboveJankyThreshold2Name,
-      0);
+  EXPECT_EQ(0u, predictor_entries.size());
 }
 
 TEST_F(ScrollJankUkmReporterTest, PredictorJankMissedVsync) {
