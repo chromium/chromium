@@ -220,8 +220,7 @@ void HTMLDetailsElement::ParseAttribute(
                AttributeModificationReason::kBySynchronizationOfLazyAttribute);
       // TODO(https://crbug.com/1444057): Should this be in
       // AttributeChanged instead?
-      if (RuntimeEnabledFeatures::AccordionPatternEnabled() &&
-          !GetName().empty() &&
+      if (!GetName().empty() &&
           params.reason == AttributeModificationReason::kDirectly) {
         // Don't fire mutation events for any changes to the open attribute
         // that this causes.
@@ -275,8 +274,7 @@ Node::InsertionNotificationRequest HTMLDetailsElement::InsertedInto(
 
 // https://html.spec.whatwg.org/multipage/C#ensure-details-exclusivity-by-closing-the-given-element-if-needed
 void HTMLDetailsElement::MaybeCloseForExclusivity() {
-  if (!RuntimeEnabledFeatures::AccordionPatternEnabled() || GetName().empty() ||
-      !is_open_) {
+  if (GetName().empty() || !is_open_) {
     return;
   }
 
@@ -304,7 +302,6 @@ void HTMLDetailsElement::ToggleOpen() {
 
 HeapVector<Member<HTMLDetailsElement>>
 HTMLDetailsElement::OtherElementsInNameGroup() {
-  CHECK(RuntimeEnabledFeatures::AccordionPatternEnabled());
   HeapVector<Member<HTMLDetailsElement>> result;
   const AtomicString& name = GetName();
   if (name.empty()) {

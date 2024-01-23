@@ -258,12 +258,6 @@
       public: true,
     },
     {
-      // Shipping in M120.  Flag should be removed after M120 has been
-      // shipping to stable for a few weeks.
-      name: "AccordionPattern",
-      status: "stable",
-    },
-    {
       name: "AddIdentityInCanMakePaymentEvent",
       origin_trial_allows_third_party: true,
       origin_trial_feature_name: "AddIdentityInCanMakePaymentEvent",
