@@ -99,7 +99,7 @@ found in the LICENSE file.
                     android:layout_height="wrap_content"
                     android:textAlignment="viewStart"
                     android:layout_marginTop="8dp"
-                    android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+                    android:textAppearance="@style/TextAppearance.Headline2Thick.Secondary"
                     android:maxLines="2"
                     android:ellipsize="end" />
                 <RelativeLayout
