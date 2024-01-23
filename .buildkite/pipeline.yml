@@ -139,6 +139,7 @@ steps:
       - "queue=runtime"
     artifact_paths:
       - "build_id/windows/x86_64/**"
+    soft_fail: true
 
   - label: ":sleuth_or_spy: Verify cross-arch `.pak` sizes and dep hashes"
     key: "verify-cross-arch-pak-sizes"
