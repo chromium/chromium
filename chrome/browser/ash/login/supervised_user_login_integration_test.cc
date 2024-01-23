@@ -85,9 +85,7 @@ class SupervisedUserLoginIntegrationTest : public AshIntegrationTest {
   SupervisedUserLoginDelegate delegate_;
 };
 
-// TODO(b/318616623): Re-enable when flaky timeout is resolved.
-IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest,
-                       DISABLED_TestUnicornLogin) {
+IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest, TestUnicornLogin) {
   SetupContextWidget();
 
   login_mixin().Login();
@@ -97,9 +95,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest,
   VerifyPolicies();
 }
 
-// TODO(b/318616623): Re-enable when flaky timeout is resolved.
-IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest,
-                       DISABLED_TestGellerLogin) {
+IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest, TestGellerLogin) {
   SetupContextWidget();
 
   delegate_.set_user_type(
@@ -111,9 +107,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest,
   VerifyPolicies();
 }
 
-// TODO(b/318616623): Re-enable when flaky timeout is resolved.
-IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest,
-                       DISABLED_TestGriffinLogin) {
+IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest, TestGriffinLogin) {
   SetupContextWidget();
 
   delegate_.set_user_type(
