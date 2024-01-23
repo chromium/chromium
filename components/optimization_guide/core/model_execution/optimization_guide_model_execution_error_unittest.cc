@@ -26,13 +26,12 @@ TEST(OptimizationGuideModelExecutionErrorTest, ShouldLogModelQuality) {
   EXPECT_TRUE(CreateModelExecutionErrorFromErrorState(
                   proto::ErrorState::ERROR_STATE_UNSUPPORTED_LANGUAGE)
                   .ShouldLogModelQuality());
-  EXPECT_FALSE(CreateModelExecutionErrorFromErrorState(
-                   proto::ErrorState::ERROR_STATE_INTERNAL_SERVER_ERROR_RETRY)
-                   .ShouldLogModelQuality());
-  EXPECT_FALSE(
-      CreateModelExecutionErrorFromErrorState(
-          proto::ErrorState::ERROR_STATE_INTERNAL_SERVER_ERROR_NO_RETRY)
-          .ShouldLogModelQuality());
+  EXPECT_TRUE(CreateModelExecutionErrorFromErrorState(
+                  proto::ErrorState::ERROR_STATE_INTERNAL_SERVER_ERROR_RETRY)
+                  .ShouldLogModelQuality());
+  EXPECT_TRUE(CreateModelExecutionErrorFromErrorState(
+                  proto::ErrorState::ERROR_STATE_INTERNAL_SERVER_ERROR_NO_RETRY)
+                  .ShouldLogModelQuality());
   EXPECT_FALSE(CreateModelExecutionErrorFromErrorState(
                    proto::ErrorState::ERROR_STATE_REQUEST_THROTTLED)
                    .ShouldLogModelQuality());
