@@ -21,6 +21,10 @@ enum Destination {
   // Devices. For more information, see go/reliable-meet-device-telemetry.
   MEET_DEVICE_TELEMETRY = 2;
 
+  // |WEB_PROTECT| legacy web protect event handler that will be deleted and
+  // replaced by the |CHROME_BROWSER_ENTERPRISE| destination.
+  WEB_PROTECT = 3 [deprecated = true];
+
   // |ARC_INSTALL| legacy arc app installation event handler
   ARC_INSTALL = 4;
 
@@ -112,8 +116,7 @@ enum Destination {
   // |CRASH_EVENTS| is for fatal crash events.
   CRASH_EVENTS = 31;
 
-  reserved 3, 8;
-  reserved "WEB_PROTECT";
+  reserved 8;
 }
 
 // |Priority| is used to determine when items from the queue should be rate
