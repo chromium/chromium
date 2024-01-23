@@ -6673,7 +6673,12 @@ source_set("unit_tests") {
     ]
   }
 
-  data = [ "//chromeos/test/data/" ]
+  data = [
+    "//chromeos/test/data/",
+
+    # Needed by os_settings_manager_unittest.cc.
+    "//tools/metrics/histograms/metadata/chromeos_settings/enums.xml",
+  ]
 }
 
 config("allow_shadow_variables") {
