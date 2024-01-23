@@ -32,9 +32,9 @@ std::unique_ptr<base::Value> ReadJsonFile(const base::FilePath& json_path) {
 
 }  // namespace
 
-FamilyAccounts::FamilyAccounts() = default;
-FamilyAccounts::FamilyAccounts(const FamilyAccounts& other) = default;
-FamilyAccounts::~FamilyAccounts() = default;
+FamilyTestData::FamilyTestData() = default;
+FamilyTestData::FamilyTestData(const FamilyTestData& other) = default;
+FamilyTestData::~FamilyTestData() = default;
 
 void GetGaiaTestAccount(std::string& out_email, std::string& out_password) {
   base::FilePath root_path;
@@ -57,7 +57,7 @@ void GetGaiaTestAccount(std::string& out_email, std::string& out_password) {
   out_password = *account.FindString("password");
 }
 
-FamilyAccounts GetFamilyTestAccounts() {
+FamilyTestData GetFamilyTestData() {
   base::FilePath root_path;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
 
@@ -71,21 +71,22 @@ FamilyAccounts GetFamilyTestAccounts() {
   CHECK(default_pool);
   CHECK(!default_pool->empty());
   const base::Value::Dict& accounts = (*default_pool)[0].GetDict();
-  FamilyAccounts account_pool;
-  account_pool.unicorn =
-      FamilyAccounts::User{*accounts.FindString("unicornEmail"),
+  FamilyTestData test_data;
+  test_data.unicorn =
+      FamilyTestData::User{*accounts.FindString("unicornEmail"),
                            *accounts.FindString("unicornPassword")};
-  account_pool.geller =
-      FamilyAccounts::User{*accounts.FindString("gellerEmail"),
+  test_data.geller =
+      FamilyTestData::User{*accounts.FindString("gellerEmail"),
                            *accounts.FindString("gellerPassword")};
-  account_pool.griffin =
-      FamilyAccounts::User{*accounts.FindString("griffinEmail"),
+  test_data.griffin =
+      FamilyTestData::User{*accounts.FindString("griffinEmail"),
                            *accounts.FindString("griffinPassword")};
-  account_pool.parent =
-      FamilyAccounts::User{*accounts.FindString("parentEmail"),
+  test_data.parent =
+      FamilyTestData::User{*accounts.FindString("parentEmail"),
                            *accounts.FindString("parentPassword")};
+  test_data.mature_site = *accounts.FindString("matureSite");
 
-  return account_pool;
+  return test_data;
 }
 
 }  // namespace crosier

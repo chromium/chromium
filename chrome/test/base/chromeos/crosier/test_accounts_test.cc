@@ -20,7 +20,7 @@ TEST(TestAccountTest, Get) {
 }
 
 TEST(TestFamilyAccountsTest, Get) {
-  FamilyAccounts accounts = GetFamilyTestAccounts();
+  FamilyTestData accounts = GetFamilyTestData();
   EXPECT_TRUE(!accounts.unicorn.email.empty());
   EXPECT_TRUE(!accounts.unicorn.password.empty());
   EXPECT_TRUE(!accounts.geller.email.empty());
@@ -29,6 +29,7 @@ TEST(TestFamilyAccountsTest, Get) {
   EXPECT_TRUE(!accounts.griffin.password.empty());
   EXPECT_TRUE(!accounts.parent.email.empty());
   EXPECT_TRUE(!accounts.parent.password.empty());
+  EXPECT_TRUE(!accounts.mature_site.empty());
 }
 
 }  // namespace crosier

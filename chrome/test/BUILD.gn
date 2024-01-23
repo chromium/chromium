@@ -1126,6 +1126,7 @@ if (is_chromeos && is_chromeos_device) {
     if (is_chromeos_ash) {
       sources += [
         "../browser/ash/bluetooth/bluetooth_integration_test.cc",
+        "../browser/ash/child_accounts/web_approvals_integration_test.cc",
         "../browser/ash/external_metrics_integration_test.cc",
         "../browser/ash/featured_integration_test.cc",
         "../browser/ash/login/lock/lock_screen_integration_test.cc",
@@ -1151,6 +1152,8 @@ if (is_chromeos && is_chromeos_device) {
         "base/chromeos/crosier/ash_integration_test_test.cc",
         "base/chromeos/crosier/interactive_ash_test.cc",
         "base/chromeos/crosier/interactive_ash_test.h",
+        "base/chromeos/crosier/supervised_user_integration_base_test.cc",
+        "base/chromeos/crosier/supervised_user_integration_base_test.h",
       ]
 
       if (is_chrome_branded && is_chromeos_ash) {

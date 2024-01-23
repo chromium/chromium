@@ -6,6 +6,7 @@
 #define CHROME_TEST_BASE_CHROMEOS_CROSIER_SUPERVISED_USER_LOGIN_DELEGATE_H_
 
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
+#include "chrome/test/base/chromeos/crosier/test_accounts.h"
 
 // Provides login support for supervised user accounts in Crosier tests.
 class SupervisedUserLoginDelegate : public CustomGaiaLoginDelegate {
@@ -17,7 +18,7 @@ class SupervisedUserLoginDelegate : public CustomGaiaLoginDelegate {
     kGriffin,
   };
 
-  SupervisedUserLoginDelegate() = default;
+  SupervisedUserLoginDelegate();
   SupervisedUserLoginDelegate(const SupervisedUserLoginDelegate&) = delete;
   SupervisedUserLoginDelegate& operator=(const SupervisedUserLoginDelegate&) =
       delete;
@@ -28,8 +29,14 @@ class SupervisedUserLoginDelegate : public CustomGaiaLoginDelegate {
 
   void set_user_type(SupervisedUserType user_type) { user_type_ = user_type; }
 
+  crosier::FamilyTestData test_data() const { return test_data_; }
+
  private:
   SupervisedUserType user_type_ = SupervisedUserType::kUnicorn;
+
+  // Account data that represents user accounts representing a family and
+  // information associated with the accounts (i.e. blocked websites).
+  crosier::FamilyTestData test_data_;
 };
 
 #endif  // CHROME_TEST_BASE_CHROMEOS_CROSIER_SUPERVISED_USER_LOGIN_DELEGATE_H_

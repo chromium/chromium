@@ -9,6 +9,7 @@
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/chromeos/crosier/supervised_user_integration_base_test.h"
 #include "chrome/test/base/chromeos/crosier/supervised_user_login_delegate.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "url/gurl.h"
@@ -20,19 +21,9 @@ constexpr char kPolicyUrl[] = "chrome://policy";
 
 // This class implements CrOS login using prod GAIA with the different types of
 // supervised accounts.
-class SupervisedUserLoginIntegrationTest : public AshIntegrationTest {
+class SupervisedUserLoginIntegrationTest
+    : public SupervisedUserIntegrationBaseTest {
  public:
-  SupervisedUserLoginIntegrationTest() {
-    set_exit_when_last_browser_closes(false);
-
-    // Allows network access for production Gaia.
-    SetAllowNetworkAccessToHostResolutions();
-
-    login_mixin().SetMode(
-        ChromeOSIntegrationLoginMixin::Mode::kCustomGaiaLogin);
-    login_mixin().set_custom_gaia_login_delegate(&delegate_);
-  }
-
   auto OpenPolicyPage() {
     return Do([&]() { CreateBrowserWindow(GURL(kPolicyUrl)); });
   }
@@ -80,9 +71,6 @@ class SupervisedUserLoginIntegrationTest : public AshIntegrationTest {
                     Log("Check that all expected policies loaded"),
                     WaitForStateChange(kPolicyTabId, verify_policies));
   }
-
- protected:
-  SupervisedUserLoginDelegate delegate_;
 };
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserLoginIntegrationTest, TestUnicornLogin) {
