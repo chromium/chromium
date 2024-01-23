@@ -121,6 +121,17 @@ constexpr char kDeviceAttestationCertificateKey[] =
     "deviceAttestationCertificate";
 constexpr char kChromeOS[] = "CHROME_OS";
 
+constexpr const char kAttestationCertificateFailureReasonHistogramName[] =
+    "QuickStart.AttestationCertificate.FailureReason";
+constexpr const char kAttestationCertificateFetchResultHistogramName[] =
+    "QuickStart.AttestationCertificate.FetchResult";
+constexpr const char kAttestationCertificateFetchDurationHistogramName[] =
+    "QuickStart.AttestationCertificate.FetchDuration";
+constexpr const char kGaiaAuthenticationDurationHistogramName[] =
+    "QuickStart.GaiaAuthentication.Duration";
+constexpr char kGaiaAuthenticationResultHistogramName[] =
+    "QuickStart.GaiaAuthentication.Result";
+
 // Compares the `std::string` `content_binding` proto field to the
 // `Base64String` `expected` value.
 MATCHER_P(ProtoBufContentBindingEq, expected, "") {
@@ -607,15 +618,15 @@ TEST_F(SecondDeviceAuthBrokerTest,
   base::HistogramTester histogram_tester;
   auto certificate = FetchAttestationCertificate(fido_credential_id());
   histogram_tester.ExpectBucketCount(
-      "QuickStart.AttestationCertificate.FailureReason",
+      kAttestationCertificateFailureReasonHistogramName,
       QuickStartMetrics::AttestationCertificateRequestErrorCode::
           kAttestationNotSupportedOnDevice,
       1);
   histogram_tester.ExpectBucketCount(
-      "QuickStart.AttestationCertificate.FetchResult",
+      kAttestationCertificateFetchResultHistogramName,
       /*sample=*/false, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "QuickStart.AttestationCertificate.FetchDuration",
+      kAttestationCertificateFetchDurationHistogramName,
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
@@ -626,14 +637,14 @@ TEST_F(SecondDeviceAuthBrokerTest,
   base::HistogramTester histogram_tester;
   auto certificate = FetchAttestationCertificate(fido_credential_id());
   histogram_tester.ExpectBucketCount(
-      "QuickStart.AttestationCertificate.FailureReason",
+      kAttestationCertificateFailureReasonHistogramName,
       QuickStartMetrics::AttestationCertificateRequestErrorCode::kBadRequest,
       1);
   histogram_tester.ExpectBucketCount(
-      "QuickStart.AttestationCertificate.FetchResult",
+      kAttestationCertificateFetchResultHistogramName,
       /*sample=*/false, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "QuickStart.AttestationCertificate.FetchDuration",
+      kAttestationCertificateFetchDurationHistogramName,
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
@@ -644,14 +655,14 @@ TEST_F(SecondDeviceAuthBrokerTest,
   base::HistogramTester histogram_tester;
   auto certificate = FetchAttestationCertificate(fido_credential_id());
   histogram_tester.ExpectBucketCount(
-      "QuickStart.AttestationCertificate.FailureReason",
+      kAttestationCertificateFailureReasonHistogramName,
       QuickStartMetrics::AttestationCertificateRequestErrorCode::kUnknownError,
       1);
   histogram_tester.ExpectBucketCount(
-      "QuickStart.AttestationCertificate.FetchResult",
+      kAttestationCertificateFetchResultHistogramName,
       /*sample=*/false, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "QuickStart.AttestationCertificate.FetchDuration",
+      kAttestationCertificateFetchDurationHistogramName,
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
@@ -662,10 +673,10 @@ TEST_F(SecondDeviceAuthBrokerTest,
   base::HistogramTester histogram_tester;
   auto certificate = FetchAttestationCertificate(fido_credential_id());
   histogram_tester.ExpectBucketCount(
-      "QuickStart.AttestationCertificate.FetchResult",
+      kAttestationCertificateFetchResultHistogramName,
       /*sample=*/true, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "QuickStart.AttestationCertificate.FetchDuration",
+      kAttestationCertificateFetchDurationHistogramName,
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
@@ -905,10 +916,10 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForUnknownErrors) {
   ASSERT_THAT(response, VariantWith<AuthCodeUnknownErrorResponse>(_));
 
   histogram_tester.ExpectBucketCount(
-      "QuickStart.GaiaAuthentication.Result",
+      kGaiaAuthenticationResultHistogramName,
       /*sample=*/QuickStartMetrics::GaiaAuthenticationResult::kUnknownError, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "QuickStart.GaiaAuthentication.Duration",
+      kGaiaAuthenticationDurationHistogramName,
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
@@ -930,10 +941,10 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForSuccess) {
   ASSERT_THAT(response, VariantWith<AuthCodeSuccessResponse>(_));
 
   histogram_tester.ExpectBucketCount(
-      "QuickStart.GaiaAuthentication.Result",
+      kGaiaAuthenticationResultHistogramName,
       /*sample=*/QuickStartMetrics::GaiaAuthenticationResult::kSuccess, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "QuickStart.GaiaAuthentication.Duration",
+      kGaiaAuthenticationDurationHistogramName,
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
@@ -948,11 +959,11 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForParsingErrors) {
   ASSERT_THAT(response, VariantWith<AuthCodeParsingErrorResponse>(_));
 
   histogram_tester.ExpectBucketCount(
-      "QuickStart.GaiaAuthentication.Result",
+      kGaiaAuthenticationResultHistogramName,
       /*sample=*/
       QuickStartMetrics::GaiaAuthenticationResult::kResponseParsingError, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "QuickStart.GaiaAuthentication.Duration",
+      kGaiaAuthenticationDurationHistogramName,
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
@@ -966,11 +977,11 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForRejectionErrors) {
   ASSERT_THAT(response, VariantWith<AuthCodeRejectionResponse>(_));
 
   histogram_tester.ExpectBucketCount(
-      "QuickStart.GaiaAuthentication.Result",
+      kGaiaAuthenticationResultHistogramName,
       /*sample=*/
       QuickStartMetrics::GaiaAuthenticationResult::kRejection, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "QuickStart.GaiaAuthentication.Duration",
+      kGaiaAuthenticationDurationHistogramName,
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
@@ -993,13 +1004,13 @@ TEST_F(SecondDeviceAuthBrokerTest,
               VariantWith<AuthCodeAdditionalChallengesOnSourceResponse>(_));
 
   histogram_tester.ExpectBucketCount(
-      "QuickStart.GaiaAuthentication.Result",
+      kGaiaAuthenticationResultHistogramName,
       /*sample=*/
       QuickStartMetrics::GaiaAuthenticationResult::
           kAdditionalChallengesOnSource,
       1);
   histogram_tester.ExpectUniqueTimeSample(
-      "QuickStart.GaiaAuthentication.Duration",
+      kGaiaAuthenticationDurationHistogramName,
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
@@ -1021,13 +1032,13 @@ TEST_F(SecondDeviceAuthBrokerTest,
               VariantWith<AuthCodeAdditionalChallengesOnTargetResponse>(_));
 
   histogram_tester.ExpectBucketCount(
-      "QuickStart.GaiaAuthentication.Result",
+      kGaiaAuthenticationResultHistogramName,
       /*sample=*/
       QuickStartMetrics::GaiaAuthenticationResult::
           kAdditionalChallengesOnTarget,
       1);
   histogram_tester.ExpectUniqueTimeSample(
-      "QuickStart.GaiaAuthentication.Duration",
+      kGaiaAuthenticationDurationHistogramName,
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
