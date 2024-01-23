@@ -11,7 +11,6 @@ import androidx.preference.Preference;
 
 import org.chromium.chrome.browser.download.DownloadDialogBridge;
 import org.chromium.chrome.browser.download.DownloadPromptStatus;
-import org.chromium.chrome.browser.download.MimeUtils;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -56,14 +55,6 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
         mAutoOpenPdfEnabledPref =
                 (ChromeSwitchPreference) findPreference(PREF_AUTO_OPEN_PDF_ENABLED);
         mAutoOpenPdfEnabledPref.setOnPreferenceChangeListener(this);
-        String summary =
-                (MimeUtils.getPdfIntentHandlers().size() == 1)
-                        ? getActivity()
-                                .getString(
-                                        R.string.auto_open_pdf_enabled_with_app_description,
-                                        MimeUtils.getDefaultPdfViewerName())
-                        : getActivity().getString(R.string.auto_open_pdf_enabled_description);
-        mAutoOpenPdfEnabledPref.setSummaryOn(summary);
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.OPEN_DOWNLOAD_DIALOG)) {
             getPreferenceScreen().removePreference(findPreference(PREF_AUTO_OPEN_PDF_ENABLED));
         }

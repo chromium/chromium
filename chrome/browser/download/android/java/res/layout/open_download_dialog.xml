@@ -24,6 +24,13 @@ found in the LICENSE file.
             android:layout_marginBottom="@dimen/download_dialog_title_margin_bottom"
             android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
 
+        <TextView
+            android:id="@+id/subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/download_dialog_subtitle_margin_top"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+
         <CheckBox
             android:id="@+id/auto_open_checkbox"
             android:layout_width="match_parent"

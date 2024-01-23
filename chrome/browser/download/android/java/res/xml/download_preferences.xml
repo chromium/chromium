@@ -21,5 +21,6 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="auto_open_pdf_enabled"
         android:title="@string/auto_open_pdf_enabled_title"
+        android:summaryOn="@string/auto_open_pdf_enabled_description"
         android:summaryOff="@string/text_off"/>
 </PreferenceScreen>
