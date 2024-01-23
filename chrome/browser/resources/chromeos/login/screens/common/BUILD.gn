@@ -25,7 +25,6 @@ js_type_check("closure_compile_local") {
   deps = [
     ":consolidated_consent",
     ":error_message",
-    ":guest_tos",
     ":offline_ad_login",
     ":recommend_apps",
     ":saml_confirm_password",
@@ -43,28 +42,6 @@ js_library("consolidated_consent") {
     "../../components:display_manager_types",
     "../../components:oobe_select",
     "../../components:oobe_types",
-    "../../components:web_view_helper",
-    "../../components:web_view_loader",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog",
-    "../../components/dialogs:oobe_modal_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/webview_tag.js",
-    "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
-  ]
-}
-
-js_library("guest_tos") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/guest_tos.js" ]
-  deps = [
-    "../..:display_manager",
     "../../components:web_view_helper",
     "../../components:web_view_loader",
     "../../components/behaviors:login_screen_behavior",
