@@ -106,56 +106,6 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
    'os_settings_search_box/os_settings_search_box_test.js'
  ],
  [
-   'OsSettingsUiMenu',
-   'os_settings_ui/os_settings_ui_menu_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSettingsUiMenuRevamp',
-   'os_settings_ui/os_settings_ui_menu_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSettingsUiPageAvailability',
-   'os_settings_ui/os_settings_ui_page_availability_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSettingsUiPageAvailabilityRevamp',
-   'os_settings_ui/os_settings_ui_page_availability_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSettingsUiPageVisibilityRevamp',
-   'os_settings_ui/os_settings_ui_page_visibility_revamp_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSettingsUiScrollRestoration',
-   'os_settings_ui/scroll_restoration_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSettingsUiToolbar',
-   'os_settings_ui/os_settings_ui_toolbar_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSettingsUiToolbarRevamp',
-   'os_settings_ui/os_settings_ui_toolbar_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSettingsUiUserActionRecorder',
-   'os_settings_ui/user_action_recorder_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSettingsUiUserActionRecorderRevamp',
-   'os_settings_ui/user_action_recorder_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
    'ParentalControlsPage',
    'parental_controls_page/parental_controls_page_test.js'
  ],

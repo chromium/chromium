@@ -1404,4 +1404,53 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
   RunSettingsTest("os_settings_ui/os_settings_ui_hats_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, OsSettingsUiMenu) {
+  RunSettingsTest("os_settings_ui/os_settings_ui_menu_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       OsSettingsUiMenuRevamp) {
+  RunSettingsTest("os_settings_ui/os_settings_ui_menu_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+                       OsSettingsUiPageAvailability) {
+  RunSettingsTest("os_settings_ui/os_settings_ui_page_availability_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       OsSettingsUiPageAvailabilityRevamp) {
+  RunSettingsTest("os_settings_ui/os_settings_ui_page_availability_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       OsSettingsUiPageVisibilityRevamp) {
+  RunSettingsTest(
+      "os_settings_ui/os_settings_ui_page_visibility_revamp_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+                       OsSettingsUiScrollRestoration) {
+  RunSettingsTest("os_settings_ui/scroll_restoration_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, OsSettingsUiToolbar) {
+  RunSettingsTest("os_settings_ui/os_settings_ui_toolbar_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       OsSettingsUiToolbarRevamp) {
+  RunSettingsTest("os_settings_ui/os_settings_ui_toolbar_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+                       OsSettingsUiUserActionRecorder) {
+  RunSettingsTest("os_settings_ui/user_action_recorder_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       OsSettingsUiUserActionRecorderRevamp) {
+  RunSettingsTest("os_settings_ui/user_action_recorder_test.js");
+}
+
 }  // namespace ash::settings
