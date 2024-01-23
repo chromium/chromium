@@ -260,7 +260,6 @@ Lacros builder that runs Tast tests and gtests on ChromeOS devices via Skylab"""
     compilator = "lacros-amd64-generic-rel-compilator",
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
-    tryjob = try_.job(),
 )
 
 try_.orchestrator_builder(
