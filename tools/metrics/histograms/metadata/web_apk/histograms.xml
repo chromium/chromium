@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Notification.Permission.Status2" enum="ContentSetting"
-    expires_after="2024-02-25">
+    expires_after="2025-01-23">
   <owner>hartmanng@chromium.org</owner>
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Notification.PermissionRequestResult"
-    enum="ContentSetting" expires_after="2024-02-25">
+    enum="ContentSetting" expires_after="2025-01-23">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
