@@ -93,22 +93,22 @@ public class StartSurfaceConfiguration {
 
     public static final BooleanCachedFieldTrialParameter SURFACE_POLISH_OMNIBOX_COLOR =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.SURFACE_POLISH, "polish_omnibox_color", false);
+                    ChromeFeatureList.SURFACE_POLISH, "polish_omnibox_color", true);
 
     private static final String SURFACE_POLISH_MOVE_DOWN_LOGO_PARAM = "move_down_logo";
     public static final BooleanCachedFieldTrialParameter SURFACE_POLISH_MOVE_DOWN_LOGO =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_MOVE_DOWN_LOGO_PARAM, false);
+                    ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_MOVE_DOWN_LOGO_PARAM, true);
 
     private static final String SURFACE_POLISH_LESS_BRAND_SPACE_PARAM = "less_brand_space";
     public static final BooleanCachedFieldTrialParameter SURFACE_POLISH_LESS_BRAND_SPACE =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_LESS_BRAND_SPACE_PARAM, false);
+                    ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_LESS_BRAND_SPACE_PARAM, true);
 
     private static final String SURFACE_POLISH_SCROLLABLE_MVT_PARAM = "scrollable_mvt";
     public static final BooleanCachedFieldTrialParameter SURFACE_POLISH_SCROLLABLE_MVT =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_SCROLLABLE_MVT_PARAM, false);
+                    ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_SCROLLABLE_MVT_PARAM, true);
 
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String INSTANT_START_SUBFIX = ".Instant";

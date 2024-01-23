@@ -152,7 +152,7 @@ public class InstantStartToolbarTest {
 
         View surface = cta.findViewById(R.id.control_container);
         ChromeRenderTestRule.sanitize(surface);
-        mRenderTestRule.render(surface, "singlePane_floatingTopToolbar");
+        mRenderTestRule.render(surface, "singlePane_floatingTopToolbar_v2");
 
         // Focus the omnibox.
         UrlBar urlBar = cta.findViewById(R.id.url_bar);
@@ -162,7 +162,7 @@ public class InstantStartToolbarTest {
         // Default search engine logo should still show.
         surface = cta.findViewById(R.id.control_container);
         ChromeRenderTestRule.sanitize(surface);
-        mRenderTestRule.render(surface, "singlePane_floatingTopToolbar");
+        mRenderTestRule.render(surface, "singlePane_floatingTopToolbar_v2");
     }
 
     @Test

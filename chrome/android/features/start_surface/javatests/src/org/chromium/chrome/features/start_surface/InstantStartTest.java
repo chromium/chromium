@@ -373,7 +373,7 @@ public class InstantStartTest {
                             is(ORIENTATION_LANDSCAPE));
                 });
         View surface = cta.findViewById(R.id.primary_tasks_surface_view);
-        mRenderTestRule.render(surface, "singlePane_landscapeV2");
+        mRenderTestRule.render(surface, "singlePane_landscapeV3");
     }
 
     @Test

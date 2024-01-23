@@ -605,7 +605,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW, true);
     public static final CachedFlag sStartSurfaceWithAccessibility =
             newCachedFlag(START_SURFACE_WITH_ACCESSIBILITY, true);
-    public static final CachedFlag sSurfacePolish = newCachedFlag(SURFACE_POLISH, false);
+    public static final CachedFlag sSurfacePolish = newCachedFlag(SURFACE_POLISH, true);
     public static final CachedFlag sTabDragDropAsWindowAndroid =
             newCachedFlag(TAB_DRAG_DROP_ANDROID, false);
     public static final CachedFlag sTabGroupParityAndroid =

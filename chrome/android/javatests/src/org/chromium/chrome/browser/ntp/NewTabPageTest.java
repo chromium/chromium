@@ -276,8 +276,8 @@ public class NewTabPageTest {
                 mNtp.getView().getRootView(),
                 "focus_fake_box"
                         + (mEnableScrollableMVT
-                                ? "_with_scrollable_mvt"
-                                : "_with_non_scrollable_mvt"));
+                                ? "_with_scrollable_mvt_v2"
+                                : "_with_non_scrollable_mvt_v2"));
         scrimCoordinator.disableAnimationForTesting(false);
     }
 
@@ -299,7 +299,7 @@ public class NewTabPageTest {
         waitForView((ViewGroup) mNtp.getView(), allOf(withId(R.id.header_title), isDisplayed()));
         onView(withId(R.id.header_title)).perform(click());
         // Check header is collapsed.
-        mRenderTestRule.render(view, "expandable_header_collapsed");
+        mRenderTestRule.render(view, "expandable_header_collapsed_v2");
     }
 
     /**

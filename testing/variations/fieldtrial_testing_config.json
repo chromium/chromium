@@ -18151,26 +18151,6 @@
             ]
         }
     ],
-    "SurfaceRevamp": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_MVP",
-                    "params": {
-                        "move_down_logo": "true",
-                        "polish_omnibox_color": "true",
-                        "scrollable_mvt": "true"
-                    },
-                    "enable_features": [
-                        "SurfacePolish"
-                    ]
-                }
-            ]
-        }
-    ],
     "SuspiciousSiteDetectionRTLookups": [
         {
             "platforms": [

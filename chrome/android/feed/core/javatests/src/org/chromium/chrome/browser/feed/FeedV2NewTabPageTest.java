@@ -436,8 +436,8 @@ public class FeedV2NewTabPageTest {
                 recyclerView,
                 "feedContent_landscape"
                         + (mEnableScrollableMVT
-                                ? "_with_scrollable_mvt"
-                                : "_with_non_scrollable_mvt"));
+                                ? "_with_scrollable_mvt_v2"
+                                : "_with_non_scrollable_mvt_v2"));
     }
 
     @Test
