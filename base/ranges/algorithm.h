@@ -108,9 +108,14 @@ class BinaryPredicateProjector {
   }
 
  private:
-  // RAW_PTR_EXCLUSION: Binary size increase (~120K on Android).
+  // This field is not a raw_ref<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
   RAW_PTR_EXCLUSION Pred& pred_;
+  // This field is not a raw_ref<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
   RAW_PTR_EXCLUSION Proj1& proj1_;
+  // This field is not a raw_ref<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
   RAW_PTR_EXCLUSION Proj2& proj2_;
 };
 

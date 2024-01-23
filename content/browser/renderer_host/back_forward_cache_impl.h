@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -578,8 +579,12 @@ class CONTENT_EXPORT BackForwardCacheImpl
       EvictionInfo(RenderFrameHostImpl& rfh,
                    BackForwardCacheCanStoreDocumentResult* reasons)
           : rfh_to_be_evicted(&rfh), reasons(reasons) {}
-      const raw_ptr<RenderFrameHostImpl> rfh_to_be_evicted;
-      raw_ptr<const BackForwardCacheCanStoreDocumentResult> reasons;
+      // This field is not a raw_ptr<> because it was filtered by the rewriter
+      // for: #union
+      RAW_PTR_EXCLUSION RenderFrameHostImpl* const rfh_to_be_evicted;
+      // This field is not a raw_ptr<> because it was filtered by the rewriter
+      // for: #union
+      RAW_PTR_EXCLUSION const BackForwardCacheCanStoreDocumentResult* reasons;
     };
 
     NotRestoredReasonBuilder(RenderFrameHostImpl* root_rfh,

@@ -159,7 +159,7 @@ void ViewsAXTreeManager::UnserializeTreeUpdates(
   for (const ui::AXEventGenerator::TargetedEvent& targeted_event :
        event_generator_) {
     if (ui::AXNode* node = ax_tree_->GetFromId(targeted_event.node_id))
-      FireGeneratedEvent(targeted_event.event_params->event, node);
+      FireGeneratedEvent(targeted_event.event_params.event, node);
   }
   event_generator_.ClearEvents();
 }

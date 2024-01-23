@@ -79,8 +79,7 @@ const TEB* GetThreadEnvironmentBlock(PlatformThreadId thread_id,
   constexpr auto ThreadBasicInformation = static_cast<THREADINFOCLASS>(0);
   struct THREAD_BASIC_INFORMATION {
     NTSTATUS ExitStatus;
-    // RAW_PTR_EXCLUSION: Filled in by the OS so cannot use raw_ptr<>.
-    RAW_PTR_EXCLUSION TEB* Teb;
+    RAW_PTR_EXCLUSION TEB* Teb;  // Filled in by the OS so cannot use raw_ptr<>.
     CLIENT_ID ClientId;
     KAFFINITY AffinityMask;
     LONG Priority;

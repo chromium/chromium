@@ -14,7 +14,6 @@
 #include "base/location.h"
 #include "base/macros/if.h"
 #include "base/macros/is_empty.h"
-#include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 
 // This header defines the CHECK, DCHECK, and DPCHECK macros.
@@ -142,7 +141,7 @@ class BASE_EXPORT CheckError {
   // Takes ownership of `log_message`.
   explicit CheckError(LogMessage* log_message) : log_message_(log_message) {}
 
-  const raw_ptr<LogMessage, DanglingUntriaged> log_message_;
+  LogMessage* const log_message_;
 };
 
 class BASE_EXPORT NotReachedError : public CheckError {

@@ -22,6 +22,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
@@ -69,7 +70,10 @@ class FakeBluetoothDetailedViewFactory : public BluetoothDetailedView::Factory {
     return bluetooth_detailed_view;
   }
 
-  raw_ptr<FakeBluetoothDetailedView> bluetooth_detailed_view_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeBluetoothDetailedView* bluetooth_detailed_view_ =
+      nullptr;
 };
 
 class FakeBluetoothDeviceListControllerFactory
@@ -96,7 +100,9 @@ class FakeBluetoothDeviceListControllerFactory
     return bluetooth_device_list_controller;
   }
 
-  raw_ptr<FakeBluetoothDeviceListController, DanglingUntriaged>
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeBluetoothDeviceListController*
       bluetooth_device_list_controller_ = nullptr;
 };
 

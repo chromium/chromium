@@ -240,8 +240,10 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
    private:
     void WedgeCheck();
 
-    // RAW_PTR_EXCLUSION: OutputController object will outlive the
-    // ErrorStatisticsTracker object.
+    // Using a raw pointer is safe since the OutputController object will
+    // outlive the ErrorStatisticsTracker object.
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
     RAW_PTR_EXCLUSION OutputController* const controller_;
 
     const base::TimeTicks start_time_;
@@ -292,7 +294,9 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // being called.
   void ProcessDeviceChange();
 
-  const raw_ptr<media::AudioManager> audio_manager_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION media::AudioManager* const audio_manager_;
   const media::AudioParameters params_;
 
   // Callback to create a device output stream; if not specified -
@@ -302,7 +306,10 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
 
   // This object (OC) is owned by an OutputStream (OS) object which is an
   // EventHandler. |handler_| is set at construction by the OS (using this).
-  // RAW_PTR_EXCLUSION: OS will always outlive the OC object.
+  // It is safe to use a raw pointer here since the OS will always outlive
+  // the OC object.
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
   RAW_PTR_EXCLUSION EventHandler* const handler_;
 
   // The task runner for the audio manager. All control methods should be called
@@ -317,7 +324,9 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // default output device.
   const std::string output_device_id_;
 
-  raw_ptr<media::AudioOutputStream, DanglingUntriaged> stream_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION media::AudioOutputStream* stream_;
 
   // When true, local audio output should be muted; either by having audio
   // diverted to |diverting_to_stream_|, or a fake AudioOutputStream.
@@ -334,7 +343,9 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   State state_;
 
   // SyncReader is used only in low latency mode for synchronous reading.
-  const raw_ptr<SyncReader> sync_reader_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION SyncReader* const sync_reader_;
 
   // Scans audio samples from OnMoreData() as input to compute power levels.
   media::AudioPowerMonitor power_monitor_;

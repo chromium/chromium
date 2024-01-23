@@ -109,7 +109,8 @@ class CRASH_KEY_EXPORT CrashKeyStringImpl {
   // If the crash key is set, this is the index into the storage that can be
   // used to set/clear the key without requiring a linear scan of the storage
   // table. This will be |num_entries| if unset.
-  // RAW_PTR_EXCLUSION: #global-scope
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
   RAW_PTR_EXCLUSION size_t* index_array_;
   size_t index_array_count_;
 };
@@ -194,8 +195,11 @@ class CrashKeyStringCombinedImpl {
   bool is_set() const { return breakpad_key_->is_set(); }
 
  private:
-  // RAW_PTR_EXCLUSION: #global-scope
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
   RAW_PTR_EXCLUSION CrashKeyStringImpl* breakpad_key_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
   RAW_PTR_EXCLUSION crashpad::Annotation* crashpad_key_;
 };
 

@@ -20,7 +20,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -393,7 +393,9 @@ class ASH_EXPORT CaptureModeController
   // kWindow source, or no region is selected in a kRegion source), then a
   // std::nullopt is returned.
   struct CaptureParams {
-    raw_ptr<aura::Window> window = nullptr;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION aura::Window* window = nullptr;
     // The capture bounds, either in root coordinates (in kFullscreen or kRegion
     // capture sources), or window-local coordinates (in a kWindow capture
     // source).

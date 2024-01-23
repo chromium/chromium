@@ -12,7 +12,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
@@ -154,7 +154,9 @@ class GpuWatchdogInit {
   void SetGpuWatchdogPtr(GpuWatchdogThread* ptr) { watchdog_ptr_ = ptr; }
 
  private:
-  raw_ptr<GpuWatchdogThread, DanglingUntriaged> watchdog_ptr_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION GpuWatchdogThread* watchdog_ptr_ = nullptr;
 };
 
 void PauseGpuWatchdog(GpuWatchdogThread* watchdog_thread) {

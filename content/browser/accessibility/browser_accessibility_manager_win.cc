@@ -953,7 +953,7 @@ void BrowserAccessibilityManagerWin::BeforeAccessibilityEvents() {
   DCHECK(ignored_changed_nodes_.empty());
 
   for (const auto& targeted_event : event_generator()) {
-    if (targeted_event.event_params->event ==
+    if (targeted_event.event_params.event ==
         ui::AXEventGenerator::Event::IGNORED_CHANGED) {
       BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
       if (!event_target)

@@ -28,8 +28,7 @@ class DestructCounter {
   void set_where(size_t* where) { where_ = where; }
 
  private:
-  // RAW_PTR_EXCLUSION: Stack location only.
-  RAW_PTR_EXCLUSION size_t* where_ = nullptr;
+  RAW_PTR_EXCLUSION size_t* where_ = nullptr;  // Stack location only.
 };
 
 }  // namespace

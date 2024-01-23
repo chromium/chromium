@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
 
@@ -33,7 +33,9 @@ class TabletModeToggleFullscreenEventHandler : public ui::EventHandler,
  private:
   struct DragData {
     int start_y_location;
-    raw_ptr<aura::Window> window;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION aura::Window* window;
   };
 
   // ui::EventHandler:

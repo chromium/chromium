@@ -17,7 +17,6 @@
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_clear_last_error.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_ostream_operators.h"
@@ -244,7 +243,7 @@ struct BASE_EXPORT LoggingSettings {
   // |log_file_path| will be ignored, and the logging system will take ownership
   // of the FILE. If there's an error writing to this file, no fallback paths
   // will be opened.
-  raw_ptr<FILE> log_file = nullptr;
+  FILE* log_file = nullptr;
   // ChromeOS uses the syslog log format by default.
   LogFormat log_format = LogFormat::LOG_FORMAT_SYSLOG;
 #endif

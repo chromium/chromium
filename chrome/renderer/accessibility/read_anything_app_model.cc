@@ -733,16 +733,16 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
   // Note that this list of events may overlap with non-generated events in the
   // It's up to the consumer to pick but its generally good to prefer generated.
   for (const auto& event : event_generator) {
-    switch (event.event_params->event) {
+    switch (event.event_params.event) {
       case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
         // For selections in PDFs coming from the main pane or from the side
         // panel, event_from is set to kNone so skip this check.
-        if (event.event_params->event_from == ax::mojom::EventFrom::kUser ||
-            event.event_params->event_from == ax::mojom::EventFrom::kAction ||
+        if (event.event_params.event_from == ax::mojom::EventFrom::kUser ||
+            event.event_params.event_from == ax::mojom::EventFrom::kAction ||
             is_pdf_) {
           requires_post_process_selection_ = true;
           selection_from_action_ =
-              event.event_params->event_from == ax::mojom::EventFrom::kAction;
+              event.event_params.event_from == ax::mojom::EventFrom::kAction;
         }
         break;
       case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
@@ -750,7 +750,7 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
         requires_distillation_ = true;
         break;
       case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
-        OnScroll(event.event_params->event_from_action ==
+        OnScroll(event.event_params.event_from_action ==
                      ax::mojom::Action::kSetSelection,
                  /* from_reading_mode= */ false);
         break;

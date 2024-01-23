@@ -10,6 +10,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/linux/bpf_dsl/trap_registry.h"
 #include "sandbox/linux/system_headers/linux_signal.h"
@@ -71,8 +72,8 @@ class SANDBOX_EXPORT Trap : public bpf_dsl::TrapRegistry {
 
   // Array of handlers indexed by ids.
   //
-  // RAW_PTR_EXCLUSION: An owning pointer, and needs to be safe for signal
-  // handlers.
+  // This is not a raw_ptr as it is an owning pointer anyway, and needs
+  // to be safe for signal handlers.
   RAW_PTR_EXCLUSION TrapRegistry::Handler* trap_array_ = nullptr;
   size_t trap_array_size_ = 0;      // Currently used size of array
   size_t trap_array_capacity_ = 0;  // Currently allocated capacity of array

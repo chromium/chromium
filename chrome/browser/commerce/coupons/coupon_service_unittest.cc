@@ -5,8 +5,6 @@
 #include "chrome/browser/commerce/coupons/coupon_service.h"
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
-#include "base/memory/raw_ref.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -81,9 +79,14 @@ const CouponProto kEmptyExpected = {};
 
 struct CouponDataStruct {
   const int64_t id;
-  const raw_ref<const GURL> origin;
-  // RAW_PTR_EXCLUSION: Tricky to convert from string literal.
+  // This field is not a raw_ref<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION const GURL& origin;
+  // This field is not a raw_ref<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
   RAW_PTR_EXCLUSION const std::string& description;
+  // This field is not a raw_ref<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
   RAW_PTR_EXCLUSION const std::string& coupon_code;
 };
 
@@ -180,12 +183,12 @@ class CouponServiceTest : public testing::Test {
       display_strings.value_prop_text = coupon.description;
       std::string promo_code = coupon.coupon_code;
       std::vector<GURL> merchant_origins;
-      merchant_origins.emplace_back(GURL(*coupon.origin));
+      merchant_origins.emplace_back(GURL(coupon.origin));
       auto offer = std::make_unique<autofill::AutofillOfferData>(
           autofill::AutofillOfferData::FreeListingCouponOffer(
               offer_id, expiry, merchant_origins, /*offer_details_url=*/GURL(),
               display_strings, promo_code));
-      coupon_map[GURL(*coupon.origin)].emplace_back(std::move(offer));
+      coupon_map[GURL(coupon.origin)].emplace_back(std::move(offer));
     }
     service_->UpdateFreeListingCoupons(coupon_map);
     task_environment_.RunUntilIdle();
@@ -223,10 +226,9 @@ class CouponServiceTest : public testing::Test {
 TEST_F(CouponServiceTest, TestGetCouponForUrl) {
   GURL orgin_a(kMockMerchantA);
   GURL orgin_b(kMockMerchantB);
-  SetUpCouponMap({{kMockCouponIdA, raw_ref(orgin_a), kMockCouponDescriptionA,
-                   kMockCouponCodeA},
-                  {kMockCouponIdB, raw_ref(orgin_b), kMockCouponDescriptionB,
-                   kMockCouponCodeB}});
+  SetUpCouponMap(
+      {{kMockCouponIdA, orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
+       {kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
 
   Coupons result = service_->GetFreeListingCouponsForUrl(orgin_a);
   EXPECT_EQ(result.size(), 1u);
@@ -245,8 +247,8 @@ TEST_F(CouponServiceTest, TestGetCouponForUrl) {
 TEST_F(CouponServiceTest, TestUpdateCoupons) {
   base::RunLoop run_loop[1];
   GURL origin = GURL(kMockMerchantA);
-  SetUpCouponMap({{kMockCouponIdA, raw_ref(origin), kMockCouponDescriptionA,
-                   kMockCouponCodeA}});
+  SetUpCouponMap(
+      {{kMockCouponIdA, origin, kMockCouponDescriptionA, kMockCouponCodeA}});
 
   Coupons result = service_->GetFreeListingCouponsForUrl(origin);
   EXPECT_EQ(result.size(), 1u);
@@ -262,10 +264,9 @@ TEST_F(CouponServiceTest, TestDeleteCouponForUrl) {
   base::RunLoop run_loop[4];
   GURL orgin_a(kMockMerchantA);
   GURL orgin_b(kMockMerchantB);
-  SetUpCouponMap({{kMockCouponIdA, raw_ref(orgin_a), kMockCouponDescriptionA,
-                   kMockCouponCodeA},
-                  {kMockCouponIdB, raw_ref(orgin_b), kMockCouponDescriptionB,
-                   kMockCouponCodeB}});
+  SetUpCouponMap(
+      {{kMockCouponIdA, orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
+       {kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
 
   Coupons result = service_->GetFreeListingCouponsForUrl(orgin_a);
   EXPECT_EQ(result.size(), 1u);
@@ -324,10 +325,9 @@ TEST_F(CouponServiceTest, TestDeleteAllCoupons) {
   base::RunLoop run_loop[1];
   GURL orgin_a(kMockMerchantA);
   GURL orgin_b(kMockMerchantB);
-  SetUpCouponMap({{kMockCouponIdA, raw_ref(orgin_a), kMockCouponDescriptionA,
-                   kMockCouponCodeA},
-                  {kMockCouponIdB, raw_ref(orgin_b), kMockCouponDescriptionB,
-                   kMockCouponCodeB}});
+  SetUpCouponMap(
+      {{kMockCouponIdA, orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
+       {kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
 
   service_->DeleteAllFreeListingCoupons();
 
@@ -342,9 +342,8 @@ TEST_F(CouponServiceTest, TestDeleteAllCoupons) {
 }
 
 TEST_F(CouponServiceTest, TestIsUrlEligible) {
-  GURL origin = GURL("https://www.example.com");
-  SetUpCouponMap({{kMockCouponIdA, raw_ref(origin), kMockCouponDescriptionA,
-                   kMockCouponCodeA}});
+  SetUpCouponMap({{kMockCouponIdA, GURL("https://www.example.com"),
+                   kMockCouponDescriptionA, kMockCouponCodeA}});
 
   EXPECT_TRUE(service_->IsUrlEligible(GURL("https://www.example.com")));
   EXPECT_TRUE(service_->IsUrlEligible(GURL("https://www.example.com/first")));
@@ -354,8 +353,8 @@ TEST_F(CouponServiceTest, TestIsUrlEligible) {
 TEST_F(CouponServiceTest, TestRecordCouponDisplayTimestamp) {
   base::RunLoop run_loop[2];
   GURL origin = GURL(kMockMerchantA);
-  SetUpCouponMap({{kMockCouponIdA, raw_ref(origin), kMockCouponDescriptionA,
-                   kMockCouponCodeA}});
+  SetUpCouponMap(
+      {{kMockCouponIdA, origin, kMockCouponDescriptionA, kMockCouponCodeA}});
   Coupons result = service_->GetFreeListingCouponsForUrl(origin);
   EXPECT_EQ(result.size(), 1u);
   autofill::AutofillOfferData* offer = result[0];
@@ -387,8 +386,8 @@ TEST_F(CouponServiceTest, TestRecordCouponDisplayTimestamp) {
 TEST_F(CouponServiceTest, TestUpdateCoupons_NotOverwriteLastDisplayTime) {
   base::RunLoop run_loop[1];
   GURL origin = GURL(kMockMerchantA);
-  SetUpCouponMap({{kMockCouponIdA, raw_ref(origin), kMockCouponDescriptionA,
-                   kMockCouponCodeA}});
+  SetUpCouponMap(
+      {{kMockCouponIdA, origin, kMockCouponDescriptionA, kMockCouponCodeA}});
   Coupons result = service_->GetFreeListingCouponsForUrl(origin);
   base::Time timestamp = service_->GetCouponDisplayTimestamp(*result[0]);
   EXPECT_EQ(timestamp, base::Time());
@@ -400,8 +399,8 @@ TEST_F(CouponServiceTest, TestUpdateCoupons_NotOverwriteLastDisplayTime) {
   timestamp = service_->GetCouponDisplayTimestamp(*result[0]);
   EXPECT_NE(timestamp, base::Time());
 
-  SetUpCouponMap({{kMockCouponIdA, raw_ref(origin), kMockCouponDescriptionA,
-                   kMockCouponCodeA}});
+  SetUpCouponMap(
+      {{kMockCouponIdA, origin, kMockCouponDescriptionA, kMockCouponCodeA}});
 
   result = service_->GetFreeListingCouponsForUrl(origin);
   EXPECT_EQ(result.size(), 1u);
@@ -415,8 +414,8 @@ TEST_F(CouponServiceTest, TestUpdateCoupons_NotOverwriteLastDisplayTime) {
 
 TEST_F(CouponServiceTest, TestUpdateCoupons_OldCouponDisplayTimeRemoved) {
   GURL origin_A = GURL(kMockMerchantA);
-  SetUpCouponMap({{kMockCouponIdA, raw_ref(origin_A), kMockCouponDescriptionA,
-                   kMockCouponCodeA}});
+  SetUpCouponMap(
+      {{kMockCouponIdA, origin_A, kMockCouponDescriptionA, kMockCouponCodeA}});
   Coupons result = service_->GetFreeListingCouponsForUrl(origin_A);
   EXPECT_EQ(service_->GetCouponDisplayTimestamp(*result[0]), base::Time());
 
@@ -429,8 +428,8 @@ TEST_F(CouponServiceTest, TestUpdateCoupons_OldCouponDisplayTimeRemoved) {
 
   // Set up with new coupons where the existing coupon is no longer valid.
   GURL origin_B = GURL(kMockMerchantB);
-  SetUpCouponMap({{kMockCouponIdB, raw_ref(origin_B), kMockCouponDescriptionB,
-                   kMockCouponCodeB}});
+  SetUpCouponMap(
+      {{kMockCouponIdB, origin_B, kMockCouponDescriptionB, kMockCouponCodeB}});
 
   EXPECT_EQ(service_->GetFreeListingCouponsForUrl(origin_A).size(), 0u);
   EXPECT_EQ(service_->GetCouponDisplayTimestamp(offer_A), base::Time());
@@ -439,8 +438,8 @@ TEST_F(CouponServiceTest, TestUpdateCoupons_OldCouponDisplayTimeRemoved) {
 TEST_F(CouponServiceTest, MaybeFeatureStatusChanged_FeatureDisabled) {
   base::RunLoop run_loop[2];
   const GURL origin(kMockMerchantA);
-  SetUpCouponMap({{kMockCouponIdA, raw_ref(origin), kMockCouponDescriptionA,
-                   kMockCouponCodeA}});
+  SetUpCouponMap(
+      {{kMockCouponIdA, origin, kMockCouponDescriptionA, kMockCouponCodeA}});
   EXPECT_TRUE(IsFeatureEnabled());
   EXPECT_TRUE(service_->IsUrlEligible(origin));
   Coupons result = service_->GetFreeListingCouponsForUrl(origin);
@@ -462,8 +461,8 @@ TEST_F(CouponServiceTest, MaybeFeatureStatusChanged_FeatureDisabled) {
                              base::Unretained(this), run_loop[1].QuitClosure(),
                              kEmptyExpected));
   run_loop[1].Run();
-  SetUpCouponMap({{kMockCouponIdA, raw_ref(origin), kMockCouponDescriptionA,
-                   kMockCouponCodeA}});
+  SetUpCouponMap(
+      {{kMockCouponIdA, origin, kMockCouponDescriptionA, kMockCouponCodeA}});
   EXPECT_EQ(service_->GetFreeListingCouponsForUrl(origin).size(), 0u);
 }
 
@@ -482,8 +481,8 @@ TEST_F(CouponServiceTest, TestDeleteCouponForUrl_NotifyObserver) {
   service_->AddObserver(&observer);
   CheckCouponServiceObservers({&observer});
   GURL origin(kMockMerchantA);
-  SetUpCouponMap({{kMockCouponIdA, raw_ref(origin), kMockCouponDescriptionA,
-                   kMockCouponCodeA}});
+  SetUpCouponMap(
+      {{kMockCouponIdA, origin, kMockCouponDescriptionA, kMockCouponCodeA}});
   Coupons result = service_->GetFreeListingCouponsForUrl(origin);
   EXPECT_EQ(result.size(), 1u);
   EXPECT_EQ(*result[0], coupon_data_a_);
@@ -499,10 +498,9 @@ TEST_F(CouponServiceTest, TestDeleteAllCoupons_NotifyObserver) {
   CheckCouponServiceObservers({&observer});
   GURL orgin_a(kMockMerchantA);
   GURL orgin_b(kMockMerchantB);
-  SetUpCouponMap({{kMockCouponIdA, raw_ref(orgin_a), kMockCouponDescriptionA,
-                   kMockCouponCodeA},
-                  {kMockCouponIdB, raw_ref(orgin_b), kMockCouponDescriptionB,
-                   kMockCouponCodeB}});
+  SetUpCouponMap(
+      {{kMockCouponIdA, orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
+       {kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
   Coupons result = service_->GetFreeListingCouponsForUrl(orgin_a);
   EXPECT_EQ(result.size(), 1u);
   EXPECT_EQ(*result[0], coupon_data_a_);
@@ -525,10 +523,9 @@ TEST_F(CouponServiceTest, TestUpdateCoupons_NotifyObserver) {
   CheckCouponServiceObservers({&observer});
   GURL orgin_a(kMockMerchantA);
   GURL orgin_b(kMockMerchantB);
-  SetUpCouponMap({{kMockCouponIdA, raw_ref(orgin_a), kMockCouponDescriptionA,
-                   kMockCouponCodeA},
-                  {kMockCouponIdB, raw_ref(orgin_b), kMockCouponDescriptionB,
-                   kMockCouponCodeB}});
+  SetUpCouponMap(
+      {{kMockCouponIdA, orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
+       {kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
   Coupons result = service_->GetFreeListingCouponsForUrl(orgin_a);
   EXPECT_EQ(result.size(), 1u);
   EXPECT_EQ(*result[0], coupon_data_a_);
@@ -540,8 +537,8 @@ TEST_F(CouponServiceTest, TestUpdateCoupons_NotifyObserver) {
 
   EXPECT_CALL(observer, OnCouponInvalidated(*couponA)).Times(1);
   EXPECT_CALL(observer, OnCouponInvalidated(*couponB)).Times(0);
-  SetUpCouponMap({{kMockCouponIdB, raw_ref(orgin_b), kMockCouponDescriptionB,
-                   kMockCouponCodeB}});
+  SetUpCouponMap(
+      {{kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
 }
 
 // Test when a new batch of coupon data arrives, existing coupons that are also
@@ -549,17 +546,16 @@ TEST_F(CouponServiceTest, TestUpdateCoupons_NotifyObserver) {
 TEST_F(CouponServiceTest, TestUpdateCoupons_SkipExisting) {
   GURL orgin_a(kMockMerchantA);
   GURL orgin_b(kMockMerchantB);
-  SetUpCouponMap({{kMockCouponIdA, raw_ref(orgin_a), kMockCouponDescriptionA,
-                   kMockCouponCodeA},
-                  {kMockCouponIdB, raw_ref(orgin_b), kMockCouponDescriptionB,
-                   kMockCouponCodeB}});
+  SetUpCouponMap(
+      {{kMockCouponIdA, orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
+       {kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
   Coupons result = service_->GetFreeListingCouponsForUrl(orgin_b);
   EXPECT_EQ(result.size(), 1u);
   EXPECT_EQ(*result[0], coupon_data_b_);
   auto* couponB = result[0];
 
-  SetUpCouponMap({{kMockCouponIdB, raw_ref(orgin_b), kMockCouponDescriptionB,
-                   kMockCouponCodeB}});
+  SetUpCouponMap(
+      {{kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
   result = service_->GetFreeListingCouponsForUrl(orgin_b);
   EXPECT_EQ(result.size(), 1u);
   EXPECT_EQ(result[0], couponB);
@@ -586,8 +582,8 @@ TEST_F(CouponServiceFeatureDisabledTest, FeatureDisabled) {
   EXPECT_FALSE(IsFeatureEnabled());
   const GURL origin(kMockMerchantA);
 
-  SetUpCouponMap({{kMockCouponIdA, raw_ref(origin), kMockCouponDescriptionA,
-                   kMockCouponCodeA}});
+  SetUpCouponMap(
+      {{kMockCouponIdA, origin, kMockCouponDescriptionA, kMockCouponCodeA}});
   EXPECT_FALSE(service_->IsUrlEligible(origin));
   Coupons result = service_->GetFreeListingCouponsForUrl(origin);
   EXPECT_EQ(result.size(), 0u);

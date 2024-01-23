@@ -107,8 +107,9 @@ class BASE_I18N_EXPORT IcuMergeableDataFile {
   File lacros_file_;
   size_t lacros_length_ = 0;
 
-  // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always mmap'ed), so
-  // there is no benefit to using a raw_ptr, only cost.
+  // This field is not a raw_ptr<> because it always points to a mmap'd
+  // region of memory outside of the PA heap. Thus, there would be overhead
+  // involved with using a raw_ptr<> but no safety gains.
   RAW_PTR_EXCLUSION uint8_t* lacros_data_ = nullptr;
   bool used_cached_hashes_ = false;
 };

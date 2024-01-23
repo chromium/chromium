@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -173,8 +174,10 @@ class FakeSecureChannelFactory : public SecureChannel::Factory {
   raw_ptr<FakeWeaveClientConnectionFactory>
       fake_weave_client_connection_factory_;
 
-  raw_ptr<FakeSecureChannelConnection, DanglingUntriaged>
-      last_created_instance_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeSecureChannelConnection* last_created_instance_ =
+      nullptr;
 };
 
 class FakeAuthenticatedChannelFactory
@@ -224,12 +227,15 @@ class FakeAuthenticatedChannelFactory
     return instance;
   }
 
-  raw_ptr<FakeSecureChannelConnection, DanglingUntriaged>
-      expected_fake_secure_channel_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeSecureChannelConnection* expected_fake_secure_channel_ =
+      nullptr;
   bool expected_to_be_background_advertisement_ = false;
 
-  raw_ptr<FakeAuthenticatedChannel, DanglingUntriaged> last_created_instance_ =
-      nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeAuthenticatedChannel* last_created_instance_ = nullptr;
 };
 
 }  // namespace

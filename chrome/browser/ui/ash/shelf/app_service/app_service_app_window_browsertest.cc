@@ -14,7 +14,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -182,10 +181,10 @@ class AppInstanceWaiter : public apps::InstanceRegistry::Observer {
   ~AppInstanceWaiter() override = default;
 
   void Await() {
-    auto instances = registry_->GetInstances(app_id_);
+    auto instances = registry_.GetInstances(app_id_);
     CHECK_LE(instances.size(), 1u);
     if (instances.empty() || (*instances.begin())->State() != state_) {
-      observation_.Observe(&*registry_);
+      observation_.Observe(&registry_);
       run_loop_.Run();
     }
   }
@@ -193,7 +192,7 @@ class AppInstanceWaiter : public apps::InstanceRegistry::Observer {
  private:
   void OnInstanceUpdate(const apps::InstanceUpdate& update) override {
     if (update.AppId() == app_id_ && update.State() == state_) {
-      CHECK_EQ(registry_->GetInstances(app_id_).size(), 1u);
+      CHECK_EQ(registry_.GetInstances(app_id_).size(), 1u);
       run_loop_.Quit();
     }
   }
@@ -202,7 +201,7 @@ class AppInstanceWaiter : public apps::InstanceRegistry::Observer {
     NOTREACHED();
   }
 
-  const raw_ref<apps::InstanceRegistry> registry_;
+  apps::InstanceRegistry& registry_;
   const std::string app_id_;
   const apps::InstanceState state_;
   base::RunLoop run_loop_;

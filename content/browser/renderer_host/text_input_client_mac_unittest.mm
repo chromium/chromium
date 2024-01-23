@@ -11,7 +11,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -131,12 +130,14 @@ class TextInputClientMacTest : public content::RenderViewHostTestHarness {
 class ScopedTestingThread {
  public:
   ScopedTestingThread(TextInputClientMacTest* test) : thread_(test->thread_) {
-    thread_->Start();
+    thread_.Start();
   }
-  ~ScopedTestingThread() { thread_->Stop(); }
+  ~ScopedTestingThread() {
+    thread_.Stop();
+  }
 
  private:
-  const raw_ref<base::Thread> thread_;
+  base::Thread& thread_;
 };
 
 }  // namespace

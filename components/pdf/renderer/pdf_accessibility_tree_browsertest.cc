@@ -109,7 +109,7 @@ MATCHER_P2(HasEventAtNode,
                PrintToString(expected_event_type) + " on " +
                PrintToString(expected_node_id)) {
   const auto& event = arg;
-  return Matches(expected_event_type)(event.event_params->event) &&
+  return Matches(expected_event_type)(event.event_params.event) &&
          Matches(expected_node_id)(event.node_id);
 }
 

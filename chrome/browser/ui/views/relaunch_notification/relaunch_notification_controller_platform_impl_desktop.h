@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_RELAUNCH_NOTIFICATION_RELAUNCH_NOTIFICATION_CONTROLLER_PLATFORM_IMPL_DESKTOP_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "ui/views/widget/widget_observer.h"
@@ -61,9 +61,11 @@ class RelaunchNotificationControllerPlatformImpl : public views::WidgetObserver,
   // at |deadline|.
   void ShowRequiredNotification(Browser* browser, base::Time deadline);
 
-  // The widget hosting the bubble or dialog, or nullptr if neither is
+  // The widget hosting the bubble or dialog, or nullptr if neither is is
   // currently shown.
-  raw_ptr<views::Widget> widget_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION views::Widget* widget_ = nullptr;
 
   // A callback run when the relaunch required notification first becomes
   // visible to the user. This callback is valid only while the instance is

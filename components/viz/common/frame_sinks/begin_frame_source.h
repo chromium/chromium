@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
@@ -176,7 +177,9 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
     // time is off.
     uint64_t next_sequence_number_ = BeginFrameArgs::kStartingFrameNumber;
 
-    raw_ptr<DynamicBeginFrameDeadlineOffsetSource, DanglingUntriaged>
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #constexpr-ctor-field-initializer
+    RAW_PTR_EXCLUSION DynamicBeginFrameDeadlineOffsetSource*
         dynamic_begin_frame_deadline_offset_source_ = nullptr;
   };
 
