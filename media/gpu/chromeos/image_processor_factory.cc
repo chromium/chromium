@@ -274,6 +274,14 @@ ImageProcessorFactory::CreateWithInputCandidates(
       base::BindRepeating(&LibYUVImageProcessorBackend::Create)
     };
 
+#if defined(ARCH_CPU_ARM_FAMILY)
+    if (base::FeatureList::IsEnabled(media::kUseGLForScaling)) {
+      create_funcs.insert(
+          create_funcs.begin(),
+          base::BindRepeating(&GLImageProcessorBackend::Create));
+    }
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+
     for (auto& create_func : create_funcs) {
       std::unique_ptr<ImageProcessor> image_processor = ImageProcessor::Create(
           std::move(create_func), input_config, output_config,
@@ -293,7 +301,9 @@ ImageProcessorFactory::CreateWithInputCandidates(
     return processor;
 #elif BUILDFLAG(USE_V4L2_CODEC)
 #if defined(ARCH_CPU_ARM_FAMILY)
-  if (base::FeatureList::IsEnabled(media::kPreferGLImageProcessor)) {
+
+  if (base::FeatureList::IsEnabled(media::kPreferGLImageProcessor) ||
+      base::FeatureList::IsEnabled(media::kUseGLForScaling)) {
     auto processor = CreateGLImageProcessorWithInputCandidates(
         input_candidates, input_visible_rect, output_size, client_task_runner,
         out_format_picker, error_cb);

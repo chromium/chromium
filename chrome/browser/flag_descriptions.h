@@ -4363,6 +4363,8 @@ extern const char kChromeOSDirectVideoDecoderDescription[];
 extern const char kChromeOSHWVBREncodingName[];
 extern const char kChromeOSHWVBREncodingDescription[];
 #if defined(ARCH_CPU_ARM_FAMILY)
+extern const char kUseGLForScalingName[];
+extern const char kUseGLForScalingDescription[];
 extern const char kPreferGLImageProcessorName[];
 extern const char kPreferGLImageProcessorDescription[];
 extern const char kPreferSoftwareMT21Name[];

@@ -1266,6 +1266,14 @@ BASE_FEATURE(kUSeSequencedTaskRunnerForVEA,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if defined(ARCH_CPU_ARM_FAMILY)
+// Experimental support for GL based scaling for NV12 on Trogdor.
+// Normally LibYUV is used to scale these frames. This flag enables
+// an experimental GL-based scaling method.
+// Owner: bchoobineh@chromium.org
+// Expiry: When GLImageProcessor is deleted
+BASE_FEATURE(kUseGLForScaling,
+             "UseGLForScaling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Experimental support for GL based image processing. On some architectures,
 // the hardware accelerated video decoder outputs frames in a format not
 // understood by the display controller. We usually use LibYUV to convert these
