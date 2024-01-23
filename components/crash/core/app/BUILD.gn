@@ -25,10 +25,7 @@ static_library("url_constants") {
 }
 
 source_set("lib") {
-  visibility = [
-    ":*",
-    "//components/crash/content/app:*",
-  ]
+  visibility = [ ":*" ]
 
   sources = [
     "crash_reporter_client.cc",
