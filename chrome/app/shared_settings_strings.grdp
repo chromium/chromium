@@ -205,7 +205,7 @@
     Save
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_DESCRIPTION" desc="A description of nearby share that helps users understand what the feature is used for.">
-    Share files with people around you. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    Share files and more with nearby devices. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_TITLE" desc="Label for the switch that toggles whether the device is visible to all devices around it for the Nearby Share feature.">
     Visible to everyone

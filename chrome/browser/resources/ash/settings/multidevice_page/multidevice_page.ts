@@ -567,12 +567,8 @@ export class SettingsMultidevicePageElement extends
     return this.pageContentData.isNearbyShareDisallowedByPolicy;
   }
 
-  private getNearbyShareDescription_(
-      state: boolean, visibility: Visibility|undefined): string|undefined {
-    if (!state) {
-      return this.i18n('nearbyShareDescriptionOff');
-    }
-
+  private getNearbyShareDescription_(visibility: Visibility|undefined): string
+      |undefined {
     if (visibility === undefined) {
       return this.i18n('nearbyShareDescriptionHidden');
     }
@@ -590,11 +586,6 @@ export class SettingsMultidevicePageElement extends
       default:
         assertNotReached();
     }
-  }
-
-  private getOnOffString_(state: boolean, onstr: string, offstr: string):
-      string {
-    return state ? onstr : offstr;
   }
 
   private showNearbyShareToggle_(isOnboardingComplete: boolean): boolean {

@@ -4727,7 +4727,7 @@ Press an assigned switch or key to remove assignment.
     Hidden
   </message>
   <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_OFF" desc="Description for the nearby share settings row when nearby share setting is disabled.">
-    Share files and more with nearby devices
+    Share files and more with nearby devices. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_MULTIDEVICE_TOGGLE_LABEL" desc="Label for the top level toggle button on the Connected Devices details subpage">
     Connect to your phone
