@@ -69,6 +69,8 @@ constexpr const char kGaiaTransferResultName[] =
     "QuickStart.GaiaTransferResult";
 constexpr const char kGaiaTransferResultFailureReasonName[] =
     "QuickStart.GaiaTransferResult.FailureReason";
+constexpr const char kGaiaAuthenticationResultHistogramName[] =
+    "QuickStart.GaiaAuthentication.Result";
 constexpr const char kScreenOpened[] = "QuickStart.ScreenOpened";
 
 std::string MapMessageTypeToMetric(
@@ -177,6 +179,15 @@ void QuickStartMetrics::RecordAttestationCertificateRequestEnded(
   base::UmaHistogramTimes(kAttestationCertificateFetchDurationHistogramName,
                           attestation_certificate_timer_->Elapsed());
   attestation_certificate_timer_.reset();
+}
+
+void QuickStartMetrics::RecordGaiaAuthenticationStarted() {
+  // TODO(b/314143139): Add  timer metrics.
+}
+
+void QuickStartMetrics::RecordGaiaAuthenticationRequestEnded(
+    const GaiaAuthenticationResult& result) {
+  base::UmaHistogramEnumeration(kGaiaAuthenticationResultHistogramName, result);
 }
 
 // static

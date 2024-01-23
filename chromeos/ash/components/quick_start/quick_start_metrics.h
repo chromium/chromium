@@ -137,6 +137,20 @@ class QuickStartMetrics {
   // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
   // reflect it (do not change one without changing the other). Entries should
   // be never modified or deleted. Only additions possible.
+  enum class GaiaAuthenticationResult {
+    kUnknownError = 0,
+    kSuccess = 1,
+    kResponseParsingError = 2,
+    kRejection = 3,
+    kAdditionalChallengesOnSource = 4,
+    kAdditionalChallengesOnTarget = 5,
+    kMaxValue = kAdditionalChallengesOnTarget,
+  };
+
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class WifiTransferResultFailureReason {
     kConnectionDroppedDuringAttempt = 0,
     kEmptyResponseBytes = 1,
@@ -221,6 +235,11 @@ class QuickStartMetrics {
   // of the error.
   void RecordAttestationCertificateRequestEnded(
       std::optional<AttestationCertificateRequestErrorCode> error_code);
+
+  void RecordGaiaAuthenticationStarted();
+
+  void RecordGaiaAuthenticationRequestEnded(
+      const GaiaAuthenticationResult& result);
 
   void RecordFastPairAdvertisementStarted(AdvertisingMethod advertising_method);
 

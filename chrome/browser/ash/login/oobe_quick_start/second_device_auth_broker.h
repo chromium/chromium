@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GoogleServiceAuthError;
@@ -194,6 +195,12 @@ class SecondDeviceAuthBroker {
       SecondDeviceAuthBroker::AttestationCertificateCallback callback,
       attestation::AttestationStatus status,
       const std::string& pem_certificate_chain);
+
+  // Internal helper method to respond to `auth_code_callback`.
+  void RunAuthCodeCallbackFromParsedResponse(
+      SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
+      std::unique_ptr<EndpointResponse> unparsed_response,
+      data_decoder::DataDecoder::ValueOrError response);
 
   // Must be between 0 (exclusive) and 64 (inclusive) characters.
   const std::string device_id_;

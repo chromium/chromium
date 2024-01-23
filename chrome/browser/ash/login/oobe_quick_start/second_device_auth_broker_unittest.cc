@@ -828,4 +828,22 @@ TEST_F(SecondDeviceAuthBrokerTest,
   EXPECT_THAT(response, VariantWith<AuthCodeSuccessResponse>(_));
 }
 
+TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForUnknownErrors) {
+  base::HistogramTester histogram_tester;
+
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "sessionStatus": "UNKNOWN_SESSION_STATUS"
+      }
+    )"));
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  ASSERT_THAT(response, VariantWith<AuthCodeUnknownErrorResponse>(_));
+
+  histogram_tester.ExpectBucketCount(
+      "QuickStart.GaiaAuthentication.Result",
+      /*sample=*/QuickStartMetrics::GaiaAuthenticationResult::kUnknownError, 1);
+}
+
 }  //  namespace ash::quick_start
