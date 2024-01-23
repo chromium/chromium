@@ -1075,6 +1075,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         // Cached the state before branding start so we can reset to the state when its done.
         private @Nullable Integer mPreBandingState;
         private PageInfoIPHController mPageInfoIPHController;
+        private int mTouchTargetSize;
 
         public View getLayout() {
             return mLocationBarFrameLayout;
@@ -1186,7 +1187,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mSecurityButton = container.findViewById(R.id.security_button);
             mAnimDelegate =
                     new CustomTabToolbarAnimationDelegate(
-                            mSecurityButton, mTitleUrlContainer, R.dimen.location_bar_icon_width);
+                            mSecurityButton,
+                            mTitleUrlContainer,
+                            this::adjustTitleUrlBarPadding,
+                            R.dimen.location_bar_icon_width);
             addButtonsVisibilityUpdater();
         }
 
@@ -1222,6 +1226,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             locationBarDataProvider.isIncognito(),
                             ChromePureJavaExceptionReporter::reportJavaException);
             mTabCreator = tabCreator;
+            mTouchTargetSize = getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
             updateColors();
             updateSecurityIcon();
             updateProgressBarColors();
@@ -1507,6 +1512,19 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mTitleBar.setText(title);
         }
 
+        private void adjustTitleUrlBarPadding() {
+            // Title/URL container height should get bigger to meet GAR guideline. Distribute
+            // the diff evenly as a padding of title/URL view to keep them staying where
+            // they are, and only make the content-wrapping container get bigger accordingly.
+            // TODO(jinsukkim): Make the animation work for further navigation like
+            //     title/url -> url -> title/url 1) the url-only view should be centered,
+            //     and 2) the animation for the transition to title/url should work as well.
+            int padding = (mTouchTargetSize - mTitleUrlContainer.getHeight()) / 2;
+            mTitleUrlContainer.setMinimumHeight(mTouchTargetSize);
+            mUrlBar.setPadding(0, 0, 0, padding);
+            mTitleBar.setPadding(0, padding, 0, 0);
+        }
+
         private void updateUrlBar() {
             if (mCurrentlyShowingBranding) return;
             Tab tab = getCurrentTab();
@@ -1628,6 +1646,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             } else {
                 mState = STATE_DOMAIN_ONLY;
                 mTitleBar.setVisibility(View.GONE);
+
+                // URL bar height should be as big as the touch target size. Update its minHeight
+                // and center it vertically.
+                var params = (FrameLayout.LayoutParams) mUrlBar.getLayoutParams();
+                params.gravity = Gravity.CENTER_VERTICAL;
+                mUrlBar.setLayoutParams(params);
+                mUrlBar.setMinimumHeight(mTouchTargetSize);
             }
             mLocationBarModel.notifyTitleChanged();
         }
