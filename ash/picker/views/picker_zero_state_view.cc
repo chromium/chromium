@@ -46,7 +46,7 @@ PickerZeroStateView::PickerZeroStateView(
         base::BindRepeating(select_category_callback, category));
     item_view->SetPrimaryText(GetStringForPickerCategory(category));
     item_view->SetLeadingIcon(kPlaceholderIcon);
-    section_view->AddItemView(std::move(item_view));
+    section_view->AddListItem(std::move(item_view));
   }
   section_views_.push_back(section_view);
 }

@@ -32,9 +32,14 @@ class ASH_EXPORT PickerSectionView : public views::View {
   PickerSectionView& operator=(const PickerSectionView&) = delete;
   ~PickerSectionView() override;
 
-  void AddItemView(std::unique_ptr<PickerItemView> item_view);
+  void AddLargeGridItem(std::unique_ptr<PickerItemView> large_grid_item);
+  void AddListItem(std::unique_ptr<PickerItemView> list_item);
 
   const views::Label* title_for_testing() const { return title_; }
+
+  const views::View* large_grid_items_container_for_testing() const {
+    return large_grid_items_container_;
+  }
 
   base::span<const raw_ptr<PickerItemView>> item_views_for_testing() const {
     return item_views_;
@@ -42,6 +47,9 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
  private:
   raw_ptr<views::Label> title_ = nullptr;
+
+  raw_ptr<views::View> large_grid_items_container_ = nullptr;
+  raw_ptr<views::View> list_items_container_ = nullptr;
 
   // The views for each result item.
   std::vector<raw_ptr<PickerItemView>> item_views_;

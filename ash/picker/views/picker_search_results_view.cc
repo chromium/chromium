@@ -53,7 +53,7 @@ void PickerSearchResultsView::SetSearchResults(
     auto* section_view =
         AddChildView(std::make_unique<PickerSectionView>(section.heading()));
     for (const auto& result : section.results()) {
-      section_view->AddItemView(CreateItemView(result));
+      section_view->AddListItem(CreateItemView(result));
     }
     section_views_.push_back(section_view);
   }
