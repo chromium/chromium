@@ -19,7 +19,7 @@
 #import "components/favicon_base/favicon_types.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "skia/ext/skia_utils_ios.h"
 #import "ui/base/l10n/l10n_util.h"
 

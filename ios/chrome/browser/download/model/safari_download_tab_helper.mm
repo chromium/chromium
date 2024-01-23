@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/download/model/safari_download_tab_helper_delegate.h"
 #import "ios/web/public/download/download_task.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 void SafariDownloadTabHelper::DownloadMobileConfig(
     std::unique_ptr<web::DownloadTask> task) {

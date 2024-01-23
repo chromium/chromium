@@ -9,7 +9,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
-#include "net/base/mac/url_conversions.h"
+#include "net/base/apple/url_conversions.h"
 
 @interface BlockedObserver : NSObject
 @end

@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/navigation/navigation_context.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "services/metrics/public/cpp/ukm_recorder.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"

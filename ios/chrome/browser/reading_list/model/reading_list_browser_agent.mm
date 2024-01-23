@@ -27,7 +27,7 @@
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "ui/base/l10n/l10n_util.h"
 

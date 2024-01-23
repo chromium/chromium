@@ -6,8 +6,8 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/net/protocol_handler_util.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/base/data_url.h"
-#import "net/base/mac/url_conversions.h"
 #import "net/base/net_errors.h"
 #import "net/http/http_response_headers.h"
 #import "ui/base/page_transition_types.h"

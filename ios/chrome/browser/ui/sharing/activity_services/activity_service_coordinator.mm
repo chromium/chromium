@@ -32,7 +32,7 @@
 #import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/web/public/web_state.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 #import <LinkPresentation/LinkPresentation.h>

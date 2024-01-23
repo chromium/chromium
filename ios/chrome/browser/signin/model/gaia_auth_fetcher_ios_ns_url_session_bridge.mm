@@ -14,7 +14,7 @@
 #import "ios/net/cookies/system_cookie_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_client.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/http/http_request_headers.h"
 
 #pragma mark - GaiaAuthFetcherIOSNSURLSessionBridge::Request

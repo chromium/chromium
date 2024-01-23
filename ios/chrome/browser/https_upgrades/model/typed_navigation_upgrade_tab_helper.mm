@@ -17,7 +17,7 @@
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/window_open_disposition.h"
 
 using security_interstitials::omnibox_https_upgrades::Event;

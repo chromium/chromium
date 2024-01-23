@@ -16,7 +16,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "components/version_info/version_info.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 namespace shell_integration {
 

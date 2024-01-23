@@ -22,7 +22,7 @@
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 using base::SysUTF16ToNSString;
 using base::UTF8ToUTF16;

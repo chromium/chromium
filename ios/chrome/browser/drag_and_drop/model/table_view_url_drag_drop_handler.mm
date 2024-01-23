@@ -9,7 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 @implementation TableViewURLDragDropHandler

@@ -12,7 +12,7 @@
 #include "base/mac/launch_application.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
-#include "net/base/mac/url_conversions.h"
+#include "net/base/apple/url_conversions.h"
 #include "ui/base/models/image_model.h"
 
 namespace apps {

@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app_shim/app_shim_controller.h"
-#include "net/base/mac/url_conversions.h"
+#include "net/base/apple/url_conversions.h"
 
 @implementation AppShimDelegate {
   raw_ptr<AppShimController> _appShimController;  // Weak, owns |this|

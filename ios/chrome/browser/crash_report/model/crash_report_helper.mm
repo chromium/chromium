@@ -28,7 +28,7 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 // WebStateList Observer that some tabs stats to be sent to the crash server.
 @interface CrashReporterTabStateObserver

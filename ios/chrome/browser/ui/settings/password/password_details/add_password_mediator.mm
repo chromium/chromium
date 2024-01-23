@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_view_controller_delegate.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 using base::SysNSStringToUTF8;
 using base::SysNSStringToUTF16;

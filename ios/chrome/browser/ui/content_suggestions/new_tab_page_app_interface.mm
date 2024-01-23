@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 using content_suggestions::SearchFieldWidth;
 using set_up_list_prefs::SetUpListItemState;

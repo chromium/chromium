@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #import "chrome/browser/ui/cocoa/dock_icon.h"
 #include "components/download/public/common/download_item.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 namespace {
 

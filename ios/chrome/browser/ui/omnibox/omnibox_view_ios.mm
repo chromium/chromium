@@ -41,7 +41,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/navigation/referrer.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/page_transition_types.h"
 #import "ui/base/resource/resource_bundle.h"

@@ -31,7 +31,7 @@
 #import "ios/chrome/test/scoped_eg_traits_overrider.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "ui/base/l10n/l10n_util.h"
 

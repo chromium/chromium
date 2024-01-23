@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/download/model/mime_type_util.h"
 #import "ios/chrome/browser/download/model/vcard_tab_helper_delegate.h"
 #import "ios/web/public/download/download_task.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 VcardTabHelper::VcardTabHelper(web::WebState* web_state) {
   DCHECK(web_state);

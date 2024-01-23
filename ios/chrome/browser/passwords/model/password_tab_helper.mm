@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/passwords/model/password_controller.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 PasswordTabHelper::~PasswordTabHelper() = default;
 

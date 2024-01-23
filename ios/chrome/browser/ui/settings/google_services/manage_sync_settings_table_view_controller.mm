@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller_model_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {

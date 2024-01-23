@@ -60,7 +60,7 @@
 #import "ios/chrome/common/intents/SetChromeDefaultBrowserIntent.h"
 #import "ios/chrome/common/intents/ViewHistoryIntent.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/test/gtest_util.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"

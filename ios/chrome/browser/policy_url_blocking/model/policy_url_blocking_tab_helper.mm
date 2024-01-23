@@ -7,7 +7,7 @@
 #import "components/policy/core/browser/url_blocklist_manager.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_util.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 PolicyUrlBlockingTabHelper::~PolicyUrlBlockingTabHelper() = default;
 

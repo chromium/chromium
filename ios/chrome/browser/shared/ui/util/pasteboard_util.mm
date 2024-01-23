@@ -12,7 +12,7 @@
 #import "components/open_from_clipboard/clipboard_async_wrapper_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 void StoreURLInPasteboard(const GURL& url) {

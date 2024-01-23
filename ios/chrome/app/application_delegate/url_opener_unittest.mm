@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/testing/open_url_context.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"

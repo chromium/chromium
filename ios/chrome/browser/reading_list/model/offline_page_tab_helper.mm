@@ -28,7 +28,7 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/page_transition_types.h"
 
 namespace {
