@@ -22,6 +22,7 @@ Nvidia,nvidia.com
 Brave,brave.com
 ByteDance,bytedance.com
 Alibaba,alibaba-inc.com
+Individuals,adenilson.org
 Individuals,gmail.com
 Individuals,googlemail.com
 Individuals,niedermayer.cc

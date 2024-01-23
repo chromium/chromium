@@ -2,8 +2,17 @@
  * Use of this source code is governed by a BSD_style license that can be
  * found in the LICENSE file. */
 
-/* A mapping of Chromium contributors to the affiliations over time. */
-/* Affilitions must be sorted from most recent to least recent. */
+/*
+ * A mapping of Chromium contributors to their affiliations over time.
+ * Chromium.org accounts are presumed to be affiliated with Google unless
+ * listed otherwise. Most non-Google Chromium contributors prefer to use their
+ * organization's e-mail address in commit logs for maximum clarity.
+ * People contributing in an individual capacity can list either the domain of
+ * their personal e-mail address, or the string "Individual".
+ * The string "Undisclosed" can be used to override the default assumption
+ * for the account without specifying any affiliation.
+ * Affilitions must be sorted from most recent to least recent.
+ */
 {
   "yoavweiss@chromium.org": {
     affiliations: [

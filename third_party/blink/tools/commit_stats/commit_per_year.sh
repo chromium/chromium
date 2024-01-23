@@ -57,7 +57,9 @@ function distribution {
         if [ $affiliation != "None" ]; then
           domain=$affiliation
         fi
-        if [ -n "${domain_to_org["$domain"]}" ]; then
+        if [ "${domain}"=="Individual" -o "${domain}"=="Undisclosed" ]; then
+          echo ${domain}
+        elif [ -n "${domain_to_org["$domain"]}" ]; then
           echo ${domain_to_org["$domain"]}
         else
           echo Others
