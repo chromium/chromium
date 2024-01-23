@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 
 namespace arc {
@@ -63,6 +64,8 @@ void ArcDataRemover::Run(RunCallback callback) {
 
 void ArcDataRemover::OnDataRemoved(RunCallback callback, bool success) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  UMA_HISTOGRAM_BOOLEAN("Arc.DataRemoved.Success", success);
 
   if (success) {
     VLOG(1) << "ARC data removal successful";
