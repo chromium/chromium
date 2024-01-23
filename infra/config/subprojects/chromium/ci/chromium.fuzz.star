@@ -922,8 +922,6 @@ ci.builder(
         ],
     ),
     os = os.LINUX_FOCAL,
-    # TODO(crbug.com/1513729): Add back to a sheriff rotation when it's stable.
-    sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
         short_name = "linux-msan",

@@ -14,6 +14,7 @@ ci/Deterministic Linux (dbg)
 ci/Libfuzzer Upload Chrome OS ASan
 ci/Libfuzzer Upload Linux ASan
 ci/Libfuzzer Upload Linux ASan Debug
+ci/Libfuzzer Upload Linux MSan
 ci/Libfuzzer Upload Linux UBSan
 ci/Libfuzzer Upload Linux V8-ARM64 ASan
 ci/Libfuzzer Upload Linux V8-ARM64 ASan Debug
