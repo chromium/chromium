@@ -129,8 +129,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     public Application newApplication(ClassLoader cl, String className, Context context)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         Context targetContext = super.getTargetContext();
-        boolean hasUnderTestApk =
-                !getContext().getPackageName().equals(targetContext.getPackageName());
 
         // Wrap |context| here so that calls to getSharedPreferences() from within
         // attachBaseContext() will hit our InMemorySharedPreferencesContext.
@@ -159,6 +157,17 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         // The target context by default points directly at the ContextImpl, which we can't wrap.
         // Make it instead point at the Application.
         return sInMemorySharedPreferencesContext;
+    }
+
+    @Override
+    public void onCreate(Bundle arguments) {
+        if (arguments == null) {
+            arguments = new Bundle();
+        }
+        // Do not finish activities between tests so that batched tests can start
+        // an activity in @BeforeClass and have it live until @AfterClass.
+        arguments.putString("waitForActivitiesToComplete", "false");
+        super.onCreate(arguments);
     }
 
     /**
@@ -588,29 +597,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
         // This will end up force stopping the package, so code after this line will not run.
         super.finish(resultCode, results);
-    }
-
-    // Since we prevent the default runner's behaviour of finishing Activities between tests, don't
-    // finish Activities, don't have the runner wait for them to finish either (as this will add a 2
-    // second timeout to each test).
-    @Override
-    protected void waitForActivitiesToComplete() {}
-
-    // Note that in this class we cannot use ThreadUtils to post tasks as some tests initialize the
-    // browser in ways that cause tasks posted through PostTask to not run. This function should be
-    // used instead.
-    @Override
-    public void runOnMainSync(Runnable runner) {
-        if (runner.getClass() == ActivityFinisher.class) {
-            // This is a gross hack.
-            // Without migrating to the androidx runner, we have no way to prevent
-            // MonitoringInstrumentation from trying to kill our activities, and we rely on
-            // MonitoringInstrumentation for many things like result reporting.
-            // In order to allow batched tests to reuse Activities, drop the ActivityFinisher tasks
-            // without running them.
-            return;
-        }
-        super.runOnMainSync(runner);
     }
 
     /** Finishes all tasks Chrome has listed in Android's Overview. */
