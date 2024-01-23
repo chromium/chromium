@@ -2,7 +2,49 @@
 # To regenerate, use "update_android_aar_prebuilts = true" and run "gn gen".
 
 aidl = []
-assets = []
+assets = [
+  "assets/assets/strings.xml",
+  "assets/assets-ar/strings.xml",
+  "assets/assets-b+es+419/strings.xml",
+  "assets/assets-bg/strings.xml",
+  "assets/assets-ca/strings.xml",
+  "assets/assets-cs/strings.xml",
+  "assets/assets-da/strings.xml",
+  "assets/assets-de/strings.xml",
+  "assets/assets-el/strings.xml",
+  "assets/assets-en-rGB/strings.xml",
+  "assets/assets-es/strings.xml",
+  "assets/assets-fi/strings.xml",
+  "assets/assets-fil/strings.xml",
+  "assets/assets-fr/strings.xml",
+  "assets/assets-hi/strings.xml",
+  "assets/assets-hr/strings.xml",
+  "assets/assets-hu/strings.xml",
+  "assets/assets-id/strings.xml",
+  "assets/assets-it/strings.xml",
+  "assets/assets-iw/strings.xml",
+  "assets/assets-ja/strings.xml",
+  "assets/assets-ko/strings.xml",
+  "assets/assets-lt/strings.xml",
+  "assets/assets-lv/strings.xml",
+  "assets/assets-nl/strings.xml",
+  "assets/assets-no/strings.xml",
+  "assets/assets-pl/strings.xml",
+  "assets/assets-pt-rBR/strings.xml",
+  "assets/assets-pt-rPT/strings.xml",
+  "assets/assets-ro/strings.xml",
+  "assets/assets-ru/strings.xml",
+  "assets/assets-sk/strings.xml",
+  "assets/assets-sl/strings.xml",
+  "assets/assets-sr/strings.xml",
+  "assets/assets-sv/strings.xml",
+  "assets/assets-th/strings.xml",
+  "assets/assets-tr/strings.xml",
+  "assets/assets-uk/strings.xml",
+  "assets/assets-vi/strings.xml",
+  "assets/assets-zh-rCN/strings.xml",
+  "assets/assets-zh-rTW/strings.xml"
+]
 has_classes_jar = true
 has_native_libraries = false
 has_proguard_flags = false

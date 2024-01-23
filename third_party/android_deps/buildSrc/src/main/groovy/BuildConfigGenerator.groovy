@@ -60,6 +60,7 @@ class BuildConfigGenerator extends DefaultTask {
         com_ibm_icu_icu4j: '//third_party/icu4j:icu4j_java',
         com_almworks_sqlite4java_sqlite4java: '//third_party/sqlite4java:sqlite4java_java',
         com_google_guava_listenablefuture: '//third_party/android_deps:guava_android_java',
+        com_google_protobuf_protobuf_lite: '//third_party/android_deps:protobuf_lite_runtime_java',
         com_jakewharton_android_repackaged_dalvik_dx: '//third_party/aosp_dalvik:aosp_dalvik_dx_java',
         junit_junit: '//third_party/junit:junit',
         net_bytebuddy_byte_buddy_android: '//third_party/byte_buddy:byte_buddy_android_java',
