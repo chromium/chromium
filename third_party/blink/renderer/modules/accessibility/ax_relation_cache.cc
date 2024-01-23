@@ -737,6 +737,7 @@ AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
 
   // First check for an existing aria-owns relation to the related AXObject.
   AXObject* related_target = obj ? obj : Get(node);
+  AXObject* ax_new_owner = nullptr;
 
   // Look for any new aria-owns relations.
   // Schedule an update on any potential new owner.
@@ -745,29 +746,32 @@ AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
 
   for (AXObject* related : related_sources) {
     if (related) {
+      // Ensure that the candidate owner updates its children in its validity
+      // as an owner is changing.
+      object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
+      related->SetNeedsToUpdateChildren();
       bool is_valid = related_target
                           ? IsValidOwnsRelation(related, related_target)
                           : IsValidOwner(related);
-      if (!is_valid) {
-        continue;
+      if (is_valid) {
+        ax_new_owner = related;
+        owner_ids_to_update_.insert(related->AXObjectID());
       }
-      owner_ids_to_update_.insert(related->AXObjectID());
-      object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
     }
   }
 
   // Schedule an update on any previous owner. This owner takes priority over
   // any new owners.
   if (related_target && IsAriaOwned(related_target)) {
-    AXObject* owned_parent = ValidatedAriaOwner(related_target);
-    if (owned_parent) {
-      owner_ids_to_update_.insert(owned_parent->AXObjectID());
-      return owned_parent;
+    AXObject* ax_previous_owner = ValidatedAriaOwner(related_target);
+    if (ax_previous_owner) {
+      owner_ids_to_update_.insert(ax_previous_owner->AXObjectID());
+      return ax_previous_owner;
     }
   }
 
   // Only the first aria-owns relation can be used.
-  return related_sources.empty() ? nullptr : related_sources[0];
+  return ax_new_owner;
 }
 
 void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
