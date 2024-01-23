@@ -407,6 +407,7 @@ component("base") {
     "memory/platform_shared_memory_mapper.h",
     "memory/platform_shared_memory_region.cc",
     "memory/platform_shared_memory_region.h",
+    "memory/protected_memory.h",
     "memory/ptr_util.h",
     "memory/raw_ptr.h",
     "memory/raw_ptr_asan_bound_arg_tracker.cc",
@@ -1089,6 +1090,7 @@ component("base") {
     ":orderfile_buildflags",
     ":power_monitor_buildflags",
     ":profiler_buildflags",
+    ":protected_memory_buildflags",
     ":rust_buildflags",
     ":sanitizer_buildflags",
     ":synchronization_buildflags",
@@ -1743,6 +1745,7 @@ component("base") {
       "memory/page_size_win.cc",
       "memory/platform_shared_memory_mapper_win.cc",
       "memory/platform_shared_memory_region_win.cc",
+      "memory/protected_memory_win.cc",
       "message_loop/message_pump_win.cc",
       "message_loop/message_pump_win.h",
       "moving_window.h",
@@ -2520,6 +2523,17 @@ buildflag_header("orderfile_buildflags") {
   ]
 }
 
+# Build flags for ProtectedMemory
+buildflag_header("protected_memory_buildflags") {
+  header = "protected_memory_buildflags.h"
+  header_dir = "base/memory"
+
+  # Currently Protected Memory is only supported on Windows.
+  protected_memory_enabled = is_win
+
+  flags = [ "PROTECTED_MEMORY_ENABLED=$protected_memory_enabled" ]
+}
+
 buildflag_header("synchronization_buildflags") {
   header = "synchronization_buildflags.h"
   header_dir = "base/synchronization"
@@ -3221,6 +3235,7 @@ test("base_unittests") {
     "memory/discardable_shared_memory_unittest.cc",
     "memory/memory_pressure_listener_unittest.cc",
     "memory/platform_shared_memory_region_unittest.cc",
+    "memory/protected_memory_unittest.cc",
     "memory/ptr_util_unittest.cc",
     "memory/raw_ptr_asan_unittest.cc",
     "memory/raw_ptr_chromium_unittest.cc",
