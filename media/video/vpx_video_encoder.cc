@@ -13,6 +13,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/timestamp_constants.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/video/video_encoder_info.h"
@@ -62,6 +63,7 @@ vpx_enc_frame_flags_t vp8_3layers_temporal_flags[] = {
 };
 
 EncoderStatus SetUpVpxConfig(const VideoEncoder::Options& opts,
+                             VideoCodecProfile profile,
                              vpx_codec_enc_cfg_t* config) {
   if (opts.frame_size.width() <= 0 || opts.frame_size.height() <= 0)
     return EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
@@ -74,7 +76,16 @@ EncoderStatus SetUpVpxConfig(const VideoEncoder::Options& opts,
   config->g_pass = VPX_RC_ONE_PASS;
   config->g_lag_in_frames = 0;
   config->rc_max_quantizer = 58;
+  // Increase min QP to 12 for vp8 screen sharing; It reduces the encoding
+  // bitrate on static content and thus helps reduce big overshoot on slide
+  // change. This optimization is cited from libwebRTC.
+  // third_party/webrtc/modules/video_coding/codecs/vp8/libvpx_vp8_encoder.cc.
+  // TODO(bugs.webrtc.org/15785): Set min quantizer for screen content in VP9.
   config->rc_min_quantizer = 2;
+  if (profile == VP8PROFILE_ANY &&
+      opts.content_hint == VideoEncoder::ContentHint::Screen) {
+    config->rc_min_quantizer = 12;
+  }
   config->rc_resize_allowed = 0;
   config->rc_dropframe_thresh = 0;  // Don't drop frames
   config->g_timebase.num = 1;
@@ -310,7 +321,7 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
       break;
   }
 
-  auto status = SetUpVpxConfig(options, &codec_config_);
+  auto status = SetUpVpxConfig(options, profile_, &codec_config_);
   if (!status.is_ok()) {
     std::move(done_cb).Run(status);
     return;
@@ -387,12 +398,25 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
     if (codec_config_.rc_end_usage == VPX_CBR) {
       vpx_codec_control(codec.get(), VP9E_SET_AQ_MODE, 3);
     }
+  }
 
-    if (options.content_hint == ContentHint::Screen) {
+  // Tune configs for screen sharing. The values are the same as libwebrtc.
+  // third_party/webrtc/modules/video_coding/codecs/vp8/libvpx_vp8_encoder.cc.
+  // third_party/webrtc/modules/video_coding/codecs/vp9/libvpx_vp9_encoder.cc.
+  unsigned int static_thresh = 1;
+  if (options.content_hint == ContentHint::Screen) {
+    if (is_vp9) {
+      // TODO(bugs.webrtc.org/15785): Set static threshold for screen content
+      // in VP9 too.
       vpx_codec_control(codec.get(), VP9E_SET_TUNE_CONTENT,
                         VP9E_CONTENT_SCREEN);
+    } else {
+      static_thresh = 100;
+      // TODO(b/280363228): Set 2 when the latency mode is realtime.
+      vpx_codec_control(codec.get(), VP8E_SET_SCREEN_CONTENT_MODE, 1 /*On*/);
     }
   }
+  vpx_codec_control(codec.get(), VP8E_SET_STATIC_THRESHOLD, static_thresh);
 
   options_ = options;
   originally_configured_size_ = options.frame_size;
@@ -638,7 +662,7 @@ void VpxVideoEncoder::ChangeOptions(const Options& options,
   }
 
   vpx_codec_enc_cfg_t new_config = codec_config_;
-  auto status = SetUpVpxConfig(options, &new_config);
+  auto status = SetUpVpxConfig(options, profile_, &new_config);
   if (!status.is_ok()) {
     std::move(done_cb).Run(status);
     return;
