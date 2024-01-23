@@ -33,6 +33,13 @@ mojom_component("ax_enums_mojo") {
   output_prefix = "ui_accessibility_ax_mojom"
 }
 
+mojom_component("ax_features_mojo") {
+  sources = [ "ax_features.mojom" ]
+
+  macro_prefix = "UI_ACCESSIBILITY_AX_FEATURES_MOJOM"
+  output_prefix = "ui_accessibility_ax_features_mojom"
+}
+
 # A tiny subset of accessibility code that's allowed to be
 # included by Blink. The rule of thumb (for now) is that it's
 # anything platform-neutral (no platform/ directory) that
@@ -96,6 +103,7 @@ component("ax_base") {
   public_deps = [
     ":ax_constants_mojo",
     ":ax_enums_mojo",
+    ":ax_features_mojo",
     "//base",
     "//ui/gfx",
     "//ui/gfx/geometry",

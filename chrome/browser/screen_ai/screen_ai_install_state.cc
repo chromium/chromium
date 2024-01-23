@@ -194,6 +194,9 @@ void ScreenAIInstallState::AddObserver(
 }
 
 void ScreenAIInstallState::DownloadComponent() {
+  // TODO(crbug.com/1520424): Do not download the component and set status to
+  // failure if both `kScreenAIMainContentExtractionEnabled` and
+  // `kScreenAIOCREnabled` are disabled.
   if (MayTryDownload()) {
     DownloadComponentInternal();
   }

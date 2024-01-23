@@ -263,6 +263,12 @@ AX_BASE_EXPORT bool IsReadAnythingWithAlgorithmEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kScreenAIDebugMode);
 AX_BASE_EXPORT bool IsScreenAIDebugModeEnabled();
 
+// ScreenAI library's Main Content Extraction service is enabled.
+AX_BASE_EXPORT bool IsScreenAIMainContentExtractionEnabled();
+
+// ScreenAI library's OCR service is enabled.
+AX_BASE_EXPORT bool IsScreenAIOCREnabled();
+
 // Enables to use the Screen AI component available for testing.
 // If enabled, ScreenAI library will be loaded from //third_party/screen-ai.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kScreenAITestMode);

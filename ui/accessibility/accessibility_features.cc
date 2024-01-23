@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/accessibility/ax_features.mojom-features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -245,21 +246,14 @@ bool IsAccessibilitySnapshotStressTestsEnabled() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-// This feature can be used as an emergency kill switch to disable Screen AI
-// main content extraction service in case of security or other issues.
-// Please talk to components/services/screen_ai/OWNERS if any changes to this
-// feature or its functionality is needed.
-BASE_FEATURE(kEmergencyDisableScreenAIMainContentExtraction,
-             "EmergencyDisableScreenAIMainContentExtraction",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsScreenAIMainContentExtractionEnabled() {
+  return base::FeatureList::IsEnabled(
+      ax::mojom::features::kScreenAIMainContentExtractionEnabled);
+}
 
-// This feature can be used as an emergency kill switch to disable Screen AI
-// OCR service in case of security or other issues.
-// Please talk to components/services/screen_ai/OWNERS if any changes to this
-// feature or its functionality is needed.
-BASE_FEATURE(kEmergencyDisableScreenAIOCR,
-             "EmergencyDisableScreenAIOCR",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsScreenAIOCREnabled() {
+  return base::FeatureList::IsEnabled(ax::mojom::features::kScreenAIOCREnabled);
+}
 
 BASE_FEATURE(kAccessibilityService,
              "AccessibilityService",
@@ -296,9 +290,11 @@ BASE_FEATURE(kPdfOcr,
 );
 
 bool IsPdfOcrEnabled() {
+  // TODO(crbug.com/1520424): Apply `IsScreenAIOCREnabled` in
+  // `ScreenAIInstallState` before setting the service state to ready and remove
+  // it from this function.
   return base::FeatureList::IsEnabled(::features::kPdfOcr) &&
-         !base::FeatureList::IsEnabled(
-             ::features::kEmergencyDisableScreenAIOCR);
+         IsScreenAIOCREnabled();
 }
 
 BASE_FEATURE(kReadAnything, "ReadAnything", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -340,9 +336,11 @@ BASE_FEATURE(kReadAnythingWithScreen2x,
              "ReadAnythingWithScreen2x",
              base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAnythingWithScreen2xEnabled() {
+  // TODO(crbug.com/1520424): Apply `IsScreenAIMainContentExtractionEnabled` in
+  // `ScreenAIInstallState` before setting the service state to ready and remove
+  // it from this function.
   return base::FeatureList::IsEnabled(::features::kReadAnythingWithScreen2x) &&
-         !base::FeatureList::IsEnabled(
-             ::features::kEmergencyDisableScreenAIMainContentExtraction);
+         IsScreenAIMainContentExtractionEnabled();
 }
 
 BASE_FEATURE(kReadAnythingWithAlgorithm,

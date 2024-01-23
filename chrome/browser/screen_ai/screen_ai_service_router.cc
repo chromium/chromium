@@ -22,6 +22,7 @@
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
 #include "mojo/public/mojom/base/file_path.mojom.h"
+#include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -187,7 +188,8 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
 void ScreenAIServiceRouter::InitializeOCRIfNeeded() {
   if (ocr_service_.is_bound() ||
       screen_ai::ScreenAIInstallState::GetInstance()->get_state() ==
-          screen_ai::ScreenAIInstallState::State::kFailed) {
+          screen_ai::ScreenAIInstallState::State::kFailed ||
+      !features::IsScreenAIOCREnabled()) {
     return;
   }
 
@@ -226,7 +228,8 @@ void ScreenAIServiceRouter::InitializeOCR(
 void ScreenAIServiceRouter::InitializeMainContentExtractionIfNeeded() {
   if (main_content_extraction_service_.is_bound() ||
       screen_ai::ScreenAIInstallState::GetInstance()->get_state() ==
-          screen_ai::ScreenAIInstallState::State::kFailed) {
+          screen_ai::ScreenAIInstallState::State::kFailed ||
+      !features::IsScreenAIMainContentExtractionEnabled()) {
     return;
   }
 
