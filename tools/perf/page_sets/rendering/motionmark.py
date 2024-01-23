@@ -310,7 +310,7 @@ class MotionMarkRampComposite(MotionMarkPage):
   TAGS = [story_tags.MOTIONMARK, story_tags.MOTIONMARK_RAMP]
   SUPPORTED_PLATFORMS = platforms.ALL_PLATFORMS
   BASE_NAME = 'motionmark_ramp_composite'
-  URL = 'https://browserbench.org/MotionMark1.2/developer.html'
+  URL = 'https://browserbench.org/MotionMark1.3/developer.html'
 
   def RunNavigateSteps(self, action_runner):
     action_runner.Navigate(self.url)
