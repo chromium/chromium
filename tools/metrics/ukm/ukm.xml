@@ -7914,6 +7914,77 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Compose.SessionProgress">
+  <owner>chrome-compose-frontend@google.com</owner>
+  <owner>petewil@chromium.org</owner>
+  <owner>dewittj@chromium.org</owner>
+  <summary>
+    Reported at the end of every compose session. There may be more than one
+    compose session per pageload. This collects user actions in the compose
+    dialogs for this URL.
+  </summary>
+  <metric name="Canceled" enum="Boolean">
+    <summary>
+      If the user canceled this session with the &quot;X&quot; button. This does
+      not include dismissing the dialog by losing focus.
+    </summary>
+  </metric>
+  <metric name="CasualCount">
+    <summary>
+      How many times the user pressed the &quot;shorten&quot; button in this
+      session. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="ComposeCount">
+    <summary>
+      How many times the user pressed the &quot;generate&quot; button in this
+      session. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="DialogShownCount">
+    <summary>
+      How many times the compose dialog was shown to the user. Uses exponential
+      buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="FormalCount">
+    <summary>
+      How many times the user pressed the &quot;formal&quot; button in this
+      session. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="InsertedResults" enum="Boolean">
+    <summary>
+      If the user inserted results back to the web page in this session, either
+      by pressing the &quot;insert&quot; or &quot;replace&quot; button.
+    </summary>
+  </metric>
+  <metric name="LengthenCount">
+    <summary>
+      How many times the user pressed the &quot;elaborate&quot; button in this
+      session. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="RegenerateCount">
+    <summary>
+      How many times the user pressed the &quot;regenerate&quot; button in this
+      session. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="ShortenCount">
+    <summary>
+      How many times the user pressed the &quot;shorten&quot; button in this
+      session. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="UndoCount">
+    <summary>
+      How many times the user pressed the &quot;undo&quot; button in this
+      session. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+</event>
+
 <event name="Compose.TextElementUsage">
   <owner>harringtond@google.com</owner>
   <owner>carlosk@chromium.org</owner>

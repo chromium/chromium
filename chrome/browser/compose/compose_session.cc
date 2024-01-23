@@ -190,6 +190,7 @@ ComposeSession::ComposeSession(
       collect_inner_text_(
           base::FeatureList::IsEnabled(compose::features::kComposeInnerText)),
       inner_text_caller_(inner_text),
+      ukm_source_id_(web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()),
       node_id_(node_id),
       model_quality_logs_uploader_(model_quality_logs_uploader),
       session_id_(session_id),
@@ -227,6 +228,8 @@ ComposeSession::~ComposeSession() {
         base::UserMetricsAction("Compose.EndedSession.EndedImplicitly"));
   }
   LogComposeSessionCloseMetrics(close_reason_, session_events_);
+
+  LogComposeSessionCloseUkmMetrics(ukm_source_id_, session_events_);
 
   // If we have a modeling quality log entry, upload it.
 
@@ -301,11 +304,22 @@ void ComposeSession::Rewrite(compose::mojom::StyleModifiersPtr style) {
   if (style && style->is_tone()) {
     request.mutable_rewrite_params()->set_tone(
         optimization_guide::proto::ComposeTone(style->get_tone()));
+    if (style->get_tone() == compose::mojom::Tone::kFormal) {
+      session_events_.formal_count++;
+    } else {
+      session_events_.casual_count++;
+    }
   } else if (style && style->is_length()) {
     request.mutable_rewrite_params()->set_length(
         optimization_guide::proto::ComposeLength(style->get_length()));
+    if (style->get_length() == compose::mojom::Length::kLonger) {
+      session_events_.lengthen_count++;
+    } else {
+      session_events_.shorten_count++;
+    }
   } else {
     request.mutable_rewrite_params()->set_regenerate(true);
+    session_events_.regenerate_count++;
   }
   request.mutable_rewrite_params()->set_previous_response(
       most_recent_ok_state_->mojo_state()->response->result);
@@ -798,6 +812,7 @@ void ComposeSession::SetCloseReason(
   switch (close_reason) {
     case compose::ComposeSessionCloseReason::kCloseButtonPressed:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
+      session_events_.canceled = true;
       break;
     case compose::ComposeSessionCloseReason::kEndedImplicitly:
       final_status_ = optimization_guide::proto::FinalStatus::
@@ -805,6 +820,7 @@ void ComposeSession::SetCloseReason(
       break;
     case compose::ComposeSessionCloseReason::kAcceptedSuggestion:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_INSERTED;
+      session_events_.inserted_results = true;
       break;
     default:
       final_status_ =

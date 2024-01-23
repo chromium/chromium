@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
 class WebContents;
@@ -281,6 +282,9 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   // Logging counters.
   compose::ComposeSessionEvents session_events_;
+
+  // UKM source ID.
+  ukm::SourceId ukm_source_id_;
 
   // If true, the inner-text was received.
   bool got_inner_text_ = false;

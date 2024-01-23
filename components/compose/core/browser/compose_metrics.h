@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_METRICS_H_
 #define COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_METRICS_H_
 
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace base {
@@ -111,13 +112,38 @@ enum class ComposeShowStatus {
 // Struct containing event and logging information for an individual
 // |ComposeSession|.
 struct ComposeSessionEvents {
+  ComposeSessionEvents();
+  ComposeSessionEvents(ComposeSessionEvents& e) = delete;
+  ComposeSessionEvents& operator=(ComposeSessionEvents& e) = delete;
+  ~ComposeSessionEvents() = default;
+
   // Logging counters.
+  // Times "Generate" button is pressed.
   unsigned int compose_count = 0;
+  // Times we have shown the compose dialog.
   unsigned int dialog_shown_count = 0;
+  // Times we have shown the first run dialog.
   unsigned int fre_dialog_shown_count = 0;
+  // Times we have shown the dialog to enable MSBB.
   unsigned int msbb_dialog_shown_count = 0;
+  // Times the user has pressed "undo" this session.
   unsigned int undo_count = 0;
+  // Compose request after input edited.
   unsigned int update_input_count = 0;
+  // Tiems the user has pressed the "regenerate" button.
+  unsigned int regenerate_count = 0;
+  // Times the user has picked the "shorter" option.
+  unsigned int shorten_count = 0;
+  // Times the user has picked the "elaborate" option.
+  unsigned int lengthen_count = 0;
+  // Times the user has picked the "formalize" option.
+  unsigned int formal_count = 0;
+  // Times the user has picked the "casual" option.
+  unsigned int casual_count = 0;
+  // True if the results were eventually inserted back to the web page.
+  bool inserted_results = false;
+  // True if the the user canceled the compose dialog via the "x" button.
+  bool canceled = false;
 };
 
 // Enum with the possible reasons for it being impossible to open the Compose
@@ -193,7 +219,12 @@ void LogComposeMSBBSessionDialogShownCount(ComposeMSBBSessionCloseReason reason,
 
 // Log session based metrics when a session ends.
 void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
-                                   ComposeSessionEvents session_events);
+                                   const ComposeSessionEvents& session_events);
+
+// Log session based UKM metrics when the session ends.
+void LogComposeSessionCloseUkmMetrics(
+    ukm::SourceId source_id,
+    const ComposeSessionEvents& session_events);
 
 // Log the amount trimmed from the inner text from the page (in bytes) when the
 // dialog is opened.

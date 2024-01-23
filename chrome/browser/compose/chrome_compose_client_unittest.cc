@@ -429,6 +429,7 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
 
   NavigateAndCommitActiveTab(GURL("about:blank"));
 
+  // Check page level UKM metrics.
   auto ukm_entries = ukm_recorder().GetEntries(
       ukm::builders::Compose_PageEvents::kEntryName,
       {ukm::builders::Compose_PageEvents::kMenuItemShownName,
@@ -446,6 +447,47 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
                         1),
           testing::Pair(
               ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 1)));
+
+  // Check session level UKM metrics.
+  auto session_ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_SessionProgress::kEntryName,
+      {ukm::builders::Compose_SessionProgress::kComposeCountName,
+       ukm::builders::Compose_SessionProgress::kDialogShownCountName,
+       ukm::builders::Compose_SessionProgress::kDialogShownCountName,
+       ukm::builders::Compose_SessionProgress::kUndoCountName,
+       ukm::builders::Compose_SessionProgress::kRegenerateCountName,
+       ukm::builders::Compose_SessionProgress::kShortenCountName,
+       ukm::builders::Compose_SessionProgress::kLengthenCountName,
+       ukm::builders::Compose_SessionProgress::kFormalCountName,
+       ukm::builders::Compose_SessionProgress::kCasualCountName,
+       ukm::builders::Compose_SessionProgress::kInsertedResultsName,
+       ukm::builders::Compose_SessionProgress::kCanceledName});
+
+  EXPECT_EQ(session_ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      session_ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kComposeCountName, 1),
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kDialogShownCountName, 1),
+          testing::Pair(ukm::builders::Compose_SessionProgress::kUndoCountName,
+                        0),
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kRegenerateCountName, 0),
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kShortenCountName, 0),
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kLengthenCountName, 0),
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kFormalCountName, 0),
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kCasualCountName, 0),
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kInsertedResultsName, 1),
+          testing::Pair(ukm::builders::Compose_SessionProgress::kCanceledName,
+                        0)));
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeShowContextMenu) {
@@ -976,6 +1018,28 @@ TEST_F(ChromeComposeClientTest, TestCloseUI) {
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 }
 
+// Tests that closing after showing the dialog does not crash the browser.
+TEST_F(ChromeComposeClientTest, TestCancelMetrics) {
+  ShowDialogAndBindMojo();
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+  // Make sure the async call to CloseUI completes before navigating away.
+  FlushMojo();
+
+  // Navigate page away to upload UKM metrics to the collector.
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  // Check session level UKM metrics.
+  auto session_ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_SessionProgress::kEntryName,
+      {ukm::builders::Compose_SessionProgress::kCanceledName});
+
+  EXPECT_EQ(session_ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(session_ukm_entries[0].metrics,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ukm::builders::Compose_SessionProgress::kCanceledName, 1)));
+}
+
 // Tests that closing the session at chrome://compose does not crash the
 // browser, even though there is no dialog shown at that URL.
 TEST_F(ChromeComposeClientTest, TestCloseUIAtChromeCompose) {
@@ -1107,6 +1171,23 @@ TEST_F(ChromeComposeClientTest, TestComposeTwiceThenUpdateWebUIStateThenUndo) {
   EXPECT_TRUE(state)
       << "Undo should return valid state after second Compose() invocation.";
   EXPECT_EQ("this state should be restored with undo", state->webui_state);
+
+  // Make sure the async call to CloseUI completes before navigating away.
+  FlushMojo();
+
+  // Navigate page away to upload UKM metrics to the collector.
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  // Check session level UKM metrics.
+  auto session_ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_SessionProgress::kEntryName,
+      {ukm::builders::Compose_SessionProgress::kUndoCountName});
+
+  EXPECT_EQ(session_ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(session_ukm_entries[0].metrics,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ukm::builders::Compose_SessionProgress::kUndoCountName, 1)));
 }
 
 // Tests if undo can be done more than once.
@@ -2142,6 +2223,24 @@ TEST_F(ChromeComposeClientTest, TestRegenerate) {
   histograms().ExpectBucketCount(compose::kComposeRequestReason,
                                  compose::ComposeRequestReason::kRetryRequest,
                                  1);
+
+  // Make sure the async call to CloseUI completes before navigating away.
+  FlushMojo();
+
+  // Navigate page away to upload UKM metrics to the collector.
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  // Check session level UKM metrics.
+  auto session_ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_SessionProgress::kEntryName,
+      {ukm::builders::Compose_SessionProgress::kRegenerateCountName});
+
+  EXPECT_EQ(session_ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      session_ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(testing::Pair(
+          ukm::builders::Compose_SessionProgress::kRegenerateCountName, 1)));
 }
 
 TEST_F(ChromeComposeClientTest, TestToneChange) {
@@ -2214,6 +2313,28 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
   histograms().ExpectBucketCount(
       compose::kComposeRequestReason,
       compose::ComposeRequestReason::kToneCasualRequest, 1);
+
+  // Make sure the async call to CloseUI completes before navigating away.
+  FlushMojo();
+
+  // Navigate page away to upload UKM metrics to the collector.
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  // Check session level UKM metrics.
+  auto session_ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_SessionProgress::kEntryName,
+      {ukm::builders::Compose_SessionProgress::kCasualCountName,
+       ukm::builders::Compose_SessionProgress::kFormalCountName});
+
+  EXPECT_EQ(session_ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      session_ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kCasualCountName, 1),
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kFormalCountName, 1)));
 }
 
 TEST_F(ChromeComposeClientTest, TestLengthChange) {
@@ -2288,6 +2409,28 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
   histograms().ExpectBucketCount(
       compose::kComposeRequestReason,
       compose::ComposeRequestReason::kLengthShortenRequest, 1);
+
+  // Make sure the async call to CloseUI completes before navigating away.
+  FlushMojo();
+
+  // Navigate page away to upload UKM metrics to the collector.
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  // Check session level UKM metrics.
+  auto session_ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_SessionProgress::kEntryName,
+      {ukm::builders::Compose_SessionProgress::kLengthenCountName,
+       ukm::builders::Compose_SessionProgress::kShortenCountName});
+
+  EXPECT_EQ(session_ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      session_ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kLengthenCountName, 1),
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kShortenCountName, 1)));
 }
 
 TEST_F(ChromeComposeClientTest, TestOfflineError) {
