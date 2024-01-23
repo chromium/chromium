@@ -30,7 +30,6 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
@@ -930,110 +929,7 @@ std::string ReadAnythingAppController::GetDataFontCss(
 
 std::string ReadAnythingAppController::GetHtmlTag(
     ui::AXNodeID ax_node_id) const {
-  ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
-  DCHECK(ax_node);
-
-  std::string html_tag =
-      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-
-  if (model_.is_pdf()) {
-    return GetHtmlTagForPDF(ax_node, html_tag);
-  }
-
-  if (ui::IsTextField(ax_node->GetRole())) {
-    return "div";
-  }
-
-  // Some divs are marked with role=heading and aria-level=# to indicate
-  // the heading level, so use the <h#> tag directly.
-  if (ax_node->GetRole() == ax::mojom::Role::kHeading) {
-    std::string aria_level = GetAriaLevel(ax_node);
-    if (!aria_level.empty()) {
-      return "h" + aria_level;
-    }
-  }
-
-  if (html_tag == ui::ToString(ax::mojom::Role::kMark)) {
-    // Replace mark element with bold element for readability.
-    html_tag = "b";
-  } else if (IsGoogleDocs()) {
-    // Change HTML tags for SVG elements to allow Reading Mode to render text
-    // for the Annotated Canvas elements in a Google Doc.
-    if (html_tag == "svg") {
-      html_tag = "div";
-    }
-    if (html_tag == "g" && ax_node->GetRole() == ax::mojom::Role::kParagraph) {
-      html_tag = "p";
-    }
-  }
-
-  return html_tag;
-}
-
-std::string ReadAnythingAppController::GetAriaLevel(ui::AXNode* ax_node) const {
-  std::string aria_level;
-  ax_node->GetHtmlAttribute("aria-level", &aria_level);
-  return aria_level;
-}
-
-std::string ReadAnythingAppController::GetHtmlTagForPDF(
-    ui::AXNode* ax_node,
-    std::string html_tag) const {
-  ax::mojom::Role role = ax_node->GetRole();
-
-  // Some nodes in PDFs don't have an HTML tag so use role instead.
-  switch (role) {
-    case ax::mojom::Role::kEmbeddedObject:
-    case ax::mojom::Role::kRegion:
-    case ax::mojom::Role::kPdfRoot:
-    case ax::mojom::Role::kRootWebArea:
-      return "span";
-    case ax::mojom::Role::kParagraph:
-      return "p";
-    case ax::mojom::Role::kLink:
-      return "a";
-    case ax::mojom::Role::kStaticText:
-      return "";
-    case ax::mojom::Role::kHeading:
-      return GetHeadingHtmlTagForPDF(ax_node, html_tag);
-    // Add a line break after each page of an inaccessible PDF for readability
-    // since there is no other formatting included in the OCR output.
-    case ax::mojom::Role::kContentInfo:
-      if (ax_node->GetTextContentUTF8() == string_constants::kPDFPageEnd) {
-        return "br";
-      }
-      ABSL_FALLTHROUGH_INTENDED;
-    default:
-      return html_tag;
-  }
-}
-
-std::string ReadAnythingAppController::GetHeadingHtmlTagForPDF(
-    ui::AXNode* ax_node,
-    std::string html_tag) const {
-  // Sometimes whole paragraphs can be formatted as a heading. If the text is
-  // longer than 2 lines, assume it was meant to be a paragragh,
-  if (ax_node->GetTextContentUTF8().length() > (2 * kMaxLineWidth)) {
-    return "p";
-  }
-
-  // A single block of text could be incorrectly formatted with multiple heading
-  // nodes (one for each line of text) instead of a single paragraph node. This
-  // case should be detected to improve readability. If there are multiple
-  // consecutive nodes with the same heading level, assume that they are all a
-  // part of one paragraph.
-  ui::AXNode* next = ax_node->GetNextUnignoredSibling();
-  ui::AXNode* prev = ax_node->GetPreviousUnignoredSibling();
-
-  if ((next && next->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag) ==
-                   html_tag) ||
-      (prev && prev->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag) ==
-                   html_tag)) {
-    return "span";
-  }
-
-  std::string aria_level = GetAriaLevel(ax_node);
-  return !aria_level.empty() ? "h" + aria_level : html_tag;
+  return model_.GetHtmlTag(ax_node_id);
 }
 
 std::string ReadAnythingAppController::GetLanguage(

@@ -179,6 +179,8 @@ class ReadAnythingAppModel {
   void DecreaseTextSize();
   void ResetTextSize();
 
+  std::string GetHtmlTag(ui::AXNodeID ax_node_id) const;
+
   // PDF handling.
   void SetIsPdf(const GURL& url);
   bool is_pdf() const { return is_pdf_; }
@@ -225,6 +227,10 @@ class ReadAnythingAppModel {
                               size_t tree_size);
 
   ui::AXNode* GetParentForSelection(ui::AXNode* node);
+  std::string GetHtmlTagForPDF(ui::AXNode* ax_node, std::string html_tag) const;
+  std::string GetHeadingHtmlTagForPDF(ui::AXNode* ax_node,
+                                      std::string html_tag) const;
+  std::string GetAriaLevel(ui::AXNode* ax_node) const;
 
   // State.
   // Store AXTrees of web contents in the browser's tab strip as AXTreeManagers.

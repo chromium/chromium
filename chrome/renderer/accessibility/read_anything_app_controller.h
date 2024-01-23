@@ -253,11 +253,6 @@ class ReadAnythingAppController
   double GetLetterSpacingValue(int letter_spacing) const;
   std::vector<std::string> GetSupportedFonts() const;
 
-  std::string GetHtmlTagForPDF(ui::AXNode* ax_node, std::string html_tag) const;
-  std::string GetHeadingHtmlTagForPDF(ui::AXNode* ax_node,
-                                      std::string html_tag) const;
-  std::string GetAriaLevel(ui::AXNode* ax_node) const;
-
   // The language code that should be used to determine which voices are
   // supported for speech.
   const std::string& GetLanguageCodeForSpeech() const;
