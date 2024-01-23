@@ -27,6 +27,7 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/test/fake_window_state.h"
+#include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
@@ -1230,9 +1231,39 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, ResizeSnappedWindow) {
   ApplyPendingRequestedBounds();
   EXPECT_TRUE(window_state()->IsSnapped());
 
-  // Resize to 1/3 (i.e. make the width 400).
+  // Start drag-resizing from the center point of the work area.
+  auto* const event_generator = GetEventGenerator();
+  gfx::Point next_cursor_point = display::Screen::GetScreen()
+                                     ->GetPrimaryDisplay()
+                                     .work_area()
+                                     .CenterPoint();
+  event_generator->set_current_screen_location(next_cursor_point);
+  event_generator->PressLeftButton();
+  // The following drag info is used by client to determine how to handle the
+  // bounds change.
+  EXPECT_TRUE(window_state_delegate()->drag_in_progress());
+  EXPECT_TRUE(window_state()->drag_details()->bounds_change &
+              WindowResizer::kBoundsChange_Resizes);
+
+  // Keep dragging...
+  next_cursor_point.Offset(-50, 0);
+  event_generator->MoveMouseTo(next_cursor_point);
+  // The following drag info is used by client to determine how to handle the
+  // bounds change.
+  EXPECT_TRUE(window_state_delegate()->drag_in_progress());
+  EXPECT_TRUE(window_state()->drag_details()->bounds_change &
+              WindowResizer::kBoundsChange_Resizes);
+  ApplyPendingRequestedBounds();
+
+  // Drag to 1/3 (i.e. make the width 400).
   const float target_width = 400;
-  DragResizeSnappedWindow(window(), target_width);
+  next_cursor_point.set_x(target_width);
+  event_generator->MoveMouseTo(next_cursor_point);
+  event_generator->ReleaseLeftButton();
+  // The following drag info is used by client to determine how to handle the
+  // bounds change.
+  EXPECT_FALSE(window_state_delegate()->drag_in_progress());
+
   ApplyPendingRequestedBounds();
   VerifySnappedBounds(window(), target_width / 1200);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
