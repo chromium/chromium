@@ -129,10 +129,9 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
 
 }  // namespace
 
-scoped_refptr<ShapeResult> StretchyOperatorShaper::Shape(
-    const Font* font,
-    float target_size,
-    Metrics* metrics) const {
+const ShapeResult* StretchyOperatorShaper::Shape(const Font* font,
+                                                 float target_size,
+                                                 Metrics* metrics) const {
   const SimpleFontData* primary_font = font->PrimaryFont();
   const HarfBuzzFace* harfbuzz_face =
       primary_font->PlatformData().GetHarfBuzzFace();
@@ -176,7 +175,7 @@ scoped_refptr<ShapeResult> StretchyOperatorShaper::Shape(
         font, direction, glyph_variant, glyph_variant_stretch_size);
   }
 
-  scoped_refptr<ShapeResult> shape_result_for_glyph_assembly =
+  const ShapeResult* shape_result_for_glyph_assembly =
       ShapeResult::CreateForStretchyMathOperator(font, direction, stretch_axis_,
                                                  std::move(*params));
   if (metrics) {

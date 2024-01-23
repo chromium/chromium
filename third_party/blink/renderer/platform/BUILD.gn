@@ -730,7 +730,6 @@ component("platform") {
     "fonts/shaping/harfbuzz_font_data.h",
     "fonts/shaping/harfbuzz_shaper.cc",
     "fonts/shaping/harfbuzz_shaper.h",
-    "fonts/shaping/ng_shape_cache.cc",
     "fonts/shaping/ng_shape_cache.h",
     "fonts/shaping/run_segmenter.cc",
     "fonts/shaping/run_segmenter.h",

@@ -32,6 +32,7 @@
 #include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -41,63 +42,10 @@
 
 namespace blink {
 
-using ShapeCacheEntry = scoped_refptr<const ShapeResult>;
-
-class NGShapeCache {
-  USING_FAST_MALLOC(NGShapeCache);
-  // Used to represent hash table keys as "small string with direction".
-  class SmallStringKey {
-    DISALLOW_NEW();
-
-   public:
-    static unsigned Capacity() { return kCapacity; }
-
-    SmallStringKey()
-        : text_(g_empty_string),
-          direction_(static_cast<unsigned>(TextDirection::kLtr)) {}
-
-    explicit SmallStringKey(WTF::HashTableDeletedValueType)
-        : direction_(static_cast<unsigned>(TextDirection::kLtr)) {}
-
-    SmallStringKey(const String& text, TextDirection direction)
-        : text_(text), direction_(static_cast<unsigned>(direction)) {
-      DCHECK(text_.length() <= kCapacity);
-      // In order to get the most optimal algorithm, use base::FastHash instead
-      // of the one provided by StringHasher. See http://crbug.com/735674.
-      // TODO(crbug.com/1408058, crbug.com/902789): Investigate hash performance
-      // improvement for NGShapeCache:
-      // - Should we rely on HashTraits<String>::GetHash(text_) and avoid
-      //   storing the hash_ on the class? That would still rely on the slower
-      //   StringHasher but would avoid that calculation when the hash result is
-      //   already stored on the String object.
-      // - Should we use base::HashInts to take direction_ into account in the
-      //   hash value to avoid some colisions?
-      hash_ = static_cast<unsigned>(
-          base::FastHash(text_.Is8Bit() ? base::as_bytes(text_.Span8())
-                                        : base::as_bytes(text_.Span16())));
-    }
-
-    const String& Text() const { return text_; }
-    TextDirection Direction() const {
-      return static_cast<TextDirection>(direction_);
-    }
-    unsigned GetHash() const { return hash_; }
-
-    bool IsHashTableDeletedValue() const { return text_.IsNull(); }
-    bool IsHashTableEmptyValue() const { return text_.empty(); }
-
-   private:
-    static constexpr unsigned kCapacity = 15;
-
-    unsigned hash_;
-    String text_;
-    unsigned direction_ : 1;
-  };
-
+class NGShapeCache : public GarbageCollected<NGShapeCache> {
  public:
-  static unsigned MaxTextLengthOfEntries() {
-    return SmallStringKey::Capacity();
-  }
+  static constexpr unsigned kMaxTextLengthOfEntries = 15;
+  static constexpr unsigned kMaxSize = 2048;
 
   NGShapeCache() {
     DCHECK(RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled());
@@ -105,59 +53,37 @@ class NGShapeCache {
   NGShapeCache(const NGShapeCache&) = delete;
   NGShapeCache& operator=(const NGShapeCache&) = delete;
 
-  ShapeCacheEntry* Add(const String& text, TextDirection direction) {
-    if (text.length() > SmallStringKey::Capacity()) {
-      return nullptr;
-    }
-    return AddSlowCase(text, direction);
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(ltr_string_map_);
+    visitor->Trace(rtl_string_map_);
   }
 
-  void ClearIfVersionChanged(unsigned version) {
-    if (version != version_) {
-      small_string_map_.clear();
-      version_ = version;
+  template <typename ShapeResultFunc>
+  const ShapeResult* GetOrCreate(const String& text,
+                                 TextDirection direction,
+                                 const ShapeResultFunc& shape_result_func) {
+    if (text.length() > kMaxTextLengthOfEntries) {
+      return shape_result_func();
     }
-  }
-
-  size_t ByteSize() const {
-    size_t self_byte_size = 0;
-    for (auto cache_entry : small_string_map_) {
-      self_byte_size += cache_entry.value->ByteSize();
+    auto& map =
+        direction == TextDirection::kLtr ? ltr_string_map_ : rtl_string_map_;
+    if (map.size() >= kMaxSize) {
+      auto it = map.find(text);
+      return it != map.end() ? it->value.Get() : shape_result_func();
     }
-    return self_byte_size;
-  }
-
-  base::WeakPtr<NGShapeCache> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
+    auto add_result = map.insert(text, nullptr);
+    if (add_result.is_new_entry) {
+      add_result.stored_value->value = shape_result_func();
+    }
+    return add_result.stored_value->value.Get();
   }
 
  private:
-  PLATFORM_EXPORT ShapeCacheEntry* AddSlowCase(const String& text,
-                                               TextDirection direction);
-  struct SmallStringKeyHashTraits : WTF::SimpleClassHashTraits<SmallStringKey> {
-    STATIC_ONLY(SmallStringKeyHashTraits);
-    static unsigned GetHash(const SmallStringKey& key) { return key.GetHash(); }
-    static const bool kEmptyValueIsZero = false;
-    static bool IsEmptyValue(const SmallStringKey& key) {
-      return key.IsHashTableEmptyValue();
-    }
-    static const unsigned kMinimumTableSize = 16;
-  };
+  typedef HeapHashMap<String, WeakMember<const ShapeResult>> SmallStringMap;
 
-  friend bool operator==(const SmallStringKey&, const SmallStringKey&);
-
-  typedef HashMap<SmallStringKey, ShapeCacheEntry, SmallStringKeyHashTraits>
-      SmallStringMap;
-
-  SmallStringMap small_string_map_;
-  unsigned version_ = 0;
-  base::WeakPtrFactory<NGShapeCache> weak_factory_{this};
+  SmallStringMap ltr_string_map_;
+  SmallStringMap rtl_string_map_;
 };
-
-inline bool operator==(const NGShapeCache::SmallStringKey& a,
-                       const NGShapeCache::SmallStringKey& b) {
-  return a.Direction() == b.Direction() && a.Text() == b.Text();
-}
 
 }  // namespace blink
 

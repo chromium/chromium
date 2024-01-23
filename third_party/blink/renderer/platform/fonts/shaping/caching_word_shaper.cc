@@ -44,7 +44,7 @@ ShapeCache* CachingWordShaper::GetShapeCache() const {
 // is specified it constructs on it the smallest bounding box covering all ink.
 float CachingWordShaper::Width(const TextRun& run, gfx::RectF* glyph_bounds) {
   float width = 0;
-  scoped_refptr<const ShapeResult> word_result;
+  const ShapeResult* word_result = nullptr;
   CachingWordShapeIterator iterator(GetShapeCache(), run, &font_);
   while (iterator.Next(&word_result)) {
     if (word_result) {
@@ -81,7 +81,7 @@ static inline float ShapeResultsForRun(ShapeCache* shape_cache,
                                        const TextRun& run,
                                        ShapeResultBuffer* results_buffer) {
   CachingWordShapeIterator iterator(shape_cache, run, font);
-  scoped_refptr<const ShapeResult> word_result;
+  const ShapeResult* word_result = nullptr;
   float total_width = 0;
   while (iterator.Next(&word_result)) {
     if (word_result) {

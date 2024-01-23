@@ -45,13 +45,13 @@ class ShapeResultBloberizerTest : public FontTestBase {
     ASSERT_EQ(USCRIPT_LATIN, font_description.GetScript());
     font_description.SetGenericFamily(FontDescription::kStandardFamily);
 
-    cache = std::make_unique<ShapeCache>();
+    cache = MakeGarbageCollected<ShapeCache>();
   }
 
   FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription font_description;
 
-  std::unique_ptr<ShapeCache> cache;
+  Persistent<ShapeCache> cache;
 };
 
 struct ExpectedRun {
@@ -425,9 +425,9 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBufferNG) {
 
   Font font(font_description);
   HarfBuzzShaper shaper(string);
-  scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kRtl);
+  const ShapeResult* result = shaper.Shape(&font, TextDirection::kRtl);
 
-  ShapeResultView* result_view = ShapeResultView::Create(result.get());
+  ShapeResultView* result_view = ShapeResultView::Create(result);
   TextFragmentPaintInfo text_info{StringView(string), 1, string.length(),
                                   result_view};
   ShapeResultBloberizer::FillGlyphsNG bloberizer_ng(
@@ -451,9 +451,9 @@ TEST_F(ShapeResultBloberizerTest, FourByteUtf8CodepointsNG) {
 
   Font font(font_description);
   HarfBuzzShaper shaper(string);
-  scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kLtr);
+  const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
-  ShapeResultView* result_view = ShapeResultView::Create(result.get());
+  ShapeResultView* result_view = ShapeResultView::Create(result);
   TextFragmentPaintInfo text_info{StringView(string), 0, string.length(),
                                   result_view};
   ShapeResultBloberizer::FillGlyphsNG bloberizer_ng(
@@ -477,9 +477,9 @@ TEST_F(ShapeResultBloberizerTest, OffsetIntoTrailingSurrogateNG) {
 
   Font font(font_description);
   HarfBuzzShaper shaper(string);
-  scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kLtr);
+  const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
-  ShapeResultView* result_view = ShapeResultView::Create(result.get());
+  ShapeResultView* result_view = ShapeResultView::Create(result);
   // Start at offset 1 into text at trailing surrogate.
   TextFragmentPaintInfo text_info{StringView(string), 1, string.length(),
                                   result_view};
@@ -524,18 +524,14 @@ TEST_F(ShapeResultBloberizerTest, LatinMultRunNG) {
 
   // Combine four separate results into a single one to ensure we have a result
   // with multiple runs. Interleave fonts to ensure run changes.
-  scoped_refptr<ShapeResult> result =
-      ShapeResult::Create(&font, 0, 0, direction);
-  shaper_a.Shape(&font, direction)
-      ->CopyRange(0u, range_a.length(), result.get());
-  shaper_b.Shape(&font2, direction)
-      ->CopyRange(0u, range_b.length(), result.get());
-  shaper_c.Shape(&font, direction)
-      ->CopyRange(0u, range_c.length(), result.get());
-  shaper_d.Shape(&font2, direction)
-      ->CopyRange(0u, range_d.length(), result.get());
+  ShapeResult* result =
+      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+  shaper_a.Shape(&font, direction)->CopyRange(0u, range_a.length(), result);
+  shaper_b.Shape(&font2, direction)->CopyRange(0u, range_b.length(), result);
+  shaper_c.Shape(&font, direction)->CopyRange(0u, range_c.length(), result);
+  shaper_d.Shape(&font2, direction)->CopyRange(0u, range_d.length(), result);
 
-  ShapeResultView* result_view = ShapeResultView::Create(result.get());
+  ShapeResultView* result_view = ShapeResultView::Create(result);
   TextFragmentPaintInfo text_info{StringView(string), 1, string.length(),
                                   result_view};
   ShapeResultBloberizer::FillGlyphsNG bloberizer_ng(
@@ -592,16 +588,13 @@ TEST_F(ShapeResultBloberizerTest, SupplementaryMultiRunNG) {
 
   // Combine four separate results into a single one to ensure we have a result
   // with multiple runs. Interleave fonts to ensure run changes.
-  scoped_refptr<ShapeResult> result =
-      ShapeResult::Create(&font, 0, 0, direction);
-  shaper_a.Shape(&font, direction)
-      ->CopyRange(0u, range_a.length(), result.get());
-  shaper_b.Shape(&font2, direction)
-      ->CopyRange(0u, range_b.length(), result.get());
-  shaper_c.Shape(&font, direction)
-      ->CopyRange(0u, range_c.length(), result.get());
+  ShapeResult* result =
+      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+  shaper_a.Shape(&font, direction)->CopyRange(0u, range_a.length(), result);
+  shaper_b.Shape(&font2, direction)->CopyRange(0u, range_b.length(), result);
+  shaper_c.Shape(&font, direction)->CopyRange(0u, range_c.length(), result);
 
-  ShapeResultView* result_view = ShapeResultView::Create(result.get());
+  ShapeResultView* result_view = ShapeResultView::Create(result);
   TextFragmentPaintInfo text_info{StringView(string), 0, string.length(),
                                   result_view};
   ShapeResultBloberizer::FillGlyphsNG bloberizer_ng(

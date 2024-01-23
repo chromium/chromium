@@ -417,7 +417,7 @@ HighlightPainter::HighlightPainter(
     if (!parts_.empty()) {
       if (const ShapeResultView* shape_result_view =
               fragment_item_->TextShapeResult()) {
-        scoped_refptr<ShapeResult> shape_result =
+        const ShapeResult* shape_result =
             shape_result_view->CreateShapeResult();
         unsigned start_offset = fragment_item_->StartOffset();
         edges_info_.push_back(HighlightEdgeInfo{

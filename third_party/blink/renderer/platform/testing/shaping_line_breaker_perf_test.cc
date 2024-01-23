@@ -42,17 +42,17 @@ class HarfBuzzShapingLineBreaker : public ShapingLineBreaker {
  public:
   HarfBuzzShapingLineBreaker(const HarfBuzzShaper* shaper,
                              const Font* font,
-                             scoped_refptr<const ShapeResult> result,
+                             const ShapeResult* result,
                              const LazyLineBreakIterator* break_iterator,
                              const Hyphenation* hyphenation)
-      : ShapingLineBreaker(std::move(result), break_iterator, hyphenation),
+      : ShapingLineBreaker(result, break_iterator, hyphenation),
         shaper_(shaper),
         font_(font) {}
 
  protected:
-  scoped_refptr<ShapeResult> Shape(unsigned start,
-                                   unsigned end,
-                                   ShapeOptions options) final {
+  const ShapeResult* Shape(unsigned start,
+                           unsigned end,
+                           ShapeOptions options) final {
     return shaper_->Shape(font_, GetShapeResult().Direction(), start, end);
   }
 
@@ -157,19 +157,17 @@ TEST_F(ShapingLineBreakerPerfTest, ShapeLatinText) {
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
-  scoped_refptr<const ShapeResult> reference_result =
-      shaper.Shape(&font, direction);
+  const ShapeResult* reference_result = shaper.Shape(&font, direction);
   HarfBuzzShapingLineBreaker reference_breaker(&shaper, &font, reference_result,
                                                &break_iterator, nullptr);
 
-  scoped_refptr<const ShapeResult> line;
   LayoutUnit available_width_px(500);
   LayoutUnit expected_width =
       ShapeText(&reference_breaker, available_width_px, len);
 
   timer_.Reset();
   do {
-    scoped_refptr<const ShapeResult> result = shaper.Shape(&font, direction);
+    const ShapeResult* result = shaper.Shape(&font, direction);
     HarfBuzzShapingLineBreaker breaker(&shaper, &font, result, &break_iterator,
                                        nullptr);
 

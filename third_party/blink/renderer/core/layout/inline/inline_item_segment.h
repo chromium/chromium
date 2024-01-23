@@ -148,13 +148,13 @@ class CORE_EXPORT InlineItemSegments {
                         unsigned item_index) const;
 
   // Shape runs in the range and return the concatenated |ShapeResult|.
-  scoped_refptr<ShapeResult> ShapeText(const HarfBuzzShaper* shaper,
-                                       const Font* font,
-                                       TextDirection direction,
-                                       unsigned start_offset,
-                                       unsigned end_offset,
-                                       unsigned item_index,
-                                       ShapeOptions = ShapeOptions()) const;
+  ShapeResult* ShapeText(const HarfBuzzShaper* shaper,
+                         const Font* font,
+                         TextDirection direction,
+                         unsigned start_offset,
+                         unsigned end_offset,
+                         unsigned item_index,
+                         ShapeOptions = ShapeOptions()) const;
 
  private:
   unsigned PopulateItemsFromFontOrientation(

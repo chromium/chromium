@@ -72,34 +72,33 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
   // occur, such as at the beginning or end of lines or at element boundaries.
   // If given arbitrary positions the results are not guaranteed to be correct.
   // May be called multiple times; font and direction may vary between calls.
-  scoped_refptr<ShapeResult> Shape(const Font*,
-                                   TextDirection,
-                                   unsigned start,
-                                   unsigned end) const;
+  ShapeResult* Shape(const Font*,
+                     TextDirection,
+                     unsigned start,
+                     unsigned end) const;
 
   // Shape a range that has already been pre-segmented. Start and end positions
   // must match the positions defined by the ranges and must be at valid break
   // positions.
-  scoped_refptr<ShapeResult> Shape(
-      const Font*,
-      TextDirection,
-      unsigned start,
-      unsigned end,
-      const Vector<RunSegmenter::RunSegmenterRange>&,
-      ShapeOptions = ShapeOptions()) const;
+  ShapeResult* Shape(const Font*,
+                     TextDirection,
+                     unsigned start,
+                     unsigned end,
+                     const Vector<RunSegmenter::RunSegmenterRange>&,
+                     ShapeOptions = ShapeOptions()) const;
 
   // Shape a single range. Start and end positions defined by the range.
-  scoped_refptr<ShapeResult> Shape(const Font*,
-                                   TextDirection,
-                                   unsigned start,
-                                   unsigned end,
-                                   const RunSegmenter::RunSegmenterRange,
-                                   ShapeOptions = ShapeOptions()) const;
+  ShapeResult* Shape(const Font*,
+                     TextDirection,
+                     unsigned start,
+                     unsigned end,
+                     const RunSegmenter::RunSegmenterRange,
+                     ShapeOptions = ShapeOptions()) const;
 
   // Shape the entire string with a single font and direction.
   // Equivalent to calling the range version with a start offset of zero and an
   // end offset equal to the length.
-  scoped_refptr<ShapeResult> Shape(const Font*, TextDirection) const;
+  ShapeResult* Shape(const Font*, TextDirection) const;
 
   const String& GetText() const { return text_; }
   unsigned TextLength() const { return text_.length(); }

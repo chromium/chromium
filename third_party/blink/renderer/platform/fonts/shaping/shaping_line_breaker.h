@@ -36,7 +36,7 @@ class PLATFORM_EXPORT ShapingLineBreaker {
 
  public:
   // Construct a ShapingLineBreaker.
-  ShapingLineBreaker(scoped_refptr<const ShapeResult> result,
+  ShapingLineBreaker(const ShapeResult* result,
                      const LazyLineBreakIterator* break_iterator,
                      const Hyphenation* hyphenation);
 
@@ -89,9 +89,9 @@ class PLATFORM_EXPORT ShapingLineBreaker {
  protected:
   const ShapeResult& GetShapeResult() const { return *result_; }
 
-  virtual scoped_refptr<ShapeResult> Shape(unsigned start,
-                                           unsigned end,
-                                           ShapeOptions = ShapeOptions()) = 0;
+  virtual const ShapeResult* Shape(unsigned start,
+                                   unsigned end,
+                                   ShapeOptions = ShapeOptions()) = 0;
 
  private:
   struct EdgeOffset {
@@ -138,24 +138,23 @@ class PLATFORM_EXPORT ShapingLineBreaker {
                      unsigned word_end,
                      bool backwards) const;
 
-  const ShapeResultView* ShapeToEnd(
-      unsigned start,
-      scoped_refptr<const ShapeResult> line_start_result,
-      unsigned first_safe,
-      unsigned range_start,
-      unsigned range_end);
+  const ShapeResultView* ShapeToEnd(unsigned start,
+                                    const ShapeResult* line_start_result,
+                                    unsigned first_safe,
+                                    unsigned range_start,
+                                    unsigned range_end);
   const ShapeResultView* ConcatShapeResults(
       unsigned start,
       unsigned end,
       unsigned first_safe,
       unsigned last_safe,
-      scoped_refptr<const ShapeResult> line_start_result,
-      scoped_refptr<const ShapeResult> line_end_result);
+      const ShapeResult* line_start_result,
+      const ShapeResult* line_end_result);
 
   void SetBreakOffset(unsigned break_offset, const String&, Result*);
   void SetBreakOffset(const BreakOpportunity&, const String&, Result*);
 
-  scoped_refptr<const ShapeResult> result_;
+  const ShapeResult* result_;
   const LazyLineBreakIterator* break_iterator_;
   const Hyphenation* hyphenation_;
   unsigned line_start_ = 0;
