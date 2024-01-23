@@ -317,6 +317,14 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
                               std::move(uploadCompletionCallback));
 }
 
+// After upload failed with `failureIdentity`, this can be called to retry an
+// upload with the same identity.
+- (void)retryUploadImageWithIdentity:(id<SystemIdentity>)failureIdentity {
+  self.identity = failureIdentity;
+  [self.delegate startValidationSpinnerForAccountPicker];
+  [self tryUploadImage];
+}
+
 // Called when the Photos service reports upload completion.
 - (void)photosServiceFinishedUploadWithResult:
     (PhotosService::UploadResult)result {
@@ -340,9 +348,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
     __weak __typeof(self) weakSelf = self;
     [self.delegate stopValidationSpinnerForAccountPicker];
     [self showTryAgainOrCancelAlertWithTryAgainBlock:^{
-      weakSelf.identity = failureIdentity;
-      [weakSelf.delegate startValidationSpinnerForAccountPicker];
-      [weakSelf tryUploadImage];
+      [weakSelf retryUploadImageWithIdentity:failureIdentity];
     }];
     return;
   }
