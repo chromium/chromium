@@ -813,7 +813,7 @@ bool QuotaDatabase::RecoverOrRaze(int error_code) {
 
   db_.reset();
   EnsureOpened();
-  return db_->is_open();
+  return db_ && db_->is_open();
 }
 
 QuotaError QuotaDatabase::CorruptForTesting(
