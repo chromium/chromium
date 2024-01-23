@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -89,7 +90,7 @@ public class ReadAloudController
 
     private final BottomSheetController mBottomSheetController;
     private final BrowserControlsSizer mBrowserControlsSizer;
-
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private ReadAloudReadabilityHooks mReadabilityHooks;
 
     @Nullable private static ReadAloudReadabilityHooks sReadabilityHooksForTesting;
@@ -271,7 +272,8 @@ public class ReadAloudController
             BottomSheetController bottomSheetController,
             BrowserControlsSizer browserControlsSizer,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
-            ActivityWindowAndroid activityWindowAndroid) {
+            ActivityWindowAndroid activityWindowAndroid,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         ReadAloudFeatures.init();
         mActivity = activity;
         mProfileSupplier = profileSupplier;
@@ -286,6 +288,7 @@ public class ReadAloudController
         mHighlightingEnabled = new ObservableSupplierImpl<>(false);
         ApplicationStatus.registerApplicationStateListener(this);
         mActivityWindowAndroid = activityWindowAndroid;
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
     }
 
     public ObservableSupplier<String> getReadabilitySupplier() {
@@ -834,6 +837,11 @@ public class ReadAloudController
                     }
                 });
         return promise;
+    }
+
+    @Override
+    public ActivityLifecycleDispatcher getActivityLifecycleDispatcher() {
+        return mActivityLifecycleDispatcher;
     }
 
     @Override

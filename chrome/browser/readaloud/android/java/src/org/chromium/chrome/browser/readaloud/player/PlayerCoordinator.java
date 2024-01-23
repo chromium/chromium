@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerCoordinator;
@@ -39,6 +40,7 @@ public class PlayerCoordinator implements Player {
     private Playback mPlayback;
     private boolean mRestoreMiniPlayer;
     private boolean mRestoreExpandedPlayer;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     // TODO remove internal call and then remove this constructor
     public PlayerCoordinator(
@@ -69,6 +71,10 @@ public class PlayerCoordinator implements Player {
         mExpandedPlayer = new ExpandedPlayerCoordinator(contextForInflation, delegate, model);
         mMediator = new PlayerMediator(/* coordinator= */ this, delegate, model);
         mDelegate = delegate;
+        mActivityLifecycleDispatcher = delegate.getActivityLifecycleDispatcher();
+        if (mActivityLifecycleDispatcher != null) {
+            mActivityLifecycleDispatcher.register(mExpandedPlayer);
+        }
     }
 
     @VisibleForTesting
@@ -82,6 +88,10 @@ public class PlayerCoordinator implements Player {
         mMediator = mediator;
         mDelegate = delegate;
         mExpandedPlayer = player;
+        mActivityLifecycleDispatcher = delegate.getActivityLifecycleDispatcher();
+        if (mActivityLifecycleDispatcher != null) {
+            mActivityLifecycleDispatcher.register(mExpandedPlayer);
+        }
     }
 
     @Override
@@ -99,6 +109,9 @@ public class PlayerCoordinator implements Player {
         dismissPlayers();
         mMediator.destroy();
         mMiniPlayer.destroy();
+        if (mActivityLifecycleDispatcher != null) {
+            mActivityLifecycleDispatcher.unregister(mExpandedPlayer);
+        }
     }
 
     @Override
@@ -156,8 +169,8 @@ public class PlayerCoordinator implements Player {
         int miniPlayerVisibility = mMiniPlayer.getVisibility();
         if (miniPlayerVisibility == VisibilityState.SHOWING
                 || miniPlayerVisibility == VisibilityState.VISIBLE) {
-        mMiniPlayer.dismiss(true);
-        mMediator.setHiddenAndPlaying(true);
+            mMiniPlayer.dismiss(true);
+            mMediator.setHiddenAndPlaying(true);
         }
     }
 

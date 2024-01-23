@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -127,6 +128,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private PrefService mPrefService;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private ActivityWindowAndroid mActivityWindowAndroid;
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     MockTabModelSelector mTabModelSelector;
 
@@ -208,7 +210,8 @@ public class ReadAloudControllerUnitTest {
                         mBottomSheetController,
                         mBrowserControlsSizer,
                         mLayoutManagerSupplier,
-                        mActivityWindowAndroid);
+                        mActivityWindowAndroid,
+                        mActivityLifecycleDispatcher);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         mTab = mTabModelSelector.getCurrentTab();
