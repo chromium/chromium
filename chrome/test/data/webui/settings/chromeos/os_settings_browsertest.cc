@@ -10,6 +10,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -1451,6 +1452,53 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
                        OsSettingsUiUserActionRecorderRevamp) {
   RunSettingsTest("os_settings_ui/user_action_recorder_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsPeoplePageAccountManagerSettingsCard) {
+  RunSettingsTest("os_people_page/account_manager_settings_card_test.js");
+}
+
+class OSSettingsPeopleTestLacrosOnlyDisabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsPeopleTestLacrosOnlyDisabled() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::standalone_browser::features::kLacrosOnly);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsPeopleTestLacrosOnlyDisabled,
+                       OsPeoplePageAccountManagerSubpage) {
+  RunSettingsTest("os_people_page/account_manager_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsPeoplePageAdditionalAccountsSettingsCard) {
+  RunSettingsTest("os_people_page/additional_accounts_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ParentalControlsPage) {
+  RunSettingsTest("parental_controls_page/parental_controls_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ParentalControlsSettingsCard) {
+  RunSettingsTest(
+      "parental_controls_page/parental_controls_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       PersonalizationPageWithPersonalizationHub) {
+  RunSettingsTest(
+      "personalization_page/"
+      "personalization_page_with_personalization_hub_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, SettingsSchedulerSlider) {
+  RunSettingsTest(
+      "settings_scheduler_slider/settings_scheduler_slider_test.js");
 }
 
 }  // namespace ash::settings

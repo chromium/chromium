@@ -106,23 +106,6 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
    'os_settings_search_box/os_settings_search_box_test.js'
  ],
  [
-   'ParentalControlsPage',
-   'parental_controls_page/parental_controls_page_test.js'
- ],
- [
-   'ParentalControlsSettingsCard',
-   'parental_controls_page/parental_controls_settings_card_test.js'
- ],
- [
-   'OsPeoplePageAccountManagerSettingsCard',
-   'os_people_page/account_manager_settings_card_test.js',
- ],
- [
-   'OsPeoplePageAccountManagerSubpage',
-   'os_people_page/account_manager_subpage_test.js',
-   {disabled: ['ash::standalone_browser::features::kLacrosOnly']},
- ],
- [
    'OsPeoplePageAccountManagerSubpageWithArcAccountRestrictionsEnabled',
    'os_people_page/account_manager_subpage_test.js',
    {
@@ -131,18 +114,6 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
        'ash::standalone_browser::features::kLacrosProfileMigrationForceOff'
      ]
    },
- ],
- [
-   'OsPeoplePageAdditionalAccountsSettingsCard',
-   'os_people_page/additional_accounts_settings_card_test.js',
- ],
- [
-   'PersonalizationPageWithPersonalizationHub',
-   'personalization_page/personalization_page_with_personalization_hub_test.js',
- ],
- [
-   'SettingsSchedulerSlider',
-   'settings_scheduler_slider/settings_scheduler_slider_test.js'
  ],
  [
    'SystemPreferencesPage',
