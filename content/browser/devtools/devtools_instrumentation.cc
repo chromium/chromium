@@ -14,7 +14,6 @@
 #include "content/browser/devtools/browser_devtools_agent_host.h"
 #include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_issue_storage.h"
-#include "content/browser/devtools/devtools_url_loader_interceptor.h"
 #include "content/browser/devtools/protocol/audits.h"
 #include "content/browser/devtools/protocol/audits_handler.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
@@ -48,7 +47,6 @@
 #include "devtools_agent_host_impl.h"
 #include "devtools_instrumentation.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/cookies/canonical_cookie.h"
@@ -59,7 +57,6 @@
 #include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 
@@ -1396,24 +1393,6 @@ bool WillCreateURLLoaderFactoryForWorkerMainScript(
       host, worker_token, rph->GetID(), rph->GetStoragePartition(),
       /*is_navigation=*/false, /*is_download=*/false,
       /*target_factory_receiver=*/nullptr, factory_override);
-}
-
-bool WillCreateURLLoaderFactory(
-    RenderFrameHostImpl* rfh,
-    bool is_navigation,
-    bool is_download,
-    std::unique_ptr<network::mojom::URLLoaderFactory>* factory) {
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> proxied_factory;
-  mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver =
-      proxied_factory.InitWithNewPipeAndPassReceiver();
-  if (!WillCreateURLLoaderFactory(rfh, is_navigation, is_download, &receiver,
-                                  nullptr)) {
-    return false;
-  }
-  mojo::MakeSelfOwnedReceiver(std::move(*factory), std::move(receiver));
-  *factory = std::make_unique<DevToolsURLLoaderFactoryAdapter>(
-      std::move(proxied_factory));
-  return true;
 }
 
 void OnPrefetchRequestWillBeSent(

@@ -1736,27 +1736,4 @@ void InterceptionJob::OnAuthRequest(
   NotifyClient(std::move(request_info));
 }
 
-DevToolsURLLoaderFactoryAdapter::DevToolsURLLoaderFactoryAdapter(
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> factory)
-    : factory_(std::move(factory)) {}
-
-DevToolsURLLoaderFactoryAdapter::~DevToolsURLLoaderFactoryAdapter() = default;
-
-void DevToolsURLLoaderFactoryAdapter::CreateLoaderAndStart(
-    mojo::PendingReceiver<network::mojom::URLLoader> loader,
-    int32_t request_id,
-    uint32_t options,
-    const network::ResourceRequest& request,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  factory_->CreateLoaderAndStart(std::move(loader), request_id, options,
-                                 request, std::move(client),
-                                 traffic_annotation);
-}
-
-void DevToolsURLLoaderFactoryAdapter::Clone(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
-  factory_->Clone(std::move(receiver));
-}
-
 }  // namespace content

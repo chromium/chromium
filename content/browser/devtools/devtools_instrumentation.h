@@ -138,12 +138,6 @@ bool WillCreateURLLoaderFactoryForWorkerMainScript(
     const base::UnguessableToken& worker_token,
     network::mojom::URLLoaderFactoryOverridePtr* factory_override);
 
-bool WillCreateURLLoaderFactory(
-    RenderFrameHostImpl* rfh,
-    bool is_navigation,
-    bool is_download,
-    std::unique_ptr<network::mojom::URLLoaderFactory>* factory);
-
 bool WillCreateURLLoaderFactoryInternal(
     DevToolsAgentHostImpl* agent_host,
     const base::UnguessableToken& devtools_token,
