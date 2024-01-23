@@ -262,6 +262,11 @@ std::optional<api::autofill_private::AccountInfo> GetAccountInfo(
       personal_data.IsSyncFeatureEnabledForAutofill();
   api_account.is_eligible_for_address_account_storage =
       personal_data.IsEligibleForAddressAccountStorage();
+  api_account.is_autofill_sync_toggle_enabled =
+      personal_data.IsUserSelectableTypeEnabled(
+          syncer::UserSelectableType::kAutofill);
+  api_account.is_autofill_sync_toggle_available =
+      personal_data.IsAutofillSyncToggleAvailable();
   return std::move(api_account);
 }
 

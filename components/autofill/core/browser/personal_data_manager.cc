@@ -69,6 +69,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
@@ -1940,6 +1941,13 @@ bool PersonalDataManager::IsUserSelectableTypeEnabled(
          sync_service_->GetUserSettings()->GetSelectedTypes().Has(type);
 }
 
+void PersonalDataManager::SetAutofillSelectableTypeEnabled(bool enabled) {
+  if (sync_service_ != nullptr) {
+    sync_service_->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kAutofill, enabled);
+  }
+}
+
 void PersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(
     bool enabled) {
   prefs::SetPaymentMethodsMandatoryReauthEnabled(pref_service_, enabled);
@@ -2009,6 +2017,48 @@ bool PersonalDataManager::IsPaymentCvcStorageEnabled() {
 
 AutofillImageFetcherBase* PersonalDataManager::GetImageFetcher() const {
   return image_fetcher_;
+}
+
+bool PersonalDataManager::IsAutofillSyncToggleAvailable() const {
+  auto is_unsupported_passphrase_user = [&] {
+    if (!sync_service_) {
+      return false;
+    }
+    return sync_service_->GetUserSettings()->IsUsingExplicitPassphrase() &&
+           !base::FeatureList::IsEnabled(
+               syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers);
+  };
+  auto is_unsupported_dasher_user = [&] {
+    if (!account_status_finder_) {
+      return false;
+    }
+    using StatusOutcome = signin::AccountManagedStatusFinder::Outcome;
+    StatusOutcome outcome = account_status_finder_->GetOutcome();
+    return (outcome == StatusOutcome::kEnterprise ||
+            outcome == StatusOutcome::kEnterpriseGoogleDotCom) &&
+           !base::FeatureList::IsEnabled(
+               syncer::kSyncEnableContactInfoDataTypeForDasherUsers);
+  };
+  auto is_child_account = [&] {
+    if (!sync_service_ || !identity_manager_ ||
+        !identity_manager_->AreRefreshTokensLoaded()) {
+      return false;
+    }
+    return identity_manager_
+               ->FindExtendedAccountInfo(sync_service_->GetAccountInfo())
+               .capabilities.is_subject_to_parental_controls() ==
+           signin::Tribool::kTrue;
+  };
+  return sync_service_ && !sync_service_->GetAccountInfo().IsEmpty() &&
+         !sync_service_->HasSyncConsent() &&
+         !sync_service_->GetUserSettings()->IsTypeManagedByPolicy(
+             syncer::UserSelectableType::kAutofill) &&
+         !is_unsupported_passphrase_user() && !is_unsupported_dasher_user() &&
+         !is_child_account() &&
+         base::FeatureList::IsEnabled(
+             syncer::kSyncEnableContactInfoDataTypeInTransportMode) &&
+         base::FeatureList::IsEnabled(
+             syncer::kSyncDecoupleAddressPaymentSettings);
 }
 
 void PersonalDataManager::AddFullServerCreditCardForTesting(

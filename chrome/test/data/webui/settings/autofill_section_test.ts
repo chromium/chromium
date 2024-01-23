@@ -689,6 +689,7 @@ suite('AutofillSectionAddressTests', function() {
   // TODO(crbug.com/1473847): Fix the flakiness.
   test.skip('verifySyncSourceNoticeForNewAddress', async () => {
     const section = await createAutofillSection([], {}, {
+      ...STUB_USER_ACCOUNT_INFO,
       email: 'stub-user@example.com',
       isSyncEnabledForAutofillProfiles: true,
       isEligibleForAddressAccountStorage: false,
@@ -706,6 +707,7 @@ suite('AutofillSectionAddressTests', function() {
   test('verifyAccountSourceNoticeForNewAddress', async () => {
     const email = 'stub-user@example.com';
     const section = await createAutofillSection([], {}, {
+      ...STUB_USER_ACCOUNT_INFO,
       email,
       isSyncEnabledForAutofillProfiles: true,
       isEligibleForAddressAccountStorage: true,
@@ -722,6 +724,125 @@ suite('AutofillSectionAddressTests', function() {
         section.i18n('newAccountAddressSourceNotice', email));
 
     document.body.removeChild(section);
+  });
+
+  // TODO(crbug.com/1502843): Remove when toggle becomes available on the Sync
+  // page for non-syncing users.
+  test('verifyAutofillSyncToggleAvailability', async () => {
+    const autofillManager = new TestAutofillManager();
+    autofillManager.data.accountInfo = {
+      ...STUB_USER_ACCOUNT_INFO,
+      isAutofillSyncToggleAvailable: false,
+    };
+    AutofillManagerImpl.setInstance(autofillManager);
+
+    const section = document.createElement('settings-autofill-section');
+    document.body.appendChild(section);
+    await autofillManager.whenCalled('getAddressList');
+    await flushTasks();
+
+    assertFalse(
+        isVisible(section.$.autofillSyncToggle),
+        'The toggle should not be visible because of ' +
+            'accountInfo.isAutofillSyncToggleAvailable == false');
+    const changeListener =
+        autofillManager.lastCallback.setPersonalDataManagerListener;
+    assertTrue(
+        !!changeListener,
+        'PersonalDataChangedListener should be set in the section element');
+
+    // Imitate native code `PersonalDataChangedListener` triggering.
+    changeListener([], [], [], {
+      ...STUB_USER_ACCOUNT_INFO,
+      isAutofillSyncToggleAvailable: true,
+      isAutofillSyncToggleEnabled: false,
+    });
+
+    await flushTasks();
+    assertTrue(
+        isVisible(section.$.autofillSyncToggle),
+        'The toggle should be visible because of ' +
+            'accountInfo.isAutofillSyncToggleAvailable == true');
+    assertFalse(
+        section.$.autofillSyncToggle.checked,
+        'The toggle should not be checked because of ' +
+            'accountInfo.isAutofillSyncToggleEnabled == false');
+
+    // Imitate native code `PersonalDataChangedListener` triggering.
+    changeListener([], [], [], {
+      ...STUB_USER_ACCOUNT_INFO,
+      isAutofillSyncToggleAvailable: true,
+      isAutofillSyncToggleEnabled: true,
+    });
+
+    await flushTasks();
+    assertTrue(
+        isVisible(section.$.autofillSyncToggle),
+        'The toggle should be visible because of ' +
+            'accountInfo.isAutofillSyncToggleAvailable == true');
+    assertTrue(
+        section.$.autofillSyncToggle.checked,
+        'The toggle should be checked because of ' +
+            'accountInfo.isAutofillSyncToggleEnabled == true');
+  });
+
+  // TODO(crbug.com/1502843): Remove as part of the cleanup work for the ticket.
+  test('verifyAutofillSyncToggleChanges', async () => {
+    const autofillManager = new TestAutofillManager();
+    autofillManager.data.accountInfo = {
+      ...STUB_USER_ACCOUNT_INFO,
+      isAutofillSyncToggleAvailable: true,
+      isAutofillSyncToggleEnabled: false,
+    };
+    AutofillManagerImpl.setInstance(autofillManager);
+
+    const section = document.createElement('settings-autofill-section');
+    document.body.appendChild(section);
+    await autofillManager.whenCalled('getAddressList');
+    await flushTasks();
+
+    const changeListener =
+        autofillManager.lastCallback.setPersonalDataManagerListener;
+    assertTrue(
+        !!changeListener,
+        'PersonalDataChangedListener should be set in the section element');
+
+    assertFalse(
+        section.$.autofillSyncToggle.checked,
+        'The toggle should not be checked because of initial ' +
+            'accountInfo.isAutofillSyncToggleEnabled == false');
+
+    section.$.autofillSyncToggle.click();
+
+    assertTrue(
+        section.$.autofillSyncToggle.checked,
+        'The toggle should be checked after the click.');
+    assertEquals(
+        autofillManager.getCallCount('setAutofillSyncToggleEnabled'), 1);
+
+    section.$.autofillSyncToggle.click();
+
+    assertFalse(
+        section.$.autofillSyncToggle.checked,
+        'The toggle should not be checked after another click.');
+    assertEquals(
+        autofillManager.getCallCount('setAutofillSyncToggleEnabled'), 2);
+
+    // Imitate native code `PersonalDataChangedListener` triggering. Notice
+    // that it was unchecked after the second click, but the listener was
+    // given `true`, the following assert checks it an covers the case when
+    // the toggle was not updated in the native code for some reason.
+    changeListener([], [], [], {
+      ...STUB_USER_ACCOUNT_INFO,
+      isAutofillSyncToggleAvailable: true,
+      isAutofillSyncToggleEnabled: true,
+    });
+    await flushTasks();
+
+    assertTrue(
+        section.$.autofillSyncToggle.checked,
+        'The toggle should be checked because of ' +
+            'accountInfo.isAutofillSyncToggleEnabled == true');
   });
 });
 

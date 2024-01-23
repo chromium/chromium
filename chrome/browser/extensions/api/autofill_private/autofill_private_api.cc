@@ -1033,4 +1033,32 @@ AutofillPrivateBulkDeleteAllCvcsFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateSetAutofillSyncToggleEnabledFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateSetAutofillSyncToggleEnabledFunction::Run() {
+  autofill::ContentAutofillClient* client =
+      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
+  if (!client) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  autofill::PersonalDataManager* personal_data =
+      client->GetPersonalDataManager();
+  if (!personal_data || !personal_data->IsDataLoaded()) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  absl::optional<api::autofill_private::SetAutofillSyncToggleEnabled::Params>
+      parameters =
+          api::autofill_private::SetAutofillSyncToggleEnabled::Params::Create(
+              args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  personal_data->SetAutofillSelectableTypeEnabled(parameters->enabled);
+
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions

@@ -15,6 +15,15 @@
         sub-label="$i18n{enableProfilesSublabel}"
         pref="{{prefs.autofill.profile_enabled}}">
     </settings-toggle-button>
+    <settings-toggle-button id="autofillSyncToggle"
+        hidden$="[[!isAutofillSyncToggleVisible_(accountInfo_)]]"
+        checked="[[accountInfo_.isAutofillSyncToggleEnabled]]"
+        label="$i18n{autofillSyncToggleLabel}"
+        sub-label="[[accountInfo_.email]]"
+        on-change="onAutofillSyncEnabledChange_"
+        no-extension-indicator
+        no-set-pref>
+    </settings-toggle-button>
     <template is="dom-if" if="[[prefs.autofill.profile_enabled.extensionId]]">
       <div class="cr-row continuation">
         <extension-controlled-indicator class="flex"

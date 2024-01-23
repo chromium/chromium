@@ -1929,6 +1929,7 @@ enum HistogramValue {
   ACCESSIBILITY_PRIVATE_INSTALLFACEGAZEASSETS = 1867,
   OS_MANAGEMENT_SETAUDIOVOLUME = 1868,
   AUTOTESTPRIVATE_SETDEVICELANGUAGE = 1869,
+  AUTOFILLPRIVATE_SETAUTOFILLSYNCTOGGLEENABLED = 1870,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
