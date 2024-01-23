@@ -2552,16 +2552,20 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
 
   // It normally is not necessary to process text nodes here, because we'll
   // also get a call for the attachment of the parent element. However in the
-  // YieldingParser scenario, the `previousOnLineId` can be unexpectedly null.
+  // YieldingParser scenario, the `previousOnLineId` can be unexpectedly null
+  // for whitespace-only nodes whose inclusion had not yet been determined.
   // Sample flake: AccessibilityContenteditableDocsLi. Therefore, find the
   // highest `LayoutInline` ancestor and mark it dirty.
-  if (IsA<Text>(node)) {
-    if (auto* layout_object = node->GetLayoutObject()) {
-      auto* layout_parent = layout_object->Parent();
-      while (layout_parent && layout_parent->IsLayoutInline()) {
-        layout_parent = layout_parent->Parent();
+  if (Text* text = DynamicTo<Text>(node)) {
+    if (text->ContainsOnlyWhitespaceOrEmpty()) {
+      if (auto* layout_object = node->GetLayoutObject()) {
+        auto* layout_parent = layout_object->Parent();
+        while (layout_parent && layout_parent->Parent() &&
+               layout_parent->Parent()->IsLayoutInline()) {
+          layout_parent = layout_parent->Parent();
+        }
+        MarkAXSubtreeDirty(Get(layout_parent));
       }
-      MarkAXSubtreeDirty(Get(layout_parent));
     }
     return;
   }
