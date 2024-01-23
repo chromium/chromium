@@ -97,30 +97,115 @@ class TestAccessibilityEventRewriterDelegate
   std::vector<MagnifierCommand> magnifier_commands_;
 };
 
-}  // namespace
-
-class ChromeVoxAccessibilityEventRewriterTest : public ash::AshTestBase {
+// Records all key events for testing.
+class EventCapturer : public ui::EventHandler {
  public:
-  ChromeVoxAccessibilityEventRewriterTest() {
-    keyboard_capability_ =
-        ui::KeyboardCapability::CreateStubKeyboardCapability();
-    event_rewriter_ash_ = std::make_unique<ui::EventRewriterAsh>(
-        &event_rewriter_delegate_, keyboard_capability_.get(), nullptr, false,
-        &fake_ime_keyboard_);
+  EventCapturer() = default;
+  EventCapturer(const EventCapturer&) = delete;
+  EventCapturer& operator=(const EventCapturer&) = delete;
+  ~EventCapturer() override = default;
+
+  void Reset() { last_key_event_.reset(); }
+
+  ui::KeyEvent* last_key_event() { return last_key_event_.get(); }
+
+ private:
+  void OnKeyEvent(ui::KeyEvent* event) override {
+    last_key_event_ = std::make_unique<ui::KeyEvent>(*event);
   }
-  ChromeVoxAccessibilityEventRewriterTest(
-      const ChromeVoxAccessibilityEventRewriterTest&) = delete;
-  ChromeVoxAccessibilityEventRewriterTest& operator=(
-      const ChromeVoxAccessibilityEventRewriterTest&) = delete;
+
+  std::unique_ptr<ui::KeyEvent> last_key_event_;
+};
+
+// Common set up for AccessibilityEventRewriter related unit tests.
+class AccessibilityEventRewriterTestBase : public ash::AshTestBase {
+ protected:
+  AccessibilityEventRewriterTestBase() = default;
+  AccessibilityEventRewriterTestBase(
+      const AccessibilityEventRewriterTestBase&) = delete;
+  AccessibilityEventRewriterTestBase& operator=(
+      const AccessibilityEventRewriterTestBase&) = delete;
+  ~AccessibilityEventRewriterTestBase() override = default;
 
   void SetUp() override {
     ash::AshTestBase::SetUp();
     generator_ = AshTestBase::GetEventGenerator();
+
     accessibility_event_rewriter_ =
-        std::make_unique<AccessibilityEventRewriter>(event_rewriter_ash_.get(),
-                                                     &delegate_);
-    GetContext()->GetHost()->GetEventSource()->AddEventRewriter(
+        std::make_unique<AccessibilityEventRewriter>(
+            &event_rewriter_ash_, &accessibility_event_rewriter_delegate_);
+
+    GetContext()->AddPreTargetHandler(&event_capturer_);
+
+    GetAccessibilityController()->SetAccessibilityEventRewriter(
         accessibility_event_rewriter_.get());
+
+    auto* event_source = GetContext()->GetHost()->GetEventSource();
+    event_source->AddEventRewriter(accessibility_event_rewriter_.get());
+  }
+
+  void TearDown() override {
+    auto* event_source = GetContext()->GetHost()->GetEventSource();
+    event_source->RemoveEventRewriter(accessibility_event_rewriter_.get());
+
+    GetAccessibilityController()->SetAccessibilityEventRewriter(nullptr);
+
+    GetContext()->RemovePreTargetHandler(&event_capturer_);
+    accessibility_event_rewriter_.reset();
+
+    generator_ = nullptr;
+    ash::AshTestBase::TearDown();
+  }
+
+ protected:
+  EventCapturer& event_capturer() { return event_capturer_; }
+
+  TestAccessibilityEventRewriterDelegate&
+  accessibility_event_rewriter_delegate() {
+    return accessibility_event_rewriter_delegate_;
+  }
+
+  AccessibilityEventRewriter& accessibility_event_rewriter() {
+    return *accessibility_event_rewriter_;
+  }
+
+  ui::test::EventGenerator& generator() { return *generator_; }
+
+  AccessibilityController* GetAccessibilityController() {
+    return Shell::Get()->accessibility_controller();
+  }
+
+  void SetModifierRemapping(const std::string& pref_name,
+                            ui::mojom::ModifierKey value) {
+    event_rewriter_ash_delegate_.SetModifierRemapping(pref_name, value);
+  }
+
+ private:
+  EventCapturer event_capturer_;
+
+  ui::test::FakeEventRewriterAshDelegate event_rewriter_ash_delegate_;
+  std::unique_ptr<ui::KeyboardCapability> keyboard_capability_{
+      ui::KeyboardCapability::CreateStubKeyboardCapability()};
+  input_method::FakeImeKeyboard fake_ime_keyboard_;
+  ui::EventRewriterAsh event_rewriter_ash_{&event_rewriter_ash_delegate_,
+                                           keyboard_capability_.get(), nullptr,
+                                           false, &fake_ime_keyboard_};
+
+  TestAccessibilityEventRewriterDelegate accessibility_event_rewriter_delegate_;
+  std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
+
+  // Generates ui::Events from simulated user input.
+  raw_ptr<ui::test::EventGenerator> generator_ = nullptr;
+};
+
+}  // namespace
+
+class ChromeVoxAccessibilityEventRewriterTest
+    : public AccessibilityEventRewriterTestBase {
+ public:
+  void SetUp() override {
+    AccessibilityEventRewriterTestBase::SetUp();
+
     GetContext()->GetHost()->GetEventSource()->AddEventRewriter(
         &event_recorder_);
   }
@@ -128,120 +213,105 @@ class ChromeVoxAccessibilityEventRewriterTest : public ash::AshTestBase {
   void TearDown() override {
     GetContext()->GetHost()->GetEventSource()->RemoveEventRewriter(
         &event_recorder_);
-    GetContext()->GetHost()->GetEventSource()->RemoveEventRewriter(
-        accessibility_event_rewriter_.get());
-    accessibility_event_rewriter_.reset();
-    generator_ = nullptr;
-    ash::AshTestBase::TearDown();
+    AccessibilityEventRewriterTestBase::TearDown();
   }
 
+  ui::test::TestEventRewriter& event_recorder() { return event_recorder_; }
+
   size_t delegate_chromevox_recorded_event_count() {
-    return delegate_.chromevox_recorded_event_count_;
+    return accessibility_event_rewriter_delegate()
+        .chromevox_recorded_event_count_;
   }
 
   size_t delegate_chromevox_captured_event_count() {
-    return delegate_.chromevox_captured_event_count_;
+    return accessibility_event_rewriter_delegate()
+        .chromevox_captured_event_count_;
   }
 
   void SetDelegateChromeVoxCaptureAllKeys(bool value) {
-    accessibility_event_rewriter_->set_chromevox_capture_all_keys(value);
+    accessibility_event_rewriter().set_chromevox_capture_all_keys(value);
   }
 
   void ExpectCounts(size_t expected_recorded_count,
                     size_t expected_delegate_count,
                     size_t expected_captured_count) {
     EXPECT_EQ(expected_recorded_count,
-              static_cast<size_t>(event_recorder_.events_seen()));
+              static_cast<size_t>(event_recorder().events_seen()));
     EXPECT_EQ(expected_delegate_count,
               delegate_chromevox_recorded_event_count());
     EXPECT_EQ(expected_captured_count,
               delegate_chromevox_captured_event_count());
   }
 
-  void SetModifierRemapping(const std::string& pref_name,
-                            ui::mojom::ModifierKey value) {
-    event_rewriter_delegate_.SetModifierRemapping(pref_name, value);
-  }
-
   bool RewriteEventForChromeVox(
       const ui::Event& event,
       const AccessibilityEventRewriter::Continuation continuation) {
-    return accessibility_event_rewriter_->RewriteEventForChromeVox(
+    return accessibility_event_rewriter().RewriteEventForChromeVox(
         event, continuation);
   }
 
   ui::KeyEvent* GetLastChromeVoxKeyEvent() {
-    if (delegate_.GetLastChromeVoxKeyEvent())
-      return delegate_.GetLastChromeVoxKeyEvent()->AsKeyEvent();
+    if (accessibility_event_rewriter_delegate().GetLastChromeVoxKeyEvent()) {
+      return accessibility_event_rewriter_delegate()
+          .GetLastChromeVoxKeyEvent()
+          ->AsKeyEvent();
+    }
     return nullptr;
   }
 
   void SetRemapPositionalKeys(bool value) {
-    accessibility_event_rewriter_
-        ->try_rewriting_positional_keys_for_chromevox_ = value;
+    accessibility_event_rewriter()
+        .try_rewriting_positional_keys_for_chromevox_ = value;
   }
 
- protected:
-  // A test accessibility event delegate; simulates ChromeVox and Switch Access.
-  TestAccessibilityEventRewriterDelegate delegate_;
-  // Generates ui::Events from simulated user input.
-  raw_ptr<ui::test::EventGenerator> generator_ = nullptr;
+ private:
   // Records events delivered to the next event rewriter after spoken feedback.
   ui::test::TestEventRewriter event_recorder_;
-
-  std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
-
-  ui::test::FakeEventRewriterAshDelegate event_rewriter_delegate_;
-  input_method::FakeImeKeyboard fake_ime_keyboard_;
-  std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
-  std::unique_ptr<ui::EventRewriterAsh> event_rewriter_ash_;
 };
 
 // The delegate should not intercept events when spoken feedback is disabled.
 TEST_F(ChromeVoxAccessibilityEventRewriterTest, EventsNotConsumedWhenDisabled) {
-  AccessibilityController* controller =
-      Shell::Get()->accessibility_controller();
+  AccessibilityController* controller = GetAccessibilityController();
   EXPECT_FALSE(controller->spoken_feedback().enabled());
 
-  generator_->PressKey(ui::VKEY_A, ui::EF_NONE);
-  EXPECT_EQ(1, event_recorder_.events_seen());
+  generator().PressKey(ui::VKEY_A, ui::EF_NONE);
+  EXPECT_EQ(1, event_recorder().events_seen());
   EXPECT_EQ(0U, delegate_chromevox_recorded_event_count());
-  generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
-  EXPECT_EQ(2, event_recorder_.events_seen());
-  EXPECT_EQ(0U, delegate_chromevox_recorded_event_count());
-
-  generator_->ClickLeftButton();
-  EXPECT_EQ(4, event_recorder_.events_seen());
+  generator().ReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  EXPECT_EQ(2, event_recorder().events_seen());
   EXPECT_EQ(0U, delegate_chromevox_recorded_event_count());
 
-  generator_->GestureTapAt(gfx::Point());
-  EXPECT_EQ(6, event_recorder_.events_seen());
+  generator().ClickLeftButton();
+  EXPECT_EQ(4, event_recorder().events_seen());
+  EXPECT_EQ(0U, delegate_chromevox_recorded_event_count());
+
+  generator().GestureTapAt(gfx::Point());
+  EXPECT_EQ(6, event_recorder().events_seen());
   EXPECT_EQ(0U, delegate_chromevox_recorded_event_count());
 }
 
 // The delegate should intercept key events when spoken feedback is enabled.
 TEST_F(ChromeVoxAccessibilityEventRewriterTest, KeyEventsConsumedWhenEnabled) {
-  AccessibilityController* controller =
-      Shell::Get()->accessibility_controller();
+  AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
 
-  generator_->PressKey(ui::VKEY_A, ui::EF_NONE);
-  EXPECT_EQ(1, event_recorder_.events_seen());
+  generator().PressKey(ui::VKEY_A, ui::EF_NONE);
+  EXPECT_EQ(1, event_recorder().events_seen());
   EXPECT_EQ(1U, delegate_chromevox_recorded_event_count());
   EXPECT_EQ(0U, delegate_chromevox_captured_event_count());
-  generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
-  EXPECT_EQ(2, event_recorder_.events_seen());
+  generator().ReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  EXPECT_EQ(2, event_recorder().events_seen());
   EXPECT_EQ(2U, delegate_chromevox_recorded_event_count());
   EXPECT_EQ(0U, delegate_chromevox_captured_event_count());
 
-  generator_->ClickLeftButton();
-  EXPECT_EQ(4, event_recorder_.events_seen());
+  generator().ClickLeftButton();
+  EXPECT_EQ(4, event_recorder().events_seen());
   EXPECT_EQ(2U, delegate_chromevox_recorded_event_count());
   EXPECT_EQ(0U, delegate_chromevox_captured_event_count());
 
-  generator_->GestureTapAt(gfx::Point());
-  EXPECT_EQ(6, event_recorder_.events_seen());
+  generator().GestureTapAt(gfx::Point());
+  EXPECT_EQ(6, event_recorder().events_seen());
   EXPECT_EQ(2U, delegate_chromevox_recorded_event_count());
   EXPECT_EQ(0U, delegate_chromevox_captured_event_count());
 }
@@ -251,56 +321,54 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest,
        UnhandledEventsSentToOtherRewriters) {
   // Before it can forward unhandled events, AccessibilityEventRewriter
   // must have seen at least one event in the first place.
-  generator_->PressKey(ui::VKEY_A, ui::EF_NONE);
-  EXPECT_EQ(1, event_recorder_.events_seen());
-  generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
-  EXPECT_EQ(2, event_recorder_.events_seen());
+  generator().PressKey(ui::VKEY_A, ui::EF_NONE);
+  EXPECT_EQ(1, event_recorder().events_seen());
+  generator().ReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  EXPECT_EQ(2, event_recorder().events_seen());
 
-  accessibility_event_rewriter_->OnUnhandledSpokenFeedbackEvent(
+  accessibility_event_rewriter().OnUnhandledSpokenFeedbackEvent(
       std::make_unique<ui::KeyEvent>(ui::ET_KEY_PRESSED, ui::VKEY_A,
                                      ui::EF_NONE));
-  EXPECT_EQ(3, event_recorder_.events_seen());
-  accessibility_event_rewriter_->OnUnhandledSpokenFeedbackEvent(
+  EXPECT_EQ(3, event_recorder().events_seen());
+  accessibility_event_rewriter().OnUnhandledSpokenFeedbackEvent(
       std::make_unique<ui::KeyEvent>(ui::ET_KEY_RELEASED, ui::VKEY_A,
                                      ui::EF_NONE));
-  EXPECT_EQ(4, event_recorder_.events_seen());
+  EXPECT_EQ(4, event_recorder().events_seen());
 }
 
 TEST_F(ChromeVoxAccessibilityEventRewriterTest,
        KeysNotEatenWithChromeVoxDisabled) {
-  AccessibilityController* controller =
-      Shell::Get()->accessibility_controller();
+  AccessibilityController* controller = GetAccessibilityController();
   EXPECT_FALSE(controller->spoken_feedback().enabled());
 
   // Send Search+Shift+Right.
-  generator_->PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
-  EXPECT_EQ(1, event_recorder_.events_seen());
-  generator_->PressKey(ui::VKEY_SHIFT, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(2, event_recorder_.events_seen());
+  generator().PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(1, event_recorder().events_seen());
+  generator().PressKey(ui::VKEY_SHIFT, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(2, event_recorder().events_seen());
 
   // Mock successful commands lookup and dispatch; shouldn't matter either way.
-  generator_->PressKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(3, event_recorder_.events_seen());
+  generator().PressKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(3, event_recorder().events_seen());
 
   // Released keys shouldn't get eaten.
-  generator_->ReleaseKey(ui::VKEY_RIGHT,
+  generator().ReleaseKey(ui::VKEY_RIGHT,
                          ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
-  generator_->ReleaseKey(ui::VKEY_SHIFT, ui::EF_COMMAND_DOWN);
-  generator_->ReleaseKey(ui::VKEY_LWIN, 0);
-  EXPECT_EQ(6, event_recorder_.events_seen());
+  generator().ReleaseKey(ui::VKEY_SHIFT, ui::EF_COMMAND_DOWN);
+  generator().ReleaseKey(ui::VKEY_LWIN, 0);
+  EXPECT_EQ(6, event_recorder().events_seen());
 
   // Try releasing more keys.
-  generator_->ReleaseKey(ui::VKEY_RIGHT, 0);
-  generator_->ReleaseKey(ui::VKEY_SHIFT, 0);
-  generator_->ReleaseKey(ui::VKEY_LWIN, 0);
-  EXPECT_EQ(9, event_recorder_.events_seen());
+  generator().ReleaseKey(ui::VKEY_RIGHT, 0);
+  generator().ReleaseKey(ui::VKEY_SHIFT, 0);
+  generator().ReleaseKey(ui::VKEY_LWIN, 0);
+  EXPECT_EQ(9, event_recorder().events_seen());
 
   EXPECT_EQ(0U, delegate_chromevox_recorded_event_count());
 }
 
 TEST_F(ChromeVoxAccessibilityEventRewriterTest, KeyEventsCaptured) {
-  AccessibilityController* controller =
-      Shell::Get()->accessibility_controller();
+  AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
 
@@ -310,42 +378,41 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest, KeyEventsCaptured) {
   size_t captured_count = 0;
 
   // Anything with Search gets captured.
-  generator_->PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
+  generator().PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
   ExpectCounts(recorded_count, ++delegate_count, ++captured_count);
-  generator_->ReleaseKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
+  generator().ReleaseKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
   ExpectCounts(recorded_count, ++delegate_count, ++captured_count);
 
   // Tab never gets captured.
-  generator_->PressKey(ui::VKEY_TAB, ui::EF_NONE);
+  generator().PressKey(ui::VKEY_TAB, ui::EF_NONE);
   ExpectCounts(++recorded_count, ++delegate_count, captured_count);
-  generator_->ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  generator().ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
   ExpectCounts(++recorded_count, ++delegate_count, captured_count);
 
   // A client requested capture of all keys.
   SetDelegateChromeVoxCaptureAllKeys(true);
-  generator_->PressKey(ui::VKEY_A, ui::EF_NONE);
+  generator().PressKey(ui::VKEY_A, ui::EF_NONE);
   ExpectCounts(recorded_count, ++delegate_count, ++captured_count);
-  generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  generator().ReleaseKey(ui::VKEY_A, ui::EF_NONE);
   ExpectCounts(recorded_count, ++delegate_count, ++captured_count);
 
   // Tab never gets captured even with explicit client request for all keys.
-  generator_->PressKey(ui::VKEY_TAB, ui::EF_NONE);
+  generator().PressKey(ui::VKEY_TAB, ui::EF_NONE);
   ExpectCounts(++recorded_count, ++delegate_count, captured_count);
-  generator_->ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  generator().ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
   ExpectCounts(++recorded_count, ++delegate_count, captured_count);
 
   // A client requested to not capture all keys.
   SetDelegateChromeVoxCaptureAllKeys(false);
-  generator_->PressKey(ui::VKEY_A, ui::EF_NONE);
+  generator().PressKey(ui::VKEY_A, ui::EF_NONE);
   ExpectCounts(++recorded_count, ++delegate_count, captured_count);
-  generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  generator().ReleaseKey(ui::VKEY_A, ui::EF_NONE);
   ExpectCounts(++recorded_count, ++delegate_count, captured_count);
 }
 
 TEST_F(ChromeVoxAccessibilityEventRewriterTest,
        KeyEventsCapturedWithModifierRemapping) {
-  AccessibilityController* controller =
-      Shell::Get()->accessibility_controller();
+  AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
 
@@ -359,51 +426,50 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest,
                        ui::mojom::ModifierKey::kMeta);
 
   // Anything with Search gets captured.
-  generator_->PressKey(ui::VKEY_CONTROL, ui::EF_CONTROL_DOWN);
+  generator().PressKey(ui::VKEY_CONTROL, ui::EF_CONTROL_DOWN);
   ExpectCounts(recorded_count, ++delegate_count, ++captured_count);
   // EventRewriterAsh actually omits the modifier flag.
-  generator_->ReleaseKey(ui::VKEY_CONTROL, 0);
+  generator().ReleaseKey(ui::VKEY_CONTROL, 0);
   ExpectCounts(recorded_count, ++delegate_count, ++captured_count);
 
   // Search itself should also work.
-  generator_->PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
+  generator().PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
   ExpectCounts(recorded_count, ++delegate_count, ++captured_count);
-  generator_->ReleaseKey(ui::VKEY_LWIN, 0);
+  generator().ReleaseKey(ui::VKEY_LWIN, 0);
   ExpectCounts(recorded_count, ++delegate_count, ++captured_count);
 
   // Remapping should have no effect on all other expectations.
 
   // Tab never gets captured.
-  generator_->PressKey(ui::VKEY_TAB, ui::EF_NONE);
+  generator().PressKey(ui::VKEY_TAB, ui::EF_NONE);
   ExpectCounts(++recorded_count, ++delegate_count, captured_count);
-  generator_->ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  generator().ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
   ExpectCounts(++recorded_count, ++delegate_count, captured_count);
 
   // A client requested capture of all keys.
   SetDelegateChromeVoxCaptureAllKeys(true);
-  generator_->PressKey(ui::VKEY_A, ui::EF_NONE);
+  generator().PressKey(ui::VKEY_A, ui::EF_NONE);
   ExpectCounts(recorded_count, ++delegate_count, ++captured_count);
-  generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  generator().ReleaseKey(ui::VKEY_A, ui::EF_NONE);
   ExpectCounts(recorded_count, ++delegate_count, ++captured_count);
 
   // Tab never gets captured even with explicit client request for all keys.
-  generator_->PressKey(ui::VKEY_TAB, ui::EF_NONE);
+  generator().PressKey(ui::VKEY_TAB, ui::EF_NONE);
   ExpectCounts(++recorded_count, ++delegate_count, captured_count);
-  generator_->ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  generator().ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
   ExpectCounts(++recorded_count, ++delegate_count, captured_count);
 
   // A client requested to not capture all keys.
   SetDelegateChromeVoxCaptureAllKeys(false);
-  generator_->PressKey(ui::VKEY_A, ui::EF_NONE);
+  generator().PressKey(ui::VKEY_A, ui::EF_NONE);
   ExpectCounts(++recorded_count, ++delegate_count, captured_count);
-  generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  generator().ReleaseKey(ui::VKEY_A, ui::EF_NONE);
   ExpectCounts(++recorded_count, ++delegate_count, captured_count);
 }
 
 TEST_F(ChromeVoxAccessibilityEventRewriterTest,
        PositionalInputMethodKeysMightBeRewritten) {
-  AccessibilityController* controller =
-      Shell::Get()->accessibility_controller();
+  AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
 
@@ -433,58 +499,18 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest,
   EXPECT_EQ(ui::VKEY_A, last_key_event->key_code());
 }
 
-// Records all key events for testing.
-class EventCapturer : public ui::EventHandler {
+class SwitchAccessAccessibilityEventRewriterTest
+    : public AccessibilityEventRewriterTestBase {
  public:
-  EventCapturer() = default;
-  EventCapturer(const EventCapturer&) = delete;
-  EventCapturer& operator=(const EventCapturer&) = delete;
-  ~EventCapturer() override = default;
-
-  void Reset() { last_key_event_.reset(); }
-
-  ui::KeyEvent* last_key_event() { return last_key_event_.get(); }
-
- private:
-  void OnKeyEvent(ui::KeyEvent* event) override {
-    last_key_event_ = std::make_unique<ui::KeyEvent>(*event);
-  }
-
-  std::unique_ptr<ui::KeyEvent> last_key_event_;
-};
-
-class SwitchAccessAccessibilityEventRewriterTest : public AshTestBase {
- public:
-  SwitchAccessAccessibilityEventRewriterTest() {
-    keyboard_capability_ =
-        ui::KeyboardCapability::CreateStubKeyboardCapability();
-    event_rewriter_ash_ = std::make_unique<ui::EventRewriterAsh>(
-        &event_rewriter_delegate_, keyboard_capability_.get(), nullptr, false,
-        &fake_ime_keyboard_);
-  }
-  ~SwitchAccessAccessibilityEventRewriterTest() override = default;
-
   void SetUp() override {
-    AshTestBase::SetUp();
+    AccessibilityEventRewriterTestBase::SetUp();
 
     // This test triggers a resize of WindowTreeHost, which will end up
     // throttling events. set_throttle_input_on_resize_for_testing() disables
     // this.
     aura::Env::GetInstance()->set_throttle_input_on_resize_for_testing(false);
 
-    accessibility_event_rewriter_ =
-        std::make_unique<AccessibilityEventRewriter>(event_rewriter_ash_.get(),
-                                                     &delegate_);
-    generator_ = AshTestBase::GetEventGenerator();
-    GetContext()->AddPreTargetHandler(&event_capturer_);
-
-    GetContext()->GetHost()->GetEventSource()->AddEventRewriter(
-        accessibility_event_rewriter_.get());
-
-    controller_ = Shell::Get()->accessibility_controller();
-    controller_->SetAccessibilityEventRewriter(
-        accessibility_event_rewriter_.get());
-    controller_->switch_access().SetEnabled(true);
+    GetAccessibilityController()->switch_access().SetEnabled(true);
 
     std::vector<ui::KeyboardDevice> keyboards;
     ui::DeviceDataManagerTestApi device_data_test_api;
@@ -495,53 +521,22 @@ class SwitchAccessAccessibilityEventRewriterTest : public AshTestBase {
     device_data_test_api.SetKeyboardDevices(keyboards);
   }
 
-  void TearDown() override {
-    GetContext()->RemovePreTargetHandler(&event_capturer_);
-    generator_ = nullptr;
-    controller_ = nullptr;
-    accessibility_event_rewriter_.reset();
-    AshTestBase::TearDown();
-  }
-
   void SetKeyCodesForSwitchAccessCommand(
       std::map<int, std::set<std::string>> key_codes,
       SwitchAccessCommand command) {
-    AccessibilityEventRewriter* rewriter =
-        controller_->GetAccessibilityEventRewriterForTest();
-    rewriter->SetKeyCodesForSwitchAccessCommand(key_codes, command);
-  }
-
-  void SetModifierRemapping(const std::string& pref_name,
-                            ui::mojom::ModifierKey value) {
-    event_rewriter_delegate_.SetModifierRemapping(pref_name, value);
+    accessibility_event_rewriter().SetKeyCodesForSwitchAccessCommand(key_codes,
+                                                                     command);
   }
 
   const std::map<int, std::set<ui::InputDeviceType>> GetKeyCodesToCapture() {
-    AccessibilityEventRewriter* rewriter =
-        controller_->GetAccessibilityEventRewriterForTest();
-    if (rewriter)
-      return rewriter->switch_access_key_codes_to_capture_for_test();
-    return std::map<int, std::set<ui::InputDeviceType>>();
+    return accessibility_event_rewriter()
+        .switch_access_key_codes_to_capture_for_test();
   }
 
   const std::map<int, SwitchAccessCommand> GetCommandForKeyCodeMap() {
-    AccessibilityEventRewriter* rewriter =
-        controller_->GetAccessibilityEventRewriterForTest();
-    if (rewriter)
-      return rewriter->key_code_to_switch_access_command_map_for_test();
-    return std::map<int, SwitchAccessCommand>();
+    return accessibility_event_rewriter()
+        .key_code_to_switch_access_command_map_for_test();
   }
-
- protected:
-  raw_ptr<ui::test::EventGenerator> generator_ = nullptr;
-  EventCapturer event_capturer_;
-  raw_ptr<AccessibilityController> controller_ = nullptr;
-  TestAccessibilityEventRewriterDelegate delegate_;
-  ui::test::FakeEventRewriterAshDelegate event_rewriter_delegate_;
-  input_method::FakeImeKeyboard fake_ime_keyboard_;
-  std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
-  std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
-  std::unique_ptr<ui::EventRewriterAsh> event_rewriter_ash_;
 };
 
 TEST_F(SwitchAccessAccessibilityEventRewriterTest, CaptureSpecifiedKeys) {
@@ -551,45 +546,51 @@ TEST_F(SwitchAccessAccessibilityEventRewriterTest, CaptureSpecifiedKeys) {
        {ui::VKEY_2, {kSwitchAccessUsbDevice}}},
       SwitchAccessCommand::kSelect);
 
-  EXPECT_FALSE(event_capturer_.last_key_event());
+  EXPECT_FALSE(event_capturer().last_key_event());
 
   // Press 1 from the internal keyboard.
-  generator_->PressKey(ui::VKEY_1, ui::EF_NONE, 1 /* keyboard id */);
-  generator_->ReleaseKey(ui::VKEY_1, ui::EF_NONE, 1 /* keyboard id */);
+  generator().PressKey(ui::VKEY_1, ui::EF_NONE, 1 /* keyboard id */);
+  generator().ReleaseKey(ui::VKEY_1, ui::EF_NONE, 1 /* keyboard id */);
 
   // The event was captured by AccessibilityEventRewriter.
-  EXPECT_FALSE(event_capturer_.last_key_event());
-  EXPECT_EQ(SwitchAccessCommand::kSelect,
-            delegate_.switch_access_commands().back());
+  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_EQ(
+      SwitchAccessCommand::kSelect,
+      accessibility_event_rewriter_delegate().switch_access_commands().back());
 
-  delegate_.ClearSwitchAccessCommands();
+  accessibility_event_rewriter_delegate().ClearSwitchAccessCommands();
 
   // Press 1 from the bluetooth keyboard.
-  generator_->PressKey(ui::VKEY_1, ui::EF_NONE, 3 /* keyboard id */);
-  generator_->ReleaseKey(ui::VKEY_1, ui::EF_NONE, 3 /* keyboard id */);
+  generator().PressKey(ui::VKEY_1, ui::EF_NONE, 3 /* keyboard id */);
+  generator().ReleaseKey(ui::VKEY_1, ui::EF_NONE, 3 /* keyboard id */);
 
   // The event was not captured by AccessibilityEventRewriter.
-  EXPECT_TRUE(event_capturer_.last_key_event());
-  EXPECT_EQ(0u, delegate_.switch_access_commands().size());
+  EXPECT_TRUE(event_capturer().last_key_event());
+  EXPECT_EQ(
+      0u,
+      accessibility_event_rewriter_delegate().switch_access_commands().size());
 
   // Press the "2" key.
-  generator_->PressKey(ui::VKEY_2, ui::EF_NONE, 2 /* keyboard id */);
-  generator_->ReleaseKey(ui::VKEY_2, ui::EF_NONE, 2 /* keyboard id */);
+  generator().PressKey(ui::VKEY_2, ui::EF_NONE, 2 /* keyboard id */);
+  generator().ReleaseKey(ui::VKEY_2, ui::EF_NONE, 2 /* keyboard id */);
 
   // The event was captured by AccessibilityEventRewriter.
-  EXPECT_TRUE(event_capturer_.last_key_event());
-  EXPECT_EQ(SwitchAccessCommand::kSelect,
-            delegate_.switch_access_commands().back());
+  EXPECT_TRUE(event_capturer().last_key_event());
+  EXPECT_EQ(
+      SwitchAccessCommand::kSelect,
+      accessibility_event_rewriter_delegate().switch_access_commands().back());
 
-  delegate_.ClearSwitchAccessCommands();
+  accessibility_event_rewriter_delegate().ClearSwitchAccessCommands();
 
   // Press the "3" key.
-  generator_->PressKey(ui::VKEY_3, ui::EF_NONE, 1 /* keyboard id */);
-  generator_->ReleaseKey(ui::VKEY_3, ui::EF_NONE, 1 /* keyboard id */);
+  generator().PressKey(ui::VKEY_3, ui::EF_NONE, 1 /* keyboard id */);
+  generator().ReleaseKey(ui::VKEY_3, ui::EF_NONE, 1 /* keyboard id */);
 
   // The event was not captured by AccessibilityEventRewriter.
-  EXPECT_TRUE(event_capturer_.last_key_event());
-  EXPECT_EQ(0u, delegate_.switch_access_commands().size());
+  EXPECT_TRUE(event_capturer().last_key_event());
+  EXPECT_EQ(
+      0u,
+      accessibility_event_rewriter_delegate().switch_access_commands().size());
 }
 
 TEST_F(SwitchAccessAccessibilityEventRewriterTest,
@@ -601,16 +602,17 @@ TEST_F(SwitchAccessAccessibilityEventRewriterTest,
        {ui::VKEY_3, {kSwitchAccessInternalDevice}}},
       SwitchAccessCommand::kSelect);
 
-  EXPECT_FALSE(event_capturer_.last_key_event());
+  EXPECT_FALSE(event_capturer().last_key_event());
 
   // Press the "1" key.
-  generator_->PressKey(ui::VKEY_1, ui::EF_NONE, 1 /* keyboard id */);
-  generator_->ReleaseKey(ui::VKEY_1, ui::EF_NONE, 1 /* keyboard id */);
+  generator().PressKey(ui::VKEY_1, ui::EF_NONE, 1 /* keyboard id */);
+  generator().ReleaseKey(ui::VKEY_1, ui::EF_NONE, 1 /* keyboard id */);
 
   // The event was captured by AccessibilityEventRewriter.
-  EXPECT_FALSE(event_capturer_.last_key_event());
-  EXPECT_EQ(SwitchAccessCommand::kSelect,
-            delegate_.switch_access_commands().back());
+  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_EQ(
+      SwitchAccessCommand::kSelect,
+      accessibility_event_rewriter_delegate().switch_access_commands().back());
 
   // Update the Switch Access keys to capture {2, 3, 4}.
   SetKeyCodesForSwitchAccessCommand(
@@ -620,42 +622,38 @@ TEST_F(SwitchAccessAccessibilityEventRewriterTest,
       SwitchAccessCommand::kSelect);
 
   // Press the "1" key.
-  generator_->PressKey(ui::VKEY_1, ui::EF_NONE, 1 /* keyboard id */);
-  generator_->ReleaseKey(ui::VKEY_1, ui::EF_NONE, 1 /* keyboard id */);
+  generator().PressKey(ui::VKEY_1, ui::EF_NONE, 1 /* keyboard id */);
+  generator().ReleaseKey(ui::VKEY_1, ui::EF_NONE, 1 /* keyboard id */);
 
   // We received a new event.
 
   // The event was NOT captured by AccessibilityEventRewriter.
-  EXPECT_TRUE(event_capturer_.last_key_event());
-  EXPECT_FALSE(event_capturer_.last_key_event()->handled());
+  EXPECT_TRUE(event_capturer().last_key_event());
+  EXPECT_FALSE(event_capturer().last_key_event()->handled());
 
   // Press the "4" key.
-  event_capturer_.Reset();
-  generator_->PressKey(ui::VKEY_4, ui::EF_NONE, 1 /* keyboard id */);
-  generator_->ReleaseKey(ui::VKEY_4, ui::EF_NONE, 1 /* keyboard id */);
+  event_capturer().Reset();
+  generator().PressKey(ui::VKEY_4, ui::EF_NONE, 1 /* keyboard id */);
+  generator().ReleaseKey(ui::VKEY_4, ui::EF_NONE, 1 /* keyboard id */);
 
   // The event was captured by AccessibilityEventRewriter.
-  EXPECT_FALSE(event_capturer_.last_key_event());
-  EXPECT_EQ(SwitchAccessCommand::kSelect,
-            delegate_.switch_access_commands().back());
+  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_EQ(
+      SwitchAccessCommand::kSelect,
+      accessibility_event_rewriter_delegate().switch_access_commands().back());
 }
 
 TEST_F(SwitchAccessAccessibilityEventRewriterTest,
        SetKeyCodesForSwitchAccessCommand) {
-  AccessibilityEventRewriter* rewriter =
-      controller_->GetAccessibilityEventRewriterForTest();
-  EXPECT_NE(nullptr, rewriter);
-
   // Both the key codes to capture and the command map should be empty.
   EXPECT_EQ(0u, GetKeyCodesToCapture().size());
   EXPECT_EQ(0u, GetCommandForKeyCodeMap().size());
 
   // Set key codes for Select command.
-  std::map<int, std::set<std::string>> new_key_codes;
-  new_key_codes[48 /* '0' */] = {kSwitchAccessInternalDevice};
-  new_key_codes[83 /* 's' */] = {kSwitchAccessInternalDevice};
-  rewriter->SetKeyCodesForSwitchAccessCommand(new_key_codes,
-                                              SwitchAccessCommand::kSelect);
+  SetKeyCodesForSwitchAccessCommand(
+      {{ui::VKEY_0, {kSwitchAccessInternalDevice}},
+       {ui::VKEY_S, {kSwitchAccessInternalDevice}}},
+      SwitchAccessCommand::kSelect);
 
   // Check that values are added to both data structures.
   std::map<int, std::set<ui::InputDeviceType>> kc_to_capture =
@@ -670,11 +668,10 @@ TEST_F(SwitchAccessAccessibilityEventRewriterTest,
   EXPECT_EQ(SwitchAccessCommand::kSelect, command_map.at(83));
 
   // Set key codes for the Next command.
-  new_key_codes.clear();
-  new_key_codes[49 /* '1' */] = {kSwitchAccessInternalDevice};
-  new_key_codes[78 /* 'n' */] = {kSwitchAccessInternalDevice};
-  rewriter->SetKeyCodesForSwitchAccessCommand(new_key_codes,
-                                              SwitchAccessCommand::kNext);
+  SetKeyCodesForSwitchAccessCommand(
+      {{ui::VKEY_1, {kSwitchAccessInternalDevice}},
+       {ui::VKEY_N, {kSwitchAccessInternalDevice}}},
+      SwitchAccessCommand::kNext);
 
   // Check that the new values are added and old values are not changed.
   kc_to_capture = GetKeyCodesToCapture();
@@ -688,11 +685,10 @@ TEST_F(SwitchAccessAccessibilityEventRewriterTest,
   EXPECT_EQ(SwitchAccessCommand::kNext, command_map.at(78));
 
   // Set key codes for the Previous command. Re-use a key code from above.
-  new_key_codes.clear();
-  new_key_codes[49 /* '1' */] = {kSwitchAccessInternalDevice};
-  new_key_codes[80 /* 'p' */] = {kSwitchAccessInternalDevice};
-  rewriter->SetKeyCodesForSwitchAccessCommand(new_key_codes,
-                                              SwitchAccessCommand::kPrevious);
+  SetKeyCodesForSwitchAccessCommand(
+      {{ui::VKEY_1, {kSwitchAccessInternalDevice}},
+       {ui::VKEY_P, {kSwitchAccessInternalDevice}}},
+      SwitchAccessCommand::kPrevious);
 
   // Check that '1' has been remapped to Previous.
   kc_to_capture = GetKeyCodesToCapture();
@@ -707,11 +703,10 @@ TEST_F(SwitchAccessAccessibilityEventRewriterTest,
   EXPECT_EQ(SwitchAccessCommand::kNext, command_map.at(78));
 
   // Set a new key code for the Select command.
-  new_key_codes.clear();
-  new_key_codes[51 /* '3' */] = {kSwitchAccessInternalDevice};
-  new_key_codes[83 /* 's' */] = {kSwitchAccessInternalDevice};
-  rewriter->SetKeyCodesForSwitchAccessCommand(new_key_codes,
-                                              SwitchAccessCommand::kSelect);
+  SetKeyCodesForSwitchAccessCommand(
+      {{ui::VKEY_3, {kSwitchAccessInternalDevice}},
+       {ui::VKEY_S, {kSwitchAccessInternalDevice}}},
+      SwitchAccessCommand::kSelect);
 
   // Check that the previously set values for Select have been cleared.
   kc_to_capture = GetKeyCodesToCapture();
@@ -743,25 +738,31 @@ TEST_F(SwitchAccessAccessibilityEventRewriterTest, RespectsModifierRemappings) {
                        ui::mojom::ModifierKey::kAlt);
 
   // Send a key event for Control.
-  generator_->PressKey(ui::VKEY_CONTROL, ui::EF_CONTROL_DOWN,
+  generator().PressKey(ui::VKEY_CONTROL, ui::EF_CONTROL_DOWN,
                        1 /* keyboard id */);
   // EventRewriterAsh actually omits the modifier flag on release.
-  generator_->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE, 1 /* keyboard id */);
+  generator().ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE, 1 /* keyboard id */);
 
   // Verify Switch Access treated it like Alt.
-  EXPECT_EQ(1u, delegate_.switch_access_commands().size());
-  EXPECT_EQ(SwitchAccessCommand::kSelect,
-            delegate_.switch_access_commands().back());
+  EXPECT_EQ(
+      1u,
+      accessibility_event_rewriter_delegate().switch_access_commands().size());
+  EXPECT_EQ(
+      SwitchAccessCommand::kSelect,
+      accessibility_event_rewriter_delegate().switch_access_commands().back());
 
   // Send a key event for Alt.
-  generator_->PressKey(ui::VKEY_MENU, ui::EF_ALT_DOWN, 1 /* keyboard id */);
+  generator().PressKey(ui::VKEY_MENU, ui::EF_ALT_DOWN, 1 /* keyboard id */);
   // EventRewriterAsh actually omits the modifier flag on release.
-  generator_->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE, 1 /* keyboard id */);
+  generator().ReleaseKey(ui::VKEY_MENU, ui::EF_NONE, 1 /* keyboard id */);
 
   // Verify Switch Access also treats that like Alt.
-  EXPECT_EQ(2u, delegate_.switch_access_commands().size());
-  EXPECT_EQ(SwitchAccessCommand::kSelect,
-            delegate_.switch_access_commands().back());
+  EXPECT_EQ(
+      2u,
+      accessibility_event_rewriter_delegate().switch_access_commands().size());
+  EXPECT_EQ(
+      SwitchAccessCommand::kSelect,
+      accessibility_event_rewriter_delegate().switch_access_commands().back());
 }
 
 TEST_F(SwitchAccessAccessibilityEventRewriterTest, UseFunctionKeyRemappings) {
@@ -777,107 +778,83 @@ TEST_F(SwitchAccessAccessibilityEventRewriterTest, UseFunctionKeyRemappings) {
       SwitchAccessCommand::kSelect);
 
   // Send a key event for F2.
-  generator_->PressKey(ui::VKEY_F2, ui::EF_NONE, 1 /* keyboard id */);
-  generator_->ReleaseKey(ui::VKEY_F2, ui::EF_NONE, 1 /* keyboard id */);
+  generator().PressKey(ui::VKEY_F2, ui::EF_NONE, 1 /* keyboard id */);
+  generator().ReleaseKey(ui::VKEY_F2, ui::EF_NONE, 1 /* keyboard id */);
 
   // Verify Switch Access treated it like BrowserForward.
-  EXPECT_EQ(1u, delegate_.switch_access_commands().size());
-  EXPECT_EQ(SwitchAccessCommand::kNext,
-            delegate_.switch_access_commands().back());
+  EXPECT_EQ(
+      1u,
+      accessibility_event_rewriter_delegate().switch_access_commands().size());
+  EXPECT_EQ(
+      SwitchAccessCommand::kNext,
+      accessibility_event_rewriter_delegate().switch_access_commands().back());
 
   // Send a key event for BrowserForward.
-  generator_->PressKey(ui::VKEY_BROWSER_FORWARD, ui::EF_NONE,
+  generator().PressKey(ui::VKEY_BROWSER_FORWARD, ui::EF_NONE,
                        1 /* keyboard id */);
-  generator_->ReleaseKey(ui::VKEY_BROWSER_FORWARD, ui::EF_NONE,
+  generator().ReleaseKey(ui::VKEY_BROWSER_FORWARD, ui::EF_NONE,
                          1 /* keyboard id */);
 
   // Verify Switch Access also treats that like BrowserForward.
-  EXPECT_EQ(2u, delegate_.switch_access_commands().size());
-  EXPECT_EQ(SwitchAccessCommand::kNext,
-            delegate_.switch_access_commands().back());
+  EXPECT_EQ(
+      2u,
+      accessibility_event_rewriter_delegate().switch_access_commands().size());
+  EXPECT_EQ(
+      SwitchAccessCommand::kNext,
+      accessibility_event_rewriter_delegate().switch_access_commands().back());
 }
 
-class MagnifierAccessibilityEventRewriterTest : public AshTestBase {
+class MagnifierAccessibilityEventRewriterTest
+    : public AccessibilityEventRewriterTestBase {
  public:
-  MagnifierAccessibilityEventRewriterTest() {
-    keyboard_capability_ =
-        ui::KeyboardCapability::CreateStubKeyboardCapability();
-    event_rewriter_ash_ = std::make_unique<ui::EventRewriterAsh>(
-        nullptr, keyboard_capability_.get(), nullptr, false,
-        &fake_ime_keyboard_);
-  }
-  ~MagnifierAccessibilityEventRewriterTest() override = default;
-
   void SetUp() override {
-    AshTestBase::SetUp();
+    AccessibilityEventRewriterTestBase::SetUp();
 
     // This test triggers a resize of WindowTreeHost, which will end up
     // throttling events. set_throttle_input_on_resize_for_testing() disables
     // this.
     aura::Env::GetInstance()->set_throttle_input_on_resize_for_testing(false);
 
-    accessibility_event_rewriter_ =
-        std::make_unique<AccessibilityEventRewriter>(event_rewriter_ash_.get(),
-                                                     &delegate_);
-    generator_ = AshTestBase::GetEventGenerator();
-    GetContext()->AddPreTargetHandler(&event_capturer_);
-
-    GetContext()->GetHost()->GetEventSource()->AddEventRewriter(
-        accessibility_event_rewriter_.get());
-
-    controller_ = Shell::Get()->accessibility_controller();
-    controller_->SetAccessibilityEventRewriter(
-        accessibility_event_rewriter_.get());
-    controller_->fullscreen_magnifier().SetEnabled(true);
+    GetAccessibilityController()->fullscreen_magnifier().SetEnabled(true);
   }
-
-  void TearDown() override {
-    GetContext()->RemovePreTargetHandler(&event_capturer_);
-    generator_ = nullptr;
-    controller_ = nullptr;
-    accessibility_event_rewriter_.reset();
-    AshTestBase::TearDown();
-  }
-
- protected:
-  raw_ptr<ui::test::EventGenerator> generator_ = nullptr;
-  EventCapturer event_capturer_;
-  raw_ptr<AccessibilityController> controller_ = nullptr;
-  TestAccessibilityEventRewriterDelegate delegate_;
-  input_method::FakeImeKeyboard fake_ime_keyboard_;
-  std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
-  std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
-  std::unique_ptr<ui::EventRewriterAsh> event_rewriter_ash_;
 };
 
 TEST_F(MagnifierAccessibilityEventRewriterTest, CaptureKeys) {
   // Press and release Ctrl+Alt+Up.
   // Verify that the events are captured by AccessibilityEventRewriter.
-  generator_->PressKey(ui::VKEY_UP, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
-  EXPECT_FALSE(event_capturer_.last_key_event());
-  EXPECT_EQ(MagnifierCommand::kMoveUp, delegate_.magnifier_commands().back());
+  generator().PressKey(ui::VKEY_UP, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_EQ(
+      MagnifierCommand::kMoveUp,
+      accessibility_event_rewriter_delegate().magnifier_commands().back());
 
-  generator_->ReleaseKey(ui::VKEY_UP, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
-  EXPECT_FALSE(event_capturer_.last_key_event());
-  EXPECT_EQ(MagnifierCommand::kMoveStop, delegate_.magnifier_commands().back());
+  generator().ReleaseKey(ui::VKEY_UP, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_EQ(
+      MagnifierCommand::kMoveStop,
+      accessibility_event_rewriter_delegate().magnifier_commands().back());
 
   // Press and release Ctrl+Alt+Down.
   // Verify that the events are captured by AccessibilityEventRewriter.
-  generator_->PressKey(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
-  EXPECT_FALSE(event_capturer_.last_key_event());
-  EXPECT_EQ(MagnifierCommand::kMoveDown, delegate_.magnifier_commands().back());
+  generator().PressKey(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_EQ(
+      MagnifierCommand::kMoveDown,
+      accessibility_event_rewriter_delegate().magnifier_commands().back());
 
-  generator_->ReleaseKey(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
-  EXPECT_FALSE(event_capturer_.last_key_event());
-  EXPECT_EQ(MagnifierCommand::kMoveStop, delegate_.magnifier_commands().back());
+  generator().ReleaseKey(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_EQ(
+      MagnifierCommand::kMoveStop,
+      accessibility_event_rewriter_delegate().magnifier_commands().back());
 
   // Press and release the "3" key.
   // Verify that the events are not captured by AccessibilityEventRewriter.
-  generator_->PressKey(ui::VKEY_3, ui::EF_NONE);
-  EXPECT_TRUE(event_capturer_.last_key_event());
+  generator().PressKey(ui::VKEY_3, ui::EF_NONE);
+  EXPECT_TRUE(event_capturer().last_key_event());
 
-  generator_->ReleaseKey(ui::VKEY_3, ui::EF_NONE);
-  EXPECT_TRUE(event_capturer_.last_key_event());
+  generator().ReleaseKey(ui::VKEY_3, ui::EF_NONE);
+  EXPECT_TRUE(event_capturer().last_key_event());
 }
 
 }  // namespace ash
