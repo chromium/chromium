@@ -19,6 +19,7 @@
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/ash_view_ids.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/public/cpp/window_properties.h"
@@ -85,6 +86,8 @@ constexpr int kSetupPulseTimes = 3;
 constexpr base::TimeDelta kSetupPulseDuration = base::Seconds(2);
 
 constexpr char kSetupNudgeId[] = "SetupNudgeId";
+constexpr char kHelpUrl[] =
+    "https://support.google.com/chromebook/?p=game-dashboard-help";
 
 // Creates an individual Game Dashboard Tile.
 std::unique_ptr<FeatureTile> CreateFeatureTile(
@@ -482,7 +485,9 @@ void GameDashboardMainMenuView::OnFeedbackButtonPressed() {
 }
 
 void GameDashboardMainMenuView::OnHelpButtonPressed() {
-  // TODO(b/273640773): Add support when help button is pressed.
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kHelpUrl), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void GameDashboardMainMenuView::OnSettingsButtonPressed() {
