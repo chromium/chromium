@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/optimization_guide/core/access_token_helper.h"
+#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -69,6 +70,42 @@ proto::ModelExecutionFeature GetModelExecutionFeature(
   }
 }
 
+// Sets user feedback for the ModelExecutionFeature corresponding to the
+// `log_entry`.
+void RecordUserFeedbackHistogram(ModelQualityLogEntry* log_entry) {
+  proto::UserFeedback user_feedback =
+      proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+  proto::ModelExecutionFeature feature =
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED;
+  switch (log_entry->log_ai_data_request()->feature_case()) {
+    case proto::LogAiDataRequest::FeatureCase::kCompose:
+      user_feedback =
+          log_entry->quality_data<ComposeFeatureTypeMap>()->user_feedback();
+      feature = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE;
+      break;
+    case proto::LogAiDataRequest::FeatureCase::kTabOrganization:
+      user_feedback = log_entry->quality_data<TabOrganizationFeatureTypeMap>()
+                          ->mutable_organizations(0)
+                          ->user_feedback();
+      feature = proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION;
+      break;
+    case proto::LogAiDataRequest::FeatureCase::kWallpaperSearch:
+      user_feedback = log_entry->quality_data<WallpaperSearchFeatureTypeMap>()
+                          ->user_feedback();
+      feature = proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+  base::UmaHistogramEnumeration(
+      base::StrCat({"OptimizationGuide.ModelQuality.UserFeedback.",
+                    GetStringNameForModelExecutionFeature(feature)}),
+      static_cast<ModelQualityUserFeedback>(user_feedback));
+}
+
 // URL load completion callback.
 void OnURLLoadComplete(
     std::unique_ptr<network::SimpleURLLoader> active_url_loader,
@@ -121,7 +158,14 @@ ModelQualityLogsUploaderService::~ModelQualityLogsUploaderService() = default;
 
 void ModelQualityLogsUploaderService::UploadModelQualityLogs(
     std::unique_ptr<ModelQualityLogEntry> log_entry) {
-  UploadModelQualityLogs(std::move(log_entry.get()->log_ai_data_request_));
+  if (!log_entry) {
+    return;
+  }
+
+  // Log User Feedback Histogram corresponding to the log entry.
+  RecordUserFeedbackHistogram(log_entry.get());
+
+  UploadModelQualityLogs(std::move(log_entry->log_ai_data_request_));
 }
 
 void ModelQualityLogsUploaderService::UploadModelQualityLogs(

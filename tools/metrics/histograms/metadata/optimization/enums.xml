@@ -564,6 +564,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Base64 decoding error"/>
 </enum>
 
+<enum name="OptimizationGuideUserFeedback">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Thumbs Up"/>
+  <int value="2" label="Thumbs Down"/>
+</enum>
+
 <enum name="OptimizationType">
   <int value="0" label="TYPE_UNSPECIFIED"/>
   <int value="1" label="NOSCRIPT"/>

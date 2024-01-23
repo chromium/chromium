@@ -943,6 +943,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelQuality.UserFeedback.{ModelExecutionFeature}"
+    enum="OptimizationGuideUserFeedback" expires_after="2024-05-10">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>sreejakshetty@chromium.org</owner>
+  <summary>
+    The user feedback for each model execution feature. Recorded once per each
+    model quality logs upload request.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelQualityLogsUploaderService.NetErrorCode"
     enum="NetErrorCodes" expires_after="2024-05-10">
   <owner>sreejakshetty@chromium.org</owner>
