@@ -777,10 +777,12 @@ testcase.fileDisplayWithoutDriveThenDisable = async () => {
   await directoryTree.selectGroupRootItemByType('drive');
 
   // The fake Google Drive should be empty.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Google Drive');
   await remoteCall.waitForFiles(appId, []);
 
   // Disable Drive.
   await sendTestMessage({name: 'setDriveEnabled', enabled: false});
+  await directoryTree.waitForItemLostByLabel('Google Drive');
 
   // The current directory should change to the default (Downloads).
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
@@ -797,7 +799,7 @@ testcase.fileDisplayWithoutDriveThenDisable = async () => {
   await sendTestMessage({name: 'setDriveEnabled', enabled: true});
 
   // Wait for the fake drive to reappear.
-  await directoryTree.waitForGroupRootItemByType('drive');
+  await directoryTree.waitForItemByLabel('Google Drive');
 };
 
 /**

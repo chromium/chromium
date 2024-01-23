@@ -241,6 +241,12 @@ function addVolumeReducer(currentState: State, payload: {
       driveFakeRoot =
           new EntryList(str('DRIVE_DIRECTORY_LABEL'), RootType.DRIVE_FAKE_ROOT);
       cacheEntries(currentState, [driveFakeRoot]);
+    }
+    // When Drive is disabled via pref change, the root key in `uiEntries` will
+    // be removed immediately but the corresponding entry in `allEntries` is
+    // removed asynchronously. When Drive is enabled again, it's possible the
+    // entry is still in `allEntries` but we don't have root key in `uiEntries`.
+    if (!currentState.uiEntries.includes(driveFakeRoot.toURL())) {
       currentState.uiEntries =
           [...currentState.uiEntries, driveFakeRoot.toURL()];
     }
