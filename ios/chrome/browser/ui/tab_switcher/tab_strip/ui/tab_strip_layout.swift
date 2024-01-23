@@ -12,10 +12,6 @@ class TabStripLayout: UICollectionViewFlowLayout {
   /// IndexPath of the selected item.
   public var selectedIndexPath: IndexPath?
 
-  /// Decoration views for the collection view.
-  public var leadingSeparatorView: TabStripDecorationView?
-  public var trailingSeparatorView: TabStripDecorationView?
-
   /// Dynamic size of a tab.
   private var tabCellSize: CGSize = .zero
 
@@ -48,16 +44,6 @@ class TabStripLayout: UICollectionViewFlowLayout {
   // MARK: - UICollectionViewLayout
 
   override func prepare() {
-    /// Display collection view separators if the `contentSize` of the
-    /// `collectionView` is bigger than its frame.
-    guard let leadingSeparatorView = leadingSeparatorView,
-      let trailingSeparatorView = trailingSeparatorView,
-      let collectionView = collectionView
-    else { return }
-    let hideSeparator: Bool = collectionView.contentSize.width <= collectionView.frame.width
-    leadingSeparatorView.isHidden = hideSeparator
-    trailingSeparatorView.isHidden = hideSeparator
-
     /// Only recalculate the `tabCellSize` when needed to avoid extra
     /// computation.
     if needsUpdate {
