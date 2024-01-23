@@ -15,6 +15,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/scoped_observation.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -37,6 +38,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/browser/app_window/app_delegate.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -58,7 +60,8 @@ namespace {
 
 // NonClientFrameView implementation for frameless chrome apps (i.e apps that do
 // not use ash style NonClientFrameView).
-class NativeAppWindowFrameView : public apps::AppWindowFrameView {
+class NativeAppWindowFrameView : public apps::AppWindowFrameView,
+                                 public aura::WindowObserver {
  public:
   NativeAppWindowFrameView(views::Widget* widget,
                            ChromeNativeAppWindowViewsAuraAsh* app_window,
@@ -69,7 +72,9 @@ class NativeAppWindowFrameView : public apps::AppWindowFrameView {
                                  app_window,
                                  draw_frame,
                                  active_frame_color,
-                                 inactive_frame_color) {}
+                                 inactive_frame_color) {
+    frame_window_observation_.Observe(widget->GetNativeWindow());
+  }
 
   NativeAppWindowFrameView(const NativeAppWindowFrameView&) = delete;
   NativeAppWindowFrameView& operator=(const NativeAppWindowFrameView&) = delete;
@@ -78,7 +83,9 @@ class NativeAppWindowFrameView : public apps::AppWindowFrameView {
 
   // views::NonClientFrameView
   void UpdateWindowRoundedCorners() override {
-    if (!GetWidget() || !chromeos::features::IsRoundedWindowsEnabled()) {
+    DCHECK(GetWidget());
+
+    if (!chromeos::features::IsRoundedWindowsEnabled()) {
       return;
     }
 
@@ -91,6 +98,26 @@ class NativeAppWindowFrameView : public apps::AppWindowFrameView {
 
     GetWidget()->client_view()->UpdateWindowRoundedCorners();
   }
+
+  // aura::WindowObserver:
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override {
+    // Windows in ChromeOS are rounded for certain window states. If these
+    // states change, we need to update the rounded corners accordingly. See
+    // `chromeos::ShouldWindowHaveRoundedCorners()` for more details.
+    if (chromeos::CanPropertyEffectFrameRadius(key)) {
+      UpdateWindowRoundedCorners();
+    }
+  }
+
+  void OnWindowDestroyed(aura::Window* window) override {
+    frame_window_observation_.Reset();
+  }
+
+ private:
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      frame_window_observation_{this};
 };
 
 class ChromeNativeAppNonClientView : public views::ClientView {
