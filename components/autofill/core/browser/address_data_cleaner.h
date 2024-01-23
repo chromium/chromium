@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_CLEANER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_CLEANER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_DATA_CLEANER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_DATA_CLEANER_H_
 
 #include <unordered_set>
 
@@ -18,17 +18,17 @@ namespace autofill {
 
 class PersonalDataManager;
 
-// PersonalDataManagerCleaner is responsible for applying address cleanups once
+// AddressDataCleaner is responsible for applying address cleanups once
 // on browser startup provided that the sync is enabled or when the sync starts.
-class PersonalDataManagerCleaner {
+class AddressDataCleaner {
  public:
-  PersonalDataManagerCleaner(
+  AddressDataCleaner(
       PersonalDataManager* personal_data_manager,
       AlternativeStateNameMapUpdater* alternative_state_name_map_updater,
       PrefService* pref_service);
-  ~PersonalDataManagerCleaner();
-  PersonalDataManagerCleaner(const PersonalDataManagerCleaner&) = delete;
-  PersonalDataManagerCleaner& operator=(const PersonalDataManagerCleaner&) =
+  ~AddressDataCleaner();
+  AddressDataCleaner(const AddressDataCleaner&) = delete;
+  AddressDataCleaner& operator=(const AddressDataCleaner&) =
       delete;
 
   // Applies address cleanups if sync is disabled.
@@ -38,7 +38,7 @@ class PersonalDataManagerCleaner {
   void MaybeCleanupAddressDataAfterSyncChange(syncer::ModelType model_type);
 
  protected:
-  friend class PersonalDataManagerCleanerTest;
+  friend class AddressDataCleanerTest;
 
  private:
   // Shared implementation of `MaybeCleanupAddressData()` and
@@ -96,9 +96,9 @@ class PersonalDataManagerCleaner {
 
   // base::WeakPtr ensures that the callback bound to the object is canceled
   // when that object is destroyed.
-  base::WeakPtrFactory<PersonalDataManagerCleaner> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AddressDataCleaner> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_CLEANER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_DATA_CLEANER_H_

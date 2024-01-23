@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/personal_data_manager_cleaner.h"
+#include "components/autofill/core/browser/address_data_cleaner.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,24 +18,24 @@
 
 namespace autofill {
 
-class PersonalDataManagerCleanerTest : public PersonalDataManagerTestBase,
-                                       public testing::Test {
+class AddressDataCleanerTest : public PersonalDataManagerTestBase,
+                               public testing::Test {
  public:
-  PersonalDataManagerCleanerTest() = default;
-  ~PersonalDataManagerCleanerTest() override = default;
+  AddressDataCleanerTest() = default;
+  ~AddressDataCleanerTest() override = default;
 
   void SetUp() override {
     SetUpTest();
     personal_data_ = std::make_unique<PersonalDataManager>("EN", "US");
     ResetPersonalDataManager(
         /*use_sync_transport_mode=*/false, personal_data_.get());
-    personal_data_manager_cleaner_ =
-        std::make_unique<PersonalDataManagerCleaner>(personal_data_.get(),
+    address_data_cleaner_ =
+        std::make_unique<AddressDataCleaner>(personal_data_.get(),
                                                      nullptr, prefs_.get());
   }
 
   void TearDown() override {
-    personal_data_manager_cleaner_.reset();
+    address_data_cleaner_.reset();
     if (personal_data_)
       personal_data_->Shutdown();
     personal_data_.reset();
@@ -77,31 +77,31 @@ class PersonalDataManagerCleanerTest : public PersonalDataManagerTestBase,
   }
 
   bool ApplyAddressDedupingRoutine() {
-    return personal_data_manager_cleaner_->ApplyAddressDedupingRoutine();
+    return address_data_cleaner_->ApplyAddressDedupingRoutine();
   }
 
   void DedupeProfiles(
       std::vector<std::unique_ptr<AutofillProfile>>* existing_profiles,
       std::unordered_set<std::string>* profile_guids_to_delete) const {
-    personal_data_manager_cleaner_->DedupeProfiles(existing_profiles,
+    address_data_cleaner_->DedupeProfiles(existing_profiles,
                                                    profile_guids_to_delete);
   }
 
   bool DeleteDisusedAddresses() {
-    return personal_data_manager_cleaner_->DeleteDisusedAddresses();
+    return address_data_cleaner_->DeleteDisusedAddresses();
   }
 
   PersonalDataManager& personal_data() { return *personal_data_.get(); }
 
  private:
   std::unique_ptr<PersonalDataManager> personal_data_;
-  std::unique_ptr<PersonalDataManagerCleaner> personal_data_manager_cleaner_;
+  std::unique_ptr<AddressDataCleaner> address_data_cleaner_;
 };
 
 // Tests that ApplyAddressDedupingRoutine merges the profile values correctly,
 // i.e. never lose information and keep the syntax of the profile with the
 // higher ranking score.
-TEST_F(PersonalDataManagerCleanerTest,
+TEST_F(AddressDataCleanerTest,
        ApplyAddressDedupingRoutine_MergedProfileValues) {
   // Create a profile with a higher ranking score.
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -184,7 +184,7 @@ TEST_F(PersonalDataManagerCleanerTest,
 // scenario. Tests that it merges the different set of similar profiles
 // independently and that the resulting profiles have the right values. It has
 // no effect on the other profiles.
-TEST_F(PersonalDataManagerCleanerTest,
+TEST_F(AddressDataCleanerTest,
        ApplyAddressDedupingRoutine_MultipleDedupes) {
   // Create a Homer home profile with a higher ranking score than other Homer
   // profiles.
@@ -292,13 +292,13 @@ TEST_F(PersonalDataManagerCleanerTest,
   EXPECT_TRUE(Barney == *profiles[2]);
 }
 
-TEST_F(PersonalDataManagerCleanerTest,
+TEST_F(AddressDataCleanerTest,
        ApplyAddressDedupingRoutine_NopIfZeroProfiles) {
   EXPECT_TRUE(personal_data().GetProfiles().empty());
   EXPECT_FALSE(ApplyAddressDedupingRoutine());
 }
 
-TEST_F(PersonalDataManagerCleanerTest,
+TEST_F(AddressDataCleanerTest,
        ApplyAddressDedupingRoutine_NopIfOneProfile) {
   // Create a profile to dedupe.
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -314,7 +314,7 @@ TEST_F(PersonalDataManagerCleanerTest,
 
 // Tests that ApplyAddressDedupingRoutine is not run a second time on the same
 // major version.
-TEST_F(PersonalDataManagerCleanerTest,
+TEST_F(AddressDataCleanerTest,
        ApplyAddressDedupingRoutine_OncePerVersion) {
   // Create a profile to dedupe.
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -361,7 +361,7 @@ TEST_F(PersonalDataManagerCleanerTest,
 }
 
 // Tests that `kAccount` profiles are not deduplicated against each other.
-TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountPairs) {
+TEST_F(AddressDataCleanerTest, Deduplicate_kAccountPairs) {
   AutofillProfile account_profile1 = test::StandardProfile();
   account_profile1.set_source_for_testing(AutofillProfile::Source::kAccount);
   AutofillProfile account_profile2 = test::StandardProfile();
@@ -373,7 +373,7 @@ TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountPairs) {
 
 // Tests that `kLocalOrSyncable` profiles which are a subset of a `kAccount`
 // profile are deduplicated. The result is a Chrome account profile.
-TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountSuperset) {
+TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSuperset) {
   // Create a non-Chrome account profile and a local profile.
   AutofillProfile account_profile = test::StandardProfile();
   const int non_chrome_service =
@@ -396,7 +396,7 @@ TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountSuperset) {
 
 // Tests that `kAccount` profiles which are a subset of a `kLocalOrSyncable`
 // profile are not deduplicated.
-TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountSubset) {
+TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSubset) {
   AutofillProfile account_profile = test::SubsetOfStandardProfile();
   account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
   AutofillProfile local_profile = test::StandardProfile();
@@ -406,7 +406,7 @@ TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountSubset) {
 
 // Tests that DeleteDisusedAddresses only deletes the addresses that are
 // supposed to be deleted.
-TEST_F(PersonalDataManagerCleanerTest,
+TEST_F(AddressDataCleanerTest,
        DeleteDisusedAddresses_DeleteDesiredAddressesOnly) {
   auto now = AutofillClock::Now();
 

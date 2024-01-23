@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/personal_data_manager_cleaner.h"
+#include "components/autofill/core/browser/address_data_cleaner.h"
 
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -19,7 +19,7 @@
 
 namespace autofill {
 
-PersonalDataManagerCleaner::PersonalDataManagerCleaner(
+AddressDataCleaner::AddressDataCleaner(
     PersonalDataManager* personal_data_manager,
     AlternativeStateNameMapUpdater* alternative_state_name_map_updater,
     PrefService* pref_service)
@@ -32,9 +32,9 @@ PersonalDataManagerCleaner::PersonalDataManagerCleaner(
       CHROME_VERSION_MAJOR;
 }
 
-PersonalDataManagerCleaner::~PersonalDataManagerCleaner() = default;
+AddressDataCleaner::~AddressDataCleaner() = default;
 
-void PersonalDataManagerCleaner::MaybeCleanupAddressData() {
+void AddressDataCleaner::MaybeCleanupAddressData() {
   // The profile de-duplication is run once every major chrome version. If the
   // profile de-duplication has not run for the |CHROME_VERSION_MAJOR| yet,
   // |AlternativeStateNameMap| needs to be populated first. Otherwise,
@@ -43,7 +43,7 @@ void PersonalDataManagerCleaner::MaybeCleanupAddressData() {
            ->is_alternative_state_name_map_populated() &&
       is_autofill_profile_dedupe_pending_) {
     alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
-        base::BindOnce(&PersonalDataManagerCleaner::MaybeCleanupAddressData,
+        base::BindOnce(&AddressDataCleaner::MaybeCleanupAddressData,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
   }
@@ -56,7 +56,7 @@ void PersonalDataManagerCleaner::MaybeCleanupAddressData() {
   }
 }
 
-void PersonalDataManagerCleaner::MaybeCleanupAddressDataAfterSyncChange(
+void AddressDataCleaner::MaybeCleanupAddressDataAfterSyncChange(
     syncer::ModelType model_type) {
   // The profile de-duplication is run once every major chrome version. If the
   // profile de-duplication has not run for the |CHROME_VERSION_MAJOR| yet,
@@ -75,7 +75,7 @@ void PersonalDataManagerCleaner::MaybeCleanupAddressDataAfterSyncChange(
       is_autofill_profile_dedupe_pending_) {
     alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
         base::BindOnce(
-            &PersonalDataManagerCleaner::MaybeCleanupAddressDataAfterSyncChange,
+            &AddressDataCleaner::MaybeCleanupAddressDataAfterSyncChange,
             weak_ptr_factory_.GetWeakPtr(), model_type));
     return;
   }
@@ -88,7 +88,7 @@ void PersonalDataManagerCleaner::MaybeCleanupAddressDataAfterSyncChange(
   }
 }
 
-void PersonalDataManagerCleaner::ApplyAddressFixesAndCleanups() {
+void AddressDataCleaner::ApplyAddressFixesAndCleanups() {
   if (!is_profile_cleanup_pending_) {
     return;
   }
@@ -102,7 +102,7 @@ void PersonalDataManagerCleaner::ApplyAddressFixesAndCleanups() {
   is_profile_cleanup_pending_ = false;
 }
 
-bool PersonalDataManagerCleaner::ApplyAddressDedupingRoutine() {
+bool AddressDataCleaner::ApplyAddressDedupingRoutine() {
   // Check if de-duplication has already been performed on this major version.
   if (!is_autofill_profile_dedupe_pending_) {
     return false;
@@ -150,7 +150,7 @@ bool PersonalDataManagerCleaner::ApplyAddressDedupingRoutine() {
   return true;
 }
 
-void PersonalDataManagerCleaner::DedupeProfiles(
+void AddressDataCleaner::DedupeProfiles(
     std::vector<std::unique_ptr<AutofillProfile>>* existing_profiles,
     std::unordered_set<std::string>* profiles_to_delete) const {
   AutofillMetrics::LogNumberOfProfilesConsideredForDedupe(
@@ -247,7 +247,7 @@ void PersonalDataManagerCleaner::DedupeProfiles(
       profiles_to_delete->size());
 }
 
-bool PersonalDataManagerCleaner::DeleteDisusedAddresses() {
+bool AddressDataCleaner::DeleteDisusedAddresses() {
   const std::vector<AutofillProfile*>& profiles =
       personal_data_manager_->GetProfilesFromSource(
           AutofillProfile::Source::kLocalOrSyncable);

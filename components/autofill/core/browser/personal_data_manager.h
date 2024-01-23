@@ -22,6 +22,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/address_data_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
@@ -34,7 +35,6 @@
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/payments/payments_data_cleaner.h"
-#include "components/autofill/core/browser/personal_data_manager_cleaner.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
@@ -988,7 +988,7 @@ class PersonalDataManager : public KeyedService,
   // The *DataCleaner classes are used to apply various address and payment
   // cleanups (e.g. deduplication, disused data removal) at browser startup or
   // when the sync starts.
-  std::unique_ptr<PersonalDataManagerCleaner> personal_data_manager_cleaner_;
+  std::unique_ptr<AddressDataCleaner> address_data_cleaner_;
   std::unique_ptr<PaymentsDataCleaner> payments_data_cleaner_;
 
   // A timely ordered list of ongoing changes for each profile.

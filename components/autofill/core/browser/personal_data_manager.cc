@@ -449,7 +449,7 @@ void PersonalDataManager::Init(
 
   Refresh();
 
-  personal_data_manager_cleaner_ = std::make_unique<PersonalDataManagerCleaner>(
+  address_data_cleaner_ = std::make_unique<AddressDataCleaner>(
       this, alternative_state_name_map_updater_.get(), pref_service);
   payments_data_cleaner_ = std::make_unique<PaymentsDataCleaner>(this);
 
@@ -637,7 +637,7 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
   if (!is_data_loaded_) {
     is_data_loaded_ = true;
     LogStoredDataMetrics();
-    personal_data_manager_cleaner_->MaybeCleanupAddressData();
+    address_data_cleaner_->MaybeCleanupAddressData();
     payments_data_cleaner_->CleanupPaymentsData();
   }
   NotifyPersonalDataObserver();
@@ -650,8 +650,7 @@ void PersonalDataManager::OnAutofillChangedBySync(
   // Note, it's possible that the cleanups are run on the stale data since
   // `Refresh` is an async operation. But, since the cleanups happen over the
   // local data, it should be fine.
-  personal_data_manager_cleaner_->MaybeCleanupAddressDataAfterSyncChange(
-      model_type);
+  address_data_cleaner_->MaybeCleanupAddressDataAfterSyncChange(model_type);
 }
 
 void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
