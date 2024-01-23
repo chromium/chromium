@@ -12,7 +12,7 @@ load("./sheriff_rotations.star", "get_sheriff_rotations")
 load("./chrome_settings.star", "per_builder_outputs_config")
 load("./nodes.star", "nodes")
 load("./structs.star", "structs")
-load("./targets.star", "TARGET_BUNDLE", targets_lib = "targets")
+load("./targets.star", "get_targets_spec_generator", "register_targets")
 load("//project.star", "settings")
 
 def _enum(**kwargs):
@@ -494,13 +494,11 @@ def register_builder_config(
         # Register the bundle under the qualified builder name, this allows for
         # explicitly setting a builder's targets to be another builder's with
         # some modifications
-        targets_key = targets_lib.bundle(
+        register_targets(
             name = "{}/{}".format(bucket, name),
             targets = targets,
-        ).get(TARGET_BUNDLE.kind)
-
-        # Link the builder config to the bundle
-        graph.add_edge(builder_config_key, targets_key)
+            parent_key = builder_config_key,
+        )
 
     graph.add_edge(builder_config_key, keys.builder(bucket, name))
 
@@ -893,58 +891,6 @@ def _node_cached(f):
 
     return execute
 
-def _get_bundle_resolver():
-    resolved_bundle_by_bundle_node = {}
-
-    def resolved_bundle(*, additional_compile_targets, test_spec_and_source_by_name):
-        return struct(
-            additional_compile_targets = additional_compile_targets,
-            test_spec_and_source_by_name = test_spec_and_source_by_name,
-        )
-
-    def visitor(_, children):
-        return [c for c in children if c.key.kind == TARGET_BUNDLE.kind]
-
-    def resolve(bundle_node):
-        for n in graph.descendants(bundle_node.key, visitor = visitor, topology = graph.DEPTH_FIRST):
-            if n in resolved_bundle_by_bundle_node:
-                continue
-
-            # TODO: crbug.com/1420012 - Update the handling of conflicting defs
-            # so that more context is provided about where the error is
-            # resulting from
-            additional_compile_targets = set(n.props.additional_compile_targets)
-            test_spec_and_source_by_name = {name: (spec, n.key) for name, spec in n.props.test_spec_by_name.items()}
-            for child in graph.children(n.key, kind = TARGET_BUNDLE.kind):
-                child_resolved_bundle = resolved_bundle_by_bundle_node[child]
-                additional_compile_targets = additional_compile_targets | child_resolved_bundle.additional_compile_targets
-                for name, (spec, source) in child_resolved_bundle.test_spec_and_source_by_name.items():
-                    if name in test_spec_and_source_by_name:
-                        existing_spec, existing_source = test_spec_and_source_by_name[name]
-                        if existing_spec != spec:
-                            fail("target {} has conflicting definitions in deps of {}\n  {}: {}\n  {}: {}".format(
-                                name,
-                                n.key,
-                                existing_source,
-                                existing_spec,
-                                source,
-                                spec,
-                            ))
-                    test_spec_and_source_by_name[name] = (spec, source)
-
-            resolved_bundle_by_bundle_node[n] = resolved_bundle(
-                additional_compile_targets = additional_compile_targets,
-                test_spec_and_source_by_name = test_spec_and_source_by_name,
-            )
-
-        resolved = resolved_bundle_by_bundle_node[bundle_node]
-        return (
-            resolved.additional_compile_targets,
-            {name: spec for name, (spec, _) in resolved.test_spec_and_source_by_name.items()},
-        )
-
-    return resolve
-
 def _bc_state():
     def get_parent(node):
         if node.key.kind != _BUILDER_CONFIG.kind:
@@ -1162,35 +1108,12 @@ def _bc_state():
 
         return get
 
-    bundle_resolver = _get_bundle_resolver()
-
-    def get_targets_spec(node):
-        bundle_nodes = graph.children(node.key, TARGET_BUNDLE.kind)
-        if not bundle_nodes:
-            return None
-        if len(bundle_nodes) > 1:
-            fail("internal error: there should be at most 1 targets_spec")
-
-        additional_compile_targets, test_spec_by_name = bundle_resolver(bundle_nodes[0])
-        sort_key_and_specs_by_type_key = {}
-        for name, spec in test_spec_by_name.items():
-            type_key, sort_key, spec = spec.spec_type.finalize(name, spec.spec_value)
-            sort_key_and_specs_by_type_key.setdefault(type_key, []).append((sort_key, spec))
-
-        specs_by_type_key = {}
-        if additional_compile_targets:
-            specs_by_type_key["additional_compile_targets"] = sorted(additional_compile_targets)
-        for type_key, sort_key_and_specs in sorted(sort_key_and_specs_by_type_key.items()):
-            specs_by_type_key[type_key] = [spec for _, spec in sorted(sort_key_and_specs)]
-
-        return specs_by_type_key
-
     bc_state = struct(
         parent = _node_cached(get_parent),
         children = _node_cached(get_children),
         builder_spec = builder_spec_getter(),
         mirrors = mirrors_getter(),
-        targets_spec = _node_cached(get_targets_spec),
+        targets_spec = _node_cached(get_targets_spec_generator()),
     )
 
     return bc_state
