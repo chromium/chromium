@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrosNetworkConfig, CrosNetworkConfigInterface as NetworkConfigServiceInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {fakeCalibrationComponentsWithFails, fakeChromeVersion, fakeComponents, fakeDeviceCustomLabels, fakeDeviceRegions, fakeDeviceSkus, fakeLog, fakeLogSavePath, fakeRsuChallengeCode, fakeRsuChallengeQrCode, fakeStates} from './fake_data.js';
@@ -17,25 +17,18 @@ import {CalibrationSetupInstruction, FeatureLevel, RmadErrorCode, ShimlessRmaSer
 
 /**
  * If true this will replace ShimlessRmaService with a fake.
- * @type {boolean}
  */
 const useFakeService = false;
 
-/**
- * @type {?ShimlessRmaServiceInterface}
- */
-let shimlessRmaService = null;
+let shimlessRmaService: ShimlessRmaServiceInterface|null = null;
 
-/**
- * @type {?NetworkConfigServiceInterface}
- */
-let networkConfigService = null;
+let networkConfigService: NetworkConfigServiceInterface|null = null;
 
 /**
  * Sets up a FakeShimlessRmaService to be used at runtime.
  * TODO(gavindodd): Remove once mojo bindings are implemented.
  */
-function setupFakeShimlessRmaService() {
+function setupFakeShimlessRmaService(): void {
   // Create provider.
   const service = new FakeShimlessRmaService();
 
@@ -93,17 +86,12 @@ function setupFakeShimlessRmaService() {
   setShimlessRmaServiceForTesting(service);
 }
 
-/**
- * @param {!ShimlessRmaServiceInterface} testService
- */
-export function setShimlessRmaServiceForTesting(testService) {
+export function setShimlessRmaServiceForTesting(
+    testService: ShimlessRmaServiceInterface): void {
   shimlessRmaService = testService;
 }
 
-/**
- * @return {!ShimlessRmaServiceInterface}
- */
-export function getShimlessRmaService() {
+export function getShimlessRmaService(): ShimlessRmaServiceInterface {
   if (!shimlessRmaService) {
     if (useFakeService) {
       setupFakeShimlessRmaService();
@@ -116,17 +104,12 @@ export function getShimlessRmaService() {
   return shimlessRmaService;
 }
 
-/**
- * @param {!NetworkConfigServiceInterface} testService
- */
-export function setNetworkConfigServiceForTesting(testService) {
+export function setNetworkConfigServiceForTesting(
+    testService: NetworkConfigServiceInterface): void {
   networkConfigService = testService;
 }
 
-/**
- * @return {!NetworkConfigServiceInterface}
- */
-export function getNetworkConfigService() {
+export function getNetworkConfigService(): NetworkConfigServiceInterface {
   if (!networkConfigService) {
     networkConfigService = CrosNetworkConfig.getRemote();
   }

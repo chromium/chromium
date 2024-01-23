@@ -71,7 +71,7 @@ build_webui("build") {
     "events.ts",
     "fake_data.ts",
     "fake_shimless_rma_service.ts",
-    "mojo_interface_provider.js",
+    "mojo_interface_provider.ts",
     "shimless_rma_util.ts",
   ]
 
