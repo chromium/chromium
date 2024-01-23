@@ -23,5 +23,10 @@
       { start: "2010-03-09", domain: "gmail.com" },
     ]
   },
+  "weidongliu@chromium.org": {
+    affiliations: [
+      { start: "2020-07-10", domain: "tencent.com" },
+    ]
+  },
 }
 
