@@ -177,7 +177,7 @@ public class RestoreTabsPromoSheetContent implements BottomSheetContent {
                         RestoreTabsOnFRERestoredTabsResult.NONE);
                 break;
             default:
-                assert currentScreen == UNINITIALIZED : "Backpressing on an unidentified screen.";
+                assert currentScreen == UNINITIALIZED : "Back pressing on an unidentified screen.";
         }
 
         if (currentScreen != UNINITIALIZED) {
