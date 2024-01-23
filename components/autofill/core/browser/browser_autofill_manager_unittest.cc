@@ -3556,7 +3556,8 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
       field.global_id(),
       {Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   PopupItemId::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator()});
+       AutofillSuggestionGenerator::CreateSeparator(),
+       AutofillSuggestionGenerator::CreateClearFormSuggestion()});
 }
 #endif
 

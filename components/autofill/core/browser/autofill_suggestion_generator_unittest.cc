@@ -110,6 +110,30 @@ Matcher<Suggestion> EqualsIbanSuggestion(
                                {Suggestion::Text(first_label_value)}}));
 }
 
+Matcher<Suggestion> EqualsClearFormSuggestion() {
+  return EqualsSuggestion(PopupItemId::kClearForm,
+#if BUILDFLAG(IS_ANDROID)
+                          base::i18n::ToUpper(l10n_util::GetStringUTF16(
+                              IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM)),
+#else
+                          l10n_util::GetStringUTF16(
+                              IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM),
+#endif
+                          Suggestion::Icon::kClear);
+}
+
+Matcher<Suggestion> EqualsUndoAutofillSuggestion() {
+  return EqualsSuggestion(PopupItemId::kClearForm,
+#if BUILDFLAG(IS_ANDROID)
+                          base::i18n::ToUpper(l10n_util::GetStringUTF16(
+                              IDS_AUTOFILL_UNDO_MENU_ITEM)),
+#else
+                          l10n_util::GetStringUTF16(
+                              IDS_AUTOFILL_UNDO_MENU_ITEM),
+#endif
+                          Suggestion::Icon::kUndo);
+}
+
 // Checks that `arg` contains necessary credit card footer suggestions. `arg`
 // has to be of type std::vector<Suggestion>.
 MATCHER(ContainsCreditCardFooterSuggestions, "") {
@@ -1778,6 +1802,42 @@ TEST_F(AutofillSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
   EXPECT_THAT(manual_fallback_suggestions, ContainsAddressFooterSuggestions());
 }
 
+// TODO(crbug.com/1441410): Clean up when the feature is launched.
+TEST_F(AutofillSuggestionGeneratorTest, ClearAddressFormSuggestion) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kAutofillUndo);
+
+  personal_data().AddProfile(test::GetFullProfile());
+  FormFieldData field;
+  field.is_autofilled = true;
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->GetSuggestionsForProfiles(
+          {NAME_FIRST}, field, NAME_FIRST,
+          /*last_targeted_fields=*/std::nullopt,
+          AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsSuggestion(PopupItemId::kAddressEntry),
+                          EqualsSuggestion(PopupItemId::kSeparator),
+                          EqualsClearFormSuggestion()));
+}
+
+TEST_F(AutofillSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
+  base::test::ScopedFeatureList features(features::kAutofillUndo);
+
+  personal_data().AddProfile(test::GetFullProfile());
+  FormFieldData field;
+  field.is_autofilled = true;
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->GetSuggestionsForProfiles(
+          {NAME_FIRST}, field, NAME_FIRST,
+          /*last_targeted_fields=*/std::nullopt,
+          AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsSuggestion(PopupItemId::kAddressEntry),
+                          EqualsSuggestion(PopupItemId::kSeparator),
+                          EqualsUndoAutofillSuggestion()));
+}
+
 TEST_F(AutofillSuggestionGeneratorTest,
        RemoveExpiredCreditCardsNotUsedSinceTimestamp) {
   const char kHistogramName[] = "Autofill.CreditCardsSuppressedForDisuse";
@@ -2041,9 +2101,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 // standalone CVC field.
 TEST_F(AutofillSuggestionGeneratorTest,
        GetSuggestionsForVirtualCardStandaloneCvc) {
-  personal_data().ClearCreditCards();
   CreditCard virtual_card = test::GetVirtualCard();
-  virtual_card.set_guid("1234");
   personal_data().AddServerCreditCard(virtual_card);
 
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
@@ -2054,10 +2112,65 @@ TEST_F(AutofillSuggestionGeneratorTest,
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForVirtualCardStandaloneCvc(
-          metadata_logging_context, virtual_card_guid_to_last_four_map);
+          FormFieldData(), metadata_logging_context,
+          virtual_card_guid_to_last_four_map);
 
   ASSERT_EQ(suggestions.size(), 2U);
   EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
+}
+
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetSuggestionsForVirtualCardStandaloneCvc_ClearForm) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kAutofillUndo);
+
+  CreditCard virtual_card = test::GetVirtualCard();
+  personal_data().AddServerCreditCard(virtual_card);
+
+  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+      virtual_card_guid_to_last_four_map;
+  virtual_card_guid_to_last_four_map.insert(
+      {virtual_card.guid(),
+       VirtualCardUsageData::VirtualCardLastFour(u"4444")});
+  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  FormFieldData field;
+  field.is_autofilled = true;
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->GetSuggestionsForVirtualCardStandaloneCvc(
+          field, metadata_logging_context, virtual_card_guid_to_last_four_map);
+
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(EqualsSuggestion(PopupItemId::kVirtualCreditCardEntry),
+                  EqualsSuggestion(PopupItemId::kSeparator),
+                  EqualsClearFormSuggestion()));
+}
+
+// TODO(crbug.com/1441410): Clean up when the feature is launched.
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetSuggestionsForVirtualCardStandaloneCvc_UndoAutofill) {
+  base::test::ScopedFeatureList features(features::kAutofillUndo);
+
+  CreditCard virtual_card = test::GetVirtualCard();
+  personal_data().AddServerCreditCard(virtual_card);
+
+  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+      virtual_card_guid_to_last_four_map;
+  virtual_card_guid_to_last_four_map.insert(
+      {virtual_card.guid(),
+       VirtualCardUsageData::VirtualCardLastFour(u"4444")});
+  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  FormFieldData field;
+  field.is_autofilled = true;
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->GetSuggestionsForVirtualCardStandaloneCvc(
+          field, metadata_logging_context, virtual_card_guid_to_last_four_map);
+
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(EqualsSuggestion(PopupItemId::kVirtualCreditCardEntry),
+                  EqualsSuggestion(PopupItemId::kSeparator),
+                  EqualsUndoAutofillSuggestion()));
 }
 
 // Ensures we appropriately generate suggestions for credit saved with CVC.
@@ -2197,9 +2310,11 @@ TEST_F(AutofillSuggestionGeneratorTest, NoSuggestionsWhenNoUserData) {
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  FormFieldData field;
+  field.is_autofilled = true;
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_NUMBER,
+          field, CREDIT_CARD_NUMBER,
           /*should_show_scan_credit_card=*/true,
           /*should_show_cards_from_account=*/true, should_display_gpay_logo,
           with_offer, with_cvc, metadata_logging_context);
@@ -2251,6 +2366,54 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
                   l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS),
                   Suggestion::Icon::kGoogle));
   EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
+}
+
+// TODO(crbug.com/1441410): Clean up when the feature is launched.
+TEST_F(AutofillSuggestionGeneratorTest,
+       FieldWasAutofilled_ClearCreditCardFormSuggestion) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kAutofillUndo);
+  personal_data().AddCreditCard(test::GetCreditCard());
+  bool should_display_gpay_logo;
+  bool with_offer;
+  bool with_cvc;
+  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  FormFieldData field;
+  field.is_autofilled = true;
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->GetSuggestionsForCreditCards(
+          field, CREDIT_CARD_NUMBER,
+          /*should_show_scan_credit_card=*/false,
+          /*should_show_cards_from_account=*/false, should_display_gpay_logo,
+          with_offer, with_cvc, metadata_logging_context);
+
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsSuggestion(PopupItemId::kCreditCardEntry),
+                          EqualsSuggestion(PopupItemId::kSeparator),
+                          EqualsClearFormSuggestion()));
+}
+
+TEST_F(AutofillSuggestionGeneratorTest,
+       FieldWasAutofilled_UndoAutofillOnCreditCardForm) {
+  base::test::ScopedFeatureList features(features::kAutofillUndo);
+  personal_data().AddCreditCard(test::GetCreditCard());
+  bool should_display_gpay_logo;
+  bool with_offer;
+  bool with_cvc;
+  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  FormFieldData field;
+  field.is_autofilled = true;
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->GetSuggestionsForCreditCards(
+          field, CREDIT_CARD_NUMBER,
+          /*should_show_scan_credit_card=*/false,
+          /*should_show_cards_from_account=*/false, should_display_gpay_logo,
+          with_offer, with_cvc, metadata_logging_context);
+
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsSuggestion(PopupItemId::kCreditCardEntry),
+                          EqualsSuggestion(PopupItemId::kSeparator),
+                          EqualsUndoAutofillSuggestion()));
 }
 
 // Test that the virtual card option is shown when all of the prerequisites are

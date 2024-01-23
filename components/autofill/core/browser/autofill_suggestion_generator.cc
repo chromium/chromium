@@ -1179,7 +1179,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
     return suggestions;
   }
 
-  base::ranges::move(GetAddressFooterSuggestions(),
+  base::ranges::move(GetAddressFooterSuggestions(trigger_field.is_autofilled),
                      std::back_inserter(suggestions));
 
   return suggestions;
@@ -1549,7 +1549,8 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
 
   base::ranges::move(
       GetCreditCardFooterSuggestions(should_show_scan_credit_card,
-                                     should_show_cards_from_account),
+                                     should_show_cards_from_account,
+                                     trigger_field.is_autofilled),
       std::back_inserter(suggestions));
 
   return suggestions;
@@ -1557,6 +1558,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
 
 std::vector<Suggestion>
 AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
+    const FormFieldData& trigger_field,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
     base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>&
         virtual_card_guid_to_last_four_map) {
@@ -1609,7 +1611,8 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
 
   base::ranges::move(
       GetCreditCardFooterSuggestions(/*should_show_scan_credit_card=*/false,
-                                     /*should_show_cards_from_account=*/false),
+                                     /*should_show_cards_from_account=*/false,
+                                     trigger_field.is_autofilled),
       std::back_inserter(suggestions));
 
   return suggestions;
@@ -1628,6 +1631,24 @@ Suggestion AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry() {
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
   suggestion.popup_item_id = PopupItemId::kAutofillOptions;
   suggestion.icon = Suggestion::Icon::kSettings;
+  return suggestion;
+}
+
+Suggestion AutofillSuggestionGenerator::CreateClearFormSuggestion() {
+  std::u16string value =
+      base::FeatureList::IsEnabled(features::kAutofillUndo)
+          ? l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM)
+          : l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    value = base::i18n::ToUpper(value);
+  }
+
+  Suggestion suggestion(value, PopupItemId::kClearForm);
+  suggestion.icon = base::FeatureList::IsEnabled(features::kAutofillUndo)
+                        ? Suggestion::Icon::kUndo
+                        : Suggestion::Icon::kClear;
+  suggestion.acceptance_a11y_announcement =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
   return suggestion;
 }
 
@@ -2129,10 +2150,15 @@ void AutofillSuggestionGenerator::SetCardArtURL(
 }
 
 std::vector<Suggestion>
-AutofillSuggestionGenerator::GetAddressFooterSuggestions() const {
+AutofillSuggestionGenerator::GetAddressFooterSuggestions(
+    bool is_autofilled) const {
   std::vector<Suggestion> footer_suggestions;
 
   footer_suggestions.push_back(CreateSeparator());
+
+  if (is_autofilled) {
+    footer_suggestions.push_back(CreateClearFormSuggestion());
+  }
 
   return footer_suggestions;
 }
@@ -2140,7 +2166,8 @@ AutofillSuggestionGenerator::GetAddressFooterSuggestions() const {
 std::vector<Suggestion>
 AutofillSuggestionGenerator::GetCreditCardFooterSuggestions(
     bool should_show_scan_credit_card,
-    bool should_show_cards_from_account) const {
+    bool should_show_cards_from_account,
+    bool is_autofilled) const {
   std::vector<Suggestion> footer_suggestions;
   if (should_show_scan_credit_card) {
     Suggestion scan_credit_card(
@@ -2159,6 +2186,10 @@ AutofillSuggestionGenerator::GetCreditCardFooterSuggestions(
   }
 
   footer_suggestions.push_back(CreateSeparator());
+
+  if (is_autofilled) {
+    footer_suggestions.push_back(CreateClearFormSuggestion());
+  }
 
   return footer_suggestions;
 }

@@ -1200,27 +1200,6 @@ void AutofillExternalDelegate::PossiblyRemoveAutofillWarnings(
 void AutofillExternalDelegate::ApplyAutofillOptions(
     std::vector<Suggestion>* suggestions,
     bool is_all_server_suggestions) {
-  // The form has been auto-filled, so give the user the chance to clear the
-  // form.  Append the 'Clear form' menu item.
-  if (query_field_.is_autofilled) {
-    std::u16string value =
-        base::FeatureList::IsEnabled(features::kAutofillUndo)
-            ? l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM)
-            : l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
-    if constexpr (BUILDFLAG(IS_ANDROID)) {
-      value = base::i18n::ToUpper(value);
-    }
-
-    suggestions->emplace_back(value);
-    suggestions->back().popup_item_id = PopupItemId::kClearForm;
-    suggestions->back().icon =
-        base::FeatureList::IsEnabled(features::kAutofillUndo)
-            ? Suggestion::Icon::kUndo
-            : Suggestion::Icon::kClear;
-    suggestions->back().acceptance_a11y_announcement =
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
-  }
-
   // Append the 'Autofill settings' menu item, or the menu item specified in the
   // popup layout experiment.
   suggestions->emplace_back(GetSettingsSuggestionValue());

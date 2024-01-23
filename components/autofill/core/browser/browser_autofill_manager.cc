@@ -2945,7 +2945,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       if (!virtual_card_guid_to_last_four_map.empty()) {
         suggestions =
             suggestion_generator_->GetSuggestionsForVirtualCardStandaloneCvc(
-                context, virtual_card_guid_to_last_four_map);
+                trigger_field, context, virtual_card_guid_to_last_four_map);
         is_virtual_card_standalone_cvc_field = true;
         // Always display GPay logo for virtual card suggestions.
         should_display_gpay_logo = true;
