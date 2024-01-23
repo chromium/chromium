@@ -7376,11 +7376,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "share-sheet-custom-actions-polish",
-    "owners": [ "wenyufu@chromium.org" ],
-    "expiry_milestone": 121
-  },
-  {
     "name": "share-sheet-migration-android",
     "owners": [ "wenyufu@chromium.org" ],
     "expiry_milestone": 121
