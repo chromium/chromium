@@ -986,7 +986,8 @@ std::pair<LayoutUnit, LayoutUnit> FragmentItem::LineLeftAndRightForOffsets(
     // TODO(layout-dev): Move caret position out of ShapeResult and into a
     // separate support class that can take a ShapeResult or ShapeResultView.
     // Allows for better code separation and avoids the extra copy below.
-    const ShapeResult* shape_result = TextShapeResult()->CreateShapeResult();
+    scoped_refptr<ShapeResult> shape_result =
+        TextShapeResult()->CreateShapeResult();
     float unrounded_start_position = shape_result->CaretPositionForOffset(
         start_offset, text, AdjustMidCluster::kToStart);
     float unrounded_end_position = shape_result->CaretPositionForOffset(

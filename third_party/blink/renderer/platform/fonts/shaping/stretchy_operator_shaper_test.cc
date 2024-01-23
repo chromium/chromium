@@ -21,8 +21,8 @@ namespace {
 
 float kSizeError = .1;
 
-const ShapeResultTestInfo* TestInfo(const ShapeResult* result) {
-  return static_cast<const ShapeResultTestInfo*>(result);
+ShapeResultTestInfo* TestInfo(const scoped_refptr<ShapeResult>& result) {
+  return static_cast<ShapeResultTestInfo*>(result.get());
 }
 
 }  // namespace
@@ -93,7 +93,8 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
 
       // Shaping of horizontal size variants.
       {
-        const ShapeResult* result = horizontal_shaper.Shape(&math, target_size);
+        scoped_refptr<ShapeResult> result =
+            horizontal_shaper.Shape(&math, target_size);
         EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
         EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(), 1u);
         Glyph expected_variant = i ? h[0] + 2 * i : horizontal_arrow;
@@ -104,7 +105,8 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
 
       // Shaping of vertical size variants.
       {
-        const ShapeResult* result = vertical_shaper.Shape(&math, target_size);
+        scoped_refptr<ShapeResult> result =
+            vertical_shaper.Shape(&math, target_size);
         EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
         EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(), 1u);
         Glyph expected_variant = i ? v[0] + 2 * i : vertical_arrow;
@@ -172,7 +174,8 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
     // Shaping of horizontal assembly.
     // From left to right: h2, h1, h1, h1, ...
     {
-      const ShapeResult* result = horizontal_shaper.Shape(&math, target_size);
+      scoped_refptr<ShapeResult> result =
+          horizontal_shaper.Shape(&math, target_size);
 
       EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
       EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(),
@@ -193,7 +196,8 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
     // Shaping of vertical assembly.
     // From bottom to top: v2, v1, v1, v1, ...
     {
-      const ShapeResult* result = vertical_shaper.Shape(&math, target_size);
+      scoped_refptr<ShapeResult> result =
+          vertical_shaper.Shape(&math, target_size);
 
       EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
       EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(),
@@ -288,7 +292,8 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariantsCenteredOnBaseline) {
   // Shaping of horizontal assembly.
   // From left to right: h2, h1, h1, h1, ...
   {
-    const ShapeResult* result = horizontal_shaper.Shape(&math, target_size);
+    scoped_refptr<ShapeResult> result =
+        horizontal_shaper.Shape(&math, target_size);
 
     EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
     EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(),
@@ -309,7 +314,8 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariantsCenteredOnBaseline) {
   // Shaping of vertical assembly.
   // From bottom to top: v2, v1, v1, v1, ...
   {
-    const ShapeResult* result = vertical_shaper.Shape(&math, target_size);
+    scoped_refptr<ShapeResult> result =
+        vertical_shaper.Shape(&math, target_size);
 
     EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
     EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(),

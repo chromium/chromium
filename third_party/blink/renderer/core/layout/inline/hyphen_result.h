@@ -15,13 +15,9 @@ namespace blink {
 class ComputedStyle;
 
 class CORE_EXPORT HyphenResult {
-  DISALLOW_NEW();
-
  public:
   HyphenResult() = default;
   explicit HyphenResult(const ComputedStyle& style) { Shape(style); }
-
-  void Trace(Visitor* visitor) const { visitor->Trace(shape_result_); }
 
   explicit operator bool() const { return !text_.IsNull(); }
 
@@ -35,7 +31,7 @@ class CORE_EXPORT HyphenResult {
 
  private:
   String text_;
-  Member<const ShapeResult> shape_result_;
+  scoped_refptr<const ShapeResult> shape_result_;
 };
 
 }  // namespace blink

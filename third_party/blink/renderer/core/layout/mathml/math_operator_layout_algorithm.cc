@@ -132,10 +132,10 @@ const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
       element->IsVertical() ? OpenTypeMathStretchData::StretchAxis::Vertical
                             : OpenTypeMathStretchData::StretchAxis::Horizontal);
   StretchyOperatorShaper::Metrics metrics;
-  const ShapeResult* shape_result =
+  scoped_refptr<ShapeResult> shape_result =
       shaper.Shape(&Style().GetFont(), operator_target_size, &metrics);
   const ShapeResultView* shape_result_view =
-      ShapeResultView::Create(shape_result);
+      ShapeResultView::Create(shape_result.get());
 
   if (metrics.italic_correction) {
     container_builder_.SetMathItalicCorrection(

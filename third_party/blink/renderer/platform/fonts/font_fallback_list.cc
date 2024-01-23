@@ -53,6 +53,14 @@ FontFallbackList::FontFallbackList(FontSelector* font_selector)
       nullify_primary_font_data_for_test_(false) {}
 
 FontFallbackList::~FontFallbackList() {
+  ReleaseFontData();
+}
+
+void FontFallbackList::Trace(Visitor* visitor) const {
+  visitor->Trace(font_selector_);
+}
+
+void FontFallbackList::ReleaseFontData() {
   unsigned num_fonts = font_list_.size();
   for (unsigned i = 0; i < num_fonts; ++i) {
     if (!font_list_[i]->IsCustomFont()) {
@@ -60,12 +68,8 @@ FontFallbackList::~FontFallbackList() {
       FontCache::Get().ReleaseFontData(To<SimpleFontData>(font_list_[i].get()));
     }
   }
-}
-
-void FontFallbackList::Trace(Visitor* visitor) const {
-  visitor->Trace(font_selector_);
-  visitor->Trace(ng_shape_cache_);
-  visitor->Trace(shape_cache_);
+  ng_shape_cache_.reset();  // Clear the weak pointer to the cache instance.
+  shape_cache_.reset();  // Clear the weak pointer to the cache instance.
 }
 
 bool FontFallbackList::ShouldSkipDrawing() const {

@@ -55,7 +55,7 @@ void LineTruncator::SetupEllipsis() {
           : String(u"...");
   HarfBuzzShaper shaper(ellipsis_text_);
   ellipsis_shape_result_ =
-      ShapeResultView::Create(shaper.Shape(&font, line_direction_));
+      ShapeResultView::Create(shaper.Shape(&font, line_direction_).get());
   ellipsis_width_ = ellipsis_shape_result_->SnappedWidth();
 }
 
@@ -105,7 +105,7 @@ wtf_size_t LineTruncator::AddTruncatedChild(
   LogicalLineItems& line = *line_box;
   const LogicalLineItem& source_item = line[source_index];
   DCHECK(source_item.shape_result);
-  const ShapeResult* shape_result =
+  scoped_refptr<ShapeResult> shape_result =
       source_item.shape_result->CreateShapeResult();
   unsigned text_offset = shape_result->OffsetToFit(position, edge);
   if (IsLtr(edge) ? IsLeftMostOffset(*shape_result, text_offset)
@@ -506,7 +506,8 @@ bool LineTruncator::TruncateChild(
 
   // TODO(layout-dev): Add support for OffsetToFit to ShapeResultView to avoid
   // this copy.
-  const ShapeResult* shape_result = child.shape_result->CreateShapeResult();
+  scoped_refptr<ShapeResult> shape_result =
+      child.shape_result->CreateShapeResult();
   DCHECK(shape_result);
   const TextOffsetRange original_offset = child.text_offset;
   // Compute the offset to truncate.

@@ -187,10 +187,10 @@ class CORE_EXPORT LineBreaker {
                                                const InlineItemResult&,
                                                unsigned end_offset);
   void UpdateShapeResult(const LineInfo&, InlineItemResult*);
-  const ShapeResult* ShapeText(const InlineItem&,
-                               unsigned start,
-                               unsigned end,
-                               ShapeOptions = ShapeOptions());
+  scoped_refptr<ShapeResult> ShapeText(const InlineItem&,
+                                       unsigned start,
+                                       unsigned end,
+                                       ShapeOptions = ShapeOptions());
 
   void HandleTrailingSpaces(const InlineItem&, LineInfo*);
   void HandleTrailingSpaces(const InlineItem&, const ShapeResult*, LineInfo*);

@@ -111,7 +111,7 @@ class PLATFORM_EXPORT ShapeResultView final
 
   void Trace(Visitor*) const {}
 
-  ShapeResult* CreateShapeResult() const;
+  scoped_refptr<ShapeResult> CreateShapeResult() const;
 
   unsigned StartIndex() const { return start_index_ + char_index_offset_; }
   unsigned EndIndex() const { return StartIndex() + num_characters_; }

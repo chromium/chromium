@@ -59,11 +59,19 @@ class ShapeResultTest : public FontTestBase {
     return false;
   }
 
+  // Release the ShapeResults held inside an array of ShapeResult::ShapeRange
+  // instances.
+  static void ReleaseShapeRange(base::span<ShapeResult::ShapeRange> ranges) {
+    for (auto& range : ranges) {
+      range.target->Release();
+    }
+  }
+
   ShapeResult* CreateShapeResult(TextDirection direction) const {
-    return MakeGarbageCollected<ShapeResult>(direction == TextDirection::kLtr
-                                                 ? GetFont(kLatinFont)
-                                                 : GetFont(kArabicFont),
-                                             0, 0, direction);
+    return new ShapeResult(direction == TextDirection::kLtr
+                               ? GetFont(kLatinFont)
+                               : GetFont(kArabicFont),
+                           0, 0, direction);
   }
 
   const Font* GetFont(FontType type) const {
@@ -92,7 +100,7 @@ void ShapeResultTest::TestCopyRangesLatin(const ShapeResult* result) const {
   EXPECT_EQ(glyphs[2].size(), 10u);
   EXPECT_EQ(glyphs[3].size(), 8u);
 
-  ShapeResult* reference[num_ranges];
+  scoped_refptr<ShapeResult> reference[num_ranges];
   reference[0] = result->SubRange(0, 10);
   reference[1] = result->SubRange(10, 20);
   reference[2] = result->SubRange(20, 30);
@@ -109,6 +117,7 @@ void ShapeResultTest::TestCopyRangesLatin(const ShapeResult* result) const {
   EXPECT_TRUE(CompareResultGlyphs(glyphs[1], reference_glyphs[1], 0u, 10u));
   EXPECT_TRUE(CompareResultGlyphs(glyphs[2], reference_glyphs[2], 0u, 10u));
   EXPECT_TRUE(CompareResultGlyphs(glyphs[3], reference_glyphs[3], 0u, 8u));
+  ReleaseShapeRange(ranges);
 }
 
 void ShapeResultTest::TestCopyRangesArabic(const ShapeResult* result) const {
@@ -128,7 +137,7 @@ void ShapeResultTest::TestCopyRangesArabic(const ShapeResult* result) const {
   EXPECT_EQ(glyphs[2].size(), 3u);
   EXPECT_EQ(glyphs[3].size(), 5u);
 
-  ShapeResult* reference[num_ranges];
+  scoped_refptr<ShapeResult> reference[num_ranges];
   reference[0] = result->SubRange(0, 4);
   reference[1] = result->SubRange(4, 7);
   reference[2] = result->SubRange(7, 10);
@@ -145,6 +154,7 @@ void ShapeResultTest::TestCopyRangesArabic(const ShapeResult* result) const {
   EXPECT_TRUE(CompareResultGlyphs(glyphs[1], reference_glyphs[1], 0u, 3u));
   EXPECT_TRUE(CompareResultGlyphs(glyphs[2], reference_glyphs[2], 0u, 3u));
   EXPECT_TRUE(CompareResultGlyphs(glyphs[3], reference_glyphs[3], 0u, 5u));
+  ReleaseShapeRange(ranges);
 }
 
 TEST_F(ShapeResultTest, CopyRangeLatin) {
@@ -152,8 +162,9 @@ TEST_F(ShapeResultTest, CopyRangeLatin) {
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
-  const ShapeResult* result = shaper.Shape(GetFont(kLatinFont), direction);
-  TestCopyRangesLatin(result);
+  scoped_refptr<ShapeResult> result =
+      shaper.Shape(GetFont(kLatinFont), direction);
+  TestCopyRangesLatin(result.get());
 }
 
 // Identical to CopyRangeLatin except the source range shape result is split
@@ -169,13 +180,17 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRun) {
 
   // Combine four separate results into a single one to ensure we have a result
   // with multiple runs.
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(GetFont(kLatinFont), 0, 0, direction);
-  shaper_a.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 5u, result);
-  shaper_b.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 2u, result);
-  shaper_c.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 25u, result);
-  shaper_d.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 6u, result);
-  TestCopyRangesLatin(result);
+  scoped_refptr<ShapeResult> result =
+      ShapeResult::Create(GetFont(kLatinFont), 0, 0, direction);
+  shaper_a.Shape(GetFont(kLatinFont), direction)
+      ->CopyRange(0u, 5u, result.get());
+  shaper_b.Shape(GetFont(kLatinFont), direction)
+      ->CopyRange(0u, 2u, result.get());
+  shaper_c.Shape(GetFont(kLatinFont), direction)
+      ->CopyRange(0u, 25u, result.get());
+  shaper_d.Shape(GetFont(kLatinFont), direction)
+      ->CopyRange(0u, 6u, result.get());
+  TestCopyRangesLatin(result.get());
 }
 
 TEST_F(ShapeResultTest, CopyRangeLatinMultiRunWithHoles) {
@@ -186,12 +201,16 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRunWithHoles) {
   HarfBuzzShaper shaper_c(string.Substring(7, 32));
   HarfBuzzShaper shaper_d(string.Substring(32, 34));
 
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(GetFont(kLatinFont), 0, 0, direction);
-  shaper_a.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 5u, result);
-  shaper_b.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 2u, result);
-  shaper_c.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 25u, result);
-  shaper_d.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 2u, result);
+  scoped_refptr<ShapeResult> result =
+      ShapeResult::Create(GetFont(kLatinFont), 0, 0, direction);
+  shaper_a.Shape(GetFont(kLatinFont), direction)
+      ->CopyRange(0u, 5u, result.get());
+  shaper_b.Shape(GetFont(kLatinFont), direction)
+      ->CopyRange(0u, 2u, result.get());
+  shaper_c.Shape(GetFont(kLatinFont), direction)
+      ->CopyRange(0u, 25u, result.get());
+  shaper_d.Shape(GetFont(kLatinFont), direction)
+      ->CopyRange(0u, 2u, result.get());
 
   ShapeResult::ShapeRange ranges[] = {
       {4, 17, CreateShapeResult(TextDirection::kLtr)},
@@ -206,7 +225,7 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRunWithHoles) {
   EXPECT_EQ(glyphs[1].size(), 3u);
   EXPECT_EQ(glyphs[2].size(), 6u);
 
-  ShapeResult* reference[3];
+  scoped_refptr<ShapeResult> reference[3];
   reference[0] = result->SubRange(4, 17);
   reference[1] = result->SubRange(20, 23);
   reference[2] = result->SubRange(25, 31);
@@ -221,6 +240,7 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRunWithHoles) {
   EXPECT_TRUE(CompareResultGlyphs(glyphs[0], reference_glyphs[0], 0u, 13u));
   EXPECT_TRUE(CompareResultGlyphs(glyphs[1], reference_glyphs[1], 0u, 3u));
   EXPECT_TRUE(CompareResultGlyphs(glyphs[2], reference_glyphs[2], 0u, 6u));
+  ReleaseShapeRange(ranges);
 }
 
 TEST_F(ShapeResultTest, CopyRangeArabic) {
@@ -231,8 +251,9 @@ TEST_F(ShapeResultTest, CopyRangeArabic) {
   TextDirection direction = TextDirection::kRtl;
 
   HarfBuzzShaper shaper(string);
-  const ShapeResult* result = shaper.Shape(GetFont(kArabicFont), direction);
-  TestCopyRangesArabic(result);
+  scoped_refptr<ShapeResult> result =
+      shaper.Shape(GetFont(kArabicFont), direction);
+  TestCopyRangesArabic(result.get());
 }
 
 // Identical to CopyRangeArabic except the source range shape result is split
@@ -251,13 +272,16 @@ TEST_F(ShapeResultTest, CopyRangeArabicMultiRun) {
 
   // Combine three separate results into a single one to ensure we have a result
   // with multiple runs.
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(GetFont(kArabicFont), 0, 0, direction);
-  shaper_a.Shape(GetFont(kArabicFont), direction)->CopyRange(0u, 2u, result);
-  shaper_b.Shape(GetFont(kArabicFont), direction)->CopyRange(0u, 7u, result);
-  shaper_c.Shape(GetFont(kArabicFont), direction)->CopyRange(0u, 8u, result);
+  scoped_refptr<ShapeResult> result =
+      ShapeResult::Create(GetFont(kArabicFont), 0, 0, direction);
+  shaper_a.Shape(GetFont(kArabicFont), direction)
+      ->CopyRange(0u, 2u, result.get());
+  shaper_b.Shape(GetFont(kArabicFont), direction)
+      ->CopyRange(0u, 7u, result.get());
+  shaper_c.Shape(GetFont(kArabicFont), direction)
+      ->CopyRange(0u, 8u, result.get());
 
-  TestCopyRangesArabic(result);
+  TestCopyRangesArabic(result.get());
 }
 
 static struct IsStartSafeToBreakData {
@@ -295,7 +319,8 @@ TEST_P(IsStartSafeToBreakDataTest, IsStartSafeToBreakData) {
   const IsStartSafeToBreakData data = GetParam();
   String string(data.text);
   HarfBuzzShaper shaper(string);
-  const ShapeResult* result = shaper.Shape(GetFont(kLatinFont), data.direction);
+  scoped_refptr<ShapeResult> result =
+      shaper.Shape(GetFont(kLatinFont), data.direction);
   if (data.end_offset)
     result = result->SubRange(data.start_offset, data.end_offset);
   EXPECT_EQ(result->IsStartSafeToBreak(), data.expected);
@@ -303,7 +328,8 @@ TEST_P(IsStartSafeToBreakDataTest, IsStartSafeToBreakData) {
 
 TEST_F(ShapeResultTest, AddUnsafeToBreakLtr) {
   HarfBuzzShaper shaper(u"ABC\u3042DEFG");
-  ShapeResult* result = shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr);
+  scoped_refptr<ShapeResult> result =
+      shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr);
   Vector<unsigned> offsets{2, 5};
   for (const unsigned offset : offsets) {
     EXPECT_EQ(result->NextSafeToBreakOffset(offset), offset);
@@ -316,7 +342,8 @@ TEST_F(ShapeResultTest, AddUnsafeToBreakLtr) {
 
 TEST_F(ShapeResultTest, AddUnsafeToBreakRtl) {
   HarfBuzzShaper shaper(u"\u05d0\u05d1\u05d2\u05d3\u05d4\u05d5");
-  ShapeResult* result = shaper.Shape(GetFont(kArabicFont), TextDirection::kRtl);
+  scoped_refptr<ShapeResult> result =
+      shaper.Shape(GetFont(kArabicFont), TextDirection::kRtl);
   Vector<unsigned> offsets{2, 5};
   for (const unsigned offset : offsets) {
     EXPECT_EQ(result->NextSafeToBreakOffset(offset), offset);
@@ -330,7 +357,7 @@ TEST_F(ShapeResultTest, AddUnsafeToBreakRtl) {
 TEST_F(ShapeResultTest, ComputeInkBoundsWithZeroOffset) {
   String string(u"abc");
   HarfBuzzShaper shaper(string);
-  const auto* result = shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr);
+  auto result = shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr);
   EXPECT_FALSE(HasNonZeroGlyphOffsets(*result));
   EXPECT_FALSE(result->ComputeInkBounds().IsEmpty());
 }
@@ -382,12 +409,13 @@ TEST_P(TextAutoSpaceResultText, AddAutoSpacingToIdeograph) {
   const auto& test_data = GetParam();
   String string(test_data.string);
   HarfBuzzShaper shaper(string);
-  ShapeResult* result = shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr);
+  scoped_refptr<ShapeResult> result =
+      shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr);
 
   // Record the position before applying text-autospace, and fill the spacing
   // widths with different values.
   Vector<float> before_adding_spacing =
-      RecordPositionBeforeApplyingSpacing(result, string.length());
+      RecordPositionBeforeApplyingSpacing(result.get(), string.length());
   Vector<OffsetWithSpacing, 16> offsets =
       RecordExpectedSpacing(test_data.offsets);
   result->ApplyTextAutoSpacing(offsets);
@@ -409,7 +437,7 @@ TEST_F(ShapeResultTest, DISABLED_ComputeInkBoundsWithNonZeroOffset) {
   // U+0A81 has non-zero glyph offset
   String string(u"xy\u0A81z");
   HarfBuzzShaper shaper(string);
-  const auto* result = shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr);
+  auto result = shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr);
   ASSERT_TRUE(HasNonZeroGlyphOffsets(*result));
   EXPECT_FALSE(result->ComputeInkBounds().IsEmpty());
 }
@@ -645,7 +673,7 @@ TEST_P(CaretPositionForOffsetText, CaretPositionForOffsets) {
   const auto& test_data = GetParam();
   String text_string(test_data.string);
   HarfBuzzShaper shaper(text_string);
-  const ShapeResult* result =
+  scoped_refptr<ShapeResult> result =
       shaper.Shape(GetFont(test_data.font), test_data.direction);
   StringView text_view(text_string);
 

@@ -66,7 +66,7 @@ class CORE_EXPORT InlineItem {
   InlineItem(const InlineItem&,
              unsigned adjusted_start,
              unsigned adjusted_end,
-             const ShapeResult*);
+             scoped_refptr<const ShapeResult>);
 
   InlineItemType Type() const { return type_; }
   const char* InlineItemTypeToString(InlineItemType val) const;
@@ -89,14 +89,12 @@ class CORE_EXPORT InlineItem {
     SetTextType(TextItemType::kSymbolMarker);
   }
 
-  const ShapeResult* TextShapeResult() const { return shape_result_.Get(); }
+  const ShapeResult* TextShapeResult() const { return shape_result_.get(); }
   ShapeResult* CloneTextShapeResult() {
-    DCHECK(shape_result_);
-    ShapeResult* clone = MakeGarbageCollected<ShapeResult>(*shape_result_);
+    scoped_refptr<ShapeResult> clone = ShapeResult::Create(*shape_result_);
     shape_result_ = clone;
-    return clone;
+    return clone.get();
   }
-
   bool IsUnsafeToReuseShapeResult() const {
     return is_unsafe_to_reuse_shape_result_;
   }
@@ -271,7 +269,7 @@ class CORE_EXPORT InlineItem {
 
   unsigned start_offset_;
   unsigned end_offset_;
-  Member<const ShapeResult> shape_result_;
+  scoped_refptr<const ShapeResult> shape_result_;
   Member<LayoutObject> layout_object_;
 
   InlineItemType type_;

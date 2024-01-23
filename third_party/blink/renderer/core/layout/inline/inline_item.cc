@@ -15,7 +15,8 @@ namespace blink {
 namespace {
 
 struct SameSizeAsInlineItem {
-  UntracedMember<void*> members[2];
+  void* pointers[1];
+  UntracedMember<void*> members[1];
   unsigned integers[3];
   unsigned bit_fields : 32;
 };
@@ -94,7 +95,7 @@ InlineItem::InlineItem(InlineItemType type,
 InlineItem::InlineItem(const InlineItem& other,
                        unsigned start,
                        unsigned end,
-                       const ShapeResult* shape_result)
+                       scoped_refptr<const ShapeResult> shape_result)
     : start_offset_(start),
       end_offset_(end),
       shape_result_(shape_result),
@@ -296,7 +297,6 @@ void InlineItem::CheckTextType(const String& text_content) const {
 #endif
 
 void InlineItem::Trace(Visitor* visitor) const {
-  visitor->Trace(shape_result_);
   visitor->Trace(layout_object_);
 }
 

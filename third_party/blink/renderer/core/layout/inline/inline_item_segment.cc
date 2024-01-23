@@ -245,19 +245,20 @@ void InlineItemSegments::ComputeItemIndex(const HeapVector<InlineItem>& items) {
   }
 }
 
-ShapeResult* InlineItemSegments::ShapeText(const HarfBuzzShaper* shaper,
-                                           const Font* font,
-                                           TextDirection direction,
-                                           unsigned start_offset,
-                                           unsigned end_offset,
-                                           unsigned item_index,
-                                           ShapeOptions options) const {
+scoped_refptr<ShapeResult> InlineItemSegments::ShapeText(
+    const HarfBuzzShaper* shaper,
+    const Font* font,
+    TextDirection direction,
+    unsigned start_offset,
+    unsigned end_offset,
+    unsigned item_index,
+    ShapeOptions options) const {
   Vector<RunSegmenter::RunSegmenterRange> ranges;
   for (const RunSegmenter::RunSegmenterRange& range :
        Ranges(start_offset, end_offset, item_index)) {
     ranges.push_back(range);
   }
-  ShapeResult* shape_result =
+  scoped_refptr<ShapeResult> shape_result =
       shaper->Shape(font, direction, start_offset, end_offset, ranges, options);
   DCHECK(shape_result);
   DCHECK_EQ(shape_result->StartIndex(), start_offset);

@@ -1213,7 +1213,8 @@ absl::optional<LayoutUnit> InlineLayoutAlgorithm::ApplyJustify(
     if (item_result.has_only_trailing_spaces)
       break;
     if (item_result.shape_result) {
-      ShapeResult* shape_result = item_result.shape_result->CreateShapeResult();
+      scoped_refptr<ShapeResult> shape_result =
+          item_result.shape_result->CreateShapeResult();
       DCHECK_GE(item_result.StartOffset(), line_text_start_offset);
       DCHECK_EQ(shape_result->NumCharacters(), item_result.Length());
       shape_result->ApplySpacing(spacing, item_result.StartOffset() -
@@ -1222,7 +1223,7 @@ absl::optional<LayoutUnit> InlineLayoutAlgorithm::ApplyJustify(
       item_result.inline_size = shape_result->SnappedWidth();
       if (UNLIKELY(item_result.is_hyphenated))
         item_result.inline_size += item_result.hyphen.InlineSize();
-      item_result.shape_result = ShapeResultView::Create(shape_result);
+      item_result.shape_result = ShapeResultView::Create(shape_result.get());
     } else if (item_result.item->Type() == InlineItem::kAtomicInline) {
       float spacing_before = 0.0f;
       DCHECK_LE(line_text_start_offset, item_result.StartOffset());
