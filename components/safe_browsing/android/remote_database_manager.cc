@@ -209,10 +209,6 @@ bool RemoteSafeBrowsingDatabaseManager::CanCheckUrl(const GURL& url) const {
          url.SchemeIsWSOrWSS();
 }
 
-bool RemoteSafeBrowsingDatabaseManager::ChecksAreAlwaysAsync() const {
-  return true;
-}
-
 bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(
     const GURL& url,
     const SBThreatTypeSet& threat_types,

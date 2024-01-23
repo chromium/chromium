@@ -85,8 +85,6 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     return request_destination != network::mojom::RequestDestination::kAudio;
   }
 
-  bool ChecksAreAlwaysAsync() const override { return false; }
-
   ThreatSource GetBrowseUrlThreatSource(
       CheckBrowseUrlType check_type) const override {
     return ThreatSource::UNKNOWN;

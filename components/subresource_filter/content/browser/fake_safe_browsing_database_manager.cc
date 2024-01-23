@@ -98,9 +98,6 @@ bool FakeSafeBrowsingDatabaseManager::CheckResourceUrl(const GURL& url,
   return true;
 }
 
-bool FakeSafeBrowsingDatabaseManager::ChecksAreAlwaysAsync() const {
-  return false;
-}
 void FakeSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
   size_t erased = checks_.erase(client);
   DCHECK_EQ(erased, 1u);

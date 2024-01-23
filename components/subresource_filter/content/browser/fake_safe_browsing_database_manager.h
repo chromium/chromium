@@ -49,7 +49,6 @@ class FakeSafeBrowsingDatabaseManager
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
   bool CheckResourceUrl(const GURL& url, Client* client) override;
   void CancelCheck(Client* client) override;
-  bool ChecksAreAlwaysAsync() const override;
   bool CanCheckRequestDestination(
       network::mojom::RequestDestination /* request_destination */)
       const override;

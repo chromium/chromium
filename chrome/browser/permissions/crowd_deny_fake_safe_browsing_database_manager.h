@@ -45,7 +45,6 @@ class CrowdDenyFakeSafeBrowsingDatabaseManager
   // safe_browsing::TestSafeBrowsingDatabaseManager:
   bool CheckApiBlocklistUrl(const GURL& url, Client* client) override;
   bool CancelApiCheck(Client* client) override;
-  bool ChecksAreAlwaysAsync() const override;
 
  private:
   safe_browsing::ThreatMetadata GetSimulatedMetadataOrSafe(const GURL& url);

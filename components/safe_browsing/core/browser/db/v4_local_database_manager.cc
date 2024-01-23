@@ -418,10 +418,6 @@ bool V4LocalDatabaseManager::CanCheckUrl(const GURL& url) const {
          url.SchemeIsWSOrWSS();
 }
 
-bool V4LocalDatabaseManager::ChecksAreAlwaysAsync() const {
-  return GetPrefixMatchesIsAsync();
-}
-
 bool V4LocalDatabaseManager::CheckBrowseUrl(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
