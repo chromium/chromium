@@ -68,11 +68,8 @@ if (cros_sdk_version != "") {
     ]
     if (_cros_is_vm) {
       # VM-related tools.
-      _symlinks += [
-        rebase_path("${_cache_path_prefix}+sys-firmware/seabios"),
-        rebase_path("${_cache_path_prefix}+chromiumos_test_image.tar.xz"),
-        rebase_path("${_cache_path_prefix}+app-emulation/qemu"),
-      ]
+      _symlinks +=
+          [ rebase_path("${_cache_path_prefix}+chromiumos_test_image.tar.xz") ]
     }
     _symlink_map += [ [
           b,
@@ -150,11 +147,7 @@ template("generate_chromeos_sdk_deps") {
       }
       if (_cros_is_vm) {
         # Add vm sdk items.
-        _sdk_data += [
-          _symlink_targets[3],
-          _symlink_targets[4],
-          _symlink_targets[5],
-        ]
+        _sdk_data += [ _symlink_targets[3] ]
       }
     }
   }
