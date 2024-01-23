@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -129,10 +130,13 @@ TEST_F(IsolatedWebAppUrlInfoTest, StoragePartitionConfigUsesOrigin) {
   base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
       IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedWebAppUrl));
 
+  // "ih5acGGEiRXrgomjVcGuM1lp4cp+dagupnpwXmiyoV0s=" is the base64 encoding of
+  // the first 6 bytes of sha256 of the App ID
+  // ("ckmbeioemjmabdoddhjadagkjknpeigi").
   auto expected_config = content::StoragePartitionConfig::Create(
       &testing_profile,
       /*partition_domain=*/
-      "iwa-aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic",
+      "ih5acGGEiRXrgomjVcGuM1lp4cp+dagupnpwXmiyoV0s=",
       /*partition_name=*/"",
       /*in_memory=*/false);
   EXPECT_THAT(url_info->storage_partition_config(&testing_profile),

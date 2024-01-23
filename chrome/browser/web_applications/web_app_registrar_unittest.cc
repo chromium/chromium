@@ -914,6 +914,8 @@ TEST_F(WebAppRegistrarTest, GetAllIsolatedWebAppStoragePartitionConfigs) {
 
   constexpr char kIwaHostname[] =
       "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+  constexpr char kExpectedIwaStoragePartitionDomain[] =
+      "i1kr80qqyjuuVC4UFPN7ovBngVoA2HbXGtTXtmQn6/H4=";
   GURL start_url(base::StrCat({chrome::kIsolatedAppScheme,
                                url::kStandardSchemeSeparator, kIwaHostname}));
   auto isolated_web_app = test::CreateWebApp(start_url);
@@ -928,7 +930,7 @@ TEST_F(WebAppRegistrarTest, GetAllIsolatedWebAppStoragePartitionConfigs) {
       registrar().GetIsolatedWebAppStoragePartitionConfigs(app_id);
 
   auto expected_config = content::StoragePartitionConfig::Create(
-      profile(), /*partition_domain=*/base::StrCat({"iwa-", kIwaHostname}),
+      profile(), kExpectedIwaStoragePartitionDomain,
       /*partition_name=*/"", /*in_memory=*/false);
   ASSERT_EQ(1UL, storage_partition_configs.size());
   EXPECT_EQ(expected_config, storage_partition_configs[0]);
@@ -964,6 +966,8 @@ TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
 
   constexpr char kIwaHostname[] =
       "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+  constexpr char kExpectedIwaStoragePartitionDomain[] =
+      "i1kr80qqyjuuVC4UFPN7ovBngVoA2HbXGtTXtmQn6/H4=";
   GURL start_url(base::StrCat({chrome::kIsolatedAppScheme,
                                url::kStandardSchemeSeparator, kIwaHostname}));
   auto isolated_web_app = test::CreateWebApp(start_url);
@@ -981,7 +985,7 @@ TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
           url_info.value(), "partition_1");
 
   auto expected_config_cf_1 = content::StoragePartitionConfig::Create(
-      profile(), /*partition_domain=*/base::StrCat({"iwa-", kIwaHostname}),
+      profile(), kExpectedIwaStoragePartitionDomain,
       /*partition_name=*/"partition_1", /*in_memory=*/true);
 
   EXPECT_EQ(expected_config_cf_1, output_config);

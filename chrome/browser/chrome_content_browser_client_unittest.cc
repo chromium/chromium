@@ -1047,7 +1047,7 @@ class ChromeContentBrowserClientStoragePartitionTest
   static constexpr char kAppId[] = "appid";
   static constexpr char kHttpsScope[] = "https://example.com";
   static constexpr char kIsolatedAppScope[] =
-      "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac";
+      "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 
   content::StoragePartitionConfig CreateDefaultStoragePartitionConfig() {
     return content::StoragePartitionConfig::CreateDefault(&profile_);
@@ -1143,7 +1143,7 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
 
   auto expected_config = content::StoragePartitionConfig::Create(
       &profile_, /*partition_domain=*/
-      "iwa-aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac",
+      "ih5acGGEiRXrgomjVcGuM1lp4cp+dagupnpwXmiyoV0s=",
       /*partition_name=*/"",
       /*in_memory=*/false);
   EXPECT_EQ(expected_config, config);
