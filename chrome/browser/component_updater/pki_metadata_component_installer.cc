@@ -213,6 +213,16 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
     const std::string& ct_config_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_CT_SUPPORTED)
+  if (ct_config_bytes.empty()) {
+    // LoadBinaryProtoFromDisk returns an empty string if it fails to find
+    // the file on disk or fails to read. An empty string is valid proto,
+    // continuing to process such an empty string will result in stomping
+    // on the default disqualified certs in the CT list allowing
+    // disqualified certs to be trusted. Treat empty string as invalid proto
+    // instead.
+    return;
+  }
+
   auto proto =
       std::make_unique<chrome_browser_certificate_transparency::CTConfig>();
   if (!proto->ParseFromString(ct_config_bytes)) {
