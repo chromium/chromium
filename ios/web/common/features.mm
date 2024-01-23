@@ -100,10 +100,7 @@ BASE_FEATURE(kEnableViewportIntents,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsLoadSimulatedRequestAPIEnabled() {
-  if (@available(iOS 15, *)) {
-    return base::FeatureList::IsEnabled(kUseLoadSimulatedRequestForOfflinePage);
-  }
-  return false;
+  return base::FeatureList::IsEnabled(kUseLoadSimulatedRequestForOfflinePage);
 }
 
 bool IsWebInspectorSupportEnabled() {
