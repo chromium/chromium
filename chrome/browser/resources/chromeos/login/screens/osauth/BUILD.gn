@@ -13,11 +13,9 @@ js_type_check("closure_compile") {
     ":enter_old_password",
     ":gaia_password_changed",
     ":local_data_loss_warning",
-    ":local_password_setup",
     ":osauth_error",
   ]
 }
-
 
 js_library("gaia_password_changed") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/gaia_password_changed.js" ]
@@ -30,19 +28,6 @@ js_library("gaia_password_changed") {
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("local_password_setup") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/local_password_setup.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog",
-  ]
   extra_deps = [ ":web_components" ]
 }
 

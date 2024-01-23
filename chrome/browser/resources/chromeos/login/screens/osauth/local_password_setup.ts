@@ -1,0 +1,174 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import '//resources/ash/common/auth_setup/set_local_password_input.js';
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.html.js';
+import '../../components/common_styles/oobe_common_styles.css.js';
+import '../../components/common_styles/oobe_dialog_host_styles.css.js';
+import '../../components/dialogs/oobe_adaptive_dialog.js';
+import '../../components/dialogs/oobe_loading_dialog.js';
+import '../../components/buttons/oobe_next_button.js';
+import '../../components/buttons/oobe_back_button.js';
+
+import {SetLocalPasswordInputElement} from '//resources/ash/common/auth_setup/set_local_password_input.js';
+import {assert} from '//resources/js/assert.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+
+import {getTemplate} from './local_password_setup.html.js';
+
+
+/**
+ * UI mode for the dialog.
+ */
+enum LocalPasswordSetupState {
+  PASSWORD = 'password',
+  PROGRESS = 'progress',
+}
+
+const LocalPasswordSetupBase = mixinBehaviors(
+                                   [
+                                     OobeI18nBehavior,
+                                     OobeDialogHostBehavior,
+                                     LoginScreenBehavior,
+                                     MultiStepBehavior,
+                                   ],
+                                   PolymerElement) as {
+  new (): PolymerElement & OobeI18nBehaviorInterface &
+      LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface &
+      MultiStepBehaviorInterface,
+};
+
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ */
+interface LocalPasswordSetupScreenData {
+  showBackButton: boolean;
+}
+
+export class LocalPasswordSetup extends LocalPasswordSetupBase {
+  static get is() {
+    return 'local-password-setup-element' as const;
+  }
+
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
+  }
+
+  static get properties(): PolymerElementProperties {
+    return {
+      /**
+       */
+      backButtonVisible: {
+        type: Boolean,
+      },
+    };
+  }
+
+  private backButtonVisible: boolean;
+
+  constructor() {
+    super();
+    this.backButtonVisible = true;
+  }
+
+  override get EXTERNAL_API(): string[] {
+    return ['showLocalPasswordSetupFailure'];
+  }
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep(): LocalPasswordSetupState {
+    return LocalPasswordSetupState.PASSWORD;
+  }
+
+  override get UI_STEPS() {
+    return LocalPasswordSetupState;
+  }
+
+  override ready(): void {
+    super.ready();
+    this.initializeLoginScreen('LocalPasswordSetupScreen');
+  }
+
+  /** Initial UI State for screen */
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override getOobeUIInitialState(): OOBE_UI_STATE {
+    return OOBE_UI_STATE.ONBOARDING;
+  }
+
+  /**
+   * Event handler that is invoked just before the screen is shown.
+   * @param data Screen initial payload
+   */
+  override onBeforeShow(data: LocalPasswordSetupScreenData): void {
+    this.reset();
+    this.backButtonVisible = data['showBackButton'];
+  }
+
+  showLocalPasswordSetupFailure(): void {
+    // TODO(b/304963851): Show setup failed message, likely allowing user to
+    // retry.
+  }
+
+  private reset(): void {
+    const passwordInput = this.shadowRoot?.querySelector('#passwordInput');
+    if (passwordInput instanceof SetLocalPasswordInputElement) {
+      passwordInput.reset();
+    }
+  }
+
+  private getPasswordInput(): SetLocalPasswordInputElement {
+    const passwordInput = this.shadowRoot?.querySelector('#passwordInput');
+    assert(passwordInput instanceof SetLocalPasswordInputElement);
+    return passwordInput;
+  }
+
+  private onBackClicked(): void {
+    if (!this.backButtonVisible) {
+      return;
+    }
+
+    this.userActed([
+      'back',
+      this.getPasswordInput().value,
+    ]);
+  }
+
+  async onSubmit(): Promise<void> {
+    await this.getPasswordInput().validate();
+    this.setUIStep(LocalPasswordSetupState.PROGRESS);
+    this.userActed([
+      'inputPassword',
+      this.getPasswordInput().value,
+    ]);
+  }
+
+  private onDoneClicked(): void {
+    this.userActed(['done']);
+  }
+
+  private titleText(_locale: string, isRecoveryFlow: boolean) {
+    const key =
+        isRecoveryFlow ? 'localPasswordResetTitle' : 'localPasswordSetupTitle';
+    return this.i18n(key);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [LocalPasswordSetup.is]: LocalPasswordSetup;
+  }
+}
+
+customElements.define(LocalPasswordSetup.is, LocalPasswordSetup);
