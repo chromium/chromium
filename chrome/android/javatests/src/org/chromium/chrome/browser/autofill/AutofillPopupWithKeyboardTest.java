@@ -10,7 +10,6 @@ import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +19,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -36,19 +35,17 @@ import org.chromium.ui.DropdownPopupWindowInterface;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-/** Integration tests for interaction of the AutofillPopup and a keyboard. */
+/**
+ * Integration tests for interaction of the AutofillPopup and a keyboard.
+ *
+ * <p>TODO(crbug.com/894428) - fix this suite to use the embedded test server instead of data urls.
+ */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures(ChromeFeatureList.AUTOFILL_ALLOW_NON_HTTP_ACTIVATION)
 public class AutofillPopupWithKeyboardTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Before
-    public void setUp() {
-        // TODO(crbug.com/894428) - fix this suite to use the embedded test server instead of
-        // data urls.
-        Features.getInstance().enable(ChromeFeatureList.AUTOFILL_ALLOW_NON_HTTP_ACTIVATION);
-    }
 
     /** Test that showing autofill popup and keyboard will not hide the autofill popup. */
     @Test
