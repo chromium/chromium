@@ -1072,7 +1072,14 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, AutoplayPolicy) {
 }
 
 // This test exercises the webview spatial navigation API
-IN_PROC_BROWSER_TEST_F(WebViewTest, SpatialNavigationJavascriptAPI) {
+// TODO(https://crbug.com/1520415): Flaky timeouts on Mac and Cros.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_SpatialNavigationJavascriptAPI \
+  DISABLED_SpatialNavigationJavascriptAPI
+#else
+#define MAYBE_SpatialNavigationJavascriptAPI SpatialNavigationJavascriptAPI
+#endif
+IN_PROC_BROWSER_TEST_F(WebViewTest, MAYBE_SpatialNavigationJavascriptAPI) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableSpatialNavigation);
 
