@@ -60,7 +60,6 @@
 namespace remoting {
 
 class ActiveDisplayMonitor;
-class AudioStream;
 class DesktopEnvironment;
 class DesktopEnvironmentFactory;
 class InputInjector;
@@ -71,6 +70,7 @@ class RemoteWebAuthnMessageHandler;
 class ScreenControls;
 
 namespace protocol {
+class AudioStream;
 class VideoLayout;
 }  // namespace protocol
 

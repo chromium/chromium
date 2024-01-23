@@ -22,6 +22,10 @@
 #include "gpu/command_buffer/service/shader_manager.h"
 #include "gpu/gpu_gles2_export.h"
 
+namespace gl {
+class ProgressReporter;
+}
+
 namespace gpu {
 
 class DecoderClient;
@@ -32,7 +36,6 @@ namespace gles2 {
 class FeatureInfo;
 class ProgramCache;
 class ProgramManager;
-class ProgressReporter;
 class Shader;
 class ShaderManager;
 

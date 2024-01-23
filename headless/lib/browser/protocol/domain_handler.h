@@ -9,8 +9,6 @@
 
 namespace headless {
 
-class UberDispatcher;
-
 namespace protocol {
 
 class DomainHandler {

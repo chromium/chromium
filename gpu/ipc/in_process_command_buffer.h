@@ -59,13 +59,10 @@ namespace gfx {
 struct GpuFenceHandle;
 }
 
-namespace viz {
-class GpuTaskSchedulerHelper;
-}
-
 namespace gpu {
 class SharedContextState;
 class GpuProcessShmCount;
+class GpuTaskSchedulerHelper;
 class SharedImageInterface;
 class SyncPointClientState;
 struct ContextCreationAttribs;
