@@ -5446,6 +5446,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Feedback.SecurityPage.SurveyRequested" enum="Boolean"
     expires_after="2024-07-10">
   <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Recorded once every time the security page survey is triggered.
   </summary>
