@@ -412,7 +412,7 @@ gfx::Rect ProtoToMojo(const chrome_screen_ai::Rect& source) {
   dest.set_x(source.x());
   dest.set_y(source.y());
   dest.set_width(source.width());
-  dest.set_width(source.height());
+  dest.set_height(source.height());
   return dest;
 }
 
