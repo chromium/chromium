@@ -13,7 +13,6 @@
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_infos.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "content/public/browser/navigation_handle.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -40,8 +39,8 @@ CrosAppsApiMutableRegistry::CrosAppsApiMutableRegistry(PassKey,
     : profile_(profile), api_infos_(CreateDefaultCrosAppsApiInfo()) {}
 
 bool CrosAppsApiMutableRegistry::CanEnableApi(
-    const blink::mojom::RuntimeFeature api_feature) const {
-  const auto iter = api_infos_.find(api_feature);
+    const CrosAppsApiId api_id) const {
+  const auto iter = api_infos_.find(api_id);
   CHECK(iter != api_infos_.end());
   return CanEnableApi(iter->second);
 }
@@ -109,9 +108,9 @@ CrosAppsApiMutableRegistry::GetBlinkFeatureEnablementFunctionsForFrame(
 }
 
 bool CrosAppsApiMutableRegistry::IsApiEnabledForFrame(
-    const blink::mojom::RuntimeFeature api_feature,
+    const CrosAppsApiId api_id,
     const CrosAppsApiFrameContext& api_context) const {
-  const auto iter = api_infos_.find(api_feature);
+  const auto iter = api_infos_.find(api_id);
   CHECK(iter != api_infos_.end());
   return IsApiEnabledForFrame(iter->second, api_context);
 }
@@ -120,6 +119,6 @@ void CrosAppsApiMutableRegistry::AddOrReplaceForTesting(
     CrosAppsApiInfo api_info) {
   CHECK_IS_TEST();
 
-  auto key = api_info.blink_feature();
+  auto key = api_info.api_id();
   api_infos_.insert_or_assign(key, std::move(api_info));
 }

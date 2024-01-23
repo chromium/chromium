@@ -34,13 +34,12 @@ class CrosAppsApiMutableRegistry : public CrosAppsApiRegistry,
   void AddOrReplaceForTesting(CrosAppsApiInfo api_info);
 
   // CrosAppsApiRegistry:
-  bool CanEnableApi(
-      const blink::mojom::RuntimeFeature api_feature) const override;
+  bool CanEnableApi(const CrosAppsApiId api_id) const override;
   std::vector<CrosAppsApiInfo::EnableBlinkRuntimeFeatureFunction>
   GetBlinkFeatureEnablementFunctionsForFrame(
       const CrosAppsApiFrameContext& api_context) const override;
   bool IsApiEnabledForFrame(
-      const blink::mojom::RuntimeFeature api_feature,
+      const CrosAppsApiId api_id,
       const CrosAppsApiFrameContext& api_context) const override;
 
  private:
@@ -51,7 +50,7 @@ class CrosAppsApiMutableRegistry : public CrosAppsApiRegistry,
   // The profile `this` is attached to. Safe to retain profile because `this` is
   // owned by the profile.
   const raw_ptr<Profile> profile_;
-  base::flat_map<blink::mojom::RuntimeFeature, CrosAppsApiInfo> api_infos_;
+  base::flat_map<CrosAppsApiId, CrosAppsApiInfo> api_infos_;
 };
 
 #endif  // CHROME_BROWSER_CHROMEOS_CROS_APPS_API_CROS_APPS_API_MUTABLE_REGISTRY_H_

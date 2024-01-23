@@ -25,7 +25,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/mojom/chromeos/diagnostics/cros_diagnostics.mojom.h"
-#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom.h"
 
 class CrosAppsApiAccessControlBrowsertestBase : public InProcessBrowserTest {
  public:
@@ -77,10 +76,9 @@ class CrosAppsApiAccessControlBrowsertestBase : public InProcessBrowserTest {
     CHECK(profile);
 
     CrosAppsApiMutableRegistry::GetInstance(profile).AddOrReplaceForTesting(
-        std::move(CrosAppsApiInfo(
-                      blink::mojom::RuntimeFeature::kBlinkExtensionDiagnostics,
-                      &blink::RuntimeFeatureStateContext::
-                          SetBlinkExtensionDiagnosticsEnabled)
+        std::move(CrosAppsApiInfo(CrosAppsApiId::kBlinkExtensionDiagnostics,
+                                  &blink::RuntimeFeatureStateContext::
+                                      SetBlinkExtensionDiagnosticsEnabled)
                       .AddAllowlistedOrigins(allowlisted_origins)
                       .SetRequiredFeatures(required_features)));
 
@@ -136,8 +134,8 @@ class CrosAppsApiAccessControlBrowsertestBase : public InProcessBrowserTest {
 
   const std::string kTestMojoInterfaceName =
       blink::mojom::CrosDiagnostics::Name_;
-  const std::string kTestApiFeature =
-      base::ToString(blink::mojom::RuntimeFeature::kBlinkExtensionDiagnostics);
+  const std::string kTestApiId =
+      base::ToString(CrosAppsApiId::kBlinkExtensionDiagnostics);
   const std::string kNoBinderFoundError = base::StringPrintf(
       "Received bad user message: No binder found for interface %s for the "
       "frame/document scope",
@@ -147,7 +145,7 @@ class CrosAppsApiAccessControlBrowsertestBase : public InProcessBrowserTest {
       "access interface %s because it isn't allowed to access the "
       "corresponding API: %s",
       kTestMojoInterfaceName.c_str(),
-      base::ToString(kTestApiFeature).c_str());
+      base::ToString(kTestApiId).c_str());
 
  private:
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};

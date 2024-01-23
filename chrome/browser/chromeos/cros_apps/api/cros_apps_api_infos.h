@@ -8,11 +8,9 @@
 #include <utility>
 #include <vector>
 
-#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom-forward.h"
+#include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_info.h"
 
-class CrosAppsApiInfo;
-
-std::vector<std::pair<blink::mojom::RuntimeFeature, CrosAppsApiInfo>>
+std::vector<std::pair<CrosAppsApiId, CrosAppsApiInfo>>
 CreateDefaultCrosAppsApiInfo();
 
 #endif  // CHROME_BROWSER_CHROMEOS_CROS_APPS_API_CROS_APPS_API_INFOS_H_

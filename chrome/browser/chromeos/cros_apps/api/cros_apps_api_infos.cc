@@ -12,15 +12,15 @@
 // TODO(b/309556977): Replace macro with something better once Runtime Feature
 // State supports a generic SetEnabled() method.
 #define DEFINE_CROS_APPS_API(api_list, name)                                 \
-  (list.emplace(list.end(), blink::mojom::RuntimeFeature::k##name,           \
+  (list.emplace(list.end(), CrosAppsApiId::k##name,                          \
                 CrosAppsApiInfo(                                             \
-                    blink::mojom::RuntimeFeature::k##name,                   \
+                    CrosAppsApiId::k##name,                                  \
                     &blink::RuntimeFeatureStateContext::Set##name##Enabled)) \
        ->second)
 
-std::vector<std::pair<blink::mojom::RuntimeFeature, CrosAppsApiInfo>>
+std::vector<std::pair<CrosAppsApiId, CrosAppsApiInfo>>
 CreateDefaultCrosAppsApiInfo() {
-  std::vector<std::pair<blink::mojom::RuntimeFeature, CrosAppsApiInfo>> list;
+  std::vector<std::pair<CrosAppsApiId, CrosAppsApiInfo>> list;
 
   DEFINE_CROS_APPS_API(list, BlinkExtensionDiagnostics)
       .SetRequiredFeatures({chromeos::features::kBlinkExtensionDiagnostics})
