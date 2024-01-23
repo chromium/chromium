@@ -17,6 +17,7 @@
 #include "base/test/test_switches.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/test/base/chromeos/crosier/annotations.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
@@ -80,25 +81,20 @@ class BluetoothIntegrationTest : public AshIntegrationTest {
 
   // AshIntegrationTest:
   void SetUpOnMainThread() override {
+    TEST_REQUIRES(crosier::Requirement::kBluetooth);
+
     AshIntegrationTest::SetUpOnMainThread();
 
     bluez_dbus_manager_ = BluezDBusManager::Get();
-    if (!bluez_dbus_manager_) {
-      // TODO(crbug.com/1464750): Come up with a better way to skip tests based
-      // on hardware support, similar to Tast hwdep.D(hwdep.Bluetooth()).
-      LOG(WARNING) << "Bluetooth (via bluez) not supported on this device.";
-      GTEST_SKIP();
-    }
+    // The TEST_REQURIES annotation should have already validated that bluetooth
+    // works on this target.
+    ASSERT_TRUE(bluez_dbus_manager_);
 
     // Get the D-Bus property tracker for the first bluetooth adapter.
     adapter_client_ = bluez_dbus_manager_->GetBluetoothAdapterClient();
     ASSERT_TRUE(adapter_client_);
     std::vector<dbus::ObjectPath> adapters = adapter_client_->GetAdapters();
-    // Some VM images have bluez, but no bluetooth adapters.
-    if (adapters.empty()) {
-      LOG(WARNING) << "No bluetooth adapters, skipping test";
-      GTEST_SKIP();
-    }
+    ASSERT_FALSE(adapters.empty());
     properties_ = adapter_client_->GetProperties(adapters[0]);
     ASSERT_TRUE(properties_);
   }
