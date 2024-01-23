@@ -240,14 +240,6 @@ enum class ClassStringContent { kEmpty, kWhiteSpaceOnly, kHasClasses };
 
 namespace {
 
-bool EarlyExitOnNoopClassOrStyleChange() {
-  static const bool is_enabled = base::FeatureList::IsEnabled(
-      features::kEarlyExitOnNoopClassOrStyleChange);
-  DCHECK_EQ(is_enabled, base::FeatureList::IsEnabled(
-                            features::kEarlyExitOnNoopClassOrStyleChange));
-  return is_enabled;
-}
-
 class DisplayLockStyleScope {
   STACK_ALLOCATED();
 
@@ -2707,8 +2699,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     }
   } else if (name == html_names::kClassAttr) {
     if (params.old_value == params.new_value &&
-        params.reason != AttributeModificationReason::kByMoveToNewDocument &&
-        EarlyExitOnNoopClassOrStyleChange()) {
+        params.reason != AttributeModificationReason::kByMoveToNewDocument) {
       return;
     }
     ClassAttributeChanged(params.new_value);
@@ -2739,8 +2730,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     SynchronizeContentAttributeAndElementReference(name);
   } else if (IsStyledElement()) {
     if (name == html_names::kStyleAttr) {
-      if (params.old_value == params.new_value &&
-          EarlyExitOnNoopClassOrStyleChange()) {
+      if (params.old_value == params.new_value) {
         return;
       }
       StyleAttributeChanged(params.new_value, params.reason);

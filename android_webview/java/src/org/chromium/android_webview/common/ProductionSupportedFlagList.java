@@ -442,10 +442,6 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_RECORD_APP_DATA_DIRECTORY_SIZE,
                 "Record the size of the embedding app's data directory"),
         Flag.baseFeature(
-                BlinkFeatures.EARLY_EXIT_ON_NOOP_CLASS_OR_STYLE_CHANGE,
-                "Early exit when the style or class attribute of a DOM element is set to the"
-                        + " same value as before."),
-        Flag.baseFeature(
                 BlinkFeatures.THREADED_PRELOAD_SCANNER,
                 "If enabled, the HTMLPreloadScanner will run on a worker thread."),
         Flag.baseFeature(
