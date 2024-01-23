@@ -107,6 +107,33 @@ constexpr base::TimeDelta kGroupFreshnessMin = base::Minutes(1);
 constexpr base::TimeDelta kGroupFreshnessMax = base::Days(30);
 constexpr int kGroupFreshnessBuckets = 100;
 
+constexpr char kInvalidServerResponseReasonUMAName[] =
+    "Ads.InterestGroup.ServerAuction.InvalidServerResponseReason";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class InvalidServerResponseReason {
+  kUnknown = 0,
+  kNotWitnessed = 1,
+  kUnknownRequestId = 2,
+  kSellerMismatch = 3,
+  kDecryptionFailure = 4,
+  kUnframingFailure = 5,
+  kDecompressFailure = 6,
+  kCBORParseFailure = 7,
+  kUnexpectedResponseStructure = 8,
+  kNotMultilevel = 9,
+  kTopLevelSellerMismatch = 10,
+  kNotSingleLevel = 11,
+  kInvalidBid = 12,
+  kWinningGroupNotBidder = 13,
+  kMissingWinningGroup = 14,
+  kMissingWinningGroupBidURL = 15,
+  kConstructBidFailure = 16,
+  kBadCurrency = 17,
+  kMaxValue = kBadCurrency,
+};
+
 std::string DirectFromSellerSignalsHeaderAdSlotNoMatchError(
     const std::string& ad_slot) {
   return base::StringPrintf(
@@ -2481,6 +2508,8 @@ bool InterestGroupAuction::HandleServerResponseImpl(
           std::string(reinterpret_cast<char*>(hash.data()), hash.size()))) {
     // If it wasn't witnessed then we don't know that it came from the server.
     saved_response_.emplace();
+    base::UmaHistogramEnumeration(kInvalidServerResponseReasonUMAName,
+                                  InvalidServerResponseReason::kNotWitnessed);
     errors_.push_back(
         base::StrCat({"runAdAuction(): Server response was not witnessed from ",
                       config_->seller.Serialize()}));
@@ -2493,6 +2522,9 @@ bool InterestGroupAuction::HandleServerResponseImpl(
   if (!request_context) {
     // The corresponding context for the requested blob couldn't be found.
     saved_response_.emplace();
+    base::UmaHistogramEnumeration(
+        kInvalidServerResponseReasonUMAName,
+        InvalidServerResponseReason::kUnknownRequestId);
     errors_.push_back(base::StrCat(
         {"runAdAuction(): No corresponding request with ID: ",
          config_->server_response->request_id.AsLowercaseString()}));
@@ -2502,6 +2534,8 @@ bool InterestGroupAuction::HandleServerResponseImpl(
   // The auction must be for the same seller that requested the blob.
   if (request_context->seller != config_->seller) {
     saved_response_.emplace();
+    base::UmaHistogramEnumeration(kInvalidServerResponseReasonUMAName,
+                                  InvalidServerResponseReason::kSellerMismatch);
     errors_.push_back(
         "runAdAuction(): Seller in response doesn't match request");
     return false;
@@ -2519,6 +2553,9 @@ bool InterestGroupAuction::HandleServerResponseImpl(
   if (!maybe_response.ok()) {
     // We couldn't decrypt the response.
     saved_response_.emplace();
+    base::UmaHistogramEnumeration(
+        kInvalidServerResponseReasonUMAName,
+        InvalidServerResponseReason::kDecryptionFailure);
     errors_.push_back("runAdAuction(): Could not decrypt server response");
     return false;
   }
@@ -2528,6 +2565,9 @@ bool InterestGroupAuction::HandleServerResponseImpl(
           base::as_bytes(base::make_span(plaintext_response)));
   if (!compressed_response) {
     saved_response_.emplace();
+    base::UmaHistogramEnumeration(
+        kInvalidServerResponseReasonUMAName,
+        InvalidServerResponseReason::kUnframingFailure);
     errors_.push_back("runAdAuction(): Could not parse response framing");
     return false;
   }
@@ -4758,6 +4798,9 @@ void InterestGroupAuction::OnDecompressedServerResponse(
     base::expected<mojo_base::BigBuffer, std::string> result) {
   if (!result.has_value()) {
     saved_response_.emplace();
+    base::UmaHistogramEnumeration(
+        kInvalidServerResponseReasonUMAName,
+        InvalidServerResponseReason::kDecompressFailure);
     errors_.push_back("runAdAuction(): Could not decompress server response");
     if (bidding_and_scoring_phase_state_ == PhaseState::kDuring) {
       MaybeCompleteBiddingAndScoringPhase();
@@ -4801,6 +4844,9 @@ bool InterestGroupAuction::OnParsedServerResponseImpl(
     // We couldn't parse the CBOR of the response.
     errors_.push_back("runAdAuction(): Could not parse server response");
     saved_response_.emplace();
+    base::UmaHistogramEnumeration(
+        kInvalidServerResponseReasonUMAName,
+        InvalidServerResponseReason::kCBORParseFailure);
     return false;
   }
   std::optional<BiddingAndAuctionResponse> response =
@@ -4811,6 +4857,9 @@ bool InterestGroupAuction::OnParsedServerResponseImpl(
     errors_.push_back(
         "runAdAuction(): Could not parse server response structure");
     saved_response_.emplace();
+    base::UmaHistogramEnumeration(
+        kInvalidServerResponseReasonUMAName,
+        InvalidServerResponseReason::kUnexpectedResponseStructure);
     return false;
   }
   if (response->error) {
@@ -4832,6 +4881,9 @@ bool InterestGroupAuction::OnParsedServerResponseImpl(
           "runAdAuction(): got server response for top-level auction in "
           "multi-level auction.");
       saved_response_.emplace();
+      base::UmaHistogramEnumeration(
+          kInvalidServerResponseReasonUMAName,
+          InvalidServerResponseReason::kNotMultilevel);
       return false;
     } else if (parent_->config_->seller != response->top_level_seller.value()) {
       errors_.push_back(base::StrCat(
@@ -4840,6 +4892,9 @@ bool InterestGroupAuction::OnParsedServerResponseImpl(
            "`, expected top level seller `", config_->seller.Serialize(),
            "`."}));
       saved_response_.emplace();
+      base::UmaHistogramEnumeration(
+          kInvalidServerResponseReasonUMAName,
+          InvalidServerResponseReason::kTopLevelSellerMismatch);
       return false;
     }
   } else if (response->top_level_seller) {
@@ -4849,6 +4904,8 @@ bool InterestGroupAuction::OnParsedServerResponseImpl(
         "runAdAuction(): got server response for multi-level auction in "
         "single-level auction.");
     saved_response_.emplace();
+    base::UmaHistogramEnumeration(kInvalidServerResponseReasonUMAName,
+                                  InvalidServerResponseReason::kNotSingleLevel);
     return false;
   }
 
@@ -4856,6 +4913,8 @@ bool InterestGroupAuction::OnParsedServerResponseImpl(
     errors_.push_back(base::StrCat({"runAdAuction(): Invalid bid value ",
                                     base::NumberToString(*response->bid)}));
     saved_response_.emplace();
+    base::UmaHistogramEnumeration(kInvalidServerResponseReasonUMAName,
+                                  InvalidServerResponseReason::kInvalidBid);
     return false;
   }
   any_bid_made_ = !response->bidding_groups.empty();
@@ -4866,6 +4925,9 @@ bool InterestGroupAuction::OnParsedServerResponseImpl(
   if (!base::Contains(response->bidding_groups, winning_group)) {
     errors_.push_back("runAdAuction(): Winning group must be a bidder");
     saved_response_.emplace();
+    base::UmaHistogramEnumeration(
+        kInvalidServerResponseReasonUMAName,
+        InvalidServerResponseReason::kWinningGroupNotBidder);
     return false;
   }
 
@@ -4893,6 +4955,9 @@ void InterestGroupAuction::OnLoadedWinningGroupImpl(
     std::optional<SingleStorageInterestGroup> maybe_group) {
   if (!maybe_group) {
     saved_response_.emplace();
+    base::UmaHistogramEnumeration(
+        kInvalidServerResponseReasonUMAName,
+        InvalidServerResponseReason::kMissingWinningGroup);
     errors_.emplace_back(
         "runAdAuction(): Could not load winning interest group");
     return;
@@ -4901,6 +4966,9 @@ void InterestGroupAuction::OnLoadedWinningGroupImpl(
   if (!maybe_group.value()->interest_group.bidding_url) {
     // Groups must have a bidding logic URL to bid.
     saved_response_.emplace();
+    base::UmaHistogramEnumeration(
+        kInvalidServerResponseReasonUMAName,
+        InvalidServerResponseReason::kMissingWinningGroupBidURL);
     errors_.emplace_back(
         "runAdAuction(): Winning group doesn't have a bidding URL");
     return;
@@ -4945,6 +5013,9 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
 
   if (!bid) {
     saved_response_.emplace();
+    base::UmaHistogramEnumeration(
+        kInvalidServerResponseReasonUMAName,
+        InvalidServerResponseReason::kConstructBidFailure);
     errors_.emplace_back("runAdAuction(): Couldn't reconstruct winning bid");
     return;
   }
@@ -4955,6 +5026,8 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
     if (!blink::VerifyAdCurrencyCode(config_->non_shared_params.seller_currency,
                                      saved_response_->bid_currency)) {
       saved_response_.emplace();
+      base::UmaHistogramEnumeration(kInvalidServerResponseReasonUMAName,
+                                    InvalidServerResponseReason::kBadCurrency);
       errors_.emplace_back(
           "runAdAuction(): currency didn't match auction config");
       return;
@@ -4963,6 +5036,8 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
             PerBuyerCurrency(config_->seller, *parent_->config_),
             saved_response_->bid_currency)) {
       saved_response_.emplace();
+      base::UmaHistogramEnumeration(kInvalidServerResponseReasonUMAName,
+                                    InvalidServerResponseReason::kBadCurrency);
       errors_.emplace_back(
           "runAdAuction(): currency didn't match top-level per-buyer currency");
       return;

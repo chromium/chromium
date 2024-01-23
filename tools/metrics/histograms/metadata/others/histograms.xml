@@ -1329,6 +1329,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.ServerAuction.InvalidServerResponseReason"
+    enum="AuctionInvalidServerResponseReason" expires_after="M125">
+  <owner>behamilton@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Reason that a server response in a Bidding and Auction API server auction
+    was rejected. Recorded when we reject the server response.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.ServerAuction.KeyFetch.Cached"
     enum="Boolean" expires_after="2024-07-21">
   <owner>behamilton@google.com</owner>
