@@ -7,8 +7,12 @@
 
 namespace prefs {
 
-extern const char kVoiceSearchLocale[];
-extern const char kVoiceSearchTTS[];
+// User preferred speech input language for voice search.
+inline constexpr char kVoiceSearchLocale[] =
+    "ios.speechinput.voicesearch_locale";
+
+// Boolean which indicates if TTS after voice search is enabled.
+inline constexpr char kVoiceSearchTTS[] = "ios.speechinput.voicesearch_tts";
 
 }  // namespace prefs
 

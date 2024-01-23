@@ -34,7 +34,6 @@ source_set("voice_search_language") {
 
 source_set("prefs") {
   sources = [
-    "voice_search_prefs.cc",
     "voice_search_prefs.h",
     "voice_search_prefs_registration.cc",
     "voice_search_prefs_registration.h",
