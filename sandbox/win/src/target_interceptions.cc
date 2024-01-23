@@ -4,21 +4,31 @@
 
 #include "sandbox/win/src/target_interceptions.h"
 
+#include <atomic>
+
 #include <ntstatus.h>
 
-#include "base/win/static_constants.h"
 #include "sandbox/win/src/interception_agent.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
 
 namespace sandbox {
 
-const char KERNEL32_DLL_NAME[] = "kernel32.dll";
+namespace {
 
-enum SectionLoadState {
-  kBeforeKernel32,
-  kAfterKernel32,
-};
+std::atomic<SectionLoadState> g_section_load_state{
+    SectionLoadState::kBeforeKernel32};
+
+void UpdateSectionLoadState(SectionLoadState new_state) {
+  g_section_load_state = new_state;
+}
+
+const char KERNEL32_DLL_NAME[] = "kernel32.dll";
+}  // namespace
+
+SectionLoadState GetSectionLoadState() {
+  return g_section_load_state.load(std::memory_order_relaxed);
+}
 
 // Hooks NtMapViewOfSection to detect the load of DLLs. If hot patching is
 // required for this dll, this functions patches it.
@@ -37,7 +47,6 @@ TargetNtMapViewOfSection(NtMapViewOfSectionFunction orig_MapViewOfSection,
   NTSTATUS ret = orig_MapViewOfSection(section, process, base, zero_bits,
                                        commit_size, offset, view_size, inherit,
                                        allocation_type, protect);
-  static SectionLoadState s_state = kBeforeKernel32;
 
   do {
     if (!NT_SUCCESS(ret))
@@ -48,7 +57,7 @@ TargetNtMapViewOfSection(NtMapViewOfSectionFunction orig_MapViewOfSection,
 
     // Only check for verifier.dll or kernel32.dll loading if we haven't moved
     // past that state yet.
-    if (s_state == kBeforeKernel32) {
+    if (GetSectionLoadState() == SectionLoadState::kBeforeKernel32) {
       const char* ansi_module_name =
           GetAnsiImageInfoFromModule(reinterpret_cast<HMODULE>(*base));
 
@@ -56,24 +65,22 @@ TargetNtMapViewOfSection(NtMapViewOfSectionFunction orig_MapViewOfSection,
       // find what looks like a valid export directory for a PE module but the
       // pointer to the module name will be pointing to invalid memory.
       __try {
-        // Don't initialize the heap if verifier.dll is being loaded. This
-        // indicates Application Verifier is enabled and we should wait until
-        // the next module is loaded.
-        if (ansi_module_name &&
-            (GetNtExports()->_strnicmp(
-                 ansi_module_name, base::win::kApplicationVerifierDllName,
-                 GetNtExports()->strlen(
-                     base::win::kApplicationVerifierDllName) +
-                     1) == 0)) {
-          break;
-        }
         if (ansi_module_name &&
             (GetNtExports()->_strnicmp(ansi_module_name, KERNEL32_DLL_NAME,
                                        sizeof(KERNEL32_DLL_NAME)) == 0)) {
-          s_state = kAfterKernel32;
+          UpdateSectionLoadState(SectionLoadState::kAfterKernel32);
         }
       } __except (EXCEPTION_EXECUTE_HANDLER) {
       }
+    }
+
+    // Assume the Windows heap isn't initialized until we've loaded kernel32. We
+    // don't expect that we will need to patch any modules before kernel32.dll
+    // is loaded as they should all depend on kernel32.dll, and Windows may load
+    // sections before it's safe to call into the Windows heap (e.g. AppVerifier
+    // or internal Windows feature key checking).
+    if (GetSectionLoadState() == SectionLoadState::kBeforeKernel32) {
+      break;
     }
 
     if (!InitHeap())

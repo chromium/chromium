@@ -10,6 +10,14 @@
 
 namespace sandbox {
 
+enum class SectionLoadState {
+  kBeforeKernel32,
+  kAfterKernel32,
+};
+
+// Returns SectionLoadState, where we track which modules have been loaded.
+SectionLoadState GetSectionLoadState();
+
 extern "C" {
 
 // Interception of NtMapViewOfSection on the child process.
