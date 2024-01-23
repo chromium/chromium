@@ -3025,11 +3025,13 @@ void BaseRenderingContext2D::DrawTextInternal(
       CanvasPerformanceMonitor::DrawType::kText);
 
   if (use_max_width) {
-    // Cannot use `paint_canvas` in case recording canvas was substituted or
-    // destroyed during draw call.
-    cc::PaintCanvas* c = GetPaintCanvas();
-    if (c) {
-      c->restore();
+    // Make sure that `paint_canvas` is still valid and active. Calling `Draw`
+    // might reset `paint_canvas`. If that happens, `GetOrCreatePaintCanvas`
+    // will create a new `paint_canvas` and return a new address. This new
+    // canvas won't have the `save()` added above, so it would be invalid to
+    // call `restore()` here.
+    if (paint_canvas == GetOrCreatePaintCanvas()) {
+      paint_canvas->restore();
     }
   }
   ValidateStateStack();
