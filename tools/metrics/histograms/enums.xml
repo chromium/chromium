@@ -7201,19 +7201,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="3" label="LegacyNavigation"/>
 </enum>
 
-<enum name="DevToolsLinearMemoryInspectorRevealedFrom">
-  <int value="0" label="Context menu"/>
-  <int value="1" label="Memory icon"/>
-</enum>
-
-<enum name="DevToolsLinearMemoryInspectorTarget">
-  <int value="0" label="DWARF inspectable address"/>
-  <int value="1" label="ArrayBuffer"/>
-  <int value="2" label="DataView"/>
-  <int value="3" label="TypedArray"/>
-  <int value="4" label="WebAssembly.Memory"/>
-</enum>
-
 <enum name="DevToolsManifestSection">
   <int value="0" label="Other section selected"/>
   <int value="1" label="Identity section selected"/>
