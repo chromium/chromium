@@ -9018,6 +9018,21 @@
             ]
         }
     ],
+    "IOSAppStoreRatingDBExclusionJan2024": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AppStoreRatingDBExclusionJan2024"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSBackgroundPasteboardAccess": [
         {
             "platforms": [
