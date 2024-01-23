@@ -52,6 +52,12 @@ class PolicyManagerInterface
   // a DM server.
   virtual bool HasActiveDevicePolicies() const = 0;
 
+  // Whether the cloud policy overrides the platform policy.
+  // This policy affects Windows only.
+  // The policy value from device management provider takes precedence if this
+  // policy has conflict values.
+  virtual std::optional<bool> CloudPolicyOverridesPlatformPolicy() const = 0;
+
   // Returns the policy for how often the Updater should check for updates.
   // Returns the time interval between update checks.
   // 0 indicates updates are disabled.

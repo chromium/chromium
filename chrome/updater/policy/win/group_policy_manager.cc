@@ -124,11 +124,6 @@ GroupPolicyManager::GroupPolicyManager(
 
 GroupPolicyManager::~GroupPolicyManager() = default;
 
-bool GroupPolicyManager::CloudPolicyOverridesPlatformPolicy() const {
-  return GetIntegerPolicy("CloudPolicyOverridesPlatformPolicy").value_or(0) !=
-         0;
-}
-
 bool GroupPolicyManager::HasActiveDevicePolicies() const {
   return is_managed_device_ && PolicyManager::HasActiveDevicePolicies();
 }

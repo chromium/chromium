@@ -33,6 +33,7 @@ class PolicyManager : public PolicyManagerInterface {
 
   bool HasActiveDevicePolicies() const override;
 
+  std::optional<bool> CloudPolicyOverridesPlatformPolicy() const override;
   std::optional<base::TimeDelta> GetLastCheckPeriod() const override;
   std::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
       const override;

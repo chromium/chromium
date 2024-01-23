@@ -20,6 +20,9 @@ namespace updater {
 
 namespace {
 
+constexpr char kCloudPolicyOverridesPlatformPolicy[] =
+    "CloudPolicyOverridesPlatformPolicy";
+
 // Preferences Category.
 constexpr char kAutoUpdateCheckPeriodOverrideMinutes[] =
     "AutoUpdateCheckPeriodMinutes";
@@ -87,6 +90,12 @@ PolicyManager::PolicyManager(base::Value::Dict policies)
 }
 
 PolicyManager::~PolicyManager() = default;
+
+std::optional<bool> PolicyManager::CloudPolicyOverridesPlatformPolicy() const {
+  std::optional<int> policy =
+      GetIntegerPolicy(kCloudPolicyOverridesPlatformPolicy);
+  return policy ? std::optional<bool>(policy.value()) : std::nullopt;
+}
 
 bool PolicyManager::HasActiveDevicePolicies() const {
   return !policies_.empty();

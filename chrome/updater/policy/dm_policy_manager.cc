@@ -94,6 +94,13 @@ std::string DMPolicyManager::source() const {
   return kSourceDMPolicyManager;
 }
 
+std::optional<bool> DMPolicyManager::CloudPolicyOverridesPlatformPolicy()
+    const {
+  // TODO(crbug.com/1313620): read the policy value from the proto once it
+  // contains the policy.
+  return std::nullopt;
+}
+
 std::optional<base::TimeDelta> DMPolicyManager::GetLastCheckPeriod() const {
   if (!omaha_settings_.has_auto_update_check_period_minutes()) {
     return std::nullopt;

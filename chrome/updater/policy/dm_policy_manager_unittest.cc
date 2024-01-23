@@ -124,6 +124,7 @@ TEST(DMPolicyManager, PolicyManagerFromEmptyProto) {
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
   EXPECT_EQ(policy_manager->source(), "Device Management");
 
+  EXPECT_EQ(policy_manager->CloudPolicyOverridesPlatformPolicy(), std::nullopt);
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), std::nullopt);
   EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), std::nullopt);
   EXPECT_EQ(policy_manager->GetDownloadPreference(), std::nullopt);
@@ -289,6 +290,7 @@ TEST(DMPolicyManager, PolicyManagerFromDMResponse) {
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
   EXPECT_EQ(policy_manager->source(), "Device Management");
 
+  EXPECT_EQ(policy_manager->CloudPolicyOverridesPlatformPolicy(), std::nullopt);
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), std::nullopt);
   EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), std::nullopt);
   EXPECT_EQ(policy_manager->GetDownloadPreference(), std::nullopt);
