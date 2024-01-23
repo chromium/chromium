@@ -25,6 +25,7 @@
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/test/test_desk_profiles_delegate.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/public/cpp/window_finder.h"
 #include "ash/root_window_controller.h"
@@ -146,9 +147,11 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -11718,34 +11721,60 @@ class DeskProfilesTest : public AshTestBase {
   DeskProfilesTest() = default;
   ~DeskProfilesTest() override = default;
 
+ protected:
+  static constexpr uint64_t kLacrosProfileIdBase = 1001;
+
+  TestDeskProfilesDelegate& GetTestDelegate() {
+    return *static_cast<TestDeskProfilesDelegate*>(
+        Shell::Get()->GetDeskProfilesDelegate());
+  }
+
+  void AddDummyProfiles(size_t count) {
+    for (size_t i = 0; i != count; ++i) {
+      LacrosProfileSummary summary;
+      summary.profile_id = kLacrosProfileIdBase + i * 2;
+      summary.name = base::StringPrintf("Lacros user %lu", i + 1);
+      summary.email = base::StringPrintf("email%lu@gmail.com", i + 1);
+      summary.icon = gfx::test::CreateImageSkia(32, 32);
+
+      GetTestDelegate().AddProfile(std::move(summary));
+    }
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       chromeos::features::kDeskProfiles};
 };
 
 TEST_F(DeskProfilesTest, DeskProfilesButtonClickMetrics) {
-  // Bypass the requirements and show the desk profiles button.
-  auto show_desk_profiles_button =
-      DeskMiniView::SetShouldShowDeskProfilesButtonForTesting();
+  // The desk profile button is visible when there are two or more profiles.
+  AddDummyProfiles(2);
+
   base::HistogramTester histogram_tester;
   auto* desk_controller = DesksController::Get()->desk_bar_controller();
   desk_controller->OpenDeskBar(Shell::Get()->GetPrimaryRootWindow());
   auto* desk_bar_view =
       desk_controller->GetDeskBarView(Shell::Get()->GetPrimaryRootWindow());
   ASSERT_EQ(1u, desk_bar_view->mini_views().size());
+
   DeskProfilesButton* desk_profile_button =
-      desk_bar_view->mini_views()[0]->desk_profile_button_;
+      DesksTestApi::GetDeskProfileButton(desk_bar_view->mini_views()[0]);
   ASSERT_NE(desk_profile_button, nullptr);
   DeskProfilesButton::TestApi test_api(desk_profile_button);
   auto* event_generator = GetEventGenerator();
   // Test desk profile button click metrics.
   ClickOnView(desk_profile_button, event_generator);
   histogram_tester.ExpectTotalCount(kDeskProfilesPressesHistogramName, 1);
+
   // Test context menu profile manager click metrics.
-  ASSERT_TRUE(desk_profile_button->IsMenuShowing());
-  int IDC_ASH_DESKS_OPEN_PROFILE_MANAGER = 35358;
-  ClickOnView(test_api.GetMenuItemByID(IDC_ASH_DESKS_OPEN_PROFILE_MANAGER),
-              event_generator);
+  DeskActionContextMenu* menu = desk_profile_button->menu();
+  ASSERT_NE(menu, nullptr);
+
+  views::MenuItemView* menu_item = DesksTestApi::GetDeskActionContextMenuItem(
+      menu, DeskActionContextMenu::kShowProfileManager);
+  ASSERT_NE(menu_item, nullptr);
+
+  ClickOnView(menu_item, event_generator);
   histogram_tester.ExpectTotalCount(
       kDeskProfilesOpenProfileManagerHistogramName, 1);
 }

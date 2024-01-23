@@ -71,8 +71,6 @@ constexpr int kShortcutViewHeight = 20;
 constexpr int kShortcutViewIconSize = 14;
 constexpr int kShortcutViewDistanceFromBottom = 4;
 
-bool g_force_show_desk_profiles_button = false;
-
 gfx::Rect ConvertScreenRect(views::View* view, const gfx::Rect& screen_rect) {
   gfx::Point origin = screen_rect.origin();
   views::View::ConvertPointFromScreen(view, &origin);
@@ -191,8 +189,7 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
   // in.
   auto* desk_profile_delegate = Shell::Get()->GetDeskProfilesDelegate();
   if (chromeos::features::IsDeskProfilesEnabled() &&
-      (g_force_show_desk_profiles_button ||
-       (desk_profile_delegate &&
+      ((desk_profile_delegate &&
         desk_profile_delegate->GetProfilesSnapshot().size() > 1))) {
     desk_profile_button_ = AddChildView(std::make_unique<DeskProfilesButton>(
         base::BindRepeating(&DeskMiniView::OnDeskProfilesButtonPressed,
@@ -395,9 +392,45 @@ bool DeskMiniView::IsPointOnMiniView(const gfx::Point& screen_location) const {
 }
 
 void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
-  // When there is only one desk, do nothing.
+  DeskActionContextMenu::Config menu_config;
+  menu_config.on_context_menu_closed_callback = base::BindRepeating(
+      &DeskMiniView::OnContextMenuClosed, base::Unretained(this));
+
+  const bool show_on_top =
+      owner_bar_->type() == DeskBarViewBase::Type::kDeskButton &&
+      Shelf::ForWindow(root_window_)->IsHorizontalAlignment();
+  menu_config.anchor_position =
+      show_on_top ? views::MenuAnchorPosition::kBubbleTopRight
+                  : views::MenuAnchorPosition::kBubbleBottomRight;
+
+  // Only add desk combine/close options if it's possible to remove a desk.
   DesksController* desk_controller = DesksController::Get();
-  if (!desk_controller->CanRemoveDesks()) {
+  if (desk_controller->CanRemoveDesks()) {
+    menu_config.close_all_callback = base::BindRepeating(
+        &DeskMiniView::OnRemovingDesk, base::Unretained(this),
+        DeskCloseType::kCloseAllWindowsAndWait);
+
+    if (ContainsAppWindows(desk_)) {
+      menu_config.combine_desks_target_name =
+          desk_controller->GetCombineDesksTargetName(desk_);
+      menu_config.combine_desks_callback = base::BindRepeating(
+          &DeskMiniView::OnRemovingDesk, base::Unretained(this),
+          DeskCloseType::kCombineDesks);
+    }
+  }
+
+  // Add desk profile selection options. The profile selection will show if
+  // there are at least two profiles.
+  if (auto* delegate = Shell::Get()->GetDeskProfilesDelegate()) {
+    menu_config.profiles = delegate->GetProfilesSnapshot();
+    menu_config.current_lacros_profile_id = desk_->lacros_profile_id();
+    menu_config.set_lacros_profile_id = base::BindRepeating(
+        &DeskMiniView::OnSetLacrosProfileId, base::Unretained(this));
+  }
+
+  if (!menu_config.close_all_callback && menu_config.profiles.size() < 2u) {
+    // If neither close operations, nor profile selection is to be shown, then
+    // we don't show the menu.
     return;
   }
 
@@ -411,27 +444,8 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
 
   desk_preview_->SetHighlightOverlayVisibility(true);
 
-  const bool show_on_top =
-      owner_bar_->type() == DeskBarViewBase::Type::kDeskButton &&
-      Shelf::ForWindow(root_window_)->IsHorizontalAlignment();
-
-  context_menu_ = std::make_unique<DeskActionContextMenu>(
-      ContainsAppWindows(desk_)
-          ? std::make_optional(
-                desk_controller->GetCombineDesksTargetName(desk_))
-          : std::nullopt,
-      show_on_top ? views::MenuAnchorPosition::kBubbleTopRight
-                  : views::MenuAnchorPosition::kBubbleBottomRight,
-      /*combine_desks_callback=*/
-      base::BindRepeating(&DeskMiniView::OnRemovingDesk, base::Unretained(this),
-                          DeskCloseType::kCombineDesks),
-      /*close_all_callback=*/
-      base::BindRepeating(&DeskMiniView::OnRemovingDesk, base::Unretained(this),
-                          DeskCloseType::kCloseAllWindowsAndWait),
-      /*on_context_menu_closed_callback=*/
-      base::BindRepeating(&DeskMiniView::OnContextMenuClosed,
-                          base::Unretained(this)));
-
+  context_menu_ =
+      std::make_unique<DeskActionContextMenu>(std::move(menu_config));
   context_menu_->ShowContextMenuForView(
       this,
       show_on_top ? (base::i18n::IsRTL()
@@ -758,12 +772,6 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 }
 
-// static
-base::AutoReset<bool>
-DeskMiniView::SetShouldShowDeskProfilesButtonForTesting() {
-  return base::AutoReset<bool>(&g_force_show_desk_profiles_button, true);
-}
-
 void DeskMiniView::OnContextMenuClosed() {
   is_context_menu_open_ = false;
 
@@ -772,6 +780,12 @@ void DeskMiniView::OnContextMenuClosed() {
   if (desk_) {
     UpdateDeskButtonVisibility();
     desk_preview_->SetHighlightOverlayVisibility(false);
+  }
+}
+
+void DeskMiniView::OnSetLacrosProfileId(uint64_t lacros_profile_id) {
+  if (desk_) {
+    desk_->SetLacrosProfileId(lacros_profile_id);
   }
 }
 
