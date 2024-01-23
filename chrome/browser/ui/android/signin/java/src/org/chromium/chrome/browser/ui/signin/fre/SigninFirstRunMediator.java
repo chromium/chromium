@@ -463,7 +463,7 @@ public class SigninFirstRunMediator
                 mAccountManagerFacade, coreAccountInfos, this::onChildAccountStatusReady);
     }
 
-    private void onChildAccountStatusReady(boolean isChild, @Nullable Account childAccount) {
+    private void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {
         mModel.set(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
         // Selected account data will be updated in {@link #onProfileDataUpdated}
         mProfileDataCache.setBadge(isChild ? R.drawable.ic_account_child_20dp : 0);

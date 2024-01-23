@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
-import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -380,14 +379,14 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
     private void setAccountBadges(List<CoreAccountInfo> coreAccountInfos) {
         for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
-            Account account = CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo);
             AccountManagerFacadeProvider.getInstance()
                     .checkChildAccountStatus(
-                            account,
+                            coreAccountInfo,
                             (isChild, childAccount) -> {
                                 if (isChild) {
                                     mProfileDataCache.setBadge(
-                                            childAccount.name, R.drawable.ic_account_child_20dp);
+                                            childAccount.getEmail(),
+                                            R.drawable.ic_account_child_20dp);
                                 }
                             });
         }

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.signin.services;
 
-import android.accounts.Account;
-
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -207,9 +205,9 @@ public class SigninChecker
                 mAccountManagerFacade, coreAccountInfos, this::onChildAccountStatusReady);
     }
 
-    private void onChildAccountStatusReady(boolean isChild, @Nullable Account childAccount) {
+    private void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {
         if (isChild) {
-            assert childAccount != null;
+            assert childInfo != null;
             mSigninManager.runAfterOperationInProgress(
                     () -> {
                         if (mSigninManager.isSigninAllowed()) {
@@ -230,7 +228,7 @@ public class SigninChecker
                                         RecordUserAction.record(
                                                 "Signin_Signin_WipeDataOnChildAccountSignin2");
                                         mSigninManager.signin(
-                                                childAccount,
+                                                childInfo,
                                                 SigninAccessPoint.FORCED_SIGNIN,
                                                 signInCallback);
                                     },

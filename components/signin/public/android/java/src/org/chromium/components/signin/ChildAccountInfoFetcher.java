@@ -81,20 +81,16 @@ final class ChildAccountInfoFetcher {
     private void fetch() {
         Log.d(TAG, "Checking child account status for %s", mCoreAccountInfo.getEmail());
         AccountManagerFacadeProvider.getInstance()
-                .checkChildAccountStatus(
-                        CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo),
-                        this::onChildAccountStatusReady);
+                .checkChildAccountStatus(mCoreAccountInfo, this::onChildAccountStatusReady);
     }
 
-    private void onChildAccountStatusReady(boolean isChild, @Nullable Account childAccount) {
+    private void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {
         assert mCoreAccountInfo != null;
-        assert (childAccount == null
-                        || childAccount.equals(
-                                CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo)))
+        assert (childInfo == null || childInfo.equals(mCoreAccountInfo))
                 : "childAccount "
-                        + childAccount.name
+                        + childInfo.getEmail()
                         + " doesn't match mCoreAccountInfo "
-                        + CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo).name;
+                        + mCoreAccountInfo.getEmail();
 
         Log.d(
                 TAG,

@@ -411,20 +411,22 @@ public class AccountManagerFacadeImplTest {
 
     @Test
     public void testCheckChildAccount() {
-        final Account account =
+        final CoreAccountInfo coreAccountInfo =
                 setFeaturesForAccount(
                         "usm@gmail.com", AccountManagerFacadeImpl.FEATURE_IS_USM_ACCOUNT_KEY);
 
-        mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
+        mFacadeWithSystemDelegate.checkChildAccountStatus(
+                coreAccountInfo, mChildAccountStatusListenerMock);
 
-        verify(mChildAccountStatusListenerMock).onStatusReady(true, account);
+        verify(mChildAccountStatusListenerMock).onStatusReady(true, coreAccountInfo);
     }
 
     @Test
     public void testCheckChildAccountForAdult() {
-        final Account account = setFeaturesForAccount("adult@gmail.com");
+        final CoreAccountInfo coreAccountInfo = setFeaturesForAccount("adult@gmail.com");
 
-        mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
+        mFacadeWithSystemDelegate.checkChildAccountStatus(
+                coreAccountInfo, mChildAccountStatusListenerMock);
 
         verify(mChildAccountStatusListenerMock).onStatusReady(false, null);
     }
@@ -504,10 +506,12 @@ public class AccountManagerFacadeImplTest {
                 Tribool.UNKNOWN);
     }
 
-    private Account setFeaturesForAccount(String email, String... features) {
+    private CoreAccountInfo setFeaturesForAccount(String email, String... features) {
         final Account account = AccountUtils.createAccountFromName(email);
+        final CoreAccountInfo coreAccountInfo =
+                CoreAccountInfo.createFromEmailAndGaiaId(email, "notUsedGaiaId");
         mShadowAccountManager.setFeatures(account, features);
-        return account;
+        return coreAccountInfo;
     }
 
     private void setAccountRestrictionPatterns(String... patterns) {

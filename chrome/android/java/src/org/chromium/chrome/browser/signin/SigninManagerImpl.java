@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.signin;
 
-import android.accounts.Account;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
@@ -38,7 +36,6 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
@@ -324,28 +321,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
 
     @Override
     public void signin(
-            Account account,
-            @SigninAccessPoint int accessPoint,
-            @Nullable SignInCallback callback) {
-        signinInternal(SignInState.createForSignin(accessPoint, account, callback));
-    }
-
-    @Override
-    public void signin(
             CoreAccountInfo coreAccountInfo,
             @SigninAccessPoint int accessPoint,
             @Nullable SignInCallback callback) {
-        // TODO(crbug.com/1462264): Replace Account with CoreAccountInfo.
-        Account account = CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo);
-        signin(account, accessPoint, callback);
-    }
-
-    @Override
-    public void signinAndEnableSync(
-            Account account,
-            @SigninAccessPoint int accessPoint,
-            @Nullable SignInCallback callback) {
-        signinInternal(SignInState.createForSigninAndEnableSync(accessPoint, account, callback));
+        signinInternal(SignInState.createForSignin(accessPoint, coreAccountInfo, callback));
     }
 
     @Override
@@ -353,9 +332,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
             CoreAccountInfo coreAccountInfo,
             @SigninAccessPoint int accessPoint,
             @Nullable SignInCallback callback) {
-        // TODO(crbug.com/1462264): Replace Account with CoreAccountInfo.
-        Account account = CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo);
-        signinAndEnableSync(account, accessPoint, callback);
+        signinInternal(
+                SignInState.createForSigninAndEnableSync(accessPoint, coreAccountInfo, callback));
     }
 
     private void signinInternal(SignInState signInState) {
@@ -369,13 +347,11 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                         mSigninAllowedByPolicy,
                         mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
         assert signInState != null : "SigninState shouldn't be null!";
-        assert signInState.mCoreAccountInfo == null : "mCoreAccountInfo shouldn't be set!";
 
         // The mSignInState must be updated prior to the async processing below, as this indicates
         // that a signin operation is in progress and prevents other sign in operations from being
         // started until this one completes (see {@link isOperationInProgress()}).
         mSignInState = signInState;
-        signInState = null;
 
         if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
             // Retrieve the primary account and use it to seed and reload all accounts.
@@ -383,10 +359,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                 throw new IllegalStateException(
                         "Account information should be available on signin");
             }
-            mSignInState.mCoreAccountInfo =
-                    AccountUtils.findCoreAccountInfoByEmail(
-                            mAccountManagerFacade.getCoreAccountInfos().getResult(),
-                            mSignInState.mAccount.name);
             if (mSignInState.mCoreAccountInfo == null) {
                 throw new IllegalStateException(
                         "The account should be on the device before it can be set as primary.");
@@ -406,7 +378,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         } else {
             Log.i(TAG, "Signin starts (enabling sync: %b).", mSignInState.shouldTurnSyncOn());
             AccountInfoServiceProvider.get()
-                    .getAccountInfoByEmail(mSignInState.mAccount.name)
+                    .getAccountInfoByEmail(mSignInState.mCoreAccountInfo.getEmail())
                     .then(
                             accountInfo -> {
                                 mSignInState.mCoreAccountInfo = accountInfo;
@@ -844,54 +816,49 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         final SignInCallback mCallback;
 
         /**
-         * Contains the basic account information, which is available immediately at the start of
-         * the sign-in operation.
+         * Contains the full Core account info, which will be updated once account seeding is
+         * complete.
          *
+         * <p>TODO(crbug.com/1491005): Update comment and make this field private if possible.
          */
-        final Account mAccount;
-
-        /**
-         * Contains the full Core account info, which can be retrieved only once account seeding is
-         * complete
-         */
-        @Nullable CoreAccountInfo mCoreAccountInfo;
+        CoreAccountInfo mCoreAccountInfo;
 
         /**
          * State for the sign-in flow that doesn't enable sync.
          *
          * @param accessPoint {@link SigninAccessPoint} that has initiated the sign-in.
-         * @param account The account to sign in to.
+         * @param coreAccountInfo The {@link CoreAccountInfo} to sign in with.
          * @param callback Called when the sign-in process finishes or is cancelled. Can be null.
          */
         static SignInState createForSignin(
                 @SigninAccessPoint int accessPoint,
-                Account account,
+                CoreAccountInfo coreAccountInfo,
                 @Nullable SignInCallback callback) {
-            return new SignInState(accessPoint, account, callback, false);
+            return new SignInState(accessPoint, coreAccountInfo, callback, false);
         }
 
         /**
          * State for the sync consent flow.
          *
          * @param accessPoint {@link SigninAccessPoint} that has initiated the sign-in.
-         * @param account The account to sign in to.
+         * @param coreAccountInfo The {@link CoreAccountInfo} to sign in with.
          * @param callback Called when the sign-in process finishes or is cancelled. Can be null.
          */
         static SignInState createForSigninAndEnableSync(
                 @SigninAccessPoint int accessPoint,
-                Account account,
+                CoreAccountInfo coreAccountInfo,
                 @Nullable SignInCallback callback) {
-            return new SignInState(accessPoint, account, callback, true);
+            return new SignInState(accessPoint, coreAccountInfo, callback, true);
         }
 
         private SignInState(
                 @SigninAccessPoint Integer accessPoint,
-                Account account,
+                CoreAccountInfo coreAccountInfo,
                 @Nullable SignInCallback callback,
                 boolean shouldTurnSyncOn) {
-            assert account != null : "Account must be set and valid to progress.";
+            assert coreAccountInfo != null : "CoreAccountInfo must be set and valid to progress.";
             mAccessPoint = accessPoint;
-            mAccount = account;
+            mCoreAccountInfo = coreAccountInfo;
             mCallback = callback;
             mShouldTurnSyncOn = shouldTurnSyncOn;
         }

@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -117,7 +116,7 @@ public final class SigninTestUtil {
                             IdentityServicesProvider.get()
                                     .getSigninManager(Profile.getLastUsedRegularProfile());
                     signinManager.signinAndEnableSync(
-                            AccountUtils.createAccountFromName(coreAccountInfo.getEmail()),
+                            coreAccountInfo,
                             SigninAccessPoint.UNKNOWN,
                             new SigninManager.SignInCallback() {
                                 @Override

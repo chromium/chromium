@@ -24,18 +24,16 @@ import java.util.List;
 
 /** Interface for {@link AccountManagerFacadeImpl}. */
 public interface AccountManagerFacade {
+    // TODO(crbug.com/1258563): consider refactoring this interface to use Promises.
     /** Listener for whether the account is a child one. */
     interface ChildAccountStatusListener {
         /**
          * The method is called when the status of the account (whether it is a child one) is ready.
          *
          * @param isChild If account is a child account.
-         * @param childAccount The child account if isChild != false; null
-         *         otherwise.
-         *
-         * TODO(crbug.com/1258563): consider refactoring this interface to use Promises.
+         * @param childAccount The child account if isChild != false; null otherwise.
          */
-        void onStatusReady(boolean isChild, @Nullable Account childAccount);
+        void onStatusReady(boolean isChild, @Nullable CoreAccountInfo childAccount);
     }
 
     /**
@@ -90,14 +88,14 @@ public interface AccountManagerFacade {
 
     /**
      * Checks the child account status of the given account.
-     * TODO(crbug.com/1462264): Replace Account with CoreAccountId.
      *
-     * @param account The account to check the child account status.
-     * @param listener The listener is called when the status of the account
-     *                 (whether it is a child one) is ready.
+     * @param coreAccountInfo The CoreAccountInfo to check the child account status.
+     * @param listener The listener is called when the status of the account (whether it is a child
+     *     one) is ready.
      */
     @MainThread
-    void checkChildAccountStatus(Account account, ChildAccountStatusListener listener);
+    void checkChildAccountStatus(
+            CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener);
 
     /**
      * @param account The account used to look up capabilities.
