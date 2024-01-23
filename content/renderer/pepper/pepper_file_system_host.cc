@@ -131,7 +131,8 @@ int32_t PepperFileSystemHost::OnHostMsgOpen(
 
   file_system_manager->Open(
       url::Origin::Create(document_url), file_system_type.value(),
-      base::BindOnce(&PepperFileSystemHost::DidOpenFileSystem, AsWeakPtr()));
+      base::BindOnce(&PepperFileSystemHost::DidOpenFileSystem,
+                     weak_ptr_factory_.GetWeakPtr()));
   return PP_OK_COMPLETIONPENDING;
 }
 

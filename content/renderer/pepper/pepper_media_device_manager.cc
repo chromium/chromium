@@ -91,7 +91,7 @@ PepperMediaDeviceManager::GetForRenderFrame(
       PepperMediaDeviceManager::Get(render_frame);
   if (!handler)
     handler = new PepperMediaDeviceManager(render_frame);
-  return handler->AsWeakPtr();
+  return handler->weak_ptr_factory_.GetWeakPtr();
 }
 
 PepperMediaDeviceManager::PepperMediaDeviceManager(RenderFrame* render_frame)
@@ -112,8 +112,9 @@ void PepperMediaDeviceManager::EnumerateDevices(PP_DeviceType_Dev type,
       request_audio_input, request_video_input, request_audio_output,
       false /* request_video_input_capabilities */,
       false /* request_audio_input_capabilities */,
-      base::BindOnce(&PepperMediaDeviceManager::DevicesEnumerated, AsWeakPtr(),
-                     std::move(callback), ToMediaDeviceType(type)));
+      base::BindOnce(&PepperMediaDeviceManager::DevicesEnumerated,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     ToMediaDeviceType(type)));
 }
 
 size_t PepperMediaDeviceManager::StartMonitoringDevices(
@@ -167,17 +168,18 @@ int PepperMediaDeviceManager::OpenDevice(PP_DeviceType_Dev type,
           kPepperInsecureOriginMessage);
     }
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&PepperMediaDeviceManager::OnDeviceOpened,
-                                  AsWeakPtr(), request_id, false, std::string(),
-                                  blink::MediaStreamDevice()));
+        FROM_HERE,
+        base::BindOnce(&PepperMediaDeviceManager::OnDeviceOpened,
+                       weak_ptr_factory_.GetWeakPtr(), request_id, false,
+                       std::string(), blink::MediaStreamDevice()));
     return request_id;
   }
 
   GetMediaStreamDispatcherHost()->OpenDevice(
       request_id, device_id,
       PepperMediaDeviceManager::FromPepperDeviceType(type),
-      base::BindOnce(&PepperMediaDeviceManager::OnDeviceOpened, AsWeakPtr(),
-                     request_id));
+      base::BindOnce(&PepperMediaDeviceManager::OnDeviceOpened,
+                     weak_ptr_factory_.GetWeakPtr(), request_id));
 
   return request_id;
 }

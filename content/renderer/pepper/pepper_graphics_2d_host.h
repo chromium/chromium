@@ -47,9 +47,8 @@ class PepperPluginInstanceImpl;
 class PPB_ImageData_Impl;
 class RendererPpapiHost;
 
-class CONTENT_EXPORT PepperGraphics2DHost
-    : public ppapi::host::ResourceHost,
-      public base::SupportsWeakPtr<PepperGraphics2DHost> {
+class CONTENT_EXPORT PepperGraphics2DHost final
+    : public ppapi::host::ResourceHost {
  public:
   static PepperGraphics2DHost* Create(
       RendererPpapiHost* host,
@@ -263,6 +262,8 @@ class CONTENT_EXPORT PepperGraphics2DHost
 
   // Whether to use gpu memory for compositor resources.
   const bool enable_gpu_memory_buffer_;
+
+  base::WeakPtrFactory<PepperGraphics2DHost> weak_ptr_factory_{this};
 
   friend class PepperGraphics2DHostTest;
 };

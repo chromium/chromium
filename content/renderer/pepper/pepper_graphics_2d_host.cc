@@ -748,7 +748,7 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
 
     gpu::Mailbox gpu_mailbox = shared_image->mailbox();
     *release_callback =
-        base::BindOnce(&ReleaseTextureCallback, this->AsWeakPtr(),
+        base::BindOnce(&ReleaseTextureCallback, weak_ptr_factory_.GetWeakPtr(),
                        main_thread_context_, size, std::move(shared_image));
     *transferable_resource = viz::TransferableResource::MakeGpu(
         std::move(gpu_mailbox), texture_target, std::move(out_sync_token), size,
@@ -790,9 +790,10 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
       shared_bitmap->id(), gpu::SyncToken(), pixel_image_size,
       viz::SinglePlaneFormat::kRGBA_8888,
       viz::TransferableResource::ResourceSource::kPepperGraphics2D);
-  *release_callback = base::BindOnce(
-      &PepperGraphics2DHost::ReleaseSoftwareCallback, this->AsWeakPtr(),
-      std::move(shared_bitmap), std::move(registration));
+  *release_callback =
+      base::BindOnce(&PepperGraphics2DHost::ReleaseSoftwareCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(shared_bitmap),
+                     std::move(registration));
   composited_output_modified_ = false;
   return true;
 }
@@ -990,7 +991,8 @@ void PepperGraphics2DHost::ScheduleOffscreenFlushAck() {
   offscreen_flush_pending_ = true;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&PepperGraphics2DHost::SendOffscreenFlushAck, AsWeakPtr()),
+      base::BindOnce(&PepperGraphics2DHost::SendOffscreenFlushAck,
+                     weak_ptr_factory_.GetWeakPtr()),
       base::Milliseconds(kOffscreenCallbackDelayMs));
 }
 

@@ -21,9 +21,8 @@ namespace content {
 
 class RendererPpapiHost;
 
-class CONTENT_EXPORT PepperFileChooserHost
-    : public ppapi::host::ResourceHost,
-      public base::SupportsWeakPtr<PepperFileChooserHost> {
+class CONTENT_EXPORT PepperFileChooserHost final
+    : public ppapi::host::ResourceHost {
  public:
   // Structure to store the information about chosen files.
   struct ChosenFileInfo {
