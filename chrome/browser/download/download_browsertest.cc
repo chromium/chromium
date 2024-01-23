@@ -2339,7 +2339,7 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
 
     content::BeginNavigateIframeToURL(web_contents,
                                       /*iframe_id=*/"test", subframe_url);
-    test_pdf_viewer_stream_manager->WaitUntilPdfLoaded();
+    test_pdf_viewer_stream_manager->DeprecatedWaitUntilPdfLoaded();
 
     content::RenderFrameHost* extension_host =
         pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
@@ -2527,7 +2527,7 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
 
     content::BeginNavigateIframeToURL(web_contents,
                                       /*iframe_id=*/"test", subframe_url);
-    test_pdf_viewer_stream_manager->WaitUntilPdfLoaded();
+    test_pdf_viewer_stream_manager->DeprecatedWaitUntilPdfLoaded();
 
     target_frame = pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
     ASSERT_TRUE(target_frame);

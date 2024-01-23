@@ -1508,7 +1508,7 @@ class SitePerProcessInteractivePDFTest
 
   void WaitUntilPdfLoaded() {
     if (UseOopif()) {
-      GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded();
+      GetTestPdfViewerStreamManager()->DeprecatedWaitUntilPdfLoaded();
     } else {
       auto* guest_view =
           GetTestGuestViewManager()->WaitForSingleGuestViewCreated();

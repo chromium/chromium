@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
   EXPECT_TRUE(NavigateIframeToURL(active_web_contents, "test", frame_url));
 
   // Wait until the PDF is fully loaded.
-  test_pdf_viewer_stream_manager->WaitUntilPdfLoaded();
+  test_pdf_viewer_stream_manager->DeprecatedWaitUntilPdfLoaded();
 
   // The primary main frame shouldn't be the PDF embedder and shouldn't have a
   // PDF stream.

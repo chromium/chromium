@@ -3721,7 +3721,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoIframe) {
   ASSERT_EQ(manager, pdf::PdfViewerStreamManager::FromWebContents(contents));
 
   // Verify the pdf has loaded. The test will timeout if the PDF fails to load.
-  manager->WaitUntilPdfLoaded();
+  manager->DeprecatedWaitUntilPdfLoaded();
 }
 
 // PDF extension tests for the OOPIF PDF viewer.

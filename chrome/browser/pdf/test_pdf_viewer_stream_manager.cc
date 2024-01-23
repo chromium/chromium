@@ -45,7 +45,7 @@ void TestPdfViewerStreamManager::DidFinishNavigation(
   std::move(on_pdf_loaded_).Run();
 }
 
-void TestPdfViewerStreamManager::WaitUntilPdfLoaded() {
+void TestPdfViewerStreamManager::DeprecatedWaitUntilPdfLoaded() {
   base::RunLoop run_loop;
   on_pdf_loaded_ = run_loop.QuitClosure();
   run_loop.Run();
