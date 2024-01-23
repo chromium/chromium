@@ -47,13 +47,11 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
       safeReplacements.SetPathStr("echo");
       if (@available(iOS 15.1, *)) {
       } else {
-        if (@available(iOS 14.5, *)) {
-          // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which
-          // breaks some back/forward navigations between pages that share a
-          // renderer process. Use 'localhost' instead of '127.0.0.1' for the
-          // safe URL to prevent sharing renderer processes with unsafe URLs.
-          safeReplacements.SetHostStr("localhost");
-        }
+        // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which
+        // breaks some back/forward navigations between pages that share a
+        // renderer process. Use 'localhost' instead of '127.0.0.1' for the
+        // safe URL to prevent sharing renderer processes with unsafe URLs.
+        safeReplacements.SetHostStr("localhost");
       }
       lookalike_container->SetLookalikeUrlInfo(
           response_url.ReplaceComponents(safeReplacements), response_url,
