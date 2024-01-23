@@ -1,7 +1,6 @@
-from typing import Any, Dict, Mapping, Union
+from typing import Any, Dict, Mapping, MutableMapping, Optional, Union
 from ._module import BidiModule, command
 from webdriver.bidi.modules.network import NetworkBytesValue
-from ..undefined import UNDEFINED, Undefined
 
 
 class BrowsingContextPartitionDescriptor(Dict[str, Any]):
@@ -10,12 +9,12 @@ class BrowsingContextPartitionDescriptor(Dict[str, Any]):
 
 
 class StorageKeyPartitionDescriptor(Dict[str, Any]):
-    def __init__(self, user_context: Union[Undefined, str] = UNDEFINED,
-                 source_origin: Union[Undefined, str] = UNDEFINED):
+    def __init__(self, user_context: Optional[str] = None,
+                 source_origin: Optional[str] = None):
         dict.__init__(self, type="storageKey")
-        if user_context is not UNDEFINED:
+        if user_context is not None:
             self["userContext"] = user_context
-        if source_origin is not UNDEFINED:
+        if source_origin is not None:
             self["sourceOrigin"] = source_origin
 
 
@@ -25,22 +24,22 @@ class PartialCookie(Dict[str, Any]):
             name: str,
             value: NetworkBytesValue,
             domain: str,
-            path: Union[Undefined, str] = UNDEFINED,
-            http_only: Union[Undefined, bool] = UNDEFINED,
-            secure: Union[Undefined, bool] = UNDEFINED,
-            same_site: Union[Undefined, str] = UNDEFINED,
-            expiry: Union[Undefined, int] = UNDEFINED,
+            path: Optional[str] = None,
+            http_only: Optional[bool] = None,
+            secure: Optional[bool] = None,
+            same_site: Optional[str] = None,
+            expiry: Optional[int] = None,
     ):
         dict.__init__(self, name=name, value=value, domain=domain)
-        if path is not UNDEFINED:
+        if path is not None:
             self["path"] = path
-        if http_only is not UNDEFINED:
+        if http_only is not None:
             self["httpOnly"] = http_only
-        if secure is not UNDEFINED:
+        if secure is not None:
             self["secure"] = secure
-        if same_site is not UNDEFINED:
+        if same_site is not None:
             self["sameSite"] = same_site
-        if expiry is not UNDEFINED:
+        if expiry is not None:
             self["expiry"] = expiry
 
 
@@ -51,16 +50,21 @@ class Storage(BidiModule):
 
     # TODO: extend with `filter`.
     @command
-    def get_cookies(self, partition: Union[Undefined, PartitionDescriptor] = UNDEFINED) -> Mapping[str, Any]:
-        return {"partition": partition}
+    def get_cookies(self, partition: Optional[PartitionDescriptor] = None) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {}
+        if partition is not None:
+            params["partition"] = partition
+        return params
 
     @command
     def set_cookie(
             self,
             cookie: PartialCookie,
-            partition: Union[Undefined, PartitionDescriptor] = UNDEFINED
+            partition: Optional[PartitionDescriptor] = None
     ) -> Mapping[str, Any]:
-        return {
-            'cookie': cookie,
-            "partition": partition
+        params: MutableMapping[str, Any] = {
+            "cookie": cookie
         }
+        if partition is not None:
+            params["partition"] = partition
+        return params

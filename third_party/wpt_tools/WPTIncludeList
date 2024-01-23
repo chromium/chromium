@@ -287,6 +287,11 @@
 ./tools/third_party_modified/mozlog/mozlog/unstructured/loglistener.py
 ./tools/third_party_modified/mozlog/setup.cfg
 ./tools/third_party_modified/mozlog/setup.py
+./tools/web_features/MANIFEST_SCHEMA.json
+./tools/web_features/__init__.py
+./tools/web_features/commands.json
+./tools/web_features/manifest.py
+./tools/web_features/web_feature_map.py
 ./tools/webdriver/webdriver/__init__.py
 ./tools/webdriver/webdriver/bidi/__init__.py
 ./tools/webdriver/webdriver/bidi/client.py

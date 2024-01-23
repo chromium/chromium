@@ -1,10 +1,10 @@
 This is a wdspec test.
 [FAIL] test_cookie_path[/]
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
 [FAIL] test_cookie_path[/some_path]
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
 [FAIL] test_cookie_path[/some/nested/path]
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
 [FAIL] test_cookie_path[None]
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected string, received null in "cookie"/"path". Expected boolean, received null in "cookie"/"httpOnly". Expected 'strict' | 'lax' | 'none', received null in "cookie"/"sameSite". Expected number, received null in "cookie"/"expiry".)
+  webdriver.bidi.error.UnknownErrorException: unknown error (partition should be set)
 Harness: the test ran to completion.
