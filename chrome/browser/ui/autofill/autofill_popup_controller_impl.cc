@@ -143,6 +143,13 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
   CHECK(picture_in_picture_window_manager);
   picture_in_picture_window_observation_.Observe(
       picture_in_picture_window_manager);
+#if !BUILDFLAG(IS_ANDROID)
+  // There may not always be a ZoomController, e.g., in tests.
+  if (auto* zoom_controller =
+          zoom::ZoomController::FromWebContents(web_contents)) {
+    zoom_observation_.Observe(zoom_controller);
+  }
+#endif
 }
 
 AutofillPopupControllerImpl::~AutofillPopupControllerImpl() = default;
@@ -166,6 +173,18 @@ void AutofillPopupControllerImpl::PrimaryMainFrameWasResized(
 #endif
   Hide(PopupHidingReason::kWidgetChanged);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void AutofillPopupControllerImpl::OnZoomControllerDestroyed(
+    zoom::ZoomController* source) {
+  zoom_observation_.Reset();
+}
+
+void AutofillPopupControllerImpl::OnZoomChanged(
+    const zoom::ZoomController::ZoomChangedEventData& data) {
+  Hide(PopupHidingReason::kContentAreaMoved);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void AutofillPopupControllerImpl::RenderFrameDeleted(
     content::RenderFrameHost* rfh) {

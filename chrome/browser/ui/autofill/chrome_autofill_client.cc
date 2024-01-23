@@ -166,7 +166,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
-#include "components/zoom/zoom_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
@@ -1325,19 +1324,6 @@ ChromeAutofillClient::GetDeviceAuthenticator() {
 #endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-void ChromeAutofillClient::OnZoomControllerDestroyed(
-    zoom::ZoomController* source) {
-  zoom_observation_.Reset();
-}
-
-void ChromeAutofillClient::OnZoomChanged(
-    const zoom::ZoomController::ZoomChangedEventData& data) {
-  HideAutofillPopup(PopupHidingReason::kContentAreaMoved);
-  // Touch To Fill is not supported on Desktop.
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
     : ContentAutofillClient(
           web_contents,
@@ -1361,13 +1347,7 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   // when requested by other Autofill classes.
   GetStrikeDatabase();
 
-#if !BUILDFLAG(IS_ANDROID)
-  // There may not always be a ZoomController, e.g. in tests.
-  if (auto* zoom_controller =
-          zoom::ZoomController::FromWebContents(web_contents)) {
-    zoom_observation_.Observe(zoom_controller);
-  }
-#else
+#if BUILDFLAG(IS_ANDROID)
   fast_checkout_client_ = std::make_unique<FastCheckoutClientImpl>(this);
 #endif
 }

@@ -26,6 +26,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/zoom/zoom_observer.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 class Profile;
 
 namespace content {
@@ -72,6 +76,9 @@ class ExpandablePopupParentControllerImpl {
 class AutofillPopupControllerImpl
     : public AutofillPopupController,
       public content::WebContentsObserver,
+#if !BUILDFLAG(IS_ANDROID)
+      public zoom::ZoomObserver,
+#endif  // !BUILDFLAG(IS_ANDROID)
       public AutofillManager::Observer,
       public PictureInPictureWindowManager::Observer,
       public ExpandablePopupParentControllerImpl {
@@ -217,6 +224,13 @@ class AutofillPopupControllerImpl
       content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
+#if !BUILDFLAG(IS_ANDROID)
+  // ZoomObserver:
+  void OnZoomControllerDestroyed(zoom::ZoomController* source) override;
+  void OnZoomChanged(
+      const zoom::ZoomController::ZoomChangedEventData& data) override;
+#endif
+
   // AutofillManager::Observer:
   void OnBeforeTextFieldDidChange(AutofillManager& manager,
                                   FormGlobalId form,
@@ -284,6 +298,11 @@ class AutofillPopupControllerImpl
   // If set to true, the popup will stay open regardless of external changes on
   // the machine that would normally cause the popup to be hidden.
   bool keep_popup_open_for_testing_ = false;
+
+#if !BUILDFLAG(IS_ANDROID)
+  base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>
+      zoom_observation_{this};
+#endif
 
   // Observer needed to check autofill popup overlap with picture-in-picture
   // window. It is guaranteed that there can only be one

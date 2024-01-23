@@ -43,7 +43,6 @@
 #else
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
-#include "components/zoom/zoom_observer.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
@@ -78,10 +77,6 @@ class MandatoryReauthManager;
 // ChromeAutofillClient.
 class ChromeAutofillClient : public ContentAutofillClient,
                              public content::WebContentsObserver
-#if !BUILDFLAG(IS_ANDROID)
-    ,
-                             public zoom::ZoomObserver
-#endif  // !BUILDFLAG(IS_ANDROID)
 {
  public:
   // Creates a new ChromeAutofillClient for the given `web_contents` if no
@@ -289,13 +284,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
     return std::exchange(unmask_controller_, std::move(test_controller));
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  // ZoomObserver:
-  void OnZoomControllerDestroyed(zoom::ZoomController* source) override;
-  void OnZoomChanged(
-      const zoom::ZoomController::ZoomChangedEventData& data) override;
-#endif
-
   AutofillProgressDialogControllerImpl*
   AutofillProgressDialogControllerForTesting() {
     return autofill_progress_dialog_controller_.get();
@@ -362,11 +350,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;
   std::unique_ptr<AutofillProgressDialogControllerImpl>
       autofill_progress_dialog_controller_;
-
-#if !BUILDFLAG(IS_ANDROID)
-  base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>
-      zoom_observation_{this};
-#endif
 };
 
 }  // namespace autofill

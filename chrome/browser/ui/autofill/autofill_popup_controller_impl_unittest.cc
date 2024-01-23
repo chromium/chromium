@@ -1474,6 +1474,8 @@ class AutofillPopupControllerImplTestHidingLogic
  public:
   void SetUp() override {
     AutofillPopupControllerImplTest::SetUp();
+#if !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     sub_frame_ = CreateAndNavigateChildFrame(
                      main_frame(), GURL("https://bar.com"), "sub_frame")
                      ->GetWeakDocumentPtr();
@@ -1609,5 +1611,26 @@ TEST_F(AutofillPopupControllerImplTestHidingLogic,
   EXPECT_CALL(client().popup_controller(sub_manager()),
               Hide(PopupHidingReason::kTabGone));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Tests that if the popup is shown in the *main frame*, changing the zoom hides
+// the popup.
+TEST_F(AutofillPopupControllerImplTestHidingLogic,
+       HideInMainFrameOnZoomChange) {
+  zoom::ZoomController::CreateForWebContents(web_contents());
+  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+  // Triggered by OnZoomChanged().
+  EXPECT_CALL(client().popup_controller(manager()),
+              Hide(PopupHidingReason::kContentAreaMoved));
+  // Triggered by PrimaryMainFrameWasResized().
+  EXPECT_CALL(client().popup_controller(manager()),
+              Hide(PopupHidingReason::kWidgetChanged));
+  auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents());
+  zoom_controller->SetZoomLevel(zoom_controller->GetZoomLevel() + 1.0);
+  // Verify and clear before TearDown() closes the popup.
+  Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill
