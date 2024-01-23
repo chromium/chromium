@@ -589,6 +589,7 @@ crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/mov
 crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-iframe-success-inline-classic.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-backgrounds/background-attachment-local-inline-002.html [ Failure ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/fail_request/request.py [ Timeout ]
 crbug.com/626703 external/wpt/fullscreen/rendering/backdrop-inherit.html [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/perform_actions/invalid.py [ Timeout ]

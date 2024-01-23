@@ -329381,6 +329381,10 @@
       "18885fdc898a4ccc260db6056f7c102ffd661c69",
       []
      ],
+     "highlight-pseudos-computed-expected.txt": [
+      "77af88e9110a614c1842060599460fcfcfe1fa9a",
+      []
+     ],
      "highlight-styling-001-ref.html": [
       "0ea90d7434d546193065b2fe58e8da5f5ae58f8c",
       []
@@ -457945,7 +457949,7 @@
       ]
      ],
      "highlight-pseudos-computed.html": [
-      "f0d848e19c959293b8f0e03aee627914d3a9236c",
+      "4a274e1bbd8506b7803f621f3f947c24be3780e3",
       [
        null,
        {}
