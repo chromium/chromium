@@ -291,11 +291,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
     TabGridPage page = GetPageFromScrollView(scrollView);
     if (page != self.currentPage) {
-      self.currentPage = page;
-      [self broadcastIncognitoContentVisibility];
       // Records when the user drags the scrollView to switch pages.
       [self.mutator pageChanged:page
                     interaction:TabSwitcherPageChangeInteraction::kScrollDrag];
+      self.currentPage = page;
+      [self broadcastIncognitoContentVisibility];
     }
   }
 }
