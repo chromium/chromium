@@ -297,24 +297,25 @@ class AutofillProviderAndroid : public AutofillProvider,
   // The form of the current session (queried input or changed select box).
   std::unique_ptr<FormDataAndroid> form_;
 
-  // Properties of the field of the current session (queried input or changed
-  // select box).
-  FieldGlobalId field_id_;
+  // Properties of the last-focused field of the current session for `form_`
+  // (queried input or changed select box).
+  FieldGlobalId last_focused_field_id_;
   FieldTypeGroup field_type_group_{FieldTypeGroup::kNoGroup};
 
   // The frame of the field for which the last OnAskForValuesToFill() happened.
   //
   // It is not necessarily the same frame as the current session's
-  // `field_id_.host_frame` because the session may survive
+  // `last_focused_field_id_.host_frame` because the session may survive
   // OnAskForValuesToFill().
   //
   // It's not necessarily the same frame as `manager_`'s for the same reason as
-  // `field_id_`, and also because `manager_` may refer to an ancestor frame of
-  // the queried field.
+  // `last_focused_field_id_`, and also because `manager_` may refer to an
+  // ancestor frame of the queried field.
   content::GlobalRenderFrameHostId last_queried_field_rfh_id_;
 
-  // The origin of the field of the current session (cf. `field_id_`). This is
-  // determines which fields are safe to be filled in cross-frame forms.
+  // The origin of the field of the current session (cf.
+  // `last_focused_field_id_`). This is determines which fields are safe to be
+  // filled in cross-frame forms.
   url::Origin triggered_origin_;
   base::WeakPtr<AndroidAutofillManager> manager_;
   bool check_submission_ = false;

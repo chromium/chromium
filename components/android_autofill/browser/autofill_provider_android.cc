@@ -188,6 +188,8 @@ void AutofillProviderAndroid::OnAskForValuesToFill(
   if (!IsLinkedForm(
           form, /*similarity_metric=*/kSimilarityCheckAskForValuesToFillUma)) {
     StartNewSession(manager, form, field, bounding_box);
+  } else {
+    last_focused_field_id_ = field.global_id();
   }
 
   if (field.datalist_options.empty()) {
@@ -246,7 +248,7 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
     return;
   }
 
-  field_id_ = field.global_id();
+  last_focused_field_id_ = field.global_id();
   field_type_group_ = manager->ComputeFieldTypeGroupForField(form, field);
   triggered_origin_ = field.origin;
   check_submission_ = false;
@@ -333,8 +335,9 @@ void AutofillProviderAndroid::OnAutofillAvailable() {
 void AutofillProviderAndroid::OnAcceptDatalistSuggestion(
     const std::u16string& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (auto* manager = manager_.get()) {
-    RendererShouldAcceptDataListSuggestion(manager, field_id_, value);
+  if (manager_) {
+    RendererShouldAcceptDataListSuggestion(manager_.get(),
+                                           last_focused_field_id_, value);
   }
 }
 
@@ -653,7 +656,7 @@ gfx::RectF AutofillProviderAndroid::ToClientAreaBound(
 void AutofillProviderAndroid::Reset() {
   manager_ = nullptr;
   form_.reset();
-  field_id_ = {};
+  last_focused_field_id_ = {};
   field_type_group_ = FieldTypeGroup::kNoGroup;
   triggered_origin_ = {};
   check_submission_ = false;

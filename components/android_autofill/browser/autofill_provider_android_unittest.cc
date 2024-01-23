@@ -359,6 +359,28 @@ TEST_F(AutofillProviderAndroidTest, OnFocusChangeInsideCurrentAutofillForm) {
       FormDataAndroid::kFormsAreSimilar.value(), 1);
 }
 
+// Tests that triggering `OnAskForValuesToFill` with a field results in an
+// update to last_focused_field_id. The update is important so that
+// `AutofillProvider::RendererShouldAcceptDatalistSuggestion` is passed the
+// correct field ID.
+TEST_F(AutofillProviderAndroidTest, OnAskForValuesToFillFindsCorrectFieldId) {
+  base::HistogramTester histogram_tester;
+
+  FormData form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
+
+  android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[0]);
+
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_id(),
+            form.fields[0].global_id());
+
+  android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[1]);
+
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_id(),
+            form.fields[1].global_id());
+}
+
 // Tests that Java is informed about visibility changes of form fields connected
 // to the current Autofill session if they are detected in focus change events.
 TEST_F(AutofillProviderAndroidTest, NotifyAboutVisibilityChangeOnFocus) {
