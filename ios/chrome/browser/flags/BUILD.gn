@@ -72,6 +72,7 @@ source_set("flags") {
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/screen_time/model:buildflags",
+    "//ios/chrome/browser/sessions:features",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",

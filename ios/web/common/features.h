@@ -77,9 +77,6 @@ BASE_DECLARE_FEATURE(kEnableWebInspector);
 // viewport adjustment experiment is selected via command line switches.
 BASE_DECLARE_FEATURE(kSmoothScrollingDefault);
 
-// Feature flag to enable the session serialization optimizations.
-BASE_DECLARE_FEATURE(kEnableSessionSerializationOptimizations);
-
 // Feature flag that force the use of the synthesized native WKWebView
 // session instead of the (maybe inexistent) saved native session. The
 // purpose of this flag it to allow to testing this code path.
@@ -97,9 +94,6 @@ bool IsLoadSimulatedRequestAPIEnabled();
 
 // When true, an option to enable Web Inspector should be present in Settings.
 bool IsWebInspectorSupportEnabled();
-
-// When true, session serialization optimizations should be enabled.
-bool UseSessionSerializationOptimizations();
 
 }  // namespace features
 }  // namespace web

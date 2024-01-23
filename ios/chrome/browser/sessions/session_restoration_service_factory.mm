@@ -14,6 +14,7 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/sessions/features.h"
 #import "ios/chrome/browser/sessions/legacy_session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_migration.h"
@@ -23,9 +24,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/web/model/session_state/web_session_state_cache_factory.h"
-
-// TODO(crbug.com/1504753): Remove once the feature has launched.
-#import "ios/web/common/features.h"
 
 namespace {
 
@@ -357,7 +355,7 @@ SessionRestorationServiceFactory::BuildServiceInstanceFor(
   // will have its default value of `SessionStorageFormat::kUnknown`. Use
   // the feature flag to select which implementation to use.
   if (format == SessionStorageFormat::kUnknown) {
-    format = web::features::UseSessionSerializationOptimizations()
+    format = session::features::UseSessionSerializationOptimizations()
                  ? SessionStorageFormat::kOptimized
                  : SessionStorageFormat::kLegacy;
   }

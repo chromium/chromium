@@ -91,6 +91,7 @@
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/sessions/features.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/session_util.h"
@@ -149,10 +150,6 @@
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 #import "ios/chrome/app/dump_documents_statistics.h"
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
-
-// To get access to web::features::kEnableSessionSerializationOptimizations.
-// TODO(crbug.com/1504753): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 namespace {
 
@@ -561,7 +558,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)performBrowserBackgroundInitialisation:(ProceduralBlock)completion {
   // Migrate the session storage based on the feature.
   const SessionRestorationServiceFactory::StorageFormat requested_format =
-      web::features::UseSessionSerializationOptimizations()
+      session::features::UseSessionSerializationOptimizations()
           ? SessionRestorationServiceFactory::kOptimized
           : SessionRestorationServiceFactory::kLegacy;
 

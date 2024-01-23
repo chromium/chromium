@@ -83,6 +83,7 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
+#import "ios/chrome/browser/sessions/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
@@ -1307,7 +1308,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableSessionSerializationOptimizationsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
-         web::features::kEnableSessionSerializationOptimizations)},
+         session::features::kEnableSessionSerializationOptimizations)},
     {"bottom-omnibox-steady-state",
      flag_descriptions::kBottomOmniboxSteadyStateName,
      flag_descriptions::kBottomOmniboxSteadyStateDescription, flags_ui::kOsIos,
