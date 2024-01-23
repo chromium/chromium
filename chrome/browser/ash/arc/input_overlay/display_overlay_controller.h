@@ -90,7 +90,6 @@ class DisplayOverlayController : public ui::EventHandler,
   // Creates a new action with guidance from the reference action, and deletes
   // the reference action.
   void ChangeActionType(Action* reference_action_, ActionType type);
-  void ChangeActionName(Action* action, int index);
   void RemoveActionNewState(Action* action);
 
   // Returns the size of active actions which include the deleted default

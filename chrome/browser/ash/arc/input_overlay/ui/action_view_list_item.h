@@ -27,9 +27,6 @@ class ActionViewListItem : public ActionEditView {
 
   void PerformPulseAnimation();
 
-  // ActionEditView:
-  void OnActionNameUpdated() override;
-
  private:
   friend class EditLabelTest;
 

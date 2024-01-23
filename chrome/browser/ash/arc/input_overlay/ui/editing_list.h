@@ -113,7 +113,6 @@ class EditingList : public views::View, public TouchInjectorObserver {
   void OnActionRemoved(const Action& action) override;
   void OnActionTypeChanged(Action* action, Action* new_action) override;
   void OnActionInputBindingUpdated(const Action& action) override;
-  void OnActionNameUpdated(const Action& action) override;
   void OnActionNewStateRemoved(const Action& action) override;
 
   // For test.

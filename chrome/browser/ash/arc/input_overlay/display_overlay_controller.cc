@@ -648,10 +648,6 @@ void DisplayOverlayController::RemoveAction(Action* action) {
   touch_injector_->RemoveAction(action);
 }
 
-void DisplayOverlayController::ChangeActionName(Action* action, int index) {
-  touch_injector_->ChangeActionName(action, index);
-}
-
 void DisplayOverlayController::RemoveActionNewState(Action* action) {
   if (!action->is_new()) {
     return;

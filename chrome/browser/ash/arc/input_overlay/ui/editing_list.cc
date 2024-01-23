@@ -630,18 +630,6 @@ void EditingList::OnActionInputBindingUpdated(const Action& action) {
   }
 }
 
-void EditingList::OnActionNameUpdated(const Action& action) {
-  DCHECK(scroll_content_);
-  for (views::View* child : scroll_content_->children()) {
-    auto* list_item = static_cast<ActionViewListItem*>(child);
-    DCHECK(list_item);
-    if (list_item->action() == &action) {
-      list_item->OnActionNameUpdated();
-      break;
-    }
-  }
-}
-
 void EditingList::OnActionNewStateRemoved(const Action& action) {
   DCHECK(scroll_content_);
   for (views::View* child : scroll_content_->children()) {

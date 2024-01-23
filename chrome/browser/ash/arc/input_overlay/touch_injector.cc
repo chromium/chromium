@@ -1004,12 +1004,6 @@ void TouchInjector::ChangeActionType(Action* action, ActionType action_type) {
   MaybeBindDefaultInputElement(new_action_ptr);
 }
 
-void TouchInjector::ChangeActionName(Action* action, int index) {
-  DCHECK(IsBeta());
-  action->set_name_label_index(index);
-  NotifyActionNameUpdated(*action);
-}
-
 void TouchInjector::RemoveActionNewState(Action* action) {
   DCHECK(IsBeta());
   DCHECK(action->is_new());
@@ -1075,12 +1069,6 @@ void TouchInjector::NotifyActionTypeChanged(Action* action,
 void TouchInjector::NotifyActionInputBindingUpdated(const Action& action) {
   for (auto& observer : observers_) {
     observer.OnActionInputBindingUpdated(action);
-  }
-}
-
-void TouchInjector::NotifyActionNameUpdated(const Action& action) {
-  for (auto& observer : observers_) {
-    observer.OnActionNameUpdated(action);
   }
 }
 

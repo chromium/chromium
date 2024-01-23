@@ -26,10 +26,6 @@ void ActionViewListItem::PerformPulseAnimation() {
   labels_view_->PerformPulseAnimationOnFirstLabel();
 }
 
-void ActionViewListItem::OnActionNameUpdated() {
-  NOTIMPLEMENTED();
-}
-
 void ActionViewListItem::ClickCallback() {
   controller_->AddButtonOptionsMenuWidget(action_);
 }

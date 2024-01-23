@@ -35,7 +35,6 @@ class ActionEditView : public views::Button {
 
   void RemoveNewState();
 
-  virtual void OnActionNameUpdated();
   virtual void OnActionInputBindingUpdated();
 
   // Returns Action name, such as "Joystick WASD".

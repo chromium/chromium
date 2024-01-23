@@ -330,10 +330,6 @@ void ButtonOptionsMenu::OnActionInputBindingUpdated(const Action& action) {
   }
 }
 
-void ButtonOptionsMenu::OnActionNameUpdated(const Action& action) {
-  NOTIMPLEMENTED();
-}
-
 void ButtonOptionsMenu::OnActionNewStateRemoved(const Action& action) {
   if (action_ == &action) {
     action_edit_->RemoveNewState();

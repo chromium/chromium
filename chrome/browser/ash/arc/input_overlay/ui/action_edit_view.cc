@@ -108,8 +108,6 @@ void ActionEditView::RemoveNewState() {
   labels_view_->RemoveNewState();
 }
 
-void ActionEditView::OnActionNameUpdated() {}
-
 void ActionEditView::OnActionInputBindingUpdated() {
   labels_view_->OnActionInputBindingUpdated();
 }
