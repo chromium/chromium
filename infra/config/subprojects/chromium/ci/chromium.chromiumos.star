@@ -757,9 +757,6 @@ ci.thin_tester(
             gs_bucket = "chromium-ci-skylab",
         ),
     ),
-    # TODO(crbug.com/1471166) Enable sheriffing.
-    sheriff_rotations = args.ignore_default(None),
-    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "lacros|x64",
         short_name = "gtest",
@@ -805,9 +802,6 @@ ci.thin_tester(
             gs_bucket = "chromium-ci-skylab",
         ),
     ),
-    # TODO(crbug.com/1471166) Enable sheriffing.
-    sheriff_rotations = args.ignore_default(None),
-    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "lacros|x64",
         short_name = "tast",

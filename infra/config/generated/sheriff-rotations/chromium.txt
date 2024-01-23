@@ -92,8 +92,10 @@ ci/ios-device
 ci/ios-simulator
 ci/ios-simulator-full-configs
 ci/ios-simulator-noncq
+ci/lacros-amd64-generic-rel-gtest
 ci/lacros-amd64-generic-rel-non-skylab
 ci/lacros-amd64-generic-rel-renamed
+ci/lacros-amd64-generic-rel-tast
 ci/lacros-arm-archive-rel
 ci/lacros-arm-generic-rel
 ci/lacros-arm-generic-rel-skylab
