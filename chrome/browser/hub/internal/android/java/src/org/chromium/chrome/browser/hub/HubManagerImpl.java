@@ -204,6 +204,6 @@ public class HubManagerImpl implements HubManager, HubController {
             mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(
                     menuOrKeyboardActionHandler);
         }
-        mSnackbarManager.setParentView(pane.getRootView());
+        mSnackbarManager.setParentView(mHubContainerView);
     }
 }

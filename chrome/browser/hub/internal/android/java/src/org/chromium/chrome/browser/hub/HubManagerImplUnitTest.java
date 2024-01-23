@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -169,12 +168,12 @@ public class HubManagerImplUnitTest {
         assertNotNull(coordinator);
         verify(mBackPressManager).addHandler(eq(coordinator), eq(BackPressHandler.Type.HUB));
         verify(mTabSwitcherPane).setPaneHubController(coordinator);
-        verify(mSnackbarManager).setParentView(mTabSwitcherPaneView);
         verify(mMenuOrKeyboardActionController)
                 .registerMenuOrKeyboardActionHandler(mTabSwitcherMenuOrKeyboardActionHandler);
 
-        View containerView = hubController.getContainerView();
+        FrameLayout containerView = hubController.getContainerView();
         assertNotNull(containerView);
+        verify(mSnackbarManager).setParentView(containerView);
 
         // Attach the container to the parent view.
         mRootView.addView(containerView);
@@ -186,7 +185,7 @@ public class HubManagerImplUnitTest {
         verify(mMenuOrKeyboardActionController)
                 .unregisterMenuOrKeyboardActionHandler(mTabSwitcherMenuOrKeyboardActionHandler);
         verify(mIncognitoTabSwitcherPane).setPaneHubController(coordinator);
-        verify(mSnackbarManager).setParentView(mIncognitoTabSwitcherPaneView);
+        verify(mSnackbarManager, times(2)).setParentView(containerView);
         verify(mMenuOrKeyboardActionController)
                 .registerMenuOrKeyboardActionHandler(
                         mIncognitoTabSwitcherMenuOrKeyboardActionHandler);
