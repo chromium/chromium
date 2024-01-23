@@ -75,9 +75,36 @@
 #include "base/allocator/partition_allocator/src/partition_alloc/memory_reclaimer.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(HAS_MEMORY_TAGGING)
+#include <sys/system_properties.h>
+#endif
+
 namespace base::allocator {
 
 namespace {
+
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(HAS_MEMORY_TAGGING)
+enum class BootloaderOverride {
+  kDefault,
+  kForceOn,
+  kForceOff,
+};
+
+BootloaderOverride GetBootloaderOverride() {
+  char bootloader_override_str[PROP_VALUE_MAX];
+  __system_property_get(
+      "persist.device_config.runtime_native_boot.bootloader_override",
+      bootloader_override_str);
+
+  if (strcmp(bootloader_override_str, "force_on") == 0) {
+    return BootloaderOverride::kForceOn;
+  }
+  if (strcmp(bootloader_override_str, "force_off") == 0) {
+    return BootloaderOverride::kForceOff;
+  }
+  return BootloaderOverride::kDefault;
+}
+#endif
 
 // When under this experiment avoid running periodic purging or reclaim for the
 // first minute after the first attempt. This is based on the insight that
@@ -328,10 +355,49 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
 #if BUILDFLAG(HAS_MEMORY_TAGGING)
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocMemoryTagging)) {
-    if (base::CPU::GetInstanceNoAllocation().has_mte()) {
+    bool has_mte = base::CPU::GetInstanceNoAllocation().has_mte();
+    if (has_mte) {
       trials.emplace("MemoryTaggingDogfood", "Enabled");
     } else {
       trials.emplace("MemoryTaggingDogfood", "Disabled");
+    }
+    BootloaderOverride bootloader_override = GetBootloaderOverride();
+    partition_alloc::TagViolationReportingMode reporting_mode =
+        allocator_shim::internal::PartitionAllocMalloc::Allocator()
+            ->memory_tagging_reporting_mode();
+    switch (bootloader_override) {
+      case BootloaderOverride::kDefault:
+        trials.emplace("MemoryTaggingBootloaderOverride", "Default");
+        break;
+      case BootloaderOverride::kForceOn:
+        if (has_mte) {
+          switch (reporting_mode) {
+            case partition_alloc::TagViolationReportingMode::kAsynchronous:
+              trials.emplace("MemoryTaggingBootloaderOverride", "ForceOnAsync");
+              break;
+            case partition_alloc::TagViolationReportingMode::kSynchronous:
+              // This should not happen unless user forces it.
+              trials.emplace("MemoryTaggingBootloaderOverride", "ForceOnSync");
+              break;
+            default:
+              // This should not happen unless user forces it.
+              trials.emplace("MemoryTaggingBootloaderOverride",
+                             "ForceOnDisabled");
+          }
+        } else {
+          // This should not happen unless user forces it.
+          trials.emplace("MemoryTaggingBootloaderOverride",
+                         "ForceOnWithoutMte");
+        }
+        break;
+      case BootloaderOverride::kForceOff:
+        if (!has_mte) {
+          trials.emplace("MemoryTaggingBootloaderOverride", "ForceOff");
+        } else {
+          // This should not happen unless user forces it.
+          trials.emplace("MemoryTaggingBootloaderOverride", "ForceOffWithMte");
+        }
+        break;
     }
   }
 #endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
