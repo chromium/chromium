@@ -4,6 +4,7 @@
 
 #include "components/crx_file/crx_verifier.h"
 
+#include <algorithm>
 #include <climits>
 #include <cstring>
 #include <iterator>
@@ -42,6 +43,9 @@ constexpr uint8_t kPublisherTestKeyHash[] = {
     0x6c, 0x46, 0x41, 0x3b, 0x00, 0xd0, 0xfa, 0x0e, 0x72, 0xc8, 0xd2,
     0x5f, 0x64, 0xf3, 0xa6, 0x17, 0x03, 0x0d, 0xde, 0x21, 0x61, 0xbe,
     0xb7, 0x95, 0x91, 0x95, 0x83, 0x68, 0x12, 0xe9, 0x78, 0x1e};
+
+constexpr uint8_t kEocd[] = {'P', 'K', 0x05, 0x06};
+constexpr uint8_t kEocd64[] = {'P', 'K', 0x06, 0x07};
 
 using VerifierCollection =
     std::vector<std::unique_ptr<crypto::SignatureVerifier>>;
@@ -109,6 +113,18 @@ VerifierResult VerifyCrx3(
       header_size) {
     return VerifierResult::ERROR_HEADER_INVALID;
   }
+
+  // If the header contains a ZIP EOCD or EOCD64 token, unzipping may not work
+  // correctly.
+  if (std::search(std::begin(header_bytes), std::end(header_bytes),
+                  std::begin(kEocd),
+                  std::end(kEocd)) != std::end(header_bytes) ||
+      std::search(std::begin(header_bytes), std::end(header_bytes),
+                  std::begin(kEocd64),
+                  std::end(kEocd64)) != std::end(header_bytes)) {
+    return VerifierResult::ERROR_HEADER_INVALID;
+  }
+
   CrxFileHeader header;
   if (!header.ParseFromArray(header_bytes.data(), header_size))
     return VerifierResult::ERROR_HEADER_INVALID;
