@@ -1285,7 +1285,9 @@ void SplitViewController::OnPostWindowStateTypeChange(
       do_divider_spawn_animation = true;
     }
 
-    OnWindowSnapped(window, old_type, WindowSnapActionSource::kNotSpecified);
+    OnWindowSnapped(window, old_type,
+                    window_state->snap_action_source().value_or(
+                        WindowSnapActionSource::kNotSpecified));
     if (do_divider_spawn_animation) {
       DoSplitDividerSpawnAnimation(window);
     }

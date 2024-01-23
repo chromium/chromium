@@ -5,6 +5,7 @@
 #include "ash/wm/window_state.h"
 
 #include <absl/cleanup/cleanup.h>
+#include <optional>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -536,6 +537,7 @@ void WindowState::OnWMEvent(const WMEvent* event) {
     // Save `event` requested snap ratio.
     const float target_snap_ratio = snap_event->snap_ratio();
     snap_ratio_ = std::make_optional(target_snap_ratio);
+    snap_action_source_ = std::make_optional(snap_event->snap_action_source());
     if (IsPartial(target_snap_ratio)) {
       partial_start_time_ = base::TimeTicks::Now();
     } else {
