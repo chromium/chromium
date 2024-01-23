@@ -62,7 +62,6 @@ source_set("model") {
     "//components/profile_metrics",
     "//components/proxy_config",
     "//components/proxy_config/ios",
-    "//components/signin/ios/browser:active_state_manager",
     "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",

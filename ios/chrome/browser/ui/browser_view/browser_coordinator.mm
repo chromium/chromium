@@ -25,7 +25,6 @@
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
-#import "components/signin/ios/browser/active_state_manager.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
@@ -646,11 +645,6 @@ enum class ToolbarKind {
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   if (browserState) {
-    // TODO(crbug.com/1272520): Refactor ActiveStateManager for multiwindow.
-    ActiveStateManager* active_state_manager =
-        ActiveStateManager::FromBrowserState(browserState);
-    active_state_manager->SetActive(active);
-
     TextToSpeechPlaybackControllerFactory::GetInstance()
         ->GetForBrowserState(browserState)
         ->SetEnabled(active);

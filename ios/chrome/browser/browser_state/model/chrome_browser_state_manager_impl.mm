@@ -18,7 +18,6 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/ios/browser/active_state_manager.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/browser_state/model/chrome_browser_state_impl.h"
 #import "ios/chrome/browser/browser_state/model/constants.h"
@@ -111,22 +110,7 @@ base::FilePath GetUserDataDir() {
 
 ChromeBrowserStateManagerImpl::ChromeBrowserStateManagerImpl() {}
 
-ChromeBrowserStateManagerImpl::~ChromeBrowserStateManagerImpl() {
-  for (const auto& pair : browser_states_) {
-    ChromeBrowserStateImpl* browser_state = pair.second.get();
-    ActiveStateManager::FromBrowserState(browser_state)->SetActive(false);
-    if (!browser_state->HasOffTheRecordChromeBrowserState()) {
-      continue;
-    }
-
-    web::BrowserState* otr_browser_state =
-        browser_state->GetOffTheRecordChromeBrowserState();
-    if (!ActiveStateManager::ExistsForBrowserState(otr_browser_state)) {
-      continue;
-    }
-    ActiveStateManager::FromBrowserState(otr_browser_state)->SetActive(false);
-  }
-}
+ChromeBrowserStateManagerImpl::~ChromeBrowserStateManagerImpl() {}
 
 ChromeBrowserState* ChromeBrowserStateManagerImpl::GetLastUsedBrowserState() {
   return GetBrowserState(GetLastUsedBrowserStateDir(GetUserDataDir()));

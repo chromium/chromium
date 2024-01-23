@@ -321,8 +321,6 @@ class AccountConsistencyServiceTest : public PlatformTest {
   }
 
   // Properties available for tests.
-  // Creates test threads, necessary for ActiveStateManager that needs a UI
-  // thread.
   web::WebTaskEnvironment task_environment_;
   web::FakeBrowserState browser_state_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
