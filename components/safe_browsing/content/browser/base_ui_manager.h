@@ -164,6 +164,13 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
       content::NavigationHandle* handle,
       security_interstitials::UnsafeResource& severest_resource);
 
+  // Goes over the |redirect_chain| and returns the severest threat.
+  // The lowest value is 0, which represents the most severe type.
+  ThreatSeverity GetSeverestThreatForRedirectChain(
+      const std::vector<GURL>& redirect_chain,
+      int64_t navigation_id,
+      security_interstitials::UnsafeResource& severest_resource);
+
  protected:
   friend class ChromePasswordProtectionService;
   virtual ~BaseUIManager();

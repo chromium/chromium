@@ -81,7 +81,13 @@ void AsyncCheckTracker::PendingCheckerCompleted(
   }
   if (result.has_post_commit_interstitial_skipped) {
     CHECK(!result.proceed);
-    show_interstitial_after_finish_navigation_ = true;
+    if (IsNavigationPending(navigation_id)) {
+      show_interstitial_after_finish_navigation_ = true;
+    } else {
+      // If the navigation has already finished, show a warning immediately.
+      MaybeDisplayBlockingPage(
+          pending_checkers_[navigation_id]->GetRedirectChain(), navigation_id);
+    }
   }
   if (!result.proceed || result.all_checks_completed) {
     // No need to keep the checker around if proceed is false. We
@@ -126,11 +132,18 @@ void AsyncCheckTracker::DidFinishNavigation(content::NavigationHandle* handle) {
   // may be removed for other reasons.
   show_interstitial_after_finish_navigation_ = false;
 
+  MaybeDisplayBlockingPage(handle->GetRedirectChain(),
+                           handle->GetNavigationId());
+}
+
+void AsyncCheckTracker::MaybeDisplayBlockingPage(
+    const std::vector<GURL>& redirect_chain,
+    int64_t navigation_id) {
   // Fields in `resource` is filled in by the call to
   // GetSeverestThreatForNavigation.
   UnsafeResource resource;
-  ThreatSeverity severity =
-      ui_manager_->GetSeverestThreatForNavigation(handle, resource);
+  ThreatSeverity severity = ui_manager_->GetSeverestThreatForRedirectChain(
+      redirect_chain, navigation_id, resource);
   if (severity == std::numeric_limits<ThreatSeverity>::max() ||
       resource.threat_type == SBThreatType::SB_THREAT_TYPE_SAFE) {
     return;

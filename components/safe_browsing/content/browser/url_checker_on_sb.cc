@@ -130,6 +130,7 @@ void UrlCheckerOnSB::CheckUrl(const GURL& url, const std::string& method) {
           : content::BrowserThread::IO);
   DCHECK(url_checker_);
   pending_checks_++;
+  redirect_chain_.push_back(url);
   url_checker_->CheckUrl(url, method,
                          base::BindOnce(&UrlCheckerOnSB::OnCheckUrlResult,
                                         base::Unretained(this)));
@@ -137,6 +138,10 @@ void UrlCheckerOnSB::CheckUrl(const GURL& url, const std::string& method) {
 
 void UrlCheckerOnSB::SwapCompleteCallback(OnCompleteCheckCallback callback) {
   complete_callback_ = std::move(callback);
+}
+
+const std::vector<GURL>& UrlCheckerOnSB::GetRedirectChain() {
+  return redirect_chain_;
 }
 
 void UrlCheckerOnSB::SetUrlCheckerForTesting(
@@ -148,6 +153,10 @@ bool UrlCheckerOnSB::IsRealTimeCheckForTesting() {
   return url_real_time_lookup_enabled_ ||
          hash_realtime_selection_ !=
              hash_realtime_utils::HashRealTimeSelection::kNone;
+}
+
+void UrlCheckerOnSB::AddUrlInRedirectChainForTesting(const GURL& url) {
+  redirect_chain_.push_back(url);
 }
 
 void UrlCheckerOnSB::OnCheckUrlResult(
