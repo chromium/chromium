@@ -175,15 +175,6 @@ void PasswordProtectionServiceBase::RequestFinished(
                    password_type, *response, base::Time::Now());
     }
 
-    // If it's password alert mode and a Gsuite/enterprise account, we do not
-    // show a modal warning.
-    if (outcome == RequestOutcome::PASSWORD_ALERT_MODE &&
-        (password_type.account_type() == ReusedPasswordAccountType::GSUITE ||
-         password_type.account_type() ==
-             ReusedPasswordAccountType::NON_GAIA_ENTERPRISE)) {
-      return;
-    }
-
     if (ShouldShowModalWarning(request->trigger_type(), password_type,
                                response->verdict_type())) {
       username_for_last_shown_warning_ = request->username();

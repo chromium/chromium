@@ -427,11 +427,12 @@ class ChromePasswordProtectionServiceTest
   }
 
   void SimulateRequestFinished(
-      LoginReputationClientResponse::VerdictType verdict_type) {
+      LoginReputationClientResponse::VerdictType verdict_type,
+      RequestOutcome request_outcome = RequestOutcome::SUCCEEDED) {
     std::unique_ptr<LoginReputationClientResponse> verdict =
         std::make_unique<LoginReputationClientResponse>();
     verdict->set_verdict_type(verdict_type);
-    service_->RequestFinished(request_.get(), RequestOutcome::SUCCEEDED,
+    service_->RequestFinished(request_.get(), request_outcome,
                               std::move(verdict));
   }
 
@@ -1261,6 +1262,23 @@ TEST_F(ChromePasswordProtectionServiceTest,
   // Event count should be unchanged.
   EXPECT_EQ(1, test_event_router_->GetEventCount(
                    OnPolicySpecifiedPasswordChanged::kEventName));
+}
+
+TEST_F(
+    ChromePasswordProtectionServiceTest,
+    VerifyTriggerOnPolicySpecifiedPasswordReuseDetectedForEnterprisePasswordWithAlertMode) {
+  TestExtensionEventObserver event_observer(test_event_router_);
+  profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
+                                    PASSWORD_REUSE);
+  NavigateAndCommit(GURL(kPasswordReuseURL));
+  PrepareRequest(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                 PasswordType::ENTERPRISE_PASSWORD,
+                 /*is_warning_showing=*/false);
+  SimulateRequestFinished(LoginReputationClientResponse::SAFE,
+                          RequestOutcome::PASSWORD_ALERT_MODE);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1, test_event_router_->GetEventCount(
+                   OnPolicySpecifiedPasswordReuseDetected::kEventName));
 }
 
 TEST_F(ChromePasswordProtectionServiceTest,
