@@ -104,7 +104,9 @@ void CalculatorProvider::UpdateFromSearch() {
 }
 
 void CalculatorProvider::AddMatchToCache(AutocompleteMatch match) {
-  match.provider = this;
+  // Set provider to null so the cache doesn't contain dangling pointers if this
+  // provider is deleted (i.e. the window it belongs to is closed).
+  match.provider = nullptr;
   match.deletable = true;
   match.allowed_to_be_default_match = false;
   match.additional_info.clear();
@@ -145,8 +147,12 @@ void CalculatorProvider::AddMatches() {
   // Score sequentially so they're ranked sequentially.
   // TODO(manukh) Consider enforcing hard grouping (e.g. search v URL).
   int relevance = omnibox_feature_configs::CalcProvider::Get().score;
-  for (auto& [match, _] : Cache()) {
+  // Use copies instead of references to avoid dangling pointers. This provider
+  // might be deleted before the cache (i.e. the window this provider belongs to
+  // might be closed).
+  for (auto [match, _] : Cache()) {
     match.relevance = relevance++;
+    match.provider = this;
     matches_.push_back(match);
   }
 }
