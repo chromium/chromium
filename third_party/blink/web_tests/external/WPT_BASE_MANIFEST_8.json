@@ -368576,6 +368576,10 @@
        "02d57baf43dd90d4a7fef4380661856f96df7dec",
        []
       ],
+      "input-checkbox-switch.tentative.window-expected.txt": [
+       "d8b35a2938d8281c4d1578e7b1982ab9c2fdafa1",
+       []
+      ],
       "input-date-baseline-min-height-ref.html": [
        "249076a5b7b064509684ddb4c70c6cea31d4b5ed",
        []
@@ -380144,26 +380148,44 @@
      "5a682929fe9ebb95fac91aa734df97f840cd0dac",
      []
     ],
-    "MediaStreamTrackProcessor-worker.js": [
-     "51eaef80a90a6e24fce8cad4fee03e05548e4517",
-     []
-    ],
-    "dedicated-worker.js": [
-     "0dbcc32d0b271f9772ee5664ba9f5fee35e95a41",
-     []
-    ],
     "idlharness.any.worker-expected.txt": [
      "28ffdbccf36b0f945ce3ebbc5177522c4ba6dd17",
      []
     ],
-    "service-worker.js": [
-     "05a8b99ad8a95f347abb7190b753440629284594",
-     []
-    ],
-    "shared-worker.js": [
-     "61ff67bcff03099cbf93fbb594e9b188d85a9f11",
-     []
-    ]
+    "tentative": {
+     "MediaStreamTrackGenerator-in-service-worker.https-expected.txt": [
+      "d9c3a78e0f1a2e947e473c977431f6a449d401af",
+      []
+     ],
+     "MediaStreamTrackGenerator-in-shared-worker.https-expected.txt": [
+      "2d6eb44d847cb39d7ee343191b8caefb75b1b991",
+      []
+     ],
+     "MediaStreamTrackGenerator-in-worker.https-expected.txt": [
+      "04bfcd90e0a1154a3f40ba65e7b0b142df6fc6a3",
+      []
+     ],
+     "MediaStreamTrackGenerator-pipes-data-in-worker.https-expected.txt": [
+      "5fa0a08ef38cb8c6a5d15d805c5ef833190121ff",
+      []
+     ],
+     "MediaStreamTrackProcessor-worker.js": [
+      "51eaef80a90a6e24fce8cad4fee03e05548e4517",
+      []
+     ],
+     "dedicated-worker.js": [
+      "0dbcc32d0b271f9772ee5664ba9f5fee35e95a41",
+      []
+     ],
+     "service-worker.js": [
+      "05a8b99ad8a95f347abb7190b753440629284594",
+      []
+     ],
+     "shared-worker.js": [
+      "61ff67bcff03099cbf93fbb594e9b188d85a9f11",
+      []
+     ]
+    }
    },
    "mediacapture-record": {
     "DIR_METADATA": [
@@ -470713,7 +470735,7 @@
       ]
      ],
      "progress-computed.tentative.html": [
-      "7f8a1ddd78957467c73b487a2373d6c94b5f0302",
+      "933d7075c1a0e4d85833d32f6771e9fd44ac2437",
       [
        null,
        {}
@@ -562108,6 +562130,13 @@
         {}
        ]
       ],
+      "parser-inserted-async-inline-module-with-import.html": [
+       "50a2add27704289efde6d7568089c483f4b6e1af",
+       [
+        null,
+        {}
+       ]
+      ],
       "parser-inserted-async-script.html": [
        "4b2216dfcb16594f026500f0402677945a641d9a",
        [
@@ -562117,6 +562146,13 @@
       ],
       "parser-inserted-defer-script.html": [
        "1ae8caf2ec9b43741fdf2a81b9b2590480c05f3b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "parser-inserted-inline-module-with-import.html": [
+       "af2ac46aaf5cf1e58a05632e306f6a1e5163393f",
        [
         null,
         {}
@@ -562180,6 +562216,13 @@
       ],
       "remove-pending-async-render-blocking-script.html": [
        "5f6e8b34d1ee0cb1d39595013372e80e1170cff3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "script-inserted-inline-module-with-import.html": [
+       "576c0b321a1f0e4da55d0951fe9ab773ee53f9be",
        [
         null,
         {}
@@ -565932,7 +565975,7 @@
        ]
       ],
       "input-checkbox-switch.tentative.window.js": [
-       "7e5095a3378155a0ae352942a759778ebccff060",
+       "84198eda100adde2642ba16295cbc093f5d89693",
        [
         "html/rendering/widgets/input-checkbox-switch.tentative.window.html",
         {}
@@ -593437,68 +593480,6 @@
     ]
    },
    "mediacapture-insertable-streams": {
-    "MediaStreamTrackGenerator-audio.https.html": [
-     "c2f0bfc011f594bb8351f9bbec7e6db18166c5b9",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "MediaStreamTrackGenerator-in-service-worker.https.html": [
-     "389a30d0d940e12bda9f520886d2dbed68532bd0",
-     [
-      null,
-      {}
-     ]
-    ],
-    "MediaStreamTrackGenerator-in-shared-worker.https.html": [
-     "deecfccad16f5df61028b9fc65e0e65e5f825e64",
-     [
-      null,
-      {}
-     ]
-    ],
-    "MediaStreamTrackGenerator-in-worker.https.html": [
-     "e0a8f2fc2792e2f0d0ca2b45735ae2d7a207e779",
-     [
-      null,
-      {}
-     ]
-    ],
-    "MediaStreamTrackGenerator-pipes-data-in-worker.https.html": [
-     "61a6f038c4b6c480053f39990bdcce1543dc9c76",
-     [
-      null,
-      {}
-     ]
-    ],
-    "MediaStreamTrackGenerator-video.https.html": [
-     "a6f73f009c6d754d5f355e6492eb1623ab12591f",
-     [
-      null,
-      {}
-     ]
-    ],
-    "MediaStreamTrackProcessor-audio.https.html": [
-     "449b4833a2ad0cab8f5a6c2da1d0f703cdc48b53",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "MediaStreamTrackProcessor-backpressure.https.html": [
-     "7b4f88e944fb277d2673f6a477cd0431b808939e",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
     "MediaStreamTrackProcessor-maxBufferSize.worker.js": [
      "3c64e590c44728b75a68c852ee9967a3da36ceef",
      [
@@ -593511,22 +593492,6 @@
         ]
        ]
       }
-     ]
-    ],
-    "MediaStreamTrackProcessor-video.https.html": [
-     "4182505ada8eff37404f8317da3a6ee64336208b",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "VideoTrackGenerator.https.html": [
-     "2c81c7604ab4362e5f2eeb018ece5f0147818dba",
-     [
-      null,
-      {}
      ]
     ],
     "idlharness.any.js": [
@@ -593550,7 +593515,87 @@
        ]
       }
      ]
-    ]
+    ],
+    "tentative": {
+     "MediaStreamTrackGenerator-audio.https.html": [
+      "83a4f21b4ac49f339a6694cec2ce893aa3844f6c",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "MediaStreamTrackGenerator-in-service-worker.https.html": [
+      "389a30d0d940e12bda9f520886d2dbed68532bd0",
+      [
+       null,
+       {}
+      ]
+     ],
+     "MediaStreamTrackGenerator-in-shared-worker.https.html": [
+      "deecfccad16f5df61028b9fc65e0e65e5f825e64",
+      [
+       null,
+       {}
+      ]
+     ],
+     "MediaStreamTrackGenerator-in-worker.https.html": [
+      "e0a8f2fc2792e2f0d0ca2b45735ae2d7a207e779",
+      [
+       null,
+       {}
+      ]
+     ],
+     "MediaStreamTrackGenerator-pipes-data-in-worker.https.html": [
+      "61a6f038c4b6c480053f39990bdcce1543dc9c76",
+      [
+       null,
+       {}
+      ]
+     ],
+     "MediaStreamTrackGenerator-video.https.html": [
+      "a6f73f009c6d754d5f355e6492eb1623ab12591f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "MediaStreamTrackProcessor-audio.https.html": [
+      "7ab7f2a5251438c78b6c1201b637af5794b5b873",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "MediaStreamTrackProcessor-backpressure.https.html": [
+      "7b4f88e944fb277d2673f6a477cd0431b808939e",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "MediaStreamTrackProcessor-video.https.html": [
+      "9f6043ee482f84bbbe0a57569e15f2fa1f2cadb1",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "VideoTrackGenerator.https.html": [
+      "855ebb764a7bb1bae377dd1b1df55e5337b2a771",
+      [
+       null,
+       {}
+      ]
+     ]
+    }
    },
    "mediacapture-record": {
     "BlobEvent-constructor.html": [

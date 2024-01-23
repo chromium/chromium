@@ -12,7 +12,7 @@
 <script src=/resources/testharnessreport.js></script>
 <script src=/resources/testdriver.js></script>
 <script src=/resources/testdriver-vendor.js></script>
-<script src='../mediacapture-streams/permission-helper.js'></script>
+<script src='/mediacapture-streams/permission-helper.js'></script>
 <script>
 promise_test(async t => {
   await setMediaPermission("granted", ["camera"]);
@@ -85,7 +85,7 @@ promise_test(async t => {
   // requests.
   for (let i = 0; i<numOperations; i++) {
      await writer.write(makeVideoFrame(i));
-     await new Promise(r=>setTimeout(r,0));
+     await new Promise(r=>t.step_timeout(r,0));
   }
 
   return promise;

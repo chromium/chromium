@@ -2579,6 +2579,9 @@ crbug.com/626703 external/wpt/html/dom/elements/global-attributes/dir-auto-form-
 # These tests generate baselines whose names are too long.
 crbug.com/626703 external/wpt/editing/other/insertparagraph-in-editing-host-cannot-have-div.tentative.html* [ Failure ]
 
+# Flaky output (https://crrev.com/c/5228398)
+crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/tentative/MediaStreamTrackProcessor-backpressure.https.html [ Failure ]
+
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/css/css-color/deprecated-sameas-002.html [ Failure ]
 crbug.com/626703 external/wpt/selection/crashtests/selectall-and-find-svg-text-on-selectstart.html [ Timeout ]
