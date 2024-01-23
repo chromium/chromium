@@ -170,8 +170,6 @@ after discussions on the right group.
       <annotation id="indexed_db_internals_handler"/>
       <annotation id="navigation_url_loader"/>
       <annotation id="url_prevision_fetcher"/>
-      <annotation id="pepper_tcp_socket"/>
-      <annotation id="pepper_udp_socket"/>
       <annotation id="service_worker_navigation_preload"/>
       <annotation id="service_worker_update_checker"/>
       <annotation id="service_worker_script_load"/>
@@ -307,6 +305,10 @@ after discussions on the right group.
       <annotation id="wallpaper_create_themes_model_execution"/>
       <annotation id="tab_organizer_model_execution"/>
       <annotation id="help_me_write_model_execution"/>
+      <annotation id="controlled_frame_content_scripts_download"/>
+      <annotation id="essential_search_manager"/>
+      <annotation id="pepper_tcp_socket"/>
+      <annotation id="pepper_udp_socket"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

@@ -116,19 +116,6 @@ void IsolatedWebAppUpdateDiscoveryTask::Start(CompletionCallback callback) {
       trigger:
         "The browser automatically checks for updates of all policy-installed "
         "Isolated Web Apps after startup and in regular time intervals."
-      internal {
-        contacts {
-          email: "cmfcmf@google.com"
-        }
-      }
-      # TODO(crbug.com/1444692): `user_data` is duplicated in
-      # `UpdateManifestFetcher::DownloadUpdateManifest`, but the traffic
-      # annotator script complains that it is missing if it is not also
-      # present here.
-      user_data {
-        type: NONE
-      }
-      last_reviewed: "2023-07-04"
     }
     policy {
       setting: "This feature cannot be disabled in settings."
@@ -260,19 +247,6 @@ void IsolatedWebAppUpdateDiscoveryTask::OnGetDownloadPath(
         "Isolated Web Apps after startup and in regular time intervals. If an "
         "update is found, then the corresponding Signed Web Bundle is "
         "downloaded."
-      internal {
-        contacts {
-          email: "cmfcmf@google.com"
-        }
-      }
-      # TODO(crbug.com/1444692): `user_data` is duplicated in
-      # `IsolatedWebAppDownloader::DownloadSignedWebBundle`, but the traffic
-      # annotator script complains that it is missing if it is not also
-      # present here.
-      user_data {
-        type: NONE
-      }
-      last_reviewed: "2023-07-04"
     }
     policy {
       setting: "This feature cannot be disabled in settings."

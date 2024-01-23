@@ -356,3 +356,5 @@ missing_new_fields,chrome/browser/ash/net/network_diagnostics/network_diagnostic
 missing_new_fields,chrome/browser/ash/net/network_diagnostics/tls_prober.cc
 missing_new_fields,chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_impl.cc
 missing_new_fields,chrome/browser/ash/file_suggest/item_suggest_cache.cc
+missing_new_fields,extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.cc
+missing_new_fields,chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.cc
