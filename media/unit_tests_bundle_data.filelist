@@ -256,7 +256,6 @@
 //media/test/data/bear.h264
 //media/test/data/bear.hevc
 //media/test/data/bear.m2ts
-//media/test/data/bear.m3u8
 //media/test/data/bear.mjpeg
 //media/test/data/bear.mp4
 //media/test/data/bear.mpeg
@@ -264,7 +263,6 @@
 //media/test/data/bear.rm
 //media/test/data/bear.swf
 //media/test/data/bear.webm
-//media/test/data/bear0.ts
 //media/test/data/bear_180p.vvc
 //media/test/data/bear_192kHz.wav
 //media/test/data/bear_192x320_270.nv12.yuv
@@ -382,11 +380,17 @@
 //media/test/data/h264-320x180-frame-2
 //media/test/data/h264-320x180-frame-3
 //media/test/data/hls/README
+//media/test/data/hls/bear0.mp4
+//media/test/data/hls/bear0.ts
+//media/test/data/hls/init_0.mp4
+//media/test/data/hls/mp_mp4_avc1.m3u8
+//media/test/data/hls/mp_ts_avc1.m3u8
 //media/test/data/hls/multi-bitrate-multivariant-bear/out_0.m3u8
 //media/test/data/hls/multi-bitrate-multivariant-bear/out_00.ts
 //media/test/data/hls/multi-bitrate-multivariant-bear/out_1.m3u8
 //media/test/data/hls/multi-bitrate-multivariant-bear/out_10.ts
 //media/test/data/hls/multi-bitrate-multivariant-bear/playlist.m3u8
+//media/test/data/hls/video.html
 //media/test/data/icy_sfx.mp3
 //media/test/data/id3_png_test.mp3
 //media/test/data/id3_test.mp3

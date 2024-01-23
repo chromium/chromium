@@ -3030,9 +3030,9 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackHi10P) {
 }
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-TEST_F(PipelineIntegrationTest, BasicHlsManifestPlayback) {
+TEST_F(PipelineIntegrationTest, HLSMediaPlaylistTSavc1) {
   base::test::ScopedFeatureList enable_hls{kBuiltInHlsPlayer};
-  ASSERT_EQ(PIPELINE_OK, StartPipelineWithHlsManifest("bear.m3u8"));
+  ASSERT_EQ(PIPELINE_OK, StartPipelineWithHlsManifest("hls/mp_ts_avc1.m3u8"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
   EXPECT_EQ("6bc0ecac3fea91d9591cb3197d28b196", GetVideoHash());

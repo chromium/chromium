@@ -1665,3 +1665,6 @@ avc-bitstream-format-1.h264: Non-IDR
   ffmpeg -i %1 -f image2 -vcodec copy -bsf h264_mp4toannexb "%d.h264"
 - manually convert one of created Non-IDR annexb file to avc bitstream.
   (replace annexb start code with length)
+
+### hls/ directory
+This directory contains all the HLS files needed to run pipeline integration tests against the HLS demuxer. The readme file in this directory contains specific steps to regenerate media and manifest files.
