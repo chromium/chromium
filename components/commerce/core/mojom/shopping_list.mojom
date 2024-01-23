@@ -39,7 +39,7 @@ struct ProductInfo {
   string previous_price;
 
   // The product cluster id.
-  int64 cluster_id;
+  uint64 cluster_id;
 };
 
 struct BookmarkProductInfo {
@@ -60,7 +60,7 @@ struct PriceInsightsInfo {
   enum PriceBucket { kUnknown, kLow, kTypical, kHigh };
 
   // The product cluster id.
-  int64 cluster_id;
+  uint64 cluster_id;
 
   // Typical low price.
   string typical_low_price;

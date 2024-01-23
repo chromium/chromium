@@ -37,7 +37,7 @@ interface CommerceInternalsHandlerFactory {
 };
 
 struct Subscription {
-  int64 cluster_id;
+  uint64 cluster_id;
   array<shopping_list.mojom.BookmarkProductInfo> product_infos;
 };
 
