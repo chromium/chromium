@@ -4963,6 +4963,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GRID_UNDO_CLOSE_ALL_BUTTON" desc="Title of the button in the tab grid UI that revert the close all action recently taken by the user. [iOS only]">
         Undo
       </message>
+      <message name="IDS_IOS_TAB_GROUP_CREATION_BUTTON" desc="Label of the button to create a tab group. [iOS only]">
+          Create group
+      </message>
       <message name="IDS_IOS_TAB_GROUP_CREATION_DATE" desc="Subtitle shown in tab group view to diplay the creation date of the group. [iOS only]">
           Created <ph name="Date"><ex>2023/12/31</ex>$1</ph>
       </message>

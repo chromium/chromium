@@ -18,6 +18,7 @@ source_set("tab_groups") {
     ":tab_group_mutator",
     ":tab_groups_ui",
     "//base",
+    "//components/tab_groups",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -47,6 +48,7 @@ source_set("tab_groups_ui") {
     "//base",
     "//base:i18n",
     "//components/strings",
+    "//components/tab_groups",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -71,7 +73,11 @@ source_set("tab_groups_constant") {
 }
 
 source_set("tab_group_mutator") {
-  sources = [ "tab_group_mutator.h" ]
+  sources = [
+    "tab_group_creation_mutator.h",
+    "tab_group_mutator.h",
+  ]
+  deps = [ "//components/tab_groups" ]
 }
 
 source_set("unit_tests") {

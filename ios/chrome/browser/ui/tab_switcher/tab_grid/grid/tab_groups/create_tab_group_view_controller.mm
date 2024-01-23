@@ -6,7 +6,9 @@
 
 #import "base/check.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -25,6 +27,7 @@ constexpr CGFloat kDotTitleSeparationMargin = 12;
 constexpr CGFloat kTitleBackgroundCornerRadius = 17;
 constexpr CGFloat kButtonsHeight = 50;
 constexpr CGFloat kButtonsMargin = 8;
+constexpr CGFloat kButtonBackgroundCornerRadius = 15;
 }
 
 @implementation CreateTabGroupViewController {
@@ -32,16 +35,21 @@ constexpr CGFloat kButtonsMargin = 8;
   UITextField* _tabGroupTextField;
   // Handler to handle user's actions.
   __weak id<TabGroupsCommands> _tabGroupsHandler;
+  // Mutator to handle model changes.
+  __weak id<TabGroupCreationMutator> _mutator;
 }
 
-- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler {
+- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
+                        mutator:(id<TabGroupCreationMutator>)mutator {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
   self = [super init];
   if (self) {
     CHECK(handler);
+    CHECK(mutator);
     _tabGroupsHandler = handler;
+    _mutator = mutator;
   }
   return self;
 }
@@ -66,8 +74,10 @@ constexpr CGFloat kButtonsMargin = 8;
   }
 
   UIView* dotAndFieldContainer = [self configuredDotAndFieldContainer];
+  UIButton* creationButton = [self configuredCreateGroupButton];
   UIButton* cancelButton = [self configuredCancelButton];
   [self.view addSubview:dotAndFieldContainer];
+  [self.view addSubview:creationButton];
   [self.view addSubview:cancelButton];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -89,6 +99,16 @@ constexpr CGFloat kButtonsMargin = 8;
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
                        constant:kHorizontalMargin],
     [cancelButton.trailingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
+                       constant:-kHorizontalMargin],
+    [creationButton.bottomAnchor
+        constraintEqualToAnchor:cancelButton.topAnchor],
+    [creationButton.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+    [creationButton.leadingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
+                       constant:kHorizontalMargin],
+    [creationButton.trailingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
                        constant:-kHorizontalMargin],
   ]];
@@ -211,8 +231,60 @@ constexpr CGFloat kButtonsMargin = 8;
   return cancelButton;
 }
 
+// Returns the cancel button.
+- (UIButton*)configuredCreateGroupButton {
+  UIButton* creationButton = [[UIButton alloc] init];
+  creationButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration filledButtonConfiguration];
+  buttonConfiguration.titleAlignment =
+      UIButtonConfigurationTitleAlignmentCenter;
+  buttonConfiguration.baseBackgroundColor = [UIColor colorNamed:kBlue600Color];
+  buttonConfiguration.background.cornerRadius = kButtonBackgroundCornerRadius;
+  NSDictionary* attributes = @{
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleBody],
+    NSForegroundColorAttributeName : [UIColor colorNamed:kSolidWhiteColor]
+  };
+  NSMutableAttributedString* attributedString =
+      [[NSMutableAttributedString alloc]
+          initWithString:l10n_util::GetNSString(
+                             IDS_IOS_TAB_GROUP_CREATION_BUTTON)
+              attributes:attributes];
+  buttonConfiguration.attributedTitle = attributedString;
+
+  creationButton.configuration = buttonConfiguration;
+
+  [creationButton addTarget:self
+                     action:@selector(creationButtonTapped)
+           forControlEvents:UIControlEventTouchUpInside];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [creationButton.heightAnchor constraintEqualToConstant:kButtonsHeight],
+  ]];
+
+  return creationButton;
+}
+
 // Hides the current view without doing anything else.
 - (void)cancelButtonTapped {
+  [self dismissViewController];
+}
+
+// Creates the group and dismiss the view.
+- (void)creationButtonTapped {
+  // TODO(crbug.com/1501837): Get the color of the selected dot.
+  __weak CreateTabGroupViewController* weakSelf = self;
+  [_mutator createNewGroupWithTitle:_tabGroupTextField.text
+                              color:tab_groups::TabGroupColorId::kYellow
+                         completion:^{
+                           [weakSelf dismissViewController];
+                         }];
+}
+
+// Dismisses the current view.
+- (void)dismissViewController {
   [_tabGroupsHandler hideTabGroupCreation];
 }
 
