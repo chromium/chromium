@@ -142,6 +142,9 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       # TODO(crbug.com/1511758): Migrate to TypeScript.
       'chrome/browser/resources/device_log',
       'chrome/test/data/webui',
+      # TODO(crbug.com/1337318): Migrate bluetooth-internals to TypeScript and
+      # remove exception.
+      'chrome/test/data/webui/bluetooth_internals',
       'chrome/test/data/webui/chromeos',
       'chrome/test/data/webui/chromeos/ash_common',
       'chrome/test/data/webui/cr_components/chromeos',
