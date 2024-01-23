@@ -1082,7 +1082,7 @@ TEST_F(PersonalDataManagerTest, GetIbans) {
   personal_data_->SetSyncingForTest(true);
 
   Iban local_iban1;
-  local_iban1.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  local_iban1.set_value(std::u16string(test::kIbanValue16));
   Iban local_iban2;
   local_iban2.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
   Iban server_iban1 = test::GetServerIban();
@@ -1135,7 +1135,7 @@ TEST_F(PersonalDataManagerTest, NoIbansAddedIfDisabled) {
   prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
 
   Iban iban;
-  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  iban.set_value(std::u16string(test::kIbanValue16));
   Iban iban1;
   iban1.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
 
@@ -1149,7 +1149,7 @@ TEST_F(PersonalDataManagerTest, AddingIbanUpdatesPref) {
   // The pref should always start disabled.
   ASSERT_FALSE(personal_data_->IsAutofillHasSeenIbanPrefEnabled());
   Iban iban;
-  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  iban.set_value(std::u16string(test::kIbanValue16));
 
   personal_data_->AddAsLocalIban(iban);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
@@ -1159,7 +1159,7 @@ TEST_F(PersonalDataManagerTest, AddingIbanUpdatesPref) {
 
 TEST_F(PersonalDataManagerTest, AddLocalIbans) {
   Iban iban1;
-  iban1.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  iban1.set_value(std::u16string(test::kIbanValue16));
   iban1.set_nickname(u"Nickname for Iban");
 
   Iban iban2;
@@ -1186,7 +1186,7 @@ TEST_F(PersonalDataManagerTest, AddLocalIbans) {
 
 TEST_F(PersonalDataManagerTest, UpdateLocalIbans) {
   Iban iban;
-  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  iban.set_value(std::u16string(test::kIbanValue16));
   iban.set_nickname(u"Nickname for Iban");
   AddLocalIban(iban);
 
@@ -1213,7 +1213,7 @@ TEST_F(PersonalDataManagerTest, UpdateLocalIbans) {
 
 TEST_F(PersonalDataManagerTest, RemoveLocalIbans) {
   Iban iban;
-  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  iban.set_value(std::u16string(test::kIbanValue16));
   iban.set_nickname(u"Nickname for Iban");
   AddLocalIban(iban);
 
@@ -1233,7 +1233,7 @@ TEST_F(PersonalDataManagerTest, RemoveLocalIbans) {
 TEST_F(PersonalDataManagerTest, OnAcceptedLocalIbanSave) {
   // Start with a new IBAN.
   Iban iban0;
-  iban0.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  iban0.set_value(std::u16string(test::kIbanValue16));
   // Add the IBAN to the database.
   std::string guid = personal_data_->OnAcceptedLocalIbanSave(iban0);
   iban0.set_identifier(Iban::Guid(guid));

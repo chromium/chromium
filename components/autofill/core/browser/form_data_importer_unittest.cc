@@ -3091,7 +3091,7 @@ TEST_F(FormDataImporterTest,
 
 TEST_F(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
   Iban iban;
-  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  iban.set_value(std::u16string(test::kIbanValue16));
   const std::string guid = personal_data_manager_->AddAsLocalIban(iban);
   // Should set identifier and record_type manually here as `iban` has been
   // passed by value above in `AddAsLocalIban`, and `AddAsLocalIban` method sets
@@ -3978,7 +3978,7 @@ TEST_F(FormDataImporterTest,
 TEST_F(FormDataImporterTest,
        ExtractFormData_ProcessIbanImportCandidate_LocalIban) {
   Iban iban;
-  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  iban.set_value(std::u16string(test::kIbanValue16));
   personal_data_manager_->AddAsLocalIban(iban);
 
   // Simulate a form submission with the same IBAN. The IBAN should not be
