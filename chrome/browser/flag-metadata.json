@@ -3707,7 +3707,7 @@
   {
     "name": "enable-tls13-kyber",
     "owners": [ "agl@chromium.org", "davidben@chromium.org" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 130
   },
   {
     "name": "enable-touch-drag-drop",
