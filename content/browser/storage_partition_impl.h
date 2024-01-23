@@ -60,6 +60,12 @@ namespace net {
 class IsolationInfo;
 }  // namespace net
 
+namespace network {
+namespace mojom {
+class SharedDictionaryAccessObserver;
+}  // namespace mojom
+}  // namespace network
+
 namespace storage {
 class SharedStorageManager;
 }
@@ -97,7 +103,6 @@ class PrivateAggregationManager;
 class PrivateAggregationManagerImpl;
 class PushMessagingContext;
 class QuotaContext;
-class SharedDictionaryAccessObserver;
 class SharedStorageHeaderObserver;
 class SharedStorageWorkletHostManager;
 class SharedWorkerServiceImpl;

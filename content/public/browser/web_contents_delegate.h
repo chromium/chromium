@@ -56,7 +56,9 @@ class WindowFeatures;
 }  // namespace blink
 
 namespace content {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
 class ColorChooser;
+#endif
 class EyeDropperListener;
 class FileSelectListener;
 class JavaScriptDialogManager;

@@ -90,9 +90,9 @@
 
 namespace content {
 
-namespace {
-
 class BrowserContext;
+
+namespace {
 
 constexpr char kInterestGroupName[] = "interest-group-name";
 constexpr char kOriginStringA[] = "https://a.test";

@@ -25,8 +25,10 @@ class Origin;
 
 namespace auction_worklet {
 
+namespace mojom {
 class BidderWorklet;
 class SellerWorklet;
+}  // namespace mojom
 
 // mojom::AuctionWorkletService implementation. This is intended to run in a
 // sandboxed utility process.

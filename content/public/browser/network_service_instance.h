@@ -28,7 +28,6 @@ class NetworkChangeNotifier;
 }  // namespace net
 
 namespace network {
-class NetworkService;
 namespace mojom {
 class NetworkService;
 }

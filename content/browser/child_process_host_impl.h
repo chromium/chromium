@@ -30,7 +30,9 @@
 
 namespace IPC {
 class Channel;
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 class MessageFilter;
+#endif
 }  // namespace IPC
 
 namespace content {

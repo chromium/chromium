@@ -49,7 +49,9 @@ struct WebPreferences;
 }  // namespace blink
 
 namespace display {
+#if BUILDFLAG(IS_ANDROID)
 class Screen;
+#endif
 class ScopedNativeScreen;
 }  // namespace display
 

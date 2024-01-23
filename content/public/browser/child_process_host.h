@@ -28,7 +28,9 @@
 #endif
 
 namespace base {
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
 class File;
+#endif
 class FilePath;
 }  // namespace base
 

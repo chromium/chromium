@@ -21,13 +21,15 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_running_status_callback.mojom.h"
 
-namespace content {
-
-class ServiceWorkerRouterEvaluator;
-
+namespace blink {
 namespace mojom {
 class ServiceWorkerContainerHost;
 }  // namespace mojom
+}  // namespace blink
+
+namespace content {
+
+class ServiceWorkerRouterEvaluator;
 
 // Vends a connection to the controller service worker for a given
 // ServiceWorkerContainerHost. This is co-owned by

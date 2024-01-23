@@ -60,12 +60,11 @@ namespace aura_extra {
 class WindowPositionInRootMonitor;
 }
 
-namespace wm {
-class ScopedTooltipDisabler;
-}
+namespace display {
+class Display;
+}  // namespace display
 
 namespace gfx {
-class Display;
 class Point;
 class Rect;
 }
@@ -74,6 +73,10 @@ namespace ui {
 enum class DomCode : uint32_t;
 class InputMethod;
 class LocatedEvent;
+}
+
+namespace wm {
+class ScopedTooltipDisabler;
 }
 
 namespace content {

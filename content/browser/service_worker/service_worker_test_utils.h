@@ -39,7 +39,6 @@ class EmbeddedWorkerTestHelper;
 class ServiceWorkerContextCore;
 class ServiceWorkerHost;
 class ServiceWorkerRegistry;
-class ServiceWorkerStorage;
 class ServiceWorkerVersion;
 
 base::OnceCallback<void(blink::ServiceWorkerStatusCode)>

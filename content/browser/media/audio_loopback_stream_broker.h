@@ -21,11 +21,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace audio {
+namespace media {
 namespace mojom {
 class AudioStreamFactory;
 }
-}  // namespace audio
+}  // namespace media
 
 namespace content {
 

@@ -117,10 +117,6 @@ FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, Doom);
 
 FORWARD_DECLARE_TEST(ServiceWorkerRegistryTest, ScriptResponseTime);
 
-namespace service_worker_registration_unittest {
-class ServiceWorkerActivationTest;
-}  // namespace service_worker_registration_unittest
-
 namespace service_worker_main_resource_loader_unittest {
 class ServiceWorkerMainResourceLoaderTest;
 }  // namespace service_worker_main_resource_loader_unittest
