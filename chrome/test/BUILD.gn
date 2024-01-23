@@ -8577,6 +8577,7 @@ if (!is_fuchsia) {
         "../browser/ui/webui/ash/edu_account_login_handler_unittest.cc",
         "../browser/ui/webui/ash/emoji/emoji_ui_unittest.cc",
         "../browser/ui/webui/ash/emoji/gif_tenor_api_fetcher_unittest.cc",
+        "../browser/ui/webui/ash/emoji/seal_unittest.cc",
         "../browser/ui/webui/ash/enterprise_reporting/history_converter_unittest.cc",
         "../browser/ui/webui/ash/mako/mako_rewrite_view_unittest.cc",
         "../browser/ui/webui/ash/sensor_info/sensor_page_handler_unittest.cc",

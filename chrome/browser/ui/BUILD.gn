@@ -3087,6 +3087,8 @@ static_library("ui") {
       "webui/ash/emoji/gif_tenor_api_fetcher.h",
       "webui/ash/emoji/new_window_proxy.cc",
       "webui/ash/emoji/new_window_proxy.h",
+      "webui/ash/emoji/seal.cc",
+      "webui/ash/emoji/seal.h",
       "webui/ash/emoji/seal_utils.cc",
       "webui/ash/emoji/seal_utils.h",
       "webui/ash/enterprise_reporting/enterprise_reporting_page_handler.cc",
@@ -3918,6 +3920,7 @@ static_library("ui") {
     public_deps += [
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings",
       "//chrome/browser/ui/webui/ash/emoji:mojo_bindings",
+      "//chrome/browser/ui/webui/ash/emoji:seal_mojom",
       "//chromeos/ash/services/multidevice_setup/public/mojom",
     ]
     allow_circular_includes_from += [
