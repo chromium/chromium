@@ -52,7 +52,7 @@ iron-test-helpers/test-helpers.*
 # paper-behaviors
 paper-behaviors/paper-button-behavior.*
 paper-behaviors/paper-checked-element-behavior.*
-
+paper-behaviors/paper-inky-focus-behavior.*
 
 # paper-ripple
 paper-ripple/paper-ripple.d.ts

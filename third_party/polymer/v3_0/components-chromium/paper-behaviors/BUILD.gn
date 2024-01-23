@@ -6,15 +6,6 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 
-js_library("paper-inky-focus-behavior") {
-  deps = [
-    ".:paper-ripple-behavior",
-    "../iron-behaviors:iron-button-state",
-    "../iron-behaviors:iron-control-state",
-    "../polymer:polymer_bundled",
-  ]
-}
-
 js_library("paper-ripple-behavior") {
   deps = [
     "../iron-behaviors:iron-button-state",
