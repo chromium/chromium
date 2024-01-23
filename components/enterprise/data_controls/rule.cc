@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "components/enterprise/data_controls/and_condition.h"
 #include "components/enterprise/data_controls/attributes_condition.h"
+#include "components/enterprise/data_controls/not_condition.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/strings/grit/components_strings.h"
 
@@ -164,6 +165,28 @@ const std::string& Rule::description() const {
 // static
 std::unique_ptr<const Condition> Rule::GetCondition(
     const base::Value::Dict& value) {
+  // `value` can hold different condition-related keys, namely:
+  // - The "not" key with a sub-dict that is parsed recursively.
+  // - The "and" or "not" keys with sub-arrays of conditions parsed recursively.
+  // - The "sources" and/or "destinations" keys with corresponding sub-dicts.
+  // These 3 cases are mutually exclusive and should preemptively be filtered
+  // by policy validations of the DataControlsRules policy, and as such the
+  // precedence in which these keys are parsed here should not matter.
+  // - TODO(b/302340176): Add "and" and "or" support
+
+  if (const base::Value::Dict* condition = value.FindDict(kKeyNot)) {
+    return NotCondition::Create(GetCondition(*condition));
+  }
+
+  // Reaching this statement implies `value` contains no boolean-logic keys
+  // ("not", "and", "or") and that it should simply be evaluated based on
+  // attributes keys ("sources", "destinations").
+  return GetSourcesAndDestinationsCondition(value);
+}
+
+// static
+std::unique_ptr<const Condition> Rule::GetSourcesAndDestinationsCondition(
+    const base::Value::Dict& value) {
   // This function will add a `Condition` for each of the following keys found
   // in `value`:
   // - "sources"
@@ -188,11 +211,6 @@ std::unique_ptr<const Condition> Rule::GetCondition(
     if (destinations_condition) {
       conditions.push_back(std::move(destinations_condition));
     }
-  }
-
-  if (conditions.empty()) {
-    // No conditions implies the rule is not valid and shouldn't be evaluated.
-    return nullptr;
   }
 
   return AndCondition::Create(std::move(conditions));

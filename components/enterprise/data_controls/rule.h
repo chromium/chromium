@@ -125,8 +125,14 @@ class Rule {
        base::flat_map<Restriction, Level> restrictions);
 
   // Helper to parse sub-fields controlling conditions and combine them into a
-  // single `Condition` object.
+  // single `Condition` object. This is called on the "root" level of the
+  // condition and recursively as needed.
   static std::unique_ptr<const Condition> GetCondition(
+      const base::Value::Dict& value);
+
+  // Helper to parse sub-fields controlling conditions under "sources" and/or
+  // "destinations" and combine them into a single `Condition` object.
+  static std::unique_ptr<const Condition> GetSourcesAndDestinationsCondition(
       const base::Value::Dict& value);
 
   // Helper to parse the following JSON schema:

@@ -26,6 +26,8 @@ source_set("data_controls") {
     "dlp_histogram_helper.cc",
     "dlp_histogram_helper.h",
     "dlp_rules_manager_base.h",
+    "not_condition.cc",
+    "not_condition.h",
     "prefs.cc",
     "prefs.h",
     "rule.cc",
@@ -60,6 +62,7 @@ source_set("unit_tests") {
   sources = [
     "and_condition_unittest.cc",
     "attributes_condition_unittest.cc",
+    "not_condition_unittest.cc",
     "rule_unittest.cc",
     "verdict_unittest.cc",
   ]
