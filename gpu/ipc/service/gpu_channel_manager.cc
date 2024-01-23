@@ -464,7 +464,9 @@ gles2::ProgramCache* GpuChannelManager::program_cache() {
 }
 
 void GpuChannelManager::RemoveChannel(int client_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // Using sequence enforcement to avoid further wrong-thread accesses
+  // in production.
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   auto it = gpu_channels_.find(client_id);
   if (it == gpu_channels_.end())
