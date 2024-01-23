@@ -113,13 +113,10 @@ class BookmarkMediatorUnitTest
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
   }
 
-  // Returns `IDS_IOS_BOOKMARK_PAGE_SAVED` string with `count` value.
+  // Returns `IDS_IOS_BOOKMARKS_BULK_SAVED` string with `count` value.
   NSString* GetSavedToDeviceText(int count) {
-    std::u16string pattern =
-        l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED);
-    std::u16string message = base::i18n::MessageFormatter::FormatWithNamedArgs(
-        pattern, "count", count);
-    return base::SysUTF16ToNSString(message);
+    return base::SysUTF16ToNSString(
+        l10n_util::GetPluralStringFUTF16(IDS_IOS_BOOKMARKS_BULK_SAVED, count));
   }
 
   // Returns `IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER` string with `count` and

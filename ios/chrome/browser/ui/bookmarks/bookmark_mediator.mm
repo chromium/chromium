@@ -312,7 +312,7 @@ using bookmarks::BookmarkNode;
             pattern, "count", count, "title", title));
   } else {
     return base::SysUTF16ToNSString(
-        l10n_util::GetPluralStringFUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED, count));
+        l10n_util::GetPluralStringFUTF16(IDS_IOS_BOOKMARKS_BULK_SAVED, count));
   }
 }
 
@@ -331,9 +331,8 @@ using bookmarks::BookmarkNode;
         l10n_util::GetStringUTF16(IDS_IOS_BOOKMARKS_BULK_SAVED_ACCOUNT),
         "count", count, "email", base::SysNSStringToUTF16(identity.userEmail));
   } else {
-    result = base::i18n::MessageFormatter::FormatWithNamedArgs(
-        l10n_util::GetStringUTF16(IDS_IOS_BOOKMARKS_BULK_SAVED), "count",
-        count);
+    result =
+        l10n_util::GetPluralStringFUTF16(IDS_IOS_BOOKMARKS_BULK_SAVED, count);
   }
 
   return base::SysUTF16ToNSString(result);
