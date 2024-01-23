@@ -14,6 +14,7 @@
 #include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/shared_memory_tracker.h"
+#include "base/notimplemented.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

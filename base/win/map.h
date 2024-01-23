@@ -13,7 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/win/vector.h"
 #include "base/win/winrt_foundation_helpers.h"
 

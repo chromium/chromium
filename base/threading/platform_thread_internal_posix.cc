@@ -11,6 +11,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 
 namespace base {

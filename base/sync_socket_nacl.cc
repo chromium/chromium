@@ -12,7 +12,7 @@
 #include <unistd.h>
 
 #include "base/containers/span.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 namespace base {
 

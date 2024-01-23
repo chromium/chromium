@@ -4,7 +4,7 @@
 
 #include "base/process/process.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/process/internal_linux.h"
 
 namespace base {

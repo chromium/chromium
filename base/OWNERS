@@ -41,6 +41,8 @@ per-file dcheck*=olivierli@chromium.org
 per-file dcheck*=pbos@chromium.org
 per-file logging*=olivierli@chromium.org
 per-file logging*=pbos@chromium.org
+per-file notimplemented.h=olivierli@chromium.org
+per-file notimplemented.h=pbos@chromium.org
 per-file notreached.h=olivierli@chromium.org
 per-file notreached.h=pbos@chromium.org
 

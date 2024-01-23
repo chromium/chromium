@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/threading/scoped_blocking_call.h"
