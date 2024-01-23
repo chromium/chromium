@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-oreo-x86-rel",
-              "project": "chromium"
+              "project": "chromium-m122"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -40,7 +40,7 @@
         {
           "bucket": "ci",
           "builder": "android-oreo-x86-rel",
-          "project": "chromium"
+          "project": "chromium-m122"
         }
       ]
     }

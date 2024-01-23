@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "mac-official",
-              "project": "chromium"
+              "project": "chromium-m122"
             },
             "builder_spec": {
               "builder_group": "chromium",
@@ -37,7 +37,7 @@
         {
           "bucket": "ci",
           "builder": "mac-official",
-          "project": "chromium"
+          "project": "chromium-m122"
         }
       ],
       "targets_spec_directory": "src/infra/config/generated/builders/try/mac-official/targets"

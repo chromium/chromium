@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux Builder",
-              "project": "chromium"
+              "project": "chromium-m122"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
@@ -33,7 +33,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux Tests",
-              "project": "chromium"
+              "project": "chromium-m122"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
@@ -57,7 +57,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Linux Builder",
-                "project": "chromium"
+                "project": "chromium-m122"
               }
             }
           }
@@ -67,24 +67,12 @@
         {
           "bucket": "ci",
           "builder": "Linux Tests",
-          "project": "chromium"
+          "project": "chromium-m122"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "linux-dcheck-off-rel",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux-mbi-mode-per-render-process-host-rel",
-          "group": "tryserver.chromium.linux"
-        },
-        {
           "builder": "linux-rel",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux_chromium_compile_rel_ng",
           "group": "tryserver.chromium.linux"
         }
       ]
@@ -100,6 +88,6 @@
   "builder_group": "chromium.linux",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

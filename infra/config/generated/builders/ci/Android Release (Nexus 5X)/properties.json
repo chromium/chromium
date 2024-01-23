@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android Release (Nexus 5X)",
-              "project": "chromium"
+              "project": "chromium-m122"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-gpu-archive",
@@ -43,16 +43,12 @@
         {
           "bucket": "ci",
           "builder": "Android Release (Nexus 5X)",
-          "project": "chromium"
+          "project": "chromium-m122"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
           "builder": "android-arm64-rel",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "gpu-try-android-m-nexus-5x-64",
           "group": "tryserver.chromium.android"
         }
       ]
@@ -74,6 +70,6 @@
   "builder_group": "chromium.gpu",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium.gpu"
+    "chrome_browser_release"
   ]
 }

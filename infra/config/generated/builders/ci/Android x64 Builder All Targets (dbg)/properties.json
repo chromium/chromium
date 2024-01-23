@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android x64 Builder All Targets (dbg)",
-              "project": "chromium"
+              "project": "chromium-m122"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -39,7 +39,7 @@
         {
           "bucket": "ci",
           "builder": "Android x64 Builder All Targets (dbg)",
-          "project": "chromium"
+          "project": "chromium-m122"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -66,6 +66,6 @@
   "builder_group": "chromium.android",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "android"
+    "chrome_browser_release"
   ]
 }

@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Mac arm64 DEPS Release (Apple M2)",
-              "project": "chromium"
+              "project": "chromium-m122"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-dawn-archive",
@@ -38,16 +38,12 @@
         {
           "bucket": "ci",
           "builder": "Dawn Mac arm64 DEPS Release (Apple M2)",
-          "project": "chromium"
+          "project": "chromium-m122"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
           "builder": "dawn-mac-arm64-deps-rel",
-          "group": "tryserver.chromium.dawn"
-        },
-        {
-          "builder": "dawn-try-mac-arm64-deps-rel",
           "group": "tryserver.chromium.dawn"
         }
       ]
@@ -69,6 +65,6 @@
   "builder_group": "chromium.dawn",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "dawn"
+    "chrome_browser_release"
   ]
 }

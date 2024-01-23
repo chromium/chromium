@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "lacros-amd64-generic-rel",
-              "project": "chromium"
+              "project": "chromium-m122"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-chromiumos-archive",
@@ -49,7 +49,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "lacros-amd64-generic-rel-gtest",
-              "project": "chromium"
+              "project": "chromium-m122"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-chromiumos-archive",
@@ -78,7 +78,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "lacros-amd64-generic-rel",
-                "project": "chromium"
+                "project": "chromium-m122"
               },
               "skylab_upload_location": {
                 "gs_bucket": "chromium-ci-skylab"
@@ -91,14 +91,14 @@
         {
           "bucket": "ci",
           "builder": "lacros-amd64-generic-rel",
-          "project": "chromium"
+          "project": "chromium-m122"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "lacros-amd64-generic-rel-gtest",
-          "project": "chromium"
+          "project": "chromium-m122"
         }
       ]
     }
