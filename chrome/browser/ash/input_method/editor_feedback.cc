@@ -74,12 +74,6 @@ bool SendEditorFeedback(Profile* profile, std::string_view description) {
   feedback_data->set_product_id(kOrcaFeedbackProductId);
   feedback_data->set_include_chrome_platform(false);
   feedback_data->set_description(std::string(description));
-  if (std::optional<std::string> user_email =
-          GetSignedInUserEmailFromProfile(profile);
-      user_email.has_value() &&
-      gaia::IsGoogleInternalAccountEmail(*user_email)) {
-    feedback_data->set_user_email(*user_email);
-  }
   feedback_data->AddLog("CHROME VERSION", GetChromeVersion());
   feedback_data->AddLog("CHROMEOS_RELEASE_VERSION", GetOsVersion());
   RedactThenSendFeedback(feedback_data);
