@@ -62,6 +62,7 @@ from blinkpy.tool.commands.command import (
     check_dir_option,
     check_file_option,
 )
+from blinkpy.tool.grammar import pluralize
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.test_expectations import SystemConfigurationEditor, TestExpectations
 from blinkpy.web_tests.models.typ_types import RESULT_TAGS, ResultType
@@ -341,6 +342,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         super(AbstractParallelRebaselineCommand,
               self).__init__(options=options)
         self.baseline_cache_stats = BaselineCacheStatistics()
+        self._total_commands = self._completed_commands = 0
         self._rebaseline_failures = {}
 
     def _release_builders(self):
@@ -416,13 +418,13 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
 
     def _copy_baselines(self, groups: Dict[str, TestBaselineSet]) -> None:
         commands = []
-        for base_test, group in groups.items():
+        for base_test in sorted(groups):
+            group = groups[base_test]
             for suffix in self._suffixes_for_group(group):
                 if self._test_can_have_suffix(base_test, suffix):
                     commands.append(
                         ('copy_baselines', base_test, suffix, group))
-        with self._message_pool(self._worker_factory) as pool:
-            pool.run(commands)
+        self._run_in_message_pool(self._worker_factory, commands)
 
     def _group_tests_by_base(
         self,
@@ -454,11 +456,12 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
               for test, build, step_name, _ in test_baseline_set))
 
     def _download_baselines(self, groups: Dict[str, TestBaselineSet]):
-        with self._message_pool(self._worker_factory) as pool:
-            # The same worker should download all the baselines in a group so
-            # that its baseline cache is effective.
-            pool.run([('download_baselines', self._group_with_results(group))
-                      for group in groups.values()])
+        # The same worker should download all the baselines in a group so that
+        # its baseline cache is effective.
+        commands = [('download_baselines', base_test,
+                     self._group_with_results(groups[base_test]))
+                    for base_test in sorted(groups)]
+        self._run_in_message_pool(self._worker_factory, commands)
 
     def _group_with_results(
         self,
@@ -532,13 +535,14 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             system_remover.remove_os_versions(test, versions)
         system_remover.update_expectations()
 
-    def _message_pool(self, worker_factory):
+    def _run_in_message_pool(self, worker_factory, commands):
         num_workers = min(self.MAX_WORKERS, self._tool.executive.cpu_count())
-        return message_pool.get(self, worker_factory, num_workers)
+        self._completed_commands, self._total_commands = 0, len(commands)
+        with message_pool.get(self, worker_factory, num_workers) as pool:
+            pool.run(commands)
 
     def _worker_factory(self, worker_connection):
-        return Worker(worker_connection,
-                      dry_run=self._dry_run)
+        return Worker(worker_connection, dry_run=self._dry_run)
 
     def handle(self, name: str, source: str, *args):
         """Handler called when a worker completes a rebaseline task.
@@ -549,9 +553,20 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         if name == 'report_baseline_cache_stats':
             (stats, ) = args
             self.baseline_cache_stats += stats
+        elif name == 'copy_baselines':
+            base_test, suffix = args
+            self._log_command_completion(
+                f'Copied baselines for {base_test!r} ({suffix})')
         elif name == 'download_baselines':
-            (rebaseline_failures, ) = args
+            base_test, rebaseline_failures = args
             self._rebaseline_failures.update(rebaseline_failures)
+            self._log_command_completion(
+                f'Downloaded baselines for {base_test!r}')
+
+    def _log_command_completion(self, message: str):
+        self._completed_commands += 1
+        _log.info(
+            f'{message} ({self._completed_commands}/{self._total_commands})')
 
     def rebaseline(self, options, test_baseline_set):
         """Fetches new baselines and removes related test expectation lines.
@@ -570,10 +585,12 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             )
             return 1
 
-        for test in test_baseline_set.all_tests():
-            _log.info('Rebaselining %s', test)
-
         rebaselinable_set = self._filter_baseline_set(test_baseline_set)
+        test_count = len(rebaselinable_set.all_tests())
+        if test_count == 0:
+            return 0
+
+        _log.info('Rebaselining %s.', pluralize('test', test_count))
         groups = self._group_tests_by_base(rebaselinable_set)
         self._copy_baselines(groups)
         self._download_baselines(groups)
@@ -592,7 +609,10 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 exit_code = exit_code or self._tool.main(optimize_command)
 
         if not self._dry_run:
-            self._tool.git().add_list(self.unstaged_baselines())
+            unstaged_baselines = self.unstaged_baselines()
+            _log.info('Staging %s with git.',
+                      pluralize('baseline', len(unstaged_baselines)))
+            self._tool.git().add_list(unstaged_baselines)
         return exit_code
 
     def _warn_about_rebaseline_failures(self):
@@ -982,7 +1002,7 @@ class Worker:
         response = self._commands[name](*args)
         # Post a message to the managing process to flush this worker's logs.
         if response is not None:
-            self._connection.post(name, response)
+            self._connection.post(name, *response)
         else:
             self._connection.post(name)
 
@@ -998,8 +1018,9 @@ class Worker:
                            or '<all-pass>', dest)
         else:
             self._copier.write_copies(copies)
+        return test_name, suffix
 
-    def _download_baselines(self,
+    def _download_baselines(self, base_test: str,
                             group: RebaselineGroup) -> RebaselineFailures:
         self._baseline_loader.clear()
         rebaseline_failures = {}
@@ -1012,7 +1033,7 @@ class Worker:
                                          contents)
                 except RebaselineFailure as error:
                     rebaseline_failures[task] = error.reason
-        return rebaseline_failures
+        return base_test, rebaseline_failures
 
     def _write_baseline(self, task: RebaselineTask, suffix: BaselineSuffix,
                         source: str, contents: bytes):

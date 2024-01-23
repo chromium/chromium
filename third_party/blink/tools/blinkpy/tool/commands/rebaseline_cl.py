@@ -410,12 +410,12 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 missing_ports -= {port for _, port in build_port_pairs}
                 if not missing_ports:
                     continue
-                _log.info('For %s:', test)
+                _log.debug('For %s:', test)
                 for port in sorted(missing_ports):
                     build = self._choose_fill_in_build(optimizer, port,
                                                        build_port_pairs)
-                    _log.info('  Using "%s" build %d for %s.',
-                              build.builder_name, build.build_number, port)
+                    _log.debug('  Using "%s" build %d for %s.',
+                               build.builder_name, build.build_number, port)
                     test_baseline_set.add(test,
                                           build,
                                           step_name,
