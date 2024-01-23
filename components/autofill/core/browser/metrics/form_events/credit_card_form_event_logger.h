@@ -80,6 +80,16 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
       bool off_the_record) override;
 
+  // Logs the original "Masked server card suggestion selected" form event
+  // metrics. These metrics were replaced in M123 due to crbug/1513307, but this
+  // call exists in order to compare the new and old metrics, providing
+  // information on the fix's impact. Once this information is gathered, this
+  // call and its associated logging can be removed.
+  void LogDeprecatedCreditCardSelectedMetric(
+      const CreditCard& credit_card,
+      const FormStructure& form,
+      AutofillMetrics::PaymentsSigninState signin_state_for_metrics);
+
   void OnDidSelectCardSuggestion(
       const CreditCard& credit_card,
       const FormStructure& form,
@@ -160,6 +170,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   UnmaskAuthFlowType current_authentication_flow_;
   bool has_logged_suggestion_with_metadata_shown_ = false;
   bool has_logged_suggestion_with_metadata_selected_ = false;
+  bool has_logged_legacy_masked_server_card_suggestion_selected_ = false;
   bool has_logged_masked_server_card_suggestion_selected_ = false;
   bool has_logged_virtual_card_suggestion_selected_ = false;
   bool has_logged_suggestion_for_virtual_card_standalone_cvc_shown_ = false;

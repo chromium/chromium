@@ -1206,10 +1206,14 @@ Called by update_autofill_enums.py.-->
   <int value="11" label="Submitted with server suggestion filled (once)"/>
   <int value="12"
       label="Submitted with masked server card suggestion filled (once)"/>
-  <int value="13" label="Masked server card suggestion selected">
+  <int value="13"
+      label="(DEPRECATED, USE NEW VERSION) Masked server card suggestion
+             selected">
     The user selected a masked server card that triggered an unmask attempt.
   </int>
-  <int value="14" label="Masked server card suggestion selected (once)">
+  <int value="14"
+      label="(DEPRECATED, USE NEW VERSION) Masked server card suggestion
+             selected (once)">
     The user selected a masked server card that triggered an unmask attempt at
     least once.
   </int>
@@ -1342,6 +1346,8 @@ Called by update_autofill_enums.py.-->
   <int value="86"
       label="Form submitted after any suggestion for card with CVC was filled
              (once)"/>
+  <int value="87" label="Masked server card suggestion selected"/>
+  <int value="88" label="Masked server card suggestion selected (once)"/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">

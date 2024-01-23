@@ -1371,25 +1371,28 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
 
   credit_card_ = credit_card;
   bool is_preview = action_persistence != mojom::ActionPersistence::kFill;
-  bool should_fetch_card =
-      !is_preview && ShouldFetchCreditCard(form, field, *form_structure,
-                                           *autofill_field, credit_card_);
 
-  if (should_fetch_card) {
+  if (!is_preview) {
     credit_card_form_event_logger_->OnDidSelectCardSuggestion(
         credit_card_, *form_structure, signin_state_for_metrics_);
+    if (ShouldFetchCreditCard(form, field, *form_structure, *autofill_field,
+                              credit_card_)) {
+      credit_card_form_event_logger_->LogDeprecatedCreditCardSelectedMetric(
+          credit_card_, *form_structure, signin_state_for_metrics_);
 
-    credit_card_form_ = form;
-    credit_card_field_ = field;
+      credit_card_form_ = form;
+      credit_card_field_ = field;
 
-    // CreditCardAccessManager::FetchCreditCard() will trigger
-    // OnCreditCardFetched() in this class after successfully fetching the card.
-    fetched_credit_card_trigger_source_ = trigger_details.trigger_source;
-    credit_card_access_manager_->FetchCreditCard(
-        &credit_card_,
-        base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
+      // CreditCardAccessManager::FetchCreditCard() will trigger
+      // OnCreditCardFetched() in this class after successfully fetching the
+      // card.
+      fetched_credit_card_trigger_source_ = trigger_details.trigger_source;
+      credit_card_access_manager_->FetchCreditCard(
+          &credit_card_,
+          base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
   }
 
   FillOrPreviewDataModelForm(action_persistence, form, field, &credit_card_,

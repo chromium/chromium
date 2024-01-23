@@ -42,10 +42,12 @@ enum FormEvent {
   FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE = 10,
   FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE = 11,
   FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE = 12,
+  // DEPRECATED IN M123, DO NOT USE. Use value 87 instead!
   // A masked server card suggestion was selected to fill the form.
-  FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED = 13,
+  DEPRECATED_FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED = 13,
+  // DEPRECATED IN M123, DO NOT USE. Use value 88 instead!
   // Same as above but only triggered once per page load.
-  FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE = 14,
+  DEPRECATED_FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE = 14,
   // An autofillable form is about to be submitted. If the submission is not
   // interrupted by JavaScript, the "form submitted" events above will also be
   // logged. Depending on the user filling a local, server, masked server card,
@@ -226,6 +228,12 @@ enum FormEvent {
   // Metric logged when form was submitted after a credit card suggestion with
   // cvc info was filled. Logged once per page load.
   FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SUBMITTED_ONCE = 86,
+
+  // A masked server card suggestion was selected to fill the form. Updated in
+  // M123 to include a fix for missing selection events.
+  FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED = 87,
+  // Same as above but only triggered once per page load.
+  FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE = 88,
 
   NUM_FORM_EVENTS,
 };
