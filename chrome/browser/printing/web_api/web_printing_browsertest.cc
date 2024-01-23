@@ -298,6 +298,8 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, FetchAttributes) {
       "separate-documents-uncollated-copies",
       "separate-documents-collated-copies"
     ],
+    "orientationRequestedDefault": "portrait",
+    "orientationRequestedSupported": [ "portrait", "landscape" ],
     "printerResolutionDefault": {
       "crossFeedDirectionResolution": 300,
       "feedDirectionResolution": 400,

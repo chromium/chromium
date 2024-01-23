@@ -23,6 +23,11 @@ enum WebPrintColorMode {
   kMonochrome
 };
 
+enum WebPrintingOrientationRequested {
+  kPortrait,
+  kLandscape,
+};
+
 // Corresponds to the printer-state IPP field.
 // Reports the current state of the printer.
 enum WebPrinterState {
@@ -95,6 +100,9 @@ struct WebPrinterAttributes {
   WebPrintingMultipleDocumentHandling multiple_document_handling_default;
   array<WebPrintingMultipleDocumentHandling> multiple_document_handling_supported;
 
+  WebPrintingOrientationRequested orientation_requested_default;
+  array<WebPrintingOrientationRequested> orientation_requested_supported;
+
   gfx.mojom.Size printer_resolution_default;
   array<gfx.mojom.Size> printer_resolution_supported;
 
@@ -114,6 +122,7 @@ struct WebPrintJobTemplateAttributes {
 
   uint32 copies;
   WebPrintingMultipleDocumentHandling? multiple_document_handling;
+  WebPrintingOrientationRequested? orientation_requested;
   gfx.mojom.Size? printer_resolution;
   WebPrintColorMode? print_color_mode;
   WebPrintingSides? sides;

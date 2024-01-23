@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printer_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_mime_media_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_multiple_document_handling.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_orientation_requested.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_resolution.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_resolution_units.h"
@@ -27,6 +28,11 @@ using MojomSides = blink::mojom::blink::WebPrintingSides;
 using V8MultipleDocumentHandling = blink::V8WebPrintingMultipleDocumentHandling;
 using MojomMultipleDocumentHandling =
     blink::mojom::blink::WebPrintingMultipleDocumentHandling;
+
+// orientation-requested:
+using V8OrientationRequested = blink::V8WebPrintingOrientationRequested;
+using MojomOrientationRequested =
+    blink::mojom::blink::WebPrintingOrientationRequested;
 
 // state:
 using V8JobState = blink::V8WebPrintJobState;
@@ -103,6 +109,32 @@ struct TypeConverter<MojomMultipleDocumentHandling,
       case V8MultipleDocumentHandling::Enum::kSeparateDocumentsUncollatedCopies:
         return MojomMultipleDocumentHandling::
             kSeparateDocumentsUncollatedCopies;
+    }
+  }
+};
+
+template <>
+struct TypeConverter<V8OrientationRequested, MojomOrientationRequested> {
+  static V8OrientationRequested Convert(
+      const MojomOrientationRequested& orientation) {
+    switch (orientation) {
+      case MojomOrientationRequested::kPortrait:
+        return V8OrientationRequested(V8OrientationRequested::Enum::kPortrait);
+      case MojomOrientationRequested::kLandscape:
+        return V8OrientationRequested(V8OrientationRequested::Enum::kLandscape);
+    }
+  }
+};
+
+template <>
+struct TypeConverter<MojomOrientationRequested, V8OrientationRequested> {
+  static MojomOrientationRequested Convert(
+      const V8OrientationRequested& orientation) {
+    switch (orientation.AsEnum()) {
+      case V8OrientationRequested::Enum::kPortrait:
+        return MojomOrientationRequested::kPortrait;
+      case V8OrientationRequested::Enum::kLandscape:
+        return MojomOrientationRequested::kLandscape;
     }
   }
 };
@@ -307,6 +339,17 @@ void ProcessMultipleDocumentHandling(
           new_attributes.multiple_document_handling_supported));
 }
 
+void ProcessOrientationRequested(
+    const mojom::blink::WebPrinterAttributes& new_attributes,
+    WebPrinterAttributes* current_attributes) {
+  current_attributes->setOrientationRequestedDefault(
+      mojo::ConvertTo<V8OrientationRequested>(
+          new_attributes.orientation_requested_default));
+  current_attributes->setOrientationRequestedSupported(
+      mojo::ConvertTo<Vector<V8OrientationRequested>>(
+          new_attributes.orientation_requested_supported));
+}
+
 void ProcessPrinterResolution(
     const mojom::blink::WebPrinterAttributes& new_attributes,
     WebPrinterAttributes* current_attributes) {
@@ -356,6 +399,7 @@ TypeConverter<blink::WebPrinterAttributes*,
   blink::ProcessCopies(*printer_attributes, attributes);
   blink::ProcessDocumentFormat(*printer_attributes, attributes);
   blink::ProcessMultipleDocumentHandling(*printer_attributes, attributes);
+  blink::ProcessOrientationRequested(*printer_attributes, attributes);
   blink::ProcessPrinterResolution(*printer_attributes, attributes);
   blink::ProcessPrintColorMode(*printer_attributes, attributes);
   blink::ProcessSides(*printer_attributes, attributes);
@@ -381,6 +425,11 @@ TypeConverter<blink::mojom::blink::WebPrintJobTemplateAttributesPtr,
     attributes->multiple_document_handling =
         mojo::ConvertTo<MojomMultipleDocumentHandling>(
             pjt_attributes->multipleDocumentHandling());
+  }
+  if (pjt_attributes->hasOrientationRequested()) {
+    attributes->orientation_requested =
+        mojo::ConvertTo<MojomOrientationRequested>(
+            pjt_attributes->orientationRequested());
   }
   if (pjt_attributes->hasPrinterResolution()) {
     attributes->printer_resolution =

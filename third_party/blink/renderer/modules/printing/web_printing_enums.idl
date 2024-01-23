@@ -17,8 +17,6 @@ enum WebPrintingMultipleDocumentHandling {
 enum WebPrintingOrientationRequested {
   "portrait",
   "landscape",
-  "reverse-landscape",
-  "reverse-portrait",
 };
 
 enum WebPrintingResolutionUnits {
