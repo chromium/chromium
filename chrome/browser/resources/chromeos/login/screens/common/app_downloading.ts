@@ -61,13 +61,13 @@ export class AppDownloading extends AppDownloadingBase {
    * Returns the control which should receive initial focus.
    */
   override get defaultControl(): HTMLElement {
-    return this.shadowRoot!.getElementById('app-downloading-dialog')!;
+    return this.shadowRoot!.querySelector('#app-downloading-dialog')!;
   }
 
   /** Called when dialog is shown */
   override onBeforeShow(): void {
     const downloadingApps = this.getDownloadingAppsLottiePlayer();
-    if (downloadingApps !== null) {
+    if (downloadingApps instanceof OobeCrLottie) {
       downloadingApps.playing = true;
     }
   }
@@ -75,7 +75,7 @@ export class AppDownloading extends AppDownloadingBase {
   /** Called when dialog is hidden */
   onBeforeHide(): void {
     const downloadingApps = this.getDownloadingAppsLottiePlayer();
-    if (downloadingApps !== null) {
+    if (downloadingApps instanceof OobeCrLottie) {
       downloadingApps.playing = false;
     }
   }
@@ -84,8 +84,8 @@ export class AppDownloading extends AppDownloadingBase {
     this.userActed('appDownloadingContinueSetup');
   }
 
-  private getDownloadingAppsLottiePlayer(): OobeCrLottie | null {
-    return this.shadowRoot!.querySelector<OobeCrLottie>('downloadingApps');
+  private getDownloadingAppsLottiePlayer(): OobeCrLottie | null | undefined {
+    return this.shadowRoot?.querySelector('#downloadingApps');
   }
 }
 
