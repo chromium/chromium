@@ -8094,7 +8094,6 @@ if (!is_fuchsia) {
         "../browser/webauthn/authenticator_request_scheduler_unittest.cc",
         "../browser/webauthn/cablev2_devices_unittest.cc",
         "../browser/webauthn/chrome_authenticator_request_delegate_unittest.cc",
-        "../browser/webauthn/enclave_manager_unittest.cc",
         "../common/importer/mock_importer_bridge.cc",
         "../common/importer/mock_importer_bridge.h",
         "../renderer/media/webrtc_logging_agent_impl_unittest.cc",
@@ -8304,7 +8303,6 @@ if (!is_fuchsia) {
         "//chrome/browser/ui/webui/side_panel/performance_controls:mojo_bindings",
         "//chrome/browser/ui/webui/side_panel/user_notes:mojo_bindings",
         "//chrome/browser/web_applications:web_applications_test_support",
-        "//chrome/browser/webauthn/proto",
         "//components/app_constants",
         "//components/color",
         "//components/commerce/core:cart_db_content_proto",
@@ -8361,12 +8359,6 @@ if (!is_fuchsia) {
       ]
 
       data += [ "//ash/components/arc/test/data/icons/" ]
-
-      data_deps += [
-        # enclave_manager_unittest.cc runs this binary as part of its testing
-        # process.
-        "//third_party/cloud_authenticator/test/local_service:cloud_authenticator_test_service",
-      ]
 
       if (include_js2gtest_tests && is_chromeos_ash) {
         data += js2gtest_js_libraries
