@@ -11,18 +11,22 @@
 enum PrivacyGuideStepType : NSInteger {
   kPrivacyGuideWelcomeStep,
   kPrivacyGuideURLUsageStep,
+  kPrivacyGuideHistorySyncStep,
 };
+
+// The accessibility identifier of the Privacy Guide History Sync step view.
+extern NSString* const kPrivacyGuideHistorySyncViewID;
 
 // The accessibility identifier of the Privacy Guide wide navigation bar.
 extern NSString* const kPrivacyGuideNavigationBarViewID;
 
-// The accessibility identifier for the Welcome step view.
-extern NSString* const kPrivacyGuideWelcomeViewID;
+// The accessibility identifier for the URL usage switch.
+extern NSString* const kPrivacyGuideURLUsageSwitchID;
 
 // The accessibility identifier for the URL usage step view.
 extern NSString* const kPrivacyGuideURLUsageViewID;
 
-// The accessibility identifier for the URL usage switch.
-extern NSString* const kPrivacyGuideURLUsageSwitchID;
+// The accessibility identifier for the Welcome step view.
+extern NSString* const kPrivacyGuideWelcomeViewID;
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PRIVACY_PRIVACY_GUIDE_PRIVACY_GUIDE_CONSTANTS_H_

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_commands.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_constants.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_main_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_coordinator_delegate.h"
@@ -35,7 +36,10 @@
   if (self) {
     // TODO: Not all steps in the list can be displayed. This will be handled
     // when optional steps are implemented.
-    _steps = @[ @(kPrivacyGuideWelcomeStep), @(kPrivacyGuideURLUsageStep) ];
+    _steps = @[
+      @(kPrivacyGuideWelcomeStep), @(kPrivacyGuideURLUsageStep),
+      @(kPrivacyGuideHistorySyncStep)
+    ];
   }
   return self;
 }
@@ -125,6 +129,16 @@
   [self.childCoordinators addObject:coordinator];
 }
 
+// Initializes the History Sync step and starts it.
+- (void)startHistorySyncCoordinator {
+  PrivacyGuideHistorySyncCoordinator* coordinator =
+      [[PrivacyGuideHistorySyncCoordinator alloc]
+          initWithBaseNavigationController:_navigationController
+                                   browser:self.browser];
+  [coordinator start];
+  [self.childCoordinators addObject:coordinator];
+}
+
 - (void)startNextCoordinator {
   switch ([self nextStepType]) {
     case kPrivacyGuideWelcomeStep:
@@ -132,6 +146,9 @@
       break;
     case kPrivacyGuideURLUsageStep:
       [self startURLUsageCoordinator];
+      break;
+    case kPrivacyGuideHistorySyncStep:
+      [self startHistorySyncCoordinator];
       break;
   }
 }

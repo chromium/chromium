@@ -96,7 +96,26 @@ id<GREYMatcher> PrivacyGuideURLUsageSwitch(BOOL is_on) {
                                           kPrivacyGuideURLUsageViewID)]
       assertWithMatcher:grey_notNil()];
 
+  // Tap the 'Next' button.
+  [[EarlGrey selectElementWithMatcher:PromoStylePrimaryActionButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Verify that the next step is displayed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPrivacyGuideHistorySyncViewID)]
+      assertWithMatcher:grey_notNil()];
+
   // 2. Test backward navigation.
+  // Tap the 'Back' button.
+  [[EarlGrey selectElementWithMatcher:PrivacyGuideBackButton()]
+      performAction:grey_tap()];
+
+  // Verify that the previous step is displayed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPrivacyGuideURLUsageViewID)]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap the 'Back' button.
   [[EarlGrey selectElementWithMatcher:PrivacyGuideBackButton()]
       performAction:grey_tap()];
 

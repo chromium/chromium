@@ -4,6 +4,8 @@
 
 source_set("privacy_guide") {
   sources = [
+    "privacy_guide_history_sync_coordinator.h",
+    "privacy_guide_history_sync_coordinator.mm",
     "privacy_guide_main_coordinator.h",
     "privacy_guide_main_coordinator.mm",
     "privacy_guide_main_coordinator_delegate.h",
