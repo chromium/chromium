@@ -215,6 +215,7 @@ const LayoutResult* GridLayoutAlgorithm::Layout() {
 const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
+  const auto& node = Node();
   LayoutUnit intrinsic_block_size;
   GridSizingTree grid_sizing_tree;
   HeapVector<Member<LayoutBox>> oof_children;
@@ -230,7 +231,7 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
     grid_sizing_tree = grid_data->grid_sizing_tree.CopyForFragmentation();
     intrinsic_block_size = grid_data->intrinsic_block_size;
   } else {
-    grid_sizing_tree = node_.ChildLayoutBlockedByDisplayLock()
+    grid_sizing_tree = node.ChildLayoutBlockedByDisplayLock()
                            ? BuildGridSizingTreeIgnoringChildren()
                            : BuildGridSizingTree(&oof_children);
     ComputeGridGeometry(grid_sizing_tree, &intrinsic_block_size);
@@ -272,7 +273,6 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
     PlaceGridItems(grid_sizing_tree, &row_break_between);
   }
 
-  const auto& node = Node();
   const auto& border_padding = BorderPadding();
   const auto& constraint_space = GetConstraintSpace();
 
@@ -379,9 +379,9 @@ MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(
                               ? BuildGridSizingTreeIgnoringChildren()
                               : BuildGridSizingTree();
 
+  bool depends_on_block_constraints = false;
   auto& sizing_data = grid_sizing_tree.TreeRootData();
 
-  bool depends_on_block_constraints = false;
   auto ComputeTotalColumnSize =
       [&](SizingConstraint sizing_constraint) -> LayoutUnit {
     InitializeTrackSizes(grid_sizing_tree);
@@ -456,33 +456,6 @@ GridArea SubgriddedAreaInParent(const SubgriddedItemData& opt_subgrid_data) {
               subgridded_area_in_parent.rows);
   }
   return subgridded_area_in_parent;
-}
-
-LayoutUnit ComputeBlockSizeForSubgrid(const GridSizingSubtree& sizing_subtree,
-                                      const GridItemData& subgrid_data,
-                                      const ConstraintSpace& space) {
-  DCHECK(sizing_subtree);
-  DCHECK(subgrid_data.IsSubgrid());
-
-  const auto& node = subgrid_data.node;
-  const auto& style = node.Style();
-
-  const auto border_padding =
-      ComputeBorders(space, node) + ComputePadding(space, style);
-  const auto fragment_geometry =
-      CalculateInitialFragmentGeometry(space, node,
-                                       /* break_token */ nullptr,
-                                       /* is_intrinsic */ true);
-
-  const absl::optional<LayoutUnit> available_inline_size =
-      space.AvailableSize().inline_size;
-
-  return ComputeBlockSizeForFragment(
-      space, style, border_padding,
-      GridLayoutAlgorithm({node, fragment_geometry, space})
-          .ComputeSubgridIntrinsicBlockSize(sizing_subtree),
-      (*available_inline_size == kIndefiniteSize) ? absl::nullopt
-                                                  : available_inline_size);
 }
 
 FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
@@ -1037,16 +1010,6 @@ const LayoutResult* LayoutGridItemForMeasure(
   return node.Layout(constraint_space);
 }
 
-GridTrackSizingDirection RelativeDirectionInSubgrid(
-    GridTrackSizingDirection track_direction,
-    const GridItemData& subgrid_data) {
-  DCHECK(subgrid_data.IsSubgrid());
-
-  const bool is_for_columns = subgrid_data.is_parallel_with_root_grid ==
-                              (track_direction == kForColumns);
-  return is_for_columns ? kForColumns : kForRows;
-}
-
 LayoutUnit GetExtraMarginForBaseline(const BoxStrut& margins,
                                      const SubgriddedItemData& subgridded_item,
                                      GridTrackSizingDirection track_direction,
@@ -1091,6 +1054,25 @@ LayoutUnit GetSynthesizedLogicalBaseline(
   return grid_item.IsLastBaselineSpecified(track_direction)
              ? block_size - synthesized_baseline
              : synthesized_baseline;
+}
+
+LayoutUnit ComputeBlockSizeForSubgrid(const GridSizingSubtree& sizing_subtree,
+                                      const GridItemData& subgrid_data,
+                                      const ConstraintSpace& space) {
+  DCHECK(sizing_subtree);
+  DCHECK(subgrid_data.IsSubgrid());
+
+  const auto& node = To<GridNode>(subgrid_data.node);
+  const auto& style = node.Style();
+
+  const auto available_inline_size =
+      absl::make_optional(space.AvailableSize().inline_size);
+
+  return ComputeBlockSizeForFragment(
+      space, style, ComputeBorders(space, node) + ComputePadding(space, style),
+      node.ComputeSubgridIntrinsicBlockSize(sizing_subtree, space),
+      (*available_inline_size == kIndefiniteSize) ? absl::nullopt
+                                                  : available_inline_size);
 }
 
 }  // namespace
@@ -1711,6 +1693,16 @@ void GridLayoutAlgorithm::InitializeTrackCollection(
 
 namespace {
 
+GridTrackSizingDirection RelativeDirectionInSubgrid(
+    GridTrackSizingDirection track_direction,
+    const GridItemData& subgrid_data) {
+  DCHECK(subgrid_data.IsSubgrid());
+
+  const bool is_for_columns = subgrid_data.is_parallel_with_root_grid ==
+                              (track_direction == kForColumns);
+  return is_for_columns ? kForColumns : kForRows;
+}
+
 absl::optional<GridTrackSizingDirection> RelativeDirectionFilterInSubgrid(
     const absl::optional<GridTrackSizingDirection>& opt_track_direction,
     const GridItemData& subgrid_data) {
@@ -1744,6 +1736,10 @@ void GridLayoutAlgorithm::InitializeTrackSizes(
         grid_item.ComputeSetIndices(track_collection);
       }
     } else {
+      // If this grid has a standalone axis, invalidate its min/max sizes cache,
+      // since they're only valid for the current step of the sizing algorithm.
+      Node().InvalidateMinMaxSizesCache();
+
       auto& track_collection = layout_data.SizingCollection(track_direction);
       CacheGridItemsProperties(track_collection, &grid_items);
 
@@ -1966,44 +1962,12 @@ void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
       });
 }
 
-namespace {
-
-// This function recurses into each subgrid in the sizing subtree invalidating
-// the `MinMaxSizes` cache from their respective `GridNode`.
-void InvalidateCachedMinMaxSizes(const GridNode& subgrid,
-                                 const GridSizingSubtree& sizing_subtree) {
-  subgrid.InvalidateCachedMinMaxSizes();
-
-  // Exit early if this subtree doesn't have nested subgrids.
-  auto next_subgrid_subtree = sizing_subtree.FirstChild();
-  if (!next_subgrid_subtree) {
-    return;
-  }
-
-  for (const auto& grid_item : sizing_subtree.GridItems()) {
-    if (!grid_item.IsSubgrid()) {
-      continue;
-    }
-
-    DCHECK(next_subgrid_subtree);
-    InvalidateCachedMinMaxSizes(To<GridNode>(grid_item.node),
-                                next_subgrid_subtree);
-    next_subgrid_subtree = next_subgrid_subtree.NextSibling();
-  }
-}
-
-}  // namespace
-
 void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
     const GridSizingTree& sizing_tree,
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint,
     bool* opt_needs_additional_pass) const {
   const auto sizing_subtree = GridSizingSubtree(sizing_tree);
-
-  // Currently the `MinMaxSizes` cache only works within the same step of the
-  // sizing algorithm; start by resetting the cache for this step.
-  InvalidateCachedMinMaxSizes(Node(), sizing_subtree);
 
   ComputeBaselineAlignment(sizing_tree.FinalizeTree(), sizing_subtree,
                            /* opt_subgrid_data */ kNoSubgriddedItemData,

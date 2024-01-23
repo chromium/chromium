@@ -30,8 +30,8 @@ class CORE_EXPORT GridNode final : public BlockNode {
     return CachedPlacementData().line_resolver;
   }
 
-  void InvalidateCachedMinMaxSizes() const {
-    To<LayoutGrid>(box_.Get())->InvalidateCachedMinMaxSizes();
+  void InvalidateMinMaxSizesCache() const {
+    To<LayoutGrid>(box_.Get())->InvalidateMinMaxSizesCache();
   }
 
   // If |oof_children| is provided, aggregate any out of flow children.
@@ -42,6 +42,10 @@ class CORE_EXPORT GridNode final : public BlockNode {
   void AppendSubgriddedItems(GridItems* grid_items) const;
 
   MinMaxSizesResult ComputeSubgridMinMaxSizes(
+      const GridSizingSubtree& sizing_subtree,
+      const ConstraintSpace& space) const;
+
+  LayoutUnit ComputeSubgridIntrinsicBlockSize(
       const GridSizingSubtree& sizing_subtree,
       const ConstraintSpace& space) const;
 
