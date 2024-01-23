@@ -6803,3 +6803,7 @@ crbug.com/1467464 http/tests/devtools/profiler/heap-snapshot.js [ Failure Pass T
 
 # May fail due to test framework issue. Disabling while this is being resolved.
 crbug.com/1367312 [ Win ] fast/dom/timer-throttling-hidden-page.html [ Failure Pass ]
+
+# Gardener: 2024-01-23
+crbug.com/1519178 [ Mac12 ] virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/automatic-beacon.https.js [ Failure Pass ]
+crbug.com/1521090 [ Mac12 ] virtual/static-routing-api/http/tests/inspector-protocol/service-worker/tentative/static-router/receive-router-rules-on-update.js [ Failure Pass ]
