@@ -6992,6 +6992,25 @@
             ]
         }
     ],
+    "EvictionUnlocksResources": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EvictionUnlocksResources"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExcludeBrokenImageIconFromBeingLcpEligible": [
         {
             "platforms": [
