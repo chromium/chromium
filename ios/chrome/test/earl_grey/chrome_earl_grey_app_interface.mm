@@ -174,10 +174,8 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 + (void)killWebKitNetworkProcess {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-  if (@available(iOS 15, *)) {
-    [[WKWebsiteDataStore defaultDataStore]
-        performSelector:@selector(_terminateNetworkProcess)];
-  }
+  [[WKWebsiteDataStore defaultDataStore]
+      performSelector:@selector(_terminateNetworkProcess)];
 #pragma clang diagnostic pop
 }
 
