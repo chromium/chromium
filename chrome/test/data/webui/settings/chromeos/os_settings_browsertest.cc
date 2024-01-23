@@ -1366,4 +1366,42 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSearchPageSearchSubpage) {
   RunSettingsTest("os_search_page/search_subpage_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, OsSettingsMain) {
+  RunSettingsTest("os_settings_main/os_settings_main_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled, OsSettingsMainRevamp) {
+  RunSettingsTest("os_settings_main/os_settings_main_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, OsSettingsMenu) {
+  RunSettingsTest("os_settings_menu/os_settings_menu_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled, OsSettingsMenuRevamp) {
+  RunSettingsTest("os_settings_menu/os_settings_menu_revamp_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, OsSettingsUi) {
+  RunSettingsTest("os_settings_ui/os_settings_ui_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled, OsSettingsUiRevamp) {
+  RunSettingsTest("os_settings_ui/os_settings_ui_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+                       OsSettingsUiAboutPage) {
+  RunSettingsTest("os_settings_ui/os_settings_ui_about_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, OsSettingsUiHats) {
+  RunSettingsTest("os_settings_ui/os_settings_ui_hats_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       OsSettingsUiHatsRevamp) {
+  RunSettingsTest("os_settings_ui/os_settings_ui_hats_test.js");
+}
+
 }  // namespace ash::settings

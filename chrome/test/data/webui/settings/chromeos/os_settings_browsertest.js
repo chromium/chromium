@@ -102,53 +102,8 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
    {enabled: ['ash::features::kCrosPrivacyHubV0']},
  ],
  [
-   'OsSettingsMain',
-   'os_settings_main/os_settings_main_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSettingsMainRevamp',
-   'os_settings_main/os_settings_main_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSettingsMenu',
-   'os_settings_menu/os_settings_menu_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSettingsMenuRevamp',
-   'os_settings_menu/os_settings_menu_revamp_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
    'OsSettingsSearchBox',
    'os_settings_search_box/os_settings_search_box_test.js'
- ],
- [
-   'OsSettingsUi',
-   'os_settings_ui/os_settings_ui_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSettingsUiRevamp',
-   'os_settings_ui/os_settings_ui_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSettingsUiAboutPage',
-   'os_settings_ui/os_settings_ui_about_page_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSettingsUiHats',
-   'os_settings_ui/os_settings_ui_hats_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsSettingsUiHatsRevamp',
-   'os_settings_ui/os_settings_ui_hats_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [
    'OsSettingsUiMenu',
