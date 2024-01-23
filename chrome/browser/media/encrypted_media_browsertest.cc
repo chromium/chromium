@@ -696,16 +696,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM_Opus) {
   TestSimplePlayback("bear-320x240-opus-av_enc-v.webm");
 }
 
-// TODO(crbug.com/1520934): Fix flakiness on Win ASAN bots.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_Playback_Multiple_VideoAudio_WebM \
-  DISABLED_Playback_Multiple_VideoAudio_WebM
-#else
-#define MAYBE_Playback_Multiple_VideoAudio_WebM \
-  Playback_Multiple_VideoAudio_WebM
-#endif  // BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
-                       MAYBE_Playback_Multiple_VideoAudio_WebM) {
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Multiple_VideoAudio_WebM) {
   if (!IsPlayBackPossible(CurrentKeySystem())) {
     GTEST_SKIP() << "Playback_Multiple test requires playback.";
   }
@@ -1042,13 +1033,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, VerifyCdmHostTest) {
 }
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 
-// TODO(crbug.com/1520934): Fix flakiness on Win ASAN bots.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_StorageIdTest DISABLED_StorageIdTest
-#else
-#define MAYBE_StorageIdTest StorageIdTest
-#endif  // BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_StorageIdTest) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, StorageIdTest) {
   TestNonPlaybackCases(media::kExternalClearKeyStorageIdTestKeySystem,
                        kUnitTestSuccess);
 }
