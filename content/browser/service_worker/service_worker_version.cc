@@ -1493,6 +1493,13 @@ void ServiceWorkerVersion::OnStopping() {
       "Script", script_url_.spec(), "Version Status",
       VersionStatusToString(status_));
 
+  // If the service worker is warmed up, finish it first. Otherwise,
+  // `should_restart` becomes true in the `OnStoppedInternal()` function, and
+  // the service worker will start after the service worker is stopped.
+  if (embedded_worker_->pause_initializing_global_scope()) {
+    FinishStartWorker(blink::ServiceWorkerStatusCode::kOk);
+  }
+
   // Endpoint isn't available after calling EmbeddedWorkerInstance::Stop().
   // This needs to be set here without waiting until the worker is actually
   // stopped because subsequent StartWorker() may read the flag to decide

@@ -371,6 +371,20 @@ blink::ServiceWorkerStatusCode WarmUpServiceWorker(
   return status;
 }
 
+bool WarmUpServiceWorker(ServiceWorkerContext& service_worker_context,
+                         const GURL& url) {
+  bool successed = false;
+  base::RunLoop run_loop;
+  service_worker_context.WarmUpServiceWorker(
+      url, blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
+      base::BindLambdaForTesting([&]() {
+        successed = true;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  return successed;
+}
+
 blink::ServiceWorkerStatusCode StartServiceWorker(
     ServiceWorkerVersion* version) {
   blink::ServiceWorkerStatusCode status;
