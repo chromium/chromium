@@ -1213,6 +1213,10 @@ BASE_FEATURE(kAllowMediaCodecSoftwareDecoder,
 BASE_FEATURE(kBuiltInHlsPlayer,
              "BuiltInHlsPlayer",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBuiltInHlsMP4,
+             "kBuiltInHlsMP4",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
