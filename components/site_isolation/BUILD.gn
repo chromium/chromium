@@ -4,8 +4,9 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/features.gni")
 
-assert(!is_ios)
+assert(use_blink)
 
 declare_args() {
   # Normally, only Google Chrome Android and some Fuchsia WebEngine builds will

@@ -8,8 +8,8 @@ partial Site Isolation, such as loading the built-in list of isolated
 sites, managing preferences that store heuristically isolated sites where
 users have entered passwords or logged in via OAuth, and computing memory
 thresholds for applying Site Isolation. Platforms that currently use
-partial Site Isolation include Android, Fuchsia, and WebLayer, while iOS does
-not support Site Isolation at all. See
+partial Site Isolation include Android, Fuchsia, WebLayer, and Blink for iOS,
+while iOS (with Webkit) does not support Site Isolation at all. See
 [process_model_and_site_isolation.md](/docs/process_model_and_site_isolation.md)
 for more details.
 
