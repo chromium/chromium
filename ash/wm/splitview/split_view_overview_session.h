@@ -105,10 +105,9 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
   }
 
  private:
-  // Either ends full overview, or only `SplitViewOverviewSession`.
-  void MaybeEndOverview(
-      SplitViewOverviewSessionExitPoint exit_point,
-      OverviewEnterExitType exit_type = OverviewEnterExitType::kNormal);
+  // Maybe ends overview or `this` based on the `setup_type_`.
+  void MaybeEndOverview(SplitViewOverviewSessionExitPoint exit_point,
+                        OverviewEnterExitType exit_type);
 
   // True while we are processing a window resize event.
   bool is_resizing_ = false;

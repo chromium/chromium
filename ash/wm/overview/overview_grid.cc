@@ -1978,15 +1978,18 @@ bool OverviewGrid::IsSavedDeskNameBeingModified() const {
 void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
                                          bool animate,
                                          bool is_continuous_enter) {
-  // If `kFasterSplitScreenSetup` or `kSnapGroup` is enabled, hide the widget if
-  // we aren't in split view, otherwise hide the widget if there is an item in
-  // overview or the saved desk grid is visible.
-  // TODO(b/307812315): Rename to `faster_splitscreen_widget_` if we'll always
-  // show this.
-  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()
-          ? !RootWindowController::ForWindow(root_window())
-                 ->split_view_overview_session()
-          : !no_items || IsShowingSavedDeskLibrary()) {
+  // `no_windows_widget_` will show under two conditions:
+  // 1. In normal full overview, when there are no items and the saved desk
+  // library is not showing;
+  // 2. In faster split screen setup, the `no_windows_widget_` show to indicate
+  // either no windows available to pair or select a window to complete the
+  // window layout.
+  // TODO(b/307812315): Consider separating the widgets i.e. one
+  // `no_windows_widget_` and one `faster_splitscreen_widget_`.
+  const bool in_faster_split_screen_setup_session =
+      window_util::IsInFasterSplitScreenSetupSession(root_window_);
+  if (!in_faster_split_screen_setup_session &&
+      (!no_items || IsShowingSavedDeskLibrary())) {
     no_windows_widget_.reset();
     return;
   }
@@ -2005,10 +2008,11 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
     params.vertical_padding = kNoItemsIndicatorVerticalPaddingDp;
     params.rounding_dp = kNoItemsIndicatorRoundingDp;
     params.preferred_height = kNoItemsIndicatorHeightDp;
-    params.message = IDS_ASH_OVERVIEW_NO_RECENT_ITEMS;
-    if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
+    if (in_faster_split_screen_setup_session) {
       params.message =
           no_items ? kFasterSplitScreenToastNoWindows : kFasterSplitScreenToast;
+    } else {
+      params.message = IDS_ASH_OVERVIEW_NO_RECENT_ITEMS;
     }
 
     params.parent =
@@ -2040,7 +2044,7 @@ void OverviewGrid::RefreshNoWindowsWidgetBounds(bool animate) {
   const gfx::Rect grid_bounds(GetGridEffectiveBounds());
   no_windows_widget_->SetBoundsCenteredIn(grid_bounds, animate);
 
-  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
+  if (window_util::IsInFasterSplitScreenSetupSession(root_window_)) {
     // If there are no windows, set it in the center of the grid.
     if (item_list_.empty()) {
       return;
@@ -2326,10 +2330,9 @@ void OverviewGrid::OnSplitViewStateChanged(
 
 void OverviewGrid::OnSplitViewDividerPositionChanged() {
   if (overview_session_->is_shutting_down() ||
-      window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
-    // If `IsFasterSplitScreenOrSnapGroupEnabledInClamshell()` is true,
+      window_util::IsInFasterSplitScreenSetupSession(root_window_)) {
     // `SplitViewOverviewSession` will manually update the bounds so we don't
-    // need to update here.
+    // need to update here in faster split screen setup session.
     return;
   }
 

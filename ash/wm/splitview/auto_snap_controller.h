@@ -19,7 +19,7 @@ namespace ash {
 class AutoSnapController : public wm::ActivationChangeObserver,
                            public aura::WindowObserver {
  public:
-  AutoSnapController(aura::Window* root_window);
+  explicit AutoSnapController(aura::Window* root_window);
 
   AutoSnapController(const AutoSnapController&) = delete;
   AutoSnapController& operator=(const AutoSnapController&) = delete;

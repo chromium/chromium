@@ -2196,9 +2196,6 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
     EndSplitView(reason == WindowDetachedReason::kWindowDragged
                      ? EndReason::kWindowDragStarted
                      : EndReason::kNormal);
-
-    // TODO(crbug.com/1351562): Consider not allowing one snapped window to be
-    // floated. Then this should be a DCHECK.
   } else {
     DCHECK(InTabletSplitViewMode());
     aura::Window* other_window =

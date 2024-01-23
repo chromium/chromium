@@ -1474,24 +1474,23 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
         break;
       }
 
-      if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
         // If we are in partial overview and an unsupported key is pressed, e.g.
         // alt + tab, escape the pairing session.
         for (auto& grid : grid_list_) {
-          if (auto* split_view_overview_session =
-                  RootWindowController::ForWindow(grid->root_window())
-                      ->split_view_overview_session();
-              split_view_overview_session) {
+          auto* root_window = grid->root_window();
+          if (window_util::IsInFasterSplitScreenSetupSession(root_window)) {
             // There may be at most one `SplitViewOverviewSession` per root
             // window; if any is active we end overview for simplicity.
             // TODO(b/314022922): Consider moving `SplitViewOverviewSession` to
             // `OverviewGrid`.
             // `this` will be destroyed after this line.
-            split_view_overview_session->OnKeyEvent();
+            RootWindowController::ForWindow(root_window)
+                ->split_view_overview_session()
+                ->OnKeyEvent();
             return;
           }
         }
-      }
+
       return;
     }
   }

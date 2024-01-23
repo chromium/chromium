@@ -142,8 +142,12 @@ void SnapOneTestWindow(
 // Verifies that `window` is in split view overview, where `window` is
 // excluded from overview, and overview occupies the work area opposite of
 // `window`. Returns the corresponding `SplitViewOverviewSession` if exits and
-// nullptr otherwise.
-SplitViewOverviewSession* VerifySplitViewOverviewSession(aura::Window* window) {
+// nullptr otherwise. `faster_split_screen_setup` specifies whether the
+// `SplitViewOverviewSession` is initiated by faster split screen set up or not,
+// where behaviors differ such as overview widget.
+SplitViewOverviewSession* VerifySplitViewOverviewSession(
+    aura::Window* window,
+    bool faster_split_screen_setup = true) {
   auto* overview_controller = Shell::Get()->overview_controller();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_FALSE(
@@ -167,7 +171,7 @@ SplitViewOverviewSession* VerifySplitViewOverviewSession(aura::Window* window) {
   // Hotseat may be on the bottom of the work area.
   EXPECT_TRUE(work_area_bounds().Contains(expected_grid_bounds));
 
-  if (!Shell::Get()->IsInTabletMode()) {
+  if (!Shell::Get()->IsInTabletMode() && faster_split_screen_setup) {
     EXPECT_TRUE(
         GetOverviewGridForRoot(window->GetRootWindow())->no_windows_widget());
   }
@@ -427,7 +431,7 @@ TEST_F(FasterSplitScreenTest, DragToPartialOverview) {
                        /*by_touch_gestures=*/false, /*drop=*/true);
   EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             WindowState::Get(w1.get())->GetStateType());
-  VerifySplitViewOverviewSession(w1.get());
+  VerifySplitViewOverviewSession(w1.get(), /*faster_split_screen_setup=*/false);
   EXPECT_TRUE(overview_session->IsWindowInOverview(w2.get()));
 
   // Select `w2`. Test it snaps and we end overview.

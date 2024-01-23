@@ -1003,6 +1003,17 @@ void RootWindowController::StartSplitViewOverviewSession(
     // overview.
     return;
   }
+
+  // TODO(michelefan): Remove the `StartOverview()` here, this is currently
+  // added to limit `SplitViewOverviewSession` creation and usage to clamshell
+  // only.
+  if (Shell::Get()->IsInTabletMode()) {
+    OverviewController::Get()->StartOverview(
+        action.value_or(OverviewStartAction::kSplitView),
+        type.value_or(OverviewEnterExitType::kNormal));
+    return;
+  }
+
   split_view_overview_session_ =
       std::make_unique<SplitViewOverviewSession>(window, snap_action_source);
   split_view_overview_session_->Init(action, type);

@@ -496,8 +496,6 @@ TEST_F(SplitViewControllerTest, StartEndSplitViewOverviewSession) {
   EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
   EXPECT_FALSE(split_view_controller()->secondary_window());
   EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
-  EXPECT_TRUE(RootWindowController::ForWindow(Shell::GetPrimaryRootWindow())
-                  ->split_view_overview_session());
 
   // Snap `window2`. Test we are in kBothSnapped state and not overview or split
   // view overview.
@@ -518,8 +516,6 @@ TEST_F(SplitViewControllerTest, StartEndSplitViewOverviewSession) {
   EXPECT_FALSE(split_view_controller()->primary_window());
   EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
   EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
-  EXPECT_TRUE(RootWindowController::ForWindow(Shell::GetPrimaryRootWindow())
-                  ->split_view_overview_session());
 
   // Close `window2`. Test we are in kNoSnap state and in overview but not
   // split view overview.
@@ -527,8 +523,6 @@ TEST_F(SplitViewControllerTest, StartEndSplitViewOverviewSession) {
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kNoSnap);
   EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
-  EXPECT_FALSE(RootWindowController::ForWindow(Shell::GetPrimaryRootWindow())
-                   ->split_view_overview_session());
 }
 
 // Tests that when the divider bouncing animation is triggered in
@@ -3562,10 +3556,6 @@ TEST_F(SplitViewControllerTest, ResnapASnappedWindowToOppositePosition) {
 
   OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  SplitViewOverviewSession* split_view_overview_session =
-      RootWindowController::ForWindow(window1.get())
-          ->split_view_overview_session();
-  EXPECT_TRUE(split_view_overview_session);
 
   // Select `window2` from overview. Since its minimum size is greater than 1/3,
   // it gets snapped at 1/2.

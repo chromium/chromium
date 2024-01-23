@@ -210,13 +210,17 @@ float GetSnapRatioForWindow(aura::Window* window);
 // SplitViewOverviewSession.
 bool IsFasterSplitScreenOrSnapGroupEnabledInClamshell();
 
+// Returns true if `SplitViewOverviewSession` is created through faster split
+// screen setup, i.e. partial overview is started on the other side of the
+// screen when `window` is snapped.
+bool IsInFasterSplitScreenSetupSession(aura::Window* window);
+
 // Returns the opposite snap type of a snapped `window`. This will be
 // `kPrimarySnapped` if `window` is `kSecondarySnapped`, or `kSecondarySnapped`
 // if `window` is `kPrimarySnapped`.
 chromeos::WindowStateType GetOppositeSnapType(aura::Window* window);
 
-// Decides whether to start `SplitViewOverviewSession` for `window`, if it
-// wasn't already active, or end Overview if it was.
+// Starts `SplitViewOverviewSession` for `window`, if it wasn't already active.
 void MaybeStartSplitViewOverview(aura::Window* window,
                                  WindowSnapActionSource snap_action_source);
 

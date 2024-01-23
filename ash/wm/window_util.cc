@@ -400,28 +400,18 @@ bool ShouldExcludeForCycleList(const aura::Window* window) {
 }
 
 bool ShouldExcludeForOverview(const aura::Window* window) {
-  // If we're currently in tablet splitview or in clamshell mode with
-  // `IsFasterSplitScreenOrSnapGroupEnabledInClamshell()`, remove the default
-  // snapped window from the window list. The default snapped window occupies
-  // one side of the screen, while the other windows occupy the other side of
-  // the screen in overview mode. The default snap position is the position
-  // where the window was first snapped. See `default_snap_position_` in
-  // SplitViewController for more details.
-
   // A window should be excluded from being shown in overview when:
   // 1. In tablet split view mode on one window snapped;
-  // 2. During split view overview session in clamshell mode,
+  // 2. In clamshell `SplitViewOverviewSession`,
   // 3. If the window is not the mru window in snap group i.e. the corresponding
   // overview item representation for the snap group has been created.
   auto should_exclude_in_clamshell = [&]() -> bool {
-    if (IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
-      if (auto* split_view_overview_session =
-              RootWindowController::ForWindow(window)
-                  ->split_view_overview_session();
-          split_view_overview_session &&
-          split_view_overview_session->window() == window) {
-        return true;
-      }
+    if (auto* split_view_overview_session =
+            RootWindowController::ForWindow(window)
+                ->split_view_overview_session();
+        split_view_overview_session &&
+        split_view_overview_session->window() == window) {
+      return true;
     }
 
     if (auto* snap_group_controller = SnapGroupController::Get()) {
@@ -768,6 +758,14 @@ bool IsFasterSplitScreenOrSnapGroupEnabledInClamshell() {
   return !Shell::Get()->IsInTabletMode() &&
          (features::IsFasterSplitScreenSetupEnabled() ||
           SnapGroupController::Get());
+}
+
+bool IsInFasterSplitScreenSetupSession(aura::Window* window) {
+  SplitViewOverviewSession* split_view_overview_session =
+      RootWindowController::ForWindow(window)->split_view_overview_session();
+  return !Shell::Get()->IsInTabletMode() && split_view_overview_session &&
+         split_view_overview_session->setup_type() ==
+             SplitViewOverviewSetupType::kSnapThenAutomaticOverview;
 }
 
 chromeos::WindowStateType GetOppositeSnapType(aura::Window* window) {
