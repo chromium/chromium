@@ -693,7 +693,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.Backend.FilterClusterProcessor.NumClusters.{Segment}{Source}"
-    units="counts" expires_after="2024-02-20">
+    units="counts" expires_after="2024-06-02">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1056,7 +1056,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.Backend.UpdateClusterTriggerability.HadUnclusteredVisitsToCluster"
-    enum="Boolean" expires_after="2024-02-04">
+    enum="Boolean" expires_after="2024-06-02">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1167,7 +1167,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.ContextClusterer.ClusterCleanedUpBeforePersistence"
-    enum="Boolean" expires_after="2024-02-04">
+    enum="Boolean" expires_after="2024-06-02">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1241,7 +1241,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.ContextClusterer.NumUnpersistedVisitsBeforeClusterPersisted"
-    units="num unpersisted visits" expires_after="2024-02-04">
+    units="num unpersisted visits" expires_after="2024-06-02">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
