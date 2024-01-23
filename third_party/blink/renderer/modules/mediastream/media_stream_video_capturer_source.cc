@@ -45,6 +45,8 @@ String CscResultToString(CapturedSurfaceControlResult result) {
       return "Captured surface not found (likely stopped asynchronously).";
     case CapturedSurfaceControlResult::kDisallowedForSelfCaptureError:
       return "API not supported for self-capture.";
+    case CapturedSurfaceControlResult::kCapturerNotFocusedError:
+      return "Capturing application not focused.";
   }
   NOTREACHED_NORETURN();
 }

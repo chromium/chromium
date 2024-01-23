@@ -178,6 +178,7 @@ enum CapturedSurfaceControlResult {
   kCapturerNotFoundError,
   kCapturedSurfaceNotFoundError,
   kDisallowedForSelfCaptureError,
+  kCapturerNotFocusedError,
 };
 
 // Per-frame renderer-side interface that receives device stopped/change

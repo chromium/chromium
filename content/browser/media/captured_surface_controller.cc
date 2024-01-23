@@ -95,8 +95,7 @@ CapturedSurfaceControlResult DoSendWheel(
   }
 
   if (!IsFocused(*capturer_wc)) {
-    // TODO(crbug.com/1466247): Use a dedicated error.
-    return CapturedSurfaceControlResult::kUnknownError;
+    return CapturedSurfaceControlResult::kCapturerNotFocusedError;
   }
 
   // Scale (x, y).
@@ -162,8 +161,7 @@ CapturedSurfaceControlResult DoSetZoomLevel(
   }
 
   if (!IsFocused(*capturer_wc)) {
-    // TODO(crbug.com/1466247): Use a dedicated error.
-    return CapturedSurfaceControlResult::kUnknownError;
+    return CapturedSurfaceControlResult::kCapturerNotFocusedError;
   }
 
   content::HostZoomMap::SetZoomLevel(

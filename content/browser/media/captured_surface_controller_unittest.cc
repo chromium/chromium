@@ -867,8 +867,7 @@ TEST_P(CapturedSurfaceControllerFocusRequirementTest,
   base::RunLoop run_loop;
   permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
   // Note absence of call to `capturer_->Focus()`.
-  // TODO(crbug.com/1466247): Use a dedicated error.
-  RunTestedActionAndExpect(&run_loop, CSCResult::kUnknownError);
+  RunTestedActionAndExpect(&run_loop, CSCResult::kCapturerNotFocusedError);
   run_loop.Run();
 }
 
