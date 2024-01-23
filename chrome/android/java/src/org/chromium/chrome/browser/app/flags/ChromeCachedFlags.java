@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuidePushNotificationManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.recent_tabs.RestoreTabsFeatureHelper;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataService;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -100,7 +99,6 @@ public class ChromeCachedFlags {
                         CustomTabIntentDataProvider.ALLOWLIST_ENTRIES,
                         DseNewTabUrlManager.EEA_COUNTRY_ONLY,
                         DseNewTabUrlManager.SWAP_OUT_NTP,
-                        RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT,
                         ShoppingPersistedTabDataService
                                 .SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION,
                         StartSurfaceConfiguration.IS_DOODLE_SUPPORTED,

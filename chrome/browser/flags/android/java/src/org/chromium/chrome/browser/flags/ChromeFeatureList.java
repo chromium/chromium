@@ -400,7 +400,6 @@ public abstract class ChromeFeatureList {
     public static final String RENAME_JOURNEYS = "RenameJourneys";
     public static final String REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS =
             "ReplaceSyncPromosWithSignInPromos";
-    public static final String RESTORE_TABS_ON_FRE = "RestoreTabsOnFRE";
     public static final String REQUEST_DESKTOP_SITE_DEFAULTS = "RequestDesktopSiteDefaults";
     public static final String REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL =
             "RequestDesktopSiteDefaultsControl";
@@ -462,7 +461,6 @@ public abstract class ChromeFeatureList {
     public static final String TANGIBLE_SYNC = "TangibleSync";
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
-    public static final String THUMBNAIL_PLACEHOLDER = "ThumbnailPlaceholder";
     public static final String TOOLBAR_USE_HARDWARE_BITMAP_DRAW = "ToolbarUseHardwareBitmapDraw";
     public static final String TRACKING_PROTECTION_NOTICE_REQUEST_TRACKING =
             "TrackingProtectionNoticeRequestTracking";
@@ -759,8 +757,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT, false);
     public static final MutableFlagWithSafeDefault sSuppressionToolbarCaptures =
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES, false);
-    public static final MutableFlagWithSafeDefault sThumbnailPlaceholder =
-            newMutableFlagWithSafeDefault(THUMBNAIL_PLACEHOLDER, true);
     public static final MutableFlagWithSafeDefault sTouchDownTriggerForPrefetch =
             newMutableFlagWithSafeDefault(OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
     public static final MutableFlagWithSafeDefault sVisibleUrlTruncation =

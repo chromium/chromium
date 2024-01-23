@@ -256,7 +256,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRequestDesktopSiteDefaultsEnabledCohort4,
     &kRequestDesktopSiteDefaultsDowngrade,
     &kRequestDesktopSiteDefaultsLogging,
-    &kRestoreTabsOnFRE,
     &kSearchEnginesPromoV3,
     &kShowNtpAtStartupAndroid,
     &kShowScrollableMVTOnNTPAndroid,
@@ -277,7 +276,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabToGTSAnimation,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
-    &kThumbnailPlaceholder,
     &kStartSurfaceAndroid,
     &kStartSurfaceOnTablet,
     &kStartSurfaceReturnTime,
@@ -800,10 +798,6 @@ BASE_FEATURE(kRequestDesktopSiteDefaultsLogging,
              "RequestDesktopSiteDefaultsLogging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRestoreTabsOnFRE,
-             "RestoreTabsOnFRE",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kShowNtpAtStartupAndroid,
              "ShowNtpAtStartupAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -868,10 +862,6 @@ BASE_FEATURE(kTestDefaultDisabled,
 
 BASE_FEATURE(kTestDefaultEnabled,
              "TestDefaultEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kThumbnailPlaceholder,
-             "ThumbnailPlaceholder",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature updates the triggering logic for the default search engine
