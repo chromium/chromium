@@ -17,6 +17,12 @@ class Location;
 
 namespace internal {
 
+template <typename Signature, typename R, typename F, typename... Args>
+static constexpr bool kHasConstCallOperator = false;
+template <typename R, typename F, typename... Args>
+static constexpr bool
+    kHasConstCallOperator<R (F::*)(Args...) const, R, F, Args...> = true;
+
 // Implementation of `BindLambdaForTesting()`, which checks preconditions before
 // handing off to `Bind{Once,Repeating}()`.
 template <typename Lambda,
@@ -27,11 +33,6 @@ template <typename Lambda, typename R, typename... Args>
 struct BindLambdaForTestingHelper<Lambda, R(Args...)> {
  private:
   using F = std::decay_t<Lambda>;
-
-  template <typename = decltype(&F::operator())>
-  static constexpr bool kHasConstCallOperator = false;
-  template <>
-  static constexpr bool kHasConstCallOperator<R (F::*)(Args...) const> = true;
 
   // For context on this "templated struct with a lambda that asserts" pattern,
   // see comments in `Invoker<>`.
@@ -57,7 +58,8 @@ struct BindLambdaForTestingHelper<Lambda, R(Args...)> {
 
  public:
   static auto BindLambdaForTesting(Lambda&& lambda) {
-    if constexpr (kHasConstCallOperator<>) {
+    if constexpr (kHasConstCallOperator<decltype(&F::operator()), R, F,
+                                        Args...>) {
       // If WTF::BindRepeating is available, and a callback argument is in WTF,
       // then this call is ambiguous without the full namespace path.
       return ::base::BindRepeating(&Run, std::forward<Lambda>(lambda));
