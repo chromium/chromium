@@ -44,7 +44,25 @@ To produce an executable built with a custom PGO profile:
       --android-browser android-trichrome-bundle
   ```
 
-  If this fails with `ServiceException: 401 Anonymous caller does not have
+  You can find available browsers using:
+
+  ```
+  tools/perf/run_benchmark run --browser=list
+  ```
+
+  By default, some benchmark replay archives require special access permissions. For more
+  details and to request access, please refer to [Telemetry documentation][telemetry_docs].
+  You can also choose to run `generate_profile.py` without these benchmarks, using the
+  `--run-public-benchmarks-only` flag. However, note that doing so may produce a profile
+  that isn't fully representative.
+
+   ```
+  python3 tools/pgo/generate_profile.py -C out/builddir \
+      --android-browser android-trichrome-bundle \
+      --run-public-benchmarks-only
+  ```
+
+  If `generate_profile.py` fails with `ServiceException: 401 Anonymous caller does not have
   storage.objects.get access to the Google Cloud Storage object.`, then run
   `download_from_google_storage --config` (with your @google address; enter 0 as
   project-id).
@@ -63,6 +81,7 @@ To produce an executable built with a custom PGO profile:
   ```
 
 [browser_names]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/catapult/telemetry/telemetry/internal/backends/android_browser_backend_settings.py;l=400;drc=bf85e76dc3467385a623e9bf11ab950cf2889ca5
+[telemetry_docs]: https://www.chromium.org/developers/telemetry/upload_to_cloud_storage/#request-access-for-google-partners
 
 ## How It Works
 
