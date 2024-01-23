@@ -53,7 +53,10 @@ import java.io.IOException;
 /** Tests for Incognito reauth view layout in Tab Switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID})
+@EnableFeatures({
+    ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID,
+    ChromeFeatureList.INCOGNITO_SCREENSHOT
+})
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherIncognitoReauthViewTest {
     @Rule
@@ -180,7 +183,9 @@ public class TabSwitcherIncognitoReauthViewTest {
         onView(withText(R.string.incognito_reauth_page_see_other_tabs_label))
                 .check(matches(not(isDisplayed())));
 
-        mRenderTestRule.render(cta.findViewById(R.id.action_bar_root), "incognito_reauth_view_hub");
+        mRenderTestRule.render(
+                cta.findViewById(org.chromium.chrome.R.id.tab_switcher_view_holder),
+                "incognito_reauth_view_hub");
     }
 
     @Test
