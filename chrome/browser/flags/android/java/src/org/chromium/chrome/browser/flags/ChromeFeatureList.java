@@ -383,6 +383,7 @@ public abstract class ChromeFeatureList {
     public static final String QUERY_TILES = "QueryTiles";
     public static final String QUERY_TILES_IN_ZPS_ON_NTP = "OmniboxQueryTilesInZPSOnNTP";
     public static final String QUICK_DELETE_FOR_ANDROID = "QuickDeleteForAndroid";
+    public static final String QUICK_DELETE_ANDROID_ANIMATION = "QuickDeleteAndroidAnimation";
     public static final String QUIET_NOTIFICATION_PROMPTS = "QuietNotificationPrompts";
     public static final String READALOUD = "ReadAloud";
     public static final String READALOUD_IN_OVERFLOW_MENU_IN_CCT = "ReadAloudInOverflowMenuInCCT";
@@ -748,6 +749,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(CCT_PAGE_INSIGHTS_HUB_BETTER_SCROLL, false);
     public static final MutableFlagWithSafeDefault sQuickDeleteForAndroid =
             newMutableFlagWithSafeDefault(QUICK_DELETE_FOR_ANDROID, false);
+    public static final MutableFlagWithSafeDefault sQuickDeleteAndroidAnimation =
+            newMutableFlagWithSafeDefault(QUICK_DELETE_ANDROID_ANIMATION, false);
     public static final MutableFlagWithSafeDefault sReaderModeCct =
             newMutableFlagWithSafeDefault(READER_MODE_IN_CCT, false);
     public static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =

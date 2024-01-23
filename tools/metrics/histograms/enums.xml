@@ -20356,6 +20356,7 @@ from previous Chrome versions.
   <int value="-1042579955" label="ChromeOSParentalControlsSettings:enabled"/>
   <int value="-1041650038" label="enable-forced-migration-to-tabbed-mode"/>
   <int value="-1041643783" label="SingleTouchSelect:enabled"/>
+  <int value="-1041363400" label="QuickDeleteAndroidAnimation:enabled"/>
   <int value="-1041150041" label="ContextualSearchLiteralSearchTap:disabled"/>
   <int value="-1040641773" label="ArcOnDemand:enabled"/>
   <int value="-1040547868" label="MutationEvents:disabled"/>
@@ -25236,6 +25237,7 @@ from previous Chrome versions.
   <int value="1241606015" label="OsFeedbackDialog:enabled"/>
   <int value="1242100010" label="AutofillProfileClientValidation:disabled"/>
   <int value="1242632259" label="ContentSuggestionsCategoryOrder:disabled"/>
+  <int value="1243017558" label="QuickDeleteAndroidAnimation:disabled"/>
   <int value="1243180545" label="HarfBuzzPDFSubsetter:enabled"/>
   <int value="1243704644" label="ArcFixupWindowFeature:enabled"/>
   <int value="1243890754" label="ForbidSyncXHRInPageDismissal:disabled"/>

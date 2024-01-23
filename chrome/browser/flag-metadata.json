@@ -6909,6 +6909,14 @@
     "expiry_milestone": 120
   },
   {
+    "name": "quick-delete-android-animation",
+    "owners": [
+      "zalmashni@google.com",
+      "chrome-contextual-privacy@google.com"
+    ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "quick-delete-for-android",
     "owners": [
       "zalmashni@google.com"

@@ -3008,6 +3008,13 @@ const char kQuickDeleteForAndroidDescription[] =
     "When enabled, a new quick delete option appears in the three dots menu, "
     "allowing users to quickly delete their last 15 mins of data.";
 
+const char kQuickDeleteAndroidAnimationName[] =
+    "Enable Quick Delete Animation on Android";
+const char kQuickDeleteAndroidAnimationDescription[] =
+    "When enabled, users will see the tab closure animations after clearing "
+    "data from the Quick Delete dialog. The QuickDeleteForAndroid flag has to "
+    "be enabled for users to see the Quick Delete dialog.";
+
 const char kSettingsAppNotificationSettingsName[] =
     "Split notification permission settings";
 const char kSettingsAppNotificationSettingsDescription[] =
