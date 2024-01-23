@@ -2514,27 +2514,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ComponentUpdater.ClientHealth.AvailableStorage" units="MB"
-    expires_after="2024-06-30">
-  <owner>noahrose@google.com</owner>
-  <owner>src/components/component_updater/OWNERS</owner>
-  <summary>
-    The amount of available storage for component updates. Recorded each time a
-    network quality esitmate is delivered to the component updater.
-  </summary>
-</histogram>
-
-<histogram name="ComponentUpdater.ClientHealth.DownstreamThroughput"
-    units="kbps" expires_after="2024-06-30">
-  <owner>noahrose@google.com</owner>
-  <owner>src/components/component_updater/OWNERS</owner>
-  <summary>
-    Downstream throughput in kilobytes per second of clients who have ample
-    storage (20gb or more) available for component updates. Recorded each time a
-    network quality estimate is delivered to the component updater.
-  </summary>
-</histogram>
-
 <histogram name="ComponentUpdater.UpdateCompleteError"
     enum="UpdateClientErrors" expires_after="2024-07-21">
   <owner>sorin@chromium.org</owner>
