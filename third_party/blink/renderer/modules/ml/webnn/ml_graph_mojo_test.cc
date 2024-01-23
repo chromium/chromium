@@ -505,6 +505,8 @@ struct Activation {
   absl::optional<float> hard_sigmoid_beta;
   absl::optional<float> elu_alpha;
   absl::optional<float> leaky_relu_alpha;
+  absl::optional<float> linear_alpha;
+  absl::optional<float> linear_beta;
   absl::optional<float> softplus_steepness;
 };
 
@@ -546,6 +548,17 @@ MLActivation* CreateActivation(V8TestingScope& scope,
         leaky_relu_options->setAlpha(activation.leaky_relu_alpha.value());
       }
       return builder->leakyRelu(leaky_relu_options, scope.GetExceptionState());
+    }
+    case MLOperator::OperatorKind::kLinear: {
+      auto* linear_options = MLLinearOptions::Create();
+      CHECK(linear_options);
+      if (activation.linear_alpha.has_value()) {
+        linear_options->setAlpha(activation.linear_alpha.value());
+      }
+      if (activation.linear_beta.has_value()) {
+        linear_options->setBeta(activation.linear_beta.value());
+      }
+      return builder->linear(linear_options, scope.GetExceptionState());
     }
     case MLOperator::OperatorKind::kRelu:
       return builder->relu(scope.GetExceptionState());
@@ -610,6 +623,16 @@ void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
       CHECK(expected_activation.leaky_relu_alpha.has_value());
       EXPECT_EQ(leaky_relu->alpha,
                 expected_activation.leaky_relu_alpha.value());
+      break;
+    }
+    case MLOperator::OperatorKind::kLinear: {
+      ASSERT_TRUE(mojom_activation->is_linear());
+      auto& linear = mojom_activation->get_linear();
+      CHECK(linear);
+      CHECK(expected_activation.linear_alpha.has_value());
+      EXPECT_EQ(linear->alpha, expected_activation.linear_alpha.value());
+      CHECK(expected_activation.linear_beta.has_value());
+      EXPECT_EQ(linear->beta, expected_activation.linear_beta.value());
       break;
     }
     case MLOperator::OperatorKind::kRelu:
@@ -3148,6 +3171,150 @@ TEST_P(MLGraphTestMojo, LeakyReluTest) {
                                  blink_mojom::Operand::DataType::kFloat16,
                              .dimensions = {1, 2, 2, 1}},
         .expected_alpha = 0.07}
+        .Test(*this, scope, builder);
+  }
+}
+
+struct LinearTester {
+  OperandInfoBlink input;
+  struct LinearOptions {
+    absl::optional<float> alpha;
+    absl::optional<float> beta;
+  };
+  LinearOptions options;
+  OperandInfoMojo expected_operand;
+  LinearOptions expected_attributes;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    MLLinearOptions* ml_linear_options = MLLinearOptions::Create();
+    if (options.alpha) {
+      ml_linear_options->setAlpha(options.alpha.value());
+    }
+    if (options.beta) {
+      ml_linear_options->setBeta(options.beta.value());
+    }
+    auto* output_operand = builder->linear(input_operand, ml_linear_options,
+                                           scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->id_to_operand_map.size(), 2u);
+
+    // Verify the input `mojo::Operand`.
+    ASSERT_EQ(graph_info->input_operands.size(), 1u);
+    auto input_operand_id = graph_info->input_operands[0];
+    auto input_operand_iter =
+        graph_info->id_to_operand_map.find(input_operand_id);
+    ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(input_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(input_operand_iter->value->data_type, expected_operand.data_type);
+    EXPECT_EQ(input_operand_iter->value->dimensions, input.dimensions);
+    EXPECT_EQ(input_operand_iter->value->name, "input");
+
+    // Verify the output `mojo::Operand`.
+    ASSERT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kOutput);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+    EXPECT_EQ(output_operand_iter->value->name, "output");
+
+    // Verify the `mojo::Operator`.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    ASSERT_TRUE(operation->is_linear());
+    auto& linear = operation->get_linear();
+    EXPECT_EQ(linear->input_operand_id, input_operand_id);
+    EXPECT_EQ(linear->output_operand_id, output_operand_id);
+    EXPECT_EQ(linear->alpha, expected_attributes.alpha);
+    EXPECT_EQ(linear->beta, expected_attributes.beta);
+  }
+};
+
+TEST_P(MLGraphTestMojo, LinearTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn_features::kWebMachineLearningNeuralNetwork);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test linear operator for 0-D scalar with default options.
+    LinearTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {}},
+        .expected_attributes = {.alpha = 1.0, .beta = 0}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test linear operator for 1-D tensor with default options.
+    LinearTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2}},
+        .expected_attributes = {.alpha = 1.0, .beta = 0}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test linear operator for 2-D tensor with given alpha.
+    LinearTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {3, 7}},
+        .options = {.alpha = 0.05},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {3, 7}},
+        .expected_attributes = {.alpha = 0.05, .beta = 0}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test linear operator for 3-D tensor with given beta.
+    LinearTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 5, 3}},
+        .options = {.beta = 0.07},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 5, 3}},
+        .expected_attributes = {.alpha = 1.0, .beta = 0.07}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test linear operator for 4-D tensor with given beta and beta.
+    LinearTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {1, 2, 2, 1}},
+        .options = {.alpha = 0.05, .beta = 0.07},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {1, 2, 2, 1}},
+        .expected_attributes = {.alpha = 0.05, .beta = 0.07}}
         .Test(*this, scope, builder);
   }
 }
