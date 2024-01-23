@@ -16,8 +16,10 @@ namespace base::trace_event {
 class ETWInterceptor::Delegate
     : public perfetto::TrackEventStateTracker::Delegate {
  public:
-  explicit Delegate(InterceptorContext& context)
-      : context_(&context), locked_self_(context_->GetInterceptorLocked()) {}
+  explicit Delegate(perfetto::LockedHandle<ETWInterceptor> locked_self)
+      : locked_self_(std::move(locked_self)) {
+    DCHECK(locked_self_);
+  }
   ~Delegate() override;
 
   perfetto::TrackEventStateTracker::SessionState* GetSessionState() override;
@@ -27,7 +29,6 @@ class ETWInterceptor::Delegate
       const perfetto::TrackEventStateTracker::ParsedTrackEvent&) override;
 
  private:
-  raw_ptr<InterceptorContext> context_;
   perfetto::LockedHandle<ETWInterceptor> locked_self_;
 };
 
@@ -95,7 +96,12 @@ void ETWInterceptor::Register(TlmProvider* provider) {
 
 void ETWInterceptor::OnTracePacket(InterceptorContext context) {
   auto& tls = context.GetThreadLocalState();
-  Delegate delegate(context);
+  perfetto::LockedHandle<ETWInterceptor> locked_self =
+      context.GetInterceptorLocked();
+  if (!locked_self) {
+    return;
+  }
+  Delegate delegate(std::move(locked_self));
   perfetto::protos::pbzero::TracePacket::Decoder packet(
       context.packet_data.data, context.packet_data.size);
   perfetto::TrackEventStateTracker::ProcessTracePacket(
