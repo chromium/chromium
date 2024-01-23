@@ -102,11 +102,6 @@ void PersonalDataManagerCleaner::ApplyAddressFixesAndCleanups() {
   is_profile_cleanup_pending_ = false;
 }
 
-void PersonalDataManagerCleaner::CleanupCreditCardData() {
-  DeleteDisusedCreditCards();
-  ClearCreditCardNonSettingsOrigins();
-}
-
 bool PersonalDataManagerCleaner::ApplyAddressDedupingRoutine() {
   // Check if de-duplication has already been performed on this major version.
   if (!is_autofill_profile_dedupe_pending_) {
@@ -278,48 +273,6 @@ bool PersonalDataManagerCleaner::DeleteDisusedAddresses() {
   }
 
   AutofillMetrics::LogNumberOfAddressesDeletedForDisuse(num_deleted_addresses);
-
-  return true;
-}
-
-void PersonalDataManagerCleaner::ClearCreditCardNonSettingsOrigins() {
-  bool has_updated = false;
-
-  for (CreditCard* card : personal_data_manager_->GetLocalCreditCards()) {
-    if (card->origin() != kSettingsOrigin && !card->origin().empty()) {
-      card->set_origin(std::string());
-      personal_data_manager_->GetLocalDatabase()->UpdateCreditCard(*card);
-      has_updated = true;
-    }
-  }
-
-  // Refresh the local cache and send notifications to observers if a changed
-  // was made.
-  if (has_updated)
-    personal_data_manager_->Refresh();
-}
-
-bool PersonalDataManagerCleaner::DeleteDisusedCreditCards() {
-  // Only delete local cards, as server cards are managed by Payments.
-  auto cards = personal_data_manager_->GetLocalCreditCards();
-
-  // Early exit when there is no local cards.
-  if (cards.empty())
-    return true;
-
-  std::vector<CreditCard> cards_to_delete;
-  for (CreditCard* card : cards) {
-    if (card->IsDeletable()) {
-      cards_to_delete.push_back(*card);
-    }
-  }
-
-  size_t num_deleted_cards = cards_to_delete.size();
-
-  if (num_deleted_cards > 0)
-    personal_data_manager_->DeleteLocalCreditCards(cards_to_delete);
-
-  AutofillMetrics::LogNumberOfCreditCardsDeletedForDisuse(num_deleted_cards);
 
   return true;
 }

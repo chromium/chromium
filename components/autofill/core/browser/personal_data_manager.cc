@@ -50,6 +50,7 @@
 #include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
+#include "components/autofill/core/browser/payments/payments_data_cleaner.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
@@ -450,6 +451,7 @@ void PersonalDataManager::Init(
 
   personal_data_manager_cleaner_ = std::make_unique<PersonalDataManagerCleaner>(
       this, alternative_state_name_map_updater_.get(), pref_service);
+  payments_data_cleaner_ = std::make_unique<PaymentsDataCleaner>(this);
 
   // Potentially import profiles for testing. `Init()` is called whenever the
   // corresponding Chrome profile is created. This is either during start-up or
@@ -636,7 +638,7 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
     is_data_loaded_ = true;
     LogStoredDataMetrics();
     personal_data_manager_cleaner_->MaybeCleanupAddressData();
-    personal_data_manager_cleaner_->CleanupCreditCardData();
+    payments_data_cleaner_->CleanupPaymentsData();
   }
   NotifyPersonalDataObserver();
 }

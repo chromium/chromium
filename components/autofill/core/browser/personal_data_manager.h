@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
+#include "components/autofill/core/browser/payments/payments_data_cleaner.h"
 #include "components/autofill/core/browser/personal_data_manager_cleaner.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
@@ -740,7 +741,7 @@ class PersonalDataManager : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, LogStoredCreditCardMetrics);
 
   friend class ::PaymentsSuggestionBottomSheetMediatorTest;
-  friend class PersonalDataManagerCleaner;
+  friend class PaymentsDataCleaner;
   friend class VirtualCardEnrollmentManagerTest;
 
   // Used to get a pointer to the strike database for migrating existing
@@ -985,10 +986,11 @@ class PersonalDataManager : public KeyedService,
   // Pref registrar for managing the change observers.
   PrefChangeRegistrar pref_registrar_;
 
-  // PersonalDataManagerCleaner is used to apply various address and credit
-  // card fixes/cleanups one time at browser startup or when the sync starts.
-  // PersonalDataManagerCleaner is declared as a friend class.
+  // The *DataCleaner classes are used to apply various address and payment
+  // cleanups (e.g. deduplication, disused data removal) at browser startup or
+  // when the sync starts.
   std::unique_ptr<PersonalDataManagerCleaner> personal_data_manager_cleaner_;
+  std::unique_ptr<PaymentsDataCleaner> payments_data_cleaner_;
 
   // A timely ordered list of ongoing changes for each profile.
   std::unordered_map<std::string, std::deque<QueuedAutofillProfileChange>>

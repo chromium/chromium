@@ -18,9 +18,8 @@ namespace autofill {
 
 class PersonalDataManager;
 
-// PersonalDataManagerCleaner is responsible for applying address and credit
-// card cleanups once on browser startup provided that the sync is enabled or
-// when the sync starts.
+// PersonalDataManagerCleaner is responsible for applying address cleanups once
+// on browser startup provided that the sync is enabled or when the sync starts.
 class PersonalDataManagerCleaner {
  public:
   PersonalDataManagerCleaner(
@@ -37,9 +36,6 @@ class PersonalDataManagerCleaner {
 
   // Applies address cleanups if all address Autofill `model_type`s are enabled.
   void MaybeCleanupAddressDataAfterSyncChange(syncer::ModelType model_type);
-
-  // Applies credit card cleanups.
-  void CleanupCreditCardData();
 
  protected:
   friend class PersonalDataManagerCleanerTest;
@@ -68,13 +64,6 @@ class PersonalDataManagerCleaner {
 
   // Tries to delete disused addresses on startup.
   bool DeleteDisusedAddresses();
-
-  // Tries to delete disused credit cards on startup.
-  bool DeleteDisusedCreditCards();
-
-  // Clears the value of the origin field of cards that were not created from
-  // the settings page.
-  void ClearCreditCardNonSettingsOrigins();
 
   // True if autofill profile dedupe needs to be performed.
   bool is_autofill_profile_dedupe_pending_ = true;
