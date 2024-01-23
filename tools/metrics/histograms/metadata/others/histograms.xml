@@ -6696,7 +6696,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LoadingPredictor.LcppStatCorruptedAtLearnTime" enum="Boolean"
-    expires_after="2024-02-01">
+    expires_after="2024-05-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -6821,7 +6821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LoadingPredictor.SetLcppNavigationHint.Status"
-    enum="LcppHintStatus" expires_after="2024-02-01">
+    enum="LcppHintStatus" expires_after="2024-05-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
