@@ -957,4 +957,30 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForRejectionErrors) {
       QuickStartMetrics::GaiaAuthenticationResult::kRejection, 1);
 }
 
+TEST_F(SecondDeviceAuthBrokerTest,
+       FetchAuthCodeLogsMetricsForAdditionalChallengesOnSourceResponse) {
+  base::HistogramTester histogram_tester;
+
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "sessionStatus": "PENDING",
+        "targetSessionIdentifier": "fake-target-session",
+        "sourceDeviceFallbackUrl": "https://example.com",
+        "email": "fake-user@example.com"
+      }
+    )"));
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  ASSERT_THAT(response,
+              VariantWith<AuthCodeAdditionalChallengesOnSourceResponse>(_));
+
+  histogram_tester.ExpectBucketCount(
+      "QuickStart.GaiaAuthentication.Result",
+      /*sample=*/
+      QuickStartMetrics::GaiaAuthenticationResult::
+          kAdditionalChallengesOnSource,
+      1);
+}
+
 }  //  namespace ash::quick_start

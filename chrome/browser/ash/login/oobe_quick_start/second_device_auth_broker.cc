@@ -476,6 +476,9 @@ void RunAuthCodeCallbackWithAdditionalChallengesOnSourceResponse(
   }
   additional_challenges_response.fallback_url = *source_device_fallback_url;
 
+  metrics.RecordGaiaAuthenticationRequestEnded(
+      QuickStartMetrics::GaiaAuthenticationResult::
+          kAdditionalChallengesOnSource);
   std::move(auth_code_callback).Run(additional_challenges_response);
 }
 
