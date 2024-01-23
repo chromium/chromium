@@ -133,6 +133,14 @@ const char kOnDeviceModelTimeoutCount[] =
 const char kOnDevicePerformanceClass[] =
     "optimization_guide.on_device.performance_class";
 
+// Stores the version of the last downloaded on-device model.
+const char kOnDeviceBaseModelVersion[] =
+    "optimization_guide.on_device.base_model_version";
+
+// Stores the name of the last downloaded on-device model.
+const char kOnDeviceBaseModelName[] =
+    "optimization_guide.on_device.base_model_name";
+
 // A dictionary pref that stores the file paths that need to be deleted as keys.
 // The value will not be used.
 const char kStoreFilePathsToDelete[] =
@@ -188,6 +196,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(localstate::kOnDeviceModelCrashCount, 0);
   registry->RegisterIntegerPref(localstate::kOnDeviceModelTimeoutCount, 0);
   registry->RegisterIntegerPref(localstate::kOnDevicePerformanceClass, 0);
+  registry->RegisterStringPref(localstate::kOnDeviceBaseModelVersion,
+                               std::string());
+  registry->RegisterStringPref(localstate::kOnDeviceBaseModelName,
+                               std::string());
   registry->RegisterDictionaryPref(localstate::kStoreFilePathsToDelete);
   registry->RegisterTimePref(
       localstate::kLastTimeOnDeviceEligibleFeatureWasUsed, base::Time::Min());

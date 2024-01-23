@@ -117,7 +117,7 @@ void OnDeviceModelServiceController::Init() {
         on_device_component_state_manager_->GetState();
     if (state) {
       SetModelPath(state->GetInstallDirectory(),
-                   state->GetVersion().GetString());
+                   state->GetComponentVersion().GetString());
     }
   }
 }
@@ -303,7 +303,8 @@ void OnDeviceModelServiceController::StateChanged(
   }
 
   if (state) {
-    SetModelPath(state->GetInstallDirectory(), state->GetVersion().GetString());
+    SetModelPath(state->GetInstallDirectory(),
+                 state->GetComponentVersion().GetString());
   } else {
     ClearModelPath();
   }
