@@ -4,6 +4,8 @@
 
 #include "components/content_settings/core/browser/cookie_settings.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -27,6 +29,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
@@ -60,8 +63,9 @@ CookieSettings::CookieSettings(
     tracking_protection_enabled_for_3pcd_ =
         tracking_protection_settings_->IsTrackingProtection3pcdEnabled();
   }
-  pref_change_registrar_.Init(prefs);
-  pref_change_registrar_.Add(
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(prefs);
+  pref_change_registrar_->Add(
       prefs::kCookieControlsMode,
       base::BindRepeating(&CookieSettings::OnCookiePreferencesChanged,
                           base::Unretained(this)));
@@ -304,7 +308,7 @@ void CookieSettings::ShutdownOnUIThread() {
   DCHECK(thread_checker_.CalledOnValidThread());
   tracking_protection_settings_ = nullptr;
   tracking_protection_settings_observation_.Reset();
-  pref_change_registrar_.RemoveAll();
+  pref_change_registrar_.reset();
 }
 
 // Returns whether third-party cookie blocking should be bypassed (i.e. always
@@ -378,6 +382,7 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
 #else
 bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
   DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK(pref_change_registrar_);
 
   if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
     return true;
@@ -390,7 +395,7 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
   }
 
   CookieControlsMode mode = static_cast<CookieControlsMode>(
-      pref_change_registrar_.prefs()->GetInteger(prefs::kCookieControlsMode));
+      pref_change_registrar_->prefs()->GetInteger(prefs::kCookieControlsMode));
 
   switch (mode) {
     case CookieControlsMode::kBlockThirdParty:
@@ -445,6 +450,8 @@ void CookieSettings::OnBlockAllThirdPartyCookiesChanged() {
 }
 
 void CookieSettings::OnTrackingProtection3pcdChanged() {
+  DCHECK(pref_change_registrar_);
+
   bool new_tracking_protection_enabled_for_3pcd =
       tracking_protection_settings_->IsTrackingProtection3pcdEnabled();
   {
@@ -463,9 +470,9 @@ void CookieSettings::OnTrackingProtection3pcdChanged() {
   // If the user opted to block all 3PC while in the experiment, preserve that
   // preference if they are offboarded.
   if (!new_tracking_protection_enabled_for_3pcd &&
-      pref_change_registrar_.prefs()->GetBoolean(
+      pref_change_registrar_->prefs()->GetBoolean(
           prefs::kBlockAll3pcToggleEnabled)) {
-    pref_change_registrar_.prefs()->SetInteger(
+    pref_change_registrar_->prefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(CookieControlsMode::kBlockThirdParty));
   }

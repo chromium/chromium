@@ -286,7 +286,7 @@ class CookieSettings
   const scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
-  PrefChangeRegistrar pref_change_registrar_;
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   const bool is_incognito_;
   const char* extension_scheme_;  // Weak.
 
