@@ -2682,6 +2682,9 @@ void BrowserView::MaybeShowReadingListInSidePanelIPH() {
 }
 
 void BrowserView::MaybeShowExperimentalAIIPH() {
+  if (!browser()->is_type_normal()) {
+    return;
+  }
   auto* opt_guide_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(browser_->profile());
   if (opt_guide_service && opt_guide_service->ShouldShowExperimentalAIPromo()) {
