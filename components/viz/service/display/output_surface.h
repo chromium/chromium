@@ -142,6 +142,8 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     bool supports_non_backed_solid_color_overlays = false;
     // Whether the platform supports single pixel buffer protocol.
     bool supports_single_pixel_buffer = false;
+    // Whether make current needs to be called for swap buffers.
+    bool present_requires_make_current = true;
 
     // SkColorType for all supported buffer formats.
     SkColorType sk_color_types[static_cast<int>(gfx::BufferFormat::LAST) + 1] =

@@ -802,10 +802,9 @@ void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
       // historically and there are edge cases too.
       // For lacros, we do not call MakeCurrent here, and delay it where
       // appropriated.
-      //
-      // TODO(crbug.com/1494032): Extend that approach for other platforms.
       false;
 #else
+      capabilities_.present_requires_make_current &&
       !force_disable_makecurrent();  // Defaults to false.
 #endif
 
