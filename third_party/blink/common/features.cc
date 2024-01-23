@@ -2010,9 +2010,9 @@ const base::FeatureParam<bool>
         &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_from_loading_predictor",
         true};
 
-// Warms up service worker after service worker is stopped.
-const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnStopped{
-    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_stopped", false};
+// Warms up service worker after service worker is stopped on idle timeout.
+const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnIdleTimeout{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_idle_timeout", true};
 
 BASE_FEATURE(kStartMediaStreamCaptureIndicatorInBrowser,
              "StartMediaStreamCaptureIndicatorInBrowser",

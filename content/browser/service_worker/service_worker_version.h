@@ -1220,6 +1220,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   bool is_update_scheduled_ = false;
   bool in_dtor_ = false;
 
+  // If true, warms up service worker after service worker is stopped.
+  // (https://crbug.com/1431792).
+  bool will_warm_up_on_stopped_ = false;
+
   // Populated via network::mojom::URLResponseHead of the main script.
   std::unique_ptr<MainScriptResponse> main_script_response_;
 
