@@ -15,7 +15,6 @@ namespace {
 
 const base::Feature* kFeaturesExposedToJava[] = {
     &kAndroidAutofillBottomSheetWorkaround,
-    &kAndroidAutofillFormSubmissionCheckById,
     &kAndroidAutofillPrefillRequestsForLoginForms,
     &kAndroidAutofillSupportVisibilityChanges,
     &kAndroidAutofillUsePwmPredictionsForOverrides,
@@ -29,16 +28,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
 // the workaround in case any unexpected thing goes wrong.
 BASE_FEATURE(kAndroidAutofillBottomSheetWorkaround,
              "AndroidAutofillBottomSheetWorkaround",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, form submissions are reported to Android Autofill iff the
-// `FormGlobalId` of the submitted form matches that of the current Autofill
-// session.
-// If disabled, a similarity check is used that requires most (see
-// `FormDataAndroid::SimilarAs` for details) members variables of the forms and
-// their fields to be identical.
-BASE_FEATURE(kAndroidAutofillFormSubmissionCheckById,
-             "AndroidAutofillFormSubmissionCheckById",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, prefill requests (i.e. calls to

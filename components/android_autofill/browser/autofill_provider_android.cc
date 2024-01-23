@@ -426,9 +426,7 @@ void AutofillProviderAndroid::OnFormSubmitted(AndroidAutofillManager* manager,
                                               bool known_success,
                                               SubmissionSource source) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(b/297228856): Remove `!form_` check when
-  // `kAndroidAutofillFormSubmissionCheckById` launches.
-  if (!IsLinkedManager(manager) || !form_) {
+  if (!IsLinkedManager(manager)) {
     return;
   }
 
@@ -437,10 +435,7 @@ void AutofillProviderAndroid::OnFormSubmitted(AndroidAutofillManager* manager,
   // Even if the page modifies the form between the user interaction and the
   // form submission, we want to inform `AutofillManager` about the submission.
   // Otherwise no saving prompt can be offered.
-  if (base::FeatureList::IsEnabled(
-          features::kAndroidAutofillFormSubmissionCheckById)
-          ? !IsIdOfLinkedForm(form.global_id())
-          : !form_->SimilarFormAs(form)) {
+  if (!IsIdOfLinkedForm(form.global_id())) {
     return;
   }
 
