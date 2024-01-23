@@ -536,11 +536,17 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
   MockReleaseCallback release;
 
   auto* sii = context_provider()->SharedImageInterface();
+
+  // NOTE: The parameters passed below are largely arbitrary, as the contents of
+  // the SharedImage are not actually accessed in any way in this test.
+  // Nonetheless, set SharedImage usage to model an SI that is written via
+  // raster and then read by the display compositor (e.g., for canvas), in order
+  // to match a use case that would actually be put into a TransferableResource
+  // in production.
   gpu::Mailbox mailbox =
       sii->CreateSharedImage(SinglePlaneFormat::kRGBA_8888, gfx::Size(1, 1),
                              gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
                              kPremul_SkAlphaType,
-                             gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                                  gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                                  gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
                              "TestLabel", gpu::kNullSurfaceHandle)
