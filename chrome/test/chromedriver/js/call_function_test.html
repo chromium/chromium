@@ -14,7 +14,7 @@ function wrapArgs(value, w3c) {
 }
 
 function unwrapResult(value) {
-  return resolveReferences(JSON.parse(value[0]), [], value.slice(1));
+  return resolveReferences(JSON.parse(value[0]), value.slice(1));
 }
 
 function serialize(value) {
@@ -24,7 +24,7 @@ function serialize(value) {
 }
 
 function deserialize(serialized) {
-  return resolveReferences(JSON.parse(serialized[0]), [], serialized.slice(1));
+  return resolveReferences(JSON.parse(serialized[0]), serialized.slice(1));
 }
 
 function roundtrip(value) {
@@ -132,6 +132,20 @@ function testStaleRef() {
   assert(thrown);
 }
 
+function testDeserializeWithNodeIndexOutOfRange() {
+  const img = document.createElement("img");
+  document.body.appendChild(img);
+  const serialized = [serialize(img)[0]];
+  let thrown = false;
+  try {
+    deserialize(serialized);
+  } catch (e) {
+    thrown = true;
+    assertEquals(StatusCode.JAVA_SCRIPT_ERROR, e.code);
+  }
+  assert(thrown);
+}
+
 function testSerializationWithShadowDomAttached() {
   // Set up something in the shadow DOM.
   const host = document.body.appendChild(document.createElement("div"));
@@ -145,7 +159,28 @@ function testSerializationWithShadowDomAttached() {
   document.body.removeChild(host);
 }
 
-function testSerializationWithShadowDomDetachedChild() {
+function testSerializeDetachedElementInShadowTree() {
+  // Set up something in the shadow DOM.
+  const host = document.body.appendChild(document.createElement("div"));
+  const root = host.attachShadow({ mode: "open" });
+  const shadowDiv = root.appendChild(document.createElement("div"));
+
+  // Test with detached element in shadow DOM.
+  root.removeChild(shadowDiv);
+  let thrown = false;
+  try {
+    serialize(shadowDiv);
+    document.body.removeChild(host);
+  } catch (e) {
+    thrown = true;
+    document.body.removeChild(host);
+    assertEquals(StatusCode.STALE_ELEMENT_REFERENCE, e.code);
+  }
+
+  assert(thrown)
+}
+
+function testDeserializeDetachedElementInShadowTree() {
   // Set up something in the shadow DOM.
   const host = document.body.appendChild(document.createElement("div"));
   const root = host.attachShadow({ mode: "open" });
@@ -162,6 +197,84 @@ function testSerializationWithShadowDomDetachedChild() {
     thrown = true;
     document.body.removeChild(host);
     assertEquals(StatusCode.STALE_ELEMENT_REFERENCE, e.code);
+  }
+
+  assert(thrown)
+}
+
+function testSerializeElementInDetachedShadowTree() {
+  // Set up something in the shadow DOM.
+  const host = document.body.appendChild(document.createElement("div"));
+  const root = host.attachShadow({ mode: "open" });
+  const shadowDiv = root.appendChild(document.createElement("div"));
+
+  // Test with detached element in shadow DOM.
+  document.body.removeChild(host);
+  let thrown = false;
+  try {
+    serialize(shadowDiv);
+  } catch (e) {
+    thrown = true;
+    assertEquals(StatusCode.STALE_ELEMENT_REFERENCE, e.code);
+  }
+
+  assert(thrown)
+}
+
+function testDeserializeElementInDetachedShadowTree() {
+  // Set up something in the shadow DOM.
+  const host = document.body.appendChild(document.createElement("div"));
+  const root = host.attachShadow({ mode: "open" });
+  const shadowDiv = root.appendChild(document.createElement("div"));
+
+  // Test with detached element in shadow DOM.
+  const serialized = serialize(shadowDiv);
+  document.body.removeChild(host);
+  let thrown = false;
+  try {
+    deserialize(serialized);
+  } catch (e) {
+    thrown = true;
+    assertEquals(StatusCode.STALE_ELEMENT_REFERENCE, e.code);
+  }
+
+  assert(thrown)
+}
+
+function testSerializeDetachedShadowTreeRoot() {
+  // Set up something in the shadow DOM.
+  const host = document.body.appendChild(document.createElement("div"));
+  const root = host.attachShadow({ mode: "open" });
+  const shadowDiv = root.appendChild(document.createElement("div"));
+
+  // Test with detached element in shadow DOM.
+  document.body.removeChild(host);
+  let thrown = false;
+  try {
+    serialize(root);
+  } catch (e) {
+    thrown = true;
+    assertEquals(StatusCode.DETACHED_SHADOW_ROOT, e.code);
+  }
+
+  assert(thrown)
+}
+
+function testDeserializeDetachedShadowTreeRoot() {
+  // Set up something in the shadow DOM.
+  const host = document.body.appendChild(document.createElement("div"));
+  const root = host.attachShadow({ mode: "open" });
+  const shadowDiv = root.appendChild(document.createElement("div"));
+
+  // Test with detached element in shadow DOM.
+  const serialized = serialize(root);
+  document.body.removeChild(host);
+  let thrown = false;
+  try {
+    deserialize(serialized);
+  } catch (e) {
+    thrown = true;
+    assertEquals(StatusCode.DETACHED_SHADOW_ROOT, e.code);
   }
 
   assert(thrown)
@@ -244,7 +357,7 @@ function testCallFunctionNoArgs(runner) {
 function testCallFunctionThrows(runner) {
   let allComplete = 0;
   callFunction(function() { throw new Error("fake error"); },
-    []).then((result) => {
+    [], true, []).then((result) => {
       const unwrapped = unwrapResult(result);
       assertEquals(StatusCode.JAVA_SCRIPT_ERROR, unwrapped.status);
       assertEquals("fake error", unwrapped.value);
@@ -257,10 +370,12 @@ function testCallFunctionThrows(runner) {
       e.code = 77;
       e.message = "CUSTOM";
       throw e;
-  }, []).then((result) => {
+  }, [], true, []).then((result) => {
     const unwrapped = unwrapResult(result);
-    assertEquals(77, unwrapped.status);
-    assertEquals("CUSTOM", unwrapped.value);
+    assertEquals(StatusCode.JAVA_SCRIPT_ERROR, unwrapped.status);
+    const nestedError = JSON.parse(unwrapped.value);
+    assertEquals(77, nestedError.status);
+    assertEquals("CUSTOM", nestedError.value);
     if (allComplete)
       runner.continueTesting();
     allComplete += 1;
@@ -271,11 +386,11 @@ function testCallFunctionThrows(runner) {
 function testCallWithMalformedIdThrows() {
   const original = {};
   original[ELEMENT_KEY] = "malformed_id";
-  callFunction(function(){}, ...wrapArgs([original]).then(resultArray) => {
+  callFunction(function(){}, ...wrapArgs([original])).then((resultArray) => {
     const unwrapped = unwrapResult(result);
     assertEquals(StatusCode.STALE_ELEMENT_REFERENCE, unwrapped.status);
     assertEquals("stale element not found", unwrapped.value);
-  }
+  });
 }
 
 function testCallFunctionArgs(runner) {
