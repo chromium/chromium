@@ -846,4 +846,26 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForUnknownErrors) {
       /*sample=*/QuickStartMetrics::GaiaAuthenticationResult::kUnknownError, 1);
 }
 
+TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForSuccess) {
+  base::HistogramTester histogram_tester;
+
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "sessionStatus": "AUTHENTICATED",
+        "credentialData": {
+            "oauthToken": "fake-auth-code"
+        },
+        "email": "fake-user@example.com"
+      }
+    )"));
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  ASSERT_THAT(response, VariantWith<AuthCodeSuccessResponse>(_));
+
+  histogram_tester.ExpectBucketCount(
+      "QuickStart.GaiaAuthentication.Result",
+      /*sample=*/QuickStartMetrics::GaiaAuthenticationResult::kSuccess, 1);
+}
+
 }  //  namespace ash::quick_start

@@ -454,9 +454,12 @@ void RunAuthCodeCallbackWithAdditionalChallengesOnSourceResponse(
 
 // Runs `auth_code_callback` with the `auth_code` as success response.
 void RunAuthCodeCallback(
-    const std::string& email,
+    QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
+    const std::string& email,
     const std::string& auth_code) {
+  metrics.RecordGaiaAuthenticationRequestEnded(
+      QuickStartMetrics::GaiaAuthenticationResult::kSuccess);
   SecondDeviceAuthBroker::AuthCodeSuccessResponse response;
   response.email = email;
   response.auth_code = auth_code;
@@ -464,6 +467,7 @@ void RunAuthCodeCallback(
 }
 
 void ParseAuthCodeAndRunCallback(
+    QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
     base::Value::Dict* response) {
   base::Value::Dict* credential_data = response->FindDict(kCredentialDataKey);
@@ -484,8 +488,8 @@ void ParseAuthCodeAndRunCallback(
     return;
   }
 
-  RunAuthCodeCallback(/*email=*/*response->FindString(kEmailKey),
-                      std::move(auth_code_callback), *auth_code);
+  RunAuthCodeCallback(metrics, std::move(auth_code_callback),
+                      /*email=*/*response->FindString(kEmailKey), *auth_code);
 }
 
 }  // namespace
@@ -754,7 +758,7 @@ void SecondDeviceAuthBroker::RunAuthCodeCallbackFromParsedResponse(
         std::move(auth_code_callback), &response->GetDict());
     return;
   } else if (base::ToLowerASCII(*session_status) == "authenticated") {
-    ParseAuthCodeAndRunCallback(std::move(auth_code_callback),
+    ParseAuthCodeAndRunCallback(metrics_, std::move(auth_code_callback),
                                 &response->GetDict());
     return;
   }
