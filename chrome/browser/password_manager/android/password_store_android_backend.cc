@@ -332,7 +332,7 @@ enum class ActionOnApiError {
   // See prefs::kSavePasswordsSuspendedByError.
   kDisableSaving,
   // See PasswordStoreAndroidBackend::TryFixPassphraseErrorCb.
-  kTryFixPassphraseError,
+  kDisableSavingAndTryFixPassphraseError,
   kRetry,
   kNone,
 };
@@ -348,7 +348,7 @@ ActionOnApiError GetActionOnApiError(AndroidBackendAPIErrorCode api_error_code,
       return ActionOnApiError::kDisableSaving;
     case AndroidBackendAPIErrorCode::kPassphraseRequired: {
       return supports_passphrase_error_fix
-                 ? ActionOnApiError::kTryFixPassphraseError
+                 ? ActionOnApiError::kDisableSavingAndTryFixPassphraseError
                  : ActionOnApiError::kEvict;
     }
     case AndroidBackendAPIErrorCode::kNetworkError:
@@ -469,7 +469,7 @@ PasswordStoreBackendError BackendErrorFromAndroidBackendError(
     // reserved for eviction.
     case ActionOnApiError::kDisableSaving:
     case ActionOnApiError::kNone:
-    case ActionOnApiError::kTryFixPassphraseError:
+    case ActionOnApiError::kDisableSavingAndTryFixPassphraseError:
       return PasswordStoreBackendError(
           error_type, PasswordStoreBackendErrorRecoveryType::kRecoverable);
   }
@@ -1037,12 +1037,12 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
         }
         break;
       }
-      case ActionOnApiError::kDisableSaving:
-        prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);
-        break;
-      case ActionOnApiError::kTryFixPassphraseError:
+      case ActionOnApiError::kDisableSavingAndTryFixPassphraseError:
         CHECK(try_fix_passphrase_error_cb_);
         try_fix_passphrase_error_cb_.Run(sync_service_);
+        ABSL_FALLTHROUGH_INTENDED;
+      case ActionOnApiError::kDisableSaving:
+        prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);
         break;
       case ActionOnApiError::kNone:
         break;
