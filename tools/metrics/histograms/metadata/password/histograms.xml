@@ -2927,7 +2927,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ProfileStore.TotalAccountsBeforeInitialSync"
-    units="accounts" expires_after="M123">
+    units="accounts" expires_after="M130">
   <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
