@@ -203,9 +203,10 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*presupplied_trigger_id=*/
       features::kHappinessTrackingSurveysForSecurityPageTriggerId.Get(),
       std::vector<std::string>{},
-      std::vector<std::string>{
-          "Security Page User Action", "Safe Browsing Setting Before Trigger",
-          "Safe Browsing Setting After Trigger", "Client Channel"});
+      std::vector<std::string>{"Security Page User Action",
+                               "Safe Browsing Setting Before Trigger",
+                               "Safe Browsing Setting After Trigger",
+                               "Client Channel", "Time On Page"});
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopPrivacyGuide,
       kHatsSurveyTriggerPrivacyGuide);

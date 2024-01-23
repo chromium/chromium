@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/hats_handler.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -134,6 +135,10 @@ void HatsHandler::HandleSecurityPageHatsRequest(const base::Value::List& args) {
       /*failure_callback*/ base::DoNothing(),
       /*product_specific_bits_data=*/{},
       /*product_specific_string_data=*/product_specific_string_data);
+
+  // Log histogram that indicates that a survey is requested from the security
+  // page.
+  base::UmaHistogramBoolean("Feedback.SecurityPage.SurveyRequested", true);
 }
 
 /**
