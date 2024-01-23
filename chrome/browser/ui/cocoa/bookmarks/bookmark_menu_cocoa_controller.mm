@@ -235,4 +235,10 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
   [self openURLForGUID:std::move(guid)];
 }
 
++ (void)openBookmarkByGUID:(base::Uuid)guid
+                 inProfile:(Profile*)profile
+           withDisposition:(WindowOpenDisposition)disposition {
+  OpenBookmarkByGUID(disposition, guid, profile);
+}
+
 @end  // BookmarkMenuCocoaController

@@ -22,9 +22,11 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/bookmarks/test/test_bookmark_client.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
@@ -119,4 +121,75 @@ TEST_F(BookmarkMenuCocoaControllerTest, TestOpenItemAfterModelLoaded) {
   navigation_observer.WaitForNavigationFinished();
   EXPECT_EQ(navigation_observer.last_navigation_url(), kUrl2);
   EXPECT_EQ(2, user_actions.GetActionCount("TopMenu_Bookmarks_LaunchURL"));
+}
+
+TEST_F(BookmarkMenuCocoaControllerTest, TestOpenItemWhileModelLoading) {
+  const GURL kUrl1("http://site1.com");
+  const GURL kUrl2("http://site2.com");
+
+  bookmarks::test::WaitForBookmarkModelToLoad(model());
+  ASSERT_TRUE(model()->loaded());
+
+  const BookmarkNode* bookmark_bar = model()->bookmark_bar_node();
+  const BookmarkNode* node1 = model()->AddURL(bookmark_bar, 0, u"", kUrl1);
+  const BookmarkNode* node2 = model()->AddURL(bookmark_bar, 1, u"", kUrl2);
+
+  const base::Uuid uuid1 = node1->uuid();
+  const base::Uuid uuid2 = node2->uuid();
+
+  // Ensure that the bookmarks JSON file is written to disk.
+  model()->CommitPendingWriteForTest();
+  task_environment()->RunUntilIdle();
+
+  // Mimic a scenario where a new profile was created and BookmarkModel is in
+  // the process of loading.
+  BookmarkModelFactory::GetInstance()->SetTestingFactoryAndUse(
+      profile(), base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+        auto model = std::make_unique<BookmarkModel>(
+            std::make_unique<bookmarks::TestBookmarkClient>());
+        model->Load(context->GetPath(),
+                    bookmarks::StorageType::kLocalOrSyncable);
+        return model;
+      }));
+
+  ASSERT_FALSE(model()->loaded());
+
+  AddTab(browser(), GURL("about:blank"));
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  CHECK(contents);
+
+  content::TestNavigationObserver navigation_observer(contents);
+
+  ASSERT_EQ(navigation_observer.last_navigation_url(), GURL());
+
+  base::UserActionTester user_actions;
+
+  [BookmarkMenuCocoaController
+      openBookmarkByGUID:uuid1
+               inProfile:profile()
+         withDisposition:WindowOpenDisposition::CURRENT_TAB];
+
+  // While the model is loading, no navigation could have happened.
+  EXPECT_EQ(nullptr, contents->GetController().GetPendingEntry());
+
+  bookmarks::test::WaitForBookmarkModelToLoad(model());
+  ASSERT_TRUE(model()->loaded());
+  ASSERT_NE(
+      nullptr,
+      model()->GetNodeByUuid(
+          uuid1, BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  ASSERT_NE(
+      nullptr,
+      model()->GetNodeByUuid(
+          uuid2, BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+
+  // Once the model is loaded, the bookmark should open.
+  CommitPendingLoad(&contents->GetController());
+  navigation_observer.WaitForNavigationFinished();
+
+  EXPECT_EQ(navigation_observer.last_navigation_url(), kUrl1);
+  EXPECT_EQ(1, user_actions.GetActionCount("TopMenu_Bookmarks_LaunchURL"));
 }
