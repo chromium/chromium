@@ -871,6 +871,8 @@ static_library("browser") {
     "net/net_error_tab_helper.h",
     "net/net_export_helper.cc",
     "net/net_export_helper.h",
+    "net/network_annotation_monitor.cc",
+    "net/network_annotation_monitor.h",
     "net/probe_message.cc",
     "net/probe_message.h",
     "net/profile_network_context_service.cc",
@@ -2004,6 +2006,7 @@ static_library("browser") {
     "//pdf:buildflags",
     "//services/data_decoder/public/mojom",
     "//services/image_annotation/public/mojom",
+    "//services/network/public/mojom",
     "//sql",
   ]
 

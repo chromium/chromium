@@ -133,6 +133,8 @@ BASE_DECLARE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff);
 
 BASE_DECLARE_FEATURE(kOmniboxTriggerForNoStatePrefetch);
 
+BASE_DECLARE_FEATURE(kNetworkAnnotationMonitoring);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_

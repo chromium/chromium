@@ -335,4 +335,11 @@ BASE_FEATURE(kOmniboxTriggerForNoStatePrefetch,
              "OmniboxTriggerForNoStatePrefetch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This feature enables monitoring of first-party network requests in order to
+// find possible violations. Example: A Chrome policy is set to disabled but the
+// network request controlled by that policy is observed.
+BASE_FEATURE(kNetworkAnnotationMonitoring,
+             "NetworkAnnotationMonitoring",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

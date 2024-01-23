@@ -1362,6 +1362,7 @@ mojom("mojom") {
     "key_pinning.mojom",
     "mdns_responder.mojom",
     "net_log.mojom",
+    "network_annotation_monitor.mojom",
     "network_context.mojom",
     "network_quality_estimator_manager.mojom",
     "network_service.mojom",

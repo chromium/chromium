@@ -23,6 +23,7 @@ import "services/network/public/mojom/network_context.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/network_interface.mojom";
 import "services/network/public/mojom/proxy_config.mojom";
+import "services/network/public/mojom/network_annotation_monitor.mojom";
 import "services/network/public/mojom/network_interface_change_listener.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_quality_estimator_manager.mojom";
@@ -409,4 +410,9 @@ interface NetworkService {
   [EnableIf=is_linux]
   SetGssapiLibraryLoadObserver(
     pending_remote<GssapiLibraryLoadObserver> gssapi_library_load_observer);
+
+  // Set NetworkAnnotationMonitor remote. This allows network calls to be
+  // reported via `NotifyNetworkRequestWithAnnotation`.
+  SetNetworkAnnotationMonitor(
+    pending_remote<network.mojom.NetworkAnnotationMonitor> remote);
 };

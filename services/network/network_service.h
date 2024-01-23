@@ -50,6 +50,7 @@
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/key_pinning.mojom.h"
 #include "services/network/public/mojom/net_log.mojom.h"
+#include "services/network/public/mojom/network_annotation_monitor.mojom.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_quality_estimator_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -141,6 +142,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // URLRequestContext's known to |this|.
   void CreateNetLogEntriesForActiveObjects(
       net::NetLog::ThreadSafeObserver* observer);
+
+  void SetNetworkAnnotationMonitor(
+      mojo::PendingRemote<network::mojom::NetworkAnnotationMonitor> remote)
+      override;
+
+  void NotifyNetworkRequestWithAnnotation(
+      net::NetworkTrafficAnnotationTag traffic_annotation);
 
   // mojom::NetworkService implementation:
   void SetParams(mojom::NetworkServiceParamsPtr params) override;
@@ -366,6 +374,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
     ConfigureStubHostResolver,
     SetTestDohConfigForTesting,
   };
+
+  mojo::Remote<network::mojom::NetworkAnnotationMonitor>
+      network_annotation_monitor_;
 
   std::unique_ptr<RestrictedCookieManager::UmaMetricsUpdater> metrics_updater_;
 

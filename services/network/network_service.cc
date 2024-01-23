@@ -40,6 +40,7 @@
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/system/functions.h"
@@ -531,6 +532,18 @@ void NetworkService::ReplaceSystemDnsConfigForTesting(
   // Force-disable the system resolver so that HostResolverManager will actually
   // use the replacement config.
   host_resolver_manager_->DisableSystemResolverForTesting();  // IN-TEST
+}
+
+void NetworkService::SetNetworkAnnotationMonitor(
+    mojo::PendingRemote<network::mojom::NetworkAnnotationMonitor> remote) {
+  network_annotation_monitor_.Bind(std::move(remote));
+}
+
+void NetworkService::NotifyNetworkRequestWithAnnotation(
+    net::NetworkTrafficAnnotationTag traffic_annotation) {
+  if (network_annotation_monitor_.is_bound()) {
+    network_annotation_monitor_->Report(traffic_annotation.unique_id_hash_code);
+  }
 }
 
 void NetworkService::SetTestDohConfigForTesting(

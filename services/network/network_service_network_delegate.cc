@@ -26,6 +26,7 @@
 #include "services/network/network_service.h"
 #include "services/network/network_service_proxy_delegate.h"
 #include "services/network/pending_callback_chain.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/url_loader.h"
 #include "url/gurl.h"
 
@@ -86,10 +87,15 @@ int NetworkServiceNetworkDelegate::OnBeforeURLRequest(
 
   MaybeTruncateReferrer(request, *effective_url);
 
+  NetworkService* network_service = network_context_->network_service();
+  if (network_service) {
+    network_service->NotifyNetworkRequestWithAnnotation(
+        request->traffic_annotation());
+  }
+
   if (!loader)
     return net::OK;
 
-  NetworkService* network_service = network_context_->network_service();
   if (network_service) {
     loader->SetEnableReportingRawHeaders(network_service->HasRawHeadersAccess(
         loader->GetProcessId(), *effective_url));
