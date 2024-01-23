@@ -11610,9 +11610,6 @@ test("chrome_app_unittests") {
     "//components/heap_profiling/in_process",
     "//components/safe_browsing:buildflags",
   ]
-  if (!is_fuchsia && !is_mac) {
-    deps += [ "//third_party/breakpad:client" ]
-  }
   if (is_android) {
     sources += [ "../app/android/chrome_main_delegate_android_unittest.cc" ]
   }
