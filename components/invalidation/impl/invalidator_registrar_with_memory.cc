@@ -11,6 +11,7 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -133,11 +134,18 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
 
 InvalidatorRegistrarWithMemory::~InvalidatorRegistrarWithMemory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(registered_handler_to_topics_map_.empty() && handlers_.empty())
-      << "Registered handlers during destruction: "
-      << DumpRegisteredHandlers(handlers_) << ". Handlers listening to topics: "
-      << DumpRegisteredHandlersToTopics(registered_handler_to_topics_map_)
-      << ".";
+  if (!registered_handler_to_topics_map_.empty() || !handlers_.empty()) {
+    // TODO(crbug.com/1475104) figure out with these logs.
+    // Note: This can't be just a `CHECK(...) << ...` because `CHECK` eats the
+    // message in production builds.
+    LOG(ERROR) << "Registered handlers during destruction: "
+               << DumpRegisteredHandlers(handlers_)
+               << ". Handlers listening to topics: "
+               << DumpRegisteredHandlersToTopics(
+                      registered_handler_to_topics_map_)
+               << ".";
+    NOTREACHED_NORETURN();
+  }
 }
 
 void InvalidatorRegistrarWithMemory::AddObserver(InvalidationHandler* handler) {
