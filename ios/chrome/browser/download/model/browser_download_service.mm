@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
+#import "net/base/url_util.h"
 
 BrowserDownloadService::BrowserDownloadService(
     web::DownloadController* download_controller)
@@ -69,7 +70,8 @@ void BrowserDownloadService::OnDownloadCreated(
       tab_helper->Download(std::move(task));
 
   } else if (task->GetMimeType() == kMobileConfigurationType &&
-             task->GetOriginalUrl().SchemeIsHTTPOrHTTPS()) {
+             (task->GetOriginalUrl().SchemeIsCryptographic() ||
+              net::IsLocalhost(task->GetOriginalUrl()))) {
     // SFSafariViewController can only open http and https URLs.
     SafariDownloadTabHelper* tab_helper =
         SafariDownloadTabHelper::FromWebState(web_state);

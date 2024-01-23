@@ -1448,7 +1448,7 @@ See your search engine’s instructions for deleting your search history, if app
           Continue
       </message>
       <message name="IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_MESSAGE" desc="Warning message displayed inside an alert before downloading a .mobileconfig file.[iOS only]">
-          This website is trying to download a configuration profile.
+          Continue downloading a configuration profile from <ph name="WEBSITE">$1<ex>example.com</ex></ph>?
       </message>
       <message name="IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE" desc="Title of the alert displaying a warning message before downloading a .mobileconfig file.[iOS only]">
           Configuration Profile Available
