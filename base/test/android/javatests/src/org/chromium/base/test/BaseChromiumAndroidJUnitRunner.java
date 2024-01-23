@@ -148,7 +148,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
         // Replace the application with our wrapper here for any code that runs between
         // Application.attachBaseContext() and our BaseJUnit4TestRule (e.g. Application.onCreate()).
-        ContextUtils.initApplicationContextForTests(sInMemorySharedPreferencesContext);
+        ContextUtils.initApplicationContextNoResetForTests(sInMemorySharedPreferencesContext);
         return ret;
     }
 

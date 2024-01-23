@@ -114,17 +114,26 @@ public class ContextUtils {
      * @param appContext The new application context.
      */
     public static void initApplicationContextForTests(Context appContext) {
+        Context prevValue = sApplicationContext;
         initJavaSideApplicationContext(appContext);
+
+        // initApplicationContext() lets <clinit> create sSharedPreferences, but that does not work
+        // when setting it multiple times.
+        SharedPreferences prevPrefs = Holder.sSharedPreferences;
         Holder.sSharedPreferences = fetchAppSharedPreferences();
+
+        ResettersForTesting.register(
+                () -> {
+                    sApplicationContext = prevValue;
+                    Holder.sSharedPreferences = prevPrefs;
+                });
     }
 
-    /**
-     * Tests that use the applicationContext may unintentionally use the Context
-     * set by a previously run test.
-     */
-    public static void clearApplicationContextForTests() {
-        sApplicationContext = null;
-        Holder.sSharedPreferences = null;
+    // For use by instrumentation runner only.
+    // TODO(agrieve): Make package-private
+    public static void initApplicationContextNoResetForTests(Context appContext) {
+        initJavaSideApplicationContext(appContext);
+        Holder.sSharedPreferences = fetchAppSharedPreferences();
     }
 
     private static void initJavaSideApplicationContext(Context appContext) {

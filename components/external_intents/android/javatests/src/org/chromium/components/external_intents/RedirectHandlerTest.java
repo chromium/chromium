@@ -14,7 +14,6 @@ import android.test.mock.MockPackageManager;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,11 +63,6 @@ public class RedirectHandlerTest {
     public void setUp() {
         mContextToRestore = ContextUtils.getApplicationContext();
         ContextUtils.initApplicationContextForTests(new TestContext());
-    }
-
-    @After
-    public void tearDown() {
-        ContextUtils.initApplicationContextForTests(mContextToRestore);
     }
 
     private List<ResolveInfo> queryIntentActivities(Intent intent) {

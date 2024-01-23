@@ -398,16 +398,15 @@ public class UrlOverridingTest {
 
     private ActivityMonitor mActivityMonitor;
     private EmbeddedTestServer mTestServer;
-    private Context mContextToRestore;
     private TestContext mTestContext;
     private String mNonBrowserPackageName;
 
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
-        mContextToRestore = ContextUtils.getApplicationContext();
         mNonBrowserPackageName = getNonBrowserPackageName();
-        mTestContext = new TestContext(mContextToRestore, mNonBrowserPackageName);
+        mTestContext =
+                new TestContext(ContextUtils.getApplicationContext(), mNonBrowserPackageName);
         ContextUtils.initApplicationContextForTests(mTestContext);
         IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
         filter.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -425,9 +424,6 @@ public class UrlOverridingTest {
 
     @After
     public void tearDown() {
-        if (mContextToRestore != null) {
-            ContextUtils.initApplicationContextForTests(mContextToRestore);
-        }
         ModalDialogTestUtils.overrideEnableButtonTapProtection(true);
     }
 
