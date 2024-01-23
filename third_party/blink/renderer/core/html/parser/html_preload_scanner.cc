@@ -326,12 +326,15 @@ class TokenPreloadScanner::StartTagScanner {
               : (is_async_ ? RenderBlockingBehavior::kPotentiallyBlocking
                            : RenderBlockingBehavior::kNonBlocking);
     } else if (is_script || type == ResourceType::kCSSStyleSheet) {
-      // CSS here is render blocking, as non blocking doesn't get preloaded.
-      // JS here is a blocking one, as others would've been caught by the
-      // previous condition.
+      // CSS here is render blocking unless it's disabled, as non blocking
+      // doesn't get preloaded. JS here is a blocking one, as others would've
+      // been caught by the previous condition.
       render_blocking_behavior =
-          treat_links_as_in_body ? RenderBlockingBehavior::kInBodyParserBlocking
-                                 : RenderBlockingBehavior::kBlocking;
+          type == ResourceType::kCSSStyleSheet && disabled_attr_set_
+              ? RenderBlockingBehavior::kNonBlocking
+          : treat_links_as_in_body
+              ? RenderBlockingBehavior::kInBodyParserBlocking
+              : RenderBlockingBehavior::kBlocking;
     }
     request->SetRenderBlockingBehavior(render_blocking_behavior);
 
@@ -520,6 +523,8 @@ class TokenPreloadScanner::StartTagScanner {
       SetFetchPriorityHint(attribute_value);
     } else if (Match(attribute_name, html_names::kBlockingAttr)) {
       blocking_attribute_value_ = attribute_value;
+    } else if (Match(attribute_name, html_names::kDisabledAttr)) {
+      disabled_attr_set_ = true;
     }
   }
 
@@ -801,6 +806,7 @@ class TokenPreloadScanner::StartTagScanner {
       network::mojom::ReferrerPolicy::kDefault;
   bool integrity_attr_set_ = false;
   bool is_async_ = false;
+  bool disabled_attr_set_ = false;
   IntegrityMetadataSet integrity_metadata_;
   SubresourceIntegrity::IntegrityFeatures integrity_features_;
   LoadingAttributeValue loading_attr_value_ = LoadingAttributeValue::kAuto;

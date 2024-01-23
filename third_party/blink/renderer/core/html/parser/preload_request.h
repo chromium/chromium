@@ -135,6 +135,10 @@ class CORE_EXPORT PreloadRequest {
     render_blocking_behavior_ = render_blocking_behavior;
   }
 
+  RenderBlockingBehavior GetRenderBlockingBehavior() {
+    return render_blocking_behavior_;
+  }
+
   bool IsAttributionReportingEligibleImgOrScript() const {
     return is_attribution_reporting_eligible_img_or_script_;
   }
