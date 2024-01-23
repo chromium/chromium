@@ -101,8 +101,7 @@ class CONTENT_EXPORT AttributionHost
   void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
-  void NotifyNavigationRegistrationData(NavigationHandle* navigation_handle,
-                                        bool is_final_response);
+  void NotifyNavigationRegistrationData(NavigationHandle* navigation_handle);
 
   // Keeps track of navigations for which we can register sources (i.e. All
   // conditions were met in `DidStartNavigation` and

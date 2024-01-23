@@ -189,8 +189,7 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
 
 void AttributionHost::DidRedirectNavigation(
     NavigationHandle* navigation_handle) {
-  NotifyNavigationRegistrationData(navigation_handle,
-                                   /*is_final_response=*/false);
+  NotifyNavigationRegistrationData(navigation_handle);
 }
 
 void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
@@ -199,8 +198,7 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  NotifyNavigationRegistrationData(navigation_handle,
-                                   /*is_final_response=*/true);
+  NotifyNavigationRegistrationData(navigation_handle);
 
   auto* attribution_manager =
       AttributionManager::FromWebContents(web_contents());
@@ -214,8 +212,7 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 }
 
 void AttributionHost::NotifyNavigationRegistrationData(
-    NavigationHandle* navigation_handle,
-    bool is_final_response) {
+    NavigationHandle* navigation_handle) {
   if (!ongoing_registration_eligible_navigations_.contains(
           navigation_handle->GetNavigationId())) {
     return;
@@ -229,6 +226,12 @@ void AttributionHost::NotifyNavigationRegistrationData(
   DCHECK(impression.has_value());
   DCHECK(navigation_handle->IsInPrimaryMainFrame());
   DCHECK(!navigation_handle->IsSameDocument());
+
+  // Populates `is_final_response` based on the headers to handle the case of an
+  // intercepted redirect. See https://crbug.com/1520612.
+  auto* headers = navigation_handle->GetResponseHeaders();
+  const bool is_final_response =
+      !(headers && headers->IsRedirect(/*location=*/nullptr));
 
   // On redirect, the reporting origin should be the origin of the request
   // responsible for initiating the redirect. At this point, the navigation
@@ -260,10 +263,9 @@ void AttributionHost::NotifyNavigationRegistrationData(
 
   bool had_header =
       attribution_manager->GetDataHostManager()
-          ->NotifyNavigationRegistrationData(
-              impression->attribution_src_token,
-              navigation_handle->GetResponseHeaders(), std::move(reporting_url),
-              impression->runtime_features);
+          ->NotifyNavigationRegistrationData(impression->attribution_src_token,
+                                             headers, std::move(reporting_url),
+                                             impression->runtime_features);
 
   if (had_header) {
     tracker->NotifySecureRegistrationAttempt();
