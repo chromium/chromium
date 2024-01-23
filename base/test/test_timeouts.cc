@@ -84,7 +84,7 @@ void InitializeTimeout(const char* switch_name,
   // add too many ChromeOS details into //base. Say in the future if we want to
   // set different values for a set of low spec ChromeOS boards, we should move
   // the logic somewhere.
-  constexpr int kTimeoutMultiplier = 2;
+  constexpr int kTimeoutMultiplier = 3;
 #else
   constexpr int kTimeoutMultiplier = 1;
 #endif
