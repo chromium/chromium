@@ -32,6 +32,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
+#include "net/base/features.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/ssl/client_cert_identity_test_util.h"
@@ -162,7 +163,7 @@ class EnterpriseReportingPrivateGetContextInfoBrowserTest
     if (browser_managed()) {
       SetupDMToken();
     }
-    feature_list_.InitAndEnableFeature(features::kAsyncDns);
+    feature_list_.InitAndEnableFeature(net::features::kAsyncDns);
   }
 
   bool browser_managed() const { return testing::get<0>(GetParam()); }
