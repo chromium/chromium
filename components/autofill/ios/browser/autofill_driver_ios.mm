@@ -262,13 +262,66 @@ web::WebFrame* AutofillDriverIOS::web_frame() const {
   return frames_manager->GetFrameWithId(web_frame_id_);
 }
 
-void AutofillDriverIOS::NotifyOfChildFrame(RemoteFrameToken token) {
-  auto* registrar = ChildFrameRegistrar::GetOrCreateForWebState(web_state_);
-  if (registrar && known_child_frames_.insert(token).second) {
-    registrar->DeclareNewRemoteToken(
-        token, base::BindOnce(&AutofillDriverIOS::SetSelfAsParent,
-                              weak_ptr_factory_.GetWeakPtr()));
+void AutofillDriverIOS::AskForValuesToFill(const FormData& form,
+                                           const FormFieldData& field) {
+  // TODO(crbug.com/1441921): Route this using AutofillDriverRouter.
+  // TODO(crbug.com/1448447): Distinguish between different trigger sources.
+  GetAutofillManager().OnAskForValuesToFill(
+      form, field, /*bounding_box=*/gfx::RectF(),
+      autofill::AutofillSuggestionTriggerSource::kiOS);
+}
+
+void AutofillDriverIOS::DidFillAutofillFormData(const FormData& form,
+                                                base::TimeTicks timestamp) {
+  // TODO(crbug.com/1441921): Route this using AutofillDriverRouter.
+  GetAutofillManager().OnDidFillAutofillFormData(form, timestamp);
+}
+
+void AutofillDriverIOS::FormsSeen(const std::vector<FormData>& updated_forms) {
+  // Any RemoteFrameTokens encountered for the first time should be posted to
+  // the registrar, which allows this driver to be established as the parent of
+  // the child frame.
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAcrossIframesIos)) {
+    for (const autofill::FormData& form : updated_forms) {
+      for (const autofill::FrameTokenWithPredecessor& child_frame :
+           form.child_frames) {
+        // This absl::get is safe because on iOS, FormData::child_frames is
+        // only ever populated with RemoteFrameTokens. absl::get will fail a
+        // CHECK if this assumption is ever wrong.
+        auto token = absl::get<autofill::RemoteFrameToken>(child_frame.token);
+        auto* registrar =
+            ChildFrameRegistrar::GetOrCreateForWebState(web_state_);
+        if (registrar && known_child_frames_.insert(token).second) {
+          registrar->DeclareNewRemoteToken(
+              token, base::BindOnce(&AutofillDriverIOS::SetSelfAsParent,
+                                    weak_ptr_factory_.GetWeakPtr()));
+        }
+      }
+    }
   }
+
+  // TODO(crbug.com/1441921): Route this using AutofillDriverRouter.
+  // TODO(crbug.com/1215337): Notify about deleted fields.
+  GetAutofillManager().OnFormsSeen(updated_forms, {});
+}
+
+void AutofillDriverIOS::FormSubmitted(
+    const FormData& form,
+    bool known_success,
+    mojom::SubmissionSource submission_source) {
+  // TODO(crbug.com/1441921): Route this using AutofillDriverRouter.
+  GetAutofillManager().OnFormSubmitted(form, known_success, submission_source);
+}
+
+void AutofillDriverIOS::TextFieldDidChange(const FormData& form,
+                                           const FormFieldData& field,
+                                           base::TimeTicks timestamp) {
+  // TODO(crbug.com/1441921): Route this using AutofillDriverRouter.
+  GetAutofillManager().OnTextFieldDidChange(
+      form, field,
+      gfx::RectF(),  // Bounds aren't needed on iOS since we don't use popups.
+      timestamp);
 }
 
 void AutofillDriverIOS::SetParent(base::WeakPtr<AutofillDriverIOS> parent) {

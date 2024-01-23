@@ -114,10 +114,21 @@ class AutofillDriverIOS : public AutofillDriver,
   void set_processed(bool processed) { processed_ = processed; }
   web::WebFrame* web_frame() const;
 
-  // Notifies this driver that a child frame with RemoteFrameToken `token` has
-  // been seen during form extraction. May safely be called repeatedly for the
-  // same token; this becomes a no-op on subsequent calls.
-  void NotifyOfChildFrame(RemoteFrameToken token);
+  // Methods routed by AutofillDriverRouter. These are a subset of the methods
+  // in mojom::AutofillDriver; that interface is content-specific, but to
+  // simplify interaction with the Router, we duplicate some methods (with a few
+  // irrelevant args omitted). See
+  // components/autofill/content/common/mojom/autofill_driver.mojom
+  // for further documentation of each method.
+  void AskForValuesToFill(const FormData& form, const FormFieldData& field);
+  void DidFillAutofillFormData(const FormData& form, base::TimeTicks timestamp);
+  void FormsSeen(const std::vector<FormData>& updated_forms);
+  void FormSubmitted(const FormData& form,
+                     bool known_success,
+                     mojom::SubmissionSource submission_source);
+  void TextFieldDidChange(const FormData& form,
+                          const FormFieldData& field,
+                          base::TimeTicks timestamp);
 
  private:
   friend AutofillDriverIOSFactory;
