@@ -158,16 +158,14 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   if (@available(iOS 15.1, *)) {
   } else {
-    if (@available(iOS 14.5, *)) {
-      // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which breaks
-      // some back/forward navigations between pages that share a renderer
-      // process. Use 'localhost' instead of '127.0.0.1' for safe URLs to
-      // prevent sharing renderer processes with unsafe URLs.
-      GURL::Replacements replacements;
-      replacements.SetHostStr("localhost");
-      _safeURL1 = _safeURL1.ReplaceComponents(replacements);
-      _safeURL2 = _safeURL2.ReplaceComponents(replacements);
-    }
+    // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which breaks
+    // some back/forward navigations between pages that share a renderer
+    // process. Use 'localhost' instead of '127.0.0.1' for safe URLs to
+    // prevent sharing renderer processes with unsafe URLs.
+    GURL::Replacements replacements;
+    replacements.SetHostStr("localhost");
+    _safeURL1 = _safeURL1.ReplaceComponents(replacements);
+    _safeURL2 = _safeURL2.ReplaceComponents(replacements);
   }
 
   // `appConfigurationForTestCase` is called during [super setUp], and
@@ -356,11 +354,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   if (@available(iOS 15.1, *)) {
   } else {
-    if (@available(iOS 14.5, *)) {
-      // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which can
-      // break loading the unsafe page below.
-      return;
-    }
+    // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which can
+    // break loading the unsafe page below.
+    return;
   }
 
   // Tap on the link to proceed to the unsafe page, and verify that this page is
@@ -401,11 +397,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   if (@available(iOS 15.1, *)) {
   } else {
-    if (@available(iOS 14.5, *)) {
-      // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which can
-      // break loading the unsafe page below.
-      return;
-    }
+    // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which can
+    // break loading the unsafe page below.
+    return;
   }
 
   // Tap on the link to proceed to the unsafe page, and verify that this page is
