@@ -38,8 +38,8 @@ cargo_crate("addr2line") {
     "//build/rust/std:std_build_deps",
   ]
   aliased_deps = {
-    alloc = ":rustc_std_workspace_alloc"
-    core = ":rustc_std_workspace_core"
+    alloc = ":rustc_std_workspace_alloc__rlib"
+    core = ":rustc_std_workspace_core__rlib"
   }
   features = [
     "alloc",
@@ -87,7 +87,7 @@ cargo_crate("adler") {
     "//build/rust/std:std_build_deps",
   ]
   aliased_deps = {
-    core = ":rustc_std_workspace_core"
+    core = ":rustc_std_workspace_core__rlib"
   }
   features = [
     "compiler_builtins",
@@ -241,7 +241,7 @@ cargo_crate("cfg_if") {
     "//build/rust/std:std_build_deps",
   ]
   aliased_deps = {
-    core = ":rustc_std_workspace_core"
+    core = ":rustc_std_workspace_core__rlib"
   }
   features = [
     "compiler_builtins",
@@ -444,7 +444,7 @@ cargo_crate("compiler_builtins") {
     "//build/rust/std:std_build_deps",
   ]
   aliased_deps = {
-    core = ":rustc_std_workspace_core"
+    core = ":rustc_std_workspace_core__rlib"
   }
   features = [
     "compiler-builtins",
@@ -966,8 +966,8 @@ cargo_crate("getopts") {
     "//build/rust/std:std_build_deps",
   ]
   aliased_deps = {
-    core = ":rustc_std_workspace_core"
-    std = ":rustc_std_workspace_std"
+    core = ":rustc_std_workspace_core__rlib"
+    std = ":rustc_std_workspace_std__rlib"
   }
   features = [
     "core",
@@ -1055,8 +1055,8 @@ cargo_crate("gimli") {
     "//build/rust/std:std_build_deps",
   ]
   aliased_deps = {
-    alloc = ":rustc_std_workspace_alloc"
-    core = ":rustc_std_workspace_core"
+    alloc = ":rustc_std_workspace_alloc__rlib"
+    core = ":rustc_std_workspace_core__rlib"
   }
   features = [
     "read",
@@ -1125,8 +1125,8 @@ cargo_crate("hashbrown") {
     "//build/rust/std:std_build_deps",
   ]
   aliased_deps = {
-    alloc = ":rustc_std_workspace_alloc"
-    core = ":rustc_std_workspace_core"
+    alloc = ":rustc_std_workspace_alloc__rlib"
+    core = ":rustc_std_workspace_core__rlib"
   }
   features = [
     "alloc",
@@ -1485,7 +1485,7 @@ cargo_crate("memchr") {
     "//build/rust/std:std_build_deps",
   ]
   aliased_deps = {
-    core = ":rustc_std_workspace_core"
+    core = ":rustc_std_workspace_core__rlib"
   }
   features = [
     "compiler_builtins",
@@ -1543,8 +1543,8 @@ cargo_crate("miniz_oxide") {
     "//build/rust/std:std_build_deps",
   ]
   aliased_deps = {
-    alloc = ":rustc_std_workspace_alloc"
-    core = ":rustc_std_workspace_core"
+    alloc = ":rustc_std_workspace_alloc__rlib"
+    core = ":rustc_std_workspace_core__rlib"
   }
   features = [
     "alloc",
@@ -1663,8 +1663,8 @@ cargo_crate("object") {
     "//build/rust/std:std_build_deps",
   ]
   aliased_deps = {
-    alloc = ":rustc_std_workspace_alloc"
-    core = ":rustc_std_workspace_core"
+    alloc = ":rustc_std_workspace_alloc__rlib"
+    core = ":rustc_std_workspace_core__rlib"
   }
   features = [
     "alloc",
@@ -1889,7 +1889,7 @@ cargo_crate("rustc_demangle") {
     "//build/rust/std:std_build_deps",
   ]
   aliased_deps = {
-    core = ":rustc_std_workspace_core"
+    core = ":rustc_std_workspace_core__rlib"
   }
   features = [
     "compiler_builtins",
@@ -2725,8 +2725,8 @@ cargo_crate("std_detect") {
     "//build/rust/std:std_build_deps",
   ]
   aliased_deps = {
-    alloc = ":rustc_std_workspace_alloc"
-    core = ":rustc_std_workspace_core"
+    alloc = ":rustc_std_workspace_alloc__rlib"
+    core = ":rustc_std_workspace_core__rlib"
   }
   features = [
     "alloc",
@@ -2847,8 +2847,8 @@ cargo_crate("unicode_width") {
     "//build/rust/std:std_build_deps",
   ]
   aliased_deps = {
-    core = ":rustc_std_workspace_core"
-    std = ":rustc_std_workspace_std"
+    core = ":rustc_std_workspace_core__rlib"
+    std = ":rustc_std_workspace_std__rlib"
   }
   features = [
     "compiler_builtins",

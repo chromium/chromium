@@ -17,7 +17,9 @@ rust_static_library("test_aliased_deps") {
   sources = [ crate_root ]
   deps = [ ":real_name" ]
   aliased_deps = {
-    other_name = ":real_name"
+    # Unfortunately we have to know the `__rlib` suffix which is attached to the
+    # actual rlib in `rust_static_library()`.
+    other_name = ":real_name__rlib"
   }
   build_native_rust_unit_tests = true
 }
