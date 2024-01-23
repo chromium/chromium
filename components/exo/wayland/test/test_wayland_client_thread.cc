@@ -113,6 +113,7 @@ void TestWaylandClientThread::DoInit(
 
 void TestWaylandClientThread::DoRun(base::OnceClosure closure) {
   std::move(closure).Run();
+  wl_display_flush(client_->display());
   wl_display_roundtrip(client_->display());
 }
 

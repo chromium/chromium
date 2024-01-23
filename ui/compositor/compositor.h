@@ -509,6 +509,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
     return !throughput_tracker_map_.empty();
   }
 
+  const cc::LayerTreeHost* host_for_testing() const { return host_.get(); }
+
  private:
   friend class base::RefCounted<Compositor>;
   friend class TotalAnimationThroughputReporter;

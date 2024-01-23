@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/app_constants/constants.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/compositor/test/begin_main_frame_waiter.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -117,41 +118,6 @@ class TestObserver final : public ui::CompositorAnimationObserver {
  private:
   int count_ = 0;
   const raw_ptr<ui::Compositor> compositor_;
-};
-
-class BeginMainFrameWaiter : public ui::CompositorObserver {
- public:
-  explicit BeginMainFrameWaiter(ui::Compositor* compositor)
-      : compositor_(compositor) {
-    compositor->AddObserver(this);
-  }
-
-  ~BeginMainFrameWaiter() override { compositor_->RemoveObserver(this); }
-
-  // ui::CompositorObserver
-  void OnDidBeginMainFrame(ui::Compositor* compositor) override {
-    DCHECK_EQ(compositor_, compositor);
-    done_ = true;
-    if (run_loop_) {
-      run_loop_->Quit();
-    }
-  }
-
-  void Wait() {
-    if (done_) {
-      return;
-    }
-
-    run_loop_ = std::make_unique<base::RunLoop>(
-        base::RunLoop::Type::kNestableTasksAllowed);
-    run_loop_->Run();
-    run_loop_.reset();
-  }
-
- private:
-  const raw_ptr<ui::Compositor> compositor_;
-  bool done_ = false;
-  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 class FirstNonAnimatedFrameStartedWaiter : public ui::CompositorObserver {
@@ -319,7 +285,7 @@ class LoginUnlockThroughputRecorderTestBase : public LoginTestBase {
     ui::Compositor* compositor =
         Shell::GetPrimaryRootWindow()->GetHost()->compositor();
     TestObserver observer(compositor);
-    BeginMainFrameWaiter(compositor).Wait();
+    ui::BeginMainFrameWaiter(compositor).Wait();
     FirstNonAnimatedFrameStartedWaiter(compositor).Wait();
     ui::DrawWaiterForTest::WaitForCompositingEnded(compositor);
   }
