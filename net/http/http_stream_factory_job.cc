@@ -20,6 +20,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/load_flags.h"
 #include "net/base/port_util.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
 #include "net/cert/cert_verifier.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -37,6 +38,7 @@
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/quic/bidirectional_stream_quic_impl.h"
 #include "net/quic/quic_http_stream.h"
+#include "net/quic/quic_session_key.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/client_socket_pool_manager.h"
 #include "net/socket/connect_job.h"
@@ -47,6 +49,7 @@
 #include "net/spdy/spdy_http_stream.h"
 #include "net/spdy/spdy_session.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
@@ -340,10 +343,27 @@ bool HttpStreamFactory::Job::HasAvailableQuicSession() const {
   }
   bool require_dns_https_alpn =
       (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3);
+  QuicSessionKey::IsProxySession is_proxy_session;
+  ProxyChain proxy_chain;
+  // TODO(https://crbug.com/1520929): Remove support for sending GET requests to
+  // the proxy server when proxying HTTP requests and instead always tunnel
+  // them.
+  CHECK(!proxy_info_.proxy_chain().is_multi_proxy());
+  if (IsGetToProxy(proxy_info_.proxy_chain(), origin_url_)) {
+    is_proxy_session = QuicSessionKey::IsProxySession::kTrue;
+    proxy_chain = ProxyChain::Direct();
+  } else {
+    is_proxy_session = QuicSessionKey::IsProxySession::kFalse;
+    proxy_chain = proxy_info_.proxy_chain();
+    // TODO(https://crbug.com/1495793): Proxying QUIC over QUIC is not currently
+    // supported, but when it is we can remove this CHECK.
+    CHECK(proxy_chain.is_direct());
+  }
+
   return quic_request_.CanUseExistingSession(
-      origin_url_, request_info_.privacy_mode, request_info_.socket_tag,
-      request_info_.network_anonymization_key, request_info_.secure_dns_policy,
-      require_dns_https_alpn, destination_);
+      origin_url_, proxy_chain, request_info_.privacy_mode, is_proxy_session,
+      request_info_.socket_tag, request_info_.network_anonymization_key,
+      request_info_.secure_dns_policy, require_dns_https_alpn, destination_);
 }
 
 bool HttpStreamFactory::Job::TargettedSocketGroupHasActiveSocket() const {
@@ -444,8 +464,7 @@ SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
   // SpdySession pool, and uses it directly (completely ignoring the result of
   // the ConnectJob, and in fact cancelling it). So we need to create the same
   // key used by the HttpProxyConnectJob for the last proxy in the chain.
-  if (proxy_chain.is_get_to_proxy_allowed() && proxy_chain.Last().is_https() &&
-      origin_url.SchemeIs(url::kHttpScheme)) {
+  if (IsGetToProxy(proxy_chain, origin_url)) {
     // For this to work as expected, the whole chain should be HTTPS.
     for (const auto& proxy_server : proxy_chain.proxy_servers()) {
       CHECK(proxy_server.is_https());
@@ -462,6 +481,14 @@ SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
                         privacy_mode, SpdySessionKey::IsProxySession::kFalse,
                         socket_tag, network_anonymization_key,
                         secure_dns_policy);
+}
+
+// static
+bool HttpStreamFactory::Job::IsGetToProxy(const ProxyChain& proxy_chain,
+                                          const GURL& origin_url) {
+  return proxy_chain.is_get_to_proxy_allowed() &&
+         proxy_chain.Last().is_secure_http_like() &&
+         origin_url.SchemeIs(url::kHttpScheme);
 }
 
 bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {
@@ -896,7 +923,10 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
   url::SchemeHostPort destination;
   GURL url(request_info_.url);
   int cert_verifier_flags;
+  QuicSessionKey::IsProxySession is_proxy_session;
+
   if (proxy_info_.is_quic()) {
+    DCHECK(url.SchemeIs(url::kHttpScheme));
     // Disable network fetches for QUIC proxies, since the network requests
     // are probably going to need to go through the proxy chain too.
     //
@@ -904,29 +934,35 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
     // proxies in ConnectJobFactory.
     cert_verifier_flags = CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES;
 
-    // TODO(https://crbug.com/1491092): Update this to support proxy chains with
-    // multiple proxies and add tests.
+    // TODO(https://crbug.com/1491092): To support multi-proxy chains here,
+    // either remove support for using proxy GET requests for HTTP traffic
+    // entirely or make it so that HTTP requests are always tunneled when
+    // multi-proxy chains are in use (like what's currently done for HTTPS/SPDY
+    // proxies).
     CHECK(!proxy_info_.proxy_chain().is_multi_proxy());
     const HostPortPair& proxy_endpoint =
         proxy_info_.proxy_chain().Last().host_port_pair();
     destination = url::SchemeHostPort(url::kHttpsScheme, proxy_endpoint.host(),
                                       proxy_endpoint.port());
     url = destination.GetURL();
+    is_proxy_session = QuicSessionKey::IsProxySession::kTrue;
   } else {
     DCHECK(using_ssl_);
     destination = destination_;
     cert_verifier_flags = server_cert_verifier_flags;
+    // This connection is to the destination and not to an intermediate proxy.
+    is_proxy_session = QuicSessionKey::IsProxySession::kFalse;
   }
   DCHECK(url.SchemeIs(url::kHttpsScheme));
   bool require_dns_https_alpn =
       (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3);
 
   int rv = quic_request_.Request(
-      std::move(destination), quic_version_, request_info_.privacy_mode,
-      priority_, request_info_.socket_tag,
-      request_info_.network_anonymization_key, request_info_.secure_dns_policy,
-      proxy_info_.is_direct(), require_dns_https_alpn, cert_verifier_flags, url,
-      net_log_, &net_error_details_,
+      std::move(destination), quic_version_, ProxyChain::Direct(),
+      is_proxy_session, request_info_.privacy_mode, priority_,
+      request_info_.socket_tag, request_info_.network_anonymization_key,
+      request_info_.secure_dns_policy, require_dns_https_alpn,
+      cert_verifier_flags, url, net_log_, &net_error_details_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {

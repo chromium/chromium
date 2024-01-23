@@ -32,6 +32,7 @@
 #include "net/spdy/spdy_session_key.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_config.h"
+#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -347,6 +348,17 @@ class HttpStreamFactory::Job
       const SocketTag& socket_tag,
       const NetworkAnonymizationKey& network_anonymization_key,
       SecureDnsPolicy secure_dns_policy);
+
+  // Returns whether an appropriate SPDY or QUIC session would correspond to
+  // either a connection to the last proxy server in the chain (for the
+  // traditional HTTP proxying behavior of sending a GET request to the proxy
+  // server) or a connection through the entire proxy chain (for tunneled
+  // requests).
+  // TODO(https://crbug.com/1495793): Support for this is being removed for QUIC
+  // proxy chains, but will remain for SPDY proxies (so update the comment
+  // above once this change is made).
+  static bool IsGetToProxy(const ProxyChain& proxy_chain,
+                           const GURL& origin_url);
 
   // Returns true if the current request can use an existing spdy session.
   bool CanUseExistingSpdySession() const;

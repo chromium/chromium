@@ -134,22 +134,22 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
 
   ~QuicSessionRequest();
 
-  // |cert_verify_flags| is bitwise OR'd of CertVerifier::VerifyFlags and it is
+  // `cert_verify_flags` is bitwise OR'd of CertVerifier::VerifyFlags and it is
   // passed to CertVerifier::Verify.
-  // |destination| will be resolved and resulting IPEndPoint used to open a
+  // `destination` will be resolved and resulting IPEndPoint used to open a
   // quic::QuicConnection.  This can be different than
   // HostPortPair::FromURL(url).
-  // When |use_dns_aliases| is true, any DNS aliases found in host resolution
-  // are stored in the |dns_aliases_by_session_key_| map. |use_dns_aliases|
-  // should be false in the case of a proxy.
+  // When `is_proxy_session` is false, any DNS aliases found in host resolution
+  // are stored in the `dns_aliases_by_session_key_` map.
   int Request(url::SchemeHostPort destination,
               quic::ParsedQuicVersion quic_version,
+              const ProxyChain& proxy_chain,
+              QuicSessionKey::IsProxySession is_proxy_session,
               PrivacyMode privacy_mode,
               RequestPriority priority,
               const SocketTag& socket_tag,
               const NetworkAnonymizationKey& network_anonymization_key,
               SecureDnsPolicy secure_dns_policy,
-              bool use_dns_aliases,
               bool require_dns_https_alpn,
               int cert_verify_flags,
               const GURL& url,
@@ -220,7 +220,9 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
 
   bool CanUseExistingSession(
       const GURL& url,
+      const ProxyChain& proxy_chain,
       PrivacyMode privacy_mode,
+      QuicSessionKey::IsProxySession is_proxy_session,
       const SocketTag& socket_tag,
       const NetworkAnonymizationKey& network_anonymization_key,
       SecureDnsPolicy secure_dns_policy,

@@ -8,16 +8,22 @@
 #include <vector>
 
 #include "base/task/sequenced_task_runner.h"
+#include "net/base/network_anonymization_key.h"
+#include "net/base/privacy_mode.h"
+#include "net/base/proxy_chain.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/quic/platform/impl/quic_chromium_clock.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_http_stream.h"
+#include "net/quic/quic_session_key.h"
 #include "net/quic/quic_session_pool.h"
+#include "net/socket/socket_tag.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_client_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 #include "url/scheme_host_port.h"
 
 using std::string;
@@ -40,18 +46,21 @@ bool QuicSessionPoolPeer::HasActiveSession(
     QuicSessionPool* factory,
     const quic::QuicServerId& server_id,
     const NetworkAnonymizationKey& network_anonymization_key,
-    bool require_dns_https_alpn) {
+    const ProxyChain& proxy_chain,
+    QuicSessionKey::IsProxySession is_proxy_session) {
   return factory->HasActiveSession(
-      QuicSessionKey(server_id, SocketTag(), network_anonymization_key,
-                     SecureDnsPolicy::kAllow, require_dns_https_alpn));
+      QuicSessionKey(server_id, proxy_chain, is_proxy_session, SocketTag(),
+                     network_anonymization_key, SecureDnsPolicy::kAllow,
+                     /*require_dns_https_alpn=*/false));
 }
 
 bool QuicSessionPoolPeer::HasActiveJob(QuicSessionPool* factory,
                                        const quic::QuicServerId& server_id,
                                        bool require_dns_https_alpn) {
-  return factory->HasActiveJob(
-      QuicSessionKey(server_id, SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow, require_dns_https_alpn));
+  return factory->HasActiveJob(QuicSessionKey(
+      server_id, ProxyChain::Direct(), QuicSessionKey::IsProxySession::kFalse,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      require_dns_https_alpn));
 }
 
 // static
@@ -59,9 +68,10 @@ QuicChromiumClientSession* QuicSessionPoolPeer::GetPendingSession(
     QuicSessionPool* factory,
     const quic::QuicServerId& server_id,
     url::SchemeHostPort destination) {
-  QuicSessionKey session_key(server_id, SocketTag(), NetworkAnonymizationKey(),
-                             SecureDnsPolicy::kAllow,
-                             /*require_dns_https_alpn=*/false);
+  QuicSessionKey session_key(
+      server_id, ProxyChain::Direct(), QuicSessionKey::IsProxySession::kFalse,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*require_dns_https_alpn=*/false);
   QuicSessionPool::QuicSessionAliasKey key(std::move(destination), session_key);
   DCHECK(factory->HasActiveJob(session_key));
   DCHECK_EQ(factory->all_sessions_.size(), 1u);
@@ -74,27 +84,12 @@ QuicChromiumClientSession* QuicSessionPoolPeer::GetActiveSession(
     const quic::QuicServerId& server_id,
     const NetworkAnonymizationKey& network_anonymization_key,
     bool require_dns_https_alpn) {
-  QuicSessionKey session_key(server_id, SocketTag(), network_anonymization_key,
+  QuicSessionKey session_key(server_id, ProxyChain::Direct(),
+                             QuicSessionKey::IsProxySession::kFalse,
+                             SocketTag(), network_anonymization_key,
                              SecureDnsPolicy::kAllow, require_dns_https_alpn);
   DCHECK(factory->HasActiveSession(session_key));
   return factory->active_sessions_[session_key];
-}
-
-bool QuicSessionPoolPeer::HasLiveSession(QuicSessionPool* factory,
-                                         url::SchemeHostPort destination,
-                                         const quic::QuicServerId& server_id,
-                                         bool require_dns_https_alpn) {
-  QuicSessionKey session_key =
-      QuicSessionKey(server_id, SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow, require_dns_https_alpn);
-  QuicSessionPool::QuicSessionAliasKey alias_key(std::move(destination),
-                                                 session_key);
-  for (const auto& it : factory->all_sessions_) {
-    if (it.second == alias_key) {
-      return true;
-    }
-  }
-  return false;
 }
 
 bool QuicSessionPoolPeer::IsLiveSession(QuicSessionPool* factory,

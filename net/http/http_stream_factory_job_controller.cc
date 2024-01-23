@@ -29,6 +29,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_resolution_request.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/quic/quic_session_key.h"
 #include "net/spdy/spdy_session.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -1296,8 +1297,10 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
     // Check whether there is an existing QUIC session to use for this origin.
     GURL mapped_origin = original_url;
     RewriteUrlWithHostMappingRules(mapped_origin);
+    CHECK(proxy_info_.proxy_chain().is_direct());
     QuicSessionKey session_key(
         HostPortPair::FromURL(mapped_origin), request_info.privacy_mode,
+        proxy_info_.proxy_chain(), QuicSessionKey::IsProxySession::kFalse,
         request_info.socket_tag, request_info.network_anonymization_key,
         request_info.secure_dns_policy, /*require_dns_https_alpn=*/false);
 

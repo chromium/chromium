@@ -2675,6 +2675,7 @@ test("net_unittests") {
     "quic/quic_http_utils_test.cc",
     "quic/quic_network_transaction_unittest.cc",
     "quic/quic_proxy_client_socket_unittest.cc",
+    "quic/quic_session_key_unittest.cc",
     "quic/quic_session_pool_peer.cc",
     "quic/quic_session_pool_peer.h",
     "quic/quic_session_pool_test.cc",

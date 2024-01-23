@@ -15,6 +15,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/quic/quic_session_key.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
@@ -48,9 +49,10 @@ class QuicSessionPoolPeer {
   static bool HasActiveSession(
       QuicSessionPool* factory,
       const quic::QuicServerId& server_id,
-      const NetworkAnonymizationKey& network_anonymization_key =
-          NetworkAnonymizationKey(),
-      bool require_dns_https_alpn = false);
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const ProxyChain& proxy_chain = ProxyChain::Direct(),
+      QuicSessionKey::IsProxySession is_proxy_session =
+          QuicSessionKey::IsProxySession::kFalse);
 
   static bool HasActiveJob(QuicSessionPool* factory,
                            const quic::QuicServerId& server_id,
@@ -67,11 +69,6 @@ class QuicSessionPoolPeer {
       const NetworkAnonymizationKey& network_anonymization_key =
           NetworkAnonymizationKey(),
       bool require_dns_https_alpn = false);
-
-  static bool HasLiveSession(QuicSessionPool* factory,
-                             url::SchemeHostPort destination,
-                             const quic::QuicServerId& server_id,
-                             bool require_dns_https_alpn = false);
 
   static bool IsLiveSession(QuicSessionPool* factory,
                             QuicChromiumClientSession* session);
@@ -101,6 +98,7 @@ class QuicSessionPoolPeer {
   // Creates a dummy QUIC server config and caches it. Caller must be holding
   // onto a QuicCryptoClientConfigHandle for the corresponding
   // |network_anonymization_key|.
+  // TODO(awillia): This is unused and can be removed.
   static void CacheDummyServerConfig(
       QuicSessionPool* factory,
       const quic::QuicServerId& quic_server_id,

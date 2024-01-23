@@ -29,6 +29,7 @@
 #include "net/base/proxy_string_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
+#include "net/base/test_proxy_delegate.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_auth_handler_factory.h"
@@ -65,6 +66,7 @@
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/socket_performance_watcher_factory.h"
+#include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/ssl/ssl_config_service_defaults.h"
@@ -567,6 +569,7 @@ class QuicNetworkTransactionTest
     session_context_.transport_security_state = &transport_security_state_;
     session_context_.socket_performance_watcher_factory =
         &test_socket_performance_watcher_factory_;
+    session_context_.proxy_delegate = proxy_delegate_.get();
     session_context_.proxy_resolution_service = proxy_resolution_service_.get();
     session_context_.ssl_config_service = ssl_config_service_.get();
     session_context_.http_auth_handler_factory = auth_handler_factory_.get();
@@ -963,6 +966,9 @@ class QuicNetworkTransactionTest
   TransportSecurityState transport_security_state_;
   TestSocketPerformanceWatcherFactory test_socket_performance_watcher_factory_;
   std::unique_ptr<SSLConfigServiceDefaults> ssl_config_service_;
+  // `proxy_resolution_service_` may store a pointer to `proxy_delegate_`, so
+  // ensure that the latter outlives the former.
+  std::unique_ptr<TestProxyDelegate> proxy_delegate_;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   std::unique_ptr<HttpAuthHandlerFactory> auth_handler_factory_;
   std::unique_ptr<HttpServerProperties> http_server_properties_;
@@ -6706,6 +6712,177 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_quic_data.AllReadDataConsumed());
   EXPECT_TRUE(mock_quic_data.AllWriteDataConsumed());
+}
+
+// Make two HTTP/1.1 requests, one to a host through a QUIC proxy and another
+// directly to the proxy. The proxy socket should not be reused for the second
+// request.
+TEST_P(QuicNetworkTransactionTest, QuicProxyConnectNoReuseDifferentChains) {
+  DisablePriorityHeader();
+  session_params_.enable_quic = true;
+  session_params_.enable_quic_proxies_for_https_urls = true;
+
+  const ProxyServer kQuicProxyServer{ProxyServer::SCHEME_QUIC,
+                                     HostPortPair("proxy.example.org", 443)};
+  const ProxyChain kQuicProxyChain{kQuicProxyServer};
+
+  proxy_delegate_ = std::make_unique<TestProxyDelegate>();
+  proxy_delegate_->set_proxy_chain(kQuicProxyChain);
+
+  proxy_resolution_service_ =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  proxy_resolution_service_->SetProxyDelegate(proxy_delegate_.get());
+
+  MockQuicData mock_quic_data_1(version_);
+  size_t write_packet_index = 1;
+
+  mock_quic_data_1.AddWrite(
+      SYNCHRONOUS, ConstructInitialSettingsPacket(write_packet_index++));
+
+  mock_quic_data_1.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientPriorityPacket(
+          write_packet_index++, GetNthClientInitiatedBidirectionalStreamId(0),
+          DEFAULT_PRIORITY));
+  mock_quic_data_1.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientRequestHeadersPacket(
+          write_packet_index++, GetNthClientInitiatedBidirectionalStreamId(0),
+          false, DEFAULT_PRIORITY,
+          ConnectRequestHeaders("mail.example.org:443"), false));
+  mock_quic_data_1.AddRead(
+      ASYNC, ConstructServerResponseHeadersPacket(
+                 1, GetNthClientInitiatedBidirectionalStreamId(0), false,
+                 GetResponseHeaders("200")));
+
+  const char get_request_1[] =
+      "GET / HTTP/1.1\r\n"
+      "Host: mail.example.org\r\n"
+      "Connection: keep-alive\r\n\r\n";
+  mock_quic_data_1.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientAckAndDataPacket(
+          write_packet_index++, GetNthClientInitiatedBidirectionalStreamId(0),
+          1, 1, false, ConstructDataFrame(get_request_1)));
+
+  const char get_response_1[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Length: 10\r\n\r\n";
+  mock_quic_data_1.AddRead(
+      ASYNC, ConstructServerDataPacket(
+                 2, GetNthClientInitiatedBidirectionalStreamId(0), false,
+                 ConstructDataFrame(get_response_1)));
+
+  const char kTrans1RespData[] = "0123456789";
+  mock_quic_data_1.AddRead(
+      SYNCHRONOUS, ConstructServerDataPacket(
+                       3, GetNthClientInitiatedBidirectionalStreamId(0), false,
+                       ConstructDataFrame(kTrans1RespData)));
+
+  mock_quic_data_1.AddWrite(
+      SYNCHRONOUS, ConstructClientAckPacket(write_packet_index++, 3, 2));
+  mock_quic_data_1.AddRead(SYNCHRONOUS,
+                           ERR_IO_PENDING);  // No more data to read
+
+  mock_quic_data_1.AddWrite(
+      SYNCHRONOUS, ConstructClientDataPacket(
+                       write_packet_index++, GetQpackDecoderStreamId(), false,
+                       StreamCancellationQpackDecoderInstruction(0)));
+
+  mock_quic_data_1.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientRstPacket(write_packet_index++,
+                               GetNthClientInitiatedBidirectionalStreamId(0),
+                               quic::QUIC_STREAM_CANCELLED));
+
+  mock_quic_data_1.AddSocketDataToFactory(&socket_factory_);
+
+  socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
+
+  CreateSession();
+
+  request_.url = GURL("https://mail.example.org/");
+  HttpNetworkTransaction trans_1(DEFAULT_PRIORITY, session_.get());
+  RunTransaction(&trans_1);
+  CheckWasHttpResponse(&trans_1);
+  CheckResponsePort(&trans_1, kQuicProxyServer.GetPort());
+  CheckResponseData(&trans_1, kTrans1RespData);
+  CheckUsedQuicProxyServer(&trans_1);
+
+  proxy_delegate_->set_proxy_chain(ProxyChain::Direct());
+
+  context_.params()->origins_to_force_quic_on.insert(
+      kQuicProxyServer.host_port_pair());
+
+  QuicTestPacketMaker client_maker2(
+      version_,
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), kQuicProxyServer.GetHost(),
+      quic::Perspective::IS_CLIENT,
+      /*client_priority_uses_incremental=*/true,
+      /*use_priority_header=*/GetParam().priority_header_enabled);
+
+  QuicTestPacketMaker server_maker2(
+      version_,
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), kQuicProxyServer.GetHost(),
+      quic::Perspective::IS_SERVER,
+      /*client_priority_uses_incremental=*/false,
+      /*use_priority_header=*/false);
+
+  MockQuicData mock_quic_data_2(version_);
+  write_packet_index = 1;
+
+  mock_quic_data_2.AddWrite(
+      SYNCHRONOUS,
+      client_maker2.MakeInitialSettingsPacket(write_packet_index++));
+
+  mock_quic_data_2.AddWrite(
+      SYNCHRONOUS,
+      client_maker2.MakeRequestHeadersPacket(
+          write_packet_index++, GetNthClientInitiatedBidirectionalStreamId(0),
+          true, ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY),
+          GetRequestHeaders("GET", "https", "/", &client_maker2), nullptr));
+  mock_quic_data_2.AddRead(
+      ASYNC, server_maker2.MakeResponseHeadersPacket(
+                 1, GetNthClientInitiatedBidirectionalStreamId(0), false,
+                 GetResponseHeaders("200"), nullptr));
+  const char kTrans2RespData[] = "0123456";
+  mock_quic_data_2.AddRead(
+      ASYNC, server_maker2.MakeDataPacket(
+                 2, GetNthClientInitiatedBidirectionalStreamId(0), true,
+                 ConstructDataFrame(kTrans2RespData)));
+  mock_quic_data_2.AddWrite(
+      SYNCHRONOUS, client_maker2.MakeAckPacket(write_packet_index++, 2, 1));
+  mock_quic_data_2.AddRead(SYNCHRONOUS,
+                           ERR_IO_PENDING);  // No more data to read
+
+  mock_quic_data_2.AddSocketDataToFactory(&socket_factory_);
+
+  SSLSocketDataProvider ssl_2(ASYNC, OK);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_2);
+
+  request_.url =
+      GURL(base::StrCat({"https://", kQuicProxyServer.GetHost(), "/"}));
+  HttpNetworkTransaction trans_2(DEFAULT_PRIORITY, session_.get());
+  RunTransaction(&trans_2);
+  CheckWasQuicResponse(&trans_2);
+  CheckResponsePort(&trans_2, 443);
+  CheckResponseData(&trans_2, kTrans2RespData);
+  const ProxyChain& proxy_chain = trans_2.GetResponseInfo()->proxy_chain;
+  EXPECT_TRUE(proxy_chain.IsValid());
+  ASSERT_TRUE(proxy_chain.is_direct());
+
+  // Causes MockSSLClientSocket to disconnect, which causes the underlying QUIC
+  // proxy socket to disconnect.
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(mock_quic_data_1.AllReadDataConsumed());
+  EXPECT_TRUE(mock_quic_data_1.AllWriteDataConsumed());
+  EXPECT_TRUE(mock_quic_data_2.AllReadDataConsumed());
+  EXPECT_TRUE(mock_quic_data_2.AllWriteDataConsumed());
 }
 
 // Sends a CONNECT request to a QUIC proxy and receive a 500 response.

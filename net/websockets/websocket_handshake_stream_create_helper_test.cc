@@ -26,6 +26,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
@@ -481,8 +482,9 @@ class WebSocketHandshakeStreamCreateHelperTest
             &transport_security_state, &ssl_config_service,
             /*server_info=*/nullptr,
             QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
-                           SocketTag(), NetworkAnonymizationKey(),
-                           SecureDnsPolicy::kAllow,
+                           ProxyChain::Direct(),
+                           QuicSessionKey::IsProxySession::kFalse, SocketTag(),
+                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                            /*require_dns_https_alpn=*/false),
             /*require_confirmation=*/false,
             /*migrate_session_early_v2=*/false,

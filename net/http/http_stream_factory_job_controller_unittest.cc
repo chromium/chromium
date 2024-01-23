@@ -26,6 +26,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/schemeful_site.h"
@@ -188,6 +189,11 @@ class JobControllerPeer {
   static bool main_job_is_resumed(
       HttpStreamFactory::JobController* job_controller) {
     return job_controller->main_job_is_resumed_;
+  }
+
+  static void InitializeProxyInfo(
+      HttpStreamFactory::JobController* job_controller) {
+    job_controller->proxy_info_.UseDirect();
   }
 
   static AlternativeServiceInfo GetAlternativeServiceInfoFor(
@@ -4631,6 +4637,10 @@ TEST_P(HttpStreamFactoryJobControllerTest, GetAlternativeServiceInfoFor) {
       server, NetworkAnonymizationKey(), alternative_service, expiration,
       quic::ParsedQuicVersionVector());
 
+  // Simulate proxy resolution succeeding, after which
+  // GetAlternativeServiceInfoFor can be called.
+  JobControllerPeer::InitializeProxyInfo(job_controller_);
+
   AlternativeServiceInfo alt_svc_info =
       JobControllerPeer::GetAlternativeServiceInfoFor(
           job_controller_, request_info, &request_delegate_,
@@ -4732,6 +4742,9 @@ void HttpStreamFactoryJobControllerTestBase::TestAltSvcVersionSelection(
   headers->AddHeader("alt-svc", alt_svc_header);
   session_->http_stream_factory()->ProcessAlternativeServices(
       session_.get(), network_anonymization_key, headers.get(), origin);
+  // Simulate proxy resolution succeeding, after which
+  // GetAlternativeServiceInfoFor can be called.
+  JobControllerPeer::InitializeProxyInfo(job_controller_);
   AlternativeServiceInfo alt_svc_info =
       JobControllerPeer::GetAlternativeServiceInfoFor(
           job_controller_, request_info, &request_delegate_,
@@ -4800,6 +4813,10 @@ TEST_P(HttpStreamFactoryJobControllerTest, QuicHostAllowlist) {
       server, NetworkAnonymizationKey(),
       AlternativeService(kProtoQUIC, "www.example.com", 443), expiration,
       supported_versions);
+
+  // Simulate proxy resolution succeeding, after which
+  // GetAlternativeServiceInfoFor can be called.
+  JobControllerPeer::InitializeProxyInfo(job_controller_);
 
   AlternativeServiceInfo alt_svc_info =
       JobControllerPeer::GetAlternativeServiceInfoFor(
@@ -4971,9 +4988,10 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
                  scheme_host_port,
                  require_dns_https_alpn ? quic::ParsedQuicVersion::Unsupported()
                                         : version_,
+                 ProxyChain::Direct(), QuicSessionKey::IsProxySession::kFalse,
                  PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY, SocketTag(),
                  NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                 /*use_dns_aliases=*/true, require_dns_https_alpn,
+                 require_dns_https_alpn,
                  /*cert_verify_flags=*/0, GURL("https://www.example.org/"),
                  net_log_with_source_, &net_error_details,
                  base::BindLambdaForTesting([&](int result) {}),

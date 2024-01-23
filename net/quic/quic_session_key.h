@@ -8,6 +8,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/proxy_chain.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/socket_tag.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
@@ -18,9 +19,23 @@ namespace net {
 // tag.
 class NET_EXPORT_PRIVATE QuicSessionKey {
  public:
+  // TODO(djmitche): Replace this with a common enum shared with SpdySessionKey.
+  enum class IsProxySession {
+    kFalse,
+    kTrue,
+  };
   QuicSessionKey();
+  // When `is_proxy_session` is IsProxySession::kTrue, `host_port_pair`
+  // corresponds to a proxy server and `proxy_chain` contains every
+  // proxy server that this connection is made through (or ProxyChain::Direct()
+  // for the connection to the first proxy server). If `is_proxy_session` is
+  // IsProxySession::kFalse, then `host_port_pair` corresponds to an endpoint
+  // and `proxy_chain` corresponds to the proxy chain, if any, that the request
+  // is proxied through.
   QuicSessionKey(const HostPortPair& host_port_pair,
                  PrivacyMode privacy_mode,
+                 const ProxyChain& proxy_chain,
+                 IsProxySession is_proxy_session,
                  const SocketTag& socket_tag,
                  const NetworkAnonymizationKey& network_anonymization_key,
                  SecureDnsPolicy secure_dns_policy,
@@ -28,11 +43,15 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
   QuicSessionKey(const std::string& host,
                  uint16_t port,
                  PrivacyMode privacy_mode,
+                 const ProxyChain& proxy_chain,
+                 IsProxySession is_proxy_session,
                  const SocketTag& socket_tag,
                  const NetworkAnonymizationKey& network_anonymization_key,
                  SecureDnsPolicy secure_dns_policy,
                  bool require_dns_https_alpn);
   QuicSessionKey(const quic::QuicServerId& server_id,
+                 const ProxyChain& proxy_chain,
+                 IsProxySession is_proxy_session,
                  const SocketTag& socket_tag,
                  const NetworkAnonymizationKey& network_anonymization_key,
                  SecureDnsPolicy secure_dns_policy,
@@ -63,6 +82,10 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
 
   const quic::QuicServerId& server_id() const { return server_id_; }
 
+  const ProxyChain& proxy_chain() const { return proxy_chain_; }
+
+  IsProxySession is_proxy_session() const { return is_proxy_session_; }
+
   SocketTag socket_tag() const { return socket_tag_; }
 
   const NetworkAnonymizationKey& network_anonymization_key() const {
@@ -75,6 +98,8 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
 
  private:
   quic::QuicServerId server_id_;
+  ProxyChain proxy_chain_;
+  IsProxySession is_proxy_session_;
   SocketTag socket_tag_;
   // Used to separate requests made in different contexts.
   NetworkAnonymizationKey network_anonymization_key_;

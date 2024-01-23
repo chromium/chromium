@@ -30,6 +30,7 @@
 #include "net/nqe/network_quality_estimator.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_proxy_client_socket.h"
+#include "net/quic/quic_session_key.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/next_proto.h"
@@ -689,15 +690,20 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
   // Use default QUIC version, which is the version listed supported version.
   quic::ParsedQuicVersion quic_version =
       common_connect_job_params()->quic_supported_versions->front();
+  // TODO(https://crbug.com/1491092): Update to handle multi-proxy chains. We
+  // will need to create a proxy chain corresponding to all proxy servers up to
+  // but not including the one we are connecting to (or ProxyChain::Direct for
+  // the first proxy server) and use that instead of ProxyChain::Direct() below.
+  CHECK(!params_->proxy_chain().is_multi_proxy());
   return quic_session_request_->Request(
       // TODO(crbug.com/1206799) Pass the destination directly once it's
       // converted to contain scheme.
       url::SchemeHostPort(url::kHttpsScheme, proxy_server.host(),
                           proxy_server.port()),
-      quic_version, ssl_params->privacy_mode(), kH2QuicTunnelPriority,
-      socket_tag(), params_->network_anonymization_key(),
-      params_->secure_dns_policy(),
-      /*use_dns_aliases=*/false, /*require_dns_https_alpn=*/false,
+      quic_version, ProxyChain::Direct(), QuicSessionKey::IsProxySession::kTrue,
+      ssl_params->privacy_mode(), kH2QuicTunnelPriority, socket_tag(),
+      params_->network_anonymization_key(), params_->secure_dns_policy(),
+      /*require_dns_https_alpn=*/false,
       ssl_params->ssl_config().GetCertVerifyFlags(),
       GURL("https://" + proxy_server.ToString()), net_log(),
       &quic_net_error_details_,
