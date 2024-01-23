@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.compositor.scene_layer.SolidColorSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -64,7 +65,7 @@ import java.util.Collections;
  * capture and animations it may transiently host a {@link StaticTabSceneLayer}.
  */
 public class HubLayout extends Layout implements HubLayoutController {
-
+    private final @NonNull Callback<Pane> mOnPaneFocused = this::updateEmptyLayerColor;
     private final @NonNull LayoutStateProvider mLayoutStateProvider;
     private final @NonNull ViewGroup mRootView;
     private final @NonNull HubController mHubController;
@@ -84,7 +85,7 @@ public class HubLayout extends Layout implements HubLayoutController {
     private @Nullable StaticTabSceneLayer mTabSceneLayer;
 
     /** An empty scene layer used to avoid drawing anything. */
-    private @Nullable SceneLayer mEmptySceneLayer;
+    private @Nullable SolidColorSceneLayer mEmptySceneLayer;
 
     private @Nullable HubLayoutAnimationRunner mCurrentAnimationRunner;
 
@@ -120,6 +121,7 @@ public class HubLayout extends Layout implements HubLayoutController {
         mHubController = hubManager.getHubController();
         mHubController.setHubLayoutController(this);
         mPaneManager = hubManager.getPaneManager();
+        mPaneManager.getFocusedPaneSupplier().addObserver(mOnPaneFocused);
         mScrimController = dependencyHolder.getScrimController();
     }
 
@@ -168,6 +170,7 @@ public class HubLayout extends Layout implements HubLayoutController {
             mEmptySceneLayer = null;
         }
         mCurrentSceneLayer = null;
+        mPaneManager.getFocusedPaneSupplier().removeObserver(mOnPaneFocused);
     }
 
     @Override
@@ -229,6 +232,7 @@ public class HubLayout extends Layout implements HubLayoutController {
             mCurrentSceneLayer = mEmptySceneLayer;
             Callback.runNullSafe(thumbnailCallback, null);
         }
+        updateEmptyLayerColor(mPaneManager.getFocusedPaneSupplier().get());
 
         assert mCurrentAnimationRunner == null;
         mCurrentAnimationRunner =
@@ -301,7 +305,10 @@ public class HubLayout extends Layout implements HubLayoutController {
             // tabId that will be shown once the animation finishes.
             createLayoutTabForTabId(tabId);
             mCurrentSceneLayer = mTabSceneLayer;
+        } else {
+            mCurrentSceneLayer = mEmptySceneLayer;
         }
+        updateEmptyLayerColor(mPaneManager.getFocusedPaneSupplier().get());
 
         HubContainerView containerView = mHubController.getContainerView();
         HubLayoutAnimatorProvider animatorProvider =
@@ -410,6 +417,7 @@ public class HubLayout extends Layout implements HubLayoutController {
         forceAnimationToFinish();
 
         mCurrentSceneLayer = mEmptySceneLayer;
+        updateEmptyLayerColor(mPaneManager.getFocusedPaneSupplier().get());
 
         @ColorInt int backgroundColor;
         if (newIsIncognito) {
@@ -580,7 +588,7 @@ public class HubLayout extends Layout implements HubLayoutController {
             }
         }
         if (mEmptySceneLayer == null) {
-            mEmptySceneLayer = new SceneLayer();
+            mEmptySceneLayer = new SolidColorSceneLayer();
         }
         if (mCurrentSceneLayer == null && mEmptySceneLayer != null) {
             mCurrentSceneLayer = mEmptySceneLayer;
@@ -620,6 +628,12 @@ public class HubLayout extends Layout implements HubLayoutController {
         if (currentTab != null) {
             currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
         }
+    }
+
+    private void updateEmptyLayerColor(@Nullable Pane pane) {
+        if (mEmptySceneLayer == null) return;
+
+        mEmptySceneLayer.setBackgroundColor(mHubController.getBackgroundColor(pane));
     }
 
     private void captureTabThumbnail(

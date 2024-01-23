@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.hub;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -103,6 +104,12 @@ public class HubManagerImpl implements HubManager, HubController {
     public @Nullable View getPaneHostView() {
         assert mHubCoordinator != null : "Access of a Hub pane host view that doesn't exist";
         return mHubContainerView.findViewById(R.id.hub_pane_host);
+    }
+
+    @Override
+    public @ColorInt int getBackgroundColor(@Nullable Pane pane) {
+        @HubColorScheme int colorScheme = HubColors.getColorSchemeSafe(pane);
+        return HubColors.getBackgroundColor(mContext, colorScheme);
     }
 
     @Override
