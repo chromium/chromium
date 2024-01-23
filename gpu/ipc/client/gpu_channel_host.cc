@@ -202,10 +202,10 @@ void GpuChannelHost::TerminateGpuProcessForTesting() {
   GetGpuChannel().TerminateForTesting();
 }
 
-std::unique_ptr<ClientSharedImageInterface>
+scoped_refptr<ClientSharedImageInterface>
 GpuChannelHost::CreateClientSharedImageInterface() {
-  return std::make_unique<ClientSharedImageInterface>(&shared_image_interface_,
-                                                      this);
+  return base::MakeRefCounted<ClientSharedImageInterface>(
+      &shared_image_interface_, this);
 }
 
 GpuChannelHost::~GpuChannelHost() = default;

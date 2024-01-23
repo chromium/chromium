@@ -46,7 +46,7 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
           std::make_unique<gpu::raster::RasterImplementationGLES>(
               gl_, nullptr, capabilities_);
       test_shared_image_interface_ =
-          std::make_unique<viz::TestSharedImageInterface>();
+          base::MakeRefCounted<viz::TestSharedImageInterface>();
     }
 
     webgpu_interface_ = std::make_unique<gpu::webgpu::WebGPUInterfaceStub>();
@@ -68,7 +68,7 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
 
     if (!raster_context_provider_) {
       test_shared_image_interface_ =
-          std::make_unique<viz::TestSharedImageInterface>();
+          base::MakeRefCounted<viz::TestSharedImageInterface>();
     }
     webgpu_interface_ = std::make_unique<gpu::webgpu::WebGPUInterfaceStub>();
 
@@ -147,7 +147,7 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
 
  private:
   cc::StubDecodeCache stub_image_decode_cache_;
-  std::unique_ptr<viz::TestSharedImageInterface> test_shared_image_interface_;
+  scoped_refptr<viz::TestSharedImageInterface> test_shared_image_interface_;
   raw_ptr<gpu::gles2::GLES2Interface, ExperimentalRenderer> gl_ = nullptr;
   std::unique_ptr<gpu::raster::RasterInterface> raster_interface_;
   raw_ptr<gpu::raster::RasterInterface, ExperimentalRenderer>

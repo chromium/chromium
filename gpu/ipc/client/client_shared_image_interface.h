@@ -25,7 +25,6 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
  public:
   ClientSharedImageInterface(SharedImageInterfaceProxy* proxy,
                              scoped_refptr<gpu::GpuChannelHost> channel);
-  ~ClientSharedImageInterface() override;
 
   // SharedImageInterface implementation.
   void UpdateSharedImage(const SyncToken& sync_token,
@@ -151,6 +150,9 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   const SharedImageCapabilities& GetCapabilities() override;
 
   gpu::GpuChannelHost* gpu_channel() { return gpu_channel_.get(); }
+
+ protected:
+  ~ClientSharedImageInterface() override;
 
  private:
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;

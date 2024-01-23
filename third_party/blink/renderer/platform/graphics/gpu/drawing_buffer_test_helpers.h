@@ -38,10 +38,14 @@ class WebGraphicsContext3DProviderForTests
  public:
   WebGraphicsContext3DProviderForTests(
       std::unique_ptr<gpu::gles2::GLES2Interface> gl)
-      : gl_(std::move(gl)) {}
+      : gl_(std::move(gl)),
+        test_shared_image_interface_(
+            base::MakeRefCounted<viz::TestSharedImageInterface>()) {}
   WebGraphicsContext3DProviderForTests(
       std::unique_ptr<gpu::webgpu::WebGPUInterface> webgpu)
-      : webgpu_(std::move(webgpu)) {}
+      : webgpu_(std::move(webgpu)),
+        test_shared_image_interface_(
+            base::MakeRefCounted<viz::TestSharedImageInterface>()) {}
 
   gpu::InterfaceBase* InterfaceBase() override { return gl_.get(); }
   gpu::gles2::GLES2Interface* ContextGL() override { return gl_.get(); }
@@ -71,7 +75,7 @@ class WebGraphicsContext3DProviderForTests
     return &image_decode_cache_;
   }
   viz::TestSharedImageInterface* SharedImageInterface() override {
-    return &test_shared_image_interface_;
+    return test_shared_image_interface_.get();
   }
   void CopyVideoFrame(media::PaintCanvasVideoRenderer* video_render,
                       media::VideoFrame* video_frame,
@@ -91,7 +95,7 @@ class WebGraphicsContext3DProviderForTests
   gpu::Capabilities capabilities_;
   gpu::GpuFeatureInfo gpu_feature_info_;
   WebglPreferences webgl_preferences_;
-  viz::TestSharedImageInterface test_shared_image_interface_;
+  scoped_refptr<viz::TestSharedImageInterface> test_shared_image_interface_;
 };
 
 class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,

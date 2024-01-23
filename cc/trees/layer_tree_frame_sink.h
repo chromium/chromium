@@ -66,7 +66,7 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
           worker_context_provider_wrapper,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface);
+      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface);
   LayerTreeFrameSink(const LayerTreeFrameSink&) = delete;
 
   ~LayerTreeFrameSink() override;
@@ -159,7 +159,7 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
   scoped_refptr<RasterContextProviderWrapper> worker_context_provider_wrapper_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
-  std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 
   std::unique_ptr<ContextLostForwarder> worker_context_lost_forwarder_;
 

@@ -57,8 +57,7 @@ class CAPTURE_EXPORT VideoCaptureGpuChannelHost final
   // `gpu::GpuChannelHost::CreateClientSharedImageInterface()` when calling
   // `VideoCaptureServiceImpl::VizGpuContextProvider::StartContextProviderIfNeeded()`
   // success or set to nullptr if failed.
-  void SetSharedImageInterface(
-      std::unique_ptr<gpu::ClientSharedImageInterface>);
+  void SetSharedImageInterface(scoped_refptr<gpu::ClientSharedImageInterface>);
 
   // It will return nullptr when
   // `VideoCaptureServiceImpl::VizGpuContextProvider::StartContextProviderIfNeeded()`
@@ -92,7 +91,7 @@ class CAPTURE_EXPORT VideoCaptureGpuChannelHost final
   // The |shared_image_interface_| is nullptr before set by the
   // `VideoCaptureServiceImpl::VizGpuContextProvider::StartContextProviderIfNeeded()`
   // It is created by Gpu Channel Host that viz::Gpu owns.
-  std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface_
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_
       GUARDED_BY(lock_);
 };
 

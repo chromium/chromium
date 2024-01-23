@@ -50,10 +50,9 @@ struct SharedImageCapabilities;
 // It is asynchronous in the same sense as GLES2Interface or RasterInterface in
 // that commands are executed asynchronously on the service side, but can be
 // synchronized using SyncTokens. See //docs/design/gpu_synchronization.md.
-class GPU_EXPORT SharedImageInterface {
+class GPU_EXPORT SharedImageInterface
+    : public base::RefCountedThreadSafe<SharedImageInterface> {
  public:
-  virtual ~SharedImageInterface() = default;
-
   // Creates a shared image of requested |format|, |size| and |color_space|.
   // |usage| is a combination of |SharedImageUsage| bits that describes which
   // API(s) the image will be used with.
@@ -347,6 +346,10 @@ class GPU_EXPORT SharedImageInterface {
       uint32_t usage);
 
   virtual const SharedImageCapabilities& GetCapabilities() = 0;
+
+ protected:
+  friend class base::RefCountedThreadSafe<SharedImageInterface>;
+  virtual ~SharedImageInterface() = default;
 };
 
 }  // namespace gpu

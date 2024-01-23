@@ -207,13 +207,14 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
   if (result == gpu::ContextResult::kSuccess) {
     capabilities_ = capabilities;
     gl_capabilities_ = gl_capabilities;
-    shared_image_interface_ = std::make_unique<SharedImageInterfaceInProcess>(
-        task_sequence_, task_executor_->sync_point_manager(),
-        task_executor_->gpu_preferences(),
-        context_group_->feature_info()->workarounds(),
-        task_executor_->gpu_feature_info(), context_state_.get(),
-        task_executor_->shared_image_manager(),
-        /*is_for_display_compositor=*/false);
+    shared_image_interface_ =
+        base::MakeRefCounted<SharedImageInterfaceInProcess>(
+            task_sequence_, task_executor_->sync_point_manager(),
+            task_executor_->gpu_preferences(),
+            context_group_->feature_info()->workarounds(),
+            task_executor_->gpu_feature_info(), context_state_.get(),
+            task_executor_->shared_image_manager(),
+            /*is_for_display_compositor=*/false);
   }
 
   return result;

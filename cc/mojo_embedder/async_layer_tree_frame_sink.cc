@@ -61,7 +61,7 @@ AsyncLayerTreeFrameSink::UnboundMessagePipes::UnboundMessagePipes(
 AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
     scoped_refptr<viz::RasterContextProvider> context_provider,
     scoped_refptr<RasterContextProviderWrapper> worker_context_provider_wrapper,
-    std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface,
+    scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface,
     InitParams* params)
     : LayerTreeFrameSink(std::move(context_provider),
                          std::move(worker_context_provider_wrapper),

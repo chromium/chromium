@@ -479,7 +479,7 @@ scoped_refptr<TestContextProvider> TestContextProvider::Create(
 
 // static
 scoped_refptr<TestContextProvider> TestContextProvider::Create(
-    std::unique_ptr<TestSharedImageInterface> sii) {
+    scoped_refptr<TestSharedImageInterface> sii) {
   DCHECK(sii);
   constexpr bool support_locking = false;
   return new TestContextProvider(
@@ -505,7 +505,7 @@ TestContextProvider::TestContextProvider(
     bool support_locking)
     : support_(std::move(support)),
       raster_context_(std::move(raster)),
-      shared_image_interface_(std::make_unique<TestSharedImageInterface>()),
+      shared_image_interface_(base::MakeRefCounted<TestSharedImageInterface>()),
       support_locking_(support_locking) {
   DCHECK(main_thread_checker_.CalledOnValidThread());
   DCHECK(raster_context_);
@@ -524,7 +524,7 @@ TestContextProvider::TestContextProvider(
     std::unique_ptr<TestContextSupport> support,
     std::unique_ptr<TestGLES2Interface> gl,
     std::unique_ptr<gpu::raster::RasterInterface> raster,
-    std::unique_ptr<TestSharedImageInterface> sii,
+    scoped_refptr<TestSharedImageInterface> sii,
     bool support_locking)
     : support_(std::move(support)),
       context_gl_(std::move(gl)),
@@ -549,7 +549,7 @@ TestContextProvider::TestContextProvider(
   if (sii) {
     shared_image_interface_ = std::move(sii);
   } else {
-    shared_image_interface_ = std::make_unique<TestSharedImageInterface>();
+    shared_image_interface_ = base::MakeRefCounted<TestSharedImageInterface>();
 
     // By default, luminance textures are supported in GLES2.
     gpu::SharedImageCapabilities shared_image_caps;

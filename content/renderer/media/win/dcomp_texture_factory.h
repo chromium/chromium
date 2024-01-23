@@ -66,7 +66,7 @@ class CONTENT_EXPORT DCOMPTextureFactory
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
-  std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 };
 
 }  // namespace content

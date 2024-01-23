@@ -30,7 +30,7 @@ VideoCaptureGpuChannelHost::GetGpuMemoryBufferManager() {
 }
 
 void VideoCaptureGpuChannelHost::SetSharedImageInterface(
-    std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface) {
+    scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface) {
   base::AutoLock lock(lock_);
   shared_image_interface_ = std::move(shared_image_interface);
 }
