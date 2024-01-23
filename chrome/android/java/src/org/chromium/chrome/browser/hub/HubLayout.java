@@ -219,7 +219,8 @@ public class HubLayout extends Layout implements HubLayoutController {
         HubLayoutAnimatorProvider animatorProvider = createShowAnimatorProvider(containerView);
 
         Callback<Bitmap> thumbnailCallback = animatorProvider.getThumbnailCallback();
-        if (mPreviousLayoutTypeSupplier.get() == LayoutType.BROWSING) {
+        @LayoutType int previousLayoutType = mPreviousLayoutTypeSupplier.get();
+        if (previousLayoutType == LayoutType.BROWSING) {
             final Tab currentTab = mTabModelSelector.getCurrentTab();
             createLayoutTabForTabId(getIdForTab(currentTab));
             mCurrentSceneLayer = mTabSceneLayer;
@@ -252,7 +253,21 @@ public class HubLayout extends Layout implements HubLayoutController {
                 containerView,
                 /* index= */ 0,
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        containerView.runOnNextLayout(this::queueAnimation);
+
+        // For start surface transitions the behavior prior to Hub is to instantly switch between
+        // layouts. Ideally, there should be a coordinated fade between the layouts, but this is
+        // difficult to implement due to how LayoutManager works and results in a flicker of the
+        // the window's background color. To avoid this skip the animation for start surface.
+        // See https://crbug.com/1520657.
+        if (!animate || previousLayoutType == LayoutType.START_SURFACE) {
+            // Don't post or wait for a layout as HubLayout is not in control of when the previous
+            // layout was hidden and this avoids a possibly empty frame.
+            queueAnimation();
+            forceAnimationToFinish();
+            hideCurrentTab();
+        } else {
+            containerView.runOnNextLayout(this::queueAnimation);
+        }
     }
 
     @Override
@@ -314,7 +329,22 @@ public class HubLayout extends Layout implements HubLayoutController {
                     }
                 });
 
-        PostTask.postTask(TaskTraits.UI_DEFAULT, this::queueAnimation);
+        // For start surface transitions the behavior prior to Hub is to instantly switch between
+        // layouts. Ideally, there should be a coordinated fade between the layouts, but this is
+        // difficult to implement due to how LayoutManager works and results in a flicker of the
+        // the window's background color. To avoid this skip the animation for start surface.
+        // See https://crbug.com/1520657.
+        if (nextLayoutType == LayoutType.START_SURFACE) {
+            // Posting is okay here as start surface won't show until doneHiding happens.
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        queueAnimation();
+                        forceAnimationToFinish();
+                    });
+        } else {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, this::queueAnimation);
+        }
     }
 
     @Override
