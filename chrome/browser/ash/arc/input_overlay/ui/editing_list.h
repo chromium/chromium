@@ -23,7 +23,6 @@ namespace views {
 class Label;
 class LabelButton;
 class ScrollView;
-class TableLayoutView;
 }  // namespace views
 
 namespace arc::input_overlay {
@@ -57,13 +56,13 @@ class EditingList : public views::View, public TouchInjectorObserver {
   friend class EditLabelTest;
   friend class OverlayViewTestBase;
 
+  class AddContainerButton;
+
   void Init();
   bool HasControls() const;
 
   // Add top buttons and title.
   void AddHeader();
-  // Adds the UI row for creating new actions.
-  void AddActionAddRow();
   // Add the list view for the actions / controls.
   void AddControlListContent();
 
@@ -74,10 +73,6 @@ class EditingList : public views::View, public TouchInjectorObserver {
 
   // Updates changes depending on whether `is_zero_state` is true.
   void UpdateOnZeroState(bool is_zero_state);
-
-  // Updates the `add_container_` background. If `add_background` is true, add
-  // a default background to `add_container_`. Otherwise, remove the background.
-  void UpdateAddContainerBackground(bool add_background);
 
   // Updates the `scroll_view_` when the `scroll_content_` changes. If
   // `scroll_to_bottom` is true, scroll `scroll_view_` to the bottom.
@@ -91,7 +86,6 @@ class EditingList : public views::View, public TouchInjectorObserver {
   void OnAddButtonPressed();
   void OnDoneButtonPressed();
   void OnHelpButtonPressed();
-  void UpdateAddButtonState();
 
   // Drag operations.
   void OnDragStart(const ui::LocatedEvent& event);
@@ -108,7 +102,6 @@ class EditingList : public views::View, public TouchInjectorObserver {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void OnThemeChanged() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
@@ -126,6 +119,7 @@ class EditingList : public views::View, public TouchInjectorObserver {
   // For test.
   bool IsKeyEditNudgeShownForTesting() const;
   ash::AnchoredNudge* GetKeyEditNudgeForTesting() const;
+  views::LabelButton* GetAddButtonForTesting() const;
 
   const raw_ptr<DisplayOverlayController> controller_;
 
@@ -137,10 +131,7 @@ class EditingList : public views::View, public TouchInjectorObserver {
   // Label for list header.
   raw_ptr<views::Label> editing_header_label_;
 
-  // UIs in the row of creating new action.
-  raw_ptr<views::TableLayoutView> add_container_;
-  raw_ptr<views::Label> add_title_;
-  raw_ptr<views::LabelButton> add_button_;
+  raw_ptr<AddContainerButton> add_container_;
 
   // Used to tell if the zero state view shows up.
   bool is_zero_state_ = false;
