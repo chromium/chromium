@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.android.httpclient;
 
 import android.content.Context;
-import android.util.Pair;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
@@ -21,7 +20,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.android.httpclient.SimpleHttpClient.HttpResponse;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -32,7 +30,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -112,24 +109,24 @@ public class SimpleHttpClientTest {
         Assert.assertNotNull(mLastAcceptedResponse);
     }
 
-    // Disable temporarily to land actual fix. See https://crbug.com/1517165.
-    @DisabledTest
     @Test
     @LargeTest
     public void testSendRequest_DestroyedClient() throws Exception {
         TestWebServer webServer = TestWebServer.start();
+        CallbackHelper receivedRequestCallback = new CallbackHelper();
         CallbackHelper serverRespondedCallbackHelper = new CallbackHelper();
         try {
             String url =
                     webServer.setResponseWithRunnableAction(
                             TEST_PAGE,
-                            "",
-                            new ArrayList<Pair<String, String>>(),
+                            "Content Body Here",
+                            null,
                             () -> {
+                                receivedRequestCallback.notifyCalled();
                                 // Simulate a slow download so we can destroy the client before
                                 // the response arrives.
                                 try {
-                                    Thread.sleep(2000);
+                                    Thread.sleep(500);
                                 } catch (InterruptedException e) {
 
                                 } finally {
@@ -146,12 +143,14 @@ public class SimpleHttpClientTest {
                     new HashMap<>(),
                     NetworkTrafficAnnotationTag.TRAFFIC_ANNOTATION_FOR_TESTS,
                     mCallback);
+
+            receivedRequestCallback.waitForFirst();
             TestThreadUtils.runOnUiThreadBlocking(() -> mHttpClient.destroy());
 
             serverRespondedCallbackHelper.waitForFirst();
             Assert.assertThrows(
                     TimeoutException.class,
-                    () -> mCallbackHelper.waitForFirst(3, TimeUnit.SECONDS));
+                    () -> mCallbackHelper.waitForFirst(1, TimeUnit.SECONDS));
             Assert.assertNull(mLastAcceptedResponse);
         } finally {
             webServer.shutdown();
