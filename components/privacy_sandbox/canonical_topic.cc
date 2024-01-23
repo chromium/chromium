@@ -41,7 +41,8 @@ std::u16string GetLocalizedDescriptionInternal(
     browsing_topics::Topic topic_id) {
   browsing_topics::SemanticTree semantic_tree;
 
-  auto children = semantic_tree.GetAtMostTwoChildren(topic_id);
+  auto children =
+      semantic_tree.GetAtMostTwoRepresentativesInCurrentTaxonomy(topic_id);
 
   if (children.size() == 0 || children.size() > 2) {
     return std::u16string();

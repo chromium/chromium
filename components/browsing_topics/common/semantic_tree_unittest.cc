@@ -4,6 +4,7 @@
 
 #include "components/browsing_topics/common/semantic_tree.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/browsing_topics/common/common_types.h"
@@ -184,30 +185,66 @@ TEST_F(SemanticTreeUnittest, GetFirstLevelTopicsSizeNotReturningDeletedTopics) {
   EXPECT_FALSE(first_level_topics_set.contains(kFirstLevelV2DeletedTopic));
 }
 
-TEST_F(SemanticTreeUnittest, GetPopularChildrenReturnsCorrectTopics) {
-  std::vector<Topic> popular_children =
-      semantic_tree_.GetAtMostTwoChildren(Topic(126));
+TEST_F(SemanticTreeUnittest, GetAtMostTwoRepresentativesReturnsCorrectTopics) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kBrowsingTopicsParameters, {{"taxonomy_version", "2"}});
 
-  EXPECT_EQ(std::size(popular_children), 2u);
-  EXPECT_EQ(popular_children[0], Topic(129));
-  EXPECT_EQ(popular_children[1], Topic(137));
+  std::vector<Topic> representatives =
+      semantic_tree_.GetAtMostTwoRepresentativesInCurrentTaxonomy(Topic(126));
 
-  popular_children = semantic_tree_.GetAtMostTwoChildren(Topic(250));
+  EXPECT_EQ(std::size(representatives), 2u);
+  EXPECT_EQ(representatives[0], Topic(140));
+  EXPECT_EQ(representatives[1], Topic(129));
 
-  EXPECT_EQ(std::size(popular_children), 1u);
-  EXPECT_EQ(popular_children[0], Topic(253));
+  representatives =
+      semantic_tree_.GetAtMostTwoRepresentativesInCurrentTaxonomy(Topic(250));
 
-  popular_children = semantic_tree_.GetAtMostTwoChildren(Topic(999999));
+  EXPECT_EQ(std::size(representatives), 1u);
+  EXPECT_EQ(representatives[0], Topic(253));
 
-  EXPECT_EQ(std::size(popular_children), 0u);
+  representatives = semantic_tree_.GetAtMostTwoRepresentativesInCurrentTaxonomy(
+      Topic(999999));
+  EXPECT_EQ(std::size(representatives), 0u);
+
+  representatives =
+      semantic_tree_.GetAtMostTwoRepresentativesInCurrentTaxonomy(Topic(275));
+  EXPECT_EQ(std::size(representatives), 0u);
 }
 
-TEST_F(SemanticTreeUnittest, GetPopularChildrenNeverEmptyForFirstLevelTopics) {
+TEST_F(SemanticTreeUnittest, RepresentativesNeverEmptyForFirstLevelTopics) {
+  base::test::ScopedFeatureList feature_list;
+
+  for (int version = 1; version <= SemanticTree::kMaxTaxonomyVersion;
+       version++) {
+    feature_list.Reset();
+    feature_list.InitAndEnableFeatureWithParameters(
+        blink::features::kBrowsingTopicsParameters,
+        {{"taxonomy_version", base::NumberToString(version)}});
+    std::vector<Topic> first_level_topics =
+        semantic_tree_.GetFirstLevelTopicsInCurrentTaxonomyInternal();
+
+    for (auto topic : first_level_topics) {
+      EXPECT_FALSE(
+          semantic_tree_.GetAtMostTwoRepresentativesInCurrentTaxonomy(topic)
+              .empty());
+    }
+  }
+}
+
+TEST_F(SemanticTreeUnittest, RepresentativesAreTopicsInTheCurrentTaxonomy) {
   std::vector<Topic> first_level_topics =
-      semantic_tree_.GetFirstLevelTopicsInCurrentTaxonomy();
+      semantic_tree_.GetFirstLevelTopicsInCurrentTaxonomyInternal();
 
   for (auto topic : first_level_topics) {
-    EXPECT_FALSE(semantic_tree_.GetAtMostTwoChildren(topic).empty());
+    auto representatives =
+        semantic_tree_.GetAtMostTwoRepresentativesInCurrentTaxonomy(topic);
+    auto topics_in_current_taxonomy =
+        semantic_tree_.GetTopicsInCurrentTaxonomyInternal();
+
+    for (auto representative : representatives) {
+      EXPECT_TRUE(topics_in_current_taxonomy.contains(representative.value()));
+    }
   }
 }
 

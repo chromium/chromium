@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_BROWSING_TOPICS_COMMON_SEMANTIC_TREE_H_
 #define COMPONENTS_BROWSING_TOPICS_COMMON_SEMANTIC_TREE_H_
 
+#include <set>
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -19,6 +21,7 @@ namespace browsing_topics {
 class COMPONENT_EXPORT(BROWSING_TOPICS_COMMON) SemanticTree {
  public:
   static constexpr int kNumTopics = 629;
+  static constexpr int kMaxTaxonomyVersion = 2;
 
   SemanticTree();
   SemanticTree(const SemanticTree& other) = delete;
@@ -34,8 +37,11 @@ class COMPONENT_EXPORT(BROWSING_TOPICS_COMMON) SemanticTree {
   // parents).
   std::vector<Topic> GetFirstLevelTopicsInCurrentTaxonomy();
 
-  // Returns at most 2 direct children topics for a given topic.
-  std::vector<Topic> GetAtMostTwoChildren(const Topic& topic);
+  // Returns at most 2 representative topics for a given topic. A representative
+  // is not necessarily a descendant, it's just a topic example that represents
+  // well the passed topic.
+  std::vector<Topic> GetAtMostTwoRepresentativesInCurrentTaxonomy(
+      const Topic& topic);
 
   // Get whether the `taxonomy_version` is supported by the semantic tree.
   bool IsTaxonomySupported(int taxonomy_version);
@@ -56,6 +62,19 @@ class COMPONENT_EXPORT(BROWSING_TOPICS_COMMON) SemanticTree {
   // any taxonomy, return an empty result.
   absl::optional<int> GetLocalizedNameMessageId(const Topic& topic,
                                                 int taxonomy_version);
+  FRIEND_TEST_ALL_PREFIXES(SemanticTreeUnittest,
+                           RepresentativesNeverEmptyForFirstLevelTopics);
+  FRIEND_TEST_ALL_PREFIXES(SemanticTreeUnittest,
+                           RepresentativesAreTopicsInTheCurrentTaxonomy);
+  // Returns all first level topics (aka Top Level topics, topics without
+  // parents).
+  std::vector<Topic> GetFirstLevelTopicsInCurrentTaxonomyInternal();
+
+  FRIEND_TEST_ALL_PREFIXES(SemanticTreeUnittest,
+                           RepresentativesAreTopicsInTheCurrentTaxonomy);
+  // Returns a set containing all the topics values in
+  // the current taxonomy.
+  std::set<int> GetTopicsInCurrentTaxonomyInternal();
 };
 }  // namespace browsing_topics
 
