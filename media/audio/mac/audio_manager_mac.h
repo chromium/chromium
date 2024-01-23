@@ -253,9 +253,9 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   // We no longer close the streams, so we may be able to get rid of these
   // member variables. They are currently used by MaybeChangeBufferSize().
   // Investigate if we can remove these.
-  std::list<AudioInputStream*> basic_input_streams_;
-  std::list<AUAudioInputStream*> low_latency_input_streams_;
-  std::list<AUHALStream*> output_streams_;
+  std::unordered_set<AudioInputStream*> basic_input_streams_;
+  std::unordered_set<AUAudioInputStream*> low_latency_input_streams_;
+  std::unordered_set<AUHALStream*> output_streams_;
 
   // Used to swizzle SCStreamManager when performing loopback capture.
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler>

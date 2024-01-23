@@ -818,7 +818,7 @@ AudioOutputStream* AudioManagerMac::MakeLowLatencyOutputStream(
   }
 
   AUHALStream* stream = new AUHALStream(this, params, device, log_callback);
-  output_streams_.push_back(stream);
+  output_streams_.insert(stream);
   return stream;
 }
 
@@ -863,7 +863,7 @@ AudioInputStream* AudioManagerMac::MakeLinearInputStream(
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LINEAR, params.format());
   AudioInputStream* stream = new PCMQueueInAudioInputStream(this, params);
-  basic_input_streams_.push_back(stream);
+  basic_input_streams_.insert(stream);
   return stream;
 }
 
@@ -897,7 +897,7 @@ AudioInputStream* AudioManagerMac::MakeLowLatencyInputStream(
 
   auto* stream = new AUAudioInputStream(this, params, audio_device_id,
                                         log_callback, voice_processing_mode);
-  low_latency_input_streams_.push_back(stream);
+  low_latency_input_streams_.insert(stream);
   return stream;
 }
 
@@ -1237,17 +1237,25 @@ void AudioManagerMac::UnsuppressNoiseReduction(AudioDeviceID device_id) {
 
 void AudioManagerMac::ReleaseOutputStream(AudioOutputStream* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  output_streams_.remove(static_cast<AUHALStream*>(stream));
+  const int streams_erased =
+      output_streams_.erase(static_cast<AUHALStream*>(stream));
+  CHECK_EQ(streams_erased, 1);
+
   AudioManagerBase::ReleaseOutputStream(stream);
 }
 
 void AudioManagerMac::ReleaseInputStream(AudioInputStream* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  auto stream_it = base::ranges::find(basic_input_streams_, stream);
-  if (stream_it == basic_input_streams_.end()) {
-    low_latency_input_streams_.remove(static_cast<AUAudioInputStream*>(stream));
-  } else {
+  auto stream_it = basic_input_streams_.find(stream);
+  if (stream_it != basic_input_streams_.end()) {
     basic_input_streams_.erase(stream_it);
+  } else {
+    auto it = low_latency_input_streams_.find(
+        static_cast<AUAudioInputStream*>(stream));
+    if (it != low_latency_input_streams_.end()) {
+      low_latency_input_streams_.erase(
+          static_cast<AUAudioInputStream*>(stream));
+    }
   }
 
   AudioManagerBase::ReleaseInputStream(stream);
