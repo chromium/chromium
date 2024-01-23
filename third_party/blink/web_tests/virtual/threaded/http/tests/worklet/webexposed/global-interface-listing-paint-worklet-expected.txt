@@ -260,13 +260,9 @@ CONSOLE MESSAGE:     method closePath
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method createConicGradient
 CONSOLE MESSAGE:     method createLinearGradient
-CONSOLE MESSAGE:     method createMesh2DIndexBuffer
-CONSOLE MESSAGE:     method createMesh2DUVBuffer
-CONSOLE MESSAGE:     method createMesh2DVertexBuffer
 CONSOLE MESSAGE:     method createPattern
 CONSOLE MESSAGE:     method createRadialGradient
 CONSOLE MESSAGE:     method drawImage
-CONSOLE MESSAGE:     method drawMesh
 CONSOLE MESSAGE:     method ellipse
 CONSOLE MESSAGE:     method endLayer
 CONSOLE MESSAGE:     method fill
@@ -716,13 +712,9 @@ CONSOLE MESSAGE:     method closePath
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method createConicGradient
 CONSOLE MESSAGE:     method createLinearGradient
-CONSOLE MESSAGE:     method createMesh2DIndexBuffer
-CONSOLE MESSAGE:     method createMesh2DUVBuffer
-CONSOLE MESSAGE:     method createMesh2DVertexBuffer
 CONSOLE MESSAGE:     method createPattern
 CONSOLE MESSAGE:     method createRadialGradient
 CONSOLE MESSAGE:     method drawImage
-CONSOLE MESSAGE:     method drawMesh
 CONSOLE MESSAGE:     method ellipse
 CONSOLE MESSAGE:     method endLayer
 CONSOLE MESSAGE:     method fill
