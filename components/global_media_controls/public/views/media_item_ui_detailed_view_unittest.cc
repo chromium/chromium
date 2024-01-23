@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/global_media_controls/public/views/media_notification_view_ash_impl.h"
+#include "components/global_media_controls/public/views/media_item_ui_detailed_view.h"
 
 #include "components/global_media_controls/public/test/mock_media_item_ui_device_selector.h"
 #include "components/global_media_controls/public/test/mock_media_item_ui_footer.h"
@@ -57,14 +57,14 @@ class MockMediaNotificationContainer
 
 }  // namespace
 
-class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
+class MediaItemUIDetailedViewTest : public views::ViewsTestBase {
  public:
-  MediaNotificationViewAshImplTest() = default;
-  MediaNotificationViewAshImplTest(const MediaNotificationViewAshImplTest&) =
+  MediaItemUIDetailedViewTest() = default;
+  MediaItemUIDetailedViewTest(const MediaItemUIDetailedViewTest&) =
       delete;
-  MediaNotificationViewAshImplTest& operator=(
-      const MediaNotificationViewAshImplTest&) = delete;
-  ~MediaNotificationViewAshImplTest() override = default;
+  MediaItemUIDetailedViewTest& operator=(
+      const MediaItemUIDetailedViewTest&) = delete;
+  ~MediaItemUIDetailedViewTest() override = default;
 
   void SetUp() override {
     views::ViewsTestBase::SetUp();
@@ -81,7 +81,7 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
     // coordinates and focus.
     widget_ = CreateTestWidget();
     view_ =
-        widget_->SetContentsView(std::make_unique<MediaNotificationViewAshImpl>(
+        widget_->SetContentsView(std::make_unique<MediaItemUIDetailedView>(
             container_.get(), item_->GetWeakPtr(), /*footer_view=*/nullptr,
             std::move(device_selector), /*dismiss_button=*/nullptr,
             media_message_center::MediaColorTheme(),
@@ -98,27 +98,27 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
     views::ViewsTestBase::TearDown();
   }
 
-  std::unique_ptr<MediaNotificationViewAshImpl> CreateView(
+  std::unique_ptr<MediaItemUIDetailedView> CreateView(
       MediaDisplayPage media_display_page) {
-    return std::make_unique<MediaNotificationViewAshImpl>(
+    return std::make_unique<MediaItemUIDetailedView>(
         container_.get(), item_->GetWeakPtr(), /*footer_view=*/nullptr,
         /*device_selector_view=*/nullptr, /*dismiss_button=*/nullptr,
         media_message_center::MediaColorTheme(), media_display_page);
   }
 
-  std::unique_ptr<MediaNotificationViewAshImpl> CreateViewWithFooter(
+  std::unique_ptr<MediaItemUIDetailedView> CreateViewWithFooter(
       std::unique_ptr<MediaItemUIFooter> footer) {
     auto device_selector =
         std::make_unique<NiceMock<MockMediaItemUIDeviceSelector>>();
-    return std::make_unique<MediaNotificationViewAshImpl>(
+    return std::make_unique<MediaItemUIDetailedView>(
         container_.get(), item_->GetWeakPtr(), std::move(footer),
         std::move(device_selector), /*dismiss_button=*/nullptr,
         media_message_center::MediaColorTheme(),
         MediaDisplayPage::kQuickSettingsMediaView);
   }
 
-  std::unique_ptr<MediaNotificationViewAshImpl> CreateLockScreenMediaView() {
-    return std::make_unique<MediaNotificationViewAshImpl>(
+  std::unique_ptr<MediaItemUIDetailedView> CreateLockScreenMediaView() {
+    return std::make_unique<MediaItemUIDetailedView>(
         container_.get(), /*item=*/nullptr, /*footer_view=*/nullptr,
         /*device_selector_view=*/nullptr,
         /*dismiss_button=*/std::make_unique<views::View>(),
@@ -155,7 +155,7 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
 
   MockMediaNotificationContainer& container() { return *container_; }
 
-  MediaNotificationViewAshImpl* view() const { return view_; }
+  MediaItemUIDetailedView* view() const { return view_; }
 
   MockMediaNotificationItem& item() { return *item_; }
 
@@ -181,12 +181,12 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
   base::flat_set<MediaSessionAction> actions_;
   std::unique_ptr<MockMediaNotificationContainer> container_;
   std::unique_ptr<MockMediaNotificationItem> item_;
-  raw_ptr<MediaNotificationViewAshImpl> view_;
+  raw_ptr<MediaItemUIDetailedView> view_;
   raw_ptr<MockMediaItemUIDeviceSelector> device_selector_;
   std::unique_ptr<views::Widget> widget_;
 };
 
-TEST_F(MediaNotificationViewAshImplTest, ChevronIconVisibilityCheck) {
+TEST_F(MediaItemUIDetailedViewTest, ChevronIconVisibilityCheck) {
   auto view = CreateView(MediaDisplayPage::kQuickSettingsMediaView);
   EXPECT_NE(view->GetChevronIconForTesting(), nullptr);
 
@@ -200,7 +200,7 @@ TEST_F(MediaNotificationViewAshImplTest, ChevronIconVisibilityCheck) {
   EXPECT_EQ(view->GetChevronIconForTesting(), nullptr);
 }
 
-TEST_F(MediaNotificationViewAshImplTest, DeviceSelectorViewCheck) {
+TEST_F(MediaItemUIDetailedViewTest, DeviceSelectorViewCheck) {
   EXPECT_NE(view()->GetStartCastingButtonForTesting(), nullptr);
   EXPECT_FALSE(view()->GetStartCastingButtonForTesting()->GetVisible());
   EXPECT_EQ(view()->GetDeviceSelectorForTesting(), device_selector());
@@ -237,7 +237,7 @@ TEST_F(MediaNotificationViewAshImplTest, DeviceSelectorViewCheck) {
   EXPECT_FALSE(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible());
 }
 
-TEST_F(MediaNotificationViewAshImplTest, FooterViewCheck) {
+TEST_F(MediaItemUIDetailedViewTest, FooterViewCheck) {
   auto footer = std::make_unique<NiceMock<MockMediaItemUIFooter>>();
   auto* footer_ptr = footer.get();
   auto view = CreateViewWithFooter(std::move(footer));
@@ -256,7 +256,7 @@ TEST_F(MediaNotificationViewAshImplTest, FooterViewCheck) {
   EXPECT_FALSE(button->GetVisible());
 }
 
-TEST_F(MediaNotificationViewAshImplTest, MetadataUpdated) {
+TEST_F(MediaItemUIDetailedViewTest, MetadataUpdated) {
   EXPECT_EQ(view()->GetSourceLabelForTesting()->GetText(), u"");
   EXPECT_EQ(view()->GetArtistLabelForTesting()->GetText(), u"");
   EXPECT_EQ(view()->GetTitleLabelForTesting()->GetText(), u"");
@@ -275,7 +275,7 @@ TEST_F(MediaNotificationViewAshImplTest, MetadataUpdated) {
   EXPECT_EQ(view()->GetTitleLabelForTesting()->GetText(), metadata.title);
 }
 
-TEST_F(MediaNotificationViewAshImplTest, PlayPauseButtonDisplay) {
+TEST_F(MediaItemUIDetailedViewTest, PlayPauseButtonDisplay) {
   EnableAllActions();
 
   auto session_info = media_session::mojom::MediaSessionInfo::New();
@@ -300,7 +300,7 @@ TEST_F(MediaNotificationViewAshImplTest, PlayPauseButtonDisplay) {
   EXPECT_TRUE(IsActionButtonVisible(MediaSessionAction::kPlay));
 }
 
-TEST_F(MediaNotificationViewAshImplTest, PictureInPictureButtonDisplay) {
+TEST_F(MediaItemUIDetailedViewTest, PictureInPictureButtonDisplay) {
   EnableAllActions();
 
   auto session_info = media_session::mojom::MediaSessionInfo::New();
@@ -326,7 +326,7 @@ TEST_F(MediaNotificationViewAshImplTest, PictureInPictureButtonDisplay) {
   EXPECT_TRUE(IsActionButtonVisible(MediaSessionAction::kExitPictureInPicture));
 }
 
-TEST_F(MediaNotificationViewAshImplTest, ButtonVisibilityCheck) {
+TEST_F(MediaItemUIDetailedViewTest, ButtonVisibilityCheck) {
   auto session_info = media_session::mojom::MediaSessionInfo::New();
   session_info->playback_state =
       media_session::mojom::MediaPlaybackState::kPlaying;
@@ -360,7 +360,7 @@ TEST_F(MediaNotificationViewAshImplTest, ButtonVisibilityCheck) {
       IsActionButtonVisible(MediaSessionAction::kEnterPictureInPicture));
 }
 
-TEST_F(MediaNotificationViewAshImplTest, NextTrackButtonClick) {
+TEST_F(MediaItemUIDetailedViewTest, NextTrackButtonClick) {
   EnableAction(MediaSessionAction::kNextTrack);
 
   EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
@@ -368,7 +368,7 @@ TEST_F(MediaNotificationViewAshImplTest, NextTrackButtonClick) {
   SimulateButtonClick(MediaSessionAction::kNextTrack);
 }
 
-TEST_F(MediaNotificationViewAshImplTest, PlayButtonClick) {
+TEST_F(MediaItemUIDetailedViewTest, PlayButtonClick) {
   EnableAction(MediaSessionAction::kPlay);
 
   EXPECT_CALL(item(),
@@ -376,7 +376,7 @@ TEST_F(MediaNotificationViewAshImplTest, PlayButtonClick) {
   SimulateButtonClick(MediaSessionAction::kPlay);
 }
 
-TEST_F(MediaNotificationViewAshImplTest, PauseButtonClick) {
+TEST_F(MediaItemUIDetailedViewTest, PauseButtonClick) {
   EnableAction(MediaSessionAction::kPause);
 
   auto session_info = media_session::mojom::MediaSessionInfo::New();
@@ -390,7 +390,7 @@ TEST_F(MediaNotificationViewAshImplTest, PauseButtonClick) {
   SimulateButtonClick(MediaSessionAction::kPause);
 }
 
-TEST_F(MediaNotificationViewAshImplTest, PreviousTrackButtonClick) {
+TEST_F(MediaItemUIDetailedViewTest, PreviousTrackButtonClick) {
   EnableAction(MediaSessionAction::kPreviousTrack);
 
   EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
@@ -398,7 +398,7 @@ TEST_F(MediaNotificationViewAshImplTest, PreviousTrackButtonClick) {
   SimulateButtonClick(MediaSessionAction::kPreviousTrack);
 }
 
-TEST_F(MediaNotificationViewAshImplTest, EnterPictureInPictureButtonClick) {
+TEST_F(MediaItemUIDetailedViewTest, EnterPictureInPictureButtonClick) {
   EnableAction(MediaSessionAction::kEnterPictureInPicture);
 
   EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
@@ -406,7 +406,7 @@ TEST_F(MediaNotificationViewAshImplTest, EnterPictureInPictureButtonClick) {
   SimulateButtonClick(MediaSessionAction::kEnterPictureInPicture);
 }
 
-TEST_F(MediaNotificationViewAshImplTest, ExitPictureInPictureButtonClick) {
+TEST_F(MediaItemUIDetailedViewTest, ExitPictureInPictureButtonClick) {
   EnableAction(MediaSessionAction::kExitPictureInPicture);
 
   auto session_info = media_session::mojom::MediaSessionInfo::New();

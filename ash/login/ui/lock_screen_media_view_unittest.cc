@@ -67,14 +67,13 @@ class LockScreenMediaViewTest : public LoginTestBase {
 
   LockScreenMediaView* media_view() { return media_view_; }
 
-  global_media_controls::MediaNotificationViewAshImpl*
-  media_notification_view() {
-    return media_view_->GetMediaNotificationViewForTesting();
+  global_media_controls::MediaItemUIDetailedView* media_detailed_view() {
+    return media_view_->GetDetailedViewForTesting();
   }
 
   bool IsActionButtonVisible(MediaSessionAction action) {
     views::Button* button =
-        media_notification_view()->GetActionButtonForTesting(action);
+        media_detailed_view()->GetActionButtonForTesting(action);
     return button && button->GetVisible();
   }
 
@@ -106,11 +105,11 @@ TEST_F(LockScreenMediaViewTest, DoNotUpdateMetadataBetweenSessions) {
   media_view()->MediaSessionMetadataChanged(metadata);
 
   EXPECT_EQ(u"source title",
-            media_notification_view()->GetSourceLabelForTesting()->GetText());
+            media_detailed_view()->GetSourceLabelForTesting()->GetText());
   EXPECT_EQ(u"title",
-            media_notification_view()->GetTitleLabelForTesting()->GetText());
+            media_detailed_view()->GetTitleLabelForTesting()->GetText());
   EXPECT_EQ(u"artist",
-            media_notification_view()->GetArtistLabelForTesting()->GetText());
+            media_detailed_view()->GetArtistLabelForTesting()->GetText());
 }
 
 TEST_F(LockScreenMediaViewTest, DoNotUpdateActionsBetweenSessions) {
@@ -150,7 +149,7 @@ TEST_F(LockScreenMediaViewTest, DoNotUpdatePositionBetweenSessions) {
   SimulateMediaSessionChanged();
   media_view()->MediaSessionPositionChanged(media_position_paused);
   EXPECT_EQ(media_position.playback_rate(),
-            media_notification_view()->GetPositionForTesting().playback_rate());
+            media_detailed_view()->GetPositionForTesting().playback_rate());
 }
 
 TEST_F(LockScreenMediaViewTest, DoNotUpdateArtworkBetweenSessions) {
@@ -163,10 +162,8 @@ TEST_F(LockScreenMediaViewTest, DoNotUpdateArtworkBetweenSessions) {
   media_view()->MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, image);
 
-  EXPECT_TRUE(media_notification_view()
-                  ->GetArtworkViewForTesting()
-                  ->GetImage()
-                  .isNull());
+  EXPECT_TRUE(
+      media_detailed_view()->GetArtworkViewForTesting()->GetImage().isNull());
 }
 
 TEST_F(LockScreenMediaViewTest, DismissButtonCheck) {

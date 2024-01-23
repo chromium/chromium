@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/global_media_controls/public/views/media_notification_view_ash_impl.h"
+#include "components/global_media_controls/public/views/media_item_ui_detailed_view.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "components/media_message_center/media_notification_container.h"
@@ -168,7 +168,7 @@ gfx::Size ScaleImageSizeToFitView(const gfx::Size& image_size,
 
 }  // namespace
 
-MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
+MediaItemUIDetailedView::MediaItemUIDetailedView(
     media_message_center::MediaNotificationContainer* container,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     std::unique_ptr<MediaItemUIFooter> footer_view,
@@ -237,7 +237,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
       text_fonts, kSourceTextLineHeight, theme_.secondary_foreground_color_id,
       theme_.focus_ring_color_id));
   source_label_->SetCallback(
-      base::BindRepeating(&MediaNotificationViewAshImpl::MediaLabelPressed,
+      base::BindRepeating(&MediaItemUIDetailedView::MediaLabelPressed,
                           base::Unretained(this), source_label_));
   source_row->SetFlexForView(source_label_, 1);
 
@@ -251,7 +251,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
       text_fonts, kTextLineHeight, theme_.primary_foreground_color_id,
       theme_.focus_ring_color_id));
   title_label_->SetCallback(
-      base::BindRepeating(&MediaNotificationViewAshImpl::MediaLabelPressed,
+      base::BindRepeating(&MediaItemUIDetailedView::MediaLabelPressed,
                           base::Unretained(this), title_label_));
   title_row->SetFlexForView(title_label_, 1);
 
@@ -272,7 +272,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
           text_fonts, kTextLineHeight, theme_.secondary_foreground_color_id,
           theme_.focus_ring_color_id));
   artist_label_->SetCallback(
-      base::BindRepeating(&MediaNotificationViewAshImpl::MediaLabelPressed,
+      base::BindRepeating(&MediaItemUIDetailedView::MediaLabelPressed,
                           base::Unretained(this), artist_label_));
 
   // |controls_column| inside |main_row| holds the play/pause button and the
@@ -320,9 +320,9 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
           theme_.paused_progress_foreground_color_id,
           theme_.paused_progress_background_color_id,
           theme_.focus_ring_color_id,
-          base::BindRepeating(&MediaNotificationViewAshImpl::OnProgressDragging,
+          base::BindRepeating(&MediaItemUIDetailedView::OnProgressDragging,
                               base::Unretained(this)),
-          base::BindRepeating(&MediaNotificationViewAshImpl::SeekTo,
+          base::BindRepeating(&MediaItemUIDetailedView::SeekTo,
                               base::Unretained(this))));
   controls_row->SetFlexForView(squiggly_progress_view_, 1);
 
@@ -339,7 +339,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
         media_message_center::kMediaCastStartIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SHOW_DEVICE_LIST);
     start_casting_button_->SetCallback(base::BindRepeating(
-        &MediaNotificationViewAshImpl::StartCastingButtonPressed,
+        &MediaItemUIDetailedView::StartCastingButtonPressed,
         base::Unretained(this)));
     start_casting_button_->SetVisible(false);
   }
@@ -380,7 +380,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   }
 }
 
-MediaNotificationViewAshImpl::~MediaNotificationViewAshImpl() {
+MediaItemUIDetailedView::~MediaItemUIDetailedView() {
   if (item_) {
     item_->SetView(nullptr);
   }
@@ -389,7 +389,7 @@ MediaNotificationViewAshImpl::~MediaNotificationViewAshImpl() {
 ///////////////////////////////////////////////////////////////////////////////
 // MediaNotificationView implementations:
 
-void MediaNotificationViewAshImpl::UpdateWithMediaSessionInfo(
+void MediaItemUIDetailedView::UpdateWithMediaSessionInfo(
     const media_session::mojom::MediaSessionInfoPtr& session_info) {
   bool playing =
       session_info && session_info->playback_state ==
@@ -436,7 +436,7 @@ void MediaNotificationViewAshImpl::UpdateWithMediaSessionInfo(
   container_->OnMediaSessionInfoChanged(session_info);
 }
 
-void MediaNotificationViewAshImpl::UpdateWithMediaMetadata(
+void MediaItemUIDetailedView::UpdateWithMediaMetadata(
     const media_session::MediaMetadata& metadata) {
   source_label_->label()->SetElideBehavior(gfx::ELIDE_HEAD);
   source_label_->SetText(metadata.source_title);
@@ -446,7 +446,7 @@ void MediaNotificationViewAshImpl::UpdateWithMediaMetadata(
   container_->OnMediaSessionMetadataChanged(metadata);
 }
 
-void MediaNotificationViewAshImpl::UpdateWithMediaActions(
+void MediaItemUIDetailedView::UpdateWithMediaActions(
     const base::flat_set<media_session::mojom::MediaSessionAction>& actions) {
   enabled_actions_ = actions;
   UpdateActionButtonsVisibility();
@@ -454,13 +454,13 @@ void MediaNotificationViewAshImpl::UpdateWithMediaActions(
   container_->OnVisibleActionsChanged(enabled_actions_);
 }
 
-void MediaNotificationViewAshImpl::UpdateWithMediaPosition(
+void MediaItemUIDetailedView::UpdateWithMediaPosition(
     const media_session::MediaPosition& position) {
   position_ = position;
   squiggly_progress_view_->UpdateProgress(position);
 }
 
-void MediaNotificationViewAshImpl::UpdateWithMediaArtwork(
+void MediaItemUIDetailedView::UpdateWithMediaArtwork(
     const gfx::ImageSkia& image) {
   if (image.isNull()) {
     // Hide the image so the other contents will adjust to fill the container.
@@ -480,7 +480,7 @@ void MediaNotificationViewAshImpl::UpdateWithMediaArtwork(
   SchedulePaint();
 }
 
-void MediaNotificationViewAshImpl::UpdateDeviceSelectorAvailability(
+void MediaItemUIDetailedView::UpdateDeviceSelectorAvailability(
     bool has_devices) {
   CHECK(start_casting_button_);
   // Do not show the start casting button if this media item is being casted to
@@ -495,7 +495,7 @@ void MediaNotificationViewAshImpl::UpdateDeviceSelectorAvailability(
 ///////////////////////////////////////////////////////////////////////////////
 // views::View implementations:
 
-void MediaNotificationViewAshImpl::AddedToWidget() {
+void MediaItemUIDetailedView::AddedToWidget() {
   // Ink drop on the start casting button requires color provider to be ready,
   // so we need to update the state after the widget is ready.
   if (device_selector_view_) {
@@ -503,8 +503,7 @@ void MediaNotificationViewAshImpl::AddedToWidget() {
   }
 }
 
-void MediaNotificationViewAshImpl::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
+void MediaItemUIDetailedView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
   node_data->role = ax::mojom::Role::kListItem;
   node_data->SetNameChecked(l10n_util::GetStringUTF8(
@@ -512,9 +511,9 @@ void MediaNotificationViewAshImpl::GetAccessibleNodeData(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// MediaNotificationViewAshImpl implementations:
+// MediaItemUIDetailedView implementations:
 
-void MediaNotificationViewAshImpl::MediaLabelPressed(MediaLabelButton* button) {
+void MediaItemUIDetailedView::MediaLabelPressed(MediaLabelButton* button) {
   // Pressing any media info label on the quick settings media view will try to
   // activate the original web contents if it is hidden, or go to detailed view
   // if it is not. Pressing other places on the quick settings media view will
@@ -524,7 +523,7 @@ void MediaNotificationViewAshImpl::MediaLabelPressed(MediaLabelButton* button) {
   container_->OnHeaderClicked(/*activate_original_media=*/true);
 }
 
-MediaButton* MediaNotificationViewAshImpl::CreateMediaButton(
+MediaButton* MediaItemUIDetailedView::CreateMediaButton(
     views::View* parent,
     int button_id,
     const gfx::VectorIcon& vector_icon,
@@ -537,14 +536,14 @@ MediaButton* MediaNotificationViewAshImpl::CreateMediaButton(
 
   if (button_id != kNotMediaActionButtonId) {
     button_ptr->SetCallback(
-        base::BindRepeating(&MediaNotificationViewAshImpl::MediaButtonPressed,
+        base::BindRepeating(&MediaItemUIDetailedView::MediaButtonPressed,
                             base::Unretained(this), button_ptr));
     action_buttons_.push_back(button_ptr);
   }
   return button_ptr;
 }
 
-void MediaNotificationViewAshImpl::UpdateActionButtonsVisibility() {
+void MediaItemUIDetailedView::UpdateActionButtonsVisibility() {
   bool should_invalidate_layout = false;
 
   for (views::Button* button : action_buttons_) {
@@ -580,7 +579,7 @@ void MediaNotificationViewAshImpl::UpdateActionButtonsVisibility() {
   }
 }
 
-void MediaNotificationViewAshImpl::MediaButtonPressed(views::Button* button) {
+void MediaItemUIDetailedView::MediaButtonPressed(views::Button* button) {
   const auto action = static_cast<MediaSessionAction>(button->GetID());
   if (item_) {
     item_->OnMediaSessionActionButtonPressed(action);
@@ -591,7 +590,7 @@ void MediaNotificationViewAshImpl::MediaButtonPressed(views::Button* button) {
   }
 }
 
-void MediaNotificationViewAshImpl::OnProgressDragging(bool pause) {
+void MediaItemUIDetailedView::OnProgressDragging(bool pause) {
   const auto action =
       (pause ? MediaSessionAction::kPause : MediaSessionAction::kPlay);
   if (item_) {
@@ -603,7 +602,7 @@ void MediaNotificationViewAshImpl::OnProgressDragging(bool pause) {
   }
 }
 
-void MediaNotificationViewAshImpl::SeekTo(double seek_progress) {
+void MediaItemUIDetailedView::SeekTo(double seek_progress) {
   const auto time = seek_progress * position_.duration();
   if (item_) {
     item_->SeekTo(time);
@@ -614,7 +613,7 @@ void MediaNotificationViewAshImpl::SeekTo(double seek_progress) {
   }
 }
 
-void MediaNotificationViewAshImpl::StartCastingButtonPressed() {
+void MediaItemUIDetailedView::StartCastingButtonPressed() {
   CHECK(device_selector_view_);
 
   switch (media_display_page_) {
@@ -642,7 +641,7 @@ void MediaNotificationViewAshImpl::StartCastingButtonPressed() {
   }
 }
 
-void MediaNotificationViewAshImpl::UpdateCastingState() {
+void MediaItemUIDetailedView::UpdateCastingState() {
   CHECK(start_casting_button_);
   CHECK(device_selector_view_);
   CHECK(device_selector_view_separator_);
@@ -678,57 +677,55 @@ void MediaNotificationViewAshImpl::UpdateCastingState() {
 }
 
 // Helper functions for testing:
-views::ImageView* MediaNotificationViewAshImpl::GetArtworkViewForTesting() {
+views::ImageView* MediaItemUIDetailedView::GetArtworkViewForTesting() {
   return artwork_view_;
 }
 
-views::Label* MediaNotificationViewAshImpl::GetSourceLabelForTesting() {
+views::Label* MediaItemUIDetailedView::GetSourceLabelForTesting() {
   return source_label_->label();
 }
 
-views::Label* MediaNotificationViewAshImpl::GetTitleLabelForTesting() {
+views::Label* MediaItemUIDetailedView::GetTitleLabelForTesting() {
   return title_label_->label();
 }
 
-views::Label* MediaNotificationViewAshImpl::GetArtistLabelForTesting() {
+views::Label* MediaItemUIDetailedView::GetArtistLabelForTesting() {
   return artist_label_->label();
 }
 
-views::ImageView* MediaNotificationViewAshImpl::GetChevronIconForTesting() {
+views::ImageView* MediaItemUIDetailedView::GetChevronIconForTesting() {
   return chevron_icon_;
 }
 
-views::Button* MediaNotificationViewAshImpl::GetActionButtonForTesting(
+views::Button* MediaItemUIDetailedView::GetActionButtonForTesting(
     media_session::mojom::MediaSessionAction action) {
   const auto i = base::ranges::find(action_buttons_, static_cast<int>(action),
                                     &views::View::GetID);
   return (i == action_buttons_.end()) ? nullptr : *i;
 }
 
-media_session::MediaPosition
-MediaNotificationViewAshImpl::GetPositionForTesting() {
+media_session::MediaPosition MediaItemUIDetailedView::GetPositionForTesting() {
   return position_;
 }
 
-views::Button* MediaNotificationViewAshImpl::GetStartCastingButtonForTesting() {
+views::Button* MediaItemUIDetailedView::GetStartCastingButtonForTesting() {
   return start_casting_button_;
 }
 
-MediaItemUIFooter* MediaNotificationViewAshImpl::GetFooterForTesting() {
+MediaItemUIFooter* MediaItemUIDetailedView::GetFooterForTesting() {
   return footer_view_;
 }
 
 MediaItemUIDeviceSelector*
-MediaNotificationViewAshImpl::GetDeviceSelectorForTesting() {
+MediaItemUIDetailedView::GetDeviceSelectorForTesting() {
   return device_selector_view_;
 }
 
-views::View*
-MediaNotificationViewAshImpl::GetDeviceSelectorSeparatorForTesting() {
+views::View* MediaItemUIDetailedView::GetDeviceSelectorSeparatorForTesting() {
   return device_selector_view_separator_;
 }
 
-BEGIN_METADATA(MediaNotificationViewAshImpl, views::View)
+BEGIN_METADATA(MediaItemUIDetailedView, views::View)
 END_METADATA
 
 }  // namespace global_media_controls

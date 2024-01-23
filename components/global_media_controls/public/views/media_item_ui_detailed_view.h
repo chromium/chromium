@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
-#define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
+#ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_DETAILED_VIEW_H_
+#define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_DETAILED_VIEW_H_
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
@@ -59,12 +59,12 @@ enum class MediaDisplayPage {
 };
 
 // CrOS implementation of media notification view.
-class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
+class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
     : public media_message_center::MediaNotificationView {
  public:
-  METADATA_HEADER(MediaNotificationViewAshImpl);
+  METADATA_HEADER(MediaItemUIDetailedView);
 
-  MediaNotificationViewAshImpl(
+  MediaItemUIDetailedView(
       media_message_center::MediaNotificationContainer* container,
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
       std::unique_ptr<MediaItemUIFooter> footer_view,
@@ -72,10 +72,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
       std::unique_ptr<views::View> dismiss_button,
       media_message_center::MediaColorTheme theme,
       MediaDisplayPage media_display_page);
-  MediaNotificationViewAshImpl(const MediaNotificationViewAshImpl&) = delete;
-  MediaNotificationViewAshImpl& operator=(const MediaNotificationViewAshImpl&) =
+  MediaItemUIDetailedView(const MediaItemUIDetailedView&) = delete;
+  MediaItemUIDetailedView& operator=(const MediaItemUIDetailedView&) =
       delete;
-  ~MediaNotificationViewAshImpl() override;
+  ~MediaItemUIDetailedView() override;
 
   // MediaNotificationView:
   void SetForcedExpandedState(bool* forced_expanded_state) override {}
@@ -117,7 +117,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
   views::View* GetDeviceSelectorSeparatorForTesting();
 
  private:
-  friend class MediaNotificationViewAshImplTest;
+  friend class MediaItemUIDetailedViewTest;
 
   // Callback for a media label being pressed.
   void MediaLabelPressed(MediaLabelButton* button);
@@ -190,4 +190,4 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
 
 }  // namespace global_media_controls
 
-#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
+#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_DETAILED_VIEW_H_

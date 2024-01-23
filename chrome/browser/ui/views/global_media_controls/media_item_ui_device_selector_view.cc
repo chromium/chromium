@@ -305,7 +305,7 @@ void MediaItemUIDeviceSelectorView::ShowDevices() {
 
   // When this device selector view is used on Chrome OS ash with
   // media::kGlobalMediaControlsCrOSUpdatedUI enabled, accessibility text will
-  // be handled by MediaNotificationViewAshImpl instead of here.
+  // be handled by MediaItemUIDetailedView instead of here.
   if (!media_color_theme_.has_value()) {
     GetViewAccessibility().AnnounceText(
         l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_SHOW_DEVICE_LIST));
@@ -339,7 +339,7 @@ void MediaItemUIDeviceSelectorView::HideDevices() {
 
   // When this device selector view is used on Chrome OS ash with
   // media::kGlobalMediaControlsCrOSUpdatedUI enabled, accessibility text will
-  // be handled by MediaNotificationViewAshImpl instead of here.
+  // be handled by MediaItemUIDetailedView instead of here.
   if (!media_color_theme_.has_value()) {
     GetViewAccessibility().AnnounceText(
         l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_HIDE_DEVICE_LIST));
