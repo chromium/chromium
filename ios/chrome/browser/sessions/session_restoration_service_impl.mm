@@ -720,6 +720,7 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
       // Serialize the WebState to protobuf message.
       auto storage = std::make_unique<web::proto::WebStateStorage>();
       web_state->SerializeToProto(*storage);
+      DCHECK(storage->has_metadata());
 
       // Extract the metadata from `storage` to save it in its own file.
       // The metadata must be non-null at this point (since at least the
