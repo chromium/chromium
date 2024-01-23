@@ -288,6 +288,11 @@ class QuickStartMetrics {
   // should be set at the start of a certificate fetch and destroyed when a
   // response is received.
   std::unique_ptr<base::ElapsedTimer> attestation_certificate_timer_;
+
+  // Timer to keep track of Gaia authentication requests. It should be set at
+  // the start of a Gaia authentication request and destroyed when a response is
+  // received.
+  std::unique_ptr<base::ElapsedTimer> gaia_authentication_timer_;
 };
 
 }  // namespace ash::quick_start

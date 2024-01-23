@@ -120,6 +120,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.GaiaAuthentication.Duration" units="ms"
+    expires_after="2024-12-01">
+  <owner>sinhak@chromium.org</owner>
+  <owner>bhartmire@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Time elapsed from attempting a Gaia authentication to receiving a response.
+    It is recorded when the `startsession` request finishes.
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.GaiaAuthentication.Result"
     enum="QuickStartGaiaAuthenticationResult" expires_after="2024-12-01">
   <owner>sinhak@chromium.org</owner>

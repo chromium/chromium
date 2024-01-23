@@ -271,6 +271,11 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
                               net::HTTP_UNAUTHORIZED);
   }
 
+  void SimulateHttpGatewayTimeout(const std::string& url) {
+    test_factory_.AddResponse(url, /*content=*/std::string(),
+                              net::HTTP_GATEWAY_TIMEOUT);
+  }
+
   void SimulateOAuthTokenFetchFailure() {
     test_factory_.AddResponse(
         GaiaUrls::GetInstance()->oauth2_token_url().spec(), /*content=*/"{}",
@@ -902,6 +907,9 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForUnknownErrors) {
   histogram_tester.ExpectBucketCount(
       "QuickStart.GaiaAuthentication.Result",
       /*sample=*/QuickStartMetrics::GaiaAuthenticationResult::kUnknownError, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "QuickStart.GaiaAuthentication.Duration",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForSuccess) {
@@ -924,6 +932,9 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForSuccess) {
   histogram_tester.ExpectBucketCount(
       "QuickStart.GaiaAuthentication.Result",
       /*sample=*/QuickStartMetrics::GaiaAuthenticationResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "QuickStart.GaiaAuthentication.Duration",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForParsingErrors) {
@@ -940,6 +951,9 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForParsingErrors) {
       "QuickStart.GaiaAuthentication.Result",
       /*sample=*/
       QuickStartMetrics::GaiaAuthenticationResult::kResponseParsingError, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "QuickStart.GaiaAuthentication.Duration",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForRejectionErrors) {
@@ -955,6 +969,9 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForRejectionErrors) {
       "QuickStart.GaiaAuthentication.Result",
       /*sample=*/
       QuickStartMetrics::GaiaAuthenticationResult::kRejection, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "QuickStart.GaiaAuthentication.Duration",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
@@ -981,6 +998,9 @@ TEST_F(SecondDeviceAuthBrokerTest,
       QuickStartMetrics::GaiaAuthenticationResult::
           kAdditionalChallengesOnSource,
       1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "QuickStart.GaiaAuthentication.Duration",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
@@ -1006,6 +1026,27 @@ TEST_F(SecondDeviceAuthBrokerTest,
       QuickStartMetrics::GaiaAuthenticationResult::
           kAdditionalChallengesOnTarget,
       1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "QuickStart.GaiaAuthentication.Duration",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+}
+
+TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForNetworkTimeouts) {
+  base::HistogramTester histogram_tester;
+
+  SimulateHttpGatewayTimeout(kStartSessionUrl);
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  ASSERT_THAT(response, VariantWith<AuthCodeParsingErrorResponse>(_));
+
+  histogram_tester.ExpectBucketCount(
+      "QuickStart.GaiaAuthentication.Result",
+      /*sample=*/
+      QuickStartMetrics::GaiaAuthenticationResult::kResponseParsingError, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "QuickStart.GaiaAuthentication.Duration",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 }  //  namespace ash::quick_start
