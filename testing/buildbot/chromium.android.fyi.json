@@ -11914,7 +11914,8 @@
         "args": [
           "--no-wpt-internal",
           "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb",
-          "--use-upstream-wpt"
+          "--use-upstream-wpt",
+          "--timeout-multiplier=4"
         ],
         "merge": {
           "args": [
@@ -13159,7 +13160,8 @@
         "args": [
           "--no-wpt-internal",
           "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb",
-          "--use-upstream-wpt"
+          "--use-upstream-wpt",
+          "--timeout-multiplier=4"
         ],
         "merge": {
           "args": [
