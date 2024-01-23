@@ -549,6 +549,7 @@ builder.
 * [reclient-config-deployment-verifier](https://ci.chromium.org/p/chromium/builders/try/reclient-config-deployment-verifier) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""reclient-config-deployment-verifier""))
 
   Location filters:
+  * [`//buildtools/reclient_cfgs/.+`](https://cs.chromium.org/chromium/src/buildtools/reclient_cfgs/)
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=+file:tools/clang/scripts/update.py)
   * [`//DEPS`](https://cs.chromium.org/chromium/src/DEPS)
 

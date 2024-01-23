@@ -59,14 +59,25 @@ def NaclRevision():
         return None
 
     if os.path.isdir(os.path.join(nacl_dir, ".git")):
-        return subprocess.run(
-            ["git", "log", "-1", "--format=%H"],
-            cwd=nacl_dir,
-            shell=os.name == "nt",
-            text=True,
-            check=True,
-            stdout=subprocess.PIPE,
-        ).stdout.strip()
+        remote_host = subprocess.run(["git", "ls-remote", "--get-url"],
+                                     cwd=nacl_dir,
+                                     shell=os.name == "nt",
+                                     text=True,
+                                     stdout=subprocess.PIPE).stdout.strip()
+        # check nacl dir is checkout of native_client.
+        if re.match(".*native_client.*", remote_host):
+            return subprocess.run(
+                ["git", "log", "-1", "--format=%H"],
+                cwd=nacl_dir,
+                shell=os.name == "nt",
+                text=True,
+                check=True,
+                stdout=subprocess.PIPE,
+            ).stdout.strip()
+        else:
+            logging.warning(
+                'unexpected remote host for native_client dir: %s' %
+                remote_host)
 
     # If we're in a work tree without .git directories, we can fallback to
     # the slower method of looking the revision up via `gclient revinfo`.
