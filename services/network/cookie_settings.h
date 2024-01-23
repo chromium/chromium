@@ -185,10 +185,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   const content_settings::HostIndexedContentSettings&
   GetHostIndexedContentSettings(ContentSettingsType type) const;
 
-  // An enum that represents the scope of cookies to which the user's
-  // third-party-cookie-blocking setting applies, in a given context.
-  using ThirdPartyBlockingScope = CookieSettingsBase::ThirdPartyBlockingScope;
-
   // Returns whether the given cookie should be allowed to be sent, according
   // to the user's settings. Assumes that the `cookie.access_result` has been
   // correctly filled in by the cookie store. Note that the cookie may be

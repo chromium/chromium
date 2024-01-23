@@ -62,7 +62,7 @@ bool IsValidType(ContentSettingsType type) {
 bool CookieSettings::IsCookieAllowed(const net::CanonicalCookie& cookie,
                                      const CookieSettingWithMetadata& setting) {
   return IsAllowed(setting.cookie_setting()) ||
-         (cookie.IsPartitioned() && setting.IsPartitionedStateAllowed());
+         (cookie.IsPartitioned() && setting.allow_partitioned_cookies());
 }
 
 // static
@@ -72,7 +72,7 @@ net::NetworkDelegate::PrivacySetting CookieSettings::PrivacySetting(
     return net::NetworkDelegate::PrivacySetting::kStateAllowed;
   }
 
-  if (setting.IsPartitionedStateAllowed()) {
+  if (setting.allow_partitioned_cookies()) {
     return net::NetworkDelegate::PrivacySetting::kPartitionedStateAllowedOnly;
   }
 

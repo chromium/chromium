@@ -107,27 +107,17 @@ CookieSettingsBase::CookieSettingsBase()
 
 CookieSettingsBase::CookieSettingWithMetadata::CookieSettingWithMetadata(
     ContentSetting cookie_setting,
-    std::optional<ThirdPartyBlockingScope> third_party_blocking_scope,
+    bool allow_partitioned_cookies,
     bool is_explicit_setting,
     ThirdPartyCookieAllowMechanism third_party_cookie_allow_mechanism)
     : cookie_setting_(cookie_setting),
-      third_party_blocking_scope_(third_party_blocking_scope),
+      allow_partitioned_cookies_(allow_partitioned_cookies),
       is_explicit_setting_(is_explicit_setting),
-      third_party_cookie_allow_mechanism_(third_party_cookie_allow_mechanism) {
-  DCHECK(!third_party_blocking_scope_.has_value() ||
-         !IsAllowed(cookie_setting_));
-}
+      third_party_cookie_allow_mechanism_(third_party_cookie_allow_mechanism) {}
 
 bool CookieSettingsBase::CookieSettingWithMetadata::
     BlockedByThirdPartyCookieBlocking() const {
-  return !IsAllowed(cookie_setting_) && third_party_blocking_scope_.has_value();
-}
-
-bool CookieSettingsBase::CookieSettingWithMetadata::IsPartitionedStateAllowed()
-    const {
-  return IsAllowed(cookie_setting_) ||
-         third_party_blocking_scope_ ==
-             ThirdPartyBlockingScope::kUnpartitionedOnly;
+  return !IsAllowed(cookie_setting_) && allow_partitioned_cookies_;
 }
 
 // static
@@ -450,12 +440,11 @@ CookieSettingsBase::GetCookieSettingInternal(
     if (info) {
       *info = SettingInfo{};
     }
-    return CookieSettingWithMetadata{
-        /*cookie_setting=*/CONTENT_SETTING_ALLOW,
-        /*third_party_blocking_scope=*/std::nullopt,
-        /*is_explicit_setting=*/false,
-        /*third_party_cookie_allow_mechanism=*/
-        ThirdPartyCookieAllowMechanism::kNone};
+    return CookieSettingWithMetadata{/*cookie_setting=*/CONTENT_SETTING_ALLOW,
+                                     /*allow_partitioned_cookies=*/true,
+                                     /*is_explicit_setting=*/false,
+                                     /*third_party_cookie_allow_mechanism=*/
+                                     ThirdPartyCookieAllowMechanism::kNone};
   }
 
   SettingInfo setting_info;
@@ -487,12 +476,12 @@ CookieSettingsBase::GetCookieSettingInternal(
     }
     const CookieSettingWithMetadata out{
         cookie_setting,
-        /*third_party_blocking_scope=*/std::nullopt,
+        /*allow_partitioned_cookies=*/true,
         is_explicit_setting,
         /*third_party_cookie_allow_mechanism=*/allow_cookies->mechanism,
     };
     CHECK(!out.BlockedByThirdPartyCookieBlocking());
-    CHECK(out.IsPartitionedStateAllowed());
+    CHECK(out.allow_partitioned_cookies());
     return out;
   }
 
@@ -504,12 +493,12 @@ CookieSettingsBase::GetCookieSettingInternal(
     }
     const CookieSettingWithMetadata out{
         CONTENT_SETTING_BLOCK,
-        ThirdPartyBlockingScope::kUnpartitionedOnly,
+        /*allow_partitioned_cookies=*/true,
         is_explicit_setting,
         ThirdPartyCookieAllowMechanism::kNone,
     };
     CHECK(out.BlockedByThirdPartyCookieBlocking());
-    CHECK(out.IsPartitionedStateAllowed());
+    CHECK(out.allow_partitioned_cookies());
     return out;
   }
 
@@ -521,12 +510,12 @@ CookieSettingsBase::GetCookieSettingInternal(
   }
   const CookieSettingWithMetadata out{
       CONTENT_SETTING_BLOCK,
-      /*third_party_blocking_scope=*/std::nullopt,
+      /*allow_partitioned_cookies=*/false,
       is_explicit_setting,
       ThirdPartyCookieAllowMechanism::kNone,
   };
   CHECK(!out.BlockedByThirdPartyCookieBlocking());
-  CHECK(!out.IsPartitionedStateAllowed());
+  CHECK(!out.allow_partitioned_cookies());
   return out;
 }
 
