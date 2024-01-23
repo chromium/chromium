@@ -39,9 +39,9 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace {
+namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
 namespace net {
 class HttpRequestHeaders;

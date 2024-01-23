@@ -34,7 +34,9 @@ enum class ChannelType;
 
 class ScriptContext;
 class WorkerThreadDispatcher;
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 struct Message;
+#endif
 struct MessageTarget;
 struct PortId;
 

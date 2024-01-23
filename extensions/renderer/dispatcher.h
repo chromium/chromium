@@ -41,7 +41,6 @@
 
 class ChromeRenderViewTest;
 class GURL;
-class ModuleSystem;
 struct ExtensionMsg_OnConnectData;
 
 namespace blink {
@@ -68,6 +67,7 @@ class ContentWatcher;
 class DispatcherDelegate;
 class Extension;
 class ExtensionsRendererAPIProvider;
+class ModuleSystem;
 class IPCMessageSender;
 class ScriptContext;
 class ScriptContextSetIterable;

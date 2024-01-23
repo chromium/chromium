@@ -13,8 +13,6 @@
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "url/gurl.h"
 
-struct HostID;
-
 namespace content {
 class BrowserContext;
 class NavigationHandle;
