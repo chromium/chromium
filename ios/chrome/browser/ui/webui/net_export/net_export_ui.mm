@@ -10,6 +10,7 @@
 #import "base/command_line.h"
 #import "base/functional/bind.h"
 #import "base/location.h"
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/strings/string_util.h"
 #import "base/values.h"
@@ -79,7 +80,7 @@ class NetExportMessageHandler
 
   // Cache of GetApplicationContext()->GetNetExportFileWriter().
   // This is owned by the ApplicationContext.
-  net_log::NetExportFileWriter* file_writer_;
+  raw_ptr<net_log::NetExportFileWriter> file_writer_;
 
   base::ScopedObservation<net_log::NetExportFileWriter,
                           net_log::NetExportFileWriter::StateObserver>
@@ -123,7 +124,7 @@ void NetExportMessageHandler::OnEnableNotifyUIWithState(
     const base::Value::List& list) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   if (!state_observation_manager_.IsObserving()) {
-    state_observation_manager_.Observe(file_writer_);
+    state_observation_manager_.Observe(file_writer_.get());
   }
   NotifyUIWithState(file_writer_->GetState());
 }
