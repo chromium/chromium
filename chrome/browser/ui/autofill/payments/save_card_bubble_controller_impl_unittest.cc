@@ -810,18 +810,21 @@ TEST_F(SaveCardBubbleControllerImplTest, UploadCardSaveDialogContent) {
             u"industry-leading security.");
 }
 
-TEST_F(SaveCardBubbleControllerImplTest, HideIconAndBubbleAfterUpload) {
+TEST_F(SaveCardBubbleControllerImplTest, UploadCardSaveBubbleType) {
   ShowUploadBubble();
-
+  EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_SAVE);
   EXPECT_TRUE(controller()->IsIconVisible());
   EXPECT_NE(controller()->GetPaymentBubbleView(), nullptr);
 
-  controller()->HideIconAndBubbleAfterUpload();
-  CloseBubble();
+  // TODO(b/309627643): Change the bubble type when the
+  // AutofillEnableSaveCardLoadingAndConfirmation feature flag is enabled.
+  controller()->OnSaveButton({});
+  EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_SAVE);
 
+  CloseBubble(PaymentsBubbleClosedReason::kAccepted);
+  EXPECT_EQ(controller()->GetBubbleType(), BubbleType::INACTIVE);
   EXPECT_FALSE(controller()->IsIconVisible());
   EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
-  EXPECT_EQ(controller()->GetBubbleType(), BubbleType::INACTIVE);
 }
 
 TEST_F(SaveCardBubbleControllerImplTest, UploadCvcOnlySaveDialogContent) {
@@ -1004,6 +1007,27 @@ class SaveCardBubbleControllerImplTestWithLoadingAndConfirmation
   }
 };
 
+// Test the entire upload save flow with the HideIconAndBubbleAfterUpload()
+// callback.
+TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
+       Upload_OnSave_HideIconAndBubbleAfterUpload) {
+  ShowUploadBubble();
+  EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_SAVE);
+  EXPECT_TRUE(controller()->IsIconVisible());
+  EXPECT_NE(controller()->GetPaymentBubbleView(), nullptr);
+
+  controller()->OnSaveButton({});
+  EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_IN_PROGRESS);
+
+  controller()->HideIconAndBubbleAfterUpload();
+  EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_COMPLETED);
+
+  CloseBubble();
+  EXPECT_EQ(controller()->GetBubbleType(), BubbleType::INACTIVE);
+  EXPECT_FALSE(controller()->IsIconVisible());
+  EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
+}
+
 // Test that `Accepted` metric is recorded on upload card save.
 TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
        Metrics_Upload_OnSave) {
@@ -1166,6 +1190,26 @@ TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
       "Autofill.SaveCreditCardPromptResult.Upload.FirstShow", 0);
   histogram_tester.ExpectTotalCount(
       "Autofill.SaveCreditCardPromptResult.Upload.Reshows", 1);
+}
+
+// Test that while in the UPLOAD_IN_PROGRESS state, after changing tabs and
+// returning to the tab with the save card, the state will remain as
+// UPLOAD_IN_PROGRESS.
+TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
+       VisibilityChange_Upload_InProgressState_Retained) {
+  ShowUploadBubble();
+  controller()->OnSaveButton({});
+  EXPECT_TRUE(IsBubbleVisible());
+  EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_IN_PROGRESS);
+
+  // Simulate switching to a different tab and back to the original tab.
+  active_web_contents()->UpdateWebContentsVisibility(
+      content::Visibility::HIDDEN);
+  EXPECT_FALSE(IsBubbleVisible());
+  active_web_contents()->UpdateWebContentsVisibility(
+      content::Visibility::VISIBLE);
+
+  EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_IN_PROGRESS);
 }
 
 }  // namespace autofill

@@ -57,6 +57,7 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
   std::unique_ptr<LegalMessageView> CreateLegalMessageView();
 
   void LinkClicked(const GURL& url);
+  void ShowThrobber();
 
   raw_ptr<views::Textfield> cardholder_name_textfield_ = nullptr;
 

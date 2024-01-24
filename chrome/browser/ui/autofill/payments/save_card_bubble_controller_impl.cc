@@ -232,8 +232,10 @@ std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
         IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD);
   }
 
-  if (current_bubble_type_ != BubbleType::UPLOAD_SAVE)
+  if (current_bubble_type_ != BubbleType::UPLOAD_SAVE &&
+      current_bubble_type_ != BubbleType::UPLOAD_IN_PROGRESS) {
     return std::u16string();
+  }
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableCvcStorageAndFilling) &&
@@ -720,6 +722,7 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
           is_upload_save_, is_reshow_);
       break;
     case BubbleType::UPLOAD_IN_PROGRESS:
+      break;
     case BubbleType::UPLOAD_COMPLETED:
     case BubbleType::MANAGE_CARDS:
     case BubbleType::INACTIVE:

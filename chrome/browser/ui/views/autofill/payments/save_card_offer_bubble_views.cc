@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
@@ -75,9 +76,18 @@ SaveCardOfferBubbleViews::SaveCardOfferBubbleViews(
 
 void SaveCardOfferBubbleViews::Init() {
   SaveCardBubbleViews::Init();
-  if (controller()->GetBubbleType() == BubbleType::UPLOAD_SAVE) {
+
+  if (controller() &&
+      (controller()->GetBubbleType() == BubbleType::UPLOAD_SAVE ||
+       controller()->GetBubbleType() == BubbleType::UPLOAD_IN_PROGRESS) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
     loading_row_ = AddChildView(CreateLoadingRow());
+    if (controller()->GetBubbleType() == BubbleType::UPLOAD_IN_PROGRESS) {
+      ShowThrobber();
+    }
   }
+
   SetExtraView(CreateUploadExplanationView());
 }
 
@@ -89,12 +99,7 @@ bool SaveCardOfferBubbleViews::Accept() {
           features::kAutofillEnableSaveCardLoadingAndConfirmation);
 
   if (show_throbber) {
-    SetButtons(ui::DIALOG_BUTTON_NONE);
-
-    loading_throbber_->Start();
-    loading_row_->SetVisible(true);
-
-    DialogModelChanged();
+    ShowThrobber();
   }
 
   if (controller()) {
@@ -413,6 +418,20 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateLoadingRow() {
 void SaveCardOfferBubbleViews::LinkClicked(const GURL& url) {
   if (controller())
     controller()->OnLegalMessageLinkClicked(url);
+}
+
+void SaveCardOfferBubbleViews::ShowThrobber() {
+  if (loading_row_ == nullptr) {
+    return;
+  }
+
+  SetButtons(ui::DIALOG_BUTTON_NONE);
+
+  CHECK(loading_throbber_);
+  loading_throbber_->Start();
+  loading_row_->SetVisible(true);
+
+  DialogModelChanged();
 }
 
 }  // namespace autofill

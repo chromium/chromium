@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
+
 #include <memory>
 #include <string>
 
@@ -31,7 +33,6 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
-#include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -2148,7 +2149,6 @@ class SaveCardBubbleViewsFullFormBrowserTestWithLoadingAndConfirmation
     feature_list_.InitAndEnableFeature(
         features::kAutofillEnableSaveCardLoadingAndConfirmation);
   }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -2158,7 +2158,7 @@ class SaveCardBubbleViewsFullFormBrowserTestWithLoadingAndConfirmation
 // other dialog buttons.
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithLoadingAndConfirmation,
-    Upload_ClickingSaveShowsLoadingView) {
+    Upload_ClickingSave_ShowsLoadingView) {
   ASSERT_TRUE(SetupSync());
 
   FillForm();
@@ -2183,7 +2183,7 @@ IN_PROC_BROWSER_TEST_F(
 // closes the bubble.
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithLoadingAndConfirmation,
-    Local_ClickingSaveClosesBubble) {
+    Local_ClickingSave_ClosesBubble) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
@@ -2195,6 +2195,47 @@ IN_PROC_BROWSER_TEST_F(
   ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
 
   EXPECT_TRUE(bubble_observer.widget_closed());
+}
+
+// Tests that when the bubble view is created while the controller is in an
+// UPLOAD_IN_PROGRESS state, the loading view will be shown.
+IN_PROC_BROWSER_TEST_F(
+    SaveCardBubbleViewsFullFormBrowserTestWithLoadingAndConfirmation,
+    Upload_InProgress_ShowsLoadingView) {
+  ASSERT_TRUE(SetupSync());
+
+  FillForm();
+  SubmitFormAndWaitForCardUploadSaveBubble();
+
+  // Start the save card upload. The save card controller bubble type should be
+  // in an UPLOAD_IN_PROGRESS state.
+  ClickOnDialogViewWithId(DialogViewId::OK_BUTTON);
+
+  // Focus onto the bubble view and then focus onto the main frame to hide the
+  // bubble view.
+  views::test::WidgetDestroyedWaiter destroyed_waiter(
+      GetSaveCardBubbleViews()->GetWidget());
+  GetSaveCardBubbleViews()->GetWidget()->Activate();
+  BrowserView::GetBrowserViewForBrowser(GetBrowser(0))->Activate();
+  destroyed_waiter.Wait();
+
+  // Wait for the bounds of the save payment icon view to be ready before
+  // clicking. Due to how the bounds are set asynchronously, the icon can be
+  // visible but un-clickable due to its unset bounds.
+  ui_test_utils::ViewBoundsWaiter save_card_icon_view_waiter(
+      GetSaveCardIconView());
+  save_card_icon_view_waiter.WaitForNonEmptyBounds();
+
+  // Click on the save card icon to reshow the bubble view.
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
+  ClickOnView(GetSaveCardIconView());
+  ASSERT_TRUE(WaitForObservedEvent());
+  EXPECT_TRUE(GetSaveCardBubbleViews()->IsDrawn());
+
+  // Expect that the loading view is correctly shown.
+  EXPECT_TRUE(FindViewInBubbleById(DialogViewId::LOADING_THROBBER)->IsDrawn());
+  EXPECT_EQ(FindViewInBubbleById(DialogViewId::OK_BUTTON), nullptr);
+  EXPECT_EQ(FindViewInBubbleById(DialogViewId::CANCEL_BUTTON), nullptr);
 }
 
 // Tests the local save bubble. Ensures that clicking the [Save] button
