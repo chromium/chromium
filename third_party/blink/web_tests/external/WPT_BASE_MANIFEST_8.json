@@ -143469,6 +143469,19 @@
         {}
        ]
       ],
+      "custom-highlight-painting-staticrange-005.html": [
+       "9ffe2cf26bc35e2ff1fa2cd0ac547749dfbc00bf",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "custom-highlight-painting-text-decoration-001.html": [
        "72201e6e782362df53765264188b0f7e96fdd927",
        [
@@ -255469,6 +255482,19 @@
        {}
       ]
      ],
+     "blur-text.html": [
+      "cfb692386bbb3714f6684e9edb3672d9e0a486ec",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/blur-text-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "clip-under-filter-001.html": [
       "7fbf0d60182f70a1d3d4538d9aca143999cfb1de",
       [
@@ -272648,6 +272674,19 @@
          [
           [
            "/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-painting-order-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fieldset-resize.html": [
+        "6a34a7465c2510b36f52f0c8196f1023450a2d7d",
+        [
+         null,
+         [
+          [
+           "/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-resize-ref.html",
            "=="
           ]
          ],
@@ -342041,6 +342080,12 @@
       []
      ]
     },
+    "css-viewport": {
+     "META.yml": [
+      "0c4122a8a54873c99c996df5cdb0e5035c9af56b",
+      []
+     ]
+    },
     "css-will-change": {
      "META.yml": [
       "8d265f24986c7af2b08a26741bbfa56f321bfbb3",
@@ -345334,6 +345379,10 @@
      ],
      "blur-clip-stacking-context-ref.html": [
       "82b907334fd71791cd2f6530e2e85169e29afa41",
+      []
+     ],
+     "blur-text-ref.html": [
+      "3f57da1f706696789525adf24c6a9519850cd9ea",
       []
      ],
      "css-backdrop-filters-animation-blur-ref.html": [
@@ -367798,6 +367847,10 @@
        ],
        "fieldset-painting-order-ref.html": [
         "13b262a804ab781905b3e4d3483554d9dd95b4d8",
+        []
+       ],
+       "fieldset-resize-ref.html": [
+        "e77bb69d7fdd9152b1da7378bb3f451be0e215bc",
         []
        ],
        "fieldset-shadow-dom.html": [
@@ -457696,7 +457749,7 @@
       ]
      ],
      "unit-cycles.html": [
-      "de26e712c77f1de63f0d596a43e2c25ad5038db2",
+      "744b0f9e4bd580573cd0f38366158a71320d3f93",
       [
        null,
        {}
@@ -471405,6 +471458,15 @@
       ]
      ]
     },
+    "css-viewport": {
+     "computedStyle-zoom.html": [
+      "30ed78e30b6a7c4c208f60aa84461f9ed13ddc73",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "css-will-change": {
      "inheritance.html": [
       "6b4ed2aa544f6f9dd4b7e77b71f1850390a5159a",
@@ -473624,6 +473686,13 @@
        {
         "timeout": "long"
        }
+      ]
+     ],
+     "image-x-y-zoom.html": [
+      "4717dcbd9d4c66a1558d02538f5134c520b2935f",
+      [
+       null,
+       {}
       ]
      ],
      "inheritance.html": [
