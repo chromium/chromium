@@ -14,10 +14,8 @@ import sys
 
 from build_rust import (CARGO_HOME_DIR, CIPD_DOWNLOAD_URL, FetchBetaPackage,
                         InstallBetaPackage, RustTargetTriple,
-                        RUST_CROSS_TARGET_LLVM_INSTALL_DIR,
                         RUST_HOST_LLVM_INSTALL_DIR)
-from update_rust import (RUST_REVISION, RUST_TOOLCHAIN_OUT_DIR,
-                         THIRD_PARTY_DIR)
+from update_rust import (RUST_TOOLCHAIN_OUT_DIR, THIRD_PARTY_DIR)
 
 # Get variables and helpers from Clang update script
 sys.path.append(
@@ -83,65 +81,28 @@ def main():
         '--skip-checkout',
         action='store_true',
         help='skip downloading the git repo. Useful for trying local changes')
-    parser.add_argument('--build-mac-arm',
-                        action='store_true',
-                        help='Build arm binaries. Only valid on macOS.')
     args, rest = parser.parse_known_args()
-
-    if args.build_mac_arm and sys.platform != 'darwin':
-        print('--build-mac-arm only valid on macOS')
-        return 1
-    if args.build_mac_arm and platform.machine() == 'arm64':
-        print('--build-mac-arm only valid on intel to cross-build arm')
-        return 1
 
     ncursesw_dir = None
     if sys.platform.startswith('linux'):
         ncursesw_dir = FetchNcurseswLibrary()
 
-    if args.build_mac_arm:
-        # When cross-compiling, the binaries in RUST_TOOLCHAIN_OUT_DIR are not
-        # usable on this machine, so we have to fetch them. We install them,
-        # along with the host and target stdlib to a sysroot dir.
-        InstallRustBetaSysroot(
-            RUST_REVISION,
-            [RustTargetTriple(),
-             RustTargetTriple(build_mac_arm=True)])
-        cargo_bin = os.path.join(RUST_BETA_SYSROOT_DIR, 'bin', f'cargo{EXE}')
-        rustc_bin = os.path.join(RUST_BETA_SYSROOT_DIR, 'bin', f'rustc{EXE}')
-
-        if not os.path.exists(cargo_bin):
-            print(f'Missing cargo at {cargo_bin}. The sysroot was not setup '
-                  'correctly?')
-            sys.exit(1)
-        if not os.path.exists(rustc_bin):
-            print(f'Missing rustc at {rustc_bin}. The sysroot was not setup '
-                  'correctly?')
-            sys.exit(1)
-    else:
-        cargo_bin = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', f'cargo{EXE}')
-        rustc_bin = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', f'rustc{EXE}')
-
-        if not os.path.exists(cargo_bin):
-            print(
-                f'Missing cargo at {cargo_bin}. The build_bindgen.py '
-                f'script expects to be run after build_rust.py is run as '
-                f'the build_rust.py script builds cargo that is needed here.')
-            sys.exit(1)
-        if not os.path.exists(rustc_bin):
-            print(
-                f'Missing rustc at {rustc_bin}. The build_bindgen.py '
-                f'script expects to be run after build_rust.py is run as '
-                f'the build_rust.py script builds rustc that is needed here.')
-            sys.exit(1)
+    cargo_bin = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', f'cargo{EXE}')
+    rustc_bin = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', f'rustc{EXE}')
+    if not os.path.exists(cargo_bin):
+        print(f'Missing cargo at {cargo_bin}. The build_bindgen.py '
+              f'script expects to be run after build_rust.py is run as '
+              f'the build_rust.py script builds cargo that is needed here.')
+        sys.exit(1)
+    if not os.path.exists(rustc_bin):
+        print(f'Missing rustc at {rustc_bin}. The build_bindgen.py '
+              f'script expects to be run after build_rust.py is run as '
+              f'the build_rust.py script builds rustc that is needed here.')
+        sys.exit(1)
 
     clang_bins_dir = os.path.join(RUST_HOST_LLVM_INSTALL_DIR, 'bin')
-    if args.build_mac_arm:
-        llvm_dir = RUST_CROSS_TARGET_LLVM_INSTALL_DIR
-        build_dir = BINDGEN_CROSS_TARGET_BUILD_DIR
-    else:
-        llvm_dir = RUST_HOST_LLVM_INSTALL_DIR
-        build_dir = BINDGEN_HOST_BUILD_DIR
+    llvm_dir = RUST_HOST_LLVM_INSTALL_DIR
+    build_dir = BINDGEN_HOST_BUILD_DIR
 
     if not os.path.exists(os.path.join(llvm_dir, 'bin', f'llvm-config{EXE}')):
         print(f'Missing llvm-config in {llvm_dir}. The build_bindgen.py '
@@ -215,7 +176,7 @@ def main():
         'build',
         f'--manifest-path={BINDGEN_SRC_DIR}/Cargo.toml',
         f'--target-dir={build_dir}',
-        f'--target={RustTargetTriple(build_mac_arm = args.build_mac_arm)}',
+        f'--target={RustTargetTriple()}',
         f'--no-default-features',
         f'--features=logging',
         '--release',
@@ -228,10 +189,8 @@ def main():
     print(f'Installing bindgen to {install_dir} ...')
 
     shutil.copy(
-        os.path.join(build_dir,
-                     RustTargetTriple(build_mac_arm=args.build_mac_arm),
-                     'release', f'bindgen{EXE}'),
-        os.path.join(install_dir, 'bin'))
+        os.path.join(build_dir, RustTargetTriple(), 'release',
+                     f'bindgen{EXE}'), os.path.join(install_dir, 'bin'))
     if sys.platform == 'win32':
         shutil.copy(os.path.join(llvm_dir, 'bin', f'libclang.dll'),
                     os.path.join(install_dir, 'bin'))
