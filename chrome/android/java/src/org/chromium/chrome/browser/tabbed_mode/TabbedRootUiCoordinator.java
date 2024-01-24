@@ -126,6 +126,7 @@ import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
@@ -176,8 +177,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private Callback<Integer> mOnTabStripHeightChangedCallback;
     private MultiInstanceManager mMultiInstanceManager;
     private int mStatusIndicatorHeight;
-    private TouchEventObserver mDragDropTouchObserver;
     private final OneshotSupplier<HubManager> mHubManagerSupplier;
+    private TouchEventObserver mDragDropTouchObserver;
+    private ViewGroup mCoordinator;
 
     /**
      * A common {@link CallbackController} used for being notified when {@link TabSwitcher} or
@@ -472,8 +474,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mDesktopSiteSettingsIPHController = null;
         }
 
-        if (mCompositorViewHolderSupplier.get() != null && mDragDropTouchObserver != null) {
-            mCompositorViewHolderSupplier.get().removeTouchEventObserver(mDragDropTouchObserver);
+        if (mCoordinator != null && mDragDropTouchObserver != null) {
+            ((CoordinatorLayoutForPointer) mCoordinator)
+                    .removeTouchEventObserver(mDragDropTouchObserver);
             mDragDropTouchObserver = null;
         }
 
@@ -540,6 +543,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
+    public void onInflationComplete() {
+        mCoordinator = mActivity.findViewById(R.id.coordinator);
+        super.onInflationComplete();
+    }
+
+    @Override
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
         assert mLayoutManager != null;
@@ -601,7 +610,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mCompositorViewHolderSupplier.get().setOnDragListener(chromeTabbedOnDragListener);
 
             // Disable touch event while drag is in progress.
-            // TODO(crbug.com/1519687): Move onTouchEventObserver to CoordinatorLayoutForPointer.
             mDragDropTouchObserver =
                     new TouchEventObserver() {
                         @Override
@@ -609,7 +617,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             return DragDropGlobalState.hasValue();
                         }
                     };
-            mCompositorViewHolderSupplier.get().addTouchEventObserver(mDragDropTouchObserver);
+            ((CoordinatorLayoutForPointer) mCoordinator)
+                    .addTouchEventObserver(mDragDropTouchObserver);
         }
 
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
@@ -758,7 +767,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     protected ScrimCoordinator buildScrimWidget() {
-        ViewGroup coordinator = mActivity.findViewById(R.id.coordinator);
         ScrimCoordinator.SystemUiScrimDelegate delegate =
                 new ScrimCoordinator.SystemUiScrimDelegate() {
                     @Override
@@ -784,8 +792,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return new ScrimCoordinator(
                 mActivity,
                 delegate,
-                coordinator,
-                coordinator.getContext().getColor(R.color.omnibox_focused_fading_background_color));
+                mCoordinator,
+                mCoordinator
+                        .getContext()
+                        .getColor(R.color.omnibox_focused_fading_background_color));
     }
 
     // Private class methods

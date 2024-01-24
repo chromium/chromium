@@ -12,13 +12,16 @@ import android.view.View;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
+import org.chromium.base.ObserverList;
+
 /**
  * This class overrides {@link onResolvePointerIcon} method to correctly determine the pointer icon
- * from a mouse motion event. This is needed because the default android impl does not consider
- * view visibility. It also allows a delegate to observe touch events.
+ * from a mouse motion event. This is needed because the default android impl does not consider view
+ * visibility. It also allows a delegate to observe touch events.
  */
-public class CoordinatorLayoutForPointer extends CoordinatorLayout {
+public class CoordinatorLayoutForPointer extends CoordinatorLayout implements TouchEventProvider {
     private Runnable mTouchEventCallback;
+    private final ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();
 
     public CoordinatorLayoutForPointer(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -47,6 +50,10 @@ public class CoordinatorLayoutForPointer extends CoordinatorLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        for (TouchEventObserver o : mTouchEventObservers) {
+            if (o.onInterceptTouchEvent(ev)) return true;
+        }
+
         if (mTouchEventCallback != null) {
             mTouchEventCallback.run();
         }
@@ -58,5 +65,15 @@ public class CoordinatorLayoutForPointer extends CoordinatorLayout {
         assert mTouchEventCallback == null || touchEventCallback == null
                 : "Another touchEventCallback is already set.";
         mTouchEventCallback = touchEventCallback;
+    }
+
+    @Override
+    public void addTouchEventObserver(TouchEventObserver obs) {
+        mTouchEventObservers.addObserver(obs);
+    }
+
+    @Override
+    public void removeTouchEventObserver(TouchEventObserver obs) {
+        mTouchEventObservers.removeObserver(obs);
     }
 }

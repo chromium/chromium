@@ -63,7 +63,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
-import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
@@ -286,13 +285,6 @@ public abstract class ToolbarLayout extends FrameLayout
         if (button != null && VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             TooltipCompat.setTooltipText(button, text);
         }
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        // Disable touch event while tab drag is in progress.
-        // TODO(crbug.com/1519687): Move onTouchEventObserver to CoordinatorLayoutForPointer.
-        return DragDropGlobalState.hasValue();
     }
 
     @Override
