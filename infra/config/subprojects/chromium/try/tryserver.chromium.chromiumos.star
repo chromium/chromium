@@ -478,29 +478,6 @@ try_.builder(
     tryjob = try_.job(),
 )
 
-# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
-try_.builder(
-    name = "linux-chromeos-compile-siso-dbg",
-    description_html = """\
-This builder shadows linux-chromeos-compile-dbg builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating linux-chromeos-compile-dbg from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/linux-chromeos-compile-dbg"),
-    try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
-        is_compile_only = True,
-    ),
-    gn_args = "try/linux-chromeos-compile-dbg",
-    builderless = False,
-    contact_team_email = "chrome-build-team@google.com",
-    main_list_view = "try",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    siso_enabled = True,
-    tryjob = try_.job(
-        experiment_percentage = 10,
-    ),
-)
-
 try_.builder(
     name = "chromeos-jacuzzi-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,

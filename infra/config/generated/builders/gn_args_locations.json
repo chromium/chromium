@@ -673,7 +673,6 @@
     "linux-cfm-rel": "try/linux-cfm-rel/gn-args.json",
     "linux-chromeos-annotator-rel": "try/linux-chromeos-annotator-rel/gn-args.json",
     "linux-chromeos-compile-dbg": "try/linux-chromeos-compile-dbg/gn-args.json",
-    "linux-chromeos-compile-siso-dbg": "try/linux-chromeos-compile-siso-dbg/gn-args.json",
     "linux-chromeos-dbg": "try/linux-chromeos-dbg/gn-args.json",
     "linux-chromeos-rel": "try/linux-chromeos-rel/gn-args.json",
     "linux-lacros-dbg": "try/linux-lacros-dbg/gn-args.json",

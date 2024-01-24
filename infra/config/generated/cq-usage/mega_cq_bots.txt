@@ -82,7 +82,6 @@ chromium/try/linux-bfcache-rel
 chromium/try/linux-cfm-rel
 chromium/try/linux-chromeos-asan-rel
 chromium/try/linux-chromeos-compile-dbg
-chromium/try/linux-chromeos-compile-siso-dbg
 chromium/try/linux-chromeos-dbg
 chromium/try/linux-chromeos-rel
 chromium/try/linux-clobber-rel
