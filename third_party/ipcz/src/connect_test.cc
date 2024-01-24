@@ -13,7 +13,6 @@
 #include "test/test_transport_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/synchronization/notification.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(IPCZ_STANDALONE)
 #include "base/sanitizer_buildflags.h"  // nogncheck

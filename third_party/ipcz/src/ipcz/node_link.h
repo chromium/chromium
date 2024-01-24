@@ -8,6 +8,7 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <type_traits>
 
 #include "ipcz/driver_memory.h"
@@ -23,7 +24,6 @@
 #include "ipcz/sublink_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
 
@@ -117,7 +117,7 @@ class NodeLink : public msg::NodeMessageListener {
 
   // Retrieves the Router and RemoteRouterLink currently bound to `sublink`
   // on this NodeLink.
-  absl::optional<Sublink> GetSublink(SublinkId sublink);
+  std::optional<Sublink> GetSublink(SublinkId sublink);
 
   // Retrieves only the Router currently bound to `sublink` on this NodeLink.
   Ref<Router> GetRouter(SublinkId sublink);

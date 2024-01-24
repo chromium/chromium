@@ -15,13 +15,13 @@
 #include <cstdint>
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "reference_drivers/file_descriptor.h"
 #include "reference_drivers/handle_eintr.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/log.h"
 #include "util/ref_counted.h"
@@ -160,7 +160,7 @@ bool SocketTransport::Send(Message message) {
       return true;
     }
 
-    absl::optional<size_t> bytes_sent = TrySend(header_bytes, message);
+    std::optional<size_t> bytes_sent = TrySend(header_bytes, message);
     if (!bytes_sent.has_value()) {
       return false;
     }
@@ -204,8 +204,8 @@ FileDescriptor SocketTransport::TakeDescriptor() {
   return std::move(socket_);
 }
 
-absl::optional<size_t> SocketTransport::TrySend(absl::Span<uint8_t> header,
-                                                Message message) {
+std::optional<size_t> SocketTransport::TrySend(absl::Span<uint8_t> header,
+                                               Message message) {
   ABSL_ASSERT(socket_.is_valid());
 
   iovec iovs[] = {
@@ -243,7 +243,7 @@ absl::optional<size_t> SocketTransport::TrySend(absl::Span<uint8_t> header,
       if (errno == EPIPE || errno == ECONNRESET) {
         // Peer closed. Not an error condition per se, but it means we can
         // terminate the transport anyway.
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       // Unrecoverable error.
@@ -446,7 +446,7 @@ void SocketTransport::TryFlushingOutgoingQueue() {
         m = outgoing_queue_[i].AsMessage();
       }
 
-      absl::optional<size_t> bytes_sent = TrySend({}, m);
+      std::optional<size_t> bytes_sent = TrySend({}, m);
       if (!bytes_sent.has_value()) {
         // Error!
         NotifyError();
