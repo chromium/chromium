@@ -55,9 +55,9 @@ void SourceStreamToDataPipe::ReadMore() {
   }
   int num_bytes = base::checked_cast<int>(pending_write_->size());
   auto buffer = base::MakeRefCounted<NetToMojoIOBuffer>(pending_write_);
-  int result = source_->Read(
-      buffer.get(), num_bytes,
-      base::BindOnce(&SourceStreamToDataPipe::DidRead, base::Unretained(this)));
+  int result = source_->Read(buffer.get(), num_bytes,
+                             base::BindOnce(&SourceStreamToDataPipe::DidRead,
+                                            weak_factory_.GetWeakPtr()));
 
   if (result != net::ERR_IO_PENDING)
     DidRead(result);
