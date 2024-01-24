@@ -186,3 +186,4 @@ interface CanvasRenderingContext2D {
 };
 
 CanvasRenderingContext2D includes CanvasPath;
+CanvasRenderingContext2D includes CanvasWebGPUAccess;

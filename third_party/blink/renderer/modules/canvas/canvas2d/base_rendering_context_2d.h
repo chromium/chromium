@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -40,6 +41,7 @@ MODULES_EXPORT BASE_DECLARE_FEATURE(kDisableCanvasOverdrawOptimization);
 class BeginLayerOptions;
 class CanvasColorCache;
 class CanvasImageSource;
+class CanvasWebGPUAccessOption;
 class Color;
 class Image;
 class Mesh2DVertexBuffer;
@@ -50,6 +52,7 @@ class Path2D;
 class TextMetrics;
 struct V8CanvasStyle;
 enum class V8CanvasStyleType;
+class GPUTexture;
 class V8UnionCanvasFilterOrString;
 using cc::UsePaintCache;
 
@@ -272,6 +275,30 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void setImageSmoothingEnabled(bool);
   String imageSmoothingQuality() const;
   void setImageSmoothingQuality(const String&);
+
+  // Transfers a canvas' existing back-buffer to a GPUTexture for use in a
+  // WebGPU pipeline. The canvas' image can be used as a texture, or the texture
+  // can be bound as a color attachment and modified. After beginWebGPUAccess is
+  // called, the Canvas2D context will become unavailable until endWebGPUAccess
+  // is called. All other method calls to the context (including additional
+  // calls to beginWebGPUAccess) will throw InvalidStateError.
+  GPUTexture* beginWebGPUAccess(const CanvasWebGPUAccessOption*,
+                                ExceptionState& exception_state);
+
+  // Returns the canvas' back-buffer texture to Canvas2D after a prior call
+  // to beginWebGPUAccess. The GPUTexture becomes inaccessible to WebGPU; any
+  // modifications made to the texture will be preserved. The Canvas2D context
+  // is restored, and Canvas2D method calls will function normally once more.
+  // Throws InvalidStateError if a matching call to beginWebGPUAccess was not
+  // performed.
+  // TODO(crbug.com/1517367): document the expected behavior if WebGPU continues
+  // to access the GPUTexture after endWebGPUAccess is called.
+  void endWebGPUAccess(ExceptionState& exception_state);
+
+  // Returns the format of the GPUTexture that beginWebGPUAccess will return.
+  // This is useful if you need to create the WebGPU render pipeline before
+  // beginWebGPUAccess is first called.
+  V8GPUTextureFormat getTextureFormat() const;
 
   virtual bool OriginClean() const = 0;
   virtual void SetOriginTainted() = 0;

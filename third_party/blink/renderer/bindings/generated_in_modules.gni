@@ -270,6 +270,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_filter_dictionary.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_rendering_context_2d_settings.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_rendering_context_2d_settings.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_webgpu_access_option.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_webgpu_access_option.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_config.cc",

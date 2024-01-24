@@ -1,0 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Used by method `beginWebGPUAccess` as defined in canvas_web_gpu_access.idl
+dictionary CanvasWebGPUAccessOption {
+  // This GPUDevice will be given access to the canvas' texture.
+  GPUDevice device;
+
+  // This label will be assigned to the GPUTexture returned by beginWebGPUAccess.
+  DOMString? label;
+};

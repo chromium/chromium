@@ -125,3 +125,4 @@
 };
 
 OffscreenCanvasRenderingContext2D includes CanvasPath;
+OffscreenCanvasRenderingContext2D includes CanvasWebGPUAccess;

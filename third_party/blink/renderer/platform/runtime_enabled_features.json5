@@ -576,6 +576,10 @@
       base_feature: "none",
     },
     {
+      name: "CanvasWebGPUAccess",
+      base_feature: "none",
+    },
+    {
       name: "CapabilityDelegationDisplayCaptureRequest",
       status: "experimental",
     },
