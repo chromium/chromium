@@ -67,9 +67,6 @@ class InfobarEditAddressProfileTableViewControllerTest
   void CreateProfileData() {
     autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
     [autofill_profile_edit_table_view_controller_
-        setHonorificPrefix:base::SysUTF16ToNSString(profile.GetRawInfo(
-                               autofill::NAME_HONORIFIC_PREFIX))];
-    [autofill_profile_edit_table_view_controller_
         setFullName:base::SysUTF16ToNSString(
                         profile.GetRawInfo(autofill::NAME_FULL))];
     [autofill_profile_edit_table_view_controller_

@@ -45,7 +45,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     delegate;
 
 // Stores the value displayed in the fields.
-@property(nonatomic, strong) NSString* honorificPrefix;
 @property(nonatomic, strong) NSString* companyName;
 @property(nonatomic, strong) NSString* fullName;
 @property(nonatomic, strong) NSString* homeAddressLine1;
@@ -399,7 +398,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       return autofill::ADDRESS_HOME_STATE;
     case AutofillProfileDetailsItemTypeZip:
       return autofill::ADDRESS_HOME_ZIP;
-    case AutofillProfileDetailsItemTypeHonorificPrefix:
     case AutofillProfileDetailsItemTypeCompanyName:
     case AutofillProfileDetailsItemTypeLine2:
     case AutofillProfileDetailsItemTypeDependentLocality:
@@ -432,7 +430,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       return l10n_util::GetNSString(IDS_IOS_AUTOFILL_STATE);
     case AutofillProfileDetailsItemTypeZip:
       return l10n_util::GetNSString(IDS_IOS_AUTOFILL_ZIP);
-    case AutofillProfileDetailsItemTypeHonorificPrefix:
     case AutofillProfileDetailsItemTypeCompanyName:
     case AutofillProfileDetailsItemTypeLine2:
     case AutofillProfileDetailsItemTypeDependentLocality:
@@ -454,8 +451,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Returns the value corresponding to `autofillType`.
 - (NSString*)valueForAutofillUIType:(AutofillUIType)autofillUIType {
   switch (autofillUIType) {
-    case AutofillUITypeProfileHonorificPrefix:
-      return self.honorificPrefix;
     case AutofillUITypeProfileCompanyName:
       return self.companyName;
     case AutofillUITypeProfileFullName:
@@ -491,8 +486,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (AutofillProfileDetailsItemType)itemTypeForAutofillUIType:
     (AutofillUIType)autofillUIType {
   switch (autofillUIType) {
-    case AutofillUITypeProfileHonorificPrefix:
-      return AutofillProfileDetailsItemTypeHonorificPrefix;
     case AutofillUITypeProfileCompanyName:
       return AutofillProfileDetailsItemTypeCompanyName;
     case AutofillUITypeProfileFullName:
@@ -633,7 +626,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     case AutofillProfileDetailsItemTypeZip:
       return self.zipRequired;
     case AutofillProfileDetailsItemTypeFullName:
-    case AutofillProfileDetailsItemTypeHonorificPrefix:
     case AutofillProfileDetailsItemTypeCompanyName:
     case AutofillProfileDetailsItemTypeLine2:
     case AutofillProfileDetailsItemTypeDependentLocality:
@@ -841,7 +833,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Returns YES if the `itemType` belongs to a text edit field.
 - (BOOL)isItemTypeTextEditCell:(NSInteger)itemType {
   switch (static_cast<AutofillProfileDetailsItemType>(itemType)) {
-    case AutofillProfileDetailsItemTypeHonorificPrefix:
     case AutofillProfileDetailsItemTypeCompanyName:
     case AutofillProfileDetailsItemTypeFullName:
     case AutofillProfileDetailsItemTypeLine1:
@@ -899,9 +890,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (void)updateValueForAutofillUIType:(AutofillUIType)autofillUIType
                                value:(NSString*)value {
   switch (autofillUIType) {
-    case AutofillUITypeProfileHonorificPrefix:
-      self.honorificPrefix = value;
-      break;
     case AutofillUITypeProfileCompanyName:
       self.companyName = value;
       break;

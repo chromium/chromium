@@ -456,7 +456,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 
 - (UIImage*)symbolForAutofillUIType:(AutofillUIType)type {
   switch (type) {
-    case AutofillUITypeNameFullWithHonorificPrefix:
+    case AutofillUITypeProfileFullName:
       return DefaultSymbolTemplateWithPointSize(kPersonFillSymbol, kSymbolSize);
     case AutofillUITypeAddressHomeAddress:
     case AutofillUITypeProfileHomeAddressStreet:
@@ -501,7 +501,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
       } else {
         return ItemTypeSavePhone;
       }
-    case AutofillUITypeNameFullWithHonorificPrefix:
+    case AutofillUITypeProfileFullName:
       if (update) {
         return old ? ItemTypeUpdateNameOld : ItemTypeUpdateNameNew;
       } else {
