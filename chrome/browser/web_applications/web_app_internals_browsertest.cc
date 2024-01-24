@@ -46,6 +46,7 @@ constexpr char kBadIconErrorTemplate[] = R"({
       "icons_http_results": [ {
          "http_code_desc": "Not Found",
          "http_status_code": 404,
+         "icon_size": "0x0",
          "icon_url": "$1banners/bad_icon.png"
       } ],
       "is_generated_icon": true

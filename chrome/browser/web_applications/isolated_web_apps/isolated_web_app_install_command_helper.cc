@@ -524,8 +524,8 @@ void IsolatedWebAppInstallCommandHelper::OnRetrieveIcons(
     base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
         callback,
     IconsDownloadedResult result,
-    std::map<GURL, std::vector<SkBitmap>> icons_map,
-    std::map<GURL, int /*http_status_code*/> unused_icons_http_results) {
+    IconsMap icons_map,
+    DownloadedIconsHttpResults unused_icons_http_results) {
   if (result != IconsDownloadedResult::kCompleted) {
     std::move(callback).Run(base::unexpected(
         base::StrCat({"Error during icon downloading: ",

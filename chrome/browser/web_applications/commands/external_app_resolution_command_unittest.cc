@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -45,6 +46,7 @@
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/size.h"
 
 using testing::_;
 using testing::Return;
@@ -1029,7 +1031,8 @@ TEST_F(ExternalAppResolutionCommandTest,
         CreateAndLoadIconMapFromSizes(new_sizes, icon_colors, manifest.get());
     DownloadedIconsHttpResults http_results;
     for (const auto& url_and_bitmap : icons_map) {
-      http_results[url_and_bitmap.first] = net::HttpStatusCode::HTTP_OK;
+      http_results[IconUrlWithSize::CreateForUnspecifiedSize(
+          url_and_bitmap.first)] = net::HttpStatusCode::HTTP_OK;
     }
 
     // Set up data retriever and load everything.
@@ -1076,7 +1079,8 @@ TEST_F(ExternalAppResolutionCommandTest, IconDownloadSuccessOverwriteOldIcons) {
         CreateAndLoadIconMapFromSizes(old_sizes, old_colors, manifest.get());
     DownloadedIconsHttpResults http_results;
     for (const auto& url_and_bitmap : icons_map) {
-      http_results[url_and_bitmap.first] = net::HttpStatusCode::HTTP_OK;
+      http_results[IconUrlWithSize::CreateForUnspecifiedSize(
+          url_and_bitmap.first)] = net::HttpStatusCode::HTTP_OK;
     }
 
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
@@ -1119,7 +1123,8 @@ TEST_F(ExternalAppResolutionCommandTest, IconDownloadSuccessOverwriteOldIcons) {
         new_sizes, new_colors, new_manifest.get());
     DownloadedIconsHttpResults new_http_results;
     for (const auto& url_and_bitmap : new_icons_map) {
-      new_http_results[url_and_bitmap.first] = net::HttpStatusCode::HTTP_OK;
+      new_http_results[IconUrlWithSize::CreateForUnspecifiedSize(
+          url_and_bitmap.first)] = net::HttpStatusCode::HTTP_OK;
     }
 
     // Set up data retriever and load everything.
@@ -1170,7 +1175,8 @@ TEST_F(ExternalAppResolutionCommandTest,
         CreateAndLoadIconMapFromSizes(old_sizes, old_colors, manifest.get());
     DownloadedIconsHttpResults http_results;
     for (const auto& url_and_bitmap : icons_map) {
-      http_results[url_and_bitmap.first] = net::HttpStatusCode::HTTP_OK;
+      http_results[IconUrlWithSize::CreateForUnspecifiedSize(
+          url_and_bitmap.first)] = net::HttpStatusCode::HTTP_OK;
     }
 
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
@@ -1214,7 +1220,8 @@ TEST_F(ExternalAppResolutionCommandTest,
         new_sizes, new_colors, new_manifest.get());
     DownloadedIconsHttpResults new_http_results;
     for (const auto& url_and_bitmap : new_icons_map) {
-      new_http_results[url_and_bitmap.first] = net::HttpStatusCode::HTTP_OK;
+      new_http_results[IconUrlWithSize::CreateForUnspecifiedSize(
+          url_and_bitmap.first)] = net::HttpStatusCode::HTTP_OK;
     }
 
     // Set up data retriever and load everything.

@@ -1663,8 +1663,8 @@ TEST(WebAppInstallUtils, DuplicateIconDownloadURLs) {
   for (size_t i = 0; i < download_urls_size; i++) {
     std::string url_str = "http://www.chromium.org/image/icon" +
                           base::NumberToString(i + 1) + ".png";
-    EXPECT_EQ(1u,
-              download_urls.count(std::make_tuple(GURL(url_str), gfx::Size())));
+    EXPECT_EQ(1u, download_urls.count(IconUrlWithSize::CreateForUnspecifiedSize(
+                      GURL(url_str))));
   }
 }
 

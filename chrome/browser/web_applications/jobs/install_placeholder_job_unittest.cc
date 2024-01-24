@@ -184,14 +184,14 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
   bitmap.allocN32Pixels(kIconSize, kIconSize);
   bitmap.eraseColor(SK_ColorRED);
   IconsMap icons = {{icon_url, {bitmap}}};
+  const IconUrlWithSize icon_metadata =
+      IconUrlWithSize::CreateForUnspecifiedSize(icon_url);
   DownloadedIconsHttpResults http_result = {
-      {icon_url, net::HttpStatusCode::HTTP_OK}};
-  EXPECT_CALL(
-      *data_retriever,
-      GetIcons(testing::_,
-               testing::ElementsAre(std::make_tuple(icon_url, gfx::Size())),
-               skip_page_favicons, fail_all_if_any_fail,
-               base::test::IsNotNullCallback()))
+      {icon_metadata, net::HttpStatusCode::HTTP_OK}};
+  EXPECT_CALL(*data_retriever,
+              GetIcons(testing::_, testing::ElementsAre(icon_metadata),
+                       skip_page_favicons, fail_all_if_any_fail,
+                       base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<4>(
           IconsDownloadedResult::kCompleted, std::move(icons), http_result));
 

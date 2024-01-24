@@ -123,9 +123,8 @@ class FakeWebContentsManager::FakeWebAppIconDownloader
     CHECK(manager_);
     IconsMap icons_map;
     DownloadedIconsHttpResults per_icon_results;
-    for (const std::tuple<GURL, gfx::Size>& icon_url_with_size :
-         extra_icon_urls) {
-      GURL icon_url = get<GURL>(icon_url_with_size);
+    for (const IconUrlWithSize& icon_url_with_size : extra_icon_urls) {
+      const GURL& icon_url = icon_url_with_size.url;
       auto icons_it = manager_->icon_state_.find(icon_url);
       if (icons_it == manager_->icon_state_.end()) {
         DLOG(WARNING) << "No icon state at url: " << icon_url.spec();
@@ -141,7 +140,7 @@ class FakeWebContentsManager::FakeWebAppIconDownloader
           return;
         }
 
-        per_icon_results[icon_url] = 404;
+        per_icon_results[icon_url_with_size] = 404;
         continue;
       }
       FakeWebContentsManager::FakeIconState& icon = icons_it->second;
@@ -158,7 +157,7 @@ class FakeWebContentsManager::FakeWebAppIconDownloader
         return;
       }
       icons_map[icon_url] = icon.bitmaps;
-      per_icon_results[icon_url] = icon.http_status_code;
+      per_icon_results[icon_url_with_size] = icon.http_status_code;
       if (icon.bitmaps.empty() && options.fail_all_if_any_fail) {
         // TODO: Test this codepath when migrating the
         // ManifestUpdateCheckCommand to use WebContentsManager.
@@ -181,7 +180,8 @@ class FakeWebContentsManager::FakeWebAppIconDownloader
         FakeWebContentsManager::FakePageState& page = page_it->second;
         if (!page.favicon_url.is_empty()) {
           icons_map[page.favicon_url] = page.favicon;
-          per_icon_results[page.favicon_url] = page.favicon.empty() ? 404 : 200;
+          per_icon_results[IconUrlWithSize::CreateForUnspecifiedSize(
+              page.favicon_url)] = page.favicon.empty() ? 404 : 200;
           if (page.favicon.empty() && options.fail_all_if_any_fail) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,

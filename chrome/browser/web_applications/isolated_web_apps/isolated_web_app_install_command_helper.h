@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
@@ -145,8 +146,8 @@ class IsolatedWebAppInstallCommandHelper {
       base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
           callback,
       IconsDownloadedResult result,
-      std::map<GURL, std::vector<SkBitmap>> icons_map,
-      std::map<GURL, int /*http_status_code*/> unused_icons_http_results);
+      IconsMap icons_map,
+      DownloadedIconsHttpResults unused_icons_http_results);
 
   IsolatedWebAppUrlInfo url_info_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;

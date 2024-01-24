@@ -92,13 +92,14 @@ void WebAppIconDownloader::Start(
   const auto& favicon_urls = GetFaviconURLsFromWebContents();
 
   if (!options_.skip_page_favicons && !favicon_urls.empty()) {
-    std::vector<IconUrlsWithSizes> combined_icon_infos(
+    std::vector<IconUrlWithSize> combined_icon_infos(
         extra_icon_urls_with_sizes.begin(), extra_icon_urls_with_sizes.end());
     combined_icon_infos.reserve(combined_icon_infos.size() +
                                 favicon_urls.size());
     for (const auto& favicon_url : favicon_urls) {
       if (favicon_url->icon_type != blink::mojom::FaviconIconType::kInvalid) {
-        combined_icon_infos.emplace_back(favicon_url->icon_url, gfx::Size());
+        combined_icon_infos.emplace_back(
+            IconUrlWithSize::CreateForUnspecifiedSize(favicon_url->icon_url));
       }
     }
     FetchIcons(IconUrlSizeSet(combined_icon_infos));
@@ -151,10 +152,9 @@ void WebAppIconDownloader::FetchIcons(
   for (const auto& url_data : urls_to_download_with_size) {
     // Only start the download if the url hasn't been processed before.
     if (processed_urls_.insert(url_data).second) {
-      const GURL url = get<GURL>(url_data);
-      in_progress_requests_.insert(std::make_pair(
-          DownloadImage(get<GURL>(url_data), get<gfx::Size>(url_data)),
-          url_data));
+      const GURL url = url_data.url;
+      in_progress_requests_.insert(
+          std::make_pair(DownloadImage(url, url_data.size), url_data));
     }
   }
   populating_pending_requests_ = false;
@@ -179,6 +179,7 @@ void WebAppIconDownloader::DidDownloadFavicon(
     return;
   }
 
+  const IconUrlWithSize icon_urls_with_sizes = in_progress_requests_.at(id);
   size_t num_deleted = in_progress_requests_.erase(id);
   CHECK_EQ(num_deleted, 1ul);
 
@@ -188,7 +189,7 @@ void WebAppIconDownloader::DidDownloadFavicon(
   if (http_status_code != 0) {
     DCHECK_LE(100, http_status_code);
     DCHECK_GT(600, http_status_code);
-    icons_http_results_[image_url] = http_status_code;
+    icons_http_results_[icon_urls_with_sizes] = http_status_code;
   }
 
   if (options_.fail_all_if_any_fail && bitmaps.empty()) {
@@ -280,8 +281,8 @@ void WebAppIconDownloader::OnTimeout() {
 
   // Populate results for the the hanging requests.
   for (const auto& [_, icon_url_with_sizes] : in_progress_requests_) {
-    const GURL& icon_url = get<GURL>(icon_url_with_sizes);
-    icons_http_results_[icon_url] = net::HttpStatusCode::HTTP_REQUEST_TIMEOUT;
+    icons_http_results_[icon_url_with_sizes] =
+        net::HttpStatusCode::HTTP_REQUEST_TIMEOUT;
   }
   base::UmaHistogramEnumeration(
       "WebApp.IconDownloader.Result",

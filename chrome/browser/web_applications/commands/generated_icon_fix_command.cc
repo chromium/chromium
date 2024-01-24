@@ -77,7 +77,7 @@ void GeneratedIconFixCommand::StartWithLock(
   install_info_.title = base::UTF8ToUTF16(app->untranslated_name());
   install_info_.start_url = app->start_url();
   for (const apps::IconInfo& icon_info : install_info_.manifest_icons) {
-    icon_urls.insert(std::make_tuple(icon_info.url, gfx::Size()));
+    icon_urls.emplace(IconUrlWithSize::CreateForUnspecifiedSize(icon_info.url));
   }
   icon_downloader_->Start(
       &lock_->shared_web_contents(), icon_urls,

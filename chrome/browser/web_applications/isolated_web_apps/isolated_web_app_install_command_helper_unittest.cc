@@ -40,6 +40,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/common/chrome_features.h"
@@ -731,18 +732,19 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
       {gfx::test::CreateBitmap(kImageSize, SK_ColorRED)},
   }};
 
-  using HttpStatusCode = int;
-  std::map<GURL, HttpStatusCode> http_result = {
-      {img_url, net::HttpStatusCode::HTTP_OK},
+  DownloadedIconsHttpResults http_result = {
+      {IconUrlWithSize::CreateForUnspecifiedSize(img_url),
+       net::HttpStatusCode::HTTP_OK},
   };
 
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever(kSomeTestApplicationUrl);
-  EXPECT_CALL(
-      *fake_data_retriever,
-      GetIcons(_, UnorderedElementsAre(std::make_tuple(img_url, gfx::Size())),
-               /*skip_page_favicons=*/true,
-               /*fail_all_if_any_fail=*/true, IsNotNullCallback()))
+  EXPECT_CALL(*fake_data_retriever,
+              GetIcons(_,
+                       UnorderedElementsAre(
+                           IconUrlWithSize::CreateForUnspecifiedSize(img_url)),
+                       /*skip_page_favicons=*/true,
+                       /*fail_all_if_any_fail=*/true, IsNotNullCallback()))
       .WillOnce(RunOnceCallback<4>(IconsDownloadedResult::kCompleted,
                                    std::move(icons), http_result));
   auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
@@ -791,16 +793,11 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
   blink::mojom::ManifestPtr manifest = CreateManifest();
   manifest->icons = {CreateImageResourceForAnyPurpose(img_url)};
 
-  std::map<GURL, std::vector<SkBitmap>> icons = {};
-
-  using HttpStatusCode = int;
-  std::map<GURL, HttpStatusCode> http_result = {};
-
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever(url_info.origin().GetURL());
   EXPECT_CALL(*fake_data_retriever, GetIcons(_, _, _, _, IsNotNullCallback()))
       .WillOnce(RunOnceCallback<4>(IconsDownloadedResult::kAbortedDueToFailure,
-                                   std::move(icons), http_result));
+                                   IconsMap{}, DownloadedIconsHttpResults{}));
   auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
       url_info, std::move(fake_data_retriever),
       /*response_reader_factory=*/nullptr);

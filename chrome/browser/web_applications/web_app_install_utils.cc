@@ -510,6 +510,45 @@ ToWebAppTranslations(
 
 }  // namespace
 
+IconUrlWithSize IconUrlWithSize::CreateForUnspecifiedSize(
+    const GURL& icon_url) {
+  return IconUrlWithSize(icon_url, gfx::Size());
+}
+
+IconUrlWithSize IconUrlWithSize::Create(const GURL& icon_url,
+                                        const gfx::Size& size) {
+  CHECK(!size.IsZero());
+  return IconUrlWithSize(icon_url, size);
+}
+
+IconUrlWithSize::IconUrlWithSize(GURL url, gfx::Size size)
+    : url(url), size(size) {}
+
+IconUrlWithSize::~IconUrlWithSize() = default;
+
+IconUrlWithSize::IconUrlWithSize(const IconUrlWithSize& icon_urls_with_size) =
+    default;
+
+IconUrlWithSize::IconUrlWithSize(IconUrlWithSize&& icon_urls_with_size) =
+    default;
+
+IconUrlWithSize& IconUrlWithSize::operator=(
+    const IconUrlWithSize& icon_urls_with_size) = default;
+
+bool IconUrlWithSize::operator<(const IconUrlWithSize& rhs) const {
+  if (url != rhs.url) {
+    return url < rhs.url;
+  }
+
+  if (size.width() != rhs.size.width()) {
+    return size.width() < rhs.size.width();
+  }
+
+  return size.height() < rhs.size.height();
+}
+
+bool IconUrlWithSize::operator==(const IconUrlWithSize& rhs) const = default;
+
 apps::FileHandlers CreateFileHandlersFromManifest(
     const std::vector<blink::mojom::ManifestFileHandlerPtr>&
         manifest_file_handlers,
@@ -781,26 +820,26 @@ WebAppInstallInfo CreateWebAppInfoFromManifest(
 
 namespace {
 
-std::vector<IconUrlsWithSizes> GetAppIconUrls(
+std::vector<IconUrlWithSize> GetAppIconUrls(
     const WebAppInstallInfo& web_app_info) {
-  std::vector<IconUrlsWithSizes> urls;
+  std::vector<IconUrlWithSize> urls;
 
   for (const apps::IconInfo& info : web_app_info.manifest_icons) {
-    urls.emplace_back(info.url, gfx::Size());
+    urls.emplace_back(IconUrlWithSize::CreateForUnspecifiedSize(info.url));
   }
 
   return urls;
 }
 
-std::vector<IconUrlsWithSizes> GetShortcutIcons(
+std::vector<IconUrlWithSize> GetShortcutIcons(
     const WebAppInstallInfo& web_app_info) {
-  std::vector<IconUrlsWithSizes> urls;
+  std::vector<IconUrlWithSize> urls;
   for (const WebAppShortcutsMenuItemInfo& shortcut :
        web_app_info.shortcuts_menu_item_infos) {
     for (IconPurpose purpose : kIconPurposes) {
       for (const WebAppShortcutsMenuItemInfo::Icon& icon :
            shortcut.GetShortcutIconInfosForPurpose(purpose)) {
-        urls.emplace_back(icon.url, gfx::Size());
+        urls.emplace_back(IconUrlWithSize::CreateForUnspecifiedSize(icon.url));
       }
     }
   }
@@ -808,22 +847,22 @@ std::vector<IconUrlsWithSizes> GetShortcutIcons(
   return urls;
 }
 
-std::vector<IconUrlsWithSizes> GetFileHandlingIcons(
+std::vector<IconUrlWithSize> GetFileHandlingIcons(
     const WebAppInstallInfo& web_app_info) {
-  std::vector<IconUrlsWithSizes> urls;
+  std::vector<IconUrlWithSize> urls;
 
   for (const apps::FileHandler& file_handler : web_app_info.file_handlers) {
     for (const apps::IconInfo& icon : file_handler.downloaded_icons) {
-      urls.emplace_back(icon.url, gfx::Size());
+      urls.emplace_back(IconUrlWithSize::CreateForUnspecifiedSize(icon.url));
     }
   }
 
   return urls;
 }
 
-std::vector<IconUrlsWithSizes> GetHomeTabIcons(
+std::vector<IconUrlWithSize> GetHomeTabIcons(
     const WebAppInstallInfo& web_app_info) {
-  std::vector<IconUrlsWithSizes> urls;
+  std::vector<IconUrlWithSize> urls;
 
   if (!HomeTabIconsExistInTabStrip(&web_app_info)) {
     return urls;
@@ -833,19 +872,19 @@ std::vector<IconUrlsWithSizes> GetHomeTabIcons(
       web_app_info.tab_strip.value().home_tab);
 
   for (const auto& icon : home_tab.icons) {
-    urls.emplace_back(icon.src, gfx::Size());
+    urls.emplace_back(IconUrlWithSize::CreateForUnspecifiedSize(icon.src));
   }
 
   return urls;
 }
 
-IconUrlSizeSet RemoveDuplicates(std::vector<IconUrlsWithSizes> from_urls) {
+IconUrlSizeSet RemoveDuplicates(std::vector<IconUrlWithSize> from_urls) {
   return IconUrlSizeSet{from_urls};
 }
 
-void RemoveInvalidUrls(std::vector<IconUrlsWithSizes>& urls) {
-  std::erase_if(urls, [](const std::tuple<GURL, gfx::Size>& url) {
-    return !get<GURL>(url).is_valid();
+void RemoveInvalidUrls(std::vector<IconUrlWithSize>& urls) {
+  std::erase_if(urls, [](const IconUrlWithSize& url_with_size) {
+    return !url_with_size.url.is_valid();
   });
 }
 
@@ -853,7 +892,7 @@ void RemoveInvalidUrls(std::vector<IconUrlsWithSizes>& urls) {
 
 IconUrlSizeSet GetValidIconUrlsToDownload(
     const WebAppInstallInfo& web_app_info) {
-  std::vector<IconUrlsWithSizes> icon_urls;
+  std::vector<IconUrlWithSize> icon_urls;
 
   base::Extend(icon_urls, GetAppIconUrls(web_app_info));
   base::Extend(icon_urls, GetShortcutIcons(web_app_info));

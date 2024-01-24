@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -49,21 +51,32 @@ enum class ForInstallableSite {
   kUnknown,
 };
 
-// An empty gfx::Size() (where width & height are both 0) signifies no preferred
-// download size.
-using IconUrlsWithSizes = std::tuple<GURL, gfx::Size>;
+// A size of (0,0) means unspecified width & height. Use
+// CreateForUnspecifiedSize() to construct the icon metadata for those
+// use-cases, otherwise Create() will crash.
+struct IconUrlWithSize {
+  static IconUrlWithSize CreateForUnspecifiedSize(const GURL& icon_url);
+  static IconUrlWithSize Create(const GURL& icon_url, const gfx::Size& size);
 
-struct IconUrlsWithSizesComparator {
-  constexpr bool operator()(const IconUrlsWithSizes& lhs,
-                            const IconUrlsWithSizes& rhs) const {
-    return (get<GURL>(lhs) < get<GURL>(rhs)) ||
-           (get<gfx::Size>(lhs).width() < get<gfx::Size>(rhs).width()) ||
-           (get<gfx::Size>(lhs).height() < get<gfx::Size>(rhs).height());
-  }
+  IconUrlWithSize(GURL url, gfx::Size size);
+  ~IconUrlWithSize();
+  IconUrlWithSize(const IconUrlWithSize& icon_urls_with_size);
+  IconUrlWithSize(IconUrlWithSize&& icon_urls_with_size);
+  IconUrlWithSize& operator=(const IconUrlWithSize& icon_urls_with_size);
+
+  bool operator<(const IconUrlWithSize& rhs) const;
+  bool operator==(const IconUrlWithSize& rhs) const;
+
+  GURL url;
+  gfx::Size size;
 };
 
-using IconUrlSizeSet =
-    base::flat_set<IconUrlsWithSizes, IconUrlsWithSizesComparator>;
+using IconUrlSizeSet = base::flat_set<IconUrlWithSize>;
+
+// A map of |IconUrlWithSize| to http status results. `http_status_code` is
+// never 0.
+using DownloadedIconsHttpResults =
+    base::flat_map<IconUrlWithSize, int /*http_status_code*/>;
 
 // Converts from the manifest type to the Chrome type.
 apps::FileHandlers CreateFileHandlersFromManifest(

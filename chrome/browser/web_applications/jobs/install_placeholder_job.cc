@@ -102,7 +102,7 @@ void InstallPlaceholderJob::FetchCustomIcon(const GURL& url, int retries_left) {
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
 
   data_retriever_->GetIcons(
-      web_contents_.get(), {std::make_tuple(url, gfx::Size())},
+      web_contents_.get(), {IconUrlWithSize::CreateForUnspecifiedSize(url)},
       /*skip_page_favicons=*/true,
       /*fail_all_if_any_fail=*/false,
       base::BindOnce(&InstallPlaceholderJob::OnCustomIconFetched,

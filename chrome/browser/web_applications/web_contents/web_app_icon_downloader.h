@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
@@ -120,7 +121,7 @@ class WebAppIconDownloader : public content::WebContentsObserver {
 
   // Request ids of in-progress requests.
   bool populating_pending_requests_ = false;
-  std::map<int, IconUrlsWithSizes> in_progress_requests_;
+  std::map<int, IconUrlWithSize> in_progress_requests_;
 
   // Urls for which a download has already been initiated. Used to prevent
   // duplicate downloads of the same url.
