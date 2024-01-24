@@ -1257,22 +1257,22 @@
   {
     "name": "clipboard-history-longpress",
     "owners": ["ckincaid@google.com", "multipaste@google.com"],
-    "expiry_milestone": 123
+    "expiry_milestone": 125
   },
   {
     "name": "clipboard-history-refresh",
     "owners": ["ckincaid@google.com", "multipaste@google.com"],
-    "expiry_milestone": 123
+    "expiry_milestone": 125
   },
   {
     "name": "clipboard-history-url-titles",
     "owners": ["ckincaid@google.com", "multipaste@google.com"],
-    "expiry_milestone": 123
+    "expiry_milestone": 125
   },
   {
     "name": "clipboard-history-web-contents-paste",
     "owners": ["dmblack@google.com", "multipaste@google.com"],
-    "expiry_milestone": 123
+    "expiry_milestone": 125
   },
     {
     "name": "clipboard-maximum-age",
@@ -2933,27 +2933,27 @@
   {
     "name": "enable-holding-space-predictability",
     "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 125
   },
   {
     "name": "enable-holding-space-refresh",
     "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 125
   },
   {
     "name": "enable-holding-space-suggestions",
     "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 125
   },
   {
     "name": "enable-holding-space-wallpaper-nudge",
     "owners": [ "//ash/user_education/OWNERS" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 125
   },
   {
     "name": "enable-holding-space-wallpaper-nudge-force-eligibility",
     "owners": [ "//ash/user_education/OWNERS" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 125
   },
   {
     "name": "enable-hostname-setting",
@@ -3198,7 +3198,7 @@
   {
     "name": "enable-notification-image-drag",
     "owners": ["andrewxu@chromium.org", "dmblack@chromium.org"],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "enable-notifier-collision",
@@ -3921,12 +3921,12 @@
   {
     "name": "enable-welcome-tour",
     "owners": [ "//ash/user_education/OWNERS" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 125
   },
   {
     "name": "enable-welcome-tour-force-user-eligibility",
     "owners": [ "//ash/user_education/OWNERS" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 125
   },
   {
     "name": "enable-wifi-qos",
