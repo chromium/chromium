@@ -111,7 +111,6 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
   MAYBE_ComposeInteractiveUiTest() {
     feature_list_.InitWithFeatures(
         {compose::features::kEnableCompose,
-         autofill::features::kAutofillContentEditables,
          optimization_guide::features::kOptimizationGuideModelExecution},
         {});
     subscription_ =

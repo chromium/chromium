@@ -359,19 +359,7 @@ TEST_F(AutofillAgentFormInteractionTest, TapNearEdge) {
                   gfx::Vector2d(element_bounds.width() / 2 + 1, 0));
 }
 
-class AutofillAgentContentEditableInteractionTest
-    : public test::AutofillRendererTest {
- public:
-  AutofillAgentContentEditableInteractionTest() {
-    scoped_features_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kAutofillContentEditables},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
-};
+using AutofillAgentContentEditableInteractionTest = test::AutofillRendererTest;
 
 // Tests that left clicking on an contenteditable triggers AskForValuesToFill.
 TEST_F(AutofillAgentContentEditableInteractionTest, LeftClick) {

@@ -197,7 +197,6 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
         /*enabled_features=*/
         {blink::features::kAutofillUseDomNodeIdForRendererId,
          features::kAutofillReplaceCachedWebElementsByRendererIds,
-         features::kAutofillContentEditables,
          features::kAutofillEnableSelectList},
         /*disabled_features=*/{});
   }

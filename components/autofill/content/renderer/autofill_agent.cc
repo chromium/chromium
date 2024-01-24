@@ -531,8 +531,7 @@ void AutofillAgent::TextFieldDidChange(const WebFormControlElement& element) {
 void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
   DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillContentEditableChangeEvents) ||
-      !base::FeatureList::IsEnabled(features::kAutofillContentEditables)) {
+          features::kAutofillContentEditableChangeEvents)) {
     return;
   }
   // TODO(crbug.com/1494479): Add throttling to avoid sending this event for
@@ -1161,12 +1160,11 @@ void AutofillAgent::ExtractForm(
       return;
     }
   }
-  if (base::FeatureList::IsEnabled(features::kAutofillContentEditables)) {
-    FieldRendererId field(*form_id);
-    if (WebElement ce = FindContentEditableByRendererId(field); !ce.IsNull()) {
-      std::move(callback).Run(FindFormForContentEditable(ce));
-      return;
-    }
+  if (WebElement ce =
+          FindContentEditableByRendererId(FieldRendererId(*form_id));
+      !ce.IsNull()) {
+    std::move(callback).Run(FindFormForContentEditable(ce));
+    return;
   }
   std::move(callback).Run(std::nullopt);
 }
@@ -1448,8 +1446,7 @@ void AutofillAgent::HandleFocusChangeComplete(
   //   false. The call comes from DidCompleteFocusChangeInFrame() which passes
   //   false since at the preceding DidReceiveLeftMouseDownOrGestureTapInNode()
   //   call `node.Focused()` was false.
-  if (!focused_element.IsNull() &&
-      base::FeatureList::IsEnabled(features::kAutofillContentEditables)) {
+  if (!focused_element.IsNull()) {
     if (std::optional<FormData> form =
             form_util::FindFormForContentEditable(focused_element)) {
       CHECK_EQ(form->fields.size(), 1u);

@@ -72,8 +72,6 @@ IN_PROC_BROWSER_TEST_F(ComposeEnablingBrowserTest,
 
   // Confirm that the required feature flags are enabled by default.
   EXPECT_TRUE(base::FeatureList::IsEnabled(compose::features::kEnableCompose));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(
-      autofill::features::kAutofillContentEditables));
 
   // Enable Compose via the Optimization Guide's pref.
   browser()->profile()->GetPrefs()->SetInteger(
