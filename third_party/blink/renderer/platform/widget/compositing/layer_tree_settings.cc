@@ -119,10 +119,6 @@ std::pair<int, int> GetTilingInterestAreaSizes() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kIncreaseTileMemorySizeProportionally,
-             "IncreaseTileMemorySizeProportionally",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Adjusting tile memory size in case a lot more websites need more tile
 // memory than the current calculation.
 BASE_FEATURE(kAdjustTileGpuMemorySize,
@@ -188,54 +184,37 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
     actual.bytes_limit_when_visible = 256 * 1024 * 1024;
   }
 #else
-  if (base::FeatureList::IsEnabled(kIncreaseTileMemorySizeProportionally)) {
-    // This calculation will increase the tile memory size. It should apply to
-    // the other plateforms if no regression on Mac.
-    //
-    // For large monitors with high resolution, increase the tile memory to
-    // avoid frequent out of memory problems. With Mac M1 on
-    // https://www.334-28th.com/, it seems 512 MB works fine on 1920x1080 * 2
-    // (scale) and 1152 MB on 2056x1329 * 2 (scale). Use this ratio for the
-    // formula to increase |bytes_limit_when_visible| proportionally.
-    // For mobile platforms with small display (roughly less than 3k x 1.6k),
-    // mb_limit will still be 512 MB.
-    constexpr size_t kLargeResolution = 2056 * 1329 * 2 * 2;
-    size_t display_size =
-        std::round(initial_screen_size.width() * initial_device_scale_factor *
-                   initial_screen_size.height() * initial_device_scale_factor);
+  // This calculation will increase the tile memory size. It should apply to
+  // the other plateforms if no regression on Mac.
+  //
+  // For large monitors with high resolution, increase the tile memory to
+  // avoid frequent out of memory problems. With Mac M1 on
+  // https://www.334-28th.com/, it seems 512 MB works fine on 1920x1080 * 2
+  // (scale) and 1152 MB on 2056x1329 * 2 (scale). Use this ratio for the
+  // formula to increase |bytes_limit_when_visible| proportionally.
+  // For mobile platforms with small display (roughly less than 3k x 1.6k),
+  // mb_limit will still be 512 MB.
+  constexpr size_t kLargeResolution = 2056 * 1329 * 2 * 2;
+  size_t display_size =
+      std::round(initial_screen_size.width() * initial_device_scale_factor *
+                 initial_screen_size.height() * initial_device_scale_factor);
 
-    size_t large_resolution_memory_mb = GetLargeResolutionMemoryMB();
-    size_t mb_limit_when_visible =
-        large_resolution_memory_mb * (display_size * 1.0 / kLargeResolution);
+  size_t large_resolution_memory_mb = GetLargeResolutionMemoryMB();
+  size_t mb_limit_when_visible =
+      large_resolution_memory_mb * (display_size * 1.0 / kLargeResolution);
 
-    // Cap the memory size to one fourth of the total system memory so it won't
-    // consume too much of the system memory. Still keep the minimum to the
-    // default of 512MB.
-    size_t default_memory_mb = GetDefaultMemoryMB();
-    size_t memory_cap_mb = base::SysInfo::AmountOfPhysicalMemoryMB() / 4;
-    if (mb_limit_when_visible > memory_cap_mb) {
-      mb_limit_when_visible = memory_cap_mb;
-    } else if (mb_limit_when_visible < default_memory_mb) {
-      mb_limit_when_visible = default_memory_mb;
-    }
-
-    actual.bytes_limit_when_visible = mb_limit_when_visible * 1024 * 1024;
-  } else {
-    // Ignore what the system said and give all clients the same maximum
-    // allocation on desktop platforms.
-    actual.bytes_limit_when_visible = 512 * 1024 * 1024;
-
-    // For large monitors (4k), double the tile memory to avoid frequent out of
-    // memory problems. 4k could mean a screen width of anywhere from 3840 to
-    // 4096 (see https://en.wikipedia.org/wiki/4K_resolution). We use 3500 as a
-    // proxy for "large enough".
-    static const int kLargeDisplayThreshold = 3500;
-    int display_width =
-        std::round(initial_screen_size.width() * initial_device_scale_factor);
-    if (display_width >= kLargeDisplayThreshold) {
-      actual.bytes_limit_when_visible *= 2;
-    }
+  // Cap the memory size to one fourth of the total system memory so it won't
+  // consume too much of the system memory. Still keep the minimum to the
+  // default of 512MB.
+  size_t default_memory_mb = GetDefaultMemoryMB();
+  size_t memory_cap_mb = base::SysInfo::AmountOfPhysicalMemoryMB() / 4;
+  if (mb_limit_when_visible > memory_cap_mb) {
+    mb_limit_when_visible = memory_cap_mb;
+  } else if (mb_limit_when_visible < default_memory_mb) {
+    mb_limit_when_visible = default_memory_mb;
   }
+
+  actual.bytes_limit_when_visible = mb_limit_when_visible * 1024 * 1024;
 #endif
   actual.priority_cutoff_when_visible =
       gpu::MemoryAllocation::CUTOFF_ALLOW_NICE_TO_HAVE;
