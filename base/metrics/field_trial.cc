@@ -712,6 +712,7 @@ bool FieldTrialList::CreateTrialsFromFieldTrialStates(
 // static
 void FieldTrialList::CreateTrialsInChildProcess(const CommandLine& cmd_line,
                                                 uint32_t fd_key) {
+  CHECK(!global_->create_trials_in_child_process_called_);
   global_->create_trials_in_child_process_called_ = true;
 
 #if BUILDFLAG(USE_BLINK)
