@@ -201,6 +201,9 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
         continue;
       }
 
+      // This SharedImage is populated via the raster interface below and may
+      // be read via the raster interface in normal VideoFrame usage exercised
+      // by the tests.
       gpu::Mailbox mailbox =
           sii->CreateSharedImage(viz::SinglePlaneFormat::kRGBA_8888,
                                  kDummyFrameCodedSize,
