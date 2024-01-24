@@ -18,6 +18,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CHAPS) MockHighLevelChapsClient
   ~MockHighLevelChapsClient() override;
 
   MOCK_METHOD(void,
+              GetMechanismList,
+              (SessionChapsClient::SlotId slot_id,
+               SessionChapsClient::GetMechanismListCallback callback),
+              (override));
+  MOCK_METHOD(void,
               CreateObject,
               (SessionChapsClient::SlotId slot_id,
                const chaps::AttributeList& attributes,

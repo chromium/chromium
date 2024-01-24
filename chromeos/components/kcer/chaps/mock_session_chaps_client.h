@@ -17,6 +17,10 @@ class MockSessionChapsClient : public SessionChapsClient {
   ~MockSessionChapsClient() override;
 
   MOCK_METHOD(void,
+              GetMechanismList,
+              (SlotId slot_id, GetMechanismListCallback callback),
+              (override));
+  MOCK_METHOD(void,
               CreateObject,
               (SlotId slot_id,
                const std::vector<uint8_t>& attributes,

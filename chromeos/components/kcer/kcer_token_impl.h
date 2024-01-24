@@ -287,6 +287,26 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
                           std::vector<uint8_t> signature,
                           uint32_t result_code);
 
+  struct GetKeyInfoTask {
+    GetKeyInfoTask(PrivateKeyHandle in_key,
+                   Kcer::GetKeyInfoCallback in_callback);
+    GetKeyInfoTask(GetKeyInfoTask&& other);
+    ~GetKeyInfoTask();
+
+    const PrivateKeyHandle key;
+    Kcer::GetKeyInfoCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void GetKeyInfoImpl(GetKeyInfoTask task);
+  void GetKeyInfoWithMechanismList(GetKeyInfoTask task,
+                                   const std::vector<uint64_t>& mechanism_list,
+                                   uint32_t result_code);
+  void GetKeyInfoGetAttributes(GetKeyInfoTask task);
+  void GetKeyInfoWithAttributes(GetKeyInfoTask task,
+                                std::optional<Error> kcer_error,
+                                chaps::AttributeList attributes,
+                                uint32_t result_code);
+
   struct SetKeyAttributeTask {
     SetKeyAttributeTask(PrivateKeyHandle in_key,
                         HighLevelChapsClient::AttributeId in_attribute_id,
@@ -314,6 +334,25 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
   void SetKeyAttributeDidSetAttribute(SetKeyAttributeTask task,
                                       uint32_t result_code);
 
+  // If `kcer_error` is not empty, the rest of the values can be discarded.
+  // Otherwise `attributes` and `result_code` contain the reply from Chaps
+  // (`resul_code` can still contain an error).
+  using GetKeyAttributesCallback =
+      base::OnceCallback<void(std::optional<Error> kcer_error,
+                              chaps::AttributeList attributes,
+                              uint32_t result_code)>;
+
+  // Retrieves attributes with `attribute_ids` for the key.
+  void GetKeyAttributes(
+      PrivateKeyHandle key,
+      std::vector<HighLevelChapsClient::AttributeId> attribute_ids,
+      GetKeyAttributesCallback callback);
+  void GetKeyAttributesWithKeyHandle(
+      std::vector<HighLevelChapsClient::AttributeId> attribute_ids,
+      GetKeyAttributesCallback callback,
+      std::vector<ObjectHandle> private_key_handles,
+      uint32_t result_code);
+
   // Indicates whether the task queue is blocked. Task queue should be
   // blocked until the token is initialized, during the processing of most
   // requests and during updating the cache.
@@ -325,6 +364,9 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
   // slot and is not used until it's overwritten in InitializeWithoutNss.
   SessionChapsClient::SlotId pkcs_11_slot_id_ =
       SessionChapsClient::SlotId(0xFFFFFFFF);
+  // Indicates whether PSS signatures are supported. This variable caches the
+  // value from Chaps, if it's empty, it needs to be retrieved first.
+  absl::optional<bool> token_supports_pss_;
 
   // Queue for the tasks that were received while the tast queue was blocked.
   std::deque<base::OnceClosure> task_queue_;

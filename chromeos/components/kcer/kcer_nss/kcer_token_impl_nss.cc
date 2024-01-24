@@ -23,6 +23,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chromeos/components/kcer/kcer_nss/cert_cache_nss.h"
 #include "chromeos/components/kcer/kcer_token.h"
+#include "chromeos/components/kcer/kcer_utils.h"
 #include "chromeos/components/kcer/key_permissions.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -703,42 +704,6 @@ void SignRsaPkcs1RawOnWorkerThread(crypto::ScopedPK11Slot slot,
   return std::move(callback).Run(Signature(std::move(signature)));
 }
 
-std::vector<SigningScheme> GetSigningSchemes(bool supports_pss,
-                                             KeyType key_type) {
-  std::vector<SigningScheme> result;
-
-  switch (key_type) {
-      // Supported signing schemes for RSA also depend on the key length, but
-      // NSS doesn't seem to provide a convenient interface to read it. In
-      // practice 2048 bits is enough for all RSA signatures, smaller keys are
-      // not really used in practice nowadays and the SSL code is expected to
-      // also double check and shrink the list.
-    case KeyType::kRsa:
-      result.insert(result.end(), {
-                                      SigningScheme::kRsaPkcs1Sha1,
-                                      SigningScheme::kRsaPkcs1Sha256,
-                                      SigningScheme::kRsaPkcs1Sha384,
-                                      SigningScheme::kRsaPkcs1Sha512,
-                                  });
-      if (supports_pss) {
-        result.insert(result.end(), {
-                                        SigningScheme::kRsaPssRsaeSha256,
-                                        SigningScheme::kRsaPssRsaeSha384,
-                                        SigningScheme::kRsaPssRsaeSha512,
-                                    });
-      }
-      break;
-    case KeyType::kEcc:
-      result.insert(result.end(), {
-                                      SigningScheme::kEcdsaSecp256r1Sha256,
-                                      SigningScheme::kEcdsaSecp384r1Sha384,
-                                      SigningScheme::kEcdsaSecp521r1Sha512,
-                                  });
-  }
-
-  return result;
-}
-
 void GetKeyPermissionsOnWorkerThread(
     KeyPermissionsAttributeId key_permissions_attribute_id,
     crypto::ScopedPK11Slot slot,
@@ -862,7 +827,7 @@ void GetKeyInfoOnWorkerThread(crypto::ScopedPK11Slot slot,
       return std::move(callback).Run(base::unexpected(Error::kUnknownKeyType));
   }
 
-  key_info.supported_signing_schemes = GetSigningSchemes(
+  key_info.supported_signing_schemes = GetSupportedSigningSchemes(
       PK11_DoesMechanism(slot.get(), CKM_RSA_PKCS_PSS), key_info.key_type);
 
   char* nickname = PK11_GetPrivateKeyNickname(sec_private_key.get());

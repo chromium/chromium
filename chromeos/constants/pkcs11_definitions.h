@@ -92,6 +92,7 @@ inline constexpr uint32_t PKCS11_CKM_ECDSA = 0x00001041;
 // PKCS #11 v2.20 section A Manifest constants pages 381-382.
 inline constexpr uint32_t PKCS11_CKR_OK = 0x00000000;
 inline constexpr uint32_t PKCS11_CKR_GENERAL_ERROR = 0x00000005;
+inline constexpr uint32_t PKCS11_CKR_ATTRIBUTE_TYPE_INVALID = 0x00000012;
 inline constexpr uint32_t PKCS11_CKR_SESSION_CLOSED = 0x000000B0;
 inline constexpr uint32_t PKCS11_CKR_SESSION_HANDLE_INVALID = 0x000000B3;
 inline constexpr uint32_t PKCS11_CKR_BUFFER_TOO_SMALL = 0x00000150;

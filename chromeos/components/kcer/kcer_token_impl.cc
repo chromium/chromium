@@ -16,6 +16,7 @@
 #include "chromeos/components/kcer/attributes.pb.h"
 #include "chromeos/components/kcer/chaps/high_level_chaps_client.h"
 #include "chromeos/components/kcer/chaps/session_chaps_client.h"
+#include "chromeos/components/kcer/kcer_utils.h"
 #include "chromeos/constants/pkcs11_definitions.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/openssl_util.h"
@@ -48,22 +49,74 @@ base::span<const uint8_t> MakeSpan(T* value) {
   return base::as_bytes(base::span<T>(value, /*count=*/1u));
 }
 
+const chaps::Attribute* GetAttribute(const chaps::AttributeList& attr_list,
+                                     AttributeId attribute_id) {
+  for (int i = 0; i < attr_list.attributes_size(); i++) {
+    if (attr_list.attributes(i).type() == static_cast<uint32_t>(attribute_id)) {
+      return &(attr_list.attributes(i));
+    }
+  }
+  return nullptr;
+}
+
 base::span<const uint8_t> GetAttributeValue(
     const chaps::AttributeList& attr_list,
     AttributeId attribute_id) {
-  for (int i = 0; i < attr_list.attributes_size(); i++) {
-    if (attr_list.attributes(i).type() != static_cast<uint32_t>(attribute_id)) {
-      continue;
-    }
-
-    const chaps::Attribute& attr = attr_list.attributes(i);
-    if (!attr.has_value()) {
-      return {};
-    }
-
-    return base::as_bytes(base::make_span(attr.value()));
+  const chaps::Attribute* attr = GetAttribute(attr_list, attribute_id);
+  if (!attr || !attr->has_value()) {
+    return {};
   }
-  return {};
+  return base::as_bytes(base::make_span(attr->value()));
+}
+
+bool GetIsHardwareBacked(const chaps::Attribute* attr,
+                         bool& is_hardware_backed) {
+  if (!attr || !attr->has_value()) {
+    return false;
+  }
+  if (attr->value().size() != sizeof(chromeos::PKCS11_CK_BBOOL)) {
+    return false;
+  }
+  chromeos::PKCS11_CK_BBOOL key_in_software =
+      *reinterpret_cast<const chromeos::PKCS11_CK_KEY_TYPE*>(
+          attr->value().data());
+  is_hardware_backed = (key_in_software == chromeos::PKCS11_CK_FALSE);
+  return true;
+}
+
+bool GetKeyType(const chaps::Attribute* attr, KeyType& key_type) {
+  if (!attr || !attr->has_value()) {
+    return false;
+  }
+  if (attr->value().size() != sizeof(chromeos::PKCS11_CK_KEY_TYPE)) {
+    return false;
+  }
+  chromeos::PKCS11_CK_KEY_TYPE pkcs_key_type =
+      *reinterpret_cast<const chromeos::PKCS11_CK_KEY_TYPE*>(
+          attr->value().data());
+  if (pkcs_key_type == chromeos::PKCS11_CKK_RSA) {
+    key_type = KeyType::kRsa;
+    return true;
+  } else if (pkcs_key_type == chromeos::PKCS11_CKK_EC) {
+    key_type = KeyType::kEcc;
+    return true;
+  }
+  return false;
+}
+
+bool GetOptionalString(const chaps::Attribute* attr,
+                       absl::optional<std::string>& result_string) {
+  if (!attr || !attr->has_value() || !attr->has_length()) {
+    return false;
+  }
+  if (static_cast<uint32_t>(attr->length()) ==
+      chromeos::PKCS11_CK_UNAVAILABLE_INFORMATION) {
+    // The attribute was not set for the object.
+    result_string.reset();
+    return true;
+  }
+  result_string = attr->value();
+  return true;
 }
 
 // Chaps wraps the EC point in a DER-encoded ASN.1 OctetString, which is
@@ -409,6 +462,7 @@ std::vector<uint8_t> GetPssSignParams(SigningScheme kcer_signing_scheme) {
 
 }  // namespace
 
+// TODO(244409232): Implement receiving of cert change notifications.
 KcerTokenImpl::KcerTokenImpl(Token token, HighLevelChapsClient* chaps_client)
     : token_(token), pkcs_11_slot_id_(0), chaps_client_(chaps_client) {
   CHECK(chaps_client_);
@@ -1543,9 +1597,173 @@ void KcerTokenImpl::GetTokenInfo(Kcer::GetTokenInfoCallback callback) {
 
 //==============================================================================
 
+void KcerTokenImpl::GetKeyAttributes(
+    PrivateKeyHandle key,
+    std::vector<HighLevelChapsClient::AttributeId> attribute_ids,
+    GetKeyAttributesCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  FindPrivateKey(key.GetPkcs11IdInternal(),
+                 base::BindOnce(&KcerTokenImpl::GetKeyAttributesWithKeyHandle,
+                                weak_factory_.GetWeakPtr(),
+                                std::move(attribute_ids), std::move(callback)));
+}
+
+void KcerTokenImpl::GetKeyAttributesWithKeyHandle(
+    std::vector<HighLevelChapsClient::AttributeId> attribute_ids,
+    GetKeyAttributesCallback callback,
+    std::vector<ObjectHandle> private_key_handles,
+    uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return std::move(callback).Run(/*kcer_error=*/std::nullopt,
+                                   chaps::AttributeList(), result_code);
+  }
+  if ((result_code != chromeos::PKCS11_CKR_OK) || private_key_handles.empty()) {
+    return std::move(callback).Run(Error::kKeyNotFound, chaps::AttributeList(),
+                                   result_code);
+  }
+  if (private_key_handles.size() != 1) {
+    // This shouldn't happen.
+    return std::move(callback).Run(Error::kUnexpectedFindResult,
+                                   chaps::AttributeList(), result_code);
+  }
+
+  chaps_client_->GetAttributeValue(
+      pkcs_11_slot_id_, private_key_handles.front(), std::move(attribute_ids),
+      base::BindOnce(std::move(callback), /*kcer_error=*/std::nullopt));
+}
+
+//==============================================================================
+
+KcerTokenImpl::GetKeyInfoTask::GetKeyInfoTask(
+    PrivateKeyHandle in_key,
+    Kcer::GetKeyInfoCallback in_callback)
+    : key(std::move(in_key)), callback(std::move(in_callback)) {}
+KcerTokenImpl::GetKeyInfoTask::GetKeyInfoTask(GetKeyInfoTask&& other) = default;
+KcerTokenImpl::GetKeyInfoTask::~GetKeyInfoTask() = default;
+
 void KcerTokenImpl::GetKeyInfo(PrivateKeyHandle key,
                                Kcer::GetKeyInfoCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_blocked_) {
+    return task_queue_.push_back(
+        base::BindOnce(&KcerTokenImpl::GetKeyInfo, weak_factory_.GetWeakPtr(),
+                       std::move(key), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking
+  // task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
+
+  if (!EnsurePkcs11IdIsSet(key)) {
+    return std::move(unblocking_callback)
+        .Run(base::unexpected(Error::kFailedToGetPkcs11Id));
+  }
+
+  GetKeyInfoImpl(
+      GetKeyInfoTask(std::move(key), std::move(unblocking_callback)));
+}
+
+// If PSS support for the token is not known yet - query it, all keys implicitly
+// inherit it. Otherwise proceed to retrieving actual key info.
+void KcerTokenImpl::GetKeyInfoImpl(GetKeyInfoTask task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  task.attemps_left--;
+  if (task.attemps_left < 0) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kPkcs11SessionFailure));
+  }
+
+  if (!token_supports_pss_.has_value()) {
+    return chaps_client_->GetMechanismList(
+        pkcs_11_slot_id_,
+        base::BindOnce(&KcerTokenImpl::GetKeyInfoWithMechanismList,
+                       weak_factory_.GetWeakPtr(), std::move(task)));
+  }
+
+  GetKeyInfoGetAttributes(std::move(task));
+}
+
+// Receives and caches PSS support for the token.
+void KcerTokenImpl::GetKeyInfoWithMechanismList(
+    GetKeyInfoTask task,
+    const std::vector<uint64_t>& mechanism_list,
+    uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return GetKeyInfoImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToRetrieveMechanismList));
+  }
+
+  for (uint64_t mechanism : mechanism_list) {
+    if (mechanism == chromeos::PKCS11_CKM_RSA_PKCS_PSS) {
+      token_supports_pss_ = true;
+      break;
+    }
+  }
+  if (!token_supports_pss_.has_value()) {
+    token_supports_pss_ = false;
+  }
+
+  GetKeyInfoGetAttributes(std::move(task));
+}
+
+void KcerTokenImpl::GetKeyInfoGetAttributes(GetKeyInfoTask task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  PrivateKeyHandle key = task.key;
+  GetKeyAttributes(
+      std::move(key),
+      {AttributeId::kKeyInSoftware, AttributeId::kKeyType, AttributeId::kLabel},
+      base::BindOnce(&KcerTokenImpl::GetKeyInfoWithAttributes,
+                     weak_factory_.GetWeakPtr(), std::move(task)));
+}
+
+// Parses the attributes into the result struct and returns it.
+void KcerTokenImpl::GetKeyInfoWithAttributes(GetKeyInfoTask task,
+                                             std::optional<Error> kcer_error,
+                                             chaps::AttributeList attributes,
+                                             uint32_t result_code) {
+  if (kcer_error.has_value()) {
+    return std::move(task.callback).Run(base::unexpected(kcer_error.value()));
+  }
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return GetKeyInfoImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToReadAttribute));
+  }
+
+  KeyInfo key_info;
+
+  bool is_ok = true;
+  is_ok = is_ok && GetIsHardwareBacked(
+                       GetAttribute(attributes, AttributeId::kKeyInSoftware),
+                       key_info.is_hardware_backed);
+  is_ok = is_ok && GetKeyType(GetAttribute(attributes, AttributeId::kKeyType),
+                              key_info.key_type);
+  is_ok =
+      is_ok && GetOptionalString(GetAttribute(attributes, AttributeId::kLabel),
+                                 key_info.nickname);
+
+  if (!is_ok) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToDecodeKeyAttributes));
+  }
+
+  CHECK(token_supports_pss_.has_value());
+  key_info.supported_signing_schemes = GetSupportedSigningSchemes(
+      token_supports_pss_.value(), key_info.key_type);
+
+  return std::move(task.callback).Run(std::move(key_info));
 }
 
 //==============================================================================
@@ -1674,8 +1892,7 @@ void KcerTokenImpl::SetKeyNickname(PrivateKeyHandle key,
         std::move(key), std::move(nickname), std::move(callback)));
   }
 
-  // Block task queue, attach unblocking
-  // task to the callback.
+  // Block task queue, attach unblocking task to the callback.
   auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
 
   return SetKeyAttribute(std::move(key),

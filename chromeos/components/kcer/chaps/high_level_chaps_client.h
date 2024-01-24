@@ -15,6 +15,8 @@
 #include "chromeos/components/kcer/attributes.pb.h"
 #include "chromeos/components/kcer/chaps/session_chaps_client.h"
 #include "chromeos/constants/pkcs11_definitions.h"
+#include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
+#include "third_party/cros_system_api/dbus/chaps/dbus-constants.h"
 
 namespace kcer {
 
@@ -37,17 +39,24 @@ class HighLevelChapsClient {
   // A list of all attributes supported by the GetAttributeValue,
   // SetAttributeValue methods, can be expanded as needed. It's allowed to cast
   // from AttributeId to uint32_t.
-  enum class AttributeId {
+  enum class AttributeId : uint32_t {
     kModulus = chromeos::PKCS11_CKA_MODULUS,
     kPublicExponent = chromeos::PKCS11_CKA_PUBLIC_EXPONENT,
     kEcPoint = chromeos::PKCS11_CKA_EC_POINT,
     kPkcs11Id = chromeos::PKCS11_CKA_ID,
     kLabel = chromeos::PKCS11_CKA_LABEL,
+    kKeyType = chromeos::PKCS11_CKA_KEY_TYPE,
+    // Stored on the private key.
+    kKeyInSoftware = chaps::kKeyInSoftwareAttribute,
   };
 
   HighLevelChapsClient() = default;
   virtual ~HighLevelChapsClient() = default;
 
+  // PKCS #11 v2.20 section 11.5 page 111.
+  virtual void GetMechanismList(
+      SessionChapsClient::SlotId slot_id,
+      SessionChapsClient::GetMechanismListCallback callback) = 0;
   // Similar to PKCS #11 v2.20 section 11.7 page 128.
   virtual void CreateObject(
       SessionChapsClient::SlotId slot_id,
@@ -65,6 +74,13 @@ class HighLevelChapsClient {
       std::vector<SessionChapsClient::ObjectHandle> object_handles,
       SessionChapsClient::DestroyObjectCallback callback) = 0;
   // Similar to PKCS #11 v2.20 section 11.7 page 133.
+  // Tries to guess attribute sizes and when Chaps replies that the guessed size
+  // is too small, queries the exact size and retries with it. If
+  // CKR_ATTRIBUTE_SENSITIVE or CKR_ATTRIBUTE_TYPE_INVALID error is returned,
+  // one or more attributes is not retrieved. If more than one attribute was
+  // not retrieved, it's impossible to deduce whether the attribute is actually
+  // there and available and just the guessed size was too small (especially
+  // relevant for string attributes).
   virtual void GetAttributeValue(
       SessionChapsClient::SlotId slot_id,
       SessionChapsClient::ObjectHandle object_handle,
@@ -116,6 +132,9 @@ class COMPONENT_EXPORT(KCER) HighLevelChapsClientImpl
   ~HighLevelChapsClientImpl() override;
 
   // Implements HighLevelChapsClient.
+  void GetMechanismList(
+      SessionChapsClient::SlotId slot_id,
+      SessionChapsClient::GetMechanismListCallback callback) override;
   void CreateObject(SessionChapsClient::SlotId slot_id,
                     const chaps::AttributeList& attributes,
                     SessionChapsClient::CreateObjectCallback callback) override;

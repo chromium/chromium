@@ -71,6 +71,20 @@ void SessionChapsClientImpl::Shutdown() {
 
 //==============================================================================
 
+void SessionChapsClientImpl::GetMechanismList(
+    SlotId slot_id,
+    GetMechanismListCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!chaps_service_) {
+    return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
+  }
+
+  return chaps_service_->GetMechanismList(slot_id.value(), std::move(callback));
+}
+
+//==============================================================================
+
 void SessionChapsClientImpl::CreateObject(
     SlotId slot_id,
     const std::vector<uint8_t>& attributes,

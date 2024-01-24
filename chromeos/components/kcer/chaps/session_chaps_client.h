@@ -41,6 +41,9 @@ class COMPONENT_EXPORT(KCER) SessionChapsClient {
   using SessionId = base::StrongAlias<class TypeTagSessionId, uint64_t>;
   using ObjectHandle = base::StrongAlias<class TypeTagObjectHandle, uint64_t>;
 
+  using GetMechanismListCallback =
+      base::OnceCallback<void(const std::vector<uint64_t>& mechanism_list,
+                              uint32_t result_code)>;
   using CreateObjectCallback =
       base::OnceCallback<void(ObjectHandle object_handle,
                               uint32_t result_code)>;
@@ -75,6 +78,10 @@ class COMPONENT_EXPORT(KCER) SessionChapsClient {
   // A convenience method for serializing `chaps::AttributeList`.
   static std::vector<uint8_t> SerializeToBytes(
       const chaps::AttributeList& attr_list);
+
+  // PKCS #11 v2.20 section 11.5 page 111.
+  virtual void GetMechanismList(SlotId slot_id,
+                                GetMechanismListCallback callback) = 0;
 
   // PKCS #11 v2.20 section 11.7 page 128.
   virtual void CreateObject(SlotId slot_id,
@@ -142,6 +149,8 @@ class COMPONENT_EXPORT(KCER) SessionChapsClientImpl
 
   // Implements SessionChapsClient.
   void Shutdown() override;
+  void GetMechanismList(SlotId slot_id,
+                        GetMechanismListCallback callback) override;
   void CreateObject(SlotId slot_id,
                     const std::vector<uint8_t>& attributes,
                     int attempts_left,

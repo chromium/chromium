@@ -23,6 +23,7 @@ using testing::DoAll;
 using testing::Invoke;
 using ObjectHandle = kcer::SessionChapsClient::ObjectHandle;
 using AttributeId = kcer::HighLevelChapsClient::AttributeId;
+using testing::UnorderedElementsAre;
 
 namespace kcer::internal {
 namespace {
@@ -151,31 +152,29 @@ class KcerTokenImplTest : public testing::Test {
 
  protected:
   chaps::AttributeList GetFakeRsaPublicKeyAttrs() {
-    std::string modulus_str(rsa_modulus_.begin(), rsa_modulus_.end());
-    std::string exponent_str(rsa_pub_exponent_.begin(),
-                             rsa_pub_exponent_.end());
-
     chaps::AttributeList result;
-    chaps::Attribute* modulus = result.add_attributes();
-    modulus->set_type(chromeos::PKCS11_CKA_MODULUS);
-    modulus->set_value(std::move(modulus_str));
-    modulus->set_length(modulus->value().size());
-    chaps::Attribute* exponent = result.add_attributes();
-    exponent->set_type(chromeos::PKCS11_CKA_PUBLIC_EXPONENT);
-    exponent->set_value(std::move(exponent_str));
-    exponent->set_length(exponent->value().size());
+    AddAttribute(result, chromeos::PKCS11_CKA_MODULUS, rsa_modulus_);
+    AddAttribute(result, chromeos::PKCS11_CKA_PUBLIC_EXPONENT,
+                 rsa_pub_exponent_);
     return result;
   }
 
   chaps::AttributeList GetFakeEcPublicKeyAttrs() {
-    std::string point_str(ec_public_value_.begin(), ec_public_value_.end());
-
     chaps::AttributeList result;
-    chaps::Attribute* point = result.add_attributes();
-    point->set_type(chromeos::PKCS11_CKA_EC_POINT);
-    point->set_value(std::move(point_str));
-    point->set_length(point->value().size());
+    AddAttribute(result, chromeos::PKCS11_CKA_EC_POINT, ec_public_value_);
+    return result;
+  }
 
+  chaps::AttributeList GetFakeKeyInfoAttrs(
+      bool is_in_software,
+      chromeos::PKCS11_CK_KEY_TYPE pkcs_key_type,
+      std::string label) {
+    chaps::AttributeList result;
+    AddAttribute(result, chaps::kKeyInSoftwareAttribute,
+                 MakeSpan(&is_in_software));
+    AddAttribute(result, chromeos::PKCS11_CKA_KEY_TYPE,
+                 MakeSpan(&pkcs_key_type));
+    AddAttribute(result, chromeos::PKCS11_CKA_LABEL, base::as_byte_span(label));
     return result;
   }
 
@@ -1678,6 +1677,280 @@ TEST_F(KcerTokenImplTest, GetTokenInfoForDeviceToken) {
   EXPECT_EQ(info.pkcs11_id, pkcs11_slot_id_.value());
   EXPECT_EQ(info.token_name, "Device Token");
   EXPECT_EQ(info.module_name, "Chaps");
+}
+
+// Test that GetKeyInfo can successfully get key info for RSA keys when PSS is
+// supported.
+TEST_F(KcerTokenImplTest, GetKeyInfoRsaPssSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  ObjectHandle key_handle(1);
+  std::vector<ObjectHandle> key_handles{key_handle};
+  bool expected_is_hw_backed = true;
+  std::string expected_nickname = "new_label";
+
+  EXPECT_CALL(chaps_client_, GetMechanismList(pkcs11_slot_id_, _))
+      .WillOnce(RunOnceCallback<1>(
+          std::vector<uint64_t>{chromeos::PKCS11_CKM_RSA_PKCS_PSS},
+          chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(key_handles, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          GetFakeKeyInfoAttrs(/*is_in_software=*/!expected_is_hw_backed,
+                              chromeos::PKCS11_CKK_RSA, expected_nickname),
+          chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<KeyInfo, Error>> info_waiter;
+  token_.GetKeyInfo(PrivateKeyHandle(public_key), info_waiter.GetCallback());
+
+  ASSERT_TRUE(info_waiter.Get().has_value());
+  const KeyInfo& key_info = info_waiter.Get().value();
+  EXPECT_EQ(key_info.is_hardware_backed, expected_is_hw_backed);
+  EXPECT_EQ(key_info.key_type, KeyType::kRsa);
+  EXPECT_EQ(key_info.nickname, expected_nickname);
+  EXPECT_THAT(
+      key_info.supported_signing_schemes,
+      UnorderedElementsAre(
+          SigningScheme::kRsaPkcs1Sha1, SigningScheme::kRsaPkcs1Sha256,
+          SigningScheme::kRsaPkcs1Sha384, SigningScheme::kRsaPkcs1Sha512,
+          SigningScheme::kRsaPssRsaeSha256, SigningScheme::kRsaPssRsaeSha384,
+          SigningScheme::kRsaPssRsaeSha512));
+}
+
+// Test that GetKeyInfo can successfully get key info for RSA keys when PSS is
+// not supported.
+TEST_F(KcerTokenImplTest, GetKeyInfoRsaNoPssSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  ObjectHandle key_handle(1);
+  std::vector<ObjectHandle> key_handles{key_handle};
+  // Also try a different value for is_hardware_backed.
+  bool expected_is_hw_backed = false;
+  std::string expected_nickname = "new_label";
+
+  EXPECT_CALL(chaps_client_, GetMechanismList(pkcs11_slot_id_, _))
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<uint64_t>{}, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(key_handles, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          GetFakeKeyInfoAttrs(/*is_in_software=*/!expected_is_hw_backed,
+                              chromeos::PKCS11_CKK_RSA, expected_nickname),
+          chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<KeyInfo, Error>> info_waiter;
+  token_.GetKeyInfo(PrivateKeyHandle(public_key), info_waiter.GetCallback());
+
+  ASSERT_TRUE(info_waiter.Get().has_value());
+  const KeyInfo& key_info = info_waiter.Get().value();
+  EXPECT_EQ(key_info.is_hardware_backed, expected_is_hw_backed);
+  EXPECT_EQ(key_info.key_type, KeyType::kRsa);
+  EXPECT_EQ(key_info.nickname, expected_nickname);
+  EXPECT_THAT(key_info.supported_signing_schemes,
+              UnorderedElementsAre(SigningScheme::kRsaPkcs1Sha1,
+                                   SigningScheme::kRsaPkcs1Sha256,
+                                   SigningScheme::kRsaPkcs1Sha384,
+                                   SigningScheme::kRsaPkcs1Sha512));
+}
+
+// Test that GetKeyInfo can successfully get key info for EC keys.
+TEST_F(KcerTokenImplTest, GetKeyInfoEcSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  ObjectHandle key_handle(1);
+  std::vector<ObjectHandle> key_handles{key_handle};
+  bool expected_is_hw_backed = false;
+  std::string expected_nickname = "new_label";
+
+  EXPECT_CALL(chaps_client_, GetMechanismList(pkcs11_slot_id_, _))
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<uint64_t>{}, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(key_handles, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          GetFakeKeyInfoAttrs(/*is_in_software=*/!expected_is_hw_backed,
+                              chromeos::PKCS11_CKK_EC, expected_nickname),
+          chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<KeyInfo, Error>> info_waiter;
+  token_.GetKeyInfo(PrivateKeyHandle(public_key), info_waiter.GetCallback());
+
+  ASSERT_TRUE(info_waiter.Get().has_value());
+  const KeyInfo& key_info = info_waiter.Get().value();
+  EXPECT_EQ(key_info.is_hardware_backed, expected_is_hw_backed);
+  EXPECT_EQ(key_info.key_type, KeyType::kEcc);
+  EXPECT_EQ(key_info.nickname, expected_nickname);
+  EXPECT_THAT(key_info.supported_signing_schemes,
+              UnorderedElementsAre(SigningScheme::kEcdsaSecp256r1Sha256,
+                                   SigningScheme::kEcdsaSecp384r1Sha384,
+                                   SigningScheme::kEcdsaSecp521r1Sha512));
+}
+
+// Test that GetKeyInfo correctly fails when it fails to fetch supported
+// mechanisms.
+TEST_F(KcerTokenImplTest, GetKeyInfoFailToGetMechanisms) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+
+  EXPECT_CALL(chaps_client_, GetMechanismList(pkcs11_slot_id_, _))
+      .WillOnce(RunOnceCallback<1>(std::vector<uint64_t>{},
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<KeyInfo, Error>> info_waiter;
+  token_.GetKeyInfo(PrivateKeyHandle(public_key), info_waiter.GetCallback());
+
+  ASSERT_FALSE(info_waiter.Get().has_value());
+  EXPECT_EQ(info_waiter.Get().error(), Error::kFailedToRetrieveMechanismList);
+}
+
+// Test that GetKeyInfo correctly fails when it fails to find the key.
+TEST_F(KcerTokenImplTest, GetKeyInfoFailToFindKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+
+  EXPECT_CALL(chaps_client_, GetMechanismList(pkcs11_slot_id_, _))
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<uint64_t>{}, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<KeyInfo, Error>> info_waiter;
+  token_.GetKeyInfo(PrivateKeyHandle(public_key), info_waiter.GetCallback());
+
+  ASSERT_FALSE(info_waiter.Get().has_value());
+  EXPECT_EQ(info_waiter.Get().error(), Error::kKeyNotFound);
+}
+
+// Test that GetKeyInfo correctly fails when it fails to read attributes.
+TEST_F(KcerTokenImplTest, GetKeyInfoFailToReadAttributes) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  ObjectHandle key_handle(1);
+  std::vector<ObjectHandle> key_handles{key_handle};
+
+  EXPECT_CALL(chaps_client_, GetMechanismList(pkcs11_slot_id_, _))
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<uint64_t>{}, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(key_handles, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .WillOnce(RunOnceCallback<3>(chaps::AttributeList(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<KeyInfo, Error>> info_waiter;
+  token_.GetKeyInfo(PrivateKeyHandle(public_key), info_waiter.GetCallback());
+
+  ASSERT_FALSE(info_waiter.Get().has_value());
+  EXPECT_EQ(info_waiter.Get().error(), Error::kFailedToReadAttribute);
+}
+
+// Test that GetKeyInfo correctly fails when retrieved attributes are
+// invalid.
+TEST_F(KcerTokenImplTest, GetKeyInfoBadAttributes) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  ObjectHandle key_handle(1);
+  std::vector<ObjectHandle> key_handles{key_handle};
+  const uint32_t kInvalidKeyType = 9999;
+
+  EXPECT_CALL(chaps_client_, GetMechanismList(pkcs11_slot_id_, _))
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<uint64_t>{}, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(key_handles, chromeos::PKCS11_CKR_OK));
+  // Imitate bad key type in the response.
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          GetFakeKeyInfoAttrs(/*is_in_software=*/true,
+                              /*pkcs_key_type=*/kInvalidKeyType, "nickname"),
+          chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<KeyInfo, Error>> info_waiter;
+  token_.GetKeyInfo(PrivateKeyHandle(public_key), info_waiter.GetCallback());
+
+  ASSERT_FALSE(info_waiter.Get().has_value());
+  EXPECT_EQ(info_waiter.Get().error(), Error::kFailedToDecodeKeyAttributes);
+}
+
+// Test that GetKeyInfo retries several times when Chaps fails to get supported
+// mechanisms with a session error.
+TEST_F(KcerTokenImplTest, GetKeyInfoRetryToGetMechanisms) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+
+  EXPECT_CALL(chaps_client_, GetMechanismList(pkcs11_slot_id_, _))
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(
+          std::vector<uint64_t>{}, chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<KeyInfo, Error>> info_waiter;
+  token_.GetKeyInfo(PrivateKeyHandle(public_key), info_waiter.GetCallback());
+
+  ASSERT_FALSE(info_waiter.Get().has_value());
+  EXPECT_EQ(info_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that GetKeyInfo retries several times when Chaps fails to find the key
+// with a session error.
+TEST_F(KcerTokenImplTest, GetKeyInfoRetryToFindKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+
+  // GetMechanismList's result should be cached and not repeated.
+  EXPECT_CALL(chaps_client_, GetMechanismList(pkcs11_slot_id_, _))
+      .Times(1)
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<uint64_t>{}, chromeos::PKCS11_CKR_OK));
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<KeyInfo, Error>> info_waiter;
+  token_.GetKeyInfo(PrivateKeyHandle(public_key), info_waiter.GetCallback());
+
+  ASSERT_FALSE(info_waiter.Get().has_value());
+  EXPECT_EQ(info_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that GetKeyInfo retries several times when Chaps fails to read
+// attributes with a session error.
+TEST_F(KcerTokenImplTest, GetKeyInfoRetryToReadAttributes) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  ObjectHandle key_handle(1);
+  std::vector<ObjectHandle> key_handles{key_handle};
+
+  // GetMechanismList's result should be cached and not repeated.
+  EXPECT_CALL(chaps_client_, GetMechanismList(pkcs11_slot_id_, _))
+      .Times(1)
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<uint64_t>{}, chromeos::PKCS11_CKR_OK));
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(
+          RunOnceCallbackRepeatedly<2>(key_handles, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<3>(
+          chaps::AttributeList(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<KeyInfo, Error>> info_waiter;
+  token_.GetKeyInfo(PrivateKeyHandle(public_key), info_waiter.GetCallback());
+
+  ASSERT_FALSE(info_waiter.Get().has_value());
+  EXPECT_EQ(info_waiter.Get().error(), Error::kPkcs11SessionFailure);
 }
 
 // Test that SetKeyNickname can successfully set a nickname.
