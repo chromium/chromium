@@ -11979,9 +11979,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Icons_Layout_ConsistentRowHeight",
+                    "name": "Enabled_Icons_Layout",
                     "enable_features": [
-                        "NtpRealboxCr23ConsistentRowHeight",
                         "NtpRealboxCr23ExpandedStateIcons",
                         "NtpRealboxCr23ExpandedStateLayout"
                     ]
@@ -11990,13 +11989,6 @@
                     "name": "Enabled_Icons",
                     "enable_features": [
                         "NtpRealboxCr23ExpandedStateIcons"
-                    ]
-                },
-                {
-                    "name": "Enabled_Icons_Layout",
-                    "enable_features": [
-                        "NtpRealboxCr23ExpandedStateIcons",
-                        "NtpRealboxCr23ExpandedStateLayout"
                     ]
                 }
             ]
