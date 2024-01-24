@@ -292,8 +292,6 @@ class StandaloneTrustedVaultBackend
   // Same as above, but specifically used for recoverability-related requests.
   // TODO(crbug.com/1201659): Move elsewhere.
   std::unique_ptr<TrustedVaultConnection::Request>
-      ongoing_get_recoverability_request_;
-  std::unique_ptr<TrustedVaultConnection::Request>
       ongoing_add_recovery_method_request_;
 
   // Used to determine current time, set to base::DefaultClock in prod and can

@@ -307,9 +307,6 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldInvokeGetIsRecoverabilityDegradedCallbackImmediately) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
   // The TaskEnvironment is needed because this test initializes the handler,
   // which works with time.
   base::test::SingleThreadTaskEnvironment environment{
@@ -338,9 +335,7 @@ TEST_F(
   // TODO(crbug.com/1413179): looks like this test verifies scenario not
   // possible in prod anymore, remove it together with
   // |pending_get_is_recoverability_degraded_| logic.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
+
   // The TaskEnvironment is needed because this test initializes the handler,
   // which works with time.
   base::test::SingleThreadTaskEnvironment environment{
@@ -380,9 +375,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // TODO(crbug.com/1413179): looks like this test verifies scenario not
   // possible in prod anymore, remove it together with
   // |pending_get_is_recoverability_degraded_| logic.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
+
   // The TaskEnvironment is needed because this test initializes the handler,
   // which works with time.
   base::test::SingleThreadTaskEnvironment environment{
