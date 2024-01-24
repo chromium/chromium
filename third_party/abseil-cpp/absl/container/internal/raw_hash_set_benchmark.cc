@@ -18,6 +18,7 @@
 #include <cstdint>
 #include <numeric>
 #include <random>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -294,7 +295,7 @@ void BM_CopyCtorSparseInt(benchmark::State& state) {
     benchmark::DoNotOptimize(t2);
   }
 }
-BENCHMARK(BM_CopyCtorSparseInt)->Range(128, 4096);
+BENCHMARK(BM_CopyCtorSparseInt)->Range(1, 4096);
 
 void BM_CopyCtorInt(benchmark::State& state) {
   std::random_device rd;
@@ -312,7 +313,7 @@ void BM_CopyCtorInt(benchmark::State& state) {
     benchmark::DoNotOptimize(t2);
   }
 }
-BENCHMARK(BM_CopyCtorInt)->Range(128, 4096);
+BENCHMARK(BM_CopyCtorInt)->Range(0, 4096);
 
 void BM_CopyCtorString(benchmark::State& state) {
   std::random_device rd;
@@ -330,7 +331,7 @@ void BM_CopyCtorString(benchmark::State& state) {
     benchmark::DoNotOptimize(t2);
   }
 }
-BENCHMARK(BM_CopyCtorString)->Range(128, 4096);
+BENCHMARK(BM_CopyCtorString)->Range(0, 4096);
 
 void BM_CopyAssign(benchmark::State& state) {
   std::random_device rd;
