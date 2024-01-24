@@ -77,9 +77,6 @@
 #include "media/mojo/mojom/media_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "net/base/features.h"
-#include "net/dns/public/dns_over_https_config.h"
-#include "net/dns/public/secure_dns_mode.h"
 #include "net/ssl/client_cert_identity.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/network/public/cpp/features.h"
@@ -705,21 +702,6 @@ void ShellContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
-
-void ShellContentBrowserClient::OnNetworkServiceCreated(
-    network::mojom::NetworkService* network_service) {
-  // TODO(bashi): Consider enabling this for Android. Excluded because the
-  // built-in resolver may not work on older SDK versions.
-#if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(net::features::kAsyncDns)) {
-    network_service->ConfigureStubHostResolver(
-        /*insecure_dns_client_enabled=*/true,
-        /*secure_dns_mode=*/net::SecureDnsMode::kAutomatic,
-        net::DnsOverHttpsConfig(),
-        /*additional_dns_types_enabled=*/true);
-  }
-#endif
-}
 
 void ShellContentBrowserClient::ConfigureNetworkContextParams(
     BrowserContext* context,

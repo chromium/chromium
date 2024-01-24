@@ -140,8 +140,6 @@ class ShellContentBrowserClient : public ContentBrowserClient {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
   device::GeolocationManager* GetGeolocationManager() override;
-  void OnNetworkServiceCreated(
-      network::mojom::NetworkService* network_service) override;
   void ConfigureNetworkContextParams(
       BrowserContext* context,
       bool in_memory,

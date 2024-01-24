@@ -6830,7 +6830,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     {"enable-async-dns", flag_descriptions::kAsyncDnsName,
      flag_descriptions::kAsyncDnsDescription, kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(net::features::kAsyncDns)},
+     FEATURE_VALUE_TYPE(features::kAsyncDns)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
     {"downloads-migrate-to-jobs-api",

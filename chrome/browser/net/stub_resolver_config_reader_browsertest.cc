@@ -26,7 +26,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
-#include "net/base/features.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,8 +45,7 @@ class StubResolverConfigReaderBrowsertest
       public testing::WithParamInterface<bool> {
  public:
   StubResolverConfigReaderBrowsertest() {
-    scoped_feature_list_.InitWithFeatureState(net::features::kAsyncDns,
-                                              GetParam());
+    scoped_feature_list_.InitWithFeatureState(features::kAsyncDns, GetParam());
   }
   ~StubResolverConfigReaderBrowsertest() override = default;
 

@@ -549,9 +549,7 @@ void NetworkService::NotifyNetworkRequestWithAnnotation(
 void NetworkService::SetTestDohConfigForTesting(
     net::SecureDnsMode secure_dns_mode,
     const net::DnsOverHttpsConfig& doh_config) {
-  DCHECK(dns_config_overrides_set_by_ == FunctionTag::None ||
-         dns_config_overrides_set_by_ ==
-             FunctionTag::ConfigureStubHostResolver);
+  DCHECK_EQ(dns_config_overrides_set_by_, FunctionTag::None);
   dns_config_overrides_set_by_ = FunctionTag::SetTestDohConfigForTesting;
 
   // Overlay DoH settings on top of the system config, whenever it is received.
