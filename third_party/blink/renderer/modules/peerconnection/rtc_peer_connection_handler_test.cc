@@ -602,7 +602,7 @@ class RTCPeerConnectionHandlerTest : public SimTest {
     waitable_event->Signal();
   }
 
- public:
+ protected:
   ScopedTestingPlatformSupport<AudioCapturerSourceTestingPlatformSupport>
       webrtc_audio_device_platform_support_;
   Persistent<MockRTCPeerConnectionHandlerClient> mock_client_;
@@ -1168,6 +1168,34 @@ TEST_F(RTCPeerConnectionHandlerTest,
   EXPECT_CALL(*mock_client_, DidChangeSessionDescriptions(_, _, _, _))
       .WillOnce(testing::Invoke([&] { pc_handler_.reset(); }));
   observer->OnIceCandidate(native_candidate.get());
+}
+
+TEST_F(RTCPeerConnectionHandlerTest,
+       OnIceCandidateAfterClientGarbageCollectionDoesNothing) {
+  testing::InSequence sequence;
+  EXPECT_CALL(*mock_tracker_.Get(),
+              TrackAddIceCandidate(pc_handler_.get(), _,
+                                   PeerConnectionTracker::kSourceLocal, true))
+      .Times(0);
+
+  std::unique_ptr<webrtc::IceCandidateInterface> native_candidate(
+      mock_dependency_factory_->CreateIceCandidate("sdpMid", 1, kDummySdp));
+  mock_client_ = nullptr;
+  WebHeap::CollectAllGarbageForTesting();
+  pc_handler_->observer()->OnIceCandidate(native_candidate.get());
+  RunMessageLoopsUntilIdle();
+}
+
+TEST_F(RTCPeerConnectionHandlerTest,
+       OnIceCandidateAfterClientGarbageCollectionFails) {
+  DummyExceptionStateForTesting exception_state;
+  auto pc_handler = CreateRTCPeerConnectionHandlerUnderTest();
+  mock_client_ = nullptr;
+  WebHeap::CollectAllGarbageForTesting();
+  EXPECT_FALSE(pc_handler->Initialize(
+      /*context=*/nullptr, webrtc::PeerConnectionInterface::RTCConfiguration(),
+      /*media_constraints=*/nullptr,
+      /*frame=*/nullptr, exception_state));
 }
 
 }  // namespace blink
