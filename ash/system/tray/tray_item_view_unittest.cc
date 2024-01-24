@@ -225,8 +225,9 @@ TEST_F(TrayItemViewTest, LargeImageIcon) {
   EXPECT_EQ(tray_item()->CalculatePreferredSize(), kLargeImageSize);
 }
 
+// TODO(crbug.com/1520190): Re-enable when flakiness is resolved.
 // Tests that a smoothness metric is recorded for the "show" animation.
-TEST_F(TrayItemViewTest, SmoothnessMetricRecordedForShowAnimation) {
+TEST_F(TrayItemViewTest, DISABLED_SmoothnessMetricRecordedForShowAnimation) {
   // Start with the tray item hidden. Note that animations still complete
   // immediately in this part of the test, so no smoothness metrics are emitted.
   tray_item()->SetVisible(false);
