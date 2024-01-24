@@ -166,7 +166,9 @@ MATCHER_P(AuthCodeSuccessResponseEq, expected, "") {
   return ExplainMatchResult(
       AllOf(Field("email", &AuthCodeSuccessResponse::email, Eq(expected.email)),
             Field("auth_code", &AuthCodeSuccessResponse::auth_code,
-                  Eq(expected.auth_code))),
+                  Eq(expected.auth_code)),
+            Field("gaia_id", &AuthCodeSuccessResponse::gaia_id,
+                  Eq(expected.gaia_id))),
       arg, result_listener);
 }
 
@@ -808,7 +810,10 @@ TEST_F(
           AuthCodeAdditionalChallengesOnTargetResponseEq(expected_response)));
 }
 
-TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeReturnsAnAuthCode) {
+// `SecondDeviceAuthBroker::FetchAuthCode()` should return a success response
+// even if the server does not return a Gaia id.
+TEST_F(SecondDeviceAuthBrokerTest,
+       FetchAuthCodeReturnsAnAuthCodeEvenWhenGaiaIdIsNotReturned) {
   AddFakeResponse(kStartSessionUrl, std::string(R"(
       {
         "sessionStatus": "AUTHENTICATED",
@@ -822,6 +827,29 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeReturnsAnAuthCode) {
   AuthCodeSuccessResponse expected_response;
   expected_response.email = "fake-user@example.com";
   expected_response.auth_code = "fake-auth-code";
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  EXPECT_THAT(response, VariantWith<AuthCodeSuccessResponse>(
+                            AuthCodeSuccessResponseEq(expected_response)));
+}
+
+TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeReturnsAnAuthCode) {
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "sessionStatus": "AUTHENTICATED",
+        "credentialData": {
+            "oauthToken": "fake-auth-code"
+        },
+        "email": "fake-user@example.com",
+        "obfuscatedGaiaId": "fake-gaia-id"
+      }
+    )"));
+
+  AuthCodeSuccessResponse expected_response;
+  expected_response.email = "fake-user@example.com";
+  expected_response.auth_code = "fake-auth-code";
+  expected_response.gaia_id = "fake-gaia-id";
   SecondDeviceAuthBroker::AuthCodeResponse response =
       FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
                     /*certificate=*/GetCertificate());

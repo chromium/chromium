@@ -58,6 +58,7 @@ constexpr char kRejectionReasonKey[] = "rejectionReason";
 constexpr char kTargetFallbackUrlKey[] = "targetFallbackUrl";
 constexpr char kSourceDeviceFallbackUrlKey[] = "sourceDeviceFallbackUrl";
 constexpr char kEmailKey[] = "email";
+constexpr char kObfuscatedGaiaIdKey[] = "obfuscatedGaiaId";
 constexpr char kTargetSessionIdentifierKey[] = "targetSessionIdentifier";
 constexpr char kCredentialIdKey[] = "credentialId";
 constexpr char kAuthenticatorDataKey[] = "authenticatorData";
@@ -490,12 +491,14 @@ void RunAuthCodeCallback(
     QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
     const std::string& email,
-    const std::string& auth_code) {
+    const std::string& auth_code,
+    const std::string& gaia_id) {
   metrics.RecordGaiaAuthenticationRequestEnded(
       QuickStartMetrics::GaiaAuthenticationResult::kSuccess);
   SecondDeviceAuthBroker::AuthCodeSuccessResponse response;
   response.email = email;
   response.auth_code = auth_code;
+  response.gaia_id = gaia_id;
   std::move(auth_code_callback).Run(response);
 }
 
@@ -523,8 +526,13 @@ void ParseAuthCodeAndRunCallback(
     return;
   }
 
+  std::string* gaia_id_ptr = response->FindString(kObfuscatedGaiaIdKey);
+  // Gaia id may be empty. We need to handle this gracefully.
+  std::string gaia_id = gaia_id_ptr ? *gaia_id_ptr : std::string();
+
   RunAuthCodeCallback(metrics, std::move(auth_code_callback),
-                      /*email=*/*response->FindString(kEmailKey), *auth_code);
+                      /*email=*/*response->FindString(kEmailKey), *auth_code,
+                      gaia_id);
 }
 
 }  // namespace

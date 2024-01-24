@@ -59,6 +59,9 @@ class SecondDeviceAuthBroker {
   struct AuthCodeSuccessResponse : public AuthCodeBaseResponse {
     // OAuth Authorization Code.
     std::string auth_code;
+
+    // Obfuscated Gaia id of the user. May be empty.
+    std::string gaia_id;
   };
 
   // `AuthCodeCallback` request was rejected.
