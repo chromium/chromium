@@ -188,6 +188,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
         mIncognitoTabSwitcherPane.createTabSwitcherPaneCoordinator();
         TabSwitcherPaneCoordinator coordinator =
                 mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        reset(coordinator);
 
         callback.onIncognitoReauthNotPossible();
         callback.onIncognitoReauthFailure();

@@ -58,7 +58,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final ObservableSupplier<Boolean> mIsVisibleSupplier;
     private final TabSwitcherPaneMediator mMediator;
     private final Supplier<Boolean> mTabGridDialogVisibilitySupplier = this::isTabGridDialogVisible;
-    private final TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
     private final MultiThumbnailCardProvider mMultiThumbnailCardProvider;
     private final TabListCoordinator mTabListCoordinator;
     private final PropertyModel mContainerViewModel;
@@ -160,7 +159,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                         isVisibleSupplier,
                         isAnimatingSupplier,
                         onTabClickCallback);
-        mTabSwitcherCustomViewManager = new TabSwitcherCustomViewManager(mMediator);
 
         mMultiThumbnailCardProvider =
                 new MultiThumbnailCardProvider(
@@ -324,9 +322,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         return mTabGridDialogVisibilitySupplier;
     }
 
-    /** Returns a {@link TabSwitcherCustomViewManager} for supplying custom views. */
-    public @Nullable TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
-        return mTabSwitcherCustomViewManager;
+    /** Returns a {@link TabSwitcherCustomViewManager.Delegate} for supplying custom views. */
+    public @Nullable TabSwitcherCustomViewManager.Delegate
+            getTabSwitcherCustomViewManagerDelegate() {
+        return mMediator;
     }
 
     /** Returns the number of elements in the tab switcher's tab list model. */

@@ -43,6 +43,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
@@ -81,6 +82,8 @@ public class TabSwitcherPaneUnitTest {
     @Mock private View.OnClickListener mNewTabButtonClickListener;
     @Mock private TabModelFilter mTabModelFilter;
     @Mock private PaneHubController mPaneHubController;
+    @Mock private TabSwitcherCustomViewManager.Delegate mCustomViewManagerDelegate;
+    @Mock private View mCustomView;
 
     @Captor ArgumentCaptor<OnSharedPreferenceChangeListener> mPriceAnnotationsPrefListenerCaptor;
     @Captor ArgumentCaptor<Callback<Integer>> mOnTabClickedCallbackCaptor;
@@ -108,6 +111,11 @@ public class TabSwitcherPaneUnitTest {
         mTabModel = new MockTabModel(mProfile, null);
         when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
 
+        Supplier<Boolean> gridDialogVisibilitySupplier = () -> false;
+        when(mTabSwitcherPaneCoordinator.getTabSwitcherCustomViewManagerDelegate())
+                .thenReturn(mCustomViewManagerDelegate);
+        when(mTabSwitcherPaneCoordinator.getTabGridDialogVisibilitySupplier())
+                .thenReturn(gridDialogVisibilitySupplier);
         doAnswer(
                         invocation -> {
                             mTimesCreated++;
@@ -473,20 +481,27 @@ public class TabSwitcherPaneUnitTest {
         mTabSwitcherPane.initWithNative();
         mTabSwitcherPane.createTabSwitcherPaneCoordinator();
 
-        assertNull(mTabSwitcherPane.getTabSwitcherCustomViewManager());
-        verify(mTabSwitcherPaneCoordinator).getTabSwitcherCustomViewManager();
+        assertNotNull(mTabSwitcherPane.getTabGridDialogVisibilitySupplier());
+        verify(mTabSwitcherPaneCoordinator).getTabGridDialogVisibilitySupplier();
     }
 
     @Test
     @SmallTest
     public void testGetCustomViewManager() {
-        assertNull(mTabSwitcherPane.getTabSwitcherCustomViewManager());
+        assertNotNull(mTabSwitcherPane.getTabSwitcherCustomViewManager());
 
         mTabSwitcherPane.initWithNative();
         mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+        verify(mTabSwitcherPaneCoordinator).getTabSwitcherCustomViewManagerDelegate();
 
-        assertNull(mTabSwitcherPane.getTabSwitcherCustomViewManager());
-        verify(mTabSwitcherPaneCoordinator).getTabSwitcherCustomViewManager();
+        TabSwitcherCustomViewManager customViewManager =
+                mTabSwitcherPane.getTabSwitcherCustomViewManager();
+        Runnable r = () -> {};
+        assertTrue(customViewManager.requestView(mCustomView, r, true));
+        verify(mCustomViewManagerDelegate).addCustomView(mCustomView, r, true);
+
+        mTabSwitcherPane.destroyTabSwitcherPaneCoordinator();
+        verify(mCustomViewManagerDelegate).removeCustomView(mCustomView);
     }
 
     @Test

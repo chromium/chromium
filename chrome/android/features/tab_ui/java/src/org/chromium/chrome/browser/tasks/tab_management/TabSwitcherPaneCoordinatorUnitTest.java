@@ -263,12 +263,12 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testCustomViewManager() {
-        TabSwitcherCustomViewManager customViewManager =
-                mCoordinator.getTabSwitcherCustomViewManager();
-        assertNotNull(customViewManager);
+        TabSwitcherCustomViewManager.Delegate customViewManagerDelegate =
+                mCoordinator.getTabSwitcherCustomViewManagerDelegate();
+        assertNotNull(customViewManagerDelegate);
 
         FrameLayout customView = new FrameLayout(mActivity);
-        customViewManager.requestView(customView, null, false);
+        customViewManagerDelegate.addCustomView(customView, null, false);
         boolean found = false;
         for (int i = 0; i < mContainerView.getChildCount(); i++) {
             if (mContainerView.getChildAt(i) == customView) {
@@ -277,7 +277,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         }
         assertTrue("Did not find added custom view.", found);
 
-        assertTrue(customViewManager.releaseView());
+        customViewManagerDelegate.removeCustomView(customView);
         found = false;
         for (int i = 0; i < mContainerView.getChildCount(); i++) {
             if (mContainerView.getChildAt(i) == customView) {
