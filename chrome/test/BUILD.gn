@@ -2978,7 +2978,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/accessibility/ax_screen_ai_annotator.cc",
         "../browser/accessibility/ax_screen_ai_annotator.h",
         "../browser/accessibility/pdf_ocr_controller_browsertest.cc",
-        "../browser/accessibility/screen_ai_service_browsertest.cc",
         "../browser/renderer_context_menu/pdf_ocr_menu_observer_browsertest.cc",
       ]
       deps += [
