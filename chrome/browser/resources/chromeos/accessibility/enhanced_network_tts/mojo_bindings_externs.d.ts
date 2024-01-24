@@ -8,55 +8,53 @@
  * @externs
  */
 
-declare global {
-  export namespace ash {
-    export namespace enhancedNetworkTts {
-      export namespace mojom {
-        /* eslint-disable @typescript-eslint/naming-convention */
-        export enum TtsRequestError {
-          kEmptyUtterance = 0,
-          kOverLength = 1,
-          kServerError = 2,
-          kReceivedUnexpectedData = 3,
-          kRequestOverride = 4,
-        }
-
-        export interface TimingInfo {
-          text: string;
-          textOffset: number;
-          timeOffset: string;
-          duration: string;
-        }
-
-        export interface TtsData {
-          audio: number[];
-          timeInfo: TimingInfo[];
-          lastData: boolean;
-        }
-
-        export interface TtsRequest {
-          utterance: string;
-          rate: number;
-          voice: string|undefined;
-          lang: string|undefined;
-        }
-
-        export interface TtsResponse {
-          errorCode: TtsRequestError|undefined;
-          data: TtsData|undefined;
-        }
+declare namespace ash {
+  export namespace enhancedNetworkTts {
+    export namespace mojom {
+      /* eslint-disable @typescript-eslint/naming-convention */
+      export enum TtsRequestError {
+        kEmptyUtterance = 0,
+        kOverLength = 1,
+        kServerError = 2,
+        kReceivedUnexpectedData = 3,
+        kRequestOverride = 4,
       }
-    }
-  }
 
-  export namespace chrome {
-    export namespace mojoPrivate {
-      export function requireAsync(moduleName: string): any;
+      export interface TimingInfo {
+        text: string;
+        textOffset: number;
+        timeOffset: string;
+        duration: string;
+      }
+
+      export interface TtsData {
+        audio: number[];
+        timeInfo: TimingInfo[];
+        lastData: boolean;
+      }
+
+      export interface TtsRequest {
+        utterance: string;
+        rate: number;
+        voice: string|undefined;
+        lang: string|undefined;
+      }
+
+      export interface TtsResponse {
+        errorCode: TtsRequestError|undefined;
+        data: TtsData|undefined;
+      }
     }
   }
 }
 
-export interface EnhancedNetworkTtsAdapter {
+declare namespace chrome {
+  export namespace mojoPrivate {
+    export function requireAsync(moduleName: string): any;
+  }
+}
+
+declare interface EnhancedNetworkTtsAdapter {
   getAudioDataWithCallback:
       (request: ash.enhancedNetworkTts.mojom.TtsRequest,
        callback: (response: ash.enhancedNetworkTts.mojom.TtsResponse) =>

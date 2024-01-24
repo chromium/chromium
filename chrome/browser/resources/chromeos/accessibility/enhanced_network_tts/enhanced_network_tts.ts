@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EnhancedNetworkTtsAdapter} from './mojo_bindings_externs';
-
 type AudioBuffer = chrome.ttsEngine.AudioBuffer;
 type AudioStreamOptions = chrome.ttsEngine.AudioStreamOptions;
 type SpeakOptions = chrome.ttsEngine.SpeakOptions;
