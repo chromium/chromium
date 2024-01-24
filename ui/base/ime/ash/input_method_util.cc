@@ -649,7 +649,7 @@ std::string InputMethodUtil::GetLanguageDefaultInputMethodId(
   return std::string();
 }
 
-std::string InputMethodUtil::MigrateInputMethod(
+std::string InputMethodUtil::GetMigratedInputMethod(
     const std::string& input_method_id) {
   std::string engine_id = input_method_id;
   // Migrates some Engine IDs from VPD.
@@ -676,7 +676,7 @@ bool InputMethodUtil::GetMigratedInputMethodIDs(
   bool rewritten = false;
   std::vector<std::string>& ids = *input_method_ids;
   for (std::string& i : ids) {
-    std::string id = MigrateInputMethod(i);
+    std::string id = GetMigratedInputMethod(i);
     if (id != i) {
       i = id;
       rewritten = true;
