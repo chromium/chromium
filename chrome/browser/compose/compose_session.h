@@ -155,6 +155,10 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   void set_fre_complete(bool fre_complete) { fre_complete_ = fre_complete; }
 
+  void set_msbb_settings_opened() {
+    session_events_.msbb_settings_opened = true;
+  }
+
   bool get_fre_complete() { return fre_complete_; }
 
   void SetFirstRunCompleted();
@@ -239,15 +243,11 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // The state of the MSBB preference
   bool current_msbb_state_;
   bool msbb_initially_off_;
-  bool msbb_enabled_during_session_;
 
   // Reason that a compose msbb session was exited, used for metrics.
   compose::ComposeMSBBSessionCloseReason msbb_close_reason_;
   // State tracking whether the FRE has been completed
   bool fre_complete_ = false;
-
-  // True if the user completed the FRE in this session.
-  bool fre_completed_in_session_ = false;
 
   // Reason that a FRE session was exited, used for metrics.
   compose::ComposeFirstRunSessionCloseReason fre_close_reason_;
