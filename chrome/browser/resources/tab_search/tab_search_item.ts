@@ -87,6 +87,13 @@ export class TabSearchItem extends TabSearchItemBase {
              '');
   }
 
+  private getCloseButtonRole_(): string {
+    // If this tab search item is an option within a list, the button
+    // should also be treated as an option in a list to ensure the correct
+    // focus traversal behavior when a screenreader is on.
+    return this.role === 'option' ? 'option' : 'button';
+  }
+
   private onItemClose_(e: Event) {
     this.dispatchEvent(new CustomEvent('close'));
     e.stopPropagation();
