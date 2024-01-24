@@ -12,11 +12,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.PersistableBundle;
 import android.os.SystemClock;
-import android.util.Log;
 
+import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.init.EmptyBrowserParts;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.webapps.WebappsUtils;
@@ -90,26 +92,39 @@ public class NotificationServiceImpl extends NotificationService.Impl {
     }
 
     /**
-     * Initializes Chrome and starts the browser process if it's not running as of yet, and
-     * dispatch |intent| to the NotificationPlatformBridge once this is done.
+     * Initializes Chrome and starts the browser process if it's not running as of yet, and dispatch
+     * |intent| to the NotificationPlatformBridge once this is done.
      *
      * @param intent The intent containing the notification's information.
      */
     static void dispatchIntentOnUIThread(Intent intent) {
-        ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
+        final BrowserParts parts =
+                new EmptyBrowserParts() {
+                    @Override
+                    public void finishNativeInitialization() {
+                        // Warm up the WebappRegistry, as we need to check if this notification
+                        // should launch a
+                        // standalone web app. This no-ops if the registry is already initialized
+                        // and warmed.
+                        WebappRegistry.getInstance();
+                        WebappRegistry.warmUpSharedPrefs();
 
-        // Warm up the WebappRegistry, as we need to check if this notification should launch a
-        // standalone web app. This no-ops if the registry is already initialized and warmed.
-        WebappRegistry.getInstance();
-        WebappRegistry.warmUpSharedPrefs();
+                        // Now that the browser process is initialized, we pass forward the call to
+                        // the
+                        // NotificationPlatformBridge which will take care of delivering the
+                        // appropriate events.
+                        if (!NotificationPlatformBridge.dispatchNotificationEvent(intent)) {
+                            Log.w(TAG, "Unable to dispatch the notification event to Chrome.");
+                        }
 
-        // Now that the browser process is initialized, we pass forward the call to the
-        // NotificationPlatformBridge which will take care of delivering the appropriate events.
-        if (!NotificationPlatformBridge.dispatchNotificationEvent(intent)) {
-            Log.w(TAG, "Unable to dispatch the notification event to Chrome.");
-        }
+                        // TODO(peter): Verify that the lifetime of the NotificationService is
+                        // sufficient
+                        // when a notification event could be dispatched successfully.
+                    }
+                };
 
-        // TODO(peter): Verify that the lifetime of the NotificationService is sufficient
-        // when a notification event could be dispatched successfully.
+        // Try to load native.
+        ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);
+        ChromeBrowserInitializer.getInstance().handlePostNativeStartup(/* isAsync= */ true, parts);
     }
 }
