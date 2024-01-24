@@ -613,6 +613,7 @@ public class PageInsightsMediatorTest {
                                 CommonTypesProto.RequestContext
                                         .CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB
                                         .getNumber()),
+                        any(),
                         any());
     }
 
@@ -635,6 +636,7 @@ public class PageInsightsMediatorTest {
                         any(),
                         any(),
                         eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB.getNumber()),
+                        any(),
                         any());
     }
 
@@ -1328,7 +1330,8 @@ public class PageInsightsMediatorTest {
                                             .getNumber()
                                 }),
                         eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB.getNumber()),
-                        any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class));
+                        any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class),
+                        any());
     }
 
     private void setBackgroundDrawable() {

@@ -17,6 +17,7 @@ import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.RequestContext;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
+import org.chromium.components.optimization_guide.proto.HintsProto.RequestContextMetadata;
 import org.chromium.components.optimization_guide.proto.PushNotificationProto.HintNotificationPayload;
 import org.chromium.url.GURL;
 
@@ -26,7 +27,7 @@ import java.util.List;
 /**
  * Provides access to the optimization guide using the C++ OptimizationGuideKeyedService.
  *
- * An instance of this class must be created, used, and destroyed on the UI thread.
+ * <p>An instance of this class must be created, used, and destroyed on the UI thread.
  */
 @JNINamespace("optimization_guide::android")
 public class OptimizationGuideBridge implements Destroyable {
@@ -128,14 +129,15 @@ public class OptimizationGuideBridge implements Destroyable {
      * indicate when the request is being made to determine the appropriate permissions to make the
      * request for accounting purposes.
      *
-     * It is expected for consumers to consult with the Optimization Guide team before using this
+     * <p>It is expected for consumers to consult with the Optimization Guide team before using this
      * API. If approved, add your request context to the assertion list here.
      */
     public void canApplyOptimizationOnDemand(
             List<GURL> urls,
             List<OptimizationType> optimizationTypes,
             RequestContext requestContext,
-            OnDemandOptimizationGuideCallback callback) {
+            OnDemandOptimizationGuideCallback callback,
+            RequestContextMetadata requestContextMetadata) {
         ThreadUtils.assertOnUiThread();
 
         assert isRequestContextAllowedForOnDemandOptimizations(requestContext);
@@ -156,13 +158,17 @@ public class OptimizationGuideBridge implements Destroyable {
         for (int i = 0; i < optimizationTypes.size(); i++) {
             intOptimizationTypes[i] = optimizationTypes.get(i).getNumber();
         }
+
+        byte[] requestContextMetadataSerialized = requestContextMetadata.toByteArray();
+
         OptimizationGuideBridgeJni.get()
                 .canApplyOptimizationOnDemand(
                         mNativeOptimizationGuideBridge,
                         gurlsArray,
                         intOptimizationTypes,
                         requestContext.getNumber(),
-                        callback);
+                        callback,
+                        requestContextMetadataSerialized);
     }
 
     public void onNewPushNotification(HintNotificationPayload notification) {
@@ -329,7 +335,8 @@ public class OptimizationGuideBridge implements Destroyable {
                 GURL[] urls,
                 int[] optimizationTypes,
                 int requestContext,
-                OnDemandOptimizationGuideCallback callback);
+                OnDemandOptimizationGuideCallback callback,
+                byte[] requestContextMetadata);
 
         void onNewPushNotification(long nativeOptimizationGuideBridge, byte[] encodedNotification);
 

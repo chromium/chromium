@@ -803,7 +803,8 @@ void HintsManager::FetchHintsForActiveTabs() {
       base::BindOnce(&HintsManager::OnHintsForActiveTabsFetched,
                      weak_ptr_factory_.GetWeakPtr(), top_hosts_set,
                      base::flat_set<GURL>(active_tab_urls_to_refresh.begin(),
-                                          active_tab_urls_to_refresh.end())));
+                                          active_tab_urls_to_refresh.end())),
+      nullptr);
 }
 
 void HintsManager::OnHintsForActiveTabsFetched(
@@ -979,9 +980,10 @@ void HintsManager::FetchHintsForURLs(const std::vector<GURL>& urls,
           request_context, target_hosts.set(), target_urls.set(),
           target_urls.set(), registered_optimization_types_,
           base::DoNothingAs<void(
-              const GURL&, const base::flat_map<
-                               proto::OptimizationType,
-                               OptimizationGuideDecisionWithMetadata>&)>()));
+              const GURL&,
+              const base::flat_map<proto::OptimizationType,
+                                   OptimizationGuideDecisionWithMetadata>&)>()),
+      nullptr);
 }
 
 void HintsManager::OnHintLoaded(base::OnceClosure callback,
@@ -1103,7 +1105,8 @@ void HintsManager::CanApplyOptimizationOnDemand(
     const std::vector<GURL>& urls,
     const base::flat_set<proto::OptimizationType>& optimization_types,
     proto::RequestContext request_context,
-    OnDemandOptimizationGuideDecisionRepeatingCallback callback) {
+    OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+    proto::RequestContextMetadata* request_context_metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   InsertionOrderedSet<GURL> urls_to_fetch;
@@ -1117,6 +1120,13 @@ void HintsManager::CanApplyOptimizationOnDemand(
                              urls_to_fetch.vector(), hosts_to_fetch.vector(),
                              optimization_guide_logger_);
 
+  if (request_context_metadata != nullptr) {
+    if (request_context != proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB ||
+        !request_context_metadata->has_page_insights_hub_metadata()) {
+      request_context_metadata = nullptr;
+    }
+  }
+
   if (features::ShouldEnablePersonalizedMetadata(request_context)) {
     // Request the token before fetching the hints.
     RequestAccessToken(
@@ -1125,11 +1135,11 @@ void HintsManager::CanApplyOptimizationOnDemand(
         base::BindOnce(&HintsManager::FetchOptimizationGuideServiceBatchHints,
                        weak_ptr_factory_.GetWeakPtr(), hosts_to_fetch,
                        urls_to_fetch, optimization_types, request_context,
-                       callback));
+                       callback, request_context_metadata));
   } else {
     FetchOptimizationGuideServiceBatchHints(hosts_to_fetch, urls_to_fetch,
                                             optimization_types, request_context,
-                                            callback,
+                                            callback, request_context_metadata,
                                             /*access_token=*/std::string());
   }
 }
@@ -1141,16 +1151,19 @@ void HintsManager::FetchOptimizationGuideServiceBatchHints(
         optimization_types,
     optimization_guide::proto::RequestContext request_context,
     OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+    proto::RequestContextMetadata* request_context_metadata,
     const std::string& access_token) {
   std::pair<int32_t, HintsFetcher*> request_id_and_fetcher =
       CreateAndTrackBatchUpdateHintsFetcher();
+
   request_id_and_fetcher.second->FetchOptimizationGuideServiceHints(
       hosts.vector(), urls.vector(), optimization_types, request_context,
       application_locale_, access_token, /*skip_cache=*/true,
       base::BindOnce(&HintsManager::OnBatchUpdateHintsFetched,
                      weak_ptr_factory_.GetWeakPtr(),
                      request_id_and_fetcher.first, request_context, hosts.set(),
-                     urls.set(), urls.vector(), optimization_types, callback));
+                     urls.set(), urls.vector(), optimization_types, callback),
+      request_context_metadata);
 }
 
 // TODO(1313521): Improve metrics coverage between all of these apis.
@@ -1706,7 +1719,8 @@ void HintsManager::MaybeFetchHintsForNavigation(
                      weak_ptr_factory_.GetWeakPtr(),
                      navigation_data->GetWeakPtr(), url,
                      base::flat_set<GURL>(urls.begin(), urls.end()),
-                     base::flat_set<std::string>(hosts.begin(), hosts.end())));
+                     base::flat_set<std::string>(hosts.begin(), hosts.end())),
+      nullptr);
   if (fetch_attempted) {
     navigation_data->set_hints_fetch_start(base::TimeTicks::Now());
 

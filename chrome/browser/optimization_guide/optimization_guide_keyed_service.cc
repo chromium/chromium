@@ -61,6 +61,7 @@
 #include "components/optimization_guide/core/prediction_model_store.h"
 #include "components/optimization_guide/core/tab_url_provider.h"
 #include "components/optimization_guide/core/top_host_provider.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
@@ -577,13 +578,16 @@ void OptimizationGuideKeyedService::CanApplyOptimizationOnDemand(
         optimization_types,
     optimization_guide::proto::RequestContext request_context,
     optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
-        callback) {
+        callback,
+    optimization_guide::proto::RequestContextMetadata*
+        request_context_metadata) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(request_context !=
          optimization_guide::proto::RequestContext::CONTEXT_UNSPECIFIED);
 
   hints_manager_->CanApplyOptimizationOnDemand(urls, optimization_types,
-                                               request_context, callback);
+                                               request_context, callback,
+                                               request_context_metadata);
 }
 
 std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>

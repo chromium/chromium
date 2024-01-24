@@ -208,7 +208,7 @@ class TestHintsFetcher : public HintsFetcher {
         fetch_states_(fetch_states) {
     DCHECK(!fetch_states_.empty());
   }
-
+  bool is_request_context_metadata_filled = false;
   bool FetchOptimizationGuideServiceHints(
       const std::vector<std::string>& hosts,
       const std::vector<GURL>& urls,
@@ -217,11 +217,15 @@ class TestHintsFetcher : public HintsFetcher {
       const std::string& locale,
       const std::string& access_token,
       bool skip_cache,
-      HintsFetchedCallback hints_fetched_callback) override {
+      HintsFetchedCallback hints_fetched_callback,
+      proto::RequestContextMetadata* request_context_metadata) override {
     HintsFetcherEndState fetch_state =
         num_fetches_requested_ < static_cast<int>(fetch_states_.size())
             ? fetch_states_[num_fetches_requested_]
             : fetch_states_.back();
+    if (request_context_metadata) {
+      is_request_context_metadata_filled = true;
+    }
     num_fetches_requested_++;
     locale_requested_ = locale;
     request_context_requested_ = request_context;
@@ -3179,7 +3183,8 @@ TEST_F(HintsManagerFetchingTest,
 
             run_loop->Quit();
           },
-          run_loop.get()));
+          run_loop.get()),
+      nullptr);
   run_loop->Run();
 
   histogram_tester.ExpectUniqueSample(
@@ -3203,21 +3208,24 @@ TEST_F(HintsManagerFetchingTest, BatchUpdateCalledMoreThanMaxConcurrent) {
       base::DoNothingAs<void(
           const GURL&,
           const base::flat_map<proto::OptimizationType,
-                               OptimizationGuideDecisionWithMetadata>&)>());
+                               OptimizationGuideDecisionWithMetadata>&)>(),
+      nullptr);
   hints_manager()->CanApplyOptimizationOnDemand(
       {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
       proto::RequestContext::CONTEXT_BOOKMARKS,
       base::DoNothingAs<void(
           const GURL&,
           const base::flat_map<proto::OptimizationType,
-                               OptimizationGuideDecisionWithMetadata>&)>());
+                               OptimizationGuideDecisionWithMetadata>&)>(),
+      nullptr);
   hints_manager()->CanApplyOptimizationOnDemand(
       {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
       proto::RequestContext::CONTEXT_BOOKMARKS,
       base::DoNothingAs<void(
           const GURL&,
           const base::flat_map<proto::OptimizationType,
-                               OptimizationGuideDecisionWithMetadata>&)>());
+                               OptimizationGuideDecisionWithMetadata>&)>(),
+      nullptr);
 
   // The third one is over the max and should evict another one.
   histogram_tester.ExpectTotalCount(
@@ -3259,7 +3267,8 @@ TEST_F(HintsManagerFetchingTest,
 
             run_loop->Quit();
           },
-          run_loop.get()));
+          run_loop.get()),
+      nullptr);
   run_loop->Run();
 
   histogram_tester.ExpectTotalCount(
@@ -3290,7 +3299,8 @@ TEST_F(HintsManagerFetchingTest,
 
             run_loop->Quit();
           },
-          run_loop.get()));
+          run_loop.get()),
+      nullptr);
   run_loop->Run();
 
   histogram_tester.ExpectTotalCount(
@@ -3338,7 +3348,8 @@ TEST_F(HintsManagerFetchingTest,
 
             run_loop->Quit();
           },
-          run_loop.get()));
+          run_loop.get()),
+      nullptr);
   run_loop->Run();
 
   histogram_tester.ExpectTotalCount(
@@ -3386,7 +3397,8 @@ TEST_F(
 
             run_loop->Quit();
           },
-          run_loop.get()));
+          run_loop.get()),
+      nullptr);
   run_loop->Run();
 }
 
@@ -3421,7 +3433,8 @@ TEST_F(HintsManagerFetchingTest,
 
             run_loop->Quit();
           },
-          run_loop.get()));
+          run_loop.get()),
+      nullptr);
   run_loop->Run();
 
   histogram_tester.ExpectUniqueSample(
@@ -3430,6 +3443,130 @@ TEST_F(HintsManagerFetchingTest,
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ApplyDecision.CompressPublicImages",
       OptimizationTypeDecision::kNoHintAvailable, 1);
+}
+
+// RequestContextMetadata will be sent in fetcher only for appropriate request
+// context.
+TEST_F(HintsManagerFetchingTest,
+       PageInsightsHubContextRequestContextMetadataPihSentGetHintsRequest) {
+  base::HistogramTester histogram_tester;
+
+  hints_manager()->RegisterOptimizationTypes({proto::PAGE_INSIGHTS});
+  InitializeWithDefaultConfig("1.0.0.0");
+
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithURLHints}));
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  proto::PageInsightsHubRequestContextMetadata
+      page_insights_hub_request_context_metadata =
+          proto::PageInsightsHubRequestContextMetadata::default_instance();
+  proto::RequestContextMetadata request_context_metadata_var;
+  *request_context_metadata_var.mutable_page_insights_hub_metadata() =
+      page_insights_hub_request_context_metadata;
+  proto::RequestContextMetadata* request_context_metadata =
+      &request_context_metadata_var;
+  hints_manager()->CanApplyOptimizationOnDemand(
+      {url_with_url_keyed_hint()}, {proto::PAGE_INSIGHTS},
+      proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB,
+      base::BindRepeating(
+          [](base::RunLoop* run_loop, const GURL& url,
+             const base::flat_map<proto::OptimizationType,
+                                  OptimizationGuideDecisionWithMetadata>&
+                 decisions) {
+            EXPECT_EQ(decisions.size(), 1u);
+            auto it = decisions.find(proto::PAGE_INSIGHTS);
+            EXPECT_TRUE(it != decisions.end());
+
+            run_loop->Quit();
+          },
+          run_loop.get()),
+      request_context_metadata);
+  HintsFetcher* it =
+      hints_manager_->batch_update_hints_fetchers_.Peek(0)->second.get();
+  TestHintsFetcher* it2 = static_cast<TestHintsFetcher*>(it);
+  EXPECT_TRUE(it2->is_request_context_metadata_filled);
+  run_loop->Run();
+}
+
+// RequestContextMetadata will not be sent in fetcher when the request context
+// is not enabled for it.
+TEST_F(
+    HintsManagerFetchingTest,
+    PageInsightsHubContextNotSentRequestContextMetadataPihSentGetHintsRequest) {
+  base::HistogramTester histogram_tester;
+
+  hints_manager()->RegisterOptimizationTypes({proto::PAGE_INSIGHTS});
+  InitializeWithDefaultConfig("1.0.0.0");
+
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithURLHints}));
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  proto::PageInsightsHubRequestContextMetadata
+      page_insights_hub_request_context_metadata =
+          proto::PageInsightsHubRequestContextMetadata::default_instance();
+  proto::RequestContextMetadata request_context_metadata_var;
+  *request_context_metadata_var.mutable_page_insights_hub_metadata() =
+      page_insights_hub_request_context_metadata;
+  proto::RequestContextMetadata* request_context_metadata =
+      &request_context_metadata_var;
+  hints_manager()->CanApplyOptimizationOnDemand(
+      {url_with_url_keyed_hint()}, {proto::PAGE_INSIGHTS},
+      proto::RequestContext::CONTEXT_BOOKMARKS,
+      base::BindRepeating(
+          [](base::RunLoop* run_loop, const GURL& url,
+             const base::flat_map<proto::OptimizationType,
+                                  OptimizationGuideDecisionWithMetadata>&
+                 decisions) {
+            EXPECT_EQ(decisions.size(), 1u);
+            auto it = decisions.find(proto::PAGE_INSIGHTS);
+            EXPECT_TRUE(it != decisions.end());
+
+            run_loop->Quit();
+          },
+          run_loop.get()),
+      request_context_metadata);
+  HintsFetcher* it =
+      hints_manager_->batch_update_hints_fetchers_.Peek(0)->second.get();
+  TestHintsFetcher* it2 = static_cast<TestHintsFetcher*>(it);
+  EXPECT_FALSE(it2->is_request_context_metadata_filled);
+  run_loop->Run();
+}
+
+// Tests the null RequestContextMetadata case.
+TEST_F(HintsManagerFetchingTest,
+       PageInsightsHubContextRequestContextMetadataPihNotSentGetHintsRequest) {
+  base::HistogramTester histogram_tester;
+
+  hints_manager()->RegisterOptimizationTypes({proto::PAGE_INSIGHTS});
+  InitializeWithDefaultConfig("1.0.0.0");
+
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithURLHints}));
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  hints_manager()->CanApplyOptimizationOnDemand(
+      {url_with_url_keyed_hint()}, {proto::PAGE_INSIGHTS},
+      proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB,
+      base::BindRepeating(
+          [](base::RunLoop* run_loop, const GURL& url,
+             const base::flat_map<proto::OptimizationType,
+                                  OptimizationGuideDecisionWithMetadata>&
+                 decisions) {
+            EXPECT_EQ(decisions.size(), 1u);
+            auto it = decisions.find(proto::PAGE_INSIGHTS);
+            EXPECT_TRUE(it != decisions.end());
+
+            run_loop->Quit();
+          },
+          run_loop.get()),
+      nullptr);
+  HintsFetcher* it =
+      hints_manager_->batch_update_hints_fetchers_.Peek(0)->second.get();
+  TestHintsFetcher* it2 = static_cast<TestHintsFetcher*>(it);
+  EXPECT_FALSE(it2->is_request_context_metadata_filled);
+  run_loop->Run();
 }
 
 class HintsManagerFetchingNoBatchUpdateTest : public HintsManagerTest {
@@ -3573,7 +3710,8 @@ TEST_F(HintsManagerPersonalizedFetchingTest,
 
             run_loop->Quit();
           },
-          run_loop.get()));
+          run_loop.get()),
+      nullptr);
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
   run_loop->Run();
@@ -3614,7 +3752,8 @@ TEST_F(HintsManagerPersonalizedFetchingTest, TokenFailure) {
 
             run_loop->Quit();
           },
-          run_loop.get()));
+          run_loop.get()),
+      nullptr);
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
   run_loop->Run();
@@ -3653,7 +3792,8 @@ TEST_F(HintsManagerPersonalizedFetchingTest, NoUserSignIn) {
 
             run_loop->Quit();
           },
-          run_loop.get()));
+          run_loop.get()),
+      nullptr);
   run_loop->Run();
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", 1, 1);

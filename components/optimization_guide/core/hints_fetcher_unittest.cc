@@ -109,7 +109,8 @@ class HintsFetcherTest : public testing::Test,
         optimization_guide::proto::CONTEXT_BATCH_UPDATE_ACTIVE_TABS, "en-US",
         /*access_token=*/std::string(), skip_cache,
         base::BindOnce(&HintsFetcherTest::OnHintsFetched,
-                       base::Unretained(this)));
+                       base::Unretained(this)),
+        nullptr);
     RunUntilIdle();
     return status;
   }

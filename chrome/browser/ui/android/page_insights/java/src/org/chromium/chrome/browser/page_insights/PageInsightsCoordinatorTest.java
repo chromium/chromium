@@ -543,7 +543,8 @@ public class PageInsightsCoordinatorTest {
                         eq(new GURL[] {JUnitTestGURLs.EXAMPLE_URL}),
                         eq(new int[] {HintsProto.OptimizationType.PAGE_INSIGHTS.getNumber()}),
                         eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB.getNumber()),
-                        any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class));
+                        any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class),
+                        any());
     }
 
     private static PageInsightsMetadata pageInsights() {

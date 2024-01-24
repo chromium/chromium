@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.page_insights.proto.PageInsights;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.RequestContext;
+import org.chromium.components.optimization_guide.proto.HintsProto.RequestContextMetadata;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -51,6 +52,8 @@ class PageInsightsDataLoader {
             callback.bind(mCache.get(url)).run();
             return;
         }
+        // TODO(edmundw): Populate the requestContextMetadata
+        RequestContextMetadata requestContextMetadata = RequestContextMetadata.newBuilder().build();
         OptimizationGuideBridgeFactoryHolder.sOptimizationGuideBridgeFactory
                 .create()
                 .canApplyOptimizationOnDemand(
@@ -85,7 +88,8 @@ class PageInsightsDataLoader {
                                                         + "Details %s.",
                                                 e));
                             }
-                        });
+                        },
+                        requestContextMetadata);
     }
 
     void clearCacheForTesting() {

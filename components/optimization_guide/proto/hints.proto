@@ -74,6 +74,9 @@ message GetHintsRequest {
   // Context in which this request is made.
   optional RequestContext context = 3;
 
+  // Metadata related to how the request with this context was made.
+  optional RequestContextMetadata context_metadata = 11;
+
   // The locale to associate with this request.
   //
   // It is the IETF language tag, defined in BCP 47. The region subtag is not
@@ -83,6 +86,20 @@ message GetHintsRequest {
 
   // Information about the request origin.
   optional OriginInfo origin_info = 9;
+}
+
+message RequestContextMetadata {
+  // update logic at {@link HintsManager::CanApplyOptimizationOnDemand} for
+  // getting the context metadata sent and setting the metadata w.r.t the
+  // context.
+  oneof metadata {
+    // Only filled in when RequestContext is CONTEXT_PAGE_INSIGHTS_HUB.
+    PageInsightsHubRequestContextMetadata page_insights_hub_metadata = 1;
+  }
+}
+
+message PageInsightsHubRequestContextMetadata {
+  // TODO(b/317287987): Fill this in with approved metadata.
 }
 
 // Response to the GetHints request.

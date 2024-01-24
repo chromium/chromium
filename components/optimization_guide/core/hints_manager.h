@@ -153,7 +153,8 @@ class HintsManager : public OptimizationHintsComponentObserver,
       const std::vector<GURL>& urls,
       const base::flat_set<proto::OptimizationType>& optimization_types,
       proto::RequestContext request_context,
-      OnDemandOptimizationGuideDecisionRepeatingCallback callback);
+      OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+      proto::RequestContextMetadata* request_context_metadata);
 
   // Clears all fetched hints from |hint_cache_|.
   void ClearFetchedHints();
@@ -219,6 +220,18 @@ class HintsManager : public OptimizationHintsComponentObserver,
   friend class HintsManagerTest;
 
   FRIEND_TEST_ALL_PREFIXES(HintsManagerFetchingTest, BatchUpdateFetcherCleanup);
+  FRIEND_TEST_ALL_PREFIXES(
+      HintsManagerFetchingTest,
+      PageInsightsHubContextRequestContextMetadataPihSentGetHintsRequest);
+  FRIEND_TEST_ALL_PREFIXES(
+      HintsManagerFetchingTest,
+      PageInsightsHubContextNotSentRequestContextMetadataPihSentGetHintsRequest);
+  FRIEND_TEST_ALL_PREFIXES(
+      HintsManagerFetchingTest,
+      PageInsightsHubContextRequestContextMetadataNotPihSentGetHintsRequest);
+  FRIEND_TEST_ALL_PREFIXES(
+      HintsManagerFetchingTest,
+      PageInsightsHubContextRequestContextMetadataPihNotSentGetHintsRequest);
 
   // Processes the optimization filters contained in the hints component.
   void ProcessOptimizationFilters(
@@ -318,6 +331,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
           optimization_types,
       optimization_guide::proto::RequestContext request_context,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+      proto::RequestContextMetadata* request_context_metadata,
       const std::string& access_token);
 
   // Returns decisions for |url| and |optimization_types| based on what's cached
