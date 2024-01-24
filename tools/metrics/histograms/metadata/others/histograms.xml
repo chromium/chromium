@@ -10022,7 +10022,7 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SubresourceWebBundles.BundleFetchErrorCode"
     enum="NetErrorCodes" expires_after="2024-07-24">
-  <owner>ksakamoto@chromium.org</owner>
+  <owner>hayato@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The net error code recorded when request for a subresource web bundle was
@@ -10081,7 +10081,7 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SubresourceWebBundles.ResourceCount" units="resources"
     expires_after="2024-07-24">
-  <owner>ksakamoto@chromium.org</owner>
+  <owner>hayato@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The number of resources contained in a web bundle. Recorded when bundle
