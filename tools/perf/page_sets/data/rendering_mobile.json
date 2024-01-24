@@ -375,24 +375,6 @@
         "motion_mark_focus": {
             "DEFAULT": "rendering_mobile_002.wprgo"
         },
-        "motionmark_anim_design_15": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_anim_focus_25": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_anim_images_50": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_anim_leaves_250": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_anim_multiply_175": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_anim_suits_125": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
         "motionmark_fixed_2_seconds_canvas_arcs": {
             "DEFAULT": "rendering_common_c95200764f.wprgo"
         },
@@ -420,39 +402,6 @@
         "motionmark_fixed_2_seconds_suits": {
             "DEFAULT": "rendering_common_c95200764f.wprgo"
         },
-        "motionmark_html_composited_transforms_125": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_css_bouncing_blend_circles_25": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_css_bouncing_circles_250": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_css_bouncing_clipped_rects_100": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_css_bouncing_filter_circles_15": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_css_bouncing_gradient_circles_250": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_css_bouncing_svg_images_50": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_css_bouncing_tagged_images_225": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_dom_particles_svg_masks_25": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_focus_20_15": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_leaves_20_50": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
         "motionmark_ramp_canvas_arcs": {
             "DEFAULT": "rendering_common_c95200764f.wprgo"
         },
@@ -479,21 +428,6 @@
         },
         "motionmark_ramp_suits": {
             "DEFAULT": "rendering_common_c95200764f.wprgo"
-        },
-        "motionmark_svg_bouncing_circles_250": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_svg_bouncing_clipped_rects_100": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_svg_bouncing_gradient_circles_200": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_svg_bouncing_png_images_200": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_svg_bouncing_svg_images_50": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
         },
         "new_tilings": {
             "DEFAULT": "rendering_mobile_010.wprgo"

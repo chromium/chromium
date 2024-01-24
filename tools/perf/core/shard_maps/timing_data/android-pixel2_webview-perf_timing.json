@@ -2360,74 +2360,6 @@
         "name": "rendering.mobile/mobile_news_sandbox"
     },
     {
-        "duration": "36.0",
-        "name": "rendering.mobile/motionmark_anim_design_15"
-    },
-    {
-        "duration": "35.0",
-        "name": "rendering.mobile/motionmark_anim_focus_25"
-    },
-    {
-        "duration": "36.0",
-        "name": "rendering.mobile/motionmark_anim_images_50"
-    },
-    {
-        "duration": "36.0",
-        "name": "rendering.mobile/motionmark_anim_leaves_250"
-    },
-    {
-        "duration": "35.0",
-        "name": "rendering.mobile/motionmark_anim_multiply_175"
-    },
-    {
-        "duration": "35.0",
-        "name": "rendering.mobile/motionmark_anim_suits_125"
-    },
-    {
-        "duration": "35.0",
-        "name": "rendering.mobile/motionmark_html_composited_transforms_125"
-    },
-    {
-        "duration": "35.0",
-        "name": "rendering.mobile/motionmark_html_css_bouncing_blend_circles_25"
-    },
-    {
-        "duration": "35.0",
-        "name": "rendering.mobile/motionmark_html_css_bouncing_circles_250"
-    },
-    {
-        "duration": "36.0",
-        "name": "rendering.mobile/motionmark_html_css_bouncing_clipped_rects_100"
-    },
-    {
-        "duration": "35.0",
-        "name": "rendering.mobile/motionmark_html_css_bouncing_filter_circles_15"
-    },
-    {
-        "duration": "35.0",
-        "name": "rendering.mobile/motionmark_html_css_bouncing_gradient_circles_250"
-    },
-    {
-        "duration": "35.0",
-        "name": "rendering.mobile/motionmark_html_css_bouncing_svg_images_50"
-    },
-    {
-        "duration": "35.0",
-        "name": "rendering.mobile/motionmark_html_css_bouncing_tagged_images_225"
-    },
-    {
-        "duration": "35.0",
-        "name": "rendering.mobile/motionmark_html_dom_particles_svg_masks_25"
-    },
-    {
-        "duration": "35.0",
-        "name": "rendering.mobile/motionmark_html_focus_20_15"
-    },
-    {
-        "duration": "35.0",
-        "name": "rendering.mobile/motionmark_html_leaves_20_50"
-    },
-    {
         "duration": "42.0",
         "name": "rendering.mobile/motionmark_ramp_design"
     },
@@ -2450,26 +2382,6 @@
     {
         "duration": "40.0",
         "name": "rendering.mobile/motionmark_ramp_suits"
-    },
-    {
-        "duration": "35.0",
-        "name": "rendering.mobile/motionmark_svg_bouncing_circles_250"
-    },
-    {
-        "duration": "36.0",
-        "name": "rendering.mobile/motionmark_svg_bouncing_clipped_rects_100"
-    },
-    {
-        "duration": "36.0",
-        "name": "rendering.mobile/motionmark_svg_bouncing_gradient_circles_200"
-    },
-    {
-        "duration": "35.0",
-        "name": "rendering.mobile/motionmark_svg_bouncing_png_images_200"
-    },
-    {
-        "duration": "35.0",
-        "name": "rendering.mobile/motionmark_svg_bouncing_svg_images_50"
     },
     {
         "duration": "25.0",
