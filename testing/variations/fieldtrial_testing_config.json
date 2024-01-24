@@ -4663,6 +4663,7 @@
                         "AttributionDebugReportingCookieDeprecationTesting",
                         "CookieDeprecationFacilitatedTesting",
                         "FledgeFacilitatedTestingSignalsHeaders",
+                        "PrivateAggregationDebugReportingCookieDeprecationTesting",
                         "SkipTpcdMitigationsForAds",
                         "TPCDAdHeuristicSubframeRequestTagging"
                     ]
