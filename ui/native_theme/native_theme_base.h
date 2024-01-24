@@ -100,13 +100,14 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
   ~NativeThemeBase() override;
 
   // Draw the arrow. Used by scrollbar and inner spin button.
-  virtual void PaintArrowButton(cc::PaintCanvas* gc,
-                                const ColorProvider* color_provider,
-                                const gfx::Rect& rect,
-                                Part direction,
-                                State state,
-                                ColorScheme color_scheme,
-                                const ScrollbarArrowExtraParams& arrow) const;
+  virtual void PaintArrowButton(
+      cc::PaintCanvas* gc,
+      const ColorProvider* color_provider,
+      const gfx::Rect& rect,
+      Part direction,
+      State state,
+      ColorScheme color_scheme,
+      const ScrollbarArrowExtraParams& extra_params) const;
   // Paint the scrollbar track. Done before the thumb so that it can contain
   // alpha.
   virtual void PaintScrollbarTrack(
