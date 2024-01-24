@@ -459,6 +459,7 @@
     "prefix": "scalefactor150",
     "platforms": ["Linux", "Win"],
     "bases": ["fast/events/synthetic-events",
+              "fast/events/wheel/wheelevent-in-scrolling-div.html",
               "fast/hidpi/static"],
     "exclusive_tests": ["fast/hidpi/static"],
     "args": ["--force-device-scale-factor=1.5",
