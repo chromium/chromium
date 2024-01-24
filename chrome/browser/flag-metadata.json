@@ -2174,6 +2174,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-bookmark-folders-for-account-storage",
+    "owners": [ "wylieb@chromium.org", "bsazonov@chromium.org" ],
+    "expiry_milestone": 126
+  },
+  {
     "name": "enable-borderless-printing",
     "owners": [ "bryancain@chromium.org", "project-bolton-eng@google.com" ],
     "expiry_milestone": 122

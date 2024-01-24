@@ -572,6 +572,9 @@ extern const char kViewTransitionOnNavigationDescription[];
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];
 
+extern const char kEnableBookmarkFoldersForAccountStorageName[];
+extern const char kEnableBookmarkFoldersForAccountStorageDescription[];
+
 extern const char kEnableExperimentalCookieFeaturesName[];
 extern const char kEnableExperimentalCookieFeaturesDescription[];
 

@@ -990,6 +990,11 @@ const char kEnableAutofillAddressSavePromptName[] =
 const char kEnableAutofillAddressSavePromptDescription[] =
     "Enable the Autofill address save prompts.";
 
+const char kEnableBookmarkFoldersForAccountStorageName[] =
+    "Enable account bookmark folders";
+const char kEnableBookmarkFoldersForAccountStorageDescription[] =
+    "Enables account bookmark folders to be made available to users.";
+
 const char kEnableExperimentalCookieFeaturesName[] =
     "Enable experimental cookie features";
 const char kEnableExperimentalCookieFeaturesDescription[] =

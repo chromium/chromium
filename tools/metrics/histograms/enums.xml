@@ -17687,6 +17687,8 @@ from previous Chrome versions.
   <int value="-1338237485" label="HardwareSecureDecryptionExperiment:disabled"/>
   <int value="-1337433513" label="FilesGoogleDriveSettingsPage:disabled"/>
   <int value="-1337185440" label="enable-webvr"/>
+  <int value="-1336974270"
+      label="EnableBookmarkFoldersForAccountStorage:enabled"/>
   <int value="-1336110789" label="CastMediaRouteProvider:disabled"/>
   <int value="-1335360580" label="ReduceTransferSizeUpdatedIPC:enabled"/>
   <int value="-1335017208" label="KeyboardLockAPI:enabled"/>
@@ -21964,6 +21966,8 @@ from previous Chrome versions.
   <int value="659871291"
       label="ClearCrossSiteCrossBrowsingContextGroupWindowName:enabled"/>
   <int value="661020875" label="AutofillSaveCardShowNoThanks:disabled"/>
+  <int value="661034193"
+      label="EnableBookmarkFoldersForAccountStorage:disabled"/>
   <int value="661537613" label="WebNotesPublish:enabled"/>
   <int value="662001716" label="ToolbarIphAndroid:disabled"/>
   <int value="662331859" label="ConversionMeasurement:enabled"/>
