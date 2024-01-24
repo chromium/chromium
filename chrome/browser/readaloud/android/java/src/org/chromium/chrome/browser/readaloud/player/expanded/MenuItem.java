@@ -150,6 +150,9 @@ public class MenuItem extends FrameLayout {
     void setItemEnabled(boolean enabled) {
         mLayout.setClickable(enabled);
         mLayout.setFocusable(enabled);
+        if (mActionType == Action.TOGGLE) {
+            getToggleSwitch().setEnabled(enabled);
+        }
     }
 
     void setValue(boolean value) {
