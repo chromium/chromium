@@ -2541,11 +2541,11 @@ std::u16string InferLabelForElement(const WebFormControlElement& element,
 
 WebFormElement FindFormByRendererId(const WebDocument& doc,
                                     FormRendererId form_renderer_id) {
+  if (!form_renderer_id) {
+    return WebFormElement();
+  }
   if (base::FeatureList::IsEnabled(
           blink::features::kAutofillUseDomNodeIdForRendererId)) {
-    if (!form_renderer_id) {
-      return WebFormElement();
-    }
     WebNode node = WebNode::FromDomNodeId(form_renderer_id.value());
     WebFormElement form = node.DynamicTo<WebFormElement>();
     return !form.IsNull() && form.IsConnected() && form.GetDocument().GetFrame()

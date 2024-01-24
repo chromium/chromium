@@ -401,7 +401,7 @@ void AutofillAgent::DidChangeScrollOffsetImpl(
 void AutofillAgent::FocusedElementChanged(const WebElement& element) {
   HidePopup();
 
-  WebFormElement last_interacted_form = last_interacted_form_.GetForm();
+  WebFormElement last_interacted_form = last_interacted_.form_id.GetForm();
   if (element.IsNull()) {
     // Focus moved away from the last interacted form (if any) to somewhere else
     // on the page.
@@ -710,7 +710,7 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
     bool filled_some_fields = !filled_fields.empty();
 
     if (!last_queried_element.Form().IsNull()) {
-      UpdateLastInteractedForm(last_queried_element.Form());
+      UpdateLastInteracted(last_queried_element.Form());
     } else {
       formless_elements_were_autofilled_ |= filled_some_fields;
     }
@@ -1512,10 +1512,10 @@ void AutofillAgent::OnProvisionallySaveForm(
   // Updates cached data needed for submission so that we only cache the latest
   // version of the to-be-submitted form.
   auto update_submission_data_on_user_edit = [&]() {
-    // If dealing with a form, forward directly to UpdateLastInteractedForm. The
+    // If dealing with a form, forward directly to UpdateLastInteracted. The
     // remaining logic deals with formless fields.
     if (!form_element.IsNull()) {
-      UpdateLastInteractedForm(form_element);
+      UpdateLastInteracted(form_element);
       return;
     }
     if (!document.IsNull()) {
@@ -1534,9 +1534,7 @@ void AutofillAgent::OnProvisionallySaveForm(
     }
     formless_elements_user_edited_.insert(
         form_util::GetFieldRendererId(element));
-    provisionally_saved_form_ = form_util::ExtractFormData(
-        document, WebFormElement(), field_data_manager());
-    last_interacted_form_ = {};
+    UpdateLastInteracted(WebFormElement());
   };
 
   switch (source) {
@@ -1624,10 +1622,10 @@ void AutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
       // handled by other sources), therefore we only consider detached
       // subframes.
       if (!unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame() &&
-          provisionally_saved_form_.has_value()) {
+          last_interacted_.saved_state.has_value()) {
         // Should not access the frame because it is now detached. Instead, use
-        // |provisionally_saved_form_|.
-        FireHostSubmitEvents(provisionally_saved_form_.value(),
+        // |last_interacted_.saved_state|.
+        FireHostSubmitEvents(last_interacted_.saved_state.value(),
                              /*known_success=*/true, source);
       }
       break;
@@ -1690,19 +1688,19 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
             form_util::IsWebElementFocusableForAutofill);
       };
 
-  // We check if we have a cached `last_interacted_form_`. In that case we
-  // return either the extracted form or `provisionally_saved_form_` as a
+  // We check if we have a cached `last_interacted_.form_id`. In that case we
+  // return either the extracted form or `last_interacted_.saved_state` as a
   // fallback if extraction fails. The remaining logic deals with formless
-  // fields.
-  // The reason why we check the ID and not the form is that we might've been
-  // caching a form that was removed, hence the form will be null but the ID
-  // won't.
-  if (last_interacted_form_.GetId()) {
+  // fields. The reason why we check the ID and not the form is that we might've
+  // been caching a form that was removed, hence the form will be null but the
+  // ID won't.
+  if (last_interacted_.form_id.GetId()) {
     if (std::optional<FormData> form = form_util::ExtractFormData(
-            document, last_interacted_form_.GetForm(), field_data_manager())) {
+            document, last_interacted_.form_id.GetForm(),
+            field_data_manager())) {
       return form;
     }
-    return provisionally_saved_form_;
+    return last_interacted_.saved_state;
   }
   // Criteria to decide on the submission of the form of formless elements,
   // assuming submission has been inferred:
@@ -1718,13 +1716,13 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
         base::FeatureList::IsEnabled(
             features::
                 kAutofillDontCheckForDisappearingFormlessElementsForSubmission)))) {
-    // Return the extracted form or `provisionally_saved_form_` as a fallback if
-    // extraction fails.
+    // Return the extracted form or `last_interacted_.saved_state` as a fallback
+    // if extraction fails.
     if (std::optional<FormData> form = form_util::ExtractFormData(
             document, WebFormElement(), field_data_manager())) {
       return form;
     }
-    return provisionally_saved_form_;
+    return last_interacted_.saved_state;
   }
   return std::nullopt;
 }
@@ -1736,22 +1734,21 @@ void AutofillAgent::SendPotentiallySubmittedFormToBrowser() {
 }
 
 void AutofillAgent::ResetLastInteractedElements() {
-  last_interacted_form_ = {};
+  last_interacted_ = {};
   formless_elements_user_edited_.clear();
   formless_elements_were_autofilled_ = false;
-  provisionally_saved_form_.reset();
 }
 
-void AutofillAgent::UpdateLastInteractedForm(
+void AutofillAgent::UpdateLastInteracted(
     const blink::WebFormElement& form) {
   DCHECK(MaybeWasOwnedByFrame(form, unsafe_render_frame()));
 
-  last_interacted_form_ = FormRef(form);
-  provisionally_saved_form_ =
+  last_interacted_.form_id = FormRef(form);
+  last_interacted_.saved_state =
       unsafe_render_frame()
           ? form_util::ExtractFormData(
                 unsafe_render_frame()->GetWebFrame()->GetDocument(),
-                last_interacted_form_.GetForm(), field_data_manager())
+                last_interacted_.form_id.GetForm(), field_data_manager())
           : std::nullopt;
 }
 

@@ -372,7 +372,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   void SendPotentiallySubmittedFormToBrowser();
 
   void ResetLastInteractedElements();
-  void UpdateLastInteractedForm(const blink::WebFormElement& form);
+  void UpdateLastInteracted(const blink::WebFormElement& form);
 
   // Called when current form is no longer submittable, submitted_forms_ is
   // cleared in this method.
@@ -417,7 +417,14 @@ class AutofillAgent : public content::RenderFrameObserver,
   mojom::ActionType last_action_type_ = mojom::ActionType::kFill;
 
   // Last form which was interacted with by the user.
-  FormRef last_interacted_form_;
+  struct {
+    FormRef form_id;
+
+    // Used if `form_id` or a formless form can't be converted to FormData at
+    // the time of form submission (e.g. because they have been removed from the
+    // DOM).
+    std::optional<FormData> saved_state;
+  } last_interacted_;
 
   // When dealing with an unowned form, we keep track of the unowned fields
   // the user has modified so we can determine when submission occurs.
@@ -425,11 +432,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // that the form has been autofilled.
   std::set<FieldRendererId> formless_elements_user_edited_;
   bool formless_elements_were_autofilled_ = false;
-
-  // The form the user interacted with last. It is used if last_interacted_form_
-  // or a formless form can't be converted to FormData at the time of form
-  // submission (e.g. because they have been removed from the DOM).
-  std::optional<FormData> provisionally_saved_form_;
 
   // Keeps track of the forms for which form submitted event has been sent to
   // AutofillDriver. We use it to avoid fire duplicated submission event when
