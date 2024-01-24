@@ -447,6 +447,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, CSPWithSandboxDoesNotBlockPDF) {
 // directive is effective on a PDF response.
 // Regression test for https://crbug.com/1107535.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, CSPFrameAncestorsCanBlockEmbedding) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   WebContents* web_contents = GetActiveWebContents();
   content::WebContentsConsoleObserver console_observer(web_contents);
   console_observer.SetPattern(
@@ -763,6 +768,11 @@ class PDFPluginDisabledTest : public PDFExtensionTest {
 };
 
 IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest, DirectNavigationToPDF) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Navigate to a PDF and test that it is downloaded.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
@@ -781,6 +791,11 @@ IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest, DirectNavigationToPDF) {
         // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest,
                        MAYBE_EmbedPdfPlaceholderWithCSP) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Navigate to a page with CSP that uses <embed> to embed a PDF as a plugin.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/pdf/pdf_embed_csp.html")));
@@ -806,6 +821,11 @@ IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest,
 #endif
 IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest,
                        MAYBE_IframePdfPlaceholderWithCSP) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Navigate to a page that uses <iframe> to embed a PDF as a plugin.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/pdf/pdf_iframe_csp.html")));
@@ -816,6 +836,11 @@ IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest,
 
 IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest,
                        IframePlaceholderInjectedIntoNewWindow) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // This is an unusual test to verify crbug.com/924823. We are injecting the
   // HTML for a PDF IFRAME into a newly created popup with an undefined URL.
   ASSERT_TRUE(
@@ -918,6 +943,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithPartialLoading,
 // Ensure that the internal PDF plugin application/x-google-chrome-pdf won't be
 // loaded if it's not loaded in the chrome extension page.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, EnsureInternalPluginDisabled) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   std::string url = embedded_test_server()->GetURL("/pdf/test.pdf").spec();
   std::string data_url =
       "data:text/html,"
@@ -1551,6 +1581,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, NavigationOnCorrectTab) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MultipleDomains) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   ASSERT_TRUE(LoadPdfInNewTab(
       embedded_test_server()->GetURL("a.com", "/pdf/test.pdf")));
   ASSERT_TRUE(LoadPdfInNewTab(
@@ -1600,6 +1635,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 // This is a separate test because fatal assertions in `SetUpInMainThread()`
 // don't terminate early, so there's no point asserting before every test.
 IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, ExpectSiteIsolation) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   EXPECT_EQ(site_isolated(),
             content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
 }
@@ -2600,6 +2640,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
 // catching future regression in docs/ and slides/ pages (see
 // https://crbug.com/763812).
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PostMessageForZeroSizedEmbed) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   content::DOMMessageQueue queue(
       browser()->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -2978,6 +3023,11 @@ class RequestWaiter {
 // propagated from a remote frame into the main frame.  See also
 // https://crbug.com/964364.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DidStopLoading) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Prepare to wait for requests for the main page of the MimeHandlerView for
   // PDFs.
   RequestWaiter interceptor(
@@ -3018,6 +3068,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DidStopLoading) {
 // a new popup window when using document.write.  See also
 // https://crbug.com/1041880.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DocumentWriteIntoNewPopup) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Navigate to an empty/boring test page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -3045,6 +3100,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DocumentWriteIntoNewPopup) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, LoadPdfFromExtension) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   const extensions::Extension* test_extension = LoadExtension(
       GetTestResourcesParentDir().AppendASCII("pdf/extension_with_pdf"));
   ASSERT_TRUE(test_extension);
@@ -3057,6 +3117,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, LoadPdfFromExtension) {
 // https://bugs.chromium.org/p/chromium/issues/detail?id=1046795
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
                        PdfLoadsWithExtensionThatInjectsFrame) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   const extensions::Extension* test_extension = LoadExtension(
       GetTestResourcesParentDir().AppendASCII("pdf/extension_injects_iframe"));
   ASSERT_TRUE(test_extension);
@@ -3413,6 +3478,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderAndFencedFrameTest,
 // Like `LoadPdfInFencedFrame`, but without Supports-Loading-Mode headers set.
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderAndFencedFrameTest,
                        LoadPdfInFencedFrameWithoutFencedFrameOptIn) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   ASSERT_TRUE(content::NavigateToURL(
       GetActiveWebContents(), embedded_test_server()->GetURL("/empty.html")));
 
@@ -3428,6 +3498,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderAndFencedFrameTest,
 // because PDF isn't allowed in fenced frames.
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderAndFencedFrameTest,
                        LoadEmbeddedPdfInFencedFrame) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   ASSERT_TRUE(content::NavigateToURL(
       GetActiveWebContents(), embedded_test_server()->GetURL("/empty.html")));
 
