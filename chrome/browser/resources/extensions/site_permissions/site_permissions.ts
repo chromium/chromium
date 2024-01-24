@@ -5,16 +5,16 @@
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import './strings.m.js';
-import './shared_style.css.js';
-import './shared_vars.css.js';
+import '../strings.m.js';
+import '../shared_style.css.js';
+import '../shared_vars.css.js';
 import './site_permissions_list.js';
 
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {navigation, Page} from './navigation_helper.js';
+import {navigation, Page} from '../navigation_helper.js';
 import {getTemplate} from './site_permissions.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 

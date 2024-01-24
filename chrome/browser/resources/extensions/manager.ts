@@ -21,8 +21,8 @@ import './load_error.js';
 import './options_dialog.js';
 import './shared_vars.css.js';
 import './sidebar.js';
-import './site_permissions.js';
-import './site_permissions_by_site.js';
+import './site_permissions/site_permissions.js';
+import './site_permissions/site_permissions_by_site.js';
 import './toolbar.js';
 // <if expr="chromeos_ash">
 import './kiosk_dialog.js';

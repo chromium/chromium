@@ -18,7 +18,7 @@ import {getTemplate} from './host_permissions_toggle_list.html.js';
 import {UserAction} from './item_util.js';
 import type {ExtensionsRestrictedSitesDialogElement} from './restricted_sites_dialog.js';
 import {getMatchingUserSpecifiedSites} from './runtime_hosts_dialog.js';
-import {SiteSettingsMixin} from './site_settings_mixin.js';
+import {SiteSettingsMixin} from './site_permissions/site_settings_mixin.js';
 import type {ExtensionsToggleRowElement} from './toggle_row.js';
 import {getFaviconUrl} from './url_util.js';
 

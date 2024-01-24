@@ -6,9 +6,9 @@ import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import './strings.m.js';
-import './shared_style.css.js';
-import './shared_vars.css.js';
+import '../strings.m.js';
+import '../shared_style.css.js';
+import '../shared_vars.css.js';
 import './site_permissions_edit_permissions_dialog.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
@@ -18,7 +18,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './site_permissions_site_group.html.js';
 import type {SiteSettingsDelegate} from './site_settings_mixin.js';
-import {getFaviconUrl, matchesSubdomains, SUBDOMAIN_SPECIFIER} from './url_util.js';
+import {getFaviconUrl, matchesSubdomains, SUBDOMAIN_SPECIFIER} from '../url_util.js';
 
 export interface SitePermissionsSiteGroupElement {
   $: {
