@@ -13,8 +13,8 @@ import '../cr_shared_vars.css.js';
 
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
-import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
-import {Debouncer, microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
+import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cr_slider.html.js';
 
@@ -45,9 +45,7 @@ function getAriaValue(tick: SliderTick|number): number {
                                               sliderTick.value;
 }
 
-const CrSliderElementBase =
-    mixinBehaviors([PaperRippleBehavior], PolymerElement) as
-    {new (): PolymerElement & PaperRippleBehavior};
+const CrSliderElementBase = PaperRippleMixin(PolymerElement);
 
 /**
  * The following are the events emitted from cr-slider.
@@ -486,7 +484,7 @@ export class CrSliderElement extends CrSliderElementBase {
     ]);
   }
 
-  // Overridden from PaperRippleBehavior
+  // Overridden from PaperRippleMixin
   /* eslint-disable-next-line @typescript-eslint/naming-convention */
   override _createRipple() {
     this._rippleContainer = this.$.knob;
