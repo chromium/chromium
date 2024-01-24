@@ -749,16 +749,6 @@
     "expiry_milestone": 124
   },
   {
-    "name": "autofill-use-improved-label-disambiguation",
-    "owners": [ "autofill-squad-muc@google.com" ],
-    "expiry_milestone": 106
-  },
-  {
-    "name": "autofill-use-mobile-label-disambiguation",
-    "owners": [ "autofill-squad-muc@google.com" ],
-    "expiry_milestone": 106
-  },
-  {
     "name": "autofill-use-two-dots-for-last-four-digits",
     "owners": [
       "smcgruer@chromium.org",
