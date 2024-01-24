@@ -218,8 +218,7 @@ void ReadAnythingUntrustedPageHandler::OnFontSizeChange(double font_size) {
 void ReadAnythingUntrustedPageHandler::OnLinksEnabledChanged(bool enabled) {
   if (browser_) {
     browser_->profile()->GetPrefs()->SetBoolean(
-        prefs::kAccessibilityReadAnythingLinksEnabled,
-        static_cast<size_t>(enabled));
+        prefs::kAccessibilityReadAnythingLinksEnabled, enabled);
   }
 }
 void ReadAnythingUntrustedPageHandler::OnColorChange(
