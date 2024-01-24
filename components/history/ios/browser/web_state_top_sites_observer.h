@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HISTORY_IOS_BROWSER_WEB_STATE_TOP_SITES_OBSERVER_H_
 #define COMPONENTS_HISTORY_IOS_BROWSER_WEB_STATE_TOP_SITES_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -34,7 +35,7 @@ class WebStateTopSitesObserver
   void WebStateDestroyed(web::WebState* web_state) override;
 
   // Underlying TopSites instance, may be null during testing.
-  TopSites* top_sites_;
+  raw_ptr<TopSites> top_sites_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
