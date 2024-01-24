@@ -458,12 +458,13 @@ public class AccountManagerFacadeImplTest {
     @Test
     public void testGetAccountCapabilitiesResponseYes() throws Exception {
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
-        final Account account = AccountUtils.createAccountFromName("test1@gmail.com");
-        mDelegate.addAccount(AccountHolder.createFromAccount(account));
+        CoreAccountInfo accountInfo = addTestAccount("test@gmail.com");
 
-        doReturn(CapabilityResponse.YES).when(mDelegate).hasCapability(eq(account), any());
+        doReturn(CapabilityResponse.YES)
+                .when(mDelegate)
+                .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
-        AccountCapabilities capabilities = facade.getAccountCapabilities(account).getResult();
+        AccountCapabilities capabilities = facade.getAccountCapabilities(accountInfo).getResult();
         Assert.assertEquals(capabilities.canOfferExtendedSyncPromos(), Tribool.TRUE);
         Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.TRUE);
         Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.TRUE);
@@ -475,12 +476,13 @@ public class AccountManagerFacadeImplTest {
     @Test
     public void testGetAccountCapabilitiesResponseNo() throws Exception {
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
-        final Account account = AccountUtils.createAccountFromName("test1@gmail.com");
-        mDelegate.addAccount(AccountHolder.createFromAccount(account));
+        CoreAccountInfo accountInfo = addTestAccount("test@gmail.com");
 
-        doReturn(CapabilityResponse.NO).when(mDelegate).hasCapability(eq(account), any());
+        doReturn(CapabilityResponse.NO)
+                .when(mDelegate)
+                .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
-        AccountCapabilities capabilities = facade.getAccountCapabilities(account).getResult();
+        AccountCapabilities capabilities = facade.getAccountCapabilities(accountInfo).getResult();
         Assert.assertEquals(capabilities.canOfferExtendedSyncPromos(), Tribool.FALSE);
         Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.FALSE);
         Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.FALSE);
@@ -492,12 +494,13 @@ public class AccountManagerFacadeImplTest {
     @Test
     public void testGetAccountCapabilitiesResponseException() throws Exception {
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
-        final Account account = AccountUtils.createAccountFromName("test1@gmail.com");
-        mDelegate.addAccount(AccountHolder.createFromAccount(account));
+        CoreAccountInfo accountInfo = addTestAccount("test@gmail.com");
 
-        doReturn(CapabilityResponse.EXCEPTION).when(mDelegate).hasCapability(eq(account), any());
+        doReturn(CapabilityResponse.EXCEPTION)
+                .when(mDelegate)
+                .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
-        AccountCapabilities capabilities = facade.getAccountCapabilities(account).getResult();
+        AccountCapabilities capabilities = facade.getAccountCapabilities(accountInfo).getResult();
         Assert.assertEquals(capabilities.canOfferExtendedSyncPromos(), Tribool.UNKNOWN);
         Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.UNKNOWN);
         Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.UNKNOWN);

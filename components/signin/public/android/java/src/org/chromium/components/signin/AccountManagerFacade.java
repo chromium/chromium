@@ -98,11 +98,11 @@ public interface AccountManagerFacade {
             CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener);
 
     /**
-     * @param account The account used to look up capabilities.
+     * @param coreAccountInfo The {@link CoreAccountInfo} used to look up capabilities.
      * @return account capabilities for the given account.
      */
     @MainThread
-    Promise<AccountCapabilities> getAccountCapabilities(Account account);
+    Promise<AccountCapabilities> getAccountCapabilities(CoreAccountInfo coreAccountInfo);
 
     /**
      * Creates an intent that will ask the user to add a new account to the device. See

@@ -194,7 +194,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
      * @return Set of supported account capability values.
      */
     @Override
-    public Promise<AccountCapabilities> getAccountCapabilities(Account account) {
+    public Promise<AccountCapabilities> getAccountCapabilities(CoreAccountInfo coreAccountInfo) {
         ThreadUtils.assertOnUiThread();
         Promise<AccountCapabilities> accountCapabilitiesPromise = new Promise<>();
         new AsyncTask<AccountCapabilities>() {
@@ -206,7 +206,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                     @CapabilityResponse
                     int capability =
                             mDelegate.hasCapability(
-                                    account, getAndroidCapabilityName(capabilityName));
+                                    CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo),
+                                    getAndroidCapabilityName(capabilityName));
                     capabilitiesResponse.put(capabilityName, capability);
                 }
                 return AccountCapabilities.parseFromCapabilitiesResponse(capabilitiesResponse);

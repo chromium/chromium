@@ -39,7 +39,7 @@ public class AccountCapabilitiesFetcher {
     @CalledByNative
     public void startFetchingAccountCapabilities() {
         AccountManagerFacadeProvider.getInstance()
-                .getAccountCapabilities(CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo))
+                .getAccountCapabilities(mCoreAccountInfo)
                 .then(
                         accountCapabilities -> {
                             onCapabilitiesFetchComplete(accountCapabilities);
