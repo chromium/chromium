@@ -301,6 +301,14 @@ void WebView::AddedToWidget() {
   }
 }
 
+void WebView::RemovedFromWidget() {
+  // Immediately clear the accessible parent upon being removed, as it's a
+  // weak reference to an object that is about to be destroyed.
+  if (holder_->native_view()) {
+    holder_->SetParentAccessible(nullptr);
+  }
+}
+
 gfx::NativeViewAccessible WebView::GetNativeViewAccessible() {
   if (web_contents() && !web_contents()->IsCrashed()) {
     content::RenderWidgetHostView* host_view =
