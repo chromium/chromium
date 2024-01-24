@@ -9,7 +9,6 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="@dimen/readaloud_menu_margin_horizontal"
     android:paddingVertical="12dp"
     android:orientation="horizontal"
     android:background="@drawable/rounded_ripple"

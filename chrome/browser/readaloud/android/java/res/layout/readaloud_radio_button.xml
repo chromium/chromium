@@ -9,5 +9,4 @@ found in the LICENSE file.
     android:id="@+id/readaloud_radio_button"
     android:layout_width="24dp"
     android:layout_height="24dp"
-    android:paddingEnd="24dp"
     android:layout_gravity="center_vertical"/>
