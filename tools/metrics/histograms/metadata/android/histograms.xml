@@ -1216,6 +1216,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DragDrop.Tab.Duration.WithinDestStrip" units="ms"
+    expires_after="2024-04-28">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    During tab drag and drop, record duration when the drag is within the
+    destination strip, which is the time difference from the first time entering
+    the destination strip to the last time leaving or dropping into the
+    destination strip. Recorded when a tab drag and drop is finished.
+  </summary>
+</histogram>
+
 <histogram name="Android.DragDrop.Tab.FromStrip.Result"
     enum="DragDropTabResult" expires_after="2024-04-28">
   <owner>shuyng@google.com</owner>
@@ -1227,6 +1239,18 @@ chromium-metrics-reviews@google.com.
     Note that the successful drops count can be recorded more often than
     Android.DragDrop.Tab.Type, such as reorder within strip or tabs being
     consumed as text by EditText in native pages.
+  </summary>
+</histogram>
+
+<histogram name="Android.DragDrop.Tab.ReorderStripWithDragDrop" enum="Boolean"
+    expires_after="2024-04-28">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records tab drops into source strip with or without leaving the strip. True
+    means the tab drag has left the source strip; while false means it does not.
+    Recorded when tab is dropped into source strip. Used to determine the amount
+    of accidental tab drag out of the strip.
   </summary>
 </histogram>
 
