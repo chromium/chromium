@@ -517,7 +517,7 @@ void TextDecorationInfo::SetSpellingOrGrammarErrorLineData(
 }
 
 bool TextDecorationInfo::ShouldAntialias() const {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   if (line_data_.line == TextDecorationLine::kSpellingError ||
       line_data_.line == TextDecorationLine::kGrammarError) {
     return true;
@@ -528,7 +528,7 @@ bool TextDecorationInfo::ShouldAntialias() const {
 
 ETextDecorationStyle TextDecorationInfo::DecorationStyle() const {
   if (IsSpellingOrGrammarError()) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     return ETextDecorationStyle::kDotted;
 #else
     return ETextDecorationStyle::kWavy;
@@ -578,7 +578,7 @@ float TextDecorationInfo::ComputeThickness() const {
   const AppliedTextDecoration& decoration = *applied_text_decoration_;
   if (HasSpellingOrGrammerError()) {
     // Spelling and grammar error thickness doesn't depend on the font size.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     return 2.f * decorating_box_style_->EffectiveZoom();
 #else
     return 1.f * decorating_box_style_->EffectiveZoom();
