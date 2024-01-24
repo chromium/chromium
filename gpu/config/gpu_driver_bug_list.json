@@ -3134,9 +3134,10 @@
         "type": "win"
       },
       "vendor_id": "0x8086",
-      "intel_gpu_series": [
-        "meteorlake"
-      ],
+      "intel_gpu_generation": {
+        "op": ">=",
+        "value": "12"
+      },
       "features": [
         "force_dcomp_triple_buffer_video_swap_chain"
       ]
