@@ -15951,8 +15951,6 @@
     "SafeBrowsingSkipSubResources2": [
         {
             "platforms": [
-                "android",
-                "android_webview",
                 "chromeos"
             ],
             "experiments": [
