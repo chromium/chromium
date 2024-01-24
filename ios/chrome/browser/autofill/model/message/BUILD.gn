@@ -7,5 +7,10 @@ source_set("message") {
     "save_card_message_with_links.h",
     "save_card_message_with_links.mm",
   ]
-  deps = [ "//url:url" ]
+  deps = [
+    "//components/autofill/core/browser:legal_message_line",
+    "//components/strings:components_strings",
+    "//ui/base:base",
+    "//url:url",
+  ]
 }

@@ -120,28 +120,13 @@
 - (NSMutableArray<SaveCardMessageWithLinks*>*)legalMessages {
   autofill::AutofillSaveCardInfoBarDelegateMobile* delegate =
       self.saveCardDelegate;
-
-  NSMutableArray<SaveCardMessageWithLinks*>* legalMessages =
-      [[NSMutableArray alloc] init];
   // Only display legal Messages if the card is being uploaded and there are
   // any.
   if (delegate->is_for_upload() && !delegate->legal_message_lines().empty()) {
-    for (const auto& line : delegate->legal_message_lines()) {
-      SaveCardMessageWithLinks* message =
-          [[SaveCardMessageWithLinks alloc] init];
-      message.messageText = base::SysUTF16ToNSString(line.text());
-      NSMutableArray* linkRanges = [[NSMutableArray alloc] init];
-      std::vector<GURL> linkURLs;
-      for (const auto& link : line.links()) {
-        [linkRanges addObject:[NSValue valueWithRange:link.range.ToNSRange()]];
-        linkURLs.push_back(link.url);
-      }
-      message.linkRanges = linkRanges;
-      message.linkURLs = linkURLs;
-      [legalMessages addObject:message];
-    }
+    return
+        [SaveCardMessageWithLinks convertFrom:delegate->legal_message_lines()];
   }
-  return legalMessages;
+  return [[NSMutableArray alloc] init];
 }
 
 @end
