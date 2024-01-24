@@ -3472,6 +3472,13 @@
        {}
       ]
      ],
+     "multicol-in-orthogonal-writing-mode-crash.html": [
+      "5a7378de2ea890fc2eefd91135c6cb299a7464ba",
+      [
+       null,
+       {}
+      ]
+     ],
      "outline-with-opacity-crash.html": [
       "556e3cfedcd31d696827211d5626f756fb25dd93",
       [
@@ -3775,15 +3782,6 @@
      },
      "scroll-snap-stop-dynamic-crash.html": [
       "0039a0168e816f37198fec55d19bacd72a36dcde",
-      [
-       null,
-       {}
-      ]
-     ]
-    },
-    "css-scrollbars": {
-     "multicol-in-orthogonal-writing-mode-crash.html": [
-      "5a7378de2ea890fc2eefd91135c6cb299a7464ba",
       [
        null,
        {}
@@ -111319,6 +111317,58 @@
         {}
        ]
       ],
+      "content-visibility-096.html": [
+       "1d1a26c680975946a5289c27352b2e8646579284",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/content-visibility-096-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-097.html": [
+       "5548f480f6ae4ab2376b668c8a0a41178e377b1f",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/content-visibility-097-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-098.html": [
+       "6494ad4a38802eba39903d5b878127eddc654879",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/container-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-099.html": [
+       "1abff2b9be0405dc69946f609bd8ccc864e13e9e",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/content-visibility-099-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "content-visibility-animation-and-scroll.html": [
        "3900918819ef72eb8a12be755e10f122b765c5d4",
        [
@@ -166734,6 +166784,19 @@
        {}
       ]
      ],
+     "scrollbars-chrome-bug-001.html": [
+      "643781bac8079267c21c4c51920c56ab5f6a315a",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scrollbars-chrome-bug-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "select-size-overflow-001.html": [
       "a4cb1b645221fdb58410868c4a35efb152bd3587",
       [
@@ -177253,19 +177316,6 @@
        [
         [
          "/css/css-scrollbars/scrollbar-width-paint-006-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "scrollbars-chrome-bug-001.html": [
-      "643781bac8079267c21c4c51920c56ab5f6a315a",
-      [
-       null,
-       [
-        [
-         "/css/css-scrollbars/scrollbars-chrome-bug-001-ref.html",
          "=="
         ]
        ],
@@ -309460,6 +309510,18 @@
        "3e7d8cd92b328e3f6335be320336420603e7c08d",
        []
       ],
+      "content-visibility-096-ref.html": [
+       "5b013f6e1ad3b1c77ee7c865231feb086d7ee590",
+       []
+      ],
+      "content-visibility-097-ref.html": [
+       "5b013f6e1ad3b1c77ee7c865231feb086d7ee590",
+       []
+      ],
+      "content-visibility-099-ref.html": [
+       "7ab3094c31c55d2fa28144c7070e55229ddbd975",
+       []
+      ],
       "content-visibility-animation-and-scroll-ref.html": [
        "548970812b6df963ab9cfb9ed206e612a16aa8ca",
        []
@@ -327717,6 +327779,10 @@
       "7dbadf995ed89bc3032c4ca1b53e1cebecd6237e",
       []
      ],
+     "scrollbars-chrome-bug-001-ref.html": [
+      "1bf59f90e740ae119b87d96855ea0277a6f8afc9",
+      []
+     ],
      "select-size-overflow-001-ref.html": [
       "2dc9c219a0cdd6dd5e9ea6e92f6eb614a6f4b2c1",
       []
@@ -330449,10 +330515,6 @@
      ],
      "scrollbar-width-paint-006-ref.html": [
       "731430735347ef8ba4c69fc9ba7862bea02e2f54",
-      []
-     ],
-     "scrollbars-chrome-bug-001-ref.html": [
-      "1bf59f90e740ae119b87d96855ea0277a6f8afc9",
       []
      ],
      "support": {
@@ -381182,7 +381244,7 @@
     ],
     "resources": {
      "sensor-data.js": [
-      "d0b280fa6c4371e8f854554a9b1fa3bed3a0a3d6",
+      "a2886e7553bd0e59689a30bb0e5b5a68ed387d37",
       []
      ]
     }
@@ -455772,6 +455834,13 @@
      ]
     },
     "css-overflow": {
+     "auto-scrollbar-inline-children.html": [
+      "149cf942fe625af24de8623baab3e68fed581738",
+      [
+       null,
+       {}
+      ]
+     ],
      "inheritance.html": [
       "ffc6b2f881965883e74d53b49c2495b141724a06",
       [
@@ -459754,13 +459823,6 @@
      }
     },
     "css-scrollbars": {
-     "auto-scrollbar-inline-children.html": [
-      "149cf942fe625af24de8623baab3e68fed581738",
-      [
-       null,
-       {}
-      ]
-     ],
      "inheritance.html": [
       "1a630786b490e4f872a36bd66f8dfaa763f968f9",
       [
