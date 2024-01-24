@@ -90,15 +90,22 @@ bool IsAlwaysAllowedUrlPrefix(const GURL& effective_url) {
 
 bool IsPlayStoreTermsOfServiceUrl(const GURL& effective_url) {
   // Play Store terms of service path:
-  static const char* kPlayStoreHost = "play.google.com";
-  static const char* kPlayTermsPath = "/about/play-terms";
+  // TODO(b/322186372): Remove old host and path after some time.
+  static const char* kPlayStoreHostOld = "play.google.com";
+  static const char* kPlayStoreHostNew = "play.google";
+  static const char* kPlayTermsPathOld = "/about/play-terms";
+  static const char* kPlayTermsPathNew = "/play-terms";
   // Check Play Store terms of service.
   // path_piece is checked separately from the host to match international pages
-  // like https://play.google.com/intl/pt-BR_pt/about/play-terms/.
+  // like https://play.google.com/intl/pt-BR_pt/about/play-terms/ or
+  // https://play.google/intl/pt-BR_pt/play-terms/.
   return effective_url.SchemeIs(url::kHttpsScheme) &&
-         effective_url.host_piece() == kPlayStoreHost &&
-         (effective_url.path_piece().find(kPlayTermsPath) !=
-          base::StringPiece::npos);
+         ((effective_url.host_piece() == kPlayStoreHostOld &&
+           (effective_url.path_piece().find(kPlayTermsPathOld) !=
+            base::StringPiece::npos)) ||
+          (effective_url.host_piece() == kPlayStoreHostNew &&
+           (effective_url.path_piece().find(kPlayTermsPathNew) !=
+            base::StringPiece::npos)));
 }
 
 namespace {

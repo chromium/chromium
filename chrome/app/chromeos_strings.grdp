@@ -4604,7 +4604,7 @@
     Can't load Google Play Terms of Service
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_PLAY_LOAD_ERROR_MESSAGE" desc="Text of the Link to Goolge Privacy Policy in opt-in screen">
-    Make sure your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is connected to the internet and try again. You can also visit play.google.com/about/play-terms on another device.
+    Make sure your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is connected to the internet and try again. You can also visit play.google/play-terms on another device.
   </message>
 
   <!-- Guest ToS Screen -->

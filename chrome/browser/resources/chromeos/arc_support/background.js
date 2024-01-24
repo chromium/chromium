@@ -296,13 +296,13 @@ class TermsOfServicePage {
     this.termsView_.addContentScripts([
       {
         name: 'preProcess',
-        matches: ['https://play.google.com/*'],
+        matches: ['https://play.google/*'],
         js: {code: scriptInitTermsView},
         run_at: 'document_start',
       },
       {
         name: 'postProcess',
-        matches: ['https://play.google.com/*'],
+        matches: ['https://play.google/*'],
         css: {files: ['playstore.css']},
         js: {files: ['playstore.js']},
         run_at: 'document_end',
@@ -371,8 +371,7 @@ class TermsOfServicePage {
     this.nextButton_.hidden = false;
     this.updateTermsHeight_();
     this.nextButton_.focus();
-    if (!this.termsView_.src.startsWith(
-            'https://play.google.com/about/play-terms')) {
+    if (!this.termsView_.src.startsWith('https://play.google/play-terms')) {
       // This is reload due to language selection. Set focus on dropdown to pass
       // GAR criteria(b/308537845)
       const getDropDown = {code: 'getLangZoneSelect();'};
@@ -431,7 +430,7 @@ class TermsOfServicePage {
       return;
     }
 
-    const defaultLocation = 'https://play.google.com/about/play-terms/';
+    const defaultLocation = 'https://play.google/play-terms/';
     if (this.termsView_.src) {
       // This is reloading the page, typically clicked RETRY on error page.
       this.fastLocation_ = undefined;
@@ -532,7 +531,7 @@ class TermsOfServicePage {
     // In case we failed with fast location let retry default scheme.
     if (this.fastLocation_) {
       this.fastLocation_ = undefined;
-      this.termsView_.src = 'https://play.google.com/about/play-terms/';
+      this.termsView_.src = 'https://play.google/play-terms/';
       return;
     }
     this.onTermsViewLoadAborted_(
