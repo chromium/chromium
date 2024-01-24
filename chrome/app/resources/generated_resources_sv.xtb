@@ -379,6 +379,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Det går inte att öppna filen}other{Det går inte att öppna filerna}}</translation>
 <translation id="1282311502488501110">Logga inte in</translation>
 <translation id="1282465000333679776">Dela ljud från systemet</translation>
+<translation id="1283126956823499975">Något gick fel med konfigureringen av enheten</translation>
 <translation id="1284277788676816155">Tillåt inte att data sparas</translation>
 <translation id="1285320974508926690">Översätt aldrig den här webbplatsen</translation>
 <translation id="1285484354230578868">Spara data i Google Drive-kontot</translation>
@@ -4942,7 +4943,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4789550509729954245">Visa en avisering när enheter i närheten delar filer</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Aktivera TrackPoint-acceleration</translation>
-<translation id="4792510204382653691">Öppna Web Store</translation>
 <translation id="4792711294155034829">&amp;Rapportera ett problem...</translation>
 <translation id="4794810983896241342">Uppdateringar hanteras av <ph name="BEGIN_LINK" />administratören<ph name="END_LINK" /></translation>
 <translation id="4794910597689955457">Vill du flytta <ph name="NUM_OF_FILES" /> filer till <ph name="CLOUD_PROVIDER" /> och öppna dem?</translation>
@@ -5040,6 +5040,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4863769717153320198">Ser ut som <ph name="WIDTH" /> × <ph name="HEIGHT" /> (standard)</translation>
 <translation id="4864369630010738180">Loggar in ...</translation>
 <translation id="4864805589453749318">Välj den förälder som ger sitt tillstånd att lägga till ett skolkonto.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blockerad)</translation>
 <translation id="486505726797718946">Minnet har sparats</translation>
 <translation id="486635084936119914">Öppna vissa filtyper automatiskt efter att de har laddats ned</translation>
 <translation id="4867272607148176509">Föräldrar kan godkänna eller blockera appar, ställa in tidsgränser och styra webbsökningar. Ett skolkonto kan läggas till senare för att få åtkomst till de flesta skolresurserna.</translation>
@@ -5532,6 +5533,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5261619498868361045">Behållarnamnet får inte vara tomt.</translation>
 <translation id="5261683757250193089">Öppna i Web Store</translation>
 <translation id="5261799091118902550">Den här filen kan innehålla ett virus eller skadlig programvara. Du kan skicka den till Google för att kontrollera om den är säker.</translation>
+<translation id="5262334727506665688">Fortsätt spara lösenord i Google-kontot</translation>
 <translation id="5262784498883614021">Anslut till ett nätverk automatiskt</translation>
 <translation id="5263656105659419083">Klicka på Fäst uppe till höger för att enkelt återgå till sidopanelen</translation>
 <translation id="5264148714798105376">Det här kan ta en liten stund.</translation>
@@ -7072,6 +7074,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="649396225532207613">Den här filen kan skada dina personliga konton och sociala nätverkskonton</translation>
 <translation id="6494327278868541139">Visa detaljer om förbättrat skydd</translation>
 <translation id="6494445798847293442">Inte från certifikatutfärdare</translation>
+<translation id="6494483173119160146">Ett allvarligt fel uppstod på enheten. Återställ enheten (detta rensar alla användaruppgifter) och försök igen.</translation>
 <translation id="6497784818439587832">Ändra skärmstorlek för att göra objekt på skärmen större eller mindre</translation>
 <translation id="6497789971060331894">Omvänd scrollning på musen</translation>
 <translation id="6498249116389603658">&amp;Alla dina språk</translation>
@@ -9551,6 +9554,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8397825320644530257">Koppla från ansluten telefon</translation>
 <translation id="8398877366907290961">Fortsätt ändå</translation>
 <translation id="8399282673057829204">Visa lösenord</translation>
+<translation id="839949601275221554">Ett fel uppstod på enheten. Starta om enheten och försök igen.</translation>
 <translation id="8401432541486058167">Ange den pinkod som är kopplad till ditt smartkort.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Cookies blockeras i Chrome igen i dag}=1{Cookies blockeras i Chrome igen i morgon}other{Cookies blockeras i Chrome igen om # dagar}}</translation>
 <translation id="8403618281196981152">Din data i Chrome</translation>

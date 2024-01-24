@@ -94,7 +94,6 @@
 <translation id="1450170672351507823">È attiva la protezione standard. Per una maggiore sicurezza, utilizza la Protezione avanzata.</translation>
 <translation id="1469381646033328562">Il tuo account è gestito da un genitore.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
-<translation id="149095475893949513">Questo sito web sta cercando di scaricare un profilo di configurazione.</translation>
 <translation id="1491277525950327607">Tocca due volte per attivare/disattivare l'impostazione</translation>
 <translation id="1492417797159476138">Hai già salvato questo nome utente per questo sito</translation>
 <translation id="1497590942294823549">Menu → Gestore delle password</translation>
@@ -302,6 +301,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="260378315836159338">Nella parte superiore dello schermo, tocca +</translation>
 <translation id="2604176749896001318">Aggiorna il browser</translation>
 <translation id="2609008503159898744">Chiudere tutte le schede?</translation>
+<translation id="2613747923081026172">Crea gruppo</translation>
 <translation id="2617210333344098964">Sposta indirizzo nell'account</translation>
 <translation id="261739049332372104">Per ricevere aggiornamenti sui contenuti che ti interessano, attiva la notifica nelle impostazioni di iOS.</translation>
 <translation id="2625189173221582860">Password copiata</translation>
@@ -1283,7 +1283,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7760127703945531263">Blocco delle schede di navigazione in incognito</translation>
 <translation id="7765158879357617694">Sposta</translation>
 <translation id="7772032839648071052">Conferma passphrase</translation>
-<translation id="777572173400717978">{count,plural, =1{Preferito creato}other{Preferiti creati}}</translation>
 <translation id="777637629667389858">Se hai eseguito l'accesso, ti protegge nei servizi Google.</translation>
 <translation id="7781011649027948662">Tradurre la pagina?</translation>
 <translation id="7781069478569868053">Pagina Nuova scheda</translation>

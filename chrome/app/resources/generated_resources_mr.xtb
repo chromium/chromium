@@ -379,6 +379,7 @@
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{फाइल उघडू शकत नाही}other{फाइल उघडू शकत नाही}}</translation>
 <translation id="1282311502488501110">साइन इन करू नका</translation>
 <translation id="1282465000333679776">सिस्टम ऑडिओ शेअर करा</translation>
+<translation id="1283126956823499975">डिव्हाइस सेट करताना काहीतरी चुकले</translation>
 <translation id="1284277788676816155">डेटा सेव्ह करण्याची अनुमती देऊ नका</translation>
 <translation id="1285320974508926690">या साइटचा कधीही भाषांतर करु नका</translation>
 <translation id="1285484354230578868">आपल्या Google ड्राइव्ह खात्यामध्ये डेटा संचयित करा</translation>
@@ -4939,7 +4940,6 @@
 <translation id="4789550509729954245">डिव्हाइस जवळपास शेअर करत असतील, तेव्हा सूचना दाखवा</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint अ‍ॅक्सिलरेशन सुरू करा</translation>
-<translation id="4792510204382653691">वेबस्टोअर उघडा</translation>
 <translation id="4792711294155034829">&amp;समस्या नोंदवणे...</translation>
 <translation id="4794810983896241342">अपडेट <ph name="BEGIN_LINK" />तुमचा अ‍ॅडमिनिस्ट्रेटर<ph name="END_LINK" /> व्यवस्‍थापित करतो</translation>
 <translation id="4794910597689955457"><ph name="NUM_OF_FILES" /> फाइल उघडण्यासाठी <ph name="CLOUD_PROVIDER" /> वर हलवायच्या आहेत का?</translation>
@@ -5037,6 +5037,7 @@
 <translation id="4863769717153320198"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (डीफॉल्ट) सारखे दिसते</translation>
 <translation id="4864369630010738180">साइन इन करत आहे...</translation>
 <translation id="4864805589453749318">शाळा खाते जोडण्याची परवानगी देणार असलेले पालक निवडा.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (ब्लॉक केलेले)</translation>
 <translation id="486505726797718946">मेमरी सेव्ह केली आहे</translation>
 <translation id="486635084936119914">डाउनलोड केल्यानंतर काही फाईल प्रकार स्वयंचलितपणे उघडा</translation>
 <translation id="4867272607148176509">पालक ॲप्स मंजूर किंवा ब्लॉक करू शकतात, वेळ मर्यादा सेट करू शकतात आणि वेब ब्राउझिंग नियंत्रित करू शकतात. बहुतेक शालेय स्रोत अ‍ॅक्सेस करण्यासाठी शाळेचे खाते नंतर जोडले जाऊ शकते.</translation>
@@ -5529,6 +5530,7 @@
 <translation id="5261619498868361045">कंटेनरचे नाव रिक्त असू शकत नाही.</translation>
 <translation id="5261683757250193089">वेब स्टोअर मध्ये उघडा</translation>
 <translation id="5261799091118902550">या फाइलमध्ये व्हायरस किंवा मालवेअर असू शकते. ती असुरक्षित आहे की नाही हे तपासण्यासाठी तुम्ही ती Google कडे पाठवू शकता.</translation>
+<translation id="5262334727506665688">तुमच्या Google खाते मध्ये पासवर्ड सेव्ह करणे सुरू ठेवा</translation>
 <translation id="5262784498883614021">नेटवर्कशी आपोआप कनेक्ट करा</translation>
 <translation id="5263656105659419083">साइड पॅनलवर सहजपणे परत जाण्यासाठी, सर्वात वर उजवीकडे पिन करा वर क्लिक करा</translation>
 <translation id="5264148714798105376">यास मिनिटभर किंवा त्‍याहून अधिक वेळ लागू शकतो.</translation>
@@ -7070,6 +7072,7 @@
 <translation id="649396225532207613">ही फाइल तुमच्या वैयक्तिक आणि सोशल नेटवर्क खात्यांना हानी पोहोचवू शकते</translation>
 <translation id="6494327278868541139">वर्धित संरक्षणाचे तपशील दाखवा</translation>
 <translation id="6494445798847293442">प्रमाणीकरण अधिकृतता नाही</translation>
+<translation id="6494483173119160146">डिव्हाइसमध्ये रिकव्‍हर न करता येणारी एरर आली आहे. कृपया तुमचे डिव्हाइस रीसेट करा (यामुळे सर्व वापरकर्ता डेटा मिटेल) आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="6497784818439587832">तुमच्या स्क्रीनवरील आयटम लहान किंवा मोठे करण्यासाठी डिस्प्लेचा आकार बदला</translation>
 <translation id="6497789971060331894">माउस रिव्हर्स स्क्रोलिंग</translation>
 <translation id="6498249116389603658">&amp;आपल्या सर्व भाषा</translation>
@@ -9547,6 +9550,7 @@
 <translation id="8397825320644530257">कनेक्ट केलेला फोन डिस्‍कनेक्‍ट करा</translation>
 <translation id="8398877366907290961">तरीही पुढे चला</translation>
 <translation id="8399282673057829204">पासवर्ड पहा</translation>
+<translation id="839949601275221554">डिव्हाइसमध्ये एरर आली. कृपया तुमचे डिव्हाइस रीस्टार्ट करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="8401432541486058167">तुमच्या स्‍मार्ट कार्डशी संलग्न असलेला पिन द्या.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome will block cookies again today}=1{Chrome उद्या पुन्हा कुकी ब्लॉक करेल}other{Chrome # दिवसांनंतर पुन्हा कुकी ब्लॉक करेल}}</translation>
 <translation id="8403618281196981152">तुमचा Chrome मधील डेटा</translation>

@@ -94,7 +94,6 @@
 <translation id="1450170672351507823">已开启标准保护。若要进一步提升安全性，请使用增强型保护。</translation>
 <translation id="1469381646033328562">您的账号由您的家长管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="149095475893949513">此网站正要尝试下载一个配置文件。</translation>
 <translation id="1491277525950327607">点按两次即可切换设置</translation>
 <translation id="1492417797159476138">您已为此网站保存该用户名</translation>
 <translation id="1497590942294823549">菜单 → 密码管理工具</translation>
@@ -302,6 +301,7 @@
 <translation id="260378315836159338">点按屏幕顶部的 +</translation>
 <translation id="2604176749896001318">更新浏览器</translation>
 <translation id="2609008503159898744">关闭所有标签页？</translation>
+<translation id="2613747923081026172">创建群组</translation>
 <translation id="2617210333344098964">将地址迁移到账号</translation>
 <translation id="261739049332372104">若要接收重要内容的最新动态，请在 iOS 设置中开启通知功能。</translation>
 <translation id="2625189173221582860">已复制密码</translation>
@@ -1283,7 +1283,6 @@
 <translation id="7760127703945531263">无痕式标签页锁定</translation>
 <translation id="7765158879357617694">移动</translation>
 <translation id="7772032839648071052">确认密码</translation>
-<translation id="777572173400717978">{count,plural, =1{已添加书签}other{已添加书签}}</translation>
 <translation id="777637629667389858">当您登录后，在各种 Google 服务中保护您。</translation>
 <translation id="7781011649027948662">翻译网页？</translation>
 <translation id="7781069478569868053">新标签页</translation>

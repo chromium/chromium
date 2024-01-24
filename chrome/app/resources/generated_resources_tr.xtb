@@ -377,6 +377,7 @@
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Dosya açılamıyor}other{Dosyalar açılamıyor}}</translation>
 <translation id="1282311502488501110">Oturum Açma</translation>
 <translation id="1282465000333679776">Sistem sesini paylaş</translation>
+<translation id="1283126956823499975">Cihaz kurulurken bir hata oluştu</translation>
 <translation id="1284277788676816155">Veri kaydetmeye izin verme</translation>
 <translation id="1285320974508926690">Bu siteyi asla çevirme</translation>
 <translation id="1285484354230578868">Verileri Google Drive hesabınızda depolama</translation>
@@ -4924,7 +4925,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4789550509729954245">Yakındaki cihazlar paylaşımda bulunurken bildirim göster</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint hızlandırmasını etkinleştir</translation>
-<translation id="4792510204382653691">Web mağazasını aç</translation>
 <translation id="4792711294155034829">&amp;Sorun Bildirin...</translation>
 <translation id="4794810983896241342">Güncellemeler <ph name="BEGIN_LINK" />yöneticiniz<ph name="END_LINK" /> tarafından yönetilmektedir</translation>
 <translation id="4794910597689955457"><ph name="NUM_OF_FILES" /> dosya, <ph name="CLOUD_PROVIDER" /> hedefine taşınıp açılsın mı?</translation>
@@ -5022,6 +5022,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4863769717153320198"><ph name="WIDTH" /> x <ph name="HEIGHT" /> şeklinde görünür (Varsayılan)</translation>
 <translation id="4864369630010738180">Oturum açılıyor...</translation>
 <translation id="4864805589453749318">Okul hesabı eklenmesine izin veren ebeveyni seçin.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (engellendi)</translation>
 <translation id="486505726797718946">Anı Kaydedildi</translation>
 <translation id="486635084936119914">Belirli türdeki dosyaları indirildikten sonra otomatik olarak aç</translation>
 <translation id="4867272607148176509">Ebeveynler uygulamaları onaylayabilir ya da engelleyebilir, zaman sınırları belirleyebilir ve web'de gezinmeyi kontrol edebilirler. Çoğu okul kaynağına erişmek için daha sonra okul hesabı eklenebilir.</translation>
@@ -5514,6 +5515,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5261619498868361045">Kapsayıcı adı boş bırakılamaz.</translation>
 <translation id="5261683757250193089">Web Mağazası'nda aç</translation>
 <translation id="5261799091118902550">Bu dosya virüs veya kötü amaçlı yazılım olabilir. Güvenli olup olmadığını kontrol etmek için Google'a gönderebilirsiniz.</translation>
+<translation id="5262334727506665688">Şifreleri Google Hesabınıza kaydetmeye devam edin</translation>
 <translation id="5262784498883614021">Ağa otomatik olarak bağlan</translation>
 <translation id="5263656105659419083">Yan panele kolayca dönmek için sağ üst taraftaki Sabitle'yi tıklayın</translation>
 <translation id="5264148714798105376">Bu işlem bir dakika kadar sürebilir.</translation>
@@ -7055,6 +7057,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="649396225532207613">Bu dosya, kişisel ve sosyal ağ hesaplarınıza zarar verebilir</translation>
 <translation id="6494327278868541139">Gelişmiş koruma ayrıntılarını göster</translation>
 <translation id="6494445798847293442">Sertifika Yetkilisi değil</translation>
+<translation id="6494483173119160146">Cihaz, düzeltilemeyen bir hatayla karşılaştı. Lütfen cihazınızı sıfırlayın (tüm kullanıcı verileri silinir) ve tekrar deneyin.</translation>
 <translation id="6497784818439587832">Ekranınızdaki öğeleri küçültmek veya büyütmek için ekran boyutunu değiştirin</translation>
 <translation id="6497789971060331894">Fare ters kaydırma</translation>
 <translation id="6498249116389603658">&amp;Tüm dilleriniz</translation>
@@ -9533,6 +9536,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8397825320644530257">Bağlı telefonun bağlantısını kes</translation>
 <translation id="8398877366907290961">Yine de devam et</translation>
 <translation id="8399282673057829204">Şifreyi göster</translation>
+<translation id="839949601275221554">Cihaz bir hatayla karşılaştı. Lütfen cihazınızı yeniden başlatın ve tekrar deneyin.</translation>
 <translation id="8401432541486058167">Akıllı kartınızla ilişkilendirilen PIN'i girin.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome bugün çerezleri tekrar engelleyecek}=1{Chrome yarın çerezleri tekrar engelleyecek}other{Chrome'un çerezleri tekrar engellemesine # gün kaldı}}</translation>
 <translation id="8403618281196981152">Chrome'daki verileriniz</translation>

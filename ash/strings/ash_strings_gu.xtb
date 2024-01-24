@@ -1498,6 +1498,7 @@
 <translation id="6981291220124935078">ઍક્સેસ ચાલુ કરો</translation>
 <translation id="6981982820502123353">ઍક્સેસિબિલિટી</translation>
 <translation id="698231206551913481">આ વપરાશકર્તા કાઢી નાખવામાં આવે તે પછી આ વપરાશકર્તા સાથે સંકળાયેલી તમામ ફાઇલો અને સ્થાનિક ડેટા કાયમ માટે ડિલીટ કરવામાં આવશે.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)ને સપોર્ટ આપતું નથી. રિઝોલ્યુશન બદલીને <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) કરવામાં આવ્યું હતું. ફેરફારો રાખવા માટે 'કન્ફર્મ કરો' પર ક્લિક કરો. અગાઉના સેટિંગ <ph name="TIMEOUT_SECONDS" />માં રિસ્ટોર કરવામાં આવશે.</translation>
 <translation id="6989752354829085073">તમારી Chromebookને જાણવા એક ઝટપટ ટૂર કરો. તો ચાલો અને ઝડપથી 6 પગલાં પૂરા કરો.</translation>
 <translation id="7004910047186208204">મોબાઇલ ડેટા સાથે કનેક્ટ કરો</translation>
 <translation id="7005239792648594238">શરૂ કરવા માટે ઍપ ખોલો</translation>

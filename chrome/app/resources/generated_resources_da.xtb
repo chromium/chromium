@@ -380,6 +380,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Filen kan ikke åbnes}one{Filen kan ikke åbnes}other{Filerne kan ikke åbnes}}</translation>
 <translation id="1282311502488501110">Log ikke ind</translation>
 <translation id="1282465000333679776">Del systemlyd</translation>
+<translation id="1283126956823499975">Noget gik galt under konfigurationen af enheden</translation>
 <translation id="1284277788676816155">Tillad ikke, at data gemmes</translation>
 <translation id="1285320974508926690">Oversæt aldrig dette website</translation>
 <translation id="1285484354230578868">Gemme data på din Google Drev-konto</translation>
@@ -4943,7 +4944,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4789550509729954245">Vis en notifikation, når enheder i nærheden deler indhold</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Aktivér TrackPoint-acceleration</translation>
-<translation id="4792510204382653691">Åbn Webshop</translation>
 <translation id="4792711294155034829">&amp;Rapporter et problem...</translation>
 <translation id="4794810983896241342">Opdateringer administreres af din <ph name="BEGIN_LINK" />administrator<ph name="END_LINK" /></translation>
 <translation id="4794910597689955457">Vil du flytte <ph name="NUM_OF_FILES" /> filer til <ph name="CLOUD_PROVIDER" />, så de kan åbnes?</translation>
@@ -5041,6 +5041,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4863769717153320198">Ligner <ph name="WIDTH" /> x <ph name="HEIGHT" /> (standard)</translation>
 <translation id="4864369630010738180">Logger ind...</translation>
 <translation id="4864805589453749318">Vælg den forælder, der giver tilladelse til at tilføje en skolekonto.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokeret)</translation>
 <translation id="486505726797718946">Mindet er gemt</translation>
 <translation id="486635084936119914">Åbn bestemte filtyper automatisk efter download</translation>
 <translation id="4867272607148176509">Forældre kan godkende eller blokere apps, angive tidsgrænser og styre webbrowsing. En skolekonto kan tilføjes senere for at få adgang til de fleste skoleressourcer.</translation>
@@ -5533,6 +5534,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5261619498868361045">Containernavnet skal udfyldes.</translation>
 <translation id="5261683757250193089">Åbn i Webshop</translation>
 <translation id="5261799091118902550">Denne fil kan være en virus eller malware. Du kan sende den til Google for at tjekke, om den er usikker.</translation>
+<translation id="5262334727506665688">Fortsæt med at gemme adgangskoder på din Google-konto</translation>
 <translation id="5262784498883614021">Opret automatisk forbindelse til netværket</translation>
 <translation id="5263656105659419083">Du kan nemt gå tilbage til sidepanelet ved at klikke på Fastgør øverst til højre</translation>
 <translation id="5264148714798105376">Dette kan tage et øjeblik.</translation>
@@ -7073,6 +7075,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="649396225532207613">Denne fil kan skade dine personlige konti og dine konti på sociale netværk</translation>
 <translation id="6494327278868541139">Vis oplysninger om forbedret beskyttelse</translation>
 <translation id="6494445798847293442">Ikke et nøglecenter</translation>
+<translation id="6494483173119160146">Der opstod en uoprettelig fejl på enheden. Nulstil din enhed (dette sletter alle brugerdata), og prøv igen.</translation>
 <translation id="6497784818439587832">Skift visningsstørrelse for at gøre elementer på skærmen mindre eller større</translation>
 <translation id="6497789971060331894">Omvendt rulning på mus</translation>
 <translation id="6498249116389603658">&amp;Alle dine sprog</translation>
@@ -9553,6 +9556,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8397825320644530257">Afbryd forbindelsen til den tilsluttede telefon</translation>
 <translation id="8398877366907290961">Fortsæt alligevel</translation>
 <translation id="8399282673057829204">Se adgangskode</translation>
+<translation id="839949601275221554">Der opstod en fejl på enheden. Genstart din enhed, og prøv igen.</translation>
 <translation id="8401432541486058167">Brug den pinkode, der hører til dit chipkort.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{I dag blokerer Chrome cookies igen}=1{I morgen blokerer Chrome cookies igen}one{# dag indtil Chrome blokerer cookies igen}other{# dage indtil Chrome blokerer cookies igen}}</translation>
 <translation id="8403618281196981152">Dine data i Chrome</translation>

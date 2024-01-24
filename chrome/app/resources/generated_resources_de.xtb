@@ -321,7 +321,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1236009322878349843">Smartphone bearbeiten</translation>
 <translation id="1239594683407221485">Du kannst die Inhalte in der App "Dateien" ansehen.</translation>
 <translation id="1239841552505950173">App starten</translation>
-<translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren deinen Namen, deine E-Mail-Adresse und dein Profilbild mit dieser Website. Lies die <ph name="BEGIN_LINK1" />Datenschutzerklärung<ph name="END_LINK1" /> und die <ph name="BEGIN_LINK2" />Nutzungsbedingungen<ph name="END_LINK2" /> dieser Website.</translation>
+<translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt deinen Namen, deine E-Mail-Adresse und dein Profilbild mit dieser Website, um fortzufahren. Weitere Informationen findest du in der <ph name="BEGIN_LINK1" />Datenschutzerklärung<ph name="END_LINK1" /> und den <ph name="BEGIN_LINK2" />Nutzungsbedingungen<ph name="END_LINK2" /> dieser Website.</translation>
 <translation id="1241066500170667906">Wähle den Teststatus für „<ph name="EXPERIMENT_NAME" />“ aus</translation>
 <translation id="124116460088058876">Weitere Sprachen</translation>
 <translation id="1241381048229838873">Alle Lesezeichen anzeigen</translation>
@@ -4924,7 +4924,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4789550509729954245">Benachrichtigung anzeigen, wenn Geräte in der Nähe etwas teilen</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint-Beschleunigung aktivieren</translation>
-<translation id="4792510204382653691">Web Store öffnen</translation>
 <translation id="4792711294155034829">&amp;Problem melden...</translation>
 <translation id="4794810983896241342">Updates werden von <ph name="BEGIN_LINK" />deinem Administrator<ph name="END_LINK" /> verwaltet</translation>
 <translation id="4794910597689955457"><ph name="NUM_OF_FILES" /> Datei zu <ph name="CLOUD_PROVIDER" /> verschieben, um sie zu öffnen?</translation>

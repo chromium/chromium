@@ -94,7 +94,6 @@
 <translation id="1450170672351507823">Սովորական պաշտպանությունը միացված է։ Ավելի շատ ապահովության համար օգտագործեք լրացուցիչ պաշտպանությունը։</translation>
 <translation id="1469381646033328562">Ձեր հաշիվը կառավարում է ձեր ծնողը։
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
-<translation id="149095475893949513">Այս կայքը փորձում է կազմաձևման պրոֆիլ ներբեռնել։</translation>
 <translation id="1491277525950327607">Կրկնակի հպեք՝ կարգավորումը միացնելու/անջատելու համար</translation>
 <translation id="1492417797159476138">Օգտանունն արդեն պահված է այս կայքի համար</translation>
 <translation id="1497590942294823549">Ընտրացանկ → Գաղտնաբառերի կառավարիչ</translation>
@@ -302,6 +301,7 @@
 <translation id="260378315836159338">Էկրանի վերևում հպեք + նշանին</translation>
 <translation id="2604176749896001318">Թարմացրեք ձեր դիտարկիչը</translation>
 <translation id="2609008503159898744">Փակե՞լ բոլոր ներդիրները</translation>
+<translation id="2613747923081026172">Ստեղծել խումբ</translation>
 <translation id="2617210333344098964">Հասցեն տեղափոխել հաշիվ</translation>
 <translation id="261739049332372104">Ձեզ հետաքրքրող բովանդակության մասին թարմացումներ ստանալու համար միացրեք ծանուցումը iOS-ի կարգավորումներում։</translation>
 <translation id="2625189173221582860">Գաղտնաբառը պատճենվեց</translation>
@@ -555,6 +555,7 @@
 <translation id="3922310737605261887">Որոնել պատճենված տեքստը</translation>
 <translation id="3928666092801078803">Իմ տվյալների միավորում</translation>
 <translation id="3929457972718048006">Հասցեներ</translation>
+<translation id="3948600256434252210">Կարող եք մատը սահեցնել աջ՝ ինկոգնիտո ռեժիմում դիտարկելու համար։</translation>
 <translation id="3955822496205734389">Դուք ունեք թույլ գաղտնաբառեր։</translation>
 <translation id="3959736869653157332">Ընտրացանկ → Նոր ինկոգնիտո ներդիր</translation>
 <translation id="3962326069546168954">Պահել</translation>
@@ -659,6 +660,7 @@
 <translation id="4539187448429948815">{count,plural, =1{Ինքնալրացման {count} պահված հուշում ցուցադրվում է ստեղնաշարի վերևում։}one{Ինքնալրացման {count} պահված հուշում ցուցադրվում է ստեղնաշարի վերևում։}other{Ինքնալրացման {count} պահված հուշում ցուցադրվում է ստեղնաշարի վերևում։}}</translation>
 <translation id="4540780316273593836">Սխալ առաջացավ</translation>
 <translation id="4550040941166547650">Միայն այս սարքում</translation>
+<translation id="4564893319561643483">Թաքցնել «<ph name="TITLE" />» մոդուլը</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Փակե՞լ {COUNT} ոչ ակտիվ ներդիրը}one{Փակե՞լ {COUNT} ոչ ակտիվ ներդիրը}other{Փակե՞լ {COUNT} ոչ ակտիվ ներդիրները}}</translation>
 <translation id="457386861538956877">Ավելին…</translation>
 <translation id="4587589328781138893">Կայքեր</translation>
@@ -1259,6 +1261,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7666861622396822790">Սա կարող եք կառավարել <ph name="BEGIN_LINK" />Բովանդակության կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="7671141431838911305">ՏԵՂԱԴՐԵԼ</translation>
+<translation id="7673346542062368520">Կարող եք մատը սահեցնել ձախ՝ ինկոգնիտո ռեժիմում դիտարկելու համար։</translation>
 <translation id="7679915578945954324">Կայքի հասցեները պատճենվեցին</translation>
 <translation id="7687508192620387263">Հասանելի է օրացույցի ֆայլ</translation>
 <translation id="7701040980221191251">Չկա</translation>
@@ -1280,7 +1283,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7760127703945531263">Ինկոգնիտո ներդիրների կողպում</translation>
 <translation id="7765158879357617694">Տեղափոխել</translation>
 <translation id="7772032839648071052">Հաստատեք անցաբառը</translation>
-<translation id="777572173400717978">{count,plural, =1{Էջանշվեց}one{Էջանշվեց}other{Էջանշվեցին}}</translation>
 <translation id="777637629667389858">Երբ դուք մուտք եք գործած հաշիվ, գործառույթը պաշտպանում է ձեզ Google-ի ծառայություններում։</translation>
 <translation id="7781011649027948662">Թարգմանե՞լ էջը</translation>
 <translation id="7781069478569868053">Նոր ներդիրի էջ</translation>

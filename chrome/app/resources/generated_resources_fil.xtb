@@ -380,6 +380,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Hindi mabuksan ang file}one{Hindi mabuksan ang mga file}other{Hindi mabuksan ang mga file}}</translation>
 <translation id="1282311502488501110">Huwag Mag-sign In</translation>
 <translation id="1282465000333679776">Ibahagi ang audio ng system</translation>
+<translation id="1283126956823499975">Nagkaproblema sa pag-set up ng device</translation>
 <translation id="1284277788676816155">Huwag payagang i-save ang data</translation>
 <translation id="1285320974508926690">Huwag isalin kailanman ang site na ito</translation>
 <translation id="1285484354230578868">Mag-imbak ng data sa iyong Google Drive account</translation>
@@ -4943,7 +4944,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4789550509729954245">Magpakita ng notification kapag nagbabahagi ang mga kalapit na device</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">I-enable ang pag-accelerate ng TrackPoint</translation>
-<translation id="4792510204382653691">Buksan ang webstore</translation>
 <translation id="4792711294155034829">&amp;Mag-ulat ng Isyu...</translation>
 <translation id="4794810983896241342">Pinapamahalaan ng <ph name="BEGIN_LINK" />iyong administrator<ph name="END_LINK" /> ang mga update</translation>
 <translation id="4794910597689955457">Ilipat ang <ph name="NUM_OF_FILES" /> (na) file sa <ph name="CLOUD_PROVIDER" /> para buksan?</translation>
@@ -5041,6 +5041,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4863769717153320198">Mukhang <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Default)</translation>
 <translation id="4864369630010738180">Nagsa-sign in...</translation>
 <translation id="4864805589453749318">Piliin ang magulang na nagbibigay ng pahintulot na magdagdag ng pampaaralang account.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (naka-block)</translation>
 <translation id="486505726797718946">Natipid na Memory</translation>
 <translation id="486635084936119914">Awtomatikong buksan ang ilang partikular na uri ng file pagkatapos ma-download</translation>
 <translation id="4867272607148176509">Magagawa ng mga magulang na aprubahan o i-block ang mga app, magtakda ng mga limitasyon sa oras, at kontrolin ang pag-browse sa web. Puwedeng magdagdag ng pampaaralang account sa ibang pagkakataon para ma-access ang karamihan sa mga resource ng paaralan.</translation>
@@ -5533,6 +5534,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5261619498868361045">Hindi puwedeng walang laman ang pangalan ng container.</translation>
 <translation id="5261683757250193089">Buksan sa Web Store</translation>
 <translation id="5261799091118902550">Posibleng virus o malware ang file na ito. Puwede mo itong ipadala sa Google para masuri kung hindi ito ligtas.</translation>
+<translation id="5262334727506665688">Patuloy na mag-save ng mga password sa iyong Google Account</translation>
 <translation id="5262784498883614021">Awtomatikong kumonekta sa network</translation>
 <translation id="5263656105659419083">Para madaling makabalik sa panel sa gilid, i-click ang I-pin sa kanang bahagi sa itaas</translation>
 <translation id="5264148714798105376">Maaari itong abutin nang isang minuto o higit pa.</translation>
@@ -7073,6 +7075,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="649396225532207613">Puwedeng mapinsala ng file na ito ang iyong mga personal na account at account sa social network</translation>
 <translation id="6494327278868541139">Ipakita ang mga detalye ng pinahusay na proteksyon</translation>
 <translation id="6494445798847293442">Hindi Certification Authority</translation>
+<translation id="6494483173119160146">Nagkaroon ng hindi nare-recover na error ang device. Paki-reset ang iyong device (buburahin nito ang lahat ng data ng user) at subukan ulit.</translation>
 <translation id="6497784818439587832">Baguhin ang laki ng display para paliitin o palakihin ang mga item sa iyong screen</translation>
 <translation id="6497789971060331894">Reverse na pag-scroll gamit ang mouse</translation>
 <translation id="6498249116389603658">&amp;Lahat ng iyong wika</translation>
@@ -9554,6 +9557,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8397825320644530257">Idiskonekta ang nakakonektang telepono</translation>
 <translation id="8398877366907290961">Magpatuloy</translation>
 <translation id="8399282673057829204">Tingnan ang password</translation>
+<translation id="839949601275221554">Nagka-error sa device. Paki-restart ang iyong device at subukan ulit.</translation>
 <translation id="8401432541486058167">Ibigay ang PIN na nauugnay sa iyong smart card.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Magba-block ulit ang Chrome ng cookies ngayong araw}=1{Magba-block ulit ang Chrome ng cookies bukas}one{# araw bago mag-block ulit ang Chrome ng cookies}other{# na araw bago mag-block ulit ang Chrome ng cookies}}</translation>
 <translation id="8403618281196981152">Ang iyong data sa Chrome</translation>

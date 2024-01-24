@@ -465,6 +465,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1828959155404624835">Alquileres de automóviles</translation>
 <translation id="1834321415901700177">Este sitio contiene programas dañinos</translation>
 <translation id="1838374766361614909">Borrar la búsqueda</translation>
+<translation id="1839331950812095887">algunas palabras que resuman tus pensamientos</translation>
 <translation id="1839551713262164453">Se produjeron errores en la validación de los valores de la política</translation>
 <translation id="1842969606798536927">Pagar</translation>
 <translation id="1846432862466000825">Plástico (archivo)</translation>
@@ -698,6 +699,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2293443924986248631">Cuando esta opción está activada, los sitios no pueden usar cookies para rastrearte en la Web. Es posible que las características de algunos sitios no funcionen de forma adecuada.</translation>
 <translation id="2295831393422400053">Activa el parámetro de configuración Mejorar las búsquedas y la navegación para usar la función Ayúdame a escribir</translation>
 <translation id="2300306941146563769">No se subió</translation>
+<translation id="2301098101308036335">Qué sitios web se visitan y cuándo.</translation>
 <translation id="230286397113210245">Botón Abrir ventana de incógnito: actívalo para abrir una nueva ventana de incógnito y así navegar de forma privada</translation>
 <translation id="2312234273148520048">Condimentos y aderezos</translation>
 <translation id="2316087952091171402">Menos de <ph name="UPPER_ESTIMATE" />. Es posible que algunos sitios tarden más en cargar cuando vuelvas a visitarlos.</translation>
@@ -1366,6 +1368,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3655670868607891010">Si este mensaje aparece con frecuencia, haz clic aquí: <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Indumentaria casual</translation>
 <translation id="3658742229777143148">Revisión</translation>
+<translation id="3659521826520353662">Qué sitios web definidos por el administrador se visitan y cuándo: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
 <translation id="3665100783276035932">La mayoría de los sitios deberían funcionar según lo previsto</translation>
 <translation id="3667704023705708645">Capital de riesgo</translation>
@@ -1456,6 +1459,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3812398568375898177">Esta es una actualización crítica que mejora el rendimiento de las apps para Android en ChromeOS.</translation>
 <translation id="3815434930383843058">20.3 × 30.5 cm (8 × 12 in)</translation>
 <translation id="3816482573645936981">Valor (sustituido)</translation>
+<translation id="382115839591654906">CVC de <ph name="CARD_NAME" /></translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552"><ph name="BROWSER_DOMAIN" /> administra tu navegador y <ph name="PROFILE_DOMAIN" /> administra tu perfil</translation>
 <translation id="382518646247711829">Si utilizas un servidor proxy...</translation>
@@ -3205,6 +3209,7 @@ Detalles adicionales:
 <translation id="7341357280245177602">Vehículos usados</translation>
 <translation id="7346048084945669753">Se afilió:</translation>
 <translation id="7346062987309535530">Vajilla</translation>
+<translation id="7346081071264046066">"responder sí a esta invitación de boda con emoción"</translation>
 <translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="7353601530677266744">Línea de comandos</translation>
 <translation id="7354880545102894991">Viajes de bajo costo y de último minuto</translation>

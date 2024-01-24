@@ -621,6 +621,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3577473026931028326">Aeth rhywbeth o'i le. Rhowch gynnig arall arni.</translation>
 <translation id="3580650856351781466">Wrthi'n lawrlwytho ffeiliau lleferydd</translation>
 <translation id="3585296979871889131">Gweld lluniau, cyfryngau, hysbysiadau ac apiau diweddar eich ffôn</translation>
+<translation id="3590441166907930941">Botwm Ochr</translation>
 <translation id="3593039967545720377">Cael mynediad at hanes eich clipfwrdd drwy bwyso <ph name="SHORTCUT_KEY_NAME" /> + V i weld eich clipfwrdd. Copïwch eitem i gychwyn arni.</translation>
 <translation id="3593646411856133110">Sweipiwch i fyny a daliwch i weld apiau sydd ar agor</translation>
 <translation id="3595596368722241419">Mae'r batri yn llawn</translation>
@@ -1033,6 +1034,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="5163434717504750796">Iechyd batri <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Cyfrif seiclo <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Cadw desg fel templed</translation>
 <translation id="5168181903108465623">Mae dyfeisiau Cast ar gael</translation>
+<translation id="5168753792967365150">Golygu yn Google Tasks</translation>
 <translation id="5170568018924773124">Dangos yn y ffolder</translation>
 <translation id="5176318573511391780">Recordio sgrîn rannol</translation>
 <translation id="5187627942836026988">Dangos manylion y boethfan. Ma'r boethfan yn cael ei rhwystro gan eich gweinyddwr.</translation>
@@ -1302,6 +1304,8 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="6168622430237609329">Eich apiau sydd wedi'u gosod</translation>
 <translation id="6173151025443907148">Ni chefnogir mewngofnodi ail ddefnyddiwr os yw Lacros wedi'i alluogi. Defnyddiwch ail broffil porwr yn Lacros yn lle hynny neu analluogi Lacros a rhowch gynnig arall arni.</translation>
 <translation id="6179832488876878285">Gallwch binio'ch ffeiliau pwysig yma. Agorwch yr ap Files i gychwyn arni.</translation>
+<translation id="6180193585172850042">Botwm Yn ôl</translation>
+<translation id="6180651297859206670">Botwm Ymlaen</translation>
 <translation id="6182592640011875895">Agor desg</translation>
 <translation id="6185696379715117369">Tudalen i fyny</translation>
 <translation id="619335566042889110">Gwefru'n llawn nawr</translation>

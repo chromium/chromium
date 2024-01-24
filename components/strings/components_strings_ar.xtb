@@ -465,6 +465,7 @@
 <translation id="1828959155404624835">استئجارات سيارات</translation>
 <translation id="1834321415901700177">يحتوي هذا الموقع على برامج ضارة</translation>
 <translation id="1838374766361614909">محو البحث</translation>
+<translation id="1839331950812095887">بضع كلمات تلخِّص أفكارك</translation>
 <translation id="1839551713262164453">لقد تعذّر التحقق من قيم السياسة مع ظهور أخطاء.</translation>
 <translation id="1842969606798536927">الدفع</translation>
 <translation id="1846432862466000825">بلاستيك (أرشفة)</translation>
@@ -698,6 +699,7 @@
 <translation id="2293443924986248631">عند تفعيل هذه الميزة، لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط لتتبّع نشاط تصفحّك على الإنترنت. وقد تتوقف الميزات عن العمل في بعض المواقع الإلكترونية.</translation>
 <translation id="2295831393422400053">يجب تفعيل إعداد "تحسين عمليات البحث والتصفُّح" لاستخدام ميزة "مساعدة في الكتابة".</translation>
 <translation id="2300306941146563769">لم يتم التحميل</translation>
+<translation id="2301098101308036335">قائمة المواقع الإلكترونية التي تمت زيارتها ووقت زيارتها</translation>
 <translation id="230286397113210245">زر فتح نافذة التصفّح المتخفي: انقر على هذا الزر لفتح نافذة تصفُّح متخفٍ جديدة والتصفّح بخصوصية تامة.</translation>
 <translation id="2312234273148520048">بهارات وتتبيلات</translation>
 <translation id="2316087952091171402">أقل من <ph name="UPPER_ESTIMATE" />. قد يتم تحميل بعض المواقع بشكل أبطأ عند زيارتها في المرة القادمة.</translation>
@@ -1252,7 +1254,7 @@
 <translation id="3441653493275994384">الشاشة</translation>
 <translation id="3443504041532578451">قرص ضوئي (برّاق)</translation>
 <translation id="344449859752187052">ملفات تعريف الارتباط التابعة لجهات خارجية محظورة.</translation>
-<translation id="3447644283769633681">حظر جميع ملفات تعريف الارتباط للأطراف الثالثة</translation>
+<translation id="3447644283769633681">حظر جميع ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="3447661539832366887">أوقف مالك هذا الجهاز تشغيل لعبة الديناصور.</translation>
 <translation id="3447884698081792621">عرض الشهادة (من إصدار <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">‏السماح للموقع الإلكتروني بطلب التحكُّم في أجهزة MIDI وإعادة برمجتها</translation>
@@ -1366,6 +1368,7 @@
 <translation id="3655670868607891010">إذا تكرّر هذا الأمر، ننصحك بالاطّلاع على هذه <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">ملابس غير رسمية</translation>
 <translation id="3658742229777143148">التعديل</translation>
+<translation id="3659521826520353662">قائمة المواقع الإلكترونية المحدّدة بواسطة المشرف التي تمت زيارتها ووقت زيارتها: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">الكلمات الرئيسية:</translation>
 <translation id="3665100783276035932">من المفترض أن تعمل معظم المواقع الإلكترونية على النحو المتوقَّع</translation>
 <translation id="3667704023705708645">رأس مال مُخاطر</translation>
@@ -1458,6 +1461,7 @@
 <translation id="3812398568375898177">‏يُرجى العِلم أنّ هذا تحديث مهم لتحسين أداء تطبيقات Android على ChromeOS.</translation>
 <translation id="3815434930383843058">8 × 12 بوصة</translation>
 <translation id="3816482573645936981">القيمة (التي تم استبدالها)</translation>
+<translation id="382115839591654906">‏رمز التحقّق من البطاقة (CVC) لبطاقة <ph name="CARD_NAME" /></translation>
 <translation id="3823019343150397277">‏رقم الحساب بصيغة IBAN</translation>
 <translation id="3823402221513322552">تتم إدارة متصفِّحك من خلال النطاق <ph name="BROWSER_DOMAIN" /> وملفك الشخصي من خلال النطاق <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">إذا كنت تستخدم خادمًا وكيلاً...</translation>
@@ -3209,6 +3213,7 @@
 <translation id="7341357280245177602">مركبات مستعملة</translation>
 <translation id="7346048084945669753">تابع إلى:</translation>
 <translation id="7346062987309535530">أوعية لتناول الطعام</translation>
+<translation id="7346081071264046066">"الرد بنعم على دعوة الزفاف هذه بأسلوب حماسي"</translation>
 <translation id="7352651011704765696">حدث خطأ ما</translation>
 <translation id="7353601530677266744">سطر الأوامر</translation>
 <translation id="7354880545102894991">رحلات سفر منخفضة التكلفة وفي آخر لحظة</translation>

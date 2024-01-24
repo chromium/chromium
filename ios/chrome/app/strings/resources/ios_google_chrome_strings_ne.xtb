@@ -41,6 +41,7 @@
 <translation id="1682483655351012182">Chrome को आफ्नो डेटा सिंक गर्नुहोस्</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">यसले इनपुट गरिएका URL हरू Chrome मा भएका तपाईंका बुकमार्कमा हाल्छ।</translation>
+<translation id="1799920918471566157">Chrome को प्रयोगसम्बन्धी सुझावहरू</translation>
 <translation id="1830634592642484976">यो ठेगाना हाल Chrome मा सेभ गरिएको छ। तपाईं यो ठेगाना Google का विभिन्न उत्पादनहरूमा प्रयोग गर्न चाहनुहुन्छ भने यसलाई आफ्नो Google खाता (<ph name="USER_EMAIL" />) मा सेभ गर्नुहोस्।</translation>
 <translation id="1843217788865538014">म्यासेज, डकुमेन्ट र अन्य एपहरूमा भएका लिंकहरूमा ट्याप गर्दा Chrome स्वतः प्रयोग गरियोस्।</translation>
 <translation id="1910975740091000991">Chrome को iOS संस्करण</translation>
@@ -75,6 +76,7 @@
 <translation id="2702250627063295552">रिडिङ लिस्टमा भएको सामग्री Chrome मा हालियोस्</translation>
 <translation id="2736805085127235148">हाल तपाईंको डिभाइसका सेटिङमा Chrome सम्बन्धी सूचना प्राप्त गर्ने सुविधा अफ गरिएको छ।</translation>
 <translation id="2767464022270041271">कुनै पनि पासवर्ड सेभ गरिएको छैन। तपाईंले आफ्ना पासवर्डहरू सेभ गर्नुभएको छ भने मात्र Google पासवर्ड म्यानेजरले ती पासवर्डहरू जाँच्न सक्छ।</translation>
+<translation id="2789947168960170215">तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा तपाईं यो सेटिङ परिवर्तन गर्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />आफ्नो खातामा गएर Chrome को डेटा मेटाउनुहोस्<ph name="END_LINK" />।</translation>
 <translation id="2868822340714096138">Chrome को ब्राउजिङ डेटा मेटाउनुहोस्</translation>
 <translation id="2869959624320573933">Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome ले तपाईंको डेटा कसरी गोप्य राख्छ<ph name="END_LINK" /> भन्ने बारेमा थप जान्नुहोस्</translation>

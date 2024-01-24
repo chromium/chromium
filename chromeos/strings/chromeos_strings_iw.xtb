@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">קדימה</translation>
 <translation id="1615335640928990664">שימוש בחבילת הגלישה מאז <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">הפעלה של בדיקת טעינה</translation>
+<translation id="1626590945318984973">מקש הקיצור לא זמין. צריך להקיש על מקש קיצור חדש בלי להשתמש במקשי הפונקציות ובמקש <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">בטעינה</translation>
 <translation id="1641857168437328880">הכנסת מסמכים (צד אחד)</translation>
 <translation id="1643449475550628585">החלפה של תמונת הטפט מדי יום</translation>
@@ -453,7 +454,9 @@
 <translation id="4394049700291259645">השבתה</translation>
 <translation id="439429847087949098">מתבצעת הפעלה מחדש של <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">התאמה אישית של המקלדת</translation>
+<translation id="4403262788869804671">מקשי קיצור בלי המקש <ph name="META_KEY" /> עלולים להיות חופפים למקשי הקיצור באפליקציה כלשהי. כדי להשתמש במקשי הקיצור האלה בכל זאת, צריך להקיש עליהם שוב. אחרת, צריך להקיש על מקשי קיצור חדשים שכוללים את המקש <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">הדמות הנוכחית</translation>
+<translation id="4417830657741848074">האדמין הגדיר הפעלה אוטומטית של מספר אפליקציות. יכול להיות שחלק מהאפליקציות האלה לא סגורות.</translation>
 <translation id="4422041425070339732">חץ למטה</translation>
 <translation id="4425149324548788773">האחסון שלי</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> מושבת</translation>
@@ -466,6 +469,7 @@
 <translation id="4469288414739283461">שומר המסך של זרימה בכדור הארץ</translation>
 <translation id="4479639480957787382">אתרנט</translation>
 <translation id="4483049906298469269">לא ניתן היה לבצע פינג לשער הרשת שאינה מוגדרת כברירת מחדל.</translation>
+<translation id="4500722292849917410">‏מקש הקיצור לא זמין. צריך להקיש על מקש קיצור חדש שכולל מקש צירוף (Ctrl,‏ Alt,‏ Shift או <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">צבע הממשק</translation>
 <translation id="4503223151711056411">חץ שמאלה</translation>
 <translation id="4507392511610824664">הגברת הבהירות</translation>
@@ -513,6 +517,7 @@
 <translation id="4832079907277790330">בחירת תיקייה מהאפליקציה 'קבצים'…</translation>
 <translation id="4835901797422965222">אין רשתות פעילות</translation>
 <translation id="4839698083503556542">ליצירת סרט משלך</translation>
+<translation id="48409034532829769">האדמין הגדיר הפעלה אוטומטית של <ph name="APP_NAME" />. יכול להיות שהאפליקציה הזו לא סגורה.</translation>
 <translation id="484462545196658690">אוטומטי</translation>
 <translation id="4847902821209177679">‏בחרת <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> – יש להקיש על Enter כדי לבחור אלבומי <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">‏רזולוציית DNS ‏(Android)</translation>
@@ -539,6 +544,7 @@
 <translation id="4969079779290789265">פיצול</translation>
 <translation id="4972592110715526173">שינוי מצב</translation>
 <translation id="498186245079027698">יש לבדוק את הסורק ולנסות שוב. חשוב לוודא שיש במכשיר מספיק מקום לשמור את הקבצים הסרוקים.</translation>
+<translation id="4982627662315910959">‏מקש הקיצור לא זמין. צריך להקיש על מקש קיצור חדש שכולל את Shift ומקש צירוף נוסף (Ctrl,‏ Alt או <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">הרצה</translation>
 <translation id="4987769320337599931">חומת אש</translation>
 <translation id="4988526792673242964">דפים</translation>
@@ -845,6 +851,7 @@
 <translation id="7216409898977639127">ספק שירות סלולרי</translation>
 <translation id="725133483556299729">בחירת אימייל</translation>
 <translation id="7271040990581020067">הסורק נמצא בשימוש כרגע. יש לנסות שוב מאוחר יותר.</translation>
+<translation id="7271932918253517778">מקש קיצור עם מקשים בשורה העליונה צריך לכלול את המקש '<ph name="META_KEY" />'.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">אוויר לנשימה</translation>
 <translation id="7287310195820267359">אוספים של טפטים</translation>

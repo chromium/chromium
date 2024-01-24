@@ -41,6 +41,7 @@
 <translation id="1682483655351012182">अपना Chrome डेटा सिंक करें</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">डाले गए यूआरएल को Chrome में आपके बुकमार्क में जोड़ता है.</translation>
+<translation id="1799920918471566157">Chrome से जुड़ी सलाह</translation>
 <translation id="1830634592642484976">फ़िलहाल, यह पता Chrome में सेव है. Google के सभी प्रॉडक्ट पर इस्तेमाल करने के लिए, इसे अपने Google खाते, <ph name="USER_EMAIL" /> में सेव करें.</translation>
 <translation id="1843217788865538014">मैसेज, दस्तावेज़ों, और अन्य ऐप्लिकेशन में मौजूद लिंक को टैप करने पर, लिंक अपने-आप Chrome में खुल जाते हैं.</translation>
 <translation id="1910975740091000991">iOS के लिए Chrome</translation>
@@ -75,6 +76,7 @@
 <translation id="2702250627063295552">Chrome की रीडिंग लिस्ट में आइटम जोड़ें</translation>
 <translation id="2736805085127235148">फ़िलहाल, आपके डिवाइस की सेटिंग में, Chrome की सूचनाएं भेजने की सुविधा बंद है.</translation>
 <translation id="2767464022270041271">कोई भी पासवर्ड सेव नहीं किया गया है. पासवर्ड सेव होने पर ही, Google Password Manager आपके पासवर्ड की जांच कर सकता है.</translation>
+<translation id="2789947168960170215">अगर आपको अपना लंबा पासवर्ड याद नहीं है या यह सेटिंग बदलनी है, तो <ph name="BEGIN_LINK" />अपने खाते से Chrome का डेटा मिटाएं<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Chrome में ब्राउज़िंग डेटा मिटाएं</translation>
 <translation id="2869959624320573933">Chrome में साइन इन करें</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome आपके डेटा को निजी कैसे रखता है<ph name="END_LINK" />, इसके बारे में ज़्यादा जानें</translation>

@@ -142,7 +142,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1102790815296970136">Gweld "<ph name="PERSONALIZED_MEMORY_TITLE" />" ac atgofion eraill yma</translation>
 <translation id="1103523840287552314">Cyfieithu <ph name="LANGUAGE" /> bob amser</translation>
 <translation id="1107482171728500359">Rhannu meicroffon</translation>
-<translation id="110850812463801904">Cysylltu â OneDrive yn bwrpasol</translation>
+<translation id="110850812463801904">Cysylltu ag OneDrive yn bwrpasol</translation>
 <translation id="1108600514891325577">&amp;Stopio</translation>
 <translation id="1108938384783527433">Cysoni hanes</translation>
 <translation id="1110155001042129815">Aros</translation>
@@ -383,6 +383,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Methu ag agor y ffeil}zero{Methu ag agor y ffeiliau}two{Methu ag agor y ffeiliau}few{Methu ag agor y ffeiliau}many{Methu ag agor y ffeiliau}other{Methu ag agor y ffeiliau}}</translation>
 <translation id="1282311502488501110">Peidio â Mewngofnodi</translation>
 <translation id="1282465000333679776">Rhannu sain y system</translation>
+<translation id="1283126956823499975">Aeth rhywbeth o'i le gyda gosod y ddyfais</translation>
 <translation id="1284277788676816155">Peidio â chaniatáu cadw data</translation>
 <translation id="1285320974508926690">Peidio byth â chyfieithu'r wefan hon</translation>
 <translation id="1285484354230578868">Storio data yn eich cyfrif Google Drive</translation>
@@ -4945,7 +4946,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4789550509729954245">Dangos hysbysiad pan fydd dyfeisiau yn rhannu gerllaw</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Galluogi cyflymiad TrackPoint</translation>
-<translation id="4792510204382653691">Agor webstore</translation>
 <translation id="4792711294155034829">&amp;Adrodd am Broblem...</translation>
 <translation id="4794810983896241342">Caiff diweddariadau eu rheoli gan <ph name="BEGIN_LINK" />eich gweinyddwr<ph name="END_LINK" /></translation>
 <translation id="4794910597689955457">Symud <ph name="NUM_OF_FILES" /> ffeil i <ph name="CLOUD_PROVIDER" /> i'w hagor?</translation>
@@ -5043,6 +5043,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4863769717153320198">Mae'n edrych fel <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Diofyn)</translation>
 <translation id="4864369630010738180">Wrthi'n mewngofnodi...</translation>
 <translation id="4864805589453749318">Dewiswch y rhiant sy'n rhoi caniatâd i ychwanegu at gyfrif ysgol.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (rhwystrwyd</translation>
 <translation id="486505726797718946">Cof a Arbedwyd</translation>
 <translation id="486635084936119914">Agorwch rai mathau o ffeiliau yn awtomatig ar ôl eu lawrlwytho</translation>
 <translation id="4867272607148176509">Gall rhieni gymeradwyo neu rwystro apiau, gosod terfynau amser, a rheoli pori gwe. Gellir ychwanegu cyfrif ysgol yn ddiweddarach i gael mynediad at y rhan fwyaf o adnoddau ysgol.</translation>
@@ -5535,6 +5536,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5261619498868361045">Ni all enw'r cynhwysydd fod yn wag.</translation>
 <translation id="5261683757250193089">Agor yn Web Store</translation>
 <translation id="5261799091118902550">Gall y ffeil hon fod yn feirws neu'n ddrwgwedd. Gallwch ei hanfon at Google i wirio a yw'n anniogel.</translation>
+<translation id="5262334727506665688">Daliwch ati i gadw cyfrineiriau yn eich Cyfrif Google</translation>
 <translation id="5262784498883614021">Cysylltu â'r rhwydwaith yn awtomatig</translation>
 <translation id="5263656105659419083">I fynd yn ôl at y panel ochr yn hawdd, cliciwch Binio ar y dde uchaf</translation>
 <translation id="5264148714798105376">Mae'n bosib y bydd hyn yn cymryd munud neu ddwy.</translation>
@@ -7075,6 +7077,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="649396225532207613">Gall y ffeil hon niweidio eich cyfrifon rhwydwaith personol a chymdeithasol</translation>
 <translation id="6494327278868541139">Dangos manylion gwell amddiffyniad</translation>
 <translation id="6494445798847293442">Nid yw'n Awdurdod Ardystio</translation>
+<translation id="6494483173119160146">Daeth y ddyfais ar draws gwall anadferadwy. Ailosodwch eich dyfais (bydd yn dileu'r holl ddata defnyddiwr) a rhowch gynnig arall arni.</translation>
 <translation id="6497784818439587832">Newidiwch y maint dangos i wneud eitemau ar eich sgrîn yn llai neu'n fwy</translation>
 <translation id="6497789971060331894">Sgrolio tuag yn ôl gyda'r llygoden</translation>
 <translation id="6498249116389603658">&amp;Eich holl ieithoedd</translation>
@@ -9560,6 +9563,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8397825320644530257">Datgysylltu ffôn sydd wedi'i gysylltu</translation>
 <translation id="8398877366907290961">Parhau beth bynnag</translation>
 <translation id="8399282673057829204">Gweld y cyfrinair</translation>
+<translation id="839949601275221554">Daeth y ddyfais ar draws gwall. Ailgychwynnwch eich dyfais a rhowch gynnig arall arni.</translation>
 <translation id="8401432541486058167">Rhowch y PIN sy'n gysylltiedig â'ch cerdyn smart.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Bydd Chrome yn rhwystro cwcis eto heddiw}=1{Bydd Chrome yn rhwystro cwcis eto yfory}two{# ddiwrnod nes bydd Chrome yn rhwystro cwcis eto}few{# diwrnod nes bydd Chrome yn rhwystro cwcis eto}many{# diwrnod nes bydd Chrome yn rhwystro cwcis eto}other{# diwrnod nes bydd Chrome yn rhwystro cwcis eto}}</translation>
 <translation id="8403618281196981152">Eich data yn Chrome</translation>

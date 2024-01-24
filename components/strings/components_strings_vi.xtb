@@ -465,6 +465,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1828959155404624835">Cho thuê ô tô</translation>
 <translation id="1834321415901700177">Trang web này có chứa các chương trình độc hại</translation>
 <translation id="1838374766361614909">Xóa tìm kiếm</translation>
+<translation id="1839331950812095887">một vài từ tóm tắt suy nghĩ của bạn</translation>
 <translation id="1839551713262164453">Không xác thực được các giá trị của chính sách do xảy ra lỗi</translation>
 <translation id="1842969606798536927">Thanh toán</translation>
 <translation id="1846432862466000825">Nhựa (Lưu niệm)</translation>
@@ -698,6 +699,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2293443924986248631">Khi tùy chọn này bật, các trang web không thể dùng cookie theo dõi bạn trên web. Do đó, các tính năng trên một số trang web có thể không hoạt động như bình thường.</translation>
 <translation id="2295831393422400053">Bật chế độ cài đặt Cải thiện tính năng tìm kiếm và duyệt web để sử dụng tính năng Giúp tôi viết</translation>
 <translation id="2300306941146563769">Chưa tải lên</translation>
+<translation id="2301098101308036335">Những trang web được truy cập và thời điểm truy cập.</translation>
 <translation id="230286397113210245">Nút Mở cửa sổ ẩn danh, hãy nhấn nút này để mở cửa sổ ẩn danh mới và duyệt web ở chế độ riêng tư</translation>
 <translation id="2312234273148520048">Gia vị và nêm gia vị</translation>
 <translation id="2316087952091171402">Dưới <ph name="UPPER_ESTIMATE" />. Một số trang web có thể tải chậm hơn vào lần tới bạn truy cập.</translation>
@@ -1365,6 +1367,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3655670868607891010">Nếu bạn thường xuyên thấy thông báo này, hãy thử các <ph name="HELP_LINK" /> sau.</translation>
 <translation id="365641980390710834">Thường phục</translation>
 <translation id="3658742229777143148">Bản sửa đổi</translation>
+<translation id="3659521826520353662">Những trang web do quản trị viên xác định được truy cập và thời điểm truy cập: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">Từ khóa:</translation>
 <translation id="3665100783276035932">Hầu hết trang web sẽ hoạt động như dự kiến</translation>
 <translation id="3667704023705708645">Vốn đầu tư mạo hiểm</translation>
@@ -1455,6 +1458,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3812398568375898177">Đây là bản cập nhật quan trọng giúp cải thiện hiệu suất của các ứng dụng Android trên Chrome OS.</translation>
 <translation id="3815434930383843058">8 x 12 inch</translation>
 <translation id="3816482573645936981">Giá trị (đã thay thế)</translation>
+<translation id="382115839591654906">CVC của <ph name="CARD_NAME" /></translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Trình duyệt của bạn do <ph name="BROWSER_DOMAIN" /> quản lý, còn hồ sơ của bạn do <ph name="PROFILE_DOMAIN" /> quản lý</translation>
 <translation id="382518646247711829">Nếu bạn sử dụng máy chủ proxy...</translation>
@@ -3204,6 +3208,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7341357280245177602">Xe đã qua sử dụng</translation>
 <translation id="7346048084945669753">Được liên kết:</translation>
 <translation id="7346062987309535530">Dụng cụ ăn</translation>
+<translation id="7346081071264046066">"hào hứng nhận lời mời dự đám cưới này"</translation>
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
 <translation id="7353601530677266744">Dòng Lệnh</translation>
 <translation id="7354880545102894991">Du lịch giá rẻ và du lịch giờ chót</translation>

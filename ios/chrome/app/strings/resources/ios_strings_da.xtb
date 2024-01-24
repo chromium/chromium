@@ -94,7 +94,6 @@
 <translation id="1450170672351507823">Standardbeskyttelse er aktiveret. Du kan øge sikkerheden ved at bruge forbedret beskyttelse.</translation>
 <translation id="1469381646033328562">Din konto administreres af din forælder.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="149095475893949513">Dette website forsøger at downloade en konfigurationsprofil.</translation>
 <translation id="1491277525950327607">Tryk to gange for at skifte indstilling</translation>
 <translation id="1492417797159476138">Du har allerede gemt dette brugernavn for dette website</translation>
 <translation id="1497590942294823549">Menu → Adgangskodeadministrator</translation>
@@ -302,6 +301,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="260378315836159338">Tryk på + øverst på skærmen</translation>
 <translation id="2604176749896001318">Opdater din browser</translation>
 <translation id="2609008503159898744">Vil du lukke alle faner?</translation>
+<translation id="2613747923081026172">Opret gruppe</translation>
 <translation id="2617210333344098964">Flyt adressen til kontoen</translation>
 <translation id="261739049332372104">Slå notifikationer til i iOS-indstillingerne for at få opdateringer om indhold, du interesserer dig for.</translation>
 <translation id="2625189173221582860">Adgangskoden er kopieret</translation>
@@ -555,6 +555,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3922310737605261887">Søg efter kopieret tekst</translation>
 <translation id="3928666092801078803">Kombiner mine data</translation>
 <translation id="3929457972718048006">Adresser</translation>
+<translation id="3948600256434252210">Du kan stryge til højre for at browse i inkognitotilstand.</translation>
 <translation id="3955822496205734389">Du har svage adgangskoder.</translation>
 <translation id="3959736869653157332">Menu → Ny inkognitofane</translation>
 <translation id="3962326069546168954">Gem</translation>
@@ -659,6 +660,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4539187448429948815">{count,plural, =1{{count} gemt forslag til autofuldførelse er tilgængeligt over dit tastatur.}one{{count} gemt forslag til autofuldførelse er tilgængeligt over dit tastatur.}other{{count} gemte forslag til autofuldførelse er tilgængelige over dit tastatur.}}</translation>
 <translation id="4540780316273593836">Der gik noget galt</translation>
 <translation id="4550040941166547650">Kun på denne enhed.</translation>
+<translation id="4564893319561643483">Skjul "<ph name="TITLE" />"</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Vil du lukke {COUNT} inaktiv fane?}one{Vil du lukke {COUNT} inaktiv fane?}other{Vil du lukke {COUNT} inaktive faner?}}</translation>
 <translation id="457386861538956877">Flere...</translation>
 <translation id="4587589328781138893">Websites</translation>
@@ -1259,6 +1261,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7666861622396822790">Du kan administrere dette i <ph name="BEGIN_LINK" />indstillingerne for indhold<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">INSTALLER</translation>
+<translation id="7673346542062368520">Du kan stryge til venstre for at browse i inkognitotilstand.</translation>
 <translation id="7679915578945954324">Websiteadresserne er kopieret</translation>
 <translation id="7687508192620387263">Tilgængelig kalenderfil</translation>
 <translation id="7701040980221191251">Ingen</translation>
@@ -1280,7 +1283,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7760127703945531263">Låsning af inkognitofaner</translation>
 <translation id="7765158879357617694">Flyt</translation>
 <translation id="7772032839648071052">Bekræft adgangssætning</translation>
-<translation id="777572173400717978">{count,plural, =1{Gemt som bogmærke}one{Bookmarked}other{Gemt som bogmærker}}</translation>
 <translation id="777637629667389858">Når du er logget ind, beskyttes du i Google-tjenester.</translation>
 <translation id="7781011649027948662">Vil du oversætte siden?</translation>
 <translation id="7781069478569868053">Siden Ny fane</translation>

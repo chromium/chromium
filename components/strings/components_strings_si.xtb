@@ -465,6 +465,7 @@
 <translation id="1828959155404624835">මෝටර් රථ කුලියට දීම</translation>
 <translation id="1834321415901700177">මෙම වෙබ් අඩවියෙහි හානිකර ක්‍රමලේඛ අඩංගුය</translation>
 <translation id="1838374766361614909">සෙවීම හිස් කරන්න</translation>
+<translation id="1839331950812095887">ඔබේ සිතුවිලි සාරාංශ කරන වචන කිහිපයක්</translation>
 <translation id="1839551713262164453">ප්‍රතිපත්ති අගයන්ගේ වලංගු කිරීම දෝෂ සමග අසමත් වී ඇත</translation>
 <translation id="1842969606798536927">ගෙවන්න</translation>
 <translation id="1846432862466000825">ප්ලාස්ටික් (ලේඛනාගාරය)</translation>
@@ -698,6 +699,7 @@
 <translation id="2293443924986248631">සක්‍රීය වූ විට, වෙබ් අඩවි හරහා ඔබව නිරීක්‍ෂණ කරන කුකී වෙබ් අඩවිවලට භාවිත කළ නොහැක. සමහර වෙබ් අඩවි මත විශේෂාංග කැඩී ගිය හැක.</translation>
 <translation id="2295831393422400053">මට ලිවීමට උදවු කිරීම භාවිත කිරීමට සෙවීම් සහ බ්‍රවුස් කිරීම වඩා හොඳ කිරීමේ සැකසීම ක්‍රියාත්මක කරන්න</translation>
 <translation id="2300306941146563769">උඩුගත නොකළා</translation>
+<translation id="2301098101308036335">කුමන වෙබ් අඩවි වලට පිවිසෙන්නේ ද සහ කෙවිට ද යන්න.</translation>
 <translation id="230286397113210245">අප්‍රසිද්ධ කවුළුව විවෘත කරන්න බොත්තම, පෞද්ගලිකව බ්‍රවුස් කිරීමට නව අප්‍රසිද්ධ කවුළුවක් විවෘත කිරීමට සක්‍රිය කරන්න</translation>
 <translation id="2312234273148520048">කුළුබඩු සහ සැරහුම්</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" />ට වඩා අඩු. සමහර අඩවි ඔබේ මීළඟ පිවිසීමෙහි වඩා සෙමින් පූරණය විය හැක.</translation>
@@ -1365,6 +1367,7 @@
 <translation id="3655670868607891010">ඔබ නිතර මෙය දකී නම්, මෙය උත්සහ කරන්න <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">සාමාන්‍ය ඇඟලුම්</translation>
 <translation id="3658742229777143148">පුනරීක්ශණය</translation>
+<translation id="3659521826520353662">කුමන පරිපාලක විසින් නිර්වචනය කරන ලද වෙබ් අඩවි වෙත පිවිසෙන්නේ ද සහ කෙවිට ද: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">මූලපද:</translation>
 <translation id="3665100783276035932">බොහෝ අඩවි අපේක්ෂා කළ පරිදි ක්‍රියා කළ යුතු ය</translation>
 <translation id="3667704023705708645">ව්‍යාපාර ප්‍රාග්ධනය</translation>
@@ -1455,6 +1458,7 @@
 <translation id="3812398568375898177">මෙය ChromeOS හි Android යෙදුම්වල ක්‍රියාකාරිත්වය වැඩි දියුණු කරන තීරණාත්මක යාවත්කාලීන කිරීමකි.</translation>
 <translation id="3815434930383843058">අඟ 8 x 12</translation>
 <translation id="3816482573645936981">අගය (ඉක්මවා ඇත)</translation>
+<translation id="382115839591654906"><ph name="CARD_NAME" /> සඳහා CVC</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">ඔබේ බ්‍රව්සරය කළමනාකරණය කරන්නේ <ph name="BROWSER_DOMAIN" /> සහ ඔබේ පැතිකඩ කළමනාකරණය කරන්නේ <ph name="PROFILE_DOMAIN" /> විසිනි</translation>
 <translation id="382518646247711829">ඔබ ප්‍රොක්සි සර්වරය භාවිතා කළහොත්...</translation>
@@ -3204,6 +3208,7 @@
 <translation id="7341357280245177602">පාවිච්චි කළ වාහන</translation>
 <translation id="7346048084945669753">අනුබද්ධ වී ඇත්තේ:</translation>
 <translation id="7346062987309535530">භෝජන භාණ්ඩ</translation>
+<translation id="7346081071264046066">"මෙම මංගල ආරාධනයට ප්‍රීතියෙන් ඔව් යැයි පිළිතුරු දෙන්න"</translation>
 <translation id="7352651011704765696">යමක් වැරදිනි</translation>
 <translation id="7353601530677266744">විධාන පේළිය</translation>
 <translation id="7354880545102894991">අඩු පිරිවැය සහ අවසාන මොහොතේ ගමන්</translation>

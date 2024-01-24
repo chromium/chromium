@@ -466,6 +466,7 @@
 <translation id="1828959155404624835">किराये पर कार देने वाली कंपनियां</translation>
 <translation id="1834321415901700177">इस साइट में हानिकारक प्रोग्राम हैं</translation>
 <translation id="1838374766361614909">खोज साफ़ करें</translation>
+<translation id="1839331950812095887">अपने विचारों के बारे में बताने वाले कुछ शब्द</translation>
 <translation id="1839551713262164453">गड़बड़ियों के चलते नीति मानों की पुष्टि नहीं हो सकी</translation>
 <translation id="1842969606798536927">पैसे चुकाएं</translation>
 <translation id="1846432862466000825">प्लास्टिक (आर्काइवल)</translation>
@@ -699,6 +700,7 @@
 <translation id="2293443924986248631">इसके चालू होने पर, साइटें उन कुकी का इस्तेमाल नहीं कर सकतीं जो आपको वेब पर ट्रैक करती हैं. शायद कुछ साइटों पर सुविधाएं ठीक से काम न करें.</translation>
 <translation id="2295831393422400053">'लिखने में मेरी मदद करें' सुविधा का इस्तेमाल करने के लिए, 'खोजों और ब्राउज़िंग को बेहतर बनाएं' सेटिंग को चालू करें</translation>
 <translation id="2300306941146563769">अपलोड नहीं की गई</translation>
+<translation id="2301098101308036335">कौनसी वेबसाइटें देखी गई हैं और कब.</translation>
 <translation id="230286397113210245">'गुप्त विंडो में खोलें' बटन, नई गुप्त विंडो खोलकर निजी तौर पर ब्राउज़ करने के लिए इसे चालू करें</translation>
 <translation id="2312234273148520048">चटनी और ड्रेसिंग</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> से कम. अगली बार जब आप कुछ साइटों पर जाएं, तो हो सकता है कि उन्हें लोड होने में थोड़ा ज़्यादा समय लगे.</translation>
@@ -1365,6 +1367,7 @@
 <translation id="3655670868607891010">अगर आपको यह बार-बार दिखाई दे रहा हो, तो इन <ph name="HELP_LINK" /> को आज़माएं.</translation>
 <translation id="365641980390710834">कैज़ुअल कपड़े</translation>
 <translation id="3658742229777143148">पुनरीक्षण</translation>
+<translation id="3659521826520353662">एडमिन की बनाई हुई कौनसी वेबसाइटें देखी गई हैं और कब: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">कीवर्ड:</translation>
 <translation id="3665100783276035932">ज़्यादातर साइटों को उम्मीद के मुताबिक काम करना चाहिए</translation>
 <translation id="3667704023705708645">वेंचर कैपिटल</translation>
@@ -1455,6 +1458,7 @@
 <translation id="3812398568375898177">यह एक ज़रूरी अपडेट है, जिससे ChromeOS पर Android ऐप्लिकेशन की परफ़ॉर्मेंस बेहतर होती है.</translation>
 <translation id="3815434930383843058">8 x 12 इंच</translation>
 <translation id="3816482573645936981">मान (इस मान की जगह लागू किया गया)</translation>
+<translation id="382115839591654906"><ph name="CARD_NAME" /> के लिए सीवीसी</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">आपके ब्राउज़र को <ph name="BROWSER_DOMAIN" /> मैनेज करता है और आपकी प्रोफ़ाइल को <ph name="PROFILE_DOMAIN" /> मैनेज करता है</translation>
 <translation id="382518646247711829">अगर आप प्रॉक्सी सर्वर का उपयोग करते हैं...</translation>
@@ -3204,6 +3208,7 @@
 <translation id="7341357280245177602">पुराने वाहन</translation>
 <translation id="7346048084945669753">जुड़ा हुआ है या नहीं:</translation>
 <translation id="7346062987309535530">खाने के बर्तन</translation>
+<translation id="7346081071264046066">"शादी के इस न्योते का जश्न मनाने के लिए, 'हां' में जवाब दें"</translation>
 <translation id="7352651011704765696">कुछ गलत हुआ</translation>
 <translation id="7353601530677266744">कमांड लाइन</translation>
 <translation id="7354880545102894991">डील खत्म होने से ठीक पहले, यात्रा पर मिलने वाले ऑफ़र और किफ़ायती यात्रा की सेवा देने वाली कंपनियां</translation>

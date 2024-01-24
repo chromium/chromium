@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Interní chyba</translation>
 <translation id="1124772482545689468">Uživatel</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">vynásobíte</translation>
 <translation id="1145018782460575098">Okno aktualizace firmwaru externích zařízení je otevřené. Dostupné aktualizace: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Články nápovědy a odpovědi na časté dotazy ohledně Chromebooků</translation>
 <translation id="1154390310959620237">Můžete si přizpůsobit pouze pět zkratek. Pokud chcete přidat novou, nějakou smažte.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Přizpůsobit skenované oblasti</translation>
 <translation id="1367951781824006909">Vybrat soubor</translation>
+<translation id="1371650399987522809">Zpětná vazba k tapetě vytvořené pomocí Googlu AI</translation>
 <translation id="1387854245479784695">Jedná se o agregaci všech jader</translation>
 <translation id="1394661041439318933">Stav baterie pouzdra je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Pingnutí brány</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">barva podsvícení</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> nelze aktualizovat</translation>
+<translation id="1566493343215789965">vydělíte</translation>
 <translation id="1567064801249837505">Alba</translation>
 <translation id="1572585716423026576">Nastavit jako tapetu</translation>
 <translation id="1578784163189013834">Vybrat pozadí spořiče obrazovky</translation>
 <translation id="160633243685262989">Náhled obrázku</translation>
 <translation id="1611649489706141841">vpřed</translation>
 <translation id="1615335640928990664">Využití dat od <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Vytváření obrázků…</translation>
 <translation id="1621067168122174824">Spustit test nabití</translation>
 <translation id="1626590945318984973">Zkratka není k dispozici. Stiskněte novou zkratku bez funkčních a kláves a bez klávesy <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Načítání</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Vybilo se <ph name="RATE" /> kapacity během <ph name="NUM_SECONDS" /> sekund.</translation>
 <translation id="2880569433548999039">Spořič obrazovky s plynoucími oblaky</translation>
 <translation id="2926057806159140518">Zadejte uživatelské jméno nebo heslo nebo naskenujte svůj QR kód</translation>
+<translation id="2938573842839598578">Přibližný výsledek získáte tak, že hodnotu <ph name="CATEGORY_TEXT" /> <ph name="OPERATOR_TEXT" /> číslem <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Zařízení nelze otestovat. Znovu otevřete víko.</translation>
 <translation id="2941112035454246133">Nízká</translation>
 <translation id="3008341117444806826">OBNOVIT</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Aktualizace ChromeOS</translation>
 <translation id="3527036260304016759">Tisk selhal – neznámá chyba</translation>
 <translation id="3532980081107202182">Zbývající minuty: <ph name="MIN_REMAINING" /></translation>
+<translation id="3547264467365135390">Vzorec</translation>
 <translation id="3557205324756024651">Místní identita (volitelné)</translation>
 <translation id="3565064564551103223">Povolené IP adresy</translation>
 <translation id="3569407787324516067">Spořič obrazovky</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Obnovit</translation>
 <translation id="7180865173735832675">Personalizovat</translation>
 <translation id="7184043045742675738">Pokud své tlačítko chcete přizpůsobit, klikněte na libovolnou klávesu. Přemístěte klávesu pomocí myši nebo kláves se šipkami.</translation>
+<translation id="7206979415662233817">Smluvní podmínky</translation>
 <translation id="7212547870105584639">Spravovat nastavení názvů přístupových bodů (APN) sítě. Názvy přístupových bodů umožňují navázat spojení mezi mobilní sítí a internetem. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Aktualizace firmwaru pro externí zařízení</translation>
 <translation id="7216409898977639127">Poskytovatel mobilních dat</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">barva klávesnice</translation>
 <translation id="7317831949569936035">Registrace do školy</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Musíte být starší 18 let a musíte souhlasit s tím, že se používání AI tapet podléhá <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />smluvním podmínkám společnosti Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> a <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />doplňujícím smluvním podmínkám generativní umělé inteligence<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Tapety můžete pomocí umělé inteligence vytvářet pouze pro osobní a nekomerční použití. Když požádáte o pomoc s tapetou, text se odešle na servery Google AI, aby vygenerovaly návrhy tapet. Platí <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />zásady ochrany soukromí společnosti Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Ve Vyhledávání Google výsledek zobrazíte stisknutím tlačítka Hledat a mezerníku.</translation>
 <translation id="7343649194310845056">Síťová zařízení</translation>
 <translation id="7353413232959255829">Výsledek vyhledávání <ph name="LIST_POSITION" /> z <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Stisknutím klávesy Enter přejdete na zkratku.</translation>

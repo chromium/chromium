@@ -377,6 +377,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Fayl ochilmadi}other{Fayllar ochilmadi}}</translation>
 <translation id="1282311502488501110">Kirilmasin</translation>
 <translation id="1282465000333679776">Tizim audiosini ulashish</translation>
+<translation id="1283126956823499975">Qurilmani sozlashda nimadir xato ketdi</translation>
 <translation id="1284277788676816155">Maʼlumotlarni saqlashni taqiqlash</translation>
 <translation id="1285320974508926690">Bu sayt hech qachon tarjima qilinmasin</translation>
 <translation id="1285484354230578868">Ma’lumotlarni Google Drive hisobingizga saqlash</translation>
@@ -4929,7 +4930,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4789550509729954245">Yaqin-atrofdagi qurilmalar maʼlumot almashganda bildirishnomalarni koʻrsatilsin</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint tezlatkichini yoqish</translation>
-<translation id="4792510204382653691">Ilovalar doʻkonini ochish</translation>
 <translation id="4792711294155034829">&amp;Muammo haqida xabar qilish...</translation>
 <translation id="4794810983896241342">Yangilanishlar <ph name="BEGIN_LINK" />administrator<ph name="END_LINK" /> tomonidan boshqariladi.</translation>
 <translation id="4794910597689955457">Ochish uchun <ph name="NUM_OF_FILES" /> ta fayl <ph name="CLOUD_PROVIDER" /> xizmatiga koʻchirilsinmi?</translation>
@@ -5027,6 +5027,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4863769717153320198"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (standart)</translation>
 <translation id="4864369630010738180">Kirilmoqda…</translation>
 <translation id="4864805589453749318">Maktab hisobini kiritishga ruxsat berayotgan ota-onani tanlang.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bloklandi)</translation>
 <translation id="486505726797718946">Xotira saqlandi</translation>
 <translation id="486635084936119914">Ba’zi turdagi fayllar yuklab olinishi bilan avtomatik ochilsin</translation>
 <translation id="4867272607148176509">Ota-onalar ilovalarni tasdiqlashi yoki bloklashi, vaqt chegaralarini belgilashi va brauzerlarni koʻrishni boshqarishi mumkin. Koʻplab maktab resurslariga kirish uchun maktab hisobini keyinroq qoʻshish mumkin.</translation>
@@ -5519,6 +5520,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5261619498868361045">Konteyner nomi boʻsh boʻlmasligi kerak.</translation>
 <translation id="5261683757250193089">Chrome internet-do‘konida ochish</translation>
 <translation id="5261799091118902550">Bu fayl virus yoki zararli dastur boʻlishi mumkin. Uning xavfsizligini aniqlash uchun Googlega yuboring.</translation>
+<translation id="5262334727506665688">Parollaringizni Google hisobingizga saqlashda davom eting</translation>
 <translation id="5262784498883614021">Tarmoqqa avtomatik ulanish</translation>
 <translation id="5263656105659419083">Yon panelga tezda qaytish uchun yuqori oʻng burchakdagi “Qadash” tugmasini bosing</translation>
 <translation id="5264148714798105376">Bunga bir-ikki daqiqa ketadi</translation>
@@ -7059,6 +7061,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="649396225532207613">Bu fayl shaxsiy va ijtimoiy tarmoqdagi hisoblaringizni zararlashi mumkin.</translation>
 <translation id="6494327278868541139">Kuchaytirilgan himoya tafsilotlarini ochish</translation>
 <translation id="6494445798847293442">Sertifikatlashtirish markazi emas</translation>
+<translation id="6494483173119160146">Bu qurilmada qayta tiklanmaydigan xato yuz berdi Qurilmangizni asliga qaytaring (barcha foydalanuvchi maʼlumotlari oʻchib ketadi) qayta urining.</translation>
 <translation id="6497784818439587832">Ekrandagi elementlarni kichiklashtirish yoki kattalashtirish uchun ekran oʻlchamini oʻzgartiring</translation>
 <translation id="6497789971060331894">Sichqoncha bilan teskari aylantirish</translation>
 <translation id="6498249116389603658">Barcha tillar</translation>
@@ -9535,6 +9538,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8397825320644530257">Ulangan telefonni uzish</translation>
 <translation id="8398877366907290961">Davom etish</translation>
 <translation id="8399282673057829204">Parolni ochish</translation>
+<translation id="839949601275221554">Bu qurilmada xatolik yuz berdi. Uni qayta ishga tushirib, yana urining.</translation>
 <translation id="8401432541486058167">Smart kartangiz PIN kodini kiriting.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome cookie fayllarni bugundan yana bloklaydi}=1{Chrome cookie fayllarni ertadan yana bloklaydi}other{Chrome cookie fayllarni # kundan keyin yana bloklaydi}}</translation>
 <translation id="8403618281196981152">Chromedagi maʼlumotlar</translation>

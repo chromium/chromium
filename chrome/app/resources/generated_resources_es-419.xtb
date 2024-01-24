@@ -377,6 +377,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{No se puede abrir el archivo}other{No se pueden abrir los archivos}}</translation>
 <translation id="1282311502488501110">No acceder</translation>
 <translation id="1282465000333679776">Compartir el audio del sistema</translation>
+<translation id="1283126956823499975">Se produjo un error cuando se configuraba el dispositivo</translation>
 <translation id="1284277788676816155">No permitir que se guarden los datos</translation>
 <translation id="1285320974508926690">Nunca traducir este sitio</translation>
 <translation id="1285484354230578868">Almacenar datos en tu cuenta de Google Drive</translation>
@@ -4923,7 +4924,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4789550509729954245">Mostrar notificación cuando hay dispositivos cercanos compartiendo contenido</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Habilitar la aceleración del TrackPoint</translation>
-<translation id="4792510204382653691">Abrir Web Store</translation>
 <translation id="4792711294155034829">Informar de un &amp;problema...</translation>
 <translation id="4794810983896241342"><ph name="BEGIN_LINK" />El administrador<ph name="END_LINK" /> gestiona las actualizaciones</translation>
 <translation id="4794910597689955457">¿Quieres mover <ph name="NUM_OF_FILES" /> archivos a <ph name="CLOUD_PROVIDER" /> para abrirlos?</translation>
@@ -5021,6 +5021,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4863769717153320198">Resolución: <ph name="WIDTH" /> × <ph name="HEIGHT" /> (predeterminada)</translation>
 <translation id="4864369630010738180">Accediendo</translation>
 <translation id="4864805589453749318">Selecciona el padre o madre que otorga permiso para agregar una cuenta de una institución educativa.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (acceso bloqueado)</translation>
 <translation id="486505726797718946">Memoria ahorrada</translation>
 <translation id="486635084936119914">Abre determinados tipos de archivo después de descargarlos</translation>
 <translation id="4867272607148176509">Los padres pueden aprobar o bloquear apps, establecer límites de tiempo y controlar la navegación web. Puedes agregar una cuenta de institución educativa para acceder a la mayoría de los recursos de la institución en otro momento.</translation>
@@ -5513,6 +5514,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5261619498868361045">El nombre del contenedor no puede quedar vacío.</translation>
 <translation id="5261683757250193089">Abrir en Web Store</translation>
 <translation id="5261799091118902550">Este archivo puede ser un virus o software malicioso. Puedes enviarlo a Google para comprobar que sea seguro.</translation>
+<translation id="5262334727506665688">Sigue guardando contraseñas en tu Cuenta de Google</translation>
 <translation id="5262784498883614021">Conectarse a una red de forma automática</translation>
 <translation id="5263656105659419083">Para volver fácilmente al panel lateral, haz clic en Fijar en la parte superior derecha</translation>
 <translation id="5264148714798105376">Esta acción puede tardar unos minutos.</translation>
@@ -7053,6 +7055,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="649396225532207613">Este archivo puede dañar tus cuentas de redes sociales y personales</translation>
 <translation id="6494327278868541139">Mostrar detalles de la protección mejorada</translation>
 <translation id="6494445798847293442">No es una entidad de certificación</translation>
+<translation id="6494483173119160146">El dispositivo detectó un error irrecuperable. Restablece el dispositivo (se borrarán todos los datos del usuario) y vuelve a intentarlo.</translation>
 <translation id="6497784818439587832">Cambia el tamaño de la pantalla para agrandar o achicar los elementos que aparecen en pantalla.</translation>
 <translation id="6497789971060331894">Desplazamiento invertido del mouse</translation>
 <translation id="6498249116389603658">&amp;Todos tus idiomas</translation>
@@ -9532,6 +9535,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8397825320644530257">Desconectar un teléfono conectado</translation>
 <translation id="8398877366907290961">Continuar de todos modos</translation>
 <translation id="8399282673057829204">Ver contraseña</translation>
+<translation id="839949601275221554">El dispositivo detectó un error. Reinicia el dispositivo y vuelve a intentarlo.</translation>
 <translation id="8401432541486058167">Proporciona el PIN asociado a tu tarjeta inteligente.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome volverá a bloquear las cookies hoy}=1{Chrome volverá a bloquear las cookies mañana}other{Faltan # días para que Chrome vuelva a bloquear las cookies}}</translation>
 <translation id="8403618281196981152">Tus datos en Chrome</translation>

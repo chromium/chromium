@@ -379,6 +379,7 @@
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Файлът не може да се отвори}other{Файловете не могат да се отворят}}</translation>
 <translation id="1282311502488501110">Без влизане в профила</translation>
 <translation id="1282465000333679776">Споделяне на системния звук</translation>
+<translation id="1283126956823499975">Нещо се обърка при настройването на устройството</translation>
 <translation id="1284277788676816155">Забраняване на запазването на данни</translation>
 <translation id="1285320974508926690">Този сайт да не се превежда никога</translation>
 <translation id="1285484354230578868">Съхраняване на данните в профила ви в Google Диск</translation>
@@ -4939,7 +4940,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4789550509729954245">Показване на известие, когато наблизо има споделящи устройства</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Активиране на ускоряването на TrackPoint</translation>
-<translation id="4792510204382653691">Отваряне на уеб магазина</translation>
 <translation id="4792711294155034829">&amp;Подаване на сигнал за проблем...</translation>
 <translation id="4794810983896241342">Актуализациите се управляват от <ph name="BEGIN_LINK" />администратора ви<ph name="END_LINK" /></translation>
 <translation id="4794910597689955457">Искате ли да преместите <ph name="NUM_OF_FILES" /> файла в <ph name="CLOUD_PROVIDER" />, за да ги отворите?</translation>
@@ -5037,6 +5037,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4863769717153320198">Разделителната способност е <ph name="WIDTH" /> x <ph name="HEIGHT" /> (по подразбиране)</translation>
 <translation id="4864369630010738180">Извършва се влизане...</translation>
 <translation id="4864805589453749318">Изберете родителя, който предоставя разрешението за добавяне на училищен профил.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (достъпът е блокиран)</translation>
 <translation id="486505726797718946">Икономисана памет</translation>
 <translation id="486635084936119914">Автоматично отваряне на определени файлови типове след изтегляне</translation>
 <translation id="4867272607148176509">Родителите могат да одобряват или блокират приложения, да задават времеви ограничения и да контролират сърфирането в мрежата. По-късно можете да добавите училищен профил за достъп до повечето училищни ресурси.</translation>
@@ -5529,6 +5530,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5261619498868361045">Името на контейнера трябва да се попълни.</translation>
 <translation id="5261683757250193089">Отваряне в уеб магазина</translation>
 <translation id="5261799091118902550">Този файл може да е вирус или злонамерен софтуер. Можете да го изпратите до Google, за да проверите дали е опасен.</translation>
+<translation id="5262334727506665688">Продължете да запазвате пароли в профила си в Google</translation>
 <translation id="5262784498883614021">Автоматично свързване с мрежа</translation>
 <translation id="5263656105659419083">За да се връщате лесно към страничния панел, кликнете върху „Фиксиране“ горе вдясно</translation>
 <translation id="5264148714798105376">Това може да отнеме около минута.</translation>
@@ -7070,6 +7072,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="649396225532207613">Този файл може да навреди на личния ви профил и на профилите ви в социалните мрежи</translation>
 <translation id="6494327278868541139">Показване на подробности за подобрената защита</translation>
 <translation id="6494445798847293442">Не е сертифициращ орган</translation>
+<translation id="6494483173119160146">Възникна непоправима грешка в устройството. Нулирайте го (всички потребителски данни ще бъдат изтрити) и опитайте отново.</translation>
 <translation id="6497784818439587832">С промяната на размера на елементите на екрана ги смалявате или увеличавате</translation>
 <translation id="6497789971060331894">Обратно превъртане с мишката</translation>
 <translation id="6498249116389603658">&amp;Всичките ви езици</translation>
@@ -9549,6 +9552,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8397825320644530257">Прекратяване на връзката със свързания телефон</translation>
 <translation id="8398877366907290961">Продължаване напред въпреки това</translation>
 <translation id="8399282673057829204">Преглед на паролата</translation>
+<translation id="839949601275221554">Възникна грешка в устройството. Рестартирайте го и опитайте отново.</translation>
 <translation id="8401432541486058167">Въведете ПИН, свързан със смарткартата ви</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome ще блокира „бисквитките“ отново днес}=1{Chrome ще блокира „бисквитките“ отново утре}other{# дни, докато Chrome блокира „бисквитките“ отново}}</translation>
 <translation id="8403618281196981152">Вашите данни в Chrome</translation>

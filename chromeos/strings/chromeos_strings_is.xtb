@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">áfram</translation>
 <translation id="1615335640928990664">Gagnanotkun síðan <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Keyra hleðslupróf</translation>
+<translation id="1626590945318984973">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil án þess að nota virkni- og <ph name="META_KEY" />-lykla.</translation>
 <translation id="1639239467298939599">Hleður</translation>
 <translation id="1641857168437328880">Skjalamatari (einhliða)</translation>
 <translation id="1643449475550628585">Skipta daglega um veggfóðursmynd</translation>
@@ -453,7 +454,9 @@
 <translation id="4394049700291259645">Slökkva</translation>
 <translation id="439429847087949098">Endurræsir <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">sérsníða lyklaborð</translation>
+<translation id="4403262788869804671">Flýtileið án <ph name="META_KEY" />-lykils gæti stangast á við flýtileið einhvers forrits. Ýttu aftur á þessa flýtileið til að halda áfram að nota hana eða ýttu á nýja flýtileið með <ph name="KEY" />-lyklinum.</translation>
 <translation id="4415951057168511744">Núverandi notandamynd</translation>
+<translation id="4417830657741848074">Stjórnandinn þinn stillti sum forrit þannig að þau ræsist sjálfkrafa. Ekki er hægt að loka sumum þessara forrita.</translation>
 <translation id="4422041425070339732">ör niður</translation>
 <translation id="4425149324548788773">Drifið mitt</translation>
 <translation id="4428374560396076622">Slökkt er á <ph name="NETWORK_NAME" /></translation>
@@ -466,6 +469,7 @@
 <translation id="4469288414739283461">Skjávari, jarðarflæði</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ping-prófun ósjálfgefinnar netkerfisgáttar mistókst</translation>
+<translation id="4500722292849917410">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil með því að nota breytilykil (ctrl, alt, shift eða <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Litur viðmóts</translation>
 <translation id="4503223151711056411">Ör til vinstri</translation>
 <translation id="4507392511610824664">auka birtustig</translation>
@@ -513,6 +517,7 @@
 <translation id="4832079907277790330">Velja möppu í forritinu Skrár...</translation>
 <translation id="4835901797422965222">Engin virk net</translation>
 <translation id="4839698083503556542">Búðu til eigin kvikmynd</translation>
+<translation id="48409034532829769">Stjórnandinn þinn stillti „<ph name="APP_NAME" />“ þannig að það ræsist sjálfkrafa. Ekki er hægt að loka forritinu.</translation>
 <translation id="484462545196658690">Sjálfvirkt</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> valið, ýttu á færslulykilinn til að velja albúm í <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) DNS-lausn</translation>
@@ -539,6 +544,7 @@
 <translation id="4969079779290789265">Skipta</translation>
 <translation id="4972592110715526173">breyta stillingu</translation>
 <translation id="498186245079027698">Athugaðu skannann og reyndu aftur. Gakktu úr skugga um að nægilegt pláss sé á tækinu fyrir skannaðar skrár.</translation>
+<translation id="4982627662315910959">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil með því að nota shift og 1 annan breytilykil (ctrl, alt eða <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Keyra</translation>
 <translation id="4987769320337599931">Eldveggur</translation>
 <translation id="4988526792673242964">Síður</translation>
@@ -845,6 +851,7 @@
 <translation id="7216409898977639127">Farsímafyrirtæki</translation>
 <translation id="725133483556299729">Velja netfang</translation>
 <translation id="7271040990581020067">Skanninn er í notkun núna. Reyndu aftur síðar.</translation>
+<translation id="7271932918253517778">Flýtilyklar sem innihalda lykla í efstu röð lyklaborðsins verða að innihalda <ph name="META_KEY" />-lykilinn.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Finndu andvarann</translation>
 <translation id="7287310195820267359">Veggfóðurssöfn</translation>

@@ -4942,7 +4942,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4789550509729954245">Prikaz obavještenja kada uređaji dijele u blizini</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Omogući ubrzanje TrackPointa</translation>
-<translation id="4792510204382653691">Otvaranje web trgovine</translation>
 <translation id="4792711294155034829">&amp;Prijavi problem...</translation>
 <translation id="4794810983896241342">Ažuriranjima upravlja <ph name="BEGIN_LINK" />vaš administrator<ph name="END_LINK" /></translation>
 <translation id="4794910597689955457">Premjestiti <ph name="NUM_OF_FILES" /> fajl(ov)a na uslugu <ph name="CLOUD_PROVIDER" /> radi otvaranja?</translation>
@@ -6675,7 +6674,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6164393601566177235">Dodajte web lokacije</translation>
 <translation id="6164832038898943453">Dodavanje jezika za automatsko prevođenje</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
-<translation id="6165850999903769629">Sve aplikacije na ChromeOS-u se sada otvaraju u svojim prozorima aplikacije umjesto u Chromeu.</translation>
+<translation id="6165850999903769629">Sve aplikacije u ChromeOS-u se sada otvaraju u svojim prozorima aplikacije umjesto u Chromeu.</translation>
 <translation id="6166185671393271715">Uvoz lozinki u Chrome</translation>
 <translation id="6166659775803431">U kolicima</translation>
 <translation id="6169040057125497443">Provjerite mikrofon</translation>

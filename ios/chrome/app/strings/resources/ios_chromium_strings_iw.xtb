@@ -102,6 +102,7 @@
 <translation id="3955621079070267756">‏פתיחת Chromium מכל אפליקציה</translation>
 <translation id="4005283307739974863">‏פתיחה והפעלה של 'טיימר לדיווח על מצב מסוכן' ב-Chromium.</translation>
 <translation id="4043291146360695975">סיסמאות נשמרות במנהל הסיסמאות במכשיר הזה בלבד.</translation>
+<translation id="4076589763479456892">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך לנקות את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">‏אין תמיכה ב-Chromium בטא</translation>
 <translation id="4106512142782407609">‏נכנסת לחשבון בתור <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@
 <translation id="5534584691915394889">‏הנתונים מ-Chromium ומ-Google Lens ישמשו ליצירת אירועים ב-Apple Calendar.</translation>
 <translation id="5571094606370987472">‏ייפתחו הכרטיסיות האחרונות ב-Chromium.</translation>
 <translation id="5623083843656850677">‏ניתן לנעול את הכרטיסיות הפרטיות כשיוצאים מ-Chromium או עוברים לאפליקציה אחרת.</translation>
+<translation id="5671188105328420281">‏טיפים ל-Chromium</translation>
 <translation id="5688047395118852662">‏בכרטיס הזה מוצגות הצעות שיעזרו לך ליהנות מהמיטב של Chromium.</translation>
 <translation id="5700709190537129682">‏Chromium לא יכול לבדוק את הסיסמאות שלך</translation>
 <translation id="5777187867430702742">‏דף Chromium</translation>
@@ -283,7 +285,7 @@
 <translation id="8776843108004031667">‏החשבון הזה וכל הנתונים שלא נשמרו יוסרו מ-Chromium.</translation>
 <translation id="88376265765385899">‏פתיחת הסימניות ב-Chromium.</translation>
 <translation id="8860548555286245440">‏פתיחת כתובות URL ב-Chromium במצב אנונימי</translation>
-<translation id="8866191443434488382">‏Chromium יזהה מספרי מעקב באתרים שבהם ביקרת, ואפשר יהיה לראות עדכונים על חבילות בדף 'כרטיסייה חדשה'. מספר המעקב אחר החבילה ושם האתר יישלחו אל Chromium כדי לספק את התכונה הזו ולשפר את התכונות שקשורות לקניות לכולם. תמיד אפשר לעדכן את האפשרות הזו <ph name="BEGIN_LINK" />בהגדרות המעקב אחר חבילה<ph name="END_LINK" />.</translation>
+<translation id="8866191443434488382">‏Chromium יזהה מספרי מעקב באתרים שבהם ביקרת, ואפשר יהיה לראות עדכונים על חבילות בדף 'כרטיסייה חדשה'. מספר המעקב אחר החבילה ושם האתר יישלחו אל Chromium כדי לספק את התכונה הזו ולשפר את התכונות שקשורות לקניות לכולם. תמיד אפשר לעדכן את <ph name="BEGIN_LINK" />הגדרות המעקב אחר חבילה<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">‏Chromium ל-iOS</translation>
 <translation id="8924617840944134898">‏פתיחת כרטיסייה פרטית ב-Chromium</translation>
 <translation id="894437814105052438">‏לאחר היציאה מהחשבון, לא יתבצע סנכרון של נתונים חדשים מ-Chromium בחשבון Google שלך. נתונים שסונכרנו בעבר יישארו בחשבון.</translation>

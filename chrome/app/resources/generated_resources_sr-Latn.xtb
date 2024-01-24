@@ -2201,7 +2201,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2643698698624765890">Upravljajte dodacima klikom na stavku Dodaci u meniju Prozor.</translation>
 <translation id="2645047101481282803">Uređajem upravlja <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Ova kartica se prebacuje na <ph name="DEVICE_NAME" /></translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="264897126871533291">Protanomalija</translation>
 <translation id="2649045351178520408">ASCII datoteka šifrovana metodom „Base64“, lanac sertifikata</translation>
 <translation id="265156376773362237">Standardno predučitavanje</translation>
@@ -4925,7 +4925,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4789550509729954245">Prikazuj obaveštenje kada uređaji dele sadržaj u blizini</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Omogući ubrzanje TrackPoint-a</translation>
-<translation id="4792510204382653691">Otvorite veb-prodavnicu</translation>
 <translation id="4792711294155034829">&amp;Prijavi problem...</translation>
 <translation id="4794810983896241342"><ph name="BEGIN_LINK" />Administrator<ph name="END_LINK" /> upravlja ažuriranjima</translation>
 <translation id="4794910597689955457">Želite da premestite <ph name="NUM_OF_FILES" /> fajl(ov)a u <ph name="CLOUD_PROVIDER" /> da biste ih otvorili?</translation>

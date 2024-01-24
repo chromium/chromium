@@ -621,6 +621,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3577473026931028326">Terjadi error. Coba lagi.</translation>
 <translation id="3580650856351781466">Mendownload file ucapan</translation>
 <translation id="3585296979871889131">Lihat foto, media, notifikasi, dan aplikasi terbaru ponsel Anda</translation>
+<translation id="3590441166907930941">Tombol Samping</translation>
 <translation id="3593039967545720377">Akses histori papan klip dengan menekan <ph name="SHORTCUT_KEY_NAME" /> + V untuk menampilkan papan klip. Salin item untuk memulai.</translation>
 <translation id="3593646411856133110">Geser ke atas dan tahan untuk melihat aplikasi yang terbuka</translation>
 <translation id="3595596368722241419">Baterai penuh</translation>
@@ -1033,6 +1034,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5163434717504750796">Kesehatan baterai <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Jumlah siklus pengisian daya penuh <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Simpan desktop sebagai template</translation>
 <translation id="5168181903108465623">Perangkat transmisi tersedia</translation>
+<translation id="5168753792967365150">Edit di Google Tasks</translation>
 <translation id="5170568018924773124">Tampilkan dalam folder</translation>
 <translation id="5176318573511391780">Rekam sebagian layar</translation>
 <translation id="5187627942836026988">Tampilkan detail hotspot. Hotspot diblokir oleh administrator Anda.</translation>
@@ -1302,6 +1304,8 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="6168622430237609329">Aplikasi terinstal Anda</translation>
 <translation id="6173151025443907148">Login sebagai pengguna kedua tidak didukung jika Lacros diaktifkan. Gunakan profil browser kedua di Lacros atau nonaktifkan Lacros lalu coba lagi.</translation>
 <translation id="6179832488876878285">Anda dapat menyematkan file penting di sini. Buka aplikasi File untuk memulai.</translation>
+<translation id="6180193585172850042">Tombol Kembali</translation>
+<translation id="6180651297859206670">Tombol Teruskan</translation>
 <translation id="6182592640011875895">Buka desktop</translation>
 <translation id="6185696379715117369">Page up</translation>
 <translation id="619335566042889110">Isi daya penuh sekarang</translation>

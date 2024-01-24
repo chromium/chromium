@@ -102,6 +102,7 @@
 <translation id="3955621079070267756">Отваряне на Chromium от което и да е приложение</translation>
 <translation id="4005283307739974863">Отваря и стартира проверка на безопасността в Chromium.</translation>
 <translation id="4043291146360695975">Паролите се запазват в мениджъра на паролите само на това устройство.</translation>
+<translation id="4076589763479456892">Ако сте забравили пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />изчистете данните от Chromium в профила си<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Не се поддържа от Chromium бета</translation>
 <translation id="4106512142782407609">Влезли сте като <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@
 <translation id="5534584691915394889">Това ще даде възможност за създаване на събития в Apple Calendar чрез съдържание от Chromium и Google Обектив.</translation>
 <translation id="5571094606370987472">Отваря скорошните раздели в Chromium.</translation>
 <translation id="5623083843656850677">Заключване на разделите в режим „инкогнито“, когато излезете от Chromium или превключите към друго приложение.</translation>
+<translation id="5671188105328420281">Съвети за Chromium</translation>
 <translation id="5688047395118852662">Тази карта ви показва предложения как да се възползвате максимално от Chromium.</translation>
 <translation id="5700709190537129682">Chromium не може да провери паролите ви</translation>
 <translation id="5777187867430702742">Страница на Chromium</translation>

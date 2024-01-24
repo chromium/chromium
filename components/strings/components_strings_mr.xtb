@@ -465,6 +465,7 @@
 <translation id="1828959155404624835">कार रेंटल</translation>
 <translation id="1834321415901700177">या साइटमध्ये धोकादायक प्रोग्राम आहेत</translation>
 <translation id="1838374766361614909">शोध साफ करा</translation>
+<translation id="1839331950812095887">तुमचे विचार थोडक्यात मांडणारे काही शब्द</translation>
 <translation id="1839551713262164453">धोरण मूल्यांची वैधता एररसह अयशस्वी झाली आहे</translation>
 <translation id="1842969606798536927">पेमेंट करा</translation>
 <translation id="1846432862466000825">प्लॅस्टिक (आर्कायव्हल)</translation>
@@ -698,6 +699,7 @@
 <translation id="2293443924986248631">सुरू असताना, साइट संपूर्ण वेबवर तुमचा माग ठेवणाऱ्या कुकी वापरू शकत नाहीत. काही साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो.</translation>
 <translation id="2295831393422400053">मला लिहिण्यात मदत करा वापरण्यासाठी शोधा व ब्राउझिंगमध्ये सुधारणा करा सेटिंग सुरू करा</translation>
 <translation id="2300306941146563769">अपलोड केला नाही</translation>
+<translation id="2301098101308036335">कोणत्या वेबसाइटना भेट दिली आहे आणि कधी.</translation>
 <translation id="230286397113210245">गुप्त विंडो उघडा बटण, खाजगीरीत्या ब्राउझ करण्यासाठी नवीन गुप्त विंडो उघडण्याकरिता ॲक्टिव्हेट करा</translation>
 <translation id="2312234273148520048">मसाले आणि ड्रेसिंग</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> पेक्षा कमी. काही साइट तुमच्या पुढील भेटीच्या वेळी आणखी हळू लोड होऊ शकतात.</translation>
@@ -1364,6 +1366,7 @@
 <translation id="3655670868607891010">तुम्ही हे वारंवार पहात असल्यास, हे वापरून पहा <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">साधा पोशाख</translation>
 <translation id="3658742229777143148">पुनरावृत्ती</translation>
+<translation id="3659521826520353662">अ‍ॅडमिनिस्ट्रेटरने परिभाषित केलेल्या कोणत्या वेबसाइटना भेट दिली आहे आणि कधी: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">कीवर्ड:</translation>
 <translation id="3665100783276035932">बहुतांश साइटनी अपेक्षेनुसार काम केले पाहिजे</translation>
 <translation id="3667704023705708645">व्हेंचर कॅपिटल</translation>
@@ -1454,6 +1457,7 @@
 <translation id="3812398568375898177">हे ChromeOS वर Android अ‍ॅप्सचा परफॉर्मन्स सुधारणारे महत्त्वाचे अपडेट आहे.</translation>
 <translation id="3815434930383843058">८ x १२ इं</translation>
 <translation id="3816482573645936981">मूल्य (अधिग्रहित केलेले)</translation>
+<translation id="382115839591654906"><ph name="CARD_NAME" /> साठी CVC</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">तुमचा ब्राउझर <ph name="BROWSER_DOMAIN" /> द्वारे आणि तुमची प्रोफाइल <ph name="PROFILE_DOMAIN" /> द्वारे व्यवस्थापित केली जाते</translation>
 <translation id="382518646247711829">तुम्ही प्रॉक्सी सर्व्हर वापरत असल्यास...</translation>
@@ -3204,6 +3208,7 @@
 <translation id="7341357280245177602">वापरलेली वाहने</translation>
 <translation id="7346048084945669753">याच्याशी संबंधित आहे:</translation>
 <translation id="7346062987309535530">डायनिंगवेअर</translation>
+<translation id="7346081071264046066">"या आमंत्रणाला उत्साहाने होय म्हणून उत्तर द्या"</translation>
 <translation id="7352651011704765696">काहीतरी चूक झाली</translation>
 <translation id="7353601530677266744">कमांड लाइन</translation>
 <translation id="7354880545102894991">कमी किमती आणि प्रवास सुरू होण्याच्या काही वेळापूर्वी दिल्या जाणाऱ्या डील</translation>

@@ -381,6 +381,7 @@
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{לא ניתן לפתוח את הקובץ}one{לא ניתן לפתוח את הקבצים}two{לא ניתן לפתוח את הקבצים}other{לא ניתן לפתוח את הקבצים}}</translation>
 <translation id="1282311502488501110">אני לא רוצה להיכנס</translation>
 <translation id="1282465000333679776">שיתוף האודיו של המערכת</translation>
+<translation id="1283126956823499975">משהו השתבש בהגדרת המכשיר</translation>
 <translation id="1284277788676816155">אין לאפשר שמירת נתונים</translation>
 <translation id="1285320974508926690">איני רוצה לקבל תרגום של אתר זה</translation>
 <translation id="1285484354230578868">‏אחסון נתונים בחשבון Google Drive</translation>
@@ -4943,7 +4944,6 @@
 <translation id="4789550509729954245">הצגת התראות כשמתבצע שיתוף על ידי מכשירים בקרבת מקום</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">‏הפעלת האצה של TrackPoint</translation>
-<translation id="4792510204382653691">לפתיחת חנות האינטרנט</translation>
 <translation id="4792711294155034829">&amp;דיווח על בעיה...</translation>
 <translation id="4794810983896241342">העדכונים מנוהלים על ידי <ph name="BEGIN_LINK" />מנהל המערכת<ph name="END_LINK" /></translation>
 <translation id="4794910597689955457">להעביר <ph name="NUM_OF_FILES" /> קבצים אל <ph name="CLOUD_PROVIDER" /> כדי לפתוח אותם?</translation>
@@ -5041,6 +5041,7 @@
 <translation id="4863769717153320198">‏נראה כמו <ph name="WIDTH" /> x <ph name="HEIGHT" /> (ברירת מחדל)</translation>
 <translation id="4864369630010738180">מתבצעת כניסה...</translation>
 <translation id="4864805589453749318">יש לבחור את ההורה שאישר את ההוספה של חשבון בית ספרי</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (הגישה חסומה)</translation>
 <translation id="486505726797718946">הזיכרון נשמר</translation>
 <translation id="486635084936119914">פתיחת סוגי קבצים מסוימים באופן אוטומטי לאחר הורדתם</translation>
 <translation id="4867272607148176509">ההורים יכולים לאשר או לחסום אפליקציות, להגדיר מגבלות זמן ולשלוט בגלישה באינטרנט. אפשר להוסיף חשבון בית ספרי בשלב מאוחר יותר כדי לגשת לרוב משאבי בית הספר.</translation>
@@ -5533,6 +5534,7 @@
 <translation id="5261619498868361045">שם הקונטיינר לא יכול להיות ריק.</translation>
 <translation id="5261683757250193089">פתיחה בחנות האינטרנט</translation>
 <translation id="5261799091118902550">‏הקובץ עשוי להיות וירוס או תוכנה זדונית. ניתן לשלוח אותו ל-Google כדי לבדוק אם הוא לא בטוח.</translation>
+<translation id="5262334727506665688">‏סיסמאות ימשיכו להישמר בחשבון Google</translation>
 <translation id="5262784498883614021">התחברות אוטומטית לרשת</translation>
 <translation id="5263656105659419083">כדי לחזור בקלות לחלונית הצדדית, לוחצים על 'הצמדה' בפינה השמאלית העליונה</translation>
 <translation id="5264148714798105376">הפעולה יכולה להימשך כדקה.</translation>
@@ -7073,6 +7075,7 @@
 <translation id="649396225532207613">הקובץ הזה יכול לפגוע בחשבונות האישיים ובחשבונות שלך ברשתות החברתיות</translation>
 <translation id="6494327278868541139">הצגה של פרטי האבטחה המשופרת</translation>
 <translation id="6494445798847293442">לא רשות אישורים</translation>
+<translation id="6494483173119160146">אירעה במכשיר שגיאה שבעקבותיה אי אפשר לשחזר אותו. עליך לאפס את המכשיר (בעקבות זאת יימחקו כל נתוני המשתמש) ולנסות שוב.</translation>
 <translation id="6497784818439587832">שינוי גודל התצוגה כדי להקטין או להגדיל את הפריטים שמופיעים במסך</translation>
 <translation id="6497789971060331894">גלילה הפוכה עם העכבר</translation>
 <translation id="6498249116389603658">&amp;כל השפות שלך</translation>
@@ -9557,6 +9560,7 @@
 <translation id="8397825320644530257">ניתוק הטלפון המחובר</translation>
 <translation id="8398877366907290961">להמשיך בכל זאת</translation>
 <translation id="8399282673057829204">הצגת הסיסמה</translation>
+<translation id="839949601275221554">אירעה שגיאה במכשיר. צריך להפעיל אותו מחדש ולנסות שוב.</translation>
 <translation id="8401432541486058167">עליך לציין את קוד האימות המשויך לכרטיס החכם שלך.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{‏קובצי cookie יחסמו היום שוב ב-Chrome}=1{‏קובצי cookie יחסמו מחר שוב ב-Chrome}one{‏יש עוד # ימים עד שקובצי cookie יחסמו שוב ב-Chrome}two{‏יש עוד # ימים עד שקובצי cookie יחסמו שוב ב-Chrome}other{‏יש עוד # ימים עד שקובצי cookie יחסמו שוב ב-Chrome}}</translation>
 <translation id="8403618281196981152">‏הנתונים שלך ב-Chrome</translation>

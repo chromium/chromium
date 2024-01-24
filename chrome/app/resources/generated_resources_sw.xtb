@@ -379,6 +379,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Haiwezi kufungua faili}other{Haiwezi kufungua faili}}</translation>
 <translation id="1282311502488501110">Usiingie Katika Akaunti</translation>
 <translation id="1282465000333679776">Shiriki sauti iliyo kwenye mfumo huu</translation>
+<translation id="1283126956823499975">Hitilafu fulani imetokea wakati wa kuweka mipangilio ya kifaa</translation>
 <translation id="1284277788676816155">Hairuhusu kuhifadhi data</translation>
 <translation id="1285320974508926690">Kamwe usitafsiri tovuti hii</translation>
 <translation id="1285484354230578868">Hifadhi data katika akaunti yako ya Hifadhi ya Google</translation>
@@ -519,7 +520,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1397594434718759194">Umeingia katika akaunti ya Chrome kwa kutumia vifaa hivi, hivyo unaweza kuvitumia kama funguo za usalama.</translation>
 <translation id="1398853756734560583">Tanua</translation>
 <translation id="139911022479327130">Fungua simu yako na uthibitishe kuwa ni wewe</translation>
-<translation id="1399261165075500043">Imeshinda kupakia Sheria na Masharti ya Google Play</translation>
+<translation id="1399261165075500043">Imeshindwa kupakia Sheria na Masharti ya Google Play</translation>
 <translation id="1401216725754314428">Pata maelezo zaidi kuhusu tovuti zinazohusiana kwenye kichupo kipya</translation>
 <translation id="1401308693935339022">Tumia data ya mahali. Ruhusu programu na huduma zilizo na ruhusa za mahali zitumie data ya mahali kilipo kifaa hiki. Google inaweza kukusanya data ya mahali mara kwa mara na kuitumia kwa njia isiyoweza kukutambulisha ili kuboresha usahihi wa kutambua mahali na huduma za mahali.</translation>
 <translation id="1402426911829176748">Inaunganisha kwenye kifaa chako</translation>
@@ -4937,7 +4938,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4789550509729954245">Onyesha arifa vifaa vinaposhiriki na vingine vilivyo karibu</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Washa kipengele cha kuongeza kasi ya TrackPoint</translation>
-<translation id="4792510204382653691">Fungua duka la wavuti</translation>
 <translation id="4792711294155034829">&amp;Ripoti Tatizo...</translation>
 <translation id="4794810983896241342">Masasisho yanadhibitiwa na <ph name="BEGIN_LINK" />msimamizi wako<ph name="END_LINK" /></translation>
 <translation id="4794910597689955457">Hamisha faili <ph name="NUM_OF_FILES" /> kwenye <ph name="CLOUD_PROVIDER" /> ili kufungua?</translation>
@@ -5035,6 +5035,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4863769717153320198">Inaonekana kama <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Chaguomsingi)</translation>
 <translation id="4864369630010738180">Unaingia katika akaunti...</translation>
 <translation id="4864805589453749318">Chagua mzazi anayetoa ruhusa ya kuweka akaunti ya shuleni.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (imezuiwa)</translation>
 <translation id="486505726797718946">Kumbukumbu Imehifadhiwa</translation>
 <translation id="486635084936119914">Fungua baadhi ya aina za faili kiotomatiki baada ya kupakua</translation>
 <translation id="4867272607148176509">Wazazi wanaweza kuidhinisha au kuzuia programu, kuweka vidhibiti vya muda na kudhibiti kuvinjari kwenye wavuti. Akaunti ya shule inaweza kuongezwa baadaye ili kufikia nyenzo nyingi za shule.</translation>
@@ -5527,6 +5528,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5261619498868361045">Lazima uweke jina la metadata.</translation>
 <translation id="5261683757250193089">Fungua katika Duka la Chrome kwenye Wavuti</translation>
 <translation id="5261799091118902550">Faili hii inaweza kuwa ni kirusi au programu hasidi. Unaweza kuituma kwa Google ili kuikagua kama si salama.</translation>
+<translation id="5262334727506665688">Endelea kuhifadhi manenosiri kwenye Akaunti yako ya Google</translation>
 <translation id="5262784498883614021">Unganisha kiotomatiki kwenye mtandao</translation>
 <translation id="5263656105659419083">Ili urudi kwenye kidirisha cha pembeni kwa urahisi, bofya Bandika katika sehemu ya juu kulia</translation>
 <translation id="5264148714798105376">Huenda shughuli hii ikachukua dakika kadhaa.</translation>
@@ -7067,6 +7069,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="649396225532207613">Faili hii inaweza kudhuru akaunti zako binafsi na za mitandao ya kijamii</translation>
 <translation id="6494327278868541139">Onyesha maelezo ya ulinzi ulioboreshwa</translation>
 <translation id="6494445798847293442">Si Mamlaka ya Kutoa Vyeti</translation>
+<translation id="6494483173119160146">Kifaa kimekumbana na hitilafu inayozuia kurejesha. Tafadhali zima kisha uwashe kifaa chako (hatua hii itafuta data yote ya mtumiaji) kisha ujaribu tena.</translation>
 <translation id="6497784818439587832">Badilisha ukubwa wa skrini ili uvifanye vipengee kwenye skrini yako vionekane vidogo au vikubwa</translation>
 <translation id="6497789971060331894">Usogezaji kinyume kwa kutumia kipanya</translation>
 <translation id="6498249116389603658">Lugha zako zote</translation>
@@ -9547,6 +9550,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8397825320644530257">Tenganisha simu iliyounganishwa</translation>
 <translation id="8398877366907290961">Endelea licha ya hayo</translation>
 <translation id="8399282673057829204">Angalia nenosiri</translation>
+<translation id="839949601275221554">Kifaa kimekumbana na hitilafu. Tafadhali zima kisha uwashe kifaa chako na ujaribu tena.</translation>
 <translation id="8401432541486058167">Weka PIN inayohusiana na kadi yako mahiri.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome itazuia vidakuzi tena leo}=1{Chrome itazuia vidakuzi tena kesho}other{Zimesalia siku # hadi Chrome izuie vidakuzi tena}}</translation>
 <translation id="8403618281196981152">Data yako kwenye Chrome</translation>

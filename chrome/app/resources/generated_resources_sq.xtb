@@ -377,6 +377,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Skedari nuk mund të hapet}other{Skedarët nuk mund të hapen}}</translation>
 <translation id="1282311502488501110">Mos u identifiko</translation>
 <translation id="1282465000333679776">Ndaj audion e sistemit</translation>
+<translation id="1283126956823499975">Ndodhi një gabim gjatë konfigurimit të pajisjes</translation>
 <translation id="1284277788676816155">Mos lejo ruajtjen e të dhënave</translation>
 <translation id="1285320974508926690">Asnjëherë mos e përkthe këtë sajt</translation>
 <translation id="1285484354230578868">Ruaji të dhënat në llogarinë tënde të "Diskut të Google"</translation>
@@ -4924,7 +4925,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4789550509729954245">Shfaq njoftimet kur pajisjet ndajnë në afërsi</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Aktivizo përshpejtimin e TrackPoint</translation>
-<translation id="4792510204382653691">Hap dyqanin e uebit</translation>
 <translation id="4792711294155034829">&amp;Raporto një problem...</translation>
 <translation id="4794810983896241342">Përditësimet menaxhohen nga <ph name="BEGIN_LINK" />administratori yt<ph name="END_LINK" /></translation>
 <translation id="4794910597689955457">Të zhvendosen <ph name="NUM_OF_FILES" /> skedarë te <ph name="CLOUD_PROVIDER" /> për t'i hapur?</translation>
@@ -5022,6 +5022,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4863769717153320198">Duket si <ph name="WIDTH" /> x <ph name="HEIGHT" /> (e parazgjedhur)</translation>
 <translation id="4864369630010738180">Po identifikohet...</translation>
 <translation id="4864805589453749318">Zgjidh prindin që po jep lejen për shtimin e një llogarie shkolle.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bllokuar)</translation>
 <translation id="486505726797718946">Memoria e kursyer</translation>
 <translation id="486635084936119914">Hap automatikisht lloje të caktuara të skedarëve pas shkarkimit</translation>
 <translation id="4867272607148176509">Prindërit mund të miratojnë ose të bllokojnë aplikacionet, të caktojnë kufijtë kohorë dhe të kontrollojnë shfletimin në ueb. Mund të shtohet më vonë një llogari shkolle për t'u qasur në shumicën e burimeve të shkollës.</translation>
@@ -5514,6 +5515,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5261619498868361045">Emri i kontejnerit nuk mund të jetë bosh.</translation>
 <translation id="5261683757250193089">Hap te "Dyqani i uebit"</translation>
 <translation id="5261799091118902550">Ky skedar mund të jetë një virus ose softuer keqdashës. Mund ta dërgosh atë te Google për të kontrolluar nëse nuk është i sigurt.</translation>
+<translation id="5262334727506665688">Vazhdo t'i ruash fjalëkalimet në "Llogarinë tënde të Google"</translation>
 <translation id="5262784498883614021">Lidhu automatikisht me rrjetin</translation>
 <translation id="5263656105659419083">Për t'u kthyer me lehtësi te paneli anësor, kliko te "Gozhdo" në këndin e sipërm djathtas</translation>
 <translation id="5264148714798105376">Kjo mund të zgjasë një minutë ose pak më shumë.</translation>
@@ -7054,6 +7056,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="649396225532207613">Ky skedar mund të dëmtojë llogaritë e tua personale dhe të rrjeteve sociale</translation>
 <translation id="6494327278868541139">Shfaq detajet e mbrojtjes së përforcuar</translation>
 <translation id="6494445798847293442">Nuk është një autoritet certifikimi</translation>
+<translation id="6494483173119160146">Pajisja ndeshi një gabim të parikuperueshëm. Rivendose pajisjen (kjo do të spastrojë të gjitha të dhënat e përdoruesit) dhe provo përsëri.</translation>
 <translation id="6497784818439587832">Ndrysho madhësinë e ekranit për t'i bërë më të vegjël ose më të mëdhenj artikujt në ekran</translation>
 <translation id="6497789971060331894">Lëvizja e kundërt e miut</translation>
 <translation id="6498249116389603658">&amp;Të gjitha gjuhët e tua</translation>
@@ -9530,6 +9533,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8397825320644530257">Shkëput telefonin e lidhur</translation>
 <translation id="8398877366907290961">Vazhdo gjithsesi</translation>
 <translation id="8399282673057829204">Shiko fjalëkalimin</translation>
+<translation id="839949601275221554">Pajisja ndeshi një gabim. Rinise pajisjen dhe provo përsëri.</translation>
 <translation id="8401432541486058167">Jep kodin PIN të lidhur me kartën tënde smart.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome do t'i bllokojë kukit përsëri sot}=1{Chrome do t'i bllokojë kukit përsëri nesër}other{# ditë derisa Chrome t'i bllokojë përsëri kukit}}</translation>
 <translation id="8403618281196981152">Të dhënat e tua në Chrome</translation>

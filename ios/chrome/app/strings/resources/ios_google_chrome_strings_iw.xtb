@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
-<translation id="1066101356081285416">‏Chrome יזהה מספרי מעקב באתרים שבהם ביקרת, ואפשר יהיה לראות עדכונים על חבילות בדף 'כרטיסייה חדשה'. מספר המעקב אחר החבילה ושם האתר יישלחו אל Google כדי לספק את התכונה הזו ולשפר את התכונות שקשורות לקניות ב-Google לכולם. תמיד אפשר לעדכן את האפשרות הזו <ph name="BEGIN_LINK" />בהגדרות המעקב אחר חבילה<ph name="END_LINK" />.</translation>
+<translation id="1066101356081285416">‏Chrome יזהה מספרי מעקב באתרים שבהם ביקרת, ואפשר יהיה לראות עדכונים על חבילות בדף 'כרטיסייה חדשה'. מספר המעקב אחר החבילה ושם האתר יישלחו אל Google כדי לספק את התכונה הזו ולשפר את התכונות שקשורות לקניות ב-Google לכולם. תמיד אפשר לעדכן את <ph name="BEGIN_LINK" />הגדרות המעקב אחר חבילה<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">‏שימוש ב-Chrome כברירת מחדל</translation>
 <translation id="1105362920864247682">‏ניקוי נתוני הגלישה ב-Chrome.</translation>
 <translation id="1113057722807951993">‏הצפנה של ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay.
@@ -41,6 +41,7 @@
 <translation id="1682483655351012182">‏סנכרון נתוני Chrome שלך</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">‏הוספה של כתובות ה-URL שהוזנו לסימניות ב-Chrome.</translation>
+<translation id="1799920918471566157">‏טיפים ל-Chrome</translation>
 <translation id="1830634592642484976">‏הכתובת הזו שמורה ב-Chrome. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך, <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">‏Chrome ייפתח באופן אוטומטי כשמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="1910975740091000991">‏Chrome ל-iOS</translation>
@@ -75,6 +76,7 @@
 <translation id="2702250627063295552">‏הוספת פריט מרשימת הקריאה ל-Chrome</translation>
 <translation id="2736805085127235148">‏ההתראות מ-Chrome מושבתות עכשיו בהגדרות המכשיר.</translation>
 <translation id="2767464022270041271">‏אין סיסמאות שמורות. למנהל הסיסמאות של Google יש אפשרות לבדוק את הסיסמאות שלך רק אם שמרת אותן.</translation>
+<translation id="2789947168960170215">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך לנקות את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">‏ניקוי נתוני הגלישה ב-Chrome</translation>
 <translation id="2869959624320573933">‏כניסה ל-Chrome</translation>
 <translation id="2876628302275096482">‏<ph name="BEGIN_LINK" />מידע נוסף לגבי השמירה על פרטיות הנתונים ב-Chrome<ph name="END_LINK" /></translation>

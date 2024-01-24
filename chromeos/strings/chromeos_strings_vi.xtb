@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">chuyển tiếp</translation>
 <translation id="1615335640928990664">Mức sử dụng dữ liệu kể từ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Chạy quá trình Kiểm tra sạc</translation>
+<translation id="1626590945318984973">Không có phím tắt này. Nhấn một phím tắt mới không dùng phím chức năng và phím <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Đang tải</translation>
 <translation id="1641857168437328880">Khay nạp tài liệu (1 mặt)</translation>
 <translation id="1643449475550628585">Thay đổi hình nền hàng ngày</translation>
@@ -453,7 +454,9 @@
 <translation id="4394049700291259645">Vô hiệu hóa</translation>
 <translation id="439429847087949098">Đang khởi động lại <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">tuỳ chỉnh bàn phím</translation>
+<translation id="4403262788869804671">Phím tắt không dùng phím <ph name="META_KEY" /> có thể xung đột với phím tắt của ứng dụng nào đó. Nhấn phím tắt này một lần nữa để tiếp tục sử dụng hoặc nhấn một phím tắt mới dùng phím <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Hình đại diện hiện tại</translation>
+<translation id="4417830657741848074">Quản trị viên của bạn đã thiết lập để một số ứng dụng tự khởi động. Bạn không thể đóng các ứng dụng này.</translation>
 <translation id="4422041425070339732">mũi tên xuống</translation>
 <translation id="4425149324548788773">Drive của tôi</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> đang tắt</translation>
@@ -466,6 +469,7 @@
 <translation id="4469288414739283461">Trình bảo vệ màn hình Dòng chảy của đất</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Không ping được cổng của mạng không phải mạng mặc định</translation>
+<translation id="4500722292849917410">Không có phím tắt này. Nhấn một phím tắt mới dùng phím bổ trợ (ctrl, alt, shift hoặc <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Màu giao diện</translation>
 <translation id="4503223151711056411">Mũi tên trái</translation>
 <translation id="4507392511610824664">tăng độ sáng</translation>
@@ -513,6 +517,7 @@
 <translation id="4832079907277790330">Chọn thư mục trong ứng dụng Files...</translation>
 <translation id="4835901797422965222">Không có mạng nào đang hoạt động</translation>
 <translation id="4839698083503556542">Tạo phim của riêng bạn</translation>
+<translation id="48409034532829769">Quản trị viên của bạn đã thiết lập để "<ph name="APP_NAME" />" tự khởi động. Bạn không thể đóng ứng dụng này.</translation>
 <translation id="484462545196658690">Tự động</translation>
 <translation id="4847902821209177679">Đã chọn <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, hãy nhấn phím Enter để chọn các album trên <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Quá trình phân giải DNS</translation>
@@ -539,6 +544,7 @@
 <translation id="4969079779290789265">Chia đôi</translation>
 <translation id="4972592110715526173">thay đổi chế độ</translation>
 <translation id="498186245079027698">Hãy kiểm tra trình quét rồi thử lại. Đảm bảo máy có đủ dung lượng để lưu các tệp đã quét.</translation>
+<translation id="4982627662315910959">Không có phím tắt này. Nhấn một phím tắt mới dùng phím shift và 1 phím bổ trợ nữa (ctrl, alt hoặc <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Chạy</translation>
 <translation id="4987769320337599931">Tường lửa</translation>
 <translation id="4988526792673242964">Trang</translation>
@@ -845,6 +851,7 @@
 <translation id="7216409898977639127">Nhà cung cấp dịch vụ di động</translation>
 <translation id="725133483556299729">Chọn email</translation>
 <translation id="7271040990581020067">Máy quét đang được sử dụng. Hãy thử lại sau.</translation>
+<translation id="7271932918253517778">Phím tắt có phím ở hàng trên cùng cần bao gồm phím <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Bay trong gió</translation>
 <translation id="7287310195820267359">Bộ sưu tập hình nền</translation>

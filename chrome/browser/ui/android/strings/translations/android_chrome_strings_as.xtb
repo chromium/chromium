@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">এপ্লিকেশ্বন সংস্কৰণ</translation>
 <translation id="1428770807407000502">ছিংক অফ কৰিবনে?</translation>
 <translation id="1430915738399379752">প্ৰিণ্ট কৰক</translation>
+<translation id="1435593198351412143">PDF স্বয়ংক্ৰিয়ভাৱে খোলে</translation>
 <translation id="1436784010935106834">আঁতৰোৱা হ’ল</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" />ত চলি আছে</translation>
 <translation id="1448440926884431741">আপুনি ট্ৰেক কৰা প্ৰ’ডাক্টসমূহ বুকমাৰ্কত শৃংখলাবদ্ধ কৰক</translation>
@@ -339,6 +340,7 @@
 <translation id="2894821468041866720">আপোনাৰ ব্ৰাউজাৰ অথবা ডিভাইচটো লক্ষণীয়ভাৱে লেহেমীয়া নকৰে।</translation>
 <translation id="2900528713135656174">অনুষ্ঠান সৃষ্টি কৰক</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" />ৰ বাবে পৰামৰ্শ দেখুৱাই থকা হৈছে</translation>
+<translation id="2904300462646366554">ডাউনল’ড কৰা PDF আপোনাৰ ডিভাইচত থকা PDF ভিউৱাৰসমূহৰ এটাৰ জৰিয়তে স্বয়ংক্ৰিয়ভাৱে খোলে</translation>
 <translation id="2904414404539560095">টেব এটা শ্বেয়াৰ কৰিবলৈ সম্পূর্ণকৈ খোল খোৱা ডিভাইচসমূহৰ সূচী।</translation>
 <translation id="2908243544703713905">নপঢ়া কাহিনী সাজু আছে</translation>
 <translation id="2909615210195135082">Googleৰ জাননীসমূহৰ প্লেটফৰ্ম</translation>
@@ -894,6 +896,7 @@
 <translation id="5810288467834065221">স্বত্বাধিকাৰ <ph name="YEAR" /> Google Inc। সর্বস্বত্ব সংৰক্ষিত।</translation>
 <translation id="5814749351757353073">আপোনাৰ প্ৰিয় ছাইটসমূহৰ জৰিয়তে আপ টু ডেট হৈ থাকক</translation>
 <translation id="5822875253699806474">আপুনি চোৱা ছাইটসমূহলৈ ক্ষিপ্ৰতাৰে পুনৰ যাবলৈ আপোনাৰ টেবসমূহ আৰু ইতিহাস ছিংক কৰক</translation>
+<translation id="5829586821381540080"><ph name="FOLDER_NAME" />ত ছেভ কৰা হ’ল</translation>
 <translation id="583281660410589416">অজ্ঞাত</translation>
 <translation id="5833984609253377421">লিংক শ্বেয়াৰ কৰক</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>

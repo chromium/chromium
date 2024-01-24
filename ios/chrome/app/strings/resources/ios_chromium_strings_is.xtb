@@ -102,6 +102,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chromiu
 <translation id="3955621079070267756">Opnaðu Chromium í hvaða forriti sem er</translation>
 <translation id="4005283307739974863">Opnar og keyrir öryggisathugun í Chromium.</translation>
 <translation id="4043291146360695975">Aðgangsorð eru aðeins vistuð í aðgangsorðastjórnun í þessu tæki.</translation>
+<translation id="4076589763479456892">Ef þú gleymdir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chromium-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Ekki stutt í Chromium Beta</translation>
 <translation id="4106512142782407609">Skráð(ur) inn sem <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@ Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota
 <translation id="5534584691915394889">Þetta verður notað til að búa til viðburði í Apple Calendar frá Chromium og Google-linsu.</translation>
 <translation id="5571094606370987472">Opnar nýlega flipa Chromium.</translation>
 <translation id="5623083843656850677">Læstu huliðsflipum þegar þú lokar Chromium eða skiptir yfir í annað forrit.</translation>
+<translation id="5671188105328420281">Ábendingar fyrir Chromium</translation>
 <translation id="5688047395118852662">Þetta spjald sýnir þér tillögur um hvernig þú getur nýtt þér Chromium til fulls.</translation>
 <translation id="5700709190537129682">Chromium getur ekki athugað aðgangsorðin þín</translation>
 <translation id="5777187867430702742">Chromium síða</translation>

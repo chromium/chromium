@@ -94,7 +94,6 @@
 <translation id="1450170672351507823">Standardschutz ist aktiviert. Der erweiterte Schutz bietet noch mehr Sicherheit.</translation>
 <translation id="1469381646033328562">Dein Konto wird von deinen Eltern verwaltet.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="149095475893949513">Diese Website versucht, ein Konfigurationsprofil herunterzuladen.</translation>
 <translation id="1491277525950327607">Zum Aktivieren bzw. Deaktivieren doppeltippen</translation>
 <translation id="1492417797159476138">Du hast diesen Nutzernamen für diese Website bereits gespeichert</translation>
 <translation id="1497590942294823549">Menü → Passwortmanager</translation>
@@ -302,6 +301,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="260378315836159338">Tippe oben auf dem Bildschirm auf +</translation>
 <translation id="2604176749896001318">Browser aktualisieren</translation>
 <translation id="2609008503159898744">Alle Tabs schließen?</translation>
+<translation id="2613747923081026172">Gruppe erstellen</translation>
 <translation id="2617210333344098964">Adresse in Konto verschieben</translation>
 <translation id="261739049332372104">Wenn du Neuigkeiten zu Inhalten erhalten möchtest, die dich interessieren, kannst du Benachrichtigungen in deinen iOS-Einstellungen aktivieren.</translation>
 <translation id="2625189173221582860">Passwort kopiert</translation>
@@ -1283,7 +1283,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7760127703945531263">Inkognitosperre</translation>
 <translation id="7765158879357617694">Verschieben</translation>
 <translation id="7772032839648071052">Passphrase bestätigen</translation>
-<translation id="777572173400717978">{count,plural, =1{Als Lesezeichen gespeichert}other{Als Lesezeichen gespeichert}}</translation>
 <translation id="777637629667389858">Wenn du angemeldet bist, bist du in allen Google-Diensten besser geschützt.</translation>
 <translation id="7781011649027948662">Seite übersetzen?</translation>
 <translation id="7781069478569868053">"Neuer Tab"-Seite</translation>

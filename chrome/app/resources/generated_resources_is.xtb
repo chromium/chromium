@@ -380,6 +380,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Ekki er hægt að opna skrána}one{Ekki er hægt að opna skrárnar}other{Ekki er hægt að opna skrárnar}}</translation>
 <translation id="1282311502488501110">Ekki skrá inn</translation>
 <translation id="1282465000333679776">Deila hljóði kerfis</translation>
+<translation id="1283126956823499975">Eitthvað fór úrskeiðis við uppsetningu tækisins</translation>
 <translation id="1284277788676816155">Ekki leyfa vistun gagna</translation>
 <translation id="1285320974508926690">Aldrei þýða þetta vefsvæði</translation>
 <translation id="1285484354230578868">Vista gögn á Google Drive reikningnum þínum</translation>
@@ -4943,7 +4944,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4789550509729954245">Birta tilkynningu þegar tæki eru að deila í næsta nágrenni</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Kveikja á TrackPoint-hröðun</translation>
-<translation id="4792510204382653691">Opna vefverslun</translation>
 <translation id="4792711294155034829">Tilkynna vandamál...</translation>
 <translation id="4794810983896241342"><ph name="BEGIN_LINK" />Kerfisstjórinn<ph name="END_LINK" /> þinn stjórnar uppfærslum</translation>
 <translation id="4794910597689955457">Færa <ph name="NUM_OF_FILES" /> skrár í <ph name="CLOUD_PROVIDER" /> til að opna?</translation>
@@ -5041,6 +5041,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4863769717153320198">Virðist vera <ph name="WIDTH" /> x <ph name="HEIGHT" /> (sjálfgefið)</translation>
 <translation id="4864369630010738180">Skráir inn...</translation>
 <translation id="4864805589453749318">Veldu foreldrið sem gefur heimild til að bæta við skólareikningi.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (lokað fyrir)</translation>
 <translation id="486505726797718946">Minning vistuð</translation>
 <translation id="486635084936119914">Opna tilteknar tegundir skráa sjálfkrafa að niðurhali loknu</translation>
 <translation id="4867272607148176509">Foreldrar geta samþykkt eða lokað á forrit, stillt tímamörk og stjórnað vefskoðun. Hægt er að bæta skólareikningi við síðar til að fá aðgang að flestum skólagögnum.</translation>
@@ -5533,6 +5534,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5261619498868361045">Heiti geymis má ekki vera autt.</translation>
 <translation id="5261683757250193089">Opna í vefverslun</translation>
 <translation id="5261799091118902550">Þessi skrá gæti verið vírus eða spilliforrit. Þú getur sent hana til Google til að athuga hvort hún sé ótraust.</translation>
+<translation id="5262334727506665688">Haltu áfram að vista aðgangsorð á Google-reikningnum þínum</translation>
 <translation id="5262784498883614021">Tengjast netkerfi sjálfkrafa</translation>
 <translation id="5263656105659419083">Smelltu á Festa uppi í hægra horninu til að komast auðveldlega aftur í hliðargluggann</translation>
 <translation id="5264148714798105376">Þetta gæti tekið um það bil mínútu.</translation>
@@ -7073,6 +7075,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="649396225532207613">Þessi skrá getur skaðað einkareikningana þína og reikninga á samfélagsmiðlum</translation>
 <translation id="6494327278868541139">Sýna upplýsingar um aukna vernd</translation>
 <translation id="6494445798847293442">Ekki vottunarstöð</translation>
+<translation id="6494483173119160146">Óleiðréttanleg villa kom upp í tæki. Endurstilltu tækið (öllum notendagögnum verður eytt) og reyndu aftur.</translation>
 <translation id="6497784818439587832">Breyta skjástærð til að minnka eða stækka atriði á skjánum</translation>
 <translation id="6497789971060331894">Öfug fletting músar</translation>
 <translation id="6498249116389603658">Öll &amp;tungumálin þín</translation>
@@ -9552,6 +9555,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8397825320644530257">Aftengja tengdan síma</translation>
 <translation id="8398877366907290961">Halda samt áfram</translation>
 <translation id="8399282673057829204">Sýna aðgangsorð</translation>
+<translation id="839949601275221554">Villa kom upp í tæki. Endurræstu tækið og reyndu aftur.</translation>
 <translation id="8401432541486058167">Sláðu inn PIN-númerið fyrir snjallkortið þitt.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome mun aftur loka fyrir fótspor í dag}=1{Chrome mun aftur loka fyrir fótspor á morgun}one{Chrome lokar aftur fyrir fótspor eftir # dag}other{Chrome lokar aftur fyrir fótspor eftir # daga}}</translation>
 <translation id="8403618281196981152">Gögnin þín í Chrome</translation>

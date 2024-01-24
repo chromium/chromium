@@ -5357,7 +5357,7 @@ Mulai <ph name="PRODUCT_NAME" /> versi 92, kebijakan ini juga didukung dalam mod
 <translation id="5366977351895725771">Jika disetel ke false, pembuatan pengguna yang dilindungi oleh pengguna ini akan dinonaktifkan. Pengguna diawasi mana pun yang sudah ada akan tetap tersedia.
 
           Jika disetel ke true atau tidak dikonfigurasi, pengguna yang dilindungi dapat dibuat dan dikelola oleh pengguna ini.</translation>
-<translation id="5367255280764736002">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> akan menentukan parameter selama melakukan penelusuran gambar dengan POST. Kebijakan terdiri dari pasangan nama nilai yang dipisahkan koma. Jika nilai adalah parameter template seperti {imageThumbnail}, data thumbnail gambar nyata akan menggantikannya.
+<translation id="5367255280764736002">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> akan menentukan parameter selama melakukan penelusuran gambar dengan POST. Kebijakan terdiri dari pasangan nama-nilai yang dipisahkan koma. Jika nilai adalah parameter template seperti {imageThumbnail}, data thumbnail gambar nyata akan menggantikannya.
 
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> tidak disetel, permintaan penelusuran gambar akan dikirimkan menggunakan metode GET.
 

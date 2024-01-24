@@ -94,7 +94,6 @@
 <translation id="1450170672351507823">Режимът за стандартна защита е включен. За още по-голяма сигурност използвайте подобрената защита.</translation>
 <translation id="1469381646033328562">Профилът ви се управлява от родителя ви.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
-<translation id="149095475893949513">Този уебсайт се опитва да изтегли конфигурационен профил.</translation>
 <translation id="1491277525950327607">Докоснете двукратно за превключване на настройката</translation>
 <translation id="1492417797159476138">Вече запазихте това потребителско име за този сайт</translation>
 <translation id="1497590942294823549">Меню → Мениджър на паролите</translation>
@@ -302,6 +301,7 @@
 <translation id="260378315836159338">В горната част на екрана докоснете +.</translation>
 <translation id="2604176749896001318">Актуализиране на браузъра ви</translation>
 <translation id="2609008503159898744">Искате ли да затворите всички раздели?</translation>
+<translation id="2613747923081026172">Създаване на група</translation>
 <translation id="2617210333344098964">Преместване на адреса в профила</translation>
 <translation id="261739049332372104">За да получавате актуална информация за важно за вас съдържание, включете известията от настройките на iOS.</translation>
 <translation id="2625189173221582860">Паролата е копирана</translation>
@@ -555,6 +555,7 @@
 <translation id="3922310737605261887">Търсене на копирания текст</translation>
 <translation id="3928666092801078803">Комбиниране на данните ми</translation>
 <translation id="3929457972718048006">Адреси</translation>
+<translation id="3948600256434252210">Можете да прекарате пръст надясно, за да сърфирате в режим „инкогнито“.</translation>
 <translation id="3955822496205734389">Имате ненадеждни пароли.</translation>
 <translation id="3959736869653157332">„Меню → Нов раздел в режим „инкогнито“</translation>
 <translation id="3962326069546168954">Запазване</translation>
@@ -659,6 +660,7 @@
 <translation id="4539187448429948815">{count,plural, =1{{count} запазено предложение за автоматично довършване е налице над клавиатурата ви.}other{{count} запазени предложения за автоматично довършване са налице над клавиатурата ви.}}</translation>
 <translation id="4540780316273593836">Нещо се обърка</translation>
 <translation id="4550040941166547650">Само на това устройство</translation>
+<translation id="4564893319561643483">Скриване на „<ph name="TITLE" />“</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Искате ли да затворите {COUNT} неактивен раздел?}other{Искате ли да затворите {COUNT} неактивни раздела?}}</translation>
 <translation id="457386861538956877">Още...</translation>
 <translation id="4587589328781138893">Сайтове</translation>
@@ -1259,6 +1261,7 @@
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7666861622396822790">Можете да управлявате това в <ph name="BEGIN_LINK" />Настройки за съдържанието<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">INSTALL</translation>
+<translation id="7673346542062368520">Можете да прекарате пръст наляво, за да сърфирате в режим „инкогнито“.</translation>
 <translation id="7679915578945954324">Адресите на сайтовете са копирани</translation>
 <translation id="7687508192620387263">Налице е файл за календара</translation>
 <translation id="7701040980221191251">Няма</translation>
@@ -1280,7 +1283,6 @@
 <translation id="7760127703945531263">Заключване на режима „инкогнито“</translation>
 <translation id="7765158879357617694">Преместване</translation>
 <translation id="7772032839648071052">Потвърдете пропуска</translation>
-<translation id="777572173400717978">{count,plural, =1{Запазихте отметка}other{Запазихте отметки}}</translation>
 <translation id="777637629667389858">Защитава ви в услугите на Google, когато сте влезли в профила си.</translation>
 <translation id="7781011649027948662">Да се преведе ли страницата?</translation>
 <translation id="7781069478569868053">Нов раздел в браузъра</translation>

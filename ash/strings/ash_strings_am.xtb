@@ -1498,6 +1498,7 @@
 <translation id="6981291220124935078">መዳረሻን አብራ</translation>
 <translation id="6981982820502123353">ተደራሽነት</translation>
 <translation id="698231206551913481">አንዴ ይህ ተጠቃሚ ከተወገደ በኋላ ከዚህ ተጠቃሚ ጋር የተጎዳኙ ሁሉም ፋይሎች እና አካባቢያዊ ውሂብ በቋሚነት ይሰረዛሉ።</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />ን (<ph name="SPECIFIED_REFRESH_RATE" /> ኸርዝ) አይደግፍም። የምስል ጥራቱ ወደ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> ኸርዝ) ተቀይሯል። ለውጦችን ለማቆየት አረጋግጥን ጠቅ ያድርጉ። ቀዳሚ ቅንብሮቹ በ<ph name="TIMEOUT_SECONDS" /> ውስጥ ወደነበሩበት ይመለሳሉ።</translation>
 <translation id="6989752354829085073">በእርስዎ Chromebook ዙሪያ እንዴት እንደሚያልፉ ለማወቅ ፈጣን ጉብኝት ያድርጉ። በ6 እርምጃዎች ይጀምሩ እና ያሂዱ።</translation>
 <translation id="7004910047186208204">ከተንቀሳቃሽ ስልክ ውሂብ ጋር ያገናኙ</translation>
 <translation id="7005239792648594238">ለመጀመር አንድ መተግበሪያ ይክፈቱ</translation>

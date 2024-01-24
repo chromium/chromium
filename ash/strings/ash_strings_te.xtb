@@ -1499,6 +1499,7 @@
 <translation id="6981291220124935078">యాక్సెస్‌ను ఆన్ చేయండి</translation>
 <translation id="6981982820502123353">యాక్సెసిబిలిటీ</translation>
 <translation id="698231206551913481">ఈ వినియోగదారును తీసివేసిన తర్వాత ఈ వినియోగదారుతో అనుబంధించిన అన్ని ఫైళ్లు మరియు స్థానిక డేటా శాశ్వతంగా తొలగించబడతాయి.</translation>
+<translation id="6984028004251196682"><ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)ను <ph name="DISPLAY_NAME" /> సపోర్ట్ చేయదు. రిజల్యూషన్ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />Hz)కు మార్చబడింది. మార్పులను అలాగే ఉంచడానికి ధృవీకరించండి ఆప్షన్‌ను క్లిక్ చేయండి. మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />లో రీస్టోర్ చేయబడతాయి.</translation>
 <translation id="6989752354829085073">Chromebookను ఎలా ఉపయోగించాలో తెలుసుకోవడానికి ఒక క్విక్ టూర్ చేయండి. కేవలం 6 దశల్లో సెటప్ చేసి, రన్ చేయండి.</translation>
 <translation id="7004910047186208204">మొబైల్ డేటాకు కనెక్ట్ చేయండి</translation>
 <translation id="7005239792648594238">యాప్‌ను తెరిచి ప్రారంభించండి</translation>

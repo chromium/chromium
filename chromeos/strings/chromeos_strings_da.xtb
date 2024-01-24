@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">videresend</translation>
 <translation id="1615335640928990664">Dataforbrug siden <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Kør opladningstest</translation>
+<translation id="1626590945318984973">Genvejen er ikke tilgængelig. Tryk en ny genvej uden at bruge funktions- og <ph name="META_KEY" />-tasterne.</translation>
 <translation id="1639239467298939599">Indlæser</translation>
 <translation id="1641857168437328880">Dokumentindføring (én side)</translation>
 <translation id="1643449475550628585">Skift baggrundsbillede dagligt</translation>
@@ -453,7 +454,9 @@
 <translation id="4394049700291259645">Deaktiver</translation>
 <translation id="439429847087949098">Genstarter <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">tilpas tastatur</translation>
+<translation id="4403262788869804671">En genvej uden <ph name="META_KEY" />-tasten kan skabe problemer i forbindelse med genveje i visse apps. Tryk på denne genvej igen for at fortsætte med at bruge den, eller tryk en ny genvej ved hjælp af <ph name="KEY" />-tasten.</translation>
 <translation id="4415951057168511744">Aktuel avatar</translation>
+<translation id="4417830657741848074">Din administrator har konfigureret visse apps til at starte automatisk. Nogle af disse apps kan ikke lukkes.</translation>
 <translation id="4422041425070339732">pil ned</translation>
 <translation id="4425149324548788773">Mit drev</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> er deaktiveret</translation>
@@ -466,6 +469,7 @@
 <translation id="4469288414739283461">Pauseskærmen Flow med Jorden</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for det netværk, der ikke er angivet som standardnetværk</translation>
+<translation id="4500722292849917410">Genvejen er ikke tilgængelig. Tryk en ny genvej ved hjælp af en ændringstast (Ctrl, Alt, Shift eller <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Grænsefladefarve</translation>
 <translation id="4503223151711056411">Venstrepil</translation>
 <translation id="4507392511610824664">lysstyrke op</translation>
@@ -513,6 +517,7 @@
 <translation id="4832079907277790330">Vælg mappe i appen Filer...</translation>
 <translation id="4835901797422965222">Ingen aktive netværk</translation>
 <translation id="4839698083503556542">Lav din egen film</translation>
+<translation id="48409034532829769">Din administrator har konfigureret "<ph name="APP_NAME" />" til at starte automatisk. Denne app kan ikke lukkes.</translation>
 <translation id="484462545196658690">Automatisk</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> er valgt. Tryk på Enter for at vælge <ph name="TOPIC_SOURCE" />-album</translation>
 <translation id="484790837831576105">(Android) DNS-oversættelse</translation>
@@ -539,6 +544,7 @@
 <translation id="4969079779290789265">Opdel</translation>
 <translation id="4972592110715526173">ændring af tilstand</translation>
 <translation id="498186245079027698">Tjek scanneren, og prøv igen. Sørg for, at der er nok lokal lagerplads til at gemme de scannede filer.</translation>
+<translation id="4982627662315910959">Genvejen er ikke tilgængelig. Tryk en ny genvej ved hjælp af Shift og 1 anden ændringstast (Ctrl, Alt eller <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Kør</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Sider</translation>
@@ -845,6 +851,7 @@
 <translation id="7216409898977639127">Mobilselskab</translation>
 <translation id="725133483556299729">Vælg mailadresse</translation>
 <translation id="7271040990581020067">Scanneren bruges i øjeblikket. Prøv igen senere.</translation>
+<translation id="7271932918253517778">Genvejen med taster i øverste række skal indeholde <ph name="META_KEY" />-tasten.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">Samlinger med baggrunde</translation>

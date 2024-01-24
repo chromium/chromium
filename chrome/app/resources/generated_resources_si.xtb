@@ -380,6 +380,7 @@
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{ගොනුව විවෘත කළ නොහැක}one{ගොනු විවෘත කළ නොහැක}other{ගොනු විවෘත කළ නොහැක}}</translation>
 <translation id="1282311502488501110">පුරන්න එපා</translation>
 <translation id="1282465000333679776">පද්ධති ශ්‍රව්‍යය බෙදා ගන්න</translation>
+<translation id="1283126956823499975">උපාංගය පිහිටුවීම සමග යමක් වැරදී ඇත</translation>
 <translation id="1284277788676816155">දත්ත සුරැකීමට ඉඩ නොදෙන්න</translation>
 <translation id="1285320974508926690">මෙම අඩවිය කිසිවිට පරිවර්තනය නොකරන්න</translation>
 <translation id="1285484354230578868">ඔබේ Google Drive ගිනුම තුළ දත්ත ගබඩා කරන්න</translation>
@@ -4931,7 +4932,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4789550509729954245">උපාංග අවට බෙදා ගන්නා විට දැනුම්දීම පෙන්වන්න</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint ත්වරණය සබල කරන්න</translation>
-<translation id="4792510204382653691">වෙබ් වෙළඳසැල විවෘත කරන්න</translation>
 <translation id="4792711294155034829">ගැටළුවක් වාර්තා කරන්න...</translation>
 <translation id="4794810983896241342">යාවත්කාලීන <ph name="BEGIN_LINK" />ඔබේ පරිපාලකයා<ph name="END_LINK" /> විසින් කළමනා කෙරේ</translation>
 <translation id="4794910597689955457">විවෘත කිරීමට ගොනු <ph name="NUM_OF_FILES" />ක් <ph name="CLOUD_PROVIDER" /> වෙත ගෙන යන්න ද?</translation>
@@ -5029,6 +5029,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4863769717153320198">පේන විදියට <ph name="WIDTH" /> x <ph name="HEIGHT" /> (පෙරනිමිය)</translation>
 <translation id="4864369630010738180">පුරමින්...</translation>
 <translation id="4864805589453749318">පාසල් ගිණුමක් එක් කිරීමට අවසර දෙන මාපිය තෝරන්න.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (අවහිර කරන ලදි)</translation>
 <translation id="486505726797718946">මතකය සුරකින ලදි</translation>
 <translation id="486635084936119914">බාගැනීමෙන් පසුව ඇතැම් ගොනු වර්ග ස්වයංක්‍රීයව විවෘත කරන්න</translation>
 <translation id="4867272607148176509">දෙමාපියන්ට යෙදුම් අනුමත කිරීමට හෝ අවහිර කිරීමට, කාල සීමාවන් සැකසීමට සහ වෙබ් බ්‍රවුස් කිරීම පාලනය කිරීමට හැක. බොහෝ පාසල් සම්පත් වෙත ප්‍රවේශ වීමට පාසල් ගිණුමක් පසුව එක් කළ හැක.</translation>
@@ -5521,6 +5522,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5261619498868361045">කන්ටේනරයේ නම හිස් විය නොහැක.</translation>
 <translation id="5261683757250193089">Web Store හි විවෘත කරන්න</translation>
 <translation id="5261799091118902550">මෙම ගොනුව වෛරසයක් හෝ අනිෂ්ට මෘදුකාංගයක් විය හැක. එය අනාරක්ෂිත දැයි පරීක්ෂා කිරීමට ඔබට එය Google වෙත යැවිය හැක.</translation>
+<translation id="5262334727506665688">ඔබේ Google ගිණුමේ මුරපද දිගටම සුරකින්න</translation>
 <translation id="5262784498883614021">ජාලට ස්වයංක්‍රීයව සම්බන්ධ කරන්න</translation>
 <translation id="5263656105659419083">පැති පැනලය වෙත පහසුවෙන් ආපසු යාම සඳහා, ඉහළ දකුණේ ඇති අමුණන්න ක්ලික් කරන්න</translation>
 <translation id="5264148714798105376">මෙය මිනිත්තුවක් හෝ කිහිපයක් ගත හැකිය.</translation>
@@ -7062,6 +7064,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="649396225532207613">මෙම ගොනුව ඔබේ පුද්ගලික සහ සමාජ ජාල ගිණුම්වලට හානි කළ හැක</translation>
 <translation id="6494327278868541139">වැඩි දියුණු කළ ආරක්ෂණ විස්තර පෙන්වන්න</translation>
 <translation id="6494445798847293442">සහතිකකරණ අධිකාරියක් නොවේ</translation>
+<translation id="6494483173119160146">උපාංගයට ප්‍රතිසාධනය කළ නොහැකි දෝෂයක් ඇති විය. ඔබේ උපාංගය යළි සකසා (එය සියලු පරිශීලක දත්ත මකනු ඇත) නැවත උත්සාහ කරන්න.</translation>
 <translation id="6497784818439587832">ඔබේ තිරයෙහි ඇති අයිතම කුඩා හෝ විශාල කිරීමට සංදර්ශක ප්‍රමාණය වෙනස් කරන්න</translation>
 <translation id="6497789971060331894">මූසික ආපස්සට අනුචලනය</translation>
 <translation id="6498249116389603658">ඔබගේ සියලුම භාෂා</translation>
@@ -9538,6 +9541,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8397825320644530257">සම්බන්ධිත දුරකථනය විසන්ධි කරන්න</translation>
 <translation id="8398877366907290961">කෙසේ හෝ කරගෙන යන්න</translation>
 <translation id="8399282673057829204">මුරපදය බලන්න</translation>
+<translation id="839949601275221554">උපාංගයේ දෝෂයක් ඇති විය. ඔබේ උපාංගය යළි අරඹා නැවත උත්සාහ කරන්න.</translation>
 <translation id="8401432541486058167">ඔබේ ස්මාර්ට් කාඩ්පත හා සම්බන්ධ රහස් අංකය ලබා දෙන්න.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome අද නැවතත් කුකී අවහිර කරයි}=1{Chrome හෙට නැවතත් කුකී අවහිර කරයි}one{Chrome දින # ක් දක්වා නැවතත් කුකී අවහිර කරයි}other{Chrome දින # ක් දක්වා නැවතත් කුකී අවහිර කරයි}}</translation>
 <translation id="8403618281196981152">Chrome තුළ ඔබේ දත්ත</translation>

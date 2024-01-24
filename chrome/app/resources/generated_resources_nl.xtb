@@ -140,7 +140,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1102790815296970136"><ph name="PERSONALIZED_MEMORY_TITLE" /> en andere herinneringen hier bekijken</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> altijd vertalen</translation>
 <translation id="1107482171728500359">Microfoon delen</translation>
-<translation id="110850812463801904">Handmatig verbinding maken met OneDrive</translation>
+<translation id="110850812463801904">Handmatig koppelen aan OneDrive</translation>
 <translation id="1108600514891325577">&amp;Stop</translation>
 <translation id="1108938384783527433">Geschiedenissynchronisatie</translation>
 <translation id="1110155001042129815">Wachten</translation>
@@ -4925,7 +4925,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4789550509729954245">Melding laten zien als apparaten in de buurt delen</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint-versnelling aanzetten</translation>
-<translation id="4792510204382653691">Chrome Web Store openen</translation>
 <translation id="4792711294155034829">&amp;Een probleem melden...</translation>
 <translation id="4794810983896241342">Updates worden beheerd door <ph name="BEGIN_LINK" />je beheerder<ph name="END_LINK" /></translation>
 <translation id="4794910597689955457"><ph name="NUM_OF_FILES" /> bestanden naar <ph name="CLOUD_PROVIDER" /> verplaatsen om te openen?</translation>

@@ -378,6 +378,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Impossible d'ouvrir le fichier}one{Impossible d'ouvrir le fichier}other{Impossible d'ouvrir les fichiers}}</translation>
 <translation id="1282311502488501110">Ne pas se connecter</translation>
 <translation id="1282465000333679776">Partager l'audio du système</translation>
+<translation id="1283126956823499975">Un problème est survenu lors de la configuration de l'appareil</translation>
 <translation id="1284277788676816155">Ne pas autoriser l'enregistrement des données</translation>
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
 <translation id="1285484354230578868">Stocker les données dans votre compte Google Disque</translation>
@@ -4929,7 +4930,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4789550509729954245">Afficher une notification lorsque des appareils partagent du contenu à proximité</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Activer l'accélération du TrackPoint</translation>
-<translation id="4792510204382653691">Ouvrir la boutique en ligne Chrome</translation>
 <translation id="4792711294155034829">&amp;Signaler un problème…</translation>
 <translation id="4794810983896241342">C'est <ph name="BEGIN_LINK" />votre administrateur<ph name="END_LINK" /> qui gère les mises à jour</translation>
 <translation id="4794910597689955457">Déplacer <ph name="NUM_OF_FILES" /> fichiers vers <ph name="CLOUD_PROVIDER" /> pour les ouvrir?</translation>
@@ -5027,6 +5027,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4863769717153320198">Semblable à <ph name="WIDTH" /> x <ph name="HEIGHT" /> (résolution par défaut)</translation>
 <translation id="4864369630010738180">Connexion en cours…</translation>
 <translation id="4864805589453749318">Sélectionne le parent qui t'accorde l'autorisation d'ajouter un compte scolaire.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bloqué)</translation>
 <translation id="486505726797718946">Mémoire enregistrée</translation>
 <translation id="486635084936119914">Ouvrir automatiquement certains types de fichiers après le téléchargement</translation>
 <translation id="4867272607148176509">Les parents peuvent approuver ou bloquer des applications, définir des limites de temps et contrôler la navigation sur le Web. Un compte scolaire peut être ajouté ultérieurement pour accéder à la plupart des ressources de l'école.</translation>
@@ -5519,6 +5520,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5261619498868361045">Le nom du conteneur ne peut pas être vide.</translation>
 <translation id="5261683757250193089">Ouvrir dans la boutique en ligne Chrome Web Store</translation>
 <translation id="5261799091118902550">Ce fichier peut être un virus ou un logiciel malveillant. Vous pouvez l'envoyer à Google pour vérifier s'il est dangereux.</translation>
+<translation id="5262334727506665688">Continuez à enregistrer les mots de passe dans votre compte Google</translation>
 <translation id="5262784498883614021">Se connecter automatiquement à un réseau</translation>
 <translation id="5263656105659419083">Pour revenir facilement au panneau latéral, cliquez sur Épingler en haut à droite</translation>
 <translation id="5264148714798105376">Cette opération peut prendre environ une minute.</translation>
@@ -7059,6 +7061,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="649396225532207613">Ce fichier peut endommager vos comptes personnels et de réseaux sociaux</translation>
 <translation id="6494327278868541139">Afficher les renseignements sur la protection renforcée</translation>
 <translation id="6494445798847293442">N'est pas une autorité de certification</translation>
+<translation id="6494483173119160146">L'appareil a rencontré une erreur irrécupérable. Veuillez réinitialiser votre appareil (cela effacera toutes les données de l'utilisateur) et réessayez.</translation>
 <translation id="6497784818439587832">Modifier la taille d'affichage pour rétrécir ou agrandir les éléments sur votre écran</translation>
 <translation id="6497789971060331894">Défilement inversé de la souris</translation>
 <translation id="6498249116389603658">&amp;Toutes vos langues</translation>
@@ -9538,6 +9541,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8397825320644530257">Déconnecter le téléphone connecté</translation>
 <translation id="8398877366907290961">Continuer</translation>
 <translation id="8399282673057829204">Afficher le mot de passe</translation>
+<translation id="839949601275221554">L'appareil a rencontré une erreur. Veuillez redémarrer votre appareil et réessayer.</translation>
 <translation id="8401432541486058167">Entrez le NIP associé à votre carte à puce.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome bloquera à nouveau les témoins aujourd'hui}=1{Chrome bloquera à nouveau les témoins demain}one{# jour jusqu'à ce que Chrome bloque à nouveau les témoins}other{# jours jusqu'à ce que Chrome bloque à nouveau les témoins}}</translation>
 <translation id="8403618281196981152">Vos données dans Chrome</translation>

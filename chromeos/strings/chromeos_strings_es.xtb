@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">adelante</translation>
 <translation id="1615335640928990664">Uso de datos desde el <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Realizar prueba de carga</translation>
+<translation id="1626590945318984973">Combinación de teclas no disponible. Pulsa una nueva combinación de teclas sin usar la tecla de función ni la tecla <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1641857168437328880">Alimentador de documentos (una cara)</translation>
 <translation id="1643449475550628585">Cambiar imagen de fondo de pantalla a diario</translation>
@@ -453,7 +454,9 @@
 <translation id="4394049700291259645">Inhabilitar</translation>
 <translation id="439429847087949098">Reiniciando <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">personalizar teclado</translation>
+<translation id="4403262788869804671">Si utilizas una combinación de teclas que no incluya la tecla <ph name="META_KEY" />, podría entrar en conflicto con una combinación de teclas de alguna aplicación. Pulsa de nuevo esta combinación de teclas para seguir usándola o pulsa una nueva combinación que incluya la tecla <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Avatar actual</translation>
+<translation id="4417830657741848074">Tu administrador ha configurado algunas aplicaciones para que se inicien automáticamente. Algunas de esas aplicaciones no se pueden cerrar.</translation>
 <translation id="4422041425070339732">flecha hacia abajo</translation>
 <translation id="4425149324548788773">Mi unidad</translation>
 <translation id="4428374560396076622">Red <ph name="NETWORK_NAME" /> desactivada</translation>
@@ -466,6 +469,7 @@
 <translation id="4469288414739283461">Salvapantallas Movimiento de la Tierra</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Se ha producido un error al hacer ping en la puerta de enlace de red no predeterminada</translation>
+<translation id="4500722292849917410">Combinación de teclas no disponible. Pulsa una nueva combinación de teclas usando una tecla modificadora (Ctrl, Alt, Mayús o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Color de la interfaz</translation>
 <translation id="4503223151711056411">Flecha hacia la izquierda</translation>
 <translation id="4507392511610824664">aumentar brillo</translation>
@@ -513,6 +517,7 @@
 <translation id="4832079907277790330">Seleccionar carpeta en aplicación Files...</translation>
 <translation id="4835901797422965222">No hay redes activas</translation>
 <translation id="4839698083503556542">Crea tu propia película</translation>
+<translation id="48409034532829769">Tu administrador ha configurado "<ph name="APP_NAME" />" para que se inicie automáticamente. Esta aplicación no se puede cerrar.</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> seleccionado, pulsa Intro para seleccionar los álbumes de <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Resolución de DNS</translation>
@@ -539,6 +544,7 @@
 <translation id="4969079779290789265">Dividir</translation>
 <translation id="4972592110715526173">cambio de modo</translation>
 <translation id="498186245079027698">Revisa el escáner e inténtalo de nuevo. Comprueba que tienes suficiente espacio local para guardar los archivos escaneados.</translation>
+<translation id="4982627662315910959">Combinación de teclas no disponible. Pulsa una nueva combinación de teclas usando Mayús y una tecla modificadora más (Ctrl, Alt o <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Ejecutar</translation>
 <translation id="4987769320337599931">Cortafuegos</translation>
 <translation id="4988526792673242964">Páginas</translation>
@@ -845,6 +851,7 @@
 <translation id="7216409898977639127">Proveedor de servicios móviles</translation>
 <translation id="725133483556299729">Seleccionar correo electrónico</translation>
 <translation id="7271040990581020067">El escáner se está usando en este momento. Vuelve a intentarlo más tarde.</translation>
+<translation id="7271932918253517778">Las combinaciones con teclas de la fila superior deben incluir la tecla <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Siente la brisa</translation>
 <translation id="7287310195820267359">Colecciones de fondos de pantalla</translation>

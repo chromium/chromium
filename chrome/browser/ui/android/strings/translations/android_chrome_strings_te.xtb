@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">అప్లికేషన్ వెర్షన్</translation>
 <translation id="1428770807407000502">సింక్‌ను ఆఫ్ చేయాలా?</translation>
 <translation id="1430915738399379752">ప్రింట్</translation>
+<translation id="1435593198351412143">PDFలను ఆటోమేటిక్‌గా తెరవండి</translation>
 <translation id="1436784010935106834">తీసివేయబడింది</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" />‌లో రన్ అవుతోంది</translation>
 <translation id="1448440926884431741">ట్రాక్ చేసిన మీ ప్రోడక్ట్‌లను బుక్‌మార్క్‌లలో ఆర్గనైజ్ చేయండి</translation>
@@ -339,6 +340,7 @@
 <translation id="2894821468041866720">మీ బ్రౌజర్ లేదా పరికర వేగాన్ని అంతగా తగ్గించదు.</translation>
 <translation id="2900528713135656174">ఈవెంట్‌ను క్రియేట్ చేయండి</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> కోసం సూచనలను చూపుతోంది</translation>
+<translation id="2904300462646366554">డౌన్‌లోడ్ చేయబడిన PDF మీ పరికరంలోని PDF వ్యూయర్‌లో ఒకదానితో ఆటోమేటిక్‌గా తెరవబడుతుంది</translation>
 <translation id="2904414404539560095">ట్యాబ్‌ను షేర్ చేయాల్సిన పరికరాల లిస్ట్‌ పూర్తి ఎత్తులో తెరవబడింది.</translation>
 <translation id="2908243544703713905">చదవని కథనాలు సిద్ధంగా ఉన్నాయి</translation>
 <translation id="2909615210195135082">Google నోటిఫికేషన్‌ల ప్లాట్‌ఫామ్</translation>
@@ -894,6 +896,7 @@
 <translation id="5810288467834065221">కాపీరైట్ <ph name="YEAR" /> Google LLC. సర్వ హక్కులు ప్రత్యేకించబడ్డాయి.</translation>
 <translation id="5814749351757353073">మీకు ఇష్టమైన సైట్‌ల గురించి తెలుసుకోండి</translation>
 <translation id="5822875253699806474">మీరు బ్రౌజ్ చేసిన సైట్‌లకు తిరిగి క్విక్‌గా వెళ్లడానికి, మీ ట్యాబ్‌లను, హిస్టరీని సింక్ చేయండి</translation>
+<translation id="5829586821381540080"><ph name="FOLDER_NAME" />లో సేవ్ చేయబడింది</translation>
 <translation id="583281660410589416">తెలియని</translation>
 <translation id="5833984609253377421">లింక్‌ను షేర్ చేయి</translation>
 <translation id="5839058148541733625">Chrome డినో</translation>

@@ -465,6 +465,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1828959155404624835">Mga pagpaparenta ng kotse</translation>
 <translation id="1834321415901700177">Naglalaman ng mga mapanirang program ang site na ito</translation>
 <translation id="1838374766361614909">I-clear ang paghahanap</translation>
+<translation id="1839331950812095887">ilang salitang nagbubuod ng iyong mga iniisip</translation>
 <translation id="1839551713262164453">Hindi na-validate ang mga value ng patakaran at may mga error</translation>
 <translation id="1842969606798536927">Magbayad</translation>
 <translation id="1846432862466000825">Plastic (Archival)</translation>
@@ -698,6 +699,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2293443924986248631">Kapag naka-on, ang mga site ay hindi makakagamit ng cookies na sumusubaybay sa iyo sa buong web. Posibleng masira ang mga feature sa ilang site.</translation>
 <translation id="2295831393422400053">I-on ang setting na Mas Pahusayin ang Mga Paghahanap at Pag-browse para magamit ang Tulungan akong magsulat</translation>
 <translation id="2300306941146563769">Hindi na-upload</translation>
+<translation id="2301098101308036335">Aling mga website ang binisita at kailan.</translation>
 <translation id="230286397113210245">Button na Magbukas ng Incognito Window, i-activate para makapagbukas ng bagong Incognito window para makapag-browse nang pribado</translation>
 <translation id="2312234273148520048">Mga Condiment at Dressing</translation>
 <translation id="2316087952091171402">Mas mababa sa <ph name="UPPER_ESTIMATE" />. Posibleng mas mabagal na mag-load ang ilang site sa iyong susunod na pagbisita.</translation>
@@ -1365,6 +1367,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3655670868607891010">Kung madalas mo itong nakikita, subukan ang mga ito <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Casual na Kasuotan</translation>
 <translation id="3658742229777143148">Rebisyon</translation>
+<translation id="3659521826520353662">Aling mga website na tinukoy ng administrator ang binisita at kailan: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">Mga Keyword:</translation>
 <translation id="3665100783276035932">Gagana dapat ang karamihan ng mga site na gaya ng inaasahan</translation>
 <translation id="3667704023705708645">Venture capital</translation>
@@ -1455,6 +1458,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3812398568375898177">Isa itong mahalagang update na nagpapahusay ng performance ng mga Android app sa ChromeOS.</translation>
 <translation id="3815434930383843058">8 x 12 in</translation>
 <translation id="3816482573645936981">Value (nasasapawan)</translation>
+<translation id="382115839591654906">CVC para sa <ph name="CARD_NAME" /></translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Ang iyong browser ay pinapamahalaan ng <ph name="BROWSER_DOMAIN" /> at ang profile mo ay pinapamahalaan ng <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Kung gumagamit ka ng proxy server...</translation>
@@ -3204,6 +3208,7 @@ Mga karagdagang detalye:
 <translation id="7341357280245177602">Mga gamit nang sasakyan</translation>
 <translation id="7346048084945669753">Naka-affiliate:</translation>
 <translation id="7346062987309535530">Mga Gamit sa Pagkain</translation>
+<translation id="7346081071264046066">"masayang sumagot ng oo sa imbitasyon sa kasal na ito"</translation>
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
 <translation id="7353601530677266744">Command Line</translation>
 <translation id="7354880545102894991">Mura at last minute na pagbiyahe</translation>

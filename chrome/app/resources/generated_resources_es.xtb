@@ -377,6 +377,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{No se puede abrir el archivo}other{No se pueden abrir los archivos}}</translation>
 <translation id="1282311502488501110">No iniciar sesión</translation>
 <translation id="1282465000333679776">Compartir audio del sistema</translation>
+<translation id="1283126956823499975">Se ha producido un error al configurar el dispositivo</translation>
 <translation id="1284277788676816155">No permitir que guarde datos</translation>
 <translation id="1285320974508926690">No traducir nunca este sitio</translation>
 <translation id="1285484354230578868">Almacenar datos en tu cuenta de Google Drive</translation>
@@ -4926,7 +4927,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4789550509729954245">Mostrar notificación cuando algún dispositivo cercano esté compartiendo contenido</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Habilitar aceleración del TrackPoint</translation>
-<translation id="4792510204382653691">Abrir Web Store</translation>
 <translation id="4792711294155034829">&amp;Notificar un error...</translation>
 <translation id="4794810983896241342">Las actualizaciones las gestiona <ph name="BEGIN_LINK" />tu administrador<ph name="END_LINK" /></translation>
 <translation id="4794910597689955457">¿Mover <ph name="NUM_OF_FILES" /> archivos a <ph name="CLOUD_PROVIDER" /> para abrirlos?</translation>
@@ -5024,6 +5024,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4863769717153320198">Resolución de <ph name="WIDTH" />x<ph name="HEIGHT" /> (predeterminada)</translation>
 <translation id="4864369630010738180">Iniciando sesión...</translation>
 <translation id="4864805589453749318">Indica si es el padre o la madre quien otorga permiso para añadir una cuenta de centro educativo.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bloqueado)</translation>
 <translation id="486505726797718946">Memoria ahorrada</translation>
 <translation id="486635084936119914">Abre determinados tipos de archivo automáticamente después de la descarga</translation>
 <translation id="4867272607148176509">Los padres pueden aprobar o bloquear aplicaciones, establecer límites de tiempo y controlar la navegación por Internet. Se puede añadir una cuenta de centro educativo más adelante para acceder a la mayoría de los recursos del centro.</translation>
@@ -5516,6 +5517,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5261619498868361045">El nombre del contenedor no puede estar vacío.</translation>
 <translation id="5261683757250193089">Abrir en Web Store</translation>
 <translation id="5261799091118902550">Este archivo podría ser un virus o malware. Puedes enviarlo a Google para comprobar si es seguro.</translation>
+<translation id="5262334727506665688">Sigue guardando contraseñas en tu cuenta de Google</translation>
 <translation id="5262784498883614021">Conectarse automáticamente a la red</translation>
 <translation id="5263656105659419083">Para volver fácilmente al panel lateral, haz clic en Fijar arriba a la derecha</translation>
 <translation id="5264148714798105376">Este proceso puede durar aproximadamente un minuto.</translation>
@@ -6881,7 +6883,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6344170822609224263">Accede a la lista de conexiones de red</translation>
 <translation id="6344576354370880196">Impresoras guardadas</translation>
 <translation id="6344608411615208519">Tu <ph name="BEGIN_LINK" />navegador lo gestionan<ph name="END_LINK" /> tus padres</translation>
-<translation id="6344622098450209924">Protección frente al seguimiento</translation>
+<translation id="6344622098450209924">Protección Antirrastreo</translation>
 <translation id="6345203628032613660">Buscar fotograma con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6345418402353744910">El proxy <ph name="PROXY" /> necesita tu nombre de usuario y tu contraseña para que el administrador pueda configurar tu red</translation>
 <translation id="6345566021391290381">Hay contraseñas de <ph name="WEBSITE_NAME" /> compartidas contigo. Puedes usarlas en el formulario de inicio de sesión.</translation>
@@ -7056,6 +7058,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="649396225532207613">Este archivo puede dañar tus cuentas personales y de redes sociales</translation>
 <translation id="6494327278868541139">Mostrar detalles de la protección mejorada</translation>
 <translation id="6494445798847293442">No es una entidad emisora de certificados</translation>
+<translation id="6494483173119160146">Se ha producido un error irrecuperable en el dispositivo. Restablece tu dispositivo (se borrarán todos los datos de usuario) y vuelve a intentarlo.</translation>
 <translation id="6497784818439587832">Cambia el tamaño de la pantalla para ampliar o reducir el tamaño de los elementos que aparecen</translation>
 <translation id="6497789971060331894">Desplazamiento inverso del ratón</translation>
 <translation id="6498249116389603658">&amp;Todos tus idiomas</translation>
@@ -8807,7 +8810,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7848892492535275379"><ph name="CREDENTIAL_TYPE" /> para <ph name="USER_EMAIL" /></translation>
 <translation id="7849264908733290972">Abrir &amp;imagen en una pestaña nueva</translation>
 <translation id="784934925303690534">Tiempo</translation>
-<translation id="7849656116606005620">Recordatorio: la protección frente al seguimiento está activada</translation>
+<translation id="7849656116606005620">Recordatorio: Protección Antirrastreo está activada</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Si permites que tus dispositivos Chrome OS nos envíen informes de forma automática, nos ayudarás a priorizar qué debemos arreglar y mejorar en Chrome OS. Estos informes pueden incluir información como cuándo ha fallado Chrome OS, qué funciones utilizas y cuánta memoria sueles usar, así como datos de diagnóstico y de uso de aplicaciones Android. Parte de los datos agregados también ayudarán a las aplicaciones y a los partners de Google, como los desarrolladores de Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar la opción para permitir que se generen estos informes en cualquier momento en los ajustes de tu dispositivo Chrome OS. Si eres el administrador de un dominio, puedes cambiar esta opción en la consola de administración.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Si el ajuste Actividad en la Web y en Aplicaciones está activado en tu cuenta de Google, es posible que tus datos de Android se guarden en tu cuenta de Google. Puedes ver tus datos, eliminarlos y cambiar la configuración de tu cuenta en account.google.com.<ph name="END_PARAGRAPH3" /></translation>
@@ -9535,6 +9538,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8397825320644530257">Desconectar teléfono conectado</translation>
 <translation id="8398877366907290961">Continuar de todos modos</translation>
 <translation id="8399282673057829204">Ver contraseña</translation>
+<translation id="839949601275221554">Se ha producido un error en el dispositivo. Reinicia el dispositivo y vuelve a intentarlo.</translation>
 <translation id="8401432541486058167">Introduce el PIN asociado a tu tarjeta inteligente.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome volverá a bloquear las cookies hoy}=1{Chrome volverá a bloquear las cookies mañana}other{Quedan # días para que Chrome vuelva a bloquear las cookies}}</translation>
 <translation id="8403618281196981152">Tus datos en Chrome</translation>

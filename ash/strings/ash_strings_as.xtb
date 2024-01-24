@@ -1498,6 +1498,7 @@
 <translation id="6981291220124935078">এক্সেছ অন কৰক</translation>
 <translation id="6981982820502123353">সাধ্য সুবিধাসমূহ</translation>
 <translation id="698231206551913481">ব্যৱহাৰকাৰীজনক আঁতৰোৱাৰ পাছত তেওঁৰ সৈতে জড়িত সকলো ফাইল বা স্থানীয় ডেটা স্থায়ীভাৱে মচা হ’ব।</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" />এ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) সমৰ্থন নকৰে। ৰিজ’লিউশ্বনটো <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz)লৈ সলনি কৰা হৈছে। সালসলনিসমূহ ৰাখিবলৈ নিশ্চিত কৰকত ক্লিক কৰক। পূৰ্বৱৰ্তী ছেটিংসমূহ <ph name="TIMEOUT_SECONDS" />ত পুনঃস্থাপন কৰা হ’ব।</translation>
 <translation id="6989752354829085073">আপোনাৰ Chromebook কেনেকৈ ব্যৱহাৰ কৰিব লাগে সেই বিষয়ে জানিবলৈ কি কি সুবিধা আছে চাওক। ৬ টা পদক্ষেপত কাৰ্যক্ষম কৰি তোলক।</translation>
 <translation id="7004910047186208204">ম’বাইলৰ ডেটাৰ সৈতে সংযোগ কৰক</translation>
 <translation id="7005239792648594238">আৰম্ভ কৰিবলৈ এটা এপ্‌ খোলক</translation>

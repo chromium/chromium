@@ -621,6 +621,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3577473026931028326">Nagkaproblema. Subukan ulit.</translation>
 <translation id="3580650856351781466">Nagda-download ng mga speech file</translation>
 <translation id="3585296979871889131">Tingnan ang mga kamakailang larawan, media, notification, at app ng iyong telepono</translation>
+<translation id="3590441166907930941">Button sa Gilid</translation>
 <translation id="3593039967545720377">I-access ang history ng iyong clipboard sa pamamagitan ng pagpindot sa <ph name="SHORTCUT_KEY_NAME" /> + V para tingnan ang clipboard mo. Kumopya ng item para magsimula.</translation>
 <translation id="3593646411856133110">Mag-swipe pataas at i-hold para makita ang mga nakabukas na app</translation>
 <translation id="3595596368722241419">Puno na ang baterya</translation>
@@ -1033,6 +1034,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5163434717504750796">Kalagayan ng baterya <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Bilang ng cycle <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">I-save ang bilang template</translation>
 <translation id="5168181903108465623">I-cast ang mga available na device</translation>
+<translation id="5168753792967365150">Mag-edit sa Google Tasks</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5176318573511391780">I-record ang hindi buong screen</translation>
 <translation id="5187627942836026988">Ipakita ang mga detalye ng hotspot. Na-block ng iyong administrator ang hotspot.</translation>
@@ -1302,6 +1304,8 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="6168622430237609329">Ang iyong mga naka-install na app</translation>
 <translation id="6173151025443907148">Hindi sinusuportahan ang pag-sign in ng pangalawang user kung naka-enable ang Lacros. Gumamit na lang ng pangalawang profile ng browser sa Lacros o i-disable ang Lacros at subukan ulit.</translation>
 <translation id="6179832488876878285">Puwede mong i-pin ang iyong mahahalagang file dito. Buksan ang app na Mga File para magsimula.</translation>
+<translation id="6180193585172850042">Button na Bumalik</translation>
+<translation id="6180651297859206670">Button na Pa-forward</translation>
 <translation id="6182592640011875895">Buksan ang desk</translation>
 <translation id="6185696379715117369">Pataas sa pahina</translation>
 <translation id="619335566042889110">Ganap na i-charge ngayon</translation>

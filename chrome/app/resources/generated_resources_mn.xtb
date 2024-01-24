@@ -751,7 +751,7 @@
 <translation id="1572266655485775982">Wi-Fi-г идэвхжүүлэх</translation>
 <translation id="1572876035008611720">Имэйлээ оруулна уу</translation>
 <translation id="1573127087832371028">Асуудлыг тайлбарлана уу</translation>
-<translation id="1574335334663388774"><ph name="APP_NAME" />-н <ph name="APP_VERSION" />-р хувилбарыг энэ төхөөрөмжид аль хэдийн суулгасан байна</translation>
+<translation id="1574335334663388774"><ph name="APP_NAME" />-н <ph name="APP_VERSION" /> хувилбарыг энэ төхөөрөмжид аль хэдийн суулгасан байна</translation>
 <translation id="1575036763505533001">Chrome-г өөрчлөхийн хажуугийн самбар</translation>
 <translation id="1575741822946219011">Хэл болон оролтууд</translation>
 <translation id="1576594961618857597">Өгөгдмөл цагаан аватар</translation>
@@ -4938,7 +4938,6 @@
 <translation id="4789550509729954245">Төхөөрөмжүүд ойролцоо хуваалцаж байгаа үед мэдэгдэл харуулах</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint хурдасгуурыг идэвхжүүлэх</translation>
-<translation id="4792510204382653691">Веб дэлгүүрийг нээх</translation>
 <translation id="4792711294155034829">&amp;Асуудлыг тайлагнах...</translation>
 <translation id="4794810983896241342"><ph name="BEGIN_LINK" />Таны администратор<ph name="END_LINK" /> шинэчлэлтүүдийг удирддаг</translation>
 <translation id="4794910597689955457">Нээхийн тулд <ph name="NUM_OF_FILES" /> файлыг <ph name="CLOUD_PROVIDER" /> руу зөөх үү?</translation>

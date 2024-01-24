@@ -102,6 +102,7 @@
 <translation id="3955621079070267756">‏فتح Chromium من أي تطبيق</translation>
 <translation id="4005283307739974863">‏يؤدي هذا الاختصار إلى فتح صفحة "التحقّق من الأمان" وإجرائه في Chromium.</translation>
 <translation id="4043291146360695975">يتم حفظ كلمات المرور في "مدير كلمات المرور" على هذا الجهاز فقط.</translation>
+<translation id="4076589763479456892">‏في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />محو بيانات Chromium في حسابك<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">‏غير متاح على الإصدار التجريبي من Chromium</translation>
 <translation id="4106512142782407609">‏تم تسجيل الدخول بحساب <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@
 <translation id="5534584691915394889">‏سيتم استخدام هذه البيانات لإنشاء الأحداث في تطبيق Apple Calendar (تقويم Apple) من Chromium و"عدسة Google".</translation>
 <translation id="5571094606370987472">‏فتح علامات التبويب الأخيرة في Chromium</translation>
 <translation id="5623083843656850677">‏يمكنك قفل علامات التبويب في وضع التصفُّح المتخفي عند مغادرة Chromium أو التبديل إلى تطبيق مختلف.</translation>
+<translation id="5671188105328420281">‏معلومات بشأن استخدام متصفِّح Chromium</translation>
 <translation id="5688047395118852662">‏تعرض لك هذه القائمة اقتراحات حول كيفية الاستفادة إلى أقصى حدّ من Chromium.</translation>
 <translation id="5700709190537129682">‏يتعذّر على متصفِّح Chromium التحقُّق من كلمات المرور.</translation>
 <translation id="5777187867430702742">‏صفحة متصفِّح Chromium</translation>

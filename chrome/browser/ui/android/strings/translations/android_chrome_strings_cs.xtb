@@ -91,6 +91,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1416550906796893042">Verze aplikace</translation>
 <translation id="1428770807407000502">Vypnout synchronizaci?</translation>
 <translation id="1430915738399379752">Tisk</translation>
+<translation id="1435593198351412143">Soubory PDF automaticky otevřít</translation>
 <translation id="1436784010935106834">Odebráno</translation>
 <translation id="1437543266176261764">Spuštěno v aplikaci <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Sledované produkty můžete třídit v záložkách</translation>
@@ -339,6 +340,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2894821468041866720">Nijak znatelně nezpomaluje prohlížeč ani zařízení.</translation>
 <translation id="2900528713135656174">Vytvořit událost</translation>
 <translation id="2901411048554510387">Zobrazují se návrhy pro <ph name="WEBSITE_TITLE" /></translation>
+<translation id="2904300462646366554">Stažené soubory PDF se automaticky otevřou v jednom z prohlížečů souborů PDF v zařízení</translation>
 <translation id="2904414404539560095">Seznam zařízení, se kterými se má karta sdílet, otevřený na plnou výšku.</translation>
 <translation id="2908243544703713905">Jsou připravené nepřečtené články</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
@@ -894,6 +896,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Všechna práva vyhrazena.</translation>
 <translation id="5814749351757353073">Sledujte své oblíbené weby</translation>
 <translation id="5822875253699806474">Pokud chcete mít možnost rychle se vrátit na navštívené weby, synchronizujte své karty a historii</translation>
+<translation id="5829586821381540080">Uloženo ve složce <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Neznámé</translation>
 <translation id="5833984609253377421">Sdílet odkaz</translation>
 <translation id="5839058148541733625">Dinosauří hra pro Chrome</translation>

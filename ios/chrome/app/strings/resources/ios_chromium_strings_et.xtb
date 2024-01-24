@@ -102,6 +102,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi an
 <translation id="3955621079070267756">Avage Chromium mis tahes rakendusest</translation>
 <translation id="4005283307739974863">Avab ja käitab Chromiumi ohutuskontrolli.</translation>
 <translation id="4043291146360695975">Paroolid salvestatakse rakendusse Paroolihaldur ainult selles seadmes.</translation>
+<translation id="4076589763479456892">Kui unustasite parooli või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi andmed<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Ei toetata Chromiumi beetaversioonis</translation>
 <translation id="4106512142782407609">Sisse logitud kasutajana <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@ Teie andmed on krüpteeritud teie parooliga. Chromiumi andmete kasutamiseks ja s
 <translation id="5534584691915394889">Seda kasutatakse Chromiumi ja Google Lensi kaudu teie Apple'i rakenduses Calendar sündmuste loomiseks.</translation>
 <translation id="5571094606370987472">Avab Chromiumi hiljutised vahelehed.</translation>
 <translation id="5623083843656850677">Lukustage Chromiumist väljumisel või muu rakenduse aktiveerimisel oma inkognito vahelehed.</translation>
+<translation id="5671188105328420281">Chromiumi nõuanded</translation>
 <translation id="5688047395118852662">Sellel kaardil kuvatakse soovitusi selle kohta, kuidas Chromiumi parimal moel kasutada.</translation>
 <translation id="5700709190537129682">Chromiumil ei õnnestu teie paroole kontrollida</translation>
 <translation id="5777187867430702742">Chromiumi leht</translation>

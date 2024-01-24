@@ -94,7 +94,6 @@
 <translation id="1450170672351507823">La protection standard est activée. Pour profiter d'une sécurité accrue, servez-vous de la protection améliorée.</translation>
 <translation id="1469381646033328562">Ton compte est géré par ton parent.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
-<translation id="149095475893949513">Ce site Web tente de télécharger un profil de configuration.</translation>
 <translation id="1491277525950327607">Touchez deux fois pour activer ou désactiver le paramètre</translation>
 <translation id="1492417797159476138">Vous avez déjà enregistré ce nom d'utilisateur pour ce site</translation>
 <translation id="1497590942294823549">Menu → Gestionnaire de mots de passe</translation>
@@ -302,6 +301,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="260378315836159338">En haut de l'écran, touchez +</translation>
 <translation id="2604176749896001318">Mettre à jour votre navigateur</translation>
 <translation id="2609008503159898744">Fermer tous les onglets?</translation>
+<translation id="2613747923081026172">Créer un groupe</translation>
 <translation id="2617210333344098964">Déplacer l'adresse vers le compte</translation>
 <translation id="261739049332372104">Pour recevoir des mises à jour sur le contenu qui vous intéresse, activez les notifications dans vos réglages iOS.</translation>
 <translation id="2625189173221582860">Mot de passe copié</translation>
@@ -555,6 +555,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3922310737605261887">Rechercher le texte copié</translation>
 <translation id="3928666092801078803">Combiner mes données</translation>
 <translation id="3929457972718048006">Adresses</translation>
+<translation id="3948600256434252210">Vous pouvez balayer l'écran vers la droite pour naviguer en mode Navigation privée.</translation>
 <translation id="3955822496205734389">Vous avez des mots de passe faibles.</translation>
 <translation id="3959736869653157332">Menu → Nouvel onglet de navigation privée</translation>
 <translation id="3962326069546168954">Enregistrer</translation>
@@ -659,6 +660,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4539187448429948815">{count,plural, =1{{count} suggestion de saisie semi-automatique enregistrée, accessible au-dessus de votre clavier.}one{{count} suggestion de saisie semi-automatique enregistrée, accessible au-dessus de votre clavier.}other{{count} suggestions de saisie semi-automatique enregistrées, accessibles au-dessus de votre clavier.}}</translation>
 <translation id="4540780316273593836">Un problème est survenu</translation>
 <translation id="4550040941166547650">Uniquement sur cet appareil</translation>
+<translation id="4564893319561643483">Masquez « <ph name="TITLE" /> »</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Fermer {COUNT} onglet inactif?}one{Fermer {COUNT} onglet inactif?}other{Fermer {COUNT} onglets inactifs?}}</translation>
 <translation id="457386861538956877">Autres...</translation>
 <translation id="4587589328781138893">Sites</translation>
@@ -1259,6 +1261,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7666861622396822790">Vous pouvez gérer cela dans les <ph name="BEGIN_LINK" />paramètres de contenu<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">INSTALLER</translation>
+<translation id="7673346542062368520">Vous pouvez balayer l'écran vers la gauche pour naviguer en mode Navigation privée.</translation>
 <translation id="7679915578945954324">Adresses de site copiées</translation>
 <translation id="7687508192620387263">Un fichier d'agenda est disponible</translation>
 <translation id="7701040980221191251">Aucun</translation>
@@ -1280,7 +1283,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7760127703945531263">Verrouillage de la Navigation privée</translation>
 <translation id="7765158879357617694">Déplacer</translation>
 <translation id="7772032839648071052">Confirmer la phrase de passe</translation>
-<translation id="777572173400717978">{count,plural, =1{Marqué comme favori}one{Marqué comme favori}other{Marqués comme favoris}}</translation>
 <translation id="777637629667389858">Vous protège dans l'ensemble des services Google lorsque vous êtes connecté.</translation>
 <translation id="7781011649027948662">Traduire la page?</translation>
 <translation id="7781069478569868053">Page Nouvel onglet</translation>

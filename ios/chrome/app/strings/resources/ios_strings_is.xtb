@@ -94,7 +94,6 @@
 <translation id="1450170672351507823">Kveikt er á hefðbundinni vörn. Þú getur aukið öryggið með því að nota aukna vörn.</translation>
 <translation id="1469381646033328562">Foreldri þitt stjórnar reikningnum þínum.
 <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
-<translation id="149095475893949513">Þetta vefsvæði er að reyna að sækja stillingasnið.</translation>
 <translation id="1491277525950327607">Ýttu tvisvar til að breyta stillingum</translation>
 <translation id="1492417797159476138">Þú varst þegar búin(n) að vista þetta notandanafn fyrir vefsvæðið</translation>
 <translation id="1497590942294823549">Valmynd → Aðgangsorðastjórnun</translation>
@@ -302,6 +301,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="260378315836159338">Ýttu á + efst á skjánum</translation>
 <translation id="2604176749896001318">Uppfærðu vafrann þinn</translation>
 <translation id="2609008503159898744">Loka öllum flipum?</translation>
+<translation id="2613747923081026172">Búa til hóp</translation>
 <translation id="2617210333344098964">Færa heimilisfang á reikning</translation>
 <translation id="261739049332372104">Kveiktu á tilkynningum í iOS-stillingunum þínum til að fá uppfærslur um efni sem skiptir þig máli.</translation>
 <translation id="2625189173221582860">Aðgangsorð afritað</translation>
@@ -555,6 +555,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3922310737605261887">Leita að afrituðum texta</translation>
 <translation id="3928666092801078803">Sameina gögnin mín</translation>
 <translation id="3929457972718048006">Heimilisföng</translation>
+<translation id="3948600256434252210">Þú getur skoðað í huliðsstillingu með því að strjúka til hægri.</translation>
 <translation id="3955822496205734389">Þú ert með léleg aðgangsorð.</translation>
 <translation id="3959736869653157332">Valmynd → Nýr huliðsflipi</translation>
 <translation id="3962326069546168954">Vista</translation>
@@ -659,6 +660,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4539187448429948815">{count,plural, =1{{count} vistuð tillaga að sjálfvirkri útfyllingu í boði ofan við lyklaborðið.}one{{count} vistuð tillaga að sjálfvirkri útfyllingu í boði ofan við lyklaborðið.}other{{count} vistaðar tillögur að sjálfvirkri útfyllingu í boði ofan við lyklaborðið.}}</translation>
 <translation id="4540780316273593836">Eitthvað fór úrskeiðis</translation>
 <translation id="4550040941166547650">Aðeins í þessu tæki</translation>
+<translation id="4564893319561643483">Fela „<ph name="TITLE" />“</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Loka {COUNT} óvirkum flipa?}one{Loka {COUNT} óvirkum flipa?}other{Loka {COUNT} óvirkum flipum?}}</translation>
 <translation id="457386861538956877">Meira...</translation>
 <translation id="4587589328781138893">Svæði</translation>
@@ -1259,6 +1261,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7666861622396822790">Þú getur stjórnað þessu í <ph name="BEGIN_LINK" />efnisstillingunum<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">SETJA UPP</translation>
+<translation id="7673346542062368520">Þú getur skoðað í huliðsstillingu með því að strjúka til vinstri.</translation>
 <translation id="7679915578945954324">Vefföng eru afrituð</translation>
 <translation id="7687508192620387263">Dagatalsskrá er tiltæk</translation>
 <translation id="7701040980221191251">Ekkert</translation>
@@ -1280,7 +1283,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7760127703945531263">Huliðsflipalás</translation>
 <translation id="7765158879357617694">Færa</translation>
 <translation id="7772032839648071052">Staðfestu aðgangsorðið</translation>
-<translation id="777572173400717978">{count,plural, =1{Bókamerkt}one{Bókamerkt}other{Bókamerkt}}</translation>
 <translation id="777637629667389858">Verndar þig í Google-þjónustum þegar þú ert innskráð(ur).</translation>
 <translation id="7781011649027948662">Þýða síðu?</translation>
 <translation id="7781069478569868053">Síða nýrra flipa</translation>

@@ -142,7 +142,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1102790815296970136">Vaadake siin albumit „<ph name="PERSONALIZED_MEMORY_TITLE" />“ ja muid mälestusi</translation>
 <translation id="1103523840287552314">Tõlgi alati: <ph name="LANGUAGE" /></translation>
 <translation id="1107482171728500359">Jaga mikrofoni</translation>
-<translation id="110850812463801904">OneDrive'iga käsitsi ühenduse loomine</translation>
+<translation id="110850812463801904">Looge ühendus OneDrive'iga käsitsi</translation>
 <translation id="1108600514891325577">&amp;Peata</translation>
 <translation id="1108938384783527433">Ajaloo sünkroonimine</translation>
 <translation id="1110155001042129815">Oota</translation>
@@ -379,6 +379,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Faili avamine ei õnnestunud}other{Failide avamine ei õnnestunud}}</translation>
 <translation id="1282311502488501110">Ära logi sisse</translation>
 <translation id="1282465000333679776">Jaga süsteemi heli</translation>
+<translation id="1283126956823499975">Seadme seadistamisel läks midagi valesti</translation>
 <translation id="1284277788676816155">Ära luba andmeid salvestada</translation>
 <translation id="1285320974508926690">Ära kunagi seda saiti tõlgi</translation>
 <translation id="1285484354230578868">Salvestage andmed oma Google Drive'i kontole</translation>
@@ -4932,7 +4933,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4789550509729954245">Kuva märguanne, kui seadmed läheduses jagavad</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Luba näpuhiire kiirendus</translation>
-<translation id="4792510204382653691">Ava veebipood</translation>
 <translation id="4792711294155034829">&amp;Teata probleemist ...</translation>
 <translation id="4794810983896241342">Värskendusi haldab <ph name="BEGIN_LINK" />administraator<ph name="END_LINK" /></translation>
 <translation id="4794910597689955457">Kas teisaldada avamiseks <ph name="NUM_OF_FILES" /> faili teenusesse <ph name="CLOUD_PROVIDER" />?</translation>
@@ -5030,6 +5030,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4863769717153320198">Näib kui <ph name="WIDTH" /> × <ph name="HEIGHT" /> (vaikeseade)</translation>
 <translation id="4864369630010738180">Sisselogimine ...</translation>
 <translation id="4864805589453749318">Vali vanem, kes annab kooli konto lisamiseks loa.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokeeritud)</translation>
 <translation id="486505726797718946">Mälu salvestatud</translation>
 <translation id="486635084936119914">Teatud failitüübid avatakse pärast allalaadimist automaatselt</translation>
 <translation id="4867272607148176509">Vanemad võivad rakendused heaks kiita või keelata, määrata ajapiiranguid ja hallata veebis sirvimist. Võite hiljem lisada koolikonto, et pääseda juurde enamikule kooli ressurssidele.</translation>
@@ -5522,6 +5523,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5261619498868361045">Konteineri nimi ei tohi olla tühi.</translation>
 <translation id="5261683757250193089">Ava veebipoes</translation>
 <translation id="5261799091118902550">See fail võib olla viirus või pahavara. Võite selle saata Google’ile, et kontrollida, kas see on ohtlik.</translation>
+<translation id="5262334727506665688">Jätkake paroolide salvestamist oma Google'i kontole</translation>
 <translation id="5262784498883614021">Automaatne ühendamine võrguga</translation>
 <translation id="5263656105659419083">Hõlpsalt külgpaneelile tagasiminemiseks klõpsake paremas ülaosas nupul Kinnita</translation>
 <translation id="5264148714798105376">Selleks võib kuluda mõni minut.</translation>
@@ -7062,6 +7064,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="649396225532207613">See fail võib kahjustada teie isiklikke või sotsiaalvõrgustike kontosid</translation>
 <translation id="6494327278868541139">Kuva täiustatud kaitse üksikasjad</translation>
 <translation id="6494445798847293442">Pole sertifitseerimisorgan</translation>
+<translation id="6494483173119160146">Seadmes ilmnes taastamatu viga. Lähtestage oma seade (see kustutab kõik kasutajaandmed) ja proovige uuesti.</translation>
 <translation id="6497784818439587832">Muutke kuvamissuurust, et ekraanil kuvatud üksused väiksemaks või suuremaks teha</translation>
 <translation id="6497789971060331894">Hiirega tagurpidi kerimine</translation>
 <translation id="6498249116389603658">&amp;Kõik teie keeled</translation>
@@ -9541,6 +9544,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8397825320644530257">Ühendatud telefoni eemaldamine</translation>
 <translation id="8398877366907290961">Jätka ikkagi</translation>
 <translation id="8399282673057829204">Kuva parool</translation>
+<translation id="839949601275221554">Seadmes ilmnes viga. Taaskäivitage seade ja proovige uuesti.</translation>
 <translation id="8401432541486058167">Sisestage oma kiipkaardi PIN-kood.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome blokeerib täna küpsisefailid uuesti}=1{Chrome blokeerib homme küpsisefailid uuesti}other{Chrome blokeerib # päeva pärast küpsisefailid uuesti}}</translation>
 <translation id="8403618281196981152">Teie andmed Chrome'is</translation>

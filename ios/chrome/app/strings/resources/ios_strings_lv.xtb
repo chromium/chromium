@@ -94,7 +94,6 @@
 <translation id="1450170672351507823">Ir ieslēgta standarta aizsardzība. Lai iegūtu lielāku drošību, izmantojiet uzlaboto aizsardzību.</translation>
 <translation id="1469381646033328562">Jūsu kontu pārvalda viens no vecākiem.
 <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
-<translation id="149095475893949513">Šī vietne mēģina lejupielādēt konfigurācijas profilu.</translation>
 <translation id="1491277525950327607">Veiciet dubultskārienu, lai pārslēgtu iestatījumu.</translation>
 <translation id="1492417797159476138">Jūs jau saglabājāt šo lietotājvārdu šai vietnei</translation>
 <translation id="1497590942294823549">Izvēlne → Paroļu pārvaldnieks</translation>
@@ -302,6 +301,7 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="260378315836159338">Ekrāna augšdaļā pieskarieties ikonai “+”.</translation>
 <translation id="2604176749896001318">Atjauniniet pārlūku</translation>
 <translation id="2609008503159898744">Vai aizvērt visas cilnes?</translation>
+<translation id="2613747923081026172">Izveidot grupu</translation>
 <translation id="2617210333344098964">Pārvietot adresi uz kontu</translation>
 <translation id="261739049332372104">Lai saņemtu jaunumus par jums svarīgu saturu, ieslēdziet paziņojumus iOS iestatījumos.</translation>
 <translation id="2625189173221582860">Parole ir nokopēta.</translation>
@@ -1283,7 +1283,6 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7760127703945531263">Inkognito ciļņu bloķēšana</translation>
 <translation id="7765158879357617694">Pārvietot</translation>
 <translation id="7772032839648071052">Apstipriniet ieejas frāzi</translation>
-<translation id="777572173400717978">{count,plural, =1{Grāmatzīme saglabāta}zero{Grāmatzīmes saglabātas}one{Grāmatzīmes saglabātas}other{Grāmatzīmes saglabātas}}</translation>
 <translation id="777637629667389858">Kad esat pierakstījies, šī funkcija aizsargā jūsu informāciju Google pakalpojumos.</translation>
 <translation id="7781011649027948662">Vai tulkot lapu?</translation>
 <translation id="7781069478569868053">Jaunas cilnes lapa</translation>

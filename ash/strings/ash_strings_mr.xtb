@@ -621,6 +621,7 @@
 <translation id="3577473026931028326">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="3580650856351781466">स्पीच फाइल डाउनलोड होत आहेत</translation>
 <translation id="3585296979871889131">तुमच्या फोनमधील अलीकडील फोटो, मीडिया, सूचना आणि अ‍ॅप्स पहा</translation>
+<translation id="3590441166907930941">बाजूचे बटण</translation>
 <translation id="3593039967545720377">तुमचे क्लिपबोर्ड पाहण्यासाठी, <ph name="SHORTCUT_KEY_NAME" /> + V प्रेस करून तुमचा क्लिपबोर्ड इतिहास ॲक्सेस करा. सुरुवात करण्यासाठी आयटम कॉपी करा.</translation>
 <translation id="3593646411856133110">उघडी अ‍ॅप्स पाहण्यासाठी वर स्वाइप करा आणि धरून ठेवा</translation>
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
@@ -1033,6 +1034,7 @@
 <translation id="5163434717504750796">बॅटरीची स्थिती <ph name="BATTERY_HEALTH_PERCENTAGE" />% | सायकल संख्या <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">डेस्‍कला टेंप्लेट म्हणून सेव्ह करा</translation>
 <translation id="5168181903108465623">कास्‍ट डिव्‍हाइसेस उपलब्‍ध</translation>
+<translation id="5168753792967365150">Google Tasks मध्ये संपादित करा</translation>
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
 <translation id="5176318573511391780">स्क्रीन अंशतः रेकॉर्ड करा</translation>
 <translation id="5187627942836026988">हॉटस्पॉटचे तपशील दाखवा. तुमच्या अ‍ॅडमिनिस्ट्रेटरने हॉटस्पॉट ब्लॉक केला आहे.</translation>
@@ -1302,6 +1304,8 @@
 <translation id="6168622430237609329">तुमची इंस्टॉल केलेली ॲप्स</translation>
 <translation id="6173151025443907148">Lacros सुरू असल्यास दुसर्‍या वापरकर्त्याला साइन इन करण्यास सपोर्ट नाही. त्याऐवजी कृपया Lacros मध्ये दुसरी ब्राउझर प्रोफाइल वापरा किंवा Lacros बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="6179832488876878285">तुम्ही तुमच्या महत्त्वाच्या फाइल येथे पिन करू शकता. सुरुवात करण्यासाठी Files अ‍ॅप उघडा.</translation>
+<translation id="6180193585172850042">मागे जा बटण</translation>
+<translation id="6180651297859206670">फॉरवर्ड करा बटण</translation>
 <translation id="6182592640011875895">डेस्‍क उघडा</translation>
 <translation id="6185696379715117369">पेज अप</translation>
 <translation id="619335566042889110">आता पूर्णपणे चार्ज करा</translation>

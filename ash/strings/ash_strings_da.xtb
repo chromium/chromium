@@ -621,6 +621,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3577473026931028326">Der opstod en fejl. Prøv igen.</translation>
 <translation id="3580650856351781466">Downloader talefiler</translation>
 <translation id="3585296979871889131">Se din telefons seneste billeder, medier, notifikationer og apps</translation>
+<translation id="3590441166907930941">Sideknap</translation>
 <translation id="3593039967545720377">Tryk på <ph name="SHORTCUT_KEY_NAME" />+V for at gå til din udklipsholders historik. Kopiér et element for at komme i gang.</translation>
 <translation id="3593646411856133110">Stryg opad, og hold fingeren nede for at se åbne apps</translation>
 <translation id="3595596368722241419">Batteri helt opladet</translation>
@@ -1033,6 +1034,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5163434717504750796">Batteriets tilstand: <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | Antal cyklusser: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Gem skrivebord som en skabelon</translation>
 <translation id="5168181903108465623">Tilgængelige Cast-enheder</translation>
+<translation id="5168753792967365150">Rediger i Google Huskeliste</translation>
 <translation id="5170568018924773124">Vis i mappe</translation>
 <translation id="5176318573511391780">Optag dele af skærmen</translation>
 <translation id="5187627942836026988">Vis oplysninger om hotspot. Hotspot er blokeret af din administrator.</translation>
@@ -1302,6 +1304,8 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="6168622430237609329">Dine installerede apps</translation>
 <translation id="6173151025443907148">Det er ikke muligt at logge ind med en yderligere bruger, hvis Lacros er aktiveret. Du skal i stedet bruge en yderligere browserprofil i Lacros, eller du kan deaktivere Lacros og prøve igen.</translation>
 <translation id="6179832488876878285">Du kan fastgøre dine vigtige filer her. Åbn appen Filer for at komme i gang.</translation>
+<translation id="6180193585172850042">Knappen Tilbage</translation>
+<translation id="6180651297859206670">Knappen Frem</translation>
 <translation id="6182592640011875895">Åbn skrivebord</translation>
 <translation id="6185696379715117369">Gå en side op</translation>
 <translation id="619335566042889110">Oplad helt nu</translation>

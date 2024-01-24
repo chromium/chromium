@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">përpara</translation>
 <translation id="1615335640928990664">Përdorimi i të dhënave që prej ditës: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Ekzekuto testin e karikimit</translation>
+<translation id="1626590945318984973">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re pa përdorur tastet e funksioneve dhe tastin "<ph name="META_KEY" />".</translation>
 <translation id="1639239467298939599">Po ngarkohet...</translation>
 <translation id="1641857168437328880">Furnizuesi i dokumentit (një anë)</translation>
 <translation id="1643449475550628585">Ndryshoje çdo ditë imazhin e sfondit</translation>
@@ -453,7 +454,9 @@
 <translation id="4394049700291259645">Çaktivizo</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> po riniset</translation>
 <translation id="4395835743215824109">personalizo tastierën</translation>
+<translation id="4403262788869804671">Shkurtorja pa tastin "<ph name="META_KEY" />" mund të jetë në konflikt me shkurtoren e një aplikacioni tjetër. Shtyp përsëri këtë shkurtore për të vazhduar ta përdorësh ose shtyp një shkurtore të re duke përdorur tastin "<ph name="KEY" />".</translation>
 <translation id="4415951057168511744">Simboli aktual</translation>
+<translation id="4417830657741848074">Administratori yt ka konfiguruar disa aplikacione që të nisen automatikisht. Disa nga këto aplikacione nuk mund të mbyllen.</translation>
 <translation id="4422041425070339732">shigjeta poshtë</translation>
 <translation id="4425149324548788773">Disku im</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> është joaktiv</translation>
@@ -466,6 +469,7 @@
 <translation id="4469288414739283461">Mbrojtësi i ekranit për rrjedhën e tokës</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Dështoi verifikimi "ping" për portën jo të parazgjedhur të kalimit</translation>
+<translation id="4500722292849917410">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re duke përdorur një tast modifikues (Ctrl, Alt, Shift ose "<ph name="META_KEY" />").</translation>
 <translation id="4500966230243561393">Ngjyra e ndërfaqes</translation>
 <translation id="4503223151711056411">Shigjeta majtas</translation>
 <translation id="4507392511610824664">rrit ndriçimin</translation>
@@ -513,6 +517,7 @@
 <translation id="4832079907277790330">Zgjidh dosjen në aplikacionin "Skedarët"...</translation>
 <translation id="4835901797422965222">Nuk ka asnjë rrjet aktiv</translation>
 <translation id="4839698083503556542">Krijo filmin tënd</translation>
+<translation id="48409034532829769">Administratori yt e ka konfiguruar "<ph name="APP_NAME" />" që të niset automatikisht. Ky aplikacion nuk mund të mbyllet.</translation>
 <translation id="484462545196658690">Automatike</translation>
 <translation id="4847902821209177679">Është zgjedhur "<ph name="TOPIC_SOURCE_DESC" />" nga "<ph name="TOPIC_SOURCE" />". Shtyp "Enter" për të zgjedhur albumet e "<ph name="TOPIC_SOURCE" />"</translation>
 <translation id="484790837831576105">(Android) Zgjidhja e DNS-së</translation>
@@ -539,6 +544,7 @@
 <translation id="4969079779290789265">I ndarë</translation>
 <translation id="4972592110715526173">ndryshimi i modalitetit</translation>
 <translation id="498186245079027698">Kontrollo skanerin dhe provo përsëri. Sigurohu që të jetë hapësirë lokale të mjaftueshme për të ruajtur skedarët e skanuar.</translation>
+<translation id="4982627662315910959">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re duke përdorur Shift dhe 1 tast tjetër modifikues (Ctrl, Alt ose "<ph name="META_KEY" />").</translation>
 <translation id="4985509611418653372">Ekzekuto</translation>
 <translation id="4987769320337599931">Mur mbrojtës</translation>
 <translation id="4988526792673242964">Faqet</translation>
@@ -845,6 +851,7 @@
 <translation id="7216409898977639127">Operatori celular</translation>
 <translation id="725133483556299729">Zgjidh email-in</translation>
 <translation id="7271040990581020067">Skaneri është aktualisht në përdorim. Provo përsëri më vonë.</translation>
+<translation id="7271932918253517778">Shkurtorja me tastet e rreshtit të sipërm duhet të përfshijë tastin "<ph name="META_KEY" />".</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Ndjeje puhizën</translation>
 <translation id="7287310195820267359">Koleksionet e imazheve të sfondit</translation>

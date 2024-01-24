@@ -6754,6 +6754,11 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
       Si estableces "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" y "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", se inhabilitará la sincronización de los tipos de datos respectivos si no inhabilitas "<ph name="CHROME_SYNC_NAME" />" estableciendo la política <ph name="SYNC_DISABLED_POLICY_NAME" /> o no inhabilitas <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
 <translation id="6462604655173570082">Si no estableces la política o si la habilitas, los usuarios podrán ver y usar el botón <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el cuadro de búsqueda de la página Nueva pestaña. Si la inhabilitas, los usuarios no verán el botón <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el cuadro de búsqueda de la página Nueva pestaña.</translation>
 <translation id="6464074037294098618">Habilitar "Autocompletar" para las direcciones</translation>
+<translation id="6464564464230511695">Si habilitas la política o no la estableces, se permitirá el <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> en todas las páginas web.
+
+Si la inhabilitas, el <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> no estará disponible en ninguna página web.
+
+Las funciones de IA generativa que son parte de esta función no están disponibles para las cuentas educativas o empresariales.</translation>
 <translation id="6467613372414922590">Permite el uso de hosts de mensajería nativa en el nivel de usuario (instalados sin permisos de administrador).</translation>
 <translation id="6467707081687600148">Programa un reinicio automático después de que se aplique una actualización de <ph name="PRODUCT_OS_NAME" />.
 

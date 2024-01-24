@@ -622,6 +622,7 @@
 <translation id="3577473026931028326">حدث خطأ. يُرجى إعادة المحاولة.</translation>
 <translation id="3580650856351781466">جارٍ تنزيل ملفات التعرّف على الكلام</translation>
 <translation id="3585296979871889131">عرض الصور والوسائط والإشعارات والتطبيقات الحديثة في هاتفك</translation>
+<translation id="3590441166907930941">الزر الجانبي</translation>
 <translation id="3593039967545720377">‏يمكنك الوصول إلى سجلّ الحافظة عن طريق الضغط على المفتاح <ph name="SHORTCUT_KEY_NAME" /> + V لعرض الحافظة. ابدأ الآن بنسخ أحد العناصر للبدء.</translation>
 <translation id="3593646411856133110">يُرجى التمرير السريع إلى الأعلى للاطّلاع على التطبيقات المفتوحة.</translation>
 <translation id="3595596368722241419">البطارية ممتلئة</translation>
@@ -1035,6 +1036,7 @@
 <translation id="5163434717504750796">حالة البطارية: %<ph name="BATTERY_HEALTH_PERCENTAGE" /> | عدد الدورات: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">حفظ سطح المكتب كنموذج</translation>
 <translation id="5168181903108465623">أجهزة البث متاحة</translation>
+<translation id="5168753792967365150">‏التعديل في "مهام Google"</translation>
 <translation id="5170568018924773124">العرض في المجلد</translation>
 <translation id="5176318573511391780">تسجيل جزء من الشاشة</translation>
 <translation id="5187627942836026988">يمكنك عرض تفاصيل نقطة الاتصال. حظَر مشرفك ميزة نقطة الاتصال.</translation>
@@ -1304,6 +1306,8 @@
 <translation id="6168622430237609329">تطبيقاتك المثبَّتة</translation>
 <translation id="6173151025443907148">‏لا يمكن تسجيل الدخول باستخدام حساب مستخدِم آخر في حال تفعيل Lacros. يُرجى استخدام ملف شخصي آخر على متصفِّح Lacros بدلاً من ذلك أو إيقاف المتصفِّح ثم إعادة المحاولة.</translation>
 <translation id="6179832488876878285">يمكنك تثبيت الملفات المهمّة هنا. افتح تطبيق "الملفات" للبدء.</translation>
+<translation id="6180193585172850042">زر الرجوع</translation>
+<translation id="6180651297859206670">زر الانتقال للأمام</translation>
 <translation id="6182592640011875895">فتح سطح المكتب</translation>
 <translation id="6185696379715117369">صفحة لأعلى</translation>
 <translation id="619335566042889110">الشحن بالكامل الآن</translation>

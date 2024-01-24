@@ -6612,6 +6612,11 @@ Bu politikayı ayarlarsanız kullanıcılar <ph name="PRODUCT_NAME" /> ürünün
       <ph name="SYNC_DISABLED_POLICY_NAME" /> politikası ayarlanarak `<ph name="CHROME_SYNC_NAME" />` devre dışı bırakılmadığı veya <ph name="BROWSER_SIGNIN_POLICY_NAME" /> devre dışı olmadığı sürece, '<ph name="CLEAR_BROWSING_HISTORY_ACTION" />', '<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />', '<ph name="CLEAR_AUTOFILL_ACTION" />' ve '<ph name="CLEAR_SITE_SETTINGS_ACTION" />' ayarlandığında ilgili veri türleri için senkronizasyon devre dışı bırakılır.</translation>
 <translation id="6462604655173570082">Politika ayarlanmadan bırakılır veya Etkin değerine ayarlanırsa kullanıcıların, yeni sekme sayfasındaki arama kutusunda <ph name="GOOGLE_LENS_PRODUCT_NAME" /> düğmesini görüntüleyip kullanmasına izin verilir. Politika, Devre Dışı değerine ayarlanırsa kullanıcılar, yeni sekme sayfasındaki arama kutusunda <ph name="GOOGLE_LENS_PRODUCT_NAME" /> düğmesini görmez.</translation>
 <translation id="6464074037294098618">Adresleri otomatik doldurmayı etkinleştir</translation>
+<translation id="6464564464230511695">Etkin seçeneğine ayarlanır veya ayarlanmadan bırakılırsa tüm web sayfalarında <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> için izin verilir.
+
+Devre Dışı seçeneğine ayarlanırsa <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" />, hiçbir web sayfasında kullanılamaz.
+
+Bu özellik kapsamındaki üretken yapay zeka özellikleri, eğitim hesaplarında veya kurumsal hesaplarda kullanılamaz.</translation>
 <translation id="6467613372414922590">Kullanıcı düzeyinde Yerel Mesajlaşma ana makinelerine izin ver (yönetici şifreleri olmadan yüklenir)</translation>
 <translation id="6467707081687600148"><ph name="PRODUCT_OS_NAME" /> güncellemesi uygulandıktan sonra otomatik yeniden başlatma planlayın.
 

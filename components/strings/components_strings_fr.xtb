@@ -1380,7 +1380,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3677008721441257057">Vouliez-vous accéder à &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; ?</translation>
 <translation id="3678029195006412963">Impossible de signer la demande</translation>
 <translation id="3678529606614285348">Ouvrir la page dans une nouvelle fenêtre de navigation privée (Ctrl+Maj+N)</translation>
-<translation id="3678914302246317895">Saisir le code de validation à <ph name="OTP_LENGTH" /> chiffres</translation>
+<translation id="3678914302246317895">Saisissez le code de validation à <ph name="OTP_LENGTH" /> chiffres</translation>
 <translation id="3681007416295224113">Informations relatives au certificat</translation>
 <translation id="3681421644246505351">Chrome se base sur votre historique de navigation récent pour déterminer les thèmes qui vous intéressent.</translation>
 <translation id="3689867156802445220">Numéro du bâtiment</translation>

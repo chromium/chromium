@@ -94,7 +94,6 @@
 <translation id="1450170672351507823">සම්මත ආරක්ෂාව ක්‍රියාත්මකයි. ඊටත් වඩා වැඩි ආරක්ෂාව සඳහා, වැඩි දියුණු කළ ආරක්ෂාව භාවිත කරන්න.</translation>
 <translation id="1469381646033328562">ඔබේ ගිණුම ඔබේ මාපියවරු විසින් කළමනා කරනු ලැබේ.
 <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
-<translation id="149095475893949513">මෙම වෙබ් අඩවිය වින්‍යාසකරණ පැතිකඩක් බාගැනීමට උත්සාහ කරයි.</translation>
 <translation id="1491277525950327607">සැකසීම ටොගල් කිරීමට දෙවරක් තට්ටු කරන්න</translation>
 <translation id="1492417797159476138">ඔබ දැනටමත් මෙම පරිශීලක නම මෙම වෙබ් අඩවිය සඳහා සුරැක ඇත</translation>
 <translation id="1497590942294823549">මෙනුව → මුරපද කළමනාකරු</translation>
@@ -302,6 +301,7 @@
 <translation id="260378315836159338">තිරයෙහි ඉහළින්, + තට්ටු කරන්න</translation>
 <translation id="2604176749896001318">ඔබේ බ්‍රව්සරය යාවත්කාලීන කරන්න</translation>
 <translation id="2609008503159898744">සියලු පටිති වසන්න ද?</translation>
+<translation id="2613747923081026172">කණ්ඩායම සාදන්න</translation>
 <translation id="2617210333344098964">ලිපිනය ගිණුම වෙත ගෙන යන්න</translation>
 <translation id="261739049332372104">ඔබට වැදගත් වන අන්තර්ගතය පිළිබඳ යාවත්කාලීන ලබා ගැනීමට, ඔබේ iOS සැකසීම් තුළ දැනුම්දීම ක්‍රියාත්මක කරන්න.</translation>
 <translation id="2625189173221582860">මුරපදය පිටපත් කරන ලදී</translation>
@@ -555,6 +555,7 @@
 <translation id="3922310737605261887">පිටපත් කළ පාඨය සොයන්න</translation>
 <translation id="3928666092801078803">මගේ දත්ත ඒකාබද්ධ කරන්න</translation>
 <translation id="3929457972718048006">ලිපින</translation>
+<translation id="3948600256434252210">අප්‍රසිද්ධව බ්‍රවුස් කිරීමට ඔබට දකුණට ස්වයිප් කළ හැක.</translation>
 <translation id="3955822496205734389">ඔබට දුර්වල මුරපද ඇත.</translation>
 <translation id="3959736869653157332">මෙනුව → නව අප්‍රකට ටැබය</translation>
 <translation id="3962326069546168954">සුරකින්න</translation>
@@ -659,6 +660,7 @@
 <translation id="4539187448429948815">{count,plural, =1{ඔබේ යතුරු පුවරුවට ඉහළින් සුරකින ලද ස්වයං සම්පූර්ණ කිරීමේ {count} යෝජනාවක් ඇත.}one{ඔබේ යතුරු පුවරුවට ඉහළින් සුරකින ලද ස්වයං සම්පූර්ණ කිරීමේ යෝජනා {count} ක් ඇත.}other{ඔබේ යතුරු පුවරුවට ඉහළින් සුරකින ලද ස්වයං සම්පූර්ණ කිරීමේ යෝජනා {count} ක් ඇත.}}</translation>
 <translation id="4540780316273593836">යම් දෙයක් වැරදිණි</translation>
 <translation id="4550040941166547650">මෙම උපාංගය මත පමණි</translation>
+<translation id="4564893319561643483">"<ph name="TITLE" />" සඟවන්න</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} අක්‍රිය පටිත්තක් වසන්න ද?}one{අක්‍රිය පටිති {COUNT}ක් වසන්න ද?}other{අක්‍රිය පටිති {COUNT}ක් වසන්න ද?}}</translation>
 <translation id="457386861538956877">තව...</translation>
 <translation id="4587589328781138893">අඩවි</translation>
@@ -1259,6 +1261,7 @@
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
 <translation id="7666861622396822790">ඔබට මෙය <ph name="BEGIN_LINK" />අන්තර්ගත සැකසීම්<ph name="END_LINK" /> තුළ කළමනාකරණය කළ හැක.</translation>
 <translation id="7671141431838911305">ස්ථාපනය</translation>
+<translation id="7673346542062368520">අප්‍රසිද්ධව බ්‍රවුස් කිරීමට ඔබට වමට ස්වයිප් කළ හැක.</translation>
 <translation id="7679915578945954324">අඩවි ලිපින පිටපත් කර ඇත</translation>
 <translation id="7687508192620387263">දින දර්ශන ගොනුව ලබා ගත හැකිය</translation>
 <translation id="7701040980221191251">නොමැත</translation>
@@ -1280,7 +1283,6 @@
 <translation id="7760127703945531263">අප්‍රසිද්ධ අගුල</translation>
 <translation id="7765158879357617694">චලනය කරන්න</translation>
 <translation id="7772032839648071052">රහස්පදය ස්ථිර කරන්න</translation>
-<translation id="777572173400717978">{count,plural, =1{පිටුසන් කළ}one{පිටුසන් කළ}other{පිටුසන් කළ}}</translation>
 <translation id="777637629667389858">ඔබ පුරනය වී ඇති විට, Google සේවා හරහා ඔබව ආරක්ෂා කරයි.</translation>
 <translation id="7781011649027948662">පිටුව පරිවර්තන කරන්නද?</translation>
 <translation id="7781069478569868053">නව පටිති පිටුව</translation>

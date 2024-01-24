@@ -102,6 +102,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="3955621079070267756">Abre Chromium desde cualquier app</translation>
 <translation id="4005283307739974863">Abre y ejecuta la Verificación de seguridad en Chromium.</translation>
 <translation id="4043291146360695975">Las contraseñas se guardan en el Administrador de contraseñas solo en este dispositivo.</translation>
+<translation id="4076589763479456892">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">No es compatible en la versión beta de Chromium</translation>
 <translation id="4106512142782407609">Accediste como <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@ Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guard
 <translation id="5534584691915394889">Se usará para crear eventos en el Calendario de Apple desde Chromium y Google Lens.</translation>
 <translation id="5571094606370987472">Abre las pestañas recientes de Chromium.</translation>
 <translation id="5623083843656850677">Bloquea tus pestañas de incógnito cuando abandonas Chromium o cambias de app.</translation>
+<translation id="5671188105328420281">Sugerencias de Chromium</translation>
 <translation id="5688047395118852662">En esta tarjeta, se muestran sugerencias para aprovechar Chromium al máximo.</translation>
 <translation id="5700709190537129682">Chromium no puede revisar las contraseñas</translation>
 <translation id="5777187867430702742">Página de Chromium</translation>

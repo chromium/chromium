@@ -379,6 +379,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Tidak dapat membuka file}other{Tidak dapat membuka file}}</translation>
 <translation id="1282311502488501110">Jangan Login</translation>
 <translation id="1282465000333679776">Bagikan audio sistem</translation>
+<translation id="1283126956823499975">Terjadi error saat menyiapkan perangkat</translation>
 <translation id="1284277788676816155">Jangan izinkan penyimpanan data</translation>
 <translation id="1285320974508926690">Jangan pernah terjemahkan situs ini</translation>
 <translation id="1285484354230578868">Simpan data di akun Google Drive Anda</translation>
@@ -4942,7 +4943,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4789550509729954245">Tampilkan notifikasi saat perangkat sedang berbagi di sekitar</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Aktifkan akselerasi TrackPoint</translation>
-<translation id="4792510204382653691">Buka Chrome Web Store</translation>
 <translation id="4792711294155034829">Lapo&amp;rkan Masalah...</translation>
 <translation id="4794810983896241342">Update dikelola oleh <ph name="BEGIN_LINK" />administrator Anda<ph name="END_LINK" /></translation>
 <translation id="4794910597689955457">Pindahkan <ph name="NUM_OF_FILES" /> file ke <ph name="CLOUD_PROVIDER" /> untuk dibuka?</translation>
@@ -5040,6 +5040,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4863769717153320198">Terlihat seperti <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Default)</translation>
 <translation id="4864369630010738180">Login...</translation>
 <translation id="4864805589453749318">Pilih orang tua yang memberikan izin untuk menambahkan akun sekolah.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (diblokir)</translation>
 <translation id="486505726797718946">Memori Dihemat</translation>
 <translation id="486635084936119914">Buka jenis file tertentu secara otomatis setelah didownload</translation>
 <translation id="4867272607148176509">Orang tua dapat menyetujui atau memblokir aplikasi, menyetel batas waktu, dan mengontrol penjelajahan web. Akun sekolah dapat ditambahkan nanti untuk mengakses sebagian besar materi sekolah.</translation>
@@ -5532,6 +5533,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5261619498868361045">Nama penampung wajib diisi.</translation>
 <translation id="5261683757250193089">Buka di Toko Web</translation>
 <translation id="5261799091118902550">File ini mungkin adalah virus atau malware. Anda dapat mengirimkannya ke Google untuk memeriksa apakah file tersebut tidak aman.</translation>
+<translation id="5262334727506665688">Tetap simpan sandi di Akun Google Anda</translation>
 <translation id="5262784498883614021">Hubungkan ke jaringan secara otomatis</translation>
 <translation id="5263656105659419083">Untuk kembali ke panel samping dengan mudah, klik Sematkan di kanan atas</translation>
 <translation id="5264148714798105376">Tindakan ini perlu waktu beberapa menit.</translation>
@@ -7072,6 +7074,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="649396225532207613">File ini dapat membahayakan akun jejaring sosial dan pribadi Anda</translation>
 <translation id="6494327278868541139">Tampilkan detail perlindungan yang ditingkatkan</translation>
 <translation id="6494445798847293442">Bukan Otoritas Sertifikasi</translation>
+<translation id="6494483173119160146">Perangkat mengalami error yang tidak dapat dipulihkan. Reset perangkat Anda (tindakan ini akan menghapus semua data pengguna) dan coba lagi.</translation>
 <translation id="6497784818439587832">Ubah ukuran layar untuk membuat item di layar menjadi lebih besar atau lebih kecil</translation>
 <translation id="6497789971060331894">Scroll terbalik mouse</translation>
 <translation id="6498249116389603658">&amp;Semua bahasa Anda</translation>
@@ -9550,6 +9553,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8397825320644530257">Putuskan hubungan ponsel yang terhubung</translation>
 <translation id="8398877366907290961">Tetap lanjutkan</translation>
 <translation id="8399282673057829204">Lihat sandi</translation>
+<translation id="839949601275221554">Terjadi error pada perangkat. Mulai ulang perangkat Anda dan coba lagi.</translation>
 <translation id="8401432541486058167">Masukkan PIN yang terkait dengan kartu smart Anda.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome akan memblokir cookie lagi hari ini}=1{Chrome akan memblokir cookie lagi besok}other{# hari sebelum Chrome memblokir cookie lagi}}</translation>
 <translation id="8403618281196981152">Data Anda di Chrome</translation>

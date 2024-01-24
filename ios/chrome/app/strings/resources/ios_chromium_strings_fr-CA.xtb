@@ -102,6 +102,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromi
 <translation id="3955621079070267756">Ouvrez Chromium depuis n'importe quelle application</translation>
 <translation id="4005283307739974863">Ouvre et exécute la Vérification de sécurité dans Chromium.</translation>
 <translation id="4043291146360695975">Les mots de passe sont enregistrés dans le gestionnaire de mots de passe sur cet appareil uniquement.</translation>
+<translation id="4076589763479456892">Si vous avez oublié votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Fonctionnalité non prise en charge par Chromium Beta</translation>
 <translation id="4106512142782407609">Connecté en tant que <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@ Vos données sont chiffrées avec votre phrase de passe. Entrez-la pour utiliser
 <translation id="5534584691915394889">Les événements seront créés dans votre Calendrier Apple à partir de Chromium et de la Lentille Google.</translation>
 <translation id="5571094606370987472">Ouvre les onglets récents de Chromium.</translation>
 <translation id="5623083843656850677">Verrouillez vos onglets de Navigation privée lorsque vous quittez Chromium ou passez à une autre application.</translation>
+<translation id="5671188105328420281">Astuce de Chromium</translation>
 <translation id="5688047395118852662">Cette carte vous montre des suggestions sur la façon de tirer le meilleur parti de Chromium.</translation>
 <translation id="5700709190537129682">Chromium ne peut pas vérifier vos mots de passe</translation>
 <translation id="5777187867430702742">Page Chromium</translation>

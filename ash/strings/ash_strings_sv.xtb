@@ -621,6 +621,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3577473026931028326">Något gick fel. Försök igen.</translation>
 <translation id="3580650856351781466">Röstfilerna laddas ned</translation>
 <translation id="3585296979871889131">Visa de senaste bilderna, mediefilerna, aviseringarna och apparna på telefonen</translation>
+<translation id="3590441166907930941">Sidoknapp</translation>
 <translation id="3593039967545720377">Få åtkomst till historiken för urklipp genom att trycka på <ph name="SHORTCUT_KEY_NAME" /> + V för att visa urklipp. Kopiera ett objekt för att komma igång.</translation>
 <translation id="3593646411856133110">Svep uppåt och tryck länge för att visa öppna appar</translation>
 <translation id="3595596368722241419">Batteriet är fulladdat</translation>
@@ -1033,6 +1034,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5163434717504750796">Batterihälsa: <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | Antal cykler: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Spara skrivbordet som mall</translation>
 <translation id="5168181903108465623">Överföringsenheter finns tillgängliga</translation>
+<translation id="5168753792967365150">Redigera i Google Tasks</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5176318573511391780">Spela in en del av skärmen</translation>
 <translation id="5187627942836026988">Visa information om surfzon. Surfzonen blockeras av administratören.</translation>
@@ -1302,6 +1304,8 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="6168622430237609329">Dina installerade appar</translation>
 <translation id="6173151025443907148">Det finns inte stöd för inloggning av en andra användare om Lacros är aktiverad. Använd i stället en annan webbläsarprofil i Lacros eller inaktivera Lacros och försök igen.</translation>
 <translation id="6179832488876878285">Du kan fästa viktiga filer här. Börja med att öppna appen Filer.</translation>
+<translation id="6180193585172850042">Bakåtknapp</translation>
+<translation id="6180651297859206670">Framåtknapp</translation>
 <translation id="6182592640011875895">Öppna skrivbordet</translation>
 <translation id="6185696379715117369">Uppåt en sida</translation>
 <translation id="619335566042889110">Ladda fullt nu</translation>

@@ -91,6 +91,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1416550906796893042">Versão da aplicação</translation>
 <translation id="1428770807407000502">Desativar a sincronização?</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1435593198351412143">Abrir PDFs automaticamente</translation>
 <translation id="1436784010935106834">Removido</translation>
 <translation id="1437543266176261764">Em execução na app <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organize os produtos monitorizados nos Marcadores</translation>
@@ -339,6 +340,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2894821468041866720">Não diminui consideravelmente a velocidade do navegador ou dispositivo.</translation>
 <translation id="2900528713135656174">Criar evento</translation>
 <translation id="2901411048554510387">A mostrar sugestões para <ph name="WEBSITE_TITLE" />…</translation>
+<translation id="2904300462646366554">Os PDFs transferidos são abertos automaticamente com um dos visualizadores de PDFs no seu dispositivo</translation>
 <translation id="2904414404539560095">Lista de dispositivos com os quais quer partilhar um separador aberta à altura total.</translation>
 <translation id="2908243544703713905">Notícias não lidas disponíveis</translation>
 <translation id="2909615210195135082">Plataforma de notificações da Google</translation>
@@ -894,6 +896,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="5814749351757353073">Mantenha-se a par dos seus sites favoritos</translation>
 <translation id="5822875253699806474">Para voltar rapidamente aos sites que visitou, sincronize os separadores e o histórico</translation>
+<translation id="5829586821381540080">Guardado em <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5833984609253377421">Partilhar link</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>

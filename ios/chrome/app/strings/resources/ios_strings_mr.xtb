@@ -94,7 +94,6 @@
 <translation id="1450170672351507823">साधारण संरक्षण सुरू आहे. याहून अधिक सुरक्षेसाठी, वर्धित संरक्षण वापरा.</translation>
 <translation id="1469381646033328562">तुमचे खाते तुमच्या पालकांद्वारे व्यवस्थापित केले जाते.
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
-<translation id="149095475893949513">ही वेबसाइट प्रोफाइल कॉंफिगरेशन डाउनलोड करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="1491277525950327607">सेटिंग टॉगल करण्यासाठी दोनदा टॅप करा</translation>
 <translation id="1492417797159476138">तुम्ही या साइटसाठी आधीच वापरकर्ता नाव सेव्ह केले आहे</translation>
 <translation id="1497590942294823549">मेनू → Password Manager</translation>
@@ -302,6 +301,7 @@
 <translation id="260378315836159338">स्क्रीनच्या सर्वात वरती, + वर टॅप करा</translation>
 <translation id="2604176749896001318">तुमचा ब्राउझर अपडेट करा</translation>
 <translation id="2609008503159898744">सर्व टॅब बंद करायचे आहेत का?</translation>
+<translation id="2613747923081026172">गट तयार करा</translation>
 <translation id="2617210333344098964">पत्ता खाते वर हलवा</translation>
 <translation id="261739049332372104">तुमच्यासाठी महत्त्वाच्या आशयाबद्दल अपडेट मिळवण्यासाठी, तुमच्या iOS सेटिंग्जमध्ये सूचना सुरू करा.</translation>
 <translation id="2625189173221582860">पासवर्ड कॉपी केला</translation>
@@ -555,6 +555,7 @@
 <translation id="3922310737605261887">कॉपी केलेला मजकूर शोधा</translation>
 <translation id="3928666092801078803">माझा डेटा एकत्र करा</translation>
 <translation id="3929457972718048006">पत्ते</translation>
+<translation id="3948600256434252210">तुम्ही गुप्त मोड मध्ये ब्राउझ करण्यासाठी उजवीकडे स्‍वाइप करू शकता.</translation>
 <translation id="3955822496205734389">तुमच्याकडे कमकुवत पासवर्ड आहेत.</translation>
 <translation id="3959736869653157332">मेनू → नवीन गुप्त टॅब</translation>
 <translation id="3962326069546168954">सेव्ह करा</translation>
@@ -659,6 +660,7 @@
 <translation id="4539187448429948815">{count,plural, =1{तुमच्या कीबोर्डच्या वर {count} सेव्ह केलेली ऑटोकंप्लीट सूचना उपलब्ध आहे.}other{तुमच्या कीबोर्डच्या वर {count} सेव्ह केलेल्या ऑटोकंप्लीट सूचना उपलब्ध आहेत.}}</translation>
 <translation id="4540780316273593836">काहीतरी चूक झाली</translation>
 <translation id="4550040941166547650">फक्त या डिव्हाइसवर</translation>
+<translation id="4564893319561643483">"<ph name="TITLE" />" लपवा</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} इनॅक्टिव्ह टॅब बंद करायचा का?}other{{COUNT} इनॅक्टिव्ह टॅब बंद करायचे का?}}</translation>
 <translation id="457386861538956877">अधिक...</translation>
 <translation id="4587589328781138893">Sites</translation>
@@ -1260,6 +1262,7 @@
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7666861622396822790">तुम्ही हे <ph name="BEGIN_LINK" />आशय सेटिंग्ज<ph name="END_LINK" /> मध्ये व्यवस्थापित करू शकता.</translation>
 <translation id="7671141431838911305">स्‍थापित करा</translation>
+<translation id="7673346542062368520">तुम्ही गुप्त मोड मध्ये ब्राउझ करण्यासाठी डावीकडे स्‍वाइप करू शकता.</translation>
 <translation id="7679915578945954324">साइट अ‍ॅड्रेस कॉपी केले</translation>
 <translation id="7687508192620387263">कॅलेंडर फाइल उपलब्ध आहे</translation>
 <translation id="7701040980221191251">काहीही नाही</translation>
@@ -1281,7 +1284,6 @@
 <translation id="7760127703945531263">गुप्त मोड लॉक करण्याची सुविधा</translation>
 <translation id="7765158879357617694">हलवा</translation>
 <translation id="7772032839648071052">सांकेतिक पासफ्रेझ निश्चित करा</translation>
-<translation id="777572173400717978">{count,plural, =1{बुकमार्क केलेली}other{बुकमार्क केलेल्या}}</translation>
 <translation id="777637629667389858">तुम्ही साइन इन केलेले असते, तेव्हा संपूर्ण Google सेवांवर तुमचे संरक्षण करते.</translation>
 <translation id="7781011649027948662">पेजचे भाषांतर करायचे?</translation>
 <translation id="7781069478569868053">नवीन टॅब पेज</translation>

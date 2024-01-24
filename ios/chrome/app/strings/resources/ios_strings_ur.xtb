@@ -94,7 +94,6 @@
 <translation id="1450170672351507823">معیاری تحفظ آن ہے۔ اور بھی مزید سیکیورٹی کے لیے، بہتر تحفظ کا استعمال کریں۔</translation>
 <translation id="1469381646033328562">آپ کا اکاؤنٹ آپ کے والد/والدہ کے زیر انتظام ہے۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
-<translation id="149095475893949513">یہ ویب سائٹ کنفیگریشن پروفائل کو ڈاؤن لوڈ کرنے کی کوشش کر رہی ہے۔</translation>
 <translation id="1491277525950327607">ترتیبات کو ٹوگل کرنے کیلئے دو بار تھپتھپائیں</translation>
 <translation id="1492417797159476138">آپ نے پہلے ہی اس سائٹ کے لئے یہ صارف نام محفوظ کر لیا ہے</translation>
 <translation id="1497590942294823549">مینیو ← پاس ورڈ مینیجر</translation>
@@ -302,6 +301,7 @@
 <translation id="260378315836159338">اسکرین کے اوپری حصے پر، + پر تھپتھپائیں</translation>
 <translation id="2604176749896001318">اپنے براؤزر کو اپ ڈیٹ کریں</translation>
 <translation id="2609008503159898744">سبھی ٹیبز بند کریں؟</translation>
+<translation id="2613747923081026172">گروپ بنائیں</translation>
 <translation id="2617210333344098964">پتہ کو اکاؤنٹ پر منتقل کریں</translation>
 <translation id="261739049332372104">‏آپ کے لیے اہم مواد کے بارے میں اپ ڈیٹس حاصل کرنے کے لیے، اپنی iOS کی ترتیبات میں اطلاع کو آن کریں۔</translation>
 <translation id="2625189173221582860">پاس ورڈ کاپی ہو گیا</translation>
@@ -1283,7 +1283,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7760127703945531263">پوشیدگی کا قفل</translation>
 <translation id="7765158879357617694">منتقل کریں</translation>
 <translation id="7772032839648071052">پاس فریز کی توثیق کریں</translation>
-<translation id="777572173400717978">{count,plural, =1{بُک مارک ہو گیا}other{بُک مارک ہو گیا}}</translation>
 <translation id="777637629667389858">‏آپ کے سائن ان ہونے پر، تمام Google سروسز پر آپ کی حفاظت کرتا ہے۔</translation>
 <translation id="7781011649027948662">صفحہ کا ترجمہ کریں؟</translation>
 <translation id="7781069478569868053">نئے ٹیب کا صفحہ</translation>

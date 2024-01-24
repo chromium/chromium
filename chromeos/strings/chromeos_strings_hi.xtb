@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">आगे जाएं</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> से लेकर अब तक इस्तेमाल किया गया डेटा</translation>
 <translation id="1621067168122174824">चार्ज टेस्ट चलाएं</translation>
+<translation id="1626590945318984973">शॉर्टकट उपलब्ध नहीं है. फ़ंक्शन और <ph name="META_KEY" /> बटनों के बिना, नए शॉर्टकट का इस्तेमाल करें.</translation>
 <translation id="1639239467298939599">लोड हो रही है</translation>
 <translation id="1641857168437328880">डॉक्यूमेंट फ़ीडर (एक तरफ़ वाला)</translation>
 <translation id="1643449475550628585">वॉलपेपर रोज़ बदलें</translation>
@@ -453,7 +454,9 @@
 <translation id="4394049700291259645">बंद करें</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> को रीस्टार्ट किया जा रहा है</translation>
 <translation id="4395835743215824109">कीबोर्ड की रोशनी को पसंद के मुताबिक बनाएं</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> बटन के बिना किसी शॉर्टकट का इस्तेमाल करने पर, कुछ ऐप्लिकेशन के शॉर्टकट में गड़बड़ी हो सकती है. इस शॉर्टकट का इस्तेमाल जारी रखने के लिए कुंजियों को फिर से दबाएं या <ph name="KEY" /> बटन के साथ किसी नए शॉर्टकट का इस्तेमाल करें.</translation>
 <translation id="4415951057168511744">मौजूदा अवतार</translation>
+<translation id="4417830657741848074">आपके एडमिन ने कुछ ऐप्लिकेशन, अपने-आप चालू होने के लिए सेट अप किए हैं. ऐसा हो सकता है कि इनमें से कुछ ऐप्लिकेशन बंद न हों.</translation>
 <translation id="4422041425070339732">डाउन ऐरो</translation>
 <translation id="4425149324548788773">मेरी ड्राइव</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> बंद है</translation>
@@ -466,6 +469,7 @@
 <translation id="4469288414739283461">अर्थ फ़्लो स्क्रीन सेवर</translation>
 <translation id="4479639480957787382">ईथरनेट</translation>
 <translation id="4483049906298469269">ऐसे नेटवर्क गेटवे को पिंग नहीं किया जा सका जो डिफ़ॉल्ट के तौर पर सेट नहीं है</translation>
+<translation id="4500722292849917410">शॉर्टकट उपलब्ध नहीं है. कार्रवाई बदलने वाली कुंजी (ctrl, alt, shift बटन या <ph name="META_KEY" />) के साथ नए शॉर्टकट का इस्तेमाल करें.</translation>
 <translation id="4500966230243561393">इंटरफ़ेस का रंग</translation>
 <translation id="4503223151711056411">लेफ़्ट ऐरो</translation>
 <translation id="4507392511610824664">स्क्रीन की रोशनी बढ़ाएं</translation>
@@ -513,6 +517,7 @@
 <translation id="4832079907277790330">फ़ाइल ऐप्लिकेशन में कोई फ़ोल्डर चुनें...</translation>
 <translation id="4835901797422965222">कोई भी नेटवर्क चालू नहीं है</translation>
 <translation id="4839698083503556542">अपनी खुद की फ़िल्म बनाएं</translation>
+<translation id="48409034532829769">आपके एडमिन ने "<ph name="APP_NAME" />" को अपने-आप चालू होने के लिए सेट अप किया है. शायद इस ऐप्लिकेशन को बंद नहीं किया गया है.</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> चुनी गई, <ph name="TOPIC_SOURCE" /> एल्बम चुनने के लिए Enter दबाएं</translation>
 <translation id="484790837831576105">(Android) डीएनएस रिज़ॉल्यूशन</translation>
@@ -539,6 +544,7 @@
 <translation id="4969079779290789265">स्प्लिट स्क्रीन मोड</translation>
 <translation id="4972592110715526173">मोड बदलें</translation>
 <translation id="498186245079027698">स्कैनर की जांच करके फिर से कोशिश करें. पक्का करें कि स्कैन की गई फ़ाइलों को सेव करने के लिए, डिवाइस में खाली जगह हो.</translation>
+<translation id="4982627662315910959">शॉर्टकट उपलब्ध नहीं है. कार्रवाई बदलने वाली एक और कुंजी (ctrl, alt, shift बटन या <ph name="META_KEY" />) के साथ-साथ shift इस्तेमाल करके नए शॉर्टकट का इस्तेमाल करें.</translation>
 <translation id="4985509611418653372">चलाएं</translation>
 <translation id="4987769320337599931">फ़ायरवॉल</translation>
 <translation id="4988526792673242964">पेज</translation>
@@ -845,6 +851,7 @@
 <translation id="7216409898977639127">सेल्युलर सेवा देने वाली कंपनी</translation>
 <translation id="725133483556299729">ईमेल चुनें</translation>
 <translation id="7271040990581020067">स्कैनर पहले से इस्तेमाल में है. कुछ देर बाद कोशिश करें.</translation>
+<translation id="7271932918253517778">जिस शॉर्टकट में सबसे ऊपर वाली पंक्ति के बटन शामिल हैं उसमें <ph name="META_KEY" /> बटन शामिल करना ज़रूरी है.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">फ़ील द ब्रीज़</translation>
 <translation id="7287310195820267359">वॉलपेपर कलेक्शन</translation>

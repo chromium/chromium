@@ -102,6 +102,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="3955621079070267756">Buksan ang Chromium Mula sa Anumang App</translation>
 <translation id="4005283307739974863">Magbubukas at Magpapatakbo ng Pag-check sa Kaligtasan sa Chromium.</translation>
 <translation id="4043291146360695975">Sine-save ang mga password sa Password Manager sa device lang na ito.</translation>
+<translation id="4076589763479456892">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Hindi sinusuportahan sa Chromium Beta</translation>
 <translation id="4106512142782407609">Naka-sign in bilang <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@ Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at 
 <translation id="5534584691915394889">Gagamitin ito para gumawa ng mga event sa iyong Apple Calendar mula sa Chromium at Google Lens.</translation>
 <translation id="5571094606370987472">Mabubuksan ang Mga Kamakailang Tab sa Chromium.</translation>
 <translation id="5623083843656850677">I-lock ang iyong mga tab na incognito kapag umalis ka sa Chromium o lumipat ka sa ibang app.</translation>
+<translation id="5671188105328420281">Mga Tip sa Chromium</translation>
 <translation id="5688047395118852662">Magpapakita sa iyo ang card na ito ng mga suhestyon sa kung paano masusulit ang Chromium.</translation>
 <translation id="5700709190537129682">Hindi masuri ng Chromium ang iyong mga password</translation>
 <translation id="5777187867430702742">Page ng Chromium</translation>

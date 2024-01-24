@@ -41,6 +41,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1682483655351012182">Synchroniser vos données Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Ajoute les URL entrées à vos favoris dans Chrome.</translation>
+<translation id="1799920918471566157">Astuces de Chrome</translation>
 <translation id="1830634592642484976">Cette adresse est actuellement enregistrée dans Chrome. Pour l'utiliser dans tous les produits Google, enregistrez-le dans votre compte Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">Utilisez automatiquement Chrome lorsque vous touchez des liens dans des messages, des documents et d'autres applications</translation>
 <translation id="1910975740091000991">Chrome pour iOS</translation>
@@ -75,6 +76,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="2702250627063295552">Ajouter un élément à la Liste de lecture dans Chrome</translation>
 <translation id="2736805085127235148">Les notifications de Chrome sont présentement désactivées dans les paramètres de votre appareil.</translation>
 <translation id="2767464022270041271">Aucun mot de passe enregistré. Le gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous les enregistrez.</translation>
+<translation id="2789947168960170215">Si vous avez oublié votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Effacer les données de navigation dans Chrome</translation>
 <translation id="2869959624320573933">Connectez-vous à Chrome</translation>
 <translation id="2876628302275096482">En savoir plus sur la <ph name="BEGIN_LINK" />manière dont Chrome préserve la confidentialité de vos données<ph name="END_LINK" /></translation>

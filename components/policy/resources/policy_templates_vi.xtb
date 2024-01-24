@@ -6672,6 +6672,11 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
       Việc đặt "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" và "<ph name="CLEAR_SITE_SETTINGS_ACTION" />" sẽ tắt tính năng đồng bộ hoá cho các loại dữ liệu tương ứng nếu "<ph name="CHROME_SYNC_NAME" />" không bị tắt bằng cách đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> hoặc <ph name="BROWSER_SIGNIN_POLICY_NAME" /> không tắt.</translation>
 <translation id="6462604655173570082">Nếu bạn không đặt hoặc đặt chính sách thành Bật, thì hệ thống sẽ cho phép người dùng thấy và dùng nút <ph name="GOOGLE_LENS_PRODUCT_NAME" /> trong hộp tìm kiếm trên trang Thẻ mới. Nếu bạn đặt chính sách này thành Tắt, thì người dùng sẽ không thấy nút <ph name="GOOGLE_LENS_PRODUCT_NAME" /> trong hộp tìm kiếm trên trang Thẻ mới.</translation>
 <translation id="6464074037294098618">Bật tính năng Tự động điền cho địa chỉ</translation>
+<translation id="6464564464230511695">Nếu bạn đặt chính sách này thành Enabled (Bật) hoặc không đặt, thì <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> sẽ được phép hoạt động trên mọi trang web.
+
+Nếu bạn đặt chính sách này thành Disabled (Tắt), thì <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> sẽ không hoạt động trên bất cứ trang web nào.
+
+Những chức năng của AI tạo sinh thuộc tính năng này không dành cho tài khoản Giáo dục hoặc Doanh nghiệp.</translation>
 <translation id="6467613372414922590">Cho phép các máy chủ Nhắn tin gốc ở cấp người dùng (cài đặt mà không cần có quyền quản trị).</translation>
 <translation id="6467707081687600148">Lên lịch tự động khởi động lại sau khi áp dụng bản cập nhật của <ph name="PRODUCT_OS_NAME" />.
 
