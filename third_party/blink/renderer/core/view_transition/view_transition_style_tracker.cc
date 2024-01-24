@@ -1592,7 +1592,6 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
            "phase";
 
     auto& element = transition_state.elements.emplace_back();
-    // TODO(khushalsagar): What about non utf8 strings?
     element.tag_name = entry.key.Utf8();
     element.border_box_size_in_css_space = gfx::SizeF(
         element_data->container_properties[0].border_box_size_in_css_space);
