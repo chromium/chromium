@@ -61,6 +61,7 @@ def CheckThirdPartyMetadataFiles(input_api, output_api):
       ('third_party', 'closure_compiler', 'interfaces'),
       ('third_party', 'feed_library'),
       ('third_party', 'ipcz'),
+      ('third_party', 'jni_zero'),
       # TODO(danakj): We should look for the README.chromium file in
       # third_party/rust/CRATE_NAME/vVERSION/.
       ('third_party', 'rust'),
@@ -104,6 +105,8 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
                                   'feed_library' + input_api.os_path.sep) and
         not local_path.startswith('third_party' + input_api.os_path.sep +
                                   'ipcz' + input_api.os_path.sep) and
+        not local_path.startswith('third_party' + input_api.os_path.sep +
+                                  'jni_zero' + input_api.os_path.sep) and
         # TODO(danakj): We should look for the README.chromium file in
         # third_party/rust/CRATE_NAME/vVERSION/.
         not local_path.startswith('third_party' + input_api.os_path.sep +
