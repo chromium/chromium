@@ -20,6 +20,16 @@
     color: var(--color-side-panel-entry-icon);
     --cr-icon-button-fill-color: var(--color-sys-primary);
   }
+  .audio-background-when-paused-true {
+    --audio-controls-background: transparent;
+    --audio-controls-right-padding: 0px;
+    --audio-controls-right-margin: 2px;
+  }
+  .audio-background-when-paused-false {
+    --audio-controls-background: var(--color-sys-tonal-container);
+    --audio-controls-right-padding: 4px;
+    --audio-controls-right-margin: 6px;
+  }
   #audio-controls {
     border-radius: 18px;
     display: inline-block;
@@ -115,14 +125,14 @@
      role="toolbar" aria-label="$i18n{readingModeToolbarLabel}"
      on-keydown="onToolbarKeyDown_">
   <template id="read-aloud-container" is="dom-if" if="[[isReadAloudEnabled_]]">
-    <span id="audio-controls">
+    <span id="audio-controls" class$="audio-background-when-paused-[[paused]]">
       <cr-icon-button
         class="toolbar-button audio-controls"
         id="play-pause"
-        aria-label="$i18n{playLabel}"
+        aria-label$="[[playPauseButtonAriaLabel_(paused)]]"
         aria-keyshortcuts="k"
         aria-description="$i18n{playDescription}"
-        iron-icon="read-anything-20:play"
+        iron-icon$="[[playPauseButtonIronIcon_(paused)]]"
         tabindex="0"
         on-click="onPlayPauseClick">
       </cr-icon-button>

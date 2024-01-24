@@ -416,24 +416,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.$.fontTemplate.render();
   }
 
-  updateUiForPlaying() {
-    const shadowRoot = this.shadowRoot;
-    assert(shadowRoot);
-    const button = shadowRoot.getElementById('play-pause');
-    assert(button);
-    button.setAttribute('iron-icon', 'read-anything-20:pause');
-    button.setAttribute('aria-label', loadTimeData.getString('pauseLabel'));
-
-    this.updateStyles({
-      '--audio-controls-background': 'var(--color-sys-tonal-container)',
-      '--audio-controls-right-padding': '4px',
-      '--audio-controls-right-margin': '6px',
-    });
-
-    const toolbar = shadowRoot.getElementById('toolbar-container');
-    assert(toolbar);
-  }
-
   showVoicePreviewPlaying(voice: SpeechSynthesisVoice|null) {
     if (!voice) {
       return;
@@ -461,22 +443,13 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
                                         }));
   }
 
-  updateUiForPausing() {
-    const shadowRoot = this.shadowRoot;
-    assert(shadowRoot);
-    const button = shadowRoot.getElementById('play-pause');
-    assert(button);
-    button.setAttribute('iron-icon', 'read-anything-20:play');
-    button.setAttribute('aria-label', loadTimeData.getString('playLabel'));
+  private playPauseButtonAriaLabel_(paused: boolean) {
+    return paused ? loadTimeData.getString('playLabel') :
+                    loadTimeData.getString('pauseLabel');
+  }
 
-    this.updateStyles({
-      '--audio-controls-background': 'transparent',
-      '--audio-controls-right-padding': '0px',
-      '--audio-controls-right-margin': '2px',
-    });
-
-    const toolbar = shadowRoot.getElementById('toolbar-container');
-    assert(toolbar);
+  private playPauseButtonIronIcon_(paused: boolean) {
+    return paused ? 'read-anything-20:play' : 'read-anything-20:pause';
   }
 
   private closeMenus_() {
@@ -798,16 +771,14 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   onPlayPauseClick() {
+    if (!this.contentPage) {
+      return;
+    }
+
     if (this.paused) {
-      this.updateUiForPlaying();
-      if (this.contentPage) {
-        this.contentPage.playSpeech();
-      }
+      this.contentPage.playSpeech();
     } else {
-      this.updateUiForPausing();
-      if (this.contentPage) {
-        this.contentPage.stopSpeech();
-      }
+      this.contentPage.stopSpeech();
     }
   }
 

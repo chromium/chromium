@@ -799,7 +799,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.speechStarted = false;
     this.paused = true;
     this.previousHighlight_ = [];
-    this.$.toolbar.updateUiForPausing();
   }
 
   // TODO(b/1465029): Once the IsReadAnythingWebUIEnabled flag is removed
