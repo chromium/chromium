@@ -83,7 +83,8 @@ class TestServiceWorkerContextObserver
   TestServiceWorkerContextObserver& operator=(
       const TestServiceWorkerContextObserver&) = delete;
 
-  void WaitForWorkerStopped() { stopped_worker_run_loop_.Run(); }
+  void WaitForWorkerStopped() { start_stopped_worker_run_loop_.Run(); }
+  void WaitForWorkerStarted() { start_stopped_worker_run_loop_.Run(); }
 
   int64_t test_worker_version_id = blink::mojom::kInvalidServiceWorkerVersionId;
 
@@ -100,6 +101,7 @@ class TestServiceWorkerContextObserver
     }
 
     test_worker_version_id = version_id;
+    start_stopped_worker_run_loop_.Quit();
   }
 
   // Called when a worker has entered the
@@ -110,10 +112,10 @@ class TestServiceWorkerContextObserver
     if (test_worker_version_id != version_id) {
       return;
     }
-    stopped_worker_run_loop_.Quit();
+    start_stopped_worker_run_loop_.Quit();
   }
 
-  base::RunLoop stopped_worker_run_loop_;
+  base::RunLoop start_stopped_worker_run_loop_;
   const GURL extension_url_;
   const raw_ptr<content::ServiceWorkerContext> sw_context_;
   base::ScopedObservation<content::ServiceWorkerContext,
@@ -540,6 +542,53 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
   // extension during the multi event dispatch. Should only need one start to
   // process the multiple events.
   EXPECT_EQ(1, start_count_observer.GetStartWorkerRequestCount());
+}
+
+// Tests the behavior of service worker start requests when a worker is already
+// running. extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch
+// feature disabled means we will redundantly try to start a worker when it is
+// already started. The feature enabled means that we will not redundantly
+// attempt to start a started worker for every event dispatch.
+IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
+                       StartedWorkerRedundantStarts) {
+  TestServiceWorkerContextObserver sw_started_stopped_observer(
+      profile(), kTestExtensionId);
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("events/reliability/service_worker"),
+      {.wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(kTestExtensionId, extension->id());
+  // This ensures that we wait until the the browser receives the ack from the
+  // renderer. This prevents unexpected histogram emits later.
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+  sw_started_stopped_observer.WaitForWorkerStarted();
+  ASSERT_TRUE(content::CheckServiceWorkerIsRunning(
+      sw_context_, sw_started_stopped_observer.test_worker_version_id));
+
+  // Setup listeners for confirming the event ran successfully.
+  ExtensionTestMessageListener extension_event_listener_fired("listener fired");
+  ServiceWorkerStartCountObserver start_count_observer(extension->id());
+
+  DispatchWebNavigationEvent();
+
+  EXPECT_TRUE(extension_event_listener_fired.WaitUntilSatisfied());
+
+  // Confirm the expected number of start requests that are sent to the
+  // extension worker during event dispatch.
+  if (GetParam()) {
+    // extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch true
+    // No start is requested when dispatching to the worker since the worker is
+    // running ready to receive tasks.
+    EXPECT_EQ(0, start_count_observer.GetStartWorkerRequestCount());
+  } else {
+    // extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch false
+    // Since the feature is disabled, we will attempt to start a worker on every
+    // event dispatch even though it is already started/running and can run the
+    // event.
+    EXPECT_EQ(1, start_count_observer.GetStartWorkerRequestCount());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
