@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/app_list/search/files/justifications.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -12,80 +14,90 @@
 
 namespace app_list::test {
 
+class JustificationsTest : public ::testing::Test {
+ public:
+  JustificationsTest() {
+    scoped_features_.InitAndDisableFeature(
+        ash::features::kLauncherContinueSectionWithRecents);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
+};
+
 TEST(JustificationsTest, OpenedOrEdited) {
   base::Time now = base::Time::Now();
 
   // Opened more recently than edited.
-  EXPECT_EQ(
-      GetJustificationString(now - base::Seconds(10), now - base::Seconds(30)),
-      l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_JUST_NOW));
+  EXPECT_EQ(GetJustificationString(app_list::JustificationType::kViewed,
+                                   now - base::Seconds(10), /*user_name=*/""),
+            l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_JUST_NOW));
 
   // Edited more recently than opened.
-  EXPECT_EQ(
-      GetJustificationString(now - base::Seconds(30), now - base::Seconds(10)),
-      l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_JUST_NOW));
-
-  // When tied, should be edited.
-  EXPECT_EQ(
-      GetJustificationString(now - base::Seconds(30), now - base::Seconds(30)),
-      l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_JUST_NOW));
+  EXPECT_EQ(GetJustificationString(app_list::JustificationType::kModified,
+                                   now - base::Seconds(10), /*user_name=*/""),
+            l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_JUST_NOW));
 }
 
 TEST(JustificationsTest, EditTimes) {
   base::Time now = base::Time::Now();
 
   // Just now.
-  EXPECT_EQ(
-      GetJustificationString(now - base::Minutes(5), now - base::Minutes(5)),
-      l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_JUST_NOW));
+  EXPECT_EQ(GetJustificationString(app_list::JustificationType::kModified,
+                                   now - base::Minutes(5), /*user_name=*/""),
+            l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_JUST_NOW));
 
   // Today.
-  EXPECT_EQ(
-      GetJustificationString(now - base::Hours(23), now - base::Hours(23)),
-      l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_TODAY));
+  EXPECT_EQ(GetJustificationString(app_list::JustificationType::kModified,
+                                   now - base::Hours(23), /*user_name=*/""),
+            l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_TODAY));
 
   // Yesterday.
-  EXPECT_EQ(
-      GetJustificationString(now - base::Hours(47), now - base::Hours(47)),
-      l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_YESTERDAY));
+  EXPECT_EQ(GetJustificationString(app_list::JustificationType::kModified,
+                                   now - base::Hours(47), /*user_name=*/""),
+            l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_YESTERDAY));
 
   // Past week.
-  EXPECT_EQ(GetJustificationString(now - base::Days(6), now - base::Days(6)),
+  EXPECT_EQ(GetJustificationString(app_list::JustificationType::kModified,
+                                   now - base::Days(6), /*user_name=*/""),
             l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_PAST_WEEK));
 
   // Past month.
-  EXPECT_EQ(GetJustificationString(now - base::Days(30), now - base::Days(30)),
+  EXPECT_EQ(GetJustificationString(app_list::JustificationType::kModified,
+                                   now - base::Days(30), /*user_name=*/""),
             l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_PAST_MONTH));
 
   // No string, file too old.
-  EXPECT_FALSE(
-      GetJustificationString(now - base::Days(32), now - base::Days(32)));
+  EXPECT_FALSE(GetJustificationString(app_list::JustificationType::kModified,
+                                      now - base::Days(32), /*user_name=*/""));
 }
 
 TEST(JustificationsTest, OpenTimes) {
   base::Time now = base::Time::Now();
 
   // Just now.
-  EXPECT_EQ(
-      GetJustificationString(now - base::Minutes(5), now - base::Days(100)),
-      l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_JUST_NOW));
+  EXPECT_EQ(GetJustificationString(app_list::JustificationType::kViewed,
+                                   now - base::Minutes(5), /*user_name=*/""),
+            l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_JUST_NOW));
 
   // Today.
-  EXPECT_EQ(
-      GetJustificationString(now - base::Hours(23), now - base::Days(100)),
-      l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_TODAY));
+  EXPECT_EQ(GetJustificationString(app_list::JustificationType::kViewed,
+                                   now - base::Hours(23), /*user_name=*/""),
+            l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_TODAY));
 
   // Yesterday.
-  EXPECT_EQ(
-      GetJustificationString(now - base::Hours(47), now - base::Days(100)),
-      l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_YESTERDAY));
+  EXPECT_EQ(GetJustificationString(app_list::JustificationType::kViewed,
+                                   now - base::Hours(47), /*user_name=*/""),
+            l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_YESTERDAY));
 
   // Past week.
-  EXPECT_EQ(GetJustificationString(now - base::Days(6), now - base::Days(100)),
+  EXPECT_EQ(GetJustificationString(app_list::JustificationType::kViewed,
+                                   now - base::Days(6), /*user_name=*/""),
             l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_PAST_WEEK));
 
   // Past month.
-  EXPECT_EQ(GetJustificationString(now - base::Days(30), now - base::Days(100)),
+  EXPECT_EQ(GetJustificationString(app_list::JustificationType::kViewed,
+                                   now - base::Days(30), /*user_name=*/""),
             l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_PAST_MONTH));
 }
 

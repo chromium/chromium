@@ -12,13 +12,26 @@
 
 namespace app_list {
 
-// Returns an appropriate justification string for the given times, for example
-// "Opened yesterday". There are different messages for times within the last
-// few minutes, day, two days, week, and month. If the time is longer than a
-// month ago, nullopt is returned.
+enum class JustificationType {
+  kViewed,
+  kModified,
+  kModifiedByCurrentUser,
+  kShared,
+};
+
+// Returns a justification string for file suggestions. The justification string
+// describes the action that prompted the file to be suggested to the user.
+// `type` is the type of action that prompted the suggestion.
+// `timestamp` is the time the action occurred.
+// `user_name` is the name of the user that performed the action. The user name
+// is only relevant for `kModified` and `kShared` actions (otherwise the action
+// is presumed to be performed by the current user). It can be an empty string
+// if the user name is not relevant for the action, or not known (in which case
+// the justification will show a fallback string without user name).
 std::optional<std::u16string> GetJustificationString(
-    const base::Time& last_accessed,
-    const base::Time& last_modified);
+    JustificationType type,
+    const base::Time& timestamp,
+    const std::string& user_name);
 
 }  // namespace app_list
 

@@ -15,8 +15,8 @@
 #include "base/i18n/time_formatting.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/app_list/search/files/justifications.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
@@ -24,7 +24,6 @@
 #include "components/drive/file_errors.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "ui/base/l10n/time_format.h"
 
 namespace ash {
 namespace {
@@ -60,13 +59,17 @@ drivefs::mojom::QueryParametersPtr CreateRecentlyViewedQuery() {
   return query;
 }
 
-std::u16string GetDateString(const base::Time& timestamp) {
-  const std::u16string relative_date =
-      ui::TimeFormat::RelativeDate(timestamp, nullptr);
-  if (!relative_date.empty()) {
-    return base::ToLowerASCII(relative_date);
-  }
-  return base::TimeFormatShortDate(timestamp);
+FileSuggestData CreateFileSuggestionWithJustification(
+    const base::FilePath& path,
+    app_list::JustificationType justification_type,
+    const base::Time& timestamp,
+    const drivefs::mojom::UserInfo* user_info) {
+  return FileSuggestData(
+      FileSuggestionType::kDriveFile, path,
+      app_list::GetJustificationString(
+          justification_type, timestamp,
+          user_info ? user_info->display_name : base::EmptyString()),
+      timestamp, /*new_score=*/std::nullopt);
 }
 
 FileSuggestData CreateFileSuggestion(
@@ -80,62 +83,34 @@ FileSuggestData CreateFileSuggestion(
   if (const absl::optional<base::Time>& shared_time =
           file_metadata.shared_with_me_time;
       shared_time && !shared_time->is_null() && viewed_time.is_null()) {
-    if (file_metadata.sharing_user &&
-        features::IsShowSharingUserInLauncherContinueSectionEnabled()) {
-      return FileSuggestData(
-          FileSuggestionType::kDriveFile, path,
-          base::JoinString(
-              {u"[Needs i18n]",
-               base::UTF8ToUTF16(file_metadata.sharing_user->display_name),
-               u"shared with you", GetDateString(*shared_time)},
-              u" "),
-          shared_time, /*new_score=*/absl::nullopt);
-    }
-    return FileSuggestData(FileSuggestionType::kDriveFile, path,
-                           base::JoinString({u"[Needs i18n] Shared with you",
-                                             GetDateString(*shared_time)},
-                                            u" "),
-                           *shared_time, /*new_score=*/absl::nullopt);
+    return CreateFileSuggestionWithJustification(
+        path, app_list::JustificationType::kShared, *shared_time,
+        features::IsShowSharingUserInLauncherContinueSectionEnabled()
+            ? file_metadata.sharing_user.get()
+            : nullptr);
   }
 
   // Viewed by the user more recently than the last modification.
   if (viewed_time > modified_time) {
-    return FileSuggestData(
-        FileSuggestionType::kDriveFile, path,
-        base::JoinString(
-            {u"[Needs i18n] You viewed", GetDateString(viewed_time)}, u" "),
-        viewed_time, /*new_score=*/absl::nullopt);
+    return CreateFileSuggestionWithJustification(
+        path, app_list::JustificationType::kViewed, viewed_time,
+        /*user_info=*/nullptr);
   }
 
   // Last modification was by the user.
-  if (file_metadata.modified_by_me_time >= modified_time) {
-    return FileSuggestData(
-        FileSuggestionType::kDriveFile, path,
-        base::JoinString({u"[Needs i18n] You modified",
-                          GetDateString(*file_metadata.modified_by_me_time)},
-                         u" "),
-        *file_metadata.modified_by_me_time, /*new_score=*/absl::nullopt);
+  if (file_metadata.modified_by_me_time &&
+      !file_metadata.modified_by_me_time->is_null() &&
+      file_metadata.modified_by_me_time >= modified_time) {
+    return CreateFileSuggestionWithJustification(
+        path, app_list::JustificationType::kModifiedByCurrentUser,
+        *file_metadata.modified_by_me_time, /*user_info=*/nullptr);
   }
 
-  // Last modification was by another user - surface the last momdifying user
-  // name.
-  if (file_metadata.last_modifying_user) {
-    return FileSuggestData(
-        FileSuggestionType::kDriveFile, path,
-        base::JoinString(
-            {u"[Needs i18n]",
-             base::UTF8ToUTF16(file_metadata.last_modifying_user->display_name),
-             u"modified", GetDateString(modified_time)},
-            u" "),
-        modified_time, /*new_score=*/absl::nullopt);
-  }
-
-  // Fallback string when the last modifying user is unknown.
-  return FileSuggestData(
-      FileSuggestionType::kDriveFile, path,
-      base::JoinString({u"[Needs i18n] Modified", GetDateString(modified_time)},
-                       u" "),
-      modified_time, /*new_score=*/absl::nullopt);
+  // Last modification was by either by another user, or the last modifying user
+  // information is not available.
+  return CreateFileSuggestionWithJustification(
+      path, app_list::JustificationType::kModified, modified_time,
+      file_metadata.last_modifying_user.get());
 }
 
 }  // namespace

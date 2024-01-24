@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/app_list/search/files/justifications.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/files/file.h"
-#include "base/files/file_util.h"
+#include "base/i18n/time_formatting.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -20,6 +21,21 @@ constexpr base::TimeDelta kToday = base::Days(1);
 constexpr base::TimeDelta kYesterday = base::Days(2);
 constexpr base::TimeDelta kPastWeek = base::Days(7);
 constexpr base::TimeDelta kPastMonth = base::Days(31);
+
+std::u16string GetTimeString(const base::Time& timestamp) {
+  const base::Time now = base::Time::Now();
+  const base::Time midnight = now.LocalMidnight();
+  if ((now - timestamp).magnitude() <= kJustNow) {
+    return l10n_util::GetStringUTF16(
+        IDS_FILE_SUGGESTION_JUSTIFICATION_TIME_NOW);
+  }
+
+  if (timestamp >= midnight && timestamp < midnight + base::Days(1)) {
+    return base::TimeFormatTimeOfDay(timestamp);
+  }
+
+  return base::LocalizedTimeFormatWithPattern(timestamp, "MMMd");
+}
 
 std::optional<std::u16string> GetEditStringFromTime(const base::Time& time) {
   const auto& delta = base::Time::Now() - time;
@@ -55,16 +71,57 @@ std::optional<std::u16string> GetOpenStringFromTime(const base::Time& time) {
   }
 }
 
+std::u16string GetActionString(JustificationType type,
+                               const std::string& user_name) {
+  switch (type) {
+    case JustificationType::kViewed: {
+      return l10n_util::GetStringUTF16(
+          IDS_FILE_SUGGESTION_JUSTIFICATION_YOU_VIEWED_ACTION);
+    }
+    case JustificationType::kModified: {
+      if (user_name.empty()) {
+        return l10n_util::GetStringUTF16(
+            IDS_FILE_SUGGESTION_JUSTIFICATION_GENERIC_MODIFIED_ACTION);
+      }
+      return l10n_util::GetStringFUTF16(
+          IDS_FILE_SUGGESTION_JUSTIFICATION_USER_MODIFIED_ACTION,
+          base::UTF8ToUTF16(user_name));
+    }
+    case JustificationType::kModifiedByCurrentUser: {
+      return l10n_util::GetStringUTF16(
+          IDS_FILE_SUGGESTION_JUSTIFICATION_YOU_MODIFIED_ACTION);
+    }
+    case JustificationType::kShared: {
+      if (user_name.empty()) {
+        return l10n_util::GetStringUTF16(
+            IDS_FILE_SUGGESTION_JUSTIFICATION_GENERIC_SHARED_ACTION);
+      }
+      return l10n_util::GetStringFUTF16(
+          IDS_FILE_SUGGESTION_JUSTIFICATION_USER_SHARED_ACTION,
+          base::UTF8ToUTF16(user_name));
+    }
+  }
+}
+
 }  // namespace
 
 std::optional<std::u16string> GetJustificationString(
-    const base::Time& last_accessed,
-    const base::Time& last_modified) {
-  // t1 > t2 means t1 is more recent. When there's a tie, choose modified.
-  if (last_modified >= last_accessed) {
-    return GetEditStringFromTime(last_modified);
-  } else {
-    return GetOpenStringFromTime(last_accessed);
+    JustificationType type,
+    const base::Time& timestamp,
+    const std::string& user_name) {
+  if (ash::features::IsLauncherContinueSectionWithRecentsEnabled()) {
+    return l10n_util::GetStringFUTF16(IDS_FILE_SUGGESTION_JUSTIFICATION,
+                                      GetActionString(type, user_name),
+                                      GetTimeString(timestamp));
+  }
+  switch (type) {
+    case JustificationType::kViewed:
+      return GetOpenStringFromTime(timestamp);
+    case JustificationType::kModified:
+    case JustificationType::kModifiedByCurrentUser:
+      return GetEditStringFromTime(timestamp);
+    case JustificationType::kShared:
+      return std::nullopt;
   }
 }
 
