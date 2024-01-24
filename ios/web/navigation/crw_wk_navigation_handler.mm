@@ -402,9 +402,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       requestURL.SchemeIs(url::kBlobScheme);
 
   _shouldPerformDownload = NO;
-  if (@available(iOS 15, *)) {
-    _shouldPerformDownload = action.shouldPerformDownload;
-  }
+  _shouldPerformDownload = action.shouldPerformDownload;
 
   __weak CRWWKNavigationHandler* weakSelf = self;
   auto callback =
@@ -524,20 +522,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     return;
   }
 
-  if (@available(iOS 15, *)) {
-    handler(WKNavigationResponsePolicyDownload);
-    return;
-  }
-
-  if (web::UrlHasWebScheme(responseURL)) {
-    [self createDownloadTaskForResponse:WKResponse HTTPHeaders:headers.get()];
-  } else {
-    // DownloadTask only supports web schemes, so do nothing.
-  }
-  // Discard the pending item to ensure that the current URL is not different
-  // from what is displayed on the view.
-  self.navigationManagerImpl->DiscardNonCommittedItems();
-  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Cancel());
+  handler(WKNavigationResponsePolicyDownload);
 }
 
 - (void)webView:(WKWebView*)webView
@@ -1484,15 +1469,13 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   // TODO(crbug.com/1308875): Remove this when `canShowMIMEType` is fixed.
   // On iOS 15 `canShowMIMEType` returns true for AR files although WebKit is
   // not capable of displaying them natively.
-  if (@available(iOS 15, *)) {
-    NSString* MIMEType = WKResponse.response.MIMEType;
-    if ([MIMEType isEqualToString:@"model/vnd.pixar.usd"] ||
-        [MIMEType isEqualToString:@"model/usd"] ||
-        [MIMEType isEqualToString:@"model/vnd.usdz+zip"] ||
-        [MIMEType isEqualToString:@"model/vnd.pixar.usd"] ||
-        [MIMEType isEqualToString:@"model/vnd.reality"]) {
-      return NO;
-    }
+  NSString* MIMEType = WKResponse.response.MIMEType;
+  if ([MIMEType isEqualToString:@"model/vnd.pixar.usd"] ||
+      [MIMEType isEqualToString:@"model/usd"] ||
+      [MIMEType isEqualToString:@"model/vnd.usdz+zip"] ||
+      [MIMEType isEqualToString:@"model/vnd.pixar.usd"] ||
+      [MIMEType isEqualToString:@"model/vnd.reality"]) {
+    return NO;
   }
 
   GURL responseURL = net::GURLWithNSURL(WKResponse.response.URL);

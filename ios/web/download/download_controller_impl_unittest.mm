@@ -90,31 +90,29 @@ TEST_F(DownloadControllerImplTest, OnNativeDownloadCreated) {
   NSString* identifier = [NSUUID UUID].UUIDString;
   GURL url("https://download.test");
 
-  if (@available(iOS 15, *)) {
-    WKDownload* fake_download = nil;
-    id<DownloadNativeTaskBridgeDelegate> fake_delegate = nil;
-    FakeNativeTaskBridge* fake_task_bridge =
-        [[FakeNativeTaskBridge alloc] initWithDownload:fake_download
-                                              delegate:fake_delegate];
+  WKDownload* fake_download = nil;
+  id<DownloadNativeTaskBridgeDelegate> fake_delegate = nil;
+  FakeNativeTaskBridge* fake_task_bridge =
+      [[FakeNativeTaskBridge alloc] initWithDownload:fake_download
+                                            delegate:fake_delegate];
 
-    download_controller_->CreateNativeDownloadTask(
-        &web_state_, identifier, url, @"POST", kContentDisposition,
-        /*total_bytes=*/-1, kMimeType, fake_task_bridge);
+  download_controller_->CreateNativeDownloadTask(
+      &web_state_, identifier, url, @"POST", kContentDisposition,
+      /*total_bytes=*/-1, kMimeType, fake_task_bridge);
 
-    ASSERT_EQ(1U, delegate_->alive_download_tasks().size());
-    DownloadTask* task = delegate_->alive_download_tasks()[0].second.get();
-    EXPECT_EQ(&web_state_, delegate_->alive_download_tasks()[0].first);
-    EXPECT_NSEQ(identifier, task->GetIdentifier());
-    EXPECT_EQ(url, task->GetOriginalUrl());
-    EXPECT_NSEQ(@"POST", task->GetHttpMethod());
-    EXPECT_FALSE(task->IsDone());
-    EXPECT_EQ(0, task->GetErrorCode());
-    EXPECT_EQ(-1, task->GetTotalBytes());
-    EXPECT_EQ(-1, task->GetPercentComplete());
-    EXPECT_EQ(kContentDisposition, task->GetContentDisposition());
-    EXPECT_EQ(kMimeType, task->GetMimeType());
-    EXPECT_EQ(base::FilePath(kTestFileName), task->GenerateFileName());
-  }
+  ASSERT_EQ(1U, delegate_->alive_download_tasks().size());
+  DownloadTask* task = delegate_->alive_download_tasks()[0].second.get();
+  EXPECT_EQ(&web_state_, delegate_->alive_download_tasks()[0].first);
+  EXPECT_NSEQ(identifier, task->GetIdentifier());
+  EXPECT_EQ(url, task->GetOriginalUrl());
+  EXPECT_NSEQ(@"POST", task->GetHttpMethod());
+  EXPECT_FALSE(task->IsDone());
+  EXPECT_EQ(0, task->GetErrorCode());
+  EXPECT_EQ(-1, task->GetTotalBytes());
+  EXPECT_EQ(-1, task->GetPercentComplete());
+  EXPECT_EQ(kContentDisposition, task->GetContentDisposition());
+  EXPECT_EQ(kMimeType, task->GetMimeType());
+  EXPECT_EQ(base::FilePath(kTestFileName), task->GenerateFileName());
 }
 
 // Tests that DownloadController::FromBrowserState does not crash if used
