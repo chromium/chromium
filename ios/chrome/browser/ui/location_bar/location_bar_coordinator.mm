@@ -554,10 +554,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   // iPhones.
   // TODO (crbug.com/1247668): Reenable this after moving to new API and move
   // this code back to -start.
-  if (@available(iOS 15, *)) {
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
-      return;
-    }
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+    return;
   }
   self.dragDropHandler = [[URLDragDropHandler alloc] init];
   self.dragDropHandler.origin = WindowActivityLocationBarSteadyViewOrigin;
