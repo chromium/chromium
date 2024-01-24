@@ -488,7 +488,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
   EXPECT_THAT(status, IsNetError(net::OK));
 }
 
-TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlDoesNotHaveUrlQuery) {
+TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlInheritsQuery) {
   RegisterWebApp(CreateIsolatedWebApp(
       kDevAppStartUrl,
       WebApp::IsolationData{DevModeProxy{.proxy_url = url::Origin::Create(
@@ -498,11 +498,12 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlDoesNotHaveUrlQuery) {
   CreateFactory();
 
   auto request = std::make_unique<network::ResourceRequest>();
-  request->url = GURL("isolated-app://" + kDevWebBundleId +
-                      "?testingQueryToRemove=testValue");
+  request->url =
+      GURL("isolated-app://" + kDevWebBundleId + "?testingQuery=testValue");
   CreateLoaderAndRun(std::move(request));
 
-  EXPECT_THAT(url_handler().intercepted_url(), Eq(GURL("http://example.com/")));
+  EXPECT_THAT(url_handler().intercepted_url(),
+              Eq(GURL("http://example.com/?testingQuery=testValue")));
 }
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlDoesNotHaveUrlFragment) {

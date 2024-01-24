@@ -535,8 +535,16 @@ void IsolatedWebAppURLLoaderFactory::HandleDevModeProxy(
     mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK(!dev_mode_proxy.proxy_url.opaque());
+
+  GURL::Replacements replacements;
+  std::string path = resource_request.url.path();
+  replacements.SetPathStr(path);
+  std::string query = resource_request.url.query();
+  if (resource_request.url.has_query()) {
+    replacements.SetQueryStr(query);
+  }
   GURL proxy_url =
-      dev_mode_proxy.proxy_url.GetURL().Resolve(resource_request.url.path());
+      dev_mode_proxy.proxy_url.GetURL().ReplaceComponents(replacements);
 
   // Create a new ResourceRequest with the proxy URL.
   network::ResourceRequest proxy_request;
