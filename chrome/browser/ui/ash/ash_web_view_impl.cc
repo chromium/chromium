@@ -37,7 +37,6 @@ void FixZoomLevelToOne(content::RenderFrameHost* render_frame_host) {
 
 AshWebViewImpl::AshWebViewImpl(const InitParams& params) : params_(params) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  SetUseDefaultFillLayout(true);
   InitWebContents(profile);
   InitLayout(profile);
 }
@@ -58,6 +57,10 @@ gfx::NativeView AshWebViewImpl::GetNativeView() {
 void AshWebViewImpl::ChildPreferredSizeChanged(views::View* child) {
   DCHECK_EQ(web_view_, child);
   SetPreferredSize(web_view_->GetPreferredSize());
+}
+
+void AshWebViewImpl::Layout() {
+  web_view_->SetBoundsRect(GetContentsBounds());
 }
 
 void AshWebViewImpl::AddObserver(Observer* observer) {

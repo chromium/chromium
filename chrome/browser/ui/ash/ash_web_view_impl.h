@@ -41,6 +41,7 @@ class AshWebViewImpl : public ash::AshWebView,
   const char* GetClassName() const override;
   gfx::NativeView GetNativeView() override;
   void ChildPreferredSizeChanged(views::View* child) override;
+  void Layout() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   bool GoBack() override;
