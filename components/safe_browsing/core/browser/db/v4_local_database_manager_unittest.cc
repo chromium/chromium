@@ -424,7 +424,7 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
   }
 
   void TearDown() override {
-    StopLocalDatabaseManager();
+    ShutdownLocalDatabaseManager();
 
     PlatformTest::TearDown();
   }
@@ -1851,6 +1851,12 @@ TEST_F(V4LocalDatabaseManagerTest, TestQueuedChecksMatchArtificialPrefixes) {
       "mark_as_malware", "https://example.com/");
   WaitForTasksOnTaskRunner();
 
+  if (kMmapSafeBrowsingDatabaseAsync.Get()) {
+    EXPECT_FALSE(client.on_check_browse_url_result_called());
+    WaitForTasksOnTaskRunner();
+  }
+
+  EXPECT_TRUE(client.on_check_browse_url_result_called());
   EXPECT_TRUE(GetQueuedChecks().empty());
 }
 

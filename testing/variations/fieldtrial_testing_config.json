@@ -11346,30 +11346,6 @@
             ]
         }
     ],
-    "MmapSafeBrowsingDatabase": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240103",
-                    "params": {
-                        "MmapSafeBrowsingDatabaseAsync": "true"
-                    },
-                    "enable_features": [
-                        "MmapSafeBrowsingDatabase",
-                        "SafeBrowsingOnUIThread"
-                    ]
-                }
-            ]
-        }
-    ],
     "ModalMemorySaver": [
         {
             "platforms": [
