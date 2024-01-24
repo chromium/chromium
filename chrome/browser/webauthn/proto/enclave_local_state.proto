@@ -1,0 +1,53 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package webauthn_pb;
+
+message EnclaveLocalState {
+  // User contains state for a specific GAIA ID.
+  message User {
+    // The hardware-bound, not-user-verification-interlocked device key:
+    //
+    // These three members are either all empty or all non-empty.
+    bytes wrapped_hardware_private_key = 1;
+    // If non-empty, this contains a valid SubjectPublicKeyInfo.
+    bytes hardware_public_key = 2;
+    // This is currently SHA-256(hardware_public_key) but need not be.
+    bytes device_id = 5;
+
+    // The hardware-bound, user-verification-interlocked device key.
+    // (This is optional and might not be present if the device doesn't
+    // support UV-interlocked keys.)
+    //
+    // These two members are either both empty or both non-empty.
+    bytes wrapped_uv_private_key = 3;
+    bytes uv_public_key = 4;
+
+    // Whether this device has been registered with the enclave. If this is
+    // true then `hardware_public_key` and `member_public_key` must be
+    // non-empty.
+    bool registered = 6;
+
+    // The enclave-wrapped, security domain physical member key.
+    //
+    // These two members are either both empty or both non-empty.
+    bytes wrapped_member_private_key = 7;
+    // If non-empty, contains a P-256 point in uncompressed X9.62 format.
+    bytes member_public_key = 8;
+
+    // Whether this device has joined the hw_protected security domain. If this
+    // is true then `wrapped_security_domain_secrets` must be non-empty.
+    bool joined = 9;
+
+    // A map from security domain epoch to the enclave-wrapped security domain
+    // secret for that epoch.
+    map<int32, bytes> wrapped_security_domain_secrets = 10;
+  }
+
+  map<string, User> users = 1;
+}
