@@ -153,14 +153,13 @@ void LockScreenReauthHandler::LoadAuthenticatorParam() {
   login::GaiaContext context;
   context.force_reload = true;
   context.email = email_;
+  context.gaia_id = user_manager::UserManager::Get()
+                        ->GetActiveUser()
+                        ->GetAccountId()
+                        .GetGaiaId();
 
   user_manager::KnownUser known_user(g_browser_process->local_state());
   if (!context.email.empty()) {
-    if (const std::string* gaia_id =
-            known_user.FindGaiaID(AccountId::FromUserEmail(context.email))) {
-      context.gaia_id = *gaia_id;
-    }
-
     context.gaps_cookie = known_user.GetGAPSCookie(
         AccountId::FromUserEmail(gaia::CanonicalizeEmail(context.email)));
   }
