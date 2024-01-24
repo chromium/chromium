@@ -61,7 +61,6 @@ if (is_chromeos_ash) {
     "neon-animation/neon-animated-pages.js",
     "neon-animation/neon-animation-behavior.js",
     "neon-animation/neon-animation-runner-behavior.js",
-    "paper-behaviors/paper-ripple-behavior.js",
   ]
 }
 
