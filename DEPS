@@ -278,13 +278,13 @@ vars = {
   'checkout_rts_experimental_model': False,
 
   # By default, do not check out the re-client binaries.
-  'checkout_reclient': False,
+  'checkout_reclient': True,
 
   # Make Dawn skip its standalone dependencies
   'dawn_standalone': False,
 
   # reclient CIPD package version
-  'reclient_version': 're_client_version:0.81.1.0853992-gomaip',
+  'reclient_version': 're_client_version:0.126.0.4aaef37-gomaip',
 
   # Fetch Rust-related packages.
   'use_rust': False,
@@ -3852,6 +3852,7 @@ deps = {
     'dep_type': 'cipd',
     'condition': 'checkout_bazel',
   },
+  'src/third_party/reclient_configs': 'https://github.com/EngFlow/reclient-configs.git@c7c2f495ab4637bf5977a8f8f7c65ded468843b3',
 }
 
 
@@ -4993,6 +4994,11 @@ hooks = [
                '--quiet',
                '--bucket', 'chromium-style-perftest',
                '-d', 'src/third_party/blink/renderer/core/css/perftest_data'],
+  },
+  {
+    'name': 'configure_reclient',
+    'pattern': '.',
+    'action': ['python3', 'src/third_party/reclient_configs/configure_reclient.py', '--src_dir=src'],
   },
 ]
 

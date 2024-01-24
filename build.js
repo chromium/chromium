@@ -120,13 +120,6 @@ fs.writeFileSync(
 `
 );
 
-const useGoma = !process.env.NO_GOMA;
-const goma_ctl = currentPlatform() == "windows" ? "goma_ctl.bat" : "goma_ctl";
-if (useGoma) {
-  // ensure goma is started for cloud builds with engflow
-  spawnChecked(goma_ctl, ["ensure_start"], { stdio: "inherit" });
-}
-
 // ensure that build configuration is written with correct paths
 const gn = currentPlatform() == "windows" ? "gn.bat" : "gn";
 spawnChecked(gn, ["gen", outdir], { stdio: "inherit" });
@@ -142,7 +135,9 @@ if (!process.env["BUILDKITE"]) {
   } finally {
     process.chdir(cwd);
   }
-  spawnChecked("node", [ path.join("replay_build_scripts", "lint.mjs")], { stdio: "inherit" });
+  spawnChecked("node", [path.join("replay_build_scripts", "lint.mjs")], {
+    stdio: "inherit",
+  });
 }
 
 console.log(`Building...`);

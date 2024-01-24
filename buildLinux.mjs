@@ -13,20 +13,21 @@ const dockerArgs = [
   "-e",
   "LOCAL_DEVELOPER_BUILD_EXTENSION",
   "-e",
-  "GOMA_SERVER_HOST=simpsonite.goma.engflow.com",
+  "RBE_service",
   "-e",
-  "GOMACTL_USE_PROXY=false",
+  "RBE_service_no_auth",
+  "-e",
+  "RBE_use_application_default_credentials",
+  "-e",
+  "RBE_tls_client_auth_cert=/chromium/engflow.crt",
+  "-e",
+  "RBE_tls_client_auth_key=/chromium/engflow.key",
   "-e",
   "DRIVER_REVISION",
   "-v",
   `${path.join(process.env.HOME, "chromium")}:/chromium`,
   "-v",
   `${path.join(process.env.HOME, "depot_tools")}:/depot_tools`,
-  "-v",
-  `${path.join(
-    process.env.HOME,
-    ".goma_client_oauth2_config"
-  )}:/home/ubuntu/.goma_client_oauth2_config`,
   "chromium-build-new",
 ];
 

@@ -25,9 +25,9 @@ steps:
     env:
       RECORD_REPLAY_BACKEND_DIR: /home/ubuntu/chromium/backend
     agents:
-     - "runtimeType=chromiumbuild"
-     - "os=linux"
-     - "queue=runtime"
+      - "runtimeType=chromiumbuild"
+      - "os=linux"
+      - "queue=runtime"
   - label: "Build chromium - Linux"
     key: "build-chromium-linux-x86_64"
     depends_on: "preflight-checks"
@@ -40,6 +40,11 @@ steps:
           env:
             BUILDEVENT_APIKEY: honeycomb-api-key
             BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
+          file:
+            - path: "/home/ubuntu/chromium/engflow.crt"
+              secret-id: engflow-certificate
+            - path: "/home/ubuntu/chromium/engflow.key"
+              secret-id: engflow-key
       - replayio/buildevents#adb8a05: ~
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
@@ -50,8 +55,11 @@ steps:
       - "be_cmd buck2-build -- buck2 build --console simple //:chromium"
       - "popd"
     env:
-      GOMA_SERVER_HOST: simpsonite.goma.engflow.com
-      GOMACTL_USE_PROXY: false
+      RBE_service: simpsonite.cluster.engflow.com:443
+      RBE_service_no_auth: true
+      RBE_use_application_default_credentials: true
+      RBE_tls_client_auth_cert: /home/ubuntu/chromium/engflow.crt
+      RBE_tls_client_auth_key: /home/ubuntu/chromium/engflow.key
       RECORD_REPLAY_BACKEND_DIR: /home/ubuntu/chromium/backend
     agents:
       - "runtimeType=chromiumbuild"
@@ -71,6 +79,11 @@ steps:
           env:
             BUILDEVENT_APIKEY: honeycomb-api-key
             BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
+          file:
+            - path: "/Users/administrator/chromium/engflow.crt"
+              secret-id: engflow-certificate
+            - path: "/Users/administrator/chromium/engflow.key"
+              secret-id: engflow-key
       - replayio/buildevents#adb8a05: ~
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
@@ -81,8 +94,11 @@ steps:
       - "be_cmd buck2-build -- buckle build --console simple //:chromium --target-platforms=//:macos-x86_64"
       - "popd"
     env:
-      GOMA_SERVER_HOST: simpsonite.goma.engflow.com
-      GOMACTL_USE_PROXY: false
+      RBE_service: simpsonite.cluster.engflow.com:443
+      RBE_service_no_auth: true
+      RBE_use_application_default_credentials: true
+      RBE_tls_client_auth_cert: /Users/administrator/chromium/engflow.crt
+      RBE_tls_client_auth_key: /Users/administrator/chromium/engflow.key
       RECORD_REPLAY_BACKEND_DIR: /Users/administrator/chromium/backend
     agents:
       - "runtimeType=chromiumbuild"
@@ -102,6 +118,11 @@ steps:
           env:
             BUILDEVENT_APIKEY: honeycomb-api-key
             BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
+          file:
+            - path: "/Users/administrator/chromium/engflow.crt"
+              secret-id: engflow-certificate
+            - path: "/Users/administrator/chromium/engflow.key"
+              secret-id: engflow-key
       - replayio/buildevents#adb8a05: ~
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
@@ -112,8 +133,11 @@ steps:
       - "be_cmd buck2-build -- buckle build --console simple //:chromium --target-platforms=//:macos-arm64"
       - "popd"
     env:
-      GOMA_SERVER_HOST: simpsonite.goma.engflow.com
-      GOMACTL_USE_PROXY: false
+      RBE_service: simpsonite.cluster.engflow.com:443
+      RBE_service_no_auth: true
+      RBE_use_application_default_credentials: true
+      RBE_tls_client_auth_cert: /Users/administrator/chromium/engflow.crt
+      RBE_tls_client_auth_key: /Users/administrator/chromium/engflow.key
       REPLAY_BUILD_ARM: true
       RECORD_REPLAY_BACKEND_DIR: /Users/administrator/chromium/backend
     agents:
@@ -122,6 +146,7 @@ steps:
       - "queue=runtime"
     artifact_paths:
       - "build_id/macOS/arm64/**"
+    # TODO(dmiller): enable rbe on Windows
   - label: "Build chromium - Windows"
     key: "build-chromium-windows"
     depends_on: "preflight-checks"
@@ -130,8 +155,9 @@ steps:
       - https://github.com/jazzdan/skip-checkout-buildkite-plugin.git#jazzdan/windows-support: ~
     command: "cd C:\\Users\\Administrator\\chromium\\src && git fetch --all && git reset --hard origin/$BUILDKITE_BRANCH && node replay_build_scripts/update-all-repos.mjs && node buildWindows.mjs &&  node replay_build_scripts/upload_build_artifacts.mjs"
     env:
-      GOMA_SERVER_HOST: simpsonite.goma.engflow.com
-      GOMACTL_USE_PROXY: false
+      RBE_service: simpsonite.cluster.engflow.com:443
+      RBE_service_no_auth: true
+      RBE_use_application_default_credentials: true
       RECORD_REPLAY_BACKEND_DIR: "C:\\Users\\Administrator\\chromium\\backend"
     agents:
       - "runtimeType=chromiumbuild"

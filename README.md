@@ -36,7 +36,7 @@ Only one build configuration is currently supported.
    ```ini
    # src/out/Release/args.gn
 
-   use_goma = true # if using engflow, false otherwise
+   use_remoteexec = true
    is_debug = false # we can't really use most debugging symbols right now
    dcheck_always_on = false # disable dchecks
    enable_nacl = false  # no native targets
