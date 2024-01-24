@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/logging.h"
@@ -25,7 +27,7 @@ constexpr char kBrowserContextDirPrefix[] = "u-";
 
 BrowserContextHelper* g_instance = nullptr;
 
-bool ShouldAddBrowserContextDirPrefix(base::StringPiece user_id_hash) {
+bool ShouldAddBrowserContextDirPrefix(std::string_view user_id_hash) {
   // Do not add profile dir prefix for legacy profile dir and test
   // user profile. The reason of not adding prefix for test user profile
   // is to keep the promise that TestingProfile::kTestUserProfileDir and
@@ -81,7 +83,7 @@ std::string BrowserContextHelper::GetUserIdHashFromBrowserContext(
     return std::string();
   }
 
-  return dir.substr(base::StringPiece(kBrowserContextDirPrefix).length());
+  return dir.substr(std::string_view(kBrowserContextDirPrefix).length());
 }
 
 content::BrowserContext* BrowserContextHelper::GetBrowserContextByAccountId(
@@ -153,7 +155,7 @@ const user_manager::User* BrowserContextHelper::GetUserByBrowserContext(
 
 // static
 std::string BrowserContextHelper::GetUserBrowserContextDirName(
-    base::StringPiece user_id_hash) {
+    std::string_view user_id_hash) {
   CHECK(!user_id_hash.empty());
   return ShouldAddBrowserContextDirPrefix(user_id_hash)
              ? base::StrCat({kBrowserContextDirPrefix, user_id_hash})
@@ -161,7 +163,7 @@ std::string BrowserContextHelper::GetUserBrowserContextDirName(
 }
 
 base::FilePath BrowserContextHelper::GetBrowserContextPathByUserIdHash(
-    base::StringPiece user_id_hash) {
+    std::string_view user_id_hash) {
   // Fails if Chrome runs with "--login-manager", but not "--login-profile", and
   // needs to restart. This might happen if you test Chrome OS on Linux and
   // you start a guest session or Chrome crashes. Be sure to add
