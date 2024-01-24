@@ -14,7 +14,7 @@
 
 namespace {
 // Workaround for https://crbug.com/1369643
-const double kMinHeight = 0.5;
+const double kThinControllerHeight = 0.5;
 }  // namespace
 
 // A stub NSWindowDelegate class that will be used to map the AppKit controlled
@@ -38,8 +38,9 @@ const double kMinHeight = 0.5;
 
 @implementation ImmersiveModeTitlebarViewController
 
-- (instancetype)init:(base::WeakPtr<remote_cocoa::ImmersiveModeControllerCocoa>)
-                         immersiveModeController {
+- (instancetype)initWithController:
+    (base::WeakPtr<remote_cocoa::ImmersiveModeControllerCocoa>)
+        immersiveModeController {
   if ((self = [super init])) {
     _blank_separator_view = [[NSView alloc] init];
     _immersive_mode_controller = immersiveModeController;
@@ -57,7 +58,7 @@ const double kMinHeight = 0.5;
   // triggering the repositioning when the toolbar is set to auto hide would
   // result in it being incorrectly positioned in that case.
   if (remote_cocoa::IsNSToolbarFullScreenWindow(self.view.window) &&
-      self.fullScreenMinHeight > kMinHeight && !self.hidden) {
+      self.fullScreenMinHeight > 0 && !self.hidden) {
     self.hidden = YES;
     self.hidden = NO;
   }
@@ -84,7 +85,7 @@ const double kMinHeight = 0.5;
       break;
     case remote_cocoa::mojom::ToolbarVisibilityStyle::kAutohide:
       self.hidden = NO;
-      self.fullScreenMinHeight = kMinHeight;
+      self.fullScreenMinHeight = 0;
       break;
     case remote_cocoa::mojom::ToolbarVisibilityStyle::kNone:
       self.hidden = YES;
@@ -170,7 +171,7 @@ ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
   // overlay_view_.
   immersive_mode_titlebar_view_controller_ =
       [[ImmersiveModeTitlebarViewController alloc]
-          init:weak_ptr_factory_.GetWeakPtr()];
+          initWithController:weak_ptr_factory_.GetWeakPtr()];
 
   // Create a NSWindow delegate that will be used to map the AppKit created
   // NSWindow to the overlay view widget's NSWindow.
@@ -205,6 +206,15 @@ ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
       addSubview:overlay_content_view];
   immersive_mode_titlebar_view_controller_.layoutAttribute =
       NSLayoutAttributeBottom;
+
+  thin_titlebar_view_controller_ =
+      [[NSTitlebarAccessoryViewController alloc] init];
+  thin_titlebar_view_controller_.view = [[NSView alloc] init];
+  thin_titlebar_view_controller_.view.wantsLayer = YES;
+  thin_titlebar_view_controller_.view.layer.backgroundColor =
+      NSColor.blackColor.CGColor;
+  thin_titlebar_view_controller_.layoutAttribute = NSLayoutAttributeBottom;
+  thin_titlebar_view_controller_.fullScreenMinHeight = kThinControllerHeight;
 }
 
 ImmersiveModeControllerCocoa::~ImmersiveModeControllerCocoa() {
@@ -212,6 +222,7 @@ ImmersiveModeControllerCocoa::~ImmersiveModeControllerCocoa() {
   StopObservingChildWindows(overlay_window_);
 
   // Rollback the view shuffling from enablement.
+  [thin_titlebar_view_controller_ removeFromParentViewController];
   [overlay_content_view_ removeFromSuperview];
   overlay_window_.contentView = overlay_content_view_;
   [immersive_mode_titlebar_view_controller_ removeFromParentViewController];
@@ -241,6 +252,10 @@ void ImmersiveModeControllerCocoa::Init() {
   [overlay_content_view_.centerYAnchor
       constraintEqualToAnchor:overlay_content_view_.superview.centerYAnchor]
       .active = YES;
+
+  thin_titlebar_view_controller_.hidden = YES;
+  [browser_window_
+      addTitlebarAccessoryViewController:thin_titlebar_view_controller_];
 }
 
 void ImmersiveModeControllerCocoa::FullscreenTransitionCompleted() {
@@ -352,6 +367,7 @@ void ImmersiveModeControllerCocoa::UpdateToolbarVisibility(
     case mojom::ToolbarVisibilityStyle::kNone:
       [immersive_mode_titlebar_view_controller_
           setVisibility:mojom::ToolbarVisibilityStyle::kNone];
+      UpdateThinControllerVisibility();
       break;
   }
 }
@@ -445,16 +461,17 @@ void ImmersiveModeControllerCocoa::RevealUnlock() {
 }
 
 bool ImmersiveModeControllerCocoa::IsToolbarRevealed() {
-  // If `fullScreenMinHeight` is not `kMinHeight`, "Always Show Toolbar in Full
-  // Screen" is enabled. If `revealAmount` > 0, the toolbar is revealed
-  // because of mouse hovering. In both cases, the toolbar is visible.
-  return immersive_mode_titlebar_view_controller_.fullScreenMinHeight >
-             kMinHeight ||
+  // If `fullScreenMinHeight` is greater than 0, "Always Show Toolbar in Full
+  // Screen" is enabled or there is an active reveal lock. If `revealAmount` >
+  // 0, the toolbar is revealed because of mouse hovering. In each case, the
+  // toolbar is visible.
+  return immersive_mode_titlebar_view_controller_.fullScreenMinHeight > 0 ||
          immersive_mode_titlebar_view_controller_.revealAmount > 0;
 }
 
 void ImmersiveModeControllerCocoa::OnToolbarRevealMaybeChanged() {
   Reanchor();
+  UpdateThinControllerVisibility();
   bool is_toolbar_revealed = IsToolbarRevealed();
   if (is_toolbar_revealed_ != is_toolbar_revealed) {
     is_toolbar_revealed_ = is_toolbar_revealed;
@@ -523,6 +540,38 @@ void ImmersiveModeControllerCocoa::
   if (NativeWidgetNSWindowBridge* bridge =
           NativeWidgetNSWindowBridge::GetFromNativeWindow(browser_window_)) {
     bridge->OnImmersiveFullscreenToolbarRevealChanged(IsToolbarRevealed());
+  }
+}
+
+void ImmersiveModeControllerCocoa::UpdateThinControllerVisibility() {
+  if (last_used_style_ == mojom::ToolbarVisibilityStyle::kNone &&
+      immersive_mode_titlebar_view_controller_.revealAmount == 0) {
+    // Needed when eventually exiting from content fullscreen and returning
+    // to mojom::ToolbarVisibilityStyle::kAlways. This is a workaround for
+    // https://crbug.com/1369643.
+    //
+    // We hit this situation when a window enters browser fullscreen, then
+    // enters content fullscreen. Exiting content fullscreen will drop the
+    // window back into browser fullscreen.
+    //
+    // We don't know what state we will be returning to when exiting content
+    // fullscreen, but `kAlways` is one of the options. Because of this we
+    // need to keep the thin controller visible during content fullscreen,
+    // otherwise we will trip https://crbug.com/1369643.
+    //
+    // Exiting content fullscreen and returning to `kAutohide` does not
+    // trigger https://crbug.com/1369643, but to keep things simple we keep
+    // the mitigation in place for all transitions out of content fullscreen.
+
+    // In short, when transitioning to `kNone` we need to take steps to
+    // mitigate https://crbug.com/1369643 which is triggered when we
+    // eventually transition out of `kNone`.
+    thin_titlebar_view_controller_.hidden = NO;
+  } else {
+    // The extra -setHidden:YES call is to clear a visual artifact when
+    // transitioning from `kNone`.
+    thin_titlebar_view_controller_.hidden = YES;
+    thin_titlebar_view_controller_.hidden = IsToolbarRevealed();
   }
 }
 

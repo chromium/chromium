@@ -140,6 +140,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
   // Notify the browser window that the reveal status changes.
   void NotifyBrowserWindowAboutToolbarRevealChanged();
 
+  // Updates the visibility of the thin controller. The thin controller will
+  // only become visible when the toolbar is hidden.
+  // TODO(https://crbug.com/1369643): Remove when fixed by Apple.
+  void UpdateThinControllerVisibility();
+
   bool initialized_ = false;
 
   int reveal_lock_count_ = 0;
@@ -162,6 +167,14 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
   // A controller for top chrome.
   ImmersiveModeTitlebarViewController* __strong
       immersive_mode_titlebar_view_controller_;
+
+  // A controller that keeps a small portion (0.5px) of the fullscreen AppKit
+  // NSWindow on screen.
+  // This controller is used as a workaround for an AppKit bug that displays a
+  // black bar when changing a NSTitlebarAccessoryViewController's
+  // fullScreenMinHeight from zero to non-zero.
+  // TODO(https://crbug.com/1369643): Remove when fixed by Apple.
+  NSTitlebarAccessoryViewController* __strong thin_titlebar_view_controller_;
 
   ImmersiveModeMapper* __strong immersive_mode_mapper_;
 
