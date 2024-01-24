@@ -114,6 +114,8 @@
   if (_searchEngineChoiceCoordinator) {
     return;
   }
+  // Using main browser so that, even in incognito mode, the user is not
+  // re-asked which search engine to use.
   if (ShouldDisplaySearchEngineChoiceScreen(
           *sceneState.browserProviderInterface.mainBrowserProvider.browser
                ->GetBrowserState(),
