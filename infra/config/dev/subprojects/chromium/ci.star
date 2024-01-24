@@ -142,6 +142,7 @@ ci_builder(
             config = "chromium",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = gn_args.config(
@@ -163,6 +164,7 @@ ci_builder(
             config = "chromium",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = gn_args.config(
@@ -184,6 +186,7 @@ ci_builder(
             config = "chromium",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = gn_args.config(
@@ -207,6 +210,7 @@ ci_builder(
             config = "chromium",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = gn_args.config(
@@ -229,6 +233,7 @@ ci_builder(
             config = "chromium",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
+            target_platform = builder_config.target_platform.MAC,
         ),
     ),
     gn_args = gn_args.config(
@@ -251,6 +256,7 @@ ci_builder(
             config = "chromium",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
+            target_platform = builder_config.target_platform.MAC,
         ),
     ),
     gn_args = gn_args.config(
@@ -275,6 +281,7 @@ ci_builder(
             config = "chromium",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = gn_args.config(
@@ -298,6 +305,7 @@ ci_builder(
             config = "chromium",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = gn_args.config(
@@ -320,6 +328,7 @@ ci_builder(
             config = "chromium",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = gn_args.config(

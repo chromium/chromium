@@ -23,7 +23,8 @@
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "chromium"
+                "config": "chromium",
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
