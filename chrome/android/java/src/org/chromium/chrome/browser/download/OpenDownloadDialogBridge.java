@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.download;
 
 import android.app.Activity;
+import android.content.pm.ResolveInfo;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
@@ -17,6 +18,8 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
+
+import java.util.List;
 
 /** Glues open download dialogs UI code and handles the communication to download native backend. */
 public class OpenDownloadDialogBridge {
@@ -44,6 +47,11 @@ public class OpenDownloadDialogBridge {
      */
     @CalledByNative
     public void showDialog(Profile profile, String guid) {
+        List<ResolveInfo> result = MimeUtils.getPdfIntentHandlers();
+        if (result.size() == 0) {
+            onCancel(guid);
+            return;
+        }
         DownloadActivityLauncher.getInstance()
                 .getActivityForOpenDialog(
                         (activity) -> {
@@ -51,7 +59,11 @@ public class OpenDownloadDialogBridge {
                                 onCancel(guid);
                                 return;
                             }
-                            showOpenDownloadDialog(profile, guid, activity);
+                            showOpenDownloadDialog(
+                                    profile,
+                                    guid,
+                                    activity,
+                                    result.size() > 1 ? null : MimeUtils.getDefaultPdfViewerName());
                         });
     }
 
@@ -61,13 +73,16 @@ public class OpenDownloadDialogBridge {
      * @param profile Profile of the user.
      * @param guid GUID of the download.
      * @param activity Activity that displays the dialog.
+     * @param appName Name of the app to open the file, null if there are multiple apps.
      */
-    private void showOpenDownloadDialog(Profile profile, String guid, Activity activity) {
+    private void showOpenDownloadDialog(
+            Profile profile, String guid, Activity activity, String appName) {
         new OpenDownloadDialog()
                 .show(
                         activity,
                         ((ModalDialogManagerHolder) activity).getModalDialogManager(),
                         UserPrefs.get(profile).getBoolean(Pref.AUTO_OPEN_PDF_ENABLED),
+                        appName,
                         (result) -> {
                             if (result
                                     == OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_ALWAYS_OPEN) {

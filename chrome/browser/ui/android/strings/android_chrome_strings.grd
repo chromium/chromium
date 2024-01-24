@@ -1912,11 +1912,14 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_OPEN_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm they want to open a downloaded pdf file.">
         Open PDF?
       </message>
-      <message name="IDS_OPEN_DOWNLOAD_DIALOG_TEXT" desc="Message shown on a dialog to ask user to confirm they want to open a downloaded pdf file.">
-        Chrome can open your downloaded PDF
+      <message name="IDS_OPEN_DOWNLOAD_WITH_APP_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm they want to open a downloaded pdf file with another app.">
+        Open PDF with <ph name="APP_NAME">%1$s<ex>Drive PDF Viewer</ex></ph>?
       </message>
       <message name="IDS_OPEN_DOWNLOAD_DIALOG_OPEN_TEXT" desc="Text label for the button on the open download dialog for user to open the downloaded pdf.">
         Open
+      </message>
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_CONTINUE_TEXT" desc="Text label for the button on the open download dialog for user to continue to select pdf viewers to open the downloaded pdf.">
+        Continue
       </message>
       <message name="IDS_OPEN_DOWNLOAD_DIALOG_CANCEL_TEXT" desc="Text label for the button on the open download dialog for user to cancel opening a downloaded pdf.">
         Cancel
@@ -1927,8 +1930,11 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_AUTO_OPEN_PDF_ENABLED_TITLE" desc="Title for preference that allows the user to indicate whether they want to automatically open a pdf after download completion if the download is triggered by an external app.">
         Automatically open PDFs
       </message>
-      <message name="IDS_AUTO_OPEN_PDF_ENABLED_DESCRIPTION" desc="Description for preference that allows the user to indicate whether they want to automatically open a pdf after download completion if the download is triggered by an external app.">
+      <message name="IDS_AUTO_OPEN_PDF_ENABLED_DESCRIPTION" desc="Description for preference that allows other apps to automatically open a pdf after download completion if the download is triggered by an external app.">
         Downloaded PDFs automatically open with one of the PDF viewers on your device
+      </message>
+      <message name="IDS_AUTO_OPEN_PDF_ENABLED_WITH_APP_DESCRIPTION" desc="Description for preference that allows another app to automatically open a pdf after download completion if the download is triggered by an external app.">
+        Downloaded PDFs automatically open with <ph name="APP_NAME">%1$s<ex>Drive PDF Viewer</ex></ph>
       </message>
 
       <!-- About Chrome preferences -->
