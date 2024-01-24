@@ -331,9 +331,9 @@ void SlotAssignment::RecalcAssignment() {
     }
   }
 
-  // TODO(https://crbug.com/576815): Once incorrect use of
-  // FlatTreeTraversal is fixed, this can probably move into
-  // DidRecalcAssignedNodes above.
+  // This needs to happen outside of the scope above, when flat tree traversal
+  // is allowed, because Element::UpdateDescendantHasDirAutoAttribute uses
+  // FlatTreeTraversal.
   for (HTMLSlotElement* slot : Slots()) {
     if (slot->HasDirectionAuto()) {
       slot->AdjustDirectionAutoAfterRecalcAssignedNodes();
