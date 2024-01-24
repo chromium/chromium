@@ -431,7 +431,8 @@ void NavigationPredictor::ReportAnchorElementClick(
         navigation_predictor_metrics_data.GetUserInteractionsData();
     auto user_interaction_it = user_interactions.find(index_it->second);
     if (user_interaction_it != user_interactions.end()) {
-      auto& user_interaction = user_interactions[index_it->second];
+      auto& user_interaction = user_interaction_it->second;
+
       // navigation_start_to_click_ is set to click->navigation_start_to_click
       // and should always have a value.
       CHECK(navigation_start_to_click_.has_value());
