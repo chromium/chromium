@@ -187,6 +187,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   void FetchRemoteAppearance(base::OnceClosure callback);
   void FetchRemoteUuids(base::OnceClosure callback);
   void FetchRemoteVendorProductInfo(base::OnceClosure callback);
+  void FetchRemoteAddressType(base::OnceClosure callback);
 
  protected:
   // BluetoothDevice override
@@ -219,6 +220,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
       base::OnceClosure callback,
       DBusResult<FlossAdapterClient::VendorProductInfo> ret);
   void OnGetRemoteUuids(base::OnceClosure callback, DBusResult<UUIDList> ret);
+  void OnGetRemoteAddressType(
+      base::OnceClosure callback,
+      DBusResult<FlossAdapterClient::BtAddressType> ret);
   void OnConnectAllEnabledProfiles(DBusResult<Void> ret);
   void OnDisconnectAllEnabledProfiles(base::OnceClosure callback,
                                       ErrorCallback error_callback,
@@ -277,21 +281,20 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   std::string name_;
 
   // Transport type of device.
-  // TODO(b/204708206): Update with property framework when available
   device::BluetoothTransport transport_ =
       device::BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC;
 
   // Class of device.
-  // TODO(b/204708206): Update with property framework when available
   uint32_t cod_ = 0;
 
   // Appearance of device.
-  // TODO(b/204708206): Update with property framework when available
   uint16_t appearance_ = 0;
 
   // Vendor and product info of device.
-  // TODO(b/204708206): Update with property framework when available
   FlossAdapterClient::VendorProductInfo vpi_;
+
+  // Address type of device.
+  AddressType address_type_ = AddressType::ADDR_TYPE_UNKNOWN;
 
   // Whether the device is bonded/paired.
   FlossAdapterClient::BondState bond_state_ =

@@ -346,6 +346,13 @@ void FakeFlossAdapterClient::GetRemoteVendorProductInfo(
   PostDelayedTask(base::BindOnce(std::move(callback), std::move(info)));
 }
 
+void FakeFlossAdapterClient::GetRemoteAddressType(
+    ResponseCallback<FlossAdapterClient::BtAddressType> callback,
+    FlossDeviceId device) {
+  PostDelayedTask(base::BindOnce(std::move(callback),
+                                 FlossAdapterClient::BtAddressType::kPublic));
+}
+
 void FakeFlossAdapterClient::GetBondState(ResponseCallback<uint32_t> callback,
                                           const FlossDeviceId& device) {
   FlossAdapterClient::BondState bond_state =

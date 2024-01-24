@@ -918,6 +918,11 @@ void BluetoothAdapterFloss::AdapterDevicePropertyChanged(
           base::BindOnce(&BluetoothAdapterFloss::NotifyDeviceChanged,
                          weak_ptr_factory_.GetWeakPtr(), device_ptr));
       break;
+    case FlossAdapterClient::BtPropertyType::kRemoteAddrType:
+      device_ptr->FetchRemoteAddressType(
+          base::BindOnce(&BluetoothAdapterFloss::NotifyDeviceChanged,
+                         weak_ptr_factory_.GetWeakPtr(), device_ptr));
+      break;
     default:;  // Do nothing for other property types for now
   }
 }

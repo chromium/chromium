@@ -84,6 +84,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   void GetRemoteVendorProductInfo(
       ResponseCallback<FlossAdapterClient::VendorProductInfo> callback,
       FlossDeviceId device) override;
+  void GetRemoteAddressType(
+      ResponseCallback<FlossAdapterClient::BtAddressType> callback,
+      FlossDeviceId device) override;
   void GetBondState(ResponseCallback<uint32_t> callback,
                     const FlossDeviceId& device) override;
   void ConnectAllEnabledProfiles(ResponseCallback<Void> callback,

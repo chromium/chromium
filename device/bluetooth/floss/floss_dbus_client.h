@@ -88,6 +88,7 @@ inline constexpr char kGetRemoteClass[] = "GetRemoteClass";
 inline constexpr char kGetRemoteAppearance[] = "GetRemoteAppearance";
 inline constexpr char kGetRemoteVendorProductInfo[] =
     "GetRemoteVendorProductInfo";
+inline constexpr char kGetRemoteAddressType[] = "GetRemoteAddressType";
 inline constexpr char kGetConnectionState[] = "GetConnectionState";
 inline constexpr char kGetRemoteUuids[] = "GetRemoteUuids";
 inline constexpr char kFetchRemoteUuids[] = "FetchRemoteUuids";

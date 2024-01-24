@@ -98,6 +98,15 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     kGeneralDiscoverable = 2,
   };
 
+  enum class BtAddressType {
+    kPublic = 0,
+    kRandom,
+    kPublicId,
+    kRandomId,
+    kUnknown = 0xfe,
+    kAnonymous = 0xff,
+  };
+
   struct VendorProductInfo {
     uint8_t vendorIdSrc;
     uint16_t vendorId;
@@ -271,9 +280,14 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   virtual void FetchRemoteUuids(ResponseCallback<bool> callback,
                                 FlossDeviceId device);
 
+  // Gets the Vendor and Product Id of a device
   virtual void GetRemoteVendorProductInfo(
       ResponseCallback<VendorProductInfo> callback,
       FlossDeviceId device);
+
+  // Gets the address type of a device
+  virtual void GetRemoteAddressType(ResponseCallback<BtAddressType> callback,
+                                    FlossDeviceId device);
 
   // Get bonding state of a device.
   virtual void GetBondState(ResponseCallback<uint32_t> callback,
