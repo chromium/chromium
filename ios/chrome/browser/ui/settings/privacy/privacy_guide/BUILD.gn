@@ -34,6 +34,8 @@ source_set("privacy_guide") {
 source_set("privacy_guide_ui") {
   sources = [
     "privacy_guide_commands.h",
+    "privacy_guide_history_sync_view_controller.h",
+    "privacy_guide_history_sync_view_controller.mm",
     "privacy_guide_url_usage_consumer.h",
     "privacy_guide_url_usage_view_controller.h",
     "privacy_guide_url_usage_view_controller.mm",
@@ -44,6 +46,7 @@ source_set("privacy_guide_ui") {
   ]
   deps = [
     ":privacy_guide_constants",
+    "resources:history_sync_illustration",
     "resources:url_usage_illustration",
     "resources:welcome_illustration",
     "//base",

@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_constants.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_history_sync_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
 @interface PrivacyGuideHistorySyncCoordinator () <
@@ -15,7 +16,7 @@
 @end
 
 @implementation PrivacyGuideHistorySyncCoordinator {
-  UIViewController* _viewController;
+  PrivacyGuideHistorySyncViewController* _viewController;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -36,8 +37,7 @@
 
 - (void)start {
   // TODO(crbug.com/1520481): Implement History Sync view controller.
-  _viewController = [[UIViewController alloc] init];
-  _viewController.view.accessibilityIdentifier = kPrivacyGuideHistorySyncViewID;
+  _viewController = [[PrivacyGuideHistorySyncViewController alloc] init];
 
   CHECK(self.baseNavigationController);
   [self.baseNavigationController pushViewController:_viewController

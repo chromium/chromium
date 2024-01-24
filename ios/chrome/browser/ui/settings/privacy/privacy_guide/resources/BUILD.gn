@@ -4,6 +4,14 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
+imageset("history_sync_illustration") {
+  sources = [
+    "history_sync_illustration.imageset/Contents.json",
+    "history_sync_illustration.imageset/history_sync_illustration.pdf",
+    "history_sync_illustration.imageset/history_sync_illustration_dark.pdf",
+  ]
+}
+
 imageset("welcome_illustration") {
   sources = [
     "welcome_illustration.imageset/Contents.json",
