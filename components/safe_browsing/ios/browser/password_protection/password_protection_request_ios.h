@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/safe_browsing/core/browser/password_protection/password_protection_request.h"
@@ -50,7 +51,7 @@ class PasswordProtectionRequestIOS final : public PasswordProtectionRequest {
       const LoginReputationClientResponse* response) override;
 
   // WebState corresponding to the password protection event.
-  web::WebState* web_state_;
+  raw_ptr<web::WebState> web_state_;
 
   // Cancels the request when it is no longer valid.
   std::unique_ptr<RequestCanceler> request_canceler_;
