@@ -128,11 +128,10 @@ void AshNotificationExpandButton::UpdateIcons() {
                                                        : kChevronIconSize;
 
   expanded_image_ =
-      gfx::CreateVectorIcon(kUnifiedMenuExpandIcon, icon_size, icon_color);
+      gfx::CreateVectorIcon(kChevronUpSmallIcon, icon_size, icon_color);
 
-  collapsed_image_ = gfx::ImageSkiaOperations::CreateRotatedImage(
-      gfx::CreateVectorIcon(kUnifiedMenuExpandIcon, icon_size, icon_color),
-      SkBitmapOperations::ROTATION_180_CW);
+  collapsed_image_ =
+      gfx::CreateVectorIcon(kChevronDownSmallIcon, icon_size, icon_color);
 
   image_->SetImage(expanded_ ? expanded_image_ : collapsed_image_);
 }

@@ -5,10 +5,10 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_util.h"
-#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
@@ -124,7 +124,7 @@ TEST_F(AshNotificationViewPixelTest, CloseButtonFocused) {
   EXPECT_TRUE(close_button->HasFocus());
   EXPECT_EQ(control_buttons_layer->opacity(), 1);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "close_button_focused", /*revision_number=*/4, notification_view));
+      "close_button_focused", /*revision_number=*/5, notification_view));
 }
 
 // Regression test for http://b/267195370. Tests that a notification with no
@@ -145,7 +145,7 @@ TEST_F(AshNotificationViewPixelTest, CollapsedNoMessage) {
   // Verify with a pixel test that the notification's title is vertically
   // centered.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "collapsed_no_message", /*revision_number=*/5, notification_view));
+      "collapsed_no_message", /*revision_number=*/6, notification_view));
 }
 
 // Tests that a progress notification does not have its title vertically
@@ -166,7 +166,7 @@ TEST_F(AshNotificationViewPixelTest, ProgressCollapsed) {
   // Verify with a pixel test that the notification's title is not vertically
   // centered.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "progress_collapsed", /*revision_number=*/4, notification_view));
+      "progress_collapsed", /*revision_number=*/5, notification_view));
 }
 
 // Tests the control buttons UI for the case of a notification with just the
@@ -188,7 +188,7 @@ TEST_F(AshNotificationViewPixelTest, CloseControlButton) {
   // Verify with a pixel test that the close control button is visible and has
   // the proper placement.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "close_control_button", /*revision_number=*/3, notification_view));
+      "close_control_button", /*revision_number=*/4, notification_view));
 }
 
 // Tests the control buttons UI for the case of a notification with both the
@@ -210,7 +210,7 @@ TEST_F(AshNotificationViewPixelTest, SettingsAndCloseControlButtons) {
   // Verify with a pixel test that the control buttons are visible and have
   // proper spacing between them.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "settings_and_close_control_buttons", /*revision_number=*/3,
+      "settings_and_close_control_buttons", /*revision_number=*/4,
       notification_view));
 }
 
@@ -255,7 +255,7 @@ TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
   // Compare pixels.
   const std::string screenshot_name = GetScreenshotName();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      screenshot_name, /*revision_number=*/9, notification_view));
+      screenshot_name, /*revision_number=*/10, notification_view));
 }
 
 class AshNotificationViewCollapsedLongTextPixelTest
@@ -306,7 +306,7 @@ TEST_P(AshNotificationViewCollapsedLongTextPixelTest, ElidedTextSpacing) {
 
   // Verify the spacing with a pixel test.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "elided_text_spacing", /*revision_number=*/2, notification_view));
+      "elided_text_spacing", /*revision_number=*/3, notification_view));
 }
 
 class ScreenCaptureNotificationPixelTest
