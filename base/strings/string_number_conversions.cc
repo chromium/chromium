@@ -120,7 +120,7 @@ bool StringToDouble(StringPiece16 input, double* output) {
 }
 
 std::string HexEncode(const void* bytes, size_t size) {
-  return HexEncode(span(reinterpret_cast<const uint8_t*>(bytes), size));
+  return HexEncode(span(static_cast<const uint8_t*>(bytes), size));
 }
 
 std::string HexEncode(span<const uint8_t> bytes) {

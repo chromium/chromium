@@ -88,7 +88,7 @@ void RandBytes(span<uint8_t> output) {
 }
 
 void RandBytes(void* output, size_t output_length) {
-  RandBytes(make_span(reinterpret_cast<uint8_t*>(output), output_length),
+  RandBytes(make_span(static_cast<uint8_t*>(output), output_length),
             /*avoid_allocation=*/false);
 }
 

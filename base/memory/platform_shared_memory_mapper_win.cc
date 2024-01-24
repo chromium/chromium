@@ -44,7 +44,7 @@ absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
     return absl::nullopt;
   }
 
-  return make_span(reinterpret_cast<uint8_t*>(address),
+  return make_span(static_cast<uint8_t*>(address),
                    GetMemorySectionSize(address));
 }
 

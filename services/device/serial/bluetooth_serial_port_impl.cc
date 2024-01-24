@@ -236,7 +236,7 @@ void BluetoothSerialPortImpl::ReadMore() {
   }
   read_pending_ = true;
   pending_write_buffer_ =
-      base::make_span(reinterpret_cast<char*>(buffer), buffer_num_bytes);
+      base::make_span(static_cast<char*>(buffer), buffer_num_bytes);
   bluetooth_socket_->Receive(
       buffer_num_bytes,
       base::BindOnce(&BluetoothSerialPortImpl::OnBluetoothSocketReceive,
