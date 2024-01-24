@@ -150,6 +150,7 @@ public class ReadAloudControllerUnitTest {
         MockitoAnnotations.initMocks(this);
         mProfileSupplier = new ObservableSupplierImpl<>();
         mProfileSupplier.set(mMockProfile);
+        doReturn(true).when(mMockProfile).isNativeInitialized();
 
         mLayoutManagerSupplier = new ObservableSupplierImpl<>();
         mLayoutManagerSupplier.set(mLayoutManager);
@@ -1508,6 +1509,36 @@ public class ReadAloudControllerUnitTest {
                 /* skipLoadingTab= */ true);
         verify(mPlayback, never()).play();
         verify(mPlayerCoordinator).restorePlayers();
+    }
+
+    // TODO(b/322052505): This test won't be necessary if we keep track of profile changes.
+    @Test
+    public void testNoRequestsIfProfileDestroyed() {
+        doReturn(false).when(mMockProfile).isNativeInitialized();
+        mController =
+                new ReadAloudController(
+                        mActivity,
+                        mProfileSupplier,
+                        mTabModelSelector.getModel(false),
+                        mTabModelSelector.getModel(true),
+                        mBottomSheetController,
+                        mBrowserControlsSizer,
+                        mLayoutManagerSupplier,
+                        mActivityWindowAndroid,
+                        mActivityLifecycleDispatcher);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        // Check readability.
+        mController.maybeCheckReadability(sTestGURL);
+        // No readability request should be made.
+        verify(mHooksImpl, never()).isPageReadable(any(), any());
+
+        // Try playing the tab.
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+        // No playback request should be made.
+        verify(mPlaybackHooks, never()).createPlayback(any(), any());
     }
 
     private void requestAndStartPlayback() {

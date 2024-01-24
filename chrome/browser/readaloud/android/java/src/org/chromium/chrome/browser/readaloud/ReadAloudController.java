@@ -110,6 +110,9 @@ public class ReadAloudController
     // Playback for voice previews.
     @Nullable private Playback mVoicePreviewPlayback;
 
+    // TODO(b/322052505): Remove this and just observe mProfileSupplier.
+    @Nullable private Profile mProfile;
+
     // Information about a tab playback necessary for resuming later. Does not
     // include language or voice which should come from current tab state or
     // settings respectively.
@@ -296,6 +299,7 @@ public class ReadAloudController
     }
 
     private void onProfileAvailable(Profile profile) {
+        mProfile = profile;
         mReadabilityHooks =
                 sReadabilityHooksForTesting != null
                         ? sReadabilityHooksForTesting
@@ -378,6 +382,10 @@ public class ReadAloudController
             return;
         }
 
+        if (mProfile == null || !mProfile.isNativeInitialized()) {
+            return;
+        }
+
         String urlSpec = stripUserData(url).getSpec();
         // TODO: 2 different URLs can have the same sanitized URL
         mSanitizedToFullUrlMap.put(url.getSpec(), urlSpec);
@@ -426,6 +434,12 @@ public class ReadAloudController
 
     /** Returns true if the web contents within current Tab is readable. */
     public boolean isReadable(Tab tab) {
+        // If we don't have a valid Profile, playback won't work.
+        // TODO(crbug.com/1518203): Remove when valid profile is guaranteed.
+        if (mProfile == null || !mProfile.isNativeInitialized()) {
+            return false;
+        }
+
         if (isTabLanguageSupported(tab) && isAvailable() && tab.getUrl().isValid()) {
             Boolean isReadable = mReadabilityMap.get(stripUserData(tab.getUrl()).getSpec());
             return isReadable == null ? false : isReadable;
@@ -823,6 +837,11 @@ public class ReadAloudController
 
     private Promise<Playback> createPlayback(PlaybackArgs args) {
         final var promise = new Promise<Playback>();
+        if (mProfile == null || !mProfile.isNativeInitialized()) {
+            promise.reject();
+            return promise;
+        }
+
         mPlaybackHooks.createPlayback(
                 args,
                 new ReadAloudPlaybackHooks.CreatePlaybackCallback() {
