@@ -23,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/token.h"
 #include "base/types/expected.h"
@@ -393,7 +394,7 @@ class RecordHandlerImpl::ReportUploader
   void StartUpload();
   void LogNumRecordsInUpload(size_t num_records);
   void ResumeUpload(size_t next_record);
-  void FinalizeUpload(size_t next_record);
+  void BuildAndUploadRequest(size_t next_record);
   void OnUploadComplete(StatusOr<base::Value::Dict> response);
   void HandleFailedUpload(Status status);
   void HandleSuccessfulUpload(base::Value::Dict last_response);
@@ -414,9 +415,6 @@ class RecordHandlerImpl::ReportUploader
   int config_file_version_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::vector<EncryptedRecord> records_ GUARDED_BY_CONTEXT(sequence_checker_);
   ScopedReservation scoped_reservation_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  std::unique_ptr<UploadEncryptedReportingRequestBuilder> request_builder_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // File upload delegate factory.
   const base::RepeatingCallback<std::unique_ptr<FileUploadJob::Delegate>()>
@@ -490,8 +488,6 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
              base::Unretained(this), records_.size());
   }
 
-  request_builder_ = std::make_unique<UploadEncryptedReportingRequestBuilder>(
-      need_encryption_key_, config_file_version_);
   ResumeUpload(/*next_record=*/0);
 }
 
@@ -522,7 +518,6 @@ void RecordHandlerImpl::ReportUploader::ResumeUpload(size_t next_record) {
     auto& record = records_.at(next_record++);
     if (!record.has_record_copy()) {
       // Regular event, add it for upload and proceed.
-      request_builder_->AddRecord(std::move(record), scoped_reservation_);
       continue;
     }
     // Asynchronously process event, add it for upload and proceed if
@@ -531,64 +526,80 @@ void RecordHandlerImpl::ReportUploader::ResumeUpload(size_t next_record) {
     auto record_copy = std::move(*record.mutable_record_copy());
     record.clear_record_copy();
     auto resume_cb = base::BindPostTaskToCurrentDefault(base::BindOnce(
-        [](RecordHandlerImpl::ReportUploader* self, EncryptedRecord record,
-           size_t next_record, Status processed_status) {
+        [](RecordHandlerImpl::ReportUploader* self, size_t next_record,
+           Status processed_status) {
           if (!processed_status.ok()) {
             // Event not processed, stop before it.
             // Do not add the current event and any later ones.
-            self->FinalizeUpload(next_record);
+            self->BuildAndUploadRequest(next_record);
             return;
           }
           // Event processed (next upload tracking event posted, if needed),
           // add current event to upload (`record_copy` has been removed
           // from it) and proceed.
-          DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
-          self->request_builder_->AddRecord(std::move(record),
-                                            self->scoped_reservation_);
           self->ResumeUpload(next_record);  // Already advanced!
         },
         base::Unretained(this),  // `ReportUploader` destructs on completion.
-        std::move(record), next_record));
+        next_record));
     ProcessFileUpload(priority, std::move(record_copy),
                       ScopedReservation(0uL, scoped_reservation_),
                       delegate_factory_, std::move(resume_cb));
     return;  // We will resume on `resume_cb`
   }
 
-  FinalizeUpload(next_record);
+  BuildAndUploadRequest(next_record);
 }
 
-void RecordHandlerImpl::ReportUploader::FinalizeUpload(size_t next_record) {
+void RecordHandlerImpl::ReportUploader::BuildAndUploadRequest(
+    size_t next_record) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto request_builder =
+      std::make_unique<UploadEncryptedReportingRequestBuilder>(
+          need_encryption_key_, config_file_version_);
+
   CHECK_LE(next_record, records_.size());
-  // Records have been captured in the request, safe to clear the vector.
+  for (size_t i = 0; i < next_record; ++i) {
+    auto& record = records_.at(i);
+    request_builder->AddRecord(std::move(record), scoped_reservation_);
+  }
+  // Release the rest of the `records_`.
   records_.clear();
 
   // Assign random UUID as the request id for server side log correlation
   const auto request_id = base::Token::CreateRandom().ToString();
-  request_builder_->SetRequestId(request_id);
+  request_builder->SetRequestId(request_id);
 
-  auto request_result = request_builder_->Build();
-  request_builder_.reset();
-  if (!request_result.has_value()) {
-    HandleFailedUpload(
-        Status(error::FAILED_PRECONDITION, "Failure to build request"));
-    return;
-  }
-
-  auto response_cb = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&RecordHandlerImpl::ReportUploader::OnUploadComplete,
-                     base::Unretained(this)));
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
+  // Perform Build on a thread pool, and upload result on UI.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {},
+      base::BindOnce(&UploadEncryptedReportingRequestBuilder::Build,
+                     std::move(request_builder)),
       base::BindOnce(
-          [](base::Value::Dict request,
-             ReportingServerConnector::ResponseCallback response_cb) {
-            ReportingServerConnector::UploadEncryptedReport(
-                std::move(request), std::move(response_cb));
+          [](RecordHandlerImpl::ReportUploader* self,
+             ScopedReservation scoped_reservation,
+             std::optional<base::Value::Dict> request_result) {
+            if (!request_result.has_value()) {
+              self->HandleFailedUpload(Status(error::FAILED_PRECONDITION,
+                                              "Failure to build request"));
+              return;
+            }
+            auto response_cb =
+                base::BindPostTaskToCurrentDefault(base::BindOnce(
+                    &RecordHandlerImpl::ReportUploader::OnUploadComplete,
+                    base::Unretained(self)));
+            content::GetUIThreadTaskRunner({})->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    [](base::Value::Dict request,
+                       ScopedReservation scoped_reservation,
+                       ReportingServerConnector::ResponseCallback response_cb) {
+                      ReportingServerConnector::UploadEncryptedReport(
+                          std::move(request), std::move(response_cb));
+                    },
+                    std::move(request_result.value()),
+                    std::move(scoped_reservation), std::move(response_cb)));
           },
-          std::move(request_result.value()), std::move(response_cb)));
+          base::Unretained(this), std::move(scoped_reservation_)));
 }
 
 void RecordHandlerImpl::ReportUploader::OnUploadComplete(
