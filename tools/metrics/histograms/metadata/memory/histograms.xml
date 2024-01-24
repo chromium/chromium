@@ -45,6 +45,17 @@ chromium-metrics-reviews@google.com.
   <variant name=".Utility" summary="a Utility process"/>
 </variants>
 
+<variants name="RecordedTiming">
+  <variant name="After"
+      summary="Recorded a small delay after all memory-purging tasks are run,
+               to allow time for asynchronous tasks to finish."/>
+  <variant name="Before"
+      summary="Recorded before any memory-purging tasks are run."/>
+  <variant name="Diff"
+      summary="The difference between before and after any memory-purging
+               tasks are run, clamped at 0."/>
+</variants>
+
 <variants name="UtilityProcessType">
   <variant name="AudioService">
     <owner>olka@chromium.org</owner>
@@ -1699,6 +1710,19 @@ chromium-metrics-reviews@google.com.
     <variant name="" summary="all threads"/>
     <variant name=".MainThread" summary="the main thread only"/>
   </token>
+</histogram>
+
+<histogram name="Memory.PreFreeze{Process}.PrivateMemoryFootprint.{Timing}"
+    units="MiB" expires_after="2025-02-01">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    The private memory footprint of {Process}, recorded when we get a
+    notification that the application is about to be frozen. {Timing} Recorded
+    only on Android U+.
+  </summary>
+  <token key="Process" variants="ProfiledProcess"/>
+  <token key="Timing" variants="RecordedTiming"/>
 </histogram>
 
 <histogram name="Memory.PressureLevel2" enum="MemoryPressureLevel"
