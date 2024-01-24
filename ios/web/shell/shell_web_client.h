@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/web/public/web_client.h"
 
 namespace web {
@@ -37,7 +38,7 @@ class ShellWebClient : public WebClient {
   ShellBrowserState* browser_state() const;
 
  private:
-  ShellWebMainParts* web_main_parts_;
+  raw_ptr<ShellWebMainParts> web_main_parts_;
 };
 
 }  // namespace web

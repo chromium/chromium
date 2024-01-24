@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#import "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ios/chrome/browser/net/model/net_types.h"
 #include "net/url_request/url_request_context.h"
@@ -63,7 +64,7 @@ class IOSChromeURLRequestContextGetter : public net::URLRequestContextGetter {
   // Otherwise, it is the URLRequestContext instance that
   // was lazily created by GetURLRequestContext().
   // Access only from the IO thread.
-  net::URLRequestContext* url_request_context_;
+  raw_ptr<net::URLRequestContext> url_request_context_;
 };
 
 #endif  // IOS_CHROME_BROWSER_NET_MODEL_IOS_CHROME_URL_REQUEST_CONTEXT_GETTER_H_

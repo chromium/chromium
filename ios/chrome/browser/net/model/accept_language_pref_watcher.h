@@ -7,6 +7,7 @@
 
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "components/prefs/pref_member.h"
@@ -59,7 +60,7 @@ class AcceptLanguagePrefWatcher {
   // Invoked by StringPrefMember when the preference value changes.
   void OnPrefValueChanged(const std::string& pref_name);
 
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   StringPrefMember accept_language_pref_;
   scoped_refptr<Handle> handle_;
 };
