@@ -51,15 +51,23 @@ copy("copy_src") {
   outputs = [ "$preprocess_folder/image_loader/{{source_file_part}}" ]
 }
 
+dts_files = [
+  "image_loader_private.d.ts",
+  "//tools/typescript/definitions/runtime.d.ts",
+]
+
 ts_library("build_ts") {
   root_dir = preprocess_folder
   out_dir = tsc_folder
   tsconfig_base = "tsconfig_base.json"
   composite = true
 
+  deps = [ "//ash/webui/common/resources:build_ts" ]
+
   extra_deps = [
     ":copy_src",
     ":from_files_app",
+    "//ash/webui/common/resources:generate_definitions",
   ]
 
   in_files = image_loader_static_js_files + image_loader_ts + [
@@ -67,6 +75,12 @@ ts_library("build_ts") {
                "file_manager/common/js/file_types_base.ts",
                "file_manager/common/js/lru_cache.ts",
              ]
+
+  definitions = dts_files
+
+  path_mappings =
+      [ "chrome://file-manager/*|" +
+        rebase_path("$preprocess_folder/file_manager/*", target_gen_dir) ]
 }
 
 optimize_webui("build") {

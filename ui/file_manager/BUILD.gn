@@ -132,6 +132,8 @@ common_path_mappings = [
   "chrome://resources/cr_components/color_change_listener/*|" + rebase_path(
           "$root_gen_dir/ui/webui/resources/tsc/cr_components/color_change_listener/*",
           target_gen_dir),
+  "chrome://file-manager/*|" +
+      rebase_path("$preprocess_folder/file_manager/*", target_gen_dir),
 ]
 
 ts_library("build_ts") {
