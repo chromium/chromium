@@ -72,19 +72,15 @@ constexpr CGFloat preferredCornerRadius = 20;
                         name:UIApplicationDidEnterBackgroundNotification
                       object:nil];
 
-  if (@available(iOS 15, *)) {
-    self.viewController.modalPresentationStyle = UIModalPresentationPageSheet;
-    UISheetPresentationController* presentationController =
-        self.viewController.sheetPresentationController;
-    presentationController.prefersEdgeAttachedInCompactHeight = YES;
-    presentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-    presentationController.preferredCornerRadius = preferredCornerRadius;
-  } else {
-    self.viewController.modalPresentationStyle = UIModalPresentationFormSheet;
-  }
+  self.viewController.modalPresentationStyle = UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      self.viewController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  presentationController.preferredCornerRadius = preferredCornerRadius;
 
   // Immediately dismiss the keyboard (only on tablet) because the
   // PasswordSuggestion view controller is incorrectly being displayed behind
