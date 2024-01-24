@@ -111,6 +111,10 @@ interface UntrustedPageHandler {
   // the webui toolbar.
   OnFontSizeChange(double font_size);
 
+  // Informs the browser controller that the user has toggled links
+  // via the webui toolbar.
+  OnLinksEnabledChanged(bool enabled);
+
   // Informs the browser controller that the user updated the color theme via
   // the webui toolbar.
   OnColorChange(read_anything.mojom.Colors color);

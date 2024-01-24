@@ -178,6 +178,7 @@ class ReadAnythingAppModel {
   void IncreaseTextSize();
   void DecreaseTextSize();
   void ResetTextSize();
+  void ToggleLinksEnabled();
 
   std::string GetHtmlTag(ui::AXNodeID ax_node_id) const;
 

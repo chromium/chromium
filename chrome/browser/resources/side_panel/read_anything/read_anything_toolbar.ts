@@ -12,6 +12,7 @@ import './icons.html.js';
 
 import type {CrActionMenuElement, ShowAtPositionConfig} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -58,6 +59,13 @@ interface MenuButton {
   menuToOpen: () => CrActionMenuElement;
 }
 
+interface ToggleButton {
+  id: string;
+  icon: string;
+  ariaLabel: string;
+  callback: (event: DomRepeatEvent<ToggleButton>) => void;
+}
+
 // Enum for logging when a text style setting is changed.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -67,18 +75,25 @@ enum ReadAnythingSettingsChange {
   THEME_CHANGE = 2,
   LINE_HEIGHT_CHANGE = 3,
   LETTER_SPACING_CHANGE = 4,
+  LINKS_ENABLED_CHANGE = 5,
 
   // Must be last.
-  COUNT = 5,
+  COUNT = 6,
 }
 
 const SETTINGS_CHANGE_UMA = 'Accessibility.ReadAnything.SettingsChange';
 const moreOptionsClass = '.more-options-icon';
 const activeClass = ' active';
 
+// Link toggle button constants.
+const LINKS_ENABLED_ICON = 'read-anything:links-enabled';
+const LINKS_DISABLED_ICON = 'read-anything:links-disabled';
+const LINK_TOGGLE_BUTTON_ID = 'link-toggle-button';
+
 const ReadAnythingToolbarElementBase = WebUiListenerMixin(PolymerElement);
 export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   contentPage = document.querySelector('read-anything-app');
+
   static get is() {
     return 'read-anything-toolbar';
   }
@@ -95,6 +110,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       colorOptions_: Array,
       rateOptions_: Array,
       textStyleOptions_: Array,
+      textStyleToggles_: Array,
       paused: Boolean,
     };
   }
@@ -196,6 +212,18 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       data: chrome.readingMode.getLineSpacingValue(
           chrome.readingMode.veryLooseLineSpacing),
       callback: () => chrome.readingMode.onVeryLooseLineSpacing(),
+    },
+  ];
+
+  private textStyleToggles_: ToggleButton[] = [
+    {
+      id: LINK_TOGGLE_BUTTON_ID,
+      icon: chrome.readingMode.linksEnabled?
+      LINKS_ENABLED_ICON: LINKS_DISABLED_ICON,
+      ariaLabel: chrome.readingMode.linksEnabled?
+               loadTimeData.getString('disableLinksLabel'):
+                   loadTimeData.getString('enableLinksLabel'),
+      callback: this.onToggleLinksClick_.bind(this),
     },
   ];
 
@@ -345,6 +373,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   restoreSettingsFromPrefs(colorSuffix?: string) {
     this.restoreFontMenu_();
+
+    this.updateLinkToggleButton();
 
     if (this.isReadAloudEnabled_) {
       const speechRate = parseFloat(chrome.readingMode.speechRate.toFixed(1));
@@ -713,6 +743,37 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private onFontSizeDecreaseClick_() {
     this.updateFontSize_(false);
+  }
+
+  private onToggleButtonClick_(event: DomRepeatEvent<ToggleButton>) {
+    event.model.item.callback(event);
+  }
+
+  private onToggleLinksClick_(event: DomRepeatEvent<ToggleButton>) {
+    if (!event.target) {
+      return;
+    }
+
+    chrome.metricsPrivate.recordEnumerationValue(
+        SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE,
+        ReadAnythingSettingsChange.COUNT);
+
+
+    chrome.readingMode.onLinksEnabledToggled();
+    this.contentPage?.updateContent();
+    this.updateLinkToggleButton();
+  }
+
+  private updateLinkToggleButton() {
+    const button = this.shadowRoot?.getElementById(LINK_TOGGLE_BUTTON_ID) as
+        CrIconButtonElement;
+    if (button) {
+      button.ironIcon = chrome.readingMode.linksEnabled ? LINKS_ENABLED_ICON :
+                                                          LINKS_DISABLED_ICON;
+      button.ariaLabel = chrome.readingMode.linksEnabled ?
+          loadTimeData.getString('disableLinksLabel') :
+          loadTimeData.getString('enableLinksLabel');
+    }
   }
 
   private updateFontSize_(increase: boolean) {

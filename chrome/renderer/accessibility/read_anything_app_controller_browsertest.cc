@@ -63,6 +63,7 @@ class MockReadAnythingUntrustedPageHandler
               (override));
   MOCK_METHOD(void, OnFontChange, (const std::string& font), (override));
   MOCK_METHOD(void, OnFontSizeChange, (double font_size), (override));
+  MOCK_METHOD(void, OnLinksEnabledChanged, (bool enabled), (override));
   MOCK_METHOD(void, OnSpeechRateChange, (double rate), (override));
   MOCK_METHOD(void,
               OnVoiceChange,
@@ -316,6 +317,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   bool isSelectable() { return controller_->IsSelectable(); }
 
   void OnFontSizeReset() { controller_->OnFontSizeReset(); }
+
+  void OnLinksEnabledToggled() { controller_->OnLinksEnabledToggled(); }
 
   void TurnedHighlightOn() { controller_->TurnedHighlightOn(); }
 
@@ -1945,6 +1948,14 @@ TEST_F(ReadAnythingAppControllerTest, OnFontSizeReset_SetsFontSizeToDefault) {
   EXPECT_CALL(page_handler_, OnFontSizeChange(kReadAnythingDefaultFontScale))
       .Times(1);
   OnFontSizeReset();
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnLinksEnabledChanged_SetsEnabledToFalse) {
+  EXPECT_CALL(page_handler_,
+              OnLinksEnabledChanged(!kReadAnythingDefaultLinksEnabled))
+      .Times(1);
+  OnLinksEnabledToggled();
 }
 
 TEST_F(ReadAnythingAppControllerTest, TurnedHighlightOn_SavesHighlightState) {
