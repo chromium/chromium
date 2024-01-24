@@ -16,14 +16,12 @@ import pkgutil
 import re
 import sys
 import types
-from typing import (Any, Dict, Generator, List, Optional, Set, Tuple, Type,
-                    Union)
+from typing import Any, Dict, Generator, List, Optional, Set, Tuple, Type
 import unittest
 
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 from telemetry.internal.browser import browser_options as bo
-from telemetry.internal.platform import gpu_device
 from telemetry.internal.platform import system_info as si_module
 from telemetry.internal.results import artifact_compatibility_wrapper as acw
 from telemetry.testing import serially_executed_browser_test_case
@@ -48,25 +46,12 @@ ResultType = json_results.ResultType
 
 # Please expand the following lists when we expand to new bot configs.
 _SUPPORTED_WIN_VERSIONS = ['win7', 'win10']
-_SUPPORTED_WIN_VERSIONS_WITH_DIRECT_COMPOSITION = ['win10']
 _SUPPORTED_WIN_GPU_VENDORS = [
     gpu_helper.GpuVendors.AMD,
     gpu_helper.GpuVendors.INTEL,
     gpu_helper.GpuVendors.NVIDIA,
     gpu_helper.GpuVendors.QUALCOMM,
 ]
-_SUPPORTED_WIN_AMD_GPUS = [0x6613, 0x699f, 0x7340]
-_SUPPORTED_WIN_AMD_GPUS_WITH_NV12_OVERLAYS = [0x7340]
-_SUPPORTED_WIN_INTEL_GPUS = [0x5912, 0x3e92, 0x9bc5]
-_SUPPORTED_WIN_INTEL_GPUS_WITH_YUY2_OVERLAYS = [0x5912, 0x3e92, 0x9bc5]
-_SUPPORTED_WIN_INTEL_GPUS_WITH_NV12_OVERLAYS = [0x5912, 0x3e92, 0x9bc5]
-# Hardware overlays are disabled in 26.20.100.8141 per crbug.com/1079393#c105
-_UNSUPPORTED_WIN_INTEL_GPU_DRIVERS_WITH_NV12_OVERLAYS = ['5912-26.20.100.8141']
-_SUPPORTED_WIN_NVIDIA_GPUS_WITH_NV12_OVERLAYS = [0x2184]
-_SUPPORTED_WIN_NVIDIA_GPUS_WITH_YUY2_OVERLAYS = [0x2184]
-_MINIMUM_WIN_NVIDIA_DRIVER_WITH_NV12_OVERLAYS = '31.0.15.4601'
-_MINIMUM_WIN_NVIDIA_DRIVER_WITH_YUY2_OVERLAYS = '31.0.15.4601'
-_SUPPORTED_WIN_QUALCOMM_GPUS_WITH_NV12_OVERLAYS = [0x41333430]
 
 _ARGS_TO_CONSOLIDATE = frozenset([
     '--enable-features',
@@ -858,103 +843,6 @@ class GpuIntegrationTest(
     be resolved via UrlOfStaticFilePath.
     """
     raise NotImplementedError
-
-  def _GetOverlayBotConfig(self) -> Dict[str, Any]:
-    """Returns expected bot config for DirectComposition and overlay support.
-
-    This is only meaningful on Windows platform.
-
-    The rules to determine bot config are:
-      1) Only win10 or newer supports DirectComposition
-      2) Only Intel supports hardware overlays with DirectComposition
-      3) Currently the Win/Intel GPU bot supports YUY2 and NV12 overlays
-    """
-    if self.browser is None:
-      raise Exception("Browser doesn't exist")
-    system_info = self.browser.GetSystemInfo()
-    if system_info is None:
-      raise Exception("Browser doesn't support GetSystemInfo")
-    gpu = system_info.gpu.devices[0]
-    if gpu is None:
-      raise Exception("System Info doesn't have a gpu")
-    os_version = self.browser.platform.GetOSVersionName()
-    if os_version is None:
-      raise Exception('browser.platform.GetOSVersionName() returns None')
-    os_version = os_version.lower()
-
-    config = {
-        'direct_composition': False,
-        'supports_overlays': False,
-        'yuy2_overlay_support': 'NONE',
-        'nv12_overlay_support': 'NONE',
-    }
-    assert os_version in _SUPPORTED_WIN_VERSIONS
-    assert gpu.vendor_id in _SUPPORTED_WIN_GPU_VENDORS
-    if os_version in _SUPPORTED_WIN_VERSIONS_WITH_DIRECT_COMPOSITION:
-      config['direct_composition'] = True
-      config['supports_overlays'] = True
-      config['yuy2_overlay_support'] = 'SOFTWARE'
-      config['nv12_overlay_support'] = 'SOFTWARE'
-      if gpu.vendor_id == gpu_helper.GpuVendors.AMD:
-        self._HandleAmdOverlays(gpu, config)
-      elif gpu.vendor_id == gpu_helper.GpuVendors.INTEL:
-        self._HandleIntelOverlays(gpu, config)
-      elif gpu.vendor_id == gpu_helper.GpuVendors.NVIDIA:
-        self._HandleNvidiaOverlays(gpu, config)
-      elif gpu.vendor_id == gpu_helper.GpuVendors.QUALCOMM:
-        self._HandleQualcommOverlays(gpu, config)
-    return config
-
-  # pylint: disable=no-self-use
-  def _HandleAmdOverlays(self, gpu: gpu_device.GPUDevice,
-                         config: Dict[str, Union[str, bool]]) -> None:
-    assert gpu.device_id in _SUPPORTED_WIN_AMD_GPUS
-    if gpu.device_id in _SUPPORTED_WIN_AMD_GPUS_WITH_NV12_OVERLAYS:
-      config['nv12_overlay_support'] = 'SCALING'
-
-  # pylint: enable=no-self-use
-
-  def _HandleIntelOverlays(self, gpu: gpu_device.GPUDevice,
-                           config: Dict[str, Union[str, bool]]) -> None:
-    if self._extra_intel_device_id_with_overlays:
-      extra_device_id = int(self._extra_intel_device_id_with_overlays, 16)
-      _SUPPORTED_WIN_INTEL_GPUS.append(extra_device_id)
-      _SUPPORTED_WIN_INTEL_GPUS_WITH_YUY2_OVERLAYS.append(extra_device_id)
-      _SUPPORTED_WIN_INTEL_GPUS_WITH_NV12_OVERLAYS.append(extra_device_id)
-
-    assert gpu.device_id in _SUPPORTED_WIN_INTEL_GPUS
-    gpu_device_and_driver = ('%x-' + gpu.driver_version) % gpu.device_id
-    if gpu.device_id in _SUPPORTED_WIN_INTEL_GPUS_WITH_YUY2_OVERLAYS:
-      config['yuy2_overlay_support'] = 'SCALING'
-    if (gpu.device_id in _SUPPORTED_WIN_INTEL_GPUS_WITH_NV12_OVERLAYS
-        and gpu_device_and_driver
-        not in _UNSUPPORTED_WIN_INTEL_GPU_DRIVERS_WITH_NV12_OVERLAYS):
-      config['nv12_overlay_support'] = 'SCALING'
-
-  # pylint: disable=no-self-use
-  def _HandleNvidiaOverlays(self, gpu: gpu_device.GPUDevice,
-                            config: Dict[str, Union[str, bool]]) -> None:
-    if (gpu.device_id in _SUPPORTED_WIN_NVIDIA_GPUS_WITH_YUY2_OVERLAYS
-        and gpu_helper.EvaluateVersionComparison(
-            gpu.driver_version, 'ge',
-            _MINIMUM_WIN_NVIDIA_DRIVER_WITH_YUY2_OVERLAYS)):
-      config['yuy2_overlay_support'] = 'SCALING'
-
-    if (gpu.device_id in _SUPPORTED_WIN_NVIDIA_GPUS_WITH_NV12_OVERLAYS
-        and gpu_helper.EvaluateVersionComparison(
-            gpu.driver_version, 'ge',
-            _MINIMUM_WIN_NVIDIA_DRIVER_WITH_NV12_OVERLAYS)):
-      config['nv12_overlay_support'] = 'SCALING'
-
-  # pylint: enable=no-self-use
-
-  # pylint: disable=no-self-use
-  def _HandleQualcommOverlays(self, gpu: gpu_device.GPUDevice,
-                              config: Dict[str, Union[str, bool]]) -> None:
-    if gpu.device_id in _SUPPORTED_WIN_QUALCOMM_GPUS_WITH_NV12_OVERLAYS:
-      config['nv12_overlay_support'] = 'SCALING'
-
-  # pylint: enable=no-self-use
 
   def _GetDx12VulkanBotConfig(self) -> Dict[str, bool]:
     """Returns expected bot config for DX12 and Vulkan support.

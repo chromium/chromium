@@ -18,6 +18,7 @@ from typing import Callable, Dict, List, Optional
 from enum import Enum
 
 from gpu_tests import common_browser_args as cba
+from gpu_tests import overlay_support
 from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
 from gpu_tests import skia_gold_matching_algorithms as algo
 from gpu_tests.util import websocket_server as wss
@@ -1214,7 +1215,10 @@ class PixelTestPages():
             base_name + '_DirectComposition_Video_MP4_FourColors_Rot_90',
             test_rect=[0, 0, 270, 240],
             browser_args=browser_args,
-            other_args={'video_is_rotated': True},
+            other_args={
+                'video_is_rotated': True,
+                'video_rotation': overlay_support.VideoRotation.ROT90,
+            },
             matching_algorithm=strict_dc_sobel_algorithm),
         PixelTestPage(
             (f'pixel_video_mp4_four_colors_rot_180.html?'
@@ -1222,7 +1226,10 @@ class PixelTestPages():
             base_name + '_DirectComposition_Video_MP4_FourColors_Rot_180',
             test_rect=[0, 0, 240, 135],
             browser_args=browser_args,
-            other_args={'video_is_rotated': True},
+            other_args={
+                'video_is_rotated': True,
+                'video_rotation': overlay_support.VideoRotation.ROT180,
+            },
             matching_algorithm=strict_dc_sobel_algorithm),
         PixelTestPage(
             (f'pixel_video_mp4_four_colors_rot_270.html?'
@@ -1230,7 +1237,10 @@ class PixelTestPages():
             base_name + '_DirectComposition_Video_MP4_FourColors_Rot_270',
             test_rect=[0, 0, 270, 240],
             browser_args=browser_args,
-            other_args={'video_is_rotated': True},
+            other_args={
+                'video_is_rotated': True,
+                'video_rotation': overlay_support.VideoRotation.ROT270,
+            },
             matching_algorithm=strict_dc_sobel_algorithm),
         PixelTestPage(f'pixel_video_vp9.html?width=240&height=135&{swap_param}',
                       base_name + '_DirectComposition_Video_VP9',

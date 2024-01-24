@@ -13,6 +13,7 @@ import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
+from gpu_tests import overlay_support
 
 from telemetry.internal.platform import gpu_info as gi
 
@@ -117,11 +118,19 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
                                 test_args: InfoCollectionTestArgs) -> None:
     os_name = self.browser.platform.GetOSName()
     if os_name and os_name.lower() == 'win':
-      overlay_bot_config = self._GetOverlayBotConfig()
+      overlay_bot_config = overlay_support.GetOverlayConfigForGpu(
+          test_args.gpu.devices[0])
       aux_attributes = test_args.gpu.aux_attributes
       if not aux_attributes:
         self.fail('GPU info does not have aux_attributes.')
-      for field, expected in overlay_bot_config.items():
+      expected_values = {
+          'direct_composition': overlay_bot_config.direct_composition,
+          'supports_overlays': overlay_bot_config.supports_overlays,
+          'nv12_overlay_support': overlay_bot_config.nv12_overlay_support,
+          'yuy2_overlay_support': overlay_bot_config.yuy2_overlay_support,
+          'bgra8_overlay_support': overlay_bot_config.bgra8_overlay_support,
+      }
+      for field, expected in expected_values.items():
         detected = aux_attributes.get(field, 'NONE')
         if expected != detected:
           self.fail(

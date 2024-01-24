@@ -11,7 +11,7 @@ import os
 import posixpath
 import sys
 import tempfile
-from typing import Any, Dict, Generator, Iterator, List, Optional, Set, Tuple
+from typing import Any, Generator, Iterator, List, Optional, Set, Tuple
 import unittest
 
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
@@ -20,6 +20,7 @@ from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
+from gpu_tests import overlay_support
 from gpu_tests import pixel_test_pages
 
 import gpu_path_util
@@ -102,20 +103,10 @@ basic_test_harness_script = r"""
   window.domAutomationController = domAutomationController;
 """
 
-# Presentation mode enums match DXGI_FRAME_PRESENTATION_MODE
-_SWAP_CHAIN_PRESENTATION_MODE_COMPOSED = 0
-_SWAP_CHAIN_PRESENTATION_MODE_OVERLAY = 1
-_SWAP_CHAIN_PRESENTATION_MODE_NONE = 2
-_SWAP_CHAIN_PRESENTATION_MODE_COMPOSITION_FAILURE = 3
-# The following is defined for Chromium testing internal use.
-_SWAP_CHAIN_GET_FRAME_STATISTICS_MEDIA_FAILED = -1
-
 _GET_STATISTICS_EVENT_NAME = 'GetFrameStatisticsMedia'
 _SWAP_CHAIN_PRESENT_EVENT_NAME = 'SwapChain::Present'
 _UPDATE_OVERLAY_EVENT_NAME = 'DCLayerTree::VisualTree::UpdateOverlay'
 _PRESENT_SWAP_CHAIN_EVENT_NAME = 'IDXGISwapChain1::Present1'
-
-_SUPPORTED_WIN_AMD_GPUS_WITH_NV12_ROTATED_OVERLAYS = [0x7340]
 
 _HTML_CANVAS_NOTIFY_LISTENERS_CANVAS_CHANGED_EVENT_NAME =\
     'HTMLCanvasElement::NotifyListenersCanvasChanged'
@@ -680,38 +671,14 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     ])
     return default_args
 
-  def _GetAndAssertOverlayBotConfig(self) -> Dict[str, str]:
-    overlay_bot_config = self._GetOverlayBotConfig()
-    if overlay_bot_config is None:
-      self.fail('Overlay bot config can not be determined')
-    assert overlay_bot_config.get('direct_composition', False)
-    return overlay_bot_config
-
   @staticmethod
-  def _SwapChainPresentationModeToStr(presentation_mode: str) -> str:
-    if presentation_mode == _SWAP_CHAIN_PRESENTATION_MODE_COMPOSED:
-      return 'COMPOSED'
-    if presentation_mode == _SWAP_CHAIN_PRESENTATION_MODE_OVERLAY:
-      return 'OVERLAY'
-    if presentation_mode == _SWAP_CHAIN_PRESENTATION_MODE_NONE:
-      return 'NONE'
-    if presentation_mode == _SWAP_CHAIN_PRESENTATION_MODE_COMPOSITION_FAILURE:
-      return 'COMPOSITION_FAILURE'
-    if presentation_mode == _SWAP_CHAIN_GET_FRAME_STATISTICS_MEDIA_FAILED:
-      return 'GET_STATISTICS_FAILED'
-    return str(presentation_mode)
-
-  @staticmethod
-  def _SwapChainPresentationModeListToStr(presentation_mode_list: List[str]
-                                          ) -> str:
-    list_str = None
-    for mode in presentation_mode_list:
-      mode_str = TraceIntegrationTest._SwapChainPresentationModeToStr(mode)
-      if list_str is None:
-        list_str = mode_str
-      else:
-        list_str = '%s,%s' % (list_str, mode_str)
-    return '[%s]' % list_str
+  def _SwapChainPresentationModeListToStr(
+      presentation_mode_list: List[int]) -> str:
+    modes = [
+        overlay_support.PresentationModeEventToStr(m)
+        for m in presentation_mode_list
+    ]
+    return f'[{",".join(modes)}]'
 
   @staticmethod
   def _DisabledByDefaultTraceCategory(category: str) -> str:
@@ -741,64 +708,40 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       A _VideoExpectations instance with zero_copy, pixel_format, no_overlay,
       and presentation_mode filled in.
     """
-    overlay_bot_config = self._GetAndAssertOverlayBotConfig()
+    gpu = self.browser.GetSystemInfo().gpu.devices[0]
+    overlay_bot_config = overlay_support.GetOverlayConfigForGpu(gpu)
+
     expected = _VideoExpectations()
     expected.zero_copy = other_args.get('zero_copy', None)
     expected.pixel_format = other_args.get('pixel_format', None)
     expected.no_overlay = other_args.get('no_overlay', False)
     video_is_rotated = other_args.get('video_is_rotated', False)
     video_is_not_scaled = other_args.get('full_size', False)
+    if not video_is_rotated:
+      video_rotation = overlay_support.VideoRotation.UNROTATED
+    else:
+      video_rotation = other_args['video_rotation']
 
-    if overlay_bot_config.get('supports_overlays', False):
-      supports_hw_nv12_overlays = overlay_bot_config[
-          'nv12_overlay_support'] in ['DIRECT', 'SCALING']
-      supports_hw_yuy2_overlays = overlay_bot_config[
-          'yuy2_overlay_support'] in ['DIRECT', 'SCALING']
-      supports_sw_nv12_overlays = overlay_bot_config[
-          'nv12_overlay_support'] == 'SOFTWARE'
+    if overlay_bot_config.supports_overlays:
+      expected.pixel_format = overlay_bot_config.GetExpectedPixelFormat(
+          forced_pixel_format=expected.pixel_format)
+      expected.presentation_mode = (
+          overlay_bot_config.GetExpectedPresentationMode(
+              expected_pixel_format=expected.pixel_format,
+              video_rotation=video_rotation))
 
-      if expected.pixel_format is None:
-        # If no specific pixel format was requested via browser arguments, we
-        # expect use of NV12 > YUY2 > BGRA based on hardware support for
-        # NV12/YUY2.
-        if supports_hw_nv12_overlays:
-          expected.pixel_format = 'NV12'
-        elif supports_hw_yuy2_overlays:
-          expected.pixel_format = 'YUY2'
-        else:
-          assert supports_sw_nv12_overlays
-          expected.pixel_format = 'BGRA'
-      else:
-        # If a specific pixel format was requested via browser arguments that
-        # the browser does not support, we expect a direct fallback to BGRA.
-        if expected.pixel_format == 'NV12' and not supports_hw_nv12_overlays:
-          expected.pixel_format = 'BGRA'
-        elif expected.pixel_format == 'YUY2' and not supports_hw_yuy2_overlays:
-          expected.pixel_format = 'BGRA'
-
-      gpu = self.browser.GetSystemInfo().gpu.devices[0]
-      supports_rotated_video_overlays = (
-          gpu.vendor_id == gpu_helper.GpuVendors.AMD and gpu.device_id
-          in _SUPPORTED_WIN_AMD_GPUS_WITH_NV12_ROTATED_OVERLAYS)
-
+      # TODO(crbug.com/1519724): Move zero copy logic into overlay config.
       supports_downscaled_overlay_promotion = (gpu.vendor_id
                                                != gpu_helper.GpuVendors.INTEL)
       no_issue_with_downscaled_overlay_promotion = (
           video_is_not_scaled or supports_downscaled_overlay_promotion)
-
-      if (((supports_hw_nv12_overlays and expected.pixel_format == 'NV12')
-           or supports_hw_yuy2_overlays)
-          and (not video_is_rotated or supports_rotated_video_overlays)):
-        expected.presentation_mode = 'OVERLAY'
-      else:
-        expected.presentation_mode = 'COMPOSED'
 
       if expected.zero_copy is None:
         # TODO(sunnyps): Check for overlay scaling support after making the same
         # change in SwapChainPresenter.
         expected.zero_copy = (expected.presentation_mode == 'OVERLAY'
                               and expected.pixel_format == 'NV12'
-                              and supports_hw_nv12_overlays
+                              and overlay_bot_config.supports_hw_nv12_overlays
                               and no_issue_with_downscaled_overlay_promotion
                               and not video_is_rotated)
 
@@ -882,12 +825,12 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       # Only check the last three entries.
       if index >= 3:
         break
-      if mode in (_SWAP_CHAIN_PRESENTATION_MODE_NONE,
-                  _SWAP_CHAIN_GET_FRAME_STATISTICS_MEDIA_FAILED):
+      if mode in (overlay_support.PresentationModeEvent.NONE,
+                  overlay_support.PresentationModeEvent.GET_STATISTICS_FAILED):
         # Be more tolerant to avoid test flakiness
         continue
-      if (TraceIntegrationTest._SwapChainPresentationModeToStr(mode) !=
-          expected.presentation_mode):
+      if (overlay_support.PresentationModeEventToStr(mode)
+          != expected.presentation_mode):
         self.fail('SwapChain presentation mode mismatch, expected %s got %s' %
                   (expected.presentation_mode,
                    TraceIntegrationTest._SwapChainPresentationModeListToStr(
@@ -905,10 +848,9 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     os_name = self.browser.platform.GetOSName()
     assert os_name and os_name.lower() == 'win'
 
-    overlay_bot_config = self._GetOverlayBotConfig()
-    if overlay_bot_config is None:
-      self.fail('Overlay bot config can not be determined')
-    assert overlay_bot_config.get('direct_composition', False)
+    gpu = self.browser.GetSystemInfo().gpu.devices[0]
+    overlay_bot_config = overlay_support.GetOverlayConfigForGpu(gpu)
+    assert overlay_bot_config.direct_composition
 
     expect_no_overlay = other_args and other_args.get('no_overlay', False)
     expect_overlay = not expect_no_overlay
@@ -941,10 +883,9 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     os_name = self.browser.platform.GetOSName()
     assert os_name and os_name.lower() == 'win'
 
-    overlay_bot_config = self._GetOverlayBotConfig()
-    if overlay_bot_config is None:
-      self.fail('Overlay bot config can not be determined')
-    assert overlay_bot_config.get('direct_composition', False)
+    gpu = self.browser.GetSystemInfo().gpu.devices[0]
+    overlay_bot_config = overlay_support.GetOverlayConfigForGpu(gpu)
+    assert overlay_bot_config.direct_composition
 
     expect_has_alpha = other_args and other_args.get('has_alpha', False)
 

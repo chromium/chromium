@@ -216,11 +216,6 @@ crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCa
 # Lacros FYI x64 Release (Intel) yet.
 crbug.com/1230619 [ android android-nexus-5x passthrough ] TraceTest_WebGLFloat [ Failure ]
 
-crbug.com/1409457 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_MP4_BGRA [ Failure ]
-crbug.com/1409457 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_MP4_YUY2 [ Failure ]
-crbug.com/1409457 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_VP9_BGRA [ Failure ]
-crbug.com/1409457 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ Failure ]
-
 crbug.com/1402261 [ win intel ] OverlayModeTraceTest_DirectComposition_Video_* [ RetryOnFailure ]
 crbug.com/1402261 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_* [ Failure ]
 
@@ -256,14 +251,6 @@ crbug.com/1519274 [ win nvidia nvidia_ge_31.0.15.4601 ] VideoPathTraceTest_Direc
 crbug.com/1519274 [ win nvidia nvidia_ge_31.0.15.4601 ] VideoPathTraceTest_DirectComposition_Video_VP9 [ Failure ]
 crbug.com/1519274 [ win nvidia nvidia_ge_31.0.15.4601 ] VideoPathTraceTest_DirectComposition_Video_VP9_Fullsize [ Failure ]
 crbug.com/1519274 [ win nvidia nvidia_ge_31.0.15.4601 ] VideoPathTraceTest_DirectComposition_Video_VP9_NV12 [ Failure ]
-
-# Always reports use of overlays even though it shouldn't be supported in all
-# cases.
-crbug.com/1519659 [ win qualcomm-0x41333430 ] OverlayModeTraceTest_DirectComposition_Video_MP4_BGRA [ Failure ]
-crbug.com/1519659 [ win qualcomm-0x41333430 ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Rot_180 [ Failure ]
-crbug.com/1519659 [ win qualcomm-0x41333430 ] OverlayModeTraceTest_DirectComposition_Video_MP4_YUY2 [ Failure ]
-crbug.com/1519659 [ win qualcomm-0x41333430 ] OverlayModeTraceTest_DirectComposition_Video_VP9_BGRA [ Failure ]
-crbug.com/1519659 [ win qualcomm-0x41333430 ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ Failure ]
 
 # Mismatch between whether the test harness believes the zero copy path should
 # be used and what Chrome actually does.
