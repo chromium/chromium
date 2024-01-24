@@ -35,6 +35,8 @@
 namespace {
 
 constexpr std::string_view kTestDictionaryString = "A dictionary";
+constexpr std::string_view kTestDictionaryHashBase64 =
+    ":CqNpAU9/qzcL6UB0aYVFx7uTLsRhJSePN780qwKjWuw=:";
 
 constexpr std::string_view kCompressedDataOriginalString =
     "This is compressed test data using a test dictionary";
@@ -356,6 +358,8 @@ class ChromeSharedDictionaryBrowserTest
       response->set_content_type("text/html");
       response->AddCustomHeader("content-encoding",
                                 network::GetSharedBrotliContentEncodingName());
+      response->AddCustomHeader("content-dictionary",
+                                kTestDictionaryHashBase64);
       response->set_content(kBrotliCompressedDataString);
       return response;
     } else if (request.relative_url == "/path/zstd_compressed") {
@@ -363,6 +367,8 @@ class ChromeSharedDictionaryBrowserTest
       response->set_content_type("text/html");
       response->AddCustomHeader("content-encoding",
                                 network::GetSharedZstdContentEncodingName());
+      response->AddCustomHeader("content-dictionary",
+                                kTestDictionaryHashBase64);
       response->set_content(kZstdCompressedDataString);
       return response;
     }

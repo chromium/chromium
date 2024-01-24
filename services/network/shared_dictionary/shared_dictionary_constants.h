@@ -47,6 +47,10 @@ extern const char kAvailableDictionaryHeaderName[];
 COMPONENT_EXPORT(NETWORK_SERVICE)
 extern const char kUseAsDictionaryHeaderName[];
 
+// The header name of "content-dictionary".
+COMPONENT_EXPORT(NETWORK_SERVICE)
+extern const char kContentDictionaryHeaderName[];
+
 // The dictionary option name of "match".
 COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameMatch[];
 

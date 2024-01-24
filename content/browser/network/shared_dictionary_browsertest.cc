@@ -795,6 +795,8 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
     if (dict_hash) {
       if (*dict_hash == GetExpectedDictionaryHashString()) {
         if (HasSharedDictionaryAcceptEncoding(request.headers, version_)) {
+          response->AddCustomHeader("content-dictionary",
+                                    kExpectedDictionaryHashBase64);
           if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
             response->AddCustomHeader(
                 "content-encoding",
@@ -1491,6 +1493,8 @@ class SharedDictionaryBrowserTest
               case network::features::
                   CompressionDictionaryTransportBackendVersion::kV2:
                 response->AddCustomHeader("content-encoding", "br-d");
+                response->AddCustomHeader("content-dictionary",
+                                          kExpectedDictionaryHashBase64);
                 break;
             }
             response->set_content(kBrotliCompressedDataString);

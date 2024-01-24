@@ -209,7 +209,7 @@ construction to catch up the following spec changes:
 - Removed support for hash negotiation and force use of sha-256
   - Stauts: Removed by https://crrev.com/c/5223985.
 - Added the dictionary hash to the compressed response
-  - Stauts: Not yet implemented.
+  - Stauts: Implemented by https://crrev.com/c/5226641.
 - Dictionary hashes changed to sf-binary
   - Stauts: Implemented by https://crrev.com/c/5224886.
 - Use "Available-Dictionary" header instead of "Sec-Available-Dictionary"

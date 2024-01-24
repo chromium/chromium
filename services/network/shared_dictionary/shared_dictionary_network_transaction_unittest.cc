@@ -270,7 +270,9 @@ const net::MockTransaction kBrotliDictionaryTestTransactionV1 = {
     .load_flags = net::LOAD_CAN_USE_SHARED_DICTIONARY,
     .transport_info = TestSpdyTransportInfo(),
     .status = "HTTP/1.1 200 OK",
-    .response_headers = "content-encoding: sbr\n",
+    .response_headers =
+        "content-encoding: sbr\n"
+        "content-dictionary: :wZcortNlA8/IGg9TWeb0cuEh93vyCi+qx5lBkSk8BiM=:\n",
     .response_time = base::Time(),
     .data = "",  // We set the body in the `handler` function.
     .dns_aliases = {},
@@ -294,7 +296,9 @@ const net::MockTransaction kBrotliDictionaryTestTransactionV2 = {
     .load_flags = net::LOAD_CAN_USE_SHARED_DICTIONARY,
     .transport_info = TestSpdyTransportInfo(),
     .status = "HTTP/1.1 200 OK",
-    .response_headers = "content-encoding: br-d\n",
+    .response_headers =
+        "content-encoding: br-d\n"
+        "content-dictionary: :wZcortNlA8/IGg9TWeb0cuEh93vyCi+qx5lBkSk8BiM=:\n",
     .response_time = base::Time(),
     .data = "",  // We set the body in the `handler` function.
     .dns_aliases = {},
@@ -318,7 +322,9 @@ const net::MockTransaction kZstdDictionaryTestTransaction = {
     .load_flags = net::LOAD_CAN_USE_SHARED_DICTIONARY,
     .transport_info = TestSpdyTransportInfo(),
     .status = "HTTP/1.1 200 OK",
-    .response_headers = "content-encoding: zstd-d\n",
+    .response_headers =
+        "content-encoding: zstd-d\n"
+        "content-dictionary: :wZcortNlA8/IGg9TWeb0cuEh93vyCi+qx5lBkSk8BiM=:\n",
     .response_time = base::Time(),
     .data = "",  // We set the body in the `handler` function.
     .dns_aliases = {},
@@ -763,6 +769,118 @@ TEST_P(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
   // SharedDictionaryNetworkTransaction must not decode the body.
   EXPECT_THAT(read_result, kBrotliEncodedDataString.size());
   EXPECT_EQ(kBrotliEncodedDataString, std::string(buf->data(), read_result));
+}
+
+TEST_P(SharedDictionaryNetworkTransactionTest, NoContentDictionary) {
+  DummySharedDictionaryManager manager(
+      base::MakeRefCounted<DummySharedDictionaryStorage>(
+          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
+
+  // Override MockTransaction to remove "content-dictionary" header.
+  net::MockTransaction new_mock_transaction =
+      GetBrotliDictionaryTestTransaction();
+
+  switch (GetVersion()) {
+    case network::features::CompressionDictionaryTransportBackendVersion::kV1:
+      new_mock_transaction.response_headers = "content-encoding: sbr\n";
+      break;
+    case network::features::CompressionDictionaryTransportBackendVersion::kV2:
+      new_mock_transaction.response_headers = "content-encoding: br-d\n";
+      break;
+  }
+  net::AddMockTransaction(&new_mock_transaction);
+
+  net::MockHttpRequest request(new_mock_transaction);
+  SharedDictionaryNetworkTransaction transaction(manager,
+                                                 CreateNetworkTransaction());
+  transaction.SetIsSharedDictionaryReadAllowedCallback(
+      base::BindRepeating([]() { return true; }));
+
+  net::TestCompletionCallback start_callback;
+  ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
+                                net::NetLogWithSource()),
+              net::test::IsError(net::ERR_IO_PENDING));
+
+  if (GetVersion() ==
+      network::features::CompressionDictionaryTransportBackendVersion::kV2) {
+    EXPECT_THAT(start_callback.WaitForResult(),
+                net::test::IsError(net::ERR_DICTIONARY_LOAD_FAILED));
+    return;
+  }
+
+  // When V1 backend is used, even if there is no "content-dictionary"
+  // header, SharedDictionaryNetworkTransaction can decode the body.
+  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+
+  scoped_refptr<net::IOBufferWithSize> buf =
+      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
+  net::TestCompletionCallback read_callback;
+  ASSERT_THAT(
+      transaction.Read(buf.get(), buf->size(), read_callback.callback()),
+      net::test::IsError(net::ERR_IO_PENDING));
+  int read_result = read_callback.WaitForResult();
+  EXPECT_THAT(read_result, kTestData.size());
+  EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
+}
+
+TEST_P(SharedDictionaryNetworkTransactionTest, WrongContentDictionary) {
+  DummySharedDictionaryManager manager(
+      base::MakeRefCounted<DummySharedDictionaryStorage>(
+          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
+
+  // Override MockTransaction to change the "content-dictionary" header.
+  net::MockTransaction new_mock_transaction =
+      GetBrotliDictionaryTestTransaction();
+
+  // The hash `kTestDictionaryData` is
+  // ":wZcortNlA8/IGg9TWeb0cuEh93vyCi+qx5lBkSk8BiM=:". But the header contains
+  // "content-dictionary" header with a different hash
+  // ":U5abz16WDg7b8KS93msLPpOB4Vbef1uRzoORYkJw9BY=:".
+  switch (GetVersion()) {
+    case network::features::CompressionDictionaryTransportBackendVersion::kV1:
+      new_mock_transaction.response_headers =
+          "content-encoding: sbr\n"
+          "content-dictionary: "
+          ":U5abz16WDg7b8KS93msLPpOB4Vbef1uRzoORYkJw9BY=:\n";
+      break;
+    case network::features::CompressionDictionaryTransportBackendVersion::kV2:
+      new_mock_transaction.response_headers =
+          "content-encoding: br-d\n"
+          "content-dictionary: "
+          ":U5abz16WDg7b8KS93msLPpOB4Vbef1uRzoORYkJw9BY=:\n";
+      break;
+  }
+  net::AddMockTransaction(&new_mock_transaction);
+
+  net::MockHttpRequest request(new_mock_transaction);
+  SharedDictionaryNetworkTransaction transaction(manager,
+                                                 CreateNetworkTransaction());
+  transaction.SetIsSharedDictionaryReadAllowedCallback(
+      base::BindRepeating([]() { return true; }));
+
+  net::TestCompletionCallback start_callback;
+  ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
+                                net::NetLogWithSource()),
+              net::test::IsError(net::ERR_IO_PENDING));
+  if (GetVersion() ==
+      network::features::CompressionDictionaryTransportBackendVersion::kV2) {
+    EXPECT_THAT(start_callback.WaitForResult(),
+                net::test::IsError(net::ERR_DICTIONARY_LOAD_FAILED));
+    return;
+  }
+
+  // When V1 backend is used, even if there is a wrong "content-dictionary"
+  // header, SharedDictionaryNetworkTransaction can decode the body.
+  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+  scoped_refptr<net::IOBufferWithSize> buf =
+      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
+  net::TestCompletionCallback read_callback;
+  ASSERT_THAT(
+      transaction.Read(buf.get(), buf->size(), read_callback.callback()),
+      net::test::IsError(net::ERR_IO_PENDING));
+  int read_result = read_callback.WaitForResult();
+  EXPECT_THAT(read_result, kTestData.size());
+  EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
 }
 
 TEST_P(SharedDictionaryNetworkTransactionTest, MultipleContentEncodingWithSbr) {
