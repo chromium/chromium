@@ -247,10 +247,6 @@ def __android_dex_handler(ctx, cmd):
 
 def __android_turbine_handler(ctx, cmd):
     inputs = []
-    outputs = []
-    out_fileslist = False
-    if cmd.args[len(cmd.args) - 1].startswith("@"):
-        out_fileslist = True
     for i, arg in enumerate(cmd.args):
         for k in ["--classpath=", "--processorpath="]:
             if arg.startswith(k):
@@ -264,7 +260,6 @@ def __android_turbine_handler(ctx, cmd):
 
     ctx.actions.fix(
         inputs = cmd.inputs + inputs,
-        outputs = cmd.outputs + outputs,
     )
 
 def __deps_configs(ctx, f, seen, inputs):
