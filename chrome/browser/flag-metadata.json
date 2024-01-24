@@ -4911,11 +4911,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "ios-bulk-upload-local-passwords",
-    "owners": ["nicolasmacbeth@google.com", "rkgibson@google.com", "tmartino@chromium.org", "bling-transactions@google.com"],
-    "expiry_milestone": 122
-  },
-  {
     "name": "ios-docking-promo",
     "owners": ["bwwilliams@google.com", "bling-get-set-up@google.com"],
     "expiry_milestone": 132

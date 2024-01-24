@@ -554,12 +554,6 @@ const char kIOSPasswordBottomSheetAutofocusName[] =
 const char kIOSPasswordBottomSheetAutofocusDescription[] =
     "Enables triggering the password bottom sheet on autofocus on IOS.";
 
-const char kIOSPasswordSettingsBulkUploadLocalPasswordsName[] =
-    "iOS Bulk Upload Local Passwords";
-const char kIOSPasswordSettingsBulkUploadLocalPasswordsDescription[] =
-    "Enables bulk uploading local passwords for eligible users in the iOS "
-    "password settings.";
-
 const char kIOSPasswordSignInUffName[] = "Password sign-in uff";
 const char kIOSPasswordSignInUffDescription[] =
     "Enables filling the username in username-first sign-in flows.";

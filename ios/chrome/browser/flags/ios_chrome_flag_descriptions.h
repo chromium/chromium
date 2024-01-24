@@ -478,11 +478,6 @@ extern const char kIOSPasswordBottomSheetDescription[];
 extern const char kIOSPasswordBottomSheetAutofocusName[];
 extern const char kIOSPasswordBottomSheetAutofocusDescription[];
 
-// Title and description for the flag to enable bulk uploading local passwords
-// for eligible users on the iOS password settings.
-extern const char kIOSPasswordSettingsBulkUploadLocalPasswordsName[];
-extern const char kIOSPasswordSettingsBulkUploadLocalPasswordsDescription[];
-
 // Title and description for the flag to enable filling the username of single
 // username forms in sign-in UFF.
 extern const char kIOSPasswordSignInUffName[];

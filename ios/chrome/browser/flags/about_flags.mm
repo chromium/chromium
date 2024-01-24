@@ -1279,12 +1279,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSBrowserEditMenuMetricsName,
      flag_descriptions::kIOSBrowserEditMenuMetricsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSBrowserEditMenuMetrics)},
-    {"ios-bulk-upload-local-passwords",
-     flag_descriptions::kIOSPasswordSettingsBulkUploadLocalPasswordsName,
-     flag_descriptions::kIOSPasswordSettingsBulkUploadLocalPasswordsDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(password_manager::features::
-                            kIOSPasswordSettingsBulkUploadLocalPasswords)},
     {"ios-docking-promo", flag_descriptions::kIOSDockingPromoName,
      flag_descriptions::kIOSDockingPromoDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSDockingPromo,
