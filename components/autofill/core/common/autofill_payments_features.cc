@@ -123,13 +123,13 @@ BASE_FEATURE(kAutofillEnableUserAvatarInSaveCardFooter,
 // autofill dialogs and bubbles on desktop.
 BASE_FEATURE(kAutofillEnableMovingGPayLogoToTheRightOnDesktop,
              "AutofillEnableMovingGPayLogoToTheRightOnDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the GPay logo will be moved to the right side in payments
 // autofill dialogs and bubbles on clank.
 BASE_FEATURE(kAutofillEnableMovingGPayLogoToTheRightOnClank,
              "AutofillEnableMovingGPayLogoToTheRightOnClank",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the user will see a new banner logo and text in the bubble
 // offering to Upstream their cards onto Google Pay.
