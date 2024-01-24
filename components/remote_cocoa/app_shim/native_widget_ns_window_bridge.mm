@@ -1762,6 +1762,13 @@ void NativeWidgetNSWindowBridge::ShowAsModalSheet() {
   DCHECK(parent_window);
   NSWindow* __weak weak_window = window_;
 
+  // Don't show a sheet twice. If a sheet is shown twice but endSheet: only
+  // once it will leave a dangling blank sheet. This happened when the browser
+  // is restored from minimization.
+  if (parent_window.attachedSheet == window_) {
+    return;
+  }
+
   auto begin_sheet_closure = base::BindOnce(^{
     [parent_window beginSheet:window_
             completionHandler:^(NSModalResponse return_code) {
