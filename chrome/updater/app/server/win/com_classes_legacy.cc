@@ -40,6 +40,7 @@
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
@@ -345,12 +346,62 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   AppWebImpl& operator=(const AppWebImpl&) = delete;
 
   HRESULT RuntimeClassInitialize(
+      const bool is_install,
       const std::wstring& app_id,
       const std::wstring& language,
       UpdateService::PolicySameVersionUpdate policy_same_version_update) {
+    if (is_install && FAILED(IsCOMCallerAllowed())) {
+      VLOG(1) << __func__ << ": admin rights required for installs";
+      return E_ACCESSDENIED;
+    }
+
     app_id_ = base::WideToASCII(app_id);
     language_ = language;
     policy_same_version_update_ = policy_same_version_update;
+
+    // Holds the result of the IPC to register an app.
+    struct RegisterAppResult
+        : public base::RefCountedThreadSafe<RegisterAppResult> {
+      bool new_install = false;
+      base::WaitableEvent completion_event;
+
+     private:
+      friend class base::RefCountedThreadSafe<RegisterAppResult>;
+      virtual ~RegisterAppResult() = default;
+    };
+
+    auto result = base::MakeRefCounted<RegisterAppResult>();
+    AppServerWin::PostRpcTask(base::BindOnce(
+        [](AppWebImplPtr obj, scoped_refptr<RegisterAppResult> result) {
+          const base::ScopedClosureRunner signal_event(base::BindOnce(
+              [](scoped_refptr<RegisterAppResult> result) {
+                result->completion_event.Signal();
+              },
+              result));
+
+          scoped_refptr<PersistedData> persisted_data =
+              GetAppServerWinInstance()->config()->GetUpdaterPersistedData();
+          if (persisted_data->GetProductVersion(obj->app_id_).IsValid()) {
+            return;
+          }
+
+          // Pre-register the app if there is no registration for it. This app
+          // registration is removed later if the app install does not happen.
+          result->new_install = true;
+          RegistrationRequest request;
+          request.app_id = obj->app_id_;
+          request.version = base::Version(kNullVersion);
+          persisted_data->RegisterApp(request);
+        },
+        AppWebImplPtr(this), result));
+
+    if (!result->completion_event.TimedWait(base::Seconds(60))) {
+      return E_FAIL;
+    }
+
+    new_install_ = result->new_install;
+
+    VLOG(1) << __func__ << ": new_install_: " << new_install_;
     return S_OK;
   }
 
@@ -612,7 +663,50 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
  private:
   using AppWebImplPtr = Microsoft::WRL::ComPtr<AppWebImpl>;
 
-  ~AppWebImpl() override = default;
+  ~AppWebImpl() override {
+    // If a new install has not happened, the app id registered in
+    // `RuntimeClassInitialize` needs to be removed here. Otherwise
+    // the updater may remain installed even if there are no other apps to
+    // manage, and try to update the app even though the app was not
+    // installed.
+    VLOG(1) << __func__ << ": new_install_: " << new_install_;
+
+    if (!new_install_) {
+      return;
+    }
+
+    // Holds the result of the IPC to remove an app whose version is not valid.
+    struct RemoveAppResult
+        : public base::RefCountedThreadSafe<RemoveAppResult> {
+      base::WaitableEvent completion_event;
+
+     private:
+      friend class base::RefCountedThreadSafe<RemoveAppResult>;
+      virtual ~RemoveAppResult() = default;
+    };
+
+    auto result = base::MakeRefCounted<RemoveAppResult>();
+    AppServerWin::PostRpcTask(base::BindOnce(
+        [](const std::string& app_id, scoped_refptr<RemoveAppResult> result) {
+          const base::ScopedClosureRunner signal_event(base::BindOnce(
+              [](scoped_refptr<RemoveAppResult> result) {
+                result->completion_event.Signal();
+              },
+              result));
+
+          scoped_refptr<PersistedData> persisted_data =
+              GetAppServerWinInstance()->config()->GetUpdaterPersistedData();
+          const base::Version version =
+              persisted_data->GetProductVersion(app_id);
+          if (!version.IsValid() || version != base::Version(kNullVersion)) {
+            return;
+          }
+          persisted_data->RemoveApp(app_id);
+        },
+        app_id_, result));
+
+    result->completion_event.TimedWait(base::Seconds(60));
+  }
 
   void UpdateStateCallback(UpdateService::UpdateState state_update) {
     base::AutoLock lock{lock_};
@@ -627,6 +721,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   // Handles the update service callbacks.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+  bool new_install_ = false;
   std::string app_id_;
   std::wstring language_;
   UpdateService::PolicySameVersionUpdate policy_same_version_update_ =
@@ -661,9 +756,8 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
       return E_UNEXPECTED;
     }
 
-    is_install_ = true;
     return MakeAndInitializeComObject<AppWebImpl>(
-        app_web_, app_id, language,
+        app_web_, /*is_install=*/true, app_id, language,
         UpdateService::PolicySameVersionUpdate::kAllowed);
   }
 
@@ -674,9 +768,8 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
       return E_UNEXPECTED;
     }
 
-    is_install_ = false;
     return MakeAndInitializeComObject<AppWebImpl>(
-        app_web_, app_id, GetPreferredLanguage(),
+        app_web_, /*is_install=*/false, app_id, GetPreferredLanguage(),
         UpdateService::PolicySameVersionUpdate::kNotAllowed);
   }
 
@@ -731,11 +824,6 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
       return E_UNEXPECTED;
     }
 
-    if (is_install_ && FAILED(IsCOMCallerAllowed())) {
-      VLOG(1) << __func__ << ": admin rights required for new system installs";
-      return E_ACCESSDENIED;
-    }
-
     return app_web_->Update();
   }
 
@@ -772,9 +860,6 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
 
   // Only a single app at a time is supported.
   Microsoft::WRL::ComPtr<AppWebImpl> app_web_;
-
-  // `false` for updates. `true` for fresh installs or reinstalls.
-  bool is_install_ = false;
 };
 
 LegacyOnDemandImpl::LegacyOnDemandImpl()

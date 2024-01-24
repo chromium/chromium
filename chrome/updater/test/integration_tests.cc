@@ -1872,6 +1872,55 @@ TEST_F(IntegrationTest, CrashUsageStatsEnabled) {
 }
 
 #if BUILDFLAG(IS_WIN)
+class IntegrationTestLegacyUpdate3WebNewInstall : public IntegrationTest {
+ public:
+  IntegrationTestLegacyUpdate3WebNewInstall() = default;
+  ~IntegrationTestLegacyUpdate3WebNewInstall() override = default;
+
+ protected:
+  void SetUp() override {
+    if (!::IsUserAnAdmin() && IsSystemInstall(GetTestScope())) {
+      GTEST_SKIP();
+    }
+
+    IntegrationTest::SetUp();
+
+    test_server_ = std::make_unique<ScopedServer>(test_commands_);
+    ASSERT_NO_FATAL_FAILURE(Install());
+  }
+
+  void TearDown() override {
+    ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+    ASSERT_NO_FATAL_FAILURE(Uninstall());
+
+    IntegrationTest::TearDown();
+  }
+
+  std::unique_ptr<ScopedServer> test_server_;
+  static constexpr char kAppId[] = "test1";
+};
+
+TEST_F(IntegrationTestLegacyUpdate3WebNewInstall, CheckForInstall) {
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
+      test_server_.get(), kAppId, UpdateService::Priority::kForeground,
+      base::Version(kNullVersion), base::Version("0.1")));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectLegacyUpdate3WebSucceeds(kAppId, AppBundleWebCreateMode::kCreateApp,
+                                     STATE_UPDATE_AVAILABLE, S_OK));
+}
+
+TEST_F(IntegrationTestLegacyUpdate3WebNewInstall, Install) {
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
+      test_server_.get(), kAppId, UpdateService::Priority::kForeground,
+      base::Version(kNullVersion), base::Version("0.1")));
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      test_server_.get(), kAppId, "", UpdateService::Priority::kForeground,
+      base::Version(kNullVersion), base::Version("0.1")));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectLegacyUpdate3WebSucceeds(kAppId, AppBundleWebCreateMode::kCreateApp,
+                                     STATE_INSTALL_COMPLETE, S_OK));
+}
+
 class IntegrationTestLegacyUpdate3Web : public IntegrationTest {
  public:
   IntegrationTestLegacyUpdate3Web() = default;
