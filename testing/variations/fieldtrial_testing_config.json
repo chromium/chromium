@@ -15496,7 +15496,7 @@
                 {
                     "name": "EnabledNLRSubframeWithQueueing_20240108",
                     "params": {
-                        "level": "non-local-root",
+                        "level": "non-local-root-subframe",
                         "queueing_level": "full"
                     },
                     "enable_features": [
