@@ -79,7 +79,7 @@
   {
     "name": "advanced-documentscan-api",
     "owners": [ "bmgordon@chromium.org", "project-bolton@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 125
   },
   {
     "name": "advanced-peripherals-support-tab-strip",
@@ -457,7 +457,7 @@
   {
     "name": "asynchronous-scanner-discovery",
     "owners": [ "bmgordon@chromium.org", "project-bolton@google.com" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 125
   },
   {
     "name": "attribution-reporting-debug-mode",
