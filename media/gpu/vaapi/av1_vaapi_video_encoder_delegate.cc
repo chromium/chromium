@@ -21,15 +21,11 @@ namespace {
 // Values from
 // third_party/webrtc/modules/video_coding/codecs/av1/libaom_av1_encoder.cc
 constexpr int kKFPeriod = 3000;
-// Quantization parameters for AV1. Between 0 and 255.
-constexpr int kMinQIndex = 145;
-constexpr int kMaxQIndex = 205;
 
-// From //third_party/webrtc/media/engine/webrtc_video_engine.h
-// These are also quantization parameters, but these are in different units than
-// above. These are used in AV1 rate control and are between 0 and 63.
-constexpr int kMinQP = 10;
-constexpr int kMaxQP = 56;
+// Quantization parameter. They are av1 ac/dc indices and their ranges are
+// 0-255. These are based on WebRTC's defaults.
+constexpr uint8_t kMinQP = 40;
+constexpr uint8_t kMaxQP = 224;
 
 // This needs to be 64, not 16, because of superblocks.
 // TODO: Look into whether or not we can reduce alignment to 16.
@@ -38,6 +34,34 @@ constexpr int kCDEFStrengthDivisor = 4;
 constexpr int kPrimaryReferenceNone = 7;
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
+
+// Convert Qindex, whose range is 0-255, to the quantizer parameter used in
+// libaom av1 rate control, whose range is 0-63.
+// The table is generated from the table of
+// ited from //third_party/libaom/source/libaom/av1/encoder/av1_quantize.c.
+uint8_t QindexToQuantizer(uint8_t q_index) {
+  constexpr static uint8_t kQindexToQuantizer[] = {
+      0,  1,  1,  1,  1,  2,  2,  2,  2,  3,  3,  3,  3,  4,  4,  4,  4,  5,
+      5,  5,  5,  6,  6,  6,  6,  7,  7,  7,  7,  8,  8,  8,  8,  9,  9,  9,
+      9,  10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 13, 13, 13, 13, 14,
+      14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 18, 18, 18,
+      18, 19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 22, 22, 22, 22, 23,
+      23, 23, 23, 24, 24, 24, 24, 25, 25, 25, 25, 26, 26, 26, 26, 27, 27, 27,
+      27, 28, 28, 28, 28, 29, 29, 29, 29, 30, 30, 30, 30, 31, 31, 31, 31, 32,
+      32, 32, 32, 33, 33, 33, 33, 34, 34, 34, 34, 35, 35, 35, 35, 36, 36, 36,
+      36, 37, 37, 37, 37, 38, 38, 38, 38, 39, 39, 39, 39, 40, 40, 40, 40, 41,
+      41, 41, 41, 42, 42, 42, 42, 43, 43, 43, 43, 44, 44, 44, 44, 45, 45, 45,
+      45, 46, 46, 46, 46, 47, 47, 47, 47, 48, 48, 48, 48, 49, 49, 49, 49, 50,
+      50, 50, 50, 51, 51, 51, 51, 52, 52, 52, 52, 53, 53, 53, 53, 54, 54, 54,
+      54, 55, 55, 55, 55, 56, 56, 56, 56, 57, 57, 57, 57, 58, 58, 58, 58, 59,
+      59, 59, 59, 60, 60, 60, 60, 61, 61, 61, 61, 62, 62, 62, 62, 62, 63, 63,
+      63, 63, 63, 63,
+  };
+  static_assert(std::size(kQindexToQuantizer) == 256,
+                "Unexpected kQindexToQuantizer size");
+  CHECK_LT(base::strict_cast<size_t>(q_index), std::size(kQindexToQuantizer));
+  return kQindexToQuantizer[q_index];
+}
 
 // TODO: Do we need other reference modes?
 enum AV1ReferenceMode {
@@ -404,8 +428,8 @@ bool AV1VaapiVideoEncoderDelegate::UpdateRates(
   rc_config.width = coded_size_.width();
   rc_config.height = coded_size_.height();
   // third_party/webrtc/modules/video_coding/codecs/av1/libaom_av1_encoder.cc
-  rc_config.max_quantizer = kMaxQP;
-  rc_config.min_quantizer = kMinQP;
+  rc_config.max_quantizer = QindexToQuantizer(current_params_.max_qp);
+  rc_config.min_quantizer = QindexToQuantizer(current_params_.min_qp);
   rc_config.target_bandwidth =
       current_params_.bitrate_allocation.GetSumBps() / 1000;
   rc_config.buf_initial_sz = 600;
@@ -424,8 +448,8 @@ bool AV1VaapiVideoEncoderDelegate::UpdateRates(
   rc_config.aq_mode = 3;
   rc_config.ss_number_layers = 1;
   rc_config.ts_number_layers = 1;
-  rc_config.max_quantizers[0] = kMaxQP;
-  rc_config.min_quantizers[0] = kMinQP;
+  rc_config.min_quantizers[0] = QindexToQuantizer(current_params_.min_qp);
+  rc_config.max_quantizers[0] = QindexToQuantizer(current_params_.max_qp);
   rc_config.scaling_factor_num[0] = 1;
   rc_config.scaling_factor_den[0] = 1;
 
@@ -869,8 +893,8 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
   pic_param.v_dc_delta_q = 0;
   pic_param.v_ac_delta_q = 0;
 
-  pic_param.min_base_qindex = kMinQIndex;
-  pic_param.max_base_qindex = kMaxQIndex;
+  pic_param.min_base_qindex = current_params_.min_qp;
+  pic_param.max_base_qindex = current_params_.max_qp;
 
   pic_param.qmatrix_flags.bits.using_qmatrix = 0;
   pic_param.qmatrix_flags.bits.qm_y = 0;
