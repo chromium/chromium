@@ -58,6 +58,8 @@ constexpr uint64_t kEventFiveHash = UINT64_C(7045523601811399253);
 constexpr uint64_t kEventSixHash = UINT64_C(2873337042686447043);
 // The name hash of "chrome::TestProjectSix::TestEventSeven".
 constexpr uint64_t kEventSevenHash = UINT64_C(16749091071228286247);
+// The name hash of "chrome::TestProjectSix::TestEnum".
+constexpr uint64_t kEventEnumHash = UINT64_C(14837072141472316574);
 // The name hash of "chrome::CrOSEvents::NoMetricsEvent".
 constexpr uint64_t kNoMetricsEventHash = UINT64_C(5106854608989380457);
 // The name has for "chrome::TestProjectSevent::TestEventEight".
@@ -75,6 +77,8 @@ constexpr uint64_t kMetricFiveHash = UINT64_C(8665976921794972190);
 constexpr uint64_t kMetricSixHash = UINT64_C(3431522567539822144);
 // The name hash of "TestMetricSeven".
 constexpr uint64_t kMetricSevenHash = UINT64_C(8395865158198697574);
+// The name hash of "TestEnumMetric".
+constexpr uint64_t kMetricEnumHash = UINT64_C(16584986597633634829);
 
 // The hex-encoded first 8 bytes of SHA256("aaa...a")
 constexpr char kProjectOneId[] = "3BA3F5F43B926026";
@@ -845,6 +849,24 @@ TEST_F(StructuredMetricsRecorderTest, WatcherTest) {
   EXPECT_EQ(watcher.EventCount(), 1);
 
   recorder_->RemoveEventsObserver(&watcher);
+}
+
+TEST_F(StructuredMetricsRecorderTest, EnumRecordedCorrectly) {
+  Init();
+
+  // Processor that sets |is_device_enrolled| to true.
+  events::v2::test_project_six::TestEnum()
+      .SetTestEnumMetric(events::v2::test_project_six::Enum1::VARIANT2)
+      .Record();
+  const auto data = GetEventMetrics();
+
+  EXPECT_EQ(data.events_size(), 1);
+  EXPECT_EQ(data.events(0).project_name_hash(), kProjectSixHash);
+  EXPECT_EQ(data.events(0).event_name_hash(), kEventEnumHash);
+  EXPECT_EQ(data.events(0).metrics_size(), 1);
+  EXPECT_EQ(data.events(0).metrics(0).name_hash(), kMetricEnumHash);
+  EXPECT_EQ(data.events(0).metrics(0).value_int64(),
+            (int64_t)events::v2::test_project_six::Enum1::VARIANT2);
 }
 
 }  // namespace metrics::structured

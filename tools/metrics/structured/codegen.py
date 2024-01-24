@@ -82,6 +82,7 @@ class ProjectInfo:
     self.validator = '{}ProjectValidator'.format(self.name)
     self.validator_snake_name = Util.camel_to_snake(self.validator)
     self.events = project.events
+    self.enums = project.enums
 
     # Set ID type.
     if project.id == 'uma':
@@ -182,6 +183,7 @@ class MetricInfo:
   def __init__(self, metric):
     self.name = Util.sanitize_name(metric.name)
     self.hash = Util.hash_name(metric.name)
+    self.is_enum = metric.is_enum
 
     if metric.type == 'hmac-string':
       self.type = 'std::string&'
@@ -204,14 +206,20 @@ class MetricInfo:
       self.type_enum = 'kDouble'
       self.base_value = 'base::Value(value)'
     else:
-      raise ValueError('Invalid metric type.')
+      if self.is_enum:
+        self.type = metric.type
+        self.setter = f'AddEnumMetric<{self.type}>'
+        self.type_enum = 'kInt'
+        self.base_value = 'base::Value((int) value)'
+      else:
+        raise ValueError('Invalid metric type.')
 
 
 class Template:
   """Template for producing code from structured.xml."""
 
   def __init__(self, model, dirname, basename, file_template, project_template,
-               event_template, metric_template):
+               event_template, metric_template, header):
     self.model = model
     self.dirname = dirname
     self.basename = basename
@@ -219,6 +227,7 @@ class Template:
     self.project_template = project_template
     self.event_template = event_template
     self.metric_template = metric_template
+    self.header = header
 
   def write_file(self):
     file_info = FileInfo(self.dirname, self.basename)
@@ -236,6 +245,13 @@ class Template:
     event_code = ''.join(
         self._stamp_event(file_info, project_info, event)
         for event in project.events)
+    if self.header:
+      enum_code = '\n\n'.join(
+          [self._stamp_enum(enum) for enum in project.enums])
+      return self.project_template.format(file=file_info,
+                                          project=project_info,
+                                          enum_code=enum_code,
+                                          event_code=event_code)
     return self.project_template.format(file=file_info,
                                         project=project_info,
                                         event_code=event_code)
@@ -249,6 +265,16 @@ class Template:
                                       project=project_info,
                                       event=event_info,
                                       metric_code=metric_code)
+
+  def _stamp_enum(self, enum):
+    ENUM_TEMPLATE = """
+enum {enum.name} {{
+{variants}
+}};
+    """
+    variants = ',\n'.join(
+        ['{v.name} = {v.value}'.format(v=v) for v in enum.variants])
+    return ENUM_TEMPLATE.format(enum=enum, variants=variants)
 
   def _stamp_metric(self, file_info, event_info, metric):
     return self.metric_template.format(file=file_info,

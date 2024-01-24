@@ -336,8 +336,11 @@ void StructuredMetricsRecorder::AddMetricsToProto(
       case Event::MetricType::kDouble:
         metric_proto->set_value_double(value.GetDouble());
         break;
-      // Not supported yet.
+      // Represents an enum.
       case Event::MetricType::kInt:
+        metric_proto->set_value_int64(value.GetInt());
+        break;
+      // Not supported yet.
       case Event::MetricType::kBoolean:
         break;
     }

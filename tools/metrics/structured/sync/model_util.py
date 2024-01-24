@@ -61,9 +61,34 @@ def get_attr(elem: ET.Element,
   return attr
 
 
-def get_optional_attr(elem: ET.Element,
-                      tag: str,
-                      regex: Optional[str] = None) -> Optional[str]:
+def get_text(elem: ET.Element, regex: Optional[str] = None) -> str:
+  """ Get the text of an element.
+
+    Error if it is missing text, optionally error if it doesn't match the
+    provided regex.
+
+    Args:
+      elem: structured.xml file element tree.
+      regex: Optional regex to match the value of the attribute.
+
+    Returns:
+      The text value of the element.
+
+    Raises:
+      ValueError: The attribute specified is missing or doesn't match provided
+      regex.
+  """
+  if not elem.text:
+    error(elem, "doesn't containt text")
+
+  text = elem.text.strip()
+  if regex and not re.match(regex, text):
+    error(elem, ("text '{}' does not match regex '{}'").format(text, regex))
+
+  return text
+
+
+def get_optional_attr(elem: ET.Element, tag: str, regex: str = None) -> str:
   """Get an attribute.
 
     Returns None if it doesn't exist.
@@ -92,10 +117,10 @@ def get_optional_attr(elem: ET.Element,
   return attr
 
 
-def get_compound_children(
-    elem: ET.Element,
-    tag: str,
-    allow_missing_children: bool = False) -> List[ET.Element]:
+def get_compound_children(elem: ET.Element,
+                          tag: str,
+                          allow_missing_children: bool = False,
+                          allow_text: bool = False) -> List[ET.Element]:
   """Get all child nodes of `elem` with tag `tag`.
 
     Error if none exist, or a child is not a compound node.
@@ -105,6 +130,7 @@ def get_compound_children(
       tag: Name of the tag to find.
       allow_missing_children: If True does not raise an
         error when there are no children.
+      allow_text: If true does not raise an error when child contain text.
 
     Returns:
       All child nodes of 'elem' with the specified tag 'tag'.
@@ -117,9 +143,11 @@ def get_compound_children(
   children = elem.findall(tag)
   if not children and not allow_missing_children:
     error(elem, f"missing node '{tag}'")
-  for child in children:
-    if child.text and child.text.strip():
-      error(child, "contains text, but shouldn't")
+
+  if not allow_text:
+    for child in children:
+      if child.text and child.text.strip():
+        error(child, "contains text, but shouldn't")
   return children
 
 
@@ -237,12 +265,16 @@ def check_attributes(
     error(elem, "has unexpected attributes: " + attrs)
 
 
-def check_children(elem: ET.Element, expected_children: Set[str]) -> None:
+def check_children(elem: ET.Element,
+                   expected_children: Set[str],
+                   optional_children: Optional[Set[str]] = None) -> None:
   """Ensure all children in `expected_children` are in `elem`.
 
     Args:
       elem: structured.xml file element tree.
       expected_children: set of expected children by tag name.
+      optional_children: set of children by tag name that may or may not be
+                         present.
 
     Returns:
       None
@@ -252,6 +284,10 @@ def check_children(elem: ET.Element, expected_children: Set[str]) -> None:
     """
   actual_children = {child.tag for child in elem}
   unexpected_children = set(expected_children) - actual_children
+
+  if optional_children:
+    unexpected_children = unexpected_children - set(optional_children)
+
   if unexpected_children:
     children = " ".join(unexpected_children)
     error(elem, "is missing nodes: " + children)
@@ -287,6 +323,25 @@ def check_child_names_unique(elem: ET.Element, tag: str) -> None:
       ValueError: children of 'elem' with 'tag' are not unique.
     """
   names = [child.attrib.get("name", None) for child in elem if child.tag == tag]
+  check_names_unique(elem, names, tag)
+
+
+def check_names_unique(elem: ET.Element, names: List[str], tag: str) -> None:
+  """Ensures that the names provided are unique.
+
+    Args:
+      elem: structured.xml file element tree.
+      names: The list of names.
+      tag: Name of the tag/attribute to find.
+
+    Returns:
+      None
+
+    Raises:
+      ValueError: children of 'elem' with 'tag' are not unique.
+
+  """
+
   name_counts = collections.Counter(names)
   has_duplicates = any(c > 1 for c in name_counts.values())
   if has_duplicates:

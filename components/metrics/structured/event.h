@@ -27,6 +27,8 @@ class Event {
  public:
   // There should be a 1-1 mapping between MetricType and the mojom enums.
   //
+  // kInt is used to represent enums.
+  //
   // TODO(jongahn): Move this into common enum file.
   enum class MetricType {
     kHmac = 0,

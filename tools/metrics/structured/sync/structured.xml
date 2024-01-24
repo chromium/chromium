@@ -90,8 +90,8 @@
     <metric name="RSSI" type="int">
       <summary>
         The inquiry RSSI of the discovered device, recorded at the time of metrics
-        emission, with a range of -128 to 127. If inquiry RSSI is unknown,
-        we report -129.
+        emission, with a range of -128 to 127. If inquiry RSSI is unknown, we report
+        -129.
       </summary>
     </metric>
     <metric name="TxPower" type="int">
@@ -125,15 +125,15 @@
     <metric name="RSSI" type="int">
       <summary>
         The inquiry RSSI of the pairing device, recorded at the time of metrics
-        emission, with a range of -128 to 127. If inquiry RSSI is unknown,
-        we report -129.
+        emission, with a range of -128 to 127. If inquiry RSSI is unknown, we report
+        -129.
       </summary>
     </metric>
     <metric name="TxPower" type="int">
       <summary>
         The inquiry TxPower of the pairing device, recorded at the time of metrics
-        emission, with a range of -128 to 127. If inquiry TxPower is
-        unknown, we report -129.
+        emission, with a range of -128 to 127. If inquiry TxPower is unknown, we
+        report -129.
       </summary>
     </metric>
   </event>
@@ -160,15 +160,15 @@
     <metric name="RSSI" type="int">
       <summary>
         The inquiry RSSI of the paired device, recorded at the time of metrics
-        emission, with a range of -128 to 127. If inquiry RSSI is unknown,
-        we report -129.
+        emission, with a range of -128 to 127. If inquiry RSSI is unknown, we report
+        -129.
       </summary>
     </metric>
     <metric name="TxPower" type="int">
       <summary>
         The inquiry TxPower of the paired device, recorded at the time of metrics
-        emission, with a range of -128 to 127. If inquiry TxPower is
-        unknown, we report -129.
+        emission, with a range of -128 to 127. If inquiry TxPower is unknown, we
+        report -129.
       </summary>
     </metric>
   </event>
@@ -494,8 +494,8 @@
     </summary>
     <metric name="IsReceiving" type="int">
       <summary>
-        A boolean value describing if this devices is receiving this transfer.
-        If false, it is assumed to be the sender.
+        A boolean value describing if this devices is receiving this transfer. If
+        false, it is assumed to be the sender.
       </summary>
     </metric>
     <metric name="Platform" type="int">
@@ -541,8 +541,8 @@
     </summary>
     <metric name="IsReceiving" type="int">
       <summary>
-        A boolean value describing if this devices is receiving this transfer.
-        If false, it is assumed to be the sender.
+        A boolean value describing if this devices is receiving this transfer. If
+        false, it is assumed to be the sender.
       </summary>
     </metric>
     <metric name="Platform" type="int">
@@ -578,8 +578,8 @@
     </summary>
     <metric name="IsReceiving" type="int">
       <summary>
-        A boolean value describing if this devices is receiving this transfer.
-        If false, it is assumed to be the sender.
+        A boolean value describing if this devices is receiving this transfer. If
+        false, it is assumed to be the sender.
       </summary>
     </metric>
     <metric name="Platform" type="int">
@@ -616,8 +616,8 @@
     </summary>
     <metric name="IsReceiving" type="int">
       <summary>
-        A boolean value describing if this devices is receiving this transfer.
-        If false, it is assumed to be the sender.
+        A boolean value describing if this devices is receiving this transfer. If
+        false, it is assumed to be the sender.
       </summary>
     </metric>
     <metric name="Platform" type="int">
@@ -638,30 +638,29 @@
     </metric>
     <metric name="TimeToSelect" type="int">
       <summary>
-        The time in milliseconds it took to select this share target from the
-        time the target was discovered. This is only emitted for the sending
-        flow.
+        The time in milliseconds it took to select this share target from the time
+        the target was discovered. This is only emitted for the sending flow.
       </summary>
     </metric>
     <metric name="TimeToConnect" type="int">
       <summary>
-        The time in milliseconds it took to connect to this share target from
-        the time the target was discovered. This is only emitted for the sending
-        flow. This will not be set for targets that fail to connect.
+        The time in milliseconds it took to connect to this share target from the
+        time the target was discovered. This is only emitted for the sending flow.
+        This will not be set for targets that fail to connect.
       </summary>
     </metric>
     <metric name="TimeToAccept" type="int">
       <summary>
         The time in milliseconds it took the receiver to accept or reject the
-        transfer from the time the target was discovered. Receivers begin the
-        Nearby Share flow at discovery. This will not be set for a sender that
-        fails to connect. It will always be set for receivers.
+        transfer from the time the target was discovered. Receivers begin the Nearby
+        Share flow at discovery. This will not be set for a sender that fails to
+        connect. It will always be set for receivers.
       </summary>
     </metric>
     <metric name="TimeToTransferComplete" type="int">
       <summary>
-        The time in milliseconds it took the transfer to complete from the time
-        the target was discovered.
+        The time in milliseconds it took the transfer to complete from the time the
+        target was discovered.
       </summary>
     </metric>
     <metric name="InitialMedium" type="int">
@@ -672,8 +671,8 @@
     <metric name="TimeToUpgrade" type="int">
       <summary>
         The time in milliseconds it took the connection to upgrade the transfer
-        medium from the time the target was discovered. This will only be set if
-        an upgrade occurred.
+        medium from the time the target was discovered. This will only be set if an
+        upgrade occurred.
       </summary>
     </metric>
     <metric name="FinalMedium" type="int">
@@ -879,8 +878,8 @@
     </summary>
     <metric name="IPHShown" type="int">
       <summary>
-        Boolean if the IPH (In-product help) was shown when the icon was clicked.
-        1 if the IPH was shown 0 otherwise.
+        Boolean if the IPH (In-product help) was shown when the icon was clicked. 1
+        if the IPH was shown 0 otherwise.
       </summary>
     </metric>
   </event>
@@ -1930,7 +1929,11 @@
   <summary>
     Project for unit testing, do not use.
   </summary>
-
+  <enum name="Enum1">
+    <variant value="1">VARIANT1</variant>
+    <variant value="2">VARIANT2</variant>
+    <variant value="5">VARIANT3</variant>
+  </enum>
   <event name="TestEventSeven">
     <summary>
       Event for unit testing, do not use.
@@ -1938,6 +1941,17 @@
     <metric name="TestMetricSeven" type="double">
       <summary>
         A floating point value.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="TestEnum">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestEnumMetric" type="Enum1">
+      <summary>
+        An enum value.
       </summary>
     </metric>
   </event>
