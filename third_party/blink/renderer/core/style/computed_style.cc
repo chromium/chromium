@@ -1020,7 +1020,7 @@ void ComputedStyle::AdjustDiffForNeedsPaintInvalidation(
   }
 
   if (PaintImagesInternal()) {
-    for (const auto& image : *PaintImagesInternal()) {
+    for (const auto& image : PaintImagesInternal()->Images()) {
       DCHECK(image);
       if (DiffNeedsPaintInvalidationForPaintImage(*image, other, document)) {
         diff.SetNeedsNormalPaintInvalidation();
@@ -1241,7 +1241,7 @@ bool ComputedStyle::HasCSSPaintImagesUsingCustomProperty(
     const AtomicString& custom_property_name,
     const Document& document) const {
   if (PaintImagesInternal()) {
-    for (const auto& image : *PaintImagesInternal()) {
+    for (const auto& image : PaintImagesInternal()->Images()) {
       DCHECK(image);
       // IsPaintImage is true for CSS Paint images only, please refer to the
       // constructor of StyleGeneratedImage.

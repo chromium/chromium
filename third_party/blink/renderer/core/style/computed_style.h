@@ -3318,9 +3318,9 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   // PaintImage
   void AddPaintImage(StyleImage* image) {
     if (!PaintImagesInternal()) {
-      SetPaintImagesInternal(std::make_unique<PaintImages>());
+      MutablePaintImagesInternal() = MakeGarbageCollected<PaintImages>();
     }
-    MutablePaintImagesInternal()->push_back(image);
+    MutablePaintImagesInternal()->Images().push_back(image);
   }
 
   // TextAutosizingMultiplier
