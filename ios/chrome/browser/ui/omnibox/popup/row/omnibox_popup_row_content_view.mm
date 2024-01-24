@@ -27,9 +27,13 @@ const CGFloat kMultilineTextTrailingMargin = 4.0;
 const CGFloat kMultilineLineSpacing = 2.0;
 const CGFloat kTrailingButtonSize = 24;
 const CGFloat kTrailingButtonTrailingMargin = 14;
+/// Trailing button trailing margin with popout omnibox.
+const CGFloat kTrailingButtonTrailingMarginPopout = 22.0;
 const CGFloat kTextSpacing = 2.0f;
 const CGFloat kLeadingIconViewSize = 30.0f;
 const CGFloat kLeadingSpace = 17.0f;
+/// Leading space with popout omnibox.
+const CGFloat kLeadingSpacePopout = 23.0;
 const CGFloat kTextIconSpace = 14.0f;
 /// Top color opacity of the `_selectedBackgroundView`.
 const CGFloat kTopGradientColorOpacity = 0.85;
@@ -51,6 +55,9 @@ const CGFloat kTopGradientColorOpacity = 0.85;
   NSLayoutConstraint* _textTopConstraint;
   NSLayoutConstraint* _textTrailingToButtonConstraint;
   NSLayoutConstraint* _textTrailingConstraint;
+  /// Constraints changes with popout omnibox.
+  NSLayoutConstraint* _leadingConstraint;
+  NSLayoutConstraint* _trailingButtonTrailingConstraint;
 }
 
 - (instancetype)initWithConfiguration:
@@ -149,6 +156,14 @@ const CGFloat kTopGradientColorOpacity = 0.85;
         constraintEqualToAnchor:_textStackView.trailingAnchor
                        constant:kTextTrailingMargin];
 
+    // Constraint updated with popout omnibox.
+    _trailingButtonTrailingConstraint = [self.trailingAnchor
+        constraintEqualToAnchor:_trailingButton.trailingAnchor
+                       constant:kTrailingButtonTrailingMargin];
+    _leadingConstraint =
+        [_leadingIconView.leadingAnchor constraintEqualToAnchor:leadingAnchor
+                                                       constant:kLeadingSpace];
+
     [NSLayoutConstraint activateConstraints:@[
       // Row has a minimum height.
       [self.heightAnchor constraintGreaterThanOrEqualToConstant:
@@ -161,8 +176,7 @@ const CGFloat kTopGradientColorOpacity = 0.85;
           constraintEqualToConstant:kLeadingIconViewSize],
       [_leadingIconView.centerYAnchor
           constraintEqualToAnchor:self.centerYAnchor],
-      [_leadingIconView.leadingAnchor constraintEqualToAnchor:leadingAnchor
-                                                     constant:kLeadingSpace],
+      _leadingConstraint,
 
       // Position textStackView "after" leadingIconView.
       _textTopConstraint,
@@ -172,16 +186,14 @@ const CGFloat kTopGradientColorOpacity = 0.85;
           constraintEqualToAnchor:_leadingIconView.trailingAnchor
                          constant:kTextIconSpace],
 
+      // Trailing button constraints.
       [_trailingButton.heightAnchor
           constraintEqualToConstant:kTrailingButtonSize],
       [_trailingButton.widthAnchor
           constraintEqualToConstant:kTrailingButtonSize],
-
       [_trailingButton.centerYAnchor
           constraintEqualToAnchor:self.centerYAnchor],
-      [self.trailingAnchor
-          constraintEqualToAnchor:_trailingButton.trailingAnchor
-                         constant:kTrailingButtonTrailingMargin],
+      _trailingButtonTrailingConstraint,
 
       // Separator height anchor added in `didMoveToWindow`.
       [_separator.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
@@ -321,6 +333,16 @@ const CGFloat kTopGradientColorOpacity = 0.85;
     _textTrailingConstraint.constant = kTextTrailingMargin;
     _textTrailingToButtonConstraint.constant = kTextTrailingMargin;
     _textTopConstraint.constant = kTextTopMargin;
+  }
+
+  // Popout omnibox margins.
+  if (configuration.isPopoutOmnibox) {
+    _trailingButtonTrailingConstraint.constant =
+        kTrailingButtonTrailingMarginPopout;
+    _leadingConstraint.constant = kLeadingSpacePopout;
+  } else {
+    _trailingButtonTrailingConstraint.constant = kTrailingButtonTrailingMargin;
+    _leadingConstraint.constant = kLeadingSpace;
   }
 
   self.directionalLayoutMargins = configuration.directionalLayoutMargin;

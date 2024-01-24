@@ -71,6 +71,8 @@
 // Margins.
 @property(nonatomic, assign, readonly)
     NSDirectionalEdgeInsets directionalLayoutMargin;
+// Some margins are updated with popout omnibox.
+@property(nonatomic, assign, readonly) BOOL isPopoutOmnibox;
 
 @end
 

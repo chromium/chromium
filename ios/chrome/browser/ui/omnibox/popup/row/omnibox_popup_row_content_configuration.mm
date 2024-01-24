@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_content_view.h"
@@ -63,6 +64,7 @@ const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
 // Margins.
 @property(nonatomic, assign, readwrite)
     NSDirectionalEdgeInsets directionalLayoutMargin;
+@property(nonatomic, assign, readwrite) BOOL isPopoutOmnibox;
 
 @end
 
@@ -157,6 +159,7 @@ const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
   configuration.secondaryText = self.secondaryText;
   configuration.trailingIconTintColor = self.trailingIconTintColor;
   configuration.directionalLayoutMargin = self.directionalLayoutMargin;
+  configuration.isPopoutOmnibox = self.isPopoutOmnibox;
   return configuration;
 }
 
@@ -211,6 +214,12 @@ const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
           NSDirectionalEdgeInsetsMake(0, leadingMargin, 0, 0);
     }
   }
+
+  // Update margins for popout omnibox. Popout omnibox is only available on
+  // regular size class.
+  configuration.isPopoutOmnibox =
+      IsIpadPopoutOmniboxEnabled() &&
+      IsRegularXRegularSizeClass(state.traitCollection);
 
   return configuration;
 }
