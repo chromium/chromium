@@ -142,7 +142,7 @@ public abstract class NotificationBuilderBase {
     protected PendingIntentProvider mContentIntent;
     protected PendingIntentProvider mDeleteIntent;
     protected List<Action> mActions = new ArrayList<>(MAX_AUTHOR_PROVIDED_ACTION_BUTTONS);
-    protected Action mSettingsAction;
+    protected List<Action> mSettingsActions = new ArrayList<>(1);
     protected int mDefaults;
     protected long[] mVibratePattern;
     protected boolean mSilent;
@@ -150,6 +150,8 @@ public abstract class NotificationBuilderBase {
     protected boolean mRenotify;
     protected int mPriority;
     private Bitmap mLargeIcon;
+    private boolean mSuppressShowingLargeIcon;
+    protected long mTimeoutAfterMs;
 
     public NotificationBuilderBase(Resources resources) {
         mLargeIconWidthPx =
@@ -195,6 +197,22 @@ public abstract class NotificationBuilderBase {
     /** Sets the large icon that is shown in the notification. */
     public NotificationBuilderBase setLargeIcon(@Nullable Bitmap icon) {
         mLargeIcon = icon;
+        return this;
+    }
+
+    /** Sets whether to hide the large icon that would normally be shown in the notification. */
+    public NotificationBuilderBase setSuppressShowingLargeIcon(boolean hideLargeIcon) {
+        mSuppressShowingLargeIcon = hideLargeIcon;
+        return this;
+    }
+
+    /**
+     * Sets the duration after which to auto-close the notification, as if the user closed it.
+     *
+     * @param ms The timeout duration in milliseconds. No timeout unless positive.
+     */
+    public NotificationBuilderBase setTimeoutAfter(long ms) {
+        mTimeoutAfterMs = ms;
         return this;
     }
 
@@ -334,17 +352,23 @@ public abstract class NotificationBuilderBase {
         mActions.add(new Action(iconBitmap, limitLength(title), intent, actionType, placeholder));
     }
 
-    /** Adds an action to the notification for opening the settings screen. */
+    /**
+     * Adds an action to the notification for performing a settings related action, such as opening
+     * the settings screen or revoking the permission in one tap.
+     */
     public NotificationBuilderBase addSettingsAction(
-            int iconId, @Nullable CharSequence title, PendingIntentProvider intent) {
-        mSettingsAction =
+            int iconId,
+            @Nullable CharSequence title,
+            PendingIntentProvider intent,
+            @NotificationUmaTracker.ActionType int umaActionType) {
+        mSettingsActions.add(
                 new Action(
                         iconId,
                         limitLength(title),
                         intent,
                         Action.Type.BUTTON,
                         null,
-                        NotificationUmaTracker.ActionType.SETTINGS);
+                        umaActionType));
         return this;
     }
 
@@ -407,6 +431,9 @@ public abstract class NotificationBuilderBase {
      * <p>See {@link NotificationBuilderBase#ensureNormalizedIcon} for more details.
      */
     protected Bitmap getNormalizedLargeIcon() {
+        if (mSuppressShowingLargeIcon) {
+            return null;
+        }
         return ensureNormalizedIcon(mLargeIcon, mOrigin);
     }
 

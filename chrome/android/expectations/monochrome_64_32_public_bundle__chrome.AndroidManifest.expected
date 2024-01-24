@@ -768,6 +768,9 @@
       <intent-filter>  # DIFF-ANCHOR: 1c1c5ed8
         <action android:name="org.chromium.chrome.browser.notifications.CLICK_NOTIFICATION"/>
         <action android:name="org.chromium.chrome.browser.notifications.CLOSE_NOTIFICATION"/>
+        <action android:name="org.chromium.chrome.browser.notifications.COMMIT_UNSUBSCRIBE"/>
+        <action android:name="org.chromium.chrome.browser.notifications.PRE_UNSUBSCRIBE"/>
+        <action android:name="org.chromium.chrome.browser.notifications.UNDO_UNSUBSCRIBE"/>
       </intent-filter>  # DIFF-ANCHOR: 1c1c5ed8
     </receiver>  # DIFF-ANCHOR: df76237f
     <receiver  # DIFF-ANCHOR: a9b53579

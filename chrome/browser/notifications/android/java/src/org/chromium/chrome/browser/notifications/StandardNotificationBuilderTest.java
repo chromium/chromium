@@ -107,7 +107,11 @@ public class StandardNotificationBuilderTest {
                 .setDeleteIntent(outContentAndDeleteIntents[1])
                 .addButtonAction(actionIcon, "button 1", createIntent(context, "button1"))
                 .addButtonAction(actionIcon, "button 2", createIntent(context, "button2"))
-                .addSettingsAction(/* iconId= */ 0, "settings", createIntent(context, "settings"));
+                .addSettingsAction(
+                        /* iconId= */ 0,
+                        "settings",
+                        createIntent(context, "settings"),
+                        /* umaActionType= */ 0);
     }
 
     private Notification buildNotification(NotificationBuilderBase builder) {

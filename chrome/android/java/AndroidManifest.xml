@@ -1015,6 +1015,9 @@ by a child template that "extends" this file.
             <intent-filter>
                 <action android:name="org.chromium.chrome.browser.notifications.CLICK_NOTIFICATION" />
                 <action android:name="org.chromium.chrome.browser.notifications.CLOSE_NOTIFICATION" />
+                <action android:name="org.chromium.chrome.browser.notifications.PRE_UNSUBSCRIBE" />
+                <action android:name="org.chromium.chrome.browser.notifications.UNDO_UNSUBSCRIBE" />
+                <action android:name="org.chromium.chrome.browser.notifications.COMMIT_UNSUBSCRIBE" />
             </intent-filter>
         </receiver>
 

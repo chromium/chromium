@@ -51,6 +51,8 @@ BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kMuteNotificationSnoozeAction);
+#else
+BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribe);
 #endif
 
 BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlocked);

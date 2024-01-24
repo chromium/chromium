@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/metrics/mock_notification_metrics_logger.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
@@ -192,9 +193,14 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
       std::make_unique<PersistentNotificationHandler>();
   handler->DisableNotifications(&profile_, origin_);
 
+#if BUILDFLAG(IS_ANDROID)
+  PermissionStatus kExpectedDisabledStatus = PermissionStatus::ASK;
+#else
+  PermissionStatus kExpectedDisabledStatus = PermissionStatus::DENIED;
+#endif
   ASSERT_EQ(permission_context
                 ->GetPermissionStatus(nullptr /* render_frame_host */, origin_,
                                       origin_)
                 .status,
-            PermissionStatus::DENIED);
+            kExpectedDisabledStatus);
 }

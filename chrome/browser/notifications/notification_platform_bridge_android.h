@@ -75,6 +75,17 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
       jboolean incognito,
       jboolean by_user);
 
+  // Called by the Java implementation when the user commits to unsubscribing
+  // from notification from this origin.
+  void OnNotificationDisablePermission(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& java_object,
+      const base::android::JavaParamRef<jstring>& java_notification_id,
+      jint java_notification_type,
+      const base::android::JavaParamRef<jstring>& java_origin,
+      const base::android::JavaParamRef<jstring>& java_profile_id,
+      jboolean incognito);
+
   // NotificationPlatformBridge implementation.
   void Display(NotificationHandler::Type notification_type,
                Profile* profile,

@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.service.notification.StatusBarNotification;
 import android.text.TextUtils;
-import android.webkit.URLUtil;
 
 import androidx.annotation.RequiresApi;
 
@@ -24,10 +23,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class that suspends and revives notifications.
@@ -57,14 +58,26 @@ public class NotificationSuspender {
      */
     public void suspendNotificationsFromDomains(List<String> fqdns) {
         List<String> storedNotificationIds =
-                storeNotificationResources(getActiveNotificationsForFqdns(fqdns));
+                storeNotificationResources(
+                        getActiveNotificationsForOrigins(getOriginsForDomains(fqdns)));
         cancelNotificationsWithIds(storedNotificationIds);
     }
 
     /**
-     * Stores resources for the given notifications back into the native NotificationDatabase.
+     * Stores resources for all notifications from a given origin back into the native
+     * NotificationDatabase.
      *
-     * This allows re-displaying these notification later.
+     * <p>This allows re-displaying these notification later.
+     *
+     * @param notifications The origins for which all notification resources to store.
+     * @return The list of notificationIds for which resources were stored.
+     */
+    public List<String> storeNotificationResourcesFromOrigins(List<Uri> origins) {
+        return storeNotificationResources(getActiveNotificationsForOrigins(origins));
+    }
+
+    /**
+     * Stores resources for the given notifications back into the native NotificationDatabase.
      *
      * @param notifications The list of notifications whose resources to store.
      */
@@ -93,7 +106,6 @@ public class NotificationSuspender {
         return new ArrayList<String>(Arrays.asList(notificationIds));
     }
 
-
     /**
      * Unsuspends notifications from the given domains.
      *
@@ -102,17 +114,26 @@ public class NotificationSuspender {
      * @param fqdns The list of domain strings to unsuspend notifications from.
      */
     public void unsuspendNotificationsFromDomains(List<String> fqdns) {
-        if (fqdns.isEmpty()) {
+        unsuspendNotificationsFromOrigins(getOriginsForDomains(fqdns));
+    }
+
+    /**
+     * Unsuspends notifications from the given origins.
+     *
+     * @param fqdns The list of domain strings to unsuspend notifications from.
+     */
+    public void unsuspendNotificationsFromOrigins(List<Uri> origins) {
+        if (origins.isEmpty()) {
             return;
         }
 
-        // Handle both http and https schemes as native expects origins.
-        String[] origins = new String[fqdns.size() * 2];
-        for (int i = 0; i < fqdns.size(); ++i) {
-            origins[i * 2 + 0] = "http://" + fqdns.get(i);
-            origins[i * 2 + 1] = "https://" + fqdns.get(i);
-        }
-        NotificationSuspenderJni.get().reDisplayNotifications(mProfile, origins);
+        NotificationSuspenderJni.get()
+                .reDisplayNotifications(
+                        mProfile,
+                        origins.stream()
+                                .map((origin) -> origin.toString())
+                                .collect(Collectors.toList())
+                                .toArray(new String[0]));
     }
 
     /**
@@ -128,17 +149,33 @@ public class NotificationSuspender {
         return host == null ? "" : host;
     }
 
-    private void cancelNotificationsWithIds(List<String> notificationIds) {
+    /**
+     * Cancels the notifications with the given notification IDs.
+     *
+     * @param notificationIds The IDs of notifications to cancel.
+     */
+    public void cancelNotificationsWithIds(List<String> notificationIds) {
         for (String notificationId : notificationIds) {
             mNotificationManager.cancel(
                     /* tag= */ notificationId, NotificationPlatformBridge.PLATFORM_ID);
         }
     }
 
-    private List<NotificationWrapper> getActiveNotificationsForFqdns(List<String> fqdns) {
+    private List<Uri> getOriginsForDomains(List<String> fqdns) {
+        final String[] notificationSchemes = {UrlConstants.HTTPS_SCHEME, UrlConstants.HTTP_SCHEME};
+        ArrayList<Uri> origins = new ArrayList<Uri>();
+        for (String fqdn : fqdns) {
+            for (String scheme : notificationSchemes) {
+                origins.add(new Uri.Builder().scheme(scheme).authority(fqdn).build());
+            }
+        }
+        return origins;
+    }
+
+    private List<NotificationWrapper> getActiveNotificationsForOrigins(List<Uri> origins) {
         List<NotificationWrapper> notifications = new ArrayList<>();
 
-        if (fqdns.isEmpty()) {
+        if (origins.isEmpty()) {
             return notifications;
         }
 
@@ -146,8 +183,7 @@ public class NotificationSuspender {
             if (notification.getId() != NotificationPlatformBridge.PLATFORM_ID) continue;
             String tag = notification.getTag();
             String origin = NotificationPlatformBridge.getOriginFromNotificationTag(tag);
-            if (!URLUtil.isHttpUrl(origin) && !URLUtil.isHttpsUrl(origin)) continue;
-            if (!fqdns.contains(Uri.parse(origin).getHost())) continue;
+            if (!origins.contains(Uri.parse(origin))) continue;
             NotificationMetadata metadata =
                     new NotificationMetadata(
                             NotificationUmaTracker.SystemNotificationType.SITES,

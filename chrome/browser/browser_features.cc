@@ -114,6 +114,12 @@ BASE_FEATURE(kDoubleTapToZoomInTabletMode,
 BASE_FEATURE(kMuteNotificationSnoozeAction,
              "MuteNotificationSnoozeAction",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+// Adds an "Unsubscribe" action to web push notifications that allows stopping
+// notifications from a given origin with a single tap (with an option to undo).
+BASE_FEATURE(kNotificationOneTapUnsubscribe,
+             "NotificationOneTapUnsubscribe",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Gates sandboxed iframe navigation toward external protocol behind any of:

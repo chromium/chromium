@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
 #include "chrome/browser/notifications/notification_common.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
@@ -192,8 +194,15 @@ void PersistentNotificationHandler::DisableNotifications(Profile* profile,
       scoped_revocation_reporter(
           profile, origin, origin, ContentSettingsType::NOTIFICATIONS,
           permissions::PermissionSourceUI::INLINE_SETTINGS);
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, NotificationChannelsProviderAndroid does not support moving a
+  // channel from ALLOW to BLOCK state, so simply delete the channel instead.
+  NotificationPermissionContext::UpdatePermission(profile, origin,
+                                                  CONTENT_SETTING_DEFAULT);
+#else
   NotificationPermissionContext::UpdatePermission(profile, origin,
                                                   CONTENT_SETTING_BLOCK);
+#endif
 }
 
 void PersistentNotificationHandler::OpenSettings(Profile* profile,

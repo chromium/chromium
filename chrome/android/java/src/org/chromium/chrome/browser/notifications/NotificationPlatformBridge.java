@@ -38,6 +38,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -63,7 +64,11 @@ import org.chromium.url.URI;
 import org.chromium.webapk.lib.client.WebApkIdentityServiceClient;
 
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Provides the ability for the NotificationPlatformBridgeAndroid to talk to the Android platform
@@ -85,6 +90,11 @@ public class NotificationPlatformBridge {
 
     private static final int[] EMPTY_VIBRATION_PATTERN = new int[0];
 
+    // The duration after which the "provisionally unsubscribed" service notification is auto-closed
+    // and the permission revocation commits.
+    // TODO(crbug.com/1521424): Fine tune this duration, and possibly turn it off for A11Y users.
+    private static final long PROVISIONAL_UNSUBSCRIBE_DURATION_MS = 10 * 1000;
+
     private static NotificationPlatformBridge sInstance;
 
     private static NotificationManagerProxy sNotificationManagerOverride;
@@ -94,6 +104,16 @@ public class NotificationPlatformBridge {
     private final NotificationManagerProxy mNotificationManager;
 
     private long mLastNotificationClickMs;
+
+    // Set of origins that are showing the "provisionally unsubscribed" service notification, and
+    // for which we will revoke the permission after a grace period of
+    // `PROVISIONAL_UNSUBSCRIBE_DURATION_MS`, unless the user hits the `ACTION_UNDO_UNSUBSCRIBE`.
+    private Set<String> mOriginsWithProvisionallyRevokedPermissions;
+
+    // Set of `notificationId`s for which we need to expressly clear an Android-side dismiss timeout
+    // if the `notificationId` is to be re-used for another notification, otherwise Android will
+    // mercilessly kill the new notification.
+    private Set<String> mNotificationIdsWithStaleTimeouts;
 
     private TrustedWebActivityClient mTwaClient;
 
@@ -172,6 +192,17 @@ public class NotificationPlatformBridge {
         } else {
             mNotificationManager = new NotificationManagerProxyImpl(context);
         }
+
+        // This set will be reset to empty if the application process is killed and then restarted.
+        // However, this is unlikely during the brief `PROVISIONAL_UNSUBSCRIBE_DURATION_MS` period.
+        // Even if it happens, it is not catastrophic: The revocation will still happen as that is
+        // wired up to the service notification getting closed. However, we won't suppress new
+        // notifications anymore.
+        mOriginsWithProvisionallyRevokedPermissions = new HashSet<String>();
+
+        // This will also be reset on process kill, however, it will be non-empty only for periods
+        // of O(k*100ms). If it does get wiped, we may cancel some notifications prematurely.
+        mNotificationIdsWithStaleTimeouts = new HashSet<String>();
     }
 
     /**
@@ -226,7 +257,11 @@ public class NotificationPlatformBridge {
                                                 .EXTRA_NOTIFICATION_INFO_WEBAPK_PACKAGE),
                                 ""));
 
-        Log.i(TAG, "Dispatching notification event to native: " + attributes.notificationId);
+        Log.i(
+                TAG,
+                String.format(
+                        "Dispatching notification event to native: id=%s action=%s",
+                        attributes.notificationId, intent.getAction()));
 
         if (NotificationConstants.ACTION_CLICK_NOTIFICATION.equals(intent.getAction())) {
             int actionIndex =
@@ -239,6 +274,15 @@ public class NotificationPlatformBridge {
             // dismissed by the user, either with the 'Clear All' button or by swiping it away
             // individually" (though a third-party NotificationListenerService may also trigger it).
             sInstance.onNotificationClosed(attributes, /* byUser= */ true);
+            return true;
+        } else if (NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(intent.getAction())) {
+            sInstance.onNotificationPreUnsubcribe(attributes);
+            return true;
+        } else if (NotificationConstants.ACTION_UNDO_UNSUBSCRIBE.equals(intent.getAction())) {
+            sInstance.onNotificationUndoUnsubcribe(attributes);
+            return true;
+        } else if (NotificationConstants.ACTION_COMMIT_UNSUBSCRIBE.equals(intent.getAction())) {
+            sInstance.onNotificationCommitUnsubscribe(attributes);
             return true;
         }
 
@@ -668,11 +712,15 @@ public class NotificationPlatformBridge {
             return;
         }
 
-        appendSiteSettingsButton(
-                notificationBuilder,
-                identifyingAttributes.notificationId,
-                identifyingAttributes.origin,
-                actions);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE)) {
+            appendUnsubscribeButton(notificationBuilder, identifyingAttributes);
+        } else {
+            appendSiteSettingsButton(
+                    notificationBuilder,
+                    identifyingAttributes.notificationId,
+                    identifyingAttributes.origin,
+                    actions);
+        }
 
         NotificationWrapper notification =
                 buildNotificationWrapper(notificationBuilder, identifyingAttributes.notificationId);
@@ -724,6 +772,10 @@ public class NotificationPlatformBridge {
             NotificationWrapper notification) {
         if (identifyingAttributes.notificationType != NotificationType.WEB_PERSISTENT) {
             return Promise.fulfilled(false);
+        }
+
+        if (mOriginsWithProvisionallyRevokedPermissions.contains(identifyingAttributes.origin)) {
+            return Promise.fulfilled(true);
         }
 
         if (!UsageStatsService.isEnabled()) {
@@ -779,6 +831,18 @@ public class NotificationPlatformBridge {
             notificationBuilder.setChannelId(channelId);
         }
 
+        // Work around the following bug in Android: if setTimeoutAfter() is called on a Builder,
+        // then the corresponding notification shown, then cancelled, and then later another
+        // notification is shown with the same ID/tag without specify any timeout, the new
+        // notification will still "inherit" the original timeout. There is no way to specify "no
+        // timeout" other than specifying a sufficiently long timeout instead (e.g. one week).
+        //
+        // TODO(crbug.com/1521437): Find a more elegant solution to this problem.
+        if (mNotificationIdsWithStaleTimeouts.contains(identifyingAttributes.notificationId)) {
+            notificationBuilder.setTimeoutAfter(/* ms= */ 1000 * 3600 * 24 * 7);
+            mNotificationIdsWithStaleTimeouts.remove(identifyingAttributes.notificationId);
+        }
+
         for (int actionIndex = 0; actionIndex < actions.length; actionIndex++) {
             ActionInfo action = actions[actionIndex];
             boolean mutable = (action.type == NotificationActionType.TEXT);
@@ -811,6 +875,80 @@ public class NotificationPlatformBridge {
         notificationBuilder.setSilent(silent);
 
         return notificationBuilder;
+    }
+
+    /**
+     * Displays a service notification informing the user that they have unsubscribed from
+     * notifications from a given site.
+     *
+     * <p>To implement undo in simple terms, the permission will not yet actually be revoked while
+     * this notification is showing. Instead, the permission is revoked when this notification is
+     * OK'ed, dismissed, or times out.
+     */
+    private void displayProvisionallyUnsubscribedNotification(
+            NotificationIdentifyingAttributes identifyingAttributes) {
+        Context context = ContextUtils.getApplicationContext();
+        Resources res = context.getResources();
+
+        NotificationBuilderBase notificationBuilder =
+                prepareNotificationBuilder(
+                        identifyingAttributes,
+                        /* vibrateEnabled= */ false,
+                        res.getString(R.string.notification_provisionally_unsubscribed_title),
+                        res.getString(
+                                R.string.notification_provisionally_unsubscribed_body,
+                                UrlFormatter.formatUrlForSecurityDisplay(
+                                        identifyingAttributes.origin,
+                                        SchemeDisplay.OMIT_HTTP_AND_HTTPS)),
+                        /* image= */ null,
+                        /* icon= */ null,
+                        /* badge= */ null,
+                        /* vibrationPattern= */ null,
+                        /* timestamp= */ -1,
+                        /* renotify= */ false,
+                        /* silent= */ true,
+                        /* actions= */ new ActionInfo[] {});
+
+        if (shouldSetChannelId(/* forWebApk= */ false)) {
+            String channelId =
+                    SiteChannelsManager.getInstance()
+                            .getChannelIdForOrigin(identifyingAttributes.origin);
+            notificationBuilder.setChannelId(channelId);
+        }
+
+        // TODO(crbug.com/1521438): We are setting quite a few uncommon attributes here, consider
+        // just not using NotificationBuilderBase.
+        notificationBuilder.setSuppressShowingLargeIcon(true);
+        notificationBuilder.setTimeoutAfter(PROVISIONAL_UNSUBSCRIBE_DURATION_MS);
+
+        // TODO(crbug.com/1521439): Find a robust solution here. The `NotificationIntentInterceptor`
+        // wraps this into another `PendingIntent` that will be `Intent.filterEquals` to the normal
+        // `ACTION_CLOSE_NOTIFICATION`, thus presently this only works because the interceptor also
+        // copies the `FLAG_UPDATE_CURRENT` flag from the inner `PendingIntent`.
+        notificationBuilder.setDeleteIntent(
+                makePendingIntent(
+                        identifyingAttributes,
+                        NotificationConstants.ACTION_COMMIT_UNSUBSCRIBE,
+                        /* actionIndex= */ -1,
+                        /* mutable= */ false));
+
+        addProvisionallyUnsubscribedNotificationAction(
+                notificationBuilder,
+                identifyingAttributes,
+                NotificationConstants.ACTION_UNDO_UNSUBSCRIBE,
+                NotificationUmaTracker.ActionType.UNDO_UNSUBSCRIBE,
+                res.getString(R.string.notification_undo_unsubscribe_button));
+
+        addProvisionallyUnsubscribedNotificationAction(
+                notificationBuilder,
+                identifyingAttributes,
+                NotificationConstants.ACTION_COMMIT_UNSUBSCRIBE,
+                NotificationUmaTracker.ActionType.COMMIT_UNSUBSCRIBE_EXPLICIT,
+                res.getString(R.string.notification_commit_unsubscribe_button));
+
+        NotificationWrapper notification =
+                buildNotificationWrapper(notificationBuilder, identifyingAttributes.notificationId);
+        mNotificationManager.notify(notification);
     }
 
     private void appendSiteSettingsButton(
@@ -852,7 +990,44 @@ public class NotificationPlatformBridge {
         // If the settings button is displayed together with the other buttons it has to be the
         // last one, so add it after the other actions.
         notificationBuilder.addSettingsAction(
-                settingsIconId, settingsTitle, settingsIntentProvider);
+                settingsIconId,
+                settingsTitle,
+                settingsIntentProvider,
+                NotificationUmaTracker.ActionType.SETTINGS);
+    }
+
+    private void appendUnsubscribeButton(
+            NotificationBuilderBase notificationBuilder,
+            NotificationIdentifyingAttributes identifyingAttributes) {
+        PendingIntentProvider unsubscribeIntentProvider =
+                makePendingIntent(
+                        identifyingAttributes,
+                        NotificationConstants.ACTION_PRE_UNSUBSCRIBE,
+                        /* actionIndex= */ -1,
+                        false);
+
+        Context context = ContextUtils.getApplicationContext();
+        Resources res = context.getResources();
+
+        // TODO(crbug.com/1519634): Double check if this icon is actually used on any Android
+        // versions and/or flavors.
+        notificationBuilder.addSettingsAction(
+                /* iconId= */ 0,
+                res.getString(R.string.notification_unsubscribe_button),
+                unsubscribeIntentProvider,
+                NotificationUmaTracker.ActionType.PRE_UNSUBSCRIBE);
+    }
+
+    private void addProvisionallyUnsubscribedNotificationAction(
+            NotificationBuilderBase notificationBuilder,
+            NotificationIdentifyingAttributes identifyingAttributes,
+            String action,
+            @NotificationUmaTracker.ActionType int umaActionType,
+            CharSequence actionLabel) {
+        PendingIntentProvider intentProvider =
+                makePendingIntent(identifyingAttributes, action, /* actionIndex= */ -1, false);
+        notificationBuilder.addSettingsAction(
+                /* iconId= */ 0, actionLabel, intentProvider, umaActionType);
     }
 
     private NotificationWrapper buildNotificationWrapper(
@@ -1016,6 +1191,79 @@ public class NotificationPlatformBridge {
                         byUser);
     }
 
+    /**
+     * Called when the user clicks the `ACTION_PRE_UNSUBSCRIBE` button.
+     *
+     * <p>Replaces the clicked notification with a "provisionally unsubscribed" service
+     * notification. While that is showing, all new notifications from the origin are suspended, but
+     * the permission is only revoked once it is dismissed/okay'ed/timed out.
+     *
+     * @param identifyingAttributes Common attributes identifying a notification and its source.
+     */
+    private void onNotificationPreUnsubcribe(
+            NotificationIdentifyingAttributes identifyingAttributes) {
+        // TODO(crbug.com/1521432): Verify if we can/need to use the correct profile here.
+        NotificationSuspender suspender =
+                new NotificationSuspender(Profile.getLastUsedRegularProfile());
+        List<String> notificationIdsToCancel =
+                suspender.storeNotificationResourcesFromOrigins(
+                        Collections.singletonList(Uri.parse(identifyingAttributes.origin)));
+
+        mOriginsWithProvisionallyRevokedPermissions.add(identifyingAttributes.origin);
+        displayProvisionallyUnsubscribedNotification(identifyingAttributes);
+
+        notificationIdsToCancel.remove(identifyingAttributes.notificationId);
+        suspender.cancelNotificationsWithIds(notificationIdsToCancel);
+    }
+
+    /**
+     * Called when the user clicks the `ACTION_UNDO_UNSUBSCRIBE` button on the "provisionally
+     * unsubscribed" service notification.
+     *
+     * <p>Restores the clicked notification and all other notifications from that origin by
+     * unsuspending them.
+     *
+     * @param identifyingAttributes Common attributes identifying a notification and its source.
+     */
+    private void onNotificationUndoUnsubcribe(
+            NotificationIdentifyingAttributes identifyingAttributes) {
+        // Manually canceling the "provisionally unsubscribed" notification is needed in case the
+        // website closed the web notification that we replaced with it.
+        mNotificationManager.cancel(identifyingAttributes.notificationId, PLATFORM_ID);
+        mOriginsWithProvisionallyRevokedPermissions.remove(identifyingAttributes.origin);
+        mNotificationIdsWithStaleTimeouts.add(identifyingAttributes.notificationId);
+
+        // TODO(crbug.com/1521432): Verify if we can/need to use the correct profile here.
+        NotificationSuspender suspender =
+                new NotificationSuspender(Profile.getLastUsedRegularProfile());
+        suspender.unsuspendNotificationsFromOrigins(
+                Collections.singletonList(Uri.parse(identifyingAttributes.origin)));
+    }
+
+    /**
+     * Called when the user clicks the `ACTION_COMMIT_UNSUBSCRIBE` button, expressly dismisses the
+     * "provisionally unsubscribed" service notification, or if the service notification times out.
+     *
+     * <p>Handles "unsubscribing", which in practice means resetting the permission for the origin,
+     * which will delete the notification channel, issue an FCM unsubscribe request, and cancel all
+     * notification, including the "Provisionally unsubscribed" service notification.
+     *
+     * @param identifyingAttributes Common attributes identifying a notification and its source.
+     */
+    private void onNotificationCommitUnsubscribe(
+            NotificationIdentifyingAttributes identifyingAttributes) {
+        NotificationPlatformBridgeJni.get()
+                .onNotificationDisablePermission(
+                        mNativeNotificationPlatformBridge,
+                        NotificationPlatformBridge.this,
+                        identifyingAttributes.notificationId,
+                        identifyingAttributes.notificationType,
+                        identifyingAttributes.origin,
+                        identifyingAttributes.profileId,
+                        identifyingAttributes.incognito);
+        mOriginsWithProvisionallyRevokedPermissions.remove(identifyingAttributes.origin);
+    }
+
     private TrustedWebActivityClient getTwaClient() {
         if (mTwaClient == null) {
             mTwaClient = ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient();
@@ -1049,6 +1297,15 @@ public class NotificationPlatformBridge {
                 String profileId,
                 boolean incognito,
                 boolean byUser);
+
+        void onNotificationDisablePermission(
+                long nativeNotificationPlatformBridgeAndroid,
+                NotificationPlatformBridge caller,
+                String notificationId,
+                @NotificationType int notificationType,
+                String origin,
+                String profileId,
+                boolean incognito);
 
         void storeCachedWebApkPackageForNotificationId(
                 long nativeNotificationPlatformBridgeAndroid,

@@ -2660,6 +2660,21 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_NOTIFICATION_SITE_SETTINGS_BUTTON" desc="Text of a button shown on notifications, that opens the Site Settings of the website that showed the notification. (If it isn't possible to fit within the char limit, the string will be ellipsized if 3 buttons are shown side by side, so try to ensure that the user can guess the meaning from the first 8 characters). [CHAR_LIMIT=9]">
         Settings
       </message>
+      <message name="IDS_NOTIFICATION_UNSUBSCRIBE_BUTTON" desc="Text of a button shown by the system on all notifications, allowing the user to unsubscribe from notifications from a web site in a single click (with an option to undo later). Note: there is very little horizontal space for this button. If it isn't possible to fit within the char limit, the string will be ellipsized if 3 buttons are shown side by side, so try to ensure that the user can guess the meaning from the first 8 characters. [CHAR_LIMIT=11]">
+        Unsubscribe
+      </message>
+      <message name="IDS_NOTIFICATION_PROVISIONALLY_UNSUBSCRIBED_TITLE" desc="Title of a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site.">
+        Unsubscribed from notifications
+      </message>
+      <message name="IDS_NOTIFICATION_PROVISIONALLY_UNSUBSCRIBED_BODY" desc="Body text of a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site.">
+        You'll no longer receive notifications from <ph name="DOMAIN">%1$s<ex>example.com</ex></ph>.
+      </message>
+      <message name="IDS_NOTIFICATION_UNDO_UNSUBSCRIBE_BUTTON" desc="Label for an action button on a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site. Clicking the button allows the user to undo unsubscribing, and continue receiving notifications instead.">
+        Undo
+      </message>
+      <message name="IDS_NOTIFICATION_COMMIT_UNSUBSCRIBE_BUTTON" desc="Label for an action button on a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site. Clicking the button allows the user to acknowledge unsubscribing and dismiss this notification.">
+        Okay
+      </message>
       <message name="IDS_NOTIFICATION_MANAGE_BUTTON" desc="Text of a button shown on notifications, that opens the Chrome notifications settings page. This allows users to edit notification settings when a site asks them to allow notifications. [CHAR_LIMIT=9]">
         Manage
       </message>
