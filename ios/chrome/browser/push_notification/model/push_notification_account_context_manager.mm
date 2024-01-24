@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
@@ -17,7 +18,7 @@
 
 @implementation PushNotificationAccountContextManager {
   // Used to retrieve BrowserStates located at a given path.
-  ios::ChromeBrowserStateManager* _chromeBrowserStateManager;
+  raw_ptr<ios::ChromeBrowserStateManager> _chromeBrowserStateManager;
 
   // A dictionary that maps a user's GAIA ID to an unsigned integer representing
   // the number of times the account is signed in across BrowserStates.

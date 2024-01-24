@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/optional_util.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
@@ -58,7 +59,7 @@ class PendingUnsafeResourceStorage {
     void SafeBrowsingAllowListDestroyed(
         SafeBrowsingUrlAllowList* allow_list) override;
 
-    PendingUnsafeResourceStorage* storage_ = nullptr;
+    raw_ptr<PendingUnsafeResourceStorage> storage_ = nullptr;
     base::ScopedObservation<SafeBrowsingUrlAllowList,
                             SafeBrowsingUrlAllowList::Observer>
         scoped_observation_{this};

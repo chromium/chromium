@@ -7,6 +7,7 @@
 
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #include "url/gurl.h"
@@ -63,12 +64,12 @@ class IOSSecurityInterstitialPage {
   // The WebState with which this interstitial page is associated. Not
   // available in the destructor since the it can be destroyed before this
   // class is destroyed.
-  web::WebState* web_state_;
+  raw_ptr<web::WebState> web_state_;
   const GURL request_url_;
 
   // Used to interact with the embedder. Unowned pointer; must outlive `this`
   // instance.
-  IOSBlockingPageControllerClient* const client_ = nullptr;
+  const raw_ptr<IOSBlockingPageControllerClient> client_ = nullptr;
 };
 
 }  // namespace security_interstitials

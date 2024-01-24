@@ -5,6 +5,7 @@
 #ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_FAKE_SAFE_BROWSING_CLIENT_H_
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_FAKE_SAFE_BROWSING_CLIENT_H_
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 
@@ -56,7 +57,7 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
 
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
   bool should_block_unsafe_resource_ = false;
-  safe_browsing::RealTimeUrlLookupService* lookup_service_ = nullptr;
+  raw_ptr<safe_browsing::RealTimeUrlLookupService> lookup_service_ = nullptr;
   bool main_frame_cancellation_decided_called_ = false;
   bool sub_frame_cancellation_decided_called_ = false;
 

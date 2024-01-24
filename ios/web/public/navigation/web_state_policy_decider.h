@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -165,7 +166,7 @@ class WebStatePolicyDecider : public base::CheckedObserver {
   void ResetWebState();
 
   // The web state to decide navigation policy for.
-  WebState* web_state_;
+  raw_ptr<WebState> web_state_;
 };
 }  // namespace web
 

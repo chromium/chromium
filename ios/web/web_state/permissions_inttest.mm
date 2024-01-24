@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -59,8 +60,8 @@ class TestPrerenderWebClient : public web::WebClient {
   }
 
  private:
-  web::WebTestWithWebState* test_case_;
-  web::WebState* web_state_;
+  raw_ptr<web::WebTestWithWebState> test_case_;
+  raw_ptr<web::WebState> web_state_;
 };
 
 // Verifies that the current permission states matches expected.

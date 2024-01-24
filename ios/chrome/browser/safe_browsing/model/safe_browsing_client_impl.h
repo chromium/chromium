@@ -4,6 +4,8 @@
 
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 
+#import "base/memory/raw_ptr.h"
+
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_SAFE_BROWSING_CLIENT_IMPL_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_SAFE_BROWSING_CLIENT_IMPL_H_
 
@@ -34,9 +36,9 @@ class SafeBrowsingClientImpl : public SafeBrowsingClient {
                                              const GURL& url) override;
 
  private:
-  safe_browsing::RealTimeUrlLookupService* lookup_service_;
-  safe_browsing::HashRealTimeService* hash_real_time_service_;
-  PrerenderService* prerender_service_;
+  raw_ptr<safe_browsing::RealTimeUrlLookupService> lookup_service_;
+  raw_ptr<safe_browsing::HashRealTimeService> hash_real_time_service_;
+  raw_ptr<PrerenderService> prerender_service_;
 
   // Must be last.
   base::WeakPtrFactory<SafeBrowsingClientImpl> weak_factory_{this};

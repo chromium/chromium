@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/insecure_credentials_helper.h"
@@ -268,7 +269,7 @@ class ChromePasswordProtectionService
            safe_browsing::PasswordProtectionService::ShowWarningCallback>
       show_warning_callbacks_;
 
-  ChromeBrowserState* browser_state_;
+  raw_ptr<ChromeBrowserState> browser_state_;
 
   // Calls `password_manager::AddPhishedCredentials`. Used to facilitate
   // testing.

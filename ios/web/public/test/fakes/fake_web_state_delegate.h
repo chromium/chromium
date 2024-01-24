@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/web/public/test/fakes/fake_java_script_dialog_presenter.h"
 #import "ios/web/public/web_state_delegate.h"
 
@@ -17,7 +18,7 @@ namespace web {
 
 // Encapsulates parameters passed to CreateNewWebState.
 struct FakeCreateNewWebStateRequest {
-  WebState* web_state = nullptr;
+  raw_ptr<WebState> web_state = nullptr;
   GURL url;
   GURL opener_url;
   bool initiated_by_user = false;
@@ -25,7 +26,7 @@ struct FakeCreateNewWebStateRequest {
 
 // Encapsulates parameters passed to CloseWebState.
 struct FakeCloseWebStateRequest {
-  WebState* web_state = nullptr;
+  raw_ptr<WebState> web_state = nullptr;
 };
 
 // Encapsulates parameters passed to OpenURLFromWebState.
@@ -33,7 +34,7 @@ struct FakeOpenURLRequest {
   FakeOpenURLRequest();
   FakeOpenURLRequest(const FakeOpenURLRequest&);
   ~FakeOpenURLRequest();
-  WebState* web_state = nullptr;
+  raw_ptr<WebState> web_state = nullptr;
   WebState::OpenURLParams params;
 };
 
@@ -41,7 +42,7 @@ struct FakeOpenURLRequest {
 struct FakeRepostFormRequest {
   FakeRepostFormRequest();
   ~FakeRepostFormRequest();
-  WebState* web_state = nullptr;
+  raw_ptr<WebState> web_state = nullptr;
   base::OnceCallback<void(bool)> callback;
 };
 
@@ -50,7 +51,7 @@ struct FakeAuthenticationRequest {
   FakeAuthenticationRequest();
   FakeAuthenticationRequest(FakeAuthenticationRequest&&);
   ~FakeAuthenticationRequest();
-  WebState* web_state = nullptr;
+  raw_ptr<WebState> web_state = nullptr;
   NSURLProtectionSpace* protection_space;
   NSURLCredential* credential;
   WebStateDelegate::AuthCallback auth_callback;

@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/supports_user_data.h"
@@ -83,7 +84,7 @@ class WebState : public base::SupportsUserData {
     ~CreateParams();
 
     // The corresponding BrowserState for the new WebState.
-    web::BrowserState* browser_state;
+    raw_ptr<web::BrowserState> browser_state;
 
     // Whether the WebState is created as the result of a window.open or by
     // clicking a link with a blank target.  Used to determine whether the
@@ -180,7 +181,7 @@ class WebState : public base::SupportsUserData {
         callback.Run(std::move(typed_receiver));
     }
 
-    WebState* const web_state_;
+    const raw_ptr<WebState> web_state_;
     std::map<std::string, Callback> callbacks_;
   };
 

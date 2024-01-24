@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 
 #import "base/files/file_path.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/commerce/core/pref_names.h"
@@ -80,7 +81,7 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
   }
 
  protected:
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   web::WebTaskEnvironment task_environment_;
   FakeSystemIdentity* fake_id_;
   PushNotificationAccountContextManager* manager_;

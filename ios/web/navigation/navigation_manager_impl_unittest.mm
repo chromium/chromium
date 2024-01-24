@@ -9,6 +9,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/escape.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -115,7 +116,7 @@ class MockNavigationManagerDelegate : public NavigationManagerDelegate {
   }
 
   id mock_web_view_;
-  WebState* web_state_ = nullptr;
+  raw_ptr<WebState> web_state_ = nullptr;
 };
 
 // Data holder for the informations to be restored in the items.

@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_TAILORED_SECURITY_TAILORED_SECURITY_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_TAILORED_SECURITY_TAILORED_SECURITY_TAB_HELPER_H_
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer.h"
@@ -58,7 +59,7 @@ class TailoredSecurityTabHelper
   WEB_STATE_USER_DATA_KEY_DECL();
 
   // Reference to the TailoredSecurityService for the BrowserState.
-  safe_browsing::TailoredSecurityService* service_;
+  raw_ptr<safe_browsing::TailoredSecurityService> service_;
 
   // Whether the WebState is currently in focus.
   bool focused_ = false;
@@ -70,10 +71,10 @@ class TailoredSecurityTabHelper
   bool has_query_request_ = false;
 
   // Associated WebState.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // The currently displayed infobar.
-  infobars::InfoBar* infobar_ = nullptr;
+  raw_ptr<infobars::InfoBar> infobar_ = nullptr;
 
   // Scoped observer that facilitates observing the infobar manager.
   base::ScopedObservation<infobars::InfoBarManager,

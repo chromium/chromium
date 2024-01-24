@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/security_interstitials/core/https_only_mode_allowlist.h"
@@ -30,7 +31,7 @@ class HttpsUpgradeServiceImpl : public HttpsUpgradeService {
 
  private:
   std::unique_ptr<base::Clock> clock_;
-  ChromeBrowserState* context_;
+  raw_ptr<ChromeBrowserState> context_;
   security_interstitials::HttpsOnlyModeAllowlist allowlist_;
 };
 

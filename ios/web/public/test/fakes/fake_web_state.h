@@ -13,6 +13,7 @@
 #include <optional>
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #import "ios/web/public/favicon/favicon_status.h"
@@ -179,7 +180,7 @@ class FakeWebState : public WebState {
   void OnVisibleSecurityStateChanged();
 
  private:
-  BrowserState* browser_state_ = nullptr;
+  raw_ptr<BrowserState> browser_state_ = nullptr;
   NSString* stable_identifier_ = nil;
   const WebStateID unique_identifier_;
   bool web_usage_enabled_ = true;

@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
@@ -144,7 +145,7 @@ class SafeBrowsingTabHelperTest
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<web::FakeBrowserState> browser_state_;
   web::FakeWebState web_state_;
-  web::FakeNavigationManager* navigation_manager_ = nullptr;
+  raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
   FakeSafeBrowsingClient client_;
 };
 

@@ -94,7 +94,7 @@ BrowserState::~BrowserState() {
   // they're going to have a bad time anyway.
   if (url_data_manager_ios_backend_) {
     bool posted = web::GetIOThreadTaskRunner({})->DeleteSoon(
-        FROM_HERE, url_data_manager_ios_backend_);
+        FROM_HERE, url_data_manager_ios_backend_.get());
     if (!posted)
       delete url_data_manager_ios_backend_;
   }

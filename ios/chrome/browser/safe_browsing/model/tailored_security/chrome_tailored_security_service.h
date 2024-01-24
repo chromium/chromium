@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_TAILORED_SECURITY_CHROME_TAILORED_SECURITY_SERVICE_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_TAILORED_SECURITY_CHROME_TAILORED_SECURITY_SERVICE_H_
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 
@@ -42,7 +43,7 @@ class ChromeTailoredSecurityService : public TailoredSecurityService {
   // Called when the app has been foregrounded.
   void AppWillEnterForeground();
 
-  ChromeBrowserState* browser_state_;
+  raw_ptr<ChromeBrowserState> browser_state_;
 
   // Observers for NSNotificationCenter notifications.
   id application_backgrounding_observer_;
