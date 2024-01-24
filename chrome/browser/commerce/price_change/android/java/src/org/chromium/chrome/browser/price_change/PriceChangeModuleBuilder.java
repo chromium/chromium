@@ -15,6 +15,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -41,6 +42,9 @@ public class PriceChangeModuleBuilder implements ModuleProviderBuilder {
     public boolean build(
             @NonNull ModuleDelegate moduleDelegate,
             @NonNull Callback<ModuleProvider> onModuleBuiltCallback) {
+        if (!PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfileSupplier.get())) {
+            return false;
+        }
         PriceChangeModuleCoordinator coordinator =
                 new PriceChangeModuleCoordinator(
                         mContext, mProfileSupplier.get(), mTabModelSelector, moduleDelegate);
