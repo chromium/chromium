@@ -11,6 +11,8 @@ source_set("mojo_service_manager") {
   sources = [
     "connection_helper.cc",
     "connection_helper.h",
+    "utility_process_bridge.cc",
+    "utility_process_bridge.h",
   ]
   deps = [
     "//base",

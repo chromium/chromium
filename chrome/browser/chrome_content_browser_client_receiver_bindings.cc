@@ -59,6 +59,7 @@
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/module_event_sink_impl.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/mojo_service_manager/utility_process_bridge.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "components/performance_manager/public/performance_manager.h"
 #if defined(ARCH_CPU_X86_64)
@@ -637,8 +638,19 @@ void ChromeContentBrowserClient::BindGpuHostReceiver(
 
 void ChromeContentBrowserClient::BindUtilityHostReceiver(
     mojo::GenericPendingReceiver receiver) {
-  if (auto r = receiver.As<metrics::mojom::CallStackProfileCollector>())
+  if (auto r = receiver.As<metrics::mojom::CallStackProfileCollector>()) {
     metrics::CallStackProfileCollector::Create(std::move(r));
+    return;
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (auto service_manager_receiver =
+          receiver
+              .As<chromeos::mojo_service_manager::mojom::ServiceManager>()) {
+    ash::mojo_service_manager::EstablishUtilityProcessBridge(
+        std::move(service_manager_receiver));
+    return;
+  }
+#endif
 }
 
 void ChromeContentBrowserClient::BindHostReceiverForRenderer(

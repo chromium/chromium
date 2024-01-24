@@ -5235,6 +5235,7 @@ static_library("browser") {
       "//chrome/browser/ash",
       "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/mojo_service_manager:mojo_service_manager",
       "//chrome/browser/ash/power/ml/smart_dim",
       "//chrome/browser/ash/smart_reader",
       "//chrome/browser/ash/system_web_apps",

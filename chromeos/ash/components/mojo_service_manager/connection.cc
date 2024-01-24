@@ -158,4 +158,9 @@ void SetServiceManagerRemoteForTesting(  // IN-TEST
   GetRemote().set_disconnect_with_reason_handler(base::BindOnce(&OnDisconnect));
 }
 
+mojo::PendingReceiver<chromeos::mojo_service_manager::mojom::ServiceManager>
+BootstrapServiceManagerInUtilityProcess() {
+  return GetRemote().BindNewPipeAndPassReceiver();
+}
+
 }  // namespace ash::mojo_service_manager
