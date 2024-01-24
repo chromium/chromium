@@ -1504,6 +1504,69 @@ TEST_F(ArcVmClientAdapterTest, SpecifyBlockSize) {
       GetTestConciergeClient()->start_arc_vm_request().rootfs_block_size());
 }
 
+TEST_F(ArcVmClientAdapterTest, VirtioBlkMultipleWorkers_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(arc::kEnableVirtioBlkMultipleWorkers);
+
+  StartParams start_params(GetPopulatedStartParams());
+  StartMiniArcWithParams(true, std::move(start_params));
+
+  // All disks should have multiple workers disabled.
+  EXPECT_FALSE(GetTestConciergeClient()
+                   ->start_arc_vm_request()
+                   .rootfs_multiple_workers());
+  for (const auto& disk :
+       GetTestConciergeClient()->start_arc_vm_request().disks()) {
+    EXPECT_FALSE(disk.multiple_workers());
+  }
+}
+
+TEST_F(ArcVmClientAdapterTest, VirtioBlkMultipleWorkers_Enabled_NoBlkData) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(arc::kEnableVirtioBlkMultipleWorkers);
+
+  StartParams start_params(GetPopulatedStartParams());
+  start_params.use_virtio_blk_data = false;
+  StartMiniArcWithParams(true, std::move(start_params));
+
+  // rootfs should have multiple workers enabled.
+  EXPECT_TRUE(GetTestConciergeClient()
+                  ->start_arc_vm_request()
+                  .rootfs_multiple_workers());
+  // No other disks should have multiple workers enabled.
+  for (const auto& disk :
+       GetTestConciergeClient()->start_arc_vm_request().disks()) {
+    EXPECT_FALSE(disk.multiple_workers());
+  }
+}
+
+TEST_F(ArcVmClientAdapterTest, VirtioBlkMultipleWorkers_Enabled_BlkData) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(arc::kEnableVirtioBlkMultipleWorkers);
+
+  GetTestConciergeClient()->set_create_disk_image_response(
+      CreateDiskImageResponse(vm_tools::concierge::DISK_STATUS_CREATED));
+
+  StartParams start_params(GetPopulatedStartParams());
+  start_params.use_virtio_blk_data = true;
+  StartMiniArcWithParams(true, std::move(start_params));
+
+  const auto& req = GetTestConciergeClient()->start_arc_vm_request();
+
+  // rootfs should have multiple workers enabled.
+  EXPECT_TRUE(req.rootfs_multiple_workers());
+  EXPECT_TRUE(HasDiskImage(req, kCreatedDiskImagePath));
+  for (const auto& disk :
+       GetTestConciergeClient()->start_arc_vm_request().disks()) {
+    // The data disk should have multiple workers enabled.
+    if (disk.path() == kCreatedDiskImagePath) {
+      EXPECT_TRUE(disk.multiple_workers());
+    } else {
+      EXPECT_FALSE(disk.multiple_workers());
+    }
+  }
+}
+
 TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_Disabled) {
   GetTestConciergeClient()->set_create_disk_image_response(
       CreateDiskImageResponse(vm_tools::concierge::DISK_STATUS_CREATED));
