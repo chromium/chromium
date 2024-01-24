@@ -71,7 +71,6 @@ ShadowRoot::ShadowRoot(Document& document, ShadowRootType type)
       registered_with_parent_shadow_root_(false),
       delegates_focus_(false),
       slot_assignment_mode_(static_cast<unsigned>(SlotAssignmentMode::kNamed)),
-      needs_dir_auto_attribute_update_(false),
       has_focusgroup_attribute_on_descendant_(false),
       unused_(0) {}
 
@@ -157,8 +156,6 @@ void ShadowRoot::setInnerHTML(const String& html,
           Element::IncludeShadowRoots::kDontInclude,
           Element::ForceHtml::kDontForce, exception_state)) {
     ReplaceChildrenWithFragment(this, fragment, exception_state);
-    if (auto* element = DynamicTo<HTMLElement>(host()))
-      element->AdjustDirectionalityIfNeededAfterShadowRootChanged();
   }
 }
 
@@ -169,9 +166,6 @@ void ShadowRoot::setHTMLUnsafe(const String& html,
           Element::IncludeShadowRoots::kInclude, Element::ForceHtml::kDontForce,
           exception_state)) {
     ReplaceChildrenWithFragment(this, fragment, exception_state);
-    if (auto* element = DynamicTo<HTMLElement>(host())) {
-      element->AdjustDirectionalityIfNeededAfterShadowRootChanged();
-    }
   }
 }
 
@@ -270,8 +264,7 @@ void ShadowRoot::ChildrenChanged(const ChildrenChange& change) {
 
   // In the case of input types like button where the child element is not
   // in a container, we need to explicit adjust directionality.
-  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled() &&
-      RuntimeEnabledFeatures::DirnameMoreInputTypesEnabled()) {
+  if (RuntimeEnabledFeatures::DirnameMoreInputTypesEnabled()) {
     if (TextControlElement* text_element =
             HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(
                 &host())) {

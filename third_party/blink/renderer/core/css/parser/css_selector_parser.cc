@@ -2235,7 +2235,6 @@ static void RecordUsageAndDeprecationsOneSelector(
       feature = WebFeature::kCSSSelectorPseudoReadWrite;
       break;
     case CSSSelector::kPseudoDir:
-      DCHECK(RuntimeEnabledFeatures::CSSPseudoDirEnabled());
       feature = WebFeature::kCSSSelectorPseudoDir;
       break;
     case CSSSelector::kPseudoHas:

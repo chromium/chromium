@@ -383,8 +383,7 @@ void HTMLSlotElement::AttributeChanged(
 // When the result of `SupportsAssignment()` changes, the behavior of a
 // <slot> element for ancestors with dir=auto changes.
 void HTMLSlotElement::UpdateDirAutoAncestorsForSupportsAssignmentChange() {
-  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled() &&
-      SelfOrAncestorHasDirAutoAttribute()) {
+  if (SelfOrAncestorHasDirAutoAttribute()) {
     UpdateAncestorWithDirAuto(UpdateAncestorTraversal::ExcludeSelf);
   }
 }

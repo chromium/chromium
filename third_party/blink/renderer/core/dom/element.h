@@ -1423,10 +1423,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   TextDirection ParentDirectionality() const;
   bool RecalcSelfOrAncestorHasDirAuto();
-  template <typename Traversal>
   absl::optional<TextDirection> ResolveAutoDirectionality(
-      bool& is_deferred,
-      Node* stay_within) const;
+      bool& is_deferred) const;
 
  private:
   friend class AXObject;

@@ -49,9 +49,6 @@ class SlotAssignment final : public GarbageCollected<SlotAssignment> {
   bool NeedsAssignmentRecalc() const { return needs_assignment_recalc_; }
   void SetNeedsAssignmentRecalc();
   void RecalcAssignment();
-  HeapHashSet<Member<Node>>& GetCandidateDirectionality() {
-    return candidate_directionality_set_;
-  }
 
  private:
   enum class SlotMutationType {
@@ -76,7 +73,6 @@ class SlotAssignment final : public GarbageCollected<SlotAssignment> {
   unsigned needs_collect_slots_ : 1;
   unsigned needs_assignment_recalc_ : 1;
   unsigned slot_count_ : 30;
-  HeapHashSet<Member<Node>> candidate_directionality_set_;
 };
 
 }  // namespace blink

@@ -4114,10 +4114,6 @@ crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/t
 crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-001.tentative.html [ Failure ]
 crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-002.tentative.html [ Failure ]
 
-# reftests that only pass when the new direction code is enabled.
-crbug.com/576815 virtual/dir-pseudo-disabled/external/wpt/html/dom/elements/global-attributes/dir_auto-N-EN.html [ Failure ]
-
-
 # "in-multicol-child.html" is laid out in legacy layout due by "multicol" but
 # reference is laid out by LayoutNG.
 

@@ -170,13 +170,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
     return available_to_element_internals_;
   }
 
-  void SetNeedsDirAutoAttributeUpdate(bool flag) {
-    needs_dir_auto_attribute_update_ = flag;
-  }
-  bool NeedsDirAutoAttributeUpdate() const {
-    return needs_dir_auto_attribute_update_;
-  }
-
   void SetHasFocusgroupAttributeOnDescendant(bool flag) {
     has_focusgroup_attribute_on_descendant_ = flag;
   }
@@ -222,7 +215,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   unsigned slot_assignment_mode_ : 1;
   unsigned is_declarative_shadow_root_ : 1;
   unsigned available_to_element_internals_ : 1;
-  unsigned needs_dir_auto_attribute_update_ : 1;
   unsigned has_focusgroup_attribute_on_descendant_ : 1;
   unsigned unused_ : 7;
 };

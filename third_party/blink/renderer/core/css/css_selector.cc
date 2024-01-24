@@ -614,11 +614,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if (match->type == CSSSelector::kPseudoDir &&
-      !RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
   if (match->type == CSSSelector::kPseudoPaused &&
       !RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled()) {
     return CSSSelector::kPseudoUnknown;

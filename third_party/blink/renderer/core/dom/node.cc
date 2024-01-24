@@ -3280,29 +3280,6 @@ void Node::FlatTreeParentChanged() {
     // parent box may have changed.
     SetForceReattachLayoutTree();
   }
-  AddCandidateDirectionalityForSlot();
-}
-
-void Node::AddCandidateDirectionalityForSlot() {
-  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
-    // This code is not needed for the new dir=auto inheritance rules.
-    return;
-  }
-
-  ShadowRoot* root = ShadowRootOfParent();
-  if (!root || !root->HasSlotAssignment()) {
-    // We should add this node as a candidate that needs to recalculate its
-    // direcationality if the parent slot has the dir auto flag.
-    if (auto* parent_slot = DynamicTo<HTMLSlotElement>(parentElement())) {
-      if (parent_slot->SelfOrAncestorHasDirAutoAttribute())
-        root = ContainingShadowRoot();
-    }
-
-    if (!root)
-      return;
-  }
-
-  root->GetSlotAssignment().GetCandidateDirectionality().insert(this);
 }
 
 void Node::RemovedFromFlatTree() {
@@ -3357,39 +3334,6 @@ void Node::SetCachedDirectionality(TextDirection direction) {
       ClearFlag(kCachedDirectionalityIsRtl);
       break;
   }
-  if (!RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
-    ClearFlag(kNeedsInheritDirectionalityFromParent);
-  }
-}
-
-bool Node::NeedsInheritDirectionalityFromParent() const {
-  CHECK(!RuntimeEnabledFeatures::CSSPseudoDirEnabled());
-  return GetFlag(kNeedsInheritDirectionalityFromParent);
-}
-
-void Node::SetNeedsInheritDirectionalityFromParent() {
-  CHECK(!RuntimeEnabledFeatures::CSSPseudoDirEnabled());
-  SetFlag(kNeedsInheritDirectionalityFromParent);
-}
-
-void Node::ClearNeedsInheritDirectionalityFromParent() {
-  CHECK(!RuntimeEnabledFeatures::CSSPseudoDirEnabled());
-  ClearFlag(kNeedsInheritDirectionalityFromParent);
-}
-
-bool Node::DirAutoInheritsFromParent() const {
-  return RuntimeEnabledFeatures::CSSPseudoDirEnabled() &&
-         GetFlag(kDirAutoInheritsFromParent);
-}
-
-void Node::SetDirAutoInheritsFromParent() {
-  CHECK(RuntimeEnabledFeatures::CSSPseudoDirEnabled());
-  return SetFlag(kDirAutoInheritsFromParent);
-}
-
-void Node::ClearDirAutoInheritsFromParent() {
-  CHECK(RuntimeEnabledFeatures::CSSPseudoDirEnabled());
-  return ClearFlag(kDirAutoInheritsFromParent);
 }
 
 void Node::Trace(Visitor* visitor) const {

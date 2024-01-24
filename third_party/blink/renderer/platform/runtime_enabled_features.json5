@@ -1013,12 +1013,6 @@
       status: "experimental",
     },
     {
-      // Shipping in M120.  Flag should be removed after M120 has been
-      // shipping to stable for a few weeks.
-      name: "CSSPseudoDir",
-      status: "stable",
-    },
-    {
       // When an audio, video, or similar resource is "playing"
       // or "paused".
       // https://www.w3.org/TR/selectors-4/#video-state
@@ -2044,14 +2038,9 @@
       status: "stable",
     },
     // This is a killswitch. Removable a few weeks after M121 ships.
-    // Feature is conditional on CSSPseudoDir as
-    // Element::AdjustDirectionalityIfNeededAfterChildrenChanged() is
-    // non-trivial to update if CSSPseudoDir is false, but CSSPseudoDir is in
-    // the process of launching.
     {
       name: "HTMLParserFastPathBulkInsertNotify",
       status: "stable",
-      depends_on: ["CSSPseudoDir"],
     },
     {
       // A flag, just for local testing to make the
