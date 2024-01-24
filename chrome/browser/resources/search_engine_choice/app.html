@@ -9,6 +9,7 @@
     --scrollbar-height: 116px;
     --action-button-margins: 40px;
     --omnibox-width: 252px;
+    --choice-list-bottom-padding: 50px;
     color: var(--cr-primary-text-color);
   }
 
@@ -113,11 +114,10 @@
   #choiceList {
     display: flex;
     flex-direction: column;
-    gap: 1px;
     overflow: auto;
     /* We add horizontal padding to put the scollbar on the right and keep
     the content centered. */
-    padding: 0 8px 50px;
+    padding: 0 8px var(--choice-list-bottom-padding);
     text-align: start;
     width: 100%;
   }
@@ -167,6 +167,7 @@
     --cr-radio-button-size: 20px;
     align-items: start;
     background-color: var(--google-grey-100);
+    border-bottom: 1px solid var(--background-color);
     border-radius: 2px;
     padding: 16px 24px;
   }
@@ -177,6 +178,7 @@
   }
 
   cr-radio-button:last-of-type {
+    border-bottom: unset;
     border-bottom-left-radius: 24px;
     border-bottom-right-radius: 24px;
   }
@@ -247,6 +249,7 @@
   /* Track */
   .custom-scrollbar::-webkit-scrollbar-track {
     border-radius: calc(var(--scrollbar-height) /2);
+    margin-bottom: var(--choice-list-bottom-padding);
   }
 
   /* Handle */
