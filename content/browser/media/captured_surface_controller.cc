@@ -49,6 +49,15 @@ base::WeakPtr<WebContents> ResolveWebContentsOnUI(
   return wc ? wc->GetWeakPtr() : nullptr;
 }
 
+// Checks whether the app is focused.
+// Note that this is different from requiring that the capturer RFH is focused.
+// The check here starts at the primary main frame, and then cascades through
+// the tree - which is the desired behavior.
+bool IsFocused(WebContentsImpl& web_contents) {
+  RenderFrameHostImpl* const rfhi = web_contents.GetPrimaryMainFrame();
+  return rfhi && rfhi->IsFocused();
+}
+
 // Deliver a synthetic MouseWheel action on `captured_wc` with the parameters
 // described by the values in `action`.
 //
@@ -84,6 +93,11 @@ CapturedSurfaceControlResult DoSendWheel(
 
   if (capturer_wc == captured_wc.get()) {
     return CapturedSurfaceControlResult::kDisallowedForSelfCaptureError;
+  }
+
+  if (!IsFocused(*capturer_wc)) {
+    // TODO(crbug.com/1466247): Use a dedicated error.
+    return CapturedSurfaceControlResult::kUnknownError;
   }
 
   // Scale (x, y).
@@ -149,6 +163,11 @@ CapturedSurfaceControlResult DoSetZoomLevel(
     return CapturedSurfaceControlResult::kDisallowedForSelfCaptureError;
   }
 
+  if (!IsFocused(*capturer_wc)) {
+    // TODO(crbug.com/1466247): Use a dedicated error.
+    return CapturedSurfaceControlResult::kUnknownError;
+  }
+
   content::HostZoomMap::SetZoomLevel(
       captured_wc.get(),
       blink::PageZoomFactorToZoomLevel(static_cast<double>(zoom_level) / 100));
@@ -183,6 +202,9 @@ std::pair<std::optional<int>, CapturedSurfaceControlResult> DoGetZoomLevel(
         std::nullopt,
         CapturedSurfaceControlResult::kDisallowedForSelfCaptureError);
   }
+
+  // The requirement that the capturer be focused does not apply here
+  // as it does for SendWheel() and SetZoomLevel().
 
   const double zoom_level = blink::PageZoomLevelToZoomFactor(
       content::HostZoomMap::GetZoomLevel(captured_wc.get()));

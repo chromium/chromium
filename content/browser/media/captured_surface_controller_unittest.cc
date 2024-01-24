@@ -137,6 +137,14 @@ class TestTab {
         web_contents_->GetPrimaryMainFrame()->GetRenderWidgetHost());
   }
 
+  void Focus() {
+    web_contents_->GetPrimaryMainFrame()->GetRenderWidgetHost()->Focus();
+    FrameTree& frame_tree = web_contents_->GetPrimaryFrameTree();
+    FrameTreeNode* const root = frame_tree.root();
+    frame_tree.SetFocusedFrame(
+        root, root->current_frame_host()->GetSiteInstance()->group());
+  }
+
  protected:
   static std::unique_ptr<TestWebContents> MakeTestWebContents(
       BrowserContext* browser_context) {
@@ -236,9 +244,12 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
     AwaitWebContentsResolution();
   }
 
-  void SetUpTestTabs() {
+  void SetUpTestTabs(bool focus_capturer = true) {
     capturer_ = std::make_unique<TestTab>(GetBrowserContext());
     capturee_ = std::make_unique<TestTab>(GetBrowserContext());
+    if (focus_capturer) {
+      capturer_->Focus();
+    }
   }
 
   void StartCaptureOf(const TestTab& tab) {
@@ -497,9 +508,6 @@ class CapturedSurfaceControllerInterfaceTest
   ~CapturedSurfaceControllerInterfaceTest() override = default;
 };
 
-// Note that kGetZoomLevel is not tested because it's currently allowed
-// without requiring permissions, and that is by design.
-// TODO(crbug.com/1466247): Remove above comment after making that API sync.
 INSTANTIATE_TEST_SUITE_P(
     ,
     CapturedSurfaceControllerInterfaceTest,
@@ -815,6 +823,53 @@ TEST_P(CapturedSurfaceControllerSelfCaptureTest,
   base::RunLoop run_loop;
   RunTestedActionAndExpect(&run_loop,
                            CSCResult::kDisallowedForSelfCaptureError);
+  run_loop.Run();
+}
+
+class CapturedSurfaceControllerFocusRequirementTest
+    : public CapturedSurfaceControllerInterfaceTestBase,
+      public ::testing::WithParamInterface<CapturedSurfaceControlAPI> {
+ public:
+  CapturedSurfaceControllerFocusRequirementTest()
+      : CapturedSurfaceControllerInterfaceTestBase(GetParam()) {}
+
+  void SetUp() override {
+    // Skip CapturedSurfaceControllerTestBase's SetUp(),
+    RenderViewHostTestHarness::SetUp();
+    SetUpTestTabs(/*focus_capturer=*/false);
+    StartCaptureOf(*capturee_);
+    AwaitWebContentsResolution();
+  }
+
+  ~CapturedSurfaceControllerFocusRequirementTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CapturedSurfaceControllerFocusRequirementTest,
+    ::testing::Values(CapturedSurfaceControlAPI::kSendWheel,
+                      CapturedSurfaceControlAPI::kSetZoomLevel,
+                      CapturedSurfaceControlAPI::kGetZoomLevel));
+
+TEST_P(CapturedSurfaceControllerFocusRequirementTest,
+       CallSucceedsIfCapturerFocused) {
+  base::RunLoop run_loop;
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+  capturer_->Focus();
+  RunTestedActionAndExpect(&run_loop, CSCResult::kSuccess);
+  run_loop.Run();
+}
+
+TEST_P(CapturedSurfaceControllerFocusRequirementTest,
+       CallsFailsIfCapturerUnfocused) {
+  if (tested_interface_ == CapturedSurfaceControlAPI::kGetZoomLevel) {
+    GTEST_SKIP() << "The focus requirement does not apply to getZoomLevel().";
+  }
+  base::RunLoop run_loop;
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+  // Note absence of call to `capturer_->Focus()`.
+  // TODO(crbug.com/1466247): Use a dedicated error.
+  RunTestedActionAndExpect(&run_loop, CSCResult::kUnknownError);
   run_loop.Run();
 }
 
