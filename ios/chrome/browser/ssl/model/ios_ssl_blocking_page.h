@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ios/components/security_interstitials/ios_security_interstitial_page.h"
 #include "net/ssl/ssl_info.h"
@@ -58,7 +59,7 @@ class IOSSSLBlockingPage
   // Returns true if `options_mask` refers to a soft-overridable SSL error.
   static bool IsOverridable(int options_mask);
 
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
   const net::SSLInfo ssl_info_;
   const bool overridable_;  // The UI allows the user to override the error.
 

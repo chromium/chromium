@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SSL_MODEL_IOS_SSL_ERROR_HANDLER_H_
 
 #include "base/functional/callback_forward.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -91,7 +92,7 @@ class IOSSSLErrorHandler : public web::WebStateUserData<IOSSSLErrorHandler> {
       captive_portal::CaptivePortalResult result);
 
   // The WebState associated with this error handler.
-  web::WebState* const web_state_ = nullptr;
+  const raw_ptr<web::WebState> web_state_ = nullptr;
   // The ssl certificate error.
   const int cert_error_ = 0;
   // The ssl certificate details.
