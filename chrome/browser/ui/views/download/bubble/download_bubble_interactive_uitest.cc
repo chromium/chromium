@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
-                       DownloadBubbleEsbShownAfterDownload_IPHShown) {
+                       DangerousDownloadShowsEsbIphPromo_WhenAutomaticClose) {
   RunTestSequence(
       Do(DownloadDangerousTestFile()),
       WaitForShow(kToolbarDownloadButtonElementId),
@@ -328,19 +328,55 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
                    feature_engagement::kIPHDownloadEsbPromoFeature)))));
 }
 
+IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
+                       DangerousDownloadShowsEsbIphPromo_WhenUserClicksAway) {
+  RunTestSequence(
+      Do(DownloadDangerousTestFile()),
+      WaitForShow(kToolbarDownloadButtonElementId),
+      Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
+      // Click outside (at the center point of the browser) to close the bubble.
+      MoveMouseTo(kBrowserViewElementId), ClickMouse(), FlushEvents(),
+      EnsureNotPresent(kToolbarDownloadBubbleElementId),
+      Check(DownloadBubbleIsShowingDetails(false),
+            "Bubble is closed after clicking outside of it."),
+      If([&]() { return IsPartialViewEnabled(); },
+         Steps(InAnyContext(WaitForShow(user_education::HelpBubbleView::
+                                            kHelpBubbleElementIdForTesting)),
+               Check(DownloadBubblePromoIsActive(
+                   IsPartialViewEnabled(),
+                   feature_engagement::kIPHDownloadEsbPromoFeature)))));
+}
+
 IN_PROC_BROWSER_TEST_F(
     DownloadBubbleInteractiveUiTest,
-    DownloadBubbleEsbShownAfterDownloadWithoutSafeBrowsing_NoIPHShown) {
+    DangerousDownloadDoesNotShowEsbIphPromo_WhenSafeBrowsingDisabled) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
                                                false);
-  RunTestSequence(Do(DownloadDangerousTestFile()),
-                  WaitForShow(kToolbarDownloadButtonElementId),
-                  Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
-                  // Hide the partial view, if enabled. The IPH should be shown.
-                  Do(ChangeBubbleVisibility(false)),
-                  Check(DownloadBubbleIsShowingDetails(false)),
-                  Check(DownloadBubblePromoIsActive(
-                      false, feature_engagement::kIPHDownloadEsbPromoFeature)));
+  RunTestSequence(
+      Do(DownloadDangerousTestFile()),
+      WaitForShow(kToolbarDownloadButtonElementId),
+      Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
+      // Hide the partial view, if enabled. The IPH should not be shown.
+      Do(ChangeBubbleVisibility(false)),
+      Check(DownloadBubbleIsShowingDetails(false)),
+      Check(DownloadBubblePromoIsActive(
+          false, feature_engagement::kIPHDownloadEsbPromoFeature)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DownloadBubbleInteractiveUiTest,
+    DangerousDownloadDoesNotShowEsbIphPromo_WhenEnhancedSafeBrowsingEnabled) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
+                                               true);
+  RunTestSequence(
+      Do(DownloadDangerousTestFile()),
+      WaitForShow(kToolbarDownloadButtonElementId),
+      Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
+      // Hide the partial view, if enabled. The IPH should not be shown.
+      Do(ChangeBubbleVisibility(false)),
+      Check(DownloadBubbleIsShowingDetails(false)),
+      Check(DownloadBubblePromoIsActive(
+          false, feature_engagement::kIPHDownloadEsbPromoFeature)));
 }
 #endif
 
