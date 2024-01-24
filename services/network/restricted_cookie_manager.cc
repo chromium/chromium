@@ -708,7 +708,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
   // Don't allow a status that has an exclusion reason as they should have
   // already been taken care of on the renderer side.
   if (!status.IsInclude()) {
-    mojo::ReportBadMessage(
+    receiver_.ReportBadMessage(
         "RestrictedCookieManager: unexpected cookie inclusion status");
     std::move(callback).Run(false);
     return;
@@ -809,7 +809,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
       UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.CookiePartitionKeyOK",
                             cookie_partition_key_ok);
       if (!cookie_partition_key_ok) {
-        mojo::ReportBadMessage(
+        receiver_.ReportBadMessage(
             "RestrictedCookieManager: unexpected cookie partition key");
         std::move(callback).Run(false);
         return;
@@ -1060,7 +1060,7 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
     const url::Origin& top_frame_origin,
     const net::CanonicalCookie* cookie_being_set) {
   if (origin_.opaque()) {
-    mojo::ReportBadMessage("Access is denied in this context");
+    receiver_.ReportBadMessage("Access is denied in this context");
     return false;
   }
 
@@ -1082,14 +1082,15 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
 
   // Don't allow setting cookies on other domains. See crbug.com/996786.
   if (cookie_being_set && !cookie_being_set->IsDomainMatch(url.host())) {
-    mojo::ReportBadMessage("Setting cookies on other domains is disallowed.");
+    receiver_.ReportBadMessage(
+        "Setting cookies on other domains is disallowed.");
     return false;
   }
 
   if (origin_.IsSameOriginWith(url))
     return true;
 
-  mojo::ReportBadMessage("Incorrect url origin");
+  receiver_.ReportBadMessage("Incorrect url origin");
   return false;
 }
 
