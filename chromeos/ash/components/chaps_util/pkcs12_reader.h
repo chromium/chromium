@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_KCER_HELPERS_PKCS12_READER_H_
-#define CHROMEOS_COMPONENTS_KCER_HELPERS_PKCS12_READER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_PKCS12_READER_H_
+#define CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_PKCS12_READER_H_
 
 #include <nss/certt.h>
 #include <stdint.h>
@@ -20,7 +20,7 @@
 #include "third_party/boringssl/src/include/openssl/pkcs7.h"
 #include "third_party/boringssl/src/include/openssl/stack.h"
 
-namespace kcer::internal {
+namespace chromeos {
 
 // Used for logging, the values should never be reordered or reused.
 enum class Pkcs12ReaderStatusCode {
@@ -74,7 +74,7 @@ struct CertData {
   std::string nickname;
 };
 
-struct COMPONENT_EXPORT(KCER) KeyData {
+struct COMPONENT_EXPORT(CHAPS_UTIL) KeyData {
   KeyData();
   KeyData(KeyData&&);
   KeyData& operator=(KeyData&&) = default;
@@ -85,7 +85,7 @@ struct COMPONENT_EXPORT(KCER) KeyData {
 
 // Class helper for operations with X509 certificates data which are required
 // for storing keys and certificates in Chaps.
-class COMPONENT_EXPORT(KCER) Pkcs12Reader {
+class COMPONENT_EXPORT(CHAPS_UTIL) Pkcs12Reader {
  public:
   Pkcs12Reader();
 
@@ -184,6 +184,6 @@ class COMPONENT_EXPORT(KCER) Pkcs12Reader {
       const scoped_refptr<net::X509Certificate>& cert,
       bool& is_cert_present) const;
 };
-}  // namespace kcer::internal
+}  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_KCER_HELPERS_PKCS12_READER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_PKCS12_READER_H_

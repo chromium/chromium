@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/kcer/helpers/key_helper.h"
+#include "chromeos/ash/components/chaps_util/key_helper.h"
 
 #include <pk11pub.h>
 #include <stdint.h>
@@ -18,7 +18,7 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
-namespace kcer::internal {
+namespace chromeos {
 
 crypto::ScopedSECItem MakeIdFromPubKeyNss(
     const std::vector<uint8_t>& public_key_bytes) {
@@ -100,4 +100,4 @@ bool IsKeyRsaType(const bssl::UniquePtr<EVP_PKEY>& key) {
   return EVP_PKEY_base_id(key.get()) == EVP_PKEY_RSA;
 }
 
-}  // namespace kcer::internal
+}  // namespace chromeos

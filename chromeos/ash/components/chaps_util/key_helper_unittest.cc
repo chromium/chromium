@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/kcer/helpers/key_helper.h"
+#include "chromeos/ash/components/chaps_util/key_helper.h"
 
 #include <pk11pub.h>
 
@@ -14,7 +14,7 @@
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
-namespace kcer::internal {
+namespace chromeos {
 namespace {
 
 // Tests for helper methods from key_helper.h. Methods are mainly tested from
@@ -80,4 +80,4 @@ TEST_F(KeyHelperTest, GetEcPrivateKeyBytes) {
 }
 
 }  // namespace
-}  // namespace kcer::internal
+}  // namespace chromeos

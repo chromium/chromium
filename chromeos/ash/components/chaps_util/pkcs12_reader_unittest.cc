@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/kcer/helpers/pkcs12_reader.h"
+#include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
 
 #include <pk11pub.h>
 #include <stdint.h>
@@ -13,7 +13,7 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
-#include "chromeos/components/kcer/helpers/key_helper.h"
+#include "chromeos/ash/components/chaps_util/key_helper.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
@@ -29,7 +29,7 @@
 #include "third_party/boringssl/src/include/openssl/stack.h"
 #include "third_party/boringssl/src/include/openssl/x509.h"
 
-namespace kcer::internal {
+namespace chromeos {
 namespace {
 
 const char kPkcs12FilePassword[] = "12345";
@@ -987,4 +987,4 @@ TEST_F(Pkcs12ReaderTest, GetCertFromDerData) {
 }
 
 }  // namespace
-}  // namespace kcer::internal
+}  // namespace chromeos

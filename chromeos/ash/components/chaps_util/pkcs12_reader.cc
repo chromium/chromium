@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/kcer/helpers/pkcs12_reader.h"
+#include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
 
 #include <stdint.h>
 
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "chromeos/components/kcer/helpers/key_helper.h"
+#include "chromeos/ash/components/chaps_util/key_helper.h"
 #include "crypto/nss_util.h"
 #include "net/cert/x509_util_nss.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -21,7 +21,7 @@
 #include "third_party/boringssl/src/include/openssl/stack.h"
 #include "third_party/boringssl/src/include/openssl/x509.h"
 
-namespace kcer::internal {
+namespace chromeos {
 
 CertData::CertData() = default;
 CertData::~CertData() = default;
@@ -361,4 +361,4 @@ Pkcs12ReaderStatusCode Pkcs12Reader::IsCertInSlot(
   return Pkcs12ReaderStatusCode::kSuccess;
 }
 
-}  // namespace kcer::internal
+}  // namespace chromeos
