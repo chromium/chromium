@@ -62,6 +62,7 @@ VideoEncoderClientConfig::VideoEncoderClientConfig(
     const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
         spatial_layers,
     SVCInterLayerPredMode inter_layer_pred_mode,
+    VideoEncodeAccelerator::Config::ContentType content_type,
     const VideoBitrateAllocation& bitrate_allocation,
     bool reverse)
     : output_profile(output_profile),
@@ -73,6 +74,7 @@ VideoEncoderClientConfig::VideoEncoderClientConfig(
       num_spatial_layers(
           std::max(spatial_layers.size(), static_cast<size_t>(1u))),
       inter_layer_pred_mode(inter_layer_pred_mode),
+      content_type(content_type),
       bitrate_allocation(bitrate_allocation),
       framerate(video->FrameRate()),
       num_frames_to_encode(video->NumFrames()),
@@ -503,9 +505,10 @@ void VideoEncoderClient::CreateEncoderTask(const RawVideo* video,
 
   config.initial_framerate = encoder_client_config_.framerate;
   config.storage_type = encoder_client_config_.input_storage_type;
-  config.content_type = VideoEncodeAccelerator::Config::ContentType::kCamera;
+  config.content_type = encoder_client_config_.content_type;
   config.drop_frame_thresh_percentage =
       encoder_client_config_.drop_frame_thresh;
+
   config.spatial_layers = encoder_client_config_.spatial_layers;
   config.inter_layer_pred = encoder_client_config_.inter_layer_pred_mode;
 

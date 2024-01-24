@@ -386,6 +386,10 @@ bool AV1VaapiVideoEncoderDelegate::Initialize(
   current_params_.bitrate_allocation.SetBitrate(0, 0,
                                                 config.bitrate.target_bps());
 
+  current_params_.is_screen =
+      config.content_type ==
+      VideoEncodeAccelerator::Config::ContentType::kDisplay;
+
   level_idx_ = ComputeLevel(coded_size_, current_params_.framerate);
   if (level_idx_ < 0) {
     LOG(ERROR) << "Could not compute level index";
@@ -452,6 +456,7 @@ bool AV1VaapiVideoEncoderDelegate::UpdateRates(
   rc_config.max_quantizers[0] = QindexToQuantizer(current_params_.max_qp);
   rc_config.scaling_factor_num[0] = 1;
   rc_config.scaling_factor_den[0] = 1;
+  rc_config.is_screen = current_params_.is_screen;
 
   if (!rate_ctrl_) {
     rate_ctrl_ = aom::AV1RateControlRTC::Create(rc_config);

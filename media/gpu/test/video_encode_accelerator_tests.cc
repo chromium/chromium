@@ -140,10 +140,10 @@ class VideoEncoderTest : public ::testing::Test {
     const auto& spatial_layers = g_env->SpatialLayers();
     CHECK_LE(spatial_layers.size(), 1u);
 
-    return VideoEncoderClientConfig(g_env->Video(), g_env->Profile(),
-                                    spatial_layers, g_env->InterLayerPredMode(),
-                                    g_env->BitrateAllocation(),
-                                    g_env->Reverse());
+    return VideoEncoderClientConfig(
+        g_env->Video(), g_env->Profile(), spatial_layers,
+        g_env->InterLayerPredMode(), g_env->ContentType(),
+        g_env->BitrateAllocation(), g_env->Reverse());
   }
 
   std::unique_ptr<VideoEncoder> CreateVideoEncoder(
@@ -561,10 +561,10 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
 
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
   RawVideo* nv12_video = g_env->GenerateNV12Video();
-  VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
-                                  g_env->SpatialLayers(),
-                                  g_env->InterLayerPredMode(),
-                                  g_env->BitrateAllocation(), g_env->Reverse());
+  VideoEncoderClientConfig config(
+      nv12_video, g_env->Profile(), g_env->SpatialLayers(),
+      g_env->InterLayerPredMode(), g_env->ContentType(),
+      g_env->BitrateAllocation(), g_env->Reverse());
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
 
@@ -618,6 +618,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
   }
   VideoEncoderClientConfig config(
       nv12_video, g_env->Profile(), spatial_layers, SVCInterLayerPredMode::kOff,
+      g_env->ContentType(),
       AllocateDefaultBitrateForTesting(/*num_spatial_layers=*/1u,
                                        num_temporal_layers, new_bitrate),
       g_env->Reverse());
@@ -663,10 +664,10 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingTopAndBottom) {
   auto nv12_expanded_video = g_env->GenerateNV12Video()->CreateExpandedVideo(
       expanded_resolution, expanded_visible_rect);
   ASSERT_TRUE(nv12_expanded_video);
-  VideoEncoderClientConfig config(nv12_expanded_video.get(), g_env->Profile(),
-                                  g_env->SpatialLayers(),
-                                  g_env->InterLayerPredMode(),
-                                  g_env->BitrateAllocation(), g_env->Reverse());
+  VideoEncoderClientConfig config(
+      nv12_expanded_video.get(), g_env->Profile(), g_env->SpatialLayers(),
+      g_env->InterLayerPredMode(), g_env->ContentType(),
+      g_env->BitrateAllocation(), g_env->Reverse());
   config.output_resolution = original_resolution;
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
@@ -704,10 +705,10 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingRightAndLeft) {
   auto nv12_expanded_video = g_env->GenerateNV12Video()->CreateExpandedVideo(
       expanded_resolution, expanded_visible_rect);
   ASSERT_TRUE(nv12_expanded_video);
-  VideoEncoderClientConfig config(nv12_expanded_video.get(), g_env->Profile(),
-                                  g_env->SpatialLayers(),
-                                  g_env->InterLayerPredMode(),
-                                  g_env->BitrateAllocation(), g_env->Reverse());
+  VideoEncoderClientConfig config(
+      nv12_expanded_video.get(), g_env->Profile(), g_env->SpatialLayers(),
+      g_env->InterLayerPredMode(), g_env->ContentType(),
+      g_env->BitrateAllocation(), g_env->Reverse());
   config.output_resolution = original_resolution;
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
@@ -763,10 +764,10 @@ TEST_F(VideoEncoderTest, DeactivateAndActivateSpatialLayers) {
     bitrate_allocation = deactivate_spatial_layer(bitrate_allocation, i);
   bitrate_allocations.emplace_back(bitrate_allocation);
 
-  VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
-                                  g_env->SpatialLayers(),
-                                  g_env->InterLayerPredMode(),
-                                  g_env->BitrateAllocation(), g_env->Reverse());
+  VideoEncoderClientConfig config(
+      nv12_video, g_env->Profile(), g_env->SpatialLayers(),
+      g_env->InterLayerPredMode(), g_env->ContentType(),
+      g_env->BitrateAllocation(), g_env->Reverse());
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
   std::vector<size_t> num_frames_to_encode(bitrate_allocations.size());
@@ -803,10 +804,10 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf_EnableDropFrame) {
   }
 
   RawVideo* nv12_video = g_env->GenerateNV12Video();
-  VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
-                                  g_env->SpatialLayers(),
-                                  g_env->InterLayerPredMode(),
-                                  g_env->BitrateAllocation(), g_env->Reverse());
+  VideoEncoderClientConfig config(
+      nv12_video, g_env->Profile(), g_env->SpatialLayers(),
+      g_env->InterLayerPredMode(), g_env->ContentType(),
+      g_env->BitrateAllocation(), g_env->Reverse());
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
   constexpr uint8_t kDropFrameThreshold = 80;
@@ -955,6 +956,7 @@ int main(int argc, char** argv) {
       media::test::VideoEncoderTestEnvironment::Create(
           media::test::VideoEncoderTestEnvironment::TestType::kValidation,
           video_path, video_metadata_path, output_folder, codec, svc_mode,
+          media::VideoEncodeAccelerator::Config::ContentType::kCamera,
           output_bitstream, output_bitrate, bitrate_mode, reverse,
           frame_output_config, /*enabled_features=*/{}, disabled_features);
 

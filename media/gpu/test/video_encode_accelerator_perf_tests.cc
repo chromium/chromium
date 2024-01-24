@@ -45,6 +45,7 @@ namespace {
 constexpr const char* usage_msg =
     R"(usage: video_encode_accelerator_perf_tests --(speed|quality)
            [--codec=<codec>] [--svc_mode=<svc scalability mode>]
+           [--content_type=(camera|display)]
            [--bitrate_mode=(cbr|vbr)] [--reverse] [--bitrate=<bitrate>]
            [-v=<level>] [--vmodule=<config>] [--output_folder]
            [--output_bitstream]
@@ -643,9 +644,9 @@ class VideoEncoderTest : public ::testing::Test {
     LOG_ASSERT(!bitstream_processors.empty())
         << "Failed to create bitstream processors";
 
-    VideoEncoderClientConfig config(video, profile, spatial_layers,
-                                    g_env->InterLayerPredMode(), bitrate,
-                                    g_env->Reverse());
+    VideoEncoderClientConfig config(
+        video, profile, spatial_layers, g_env->InterLayerPredMode(),
+        g_env->ContentType(), bitrate, g_env->Reverse());
     config.input_storage_type =
         VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
     config.num_frames_to_encode = num_encode_frames;
@@ -970,6 +971,8 @@ int main(int argc, char** argv) {
   base::FilePath video_metadata_path =
       (args.size() >= 2) ? base::FilePath(args[1]) : base::FilePath();
   std::string codec = "h264";
+  media::VideoEncodeAccelerator::Config::ContentType content_type =
+      media::VideoEncodeAccelerator::Config::ContentType::kCamera;
   media::Bitrate::Mode bitrate_mode = media::Bitrate::Mode::kConstant;
   bool reverse = false;
   bool output_bitstream = false;
@@ -1002,6 +1005,15 @@ int main(int argc, char** argv) {
       codec = it->second;
     } else if (it->first == "svc_mode") {
       svc_mode = it->second;
+    } else if (it->first == "content_type") {
+      if (it->second == "display") {
+        content_type =
+            media::VideoEncodeAccelerator::Config::ContentType::kDisplay;
+      } else if (it->second != "camera") {
+        std::cout << "unknown content type \"" << it->second
+                  << "\", possible values are \"camera|display\"\n";
+        return EXIT_FAILURE;
+      }
     } else if (it->first == "bitrate_mode") {
       if (it->second == "vbr") {
         bitrate_mode = media::Bitrate::Mode::kVariable;
@@ -1048,8 +1060,8 @@ int main(int argc, char** argv) {
   media::test::VideoEncoderTestEnvironment* test_environment =
       media::test::VideoEncoderTestEnvironment::Create(
           test_type, video_path, video_metadata_path,
-          base::FilePath(output_folder), codec, svc_mode, output_bitstream,
-          encode_bitrate, bitrate_mode, reverse,
+          base::FilePath(output_folder), codec, svc_mode, content_type,
+          output_bitstream, encode_bitrate, bitrate_mode, reverse,
           media::test::FrameOutputConfig(),
           /*enabled_features=*/{}, disabled_features);
   if (!test_environment)

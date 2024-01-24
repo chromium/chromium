@@ -40,6 +40,7 @@ struct VideoEncoderClientConfig {
       const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
           spatial_layers,
       SVCInterLayerPredMode inter_layer_pred_mode,
+      VideoEncodeAccelerator::Config::ContentType content_type,
       const media::VideoBitrateAllocation& bitrate,
       bool reverse);
   VideoEncoderClientConfig(const VideoEncoderClientConfig&);
@@ -56,6 +57,8 @@ struct VideoEncoderClientConfig {
   size_t num_temporal_layers = 1u;
   size_t num_spatial_layers = 1u;
   SVCInterLayerPredMode inter_layer_pred_mode = SVCInterLayerPredMode::kOff;
+  VideoEncodeAccelerator::Config::ContentType content_type =
+      VideoEncodeAccelerator::Config::ContentType::kCamera;
   // The maximum number of bitstream buffer encodes that can be requested
   // without waiting for the result of the previous encodes requests.
   size_t max_outstanding_encode_requests = 1;

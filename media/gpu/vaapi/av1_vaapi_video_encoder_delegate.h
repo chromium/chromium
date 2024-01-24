@@ -32,6 +32,9 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
     // The rate controller drop frame threshold. 0-100 as this is percentage.
     uint8_t drop_frame_thresh = 0;
 
+    // The encoding content is a screen content.
+    bool is_screen = false;
+
     // Sensible default values for CDEF taken from
     // https://github.com/intel/libva-utils/blob/master/encode/av1encode.c
     // TODO: we may want to tune these parameters.
