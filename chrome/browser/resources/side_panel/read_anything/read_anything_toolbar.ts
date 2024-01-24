@@ -119,9 +119,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       ReadAnythingToolbarElement.showElement(btn as HTMLElement);
     });
 
-    // When scroll width and client width are the different, then the content
-    // has overflowed.
-    if (toolbar.scrollWidth !== toolbar.clientWidth) {
+    const parentWidth = toolbar.offsetParent?.clientWidth;
+    assert(parentWidth);
+
+    // When the toolbar's width exceeds the parent width, then the content has
+    // overflowed.
+    if (toolbar.clientWidth > parentWidth) {
       ReadAnythingToolbarElement.showElement(moreOptionsButton);
       // Hide all the buttons on the toolbar that are in the more options menu
       buttonsOnToolbarToMaybeHide.forEach(btn => {
@@ -399,7 +402,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
     const toolbar = shadowRoot.getElementById('toolbar-container');
     assert(toolbar);
-    ReadAnythingToolbarElement.maybeUpdateMoreOptions(toolbar);
   }
 
   showVoicePreviewPlaying(voice: SpeechSynthesisVoice|null) {
@@ -445,7 +447,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
     const toolbar = shadowRoot.getElementById('toolbar-container');
     assert(toolbar);
-    ReadAnythingToolbarElement.maybeUpdateMoreOptions(toolbar);
   }
 
   private closeMenus_() {
