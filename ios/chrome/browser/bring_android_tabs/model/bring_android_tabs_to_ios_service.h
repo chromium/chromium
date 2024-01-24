@@ -8,6 +8,7 @@
 #import <memory>
 #import <vector>
 
+#import "base/memory/raw_ptr.h"
 #import "components/keyed_service/core/keyed_service.h"
 
 class PrefService;
@@ -90,11 +91,11 @@ class BringAndroidTabsToIOSService : public KeyedService {
   LoadSyncedSessionsAndComputeTabPositions();
 
   // Service dependencies.
-  segmentation_platform::DeviceSwitcherResultDispatcher* const
+  const raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>
       device_switcher_result_dispatcher_;
-  syncer::SyncService* const sync_service_;
-  sync_sessions::SessionSyncService* session_sync_service_;
-  PrefService* const browser_state_prefs_;
+  const raw_ptr<syncer::SyncService> sync_service_;
+  raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
+  const raw_ptr<PrefService> browser_state_prefs_;
   // Flag that marks whether `LoadTabs` has been invoked.
   bool load_tabs_invoked_ = false;
 

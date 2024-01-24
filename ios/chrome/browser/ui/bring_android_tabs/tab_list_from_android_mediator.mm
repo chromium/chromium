@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
@@ -28,11 +29,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @implementation TabListFromAndroidMediator {
   // Keyed service to retrieve active tabs from Android.
-  BringAndroidTabsToIOSService* _bringAndroidTabsService;
+  raw_ptr<BringAndroidTabsToIOSService> _bringAndroidTabsService;
   // URL loader to open tabs when needed.
-  UrlLoadingBrowserAgent* _URLLoader;
+  raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
   // Favicon loader.
-  FaviconLoader* _faviconLoader;
+  raw_ptr<FaviconLoader> _faviconLoader;
 }
 
 - (instancetype)

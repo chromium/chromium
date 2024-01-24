@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -106,10 +107,10 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 @end
 
 @implementation BubblePresenter {
-  segmentation_platform::DeviceSwitcherResultDispatcher*
+  raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>
       _deviceSwitcherResultDispatcher;
 
-  PrefService* _prefService;
+  raw_ptr<PrefService> _prefService;
 
   id<TabStripCommands> _tabStripCommandsHandler;
 }

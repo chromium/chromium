@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_prompt_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
@@ -64,7 +65,7 @@ class BringAndroidTabsPromptMediatorTest : public PlatformTest {
  private:
   // Environment mocks.
   web::WebTaskEnvironment task_environment_;
-  FakeBringAndroidTabsToIOSService* fake_bring_android_tabs_service_;
+  raw_ptr<FakeBringAndroidTabsToIOSService> fake_bring_android_tabs_service_;
   // Mediator dependencies.
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   BringAndroidTabsPromptMediator* mediator_;
