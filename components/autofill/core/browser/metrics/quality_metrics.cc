@@ -157,9 +157,14 @@ void LogQualityMetrics(
               *field, address_field_stats_by_filling_method);
         }
 
-        LogPreFilledFieldStatus(FormTypeToStringView(form_type_of_field),
-                                field->initial_value_changed(),
+        const std::string_view form_type_name =
+            FormTypeToStringView(form_type_of_field);
+        LogPreFilledFieldStatus(form_type_name, field->initial_value_changed(),
                                 type.GetStorableType());
+        LogPreFilledValueChanged(form_type_name, field->initial_value_changed(),
+                                 field->value, field->field_log_events(),
+                                 field->possible_types(),
+                                 type.GetStorableType(), field->is_autofilled);
       }
     }
 

@@ -443,6 +443,14 @@ class BrowserAutofillManager : public AutofillManager {
     std::optional<FormData> filled_form;
   };
 
+  // Stores the value to be filled into a field, along with its field type and
+  // if it's an override.
+  struct FieldFillingData {
+    std::u16string value_to_fill;
+    FieldType field_type;
+    bool value_is_an_override;
+  };
+
   // Given a `form` (and corresponding `form_structure`) to fill, return a map
   // from each field's id to the skip reasons for that field.
   // `type_group_originally_filled` denotes, in case of a refill, what groups
@@ -604,6 +612,18 @@ class BrowserAutofillManager : public AutofillManager {
   static void DisambiguateNameUploadTypes(FormStructure* form,
                                           size_t current_index,
                                           const FieldTypeSet& upload_types);
+
+  // Returns the value to fill along with the field type and if the value is an
+  // override.
+  FieldFillingData GetFieldFillingData(
+      const AutofillField& autofill_field,
+      const absl::variant<const AutofillProfile*, const CreditCard*>
+          profile_or_credit_card,
+      const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
+      const FormFieldData& field_data,
+      const std::u16string& cvc,
+      mojom::ActionPersistence action_persistence,
+      std::string* failure_to_fill);
 
   // Fills `field_data` and modifies `autofill_field` given all other states.
   // Also logs metrics and, if `should_notify` is true, calls

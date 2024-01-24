@@ -320,7 +320,7 @@ void AutofillMetricsBaseTest::CreateTestAutofillProfiles() {
   test::SetProfileInfo(&profile2, "Charles", "Hardin", "Holley",
                        "buddy@gmail.com", "Decca", "123 Apple St.", "unit 6",
                        "Lubbock", "Texas", "79401", "US", "2345678901");
-  profile2.set_guid("00000000-0000-0000-0000-000000000002");
+  profile2.set_guid(kTestProfile2Id);
   personal_data().AddProfile(profile2);
 }
 

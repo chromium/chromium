@@ -2951,11 +2951,12 @@ TEST_F(BrowserAutofillManagerTest, SkipFillIfFieldIsMeaningfullyPreFilled) {
   base::test::ScopedFeatureList placeholders_feature{
       features::kAutofillOverwritePlaceholdersOnly};
 
+  const FieldType kSkippedType = ADDRESS_HOME_LINE1;
   FormData form = test::GetFormData(
       {.fields = {{.role = NAME_FIRST, .value = u"Triggering field (filled)"},
                   {.role = NAME_LAST, .value = u"Placeholder (filled)"},
                   {.role = EMAIL_ADDRESS, .value = u"No data (filled)"},
-                  {.role = ADDRESS_HOME_LINE1,
+                  {.role = kSkippedType,
                    .value = u"Meaningfully pre-filled (skipped)"}}});
   FormsSeen({form});
 
@@ -2980,15 +2981,39 @@ TEST_F(BrowserAutofillManagerTest, SkipFillIfFieldIsMeaningfullyPreFilled) {
                                   form.fields.front(), profile, nullptr,
                                   form_structure, autofill_field);
 
+  auto expect_hash = [&](const FormFieldData& field,
+                         std::optional<size_t> expected_hash) {
+    AutofillField* autofill_field = nullptr;
+    FormStructure* form_structure = nullptr;
+    ASSERT_TRUE(browser_autofill_manager_->GetCachedFormAndField(
+        form, field, &form_structure, &autofill_field));
+    ASSERT_TRUE(autofill_field);
+    EXPECT_THAT(
+        autofill_field->field_log_events(),
+        Contains(VariantWith<FillFieldLogEvent>(Field(
+            "value_that_would_have_been_filled_in_a_prefilled_field_hash",
+            &FillFieldLogEvent::
+                value_that_would_have_been_filled_in_a_prefilled_field_hash,
+            testing::Conditional(expected_hash.has_value(),
+                                 testing::Optional(expected_hash),
+                                 Eq(std::nullopt))))));
+  };
+
   const auto& filled_fields = filled_form.fields;
   EXPECT_TRUE(filled_fields[0].is_autofilled);
   EXPECT_EQ(filled_fields[0].value, profile->GetRawInfo(NAME_FIRST));
+  expect_hash(filled_fields[0], std::nullopt);
   EXPECT_TRUE(filled_fields[1].is_autofilled);
   EXPECT_EQ(filled_fields[1].value, profile->GetRawInfo(NAME_LAST));
+  expect_hash(filled_fields[1], std::nullopt);
   EXPECT_TRUE(filled_fields[2].is_autofilled);
   EXPECT_EQ(filled_fields[2].value, profile->GetRawInfo(EMAIL_ADDRESS));
+  expect_hash(filled_fields[2], std::nullopt);
   EXPECT_FALSE(filled_fields[3].is_autofilled);
   EXPECT_EQ(filled_fields[3].value, form.fields[3].value);
+  expect_hash(
+      filled_fields[3],
+      base::FastHash(base::UTF16ToUTF8(profile->GetRawInfo(kSkippedType))));
 }
 
 TEST_F(BrowserAutofillManagerTest,
