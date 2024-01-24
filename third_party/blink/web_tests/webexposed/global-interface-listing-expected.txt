@@ -1209,12 +1209,14 @@ interface CaptureController : EventTarget
     static method getSupportedZoomLevels
     attribute @@toStringTag
     getter oncapturedmousechange
+    getter oncapturedzoomlevelchange
     method constructor
     method getZoomLevel
     method sendWheel
     method setFocusBehavior
     method setZoomLevel
     setter oncapturedmousechange
+    setter oncapturedzoomlevelchange
 interface CapturedMouseEvent : Event
     attribute @@toStringTag
     getter surfaceX

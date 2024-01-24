@@ -57,4 +57,10 @@ interface CaptureController : EventTarget {
     CallWith = ScriptState
   ]
   Promise<undefined> setZoomLevel(long zoomLevel);
+
+  [
+    RuntimeEnabled = CapturedSurfaceControl,
+    MeasureAs = CapturedSurfaceControl
+  ]
+  attribute EventHandler oncapturedzoomlevelchange;
 };
