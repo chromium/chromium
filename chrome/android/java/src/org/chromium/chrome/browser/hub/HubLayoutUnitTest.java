@@ -582,10 +582,12 @@ public class HubLayoutUnitTest {
         verify(mHubController, times(1)).onHubLayoutShow();
         assertEquals(1, mFrameLayout.getChildCount());
 
-        if (animate) {
+        if (animate && fromLayout != LayoutType.START_SURFACE) {
             assertEquals(expectedAnimationType, mHubLayout.getCurrentAnimationType());
             assertTrue(mHubLayout.isRunningAnimations());
             assertTrue(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
+        } else {
+            assertFalse(mHubLayout.isRunningAnimations());
         }
 
         ShadowLooper.runUiThreadTasks();
@@ -594,7 +596,11 @@ public class HubLayoutUnitTest {
         assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
         verify(mHubLayout).doneShowing();
         verify(mTab).hide(eq(TabHidingType.TAB_SWITCHER_SHOWN));
-        verify(mScrimController, never()).forceAnimationToFinish();
+        if (fromLayout == LayoutType.START_SURFACE) {
+            verify(mScrimController).forceAnimationToFinish();
+        } else {
+            verify(mScrimController, never()).forceAnimationToFinish();
+        }
     }
 
     private void hide(
@@ -624,7 +630,12 @@ public class HubLayoutUnitTest {
         verify(mHubController, times(1)).onHubLayoutDoneHiding();
         assertEquals(0, mFrameLayout.getChildCount());
         verify(mHubLayout).doneHiding();
-        verify(mScrimController, never()).forceAnimationToFinish();
+
+        if (nextLayout == LayoutType.START_SURFACE) {
+            verify(mScrimController).forceAnimationToFinish();
+        } else {
+            verify(mScrimController, never()).forceAnimationToFinish();
+        }
     }
 
     private void startShowing(@LayoutType int fromLayout, boolean animate) {
