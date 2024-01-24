@@ -52,15 +52,9 @@ using RemoveChangesReceived = PasswordStoreBackend::RemoteChangesReceived;
 const PasswordStoreBackendError kUnrecoverableError = PasswordStoreBackendError(
     PasswordStoreBackendErrorType::kUncategorized,
     PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
-const PasswordStoreBackendError kUnspecifiedError = PasswordStoreBackendError(
-    PasswordStoreBackendErrorType::kUncategorized,
-    PasswordStoreBackendErrorRecoveryType::kUnspecified);
 const PasswordStoreBackendError kRecoverableError = PasswordStoreBackendError(
     PasswordStoreBackendErrorType::kUncategorized,
     PasswordStoreBackendErrorRecoveryType::kRecoverable);
-const PasswordStoreBackendError kRetriableError = PasswordStoreBackendError(
-    PasswordStoreBackendErrorType::kUncategorized,
-    PasswordStoreBackendErrorRecoveryType::kRetriable);
 
 PasswordForm CreateTestForm() {
   PasswordForm form;
@@ -883,15 +877,7 @@ INSTANTIATE_TEST_SUITE_P(
                       .is_account_store = false,
                       .is_using_split_account_local_stores = false,
                       .should_fallback = true},
-        FallbackParam{.error = kUnspecifiedError,
-                      .is_account_store = false,
-                      .is_using_split_account_local_stores = false,
-                      .should_fallback = true},
         FallbackParam{.error = kRecoverableError,
-                      .is_account_store = false,
-                      .is_using_split_account_local_stores = false,
-                      .should_fallback = false},
-        FallbackParam{.error = kRetriableError,
                       .is_account_store = false,
                       .is_using_split_account_local_stores = false,
                       .should_fallback = false},
@@ -901,15 +887,7 @@ INSTANTIATE_TEST_SUITE_P(
                       .is_account_store = true,
                       .is_using_split_account_local_stores = true,
                       .should_fallback = true},
-        FallbackParam{.error = kUnspecifiedError,
-                      .is_account_store = true,
-                      .is_using_split_account_local_stores = true,
-                      .should_fallback = true},
         FallbackParam{.error = kRecoverableError,
-                      .is_account_store = true,
-                      .is_using_split_account_local_stores = true,
-                      .should_fallback = false},
-        FallbackParam{.error = kRetriableError,
                       .is_account_store = true,
                       .is_using_split_account_local_stores = true,
                       .should_fallback = false},
@@ -919,15 +897,7 @@ INSTANTIATE_TEST_SUITE_P(
                       .is_account_store = false,
                       .is_using_split_account_local_stores = true,
                       .should_fallback = false},
-        FallbackParam{.error = kUnspecifiedError,
-                      .is_account_store = false,
-                      .is_using_split_account_local_stores = true,
-                      .should_fallback = false},
         FallbackParam{.error = kRecoverableError,
-                      .is_account_store = false,
-                      .is_using_split_account_local_stores = true,
-                      .should_fallback = false},
-        FallbackParam{.error = kRetriableError,
                       .is_account_store = false,
                       .is_using_split_account_local_stores = true,
                       .should_fallback = false}),
@@ -937,8 +907,6 @@ INSTANTIATE_TEST_SUITE_P(
         error_type = "Unrecoverable";
       } else if (info.param.error == kRecoverableError) {
         error_type = "Recoverable";
-      } else if (info.param.error == kRetriableError) {
-        error_type = "Retriable";
       }
       std::string account_or_profile_store =
           info.param.is_account_store ? "Account" : "Profile";

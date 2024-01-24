@@ -31,17 +31,12 @@ enum class PasswordStoreBackendErrorType {
 };
 
 enum class PasswordStoreBackendErrorRecoveryType {
-  // Error which isn't specified properly, should be treated as kUnrecoverable.
-  kUnspecified,
   // Recoverable which can be fixed by either automated or user-driven
   // resolution specific for this error.
   kRecoverable,
   // Unrecoverable errors which can't be fixed easily. It may indicate broken
   // database or other persistent errors.
   kUnrecoverable,
-  // Transitory error which requires no user input and could be resolved by
-  // retrying the operation.
-  kRetriable,
 };
 
 struct PasswordStoreBackendError {

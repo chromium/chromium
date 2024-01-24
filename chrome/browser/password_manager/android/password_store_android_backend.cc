@@ -394,51 +394,6 @@ PasswordStoreBackendErrorType APIErrorCodeToErrorType(
   return PasswordStoreBackendErrorType::kUncategorized;
 }
 
-PasswordStoreBackendError BackendErrorFromAndroidBackendError(
-    const AndroidBackendError& error,
-    PasswordStoreOperation operation,
-    base::TimeDelta delay,
-    bool can_remove_unenrollment,
-    bool supports_passphrase_error_fix) {
-  if (error.type != AndroidBackendErrorType::kExternalError) {
-    return PasswordStoreBackendError(
-        PasswordStoreBackendErrorType::kUncategorized,
-        PasswordStoreBackendErrorRecoveryType::kUnspecified);
-  }
-
-  // External error with no api error code specified should never happen.
-  // Treat is as unrecoverable.
-  if (!error.api_error_code.has_value()) {
-    return PasswordStoreBackendError(
-        PasswordStoreBackendErrorType::kUncategorized,
-        PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
-  }
-
-  AndroidBackendAPIErrorCode api_error_code =
-      static_cast<AndroidBackendAPIErrorCode>(error.api_error_code.value());
-  PasswordStoreBackendErrorType error_type =
-      APIErrorCodeToErrorType(api_error_code, can_remove_unenrollment);
-
-  switch (GetActionOnApiError(api_error_code, operation, delay,
-                              can_remove_unenrollment,
-                              supports_passphrase_error_fix)) {
-    case ActionOnApiError::kRetry:
-      return PasswordStoreBackendError(
-          error_type, PasswordStoreBackendErrorRecoveryType::kRetriable);
-    case ActionOnApiError::kEvict:
-      return PasswordStoreBackendError(
-          error_type, PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
-    // Counterintuitively, kDisableSaving is kRecoverable, as kUnrecoverable is
-    // reserved for eviction.
-    case ActionOnApiError::kDisableSaving:
-    case ActionOnApiError::kNone:
-    case ActionOnApiError::kDisableSavingAndTryFixPassphraseError:
-      return PasswordStoreBackendError(
-          error_type, PasswordStoreBackendErrorRecoveryType::kRecoverable);
-  }
-  NOTREACHED_NORETURN();
-}
-
 }  // namespace
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
@@ -787,10 +742,9 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   // eviction resets state which might be used to infer the recovery type of
   // the error.
   base::TimeDelta delay = reply->GetDelay();
-  PasswordStoreBackendError reported_error =
-      BackendErrorFromAndroidBackendError(
-          error, operation, delay, bridge_helper_->CanRemoveUnenrollment(),
-          !!try_fix_passphrase_error_cb_);
+  PasswordStoreBackendError reported_error(
+      PasswordStoreBackendErrorType::kUncategorized,
+      PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
 
   if (error.api_error_code.has_value() && sync_service_) {
     // TODO(crbug.com/1324588): DCHECK_EQ(api_error_code,
@@ -799,7 +753,8 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
 
     int api_error = error.api_error_code.value();
     auto api_error_code = static_cast<AndroidBackendAPIErrorCode>(api_error);
-
+    reported_error.type = APIErrorCodeToErrorType(
+        api_error_code, bridge_helper_->CanRemoveUnenrollment());
     // TODO(crbug.com/1372343): Extract the retry logic into a separate method.
 
     // Retry the call if the performed operation in combination with the error
@@ -826,6 +781,8 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
         return;
       }
       case ActionOnApiError::kEvict: {
+        reported_error.recovery_type =
+            PasswordStoreBackendErrorRecoveryType::kUnrecoverable;
         if (!password_manager_upm_eviction::IsCurrentUserEvicted(prefs_)) {
           password_manager_upm_eviction::EvictCurrentUser(api_error, prefs_);
         }
@@ -836,9 +793,13 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
         try_fix_passphrase_error_cb_.Run(sync_service_);
         ABSL_FALLTHROUGH_INTENDED;
       case ActionOnApiError::kDisableSaving:
+        reported_error.recovery_type =
+            PasswordStoreBackendErrorRecoveryType::kRecoverable;
         prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);
         break;
       case ActionOnApiError::kNone:
+        reported_error.recovery_type =
+            PasswordStoreBackendErrorRecoveryType::kRecoverable;
         break;
     }
   }

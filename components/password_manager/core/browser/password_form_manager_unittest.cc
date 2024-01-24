@@ -4258,7 +4258,7 @@ TEST_P(PasswordFormManagerTest,
        ClientShouldNotShowErrorMessageWhenErrorIsNotAuthError) {
   fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
       PasswordStoreBackendErrorType::kUncategorized,
-      PasswordStoreBackendErrorRecoveryType::kUnspecified));
+      PasswordStoreBackendErrorRecoveryType::kUnrecoverable));
 
   EXPECT_CALL(client_, ShowPasswordManagerErrorMessage).Times(0);
   fetcher_->NotifyFetchCompleted();

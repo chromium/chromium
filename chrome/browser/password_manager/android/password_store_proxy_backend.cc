@@ -39,9 +39,7 @@ using sync_util::IsSyncFeatureEnabledIncludingPasswords;
 bool ShouldErrorResultInFallback(PasswordStoreBackendError error) {
   switch (error.recovery_type) {
     case PasswordStoreBackendErrorRecoveryType::kUnrecoverable:
-    case PasswordStoreBackendErrorRecoveryType::kUnspecified:
       return true;
-    case PasswordStoreBackendErrorRecoveryType::kRetriable:
     case PasswordStoreBackendErrorRecoveryType::kRecoverable:
       return false;
   }
