@@ -4455,7 +4455,7 @@
   },
   {
     "name": "force-signin-flows-profile-picker",
-    "owners": ["rsult@chromium.org", "chrome-signin-team@google.com"],
+    "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
     "expiry_milestone": 126
   },
   {
@@ -6774,8 +6774,8 @@
   },
   {
     "name": "profiles-reordering",
-    "owners": ["rsult@chromium.org", "chrome-signin-team@google.com"],
-    "expiry_milestone": 122
+    "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
+    "expiry_milestone": 126
   },
   {
     "name": "promise-icons",
