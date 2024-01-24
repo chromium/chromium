@@ -30,6 +30,13 @@ class ShelfTestUtil {
                                           ShelfItemType type,
                                           gfx::ImageSkia icon);
 
+  // Adds an web app shortcut to the shelf model, with the given identifier, the
+  // given shelf item type, the given icon, and the given badge icon.
+  static ShelfItem AddWebAppShortcut(const std::string& id,
+                                     bool pinned,
+                                     gfx::ImageSkia icon,
+                                     gfx::ImageSkia badge_icon);
+
   // Adds an app that is not pinnable to the shelf model.
   static ShelfItem AddAppNotPinnable(const std::string& id);
 };

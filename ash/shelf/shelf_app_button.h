@@ -176,6 +176,8 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   ProgressIndicator* GetProgressIndicatorForTest() const;
 
  protected:
+  gfx::ImageSkia GetHostBadgeImageForTest() { return host_badge_image_; }
+
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
@@ -188,6 +190,7 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
  private:
   class AppNotificationIndicatorView;
   class AppStatusIndicatorView;
+  friend class ShelfViewWebAppShortcutTest;
 
   // views::View:
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
