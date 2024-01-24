@@ -428,10 +428,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)startUpBrowserBasicInitialization {
   _appLaunchTime = IOSChromeMain::StartTime();
   _isColdStart = YES;
-  if (@available(iOS 15, *)) {
-    UMA_HISTOGRAM_BOOLEAN("IOS.Process.ActivePrewarm",
-                          base::ios::IsApplicationPreWarmed());
-  }
+  UMA_HISTOGRAM_BOOLEAN("IOS.Process.ActivePrewarm",
+                        base::ios::IsApplicationPreWarmed());
 
   [SetupDebugging setUpDebuggingOptions];
 
