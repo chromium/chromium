@@ -96,6 +96,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/common/manifest.h"
 #endif
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -541,7 +542,19 @@ std::optional<size_t> ChromeSigninClient::GetExtensionsCount() {
     return std::nullopt;
   }
 
-  return registry->enabled_extensions().size();
+  size_t user_installed_extension_count = 0;
+  for (auto& extension : registry->enabled_extensions()) {
+    // Mimics the count done for the Histograms `Extensions.LoadExtensionUser2`
+    // that counts the user installed extensions.
+    if (extension->is_extension() &&
+        !extensions::Manifest::IsExternalLocation(extension->location()) &&
+        !extensions::Manifest::IsUnpackedLocation(extension->location()) &&
+        !extensions::Manifest::IsComponentLocation(extension->location())) {
+      ++user_installed_extension_count;
+    }
+  }
+
+  return user_installed_extension_count;
 }
 #endif
 

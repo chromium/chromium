@@ -151,15 +151,24 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientBrowserTest,
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(browser()->profile());
   // Create 3 fake extensions and enable them.
-  registry->AddEnabled(extensions::ExtensionBuilder("Extension1").Build());
-  registry->AddEnabled(extensions::ExtensionBuilder("Extension2").Build());
-  registry->AddEnabled(extensions::ExtensionBuilder("Extension3").Build());
-  // Pre installed extensions by default:
-  // - Web Store
-  // - Chromium/Chrome PDF Viewer
-  size_t default_extensions_count = 2;
-  size_t expected_extensions_count = default_extensions_count + 3;
+  // Setting the ManifestLocation to kInternal means that the extension is user
+  // installed. kComponent is an internal Chrome Exntension used for features,
+  // kExternalPolicy means that the extension was installed through a policy.
+  registry->AddEnabled(
+      extensions::ExtensionBuilder("Extension1")
+          .SetLocation(extensions::mojom::ManifestLocation::kInternal)
+          .Build());
+  registry->AddEnabled(
+      extensions::ExtensionBuilder("Extension2")
+          .SetLocation(extensions::mojom::ManifestLocation::kComponent)
+          .Build());
+  registry->AddEnabled(
+      extensions::ExtensionBuilder("Extension3")
+          .SetLocation(extensions::mojom::ManifestLocation::kExternalPolicy)
+          .Build());
 
+  // Only one of the 3 extensions is considered user_installed.
+  size_t expected_extensions_count = 1;
   // Sign in to Chrome.
   const std::string email = "alice@example.com";
   signin::IdentityManager* identity_manager =
@@ -171,14 +180,17 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientBrowserTest,
                                       expected_extensions_count, 1);
   histogram_tester.ExpectUniqueSample("Signin.Extensions.OnSignin.Other",
                                       expected_extensions_count, 1);
-  // No values expected for sync.
+  // No values expected for OnSync.
   base::HistogramTester::CountsMap expected_sync_counts;
   EXPECT_THAT(
       histogram_tester.GetTotalCountsForPrefix("Signin.Extensions.OnSync"),
       testing::ContainerEq(expected_sync_counts));
 
   // Add 1 more extension before syncing.
-  registry->AddEnabled(extensions::ExtensionBuilder("Extension4").Build());
+  registry->AddEnabled(
+      extensions::ExtensionBuilder("Extension4")
+          .SetLocation(extensions::mojom::ManifestLocation::kInternal)
+          .Build());
   size_t sync_expected_extensions_count = expected_extensions_count + 1;
 
   // New histogram tester for easier new values check.
@@ -191,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientBrowserTest,
                                            sync_expected_extensions_count, 1);
   histogram_tester_sync.ExpectUniqueSample("Signin.Extensions.OnSync.Other",
                                            sync_expected_extensions_count, 1);
-  // No values expected for sync.
+  // No values expected for OnSignin.
   base::HistogramTester::CountsMap expected_signin_counts;
   EXPECT_THAT(histogram_tester_sync.GetTotalCountsForPrefix(
                   "Signin.Extensions.OnSignin"),
