@@ -256,7 +256,7 @@ class BookmarkBridge : public ProfileObserver,
   void EndGroupingUndos(JNIEnv* env);
 
   bool IsBookmarked(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& gurl);
+                    const base::android::JavaParamRef<jobject>& j_url);
 
   std::u16string GetTitle(const bookmarks::BookmarkNode* node) const;
 
