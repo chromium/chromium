@@ -37,24 +37,18 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
   base::FilePath profile_path = original_browser_state->GetStatePath();
 
   base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store;
-  base::WeakPtr<optimization_guide::OptimizationGuideStore>
-      prediction_model_and_features_store;
   if (chrome_browser_state->IsOffTheRecord()) {
     OptimizationGuideService* original_ogs =
         OptimizationGuideServiceFactory::GetForBrowserState(
             original_browser_state);
     DCHECK(original_ogs);
     hint_store = original_ogs->GetHintsManager()->hint_store();
-    if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
-      prediction_model_and_features_store =
-          original_ogs->GetPredictionManager()->model_and_features_store();
-    }
   }
 
   return std::make_unique<OptimizationGuideService>(
       proto_db_provider, profile_path, chrome_browser_state->IsOffTheRecord(),
       GetApplicationContext()->GetApplicationLocale(), hint_store,
-      prediction_model_and_features_store, chrome_browser_state->GetPrefs(),
+      chrome_browser_state->GetPrefs(),
       BrowserListFactory::GetForBrowserState(chrome_browser_state),
       chrome_browser_state->GetSharedURLLoaderFactory(),
       base::BindOnce(

@@ -165,7 +165,6 @@ PredictionManager::ModelRegistrationInfo::ModelRegistrationInfo(
 PredictionManager::ModelRegistrationInfo::~ModelRegistrationInfo() = default;
 
 PredictionManager::PredictionManager(
-    base::WeakPtr<OptimizationGuideStore> model_and_features_store,
     PredictionModelStore* prediction_model_store,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* pref_service,
@@ -176,7 +175,6 @@ PredictionManager::PredictionManager(
     BackgroundDownloadServiceProvider background_download_service_provider,
     ComponentUpdatesEnabledProvider component_updates_enabled_provider)
     : prediction_model_download_manager_(nullptr),
-      model_and_features_store_(model_and_features_store),
       prediction_model_store_(prediction_model_store),
       url_loader_factory_(url_loader_factory),
       optimization_guide_logger_(optimization_guide_logger),
@@ -194,9 +192,7 @@ PredictionManager::PredictionManager(
       application_locale_(application_locale),
       model_cache_key_(GetModelCacheKey(application_locale_)),
       models_dir_path_(models_dir_path) {
-  DCHECK(!features::IsInstallWideModelStoreEnabled() ||
-         prediction_model_store_);
-  DCHECK(!model_and_features_store_ || !prediction_model_store_);
+  DCHECK(prediction_model_store_);
   Initialize(std::move(background_download_service_provider));
 }
 
@@ -207,18 +203,10 @@ PredictionManager::~PredictionManager() {
 
 void PredictionManager::Initialize(
     BackgroundDownloadServiceProvider background_download_service_provider) {
-  if (features::IsInstallWideModelStoreEnabled()) {
-    store_is_ready_ = true;
-    LoadPredictionModels(GetRegisteredOptimizationTargets());
-    LOCAL_HISTOGRAM_BOOLEAN(
-        "OptimizationGuide.PredictionManager.StoreInitialized", true);
-  } else if (model_and_features_store_) {
-    model_and_features_store_->Initialize(
-        switches::ShouldPurgeModelAndFeaturesStoreOnStartup(),
-        base::BindOnce(&PredictionManager::OnStoreInitialized,
-                       ui_weak_ptr_factory_.GetWeakPtr(),
-                       std::move(background_download_service_provider)));
-  }
+  store_is_ready_ = true;
+  LoadPredictionModels(GetRegisteredOptimizationTargets());
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "OptimizationGuide.PredictionManager.StoreInitialized", true);
 }
 
 void PredictionManager::AddObserverForOptimizationTargetModel(
@@ -575,14 +563,6 @@ void PredictionManager::UpdatePredictionModels(
         prediction_models) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Check whether the model store from the original profile still exists.
-  if (!features::IsInstallWideModelStoreEnabled() && !model_and_features_store_)
-    return;
-
-  std::unique_ptr<StoreUpdateData> prediction_model_update_data =
-      StoreUpdateData::CreatePredictionModelStoreUpdateData(
-          clock_->Now() + features::StoredModelsValidDuration());
-  bool has_models_to_update = false;
   std::set<proto::OptimizationTarget> received_optimization_targets;
   for (const auto& model : prediction_models) {
     auto optimization_target = model.model_info().optimization_target();
@@ -602,24 +582,14 @@ void PredictionManager::UpdatePredictionModels(
     }
 
     RecordModelUpdateVersion(model.model_info());
-    if (features::IsInstallWideModelStoreEnabled()) {
-      DCHECK(prediction_model_store_->HasModel(optimization_target,
-                                               model_cache_key_));
-      // Load the model from the store to see whether it is valid or not.
-      prediction_model_store_->LoadModel(
-          optimization_target, model_cache_key_,
-          base::BindOnce(
-              &PredictionManager::MaybeDownloadOrUpdatePredictionModel,
-              ui_weak_ptr_factory_.GetWeakPtr(), optimization_target, model));
-    } else {
-      // Storing the model regardless of whether the model is valid or not.
-      // Model will be removed from store if it fails to load.
-      has_models_to_update = true;
-      prediction_model_update_data->CopyPredictionModelIntoUpdateData(model);
-      OnLoadPredictionModel(optimization_target,
-                            /*record_availability_metrics=*/false,
-                            std::make_unique<proto::PredictionModel>(model));
-    }
+    DCHECK(prediction_model_store_->HasModel(optimization_target,
+                                             model_cache_key_));
+    // Load the model from the store to see whether it is valid or not.
+    prediction_model_store_->LoadModel(
+        optimization_target, model_cache_key_,
+        base::BindOnce(&PredictionManager::MaybeDownloadOrUpdatePredictionModel,
+                       ui_weak_ptr_factory_.GetWeakPtr(), optimization_target,
+                       model));
     if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
       OPTIMIZATION_GUIDE_LOGGER(
           optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
@@ -638,22 +608,12 @@ void PredictionManager::UpdatePredictionModels(
           PredictionModelStoreModelRemovalReason::kNoModelInGetModelsResponse);
     }
   }
-
-  if (has_models_to_update && model_and_features_store_) {
-    model_and_features_store_->UpdatePredictionModels(
-        std::move(prediction_model_update_data),
-        base::BindOnce(&PredictionManager::OnPredictionModelsStored,
-                       ui_weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 void PredictionManager::OnModelReady(const base::FilePath& base_model_dir,
                                      const proto::PredictionModel& model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (switches::IsModelOverridePresent())
-    return;
-
-  if (!features::IsInstallWideModelStoreEnabled() && !model_and_features_store_)
     return;
 
   DCHECK(model.model_info().has_version() &&
@@ -673,22 +633,11 @@ void PredictionManager::OnModelReady(const base::FilePath& base_model_dir,
   }
 
   // Store the received model in the store.
-  if (features::IsInstallWideModelStoreEnabled()) {
-    prediction_model_store_->UpdateModel(
-        model.model_info().optimization_target(), model_cache_key_,
-        model.model_info(), base_model_dir,
-        base::BindOnce(&PredictionManager::OnPredictionModelsStored,
-                       ui_weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    std::unique_ptr<StoreUpdateData> prediction_model_update_data =
-        StoreUpdateData::CreatePredictionModelStoreUpdateData(
-            clock_->Now() + features::StoredModelsValidDuration());
-    prediction_model_update_data->CopyPredictionModelIntoUpdateData(model);
-    model_and_features_store_->UpdatePredictionModels(
-        std::move(prediction_model_update_data),
-        base::BindOnce(&PredictionManager::OnPredictionModelsStored,
-                       ui_weak_ptr_factory_.GetWeakPtr()));
-  }
+  prediction_model_store_->UpdateModel(
+      model.model_info().optimization_target(), model_cache_key_,
+      model.model_info(), base_model_dir,
+      base::BindOnce(&PredictionManager::OnPredictionModelsStored,
+                     ui_weak_ptr_factory_.GetWeakPtr()));
 
   if (model_registration_info_map_.contains(
           model.model_info().optimization_target())) {
@@ -800,35 +749,6 @@ void PredictionManager::MaybeInitializeModelDownloads(
   }
 }
 
-void PredictionManager::OnStoreInitialized(
-    BackgroundDownloadServiceProvider background_download_service_provider) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!features::IsInstallWideModelStoreEnabled());
-
-  store_is_ready_ = true;
-  init_time_ = base::TimeTicks::Now();
-  LOCAL_HISTOGRAM_BOOLEAN(
-      "OptimizationGuide.PredictionManager.StoreInitialized", true);
-
-  // Purge any inactive models from the store.
-  if (model_and_features_store_)
-    model_and_features_store_->PurgeInactiveModels();
-
-  MaybeInitializeModelDownloads(
-      background_download_service_provider && !off_the_record_
-          ? std::move(background_download_service_provider).Run()
-          : nullptr);
-
-  // Only load models if there are optimization targets registered.
-  if (model_registration_info_map_.empty()) {
-    return;
-  }
-
-  // The store is ready so start loading models for the registered optimization
-  // targets.
-  LoadPredictionModels(GetRegisteredOptimizationTargets());
-}
-
 void PredictionManager::OnPredictionModelOverrideLoaded(
     proto::OptimizationTarget optimization_target,
     std::unique_ptr<proto::PredictionModel> prediction_model) {
@@ -870,29 +790,6 @@ void PredictionManager::LoadPredictionModels(
                          /*record_availability_metrics=*/true));
     }
     return;
-  }
-
-  DCHECK(!features::IsInstallWideModelStoreEnabled());
-  if (!model_and_features_store_)
-    return;
-
-  OptimizationGuideStore::EntryKey model_entry_key;
-  for (const auto& optimization_target : optimization_targets) {
-    // The prediction model for this optimization target has already been
-    // loaded.
-    bool model_stored_locally =
-        model_and_features_store_->FindPredictionModelEntryKey(
-            optimization_target, &model_entry_key);
-    if (!model_stored_locally) {
-      RecordModelAvailableAtRegistration(optimization_target,
-                                         model_stored_locally);
-      continue;
-    }
-    model_and_features_store_->LoadPredictionModel(
-        model_entry_key,
-        base::BindOnce(&PredictionManager::OnLoadPredictionModel,
-                       ui_weak_ptr_factory_.GetWeakPtr(), optimization_target,
-                       /*record_availability_metrics=*/true));
   }
 }
 
@@ -942,20 +839,6 @@ void PredictionManager::RemoveModelFromStore(
       NotifyObserversOfNewModel(optimization_target, absl::nullopt);
     }
     return;
-  }
-
-  // Remove model from store if it exists.
-  OptimizationGuideStore::EntryKey model_entry_key;
-  if (model_and_features_store_ &&
-      model_and_features_store_->FindPredictionModelEntryKey(
-          optimization_target, &model_entry_key)) {
-    base::UmaHistogramBoolean(
-        "OptimizationGuide.PredictionModelRemoved." +
-            GetStringNameForOptimizationTarget(optimization_target),
-        true);
-    model_and_features_store_->RemovePredictionModelFromEntryKey(
-        model_entry_key);
-    NotifyObserversOfNewModel(optimization_target, absl::nullopt);
   }
 }
 

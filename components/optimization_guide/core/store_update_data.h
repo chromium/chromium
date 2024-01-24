@@ -16,14 +16,13 @@
 namespace optimization_guide {
 namespace proto {
 class Hint;
-class PredictionModel;
 class StoreEntry;
 }  // namespace proto
 
 using EntryVector =
     leveldb_proto::ProtoDatabase<proto::StoreEntry>::KeyEntryVector;
 
-// Holds hint or prediction model data for updating the OptimizationGuideStore.
+// Holds hint data for updating the OptimizationGuideStore.
 class StoreUpdateData {
  public:
   StoreUpdateData(const StoreUpdateData&) = delete;
@@ -38,10 +37,6 @@ class StoreUpdateData {
   // Creates an update data object for a fetched hint update.
   static std::unique_ptr<StoreUpdateData> CreateFetchedStoreUpdateData(
       base::Time fetch_update_time);
-
-  // Creates an update data object for a prediction model update.
-  static std::unique_ptr<StoreUpdateData> CreatePredictionModelStoreUpdateData(
-      base::Time expiry_time);
 
   // Returns the component version of a component hint update.
   const absl::optional<base::Version> component_version() const {
@@ -58,10 +53,6 @@ class StoreUpdateData {
   // called, |hint| is no longer valid.
   void MoveHintIntoUpdateData(proto::Hint&& hint);
 
-  // Copies |prediction_model| into this update data.
-  void CopyPredictionModelIntoUpdateData(
-      const proto::PredictionModel& prediction_model);
-
   // Returns the store entry updates along with ownership to them.
   std::unique_ptr<EntryVector> TakeUpdateEntries();
 
@@ -69,7 +60,6 @@ class StoreUpdateData {
   StoreUpdateData(absl::optional<base::Version> component_version,
                   absl::optional<base::Time> fetch_update_time,
                   absl::optional<base::Time> expiry_time);
-  explicit StoreUpdateData(base::Time expiry_time);
 
   // The component version of the update data for a component update.
   absl::optional<base::Version> component_version_;

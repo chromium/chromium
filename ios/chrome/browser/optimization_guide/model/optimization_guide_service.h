@@ -69,8 +69,6 @@ class OptimizationGuideService
       bool off_the_record,
       const std::string& application_locale,
       base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store,
-      base::WeakPtr<optimization_guide::OptimizationGuideStore>
-          prediction_model_and_features_store,
       PrefService* pref_service,
       BrowserList* browser_list,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -167,10 +165,6 @@ class OptimizationGuideService
   std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
 
   std::unique_ptr<OptimizationGuideLogger> optimization_guide_logger_;
-
-  // The store of optimization target prediction models and features.
-  std::unique_ptr<optimization_guide::OptimizationGuideStore>
-      prediction_model_and_features_store_;
 
   // Manages the storing, loading, and evaluating of optimization target
   // prediction models.

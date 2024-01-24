@@ -332,8 +332,6 @@ void OptimizationGuideKeyedService::Initialize() {
   // profile's store and do not fetch any new hints or models.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
   base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store;
-  base::WeakPtr<optimization_guide::OptimizationGuideStore>
-      prediction_model_and_features_store;
   base::FilePath model_downloads_dir;
   if (profile->IsOffTheRecord()) {
     OptimizationGuideKeyedService* original_ogks =
@@ -341,8 +339,6 @@ void OptimizationGuideKeyedService::Initialize() {
             GetProfileForOTROptimizationGuide(profile));
     DCHECK(original_ogks);
     hint_store = original_ogks->GetHintsManager()->hint_store();
-    prediction_model_and_features_store =
-        original_ogks->GetPredictionManager()->model_and_features_store();
   } else {
     // Use the database associated with the original profile.
     auto* proto_db_provider = profile->GetOriginalProfile()
@@ -385,28 +381,6 @@ void OptimizationGuideKeyedService::Initialize() {
                   profile->GetPrefs())
             : nullptr;
     hint_store = hint_store_ ? hint_store_->AsWeakPtr() : nullptr;
-
-    if (!optimization_guide::features::IsInstallWideModelStoreEnabled()) {
-      // Do not explicitly hand off the model downloads directory to
-      // off-the-record profiles. Underneath the hood, this variable is only
-      // used in non off-the-record profiles to know where to download the model
-      // files to. Off-the-record profiles read the model locations from the
-      // original profiles they are associated with.
-      model_downloads_dir = profile_path.Append(
-          optimization_guide::kOldOptimizationGuidePredictionModelDownloads);
-      prediction_model_and_features_store_ =
-          std::make_unique<optimization_guide::OptimizationGuideStore>(
-              proto_db_provider,
-              profile_path.Append(
-                  optimization_guide::
-                      kOldOptimizationGuidePredictionModelMetadataStore),
-              model_downloads_dir,
-              base::ThreadPool::CreateSequencedTaskRunner(
-                  {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-              profile->GetPrefs());
-      prediction_model_and_features_store =
-          prediction_model_and_features_store_->AsWeakPtr();
-    }
   }
 
   optimization_guide_logger_ = std::make_unique<OptimizationGuideLogger>();
@@ -418,10 +392,7 @@ void OptimizationGuideKeyedService::Initialize() {
       optimization_guide_logger_.get());
 
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
-      prediction_model_and_features_store,
-      optimization_guide::features::IsInstallWideModelStoreEnabled()
-          ? optimization_guide::PredictionModelStore::GetInstance()
-          : nullptr,
+      optimization_guide::PredictionModelStore::GetInstance(),
       url_loader_factory, profile->GetPrefs(), profile->IsOffTheRecord(),
       g_browser_process->GetApplicationLocale(), model_downloads_dir,
       optimization_guide_logger_.get(),
