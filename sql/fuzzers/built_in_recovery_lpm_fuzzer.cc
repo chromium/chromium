@@ -110,7 +110,7 @@ class TestCase {
         wal_mode_(input.wal_mode()),
         sql_statement_(sql_fuzzer::SQLQueriesToString(input.queries())),
         sql_statement_after_open_(
-            sql_fuzzer::SQLQueriesToString(input.queries())) {
+            sql_fuzzer::SQLQueriesToString(input.queries_after_open())) {
     // Parse the input's `mutations` map as `Mutation` structs.
     mutations_.reserve(input.mutations_size());
     for (const auto& [pos, xor_mask] : input.mutations()) {
@@ -140,8 +140,8 @@ class TestCase {
     }
     os << std::dec;
     os << "- sql_statement: " << DebugFormat(sql_statement()) << std::endl;
-    os << "- sql_statement_after_open: " << DebugFormat(sql_statement())
-       << std::endl;
+    os << "- sql_statement_after_open: "
+       << DebugFormat(sql_statement_after_open()) << std::endl;
     return os;
   }
 
