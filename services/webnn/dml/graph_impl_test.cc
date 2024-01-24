@@ -407,7 +407,7 @@ struct BatchNormalizationTester {
     absl::optional<Activation> activation;
   };
   BatchNormalizationAttributes attributes;
-  OperandInfo<float> output;
+  OperandInfo<T> output;
 
   void Test(BuildAndComputeExpectation expectation =
                 BuildAndComputeExpectation::kSuccess) {
@@ -450,9 +450,7 @@ struct BatchNormalizationTester {
                     named_outputs, expectation);
 
     if (expectation == BuildAndComputeExpectation::kSuccess) {
-      VerifyFloatDataIsEqual(
-          GetFloatOutputData(std::move(named_outputs["output"]), output.type),
-          output.values);
+      VerifyIsEqual(std::move(named_outputs["output"]), output);
     }
   }
 };
@@ -706,7 +704,8 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
         .Test();
   }
   {
-    // Test throws error when scale operand is missing.
+    // Test batchNormalization with 1-D input with axis = 0 when scale operand
+    // is missing.
     BatchNormalizationTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {2},
@@ -724,10 +723,11 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {2},
                    .values = {0, 1}}}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+        .Test();
   }
   {
-    // Test throws error when bias operand is missing.
+    // Test batchNormalization with 1-D input with axis = 0 when bias operand is
+    // missing.
     BatchNormalizationTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {2},
@@ -740,12 +740,31 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
                      .values = {1.0, 1.5}},
         .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
                                     .dimensions = {2},
-                                    .values = {0.5, 1, 0}},
+                                    .values = {1.0, 1.5}},
         .attributes = {.axis = 0},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {2},
-                   .values = {0, 1}}}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+                   .values = {0, 0}}}
+        .Test();
+  }
+  {
+    // Test batchNormalization with 1-D input with axis = 0 and float16 data
+    // type when scale and bias operands are both missing.
+    BatchNormalizationTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {2},
+                  .values = Float16FromFloat32({-1, 1})},
+        .mean = {.type = mojom::Operand::DataType::kFloat16,
+                 .dimensions = {2},
+                 .values = Float16FromFloat32({-1, 1})},
+        .variance = {.type = mojom::Operand::DataType::kFloat16,
+                     .dimensions = {2},
+                     .values = Float16FromFloat32({1.0, 1.5})},
+        .attributes = {.axis = 0},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {2},
+                   .values = Float16FromFloat32({0, 0})}}
+        .Test();
   }
 }
 
@@ -4704,9 +4723,7 @@ struct InstanceNormalizationTester {
                     named_outputs, expectation);
 
     if (expectation == BuildAndComputeExpectation::kSuccess) {
-      VerifyFloatDataIsEqual(
-          GetFloatOutputData(std::move(named_outputs["output"]), output.type),
-          output.values);
+      VerifyIsEqual(std::move(named_outputs["output"]), output);
     }
   }
 };
@@ -4767,21 +4784,26 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorInstanceNormalization) {
         .Test();
   }
   {
-    // Test graph creation failure with given scale only.
-    InstanceNormalizationTester<float>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
+    // Test instanceNormalization with 4-D input with float16 data type, given
+    // scale only.
+    InstanceNormalizationTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {1, 2, 1, 3},
-                  .values = {1, 2, 3, 4, 5, 6}},
-        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                                    .dimensions = {2},
-                                    .values = {0.5, -0.5}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
+                  .values = Float16FromFloat32({1, 2, 3, 4, 5, 6})},
+        .scale =
+            OperandInfo<float16>{.type = mojom::Operand::DataType::kFloat16,
+                                 .dimensions = {2},
+                                 .values = Float16FromFloat32({0.5, -0.5})},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 2, 1, 3},
-                   .values = {1, 2, 3, 4, 5, 6}}}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+                   .values = Float16FromFloat32(
+                       {-0.6123678429541951, 0, 0.6123678429541951,
+                        0.6123678429541952, 0, -0.6123678429541951})}}
+        .Test();
   }
   {
-    // Test graph creation failure with given bias only.
+    // Test instanceNormalization with 4-D input with float32 data type, given
+    // bias only.
     InstanceNormalizationTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 1, 3},
@@ -4791,8 +4813,9 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorInstanceNormalization) {
                                    .values = {0.5, -0.5}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 1, 3},
-                   .values = {1, 2, 3, 4, 5, 6}}}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+                   .values = {-0.7247356859083902, 0.5, 1.7247356859083902,
+                              -1.7247356859083902, -0.5, 0.7247356859083902}}}
+        .Test();
   }
 }
 
@@ -4844,9 +4867,7 @@ struct LayerNormalizationTester {
                     named_outputs, expectation);
 
     if (expectation == BuildAndComputeExpectation::kSuccess) {
-      VerifyFloatDataIsEqual(
-          GetFloatOutputData(std::move(named_outputs["output"]), output.type),
-          output.values);
+      VerifyIsEqual(std::move(named_outputs["output"]), output);
     }
   }
 };
@@ -4956,34 +4977,43 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorLayerNormalization) {
         .Test();
   }
   {
-    // Test graph creation failure with given scale only.
-    LayerNormalizationTester<float>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1},
-                  .values = {5}},
-        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                                    .dimensions = {1},
-                                    .values = {0.5}},
-        .attributes = {.axes = {0}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1},
-                   .values = {0}}}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+    // Test layerNormalization with 4-D input with axes = [1, 2, 3], float16
+    // data type, given scale only.
+    LayerNormalizationTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = Float16FromFloat32({-1, 0, 1, 2, 3, 4})},
+        .scale =
+            OperandInfo<float16>{
+                .type = mojom::Operand::DataType::kFloat16,
+                .dimensions = {2, 1, 3},
+                .values = Float16FromFloat32({1, 1, 1, 1, 1, 1})},
+        .attributes = {.axes = {1, 2, 3}},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = Float16FromFloat32(
+                       {-1.4638475999719223, -0.8783085599831534,
+                        -0.29276951999438444, 0.29276951999438444,
+                        0.8783085599831534, 1.4638475999719223})}}
+        .Test();
   }
   {
-    // Test graph creation failure with given bias only.
+    // Test layerNormalization with 4-D input with axes = [1, 2, 3], float32
+    // data type, given bias only.
     LayerNormalizationTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1},
-                  .values = {5}},
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {-1, 0, 1, 2, 3, 4}},
         .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                                   .dimensions = {1},
-                                   .values = {0.5}},
-        .attributes = {.axes = {0}},
+                                   .dimensions = {2, 1, 3},
+                                   .values = {0, 0.1, 0.2, 0.3, 0.4, 0.5}},
+        .attributes = {.axes = {1, 2, 3}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1},
-                   .values = {0}}}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {-1.4638475999719223, -0.7783085599831534,
+                              -0.09276951999438444, 0.59276951999438444,
+                              1.2783085599831534, 1.9638475999719223}}}
+        .Test();
   }
 }
 
