@@ -157,7 +157,7 @@ export class AcceleratorSubsectionElement extends
     if (!isCustomizationAllowed()) {
       return false;
     }
-    return this.lookupManager.isCategoryLocked(this.category);
+    return this.lookupManager.isSubcategoryLocked(this.subcategory);
   }
 }
 

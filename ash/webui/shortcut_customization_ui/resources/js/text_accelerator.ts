@@ -140,8 +140,8 @@ export class TextAcceleratorElement extends PolymerElement {
     if (!isCustomizationAllowed()) {
       return false;
     }
-    return !this.lookupManager.isCategoryLocked(
-        this.lookupManager.getAcceleratorCategory(this.source, this.action));
+    return !this.lookupManager.isSubcategoryLocked(
+        this.lookupManager.getAcceleratorSubcategory(this.source, this.action));
   }
 
   private areAllPartsTextParts(): boolean {

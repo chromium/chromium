@@ -329,16 +329,17 @@ suite('acceleratorViewTest', function() {
       }
       for (const scenario of scenarios) {
         // replicate getCategory() logic.
-        const category = manager!.getAcceleratorCategory(
+        const subcategory = manager!.getAcceleratorSubcategory(
             layoutInfo.source, layoutInfo.action);
-        const categoryIsLocked = manager!.isCategoryLocked(category);
+        const subcategoryIsLocked = manager!.isSubcategoryLocked(subcategory);
         // replicate shouldShowLockIcon() logic.
         const expectLockIconVisible = scenario.customizationEnabled &&
-            !categoryIsLocked && (scenario.locked || scenario.sourceIsLocked);
+            !subcategoryIsLocked &&
+            (scenario.locked || scenario.sourceIsLocked);
         testCases.push({
           ...scenario,
           layoutInfo: layoutInfo,
-          categoryIsLocked: categoryIsLocked,
+          subcategoryIsLocked: subcategoryIsLocked,
           expectLockIconVisible: expectLockIconVisible,
         });
       }
@@ -349,7 +350,7 @@ suite('acceleratorViewTest', function() {
           {isCustomizationAllowed: testCase.customizationEnabled});
       viewElement.source = testCase.layoutInfo.source;
       viewElement.action = testCase.layoutInfo.action;
-      viewElement.categoryIsLocked = testCase.categoryIsLocked;
+      viewElement.subcategoryIsLocked = testCase.subcategoryIsLocked;
       const acceleratorInfo = createStandardAcceleratorInfo(
           Modifier.CONTROL | Modifier.SHIFT,
           /*key=*/ 71,
@@ -412,19 +413,19 @@ suite('acceleratorViewTest', function() {
         continue;
       }
       for (const scenario of scenarios) {
-        // replicate getCategory() logic.
-        const category = manager!.getAcceleratorCategory(
+        // replicate getSubcategory() logic.
+        const subcategory = manager!.getAcceleratorSubcategory(
             layoutInfo.source, layoutInfo.action);
-        const categoryIsLocked = manager!.isCategoryLocked(category);
+        const subcategoryIsLocked = manager!.isSubcategoryLocked(subcategory);
         // replicate shouldShowLockIcon() logic.
         const expectEditIconVisible = scenario.customizationEnabled &&
-            scenario.isAcceleratorRow && !categoryIsLocked &&
+            scenario.isAcceleratorRow && !subcategoryIsLocked &&
             !scenario.locked && !scenario.sourceIsLocked &&
             scenario.isFirstAccelerator;
         testCases.push({
           ...scenario,
           layoutInfo: layoutInfo,
-          categoryIsLocked: categoryIsLocked,
+          subcategoryIsLocked: subcategoryIsLocked,
           expectEditIconVisible: expectEditIconVisible,
         });
       }
@@ -434,7 +435,7 @@ suite('acceleratorViewTest', function() {
           {isCustomizationAllowed: testCase.customizationEnabled});
       viewElement.source = testCase.layoutInfo.source;
       viewElement.action = testCase.layoutInfo.action;
-      viewElement.categoryIsLocked = testCase.categoryIsLocked;
+      viewElement.subcategoryIsLocked = testCase.subcategoryIsLocked;
       viewElement.showEditIcon = testCase.isAcceleratorRow;
       viewElement.isFirstAccelerator = testCase.isFirstAccelerator;
       const acceleratorInfo = createStandardAcceleratorInfo(

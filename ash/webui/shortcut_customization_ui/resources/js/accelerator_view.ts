@@ -158,7 +158,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   source: AcceleratorSource;
   sourceIsLocked: boolean;
   showEditIcon: boolean;
-  categoryIsLocked: boolean;
+  subcategoryIsLocked: boolean;
   isFirstAccelerator: boolean;
   isDisabled: boolean;
   hasLauncherButton: boolean;
@@ -178,8 +178,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   override async connectedCallback(): Promise<void> {
     super.connectedCallback();
 
-    this.categoryIsLocked = this.lookupManager.isCategoryLocked(
-        this.lookupManager.getAcceleratorCategory(this.source, this.action));
+    this.subcategoryIsLocked = this.lookupManager.isSubcategoryLocked(
+        this.lookupManager.getAcceleratorSubcategory(this.source, this.action));
     this.hasLauncherButton = this.lookupManager.getHasLauncherButton();
     this.defaultAccelerators =
         (await this.shortcutProvider.getDefaultAcceleratorsForId(this.action))
@@ -504,7 +504,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   private shouldShowLockIcon(): boolean {
     // Do not show lock icon in each row if customization is disabled or its
     // category is locked.
-    if (!isCustomizationAllowed() || this.categoryIsLocked) {
+    if (!isCustomizationAllowed() || this.subcategoryIsLocked) {
       return false;
     }
     // Show lock icon if accelerator is locked.
@@ -516,7 +516,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     // Do not show edit icon in each row if customization is disabled, the row
     // is displayed in edit-dialog(!showEditIcon) or category is locked.
     if (!isCustomizationAllowed() || !this.showEditIcon ||
-        this.categoryIsLocked) {
+        this.subcategoryIsLocked) {
       return false;
     }
     // Show edit icon if accelerator is not locked.
