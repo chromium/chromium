@@ -103,8 +103,13 @@ dictionary CheckVisibilityOptions {
     // https://github.com/whatwg/html/pull/9538
     [RuntimeEnabled=HTMLUnsafeMethods,RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe(DOMString html);
 
-    // Declarative Shadow DOM getInnerHTML() function.
-    [Affects=Nothing, MeasureAs=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
+    // Declarative Shadow DOM getInnerHTML() function. This version should be
+    // considered deprecated, as we work to standardize the version below,
+    // getHTML().
+    [Affects=Nothing, MeasureAs=ElementGetInnerHTML, RuntimeEnabled=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
+
+    // Declarative Shadow DOM getHTML() function.
+    [Affects=Nothing, MeasureAs=ElementGetHTML, RaisesException, RuntimeEnabled=ElementGetHTML] HTMLString getHTML(optional GetHTMLOptions options = {});
 
     // Pointer Lock
     // https://w3c.github.io/pointerlock/#extensions-to-the-element-interface

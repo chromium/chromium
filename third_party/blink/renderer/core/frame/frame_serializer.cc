@@ -91,7 +91,8 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
   bool ShouldIgnoreElement(const Element&) const override;
   AtomicString AppendElement(const Element&) override;
   void AppendAttribute(const Element&, const Attribute&) override;
-  std::pair<Node*, Element*> GetAuxiliaryDOMTree(const Element&) const override;
+  std::pair<ShadowRoot*, HTMLTemplateElement*> GetShadowTree(
+      const Element&) const override;
 
  private:
   void AppendAttributeValue(const String& attribute_value);
@@ -116,7 +117,7 @@ SerializerMarkupAccumulator::SerializerMarkupAccumulator(
     : MarkupAccumulator(kResolveAllURLs,
                         IsA<HTMLDocument>(document) ? SerializationType::kHTML
                                                     : SerializationType::kXML,
-                        kNoShadowRoots),
+                        ShadowRootInclusion()),
       delegate_(delegate),
       resource_delegate_(resource_delegate),
       document_(&document) {}
@@ -245,9 +246,9 @@ void SerializerMarkupAccumulator::AppendAttribute(const Element& element,
   MarkupAccumulator::AppendAttribute(element, attribute);
 }
 
-std::pair<Node*, Element*> SerializerMarkupAccumulator::GetAuxiliaryDOMTree(
-    const Element& element) const {
-  return delegate_.GetAuxiliaryDOMTree(element);
+std::pair<ShadowRoot*, HTMLTemplateElement*>
+SerializerMarkupAccumulator::GetShadowTree(const Element& element) const {
+  return delegate_.GetShadowTree(element);
 }
 
 void SerializerMarkupAccumulator::AppendAttributeValue(

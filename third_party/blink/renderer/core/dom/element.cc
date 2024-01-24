@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_check_visibility_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_get_inner_html_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_lock_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
@@ -6770,19 +6769,6 @@ void Element::setInnerHTMLWithDeclarativeShadowDOMForTesting(
     const String& html) {
   SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
                        ForceHtml::kDontForce, ASSERT_NO_EXCEPTION);
-}
-
-String Element::getInnerHTML(const GetInnerHTMLOptions* options) const {
-  ClosedRootsSet include_closed_roots;
-  if (options->hasClosedRoots()) {
-    for (auto& shadow_root : options->closedRoots()) {
-      include_closed_roots.insert(shadow_root);
-    }
-  }
-  return CreateMarkup(
-      this, kChildrenOnly, kDoNotResolveURLs,
-      options->includeShadowRoots() ? kIncludeShadowRoots : kNoShadowRoots,
-      include_closed_roots);
 }
 
 void Element::setOuterHTML(const String& html,

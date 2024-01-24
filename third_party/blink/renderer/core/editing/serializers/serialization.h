@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/editing/serializers/create_markup_options.h"
 #include "third_party/blink/renderer/core/editing/serializers/html_interchange.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -47,7 +48,29 @@ class Node;
 class CSSPropertyValueSet;
 
 enum ChildrenOnly { kIncludeNode, kChildrenOnly };
-enum IncludeShadowRoots { kNoShadowRoots, kIncludeShadowRoots };
+
+using ShadowRootSet = HeapHashSet<Member<ShadowRoot>>;
+struct ShadowRootInclusion final {
+  STACK_ALLOCATED();
+
+ public:
+  enum class Behavior {
+    // Only serialize shadow roots provided in the include_shadow_roots list.
+    kOnlyProvidedShadowRoots,
+    // Include any open shadow root marked `serializable`.
+    kIncludeAllSerializableShadowRoots,
+    // TODO(crbug.com/1519972): This value is only used for the deprecated
+    // version of getInnerHTML() and can be removed once that is removed.
+    kIncludeAllOpenShadowRoots,
+  };
+
+  ShadowRootInclusion() = default;
+  explicit ShadowRootInclusion(Behavior behavior) : behavior(behavior) {}
+  ~ShadowRootInclusion() = default;
+
+  Behavior behavior{Behavior::kOnlyProvidedShadowRoots};
+  ShadowRootSet include_shadow_roots{};
+};
 
 DocumentFragment* CreateFragmentFromText(const EphemeralRange& context,
                                          const String& text);
@@ -87,13 +110,11 @@ void ReplaceChildrenWithFragment(ContainerNode*,
                                  ExceptionState&);
 void ReplaceChildrenWithText(ContainerNode*, const String&, ExceptionState&);
 
-using ClosedRootsSet = HeapHashSet<Member<ShadowRoot>>;
 CORE_EXPORT String
 CreateMarkup(const Node*,
              ChildrenOnly = kIncludeNode,
              AbsoluteURLs = kDoNotResolveURLs,
-             IncludeShadowRoots = kNoShadowRoots,
-             ClosedRootsSet include_closed_roots = ClosedRootsSet());
+             const ShadowRootInclusion& = ShadowRootInclusion());
 
 CORE_EXPORT String
 CreateMarkup(const Position& start,
@@ -119,16 +140,15 @@ CORE_EXPORT DocumentFragment* CreateSanitizedFragmentFromMarkupWithContext(
 // re-serializes it with the last few parameters as the return value. The whole
 // process is done in an isolated document. Returns the null string if
 // sanitization fails, and otherwise returns the sanitized markup.
-CORE_EXPORT String
-CreateSanitizedMarkupWithContext(Document&,
-                                 const String& raw_markup,
-                                 unsigned fragment_start,
-                                 unsigned fragment_end,
-                                 const String& base_url,
-                                 ChildrenOnly = kIncludeNode,
-                                 AbsoluteURLs = kDoNotResolveURLs,
-                                 IncludeShadowRoots = kNoShadowRoots,
-                                 ClosedRootsSet = ClosedRootsSet());
+CORE_EXPORT String CreateSanitizedMarkupWithContext(
+    Document&,
+    const String& raw_markup,
+    unsigned fragment_start,
+    unsigned fragment_end,
+    const String& base_url,
+    ChildrenOnly = kIncludeNode,
+    AbsoluteURLs = kDoNotResolveURLs,
+    const ShadowRootInclusion& = ShadowRootInclusion());
 
 void MergeWithNextTextNode(Text*, ExceptionState&);
 

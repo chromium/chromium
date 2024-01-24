@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_get_inner_html_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -134,19 +133,6 @@ void ShadowRoot::OnAdoptedStyleSheetDelete(
     ExceptionState& exception_state) {
   TreeScope::OnAdoptedStyleSheetDelete(script_state, observable_array, index,
                                        exception_state);
-}
-
-String ShadowRoot::getInnerHTML(const GetInnerHTMLOptions* options) const {
-  ClosedRootsSet include_closed_roots;
-  if (options->hasClosedRoots()) {
-    for (auto& shadow_root : options->closedRoots()) {
-      include_closed_roots.insert(shadow_root);
-    }
-  }
-  return CreateMarkup(
-      this, kChildrenOnly, kDoNotResolveURLs,
-      options->includeShadowRoots() ? kIncludeShadowRoots : kNoShadowRoots,
-      include_closed_roots);
 }
 
 void ShadowRoot::setInnerHTML(const String& html,

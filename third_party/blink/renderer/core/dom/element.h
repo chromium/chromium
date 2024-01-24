@@ -95,7 +95,6 @@ class ElementIntersectionObserverData;
 class ElementRareDataVector;
 class ExceptionState;
 class FocusOptions;
-class GetInnerHTMLOptions;
 class HTMLTemplateElement;
 class Image;
 class InputDeviceCapabilities;
@@ -924,7 +923,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   String outerHTML() const;
   void setInnerHTML(const String&, ExceptionState& = ASSERT_NO_EXCEPTION);
   void setInnerHTMLWithDeclarativeShadowDOMForTesting(const String& html);
-  String getInnerHTML(const GetInnerHTMLOptions* options) const;
   void setOuterHTML(const String&, ExceptionState& = ASSERT_NO_EXCEPTION);
   // https://github.com/whatwg/html/pull/9538
   void setHTMLUnsafe(const String& html, ExceptionState&);

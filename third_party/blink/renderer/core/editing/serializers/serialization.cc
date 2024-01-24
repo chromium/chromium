@@ -497,8 +497,7 @@ DocumentFragment* CreateFragmentFromMarkupWithContext(
 String CreateMarkup(const Node* node,
                     ChildrenOnly children_only,
                     AbsoluteURLs should_resolve_urls,
-                    IncludeShadowRoots include_shadow_roots,
-                    ClosedRootsSet include_closed_roots) {
+                    const ShadowRootInclusion& shadow_root_inclusion) {
   if (!node)
     return "";
 
@@ -506,7 +505,7 @@ String CreateMarkup(const Node* node,
                                 IsA<HTMLDocument>(node->GetDocument())
                                     ? SerializationType::kHTML
                                     : SerializationType::kXML,
-                                include_shadow_roots, include_closed_roots);
+                                shadow_root_inclusion);
   return accumulator.SerializeNodes<EditingStrategy>(*node, children_only);
 }
 
@@ -943,15 +942,15 @@ constexpr unsigned kMaxSanitizationIterations = 16;
 
 }  // namespace
 
-String CreateSanitizedMarkupWithContext(Document& document,
-                                        const String& raw_markup,
-                                        unsigned fragment_start,
-                                        unsigned fragment_end,
-                                        const String& base_url,
-                                        ChildrenOnly children_only,
-                                        AbsoluteURLs should_resolve_urls,
-                                        IncludeShadowRoots include_shadow_roots,
-                                        ClosedRootsSet include_closed_roots) {
+String CreateSanitizedMarkupWithContext(
+    Document& document,
+    const String& raw_markup,
+    unsigned fragment_start,
+    unsigned fragment_end,
+    const String& base_url,
+    ChildrenOnly children_only,
+    AbsoluteURLs should_resolve_urls,
+    const ShadowRootInclusion& shadow_root_inclusion) {
   if (raw_markup.empty())
     return String();
 
@@ -1010,9 +1009,8 @@ String CreateSanitizedMarkupWithContext(Document& document,
     DocumentFragment* final_fragment =
         CreateFragmentFromMarkup(*staging_document, markup, base_url,
                                  kDisallowScriptingAndPluginContent);
-    final_markup =
-        CreateMarkup(final_fragment, children_only, should_resolve_urls,
-                     include_shadow_roots, include_closed_roots);
+    final_markup = CreateMarkup(final_fragment, children_only,
+                                should_resolve_urls, shadow_root_inclusion);
   }
   staging_document->GetPage()->WillBeDestroyed();
   return final_markup;
