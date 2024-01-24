@@ -5,6 +5,7 @@
 #include "ash/picker/views/picker_section_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -30,7 +31,32 @@ namespace {
 
 constexpr auto kSectionTitlePadding = gfx::Insets::VH(8, 16);
 
+// Horizontal padding between small grid items.
+constexpr auto kSmallGridItemMargins = gfx::Insets::VH(0, 12);
+
+// Padding around each row of small items.
+constexpr auto kSmallGridItemRowMargins = gfx::Insets::TLBR(0, 8, 8, 8);
+
+// Padding between and around large grid items.
 constexpr int kLargeGridItemsPadding = 8;
+
+std::unique_ptr<views::View> CreateSmallGridItemsRow() {
+  auto row = views::Builder<views::FlexLayoutView>()
+                 .SetOrientation(views::LayoutOrientation::kHorizontal)
+                 .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+                 .SetCollapseMargins(true)
+                 .SetIgnoreDefaultMainAxisMargins(true)
+                 .SetProperty(views::kMarginsKey, kSmallGridItemRowMargins)
+                 .Build();
+  row->SetDefault(views::kMarginsKey, kSmallGridItemMargins);
+  return row;
+}
+
+std::unique_ptr<views::View> CreateSmallGridItemsContainer() {
+  return views::Builder<views::FlexLayoutView>()
+      .SetOrientation(views::LayoutOrientation::kVertical)
+      .Build();
+}
 
 std::unique_ptr<views::View> CreateLargeGridItemsColumn() {
   auto column = views::Builder<views::FlexLayoutView>()
@@ -71,7 +97,7 @@ std::unique_ptr<views::View> CreateLargeGridItemsContainer() {
 std::unique_ptr<views::View> CreateListItemsContainer() {
   return views::Builder<views::FlexLayoutView>()
       .SetOrientation(views::LayoutOrientation::kVertical)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .Build();
 }
 
@@ -89,6 +115,29 @@ PickerSectionView::PickerSectionView(const std::u16string& title_text) {
 }
 
 PickerSectionView::~PickerSectionView() = default;
+
+void PickerSectionView::SetMaximumWidth(int maximum_width) {
+  maximum_width_ = maximum_width;
+}
+
+void PickerSectionView::AddSmallGridItem(
+    std::unique_ptr<PickerItemView> item_view) {
+  if (small_grid_items_container_ == nullptr) {
+    small_grid_items_container_ = AddChildView(CreateSmallGridItemsContainer());
+    small_grid_items_container_->AddChildView(CreateSmallGridItemsRow());
+  }
+
+  // Try to add the item to the last row. If it doesn't fit, create a new row
+  // and add the item there.
+  views::View* row = small_grid_items_container_->children().back();
+  if (!row->children().empty() && maximum_width_.has_value() &&
+      row->GetPreferredSize().width() + kSmallGridItemMargins.left() +
+              item_view->GetPreferredSize().width() >
+          maximum_width_.value()) {
+    row = small_grid_items_container_->AddChildView(CreateSmallGridItemsRow());
+  }
+  item_views_.push_back(row->AddChildView(std::move(item_view)));
+}
 
 void PickerSectionView::AddLargeGridItem(
     std::unique_ptr<PickerItemView> item_view) {

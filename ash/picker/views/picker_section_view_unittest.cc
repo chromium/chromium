@@ -31,6 +31,33 @@ std::unique_ptr<PickerItemView> CreateSizedItem(const gfx::Size& size) {
 
 using PickerSectionViewTest = AshTestBase;
 
+TEST_F(PickerSectionViewTest, OneSmallGridItem) {
+  PickerSectionView section_view(u"Section");
+
+  section_view.AddSmallGridItem(CreateSizedItem(gfx::Size(100, 40)));
+
+  // One row with one item.
+  EXPECT_THAT(
+      section_view.small_grid_items_container_for_testing()->children(),
+      ElementsAre(Pointee(Property(&views::View::children, SizeIs(1)))));
+}
+
+TEST_F(PickerSectionViewTest, SmallGridItemsStayWithinMaximumWidth) {
+  PickerSectionView section_view(u"Section");
+
+  section_view.SetMaximumWidth(320);
+  section_view.AddSmallGridItem(CreateSizedItem(gfx::Size(100, 40)));
+  section_view.AddSmallGridItem(CreateSizedItem(gfx::Size(80, 40)));
+  section_view.AddSmallGridItem(CreateSizedItem(gfx::Size(90, 40)));
+  section_view.AddSmallGridItem(CreateSizedItem(gfx::Size(100, 40)));
+
+  // Three items in first row, one item in second row.
+  EXPECT_THAT(
+      section_view.small_grid_items_container_for_testing()->children(),
+      ElementsAre(Pointee(Property(&views::View::children, SizeIs(3))),
+                  Pointee(Property(&views::View::children, SizeIs(1)))));
+}
+
 TEST_F(PickerSectionViewTest, OneLargeGridItem) {
   PickerSectionView section_view(u"Section");
 
@@ -69,6 +96,23 @@ TEST_F(PickerSectionViewTest, LargeGridItemsWithVaryingHeight) {
       section_view.large_grid_items_container_for_testing()->children(),
       ElementsAre(Pointee(Property(&views::View::children, SizeIs(1))),
                   Pointee(Property(&views::View::children, SizeIs(3)))));
+}
+
+TEST_F(PickerSectionViewTest, SmallAndLargeGridItems) {
+  PickerSectionView section_view(u"Section");
+
+  section_view.AddSmallGridItem(CreateSizedItem(gfx::Size(100, 40)));
+  section_view.AddLargeGridItem(CreateSizedItem(gfx::Size(100, 100)));
+
+  // One row with one small grid item.
+  EXPECT_THAT(
+      section_view.small_grid_items_container_for_testing()->children(),
+      ElementsAre(Pointee(Property(&views::View::children, SizeIs(1)))));
+  // Two columns, one large grid item in the first column.
+  EXPECT_THAT(
+      section_view.large_grid_items_container_for_testing()->children(),
+      ElementsAre(Pointee(Property(&views::View::children, SizeIs(1))),
+                  Pointee(Property(&views::View::children, SizeIs(0)))));
 }
 
 }  // namespace
