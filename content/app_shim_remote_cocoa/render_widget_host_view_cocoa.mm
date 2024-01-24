@@ -2298,9 +2298,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   // handle the command in the key event handler. Otherwise we can just handle
   // it here.
   if ([self isHandlingKeyDown]) {
-    if ((_textInputFlags & blink::kWebTextInputFlagVertical) &&
-        base::FeatureList::IsEnabled(
-            blink::features::kArrowKeysInVerticalWritingModes)) {
+    if ((_textInputFlags & blink::kWebTextInputFlagVertical)) {
       // Commands assigned to arrow keys are ignored and Blink handles key down
       // events because macOS doesn't work well with some vertical writing
       // modes. See editing_behavior.cc.

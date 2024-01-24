@@ -321,11 +321,6 @@
       status: "experimental",
     },
     {
-      // crbug.com/484651
-      name: "ArrowKeysInVerticalWritingModes",
-      status: "stable",
-    },
-    {
       name: "AsyncClipboardImplicitPermission",
       status: "stable",
     },
@@ -1906,7 +1901,6 @@
       // Allow text-based form controls to have vertical writing mode: textarea
       // and input types email, number, password, search, tel, text, url.
       name: "FormControlsVerticalWritingModeTextSupport",
-      depends_on: ["ArrowKeysInVerticalWritingModes"],
       status: "stable",
     },
     {

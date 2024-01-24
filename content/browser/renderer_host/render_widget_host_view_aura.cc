@@ -11,7 +11,6 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -54,7 +53,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/page_visibility_state.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -2727,13 +2725,8 @@ void RenderWidgetHostViewAura::ForwardKeyboardEventWithLatencyInfo(
   auto* linux_ui = ui::LinuxUi::instance();
   std::vector<ui::TextEditCommandAuraLinux> commands;
   if (!event.skip_if_unhandled && linux_ui && event.os_event &&
-      linux_ui->GetTextEditCommandsForEvent(
-          *event.os_event,
-          base::FeatureList::IsEnabled(
-              blink::features::kArrowKeysInVerticalWritingModes)
-              ? GetTextInputFlags()
-              : ui::TEXT_INPUT_FLAG_NONE,
-          &commands)) {
+      linux_ui->GetTextEditCommandsForEvent(*event.os_event,
+                                            GetTextInputFlags(), &commands)) {
     // Transform from ui/ types to content/ types.
     std::vector<blink::mojom::EditCommandPtr> edit_commands;
     for (std::vector<ui::TextEditCommandAuraLinux>::const_iterator it =
