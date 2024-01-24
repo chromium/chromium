@@ -1767,7 +1767,94 @@ suite('WallpaperSearchTest', () => {
           handler.getArgs('setBackgroundToInspirationImage')[0][1].url);
     });
 
-    test('inspirations updates selected descriptors', async () => {
+    test('inspration group titles update selected descriptors', async () => {
+      createWallpaperSearchElement(
+          /*descriptors=*/ {
+            descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
+            descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
+            descriptorC: ['foo', 'bar', 'baz'],
+          },
+          /*inspirationGroups=*/[
+            {
+              descriptors: {
+                subject: 'baz',
+                style: 'foo',
+                mood: 'bar',
+                color: {name: DescriptorDName.kYellow},
+              },
+              inspirations: [
+                {
+                  id: {high: BigInt(10), low: BigInt(1)},
+                  description: 'Description foo',
+                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                },
+              ],
+            },
+            {
+              descriptors: {
+                subject: 'bar',
+                mood: 'baz',
+              },
+              inspirations: [
+                {
+                  id: {high: BigInt(10), low: BigInt(1)},
+                  description: 'Description foo',
+                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                },
+              ],
+            },
+          ]);
+      await flushTasks();
+
+      const groupTitles = wallpaperSearchElement.shadowRoot!.querySelectorAll(
+          '.inspiration-title');
+      const fistGroupTitle = groupTitles[0];
+      assertTrue(!!fistGroupTitle);
+      (fistGroupTitle as HTMLElement).click();
+      await flushTasks();
+
+      assertEquals(
+          'baz',
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxA')!.value);
+      assertEquals(
+          'foo',
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxB')!.value);
+      assertEquals(
+          'bar',
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxC')!.value);
+      const checkedColor =
+          $$(wallpaperSearchElement, '#descriptorMenuD button [checked]');
+      assertTrue(!!checkedColor);
+      assertEquals('Yellow', checkedColor!.parentElement!.title);
+
+      const secondGroupTitle = groupTitles[1];
+      assertTrue(!!secondGroupTitle);
+      (secondGroupTitle as HTMLElement)
+          .dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
+      await flushTasks();
+
+      assertEquals(
+          'bar',
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxA')!.value);
+      assertEquals(
+          null,
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxB')!.value);
+      assertEquals(
+          'baz',
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxC')!.value);
+      assertFalse(
+          !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
+    });
+
+    test('inspiration tiles updates selected descriptors', async () => {
       createWallpaperSearchElement(
           /*descriptors=*/ {
             descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],

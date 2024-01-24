@@ -268,8 +268,13 @@
     margin-inline-start: 16px;
   }
 
+  .inspirations-content h3 {
+    margin: 0;
+  }
+
   .inspiration-title {
     color: var(--color-side-panel-wallpaper-search-inspiration-descriptors);
+    cursor: pointer;
     font-size: 12px;
     font-weight: 500;
     line-height: 16px;
@@ -463,9 +468,13 @@
     <iron-collapse opened="[[openInspirations_]]">
       <div class="inspirations-content">
         <template is="dom-repeat" items="[[inspirationGroups_]]">
-          <div class="inspiration-title">
-            [[getInspirationGroupTitle_(item.descriptors)]]
-          </div>
+          <h3>
+            <div class="inspiration-title" role="button" tabindex="0"
+                on-click="onInspirationGroupTitleClick_"
+                on-keydown="onInspirationGroupTitleKeydown_">
+              [[getInspirationGroupTitle_(item.descriptors)]]
+            </div>
+          </h3>
           <cr-grid columns="3" disable-arrow-navigation>
             <template is="dom-repeat" items="[[item.inspirations]]">
               <div class="tile result" on-click="onInspirationImageClick_"

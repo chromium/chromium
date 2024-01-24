@@ -584,6 +584,18 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         e.model.item.id, e.model.item.descriptors ?? {});
   }
 
+  private onInspirationGroupTitleClick_(e: DomRepeatEvent<InspirationGroup>) {
+    this.selectDescriptorsFromInspirationGroup_(e.model.item);
+  }
+
+  private onInspirationGroupTitleKeydown_(e: KeyboardEvent) {
+    if (['Enter', ' '].includes(e.key)) {
+      e.preventDefault();
+      e.stopPropagation();
+      (e.target as HTMLElement).click();
+    }
+  }
+
   private onInspirationToggleClick_() {
     this.openInspirations_ = !this.openInspirations_;
   }
@@ -600,24 +612,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         CustomizeChromeAction.WALLPAPER_SEARCH_INSPIRATION_THEME_SELECTED);
     this.wallpaperSearchHandler_.setBackgroundToInspirationImage(
         e.model.item.id, e.model.item.backgroundUrl);
-
-    const groupDescriptors = e.model.parentModel.item.descriptors;
-    this.selectedDescriptorA_ = groupDescriptors.subject || null;
-    this.selectedDescriptorB_ = groupDescriptors.style || null;
-    this.selectedDescriptorC_ = groupDescriptors.mood || null;
-
-    if (groupDescriptors.color?.name !== undefined) {
-      const hex = descriptorDNameToHex(groupDescriptors.color.name);
-      this.selectedDefaultColor_ = hex;
-      this.selectedHue_ = null;
-      this.selectedDescriptorD_ = {
-        color: hexColorToSkColor(this.selectedDefaultColor_),
-      };
-    } else {
-      this.selectedDefaultColor_ = undefined;
-      this.selectedHue_ = null;
-      this.selectedDescriptorD_ = null;
-    }
+    this.selectDescriptorsFromInspirationGroup_(e.model.parentModel.item);
   }
 
   private onLearnMoreClick_(e: Event) {
@@ -717,6 +712,26 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       this.$.wallpaperSearch.focus();
     } else {
       this.$.error.focus();
+    }
+  }
+
+  private selectDescriptorsFromInspirationGroup_(group: InspirationGroup) {
+    const groupDescriptors = group.descriptors;
+    this.selectedDescriptorA_ = groupDescriptors.subject || null;
+    this.selectedDescriptorB_ = groupDescriptors.style || null;
+    this.selectedDescriptorC_ = groupDescriptors.mood || null;
+
+    if (groupDescriptors.color?.name !== undefined) {
+      const hex = descriptorDNameToHex(groupDescriptors.color.name);
+      this.selectedDefaultColor_ = hex;
+      this.selectedHue_ = null;
+      this.selectedDescriptorD_ = {
+        color: hexColorToSkColor(this.selectedDefaultColor_),
+      };
+    } else {
+      this.selectedDefaultColor_ = undefined;
+      this.selectedHue_ = null;
+      this.selectedDescriptorD_ = null;
     }
   }
 
