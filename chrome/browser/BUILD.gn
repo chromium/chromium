@@ -6935,9 +6935,6 @@ static_library("browser") {
     if (is_linux) {
       sources += [ "printing/printer_manager_dialog_linux.cc" ]
     }
-    if (is_fuchsia) {
-      sources += [ "printing/printer_manager_dialog_fuchsia.cc" ]
-    }
     if (enable_oop_printing) {
       sources += [
         "printing/print_backend_service_manager.cc",
