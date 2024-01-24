@@ -2106,6 +2106,69 @@ IN_PROC_BROWSER_TEST_F(
         web_contents, "window.matchMedia('(display-state: normal)').matches");
   }));
 }
+
+#if !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    WindowSetResizableBlocksMaximizingNormalWindow) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+
+  auto* browser_view = helper()->browser_view();
+  browser_view->SetCanResize(true);
+  browser_view->SetCanMaximize(true);
+  auto* web_contents = browser_view->GetActiveWebContents();
+
+  // Restore window to make sure we start from the normal state.
+  EXPECT_TRUE(ExecJs(web_contents, "window.restore()"));
+  EXPECT_TRUE(
+      RunUntil([&]() { return !helper()->browser_view()->IsMaximized(); }));
+  EXPECT_TRUE(RunUntil([&]() {
+    return MatchMediaMatches(
+        web_contents, "window.matchMedia('(display-state: normal)').matches");
+  }));
+
+  // Block resizing
+  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  CheckCanResize(false, false);
+
+  // window.maximize() API no longer takes action
+  EXPECT_TRUE(ExecJs(web_contents, "window.maximize()"));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(browser_view->IsMaximized());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    WindowSetResizableBlocksRestoringMaximizedWindow) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+
+  auto* browser_view = helper()->browser_view();
+  browser_view->SetCanResize(true);
+  browser_view->SetCanMaximize(true);
+  auto* web_contents = browser_view->GetActiveWebContents();
+
+  // Maximize window
+  EXPECT_TRUE(ExecJs(web_contents, "window.maximize()"));
+  EXPECT_TRUE(
+      RunUntil([&]() { return helper()->browser_view()->IsMaximized(); }));
+  EXPECT_TRUE(RunUntil([&]() {
+    return MatchMediaMatches(
+        web_contents,
+        "window.matchMedia('(display-state: maximized)').matches");
+  }));
+
+  // Block resizing
+  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  CheckCanResize(false, false);
+
+  // window.restore() API no longer takes action
+  EXPECT_TRUE(ExecJs(web_contents, "window.restore()"));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(browser_view->IsMaximized());
+}
+#endif  // !BUILDFLAG(IS_MAC)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class OriginTextVisibilityWaiter : public views::ViewObserver {
