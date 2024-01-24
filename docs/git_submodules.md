@@ -169,7 +169,8 @@ will stage all changes except for submodules.
 and magic [pathspecs](https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec))
 
 To make these commands shorter, you can create git aliases for them by adding
-the following to your src/.git/config file:
+the following to your $HOME/.gitconfig (globally) or src/.git/config file (just
+chromium/src):
 ```
 [alias]
         # 's', 'c', or whatever alias you want for each command
