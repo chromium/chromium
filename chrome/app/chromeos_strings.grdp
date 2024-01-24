@@ -628,7 +628,7 @@
     Language
   </message>
   <message name="IDS_KEYBOARD_DROPDOWN_TITLE" desc="Title of keyboard selection dropdown menu" meaning="Small title near keyboard dropdown menu suggesting that this is a keyboard layout selector.">
-    Keyboard
+    Input method
   </message>
   <message name="IDS_COUNTRY_DROPDOWN_TITLE" desc="Title of country selection dropdown menu" meaning="Small title near country dropdown menu suggesting that this is a country selector.">
     Country
@@ -643,7 +643,7 @@
     Select language and keyboard button. Currently selected language is <ph name="LANGUAGE">$1<ex>English (United States)</ex></ph>.
   </message>
   <message name="IDS_LANGUAGE_SECTION_TITLE" desc="Title of language selection screen" meaning="A title of the dialog where user should select ChromeOS UI language and default keyboard layout during initial device setup.">
-    Choose your language &amp; keyboard
+    Language and input method
   </message>
   <message name="IDS_LANGUAGE_SECTION_HINT" desc="Under-title line on the language selection screen" meaning="A hint to the user that language files are shared among users.">
     Language files are shared among users to save disk space.
