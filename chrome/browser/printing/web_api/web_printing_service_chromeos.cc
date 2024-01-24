@@ -125,8 +125,10 @@ bool HasPrintingPermission(content::RenderFrameHost& rfh) {
 
 WebPrintingServiceChromeOS::WebPrintingServiceChromeOS(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::WebPrintingService> receiver)
+    mojo::PendingReceiver<blink::mojom::WebPrintingService> receiver,
+    const std::string& app_id)
     : DocumentService(*render_frame_host, std::move(receiver)),
+      app_id_(app_id),
       cups_wrapper_(chromeos::CupsWrapper::Create()),
       pdf_flattener_(std::make_unique<PdfBlobDataFlattener>(
           Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))),
@@ -271,12 +273,11 @@ void WebPrintingServiceChromeOS::OnPdfReadAndFlattened(
   job_info->job_pages = flatten_pdf_result->page_count * settings->copies();
   job_info->observer = observer.InitWithNewPipeAndPassReceiver();
 
-  // TODO(b/302505962): Figure out the correct value to pass as `source_id`.
   print_job_controller_->CreatePrintJob(
       std::move(flatten_pdf_result->flattened_pdf), std::move(settings),
       flatten_pdf_result->page_count,
       /*source=*/crosapi::mojom::PrintJob::Source::kIsolatedWebApp,
-      /*source_id=*/"",
+      /*source_id=*/app_id_,
       base::BindOnce(&WebPrintingServiceChromeOS::OnPrintJobCreated,
                      weak_factory_.GetWeakPtr(), std::move(observer)));
 
@@ -302,11 +303,10 @@ void WebPrintingServiceChromeOS::OnPrintJobCreated(
       printer_id, creation_info->job_id, std::move(observer));
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/302505962): Figure out the correct value to pass as `source_id`.
   NotifyAshJobCreated(
       creation_info->job_id, *creation_info->document,
       /*source=*/crosapi::mojom::PrintJob::Source::kIsolatedWebApp,
-      /*source_id=*/"", GetLocalPrinterInterface());
+      /*source_id=*/app_id_, GetLocalPrinterInterface());
 #endif
 }
 
