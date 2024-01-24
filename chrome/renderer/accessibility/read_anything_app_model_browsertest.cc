@@ -224,6 +224,10 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     model_->set_selection_from_action(selection_from_action);
   }
 
+  void OnSelection(ax::mojom::EventFrom event_from) {
+    model_->OnSelection(event_from);
+  }
+
   void IncreaseTextSize() { model_->IncreaseTextSize(); }
 
   void DecreaseTextSize() { model_->DecreaseTextSize(); }
@@ -1461,4 +1465,62 @@ TEST_F(ReadAnythingAppModelTest, PdfEvents_DontSetRequiresDistillation) {
   update.nodes = {static_text_node};
   AccessibilityEventReceived({update});
   ASSERT_FALSE(RequiresDistillation());
+}
+
+TEST_F(ReadAnythingAppModelTest, OnSelection_HandlesClickAndDragEvents) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 3;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 0;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+  ProcessSelection();
+
+  // If there is a click and drag selection (the anchor object id and offset are
+  // the same as the prev selection received), the event_from eventually changes
+  // from kUser to kPage. Post process selection should be required in either
+  // case.
+  // SetRequiresPostProcessSelection(false) is needed to reset the flag to check
+  // that OnSelection(...) properly sets (or doesn't set) the flag.
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 3;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 1;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+
+  SetRequiresPostProcessSelection(false);
+  OnSelection(ax::mojom::EventFrom::kUser);
+  EXPECT_TRUE(RequiresPostProcessSelection());
+
+  SetRequiresPostProcessSelection(false);
+  OnSelection(ax::mojom::EventFrom::kPage);
+  EXPECT_TRUE(RequiresPostProcessSelection());
+
+  // If the user drags the selection so that it is backwards, post process
+  // selection should still be required.
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 1;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 2;
+  update.tree_data.sel_is_backward = true;
+  AccessibilityEventReceived({update});
+  SetRequiresPostProcessSelection(false);
+  OnSelection(ax::mojom::EventFrom::kPage);
+  EXPECT_TRUE(RequiresPostProcessSelection());
+
+  // If the anchor changes (the user stopped dragging their cursor) and we
+  // receive an event with event_from kPage, post process selection should not
+  // be set to true.
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 3;
+  update.tree_data.sel_anchor_offset = 1;
+  update.tree_data.sel_focus_offset = 0;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+  SetRequiresPostProcessSelection(false);
+  OnSelection(ax::mojom::EventFrom::kPage);
+  EXPECT_FALSE(RequiresPostProcessSelection());
 }
