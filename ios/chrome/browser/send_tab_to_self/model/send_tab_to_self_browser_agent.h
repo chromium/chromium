@@ -10,6 +10,7 @@
 #import <string>
 #import <vector>
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
@@ -77,16 +78,16 @@ class SendTabToSelfBrowserAgent
   void CleanUpObserversAndVariables();
 
   // The owning Browser
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 
   // Owned by the SendTabToSelfSyncService which should outlive this class
-  send_tab_to_self::SendTabToSelfModel* model_;
+  raw_ptr<send_tab_to_self::SendTabToSelfModel> model_;
 
   // The pending SendTabToSelf entry to display an InfoBar for.
-  const send_tab_to_self::SendTabToSelfEntry* pending_entry_ = nullptr;
+  raw_ptr<const send_tab_to_self::SendTabToSelfEntry> pending_entry_ = nullptr;
 
   // The WebState that is being observed for activation, if any.
-  web::WebState* pending_web_state_ = nullptr;
+  raw_ptr<web::WebState> pending_web_state_ = nullptr;
 
   base::ScopedObservation<Browser, BrowserObserver> browser_observation_{this};
 
