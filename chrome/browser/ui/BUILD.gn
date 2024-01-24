@@ -6874,6 +6874,7 @@ static_library("ui") {
     deps += [
       "//chrome/common/compose:mojo_bindings",
       "//components/compose/core/browser",
+      "//components/compose/core/browser:mojo_bindings",
     ]
   }
 }

@@ -20,6 +20,9 @@ source_set("compose") {
 
 mojom("mojo_bindings") {
   sources = [ "compose.mojom" ]
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//components/compose/core/browser:mojo_bindings",
+    "//mojo/public/mojom/base",
+  ]
   webui_module_path = "/"
 }

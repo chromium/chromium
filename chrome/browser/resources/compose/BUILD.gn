@@ -28,6 +28,12 @@ build_webui("build") {
   ]
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
 
-  mojo_files_deps = [ "//chrome/common/compose:mojo_bindings_ts__generator" ]
-  mojo_files = [ "$root_gen_dir/chrome/common/compose/compose.mojom-webui.ts" ]
+  mojo_files_deps = [
+    "//chrome/common/compose:mojo_bindings_ts__generator",
+    "//components/compose/core/browser:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/chrome/common/compose/compose.mojom-webui.ts",
+    "$root_gen_dir/components/compose/core/browser/compose_enums.mojom-webui.ts",
+  ]
 }
