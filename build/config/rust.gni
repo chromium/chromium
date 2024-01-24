@@ -66,6 +66,17 @@ declare_args() {
   # you can specify whether it supports nacl here.
   rust_toolchain_supports_nacl = false
 
+  # Whether artifacts produced by the Rust compiler can participate in ThinLTO.
+  #
+  # One important consideration is whether the linker uses the same LLVM
+  # version as `rustc` (i.e. if it can understand the LLVM-IR from the
+  # compilation artifacts produced by `rustc`).  In LaCrOS and ash builds this
+  # may not be true - see b/299483903.
+  #
+  # TODO(https://crbug.com/1482525): Re-enable ThinLTO for Rust on LaCrOS
+  # TODO(b/300937673): Re-enable ThinLTO for Rust on ash-chrome
+  toolchain_supports_rust_thin_lto = !is_chromeos
+
   # Any extra std rlibs in your Rust toolchain, relative to the standard
   # Rust toolchain. Typically used with 'rust_sysroot_absolute'
   added_rust_stdlib_libs = []
@@ -155,17 +166,6 @@ if (enable_rust) {
 # them as a dylib and put them into an APK. We should reuse all the same logic
 # for gtests from the `//testing/test:test` template.
 can_build_rust_unit_tests = toolchain_has_rust && !is_android
-
-# Whether artifacts produced by the Rust compiler can participate in ThinLTO.
-#
-# One important consideration is whether the linker uses the same LLVM
-# version as `rustc` (i.e. if it can understand the LLVM-IR from the
-# compilation artifacts produced by `rustc`).  In LaCrOS and ash builds this may
-# not be true - see b/299483903.
-#
-# TODO(https://crbug.com/1482525): Re-enable ThinLTO for Rust on LaCrOS
-# TODO(b/300937673): Re-enable ThinLTO for Rust on ash-chrome
-toolchain_supports_rust_thin_lto = !is_chromeos
 
 # We want to store rust_sysroot as a source-relative variable for ninja
 # portability. In practice if an external toolchain was specified, it might

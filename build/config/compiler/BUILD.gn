@@ -1032,7 +1032,7 @@ config("compiler") {
   if (rust_abi_target != "") {
     rustflags += [ "--target=$rust_abi_target" ]
   }
-  if (!use_thin_lto) {
+  if (!use_thin_lto || !toolchain_supports_rust_thin_lto) {
     # Don't include bitcode if it won't be used.
     rustflags += [ "-Cembed-bitcode=no" ]
   }
