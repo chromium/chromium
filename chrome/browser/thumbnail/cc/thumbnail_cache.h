@@ -75,7 +75,9 @@ class ThumbnailCache : ThumbnailDelegate {
   Thumbnail* Get(TabId tab_id, bool force_disk_read);
 
   void InvalidateThumbnailIfChanged(TabId tab_id, const GURL& url);
-  bool CheckAndUpdateThumbnailMetaData(TabId tab_id, const GURL& url);
+  bool CheckAndUpdateThumbnailMetaData(TabId tab_id,
+                                       const GURL& url,
+                                       bool force_update);
   bool IsInVisibleIds(TabId tab_id);
   void UpdateVisibleIds(const std::vector<TabId>& priority,
                         TabId primary_tab_id);

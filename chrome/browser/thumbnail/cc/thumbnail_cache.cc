@@ -220,7 +220,7 @@ void ThumbnailCache::InvalidateThumbnailIfChanged(TabId tab_id,
   auto meta_data_iter = thumbnail_meta_data_.find(tab_id);
   if (meta_data_iter == thumbnail_meta_data_.end()) {
     thumbnail_meta_data_[tab_id] = ThumbnailMetaData(base::Time(), url);
-  } else if (meta_data_iter->second.url() != url) {
+  } else if (!url.is_empty() && meta_data_iter->second.url() != url) {
     Remove(tab_id);
   }
 }
@@ -235,10 +235,11 @@ base::FilePath ThumbnailCache::GetCacheDirectory() {
 }
 
 bool ThumbnailCache::CheckAndUpdateThumbnailMetaData(TabId tab_id,
-                                                     const GURL& url) {
+                                                     const GURL& url,
+                                                     bool force_update) {
   base::Time current_time = base::Time::Now();
   auto meta_data_iter = thumbnail_meta_data_.find(tab_id);
-  if (meta_data_iter != thumbnail_meta_data_.end() &&
+  if (!force_update && meta_data_iter != thumbnail_meta_data_.end() &&
       meta_data_iter->second.url() == url &&
       (current_time - meta_data_iter->second.capture_time()) <
           capture_min_request_time_ms_) {
