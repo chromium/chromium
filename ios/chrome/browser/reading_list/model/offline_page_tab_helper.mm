@@ -373,20 +373,18 @@ void OfflinePageTabHelper::LoadOfflinePage(const GURL& url) {
           ->OfflineRoot()
           .DirName();
 
-  if (@available(iOS 15, *)) {
-    scoped_refptr<const ReadingListEntry> entry =
-        reading_list_model_->GetEntryByURL(url);
-    base::FilePath offline_path = entry->DistilledPath();
-    bool is_pdf = offline_path.Extension() == ".pdf";
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model_->GetEntryByURL(url);
+  base::FilePath offline_path = entry->DistilledPath();
+  bool is_pdf = offline_path.Extension() == ".pdf";
 
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(&GetOfflineData, offline_root, offline_path),
-        base::BindOnce(&OfflinePageTabHelper::LoadOfflineData,
-                       weak_factory_.GetWeakPtr(), web_state_, url, is_pdf));
-  }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&GetOfflineData, offline_root, offline_path),
+      base::BindOnce(&OfflinePageTabHelper::LoadOfflineData,
+                     weak_factory_.GetWeakPtr(), web_state_, url, is_pdf));
 }
 
 bool OfflinePageTabHelper::HasDistilledVersionForOnlineUrl(
