@@ -961,6 +961,7 @@ suite('WallpaperSearchTest', () => {
       });
 
       test('reattempts failed descriptor fetch for generic error', async () => {
+        loadTimeData.overrideValues({genericErrorDescription: 'generic error'});
         createWallpaperSearchElement();
         await flushTasks();
 
@@ -970,7 +971,7 @@ suite('WallpaperSearchTest', () => {
         assertEquals(
             $$<HTMLElement>(
                 wallpaperSearchElement, '#errorDescription')!.textContent,
-            'Please try again later.');
+            'generic error');
         assertStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
 
@@ -992,6 +993,8 @@ suite('WallpaperSearchTest', () => {
       });
 
       test('shows history description for generic error', async () => {
+        loadTimeData.overrideValues(
+            {genericErrorDescriptionWithHistory: 'generic error with history'});
         createWallpaperSearchElement();
 
         wallpaperSearchCallbackRouterRemote.setHistory([
@@ -1005,13 +1008,14 @@ suite('WallpaperSearchTest', () => {
         assertEquals(
             $$<HTMLElement>(
                 wallpaperSearchElement, '#errorDescription')!.textContent,
-            'Try again or select from one of the previously generated themes below.');
+            'generic error with history');
         assertStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
 
       test(
           'reattempts failed descriptor fetch with offline error', async () => {
+            loadTimeData.overrideValues({offlineDescription: 'offline error'});
             windowProxy.setResultFor('onLine', false);
             createWallpaperSearchElement();
             await flushTasks();
@@ -1022,7 +1026,7 @@ suite('WallpaperSearchTest', () => {
             assertEquals(
                 $$<HTMLElement>(
                     wallpaperSearchElement, '#errorDescription')!.textContent,
-                'Check your internet and try again.');
+                'offline error');
             assertStyle(
                 $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
                 'none');
@@ -1048,6 +1052,8 @@ suite('WallpaperSearchTest', () => {
           });
 
       test('shows history description for offline error', async () => {
+        loadTimeData.overrideValues(
+            {offlineDescriptionWithHistory: 'offline error with history'});
         createWallpaperSearchElement();
 
         windowProxy.setResultFor('onLine', false);
@@ -1062,8 +1068,7 @@ suite('WallpaperSearchTest', () => {
         assertEquals(
             $$<HTMLElement>(
                 wallpaperSearchElement, '#errorDescription')!.textContent,
-            'Check your internet and try again. ' +
-                'You can still select from one of the previously generated themes below.');
+            'offline error with history');
       });
     });
 
@@ -1088,6 +1093,7 @@ suite('WallpaperSearchTest', () => {
       });
 
       test('shows error ui if browser offline', async () => {
+        loadTimeData.overrideValues({offlineDescription: 'offline error'});
         windowProxy.setResultFor('onLine', false);
         createWallpaperSearchElementWithDescriptors();
         await flushTasks();
@@ -1101,7 +1107,7 @@ suite('WallpaperSearchTest', () => {
         assertEquals(
             $$<HTMLElement>(
                 wallpaperSearchElement, '#errorDescription')!.textContent,
-            'Check your internet and try again.');
+            'offline error');
         assertStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
@@ -1126,13 +1132,14 @@ suite('WallpaperSearchTest', () => {
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
 
-      [[WallpaperSearchStatus.kError, 'Please try again later.'],
-       [
-         WallpaperSearchStatus.kRequestThrottled,
-         'Please try again in a few minutes.',
-       ],
+      [[WallpaperSearchStatus.kError, 'generic error'],
+       [WallpaperSearchStatus.kRequestThrottled, 'throttle error'],
       ].forEach(([status, description]) => {
-        test(`shows error ${description} for status ${status}`, async () => {
+        test(`shows correct error for status ${status}`, async () => {
+          loadTimeData.overrideValues({
+            genericErrorDescription: 'generic error',
+            requestThrottledDescription: 'throttle error',
+          });
           handler.setResultFor(
               'getWallpaperSearchResults',
               Promise.resolve({status: status, results: []}));
@@ -1155,6 +1162,8 @@ suite('WallpaperSearchTest', () => {
       });
 
       test(`shows generic error if there is history`, async () => {
+        loadTimeData.overrideValues(
+            {genericErrorDescriptionWithHistory: 'generic error with history'});
         handler.setResultFor(
             'getWallpaperSearchResults',
             Promise.resolve(
@@ -1175,20 +1184,21 @@ suite('WallpaperSearchTest', () => {
         assertEquals(
             $$<HTMLElement>(
                 wallpaperSearchElement, '#errorDescription')!.textContent,
-            'Try again or select from one of the previously generated themes below.');
+            'generic error with history');
         assertStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
     });
 
     test('maintains focus on error ui if error is unresolved', async () => {
+      loadTimeData.overrideValues({offlineDescription: 'offline error'});
       windowProxy.setResultFor('onLine', false);
       createWallpaperSearchElement();
       await flushTasks();
       assertEquals(
           $$<HTMLElement>(
               wallpaperSearchElement, '#errorDescription')!.textContent,
-          'Check your internet and try again.');
+          'offline error');
       assertEquals(
           wallpaperSearchElement.$.error,
           wallpaperSearchElement.shadowRoot!.activeElement);
@@ -1199,7 +1209,7 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           $$<HTMLElement>(
               wallpaperSearchElement, '#errorDescription')!.textContent,
-          'Check your internet and try again.');
+          'offline error');
       assertEquals(
           wallpaperSearchElement.$.error,
           wallpaperSearchElement.shadowRoot!.activeElement);
