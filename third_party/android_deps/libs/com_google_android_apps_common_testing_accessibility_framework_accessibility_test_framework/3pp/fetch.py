@@ -19,7 +19,7 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          module_name='accessibility-test-framework',
                          file_ext='aar',
                          patch_version='cr1',
-                         version_override='3.1',
+                         version_override=None,
                          version_filter=None)
 
 

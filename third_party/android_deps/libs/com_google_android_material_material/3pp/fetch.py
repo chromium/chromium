@@ -19,7 +19,7 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          module_name='material',
                          file_ext='aar',
                          patch_version='cr1',
-                         version_override='1.11.0-beta01',
+                         version_override=None,
                          version_filter=None)
 
 
