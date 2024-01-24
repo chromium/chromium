@@ -639,6 +639,19 @@ struct ToV8Traits<IDLNullable<IDLIntegerTypeBase<T, mode>>> {
   }
 };
 
+// Nullable Bigints
+template <>
+struct ToV8Traits<IDLNullable<IDLBigint>> {
+  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+      ScriptState* script_state,
+      const absl::optional<BigInt>& value) {
+    if (!value) {
+      return v8::Null(script_state->GetIsolate());
+    }
+    return ToV8Traits<IDLBigint>::ToV8(script_state, *value);
+  }
+};
+
 // Nullable Floating Point Number
 template <typename T, bindings::IDLFloatingPointNumberConvMode mode>
 struct ToV8Traits<IDLNullable<IDLFloatingPointNumberTypeBase<T, mode>>> {

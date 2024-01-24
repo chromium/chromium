@@ -3030,6 +3030,10 @@
       origin_trial_allows_third_party: true,
     },
     {
+      name: "PrivateAggregationAuctionReportBuyerDebugModeConfig",
+      status: "stable",
+    },
+    {
       name: "PrivateNetworkAccessNonSecureContextsAllowed",
       origin_trial_feature_name: "PrivateNetworkAccessNonSecureContextsAllowed",
       origin_trial_type: "deprecation",

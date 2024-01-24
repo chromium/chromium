@@ -219,6 +219,27 @@ struct BLINK_COMMON_EXPORT StructTraits<
 };
 
 template <>
+struct BLINK_COMMON_EXPORT StructTraits<
+    blink::mojom::AuctionReportBuyerDebugModeConfigDataView,
+    blink::AuctionConfig::NonSharedParams::AuctionReportBuyerDebugModeConfig> {
+  static bool is_enabled(const blink::AuctionConfig::NonSharedParams::
+                             AuctionReportBuyerDebugModeConfig& params) {
+    return params.is_enabled;
+  }
+
+  static absl::optional<uint64_t> debug_key(
+      const blink::AuctionConfig::NonSharedParams::
+          AuctionReportBuyerDebugModeConfig& params) {
+    return params.debug_key;
+  }
+
+  static bool Read(
+      blink::mojom::AuctionReportBuyerDebugModeConfigDataView data,
+      blink::AuctionConfig::NonSharedParams::AuctionReportBuyerDebugModeConfig*
+          out);
+};
+
+template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::AuctionAdServerResponseConfigDataView,
                  blink::AuctionConfig::ServerResponseConfig> {
@@ -315,6 +336,13 @@ struct BLINK_COMMON_EXPORT
       blink::AuctionConfig::NonSharedParams::AuctionReportBuyersConfig>>&
   auction_report_buyers(const blink::AuctionConfig::NonSharedParams& params) {
     return params.auction_report_buyers;
+  }
+
+  static const absl::optional<
+      blink::AuctionConfig::NonSharedParams::AuctionReportBuyerDebugModeConfig>&
+  auction_report_buyer_debug_mode_config(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.auction_report_buyer_debug_mode_config;
   }
 
   static const blink::SellerCapabilitiesType required_seller_capabilities(
