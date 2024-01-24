@@ -97,6 +97,7 @@ class ASH_EXPORT KeyboardControllerImpl
   void RemoveObserver(KeyboardControllerObserver* observer) override;
   std::optional<KeyRepeatSettings> GetKeyRepeatSettings() override;
   bool AreTopRowKeysFunctionKeys() override;
+  void SetSmartVisibilityEnabled(bool enabled) override;
 
   // keyboard::KeyboardLayoutDelegate:
   aura::Window* GetContainerForDefaultDisplay() override;

@@ -2019,6 +2019,7 @@ chromium-metrics-reviews@google.com.
   <int value="1199" label="FloatingSsoDomainBlocklistExceptions"/>
   <int value="1200" label="F11KeyModifier"/>
   <int value="1201" label="F12KeyModifier"/>
+  <int value="1202" label="VirtualKeyboardSmartVisibilityEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

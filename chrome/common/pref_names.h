@@ -654,6 +654,10 @@ inline constexpr char kFileSystemProviderMounted[] =
 inline constexpr char kTouchVirtualKeyboardEnabled[] =
     "ui.touch_virtual_keyboard_enabled";
 
+// A boolean pref to enable virtual keyboard smart visibility.
+inline constexpr char kVirtualKeyboardSmartVisibilityEnabled[] =
+    "ui.virtual_keyboard_smart_visibility_enabled";
+
 // This is the policy CaptivePortalAuthenticationIgnoresProxy that allows to
 // open captive portal authentication pages in a separate window under
 // a temporary incognito profile ("signin profile" is used for this purpose),

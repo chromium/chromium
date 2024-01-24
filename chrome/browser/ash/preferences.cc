@@ -374,6 +374,8 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterStringPref(::prefs::kTermsOfServiceURL, "");
 
   registry->RegisterBooleanPref(::prefs::kTouchVirtualKeyboardEnabled, false);
+  registry->RegisterBooleanPref(::prefs::kVirtualKeyboardSmartVisibilityEnabled,
+                                true);
 
   std::string current_timezone_id;
   if (CrosSettings::IsInitialized()) {

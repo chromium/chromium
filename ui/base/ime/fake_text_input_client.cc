@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/ime/input_method.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -15,7 +16,16 @@ namespace ui {
 FakeTextInputClient::FakeTextInputClient(TextInputType text_input_type)
     : text_input_type_(text_input_type) {}
 
-FakeTextInputClient::~FakeTextInputClient() = default;
+FakeTextInputClient::FakeTextInputClient(InputMethod* input_method,
+                                         Options options)
+    : input_method_(input_method),
+      text_input_type_(options.type),
+      mode_(options.mode),
+      flags_(options.flags) {}
+
+FakeTextInputClient::~FakeTextInputClient() {
+  Blur();
+}
 
 void FakeTextInputClient::set_text_input_type(TextInputType text_input_type) {
   text_input_type_ = text_input_type;
@@ -30,6 +40,18 @@ void FakeTextInputClient::SetTextAndSelection(const std::u16string& text,
   DCHECK_LE(selection_.end(), text.length());
   text_ = text;
   selection_ = selection;
+}
+
+void FakeTextInputClient::Focus() {
+  if (input_method_ != nullptr) {
+    input_method_->SetFocusedTextInputClient(this);
+  }
+}
+
+void FakeTextInputClient::Blur() {
+  if (input_method_ != nullptr) {
+    input_method_->SetFocusedTextInputClient(nullptr);
+  }
 }
 
 void FakeTextInputClient::SetCompositionText(
@@ -70,7 +92,7 @@ TextInputType FakeTextInputClient::GetTextInputType() const {
 }
 
 TextInputMode FakeTextInputClient::GetTextInputMode() const {
-  return TEXT_INPUT_MODE_NONE;
+  return mode_;
 }
 
 base::i18n::TextDirection FakeTextInputClient::GetTextDirection() const {

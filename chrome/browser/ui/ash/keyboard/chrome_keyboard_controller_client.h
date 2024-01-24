@@ -181,7 +181,10 @@ class ChromeKeyboardControllerClient
   void OnSessionStateChanged() override;
 
   // Sets whether the virtual keyboard is enabled from prefs.
-  void SetVirtualKeyboardBehaviorFromPrefs();
+  void SetTouchKeyboardEnabledFromPrefs();
+
+  // Sets whether smart visibility is enabled from prefs.
+  void SetSmartVisibilityFromPrefs();
 
   // Returns either the test profile or the active user profile.
   Profile* GetProfile();

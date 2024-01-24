@@ -126,6 +126,10 @@ class ASH_PUBLIC_EXPORT KeyboardController {
   // rather than media keys (back/forward/refresh/etc.)
   virtual bool AreTopRowKeysFunctionKeys() = 0;
 
+  // Controls whether the virtual keyboard visibility should be determined by
+  // some smart heuristics.
+  virtual void SetSmartVisibilityEnabled(bool enabled) = 0;
+
  protected:
   static KeyboardController* g_instance_;
 };
