@@ -16,7 +16,7 @@ TEST(TransformedStringTest, CreateLengthMap) {
     const char* locale;
     const char16_t* source;
     const char16_t* expected_string;
-    const Vector<uint8_t> expected_map;
+    const Vector<unsigned> expected_map;
   } kTestData[] = {
       {"", u"", u"", {}},
       {"", u"z", u"Z", {}},
@@ -39,6 +39,18 @@ TEST(TransformedStringTest, CreateLengthMap) {
               TransformedString::CreateLengthMap(
                   source.length(), transformed.length(), offset_map));
   }
+}
+
+// crbug.com/1519398
+TEST(TransformedStringTest, CreateLengthMapCombiningMark) {
+  TextOffsetMap offset_map;
+  // Unlike text-transform property, -webki-text-security property can shrink a
+  // long grapheme cluster.
+  offset_map.Append(1000u, 1u);
+  Vector<unsigned> length_map =
+      TransformedString::CreateLengthMap(1000u, 1u, offset_map);
+  EXPECT_EQ(1u, length_map.size());
+  EXPECT_EQ(1000u, length_map[0]);
 }
 
 }  // namespace blink

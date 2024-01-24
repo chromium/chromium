@@ -530,7 +530,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
   String transformed =
       layout_text->TransformAndSecureText(original, offset_map);
   DCHECK_EQ(layout_text->TransformedText(), transformed);
-  const Vector<uint8_t> length_map = TransformedString::CreateLengthMap(
+  const Vector<unsigned> length_map = TransformedString::CreateLengthMap(
       original.length(), transformed.length(), offset_map);
   AppendText(TransformedString(layout_text->TransformedText(),
                                {length_map.data(), length_map.size()}),
