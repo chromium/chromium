@@ -55,9 +55,8 @@ class PartitionItem {
   URLPatternSet accessible_resources_;
 };
 
-WebviewInfo::WebviewInfo(const std::string& extension_id)
-    : extension_id_(extension_id) {
-}
+WebviewInfo::WebviewInfo(const ExtensionId& extension_id)
+    : extension_id_(extension_id) {}
 
 WebviewInfo::~WebviewInfo() {
 }

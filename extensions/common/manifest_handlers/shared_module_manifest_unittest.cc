@@ -4,6 +4,7 @@
 
 #include "base/version.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/manifest_test.h"
@@ -104,7 +105,7 @@ TEST_F(SharedModuleManifestTest, SharedModuleStaticFunctions) {
   EXPECT_TRUE(SharedModuleInfo::IsImportedPath(kValidImportPath));
   EXPECT_FALSE(SharedModuleInfo::IsImportedPath(kInvalidImportPath));
 
-  std::string id;
+  ExtensionId id;
   std::string relative;
   SharedModuleInfo::ParseImportedPath(kValidImportPath, &id, &relative);
   EXPECT_EQ(id, kValidImportPathID);

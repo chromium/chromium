@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_handler.h"
 #include "extensions/common/url_pattern_set.h"
@@ -70,7 +71,7 @@ struct ExternallyConnectableInfo : public Extension::ManifestData {
   const URLPatternSet matches;
 
   // The extension IDs that are allowed to connect/sendMessage. Sorted.
-  const std::vector<std::string> ids;
+  const std::vector<ExtensionId> ids;
 
   // True if any extension is allowed to connect. This would have corresponded
   // to an ID of "*" in |ids|.
@@ -84,11 +85,11 @@ struct ExternallyConnectableInfo : public Extension::ManifestData {
   //
   // More convenient for callers than checking each individually, and it makes
   // use of the sortedness of |ids|.
-  bool IdCanConnect(const std::string& id);
+  bool IdCanConnect(const ExtensionId& id);
 
   // Public only for testing. Use FromValue in production.
   ExternallyConnectableInfo(URLPatternSet matches,
-                            const std::vector<std::string>& ids,
+                            const std::vector<ExtensionId>& ids,
                             bool all_ids,
                             bool accepts_tls_channel_id);
 };

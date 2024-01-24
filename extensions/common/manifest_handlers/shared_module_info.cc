@@ -60,7 +60,7 @@ SharedModuleInfo::~SharedModuleInfo() {
 
 // static
 void SharedModuleInfo::ParseImportedPath(const std::string& path,
-                                         std::string* import_id,
+                                         ExtensionId* import_id,
                                          std::string* import_relative_path) {
   std::vector<std::string> tokens = base::SplitString(
       path, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -92,7 +92,7 @@ bool SharedModuleInfo::IsSharedModule(const Extension* extension) {
 
 // static
 bool SharedModuleInfo::IsExportAllowedByAllowlist(const Extension* extension,
-                                                  const std::string& other_id) {
+                                                  const ExtensionId& other_id) {
   // Sanity check. In case the caller did not check |extension| to make sure it
   // is a shared module, we do not want it to appear that the extension with
   // |other_id| importing |extension| is valid.
@@ -106,7 +106,7 @@ bool SharedModuleInfo::IsExportAllowedByAllowlist(const Extension* extension,
 
 // static
 bool SharedModuleInfo::ImportsExtensionById(const Extension* extension,
-                                            const std::string& other_id) {
+                                            const ExtensionId& other_id) {
   const SharedModuleInfo& info = GetSharedModuleInfo(extension);
   for (size_t i = 0; i < info.imports_.size(); i++) {
     if (info.imports_[i].extension_id == other_id)
@@ -171,7 +171,7 @@ bool SharedModuleHandler::Parse(Extension* extension, std::u16string* error) {
           base::NumberToString(it - begin));
       return false;
     }
-    info->set_export_allowlist(std::set<std::string>(
+    info->set_export_allowlist(std::set<ExtensionId>(
         std::make_move_iterator(begin), std::make_move_iterator(end)));
   }
 

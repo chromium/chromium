@@ -30,6 +30,7 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handler.h"
@@ -242,7 +243,7 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
                                            ManifestLocation location,
                                            const base::Value::Dict& value,
                                            int flags,
-                                           const std::string& explicit_id,
+                                           const ExtensionId& explicit_id,
                                            std::string* utf8_error) {
   base::ElapsedTimer timer;
   DCHECK(utf8_error);
@@ -402,7 +403,7 @@ bool Extension::FormatPEMForFileOutput(const std::string& input,
 }
 
 // static
-GURL Extension::GetBaseURLFromExtensionId(const std::string& extension_id) {
+GURL Extension::GetBaseURLFromExtensionId(const ExtensionId& extension_id) {
   return GURL(base::StrCat({extensions::kExtensionScheme,
                             url::kStandardSchemeSeparator, extension_id}));
 }
@@ -467,7 +468,7 @@ ManifestLocation Extension::location() const {
   return manifest_->location();
 }
 
-const std::string& Extension::id() const {
+const ExtensionId& Extension::id() const {
   return manifest_->extension_id();
 }
 
@@ -809,7 +810,7 @@ bool Extension::LoadShortName(std::u16string* error) {
 }
 
 ExtensionInfo::ExtensionInfo(const base::Value::Dict* manifest,
-                             const std::string& id,
+                             const ExtensionId& id,
                              const base::FilePath& path,
                              ManifestLocation location)
     : extension_id(id), extension_path(path), extension_location(location) {

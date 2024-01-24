@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handler.h"
 
 namespace extensions {
@@ -19,13 +20,13 @@ class SharedModuleInfo : public Extension::ManifestData {
   ~SharedModuleInfo() override;
 
   struct ImportInfo {
-    std::string extension_id;
+    ExtensionId extension_id;
     std::string minimum_version;
   };
 
   // Utility functions.
   static void ParseImportedPath(const std::string& path,
-                                std::string* import_id,
+                                ExtensionId* import_id,
                                 std::string* import_relative_path);
   static bool IsImportedPath(const std::string& path);
 
@@ -36,15 +37,15 @@ class SharedModuleInfo : public Extension::ManifestData {
   // its resources. If no allowlist is specified, all extensions can import this
   // extension.
   static bool IsExportAllowedByAllowlist(const Extension* extension,
-                                         const std::string& other_id);
+                                         const ExtensionId& other_id);
 
   // Functions relating to importing resources.
   static bool ImportsExtensionById(const Extension* extension,
-                                   const std::string& other_id);
+                                   const ExtensionId& other_id);
   static bool ImportsModules(const Extension* extension);
   static const std::vector<ImportInfo>& GetImports(const Extension* extension);
 
-  void set_export_allowlist(std::set<std::string> allowlist) {
+  void set_export_allowlist(std::set<ExtensionId> allowlist) {
     export_allowlist_ = std::move(allowlist);
   }
 
@@ -54,7 +55,7 @@ class SharedModuleInfo : public Extension::ManifestData {
 
  private:
   // Optional list of extensions from which importing is allowed.
-  std::set<std::string> export_allowlist_;
+  std::set<ExtensionId> export_allowlist_;
 
   // Optional list of module imports of other extensions.
   std::vector<ImportInfo> imports_;

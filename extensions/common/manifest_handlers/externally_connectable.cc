@@ -115,7 +115,7 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
     }
   }
 
-  std::vector<std::string> ids;
+  std::vector<ExtensionId> ids;
   bool all_ids = false;
 
   if (externally_connectable->ids) {
@@ -157,16 +157,15 @@ ExternallyConnectableInfo::~ExternallyConnectableInfo() {
 
 ExternallyConnectableInfo::ExternallyConnectableInfo(
     URLPatternSet matches,
-    const std::vector<std::string>& ids,
+    const std::vector<ExtensionId>& ids,
     bool all_ids,
     bool accepts_tls_channel_id)
     : matches(std::move(matches)),
       ids(Sorted(ids)),
       all_ids(all_ids),
-      accepts_tls_channel_id(accepts_tls_channel_id) {
-}
+      accepts_tls_channel_id(accepts_tls_channel_id) {}
 
-bool ExternallyConnectableInfo::IdCanConnect(const std::string& id) {
+bool ExternallyConnectableInfo::IdCanConnect(const ExtensionId& id) {
   if (all_ids)
     return true;
   DCHECK(base::ranges::is_sorted(ids));
