@@ -121,42 +121,39 @@ build_config_target_suffix = "__build_config_crbug_908819"
 # See build/android/gyp/write_build_config.py and
 # build/android/gyp/util/build_utils.py:ExpandFileArgs
 template("write_build_config") {
-  _type = invoker.type
-  _parent_invoker = invoker.invoker
-  _target_label =
-      get_label_info(":${_parent_invoker.target_name}", "label_no_toolchain")
-
-  # Ensure targets match naming patterns so that __assetres, __header, __host,
-  # and __validate targets work properly.
-  if (filter_exclude([ _type ], _java_resource_types) == []) {
-    if (filter_exclude([ _target_label ], java_resource_patterns) != []) {
-      assert(false, "Invalid java resource target name: $_target_label")
-    }
-  } else if (filter_exclude([ _type ], _java_library_types) == []) {
-    if (filter_exclude([ _target_label ], java_library_patterns) != [] ||
-        filter_exclude([ _target_label ], java_resource_patterns) == []) {
-      assert(false, "Invalid java library target name: $_target_label")
-    }
-  } else if (_type == "group") {
-    if (filter_exclude([ _target_label ], java_target_patterns) != []) {
-      assert(false, "Invalid java target name: $_target_label")
-    }
-  } else if (filter_exclude([ _type ], _java_leaf_types) != []) {
-    assert(false, "This java type needs a category: $_type")
-  }
-
-  if (defined(invoker.public_target_label)) {
-    _target_label = invoker.public_target_label
-  }
-
   action_with_pydeps(target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "deps",
-                             "testonly",
-                           ])
-    if (!defined(deps)) {
-      deps = []
+    forward_variables_from(invoker, [ "testonly" ])
+    _type = invoker.type
+    _parent_invoker = invoker.invoker
+    _target_label =
+        get_label_info(":${_parent_invoker.target_name}", "label_no_toolchain")
+
+    # Ensure targets match naming patterns so that __assetres, __header, __host,
+    # and __validate targets work properly.
+    if (filter_exclude([ _type ], _java_resource_types) == []) {
+      if (filter_exclude([ _target_label ], java_resource_patterns) != []) {
+        assert(false, "Invalid java resource target name: $_target_label")
+      }
+    } else if (filter_exclude([ _type ], _java_library_types) == []) {
+      if (filter_exclude([ _target_label ], java_library_patterns) != [] ||
+          filter_exclude([ _target_label ], java_resource_patterns) == []) {
+        assert(false, "Invalid java library target name: $_target_label")
+      }
+    } else if (_type == "group") {
+      if (filter_exclude([ _target_label ], java_target_patterns) != []) {
+        assert(false, "Invalid java target name: $_target_label")
+      }
+    } else if (filter_exclude([ _type ], _java_leaf_types) != []) {
+      assert(false, "This java type needs a category: $_type")
+    }
+
+    if (defined(invoker.public_target_label)) {
+      _target_label = invoker.public_target_label
+    }
+
+    deps = []
+    if (defined(invoker.deps)) {
+      deps = invoker.deps
     }
     if (defined(invoker.android_manifest_dep)) {
       deps += [ invoker.android_manifest_dep ]
