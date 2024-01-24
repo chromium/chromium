@@ -200,7 +200,8 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
           debug_label, std::move(buffer_handle))));
 }
 
-scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
+SharedImageInterface::SharedImageMapping
+ClientSharedImageInterface::CreateSharedImage(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -216,6 +217,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
   CHECK(!format.PrefersExternalSampler()) << format.ToString();
 #endif
 
+  SharedImageInterface::SharedImageMapping shared_image_mapping;
   gfx::BufferFormat buffer_format =
       viz::SinglePlaneSharedImageFormatToBufferFormat(format);
   const size_t buffer_size =
@@ -229,6 +231,13 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     base::TerminateBecauseOutOfMemory(buffer_size);
   }
 
+  shared_image_mapping.mapping = shared_memory_region.Map();
+  if (!shared_image_mapping.mapping.IsValid()) {
+    DLOG(ERROR)
+        << "shared_memory_region.Map() for SHARED_IMAGE_USAGE_CPU_WRITE fails!";
+    base::TerminateBecauseOutOfMemory(buffer_size);
+  }
+
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::SHARED_MEMORY_BUFFER;
   handle.offset = 0;
@@ -236,14 +245,11 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
       gfx::RowSizeForBufferFormat(size.width(), buffer_format, 0));
   handle.region = std::move(shared_memory_region);
 
-  GpuMemoryBufferHandleInfo handle_info = GpuMemoryBufferHandleInfo(
-      handle.Clone(), format, size, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
-
-  return base::MakeRefCounted<ClientSharedImage>(
+  shared_image_mapping.shared_image = base::MakeRefCounted<ClientSharedImage>(
       AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
                                            surface_origin, alpha_type, usage,
-                                           debug_label, std::move(handle))),
-      std::move(handle_info));
+                                           debug_label, std::move(handle))));
+  return shared_image_mapping;
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(

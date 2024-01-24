@@ -158,7 +158,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
     return base::MakeRefCounted<gpu::ClientSharedImage>(result);
   }
 
-  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+  SharedImageInterface::SharedImageMapping CreateSharedImage(
       viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
@@ -166,7 +166,8 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       SkAlphaType alpha_type,
       uint32_t usage,
       base::StringPiece debug_label) override {
-    return base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox());
+    return {base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox()),
+            base::WritableSharedMemoryMapping()};
   }
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(

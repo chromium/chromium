@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/process/memory.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -507,7 +508,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
 
   return base::MakeRefCounted<ClientSharedImage>(mailbox);
 }
-scoped_refptr<ClientSharedImage>
+SharedImageInterface::SharedImageMapping
 SharedImageInterfaceInProcess::CreateSharedImage(
     viz::SharedImageFormat format,
     const gfx::Size& size,
@@ -523,13 +524,25 @@ SharedImageInterfaceInProcess::CreateSharedImage(
   CHECK(!format.PrefersExternalSampler());
 #endif
 
+  SharedImageInterface::SharedImageMapping shared_image_mapping;
   gfx::BufferFormat buffer_format =
       viz::SinglePlaneSharedImageFormatToBufferFormat(format);
   const size_t buffer_size =
       gfx::BufferSizeForBufferFormat(size, buffer_format);
   auto shared_memory_region =
       base::UnsafeSharedMemoryRegion::Create(buffer_size);
-  CHECK(shared_memory_region.IsValid());
+  if (!shared_memory_region.IsValid()) {
+    DLOG(ERROR) << "base::UnsafeSharedMemoryRegion::Create() for SharedImage "
+                   "with SHARED_IMAGE_USAGE_CPU_WRITE fails!";
+    base::TerminateBecauseOutOfMemory(buffer_size);
+  }
+
+  shared_image_mapping.mapping = shared_memory_region.Map();
+  if (!shared_image_mapping.mapping.IsValid()) {
+    DLOG(ERROR)
+        << "shared_memory_region.Map() for SHARED_IMAGE_USAGE_CPU_WRITE fails!";
+    base::TerminateBecauseOutOfMemory(buffer_size);
+  }
 
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::SHARED_MEMORY_BUFFER;
@@ -537,9 +550,6 @@ SharedImageInterfaceInProcess::CreateSharedImage(
   handle.stride = static_cast<int32_t>(
       gfx::RowSizeForBufferFormat(size.width(), buffer_format, 0));
   handle.region = std::move(shared_memory_region);
-
-  GpuMemoryBufferHandleInfo handle_info = GpuMemoryBufferHandleInfo(
-      handle.Clone(), format, size, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
 
   auto mailbox = Mailbox::GenerateForSharedImage();
   {
@@ -557,9 +567,10 @@ SharedImageInterfaceInProcess::CreateSharedImage(
                        std::move(handle), std::string(debug_label), sync_token),
         {});
   }
+  shared_image_mapping.shared_image =
+      base::MakeRefCounted<ClientSharedImage>(mailbox);
 
-  return base::MakeRefCounted<ClientSharedImage>(mailbox,
-                                                 std::move(handle_info));
+  return shared_image_mapping;
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithBufferOnGpuThread(

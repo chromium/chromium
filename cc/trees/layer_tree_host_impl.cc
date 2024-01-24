@@ -4666,7 +4666,6 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   // UIResource will be copied into it.
   base::MappedReadOnlyRegion shm;
   base::WritableSharedMemoryMapping shared_mapping;
-  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping;
   viz::SharedBitmapId shared_bitmap_id;
   bool overlay_candidate = false;
   // Use sharedImage for software composition;
@@ -4696,12 +4695,12 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     auto* sii = layer_tree_frame_sink_->shared_image_interface();
     CHECK(sii);
 
-    client_shared_image = sii->CreateSharedImage(
+    auto shared_image_mapping = sii->CreateSharedImage(
         format, upload_size, color_space, kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, shared_image_usage, "LayerTreeHostUIResource");
+    client_shared_image = std::move(shared_image_mapping.shared_image);
+    shared_mapping = std::move(shared_image_mapping.mapping);
     CHECK(client_shared_image);
-    scoped_mapping = client_shared_image->Map();
-    CHECK(scoped_mapping);
   } else {
     shm = viz::bitmap_allocation::AllocateSharedBitmap(upload_size, format);
     shared_mapping = std::move(shm.mapping);
@@ -4726,11 +4725,8 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(source_size));
       SkImageInfo dst_info =
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
-
-      void* pixels =
-          scoped_mapping ? scoped_mapping->Memory(0) : shared_mapping.memory();
-      sk_sp<SkSurface> surface =
-          SkSurfaces::WrapPixels(dst_info, pixels, dst_info.minRowBytes());
+      sk_sp<SkSurface> surface = SkSurfaces::WrapPixels(
+          dst_info, shared_mapping.memory(), dst_info.minRowBytes());
       surface->getCanvas()->writePixels(
           src_info, const_cast<uint8_t*>(bitmap.GetPixels()),
           bitmap.row_bytes(), 0, 0);
@@ -4766,10 +4762,8 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     } else {
       SkImageInfo dst_info =
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
-      void* pixels =
-          scoped_mapping ? scoped_mapping->Memory(0) : shared_mapping.memory();
-      scaled_surface =
-          SkSurfaces::WrapPixels(dst_info, pixels, dst_info.minRowBytes());
+      scaled_surface = SkSurfaces::WrapPixels(dst_info, shared_mapping.memory(),
+                                              dst_info.minRowBytes());
       CHECK(scaled_surface);  // This could fail on invalid parameters.
     }
     SkCanvas* scaled_canvas = scaled_surface->getCanvas();

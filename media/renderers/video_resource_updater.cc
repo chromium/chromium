@@ -483,13 +483,13 @@ class VideoResourceUpdater::SoftwarePlaneResource
                               ? gpu::Mailbox()
                               : viz::SharedBitmap::GenerateId()) {
     if (shared_image_interface_) {
-      shared_image_ = shared_image_interface_->CreateSharedImage(
+      auto shared_image_mapping = shared_image_interface_->CreateSharedImage(
           viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
           gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "VideoResourceUpdater");
+      shared_image_ = std::move(shared_image_mapping.shared_image);
+      shared_mapping_ = std::move(shared_image_mapping.mapping);
       CHECK(shared_image_);
-      scoped_mapping_ = shared_image_->Map();
-      CHECK(scoped_mapping_);
     } else {
       DCHECK(shared_bitmap_reporter_);
       // Allocate SharedMemory and notify display compositor of the allocation.
@@ -520,10 +520,7 @@ class VideoResourceUpdater::SoftwarePlaneResource
     return shared_image_ ? shared_image_->mailbox() : shared_bitmap_id_;
   }
 
-  void* pixels() {
-    return shared_image_ ? scoped_mapping_->Memory(0)
-                         : shared_mapping_.memory();
-  }
+  void* pixels() { return shared_mapping_.memory(); }
 
   gpu::SyncToken GetSyncToken() {
     if (shared_image_ && shared_image_interface_) {
@@ -533,30 +530,20 @@ class VideoResourceUpdater::SoftwarePlaneResource
     return gpu::SyncToken();
   }
 
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      int importance) const {
-    if (shared_image_) {
-      auto* dump_manager = base::trace_event::MemoryDumpManager::GetInstance();
-      uint64_t tracing_process_id = dump_manager->GetTracingProcessId();
-      scoped_mapping_->OnMemoryDump(pmd, buffer_dump_guid, tracing_process_id,
-                                    importance);
-    } else {
-      pmd->CreateSharedMemoryOwnershipEdge(buffer_dump_guid,
-                                           shared_mapping_.guid(), importance);
-    }
+  // Returns a memory dump GUID consistent across processes.
+  base::UnguessableToken GetSharedMemoryGuid() const {
+    return shared_mapping_.guid();
   }
 
  private:
   // Used for SharedImage.
   const raw_ptr<gpu::SharedImageInterface> shared_image_interface_;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
-  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping_;
 
   // Used for SharedBitmap.
   const raw_ptr<viz::SharedBitmapReporter> shared_bitmap_reporter_;
   const viz::SharedBitmapId shared_bitmap_id_;
+
   base::WritableSharedMemoryMapping shared_mapping_;
 };
 
@@ -1759,7 +1746,9 @@ bool VideoResourceUpdater::OnMemoryDump(
     // Resources are shared across processes and require a shared GUID to
     // prevent double counting the memory.
     if (software_compositor()) {
-      resource->AsSoftware()->OnMemoryDump(pmd, dump->guid(), kImportance);
+      base::UnguessableToken shm_guid =
+          resource->AsSoftware()->GetSharedMemoryGuid();
+      pmd->CreateSharedMemoryOwnershipEdge(dump->guid(), shm_guid, kImportance);
     } else {
       base::trace_event::MemoryAllocatorDumpGuid guid =
           gpu::GetSharedImageGUIDForTracing(resource->AsHardware()->mailbox());

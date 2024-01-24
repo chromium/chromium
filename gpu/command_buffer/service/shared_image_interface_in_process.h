@@ -114,7 +114,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       uint32_t usage,
       base::StringPiece debug_label,
       gfx::GpuMemoryBufferHandle buffer_handle) override;
-  scoped_refptr<ClientSharedImage> CreateSharedImage(
+  SharedImageInterface::SharedImageMapping CreateSharedImage(
       viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,

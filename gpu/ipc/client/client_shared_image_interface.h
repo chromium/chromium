@@ -96,10 +96,10 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
       base::StringPiece debug_label,
       gfx::GpuMemoryBufferHandle buffer_handle) override;
 
-  // Used by the software compositor only. |useage| must be
+  // Used by the software compositor only. |usage| must be
   // gpu::SHARED_IMAGE_USAGE_CPU_WRITE. Call client_shared_image->Map() later to
   // get the shared memory mapping.
-  scoped_refptr<ClientSharedImage> CreateSharedImage(
+  SharedImageInterface::SharedImageMapping CreateSharedImage(
       viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,

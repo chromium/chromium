@@ -157,11 +157,25 @@ class GPU_EXPORT SharedImageInterface
       base::StringPiece debug_label,
       gfx::GpuMemoryBufferHandle buffer_handle) = 0;
 
+  struct GPU_EXPORT SharedImageMapping {
+    SharedImageMapping(SharedImageMapping& mapped) = delete;
+    SharedImageMapping& operator=(SharedImageMapping& mapped) = delete;
+    SharedImageMapping();
+    SharedImageMapping(SharedImageMapping&& mapped);
+    SharedImageMapping(scoped_refptr<ClientSharedImage> shared_image,
+                       base::WritableSharedMemoryMapping mapping);
+    SharedImageMapping& operator=(SharedImageMapping&& mapped);
+    ~SharedImageMapping();
+
+    scoped_refptr<ClientSharedImage> shared_image;
+    base::WritableSharedMemoryMapping mapping;
+  };
+
   // Creates a shared image with the usage of gpu::SHARED_IMAGE_USAGE_CPU_WRITE
   // only. A shared memory buffer is created internally and a shared image is
   // created out this buffer. This method is used by the software compositor
   // only.
-  virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
+  virtual SharedImageMapping CreateSharedImage(
       viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,

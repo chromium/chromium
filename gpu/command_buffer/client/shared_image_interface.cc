@@ -62,4 +62,16 @@ void SharedImageInterface::UpdateSharedImage(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+SharedImageInterface::SharedImageMapping::SharedImageMapping() = default;
+SharedImageInterface::SharedImageMapping::SharedImageMapping(
+    SharedImageInterface::SharedImageMapping&& mapped) = default;
+SharedImageInterface::SharedImageMapping::SharedImageMapping(
+    scoped_refptr<ClientSharedImage> shared_image,
+    base::WritableSharedMemoryMapping mapping)
+    : shared_image(std::move(shared_image)), mapping(std::move(mapping)) {}
+SharedImageInterface::SharedImageMapping&
+SharedImageInterface::SharedImageMapping::operator=(
+    SharedImageInterface::SharedImageMapping&& mapped) = default;
+SharedImageInterface::SharedImageMapping::~SharedImageMapping() = default;
+
 }  // namespace gpu
