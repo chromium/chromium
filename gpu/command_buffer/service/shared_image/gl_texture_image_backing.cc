@@ -260,6 +260,7 @@ GLTextureImageBacking::GLTextureImageBacking(const Mailbox& mailbox,
                                              GrSurfaceOrigin surface_origin,
                                              SkAlphaType alpha_type,
                                              uint32_t usage,
+                                             std::string debug_label,
                                              bool is_passthrough)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
@@ -268,6 +269,7 @@ GLTextureImageBacking::GLTextureImageBacking(const Mailbox& mailbox,
                                       surface_origin,
                                       alpha_type,
                                       usage,
+                                      std::move(debug_label),
                                       format.EstimatedSizeInBytes(size),
                                       /*is_thread_safe=*/false),
       is_passthrough_(is_passthrough) {
@@ -399,8 +401,7 @@ std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
 
   // TODO (crbug.com/1434885) - Delete this code path if it's not used.
   // Otherwise optimize this path with a GPU copy.
-  SCOPED_CRASH_KEY_STRING256("", "GLSharedImage_DebugLabel",
-                             debug_label_from_client_);
+  SCOPED_CRASH_KEY_STRING256("", "GLSharedImage_DebugLabel", debug_label());
   SCOPED_CRASH_KEY_STRING32("", "GLSharedImage_Usage",
                             base::NumberToString(usage()));
   base::debug::DumpWithoutCrashing();
@@ -436,10 +437,9 @@ void GLTextureImageBacking::InitializeGLTexture(
     const std::vector<GLCommonImageBackingFactory::FormatInfo>& format_info,
     base::span<const uint8_t> pixel_data,
     gl::ProgressReporter* progress_reporter,
-    bool framebuffer_attachment_angle,
-    std::string debug_label_from_client) {
-  const std::string debug_label = "GLSharedImage_" + debug_label_from_client;
-  debug_label_from_client_ = debug_label_from_client;
+    bool framebuffer_attachment_angle) {
+  const std::string debug_label =
+      "GLSharedImage_" + SharedImageBacking::debug_label();
   int num_planes = format().NumberOfPlanes();
   textures_.reserve(num_planes);
   for (int plane = 0; plane < num_planes; ++plane) {

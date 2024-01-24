@@ -77,6 +77,7 @@ SharedImageBacking::SharedImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     size_t estimated_size,
     bool is_thread_safe,
     std::optional<gfx::BufferUsage> buffer_usage)
@@ -87,6 +88,7 @@ SharedImageBacking::SharedImageBacking(
       surface_origin_(surface_origin),
       alpha_type_(alpha_type),
       usage_(usage),
+      debug_label_(std::move(debug_label)),
       estimated_size_(estimated_size),
       buffer_usage_(std::move(buffer_usage)) {
   DCHECK_CALLED_ON_VALID_THREAD(factory_thread_checker_);
@@ -148,6 +150,7 @@ base::trace_event::MemoryAllocatorDump* SharedImageBacking::OnMemoryDump(
   dump->AddString("dimensions", "", size().ToString());
   dump->AddString("format", "", format().ToString());
   dump->AddString("usage", "", CreateLabelForSharedImageUsage(usage()));
+  dump->AddString("debug label", "", debug_label_);
   dump->AddScalar("purgeable", "bool", IsPurgeable());
 
   // Add ownership edge to `client_guid` which expresses shared ownership with
@@ -404,6 +407,7 @@ ClearTrackingSharedImageBacking::ClearTrackingSharedImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     size_t estimated_size,
     bool is_thread_safe,
     std::optional<gfx::BufferUsage> buffer_usage)
@@ -414,6 +418,7 @@ ClearTrackingSharedImageBacking::ClearTrackingSharedImageBacking(
                          surface_origin,
                          alpha_type,
                          usage,
+                         std::move(debug_label),
                          estimated_size,
                          is_thread_safe,
                          std::move(buffer_usage)) {}

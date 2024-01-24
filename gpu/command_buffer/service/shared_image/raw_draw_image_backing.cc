@@ -115,7 +115,8 @@ RawDrawImageBacking::RawDrawImageBacking(const Mailbox& mailbox,
                                          const gfx::ColorSpace& color_space,
                                          GrSurfaceOrigin surface_origin,
                                          SkAlphaType alpha_type,
-                                         uint32_t usage)
+                                         uint32_t usage,
+                                         std::string debug_label)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -123,6 +124,7 @@ RawDrawImageBacking::RawDrawImageBacking(const Mailbox& mailbox,
                                       surface_origin,
                                       alpha_type,
                                       usage,
+                                      std::move(debug_label),
                                       /*estimated_size=*/0,
                                       /*is_thread_safe=*/true) {}
 

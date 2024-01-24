@@ -195,8 +195,8 @@ ExternalVkImageBackingFactory::CreateSharedImage(
   DCHECK(!is_thread_safe);
   return ExternalVkImageBacking::Create(
       context_state_, command_pool_.get(), mailbox, format, size, color_space,
-      surface_origin, alpha_type, usage, image_usage_cache_,
-      base::span<const uint8_t>());
+      surface_origin, alpha_type, usage, std::move(debug_label),
+      image_usage_cache_, base::span<const uint8_t>());
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -212,7 +212,8 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     base::span<const uint8_t> pixel_data) {
   return ExternalVkImageBacking::Create(
       context_state_, command_pool_.get(), mailbox, format, size, color_space,
-      surface_origin, alpha_type, usage, image_usage_cache_, pixel_data);
+      surface_origin, alpha_type, usage, std::move(debug_label),
+      image_usage_cache_, pixel_data);
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -229,7 +230,8 @@ ExternalVkImageBackingFactory::CreateSharedImage(
   CHECK(CanImportGpuMemoryBuffer(handle.type));
   return ExternalVkImageBacking::CreateFromGMB(
       context_state_, command_pool_.get(), mailbox, std::move(handle), format,
-      size, color_space, surface_origin, alpha_type, usage);
+      size, color_space, surface_origin, alpha_type, usage,
+      std::move(debug_label));
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -251,7 +253,7 @@ ExternalVkImageBackingFactory::CreateSharedImage(
   return CreateSharedImage(mailbox,
                            viz::GetSinglePlaneSharedImageFormat(buffer_format),
                            size, color_space, surface_origin, alpha_type, usage,
-                           debug_label, std::move(handle));
+                           std::move(debug_label), std::move(handle));
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -272,7 +274,8 @@ ExternalVkImageBackingFactory::CreateSharedImage(
   // Creating the backing with a native pixmap so that it can be CPU mappable.
   return ExternalVkImageBacking::CreateWithPixmap(
       context_state_, command_pool_.get(), mailbox, format, surface_handle,
-      size, color_space, surface_origin, alpha_type, usage, buffer_usage);
+      size, color_space, surface_origin, alpha_type, usage,
+      std::move(debug_label), buffer_usage);
 #else
   // A CPU mappable backing of this type can only be requested for OZONE
   // platforms.

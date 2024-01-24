@@ -88,7 +88,7 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
   const auto format = viz::GetSinglePlaneSharedImageFormat(buffer_format);
   auto backing = std::make_unique<SharedMemoryImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(shm_wrapper));
+      std::move(debug_label), std::move(shm_wrapper));
   return backing;
 }
 
@@ -115,7 +115,8 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
   }
   auto backing = std::make_unique<SharedMemoryImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(shm_wrapper), std::move(handle), std::move(buffer_usage));
+      std::move(debug_label), std::move(shm_wrapper), std::move(handle),
+      std::move(buffer_usage));
   return backing;
 }
 

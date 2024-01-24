@@ -288,8 +288,8 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
         gpu::D3DImageBacking::Create(
             mailboxes[0], DXGIFormatToMultiPlanarSharedImageFormat(dxgi_format),
             size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-            usage, texture, std::move(dxgi_shared_handle_state), caps,
-            GL_TEXTURE_EXTERNAL_OES, array_slice, /*plane_index=*/0u);
+            usage, "VideoTexture", texture, std::move(dxgi_shared_handle_state),
+            caps, GL_TEXTURE_EXTERNAL_OES, array_slice, /*plane_index=*/0u);
     if (backing) {
       // Need to clear the backing since the D3D11 Video Decoder will initialize
       // the textures.

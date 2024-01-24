@@ -62,7 +62,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     bool is_thread_safe) {
   auto backing = std::make_unique<AngleVulkanImageBacking>(
       context_state_, mailbox, format, size, color_space, surface_origin,
-      alpha_type, usage);
+      alpha_type, usage, std::move(debug_label));
 
   if (!backing->Initialize({}))
     return nullptr;
@@ -83,7 +83,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     base::span<const uint8_t> data) {
   auto backing = std::make_unique<AngleVulkanImageBacking>(
       context_state_, mailbox, format, size, color_space, surface_origin,
-      alpha_type, usage);
+      alpha_type, usage, std::move(debug_label));
 
   if (!backing->Initialize(data))
     return nullptr;
@@ -104,7 +104,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     gfx::GpuMemoryBufferHandle handle) {
   auto backing = std::make_unique<AngleVulkanImageBacking>(
       context_state_, mailbox, format, size, color_space, surface_origin,
-      alpha_type, usage);
+      alpha_type, usage, std::move(debug_label));
 
   if (!backing->InitializeWihGMB(std::move(handle))) {
     return nullptr;
@@ -128,7 +128,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
   return CreateSharedImage(mailbox,
                            viz::GetSinglePlaneSharedImageFormat(buffer_format),
                            size, color_space, surface_origin, alpha_type, usage,
-                           debug_label, std::move(handle));
+                           std::move(debug_label), std::move(handle));
 }
 
 bool AngleVulkanImageBackingFactory::IsGMBSupported(

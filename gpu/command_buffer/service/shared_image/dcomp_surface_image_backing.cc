@@ -185,7 +185,8 @@ std::unique_ptr<DCompSurfaceImageBacking> DCompSurfaceImageBacking::Create(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
+    uint32_t usage,
+    std::string debug_label) {
   // IDCompositionSurface only supports the following formats:
   // https://learn.microsoft.com/en-us/windows/win32/api/dcomp/nf-dcomp-idcompositiondevice2-createsurface#remarks
   DCHECK(internal_format == DXGI_FORMAT_B8G8R8A8_UNORM ||
@@ -217,7 +218,7 @@ std::unique_ptr<DCompSurfaceImageBacking> DCompSurfaceImageBacking::Create(
 
   return base::WrapUnique(new DCompSurfaceImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(dcomp_surface)));
+      std::move(debug_label), std::move(dcomp_surface)));
 }
 
 DCompSurfaceImageBacking::DCompSurfaceImageBacking(
@@ -228,6 +229,7 @@ DCompSurfaceImageBacking::DCompSurfaceImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     Microsoft::WRL::ComPtr<IDCompositionSurface> dcomp_surface)
     : ClearTrackingSharedImageBacking(
           mailbox,
@@ -237,6 +239,7 @@ DCompSurfaceImageBacking::DCompSurfaceImageBacking(
           surface_origin,
           alpha_type,
           usage,
+          std::move(debug_label),
           gfx::BufferSizeForBufferFormat(size, ToBufferFormat(format)),
           /*is_thread_safe=*/false),
       gl_surface_(scoped_refptr(

@@ -25,6 +25,7 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
                         GrSurfaceOrigin surface_origin,
                         SkAlphaType alpha_type,
                         uint32_t usage,
+                        std::string debug_layer,
                         bool is_passthrough);
   GLTextureImageBacking(const GLTextureImageBacking&) = delete;
   GLTextureImageBacking& operator=(const GLTextureImageBacking&) = delete;
@@ -34,8 +35,7 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
       const std::vector<GLCommonImageBackingFactory::FormatInfo>& format_info,
       base::span<const uint8_t> pixel_data,
       gl::ProgressReporter* progress_reporter,
-      bool framebuffer_attachment_angle,
-      std::string debug_label);
+      bool framebuffer_attachment_angle);
 
  private:
   // SharedImageBacking:
@@ -69,9 +69,6 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
 
   std::vector<GLTextureHolder> textures_;
   std::vector<sk_sp<GrPromiseImageTexture>> cached_promise_textures_;
-
-  // TODO(crbug.com/1434885) - Remove it after the data is collected.
-  std::string debug_label_from_client_;
 };
 
 }  // namespace gpu

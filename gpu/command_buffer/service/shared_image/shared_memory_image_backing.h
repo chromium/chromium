@@ -30,6 +30,7 @@ class GPU_GLES2_EXPORT SharedMemoryImageBacking : public SharedImageBacking {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      std::string debug_label,
       SharedMemoryRegionWrapper wrapper,
       gfx::GpuMemoryBufferHandle handle = gfx::GpuMemoryBufferHandle(),
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);

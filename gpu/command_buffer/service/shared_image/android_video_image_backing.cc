@@ -40,6 +40,7 @@ AndroidVideoImageBacking::AndroidVideoImageBacking(
           // will potentially be sent to the display compositor and read by the
           // GL interface for WebGL.
           SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_GLES2_READ,
+          {},
           viz::SinglePlaneFormat::kRGBA_8888.EstimatedSizeInBytes(size),
           is_thread_safe,
           base::ScopedFD()) {}

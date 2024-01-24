@@ -218,6 +218,7 @@ TestImageBacking::TestImageBacking(const Mailbox& mailbox,
                          surface_origin,
                          alpha_type,
                          usage,
+                         "TestBacking",
                          estimated_size,
                          /*is_thread_safe=*/false),
       service_id_(texture_id) {

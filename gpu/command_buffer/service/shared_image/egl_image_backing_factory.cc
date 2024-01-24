@@ -63,7 +63,8 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     std::string debug_label,
     bool is_thread_safe) {
   return MakeEglImageBacking(mailbox, format, size, color_space, surface_origin,
-                             alpha_type, usage, base::span<const uint8_t>());
+                             alpha_type, usage, std::move(debug_label),
+                             base::span<const uint8_t>());
 }
 
 std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
@@ -77,7 +78,8 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     std::string debug_label,
     base::span<const uint8_t> pixel_data) {
   return MakeEglImageBacking(mailbox, format, size, color_space, surface_origin,
-                             alpha_type, usage, pixel_data);
+                             alpha_type, usage, std::move(debug_label),
+                             pixel_data);
 }
 
 std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
@@ -171,6 +173,7 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     base::span<const uint8_t> pixel_data) {
   DCHECK(!(usage & SHARED_IMAGE_USAGE_SCANOUT));
 
@@ -187,8 +190,8 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
 
   return std::make_unique<EGLImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      estimated_size.value(), format_info[0], workarounds_, use_passthrough_,
-      pixel_data);
+      std::move(debug_label), estimated_size.value(), format_info[0],
+      workarounds_, use_passthrough_, pixel_data);
 }
 
 }  // namespace gpu

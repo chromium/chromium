@@ -59,7 +59,8 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
+    uint32_t usage,
+    std::string debug_label) {
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
   d3d11_device.As(&dxgi_device);
   DCHECK(dxgi_device);
@@ -139,8 +140,8 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
 
   return base::WrapUnique(new DXGISwapChainImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_device), std::move(dxgi_swap_chain),
-      buffers_need_alpha_initialization_count));
+      std::move(debug_label), std::move(d3d11_device),
+      std::move(dxgi_swap_chain), buffers_need_alpha_initialization_count));
 }
 
 DXGISwapChainImageBacking::DXGISwapChainImageBacking(
@@ -151,6 +152,7 @@ DXGISwapChainImageBacking::DXGISwapChainImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain,
     int buffers_need_alpha_initialization_count)
@@ -162,6 +164,7 @@ DXGISwapChainImageBacking::DXGISwapChainImageBacking(
           surface_origin,
           alpha_type,
           usage,
+          std::move(debug_label),
           gfx::BufferSizeForBufferFormat(size, ToBufferFormat(format)),
           /*is_thread_safe=*/false),
       d3d11_device_(std::move(d3d11_device)),

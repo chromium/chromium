@@ -123,6 +123,7 @@ WrappedSkImageBacking::WrappedSkImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     scoped_refptr<SharedContextState> context_state,
     const bool thread_safe)
     : ClearTrackingSharedImageBacking(mailbox,
@@ -132,6 +133,7 @@ WrappedSkImageBacking::WrappedSkImageBacking(
                                       surface_origin,
                                       alpha_type,
                                       usage,
+                                      std::move(debug_label),
                                       format.EstimatedSizeInBytes(size),
                                       thread_safe),
       context_state_(std::move(context_state)) {

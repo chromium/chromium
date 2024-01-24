@@ -248,6 +248,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      std::string debug_label,
       GLenum gl_target,
       bool framebuffer_attachment_angle,
       bool is_cleared,

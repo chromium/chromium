@@ -119,6 +119,7 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      std::string debug_label,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 };
 

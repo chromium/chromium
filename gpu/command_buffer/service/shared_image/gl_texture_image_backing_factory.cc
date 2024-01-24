@@ -216,10 +216,9 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
 
   auto result = std::make_unique<GLTextureImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      use_passthrough_);
+      std::move(debug_label), use_passthrough_);
   result->InitializeGLTexture(GetFormatInfo(format), pixel_data,
-                              progress_reporter_, framebuffer_attachment_angle,
-                              std::move(debug_label));
+                              progress_reporter_, framebuffer_attachment_angle);
 
   return std::move(result);
 }

@@ -203,6 +203,7 @@ SharedMemoryImageBacking::SharedMemoryImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     SharedMemoryRegionWrapper wrapper,
     gfx::GpuMemoryBufferHandle handle,
     std::optional<gfx::BufferUsage> buffer_usage)
@@ -213,6 +214,7 @@ SharedMemoryImageBacking::SharedMemoryImageBacking(
                          surface_origin,
                          alpha_type,
                          usage,
+                         std::move(debug_label),
                          format.EstimatedSizeInBytes(size),
                          false,
                          std::move(buffer_usage)),
