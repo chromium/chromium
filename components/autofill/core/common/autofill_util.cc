@@ -187,7 +187,8 @@ GURL StripAuthAndParams(const GURL& gurl) {
 bool IsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source) {
   return IsAddressAutofillManuallyTriggered(trigger_source) ||
-         IsPaymentsAutofillManuallyTriggered(trigger_source);
+         IsPaymentsAutofillManuallyTriggered(trigger_source) ||
+         IsPasswordsAutofillManuallyTriggered(trigger_source);
 }
 
 bool IsAddressAutofillManuallyTriggered(
@@ -200,6 +201,12 @@ bool IsPaymentsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source) {
   return trigger_source ==
          AutofillSuggestionTriggerSource::kManualFallbackPayments;
+}
+
+bool IsPasswordsAutofillManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source) {
+  return trigger_source ==
+         AutofillSuggestionTriggerSource::kManualFallbackPasswords;
 }
 
 }  // namespace autofill

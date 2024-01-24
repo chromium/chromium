@@ -593,6 +593,9 @@ enum AutofillSuggestionTriggerSource {
   // Suggestions triggered by selecting the Autofill payment methods manual
   // fallback entry from the Chrome context menu.
   kManualFallbackPayments,
+  // Suggestions triggered by selecting the Autofill password manager manual
+  // fallback entry from the Chrome context menu.
+  kManualFallbackPasswords,
   // Suggestions triggered by the user closing a dialog after performing some
   // action.
   kShowPromptAfterDialogClosed,

@@ -93,6 +93,11 @@ bool IsAddressAutofillManuallyTriggered(
 bool IsPaymentsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source);
 
+// Checks if the user triggered passwords Autofill on a field manually through
+// the Chrome context menu.
+bool IsPasswordsAutofillManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_UTIL_H_
