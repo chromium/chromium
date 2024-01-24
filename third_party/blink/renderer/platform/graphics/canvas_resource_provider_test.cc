@@ -565,8 +565,7 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
       context_provider_wrapper_, RasterMode::kGPU,
       /*shared_image_usage_flags=*/0u);
 
-  MemoryManagedPaintCanvas* dst_canvas =
-      static_cast<MemoryManagedPaintCanvas*>(dst_provider->Canvas());
+  MemoryManagedPaintCanvas* dst_canvas = dst_provider->Canvas();
 
   PaintImage paint_image = src_provider->Snapshot(FlushReason::kTesting)
                                ->PaintImageForCurrentFrame();
@@ -584,7 +583,7 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
   src_provider->ProduceCanvasResource(FlushReason::kTesting);
 
   // The paint canvas may have moved
-  dst_canvas = static_cast<MemoryManagedPaintCanvas*>(dst_provider->Canvas());
+  dst_canvas = dst_provider->Canvas();
 
   // TODO(aaronhk): The resource on the src_provider should be the same before
   // and after the draw. Something about the program flow within

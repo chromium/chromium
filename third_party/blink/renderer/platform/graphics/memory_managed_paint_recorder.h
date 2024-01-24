@@ -66,7 +66,7 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
   size_t OpBytesUsed() const { return canvas_.OpBytesUsed(); }
   size_t ImageBytesUsed() const { return canvas_.ImageBytesUsed(); }
 
-  cc::PaintCanvas* getRecordingCanvas() { return &canvas_; }
+  MemoryManagedPaintCanvas* getRecordingCanvas() { return &canvas_; }
 
  private:
   // Pointer to the client interested in events from this

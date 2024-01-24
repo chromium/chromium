@@ -52,6 +52,7 @@ namespace blink {
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DAutoFlushParams);
 
 class CanvasResourceDispatcher;
+class MemoryManagedPaintCanvas;
 class WebGraphicsContext3DProviderWrapper;
 
 // CanvasResourceProvider
@@ -159,7 +160,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // WebGraphicsContext3DProvider::DestructionObserver implementation.
   void OnContextDestroyed() override;
 
-  cc::PaintCanvas* Canvas(bool needs_will_draw = false);
+  MemoryManagedPaintCanvas* Canvas(bool needs_will_draw = false);
   void ReleaseLockedImages();
   // FlushCanvas and preserve recording only if IsPrinting or
   // FlushReason indicates printing in progress.
