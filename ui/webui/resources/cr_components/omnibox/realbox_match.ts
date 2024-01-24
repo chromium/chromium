@@ -502,6 +502,9 @@ export class RealboxMatchElement extends PolymerElement {
   }
 
   updateSelection(selection: OmniboxPopupSelection) {
+    this.$['focus-indicator'].classList.toggle(
+        'selected-within', selection.state !== SelectionLineState.kNormal);
+
     this.$.remove.classList.toggle(
         'selected',
         selection.state === SelectionLineState.kFocusedButtonRemoveSuggestion);

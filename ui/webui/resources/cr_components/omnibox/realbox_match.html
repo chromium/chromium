@@ -121,7 +121,7 @@
 
   /* TODO(crbug.com/1430996): Add focus indicator for secondary results. */
   :host(:is(:focus-visible, [selected]:not(:focus-within)):not(
-      [side-type-class_='secondary-side'])) #focus-indicator {
+      [side-type-class_='secondary-side'])) #focus-indicator:not(.selected-within) {
     display: block;
   }
 
