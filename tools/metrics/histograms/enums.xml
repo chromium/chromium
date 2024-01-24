@@ -1095,7 +1095,6 @@ Called by update_autofill_enums.py.-->
   <int value="114" label="ADDRESS_HOME_ADDRESS"/>
   <int value="115" label="ADDRESS_HOME_ADDRESS_WITH_NAME"/>
   <int value="116" label="ADDRESS_HOME_FLOOR"/>
-  <int value="117" label="NAME_FULL_WITH_HONORIFIC_PREFIX"/>
   <int value="118" label="BIRTHDATE_DAY"/>
   <int value="119" label="BIRTHDATE_MONTH"/>
   <int value="120" label="BIRTHDATE_4_DIGIT_YEAR"/>
@@ -1343,10 +1342,6 @@ Called by update_autofill_enums.py.-->
   <int value="1841" label="ADDRESS_HOME_ADDRESS_WITH_NAME: Empty on page load"/>
   <int value="1856" label="ADDRESS_HOME_FLOOR: Pre-filled on page load"/>
   <int value="1857" label="ADDRESS_HOME_FLOOR: Empty on page load"/>
-  <int value="1872"
-      label="NAME_FULL_WITH_HONORIFIC_PREFIX: Pre-filled on page load"/>
-  <int value="1873"
-      label="NAME_FULL_WITH_HONORIFIC_PREFIX: Empty on page load"/>
   <int value="1888" label="BIRTHDATE_DAY: Pre-filled on page load"/>
   <int value="1889" label="BIRTHDATE_DAY: Empty on page load"/>
   <int value="1904" label="BIRTHDATE_MONTH: Pre-filled on page load"/>

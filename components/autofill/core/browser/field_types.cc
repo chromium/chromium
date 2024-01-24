@@ -107,7 +107,6 @@ static constexpr auto kTypeNameToFieldType =
          {"ADDRESS_HOME_ADDRESS", ADDRESS_HOME_ADDRESS},
          {"ADDRESS_HOME_ADDRESS_WITH_NAME", ADDRESS_HOME_ADDRESS_WITH_NAME},
          {"ADDRESS_HOME_FLOOR", ADDRESS_HOME_FLOOR},
-         {"NAME_FULL_WITH_HONORIFIC_PREFIX", NAME_FULL_WITH_HONORIFIC_PREFIX},
          {"BIRTHDATE_DAY", BIRTHDATE_DAY},
          {"BIRTHDATE_MONTH", BIRTHDATE_MONTH},
          {"BIRTHDATE_4_DIGIT_YEAR", BIRTHDATE_4_DIGIT_YEAR},
@@ -155,7 +154,6 @@ bool IsFillableFieldType(FieldType field_type) {
     case NAME_LAST_SECOND:
     case NAME_MIDDLE_INITIAL:
     case NAME_FULL:
-    case NAME_FULL_WITH_HONORIFIC_PREFIX:
     case NAME_SUFFIX:
     case EMAIL_ADDRESS:
     case USERNAME_AND_EMAIL_ADDRESS:
@@ -335,8 +333,6 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
       return "Price";
     case NAME_HONORIFIC_PREFIX:
       return "Honorific prefix";
-    case NAME_FULL_WITH_HONORIFIC_PREFIX:
-      return "Full name with honorific prefix";
     case NAME_FIRST:
       return "First name";
     case NAME_MIDDLE:
@@ -493,7 +489,6 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case NAME_MIDDLE_INITIAL:
     case NAME_FULL:
     case NAME_SUFFIX:
-    case NAME_FULL_WITH_HONORIFIC_PREFIX:
       return FieldTypeGroup::kName;
 
     case EMAIL_ADDRESS:

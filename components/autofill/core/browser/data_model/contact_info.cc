@@ -67,11 +67,6 @@ bool NameInfo::operator==(const NameInfo& other) const {
 
 std::u16string NameInfo::GetRawInfo(FieldType type) const {
   DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfFieldType(type));
-  // TODO(b/320307442) Remove when NAME_FULL_WITH_HONORIFIC_PREFIX is
-  // deprecated.
-  if (type == NAME_FULL_WITH_HONORIFIC_PREFIX) {
-    type = NAME_FULL;
-  }
   return name_->GetValueForType(type);
 }
 
@@ -108,19 +103,6 @@ bool NameInfo::SetInfoWithVerificationStatusImpl(const AutofillType& type,
   }
   return FormGroup::SetInfoWithVerificationStatusImpl(type, value, app_locale,
                                                       status);
-}
-
-void NameInfo::GetMatchingTypes(const std::u16string& text,
-                                const std::string& app_locale,
-                                FieldTypeSet* matching_types) const {
-  FormGroup::GetMatchingTypes(text, app_locale, matching_types);
-  // Replace type matches for |NAME_FULL_WITH_HONORIFIC_PREFIX| with |NAME_FULL|
-  // to always vote for a full name field even if the user decides to add an
-  // additional honorific prefix to their name.
-  if (matching_types->contains(NAME_FULL_WITH_HONORIFIC_PREFIX)) {
-    matching_types->erase(NAME_FULL_WITH_HONORIFIC_PREFIX);
-    matching_types->insert(NAME_FULL);
-  }
 }
 
 VerificationStatus NameInfo::GetVerificationStatusImpl(FieldType type) const {

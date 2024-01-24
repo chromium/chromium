@@ -28,10 +28,6 @@ class NameInfo : public FormGroup {
   // FormGroup:
   std::u16string GetRawInfo(FieldType type) const override;
 
-  void GetMatchingTypes(const std::u16string& text,
-                        const std::string& app_locale,
-                        FieldTypeSet* matching_types) const override;
-
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;

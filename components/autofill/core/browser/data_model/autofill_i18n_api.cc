@@ -120,7 +120,6 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case NAME_LAST_CONJUNCTION:
     case NAME_LAST_SECOND:
     case NAME_HONORIFIC_PREFIX:
-    case NAME_FULL_WITH_HONORIFIC_PREFIX:
       return std::make_unique<AddressComponent>(type, std::move(children),
                                                 MergeMode::kDefault);
     case NO_SERVER_DATA:

@@ -328,7 +328,6 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case NAME_LAST_CONJUNCTION:
         case NAME_LAST_SECOND:
         case NAME_HONORIFIC_PREFIX:
-        case NAME_FULL_WITH_HONORIFIC_PREFIX:
         case BIRTHDATE_DAY:
         case BIRTHDATE_MONTH:
         case BIRTHDATE_4_DIGIT_YEAR:
