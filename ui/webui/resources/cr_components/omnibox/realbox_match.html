@@ -169,8 +169,8 @@
     width: 100%;
   }
 
-  /* Deemphasizes description for entities with images. */
-  :host([is-entity-suggestion][has-image]) #description {
+  /* Deemphasizes description for rich suggestions. */
+  :host([is-rich-suggestion]) #description {
     font-size: .875em;
   }
 
@@ -178,10 +178,8 @@
     font-weight: 600;
   }
 
-  /* Uses a dimmed color for description for entities. */
-  :host([is-entity-suggestion]) #description,
-  /* Description ellipsis color to match the description text color */
-  #description:has(.dim),
+  /* Use dimmed color for descriptions. */
+  #description,
   .dim {
     color: var(--color-realbox-results-foreground-dimmed);
   }
