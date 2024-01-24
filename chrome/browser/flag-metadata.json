@@ -7477,7 +7477,7 @@
   {
     "name" : "side-panel-pinning",
     "owners": [ "corising@chromium.org", "chrome-desktop-ui-sea@chromium.org" ],
-    "expiry_milestone" : 123
+    "expiry_milestone" : 126
   },
   {
     "name" : "side-search",
