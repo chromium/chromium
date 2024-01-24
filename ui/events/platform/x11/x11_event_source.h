@@ -84,6 +84,10 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
     return last_cursor_location_;
   }
 
+  void set_last_cursor_location(const gfx::Point& last_cursor_location) {
+    last_cursor_location_ = last_cursor_location;
+  }
+
  private:
   // x11::EventObserver:
   void OnEvent(const x11::Event& event) override;

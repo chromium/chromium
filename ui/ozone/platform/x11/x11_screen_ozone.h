@@ -93,8 +93,6 @@ class X11ScreenOzone : public PlatformScreen,
   // DeviceScaleFactorObserver:
   void OnDeviceScaleFactorChanged() override;
 
-  gfx::Point GetCursorLocation() const;
-
   const raw_ptr<x11::Connection> connection_;
   const raw_ptr<X11WindowManager> window_manager_;
   std::unique_ptr<ui::XDisplayManager> x11_display_manager_;
