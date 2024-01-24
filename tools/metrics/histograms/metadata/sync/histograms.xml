@@ -71,6 +71,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".USER_CONSENT" summary="USER_CONSENT"/>
   <variant name=".USER_EVENT" summary="USER_EVENT"/>
   <variant name=".WALLET_METADATA" summary="WALLET_METADATA"/>
+  <variant name=".WEB_APK" summary="WEB_APK"/>
   <variant name=".WEB_APP" summary="WEB_APP"/>
   <variant name=".WEBAUTHN_CREDENTIAL" summary="WEBAUTHN_CREDENTIAL"/>
   <variant name=".WIFI_CONFIGURATION" summary="WIFI_CONFIGURATION"/>

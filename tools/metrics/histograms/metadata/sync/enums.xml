@@ -772,6 +772,7 @@ chromium-metrics-reviews@google.com.
   <int value="59" label="Incoming Password Sharing Invitations"/>
   <int value="60" label="Outgoing Password Sharing Invitations"/>
   <int value="61" label="Autofill Wallet Credential"/>
+  <int value="62" label="WebAPKs"/>
 </enum>
 
 <enum name="SyncPassphraseType">

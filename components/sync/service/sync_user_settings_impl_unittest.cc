@@ -130,10 +130,14 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
   if (base::FeatureList::IsEnabled(kSyncChromeOSAppsToggleSharing)) {
     ASSERT_TRUE(all_registered_types.Has(UserSelectableType::kApps));
     ASSERT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
-    expected_types.RemoveAll({APPS, APP_SETTINGS, WEB_APPS});
+    expected_types.RemoveAll({APPS, APP_SETTINGS, WEB_APPS, WEB_APKS});
     all_registered_types.Remove(UserSelectableType::kApps);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  expected_types.RemoveAll({WEB_APKS});
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   EXPECT_TRUE(sync_user_settings->IsSyncEverythingEnabled());
   EXPECT_EQ(expected_types, GetPreferredUserTypes(*sync_user_settings));
@@ -257,6 +261,7 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
       MakeSyncUserSettings(GetUserTypes());
 
   ModelTypeSet expected_types = GetUserTypes();
+  expected_types.RemoveAll({WEB_APKS});
   EXPECT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
   EXPECT_EQ(expected_types, GetPreferredUserTypes(*sync_user_settings));
 
