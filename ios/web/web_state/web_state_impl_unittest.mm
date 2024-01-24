@@ -952,60 +952,58 @@ TEST_F(WebStateImplTest, VerifyDialogRunningBoolean) {
 // Tests that CreateFullPagePdf invokes completion callback nil when a
 // javascript dialog is running
 TEST_F(WebStateImplTest, CreateFullPagePdfJavaScriptDialog) {
-  if (@available(iOS 14, *)) {
-    WebStateImpl web_state =
-        WebStateImpl(WebState::CreateParams(GetBrowserState()));
+  WebStateImpl web_state =
+      WebStateImpl(WebState::CreateParams(GetBrowserState()));
 
-    FakeWebStateDelegate delegate;
-    web_state.SetDelegate(&delegate);
+  FakeWebStateDelegate delegate;
+  web_state.SetDelegate(&delegate);
 
-    // Load the HTML content.
-    CRWWebController* web_controller = web_state.GetWebController();
-    NSString* html_content =
-        @"<html><body><div style='background-color:#FF0000; width:50%; "
-         "height:100%;'></div>Hello world</body></html>";
-    [web_controller loadHTML:html_content forURL:GURL("http://example.org")];
+  // Load the HTML content.
+  CRWWebController* web_controller = web_state.GetWebController();
+  NSString* html_content =
+      @"<html><body><div style='background-color:#FF0000; width:50%; "
+       "height:100%;'></div>Hello world</body></html>";
+  [web_controller loadHTML:html_content forURL:GURL("http://example.org")];
 
-    ASSERT_TRUE(test::WaitForWebViewContainingText(&web_state, "Hello world"));
+  ASSERT_TRUE(test::WaitForWebViewContainingText(&web_state, "Hello world"));
 
-    // Pause the callback execution to allow testing while the dialog is
-    // presented.
-    delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
-        true);
-    web_state.RunJavaScriptAlertDialog(GURL(), @"message", base::DoNothing());
+  // Pause the callback execution to allow testing while the dialog is
+  // presented.
+  delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
+      true);
+  web_state.RunJavaScriptAlertDialog(GURL(), @"message", base::DoNothing());
 
-    // Attempt to create a PDF for this page and validate that it return nil.
-    __block NSData* callback_data_when_dialog = nil;
-    __block BOOL callback_called_when_dialog = NO;
-    web_state.CreateFullPagePdf(base::BindOnce(^(NSData* pdf_document_data) {
-      callback_data_when_dialog = [pdf_document_data copy];
-      callback_called_when_dialog = YES;
-    }));
+  // Attempt to create a PDF for this page and validate that it return nil.
+  __block NSData* callback_data_when_dialog = nil;
+  __block BOOL callback_called_when_dialog = NO;
+  web_state.CreateFullPagePdf(base::BindOnce(^(NSData* pdf_document_data) {
+    callback_data_when_dialog = [pdf_document_data copy];
+    callback_called_when_dialog = YES;
+  }));
 
-    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-      return callback_called_when_dialog;
-    }));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+    return callback_called_when_dialog;
+  }));
 
-    EXPECT_FALSE(callback_data_when_dialog);
+  EXPECT_FALSE(callback_data_when_dialog);
 
-    // Unpause the presenter and verify that it return data instead of nil when
-    // the dialog is no longer on the screen
-    delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
-        false);
+  // Unpause the presenter and verify that it return data instead of nil when
+  // the dialog is no longer on the screen
+  delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
+      false);
 
-    __block NSData* callback_data_no_dialog = nil;
-    __block BOOL callback_called_no_dialog = NO;
-    web_state.CreateFullPagePdf(base::BindOnce(^(NSData* pdf_document_data) {
-      callback_data_no_dialog = [pdf_document_data copy];
-      callback_called_no_dialog = YES;
-    }));
+  __block NSData* callback_data_no_dialog = nil;
+  __block BOOL callback_called_no_dialog = NO;
+  web_state.CreateFullPagePdf(base::BindOnce(^(NSData* pdf_document_data) {
+    callback_data_no_dialog = [pdf_document_data copy];
+    callback_called_no_dialog = YES;
+  }));
 
-    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-      return callback_called_no_dialog;
-    }));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+    return callback_called_no_dialog;
+  }));
 
-    EXPECT_TRUE(callback_data_no_dialog);
-  }
+  EXPECT_TRUE(callback_data_no_dialog);
 }
 
 // Tests that the WebView is removed from the view hierarchy and the
