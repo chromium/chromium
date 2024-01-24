@@ -9,7 +9,62 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 
 import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, ExternalDiskStateObserverRemote, FeatureLevel, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, Shimless3pDiagnosticsAppInfo, ShimlessRmaServiceInterface, Show3pDiagnosticsAppResult, State, StateResult, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from './shimless_rma.mojom-webui.js';
 
-export class FakeShimlessRmaService implements ShimlessRmaServiceInterface {
+
+/**
+ * Type for methods needed for the fake FakeShimlessRmaService implementation.
+ */
+export type FakeShimlessRmaServiceInterface = ShimlessRmaServiceInterface&{
+  setStates(states: StateResult[]): void,
+  setAsyncOperationDelayMs(delayMs: number): void,
+  setAbortRmaResult(error: RmadErrorCode): void,
+  enableAutomaticallyTriggerProvisioningObservation(): void,
+  getCurrentOsVersion(): void,
+  setCheckForOsUpdatesResult(version: string): void,
+  setUpdateOsResult(started: boolean): void,
+  setGetRsuDisableWriteProtectChallengeResult(challenge: string): void,
+  enableAutomaticallyTriggerDisableWriteProtectionObservation(): void,
+  setGetPowerwashRequiredResult(powerwashRequired: boolean): void,
+  setSaveLogResult(savePath: FilePath): void,
+  enableAutomaticallyTriggerHardwareVerificationStatusObservation(): void,
+  setGetCurrentOsVersionResult(version: string|null): void,
+  setGetComponentListResult(components: Component[]): void,
+  setGetRsuDisableWriteProtectHwidResult(hwid: string): void,
+  getRsuDisableWriteProtectChallengeQrCode(): Promise<{qrCodeData: number[]}>,
+  setGetRsuDisableWriteProtectChallengeQrCodeResponse(qrCodeData: number[]):
+      void,
+  setGetLogResult(log: string): void,
+  enableAutomaticallyTriggerFinalizationObservation(): void,
+  enableAutomaticallyTriggerOsUpdateObservation(): void,
+  setGetWriteProtectDisableCompleteAction(
+      action: WriteProtectDisableCompleteAction): void,
+  getWriteProtectDisableCompleteAction():
+      Promise<{action: WriteProtectDisableCompleteAction}>,
+  getOriginalSerialNumber(): Promise<{serialNumber: string}>,
+  setGetOriginalSerialNumberResult(serialNumber: string): void,
+  getRegionList(): Promise<{regions: string[]}>,
+  setGetRegionListResult(regions: string[]): void,
+  getCalibrationComponentList():
+      Promise<{components: CalibrationComponentStatus[]}>,
+  setGetCalibrationComponentListResult(
+      components: CalibrationComponentStatus[]): void,
+  setGetSkuListResult(skus: bigint[]): void,
+  enableAautomaticallyTriggerUpdateRoFirmwareObservation(): void,
+  setGetOriginalSkuResult(skuIndex: number): void,
+  enableAutomaticallyTriggerCalibrationObservation(): void,
+  getCustomLabelList(): Promise<{customLabels: string[]}>,
+  enableAutomaticallyTriggerPowerCableStateObservation(): void,
+  setGetOriginalRegionResult(regionIndex: number): void,
+  setGetCustomLabelListResult(customLabels: string[]): void,
+  setGetOriginalCustomLabelResult(customLabelIndex: number): void,
+  getOriginalDramPartNumber(): Promise<{dramPartNumber: string}>,
+  setGetOriginalDramPartNumberResult(dramPartNumber: string): void,
+  setGetOriginalFeatureLevelResult(featureLevel: FeatureLevel): void,
+  setGetCalibrationSetupInstructionsResult(
+      instructions: CalibrationSetupInstruction): void,
+};
+
+
+export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
   constructor() {
     this.methods = new FakeMethodResolver();
     this.observables = new FakeObservables();
