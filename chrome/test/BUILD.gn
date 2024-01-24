@@ -11409,7 +11409,10 @@ if (!is_android && !is_chromeos_device && !is_fuchsia) {
       sources -=
           [ "../browser/notifications/notification_interactive_uitest.cc" ]
 
-      deps += [ ":lacros_test_support_ui" ]
+      deps += [
+        ":lacros_test_support_ui",
+        "//ui/display:managed_display_info",
+      ]
     }
 
     if (is_win) {

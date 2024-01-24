@@ -8,6 +8,7 @@
 #include <wayland-util.h>
 
 #include <memory>
+#include <string>
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
@@ -60,6 +61,12 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
                     const gfx::Point& touch_screen_location,
                     int touch_id,
                     uint32_t request_id);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // |display_specs| is the spec for the display(s).
+  void EmulateUpdateDisplay(const std::string& display_specs,
+                            uint32_t request_id);
+#endif
 
 #if BUILDFLAG(IS_LINUX)
   void ForceUseScreenCoordinatesOnce();
@@ -154,6 +161,9 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
                        uint32_t name,
                        const char* interface,
                        uint32_t version);
+
+  // wl_registry_listener callbacks:
+  static void OnGlobalRemove(void* data, wl_registry* registry, uint32_t name);
 
   // wl_callback_listener callbacks:
   static void OnFrameDone(void* data, wl_callback* callback, uint32_t time);

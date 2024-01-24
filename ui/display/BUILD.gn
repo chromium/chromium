@@ -147,6 +147,36 @@ component("display") {
   }
 }
 
+if (is_chromeos_lacros) {
+  component("managed_display_info") {
+    testonly = true
+    sources = [
+      "manager/managed_display_info.cc",
+      "manager/managed_display_info.h",
+      "manager/util/display_manager_test_util.cc",
+      "manager/util/display_manager_test_util.h",
+      "manager/util/display_manager_util.cc",
+      "manager/util/display_manager_util.h",
+    ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+    public_deps = [ "//ui/display" ]
+
+    deps = [
+      "//base",
+      "//build:chromeos_buildflags",
+      "//ui/base:base",
+      "//ui/display",
+      "//ui/display/types",
+      "//ui/display/util",
+      "//ui/display/util",
+    ]
+
+    defines = [ "DISPLAY_MANAGER_IMPLEMENTATION" ]
+  }
+}
+
 if (is_chromeos_ash) {
   component("display_manager_test_api") {
     testonly = true
@@ -163,6 +193,7 @@ if (is_chromeos_ash) {
       "//base",
       "//build:chromeos_buildflags",
       "//ui/display",
+      "//ui/display:test_support",
       "//ui/display/types",
       "//ui/display/util",
     ]
@@ -217,6 +248,10 @@ static_library("test_support") {
     ]
   }
 
+  if (is_chromeos) {
+    sources += [ "test/display_test_util.cc" ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "manager/test/action_logger.cc",
@@ -238,6 +273,10 @@ static_library("test_support") {
     ]
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
     public_deps += [ "//ui/display/manager" ]
+  }
+
+  if (is_chromeos_lacros) {
+    public_deps += [ "//ui/display:managed_display_info" ]
   }
 }
 

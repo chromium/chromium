@@ -707,6 +707,7 @@ source_set("ui_test_support") {
     "//third_party/wayland-protocols:ui_controls_protocol",
     "//third_party/wayland-protocols:xdg_shell_protocol",
     "//ui/base:test_support",
+    "//ui/display:test_support",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
     "//ui/events:test_support",

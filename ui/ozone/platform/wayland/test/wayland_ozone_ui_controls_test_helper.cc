@@ -113,6 +113,14 @@ void WaylandOzoneUIControlsTestHelper::SendTouchEvent(
   pending_closures_.insert_or_assign(request_id, std::move(closure));
   input_emulate_->EmulateTouch(action, touch_loc, id, request_id);
 }
+
+void WaylandOzoneUIControlsTestHelper::UpdateDisplay(
+    const std::string& display_specs,
+    base::OnceClosure closure) {
+  uint32_t request_id = GetNextRequestId();
+  pending_closures_.insert_or_assign(request_id, std::move(closure));
+  input_emulate_->EmulateUpdateDisplay(display_specs, request_id);
+}
 #endif
 
 void WaylandOzoneUIControlsTestHelper::RunClosureAfterAllPendingUIEvents(
