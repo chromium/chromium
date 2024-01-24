@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/chaps_util/pkcs12_validator.h"
+#include "chromeos/components/kcer/helpers/pkcs12_validator.h"
 
 #include <cert.h>
 #include <stdint.h>
@@ -14,13 +14,13 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
+#include "chromeos/components/kcer/helpers/pkcs12_reader.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/pkcs8.h"
 #include "third_party/boringssl/src/include/openssl/stack.h"
 
-namespace chromeos {
+namespace kcer::internal {
 namespace {
 
 constexpr char kPkcs12CertImportFailed[] =
@@ -348,4 +348,4 @@ Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
   return Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound;
 }
 
-}  // namespace chromeos
+}  // namespace kcer::internal
