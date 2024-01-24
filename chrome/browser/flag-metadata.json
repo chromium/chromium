@@ -4043,7 +4043,7 @@
   {
     "name": "extensions-menu-access-control",
     "owners": [ "emiliapaz@chromium.org" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 128
   },
   {
     "name": "extensions-on-chrome-urls",
@@ -5050,14 +5050,14 @@
     "owners": [
       "emiliapaz@chromium.org"
     ],
-    "expiry_milestone": 123
+    "expiry_milestone": 128
   },
   {
     "name": "iph-extensions-request-access-button-feature",
     "owners": [
       "emiliapaz@chromium.org"
     ],
-    "expiry_milestone": 123
+    "expiry_milestone": 128
   },
   {
       "name": "iph-ios-promo-manager-widget-promo",
