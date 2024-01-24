@@ -310,27 +310,6 @@ TEST_F(
 
 TEST_F(
     BluetoothUtilsTest,
-    TestFilterBluetoothDeviceList_FilterKnown_KeepDualDevicesWithNamesAndAppearances) {
-  auto* mock_bluetooth_device =
-      AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_DUAL);
-  EXPECT_CALL(*mock_bluetooth_device, GetDeviceType)
-      .WillRepeatedly(testing::Return(BluetoothDeviceType::AUDIO));
-
-  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
-                                  1u /* num_expected_remaining_devices */);
-}
-
-TEST_F(
-    BluetoothUtilsTest,
-    TestFilterBluetoothDeviceList_FilterKnown_DualDevicesWithoutAppearances_RemoveWithFilterFlagEnabled) {
-  AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_DUAL);
-
-  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
-                                  0u /* num_expected_remaining_devices */);
-}
-
-TEST_F(
-    BluetoothUtilsTest,
     TestFilterBluetoothDeviceList_FilterKnown_AppearanceComputer_RemoveWithFilterFlagEnabled) {
   auto* mock_bluetooth_device_1 =
       AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_CLASSIC);
@@ -358,6 +337,58 @@ TEST_F(BluetoothUtilsTest,
   ON_CALL(*mock_bluetooth_device, GetDeviceType)
       .WillByDefault(testing::Return(BluetoothDeviceType::PHONE));
 
+  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
+                                  0u /* num_expected_remaining_devices */);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(BluetoothUtilsTest,
+       TestFilterBluetoothDeviceList_FilterKnown_DualWithRandomAddressIsLE) {
+  auto* mock_bluetooth_device =
+      AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_DUAL);
+  EXPECT_CALL(*mock_bluetooth_device, GetAddressType)
+      .WillRepeatedly(
+          testing::Return(BluetoothDevice::AddressType::ADDR_TYPE_RANDOM));
+
+  // Test RemoveBleDevicesWithoutExpectedUuids
+  mock_bluetooth_device->AddUUID(device::BluetoothUUID(kUnexpectedServiceUUID));
+  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
+                                  0u /* num_expected_remaining_devices */);
+
+  // Test KeepBleDevicesWithExpectedUuids
+  mock_bluetooth_device->AddUUID(device::BluetoothUUID(kHIDServiceUUID));
+  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
+                                  1u /* num_expected_remaining_devices */);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(BluetoothUtilsTest,
+       TestFilterBluetoothDeviceList_FilterKnown_DualWithKnownTypeIsClassic) {
+  auto* mock_bluetooth_device =
+      AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_DUAL);
+  EXPECT_CALL(*mock_bluetooth_device, GetDeviceType)
+      .WillRepeatedly(testing::Return(BluetoothDeviceType::AUDIO));
+
+  // Test RemoveClassicDevicesWithoutNames
+  EXPECT_CALL(*mock_bluetooth_device, GetName)
+      .WillRepeatedly(testing::Return(absl::nullopt));
+  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
+                                  0u /* num_expected_remaining_devices */);
+
+  // Test KeepClassicDevicesWithNames
+  EXPECT_CALL(*mock_bluetooth_device, GetName)
+      .WillRepeatedly(testing::Return(kTestBluetoothDisplayName));
+  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
+                                  1u /* num_expected_remaining_devices */);
+}
+
+TEST_F(
+    BluetoothUtilsTest,
+    TestFilterBluetoothDeviceList_FilterKnown_DualWithoutKnownTypeIsInvalid) {
+  auto* mock_bluetooth_device =
+      AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_DUAL);
+  EXPECT_CALL(*mock_bluetooth_device, GetName)
+      .WillRepeatedly(testing::Return(kTestBluetoothDisplayName));
   VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
                                   0u /* num_expected_remaining_devices */);
 }
