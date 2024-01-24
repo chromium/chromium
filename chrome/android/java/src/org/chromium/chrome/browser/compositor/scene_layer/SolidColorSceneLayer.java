@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.scene_layer;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -43,7 +44,8 @@ public class SolidColorSceneLayer extends SceneLayer {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting
+    public interface Natives {
         long init(SolidColorSceneLayer caller);
 
         void setBackgroundColor(long nativeSolidColorSceneLayer, int backgroundColor);
