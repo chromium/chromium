@@ -14,7 +14,7 @@
         },
         "mac": {
             "hash": "405f603713db67dfe1e4234d96413fdeb38b9ef2",
-            "full_remote_path": "chromium-telemetry/perfetto_binaries/trace_processor_shell/mac/cb8e742e623766cda5365735d781969f3dfe6a02/trace_processor_shell"
+            "full_remote_path": "chromium-telemetry/perfetto_binaries/trace_processor_shell/mac/8e7b6e4713dc6ab25932d3f439eab9f4c691ee5c/trace_processor_shell"
         },
         "mac_arm64": {
             "hash": "8cd6239efb03863974fdc94e5ee004352f999e3a",
