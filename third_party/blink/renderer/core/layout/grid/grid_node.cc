@@ -164,7 +164,7 @@ void GridNode::AppendSubgriddedItems(GridItems* grid_items) const {
 MinMaxSizesResult GridNode::ComputeSubgridMinMaxSizes(
     const GridSizingSubtree& sizing_subtree,
     const ConstraintSpace& space) const {
-  DCHECK(sizing_subtree);
+  DCHECK(sizing_subtree.HasValidRootFor(*this));
   DCHECK(sizing_subtree.LayoutData().IsSubgridWithStandaloneAxis(kForColumns));
 
   auto* layout_grid = To<LayoutGrid>(box_.Get());
@@ -185,7 +185,7 @@ MinMaxSizesResult GridNode::ComputeSubgridMinMaxSizes(
 LayoutUnit GridNode::ComputeSubgridIntrinsicBlockSize(
     const GridSizingSubtree& sizing_subtree,
     const ConstraintSpace& space) const {
-  DCHECK(sizing_subtree);
+  DCHECK(sizing_subtree.HasValidRootFor(*this));
   DCHECK(sizing_subtree.LayoutData().IsSubgridWithStandaloneAxis(kForRows));
 
   auto* layout_grid = To<LayoutGrid>(box_.Get());

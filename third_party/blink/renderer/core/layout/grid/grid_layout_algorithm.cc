@@ -420,7 +420,7 @@ MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(
 
 MinMaxSizes GridLayoutAlgorithm::ComputeSubgridMinMaxSizes(
     const GridSizingSubtree& sizing_subtree) const {
-  DCHECK(sizing_subtree);
+  DCHECK(sizing_subtree.HasValidRootFor(Node()));
 
   return {ComputeSubgridIntrinsicSize(sizing_subtree, kForColumns,
                                       SizingConstraint::kMinContent),
@@ -430,7 +430,8 @@ MinMaxSizes GridLayoutAlgorithm::ComputeSubgridMinMaxSizes(
 
 LayoutUnit GridLayoutAlgorithm::ComputeSubgridIntrinsicBlockSize(
     const GridSizingSubtree& sizing_subtree) const {
-  DCHECK(sizing_subtree);
+  DCHECK(sizing_subtree.HasValidRootFor(Node()));
+
   return ComputeSubgridIntrinsicSize(sizing_subtree, kForRows,
                                      SizingConstraint::kMaxContent);
 }
@@ -515,12 +516,13 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
     bool must_ignore_children) const {
   DCHECK(sizing_tree);
 
-  auto& sizing_node = sizing_tree->CreateSizingData(opt_subgrid_data);
-
   const auto& node = Node();
   const auto& style = node.Style();
   const auto subgrid_area = SubgriddedAreaInParent(opt_subgrid_data);
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
+
+  auto& sizing_node = sizing_tree->CreateSizingData(
+      opt_subgrid_data ? opt_subgrid_data->node : node);
 
   const wtf_size_t column_auto_repetitions =
       ComputeAutomaticRepetitions(subgrid_area.columns, kForColumns);
@@ -675,10 +677,10 @@ GridSizingTree GridLayoutAlgorithm::BuildGridSizingTree(
 
   if (const auto* layout_subtree =
           GetConstraintSpace().GetGridLayoutSubtree()) {
-    auto& [grid_items, layout_data, subtree_size] =
-        sizing_tree.CreateSizingData();
-
     const auto& node = Node();
+    auto& [grid_items, layout_data, subtree_size] =
+        sizing_tree.CreateSizingData(node);
+
     grid_items =
         node.ConstructGridItems(node.CachedLineResolver(), oof_children);
     layout_data = layout_subtree->LayoutData();
@@ -1720,7 +1722,7 @@ void GridLayoutAlgorithm::InitializeTrackSizes(
     const GridSizingSubtree& sizing_subtree,
     const SubgriddedItemData& opt_subgrid_data,
     const absl::optional<GridTrackSizingDirection>& opt_track_direction) const {
-  DCHECK(sizing_subtree);
+  DCHECK(sizing_subtree.HasValidRootFor(Node()));
 
   auto& grid_items = sizing_subtree.GridItems();
   auto& layout_data = sizing_subtree.LayoutData();
@@ -1855,7 +1857,7 @@ void GridLayoutAlgorithm::ComputeUsedTrackSizes(
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint,
     bool* opt_needs_additional_pass) const {
-  DCHECK(sizing_subtree);
+  DCHECK(sizing_subtree.HasValidRootFor(Node()));
 
   auto& track_collection =
       sizing_subtree.LayoutData().SizingCollection(track_direction);
@@ -1897,7 +1899,7 @@ void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint,
     bool* opt_needs_additional_pass) const {
-  DCHECK(sizing_subtree);
+  DCHECK(sizing_subtree.HasValidRootFor(Node()));
 
   auto& layout_data = sizing_subtree.LayoutData();
 
@@ -1984,7 +1986,7 @@ void GridLayoutAlgorithm::ComputeBaselineAlignment(
     const SubgriddedItemData& opt_subgrid_data,
     const absl::optional<GridTrackSizingDirection>& opt_track_direction,
     SizingConstraint sizing_constraint) const {
-  DCHECK(sizing_subtree);
+  DCHECK(sizing_subtree.HasValidRootFor(Node()));
 
   auto& layout_data = sizing_subtree.LayoutData();
 
@@ -2078,7 +2080,7 @@ LayoutUnit GridLayoutAlgorithm::ComputeSubgridIntrinsicSize(
     const GridSizingSubtree& sizing_subtree,
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint) const {
-  DCHECK(sizing_subtree);
+  DCHECK(sizing_subtree.HasValidRootFor(Node()));
 
   ComputeUsedTrackSizes(sizing_subtree, track_direction, sizing_constraint,
                         /* opt_needs_additional_pass */ nullptr);
