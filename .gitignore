@@ -127,7 +127,7 @@ vs-chromium-project.txt
 /chrome/browser/resources/media_router/extension/src/
 /chrome/browser/resources/preinstalled_web_apps/internal/
 /chrome/browser/resources/media_router_internal/
-/chrome/browser/resources/settings_internal/
+/chrome/browser/resources/settings/internal/
 /chrome/browser/resources/software_rendering_list
 # Asset files downloaded by gclient runhooks.
 /chrome/browser/resources/vr/assets/google_chrome/*.png

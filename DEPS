@@ -3834,7 +3834,7 @@ deps = {
       'condition': '(checkout_chromeos or checkout_linux) and checkout_src_internal',
   },
 
-  'src/chrome/browser/resources/settings_internal': {
+  'src/chrome/browser/resources/settings/internal': {
       'url': Var('chrome_git') + '/chrome/browser/resources/settings_internal.git' + '@' +
         '5d6316b2434986e6b073e1d24585578bb27da451', # from svn revision 41419
       'condition': 'checkout_src_internal',
