@@ -34,6 +34,12 @@ namespace ash {
 class Shelf;
 class Shell;
 
+// <<<<<< WARNING >>>>>>
+// This class is deprecated in favor of using the new `AnchoredNudge` component,
+// created through the `AnchoredNudgeManager` class.
+// Please visit go/system-nudge-v2 to learn more about this migration and
+// go/howtonudge on how to use the new component.
+
 // Creates and manages the nudge widget and its contents view for a contextual
 // system nudge. The nudge displays an icon and a label view in a shelf-colored
 // system bubble with rounded corners.
