@@ -355,7 +355,7 @@ bool FormFieldParser::FieldMatchesMatchPatternRef(
     base::span<const MatchPatternRef> patterns,
     const AutofillField& field,
     const char* regex_name,
-    MatchingPattern (*projection)(const MatchingPattern&)) {
+    MatchParams (*projection)(const MatchParams&)) {
   // Calling the regex engine with multiple smaller regexes is less efficient
   // than calling it with one larger regex. For this reasons, positive_patterns
   // are batched by OR-ing them together. Since matching further depends on the
@@ -365,40 +365,40 @@ bool FormFieldParser::FieldMatchesMatchPatternRef(
       batched_patterns;
 
   for (MatchPatternRef pattern_ref : patterns) {
-    MatchingPattern pattern =
-        projection ? (*projection)(*pattern_ref) : *pattern_ref;
+    MatchingPattern pattern = *pattern_ref;
     CHECK(!IsEmpty(pattern.positive_pattern));
+    MatchParams match_params(pattern.match_field_attributes,
+                             pattern.form_control_types);
+    if (projection) {
+      match_params = (*projection)(match_params);
+    }
     if (!MatchesFormControlType(field.form_control_type,
-                                pattern.form_control_types)) {
+                                match_params.field_types)) {
       continue;
     }
 
-    DenseSet<MatchAttribute> attributes = pattern.match_field_attributes;
-
+    DenseSet<MatchAttribute> reduced_attributes = match_params.attributes;
     if (!IsEmpty(pattern.negative_pattern)) {
       // For each attribute that is active for the current pattern, test if it
       // matches the negative pattern. If so, remove it from the attributes that
       // are considered for positive matching.
-      for (MatchAttribute attribute : pattern.match_field_attributes) {
+      for (MatchAttribute attribute : match_params.attributes) {
         if (Match(context, &field, pattern.negative_pattern, {attribute},
                   regex_name)) {
-          attributes.erase(attribute);
+          reduced_attributes.erase(attribute);
         }
       }
-      if (attributes.empty()) {
+      if (reduced_attributes.empty()) {
         continue;
       }
     }
 
-    auto it = batched_patterns.lower_bound(attributes);
-    // Since the `projection` should never modify the positive_pattern, store
-    // a pointer to the original positive_pattern in `batched_patterns`. This
-    // avoids a string copy.
-    if (it != batched_patterns.end() && it->first == attributes) {
+    auto it = batched_patterns.lower_bound(reduced_attributes);
+    if (it != batched_patterns.end() && it->first == reduced_attributes) {
       it->second.push_back((*pattern_ref).positive_pattern);
     } else {
-      batched_patterns.insert(it,
-                              {attributes, {(*pattern_ref).positive_pattern}});
+      batched_patterns.insert(
+          it, {reduced_attributes, {(*pattern_ref).positive_pattern}});
     }
   }
   for (const auto& [attributes, positive_patterns] : batched_patterns) {
@@ -454,7 +454,7 @@ bool FormFieldParser::ParseFieldSpecificsWithNewPatterns(
     base::span<const MatchPatternRef> patterns,
     raw_ptr<AutofillField>* match,
     const char* regex_name,
-    MatchingPattern (*projection)(const MatchingPattern&)) {
+    MatchParams (*projection)(const MatchParams&)) {
   if (scanner->IsEnd()) {
     return false;
   }
@@ -479,14 +479,15 @@ bool FormFieldParser::ParseFieldSpecifics(
     base::span<const MatchPatternRef> patterns,
     raw_ptr<AutofillField>* match,
     const char* regex_name,
-    MatchingPattern (*projection)(const MatchingPattern&)) {
+    MatchParams (*match_pattern_projection)(const MatchParams&)) {
   return (base::FeatureList::IsEnabled(
               features::kAutofillParsingPatternProvider) ||
           // Some patterns may not exist as an old-school regex because they
           // require negative matching.
           pattern == kNoLegacyPattern)
              ? ParseFieldSpecificsWithNewPatterns(context, scanner, patterns,
-                                                  match, regex_name, projection)
+                                                  match, regex_name,
+                                                  match_pattern_projection)
              : ParseFieldSpecificsWithLegacyPattern(
                    context, scanner, pattern, match_type, match, regex_name);
 }

@@ -176,7 +176,7 @@ class FormFieldParser {
       base::span<const MatchPatternRef> patterns,
       const AutofillField& field,
       const char* regex_name = "",
-      MatchingPattern (*projection)(const MatchingPattern&) = nullptr);
+      MatchParams (*projection)(const MatchParams&) = nullptr);
 
 #if defined(UNIT_TEST)
   static bool MatchForTesting(ParsingContext& context,
@@ -246,10 +246,12 @@ class FormFieldParser {
                          raw_ptr<AutofillField>* match,
                          const char* regex_name = "");
 
-  // TODO(crbug/1142936): Remove `projection` if it's not needed anymore.
   // When `kNoLegacyPattern` is passed as the `pattern`, the functions always
   // default to `patterns`, regardless of the status of
   // `features::kAutofillParsingPatternProvider`.
+  // If a `match_pattern_projection` is defined, it is applied to the pattern's
+  // MatchParams after dereferencing the `MatchPatternRef`s. Note that this is
+  // only relevant with pattern provider.
   static bool ParseFieldSpecifics(
       ParsingContext& context,
       AutofillScanner* scanner,
@@ -258,7 +260,7 @@ class FormFieldParser {
       base::span<const MatchPatternRef> patterns,
       raw_ptr<AutofillField>* match,
       const char* regex_name = "",
-      MatchingPattern (*projection)(const MatchingPattern&) = nullptr);
+      MatchParams (*match_pattern_projection)(const MatchParams&) = nullptr);
 
   // Attempts to parse a field with an empty label. Returns true
   // on success and fills |match| with a pointer to the field.
@@ -326,7 +328,7 @@ class FormFieldParser {
       base::span<const MatchPatternRef> patterns,
       raw_ptr<AutofillField>* match,
       const char* regex_name,
-      MatchingPattern (*projection)(const MatchingPattern&));
+      MatchParams (*projection)(const MatchParams&));
 
   // Parses the stream of fields in |scanner| with regular expression |pattern|
   // as specified in |match_type|. If |match| is non-NULL and the pattern

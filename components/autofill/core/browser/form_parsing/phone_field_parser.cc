@@ -463,15 +463,11 @@ bool PhoneFieldParser::ParsePhoneField(ParsingContext& context,
         FormControlType::kInputTelephone, FormControlType::kInputNumber,
         FormControlType::kSelectOne, FormControlType::kSelectList>;
     return ParseFieldSpecifics(context, scanner, regex, match_type, patterns,
-                               field, regex_name, [](const MatchingPattern& p) {
-                                 return MatchingPattern{
-                .positive_pattern = p.positive_pattern,
-                .negative_pattern = p.negative_pattern,
-                .positive_score = p.positive_score,
-                .match_field_attributes = p.match_field_attributes,
-                .form_control_types =  kDefaultMatchParamsWith<
+                               field, regex_name, [](const MatchParams& p) {
+                                 return MatchParams(p.attributes,
+                kDefaultMatchParamsWith<
         FormControlType::kInputTelephone, FormControlType::kInputNumber,
-        FormControlType::kSelectOne, FormControlType::kSelectList>.field_types};
+        FormControlType::kSelectOne, FormControlType::kSelectList>.field_types);
                                });
   }
 

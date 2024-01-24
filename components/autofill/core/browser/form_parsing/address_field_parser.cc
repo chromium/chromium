@@ -40,42 +40,16 @@ bool SetFieldAndAdvanceCursor(AutofillScanner* scanner,
   return true;
 }
 
-// Removes a MatchAttribute from a MatchingPattern.
-// TODO(crbug/1142936): This is necessary for
-// AddressFieldParser::ParseNameAndLabelSeparately().
-MatchingPattern WithoutAttribute(MatchingPattern p, MatchAttribute attribute) {
-  DenseSet<MatchAttribute> match_field_attributes = p.match_field_attributes;
-  match_field_attributes.erase(attribute);
-  return {
-      .positive_pattern = p.positive_pattern,
-      .negative_pattern = p.negative_pattern,
-      .positive_score = p.positive_score,
-      .match_field_attributes = match_field_attributes,
-      .form_control_types = p.form_control_types,
-  };
+// Removes a MatchAttribute from MatchParams.
+MatchParams WithoutAttribute(MatchParams p, MatchAttribute attribute) {
+  p.attributes.erase(attribute);
+  return p;
 }
 
-// Removes a MatchAttribute from a MatchParams.
-// TODO(crbug/1142936): This is necessary for
-// AddressFieldParser::ParseNameAndLabelSeparately().
-MatchParams WithoutAttribute(MatchParams match_type, MatchAttribute attribute) {
-  match_type.attributes.erase(attribute);
-  return match_type;
-}
-
-// Adds a FormControlType to a MatchingPattern.
-// TODO(crbug/1142936): This is necessary for
-// AddressFieldParser::ParseAddressLines() and AddressFieldParser::Parse().
-MatchingPattern WithFieldType(MatchingPattern p, FormControlType field_type) {
-  DenseSet<FormControlType> form_control_types = p.form_control_types;
-  form_control_types.insert(field_type);
-  return {
-      .positive_pattern = p.positive_pattern,
-      .negative_pattern = p.negative_pattern,
-      .positive_score = p.positive_score,
-      .match_field_attributes = p.match_field_attributes,
-      .form_control_types = form_control_types,
-  };
+// Adds a FormControlType to MatchParams.
+MatchParams WithFieldType(MatchParams p, FormControlType field_type) {
+  p.field_types.insert(field_type);
+  return p;
 }
 
 // Some sites use type="tel" for zip fields (to get a numerical input).
@@ -176,7 +150,7 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
                    kDefaultMatchParamsWith<FormControlType::kInputEmail,
                                            FormControlType::kTextArea>,
                    email_patterns, nullptr, "kEmailRe",
-                   [](const MatchingPattern& p) {
+                   [](const MatchParams& p) {
                      return WithFieldType(p, FormControlType::kTextArea);
                    })) {
       continue;
@@ -630,7 +604,7 @@ bool AddressFieldParser::ParseAddressLines(ParsingContext& context,
           kDefaultMatchParamsWith<FormControlType::kInputSearch,
                                   FormControlType::kTextArea>,
           address_line1_patterns, &street_address_, "kAddressLine1Re",
-          [](const MatchingPattern& p) {
+          [](const MatchParams& p) {
             return WithFieldType(p, FormControlType::kTextArea);
           }) &&
       !ParseFieldSpecifics(
@@ -638,7 +612,7 @@ bool AddressFieldParser::ParseAddressLines(ParsingContext& context,
           MatchParams({MatchAttribute::kLabel}, {FormControlType::kInputSearch,
                                                  FormControlType::kTextArea}),
           address_line1_patterns, &street_address_, "kAddressLine1LabelRe",
-          [](const MatchingPattern& p) {
+          [](const MatchParams& p) {
             return WithFieldType(p, FormControlType::kTextArea);
           })) {
     return false;
@@ -757,14 +731,14 @@ AddressFieldParser::ParseNameAndLabelSeparately(
   bool parsed_name = ParseFieldSpecifics(
       context, scanner, pattern,
       WithoutAttribute(match_type, MatchAttribute::kLabel), patterns,
-      &cur_match, regex_name, [](const MatchingPattern& p) {
+      &cur_match, regex_name, [](const MatchParams& p) {
         return WithoutAttribute(p, MatchAttribute::kLabel);
       });
   scanner->RewindTo(saved_cursor);
   bool parsed_label = ParseFieldSpecifics(
       context, scanner, pattern,
       WithoutAttribute(match_type, MatchAttribute::kName), patterns, &cur_match,
-      regex_name, [](const MatchingPattern& p) {
+      regex_name, [](const MatchParams& p) {
         return WithoutAttribute(p, MatchAttribute::kName);
       });
   if (parsed_name && parsed_label) {
