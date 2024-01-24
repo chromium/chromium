@@ -22,7 +22,6 @@ import {
   InvalidArgumentException,
   Network,
   UnableToSetCookieException,
-  UnderspecifiedStoragePartitionException,
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
@@ -61,9 +60,11 @@ export class StorageProcessor {
 
     const filteredBiDiCookies = cdpResponse.cookies
       .filter(
-        // CDP's partition key is the source origin.
+        // CDP's partition key is the source origin. If the request specifies the
+        // `sourceOrigin` partition key, only cookies with the requested source origin
+        // are returned.
         (c) =>
-          c.partitionKey === undefined ||
+          partitionKey.sourceOrigin === undefined ||
           c.partitionKey === partitionKey.sourceOrigin
       )
       .map((c) => this.#cdpToBiDiCookie(c))
@@ -98,35 +99,32 @@ export class StorageProcessor {
     descriptor: Storage.BrowsingContextPartitionDescriptor
   ): Storage.PartitionKey {
     const browsingContextId: string = descriptor.context;
-    const browsingContext =
-      this.#browsingContextStorage.getContext(browsingContextId);
-    const url = NetworkProcessor.parseUrlString(browsingContext?.url ?? '');
-    // Cookie origin should not contain the port.
-    // Origin `null` is a special case for local pages.
-    const sourceOrigin =
-      url.origin === 'null' ? url.origin : `${url.protocol}//${url.hostname}`;
-
-    return {
-      sourceOrigin,
-    };
+    // Assert the browsing context exists.
+    this.#browsingContextStorage.getContext(browsingContextId);
+    // https://w3c.github.io/webdriver-bidi/#associated-storage-partition.
+    // Each browsing context also has an associated storage partition, which is the
+    // storage partition it uses to persist data. In Chromium it's a `BrowserContext`
+    // which maps to BiDi `UserContext`.
+    // TODO: extend with UserContext.
+    return {};
   }
 
   #expandStoragePartitionSpecByStorageKey(
     descriptor: Storage.StorageKeyPartitionDescriptor
   ): Storage.PartitionKey {
-    let sourceOrigin: string | undefined = undefined;
-
-    if (descriptor.sourceOrigin !== undefined) {
-      sourceOrigin = descriptor.sourceOrigin;
-    }
-
-    if (sourceOrigin === undefined) {
-      throw new UnderspecifiedStoragePartitionException(
-        '"sourceOrigin" should be set'
-      );
-    }
-
     const unsupportedPartitionKeys = new Map<string, string>();
+    let sourceOrigin = descriptor.sourceOrigin;
+    if (sourceOrigin !== undefined) {
+      const url = NetworkProcessor.parseUrlString(sourceOrigin);
+      if (url.origin === 'null') {
+        // Origin `null` is a special case for local pages.
+        sourceOrigin = url.origin;
+      } else {
+        // Port is not supported in CDP Cookie's `partitionKey`, so it should be stripped
+        // from the requested source origin.
+        sourceOrigin = `${url.protocol}//${url.hostname}`;
+      }
+    }
 
     // Partition spec is a storage partition.
     // Let partition key be partition spec.
@@ -150,7 +148,7 @@ export class StorageProcessor {
     }
 
     return {
-      sourceOrigin,
+      ...(sourceOrigin === undefined ? {} : {sourceOrigin}),
     };
   }
 

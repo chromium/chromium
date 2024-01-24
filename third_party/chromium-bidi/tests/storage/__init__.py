@@ -13,15 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from urllib.parse import urlparse
-
 from test_helpers import execute_command
-
-
-def get_hostname_and_origin(url):
-    """ Return the hostname and origin of cookies for the given url."""
-    parts = urlparse(url)
-    return parts.hostname, parts.scheme + '://' + parts.hostname
 
 
 def get_bidi_cookie(cookie_name,
