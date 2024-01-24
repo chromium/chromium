@@ -589,7 +589,8 @@ void CrOSComponentInstaller::LoadInternal(const std::string& name,
 void CrOSComponentInstaller::FinishLoad(LoadCallback load_callback,
                                         const std::string& name,
                                         std::optional<base::FilePath> result) {
-  bool success = result.has_value();
+  // ImageLoader returns an empty path if mount failed.
+  bool success = result.has_value() && !result.value().empty();
   base::FilePath path;
   if (success) {
     path = result.value();
