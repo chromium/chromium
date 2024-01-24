@@ -336,6 +336,7 @@ class ChromeSharedDictionaryBrowserTest
     if (request.relative_url == "/dictionary") {
       response->set_content_type("text/plain");
       response->AddCustomHeader("use-as-dictionary", "match=\"/path/*\"");
+      response->AddCustomHeader("cache-control", "max-age=3600");
       response->set_content(kTestDictionaryString);
       return response;
     } else if (request.relative_url == "/path/check_header") {

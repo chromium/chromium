@@ -15,6 +15,7 @@ namespace network::shared_dictionary {
 
 // The default value (1 year) of expiration time in "use-as-dictionary"
 // HTTP header.
+// This will not be used when V2 backend is enabled.
 constexpr base::TimeDelta kDefaultExpiration = base::Seconds(31536000);
 
 // The max expiration time (30 days) for Origin Trial. This is used when
@@ -55,6 +56,7 @@ extern const char kContentDictionaryHeaderName[];
 COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameMatch[];
 
 // The dictionary option name of "expires".
+// This will not be used when V2 backend is enabled.
 COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameExpires[];
 
 // The dictionary option name of "type".

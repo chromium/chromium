@@ -617,8 +617,8 @@ void CorsURLLoader::OnReceiveResponse(
     // registration.
     CHECK_NE(mojom::FetchResponseType::kOpaque, response_tainting_);
     auto writer = shared_dictionary_storage_->MaybeCreateWriter(
-        request_.url, response_head->response_time, *response_head->headers,
-        response_head->was_fetched_via_cache,
+        request_.url, response_head->request_time, response_head->response_time,
+        *response_head->headers, response_head->was_fetched_via_cache,
         base::BindOnce(
             &SharedDictionaryAccessChecker::CheckAllowedToWriteAndReport,
             std::make_unique<SharedDictionaryAccessChecker>(

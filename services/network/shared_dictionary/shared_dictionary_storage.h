@@ -54,7 +54,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
   // returns true,
   scoped_refptr<SharedDictionaryWriter> MaybeCreateWriter(
       const GURL& url,
-      base::Time response_time,
+      const base::Time request_time,
+      const base::Time response_time,
       const net::HttpResponseHeaders& headers,
       bool was_fetched_via_cache,
       base::OnceCallback<bool()> access_allowed_check_callback);

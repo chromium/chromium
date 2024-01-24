@@ -1176,6 +1176,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
     // We want to check the behavior of kBackendOnly and kFullyEnabled.
     return;
   }
+  base::Time test_start_time = base::Time::Now();
   RunWriteDictionaryTest(
       FetchType::kLinkRelDictionary,
       GURL("https://shared-dictionary.test/blank.html?ot=enabled"),
@@ -1190,10 +1191,26 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
       base::BindLambdaForTesting(
           [&](std::vector<network::mojom::SharedDictionaryInfoPtr> result) {
             ASSERT_EQ(1u, result.size());
-            EXPECT_EQ(GetFeatureState() == FeatureState::kBackendOnly
-                          ? base::Days(30)
-                          : base::Seconds(31536000),
-                      result[0]->expiration);
+            switch (GetVersion()) {
+              case network::features::
+                  CompressionDictionaryTransportBackendVersion::kV1:
+                EXPECT_EQ(GetFeatureState() == FeatureState::kBackendOnly
+                              ? base::Days(30)
+                              : base::Seconds(31536000),
+                          result[0]->expiration);
+                break;
+              case network::features::
+                  CompressionDictionaryTransportBackendVersion::kV2:
+                // The dictionary response was treated as somewhat aged
+                // (response time - request time). So the expiration is a bit
+                // smaller than 3600 seconds which is set in the Cache-Control
+                // header's max-age directive.
+                EXPECT_LT(result[0]->expiration, base::Seconds(3600));
+                EXPECT_GT(result[0]->expiration,
+                          base::Seconds(3600) -
+                              (result[0]->response_time - test_start_time));
+                break;
+            }
             loop.Quit();
           }));
   loop.Run();

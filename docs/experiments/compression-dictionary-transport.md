@@ -204,8 +204,9 @@ construction to catch up the following spec changes:
   - Stauts: Not yet implemented.
 - Added support for a server-provided dictionary id
   - Stauts: Not yet implemented.
-- Updated the default dictionary ttl to 14 days since last fetched
-  - Stauts: Not yet implemented.
+- Stop using "expires" value of "Use-As-Dictionary" header, and use the cache
+  expiration time calculated from the response's freshness instead.
+  - Stauts: Removed by https://crrev.com/c/5227360.
 - Removed support for hash negotiation and force use of sha-256
   - Stauts: Removed by https://crrev.com/c/5223985.
 - Added the dictionary hash to the compressed response
