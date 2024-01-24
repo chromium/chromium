@@ -71,8 +71,6 @@ def fyi_reclient_comparison_builder(*, name, **kwargs):
     kwargs["reclient_bootstrap_env"] = kwargs.get("reclient_bootstrap_env", {})
     kwargs["reclient_bootstrap_env"].update({
         "RBE_ip_reset_min_delay": "-1s",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
         "RBE_fast_log_collection": "true",
     })
     return ci.builder(name = name, **kwargs)
