@@ -338,6 +338,9 @@ public final class ProductionSupportedFlagList {
                 "Enables de-duplicating cookie access details that are sent to observers via"
                         + " OnCookiesAccessed."),
         Flag.baseFeature(
+                NetworkServiceFeatures.MASKED_DOMAIN_LIST,
+                "When enabled, the masked domain list required for IP Protection is loaded."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_EMPTY_COMPONENT_LOADER_POLICY,
                 "Enables loading a fake empty (no-op) component during WebView startup."),
         Flag.commandLine(
