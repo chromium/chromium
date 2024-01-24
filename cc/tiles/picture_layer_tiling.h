@@ -156,7 +156,7 @@ class CC_EXPORT PictureLayerTiling {
   const PaintWorkletRecordMap& GetPaintWorkletRecords() const {
     return client_->GetPaintWorkletRecords();
   }
-  gfx::Size tiling_size() const { return tiling_data_.tiling_size(); }
+  gfx::Size tiling_size() const { return tiling_data_.tiling_rect().size(); }
   gfx::Rect live_tiles_rect() const { return live_tiles_rect_; }
   gfx::Size tile_size() const { return tiling_data_.max_texture_size(); }
   // PictureLayerTilingSet uses the scale component of the raster transform
@@ -199,7 +199,7 @@ class CC_EXPORT PictureLayerTiling {
 
   // For testing functionality.
   void CreateAllTilesForTesting() {
-    SetLiveTilesRect(gfx::Rect(tiling_data_.tiling_size()));
+    SetLiveTilesRect(tiling_data_.tiling_rect());
   }
   const TilingData& TilingDataForTesting() const { return tiling_data_; }
   std::vector<Tile*> AllTilesForTesting() const {
@@ -524,7 +524,7 @@ class CC_EXPORT PictureLayerTiling {
   bool may_contain_low_resolution_tiles_ = false;
 
   // Internal data.
-  TilingData tiling_data_ = TilingData(gfx::Size(), gfx::Size(), kBorderTexels);
+  TilingData tiling_data_{gfx::Size(), gfx::Rect(), kBorderTexels};
   TileMap tiles_;  // It is not legal to have a NULL tile in the tiles_ map.
   gfx::Rect live_tiles_rect_;
 

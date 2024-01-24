@@ -975,7 +975,7 @@ void PictureLayerTiling::SetTilingSize(const gfx::Size& tiling_size) {
   has_soon_border_rect_tiles_ =
       tiling_rect.Intersects(current_soon_border_rect_);
   has_eventually_rect_tiles_ = tiling_rect.Intersects(current_eventually_rect_);
-  tiling_data_.SetTilingSize(tiling_size);
+  tiling_data_.SetTilingRect(gfx::Rect(tiling_size));
 }
 
 PictureLayerTiling::TileIterator::TileIterator(PictureLayerTiling* tiling)
