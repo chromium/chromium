@@ -1104,6 +1104,7 @@ html element td
 html element template
     property content
     property parseparts
+    property serializable
     property shadowRootMode
 html element textarea
     property autocomplete

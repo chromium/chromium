@@ -4142,6 +4142,8 @@ enum WebFeature {
   kUserFeatureNgAfterRender = 4778,
   kUserFeatureNgHydration = 4779,
   kCapturedSurfaceControl = 4780,
+  kElementGetHTML = 4781,
+  kElementAttachSerializableShadow = 4782,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

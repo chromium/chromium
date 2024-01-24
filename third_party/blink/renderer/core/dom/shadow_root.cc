@@ -153,7 +153,7 @@ void ShadowRoot::setInnerHTML(const String& html,
                               ExceptionState& exception_state) {
   if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
           html, &host(), kAllowScriptingContent,
-          Element::IncludeShadowRoots::kDontInclude,
+          Element::ParseDeclarativeShadowRoots::kDontParse,
           Element::ForceHtml::kDontForce, exception_state)) {
     ReplaceChildrenWithFragment(this, fragment, exception_state);
   }
@@ -163,8 +163,8 @@ void ShadowRoot::setHTMLUnsafe(const String& html,
                                ExceptionState& exception_state) {
   if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
           html, &host(), kAllowScriptingContent,
-          Element::IncludeShadowRoots::kInclude, Element::ForceHtml::kDontForce,
-          exception_state)) {
+          Element::ParseDeclarativeShadowRoots::kParse,
+          Element::ForceHtml::kDontForce, exception_state)) {
     ReplaceChildrenWithFragment(this, fragment, exception_state);
   }
 }

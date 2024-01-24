@@ -50,4 +50,11 @@
 
     // Used by the DOM Parts API
     [Reflect, RuntimeEnabled=DOMPartsAPI] attribute boolean parseparts;
+
+    // Declarative shadow dom serializable attribute, which controls whether the
+    // shadow root will be serialized by getHTML({includeShadowRoots:true}).
+    // Note that this is just the reflection of HTMLTemplateElement's attribute,
+    // which isn't a common usage - in normal declarative shadow DOM usage, the
+    // template element is "converted" to a shadow root.
+    [Reflect, RuntimeEnabled=ElementGetHTML] attribute boolean serializable;
 };

@@ -655,7 +655,7 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
     const String& markup,
     Element* context_element,
     ParserContentPolicy parser_content_policy,
-    Element::IncludeShadowRoots include_shadow_roots,
+    Element::ParseDeclarativeShadowRoots parse_declarative_shadows,
     Element::ForceHtml force_html,
     ExceptionState& exception_state) {
   DCHECK(context_element);
@@ -671,7 +671,8 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
           : context_element->GetDocument();
   DocumentFragment* fragment = DocumentFragment::Create(document);
   document.setAllowDeclarativeShadowRoots(
-      include_shadow_roots == Element::IncludeShadowRoots::kInclude);
+      parse_declarative_shadows ==
+      Element::ParseDeclarativeShadowRoots::kParse);
 
   if (IsA<HTMLDocument>(document) || force_html == Element::ForceHtml::kForce) {
 #if defined(USE_INNER_HTML_PARSER_FAST_PATH)
@@ -679,7 +680,8 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
     base::ElapsedTimer parse_timer;
     const bool parsed_fast_path = TryParsingHTMLFragment(
         markup, document, *fragment, *context_element, parser_content_policy,
-        include_shadow_roots == Element::IncludeShadowRoots::kInclude,
+        parse_declarative_shadows ==
+            Element::ParseDeclarativeShadowRoots::kParse,
         &log_tag_stats);
     if (parsed_fast_path) {
       LogFastPathParserTotalTime(parse_timer.Elapsed());
@@ -778,8 +780,8 @@ DocumentFragment* CreateContextualFragment(
 
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
       markup, element, parser_content_policy,
-      Element::IncludeShadowRoots::kDontInclude, Element::ForceHtml::kDontForce,
-      exception_state);
+      Element::ParseDeclarativeShadowRoots::kDontParse,
+      Element::ForceHtml::kDontForce, exception_state);
   if (!fragment)
     return nullptr;
 

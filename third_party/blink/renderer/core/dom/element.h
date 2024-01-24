@@ -186,16 +186,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
           Document*,
           ConstructionType = kCreateElement);
 
-  // IncludeShadowRoots and ForceHtml are used as parameters for HTML
-  // serialization and parsing functions in Element and serialization.h.
-  // IncludeShadowRoots specifies whether ShadowRoots should be included in the
-  // serialized HTML.
+  // ParseDeclarativeShadowRoots specifies whether declarative shadow roots
+  // should be parsed by the HTML parser.
+  enum class ParseDeclarativeShadowRoots {
+    kDontParse = 0,
+    kParse = 1,
+  };
   // ForceHtml specifies whether the HTML parser should be used when parsing
   // markup even if we are in an XML document.
-  enum class IncludeShadowRoots {
-    kDontInclude = 0,
-    kInclude = 1,
-  };
   enum class ForceHtml {
     kDontForce = 0,
     kForce = 1,
@@ -742,7 +740,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       ShadowRootType,
       FocusDelegation focus_delegation = FocusDelegation::kNone,
       SlotAssignmentMode slot_assignment_mode = SlotAssignmentMode::kNamed,
-      CustomElementRegistry* registry = nullptr);
+      CustomElementRegistry* registry = nullptr,
+      bool serializable = false);
 
   // Returns the shadow root attached to this element if it is a shadow host.
   ShadowRoot* GetShadowRoot() const;
@@ -1694,10 +1693,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                                         const QualifiedName&,
                                                         const AtomicString&);
 
-  void SetInnerHTMLInternal(const String&,
-                            IncludeShadowRoots include_shadow_roots,
-                            ForceHtml force_html_over_xml,
-                            ExceptionState&);
+  void SetInnerHTMLInternal(
+      const String&,
+      ParseDeclarativeShadowRoots parse_declarative_shadows,
+      ForceHtml force_html_over_xml,
+      ExceptionState&);
 
   ElementRareDataVector* GetElementRareData() const;
   ElementRareDataVector& EnsureElementRareData();

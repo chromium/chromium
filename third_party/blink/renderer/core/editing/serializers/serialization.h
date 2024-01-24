@@ -66,7 +66,7 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
     const String&,
     Element*,
     ParserContentPolicy,
-    Element::IncludeShadowRoots include_shadow_roots,
+    Element::ParseDeclarativeShadowRoots parse_declarative_shadows,
     Element::ForceHtml force_html,
     ExceptionState&);
 DocumentFragment* CreateFragmentForTransformToFragment(

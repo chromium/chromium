@@ -43,6 +43,10 @@ interface ShadowRoot : DocumentFragment {
     // Declarative Shadow DOM getInnerHTML() function.
     [Affects=Nothing, MeasureAs=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
 
+    // The serializable attribute controls whether the shadow root will be
+    // serialized by getHTML({includeShadowRoots:true}).
+    [RuntimeEnabled=ElementGetHTML] attribute boolean serializable;
+
     // Scoped element creation APIs
     // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries#scoped-element-creation-apis
     [

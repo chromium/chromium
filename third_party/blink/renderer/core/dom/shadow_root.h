@@ -96,6 +96,9 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   bool IsOpen() const { return GetType() == ShadowRootType::kOpen; }
   bool IsUserAgent() const { return GetType() == ShadowRootType::kUserAgent; }
 
+  bool serializable() const { return serializable_; }
+  void setSerializable(bool serializable) { serializable_ = serializable; }
+
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
@@ -216,7 +219,8 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   unsigned is_declarative_shadow_root_ : 1;
   unsigned available_to_element_internals_ : 1;
   unsigned has_focusgroup_attribute_on_descendant_ : 1;
-  unsigned unused_ : 7;
+  unsigned serializable_ : 1;
+  unsigned unused_ : 6;
 };
 
 inline bool Node::IsInUserAgentShadowRoot() const {

@@ -4936,9 +4936,11 @@ interface HTMLTemplateElement : HTMLElement
     attribute @@toStringTag
     getter content
     getter parseparts
+    getter serializable
     getter shadowRootMode
     method constructor
     setter parseparts
+    setter serializable
     setter shadowRootMode
 interface HTMLTextAreaElement : HTMLElement
     attribute @@toStringTag
@@ -9351,6 +9353,7 @@ interface ShadowRoot : DocumentFragment
     getter pictureInPictureElement
     getter pointerLockElement
     getter registry
+    getter serializable
     getter slotAssignment
     getter styleSheets
     method constructor
@@ -9366,6 +9369,7 @@ interface ShadowRoot : DocumentFragment
     setter fullscreenElement
     setter innerHTML
     setter onslotchange
+    setter serializable
 interface SharedStorage
     attribute @@toStringTag
     getter worklet

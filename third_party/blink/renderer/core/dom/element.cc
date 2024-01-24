@@ -679,11 +679,14 @@ Node* Element::Clone(Document& factory,
       // 7.1 Run attach a shadow root with shadow host equal to copy, mode equal
       // to node’s shadow root’s mode, and delegates focus equal to node’s
       // shadow root’s delegates focus.
+      // TODO(crbug.com/1521128): it seems like the `registry` parameter should
+      // not always be nullptr.
       ShadowRoot& cloned_shadow_root = copy->AttachShadowRootInternal(
           shadow_root->GetType(),
           shadow_root->delegatesFocus() ? FocusDelegation::kDelegateFocus
                                         : FocusDelegation::kNone,
-          shadow_root->GetSlotAssignmentMode());
+          shadow_root->GetSlotAssignmentMode(), /*registry*/ nullptr,
+          shadow_root->serializable());
       // 7.2 If node’s shadow root’s "is declarative shadow root" is true, then
       // set copy’s shadow root’s "is declarative shadow root" property to true.
       cloned_shadow_root.SetIsDeclarativeShadowRoot(
@@ -5300,6 +5303,11 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
   } else {
     UseCounter::Count(GetDocument(), WebFeature::kElementAttachShadowClosed);
   }
+  bool serializable = shadow_root_init_dict->getSerializableOr(false);
+  if (serializable) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kElementAttachSerializableShadow);
+  }
 
   auto focus_delegation = (shadow_root_init_dict->hasDelegatesFocus() &&
                            shadow_root_init_dict->delegatesFocus())
@@ -5337,8 +5345,8 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
     }
   }
 
-  ShadowRoot& shadow_root = AttachShadowRootInternal(type, focus_delegation,
-                                                     slot_assignment, registry);
+  ShadowRoot& shadow_root = AttachShadowRootInternal(
+      type, focus_delegation, slot_assignment, registry, serializable);
 
   // Ensure that the returned shadow root is not marked as declarative so that
   // attachShadow() calls after the first one do not succeed for a shadow host
@@ -5365,6 +5373,8 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
     return false;
   }
 
+  // TODO(crbug.com/1517959): declarative shadow roots should support the
+  // `serializable` attribute here, by creating a serializable shadow root.
   ShadowRoot& shadow_root =
       AttachShadowRootInternal(type, focus_delegation, slot_assignment);
   // 13.1. Set declarative shadow host element's shadow host's "is declarative
@@ -5386,13 +5396,15 @@ ShadowRoot& Element::AttachShadowRootInternal(
     ShadowRootType type,
     FocusDelegation focus_delegation,
     SlotAssignmentMode slot_assignment_mode,
-    CustomElementRegistry* registry) {
+    CustomElementRegistry* registry,
+    bool serializable) {
   // SVG <use> is a special case for using this API to create a closed shadow
   // root.
   DCHECK(CanAttachShadowRoot() || IsA<SVGUseElement>(*this));
   DCHECK(type == ShadowRootType::kOpen || type == ShadowRootType::kClosed)
       << type;
   DCHECK(!AlwaysCreateUserAgentShadowRoot());
+  CHECK(!serializable || RuntimeEnabledFeatures::ElementGetHTMLEnabled());
 
   GetDocument().SetContainsShadowRoot();
 
@@ -5415,6 +5427,7 @@ ShadowRoot& Element::AttachShadowRootInternal(
   shadow_root.SetIsDeclarativeShadowRoot(false);
 
   shadow_root.SetRegistry(registry);
+  shadow_root.setSerializable(serializable);
 
   // 7. If this’s custom element state is "precustomized" or "custom", then set
   // shadow’s available to element internals to true.
@@ -6689,15 +6702,16 @@ String Element::outerHTML() const {
   return CreateMarkup(this);
 }
 
-void Element::SetInnerHTMLInternal(const String& html,
-                                   IncludeShadowRoots include_shadow_roots,
-                                   ForceHtml force_html,
-                                   ExceptionState& exception_state) {
+void Element::SetInnerHTMLInternal(
+    const String& html,
+    ParseDeclarativeShadowRoots parse_declarative_shadows,
+    ForceHtml force_html,
+    ExceptionState& exception_state) {
   if (html.empty() && !HasNonInBodyInsertionMode()) {
     setTextContent(html);
   } else {
     if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-            html, this, kAllowScriptingContent, include_shadow_roots,
+            html, this, kAllowScriptingContent, parse_declarative_shadows,
             force_html, exception_state)) {
       ContainerNode* container = this;
       bool swap_dom_parts{false};
@@ -6721,13 +6735,13 @@ void Element::SetInnerHTMLInternal(const String& html,
 void Element::setInnerHTML(const String& html,
                            ExceptionState& exception_state) {
   probe::BreakableLocation(GetExecutionContext(), "Element.setInnerHTML");
-  SetInnerHTMLInternal(html, IncludeShadowRoots::kDontInclude,
+  SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kDontParse,
                        ForceHtml::kDontForce, exception_state);
 }
 
 void Element::setInnerHTMLWithDeclarativeShadowDOMForTesting(
     const String& html) {
-  SetInnerHTMLInternal(html, IncludeShadowRoots::kInclude,
+  SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
                        ForceHtml::kDontForce, ASSERT_NO_EXCEPTION);
 }
 
@@ -6766,9 +6780,10 @@ void Element::setOuterHTML(const String& html,
   Node* prev = previousSibling();
   Node* next = nextSibling();
 
-  DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-      html, parent, kAllowScriptingContent, IncludeShadowRoots::kDontInclude,
-      ForceHtml::kDontForce, exception_state);
+  DocumentFragment* fragment =
+      CreateFragmentForInnerOuterHTML(html, parent, kAllowScriptingContent,
+                                      ParseDeclarativeShadowRoots::kDontParse,
+                                      ForceHtml::kDontForce, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -6996,7 +7011,8 @@ void Element::insertAdjacentHTML(const String& where,
   // Step 3 of http://domparsing.spec.whatwg.org/#insertadjacenthtml()
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
       markup, context_element, kAllowScriptingContent,
-      IncludeShadowRoots::kDontInclude, ForceHtml::kDontForce, exception_state);
+      ParseDeclarativeShadowRoots::kDontParse, ForceHtml::kDontForce,
+      exception_state);
   if (!fragment) {
     return;
   }
@@ -9872,8 +9888,8 @@ Element* Element::ImplicitAnchorElement() {
 void Element::setHTMLUnsafe(const String& html,
                             ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::HTMLUnsafeMethodsEnabled());
-  SetInnerHTMLInternal(html, IncludeShadowRoots::kInclude, ForceHtml::kForce,
-                       exception_state);
+  SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
+                       ForceHtml::kForce, exception_state);
 }
 
 }  // namespace blink

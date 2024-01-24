@@ -1486,6 +1486,21 @@
       status: {"Android": "", "default": "experimental"},
     },
     {
+      // This is the "new" version of getHTML() used for declarative shadow
+      // DOM, and this version will replace the deprecated getInnerHTML(), which
+      // is enabled by the ElementGetInnerHTML feature.
+      name: "ElementGetHTML",
+      status: "experimental",
+    },
+    {
+      // This is the "old" version of getInnerHTML() used for declarative shadow
+      // DOM, and this version is deprecated. The replacement is enabled by the
+      // ElementGetHTML feature. Once the new feature is stabilized and shipped,
+      // this feature (and its corresponding functionality) will be removed.
+      name: "ElementGetInnerHTML",
+      status: "stable",
+    },
+    {
       name: "EmptyClipboardRead",
       status: "stable",
     },

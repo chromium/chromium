@@ -12,4 +12,5 @@ dictionary ShadowRootInit {
     boolean delegatesFocus;
     SlotAssignmentMode slotAssignment;
     [RuntimeEnabled=ScopedCustomElementRegistry] CustomElementRegistry registry;
+    [RuntimeEnabled=ElementGetHTML] boolean serializable;
 };

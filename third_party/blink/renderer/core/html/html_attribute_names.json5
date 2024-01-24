@@ -316,6 +316,7 @@
     "scrolling",
     "select",
     "selected",
+    "serializable",
     "shadowroot",
     "shadowrootmode",
     "shadowrootdelegatesfocus",
