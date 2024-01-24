@@ -11,7 +11,6 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/system/toast_data.h"
-#include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/system_shadow.h"
@@ -45,9 +44,7 @@ constexpr int kToastLeadingIconPaddingWidth = 14;
 
 }  // namespace
 
-SystemToastView::SystemToastView(const ToastData& toast_data)
-    : scoped_a11y_overrider_(
-          std::make_unique<ScopedA11yOverrideWindowSetter>()) {
+SystemToastView::SystemToastView(const ToastData& toast_data) {
   // Paint to layer so the background can be transparent.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -89,7 +86,7 @@ SystemToastView::SystemToastView(const ToastData& toast_data)
 
   const bool has_button = !toast_data.dismiss_text.empty();
   if (has_button) {
-    dismiss_button_ = AddChildView(
+    AddChildView(
         views::Builder<PillButton>()
             .SetID(VIEW_ID_TOAST_BUTTON)
             .SetCallback(std::move(toast_data.dismiss_callback))
@@ -122,36 +119,6 @@ SystemToastView::SystemToastView(const ToastData& toast_data)
 }
 
 SystemToastView::~SystemToastView() = default;
-
-bool SystemToastView::ToggleA11yFocus() {
-  if (!dismiss_button_ ||
-      !Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
-    return false;
-  }
-
-  auto* focus_ring = views::FocusRing::Get(dismiss_button_);
-  focus_ring->SetOutsetFocusRingDisabled(true);
-  focus_ring->SetHasFocusPredicate(base::BindRepeating(
-      [](const SystemToastView* toast_view, const views::View* view) {
-        return toast_view->is_dismiss_button_highlighted_;
-      },
-      base::Unretained(this)));
-
-  is_dismiss_button_highlighted_ = !is_dismiss_button_highlighted_;
-  scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
-      is_dismiss_button_highlighted_
-          ? dismiss_button_->GetWidget()->GetNativeWindow()
-          : nullptr);
-
-  if (is_dismiss_button_highlighted_) {
-    dismiss_button_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
-                                              true);
-  }
-
-  focus_ring->SetVisible(is_dismiss_button_highlighted_);
-  focus_ring->SchedulePaint();
-  return is_dismiss_button_highlighted_;
-}
 
 void SystemToastView::AddedToWidget() {
   shadow_->ObserveColorProviderSource(GetWidget());
