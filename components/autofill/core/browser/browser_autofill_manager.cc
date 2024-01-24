@@ -765,15 +765,11 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
                              : CREDIT_CARD_NUMBER;
   DCHECK_EQ(FieldTypeGroup::kCreditCard, GroupTypeOfFieldType(field_type));
 
-  bool should_display_gpay_logo = false;
   auto cards = GetCreditCardSuggestions(
       form, field_data, field_type,
-      AutofillSuggestionTriggerSource::kShowCardsFromAccount,
-      should_display_gpay_logo);
+      AutofillSuggestionTriggerSource::kShowCardsFromAccount);
   DCHECK(!cards.empty());
-  external_delegate_->OnSuggestionsReturned(
-      field_data.global_id(), cards,
-      should_display_gpay_logo);
+  external_delegate_->OnSuggestionsReturned(field_data.global_id(), cards);
 }
 
 bool BrowserAutofillManager::ShouldParseForms() {
@@ -1335,8 +1331,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
   if (show_suggestion) {
     // Send Autofill suggestions (could be an empty list).
-    external_delegate_->OnSuggestionsReturned(field.global_id(), suggestions,
-                                              context.should_display_gpay_logo);
+    external_delegate_->OnSuggestionsReturned(field.global_id(), suggestions);
   }
 }
 
@@ -2956,8 +2951,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     const FormData& form,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
-    AutofillSuggestionTriggerSource trigger_source,
-    bool& should_display_gpay_logo) const {
+    AutofillSuggestionTriggerSource trigger_source) const {
   credit_card_form_event_logger_->OnDidPollSuggestions(
       trigger_field, signin_state_for_metrics_);
 
@@ -2977,15 +2971,13 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
             suggestion_generator_->GetSuggestionsForVirtualCardStandaloneCvc(
                 trigger_field, context, virtual_card_guid_to_last_four_map);
         is_virtual_card_standalone_cvc_field = true;
-        // Always display GPay logo for virtual card suggestions.
-        should_display_gpay_logo = true;
       }
     } else {
       suggestions = suggestion_generator_->GetSuggestionsForCreditCards(
           trigger_field, trigger_field_type,
           ShouldShowScanCreditCard(form, trigger_field),
           ShouldShowCardsFromAccountOption(form, trigger_field, trigger_source),
-          should_display_gpay_logo, with_offer, with_cvc, context);
+          with_offer, with_cvc, context);
     }
   }
 
@@ -3682,8 +3674,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
             ? context->focused_field->Type().GetStorableType()
             : UNKNOWN_TYPE;
     *suggestions = GetCreditCardSuggestions(form, field, trigger_field_type,
-                                            trigger_source,
-                                            context->should_display_gpay_logo);
+                                            trigger_source);
   } else if (context->filling_product == FillingProduct::kAddress) {
     // Profile suggestions fill ac=unrecognized fields only when triggered
     // through manual fallbacks. As such, suggestion labels differ depending on

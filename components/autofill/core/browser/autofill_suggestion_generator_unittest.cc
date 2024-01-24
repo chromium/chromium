@@ -134,19 +134,47 @@ Matcher<Suggestion> EqualsUndoAutofillSuggestion() {
                           Suggestion::Icon::kUndo);
 }
 
+Matcher<Suggestion> EqualsManageAddressesSuggestion() {
+  return EqualsSuggestion(
+      PopupItemId::kAutofillOptions,
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
+      Suggestion::Icon::kSettings);
+}
+
+Matcher<Suggestion> EqualsManagePaymentsMethodsSuggestion(bool with_gpay_logo) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return EqualsSuggestion(
+      PopupItemId::kAutofillOptions,
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
+      with_gpay_logo ? Suggestion::Icon::kGooglePay
+                     : Suggestion::Icon::kSettings);
+#else
+  return AllOf(EqualsSuggestion(PopupItemId::kAutofillOptions,
+                                l10n_util::GetStringUTF16(
+                                    IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
+                                Suggestion::Icon::kSettings),
+               Field(&Suggestion::trailing_icon,
+                     with_gpay_logo ? Suggestion::Icon::kGooglePay
+                                    : Suggestion::Icon::kNoIcon));
+#endif
+}
+
 // Checks that `arg` contains necessary credit card footer suggestions. `arg`
 // has to be of type std::vector<Suggestion>.
-MATCHER(ContainsCreditCardFooterSuggestions, "") {
-  EXPECT_GT(arg.size(), 1ul);
-  EXPECT_THAT(arg.back(), EqualsSuggestion(PopupItemId::kSeparator));
+MATCHER_P(ContainsCreditCardFooterSuggestions, with_gpay_logo, "") {
+  EXPECT_GT(arg.size(), 2ul);
+  EXPECT_THAT(arg[arg.size() - 2], EqualsSuggestion(PopupItemId::kSeparator));
+  EXPECT_THAT(arg.back(),
+              EqualsManagePaymentsMethodsSuggestion(with_gpay_logo));
   return true;
 }
 
 // Checks that `arg` contains necessary address footer suggestions. `arg`
 // has to be of type std::vector<Suggestion>.
 MATCHER(ContainsAddressFooterSuggestions, "") {
-  EXPECT_GT(arg.size(), 1ul);
-  EXPECT_THAT(arg.back(), EqualsSuggestion(PopupItemId::kSeparator));
+  EXPECT_GT(arg.size(), 2ul);
+  EXPECT_THAT(arg[arg.size() - 2], EqualsSuggestion(PopupItemId::kSeparator));
+  EXPECT_THAT(arg.back(), EqualsManageAddressesSuggestion());
   return true;
 }
 
@@ -1511,7 +1539,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
           {UNKNOWN_TYPE}, triggering_field, UNKNOWN_TYPE,
           /*last_targeted_fields=*/std::nullopt,
           AutofillSuggestionTriggerSource::kManualFallbackAddress);
-  EXPECT_EQ(suggestions.size(), 3ul);
+  EXPECT_EQ(suggestions.size(), 4ul);
   EXPECT_THAT(suggestions[0], EqualsSuggestion(PopupItemId::kAddressEntry));
   EXPECT_THAT(suggestions[1], EqualsSuggestion(PopupItemId::kAddressEntry));
   EXPECT_THAT(suggestions, ContainsAddressFooterSuggestions());
@@ -1789,7 +1817,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
           {NAME_FIRST}, triggering_field, NAME_FIRST,
           /*last_targeted_fields=*/std::nullopt,
           AutofillSuggestionTriggerSource::kFormControlElementClicked);
-  EXPECT_EQ(address_suggestions.size(), 2ul);
+  EXPECT_EQ(address_suggestions.size(), 3ul);
   EXPECT_THAT(address_suggestions, ContainsAddressFooterSuggestions());
 
   // But manual fallback suggestions do not.
@@ -1798,7 +1826,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
           {NAME_FIRST}, triggering_field, NAME_FIRST,
           /*last_targeted_fields=*/std::nullopt,
           AutofillSuggestionTriggerSource::kManualFallbackAddress);
-  EXPECT_EQ(manual_fallback_suggestions.size(), 3ul);
+  EXPECT_EQ(manual_fallback_suggestions.size(), 4ul);
   EXPECT_THAT(manual_fallback_suggestions, ContainsAddressFooterSuggestions());
 }
 
@@ -1818,7 +1846,8 @@ TEST_F(AutofillSuggestionGeneratorTest, ClearAddressFormSuggestion) {
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsSuggestion(PopupItemId::kAddressEntry),
                           EqualsSuggestion(PopupItemId::kSeparator),
-                          EqualsClearFormSuggestion()));
+                          EqualsClearFormSuggestion(),
+                          EqualsManageAddressesSuggestion()));
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
@@ -1835,7 +1864,8 @@ TEST_F(AutofillSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsSuggestion(PopupItemId::kAddressEntry),
                           EqualsSuggestion(PopupItemId::kSeparator),
-                          EqualsUndoAutofillSuggestion()));
+                          EqualsUndoAutofillSuggestion(),
+                          EqualsManageAddressesSuggestion()));
 }
 
 TEST_F(AutofillSuggestionGeneratorTest,
@@ -2069,7 +2099,6 @@ TEST_F(AutofillSuggestionGeneratorTest,
       GURL("http://www.example1.com"));
   personal_data().AddAutofillOfferData(offer_data);
 
-  bool should_display_gpay_logo;
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -2077,11 +2106,11 @@ TEST_F(AutofillSuggestionGeneratorTest,
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_NUMBER,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, with_cvc, metadata_logging_context);
+          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+          metadata_logging_context);
 
   EXPECT_TRUE(with_offer);
-  ASSERT_EQ(suggestions.size(), 4U);
+  ASSERT_EQ(suggestions.size(), 5U);
   // The suggestion with card linked offer available should be ranked to the
   // top.
   EXPECT_EQ(suggestions[0].GetPayload<Suggestion::BackendId>(),
@@ -2094,7 +2123,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(suggestions[2].GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId(
                 Suggestion::Guid("00000000-0000-0000-0000-000000000001")));
-  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
+  EXPECT_THAT(suggestions,
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
 }
 
 // Ensures we appropriately generate suggestions for virtual cards on a
@@ -2115,8 +2145,9 @@ TEST_F(AutofillSuggestionGeneratorTest,
           FormFieldData(), metadata_logging_context,
           virtual_card_guid_to_last_four_map);
 
-  ASSERT_EQ(suggestions.size(), 2U);
-  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
+  ASSERT_EQ(suggestions.size(), 3U);
+  EXPECT_THAT(suggestions,
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
 }
 
 TEST_F(AutofillSuggestionGeneratorTest,
@@ -2141,9 +2172,11 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
   EXPECT_THAT(
       suggestions,
-      ElementsAre(EqualsSuggestion(PopupItemId::kVirtualCreditCardEntry),
-                  EqualsSuggestion(PopupItemId::kSeparator),
-                  EqualsClearFormSuggestion()));
+      ElementsAre(
+          EqualsSuggestion(PopupItemId::kVirtualCreditCardEntry),
+          EqualsSuggestion(PopupItemId::kSeparator),
+          EqualsClearFormSuggestion(),
+          EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/true)));
 }
 
 // TODO(crbug.com/1441410): Clean up when the feature is launched.
@@ -2168,9 +2201,11 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
   EXPECT_THAT(
       suggestions,
-      ElementsAre(EqualsSuggestion(PopupItemId::kVirtualCreditCardEntry),
-                  EqualsSuggestion(PopupItemId::kSeparator),
-                  EqualsUndoAutofillSuggestion()));
+      ElementsAre(
+          EqualsSuggestion(PopupItemId::kVirtualCreditCardEntry),
+          EqualsSuggestion(PopupItemId::kSeparator),
+          EqualsUndoAutofillSuggestion(),
+          EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/true)));
 }
 
 // Ensures we appropriately generate suggestions for credit saved with CVC.
@@ -2178,7 +2213,6 @@ TEST_F(AutofillSuggestionGeneratorTest, GetCardSuggestionsWithCvc) {
   CreditCard card = test::WithCvc(test::GetMaskedServerCard2());
   personal_data().AddServerCreditCard(card);
 
-  bool should_display_gpay_logo;
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -2186,18 +2220,18 @@ TEST_F(AutofillSuggestionGeneratorTest, GetCardSuggestionsWithCvc) {
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_NUMBER,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, with_cvc, metadata_logging_context);
+          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+          metadata_logging_context);
 
-  ASSERT_EQ(suggestions.size(), 2U);
+  ASSERT_EQ(suggestions.size(), 3U);
   EXPECT_TRUE(with_cvc);
-  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
+  EXPECT_THAT(suggestions,
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
 }
 
-// Verifies that the `should_display_gpay_logo` is set correctly.
+// Verifies that the GPay logo is set correctly.
 TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
-  // `should_display_gpay_logo` should be true if suggestions were all for
-  // server cards.
+  // GPay logo should be displayed if suggestions were all for server cards;
   {
     // Create two server cards.
     personal_data().AddServerCreditCard(CreateServerCard(
@@ -2207,7 +2241,6 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
         /*guid=*/"00000000-0000-0000-0000-000000000002",
         /*server_id=*/"server_id2", /*instrument_id=*/2));
 
-    bool should_display_gpay_logo;
     bool with_offer;
     bool with_cvc;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -2215,18 +2248,18 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
         suggestion_generator()->GetSuggestionsForCreditCards(
             FormFieldData(), CREDIT_CARD_NUMBER,
             /*should_show_scan_credit_card=*/false,
-            /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-            with_offer, with_cvc, metadata_logging_context);
+            /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+            metadata_logging_context);
 
-    EXPECT_EQ(suggestions.size(), 3U);
-    EXPECT_TRUE(should_display_gpay_logo);
-    EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
+    EXPECT_EQ(suggestions.size(), 4U);
+    EXPECT_THAT(suggestions,
+                ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
   }
 
   personal_data().ClearCreditCards();
 
-  // `should_display_gpay_logo` should be false if at least one local card was
-  // in the suggestions.
+  // GPay logo should not be displayed if at least one local card was in the
+  // suggestions.
   {
     // Create one server card and one local card.
     auto local_card = CreateLocalCard(
@@ -2237,7 +2270,6 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
         /*guid=*/"00000000-0000-0000-0000-000000000002",
         /*server_id=*/"server_id2", /*instrument_id=*/2));
 
-    bool should_display_gpay_logo;
     bool with_offer;
     bool with_cvc;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -2245,18 +2277,18 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
         suggestion_generator()->GetSuggestionsForCreditCards(
             FormFieldData(), CREDIT_CARD_NUMBER,
             /*should_show_scan_credit_card=*/false,
-            /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-            with_offer, with_cvc, metadata_logging_context);
+            /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+            metadata_logging_context);
 
-    EXPECT_EQ(suggestions.size(), 3U);
-    EXPECT_FALSE(should_display_gpay_logo);
-    EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
+    EXPECT_EQ(suggestions.size(), 4U);
+    EXPECT_THAT(suggestions,
+                ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
   }
 
   personal_data().ClearCreditCards();
 
-  // `should_display_gpay_logo` should be true if there was an unused expired
-  // local card in the suggestions.
+  // GPay logo should be displayed if there was an unused expired local card in
+  // the suggestions.
   {
     // Create one server card and one unused expired local card.
     auto local_card = CreateLocalCard(
@@ -2269,7 +2301,6 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
         /*guid=*/"00000000-0000-0000-0000-000000000002",
         /*server_id=*/"server_id2", /*instrument_id=*/2));
 
-    bool should_display_gpay_logo;
     bool with_offer;
     bool with_cvc;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -2277,36 +2308,16 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
         suggestion_generator()->GetSuggestionsForCreditCards(
             FormFieldData(), CREDIT_CARD_NUMBER,
             /*should_show_scan_credit_card=*/false,
-            /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-            with_offer, with_cvc, metadata_logging_context);
+            /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+            metadata_logging_context);
 
-    EXPECT_EQ(suggestions.size(), 2U);
-    EXPECT_TRUE(should_display_gpay_logo);
-    EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
-  }
-
-  personal_data().ClearCreditCards();
-
-  // `should_display_gpay_logo` should be true if there was no card at all.
-  {
-    bool should_display_gpay_logo;
-    bool with_offer;
-    bool with_cvc;
-    autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
-    std::vector<Suggestion> suggestions =
-        suggestion_generator()->GetSuggestionsForCreditCards(
-            FormFieldData(), CREDIT_CARD_NUMBER,
-            /*should_show_scan_credit_card=*/false,
-            /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-            with_offer, with_cvc, metadata_logging_context);
-
-    EXPECT_TRUE(suggestions.empty());
-    EXPECT_TRUE(should_display_gpay_logo);
+    EXPECT_EQ(suggestions.size(), 3U);
+    EXPECT_THAT(suggestions,
+                ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
   }
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, NoSuggestionsWhenNoUserData) {
-  bool should_display_gpay_logo;
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -2316,15 +2327,14 @@ TEST_F(AutofillSuggestionGeneratorTest, NoSuggestionsWhenNoUserData) {
       suggestion_generator()->GetSuggestionsForCreditCards(
           field, CREDIT_CARD_NUMBER,
           /*should_show_scan_credit_card=*/true,
-          /*should_show_cards_from_account=*/true, should_display_gpay_logo,
-          with_offer, with_cvc, metadata_logging_context);
+          /*should_show_cards_from_account=*/true, with_offer, with_cvc,
+          metadata_logging_context);
 
   EXPECT_TRUE(suggestions.empty());
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, ShouldShowScanCreditCard) {
   personal_data().AddCreditCard(test::GetCreditCard());
-  bool should_display_gpay_logo;
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -2332,22 +2342,22 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowScanCreditCard) {
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_NUMBER,
           /*should_show_scan_credit_card=*/true,
-          /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, with_cvc, metadata_logging_context);
+          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+          metadata_logging_context);
 
-  EXPECT_EQ(suggestions.size(), 3ul);
+  EXPECT_EQ(suggestions.size(), 4ul);
   EXPECT_THAT(suggestions[0], EqualsSuggestion(PopupItemId::kCreditCardEntry));
   EXPECT_THAT(
       suggestions[1],
       EqualsSuggestion(PopupItemId::kScanCreditCard,
                        l10n_util::GetStringUTF16(IDS_AUTOFILL_SCAN_CREDIT_CARD),
                        Suggestion::Icon::kScanCreditCard));
-  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
+  EXPECT_THAT(suggestions,
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
   personal_data().AddCreditCard(test::GetCreditCard());
-  bool should_display_gpay_logo;
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -2355,17 +2365,18 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_NUMBER,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/true, should_display_gpay_logo,
-          with_offer, with_cvc, metadata_logging_context);
+          /*should_show_cards_from_account=*/true, with_offer, with_cvc,
+          metadata_logging_context);
 
-  EXPECT_EQ(suggestions.size(), 3ul);
+  EXPECT_EQ(suggestions.size(), 4ul);
   EXPECT_THAT(suggestions[0], EqualsSuggestion(PopupItemId::kCreditCardEntry));
   EXPECT_THAT(suggestions[1],
               EqualsSuggestion(
                   PopupItemId::kShowAccountCards,
                   l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS),
                   Suggestion::Icon::kGoogle));
-  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
+  EXPECT_THAT(suggestions,
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
 }
 
 // TODO(crbug.com/1441410): Clean up when the feature is launched.
@@ -2374,7 +2385,6 @@ TEST_F(AutofillSuggestionGeneratorTest,
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kAutofillUndo);
   personal_data().AddCreditCard(test::GetCreditCard());
-  bool should_display_gpay_logo;
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -2384,20 +2394,21 @@ TEST_F(AutofillSuggestionGeneratorTest,
       suggestion_generator()->GetSuggestionsForCreditCards(
           field, CREDIT_CARD_NUMBER,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, with_cvc, metadata_logging_context);
+          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+          metadata_logging_context);
 
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsSuggestion(PopupItemId::kCreditCardEntry),
                           EqualsSuggestion(PopupItemId::kSeparator),
-                          EqualsClearFormSuggestion()));
+                          EqualsClearFormSuggestion(),
+                          EqualsManagePaymentsMethodsSuggestion(
+                              /*with_gpay_logo=*/false)));
 }
 
 TEST_F(AutofillSuggestionGeneratorTest,
        FieldWasAutofilled_UndoAutofillOnCreditCardForm) {
   base::test::ScopedFeatureList features(features::kAutofillUndo);
   personal_data().AddCreditCard(test::GetCreditCard());
-  bool should_display_gpay_logo;
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -2407,13 +2418,15 @@ TEST_F(AutofillSuggestionGeneratorTest,
       suggestion_generator()->GetSuggestionsForCreditCards(
           field, CREDIT_CARD_NUMBER,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, with_cvc, metadata_logging_context);
+          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+          metadata_logging_context);
 
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsSuggestion(PopupItemId::kCreditCardEntry),
                           EqualsSuggestion(PopupItemId::kSeparator),
-                          EqualsUndoAutofillSuggestion()));
+                          EqualsUndoAutofillSuggestion(),
+                          EqualsManagePaymentsMethodsSuggestion(
+                              /*with_gpay_logo=*/false)));
 }
 
 // Test that the virtual card option is shown when all of the prerequisites are
@@ -3269,19 +3282,19 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   FormFieldData field_data;
   field_data.value = u"$$$";
-  bool should_display_gpay_logo;
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
           field_data, UNKNOWN_TYPE, /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, with_cvc, metadata_logging_context);
+          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+          metadata_logging_context);
 
   // Credit card suggestions should not depend on the field's value.
-  EXPECT_EQ(suggestions.size(), 2U);
-  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
+  EXPECT_EQ(suggestions.size(), 3U);
+  EXPECT_THAT(suggestions,
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -3297,7 +3310,6 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   personal_data().AddCreditCard(std::move(local_card));
   personal_data().AddServerCreditCard(CreateServerCard());
 
-  bool should_display_gpay_logo;
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -3305,12 +3317,12 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, with_cvc, metadata_logging_context);
+          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+          metadata_logging_context);
 
   // Both local card and server card suggestion should be shown when CVC field
   // is focused.
-  ASSERT_EQ(suggestions.size(), 3U);
+  ASSERT_EQ(suggestions.size(), 4U);
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(suggestions[0].main_text.value, u"CVC");
   EXPECT_EQ(suggestions[1].main_text.value, u"CVC");
@@ -3322,7 +3334,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   EXPECT_EQ(suggestions[0].minor_text.value, u"");
   EXPECT_EQ(suggestions[1].minor_text.value, u"");
 #endif
-  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
+  EXPECT_THAT(suggestions,
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
 }
 
 // Verify that the suggestion's texts are populated correctly for a duplicate
@@ -3333,7 +3346,6 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   personal_data().AddCreditCard(CreateLocalCard());
   personal_data().AddServerCreditCard(CreateServerCard());
 
-  bool should_display_gpay_logo;
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -3341,12 +3353,13 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, with_cvc, metadata_logging_context);
+          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+          metadata_logging_context);
 
   // Only 1 suggestion + footer should be shown when CVC field is focused.
-  ASSERT_EQ(suggestions.size(), 2U);
-  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
+  ASSERT_EQ(suggestions.size(), 3U);
+  EXPECT_THAT(suggestions,
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
 }
 
 // Verify that the FPAN and VCN suggestion's texts are populated correctly for a
@@ -3359,7 +3372,6 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
   personal_data().AddServerCreditCard(std::move(server_card));
 
-  bool should_display_gpay_logo;
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -3367,11 +3379,11 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, with_cvc, metadata_logging_context);
+          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+          metadata_logging_context);
 
   // Both FPAN and VCN suggestion should be shown when CVC field is focused.
-  ASSERT_EQ(suggestions.size(), 3U);
+  ASSERT_EQ(suggestions.size(), 4U);
 
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(suggestions[0].main_text.value, u"CVC");
@@ -3384,7 +3396,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   EXPECT_EQ(suggestions[0].minor_text.value, u"");
   EXPECT_EQ(suggestions[1].minor_text.value, u"");
 #endif
-  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
+  EXPECT_THAT(suggestions,
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
 }
 
 // Verify that the FPAN and VCN suggestion's texts are populated correctly for a
@@ -3399,7 +3412,6 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   personal_data().AddServerCreditCard(std::move(server_card));
   personal_data().AddCreditCard(CreateLocalCard());
 
-  bool should_display_gpay_logo;
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -3407,12 +3419,13 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
       suggestion_generator()->GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-          with_offer, with_cvc, metadata_logging_context);
+          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+          metadata_logging_context);
 
   // Both FPAN and VCN suggestion should be shown when CVC field is focused.
-  ASSERT_EQ(suggestions.size(), 3U);
-  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions());
+  ASSERT_EQ(suggestions.size(), 4U);
+  EXPECT_THAT(suggestions,
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -3619,15 +3632,14 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
     }
     personal_data().AddServerCreditCard(server_card);
 
-    bool should_display_gpay_logo;
     bool with_offer;
     bool with_cvc;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     suggestion_generator()->GetSuggestionsForCreditCards(
         FormFieldData(), CREDIT_CARD_NUMBER,
         /*should_show_scan_credit_card=*/false,
-        /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-        with_offer, with_cvc, metadata_logging_context);
+        /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+        metadata_logging_context);
 
     EXPECT_FALSE(metadata_logging_context.card_metadata_available);
     EXPECT_FALSE(metadata_logging_context.card_product_description_shown);
@@ -3652,15 +3664,14 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
         GURL("https://www.example.com/card-art.png"));
     personal_data().AddServerCreditCard(server_card_with_metadata);
 
-    bool should_display_gpay_logo;
     bool with_offer;
     bool with_cvc;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     suggestion_generator()->GetSuggestionsForCreditCards(
         FormFieldData(), CREDIT_CARD_NUMBER,
         /*should_show_scan_credit_card=*/false,
-        /*should_show_cards_from_account=*/false, should_display_gpay_logo,
-        with_offer, with_cvc, metadata_logging_context);
+        /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+        metadata_logging_context);
 
     EXPECT_TRUE(metadata_logging_context.card_metadata_available);
     EXPECT_EQ(metadata_logging_context.card_product_description_shown,

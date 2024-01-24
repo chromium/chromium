@@ -57,6 +57,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "ui/native_theme/native_theme.h"  // nogncheck
+#endif
+
 namespace autofill {
 
 namespace {
@@ -1480,7 +1484,6 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     FieldType trigger_field_type,
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account,
-    bool& should_display_gpay_logo,
     bool& with_offer,
     bool& with_cvc,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
@@ -1505,13 +1508,6 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
 
   metadata_logging_context =
       autofill_metrics::GetMetadataLoggingContext(cards_to_suggest);
-
-  // Set `should_display_gpay_logo` to true if all cards are server cards, and
-  // to false if any of the card is a local card.
-  should_display_gpay_logo = base::ranges::all_of(
-      cards_to_suggest, std::not_fn([](const CreditCard& card) {
-        return CreditCard::IsLocalCard(&card);
-      }));
 
   for (const CreditCard& credit_card : cards_to_suggest) {
     // The value of the stored data for this field type in the |credit_card|.
@@ -1547,10 +1543,13 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     return suggestions;
   }
 
+  const bool display_gpay_logo = base::ranges::none_of(
+      cards_to_suggest,
+      [](const CreditCard& card) { return CreditCard::IsLocalCard(&card); });
   base::ranges::move(
-      GetCreditCardFooterSuggestions(should_show_scan_credit_card,
-                                     should_show_cards_from_account,
-                                     trigger_field.is_autofilled),
+      GetCreditCardFooterSuggestions(
+          should_show_scan_credit_card, should_show_cards_from_account,
+          trigger_field.is_autofilled, display_gpay_logo),
       std::back_inserter(suggestions));
 
   return suggestions;
@@ -1612,7 +1611,8 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
   base::ranges::move(
       GetCreditCardFooterSuggestions(/*should_show_scan_credit_card=*/false,
                                      /*should_show_cards_from_account=*/false,
-                                     trigger_field.is_autofilled),
+                                     trigger_field.is_autofilled,
+                                     /*with_gpay_logo=*/true),
       std::back_inserter(suggestions));
 
   return suggestions;
@@ -1626,11 +1626,35 @@ Suggestion AutofillSuggestionGenerator::CreateSeparator() {
 }
 
 // static
-Suggestion AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry() {
+Suggestion AutofillSuggestionGenerator::CreateManageAddressesEntry() {
   Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
-  suggestion.popup_item_id = PopupItemId::kAutofillOptions;
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
+      PopupItemId::kAutofillOptions);
   suggestion.icon = Suggestion::Icon::kSettings;
+  return suggestion;
+}
+
+// static
+Suggestion AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+    bool with_gpay_logo) {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
+      PopupItemId::kAutofillOptions);
+  // On Android and Desktop, Google Pay branding is shown along with Settings.
+  // So Google Pay Icon is just attached to an existing menu item.
+  if (with_gpay_logo) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    suggestion.icon = Suggestion::Icon::kGooglePay;
+#else
+    suggestion.icon = Suggestion::Icon::kSettings;
+    suggestion.trailing_icon =
+        ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
+            ? Suggestion::Icon::kGooglePayDark
+            : Suggestion::Icon::kGooglePay;
+#endif
+  } else {
+    suggestion.icon = Suggestion::Icon::kSettings;
+  }
   return suggestion;
 }
 
@@ -1721,7 +1745,8 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForIbans(
   }
 
   suggestions.push_back(CreateSeparator());
-  suggestions.push_back(CreateManagePaymentMethodsEntry());
+  suggestions.push_back(
+      CreateManagePaymentMethodsEntry(/*with_gpay_logo=*/false));
   return suggestions;
 }
 
@@ -2160,6 +2185,8 @@ AutofillSuggestionGenerator::GetAddressFooterSuggestions(
     footer_suggestions.push_back(CreateClearFormSuggestion());
   }
 
+  footer_suggestions.push_back(CreateManageAddressesEntry());
+
   return footer_suggestions;
 }
 
@@ -2167,7 +2194,8 @@ std::vector<Suggestion>
 AutofillSuggestionGenerator::GetCreditCardFooterSuggestions(
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account,
-    bool is_autofilled) const {
+    bool is_autofilled,
+    bool with_gpay_logo) const {
   std::vector<Suggestion> footer_suggestions;
   if (should_show_scan_credit_card) {
     Suggestion scan_credit_card(
@@ -2190,6 +2218,8 @@ AutofillSuggestionGenerator::GetCreditCardFooterSuggestions(
   if (is_autofilled) {
     footer_suggestions.push_back(CreateClearFormSuggestion());
   }
+
+  footer_suggestions.push_back(CreateManagePaymentMethodsEntry(with_gpay_logo));
 
   return footer_suggestions;
 }

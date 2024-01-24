@@ -96,8 +96,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // to be displayed. Called when an Autofill query result is available.
   virtual void OnSuggestionsReturned(
       FieldGlobalId field_id,
-      const std::vector<Suggestion>& suggestions,
-      bool is_all_server_suggestions = false);
+      const std::vector<Suggestion>& suggestions);
 
   // Returns the last targeted field types to be filled. This does not
   // equate to the field types that were actually filed, but only to those

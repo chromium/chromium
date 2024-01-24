@@ -98,9 +98,7 @@ class AutofillSuggestionGenerator {
 
   // Generates suggestions for all available credit cards based on the
   // `trigger_field_type` and the value of `trigger_field`.
-  // `should_display_gpay_logo` will be set to true if there are no credit card
-  // suggestions, or all suggestions come from Payments server. `with_offer`
-  // is set to true if ANY card has card-linked offers.
+  // `with_offer` is set to true if ANY card has card-linked offers.
   // `with_cvc` is set to true if ANY card has cvc saved.
   // `metadata_logging_context` contains card metadata related information used
   // for metrics logging.
@@ -110,7 +108,6 @@ class AutofillSuggestionGenerator {
       FieldType trigger_field_type,
       bool should_show_scan_credit_card,
       bool should_show_cards_from_account,
-      bool& should_display_gpay_logo,
       bool& with_offer,
       bool& with_cvc,
       autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
@@ -127,9 +124,14 @@ class AutofillSuggestionGenerator {
   // Generates a separator suggestion.
   static Suggestion CreateSeparator();
 
+  // Generates a footer suggestion "Manage addresses..." menu item which will
+  // redirect to Chrome address settings page.
+  static Suggestion CreateManageAddressesEntry();
+
   // Generates a footer suggestion "Manage payment methods..." menu item which
-  // will redirect to Chrome payment settings page.
-  static Suggestion CreateManagePaymentMethodsEntry();
+  // will redirect to Chrome payment settings page. `with_gpay_logo` is used to
+  // conditionally add GPay logo icon to the manage payment methods suggestion.
+  static Suggestion CreateManagePaymentMethodsEntry(bool with_gpay_logo);
 
   // Generate "Clear form" suggestion.
   static Suggestion CreateClearFormSuggestion();
@@ -260,11 +262,13 @@ class AutofillSuggestionGenerator {
   // to conditionally add scan credit card suggestion,
   // `should_show_cards_from_account` - conditionally add suggestions for
   // showing cards from account. `is_autofilled` is used to conditionally add
-  // suggestion for clearing all autofilled fields.
+  // suggestion for clearing all autofilled fields. `with_gpay_logo` is used to
+  // conditionally add GPay logo icon to the manage payment methods suggestion.
   std::vector<Suggestion> GetCreditCardFooterSuggestions(
       bool should_show_scan_credit_card,
       bool should_show_cards_from_account,
-      bool is_autofilled) const;
+      bool is_autofilled,
+      bool with_gpay_logo) const;
 
   // Returns true if we should show a virtual card option for the server card
   // `card`, false otherwise.

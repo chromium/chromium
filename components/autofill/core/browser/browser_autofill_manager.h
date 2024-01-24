@@ -564,15 +564,12 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Returns a list of values from the stored credit cards that match
   // `trigger_field_type` and the value of `trigger_field` and returns the
-  // labels of the matching credit cards. `should_display_gpay_logo` will be set
-  // to true if there is no credit card suggestions or all suggestions come from
-  // Payments  server.
+  // labels of the matching credit cards.
   std::vector<Suggestion> GetCreditCardSuggestions(
       const FormData& form,
       const FormFieldData& trigger_field,
       FieldType trigger_field_type,
-      AutofillSuggestionTriggerSource trigger_source,
-      bool& should_display_gpay_logo) const;
+      AutofillSuggestionTriggerSource trigger_source) const;
 
   // Returns a mapping of credit card guid values to virtual card last fours for
   // standalone CVC field. Cards will only be added to the returned map if they

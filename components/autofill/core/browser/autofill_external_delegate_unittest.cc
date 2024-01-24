@@ -869,8 +869,7 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
   IssueOnQuery();
 
   const auto kExpectedSuggestions =
-      SuggestionVectorIdsAre(PopupItemId::kAddressEntry,
-                             PopupItemId::kAutofillOptions);
+      SuggestionVectorIdsAre(PopupItemId::kAddressEntry);
   EXPECT_CALL(client(),
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
 
@@ -911,8 +910,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
 #if !BUILDFLAG(IS_ANDROID)
                              PopupItemId::kSeparator,
 #endif
-                             PopupItemId::kAddressEntry,
-                             PopupItemId::kAutofillOptions);
+                             PopupItemId::kAddressEntry);
   EXPECT_CALL(client(),
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
   std::vector<Suggestion> autofill_item;
@@ -952,8 +950,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
 #if !BUILDFLAG(IS_ANDROID)
                              PopupItemId::kSeparator,
 #endif
-                             PopupItemId::kAddressEntry,
-                             PopupItemId::kAutofillOptions);
+                             PopupItemId::kAddressEntry);
   EXPECT_CALL(client(),
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
   std::vector<Suggestion> autofill_item;
@@ -993,8 +990,7 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
 #if !BUILDFLAG(IS_ANDROID)
       PopupItemId::kSeparator,
 #endif
-      PopupItemId::kAddressEntry,
-      PopupItemId::kAutofillOptions);
+      PopupItemId::kAddressEntry);
   EXPECT_CALL(client(),
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
 
@@ -2305,63 +2301,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
-}
-
-TEST_F(AutofillExternalDelegateUnitTest, ShouldShowGooglePayIcon) {
-  IssueOnQuery();
-
-  const auto kExpectedSuggestions =
-  // On Desktop, the GPay icon should be stored in the store indicator icon.
-#if BUILDFLAG(IS_ANDROID)
-      SuggestionVectorIconsAre(Suggestion::Icon::kNoIcon,
-                               AnyOf(Suggestion::Icon::kGooglePay,
-                                     Suggestion::Icon::kGooglePayDark));
-#elif BUILDFLAG(IS_IOS)
-      SuggestionVectorIconsAre(Suggestion::Icon::kNoIcon,
-                               AnyOf(Suggestion::Icon::kGooglePay,
-                                     Suggestion::Icon::kGooglePayDark));
-#else
-      SuggestionVectorStoreIndicatorIconsAre(
-          Suggestion::Icon::kNoIcon, AnyOf(Suggestion::Icon::kGooglePay,
-                                           Suggestion::Icon::kGooglePayDark));
-#endif
-  EXPECT_CALL(client(),
-              ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
-  std::vector<Suggestion> autofill_item;
-  autofill_item.emplace_back(/*main_text=*/u"", PopupItemId::kAddressEntry);
-  external_delegate().OnSuggestionsReturned(queried_form_triggering_field_id_,
-                                            autofill_item, true);
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       ShouldNotShowGooglePayIconIfSuggestionsContainLocalCards) {
-  IssueOnQuery();
-
-  const auto kExpectedSuggestions =
-      SuggestionVectorIconsAre(Suggestion::Icon::kNoIcon,
-                               Suggestion::Icon::kSettings);
-  EXPECT_CALL(client(),
-              ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
-  std::vector<Suggestion> autofill_item;
-  autofill_item.emplace_back(/*main_text=*/u"", PopupItemId::kAddressEntry);
-  external_delegate().OnSuggestionsReturned(queried_form_triggering_field_id_,
-                                            autofill_item, false);
-}
-
-TEST_F(AutofillExternalDelegateUnitTest, ShouldUseNewSettingName) {
-  IssueOnQuery();
-
-  const auto kExpectedSuggestions = SuggestionVectorMainTextsAre(
-      Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(true)),
-      Suggestion::Text(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
-                       Suggestion::Text::IsPrimary(true)));
-  EXPECT_CALL(client(),
-              ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
-  std::vector<Suggestion> autofill_item;
-  autofill_item.emplace_back(/*main_text=*/u"", PopupItemId::kAddressEntry);
-  autofill_item[0].main_text.is_primary = Suggestion::Text::IsPrimary(true);
-  external_delegate().OnSuggestionsReturned(queried_form_triggering_field_id_,
-                                            autofill_item);
 }
 
 // Test that browser autofill manager will handle the unmasking request for the
