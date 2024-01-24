@@ -6,13 +6,9 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "components/sync/base/features.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 
 namespace extensions {
 
@@ -22,14 +18,6 @@ PasswordAccessAuthTimeoutHandler::~PasswordAccessAuthTimeoutHandler() = default;
 
 void PasswordAccessAuthTimeoutHandler::Init(TimeoutCallback timeout_call) {
   timeout_call_ = std::move(timeout_call);
-}
-
-// static
-base::TimeDelta PasswordAccessAuthTimeoutHandler::GetAuthValidityPeriod() {
-  if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    return base::Seconds(60);
-  }
-  return syncer::kPasswordNotesAuthValidity.Get();
 }
 
 void PasswordAccessAuthTimeoutHandler::RestartAuthTimer() {
@@ -42,8 +30,9 @@ void PasswordAccessAuthTimeoutHandler::OnUserReauthenticationResult(
     bool authenticated) {
   if (authenticated) {
     CHECK(!timeout_call_.is_null());
-    timeout_timer_.Start(FROM_HERE, GetAuthValidityPeriod(),
-                         base::BindRepeating(timeout_call_));
+    timeout_timer_.Start(
+        FROM_HERE, password_manager::constants::kPasswordManagerAuthValidity,
+        base::BindRepeating(timeout_call_));
   }
 }
 

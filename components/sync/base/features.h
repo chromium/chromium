@@ -48,11 +48,6 @@ BASE_DECLARE_FEATURE(kPassExplicitSyncPassphraseToGmsCore);
 // default value in sync with the default value in
 // ios/chrome/credential_provider_extension/ui/feature_flags.mm.
 BASE_DECLARE_FEATURE(kPasswordNotesWithBackup);
-// Decides how long the user does not require reuathentication after
-// successfully authenticated.
-inline constexpr base::FeatureParam<base::TimeDelta> kPasswordNotesAuthValidity{
-    &kPasswordNotesWithBackup, "authentication_validity_duration",
-    base::Minutes(5)};
 
 // Controls whether to enable bootstrapping Public-private keys in Nigori
 // key-bag.

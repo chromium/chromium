@@ -40,6 +40,7 @@ static_library("common") {
 
 source_set("constants") {
   sources = [ "password_manager_constants.h" ]
+  deps = [ "//base" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 

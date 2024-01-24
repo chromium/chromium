@@ -25,7 +25,6 @@ source_set("password_details") {
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/strings",
-    "//components/sync/base:features",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/credential_provider_promo/model:features",

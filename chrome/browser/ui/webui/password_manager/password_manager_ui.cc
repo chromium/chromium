@@ -505,7 +505,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
               IDS_PASSWORD_MANAGER_UI_AUTH_TIMED_OUT_DESCRIPTION),
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE),
-          syncer::kPasswordNotesAuthValidity.Get().InMinutes()));
+          password_manager::constants::kPasswordManagerAuthValidity
+              .InMinutes()));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Overwrite ubranded logo for Chrome-branded builds.

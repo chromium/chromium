@@ -9,6 +9,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 
 namespace extensions {
 
@@ -31,9 +32,6 @@ class PasswordAccessAuthTimeoutHandler {
   // |timeout_timer_| runs out.
   void Init(TimeoutCallback timeout_call);
 
-  // Determines the |timeout_timer_| period.
-  static base::TimeDelta GetAuthValidityPeriod();
-
   // Restarts the |timeout_timer_| if it is already running. Has no effect if
   // |timeout_timer_| is not running.
   void RestartAuthTimer();
@@ -42,8 +40,9 @@ class PasswordAccessAuthTimeoutHandler {
   // Use it in tests to mock starting |timeout_timer_|.
   void start_auth_timer(TimeoutCallback timeout_call) {
     timeout_call_ = timeout_call;
-    timeout_timer_.Start(FROM_HERE, GetAuthValidityPeriod(),
-                         base::BindRepeating(timeout_call_));
+    timeout_timer_.Start(
+        FROM_HERE, password_manager::constants::kPasswordManagerAuthValidity,
+        base::BindRepeating(timeout_call_));
   }
 #endif  // defined(UNIT_TEST)
 

@@ -23,7 +23,6 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
-#include "components/sync/base/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -362,7 +361,8 @@ void ManagePasswordsView::AuthenticateUserAndDisplayDetailsOf(
               view->RecreateLayout();
             }
             view->auth_timer_.Start(
-                FROM_HERE, syncer::kPasswordNotesAuthValidity.Get(),
+                FROM_HERE,
+                password_manager::constants::kPasswordManagerAuthValidity,
                 base::BindRepeating(&ManagePasswordsView::SwitchToListView,
                                     base::Unretained(view)));
             // This is necessary on Windows since the bubble isn't activated
