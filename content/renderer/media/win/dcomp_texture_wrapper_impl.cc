@@ -177,8 +177,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
     shared_image = sii->NotifyMailboxAdded(
         mailbox_, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                       gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE);
+                      gpu::SHARED_IMAGE_USAGE_RASTER_READ);
   }
 
   gpu::MailboxHolder holders[media::VideoFrame::kMaxPlanes] = {
