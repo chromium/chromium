@@ -251,10 +251,12 @@ void EmbeddedA11yManagerLacros::UpdateProfile(Profile* profile) {
     MaybeRemoveExtension(profile, extension_misc::kChromeVoxHelperExtensionId);
   }
 
-  PrefService* const pref_service = profile->GetPrefs();
-  CHECK(pref_service);
-  pref_service->SetBoolean(::prefs::kAccessibilityPdfOcrAlwaysActive,
-                           pdf_ocr_always_active_enabled_);
+  if (pdf_ocr_always_active_enabled_.has_value()) {
+    PrefService* const pref_service = profile->GetPrefs();
+    CHECK(pref_service);
+    pref_service->SetBoolean(::prefs::kAccessibilityPdfOcrAlwaysActive,
+                             pdf_ocr_always_active_enabled_.value());
+  }
 }
 
 void EmbeddedA11yManagerLacros::OnChromeVoxEnabledChanged(base::Value value) {

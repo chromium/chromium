@@ -21,6 +21,7 @@
 #include "components/keyed_service/core/keyed_service_base_factory.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -30,6 +31,10 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/ui_base_features.h"
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "ui/accessibility/accessibility_features.h"
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/companion/visual_query/features.h"
@@ -176,6 +181,9 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           blink::features::kBrowsingTopics,
           net::features::kTpcdMetadataGrants,
           net::features::kTpcdTrialSettings,
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+          features::kPdfOcr,
+#endif
           features::kPersistentOriginTrials,
           features::kSidePanelPinning,
           features::kChromeRefresh2023,
@@ -460,6 +468,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "OptimizationGuideKeyedService",
     "PageContentAnnotationsService",
     "PasswordsPrivateEventRouter",
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    "PdfOcrController",
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #if BUILDFLAG(ENABLE_PDF)
     "PdfViewerPrivateEventRouter",
 #endif  // BUILDFLAG(ENABLE_PDF)

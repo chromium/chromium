@@ -46,8 +46,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
 #include "chrome/browser/accessibility/accessibility_extension_api_ash.h"
-#include "chrome/browser/accessibility/pdf_ocr_controller.h"
-#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "chrome/browser/ash/accessibility/accessibility_dlc_installer.h"
 #include "chrome/browser/ash/accessibility/accessibility_extension_loader.h"
 #include "chrome/browser/ash/accessibility/dictation.h"
@@ -728,12 +726,6 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
         profile_,
         base::BindOnce(&AccessibilityManager::PostSwitchChromeVoxProfile,
                        weak_ptr_factory_.GetWeakPtr()));
-
-    if (::features::IsPdfOcrEnabled()) {
-      // Create PdfOcrController when both the PDF OCR feature flag and
-      // Chromevox are enabled.
-      ::screen_ai::PdfOcrControllerFactory::GetForProfile(profile());
-    }
   }
 
   if (spoken_feedback_enabled_ == enabled)
@@ -1333,13 +1325,6 @@ void AccessibilityManager::OnSelectToSpeakChanged() {
       prefs::kAccessibilitySelectToSpeakEnabled);
   if (enabled) {
     select_to_speak_loader_->SetBrowserContext(profile_, base::OnceClosure());
-
-    if (::features::IsAccessibilityPdfOcrForSelectToSpeakEnabled() &&
-        ::features::IsPdfOcrEnabled()) {
-      // Create PdfOcrController when both the PDF OCR feature flag and STS are
-      // enabled.
-      ::screen_ai::PdfOcrControllerFactory::GetForProfile(profile());
-    }
   }
 
   if (select_to_speak_enabled_ == enabled)

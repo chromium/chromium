@@ -727,7 +727,6 @@
 #endif  // defined(_WINDOWS_)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/pdf_ocr_controller.h"
 #include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
@@ -7154,12 +7153,10 @@ ui::AXMode ChromeContentBrowserClient::GetAXModeForBrowserContext(
     ax_mode.set_mode(ui::AXMode::kLabelImages, true);
   }
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (features::IsPdfOcrEnabled() &&
-      (accessibility_state_utils::IsScreenReaderEnabled() ||
-       (features::IsAccessibilityPdfOcrForSelectToSpeakEnabled() &&
-        accessibility_state_utils::IsSelectToSpeakEnabled()))) {
-    // PdfOcrController will be created when the user turns on a screen reader
-    // before or even after starting the browser.
+  if (features::IsPdfOcrEnabled()) {
+    // PdfOcrController will be enabled when the user turns on a screen reader
+    // or any other accessibility feature that needs it; before or even after
+    // starting the browser.
     auto* pdf_ocr_controller =
         screen_ai::PdfOcrControllerFactory::GetForProfile(profile);
     if (pdf_ocr_controller && pdf_ocr_controller->IsEnabled()) {
