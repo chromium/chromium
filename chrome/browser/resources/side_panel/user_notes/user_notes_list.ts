@@ -10,13 +10,15 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../strings.m.js';
 import './user_note.js';
 
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeat, DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Note} from './user_notes.mojom-webui.js';
-import {UserNotesApiProxy, UserNotesApiProxyImpl} from './user_notes_api_proxy.js';
+import type {Note} from './user_notes.mojom-webui.js';
+import type {UserNotesApiProxy} from './user_notes_api_proxy.js';
+import {UserNotesApiProxyImpl} from './user_notes_api_proxy.js';
 import {getTemplate} from './user_notes_list.html.js';
 
 export interface UserNotesListElement {

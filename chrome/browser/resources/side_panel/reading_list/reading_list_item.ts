@@ -11,13 +11,14 @@ import 'chrome://resources/cr_elements/mwb_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './icons.html.js';
 
-import {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
+import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {MouseHoverableMixin} from 'chrome://resources/cr_elements/mouse_hoverable_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ReadLaterEntry} from './reading_list.mojom-webui.js';
-import {ReadingListApiProxy, ReadingListApiProxyImpl} from './reading_list_api_proxy.js';
+import type {ReadLaterEntry} from './reading_list.mojom-webui.js';
+import type {ReadingListApiProxy} from './reading_list_api_proxy.js';
+import {ReadingListApiProxyImpl} from './reading_list_api_proxy.js';
 import {getTemplate} from './reading_list_item.html.js';
 
 export const MARKED_AS_READ_UI_EVENT = 'reading-list-marked-as-read';

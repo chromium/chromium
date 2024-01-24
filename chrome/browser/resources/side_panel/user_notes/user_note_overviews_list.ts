@@ -9,8 +9,9 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './user_note_overviews_list.html.js';
-import {NoteOverview} from './user_notes.mojom-webui.js';
-import {UserNotesApiProxy, UserNotesApiProxyImpl} from './user_notes_api_proxy.js';
+import type {NoteOverview} from './user_notes.mojom-webui.js';
+import type {UserNotesApiProxy} from './user_notes_api_proxy.js';
+import {UserNotesApiProxyImpl} from './user_notes_api_proxy.js';
 
 export class UserNoteOverviewsListElement extends PolymerElement {
   static get is() {

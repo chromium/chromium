@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MemorySaverCardCallbackRouter, MemorySaverCardHandlerFactory, MemorySaverCardHandlerInterface, MemorySaverCardHandlerRemote} from './performance.mojom-webui.js';
+import type {MemorySaverCardHandlerInterface} from './performance.mojom-webui.js';
+import {MemorySaverCardCallbackRouter, MemorySaverCardHandlerFactory, MemorySaverCardHandlerRemote} from './performance.mojom-webui.js';
 
 let instance: MemorySaverCardApiProxy|null = null;
 

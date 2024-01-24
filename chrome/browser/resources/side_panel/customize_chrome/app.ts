@@ -16,18 +16,20 @@ import './themes.js';
 import './wallpaper_search/wallpaper_search.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {AppearanceElement} from './appearance.js';
-import {CategoriesElement} from './categories.js';
-import {ChromeColorsElement} from './chrome_colors.js';
-import {BackgroundCollection, CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
+import type {AppearanceElement} from './appearance.js';
+import type {CategoriesElement} from './categories.js';
+import type {ChromeColorsElement} from './chrome_colors.js';
+import type {BackgroundCollection} from './customize_chrome.mojom-webui.js';
+import {CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
-import {ThemesElement} from './themes.js';
+import type {ThemesElement} from './themes.js';
 
 const SECTION_TO_SELECTOR = {
   [CustomizeChromeSection.kAppearance]: '#appearance',

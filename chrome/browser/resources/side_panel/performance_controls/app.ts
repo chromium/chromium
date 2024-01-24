@@ -15,7 +15,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './app.html.js';
 import {PerformanceSidePanelNotification} from './performance.mojom-webui.js';
-import {PerformancePageApiProxy, PerformancePageApiProxyImpl} from './performance_page_api_proxy.js';
+import type {PerformancePageApiProxy} from './performance_page_api_proxy.js';
+import {PerformancePageApiProxyImpl} from './performance_page_api_proxy.js';
 
 export interface PerformanceAppElement {
   $: {
