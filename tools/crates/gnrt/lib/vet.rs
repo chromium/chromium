@@ -24,7 +24,7 @@ fn group_vet_criteria(group: Group, shipped: Option<bool>) -> Vec<AuditCriteria>
         // We currently consider ub-risk-2 as satisfying the Rule of Two, though there seems to be
         // some spot in between risk 1 and 2 that fits better and this could be improved.
         (Some(true), Group::Safe) | (None, Group::Safe) => {
-            vec![DoesNotImplmentCrypto, SafeToDeploy, UbRisk2]
+            vec![DoesNotImplementCrypto, SafeToDeploy, UbRisk2]
         }
         // Sandbox crates are used in a sandbox, so we have a weaker tolerance. There may be a bunch
         // of ASM code in there for example. Adversarial inputs may have a way to break things,
@@ -33,16 +33,16 @@ fn group_vet_criteria(group: Group, shipped: Option<bool>) -> Vec<AuditCriteria>
         // This type of crate is not well described in the UB risk guidelines for now, so we use
         // "ub-risk-3" for this category.
         (Some(true), Group::Sandbox) | (None, Group::Sandbox) => {
-            vec![DoesNotImplmentCrypto, SafeToDeploy, UbRisk3]
+            vec![DoesNotImplementCrypto, SafeToDeploy, UbRisk3]
         }
         // Code in tests is not run on user machines and does not interact with adversarial inputs.
         // Thus it does not need to be safe-to-deploy, but it needs to not be malicious against
         // developers and CI bots which is covered by "safe-to-run".
-        (_, Group::Test) => vec![DoesNotImplmentCrypto, SafeToRun],
+        (_, Group::Test) => vec![DoesNotImplementCrypto, SafeToRun],
         // Crates that contribute to the shipped binary but are not themselves shipped (code
         // generators for example) do not get deployed themselves and do not interact with
         // adversarial inputs. Thus they need to be "safe-to-run" by developers and CI only.
-        (Some(false), _) => vec![DoesNotImplmentCrypto, SafeToRun],
+        (Some(false), _) => vec![DoesNotImplementCrypto, SafeToRun],
     }
 }
 
@@ -66,7 +66,7 @@ pub struct Policy {
 #[derive(serde::Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum AuditCriteria {
-    DoesNotImplmentCrypto,
+    DoesNotImplementCrypto,
     SafeToDeploy,
     SafeToRun,
     #[serde(rename = "ub-risk-2")]
