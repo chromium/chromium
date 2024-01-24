@@ -6,6 +6,7 @@
 
 #import "base/files/scoped_temp_dir.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -438,12 +439,12 @@ class OverflowMenuMediatorTest : public PlatformTest {
   OverflowMenuModel* model_;
   OverflowMenuMediator* mediator_;
   OverflowMenuOrderer* orderer_;
-  BookmarkModel* local_or_syncable_bookmark_model_;
-  BookmarkModel* account_bookmark_model_;
-  ReadingListModel* reading_list_model_;
+  raw_ptr<BookmarkModel> local_or_syncable_bookmark_model_;
+  raw_ptr<BookmarkModel> account_bookmark_model_;
+  raw_ptr<ReadingListModel> reading_list_model_;
   std::unique_ptr<TestingPrefServiceSimple> browserStatePrefs_;
   std::unique_ptr<TestingPrefServiceSimple> localStatePrefs_;
-  web::FakeWebState* web_state_;
+  raw_ptr<web::FakeWebState> web_state_;
   std::unique_ptr<web::NavigationItem> navigation_item_;
   UIViewController* baseViewController_;
   translate::LanguageDetectionModel language_detection_model_;

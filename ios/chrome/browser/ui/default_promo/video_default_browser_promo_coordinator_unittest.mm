@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/default_promo/video_default_browser_promo_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/task_environment.h"
@@ -68,7 +69,7 @@ class VideoDefaultBrowserPromoCoordinatorTest : public PlatformTest {
   VideoDefaultBrowserPromoCoordinator* coordinator_;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* view_controller_;
-  feature_engagement::test::MockTracker* mock_tracker_;
+  raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
 };
 
 #pragma mark - Tests.
