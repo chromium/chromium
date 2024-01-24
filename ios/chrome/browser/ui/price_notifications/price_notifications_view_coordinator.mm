@@ -121,22 +121,20 @@
 
   self.navigationController.navigationBar.prefersLargeTitles = NO;
 
-  if (@available(iOS 15, *)) {
-    UISheetPresentationController* sheetPresentationController =
-        self.navigationController.sheetPresentationController;
-    if (sheetPresentationController) {
-      sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
-      sheetPresentationController
-          .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  UISheetPresentationController* sheetPresentationController =
+      self.navigationController.sheetPresentationController;
+  if (sheetPresentationController) {
+    sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
+    sheetPresentationController
+        .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
 
-      sheetPresentationController.detents =
-          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
-              ? @[ [UISheetPresentationControllerDetent largeDetent] ]
-              : @[
-                  [UISheetPresentationControllerDetent mediumDetent],
-                  [UISheetPresentationControllerDetent largeDetent]
-                ];
-    }
+    sheetPresentationController.detents =
+        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+            ? @[ [UISheetPresentationControllerDetent largeDetent] ]
+            : @[
+                [UISheetPresentationControllerDetent mediumDetent],
+                [UISheetPresentationControllerDetent largeDetent]
+              ];
   }
 
   [self.baseViewController presentViewController:self.navigationController
