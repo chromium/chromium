@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './android_photos.js';
 import './breadcrumbs.js';
 import './context_menu.js';
 import './copy_between_windows.js';
@@ -379,8 +378,8 @@ window.addEventListener('load', () => {
     testCaseName => {
       // Get the test function from testcase namespace testCaseName.
       const test = testcase[testCaseName];
-      // Verify test is an unnamed (aka 'anonymous') Function.
-      if (!(test instanceof Function) || test.name) {
+      // Verify test is a Function without args.
+      if (!(test instanceof Function && test.length === 0)) {
         chrome.test.fail('[' + testCaseName + '] not found.');
         // @ts-ignore: error TS7027: Unreachable code detected.
         return;

@@ -6,6 +6,7 @@ import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, TestEntr
 import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {fileListKeyboardSelectionA11yImpl, fileListMouseSelectionA11yImpl} from './file_list.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
@@ -112,16 +113,14 @@ testcase.showGridViewButtonSwitches = async () => {
 };
 
 /**
- * Tests that selecting/de-selecting files with keyboard produces a11y
- * messages.
+ * Tests that selecting/de-selecting files with keyboard produces a11y messages.
  */
 // @ts-ignore: error TS4111: Property 'showGridViewKeyboardSelectionA11y' comes
 // from an index signature, so it must be accessed with
 // ['showGridViewKeyboardSelectionA11y'].
 testcase.showGridViewKeyboardSelectionA11y = async () => {
   const isGridView = true;
-  // @ts-ignore: error TS2554: Expected 0 arguments, but got 1.
-  return testcase.fileListKeyboardSelectionA11y(isGridView);
+  return fileListKeyboardSelectionA11yImpl(isGridView);
 };
 
 /**
@@ -132,8 +131,7 @@ testcase.showGridViewKeyboardSelectionA11y = async () => {
 // ['showGridViewMouseSelectionA11y'].
 testcase.showGridViewMouseSelectionA11y = async () => {
   const isGridView = true;
-  // @ts-ignore: error TS2554: Expected 0 arguments, but got 1.
-  return testcase.fileListMouseSelectionA11y(isGridView);
+  return fileListMouseSelectionA11yImpl(isGridView);
 };
 
 /**

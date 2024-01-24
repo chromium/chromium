@@ -218,7 +218,7 @@ testcase.fileListSortWithKeyboard = async () => {
  * @param {?string=} expectedMessage
  * @return {!Promise<string>} Latest a11y message.
  */
-export async function countAndCheckLatestA11yMessage(
+async function countAndCheckLatestA11yMessage(
     appId, expectedCount, expectedMessage) {
   const a11yMessages =
       await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
@@ -242,10 +242,7 @@ export async function countAndCheckLatestA11yMessage(
  * NOTE: Test shared with grid_view.js.
  * @param {boolean=} isGridView if the test is testing the grid view.
  */
-// @ts-ignore: error TS4111: Property 'fileListKeyboardSelectionA11y' comes from
-// an index signature, so it must be accessed with
-// ['fileListKeyboardSelectionA11y'].
-testcase.fileListKeyboardSelectionA11y = async (isGridView) => {
+export async function fileListKeyboardSelectionA11yImpl(isGridView) {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
@@ -324,6 +321,13 @@ testcase.fileListKeyboardSelectionA11y = async (isGridView) => {
   // Check: Announced deselecting all entries.
   await countAndCheckLatestA11yMessage(
       appId, ++a11yMsgCount, 'Removed all entries from selection.');
+}
+
+// @ts-ignore: error TS4111: Property 'fileListKeyboardSelectionA11y' comes from
+// an index signature, so it must be accessed with
+// ['fileListKeyboardSelectionA11y'].
+testcase.fileListKeyboardSelectionA11y = async () => {
+  return fileListKeyboardSelectionA11yImpl(/*isGridView*/ false);
 };
 
 /**
@@ -332,9 +336,7 @@ testcase.fileListKeyboardSelectionA11y = async (isGridView) => {
  * NOTE: Test shared with grid_view.js.
  * @param {boolean=} isGridView if the test is testing the grid view.
  */
-// @ts-ignore: error TS4111: Property 'fileListMouseSelectionA11y' comes from an
-// index signature, so it must be accessed with ['fileListMouseSelectionA11y'].
-testcase.fileListMouseSelectionA11y = async (isGridView) => {
+export async function fileListMouseSelectionA11yImpl(isGridView) {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
@@ -392,6 +394,13 @@ testcase.fileListMouseSelectionA11y = async (isGridView) => {
   // Check: Announced deselecting all entries.
   await countAndCheckLatestA11yMessage(
       appId, ++a11yMsgCount, 'Removed all entries from selection.');
+}
+
+// @ts-ignore: error ts4111: property 'filelistmouseselectiona11y ' comes from
+// an index signature, so it must be accessed with
+// ['filelistmouseselectiona11y '].
+testcase.fileListMouseSelectionA11y = async () => {
+  return fileListMouseSelectionA11yImpl(/*isGridView*/ false);
 };
 
 /**

@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 import {addEntries, ENTRIES, RootPath} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
-testcase['androidPhotosBanner'] = async () => {
+export type ElementQuery = string|string[];
+
+export async function androidPhotosBanner() {
   // Add test files.
   // Photos provider currently does not have subdirectories, but we need one
   // there to tell that it's mounted and clickable (has-children="true"
@@ -20,22 +21,18 @@ testcase['androidPhotosBanner'] = async () => {
   // Open Files app.
   const appId = await openNewWindow(RootPath.DOWNLOADS);
 
-  // @ts-ignore: error TS7006: Parameter 'query' implicitly has an 'any' type.
-  const click = async (query) => {
+  const click = async (query: ElementQuery) => {
     chrome.test.assertTrue(
         !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [query]),
         'fakeMouseClick failed');
   };
-  // @ts-ignore: error TS7006: Parameter 'query' implicitly has an 'any' type.
-  const waitForElement = async (query) => {
+  const waitForElement = async (query: ElementQuery) => {
     await remoteCall.waitForElement(appId, query);
   };
-  // @ts-ignore: error TS7006: Parameter 'query' implicitly has an 'any' type.
-  const waitForElementLost = async (query) => {
+  const waitForElementLost = async (query: ElementQuery) => {
     await remoteCall.waitForElementLost(appId, query);
   };
-  // @ts-ignore: error TS7006: Parameter 'name' implicitly has an 'any' type.
-  const waitForFile = async (name) => {
+  const waitForFile = async (name: ElementQuery) => {
     await remoteCall.waitForElement(appId, `#file-list [file-name="${name}"]`);
   };
 
@@ -91,4 +88,4 @@ testcase['androidPhotosBanner'] = async () => {
   await directoryTree.selectItemByType(photosVolumeType);
   await waitForFile('image2.png');
   await waitForElement(photosBannerHiddenQuery);
-};
+}
