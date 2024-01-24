@@ -124,3 +124,10 @@ if (build_with_chromium && use_blink) {
     ]
   }
 }
+
+# A wrapper that knows how to execute a single fuzztest within a binary
+# containing many fuzztests.
+source_set("individual_fuzztest_wrapper") {
+  sources = [ "//testing/libfuzzer/fuzztest_wrapper.cpp" ]
+  deps = [ "//base" ]
+}

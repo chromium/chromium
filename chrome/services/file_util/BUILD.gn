@@ -152,7 +152,7 @@ if (enable_extractors && fuzztest_supported) {
   test("single_file_tar_reader_fuzzer") {
     sources = [ "single_file_tar_reader_fuzzer.cc" ]
 
-    enable_fuzztest = true
+    fuzztests = [ "SingleFileTarReaderTest.ExtractChunkNeverCrashes" ]
 
     deps = [
       ":file_util",

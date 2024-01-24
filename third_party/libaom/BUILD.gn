@@ -369,7 +369,10 @@ if (fuzztest_supported) {
   test("av1_encoder_fuzz_test") {
     sources = [ "fuzz/av1_encoder_fuzz_test.cc" ]
 
-    enable_fuzztest = true
+    fuzztests = [
+      "AV1EncodeFuzzTest.AV1EncodeSucceeds",
+      "AV1EncodeFuzzTest.AV1EncodeArbitraryCallSequenceSucceeds",
+    ]
 
     deps = [
       ":libaom",

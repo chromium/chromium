@@ -20,7 +20,7 @@ otherwise manipulates that input, it definitely should be fuzzed!
    alongside. (In the future, you'll be able to add them right into your
    unit test code directly.)
 2. Add a gn target definition a lot like a normal unit test, but with
-   `enable_fuzztest = true`. See below for details. Create a `.cc` file.
+   `fuzztests = [ list-of-fuzztests ]`. See below for details. Create a `.cc` file.
 3. In the unit tests code, `#include "third_party/fuzztest/src/fuzztest/fuzztest.h"`
 4. Add a `FUZZ_TEST` macro, which might be as simple as `FUZZ_TEST(MyApiTest, ExistingFunctionWhichTakesUntrustedInput)`
    (though you may wish to structure things differently, see below)
@@ -52,7 +52,7 @@ if (fuzztest_supported) {
   test("hypothetical_fuzztests") {
     sources = [ "hypothetical_fuzztests.cc" ]
 
-    enable_fuzztest = true
+    fuzztests = ['MyApiTest.MyApiCanSuccessfullyParseAnyString']
 
     deps = [
       ":hypothetical_component",
@@ -73,15 +73,15 @@ we don't yet support this option in Chromium.
 ***
 
 In the near future we'll support adding `FUZZ_TEST`s alongside existing
-unit tests, even in the same .cc file. You will add an extra
-`enable_fuzztest = true` line:
+unit tests, even in the same .cc file.
 
 ```
 if (is_linux) {
   test("existing_unit_tests") {
     sources = [ "existing_unit_tests.cc" ] # add FUZZ_TESTs here
 
-    enable_fuzztest = true   # add this!
+    fuzztests = ['MyApiTest.ApiWorksAlways']
+      # Add this!
 
     deps = [
       ":existing_component",
