@@ -119,7 +119,7 @@ public class PlayerCoordinator implements Player {
         mMediator.setPlayback(null);
         mMediator.setPlaybackState(PlaybackListener.State.BUFFERING);
         if (!mExpandedPlayer.anySheetShowing()) {
-            mMiniPlayer.show(true);
+            mMiniPlayer.show(/* animate= */ true);
         }
     }
 
@@ -144,12 +144,12 @@ public class PlayerCoordinator implements Player {
     /** Show expanded player. */
     void expand() {
         mExpandedPlayer.show();
-        mMiniPlayer.dismiss(true);
+        mMiniPlayer.dismiss(/* animate= */ false);
     }
 
     @Override
     public void restoreMiniPlayer() {
-        mMiniPlayer.show(true);
+        mMiniPlayer.show(/* animate= */ true);
         mMediator.setHiddenAndPlaying(false);
     }
 
@@ -159,7 +159,7 @@ public class PlayerCoordinator implements Player {
         // dismissed when stopping the playback.
         mMediator.setPlayback(null);
         mMediator.setPlaybackState(PlaybackListener.State.STOPPED);
-        mMiniPlayer.dismiss(true);
+        mMiniPlayer.dismiss(/* animate= */ true);
         mExpandedPlayer.dismiss();
         mMediator.setHiddenAndPlaying(false);
     }
@@ -169,7 +169,7 @@ public class PlayerCoordinator implements Player {
         int miniPlayerVisibility = mMiniPlayer.getVisibility();
         if (miniPlayerVisibility == VisibilityState.SHOWING
                 || miniPlayerVisibility == VisibilityState.VISIBLE) {
-            mMiniPlayer.dismiss(true);
+            mMiniPlayer.dismiss(/* animate= */ true);
             mMediator.setHiddenAndPlaying(true);
         }
     }
@@ -187,7 +187,7 @@ public class PlayerCoordinator implements Player {
                 || miniPlayerVisibility == VisibilityState.VISIBLE) {
             mRestoreMiniPlayer = true;
             mRestoreExpandedPlayer = false;
-            mMiniPlayer.dismiss(true);
+            mMiniPlayer.dismiss(/* animate= */ true);
         }
 
         mMediator.setHiddenAndPlaying(true);
