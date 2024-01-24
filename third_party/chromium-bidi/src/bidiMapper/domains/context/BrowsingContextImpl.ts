@@ -44,6 +44,7 @@ export class BrowsingContextImpl {
 
   /** The ID of this browsing context. */
   readonly #id: BrowsingContext.BrowsingContext;
+  readonly userContext: string;
 
   /**
    * The ID of the parent browsing context.
@@ -83,6 +84,7 @@ export class BrowsingContextImpl {
     realmStorage: RealmStorage,
     id: BrowsingContext.BrowsingContext,
     parentId: BrowsingContext.BrowsingContext | null,
+    userContext: string,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     sharedIdWithFrame: boolean,
@@ -92,6 +94,7 @@ export class BrowsingContextImpl {
     this.#realmStorage = realmStorage;
     this.#id = id;
     this.#parentId = parentId;
+    this.userContext = userContext;
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
     this.#sharedIdWithFrame = sharedIdWithFrame;
@@ -103,6 +106,7 @@ export class BrowsingContextImpl {
     realmStorage: RealmStorage,
     id: BrowsingContext.BrowsingContext,
     parentId: BrowsingContext.BrowsingContext | null,
+    userContext: string,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     sharedIdWithFrame: boolean,
@@ -113,6 +117,7 @@ export class BrowsingContextImpl {
       realmStorage,
       id,
       parentId,
+      userContext,
       eventManager,
       browsingContextStorage,
       sharedIdWithFrame,
@@ -306,6 +311,7 @@ export class BrowsingContextImpl {
     return {
       context: this.#id,
       url: this.url,
+      userContext: this.userContext,
       children:
         maxDepth > 0
           ? this.directChildren.map((c) =>

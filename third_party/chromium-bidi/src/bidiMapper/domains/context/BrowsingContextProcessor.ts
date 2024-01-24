@@ -22,6 +22,7 @@ import {
   BrowsingContext,
   InvalidArgumentException,
   type EmptyResult,
+  NoSuchUserContextException,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
@@ -48,6 +49,7 @@ export class BrowsingContextProcessor {
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #realmStorage: RealmStorage;
 
+  readonly #defaultUserContextId: string;
   readonly #logger?: LoggerFn;
 
   constructor(
@@ -61,6 +63,7 @@ export class BrowsingContextProcessor {
     preloadScriptStorage: PreloadScriptStorage,
     acceptInsecureCerts: boolean,
     sharedIdWithFrame: boolean,
+    defaultUserContextId: string,
     logger?: LoggerFn
   ) {
     this.#acceptInsecureCerts = acceptInsecureCerts;
@@ -73,6 +76,7 @@ export class BrowsingContextProcessor {
     this.#networkStorage = networkStorage;
     this.#realmStorage = realmStorage;
     this.#sharedIdWithFrame = sharedIdWithFrame;
+    this.#defaultUserContextId = defaultUserContextId;
     this.#logger = logger;
 
     this.#setEventListeners(browserCdpClient);
@@ -97,6 +101,7 @@ export class BrowsingContextProcessor {
     params: BrowsingContext.CreateParameters
   ): Promise<BrowsingContext.CreateResult> {
     let referenceContext: BrowsingContextImpl | undefined;
+    let userContext = params.userContext ?? 'default';
     if (params.referenceContext !== undefined) {
       referenceContext = this.#browsingContextStorage.getContext(
         params.referenceContext
@@ -106,29 +111,51 @@ export class BrowsingContextProcessor {
           `referenceContext should be a top-level context`
         );
       }
+      userContext = referenceContext.userContext;
+    }
+
+    let newWindow = false;
+    switch (params.type) {
+      case BrowsingContext.CreateType.Tab:
+        newWindow = false;
+        break;
+      case BrowsingContext.CreateType.Window:
+        newWindow = true;
+        break;
+    }
+
+    if (userContext !== 'default') {
+      const existingContexts = this.#browsingContextStorage
+        .getAllContexts()
+        .filter((context) => context.userContext === userContext);
+
+      if (!existingContexts.length) {
+        // If there are no contexts in the given user context, we need to set
+        // newWindow to true as newWindow=false will be rejected.
+        newWindow = true;
+      }
     }
 
     let result: Protocol.Target.CreateTargetResponse;
 
-    switch (params.type) {
-      case BrowsingContext.CreateType.Tab:
-        result = await this.#browserCdpClient.sendCommand(
-          'Target.createTarget',
-          {
-            url: 'about:blank',
-            newWindow: false,
-          }
+    try {
+      result = await this.#browserCdpClient.sendCommand('Target.createTarget', {
+        url: 'about:blank',
+        newWindow,
+        browserContextId: userContext === 'default' ? undefined : userContext,
+      });
+    } catch (err) {
+      // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/devtools/protocol/target_handler.cc;l=1;drc=e80392ac11e48a691f4309964cab83a3a59e01c8
+      if (
+        (err as Error).message.startsWith(
+          'Failed to find browser context with id'
+        )
+      ) {
+        throw new NoSuchUserContextException(
+          `The context ${userContext} was not found`
         );
-        break;
-      case BrowsingContext.CreateType.Window:
-        result = await this.#browserCdpClient.sendCommand(
-          'Target.createTarget',
-          {
-            url: 'about:blank',
-            newWindow: true,
-          }
-        );
-        break;
+      }
+      throw err;
     }
 
     // Wait for the new tab to be loaded to avoid race conditions in the
@@ -319,6 +346,7 @@ export class BrowsingContextProcessor {
         this.#realmStorage,
         params.frameId,
         params.parentFrameId,
+        parentBrowsingContext.userContext,
         this.#eventManager,
         this.#browsingContextStorage,
         this.#sharedIdWithFrame,
@@ -382,6 +410,10 @@ export class BrowsingContextProcessor {
             this.#realmStorage,
             targetInfo.targetId,
             null,
+            targetInfo.browserContextId &&
+              targetInfo.browserContextId !== this.#defaultUserContextId
+              ? targetInfo.browserContextId
+              : 'default',
             this.#eventManager,
             this.#browsingContextStorage,
             this.#sharedIdWithFrame,

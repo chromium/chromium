@@ -14,8 +14,9 @@
 # limitations under the License.
 import pytest
 from anys import ANY_DICT, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, AnyExtending, get_tree, goto_url,
-                          read_JSON_message, send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
+                          get_tree, goto_url, read_JSON_message,
+                          send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -65,7 +66,8 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
             "context": new_context_id,
             "url": "about:blank",
             "children": None,
-            "parent": None
+            "parent": None,
+            "userContext": "default"
         }
     } == context_created_event
 
@@ -129,15 +131,18 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
             "context": ANY_STR,
             "parent": None,
             "url": top_level_page,
+            "userContext": "default",
             "children": [
                 {
                     "context": ANY_STR,
                     # It's not guaranteed the nested page is already loaded.
                     "url": ANY_STR,
+                    "userContext": "default",
                     "children": [{
                         "context": ANY_STR,
                         # It's not guaranteed the nested page is already loaded.
                         "url": ANY_STR,
+                        "userContext": "default",
                         "children": []
                     }]
                 },
@@ -156,7 +161,8 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
             'context': intermediate_page_context_id,
             'parent': context_id,
             'children': None,
-            'url': 'about:blank'
+            'url': 'about:blank',
+            'userContext': 'default'
         }
     }
 
@@ -167,7 +173,8 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
             'context': nested_iframe_context_id,
             'parent': intermediate_page_context_id,
             'children': None,
-            'url': 'about:blank'
+            'url': 'about:blank',
+            'userContext': 'default'
         }
     }
 
@@ -210,7 +217,8 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
             "context": ANY_STR,
             "url": "about:blank",
             "children": None,
-            "parent": None
+            "parent": None,
+            'userContext': 'default'
         }
     }
 
@@ -258,4 +266,42 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
             "timestamp": ANY_TIMESTAMP,
             "url": blank_url
         }
+    }
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("type", ["window", "tab"])
+async def test_browsingContext_create_withUserContext(websocket, type):
+    user_context = await execute_command(websocket, {
+        "method": "browser.createUserContext",
+        "params": {}
+    })
+
+    await subscribe(websocket, [
+        "browsingContext.contextCreated", "browsingContext.domContentLoaded",
+        "browsingContext.load"
+    ])
+
+    result = await execute_command(
+        websocket, {
+            "method": "browsingContext.create",
+            "params": {
+                "type": type,
+                "userContext": user_context["userContext"]
+            }
+        })
+
+    tree = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {}
+    })
+
+    assert len(tree['contexts']) == 2
+
+    assert tree["contexts"][1] == {
+        'context': result['context'],
+        'url': 'about:blank',
+        'userContext': user_context["userContext"],
+        'children': [],
+        'parent': None
     }

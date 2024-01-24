@@ -15,7 +15,12 @@
  * limitations under the License.
  */
 
-import type {EmptyResult} from '../../../protocol/protocol.js';
+import {
+  type EmptyResult,
+  type Browser,
+  InvalidArgumentException,
+  NoSuchUserContextException,
+} from '../../../protocol/protocol.js';
 import type {CdpClient} from '../../BidiMapper.js';
 
 export class BrowserProcessor {
@@ -31,5 +36,54 @@ export class BrowserProcessor {
     setTimeout(() => this.#browserCdpClient.sendCommand('Browser.close'), 0);
 
     return {};
+  }
+
+  async createUserContext(): Promise<Browser.CreateUserContextResult> {
+    const context = await this.#browserCdpClient.sendCommand(
+      'Target.createBrowserContext'
+    );
+    return {
+      userContext: context.browserContextId,
+    };
+  }
+
+  async removeUserContext(
+    userContext: Browser.UserContext
+  ): Promise<EmptyResult> {
+    if (userContext === 'default') {
+      throw new InvalidArgumentException(
+        '`default` user context cannot be removed'
+      );
+    }
+    try {
+      await this.#browserCdpClient.sendCommand('Target.disposeBrowserContext', {
+        browserContextId: userContext,
+      });
+    } catch (err) {
+      // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/target_handler.cc;l=1424;drc=c686e8f4fd379312469fe018f5c390e9c8f20d0d
+      if ((err as Error).message.startsWith('Failed to find context with id')) {
+        throw new NoSuchUserContextException((err as Error).message);
+      }
+      throw err;
+    }
+    return {};
+  }
+
+  async getUserContexts(): Promise<Browser.GetUserContextsResult> {
+    const result = await this.#browserCdpClient.sendCommand(
+      'Target.getBrowserContexts'
+    );
+    return {
+      userContexts: [
+        {
+          userContext: 'default',
+        },
+        ...result.browserContextIds.map((id) => {
+          return {
+            userContext: id,
+          };
+        }),
+      ],
+    };
   }
 }

@@ -37,6 +37,7 @@ describe('Exception', () => {
     [ErrorCode.NoSuchRequest]: undefined,
     [ErrorCode.NoSuchScript]: undefined,
     [ErrorCode.NoSuchStoragePartition]: undefined,
+    [ErrorCode.NoSuchUserContext]: undefined,
     [ErrorCode.SessionNotCreated]: undefined,
     [ErrorCode.UnableToCaptureScreen]: undefined,
     [ErrorCode.UnableToCloseBrowser]: undefined,

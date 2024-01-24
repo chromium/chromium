@@ -123,7 +123,8 @@ async def test_subscribeWithContext_subscribesToEventsInNestedContext(
             "context": ANY_STR,
             "url": url_same_origin,
             "children": None,
-            "parent": context_id
+            "parent": context_id,
+            "userContext": "default"
         }
     } == resp
 
@@ -529,7 +530,8 @@ async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
                 "params": {
                     "events": [
                         "log.entryAdded",
-                        "network.responseCompleted",  # This event is not subscribed.
+                        # This event is not subscribed.
+                        "network.responseCompleted",
                     ],
                     "contexts": [context_id]
                 }

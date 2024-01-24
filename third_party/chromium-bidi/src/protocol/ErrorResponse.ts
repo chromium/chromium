@@ -107,6 +107,12 @@ export class NoSuchScriptException extends Exception {
   }
 }
 
+export class NoSuchUserContextException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.NoSuchUserContext, message, stacktrace);
+  }
+}
+
 export class SessionNotCreatedException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.SessionNotCreated, message, stacktrace);

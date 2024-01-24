@@ -26,7 +26,8 @@ async def test_browsingContext_getTree_contextReturned(websocket, context_id):
             "context": context_id,
             "children": [],
             "parent": None,
-            "url": "about:blank"
+            "url": "about:blank",
+            "userContext": "default"
         }]
     }
 
@@ -52,7 +53,8 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket):
             "context": new_context_id,
             "parent": None,
             "url": "about:blank",
-            "children": []
+            "children": [],
+            "userContext": "default"
         }]
     }
 
@@ -75,10 +77,12 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedCrossOriginConte
             "children": [{
                 "context": ANY_STR,
                 "url": another_example_url,
-                "children": []
+                "children": [],
+                "userContext": "default"
             }],
             "parent": None,
-            "url": another_page_with_nested_iframe
+            "url": another_page_with_nested_iframe,
+            "userContext": "default"
         }]
     } == result
 
@@ -103,10 +107,12 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_context
             "children": [{
                 "context": ANY_STR,
                 "url": nested_iframe,
-                "children": []
+                "children": [],
+                "userContext": "default"
             }],
             "parent": None,
-            "url": page_with_nested_iframe
+            "url": page_with_nested_iframe,
+            "userContext": "default"
         }]
     } == result
 
@@ -120,9 +126,11 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_context
             "children": [{
                 "context": ANY_STR,
                 "url": another_nested_iframe,
-                "children": []
+                "children": [],
+                "userContext": "default"
             }],
             "parent": None,
-            "url": another_page_with_nested_iframe
+            "url": another_page_with_nested_iframe,
+            "userContext": "default"
         }]
     } == result

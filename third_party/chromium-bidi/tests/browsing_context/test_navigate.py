@@ -234,7 +234,8 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
             "context": context_id,
             "children": [],
             "parent": None,
-            "url": url_with_hash_1
+            "url": url_with_hash_1,
+            "userContext": "default"
         }]
     } == result
 
@@ -249,7 +250,8 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
             "context": context_id,
             "children": [],
             "parent": None,
-            "url": url_with_hash_2
+            "url": url_with_hash_2,
+            "userContext": "default"
         }]
     } == result
 
@@ -274,7 +276,8 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
             "context": context_id,
             "children": [],
             "parent": None,
-            "url": url_with_hash_1
+            "url": url_with_hash_1,
+            "userContext": "default"
         }]
     } == result
 
@@ -288,7 +291,8 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
             "context": context_id,
             "children": [],
             "parent": None,
-            "url": url_with_hash_2
+            "url": url_with_hash_2,
+            "userContext": "default"
         }]
     } == result
 
@@ -309,7 +313,8 @@ async def test_navigateToPageWithHash_contextInfoUpdated(
             "context": context_id,
             "children": [],
             "parent": None,
-            "url": url_with_hash_1
+            "url": url_with_hash_1,
+            "userContext": "default"
         }]
     }
 

@@ -90,6 +90,7 @@ export const enum ErrorCode {
   NoSuchRequest = 'no such request',
   NoSuchScript = 'no such script',
   NoSuchStoragePartition = 'no such storage partition',
+  NoSuchUserContext = 'no such user context',
   SessionNotCreated = 'session not created',
   UnableToCaptureScreen = 'unable to capture screen',
   UnableToCloseBrowser = 'unable to close browser',
@@ -233,11 +234,54 @@ export namespace Session {
     params: Session.SubscriptionRequest;
   };
 }
-export type BrowserCommand = Browser.Close;
+export type BrowserCommand =
+  | Browser.Close
+  | Browser.CreateUserContext
+  | Browser.GetUserContexts
+  | Browser.RemoveUserContext;
+export type BrowserResult =
+  | Browser.CreateUserContextResult
+  | Browser.GetUserContextsResult;
+export namespace Browser {
+  export type UserContext = string;
+}
+export namespace Browser {
+  export type UserContextInfo = {
+    userContext: Browser.UserContext;
+  };
+}
 export namespace Browser {
   export type Close = {
     method: 'browser.close';
     params: EmptyParams;
+  };
+}
+export namespace Browser {
+  export type CreateUserContext = {
+    method: 'browser.createUserContext';
+    params: EmptyParams;
+  };
+}
+export namespace Browser {
+  export type CreateUserContextResult = Browser.UserContextInfo;
+}
+export namespace Browser {
+  export type GetUserContexts = {
+    method: 'browser.getUserContexts';
+    params: EmptyParams;
+  };
+}
+export namespace Browser {
+  export type GetUserContextsResult = {
+    userContexts: [Browser.UserContextInfo, ...Browser.UserContextInfo[]];
+  };
+}
+export namespace Browser {
+  export type RemoveUserContext = {
+    method: 'browser.removeUserContext';
+    params: {
+      userContext: Browser.UserContext;
+    };
   };
 }
 export type BrowsingContextCommand =
@@ -281,9 +325,10 @@ export namespace BrowsingContext {
 }
 export namespace BrowsingContext {
   export type Info = {
+    children: BrowsingContext.InfoList | null;
     context: BrowsingContext.BrowsingContext;
     url: string;
-    children: BrowsingContext.InfoList | null;
+    userContext: Browser.UserContext;
     parent?: BrowsingContext.BrowsingContext | null;
   };
 }
@@ -429,6 +474,7 @@ export namespace BrowsingContext {
      * @defaultValue `false`
      */
     background?: boolean;
+    userContext?: Browser.UserContext | null;
   };
 }
 export namespace BrowsingContext {

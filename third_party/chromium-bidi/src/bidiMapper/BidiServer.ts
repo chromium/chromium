@@ -74,6 +74,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     cdpConnection: CdpConnection,
     browserCdpClient: CdpClient,
     selfTargetId: string,
+    defaultUserContextId: string,
     options?: MapperOptions,
     parser?: BidiCommandParameterParser,
     logger?: LoggerFn
@@ -92,6 +93,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       browserCdpClient,
       this.#eventManager,
       selfTargetId,
+      defaultUserContextId,
       this.#browsingContextStorage,
       new RealmStorage(),
       options?.acceptInsecureCerts ?? false,
@@ -122,11 +124,31 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     parser?: BidiCommandParameterParser,
     logger?: LoggerFn
   ): Promise<BidiServer> {
+    // The default context is not exposed in Target.getBrowserContexts but can
+    // be observed via Target.getTargets. To determine the default browser
+    // context, we check which one is mentioned in Target.getTargets and not in
+    // Target.getBrowserContexts.
+    const [{browserContextIds}, {targetInfos}] = await Promise.all([
+      browserCdpClient.sendCommand('Target.getBrowserContexts'),
+      browserCdpClient.sendCommand('Target.getTargets'),
+    ]);
+    let defaultUserContextId = 'default';
+    for (const info of targetInfos) {
+      if (
+        info.browserContextId &&
+        !browserContextIds.includes(info.browserContextId)
+      ) {
+        defaultUserContextId = info.browserContextId;
+        break;
+      }
+    }
+
     const server = new BidiServer(
       bidiTransport,
       cdpConnection,
       browserCdpClient,
       selfTargetId,
+      defaultUserContextId,
       options,
       parser,
       logger

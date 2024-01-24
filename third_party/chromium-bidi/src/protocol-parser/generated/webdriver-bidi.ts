@@ -117,6 +117,7 @@ export const ErrorCodeSchema = z.lazy(() =>
     'no such request',
     'no such script',
     'no such storage partition',
+    'no such user context',
     'session not created',
     'unable to capture screen',
     'unable to close browser',
@@ -318,12 +319,73 @@ export namespace Session {
     })
   );
 }
-export const BrowserCommandSchema = z.lazy(() => Browser.CloseSchema);
+export const BrowserCommandSchema = z.lazy(() =>
+  z.union([
+    Browser.CloseSchema,
+    Browser.CreateUserContextSchema,
+    Browser.GetUserContextsSchema,
+    Browser.RemoveUserContextSchema,
+  ])
+);
+export const BrowserResultSchema = z.lazy(() =>
+  z.union([
+    Browser.CreateUserContextResultSchema,
+    Browser.GetUserContextsResultSchema,
+  ])
+);
+export namespace Browser {
+  export const UserContextSchema = z.lazy(() => z.string());
+}
+export namespace Browser {
+  export const UserContextInfoSchema = z.lazy(() =>
+    z.object({
+      userContext: Browser.UserContextSchema,
+    })
+  );
+}
 export namespace Browser {
   export const CloseSchema = z.lazy(() =>
     z.object({
       method: z.literal('browser.close'),
       params: EmptyParamsSchema,
+    })
+  );
+}
+export namespace Browser {
+  export const CreateUserContextSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('browser.createUserContext'),
+      params: EmptyParamsSchema,
+    })
+  );
+}
+export namespace Browser {
+  export const CreateUserContextResultSchema = z.lazy(
+    () => Browser.UserContextInfoSchema
+  );
+}
+export namespace Browser {
+  export const GetUserContextsSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('browser.getUserContexts'),
+      params: EmptyParamsSchema,
+    })
+  );
+}
+export namespace Browser {
+  export const GetUserContextsResultSchema = z.lazy(() =>
+    z.object({
+      userContexts: z.array(Browser.UserContextInfoSchema),
+    })
+  );
+}
+export namespace Browser {
+  export const RemoveUserContextSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('browser.removeUserContext'),
+      params: z.object({
+        userContext: Browser.UserContextSchema,
+      }),
     })
   );
 }
@@ -380,9 +442,10 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export const InfoSchema = z.lazy(() =>
     z.object({
+      children: z.union([BrowsingContext.InfoListSchema, z.null()]),
       context: BrowsingContext.BrowsingContextSchema,
       url: z.string(),
-      children: z.union([BrowsingContext.InfoListSchema, z.null()]),
+      userContext: Browser.UserContextSchema,
       parent: z
         .union([BrowsingContext.BrowsingContextSchema, z.null()])
         .optional(),
@@ -551,6 +614,7 @@ export namespace BrowsingContext {
       type: BrowsingContext.CreateTypeSchema,
       referenceContext: BrowsingContext.BrowsingContextSchema.optional(),
       background: z.boolean().default(false).optional(),
+      userContext: z.union([Browser.UserContextSchema, z.null()]).optional(),
     })
   );
 }

@@ -39,7 +39,8 @@ async def test_browsingContext_close(websocket, context_id):
             "context": context_id,
             "parent": None,
             "url": "about:blank",
-            "children": None
+            "children": None,
+            "userContext": "default"
         }
     }
 

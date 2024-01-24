@@ -78,6 +78,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     browserCdpClient: CdpClient,
     eventManager: EventManager,
     selfTargetId: string,
+    defaultUserContextId: string,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     acceptInsecureCerts: boolean,
@@ -105,6 +106,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       preloadScriptStorage,
       acceptInsecureCerts,
       sharedIdWithFrame,
+      defaultUserContextId,
       logger
     );
     this.#cdpProcessor = new CdpProcessor(
@@ -149,6 +151,14 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // keep-sorted start block=yes
       case 'browser.close':
         return this.#browserProcessor.close();
+      case 'browser.createUserContext':
+        return await this.#browserProcessor.createUserContext();
+      case 'browser.getUserContexts':
+        return await this.#browserProcessor.getUserContexts();
+      case 'browser.removeUserContext':
+        return await this.#browserProcessor.removeUserContext(
+          command.params.userContext
+        );
       // keep-sorted end
 
       // Browsing Context domain
