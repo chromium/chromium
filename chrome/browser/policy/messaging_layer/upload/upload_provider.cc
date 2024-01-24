@@ -285,6 +285,11 @@ void EncryptedReportingUploadProvider::RequestUploadEncryptedRecords(
                          std::move(scoped_reservation), std::move(result_cb));
 }
 
+base::WeakPtr<EncryptedReportingUploadProvider>
+EncryptedReportingUploadProvider::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 // static
 EncryptedReportingUploadProvider::UploadClientBuilderCb
 EncryptedReportingUploadProvider::GetUploadClientBuilder() {
