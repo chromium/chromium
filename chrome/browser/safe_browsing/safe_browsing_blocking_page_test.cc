@@ -75,6 +75,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
@@ -3864,7 +3865,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTest,
 // Tests for real time URL check. To test it without making network requests to
 // Safe Browsing servers, store an unsafe verdict in cache for the URL.
 class SafeBrowsingBlockingPageRealTimeUrlCheckTest
-    : public InProcessBrowserTest {
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   SafeBrowsingBlockingPageRealTimeUrlCheckTest() = default;
 
@@ -3874,9 +3876,14 @@ class SafeBrowsingBlockingPageRealTimeUrlCheckTest
       const SafeBrowsingBlockingPageRealTimeUrlCheckTest&) = delete;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{kDelayedWarnings});
+    std::vector<base::test::FeatureRef> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {kDelayedWarnings};
+    if (GetParam()) {
+      enabled_features.push_back(kSafeBrowsingAsyncRealTimeCheck);
+    } else {
+      disabled_features.push_back(kSafeBrowsingAsyncRealTimeCheck);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     InProcessBrowserTest::SetUp();
   }
 
@@ -3915,12 +3922,36 @@ class SafeBrowsingBlockingPageRealTimeUrlCheckTest
         ->set_threat_details_done_callback(std::move(callback));
   }
 
+  void MaybeWaitForAsyncChecksToComplete() {
+    AsyncCheckTracker* tracker =
+        safe_browsing::AsyncCheckTracker::GetOrCreateForWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents(),
+            factory_.test_safe_browsing_service()->ui_manager().get());
+    // If all pending async checks are already resolved or were never created,
+    // don't wait for the tracker to say the checkers size reached 0, because
+    // that will never occur.
+    if (tracker->PendingCheckersSizeForTesting() > 0u) {
+      base::RunLoop async_checks_completed_run_loop;
+      tracker->SetOnAllCheckersCompletedForTesting(
+          async_checks_completed_run_loop.QuitClosure());
+      async_checks_completed_run_loop.Run();
+    }
+    // When all pending checks have been resolved, we may still need to wait for
+    // the interstitial to load.
+    content::WaitForLoadStop(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
  private:
   TestSafeBrowsingServiceFactory factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
+INSTANTIATE_TEST_SUITE_P(AsyncCheckEnabled,
+                         SafeBrowsingBlockingPageRealTimeUrlCheckTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
                        WarningShown_EnhancedProtectionEnabled) {
   safe_browsing::SetSafeBrowsingState(
       browser()->profile()->GetPrefs(),
@@ -3931,11 +3962,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
   SetReportSentCallback(threat_report_sent_runner->QuitClosure());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  MaybeWaitForAsyncChecksToComplete();
   ASSERT_TRUE(IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
                        WarningShown_MbbEnabled) {
   safe_browsing::SetSafeBrowsingState(
       browser()->profile()->GetPrefs(),
@@ -3946,11 +3978,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
   SetupUnsafeVerdict(url, browser()->profile());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  MaybeWaitForAsyncChecksToComplete();
   ASSERT_TRUE(IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
                        WarningNotShown_MbbDisabled) {
   safe_browsing::SetSafeBrowsingState(
       browser()->profile()->GetPrefs(),

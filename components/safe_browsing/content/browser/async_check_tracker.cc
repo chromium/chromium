@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 
+#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/unsafe_resource_util.h"
@@ -182,6 +183,7 @@ void AsyncCheckTracker::MaybeDeleteChecker(int64_t navigation_id) {
         FROM_HERE, std::move(pending_checkers_[navigation_id]));
   }
   pending_checkers_.erase(navigation_id);
+  MaybeCallOnAllCheckersCompletedCallback();
 }
 
 void AsyncCheckTracker::DeletePendingCheckers(
@@ -199,11 +201,24 @@ void AsyncCheckTracker::DeletePendingCheckers(
                                                      std::move(it->second));
     }
     it = pending_checkers_.erase(it);
+    MaybeCallOnAllCheckersCompletedCallback();
   }
 }
 
 size_t AsyncCheckTracker::PendingCheckersSizeForTesting() {
   return pending_checkers_.size();
+}
+
+void AsyncCheckTracker::SetOnAllCheckersCompletedForTesting(
+    base::OnceClosure callback) {
+  on_all_checkers_completed_callback_for_testing_ = std::move(callback);
+}
+
+void AsyncCheckTracker::MaybeCallOnAllCheckersCompletedCallback() {
+  if (pending_checkers_.empty() &&
+      on_all_checkers_completed_callback_for_testing_) {
+    std::move(on_all_checkers_completed_callback_for_testing_).Run();
+  }
 }
 
 base::WeakPtr<AsyncCheckTracker> AsyncCheckTracker::GetWeakPtr() {

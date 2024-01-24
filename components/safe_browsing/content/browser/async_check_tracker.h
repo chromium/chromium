@@ -71,6 +71,7 @@ class AsyncCheckTracker
   friend class content::WebContentsUserData<AsyncCheckTracker>;
   friend class SBBrowserUrlLoaderThrottleTestBase;
   friend class AsyncCheckTrackerTest;
+  friend class SafeBrowsingBlockingPageRealTimeUrlCheckTest;
 
   AsyncCheckTracker(content::WebContents* web_contents,
                     scoped_refptr<BaseUIManager> ui_manager);
@@ -91,6 +92,14 @@ class AsyncCheckTracker
   // Displays an interstitial on `resource`.
   void DisplayBlockingPage(security_interstitials::UnsafeResource resource);
 
+  // Sets callback to be used once all checkers are completed. Used only for
+  // tests.
+  void SetOnAllCheckersCompletedForTesting(base::OnceClosure callback);
+
+  // May call |on_all_checkers_completed_callback_for_testing_| if there are no
+  // |pending_checkers_| remaining.
+  void MaybeCallOnAllCheckersCompletedCallback();
+
   // Used to display a warning.
   scoped_refptr<BaseUIManager> ui_manager_;
 
@@ -104,6 +113,10 @@ class AsyncCheckTracker
 
   // A set of navigation ids that have committed.
   base::flat_set<int64_t> committed_navigation_ids_;
+
+  // Callback that is called once all checkers are completed. Used only for
+  // tests.
+  base::OnceClosure on_all_checkers_completed_callback_for_testing_;
 
   base::WeakPtrFactory<AsyncCheckTracker> weak_factory_{this};
 
