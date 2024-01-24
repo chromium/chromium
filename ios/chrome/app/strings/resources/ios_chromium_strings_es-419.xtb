@@ -102,6 +102,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="3955621079070267756">Abre Chromium desde cualquier app</translation>
 <translation id="4005283307739974863">Abre y ejecuta la Verificación de seguridad en Chromium.</translation>
 <translation id="4043291146360695975">Las contraseñas se guardan en el Administrador de contraseñas solo en este dispositivo.</translation>
+<translation id="4076589763479456892">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">No es compatible en la versión beta de Chromium</translation>
 <translation id="4106512142782407609">Accediste como <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@ Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guard
 <translation id="5534584691915394889">Se usará para crear eventos en el Calendario de Apple desde Chromium y Google Lens.</translation>
 <translation id="5571094606370987472">Abre las pestañas recientes de Chromium.</translation>
 <translation id="5623083843656850677">Bloquea tus pestañas de incógnito cuando abandonas Chromium o cambias de app.</translation>
+<translation id="5671188105328420281">Sugerencias de Chromium</translation>
 <translation id="5688047395118852662">En esta tarjeta, se muestran sugerencias para aprovechar Chromium al máximo.</translation>
 <translation id="5700709190537129682">Chromium no puede revisar las contraseñas</translation>
 <translation id="5777187867430702742">Página de Chromium</translation>
@@ -283,6 +285,7 @@ Aspectos para tener en cuenta:
 <translation id="8776843108004031667">Esta cuenta y todos los datos sin guardar se quitarán de Chromium.</translation>
 <translation id="88376265765385899">Abre los favoritos de Chromium.</translation>
 <translation id="8860548555286245440">Abrir URLs en Chromium en modo Incógnito</translation>
+<translation id="8866191443434488382">Chromium detectará los números de seguimiento en los sitios que visites y te mostrará actualizaciones de paquetes en la página Nueva pestaña. El número de seguimiento del paquete y el nombre del sitio web se enviarán a Chromium para proporcionar esta función y mejorar las funciones de compras para todos los usuarios. Puedes actualizar esta opción en cualquier momento en la <ph name="BEGIN_LINK" />configuración de seguimiento de paquetes<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium para iOS</translation>
 <translation id="8924617840944134898">Abrir una pestaña de incógnito en Chromium</translation>
 <translation id="894437814105052438">Si sales de la cuenta, Chromium no sincronizará ningún dato nuevo con tu Cuenta de Google. Los datos sincronizados anteriormente permanecerán en la cuenta.</translation>

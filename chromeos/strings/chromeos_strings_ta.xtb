@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">அடுத்த பக்கம்</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> வரையிலான டேட்டா உபயோகம்</translation>
 <translation id="1621067168122174824">சார்ஜ் சோதனையை இயக்கு</translation>
+<translation id="1626590945318984973">ஷார்ட்கட் இல்லை. ஃபங்க்ஷன் மற்றும் <ph name="META_KEY" /> பட்டன்களைப் பயன்படுத்தாமல் புதிய ஷார்ட்கட்டை அழுத்தவும்.</translation>
 <translation id="1639239467298939599">ஏற்றுகிறது</translation>
 <translation id="1641857168437328880">டாக்குமெண்ட் ஃபீடர் (ஒரு பக்கம்)</translation>
 <translation id="1643449475550628585">வால்பேப்பர் படத்தைத் தினமும் மாற்றும்</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">இப்போது நீங்கள் புதிய <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />வால்பேப்பர்களை<ph name="END_LINK_WALLPAPER_SUBPAGE" /> அணுகலாம்</translation>
 <translation id="4117637339509843559">டார்க் பயன்முறை</translation>
 <translation id="4130035430755296270">கூடுதல் தளவமைப்பு விருப்பங்களுக்கு மவுஸ் பாயிண்ட்டரை மேலே கொண்டு செல்லவும்</translation>
+<translation id="4130750466177569591">நான் ஏற்கிறேன்</translation>
 <translation id="4131410914670010031">கருப்பு வெள்ளை</translation>
 <translation id="4145784616224233563">HTTP ஃபயர்வால்</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">முடக்கு</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ஐ மீண்டும் தொடங்குகிறது</translation>
 <translation id="4395835743215824109">கீபோர்டு பிரத்தியேகமாக்கல்</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> பட்டன் இல்லாத ஷார்ட்கட், சில ஆப்ஸின் ஷார்ட்கட்டுடன் முரண்படக்கூடும். இந்த ஷார்ட்கட்டைத் தொடர்ந்து பயன்படுத்த, அதை மீண்டும் அழுத்தவும் அல்லது <ph name="KEY" /> பட்டனைப் பயன்படுத்தி புதிய ஷார்ட்கட்டை அழுத்தவும்.</translation>
 <translation id="4415951057168511744">தற்போதைய தோற்றப் படம்</translation>
+<translation id="4417830657741848074">உங்கள் நிர்வாகி சில ஆப்ஸைத் தானாகவே தொடங்கும் வகையில் அமைத்துள்ளார். அந்த ஆப்ஸில் சிலவற்றை மூட முடியாமல் போகலாம்.</translation>
 <translation id="4422041425070339732">கீழ்நோக்கிய அம்புக்குறி ஐகான்</translation>
 <translation id="4425149324548788773">எனது இயக்ககம்</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> முடக்கப்பட்டுள்ளது</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">எர்த் ஃப்ளோ ஸ்கிரீன் சேவர்</translation>
 <translation id="4479639480957787382">ஈத்தர்நெட்</translation>
 <translation id="4483049906298469269">இயல்புநிலையற்ற நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
+<translation id="4500722292849917410">ஷார்ட்கட் இல்லை. ஒரு மாற்றி விசையை (ctrl, alt, shift அல்லது <ph name="META_KEY" />) பயன்படுத்தி புதிய ஷார்ட்கட்டை அழுத்தவும்.</translation>
 <translation id="4500966230243561393">இடைமுக வண்ணம்</translation>
 <translation id="4503223151711056411">இடது அம்புக்குறி</translation>
 <translation id="4507392511610824664">ஒளிர்வை அதிகரிப்பதற்கான ஐகான்</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Files ஆப்ஸில் ஃபோல்டரைத் தேர்ந்தெடு...</translation>
 <translation id="4835901797422965222">நெட்நொர்க்குகள் எதுவும் செயலில் இல்லை</translation>
 <translation id="4839698083503556542">சொந்த மூவியை உருவாக்குக</translation>
+<translation id="48409034532829769">உங்கள் நிர்வாகி "<ph name="APP_NAME" />" ஆப்ஸைத் தானாகவே தொடங்கும் வகையில் அமைத்துள்ளார். இந்த ஆப்ஸை மூட முடியாமல் போகலாம்.</translation>
 <translation id="484462545196658690">தானியங்கு</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> தேர்ந்தெடுக்கப்பட்டுள்ளது, <ph name="TOPIC_SOURCE" /> ஆல்பங்களைத் தேர்ந்தெடுக்க Enter விசையை அழுத்துங்கள்</translation>
 <translation id="484790837831576105">(Android) DNS ரெசல்யூஷன்</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">பிரி</translation>
 <translation id="4972592110715526173">பயன்முறையை மாற்றுவதற்கான ஐகான்</translation>
 <translation id="498186245079027698">ஸ்கேனரைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும். ஸ்கேன் செய்த ஃபைல்களைச் சேமிக்க போதுமான இடம் இருப்பதை உறுதிப்படுத்திக்கொள்ளவும்.</translation>
+<translation id="4982627662315910959">ஷார்ட்கட் இல்லை. shift உடன் மேலும் ஒரு மாற்றி விசையை (ctrl, alt அல்லது <ph name="META_KEY" />) பயன்படுத்தி புதிய ஷார்ட்கட்டை அழுத்தவும்.</translation>
 <translation id="4985509611418653372">இயக்கு</translation>
 <translation id="4987769320337599931">ஃபயர்வால்</translation>
 <translation id="4988526792673242964">பக்கங்கள்</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">செல்லுலார் வழங்குநர்</translation>
 <translation id="725133483556299729">மின்னஞ்சல் முகவரியைத் தேர்ந்தெடுக்கும்</translation>
 <translation id="7271040990581020067">ஸ்கேனர் தற்போது உபயோகத்தில் உள்ளது. பிறகு முயலவும்.</translation>
+<translation id="7271932918253517778">மேல் வரிசை பட்டன்கள் இருக்கும் ஷார்ட்கட்டில் <ph name="META_KEY" /> பட்டன் இருக்க வேண்டும்.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">மனதை வருடும் நினைவுகள்</translation>
 <translation id="7287310195820267359">வால்பேப்பர் தொகுப்புகள்</translation>

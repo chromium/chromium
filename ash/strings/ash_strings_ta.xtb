@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">மொபைலில் நெட்வொர்க் இல்லை</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> ஐப் பிரதிபலிக்கிறது</translation>
 <translation id="1885785240814121742">கைரேகை மூலம் அன்லாக் செய்யலாம்</translation>
-<translation id="1888656773939766144"><ph name="SPECIFIED_RESOLUTION" /> தெளிவுத்திறனை (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) <ph name="DISPLAY_NAME" /> ஆதரிக்கவில்லை. தெளிவுத்திறன் <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) என்பதற்கு மாற்றப்பட்டது. மாற்றங்களை வைத்திருக்க ‘உறுதிசெய்’ என்பதைக் கிளிக் செய்யவும். இன்னும் <ph name="TIMEOUT_SECONDS" /> இல் முந்தைய அமைப்புகள் மீட்டெடுக்கப்படும்.</translation>
 <translation id="1908992311423394684">புதிதாக நிறுவப்பட்டது</translation>
 <translation id="1915307458270490472">மூடுக</translation>
 <translation id="1918022425394817322">கேமரா மாதிரிக்காட்சி மேல் வலது மூலையில் பொருத்தப்பட்டது</translation>
@@ -622,6 +621,7 @@
 <translation id="3577473026931028326">ஏதோ தவறாகிவிட்டது. மீண்டும் முயலவும்.</translation>
 <translation id="3580650856351781466">பேச்சு அறிதல் அம்சத்திற்கான ஃபைல்களைப் பதிவிறக்குகிறது</translation>
 <translation id="3585296979871889131">மொபைலில் உள்ள சமீபத்திய படங்கள், மீடியா, அறிவிப்புகள், ஆப்ஸ் ஆகியவற்றைப் பார்க்கலாம்</translation>
+<translation id="3590441166907930941">பக்கவாட்டு பட்டன்</translation>
 <translation id="3593039967545720377">கிளிப்போர்டைப் பார்க்க, <ph name="SHORTCUT_KEY_NAME" /> + V விசைகளை அழுத்தி இதுவரையான கிளிப்போர்டு தகவல்களை அணுகலாம். இதைச் செய்ய, ஏதேனும் ஒன்றை நகலெடுக்கவும்.</translation>
 <translation id="3593646411856133110">திறந்திருக்கும் ஆப்ஸ்களைப் பார்க்க மேலே ஸ்வைப் செய்து பிடிக்கவும்</translation>
 <translation id="3595596368722241419">பேட்டரி நிரம்பியது</translation>
@@ -1034,6 +1034,7 @@
 <translation id="5163434717504750796">பேட்டரி ஆயுள் <ph name="BATTERY_HEALTH_PERCENTAGE" />% | சுழற்சி எண்ணிக்கை <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">டெஸ்க்கை டெம்ப்ளேட்டாகச் சேமி</translation>
 <translation id="5168181903108465623">Cast சாதனங்கள் உள்ளன</translation>
+<translation id="5168753792967365150">Google Tasksஸில் திருத்து</translation>
 <translation id="5170568018924773124">ஃபோல்டரில் காண்பி</translation>
 <translation id="5176318573511391780">திரையைப் பகுதியளவு ரெக்கார்டு செய்யும்</translation>
 <translation id="5187627942836026988">ஹாட்ஸ்பாட் விவரங்களைக் காட்டும். உங்கள் நிர்வாகி ஹாட்ஸ்பாட்டைத் தடுத்துள்ளார்.</translation>
@@ -1303,6 +1304,8 @@
 <translation id="6168622430237609329">உங்களது நிறுவப்பட்டுள்ள ஆப்ஸ்</translation>
 <translation id="6173151025443907148">Lacros இயக்கப்பட்டிருக்கும்போது இரண்டாவது பயனர் உள்நுழைய முடியாது. இதற்குப் பதிலாக Lacros உலாவியில் இரண்டாவது உலாவிச் சுயவிவரத்தைப் பயன்படுத்தவும் அல்லது Lacrosஸை முடக்கிவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="6179832488876878285">முக்கியமான கோப்புகளை இங்கே பின் (pin) செய்யலாம். பின் செய்ய Files ஆப்ஸைத் திறக்கவும்.</translation>
+<translation id="6180193585172850042">பின்செல்லும் பட்டன்</translation>
+<translation id="6180651297859206670">முன்செல்லும் பட்டன்</translation>
 <translation id="6182592640011875895">டெஸ்க்கைத் திற</translation>
 <translation id="6185696379715117369">பக்கத்தின் மேலே</translation>
 <translation id="619335566042889110">இப்போதே சார்ஜ் செய்க</translation>

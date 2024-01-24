@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">往前</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />至今的數據用量</translation>
 <translation id="1621067168122174824">執行充電測試</translation>
+<translation id="1626590945318984973">這組快速鍵無法使用，請使用其他快速鍵，而且當中不得有功能鍵和<ph name="META_KEY" />鍵。</translation>
 <translation id="1639239467298939599">載入中</translation>
 <translation id="1641857168437328880">文件送紙器 (單面)</translation>
 <translation id="1643449475550628585">每天變更桌布圖片</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">現在起，你可以使用全新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />桌布<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">深色模式</translation>
 <translation id="4130035430755296270">將滑鼠游標懸停在上方，即可查看更多版面配置選項</translation>
+<translation id="4130750466177569591">我同意</translation>
 <translation id="4131410914670010031">黑白</translation>
 <translation id="4145784616224233563">HTTP 防火牆</translation>
 <translation id="4147897805161313378">Google 相簿</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">停用</translation>
 <translation id="439429847087949098">正在重新啟動「<ph name="DEVICE_NAME" />」</translation>
 <translation id="4395835743215824109">自訂鍵盤</translation>
+<translation id="4403262788869804671">使用快速鍵時如未按下<ph name="META_KEY" />鍵，可能會與某些應用程式的快速鍵衝突。再次按下這個快速鍵即可繼續使用，或是按下<ph name="KEY" />鍵重新輸入快速鍵。</translation>
 <translation id="4415951057168511744">目前的顯示圖片</translation>
+<translation id="4417830657741848074">系統管理員已將某些應用程式設為自動啟動，部分應用程式可能無法關閉。</translation>
 <translation id="4422041425070339732">向下鍵</translation>
 <translation id="4425149324548788773">我的雲端硬碟</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> 已停用</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">地球動態螢幕保護程式</translation>
 <translation id="4479639480957787382">乙太網路</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網路閘道</translation>
+<translation id="4500722292849917410">這組快速鍵無法使用。按下新的快速鍵時，請使用輔助鍵 (Ctrl、Alt、Shift 或<ph name="META_KEY" />鍵)。</translation>
 <translation id="4500966230243561393">介面顏色</translation>
 <translation id="4503223151711056411">向左鍵</translation>
 <translation id="4507392511610824664">調高亮度</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">在「檔案」應用程式中選取資料夾...</translation>
 <translation id="4835901797422965222">沒有使用中的網路</translation>
 <translation id="4839698083503556542">創作自己的電影</translation>
+<translation id="48409034532829769">系統管理員已將「<ph name="APP_NAME" />」設為自動啟動，你可能無法關閉這個應用程式。</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4847902821209177679">已選取「<ph name="TOPIC_SOURCE" /><ph name="TOPIC_SOURCE_DESC" />」，按下 Enter 鍵即可選取「<ph name="TOPIC_SOURCE" />」的相簿</translation>
 <translation id="484790837831576105">(Android) DNS 解析</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">分割</translation>
 <translation id="4972592110715526173">變更模式</translation>
 <translation id="498186245079027698">請檢查掃描器，然後再試一次。另請確認本機有足夠空間可以儲存掃描的檔案。</translation>
+<translation id="4982627662315910959">這組快速鍵無法使用。按下新的快速鍵時，請使用 Shift 鍵和 1 個輔助鍵 (Ctrl、Alt 或<ph name="META_KEY" />鍵)。</translation>
 <translation id="4985509611418653372">執行</translation>
 <translation id="4987769320337599931">防火牆</translation>
 <translation id="4988526792673242964">網頁</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">行動網路提供者</translation>
 <translation id="725133483556299729">選取電子郵件地址</translation>
 <translation id="7271040990581020067">掃描器正在使用中，請稍後再試。</translation>
+<translation id="7271932918253517778">如果快速鍵會用到最上排的按鍵，請一併按下<ph name="META_KEY" />鍵。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">感受微風徐徐</translation>
 <translation id="7287310195820267359">桌布集錦</translation>

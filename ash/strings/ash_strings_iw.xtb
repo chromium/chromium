@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">אין רשת סלולרית</translation>
 <translation id="1882897271359938046">משקף אל <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">ביטול נעילה עם טביעת אצבע</translation>
-<translation id="1888656773939766144">‏<ph name="DISPLAY_NAME" /> לא תומך ברזולוציה של <ph name="SPECIFIED_RESOLUTION" /> ‏(<ph name="SPECIFIED_REFRESH_RATE" />Hz). הרזולוציה הוחלפה ל-<ph name="FALLBACK_RESOLUTION" /> ‏(<ph name="FALLBACK_REFRESH_RATE" />). עליך ללחוץ על 'אישור' כדי לשמור את השינויים. ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">התקנה חדשה</translation>
 <translation id="1915307458270490472">ניתוק</translation>
 <translation id="1918022425394817322">המצלמה מוצמדת לפינה השמאלית העליונה</translation>
@@ -622,6 +621,7 @@
 <translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="3580650856351781466">מתבצעת הורדה של קובצי דיבור</translation>
 <translation id="3585296979871889131">הצגת התמונות, המדיה, ההתראות והאפליקציות שבטלפון מהזמן האחרון</translation>
+<translation id="3590441166907930941">הלחצן הצדדי</translation>
 <translation id="3593039967545720377">‏כדי להיכנס להיסטוריית הלוח, יש ללחוץ על <ph name="SHORTCUT_KEY_NAME" /> + V לצפייה בלוח. כדי להתחיל, צריך להעתיק פריט.</translation>
 <translation id="3593646411856133110">כדי להציג את האפליקציות הפתוחות, מחליקים כלפי מעלה ולוחצים לחיצה ארוכה</translation>
 <translation id="3595596368722241419">סוללה מלאה</translation>
@@ -1034,6 +1034,7 @@
 <translation id="5163434717504750796">תקינות הסוללה: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | מספר המחזורים: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">שמירת שולחן העבודה הווירטואלי כתבנית</translation>
 <translation id="5168181903108465623">מכשירי העברה זמינים</translation>
+<translation id="5168753792967365150">‏עריכה ב-Google Tasks</translation>
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="5176318573511391780">הקלטה של מסך חלקי</translation>
 <translation id="5187627942836026988">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). נקודת האינטרנט חסומה על ידי האדמין.</translation>
@@ -1303,6 +1304,8 @@
 <translation id="6168622430237609329">האפליקציות המותקנות</translation>
 <translation id="6173151025443907148">‏רק משתמש אחד יכול להיכנס לחשבון כשארכיטקטורת Lacros מופעלת. במקום זאת, צריך להשתמש בפרופיל דפדפן שני ב-Lacros או להשבית את Lacros ולנסות שוב.</translation>
 <translation id="6179832488876878285">כאן אפשר להצמיד את הקבצים החשובים. יש לפתוח את אפליקציית 'קבצים' כדי להתחיל.</translation>
+<translation id="6180193585172850042">לחצן 'הקודם'</translation>
+<translation id="6180651297859206670">לחצן 'הבא'</translation>
 <translation id="6182592640011875895">פתיחת שולחן העבודה</translation>
 <translation id="6185696379715117369">Page up</translation>
 <translation id="619335566042889110">לטעינה מלאה</translation>

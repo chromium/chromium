@@ -90,6 +90,7 @@
 <translation id="2583187216237139145">Бул профилди колдонуп жатканда Chromium'да топтолгон бардык маалыматты (түзүлгөн кыстармалар, таржымал, сырсөздөр жана башка жөндөөлөр) жумуш профилинин администратору өчүрө алат. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium'ду колдоно берүү</translation>
 <translation id="259935314519650377">Жүктөлүп алынган орноткучтун кеши түзүлбөй калды. Ката: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium ылдамыраак иштейт жана JavaScript'ти колдонгон функциялар туура иштеши керек (сунушталат)</translation>
 <translation id="2648074677641340862">Орнотулуп жатканда иш системасында ката кетти. Chromium'ду кайра жүктөп алыңыз.</translation>
 <translation id="2661879430930417727">Түзмөктү бөлүшсөңүз, жакындарыңыз өзүнчө серептеп, Chromium'ду өздөрү каалагандай тууралап алышат</translation>
 <translation id="268602741124540128">Chromium'га кош келиңиз, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -125,6 +126,7 @@
 <translation id="3258596308407688501">Chromium дайындар каталогун окуп, ага жаза албайт:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 — Chromium'дун JavaScript жана WebAssembly каражаты. Ал сайттын ишин жакшыртуу үчүн колдонулат</translation>
 <translation id="3283186697780795848"><ph name="PRODUCT_VERSION" /> Chromium версиясы орнотулду</translation>
 <translation id="3286538390144397061">Азыр өчүрүп күйгүзүү</translation>
 <translation id="328888136576916638">Google API ачкычтары жок болуп жатат. Chromium'дун айрым функциялары өчүрүлөт.</translation>
@@ -218,6 +220,7 @@
 <translation id="4814736265800133385">Chromium'ду аккаунтсуз колдонуу</translation>
 <translation id="4888717733111232871">mDNS трафигине уруксат берүү үчүн Chromium'дун кирүү эрежеси.</translation>
 <translation id="4893347770495441059">&amp;Chromium'ду жаңыртуу үчүн кайра иштетиңиз</translation>
+<translation id="4942295735032723435">Chromium жаңыртууларын алып туруу үчүн macOS 11 же андан кийинки версиясын орнотушуңуз керек. Бул компьютерде macOS 10.15 версиясы колдонулууда.</translation>
 <translation id="4943838377383847465">Chromium фондук режимде.</translation>
 <translation id="4987820182225656817">Коноктор Chromium'ду артында эч нерсе калтырбай колдоно алышат.</translation>
 <translation id="4994636714258228724">Өзүңүздү Chromium'га кошуңуз</translation>
@@ -406,6 +409,7 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="8105840573057009683">Chromium'га бул сайтта жайгашкан жерди колдонууга уруксат бериңиз</translation>
 <translation id="8133124826068723441">Сиздин домениңизде шайкештештирүү мүмкүнчүлүгү жок болгондуктан, ChromiumOS дайын-даректериңизди шайкештештире алган жок.</translation>
 <translation id="813913629614996137">Баштапкы маанини берүүдө...</translation>
+<translation id="8166782796394721554">Chromium'дун JavaScript жана WebAssembly каражаттарында кошумча коргоону күйгүзүү</translation>
 <translation id="81770708095080097">Бул файл кооптуу, ошондуктан Chromium аны бөгөттөп койду.</translation>
 <translation id="8213374284266571500">Файлдын мындай түрү кооптуу болгондуктан, Chromium аны бөгөттөп койду</translation>
 <translation id="8248265253516264921">Эгер сүрөттөрдүн түшүндүрмөсү жок болсо, Chromium аны түшүндүрүп берүүгө аракет кылат. Түшүндүрмөлөрдү даярдоо үчүн, сүрөттөр Google'га жөнөтүлөт. Аны жөндөөлөрдөн каалаган убакта өчүрүп койсоңуз болот.</translation>

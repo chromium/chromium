@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">Променете стандартното местоположение за изтегляне по всяко време</translation>
 <translation id="1796666869097395659">Намалете раздела, за да се върнете към него по-късно</translation>
 <translation id="1807246157184219062">Светло</translation>
+<translation id="1807709131360304325">Отваряне на нов прозорец</translation>
 <translation id="1810845389119482123">Първоначалното настройване на синхронизирането не завърши</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> не може да продължи да използва <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1829244130665387512">Търсене в страницата</translation>
@@ -959,7 +960,6 @@
 <translation id="6192907950379606605">Описания на изображенията</translation>
 <translation id="6193448654517602979">Избиране на раздели</translation>
 <translation id="6196315980958524839">Паролите се запазват в Google Мениджър на пароли на това устройство</translation>
-<translation id="6202514376968366382">Chrome може да отвори изтегления от вас PDF файл</translation>
 <translation id="6202812185118613467">Влезте отново в профила си, за да стартирате синхронизирането</translation>
 <translation id="6205314730813004066">Поверителност при рекламите</translation>
 <translation id="6210748933810148297">Не сте <ph name="EMAIL" />?</translation>
@@ -1328,6 +1328,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> не е актуален.</translation>
 <translation id="7944772052836377867">Синхронизирането трябва да потвърди, че това сте вие</translation>
 <translation id="7947953824732555851">Приемам и влизам</translation>
+<translation id="7951102827450076904">Изтеглените PDF файлове да се отварят винаги</translation>
 <translation id="7957413488482743710">Виртуалната карта скрива действителната ви, за да ви защити от потенциална измама. <ph name="BEGIN_LINK1" />Научете повече за виртуалните карти<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Бутон за връщане назад към Page Insights</translation>
 <translation id="7961926449547174351">Деактивирахте достъпа до хранилището. Моля, отворете настройките, за да го активирате.</translation>

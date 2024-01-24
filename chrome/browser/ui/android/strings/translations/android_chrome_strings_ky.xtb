@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">Жүктөлүп алынгандар үчүн демейки папканы каалаган убакта өзгөртүңүз</translation>
 <translation id="1796666869097395659">Ага кийинчерээк кайтуу үчүн өтмөктү кичирейтиңиз</translation>
 <translation id="1807246157184219062">Ачык</translation>
+<translation id="1807709131360304325">Жаңы терезе ачуу</translation>
 <translation id="1810845389119482123">Шайкештирүү аягына чейин жөндөлгөн жок</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аркылуу уланта албайт</translation>
 <translation id="1829244130665387512">Ушул беттен табыңыз</translation>
@@ -959,7 +960,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6192907950379606605">Сүрөттөмөлөрдү алуу</translation>
 <translation id="6193448654517602979">Өтмөктөрдү тандоо</translation>
 <translation id="6196315980958524839">Сырсөздөр ушул түзмөктө Google Сырсөздөрдү башкаргычка сакталат</translation>
-<translation id="6202514376968366382">Chrome жүктөлүп алынган PDF файлдарын ача алат</translation>
 <translation id="6202812185118613467">Шайкештирип баштоо үчүн кайра кириңиз</translation>
 <translation id="6205314730813004066">Жарнаманын купуялыгы</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> эмеспи?</translation>
@@ -1328,6 +1328,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> эскирип калган.</translation>
 <translation id="7944772052836377867">Шайкештирүү өзүңүздү ырасташы керек</translation>
 <translation id="7947953824732555851">Кабыл алуу жана кирүү</translation>
+<translation id="7951102827450076904">Жүктөлүп алынган PDF файлдарын ар дайым ачуу</translation>
 <translation id="7957413488482743710">Шылуундуктан коргоого жардам берүү үчүн виртуалдык карта чыныгы картаңыздын маалыматын жашырат. <ph name="BEGIN_LINK1" />Виртуалдык карталар жөнүндө кеңири маалымат алыңыз<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Барактын статистикасындагы Кайтуу баскычы</translation>
 <translation id="7961926449547174351">Сактагычты колдонуу мүмкүнчүлүгүн өчүрүп койдуңуз. Параметрлерге өтүп, аны иштетиңиз.</translation>

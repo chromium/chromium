@@ -382,6 +382,7 @@
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Не вдалося відкрити файл}one{Не вдалося відкрити файли}few{Не вдалося відкрити файли}many{Не вдалося відкрити файли}other{Не вдалося відкрити файли}}</translation>
 <translation id="1282311502488501110">Не входити</translation>
 <translation id="1282465000333679776">Надати доступ до системного аудіо</translation>
+<translation id="1283126956823499975">Не вдалося налаштувати пристрій</translation>
 <translation id="1284277788676816155">Не дозволяти зберігати дані</translation>
 <translation id="1285320974508926690">Ніколи не перекладати цей сайт</translation>
 <translation id="1285484354230578868">Зберігати дані в обліковому записі Google Диска</translation>
@@ -4647,7 +4648,6 @@
 <translation id="4546345569117159016">Права кнопка</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> хоче використовувати це розширення:</translation>
 <translation id="4546692474302123343">Голосовий ввід через Google Асистента</translation>
-<translation id="4547538408998421970">Ви вичерпали денний ліміт.</translation>
 <translation id="4547659257713117923">Немає вкладок з інших пристроїв</translation>
 <translation id="4547672827276975204">Налаштовувати автоматично</translation>
 <translation id="4548858987594081919">Щоб зберегти ваші облікові дані в Google Менеджері паролів, додайте ім’я користувача для цього сайту</translation>
@@ -5044,6 +5044,7 @@
 <translation id="4863769717153320198"><ph name="WIDTH" />x<ph name="HEIGHT" /> (за умовчанням)</translation>
 <translation id="4864369630010738180">Вхід…</translation>
 <translation id="4864805589453749318">Вибери, хто з батьків дозволяє додати обліковий запис навчального закладу.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (заблоковано)</translation>
 <translation id="486505726797718946">Спогад збережено</translation>
 <translation id="486635084936119914">Автоматично відкривати певні типи файлів після завантаження</translation>
 <translation id="4867272607148176509">Батьки зможуть схвалювати й блокувати додатки, обмежувати час користування пристроєм і контролювати перегляд веб-сторінок. Пізніше можна додати обліковий запис закладу освіти, щоб отримати доступ до більшості шкільних ресурсів.</translation>
@@ -5257,7 +5258,6 @@
 <translation id="5032430150487044192">Не вдається створити QR-код</translation>
 <translation id="5033137252639132982">Заборонено використовувати датчики руху</translation>
 <translation id="5033266061063942743">Геометричні фігури</translation>
-<translation id="5033646801355533305">Повторіть спробу завтра.</translation>
 <translation id="5035846135112863536">Натисніть "Докладніше" нижче, щоб отримати докладнішу інформацію від сервісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="5037676449506322593">Вибрати всі</translation>
 <translation id="5038818366306248416">Раніше ви вирішили заборонити всі розширення на сторінці <ph name="ORIGIN" /></translation>
@@ -5537,6 +5537,7 @@
 <translation id="5261619498868361045">Введіть назву контейнера.</translation>
 <translation id="5261683757250193089">Відкрити у Веб-магазині</translation>
 <translation id="5261799091118902550">Цей файл може містити вірус або зловмисне програмне забезпечення. Ви можете надіслати його в Google на перевірку.</translation>
+<translation id="5262334727506665688">Продовжуйте зберігати паролі в обліковому записі Google</translation>
 <translation id="5262784498883614021">Автоматично підключатися до мережі</translation>
 <translation id="5263656105659419083">Щоб легко повернутися на бічну панель, угорі праворуч натисніть "Закріпити".</translation>
 <translation id="5264148714798105376">Це може зайняти близько хвилини.</translation>
@@ -6050,7 +6051,6 @@
 <translation id="5667546120811588575">Налаштування Google Play…</translation>
 <translation id="5668351004957198136">Перевірку не пройдено</translation>
 <translation id="5669863904928111203">Версія ChromeOS застаріла</translation>
-<translation id="56702779821643359">Діліться файлами з людьми поруч. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5671641761787789573">Зображення заблоковано</translation>
 <translation id="5671658447180261823">Видалити пропозицію "<ph name="SUGGESTION_NAME" />"</translation>
 <translation id="567210741546439261">Закладки й списки</translation>
@@ -7075,6 +7075,7 @@
 <translation id="649396225532207613">Цей файл може зашкодити вашим особистим обліковим записам і обліковим записам у соціальних мережах</translation>
 <translation id="6494327278868541139">Показати детальний опис покращеного захисту</translation>
 <translation id="6494445798847293442">Не є Центром сертифікації</translation>
+<translation id="6494483173119160146">На пристрої сталася помилка з неможливістю відновлення. Скиньте налаштування пристрою (усі дані користувача буде видалено) і повторіть спробу.</translation>
 <translation id="6497784818439587832">Зменшуйте або збільшуйте розмір елементів на екрані</translation>
 <translation id="6497789971060331894">Зворотне прокручування мишею</translation>
 <translation id="6498249116389603658">&amp;Усі мови</translation>
@@ -8393,7 +8394,6 @@
 <translation id="752098910262610337">Показувати ярлики</translation>
 <translation id="7521430434164837205">Файли Microsoft 365</translation>
 <translation id="7522255036471229694">Скажіть "Ok Google"</translation>
-<translation id="7523112275619538890">Діліться файлами й іншими об’єктами з пристроями поблизу</translation>
 <translation id="7523117833414447032">Озвучення великих літер</translation>
 <translation id="7523585675576642403">Перейменувати профіль</translation>
 <translation id="7525067979554623046">Створити</translation>
@@ -9560,6 +9560,7 @@
 <translation id="8397825320644530257">Від'єднати підключений телефон</translation>
 <translation id="8398877366907290961">Продовжити</translation>
 <translation id="8399282673057829204">Переглянути пароль</translation>
+<translation id="839949601275221554">Сталася помилка пристрою. Перезапустіть його й повторіть спробу.</translation>
 <translation id="8401432541486058167">Укажіть PIN-код, зв'язаний із вашою розумною карткою.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome сьогодні знову заблокує файли cookie}=1{Завтра Chrome знову заблокує файли cookie}one{Chrome знову заблокує файли cookie через # день}few{Chrome знову заблокує файли cookie через # дні}many{Chrome знову заблокує файли cookie через # днів}other{Chrome знову заблокує файли cookie через # дня}}</translation>
 <translation id="8403618281196981152">Ваші дані в Chrome</translation>
@@ -9990,7 +9991,6 @@
 <translation id="8732212173949624846">Читати й змінювати історію веб-перегляду на всіх пристроях, на яких ви ввійшли</translation>
 <translation id="8732844209475700754">Інші налаштування конфіденційності, безпеки та збору даних</translation>
 <translation id="8734073480934656039">Якщо ввімкнути це налаштування, додатки для терміналів запускатимуться автоматично під час запуску комп’ютера.</translation>
-<translation id="8734674662128056360">Блокування файлів cookie третіх сторін</translation>
 <translation id="8734755021067981851">Немає підключених пристроїв USB.</translation>
 <translation id="8736288397686080465">Цей сайт оновлено у фоновому режимі.</translation>
 <translation id="8737709691285775803">Shill</translation>

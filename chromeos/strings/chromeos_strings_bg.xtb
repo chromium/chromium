@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">напред</translation>
 <translation id="1615335640928990664">Пренос на данни от <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Стартиране на тест на зареждането</translation>
+<translation id="1626590945318984973">Клавишната комбинация не е налице. Използвайте друга, без да натискате функционалните клавиши и клавиша „<ph name="META_KEY" />“.</translation>
 <translation id="1639239467298939599">Зарежда се</translation>
 <translation id="1641857168437328880">Подавач на документи (едностранно)</translation>
 <translation id="1643449475550628585">Ежедневна промяна на изображението на тапета</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">Вече имате достъп до нови <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тапети<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Тъмен режим</translation>
 <translation id="4130035430755296270">Продължете да задържате курсора на мишката за още опции за оформление</translation>
+<translation id="4130750466177569591">Приемам</translation>
 <translation id="4131410914670010031">Черно-бяло</translation>
 <translation id="4145784616224233563">Защитна стена за HTTP</translation>
 <translation id="4147897805161313378">Google Снимки</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Деактивиране</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> се рестартира</translation>
 <translation id="4395835743215824109">персонализиране на клавиатурата</translation>
+<translation id="4403262788869804671">Клавишната комбинация без клавиша „<ph name="META_KEY" />“ може да е в конфликт с комбинация в приложение. Натиснете тази комбинация отново, за да продължите да я използвате, или натиснете нова, като включите и клавиша „<ph name="KEY" />“.</translation>
 <translation id="4415951057168511744">Текущ аватар</translation>
+<translation id="4417830657741848074">Администраторът ви е настроил някои приложения така, че да се стартират автоматично. Част от тях не могат да бъдат затворени.</translation>
 <translation id="4422041425070339732">стрелка за надолу</translation>
 <translation id="4425149324548788773">Моят диск</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> е изключена</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">Скрийнсейвър със Земята</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Неуспех при команда ping към шлюза на допълнителната мрежа</translation>
+<translation id="4500722292849917410">Клавишната комбинация не е налице. Използвайте друга, като натиснете модифициращ клавиш (Ctrl, Alt, Shift или „<ph name="META_KEY" />“).</translation>
 <translation id="4500966230243561393">Цвят на интерфейса</translation>
 <translation id="4503223151711056411">Стрелка за наляво</translation>
 <translation id="4507392511610824664">увеличаване на яркостта</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Избиране на папка в приложението Файлове…</translation>
 <translation id="4835901797422965222">Няма активни мрежи</translation>
 <translation id="4839698083503556542">Създайте свой филм</translation>
+<translation id="48409034532829769">Администраторът ви е настроил <ph name="APP_NAME" /> така, че да се стартира автоматично. Приложението не може да бъде затворено.</translation>
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="4847902821209177679">Избрахте опцията <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />. Натиснете Enter, за да посочите албуми от <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Преобразуване от DNS</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">Разделяне</translation>
 <translation id="4972592110715526173">промяна на режима</translation>
 <translation id="498186245079027698">Проверете скенера и опитайте отново. Уверете се, че на устройството ви има достатъчно място за запазване на сканираните файлове.</translation>
+<translation id="4982627662315910959">Клавишната комбинация не е налице. Използвайте друга, като натиснете Shift и още 1 модифициращ клавиш (Ctrl, Alt или „<ph name="META_KEY" />“).</translation>
 <translation id="4985509611418653372">Стартиране</translation>
 <translation id="4987769320337599931">Защитна стена</translation>
 <translation id="4988526792673242964">Страници</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Мобилен оператор</translation>
 <translation id="725133483556299729">Избиране на имейл адрес</translation>
 <translation id="7271040990581020067">Скенерът се използва понастоящем. Опитайте отново по-късно.</translation>
+<translation id="7271932918253517778">Комбинацията с клавиши от най-горния ред трябва да включва клавиша „<ph name="META_KEY" />“.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Лек полъх</translation>
 <translation id="7287310195820267359">Колекции от тапети</translation>

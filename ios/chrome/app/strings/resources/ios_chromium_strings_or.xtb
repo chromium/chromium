@@ -102,6 +102,7 @@
 <translation id="3955621079070267756">ଯେ କୌଣସି ଆପରୁ Chromium ଖୋଲନ୍ତୁ</translation>
 <translation id="4005283307739974863">Chromium ସୁରକ୍ଷା ଯାଞ୍ଚ ଖୋଲେ ଏବଂ ଚଲାଏ।</translation>
 <translation id="4043291146360695975">ଏହି ଡିଭାଇସରେ ପାସୱାର୍ଡଗୁଡ଼ିକ କେବଳ ପାସୱାର୍ଡ ମ୍ୟାନେଜରରେ ସେଭ କରାଯାଏ।</translation>
+<translation id="4076589763479456892">ଯଦି ଆପଣ ଆପଣଙ୍କ ପାସଫ୍ରେଜକୁ ଭୁଲି ଯାଇଛନ୍ତି କିମ୍ବା ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଚାହାଁନ୍ତି, ତେବେ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chromium ଡାଟାକୁ ଖାଲି କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="4099085513035183040">Chromium ବିଟାରେ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="4106512142782407609"><ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରିଛନ୍ତି।
 
@@ -153,6 +154,7 @@
 <translation id="5534584691915394889">Chromium ଏବଂ Google Lensରୁ ଆପଣଙ୍କ Apple Calendarରେ ଇଭେଣ୍ଟଗୁଡ଼ିକୁ ତିଆରି କରିବା ପାଇଁ ଏହାକୁ ବ୍ୟବହାର କରାଯିବ।</translation>
 <translation id="5571094606370987472">Chromiumର ବର୍ତ୍ତମାନର ଟାବଗୁଡ଼ିକୁ ଖୋଲେ।</translation>
 <translation id="5623083843656850677">ଆପଣ Chromiumରୁ ବାହାରି ଗଲେ କିମ୍ବା ଏକ ଭିନ୍ନ ଆପକୁ ସୁଇଚ କଲେ ଆପଣଙ୍କ ଇନକଗ୍ନିଟୋ ଟାବକୁ ଲକ କରନ୍ତୁ।</translation>
+<translation id="5671188105328420281">Chromium ଟିପ୍ସ</translation>
 <translation id="5688047395118852662">Chromiumରୁ ସବୁଠୁ ଅଧିକ ସୁବିଧା କିପରି ପାଇବେ ସେ ବିଷୟରେ ଏହି କାର୍ଡ ଆପଣଙ୍କୁ ପରାମର୍ଶ ଦେଖାଏ।</translation>
 <translation id="5700709190537129682">Chromium ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
 <translation id="5777187867430702742">Chromium ପୃଷ୍ଠା</translation>
@@ -283,6 +285,7 @@
 <translation id="8776843108004031667">ଏହି ଆକାଉଣ୍ଟ ଏବଂ ଯେ କୌଣସି ସେଭ୍ କରାଯାଇନଥିବା ଡାଟା Chromiumରୁ କାଢ଼ି ଦିଆଯିବ।</translation>
 <translation id="88376265765385899">Chromium ବୁକମାର୍କଗୁଡ଼ିକ ଖୋଲେ।</translation>
 <translation id="8860548555286245440">Chromiumରେ ଇନକଗ୍ନିଟୋ ମୋଡରେ URLଗୁଡ଼ିକ ଖୋଲନ୍ତୁ</translation>
+<translation id="8866191443434488382">Chromium ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟରେ ଟ୍ରାକିଂ ନମ୍ବରଗୁଡ଼ିକୁ ଚିହ୍ନଟ କରିବ ଏବଂ ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଆପଣଙ୍କ ପେକେଜ ଅପଡେଟଗୁଡ଼ିକୁ ଦେଖାଇବ। ଏହି ଫିଚର ପ୍ରଦାନ କରିବା ଏବଂ ସମସ୍ତଙ୍କ ପାଇଁ ସପିଂ ଫିଚରଗୁଡ଼ିକ ଉନ୍ନତ କରିବାକୁ ପେକେଜ ଟ୍ରାକିଂ ନମ୍ବର ଓ ୱେବସାଇଟ ନାମ Chromiumକୁ ପଠାଯିବ। ଆପଣ <ph name="BEGIN_LINK" />ପେକେଜ ଟ୍ରାକିଂ ସେଟିଂସ<ph name="END_LINK" />ରେ ଏହାକୁ ଯେ କୌଣସି ସମୟରେ ଅପଡେଟ କରିପାରିବେ।</translation>
 <translation id="8909995017390087892">iOS ପାଇଁ Chromium</translation>
 <translation id="8924617840944134898">Chromium ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲନ୍ତୁ</translation>
 <translation id="894437814105052438">ଆପଣ ସାଇନ୍ ଆଉଟ୍ କଲେ, Chromium ଯେ କୌଣସି ନୂଆ ଡାଟାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହିତ ସିଙ୍କ କରିବ ନାହିଁ। ପୂର୍ବରୁ ସିଙ୍କ କରାଯାଇଥିବା ଡାଟା ଆକାଉଣ୍ଟରେ ରହିଥାଏ।</translation>

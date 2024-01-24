@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">যেকোনও সময় ডাউনলোডের ডিফল্ট লোকেশন পরিবর্তন করুন</translation>
 <translation id="1796666869097395659">পরে আবার এখানে ফিরে আসতে ট্যাব মিনিমাইজ করে রাখুন</translation>
 <translation id="1807246157184219062">আলো</translation>
+<translation id="1807709131360304325">একটি নতুন উইন্ডো খুলুন</translation>
 <translation id="1810845389119482123">প্রারম্ভিক সিঙ্ক সেট-আপ করা সম্পূর্ণ হয়নি</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />-এ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ব্যবহার করা চালিয়ে যাওয়া যাচ্ছে না</translation>
 <translation id="1829244130665387512">পৃষ্ঠাতে খুঁজুন</translation>
@@ -959,7 +960,6 @@
 <translation id="6192907950379606605">ছবির বিবরণ পান</translation>
 <translation id="6193448654517602979">ট্যাব বেছে নিন</translation>
 <translation id="6196315980958524839">পাসওয়ার্ড এই ডিভাইসের Google পাসওয়ার্ড ম্যানেজার বিকল্পে সেভ করা হয়</translation>
-<translation id="6202514376968366382">Chrome আপনার ডাউনলোড করা পিডিএফ খুলতে পারবে</translation>
 <translation id="6202812185118613467">সিঙ্ক শুরু করার জন্য আবার সাইন-ইন করুন</translation>
 <translation id="6205314730813004066">বিজ্ঞাপন সংক্রান্ত গোপনীয়তা</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> না?</translation>
@@ -1328,6 +1328,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> পুরনো হয়ে গেছে।</translation>
 <translation id="7944772052836377867">সিঙ্ক করার আগে যাচাই করিয়ে নিতে হবে যে এটি আপনি করছেন</translation>
 <translation id="7947953824732555851">সম্মত হয়ে সাইন-ইন করুন</translation>
+<translation id="7951102827450076904">সবসময় ডাউনলোড করা পিডিএফ খুলুন</translation>
 <translation id="7957413488482743710">আপনাকে সম্ভাব্য জালিয়াতির হাত থেকে রক্ষা করতে, ভার্চুয়াল কার্ড আসল কার্ডের ছদ্মবেশ ধারন করে। <ph name="BEGIN_LINK1" />ভার্চুয়াল কার্ড সম্পর্কে আরও জানুন<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">পেজের ইনসাইট শিটের ফিরে যাওয়ার বোতাম</translation>
 <translation id="7961926449547174351">আপনি স্টোরেজ অ্যাক্সেস বন্ধ করে রেখেছেন, 'সেটিংস' থেকে এটি চালু করতে পারবেন।</translation>

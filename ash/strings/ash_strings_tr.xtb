@@ -228,7 +228,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1882814835921407042">Mobil ağ yok</translation>
 <translation id="1882897271359938046">Şuraya yansıtılıyor: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Parmak iziyle kilit açın</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) çözünürlüğü desteklemiyor. Çözünürlük, <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) olarak değiştirildi. Değişiklikleri korumak için Onayla'yı tıklayın. Önceki ayarlar <ph name="TIMEOUT_SECONDS" /> saniye içinde geri yüklenecek.</translation>
 <translation id="1908992311423394684">Yeni yükleme</translation>
 <translation id="1915307458270490472">Kapat</translation>
 <translation id="1918022425394817322">Kamera sağ üst köşeye tutturuldu</translation>
@@ -622,6 +621,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3577473026931028326">Bir sorun oldu. Tekrar deneyin.</translation>
 <translation id="3580650856351781466">Konuşma dosyaları indiriliyor</translation>
 <translation id="3585296979871889131">Telefonunuzdaki son fotoğrafları, medya içeriklerini, bildirimleri ve uygulamaları görün</translation>
+<translation id="3590441166907930941">Yan Düğme</translation>
 <translation id="3593039967545720377">Panonuzu görüntülemek üzere <ph name="SHORTCUT_KEY_NAME" /> + V tuşlarına basarak pano geçmişinize erişin. Başlamak için bir öğe kopyalayın.</translation>
 <translation id="3593646411856133110">Açık uygulamaları görmek için yukarı kaydırıp basılı tutun</translation>
 <translation id="3595596368722241419">Pil tam dolu</translation>
@@ -1034,6 +1034,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="5163434717504750796">Pil sağlığı %<ph name="BATTERY_HEALTH_PERCENTAGE" /> | Şarj döngüsü sayısı <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Masayı şablon olarak kaydet</translation>
 <translation id="5168181903108465623">Yayın cihazları kullanılabilir</translation>
+<translation id="5168753792967365150">Google Görevler'de düzenle</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="5176318573511391780">Kısmi ekranı kaydet</translation>
 <translation id="5187627942836026988">Hotspot ayrıntılarını göster. Hotspot, yöneticiniz tarafından engellendi.</translation>
@@ -1303,6 +1304,8 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="6168622430237609329">Yüklü uygulamalarınız</translation>
 <translation id="6173151025443907148">Lacros etkinse ikinci bir kullanıcının oturum açması desteklenmez. Bunun yerine lütfen Lacros'ta ikinci bir tarayıcı profili kullanın veya Lacros'u kapatıp tekrar deneyin.</translation>
 <translation id="6179832488876878285">Önemli dosyalarınızı buraya sabitleyebilirsiniz. Başlamak için Dosyalar uygulamasını açın.</translation>
+<translation id="6180193585172850042">Geri Düğmesi</translation>
+<translation id="6180651297859206670">İleri Düğmesi</translation>
 <translation id="6182592640011875895">Masayı aç</translation>
 <translation id="6185696379715117369">Bir sayfa yukarı</translation>
 <translation id="619335566042889110">Şimdi tamamen şarj et</translation>

@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">అంతర్గత ఎర్రర్</translation>
 <translation id="1124772482545689468">వినియోగదారు</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">గుణకారం</translation>
 <translation id="1145018782460575098">బాహ్య పరికరాలకు ఫర్మ్‌వేర్‌‌ను అప్‌డేట్ చేసే విండో తెరిచి ఉంది. <ph name="NUM_UPDATES" /> అప్‌డేట్‌లు అందుబాటులో ఉన్నాయి.</translation>
 <translation id="1145516343487477149">సాధారణ Chromebook ప్రశ్నలకు సహాయక ఆర్టికల్స్, సమాధానాలను కనుగొంటుంది</translation>
 <translation id="1154390310959620237">మీరు 5 షార్ట్‌కట్‌లను మాత్రమే అనుకూలంగా మార్చుకోగలరు. కొత్త షార్ట్‌కట్‌ను జోడించడానికి ఒక దాన్ని తొలగించండి.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">స్కాన్ ఏరియాకు సెట్ చేయండి</translation>
 <translation id="1367951781824006909">ఒక ఫైల్‌ని ఎంచుకోండి</translation>
+<translation id="1371650399987522809">Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతున్న వాల్‌పేపర్ కోసం ఫీడ్‌బ్యాక్</translation>
 <translation id="1387854245479784695">ఇది అన్ని కోర్‌ల సముదాయం</translation>
 <translation id="1394661041439318933">పరికరంలో <ph name="BATTERY_PERCENTAGE" />% కేస్ బ్యాటరీ ఉంది.</translation>
 <translation id="1397738625398125236">గేట్‌వేను పింగ్ చేయవచ్చు</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">టచ్‌ప్యాడ్</translation>
 <translation id="1561927818299383735">బ్యాక్‌లైట్ రంగు</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />‌ను అప్‌డేట్ చేయడం సాధ్యం కాదు</translation>
+<translation id="1566493343215789965">భాగహారం</translation>
 <translation id="1567064801249837505">ఆల్బమ్‌లు</translation>
 <translation id="1572585716423026576">వాల్‌పేపర్‌గా సెట్ చేయి</translation>
 <translation id="1578784163189013834">స్క్రీన్ సేవర్ బ్యాక్‌గ్రౌండ్ ఎంచుకోండి</translation>
 <translation id="160633243685262989">ఇమేజ్ ప్రివ్యూను చూడండి</translation>
 <translation id="1611649489706141841">ముందుకు</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> నుండి డేటా వినియోగం</translation>
+<translation id="1615576200479539465">ఇమేజ్‌లను జెనరేట్ చేస్తుంది...</translation>
 <translation id="1621067168122174824">ఛార్జ్ పరీక్షను రన్ చేయండి</translation>
 <translation id="1626590945318984973">షార్ట్‌కట్ అందుబాటులో లేదు. ఫంక్షన్, <ph name="META_KEY" /> కీలను ఉపయోగించకుండా కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="1639239467298939599">లోడ్ చేస్తోంది</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> డిశ్చార్జ్ చేయబడింది.</translation>
 <translation id="2880569433548999039">క్లౌడ్ ఫ్లో స్క్రీన్ సేవర్</translation>
 <translation id="2926057806159140518">మీ యూజర్‌నేమ్, పాస్‌వర్డ్‌ను ఎంటర్ చేయండి లేదా మీ QR కోడ్‌ను స్కాన్ చేయండి</translation>
+<translation id="2938573842839598578">సమీప ఫలితం కోసం, <ph name="CATEGORY_TEXT" /> విలువను <ph name="CONVERSION_RATE" />తో <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">పరికరాన్ని పరీక్షించడం సాధ్యపడదు. పరీక్షించడానికి మూతను మళ్లీ తెరవండి.</translation>
 <translation id="2941112035454246133">తక్కువ</translation>
 <translation id="3008341117444806826">రిఫ్రెష్ చేయండి</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS అప్‌డేట్</translation>
 <translation id="3527036260304016759">విఫలమైంది - తెలియని ఎర్రర్</translation>
 <translation id="3532980081107202182">సుమారు <ph name="MIN_REMAINING" /> నిమిషాలు మిగిలి ఉన్నాయి</translation>
+<translation id="3547264467365135390">ఫార్ములా</translation>
 <translation id="3557205324756024651">లోకల్ గుర్తింపు (ఆప్షనల్)</translation>
 <translation id="3565064564551103223">అనుమతించబడిన IPలు</translation>
 <translation id="3569407787324516067">స్క్రీన్ సేవర్</translation>
@@ -414,6 +420,7 @@
 <translation id="4113067922640381334">మీకు ఇప్పుడు కొత్త <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />వాల్‌పేపర్‌ల<ph name="END_LINK_WALLPAPER_SUBPAGE" />కు యాక్సెస్ ఉంది</translation>
 <translation id="4117637339509843559">డార్క్ మోడ్</translation>
 <translation id="4130035430755296270">మరిన్ని లేఅవుట్ ఆప్షన్‌ల కోసం మౌస్ కర్సర్‌ని ఉంచడం కొనసాగించండి</translation>
+<translation id="4130750466177569591">నేను అంగీకరిస్తున్నాను</translation>
 <translation id="4131410914670010031">నలుపు మరియు తెలుపు</translation>
 <translation id="4145784616224233563">HTTP ఫైర్‌వాల్</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -845,6 +852,7 @@
 <translation id="7180611975245234373">రిఫ్రెష్ చేయండి</translation>
 <translation id="7180865173735832675">అనుకూలంగా మార్చండి</translation>
 <translation id="7184043045742675738">మీ బటన్‌ను అనుకూలంగా మార్చడానికి ఏదైనా కీపై క్లిక్ చేయండి. మౌస్ లేదా బాణం కీలతో కీ స్థానాన్ని మార్చండి.</translation>
+<translation id="7206979415662233817">సర్వీస్ నియమాలు</translation>
 <translation id="7212547870105584639">నెట్‌వర్క్ APN సెట్టింగ్‌లను మేనేజ్ చేయండి. APNలు సెల్యులార్ నెట్‌వర్క్‌కు, ఇంటర్నెట్‌కు మధ్య కనెక్షన్‌ని ఏర్పరుస్తాయి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">బాహ్య పరికరాల కోసం ఫర్మ్‌వేర్ అప్‌డేట్‌లు</translation>
 <translation id="7216409898977639127">సెల్యులార్ ప్రదాత</translation>
@@ -863,6 +871,10 @@
 <translation id="7311368985037279727">కీబోర్డ్ రంగు</translation>
 <translation id="7317831949569936035">స్కూల్ ఎన్‌రోల్‌మెంట్</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">మీరు తప్పనిసరిగా కనీసం 18 ఏళ్లు నిండి ఉండాలి, మీ AI వాల్‌పేపర్‌ల ఉపయోగం <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google సర్వీస్ నియమాలు<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" />, <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />జెనరేటివ్ AI అదనపు సర్వీస్ నియమాలు<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> లోబడి ఉంటుందని అంగీకరిస్తున్నారు.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          మీరు వ్యక్తిగత, వాణిజ్యేతర ఉపయోగం కోసం AIతో మాత్రమే వాల్‌పేపర్‌లను క్రియేట్ చేయగలరు. మీరు వాల్‌పేపర్ సహాయం పొందినప్పుడు, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google గోప్యతా పాలసీ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />కి లోబడి వాల్‌పేపర్ సూచనలను జెనరేట్ చేయడానికి Googleకు చెందిన AI టెక్నాలజీల సర్వర్‌లకు టెక్స్ట్ మెసేజ్ పంపబడుతుంది. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchలో ఫలితాన్ని చూడటానికి 'Search + Space'ను నొక్కండి.</translation>
 <translation id="7343649194310845056">నెట్‌వర్క్ పరికరాలు</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" />లోని <ph name="LIST_POSITION" />లో ఉన్న సెర్చ్ ఫలితం: <ph name="SEARCH_RESULT_TEXT" />. షార్ట్‌కట్‌కు నావిగేట్ అవ్వడానికి 'Enter'ను నొక్కండి.</translation>

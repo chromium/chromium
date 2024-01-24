@@ -102,6 +102,7 @@
 <translation id="3955621079070267756">Odpiranje Chromiuma v poljubni aplikaciji</translation>
 <translation id="4005283307739974863">Odpre in izvede varnostno preverjanje v Chromiumu.</translation>
 <translation id="4043291146360695975">Gesla so shranjena v upravitelju gesel samo v tej napravi.</translation>
+<translation id="4076589763479456892">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Ni podprto v Chromiumu Beta</translation>
 <translation id="4106512142782407609">Prijavljeni ste kot <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chromi
 <translation id="5534584691915394889">To bo uporabljeno za ustvarjanje dogodkov v koledarju Apple Calendar s Chromiumom in Googlom Lens.</translation>
 <translation id="5571094606370987472">Odpiranje nedavnih zavihkov v Chromiumu.</translation>
 <translation id="5623083843656850677">Zaklepanje anonimnih zavihkov, ko zapustite Chromium ali preklopite na drugo aplikacijo.</translation>
+<translation id="5671188105328420281">Nasveti za Chromium</translation>
 <translation id="5688047395118852662">Na tej kartici so prikazani predlogi, kako izkoristiti Chromium na najboljši način.</translation>
 <translation id="5700709190537129682">Chromium ne more preveriti vaših gesel</translation>
 <translation id="5777187867430702742">Stran Chromiuma</translation>

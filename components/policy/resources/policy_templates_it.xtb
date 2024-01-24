@@ -5291,6 +5291,7 @@ A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è su
 
           Se questo criterio viene impostato su Disattivato, la funzionalità viene disattivata forzatamente.
           </translation>
+<translation id="5433865420958136693">Usa l'accelerazione grafica quando disponibile</translation>
 <translation id="5435888298115339571">Attiva la condivisione desktop nel menu con tre puntini e in omnibox</translation>
 <translation id="5441508088704391614">Nessuna limitazione speciale (opzione predefinita).</translation>
 <translation id="5442026853063570579">Questa norma consente di controllare anche l'accesso alle Opzioni sviluppatore di Android. Se la norma viene impostata su "DeveloperToolsDisallowed" (valore 2), gli utenti non potranno accedere alle Opzioni sviluppatore. Se la norma viene impostata su un altro valore o non viene impostata, gli utenti potranno accedere alle Opzioni sviluppatore toccando sette volte il numero di build nell'app Impostazioni di Android.</translation>
@@ -5363,6 +5364,9 @@ Se il criterio viene impostato su Disabled o se non viene configurato, gli eleme
 <translation id="5480380613778757009">Se questo criterio viene disattivato o se non viene configurato, tutte le impostazioni di visualizzazione configurate nella sessione Ospite gestita verranno reimpostate al termine della sessione. Se questo criterio viene impostato su Vero, le proprietà di visualizzazione verranno memorizzate dopo la chiusura della sessione Ospite gestita.</translation>
 <translation id="5483012943408894695">Origini o pattern di nomi host a cui non dovrebbero essere applicate limitazioni previste per le origini non sicure.</translation>
 <translation id="5483065054530244863">Consenti i certificati SHA-1 firmati emessi dai trust anchor locali</translation>
+<translation id="5486917900445838803">Se il criterio viene impostato su Attivato o se non viene configurato, viene abilitata l'accelerazione grafica, se disponibile.
+
+      Se il criterio viene impostato su Disattivato, l'accelerazione grafica viene disabilitata.</translation>
 <translation id="5487758664517243511">Se questa impostazione viene attivata, gli utenti che hanno già attivato Phone Hub possono continuare attività su ChromeOS, come ad esempio la visualizzazione di pagine web che avevano iniziato a consultare sul telefono.
 
       Se viene disattivata, gli utenti non possono usare questa funzionalità. Gli utenti non possono usare questa funzionalità anche se viene disattivato il criterio PhoneHubAllowed.
@@ -6492,6 +6496,7 @@ verrà usata soltanto la risoluzione della posizione basata sull'<ph name="IP" /
 Se il criterio viene impostato su Disattivato o se non viene configurato, la ricerca CNAME determina il nome canonico del server durante la generazione del Kerberos SPN.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">Esegui i controlli di Navigazione sicura per tutti i file scaricati</translation>
+<translation id="6426899507714989471">Disattiva l'accelerazione grafica</translation>
 <translation id="6433697627431665375">Impedisci l'inclusione dei dati di <ph name="PRODUCT_NAME" /> nei backup</translation>
 <translation id="6436052172226685535">Comportamento predefinito di LBS</translation>
 <translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> tenta di eseguire l'upgrade di alcune navigazioni da HTTP a HTTPS, se possibile. È possibile utilizzare questo criterio per disabilitare questo comportamento. Se viene impostata su "true" o non viene impostata, questa funzionalità verrà attivata per impostazione predefinita.
@@ -9811,6 +9816,7 @@ Se questo criterio viene attivato o se non viene configurato, i sondaggi all'int
 Se questo criterio viene disattivato, i sondaggi all'interno del prodotto non vengono mostrati agli utenti.
 
 Questo criterio non ha effetto se il criterio <ph name="METRICS_REPORTING_ENABLED_POLICY_NAME" /> viene impostato su Disattivato e vengono disattivati anche i sondaggi all'interno dei prodotti.</translation>
+<translation id="9173633148008709976">Attiva l'accelerazione grafica</translation>
 <translation id="9180108183162961002">Consenti gli accessi come ospite al browser</translation>
 <translation id="9185963199234034321">Attiva l'alto contrasto nella schermata di accesso e consenti all'utente di disattivarlo temporaneamente</translation>
 <translation id="9187743794267626640">Disabilita il montaggio di una memoria esterna</translation>

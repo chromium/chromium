@@ -90,7 +90,6 @@
 <translation id="1408847409015257906">انقر على "الخصوصية والأمان".</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="143681031165817424">تم حفظ العنوان على هذا الجهاز فقط.</translation>
-<translation id="1443958768615272145">مواصلة التصفُّح</translation>
 <translation id="1449835205994625556">إخفاء كلمة المرور</translation>
 <translation id="1450170672351507823">الحماية العادية مفعَّلة. لزيادة مستوى الأمان، يمكنك استخدام "الحماية المُحسَّنة".</translation>
 <translation id="1469381646033328562">يدير أحد والدَيك حسابك.
@@ -218,7 +217,6 @@
 <translation id="2139502497535990641">هل تريد تلقِّي تنبيهات عن تغيير الأسعار؟</translation>
 <translation id="2139867232736819575">البحث عن النص الذي نسخته</translation>
 <translation id="214201757571129614">تسجيل الدخول…</translation>
-<translation id="2145004670974387485">اختَر الحساب الذي تريد استخدامه لحفظ <ph name="FILENAME" />.</translation>
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="2149973817440762519">تعديل الإشارة</translation>
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
@@ -317,7 +315,6 @@
 <translation id="2664621323652615289">إيقاف</translation>
 <translation id="2666092431469916601">أعلى</translation>
 <translation id="2669454659051515572">يمكن لأي شخص يستخدم هذا الجهاز الاطّلاع على الملفات التي تم تنزيلها.</translation>
-<translation id="2681158575552244226">‏يجري حفظ الملف في الحساب <ph name="USER_EMAIL" /> على Drive.</translation>
 <translation id="2690858294534178585">الكاميرا قيد الاستخدام</translation>
 <translation id="2691653761409724435">غير متاح بلا اتصال</translation>
 <translation id="2695507686909505111">تمت ترجمة الصفحة</translation>
@@ -486,7 +483,6 @@
 <translation id="3519193562722059437">افتح علامة تبويب لتصفح الويب.</translation>
 <translation id="3519905498307021260">{count,plural, =1{فتح علامة التبويب}zero{فتح {count} علامة تبويب}two{فتح علامتَي التبويب ({count})}few{فتح {count} علامات تبويب}many{فتح {count} علامة تبويب}other{فتح {count} علامة تبويب}}</translation>
 <translation id="3523789730715594198">‏يمكنك إيقاف المزامنة في أي وقت من خلال الإعدادات. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
-<translation id="3526783603136816353">اختَر الحساب الذي تريد استخدامه لحفظ <ph name="FILENAME" /> (<ph name="FILE_SIZE" />).</translation>
 <translation id="3527085408025491307">المجلد</translation>
 <translation id="3529024052484145543">غير آمن</translation>
 <translation id="3530206579861815432">يمكنك العثور بسرعة على علامات التبويب المفتوحة وتلك التي تم إغلاقها مؤخرًا على جميع أجهزتك التي تمت مزامنتها.</translation>
@@ -561,6 +557,7 @@
 <translation id="3922310737605261887">البحث عن النص الذي نسخته</translation>
 <translation id="3928666092801078803">دمج البيانات التابعة لي</translation>
 <translation id="3929457972718048006">العناوين</translation>
+<translation id="3948600256434252210">يمكنك التمرير سريعًا إلى اليسار للتصفُّح في "وضع التصفّح المتخفي".</translation>
 <translation id="3955822496205734389">لديك كلمات مرور ضعيفة.</translation>
 <translation id="3959736869653157332">القائمة ← علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="3962326069546168954">حفظ</translation>
@@ -665,6 +662,7 @@
 <translation id="4539187448429948815">{count,plural, =1{يتوفّر اقتراح واحد ({count}) محفوظ للإكمال التلقائي أعلى لوحة المفاتيح.}zero{يتوفّر {count} اقتراح محفوظ للإكمال التلقائي أعلى لوحة المفاتيح.}two{يتوفّر اقتراحان ({count}) محفوظان للإكمال التلقائي أعلى لوحة المفاتيح.}few{تتوفّر {count} اقتراحات محفوظة للإكمال التلقائي أعلى لوحة المفاتيح.}many{يتوفّر {count} اقتراحًا محفوظًا للإكمال التلقائي أعلى لوحة المفاتيح.}other{يتوفّر {count} اقتراح محفوظ للإكمال التلقائي أعلى لوحة المفاتيح.}}</translation>
 <translation id="4540780316273593836">حدث خطأٌ</translation>
 <translation id="4550040941166547650">على هذا الجهاز فقط</translation>
+<translation id="4564893319561643483">إخفاء "<ph name="TITLE" />"</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{هل تريد إغلاق علامة تبويب واحدة ({COUNT}) غير نشطة؟}zero{هل تريد إغلاق {COUNT} علامة تبويب غير نشطة؟}two{هل تريد إغلاق علامتَي تبويب ({COUNT}) غير نشطتَين؟}few{هل تريد إغلاق {COUNT} علامات تبويب غير نشطة؟}many{هل تريد إغلاق {COUNT} علامة تبويب غير نشطة؟}other{هل تريد إغلاق {COUNT} علامة تبويب غير نشطة؟}}</translation>
 <translation id="457386861538956877">المزيد...</translation>
 <translation id="4587589328781138893">المواقع</translation>
@@ -1104,7 +1102,6 @@
 <translation id="6685259053455152195">اختصارات لتعديل الإعدادات بسرعة واستخدام الميزات من شريط العناوين</translation>
 <translation id="6710079714193676716">تتم إدارة المتصفِّح من خلال مؤسستك. وقد تكون بعض الميزات غير متوفِّرة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
-<translation id="6716730056313760676">‏تم حفظ الملف في الحساب <ph name="USER_EMAIL" /> على Drive.</translation>
 <translation id="672735642903863329">الحصول على الإشارات المرجعية وكلمات المرور وإعدادات أخرى واستخدامها على جميع أجهزتك</translation>
 <translation id="6730682669179532099">يتعذّر تصدير كلمات المرور</translation>
 <translation id="6732087373923685049">الكاميرا</translation>
@@ -1123,7 +1120,6 @@
 <translation id="6790502149545262384">قريبًا، ستظهر لك قصص من "<ph name="CHANNEL_NAME" />" عند فتح علامة تبويب جديدة.</translation>
 <translation id="6797885426782475225">البحث الصوتي</translation>
 <translation id="6800349425672670802">يمكنك الوصول إلى جميع علامات التبويب المفتوحة من خلال "أداة التبديل بين علامات التبويب".</translation>
-<translation id="6805179248725678418">‏الحفظ في Google Drive</translation>
 <translation id="6807889908376551050">إظهار الكل...</translation>
 <translation id="681368974849482173">تم إنشاء العنصر</translation>
 <translation id="6822587385560699678">عند تفعيل هذا الإعداد، يتم حفظ كلمات المرور في <ph name="ACCOUNT" />. وعند إيقافه، يتم حفظ كلمات المرور على هذا الجهاز فقط.</translation>
@@ -1267,6 +1263,7 @@
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7666861622396822790">يمكنك إدارة هذه الميزة من خلال <ph name="BEGIN_LINK" />إعدادات المحتوى<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">تثبيت</translation>
+<translation id="7673346542062368520">يمكنك التمرير سريعًا إلى اليمين للتصفُّح في "وضع التصفّح المتخفي".</translation>
 <translation id="7679915578945954324">تم نسخ عناوين المواقع الإلكترونية.</translation>
 <translation id="7687508192620387263">ملف التقويم متوفّر</translation>
 <translation id="7701040980221191251">لا يوجد</translation>
@@ -1411,7 +1408,6 @@
 <translation id="8395339334550012808">سيظهر لك قريبًا محتوى من "<ph name="CHANNEL_NAME" />" وحولها في القسم "تتم متابعته حاليًا".</translation>
 <translation id="8395378633507873708">‏شريط العناوين (Address Bar)</translation>
 <translation id="8402673309244746971">الانتقال إلى "المواقع التي تتابعها"</translation>
-<translation id="8403629764260204788">إخفاء ميزة "التصفُّح المستمر"</translation>
 <translation id="8407669440184693619">لم يتم العثور على كلمات مرور لهذا الموقع الإلكتروني</translation>
 <translation id="842017693807136194">تم تسجيل الدخول باستخدام</translation>
 <translation id="8423121072346537366">الآن</translation>

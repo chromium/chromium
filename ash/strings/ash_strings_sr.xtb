@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">Нема мобилне мреже</translation>
 <translation id="1882897271359938046">Пресликавање у <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Откључајте отиском прста</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> не подржава резолуцију <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Резолуција је промењена у <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Да бисте задржали промене, кликните на Потврди. Претходна подешавања ће бити враћена за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Ново инсталирање</translation>
 <translation id="1915307458270490472">Прекини везу</translation>
 <translation id="1918022425394817322">Камера је уклопљена у горњи десни угао</translation>
@@ -390,7 +389,7 @@
 <translation id="2624588537172718173">Звук уређаја и микрофон</translation>
 <translation id="263399434338050016">„Изабери све“</translation>
 <translation id="2644422758626431000">Закачи прозор налево</translation>
-<translation id="2645435784669275700">Chrome ОС</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Снимање прозора</translation>
 <translation id="2653659639078652383">Пошаљи</translation>
 <translation id="2658778018866295321">Кликните и превуците</translation>
@@ -622,6 +621,7 @@
 <translation id="3577473026931028326">Дошло је до грешке. Пробајте поново.</translation>
 <translation id="3580650856351781466">Преузимају се фајлови говора</translation>
 <translation id="3585296979871889131">Прегледајте недавне слике, медије, обавештења и апликације на телефону</translation>
+<translation id="3590441166907930941">Бочно дугме</translation>
 <translation id="3593039967545720377">Притисните <ph name="SHORTCUT_KEY_NAME" /> + V да бисте приступили историји привремене меморије. Копирајте неку ставку да бисте започели.</translation>
 <translation id="3593646411856133110">Превуците нагоре и задржите да бисте видели отворене апликације</translation>
 <translation id="3595596368722241419">Батерија је пуна</translation>
@@ -1035,6 +1035,7 @@
 <translation id="5163434717504750796">Стање батерије <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Број циклуса <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Сачувај радну површину као шаблон</translation>
 <translation id="5168181903108465623">Доступни су уређаји за пребацивање</translation>
+<translation id="5168753792967365150">Измени у Google задацима</translation>
 <translation id="5170568018924773124">Прикажи у директоријуму</translation>
 <translation id="5176318573511391780">Сними део екрана</translation>
 <translation id="5187627942836026988">Прегледајте детаље хотспота. Администратор је блокирао хотспот.</translation>
@@ -1304,6 +1305,8 @@
 <translation id="6168622430237609329">Инсталиране апликације</translation>
 <translation id="6173151025443907148">Пријављивање другог корисника није подржано док је Lacros омогућен. Користите други профил за прегледач у Lacros-у или онемогућите Lacros и пробајте поново.</translation>
 <translation id="6179832488876878285">Овде можете да закачите најважније фајлове. Отворите апликацију Фајлови да бисте започели.</translation>
+<translation id="6180193585172850042">Дугме Назад</translation>
+<translation id="6180651297859206670">Дугме за напред</translation>
 <translation id="6182592640011875895">Отвори радну површину</translation>
 <translation id="6185696379715117369">Страница нагоре</translation>
 <translation id="619335566042889110">Одмах напуните до краја</translation>

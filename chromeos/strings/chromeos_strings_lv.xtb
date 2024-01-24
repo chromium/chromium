@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">pārsūtīt</translation>
 <translation id="1615335640928990664">Datu lietojums kopš šī datuma: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Veikt uzlādes pārbaudi</translation>
+<translation id="1626590945318984973">Šie īsinājumtaustiņi nav pieejami. Nospiediet jaunus īsinājumtaustiņus, neizmantojot funkciju taustiņu un <ph name="META_KEY" /> taustiņu.</translation>
 <translation id="1639239467298939599">Notiek ielāde</translation>
 <translation id="1641857168437328880">Dokumentu padevējs (vienpusēji)</translation>
 <translation id="1643449475550628585">Katru dienu mainīt fona tapetes attēlu</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">Tagad varat piekļūt jaunām <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fona tapetēm<ph name="END_LINK_WALLPAPER_SUBPAGE" />.</translation>
 <translation id="4117637339509843559">Tumšais režīms</translation>
 <translation id="4130035430755296270">Lai skatītu citas izkārtojuma iespējas, turpiniet turēt kursoru turpat</translation>
+<translation id="4130750466177569591">Piekrītu</translation>
 <translation id="4131410914670010031">Melnbaltā</translation>
 <translation id="4145784616224233563">HTTP ugunsmūris</translation>
 <translation id="4147897805161313378">Google fotoattēli</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Atspējot</translation>
 <translation id="439429847087949098">Notiek ierīces “<ph name="DEVICE_NAME" />” restartēšana</translation>
 <translation id="4395835743215824109">tastatūras pielāgošana</translation>
+<translation id="4403262788869804671">Īsinājumtaustiņi, kuros netiek izmantots <ph name="META_KEY" /> taustiņš, var būt pretrunā ar noteiktas lietotnes īsinājumtaustiņiem. Vēlreiz nospiediet šos īsinājumtaustiņus, lai turpinātu tos lietot, vai nospiediet jaunus īsinājumtaustiņus, kuros izmantots taustiņš <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Pašreizējais iemiesojums</translation>
+<translation id="4417830657741848074">Administrators ir iestatījis dažu lietotņu automātisku palaišanu. Dažas no šīm lietotnēm nevar aizvērt.</translation>
 <translation id="4422041425070339732">lejupvērstais bulttaustiņš</translation>
 <translation id="4425149324548788773">Mans disks</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ir izslēgts</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">Ekrānsaudzētājs Zemes plūsma</translation>
 <translation id="4479639480957787382">tīkls Ethernet</translation>
 <translation id="4483049906298469269">Neizdevās ehotestēt tīkla vārteju, kas nav noklusējuma vārteja</translation>
+<translation id="4500722292849917410">Šie īsinājumtaustiņi nav pieejami. Nospiediet jaunus īsinājumtaustiņus, izmantojot modificētājtaustiņu (Ctrl, Alt, Shift vai <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Saskarnes krāsa</translation>
 <translation id="4503223151711056411">Kreisais bulttaustiņš</translation>
 <translation id="4507392511610824664">palielināt spilgtumu</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Atlasīt mapi lietotnē Faili…</translation>
 <translation id="4835901797422965222">Nav aktīvu tīklu</translation>
 <translation id="4839698083503556542">Izveidojiet savu filmu</translation>
+<translation id="48409034532829769">Administrators lietotnei <ph name="APP_NAME" /> ir iestatījis automātisku palaišanu. Šo lietotni nevar aizvērt.</translation>
 <translation id="484462545196658690">Autom.</translation>
 <translation id="4847902821209177679">Atlasīts <ph name="TOPIC_SOURCE" /> vienums <ph name="TOPIC_SOURCE_DESC" />. Lai atlasītu <ph name="TOPIC_SOURCE" /> albumus, nospiediet taustiņu Enter.</translation>
 <translation id="484790837831576105">(Android) DNS atrise</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">Sadalīt</translation>
 <translation id="4972592110715526173">mainīt režīmu</translation>
 <translation id="498186245079027698">Pārbaudiet skeneri un mēģiniet vēlreiz. Vietējā krātuvē jābūt pietiekami daudz vietas skenēto failu saglabāšanai.</translation>
+<translation id="4982627662315910959">Šie īsinājumtaustiņi nav pieejami. Nospiediet jaunus īsinājumtaustiņus, izmantojot taustiņu Shift un vēl vienu modificētājtaustiņu (Ctrl, Alt vai <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Izpildīt</translation>
 <translation id="4987769320337599931">Ugunsmūris</translation>
 <translation id="4988526792673242964">Lapas</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Mobilo sakaru operators</translation>
 <translation id="725133483556299729">Atlasiet e-pasta adresi</translation>
 <translation id="7271040990581020067">Skeneris pašlaik tiek izmantots. Vēlāk mēģiniet vēlreiz.</translation>
+<translation id="7271932918253517778">Īsinājumtaustiņiem, kuros tiek izmantots kāds no augšējās rindas taustiņiem, ir jāietver arī <ph name="META_KEY" /> taustiņš.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Vējš</translation>
 <translation id="7287310195820267359">Fona tapešu kolekcijas</translation>

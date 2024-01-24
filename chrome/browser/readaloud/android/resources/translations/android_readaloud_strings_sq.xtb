@@ -4,9 +4,12 @@
 <translation id="1173075331199604451">Menyja e zërit</translation>
 <translation id="1178581264944972037">Pauzë</translation>
 <translation id="1246424317317450637">Të trashësuara</translation>
+<translation id="1586836055630070874">Qetësues</translation>
+<translation id="1741047078107369903">I ngrohtë</translation>
 <translation id="1921351128855867012">Shpejt përpara <ph name="NUMBER_OF_SECONDS" /> sekonda</translation>
 <translation id="1984328900355667246">Luajta nuk ofrohet</translation>
 <translation id="2224347680315897176">I qëndrueshëm</translation>
+<translation id="2611765907167846862">I qetë</translation>
 <translation id="3023502830214299618">Fatkeqësisht, luajtja nuk ofrohet për këtë faqe në këtë moment. Provo përsëri më vonë.</translation>
 <translation id="3807208219231826020">Lëviz kursorin e luajtjes</translation>
 <translation id="385051799172605136">Prapa</translation>
@@ -15,7 +18,9 @@
 <translation id="4431240646217225907">Thekso tekstin dhe lëviz automatikisht</translation>
 <translation id="4494605076346185630">Me ton mesatar</translation>
 <translation id="4710974520964166851">I qetësuar</translation>
+<translation id="4773921449011281499">Paqësor</translation>
 <translation id="4872475766448853257">Kthehu prapa <ph name="NUMBER_OF_SECONDS" /> sekonda</translation>
+<translation id="5026371835667036198">I qartë</translation>
 <translation id="5234971936051226002">Luajtësi "Dëgjoje këtë faqe" u minimizua.</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
 <translation id="5694491020339060116">Menyja e shpejtësisë së luajtjes</translation>
@@ -26,6 +31,8 @@
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="6846298663435243399">Po ngarkohet...</translation>
 <translation id="6889157801232138307">Luajtësi "Dëgjoje këtë faqe"</translation>
+<translation id="7221920857098237570">I butë</translation>
+<translation id="7237590978482584900">I freskët</translation>
 <translation id="7282547042039404307">I qetë</translation>
 <translation id="7587250070160020374">Chrome po luan tani</translation>
 <translation id="8136852699834914183">Luajtja nuk ofrohet për këtë faqe.</translation>

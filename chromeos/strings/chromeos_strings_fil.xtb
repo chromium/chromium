@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">susunod</translation>
 <translation id="1615335640928990664">Paggamit ng data simula noong <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Patakbuhin ang pagsusuri sa Pag-charge</translation>
+<translation id="1626590945318984973">Hindi available ang shortcut. Pumindot ng bagong shortcut nang hindi ginagamit ang function key at <ph name="META_KEY" /> key.</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
 <translation id="1641857168437328880">Document Feeder (Isang bahagi)</translation>
 <translation id="1643449475550628585">Araw-araw na palitan ang larawan sa wallpaper</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">May access ka na ngayon sa mga bagong <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpaper<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Dark mode</translation>
 <translation id="4130035430755296270">Mag-hover lang para sa higit pang opsyon sa layout</translation>
+<translation id="4130750466177569591">Sumasang-ayon ako</translation>
 <translation id="4131410914670010031">Itim at puti</translation>
 <translation id="4145784616224233563">Firewall ng HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Huwag paganahin</translation>
 <translation id="439429847087949098">Nire-restart ang <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">pag-customize ng keyboard</translation>
+<translation id="4403262788869804671">Posibleng sumalungat sa shortcut ng ilang app ang shortcut na walang <ph name="META_KEY" /> key. Pindutin ulit ang shortcut na ito para ituloy ang paggamit nito, o pumindot ng bagong shortcut gamit ang <ph name="KEY" /> key.</translation>
 <translation id="4415951057168511744">Kasalukuyang Avatar</translation>
+<translation id="4417830657741848074">Na-set up ng iyong administrator na awtomatikong magsisimula ang ilang app. Posibleng hindi maisasara ang ilan sa mga app na ito.</translation>
 <translation id="4422041425070339732">pababang arrow</translation>
 <translation id="4425149324548788773">Aking Drive</translation>
 <translation id="4428374560396076622">Naka-off ang <ph name="NETWORK_NAME" /></translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">Screen saver na paggalaw ng mundo</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Hindi na-ping ang hindi default na network gateway</translation>
+<translation id="4500722292849917410">Hindi available ang shortcut. Pumindot ng bagong shortcut gamit ang modifier key (ctrl, alt, shift, o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Kulay ng interface</translation>
 <translation id="4503223151711056411">Kaliwang arrow</translation>
 <translation id="4507392511610824664">taasan ang liwanag</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Pumili ng folder sa Files app...</translation>
 <translation id="4835901797422965222">Walang aktibong network</translation>
 <translation id="4839698083503556542">Gumawa ng pelikula mo</translation>
+<translation id="48409034532829769">Na-set up ng iyong administrator na awtomatikong magsisimula ang "<ph name="APP_NAME" />." Posibleng hindi maisasara ang app na ito.</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4847902821209177679">Pinili ang <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, pindutin ang Enter para piliin ang mga album sa <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Resolution ng DNS</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">I-split</translation>
 <translation id="4972592110715526173">pagbabago ng mode</translation>
 <translation id="498186245079027698">Suriin ang scanner at subukan ulit. Tiyaking may sapat na lokal na space para mag-save ng mga na-scan na file.</translation>
+<translation id="4982627662315910959">Hindi available ang shortcut. Pumindot ng bagong shortcut gamit ang shift at 1 pang modifier key (ctrl, alt, o <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Patakbuhin</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Mga Page</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Cellular provider</translation>
 <translation id="725133483556299729">Pumili ng email</translation>
 <translation id="7271040990581020067">Kasalukuyang ginagamit ang scanner. Subukan ulit sa ibang pagkakataon.</translation>
+<translation id="7271932918253517778">Kailangang kasama ang <ph name="META_KEY" /> key sa shortcut na may mga top row key.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">Mga Koleksyon ng Wallpaper</translation>

@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">ଆଗକୁ ବଢ଼ିବା କୀ</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />ଠାରୁ ଡାଟା ବ୍ୟବହାର</translation>
 <translation id="1621067168122174824">ବ୍ୟାଟେରୀ ଚାର୍ଜ ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
+<translation id="1626590945318984973">ସର୍ଟକଟ ଉପଲବ୍ଧ ନାହିଁ। ଫଙ୍କସନ ଏବଂ <ph name="META_KEY" /> କୀଗୁଡ଼ିକୁ ବ୍ୟବହାର ନକରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ।</translation>
 <translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
 <translation id="1641857168437328880">ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ (ଗୋଟିଏ-ପାର୍ଶ୍ୱ)</translation>
 <translation id="1643449475550628585">ୱାଲପେପର୍ ଛବିକୁ ଦୈନିକ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">ନୂଆ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ୱାଲପେପର<ph name="END_LINK_WALLPAPER_SUBPAGE" />କୁ ଆପଣଙ୍କର ବର୍ତ୍ତମାନ ଆକ୍ସେସ ଅଛି</translation>
 <translation id="4117637339509843559">ଡାର୍କ ମୋଡ୍</translation>
 <translation id="4130035430755296270">ଅଧିକ ଲେଆଉଟ ବିକଳ୍ପ ପାଇଁ ହୋଭର କରିବା ଜାରି ରଖନ୍ତୁ</translation>
+<translation id="4130750466177569591">ମୁଁ ରାଜି</translation>
 <translation id="4131410914670010031">କଳା ଏବଂ ଧଳା</translation>
 <translation id="4145784616224233563">HTTP ଫାୟାରୱାଲ୍</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ରିଷ୍ଟାର୍ଟ କରାଯାଉଛି</translation>
 <translation id="4395835743215824109">କୀବୋର୍ଡକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> କୀ ବିନା ସର୍ଟକଟ କିଛି ଆପର ସର୍ଟକଟ ସହ ବିବାଦ ସୃଷ୍ଟି କରିପାରେ। ଏହି ସର୍ଟକଟକୁ ବ୍ୟବହାର କରିବା ଜାରି ରଖିବା ପାଇଁ ପୁଣି ଏହାକୁ ଦବାନ୍ତୁ କିମ୍ବା <ph name="KEY" /> କୀ ବ୍ୟବହାର କରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ।</translation>
 <translation id="4415951057168511744">ବର୍ତ୍ତମାନର ଅବତାର</translation>
+<translation id="4417830657741848074">ସ୍ୱତଃ ଆରମ୍ଭ ହେବା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର କିଛି ଆପ୍ସ ସେଟ ଅପ କରିଛନ୍ତି। ଏହି ଆପ୍ସ ମଧ୍ୟରୁ କିଛି ଆପ୍ସ ବନ୍ଦ ହୋଇନପାରେ।</translation>
 <translation id="4422041425070339732">ତଳ ଆଡ଼କୁ ତୀର</translation>
 <translation id="4425149324548788773">ମୋ ଡ୍ରାଇଭ୍</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ବନ୍ଦ ଅଛି</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">ଆର୍ଥ ଫ୍ଲୋ ସ୍କ୍ରିନ ସେଭର</translation>
 <translation id="4479639480957787382">ଇଥର୍‌ନେଟ୍‌</translation>
 <translation id="4483049906298469269">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
+<translation id="4500722292849917410">ସର୍ଟକଟ ଉପଲବ୍ଧ ନାହିଁ। ଏକ ମୋଡିଫାୟର କୀ (ctrl, alt, shift କିମ୍ବା <ph name="META_KEY" />) ବ୍ୟବହାର କରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ।</translation>
 <translation id="4500966230243561393">ଇଣ୍ଟରଫେସ ରଙ୍ଗ</translation>
 <translation id="4503223151711056411">ବାମ ତୀର</translation>
 <translation id="4507392511610824664">ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Files ଆପରେ ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ...</translation>
 <translation id="4835901797422965222">କୌଣସି ସକ୍ରିୟ ନେଟୱାର୍କ ନାହିଁ</translation>
 <translation id="4839698083503556542">ନିଜର ମୁଭି ତିଆରି କରନ୍ତୁ</translation>
+<translation id="48409034532829769">ସ୍ୱତଃ ଆରମ୍ଭ ହେବା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର "<ph name="APP_NAME" />" ସେଟ ଅପ କରିଛନ୍ତି। ଏହି ଆପ ବନ୍ଦ ହୋଇନପାରେ।</translation>
 <translation id="484462545196658690">ସ୍ୱତଃ</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ଚୟନ କରାଯାଇଛି, <ph name="TOPIC_SOURCE" /> ଆଲବମ୍ ଚୟନ କରିବାକୁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="484790837831576105">(Android) DNS ରିଜୋଲ୍ୟୁସନ୍</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">ସ୍ପ୍ଲିଟ କରନ୍ତୁ</translation>
 <translation id="4972592110715526173">ମୋଡ୍‍ ପରିବର୍ତ୍ତନ</translation>
 <translation id="498186245079027698">ସ୍କାନର୍ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। ସ୍କାନ୍ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକୁ ସେଭ୍ କରିବାକୁ ଯଥେଷ୍ଟ ଲୋକାଲ୍ ସ୍ଥାନ ଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
+<translation id="4982627662315910959">ସର୍ଟକଟ ଉପଲବ୍ଧ ନାହିଁ। shift ଏବଂ 1 ଅଧିକ ମୋଡିଫାୟର କୀ (ctrl, alt କିମ୍ବା <ph name="META_KEY" />) ବ୍ୟବହାର କରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ।</translation>
 <translation id="4985509611418653372">ଚଲାନ୍ତୁ</translation>
 <translation id="4987769320337599931">ଫାୟାରୱାଲ୍</translation>
 <translation id="4988526792673242964">ପୃଷ୍ଠାଗୁଡ଼ିକ</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">ସେଲ୍ୟୁଲାର୍ ସେବା ପ୍ରଦାତା</translation>
 <translation id="725133483556299729">ଇମେଲ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7271040990581020067">ସ୍କାନରକୁ ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରାଯାଉଛି। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="7271932918253517778">ଶୀର୍ଷ ଧାଡ଼ିର କୀଗୁଡ଼ିକ ଥିବା ସର୍ଟକଟରେ <ph name="META_KEY" /> କୀ'କୁ ଅନ୍ତର୍ଭୁକ୍ତ କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ମୃଦୁ ପବନର ଆନନ୍ଦ ନିଅନ୍ତୁ</translation>
 <translation id="7287310195820267359">ୱାଲପେପର୍ ସଂଗ୍ରହଗୁଡ଼ିକ</translation>

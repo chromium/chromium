@@ -102,6 +102,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromi
 <translation id="3955621079070267756">Abrir o Chromium por qualquer app</translation>
 <translation id="4005283307739974863">Abre e realiza a Confirmação de segurança no Chromium.</translation>
 <translation id="4043291146360695975">As senhas são salvas no Gerenciador de senhas somente neste dispositivo.</translation>
+<translation id="4076589763479456892">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Indisponível no Chromium Beta</translation>
 <translation id="4106512142782407609">Login feito como <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@ Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os
 <translation id="5534584691915394889">Eventos serão criados no Calendário da Apple com o conteúdo do Chromium e do Google Lens.</translation>
 <translation id="5571094606370987472">Abre as guias recentes do Chromium.</translation>
 <translation id="5623083843656850677">Bloqueie o modo de navegação anônima ao sair do Chromium ou mudar para outro app.</translation>
+<translation id="5671188105328420281">Dicas do Chromium</translation>
 <translation id="5688047395118852662">Este card mostra sugestões para você aproveitar o Chromium ao máximo.</translation>
 <translation id="5700709190537129682">Não é possível verificar suas senhas com o Chromium</translation>
 <translation id="5777187867430702742">Página do Chromium</translation>
@@ -283,6 +285,7 @@ Considerações:
 <translation id="8776843108004031667">A conta e os dados não salvos serão removidos do Chromium.</translation>
 <translation id="88376265765385899">Abre os favoritos do Chromium.</translation>
 <translation id="8860548555286245440">Abrir URLs na navegação anônima do Chromium</translation>
+<translation id="8866191443434488382">O Chromium vai detectar números de rastreamento nos sites que você visitar e mostrar atualizações de pacotes na página "Nova guia". O número de rastreamento do pacote e o nome do site serão enviados ao Chromium para fornecer esse recurso e melhorar os recursos de compras para todos. É possível atualizar essa opção a qualquer momento nas <ph name="BEGIN_LINK" />Configurações de rastreamento de pacote<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium para iOS</translation>
 <translation id="8924617840944134898">Abrir uma guia anônima no Chromium</translation>
 <translation id="894437814105052438">Quando você se desconecta, o Chromium não sincroniza nenhum dado novo com sua Conta do Google. Os dados sincronizados anteriormente permanecem na conta.</translation>

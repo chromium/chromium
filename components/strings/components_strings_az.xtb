@@ -465,6 +465,7 @@
 <translation id="1828959155404624835">Avtomobil icarəsi</translation>
 <translation id="1834321415901700177">Saytda zərərli proqramlar var</translation>
 <translation id="1838374766361614909">Axtarışı təmizləyin</translation>
+<translation id="1839331950812095887">fikirlərinizi ümumiləşdirən bir neçə söz</translation>
 <translation id="1839551713262164453">Siyasət dəyərlərinin doğrulanması xəta səbəbilə alınmadı</translation>
 <translation id="1842969606798536927">Ödəniş</translation>
 <translation id="1846432862466000825">Plastik (arxiv)</translation>
@@ -698,6 +699,7 @@
 <translation id="2293443924986248631">Aktiv edildiyi zaman saytlar vebdə sizi izləyən kukilərdən istifadə edə bilmir. Bəzi saytlardakı funksiyalar dayandırıla bilər.</translation>
 <translation id="2295831393422400053">"Yazmağa kömək et" funksiyasından istifadə üçün Axtarış edin və Daha yaxşı axtarış ayarını aktiv edin</translation>
 <translation id="2300306941146563769">Yüklənməyib</translation>
+<translation id="2301098101308036335">Hansı veb-saytlara nə zaman daxil olunur.</translation>
 <translation id="230286397113210245">"Anonim pəncərə açın" düyməsi, aktivləşdirərək yeni anonim pəncərə açıb, gizli baxın</translation>
 <translation id="2312234273148520048">Ədviyyat və ləzzətləndiricilər</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> həcmindən az. Növbəti dəfə daxil olarkən bəzi saytlar yavaş yüklənə bilər.</translation>
@@ -1361,6 +1363,7 @@
 <translation id="3655670868607891010">Əgər bunu tez-tez görürsünüzsə, <ph name="HELP_LINK" /> linkini sınayın.</translation>
 <translation id="365641980390710834">Gündəlik geyim</translation>
 <translation id="3658742229777143148">Versiya</translation>
+<translation id="3659521826520353662">Administratorun müəyyən etdiyi hansı veb-saytlara nə zaman daxil olunur: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">Açar sözlər:</translation>
 <translation id="3665100783276035932">Əksər saytlar düzgün işləməlidir</translation>
 <translation id="3667704023705708645">Vençur kapitalı</translation>
@@ -1451,6 +1454,7 @@
 <translation id="3812398568375898177">Bu, ChromeOS-də Android tətbiqlərinin performansını təkmilləşdirən vacib güncəllənmədir.</translation>
 <translation id="3815434930383843058">8 x 12 düym</translation>
 <translation id="3816482573645936981">Dəyər (əvəz edilib)</translation>
+<translation id="382115839591654906"><ph name="CARD_NAME" /> üçün CVC</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Brauzeriniz <ph name="BROWSER_DOMAIN" /> tərəfindən, profiliniz isə <ph name="PROFILE_DOMAIN" /> tərəfindən idarə olunur</translation>
 <translation id="382518646247711829">Əgər proksi server istifadə edirsinizsə...</translation>
@@ -2589,6 +2593,7 @@
 <translation id="6124432979022149706">Chrome Enterprise Birləşdiriciləri</translation>
 <translation id="6126565365696310362">Zərf Çin #2</translation>
 <translation id="6127379762771434464">Element silindi</translation>
+<translation id="6131824478727057281">məkan</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome'da Anonim Rejim barədə məlumat<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">İcazəni davam etdirin</translation>
 <translation id="6133984428121856852">Fayl artırması boşdur və ya səhvdir.</translation>
@@ -3199,6 +3204,7 @@
 <translation id="7341357280245177602">İkinci əl avtomobillər</translation>
 <translation id="7346048084945669753">Qoşulub:</translation>
 <translation id="7346062987309535530">Yemək ləvazimatları</translation>
+<translation id="7346081071264046066">"bu toy dəvətinə həyəcanla "hə" cavabı verin"</translation>
 <translation id="7352651011704765696">Xəta oldu</translation>
 <translation id="7353601530677266744">Əmr sahəsi</translation>
 <translation id="7354880545102894991">Aşağı qiymət və son dəqiqədə səyahət</translation>

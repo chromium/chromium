@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">sambaza</translation>
 <translation id="1615335640928990664">Matumizi ya data tangu <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Tekeleza jaribio la Kuchaji</translation>
+<translation id="1626590945318984973">Njia ya mkato haipatikani. Bonyeza njia mpya ya mkato bila kutumia vitufe vya utendaji na vya <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Inapakia</translation>
 <translation id="1641857168437328880">Mashine ya kuingiza hati (Upande mmoja)</translation>
 <translation id="1643449475550628585">Badilisha picha ya mandhari kila siku</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">Sasa unaweza kufikia <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />mandhari mpya<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Hali nyeusi</translation>
 <translation id="4130035430755296270">Endelea kuelea juu yake ili upate chaguo zaidi za muundo</translation>
+<translation id="4130750466177569591">Ninakubali</translation>
 <translation id="4131410914670010031">Nyeusi na nyeupe</translation>
 <translation id="4145784616224233563">Kinga mtandao ya HTTP</translation>
 <translation id="4147897805161313378">Picha kwenye Google</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Zima</translation>
 <translation id="439429847087949098">Inazima kisha iwake <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">kuweka mapendeleo ya kibodi</translation>
+<translation id="4403262788869804671">Njia ya mkato isiyo na kitufe cha <ph name="META_KEY" /> inaweza kukinzana na njia ya mkato ya baadhi ya programu. Bonyeza tena njia hii ya mkato ili uendelee kuitumia au ubonyeze njia ya mkato mpya ukitumia kitufe cha <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Ishara ya Sasa</translation>
+<translation id="4417830657741848074">Msimamizi wako ameweka mipangilio ya baadhi ya programu ili zianze kiotomatiki. Huenda baadhi ya programu hizi zisifungwe.</translation>
 <translation id="4422041425070339732">kishale cha chini</translation>
 <translation id="4425149324548788773">Hifadhi Yangu</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> imezimwa</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">Taswira ya skrini kulingana na mwelekeo wa dunia</translation>
 <translation id="4479639480957787382">Ethaneti</translation>
 <translation id="4483049906298469269">Imeshindwa kuita lango la mtandao usio chaguomsingi</translation>
+<translation id="4500722292849917410">Njia ya mkato haipatikani. Bonyeza njia mpya ya mkato ukitumia kitufe cha kurekebisha (ctrl, alt, shift au <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Rangi ya kiolesura</translation>
 <translation id="4503223151711056411">Kishale cha kushoto</translation>
 <translation id="4507392511610824664">ongeza ung'aavu</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Chagua folda katika programu ya Faili...</translation>
 <translation id="4835901797422965222">Hakuna mitandao inayotumika</translation>
 <translation id="4839698083503556542">Andaa filamu yako mwenyewe</translation>
+<translation id="48409034532829769">Msimamizi wako ameweka mipangilio ya "<ph name="APP_NAME" />" ili ianze kiotomatiki. Huenda programu hii isifungwe.</translation>
 <translation id="484462545196658690">Otomatiki</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> imechaguliwa, bonyeza 'Enter' ili uchague albamu za <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">Usuluhishaji wa DNS (Android)</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">Iliyogawanywa</translation>
 <translation id="4972592110715526173">hali ya mabadiliko</translation>
 <translation id="498186245079027698">Kagua kichanganuzi kisha ujaribu tena. Hakikisha kuna nafasi ya kutosha kwenye kompyuta yako ya kuhifadhi faili zilizochanganuliwa.</translation>
+<translation id="4982627662315910959">Njia ya mkato haipatikani. Bonyeza njia mpya ya mkato ukitumia shift na kitufe kingine 1 cha kurekebisha (ctrl, alt au <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Tekeleza</translation>
 <translation id="4987769320337599931">Kinga mtandao</translation>
 <translation id="4988526792673242964">Kurasa</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Mtoa huduma za vifaa vya mkononi</translation>
 <translation id="725133483556299729">Chagua barua pepe</translation>
 <translation id="7271040990581020067">Kichanganuzi kinatumika kwa sasa. Jaribu tena baadaye.</translation>
+<translation id="7271932918253517778">Njia ya mkato iliyo na vitufe vya safu mlalo ya juu inahitaji kujumuisha kitufe cha <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Hali ya upepo mwanana</translation>
 <translation id="7287310195820267359">Mikusanyiko ya Mandhari</translation>

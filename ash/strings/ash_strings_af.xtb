@@ -228,7 +228,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1882814835921407042">Geen selnetwerk nie</translation>
 <translation id="1882897271359938046">Weerspieëling na <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Ontsluit met vingerafdruk</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> steun nie <ph name="SPECIFIED_RESOLUTION" /> nie (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Die resolusie is verander na <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klik bevestig om veranderinge te hou. Die vorige instellings sal oor <ph name="TIMEOUT_SECONDS" /> teruggestel word.</translation>
 <translation id="1908992311423394684">Nuwe installasie</translation>
 <translation id="1915307458270490472">Sit neer</translation>
 <translation id="1918022425394817322">Kamera is geglip na hoek bo regs</translation>
@@ -622,6 +621,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3577473026931028326">Iets was fout. Probeer weer.</translation>
 <translation id="3580650856351781466">Laai tans spraaklêers af</translation>
 <translation id="3585296979871889131">Bekyk jou foon se onlangse foto’s, media, kennisgewings en apps</translation>
+<translation id="3590441166907930941">Kantknoppie</translation>
 <translation id="3593039967545720377">Kry jou knipbordgeskiedenis deur <ph name="SHORTCUT_KEY_NAME" /> + V te druk om jou knipbord te bekyk. Kopieer 'n item om te begin.</translation>
 <translation id="3593646411856133110">Swiep op en hou om oop programme te sien</translation>
 <translation id="3595596368722241419">Battery is vol</translation>
@@ -1035,6 +1035,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="5163434717504750796">Batterygesondheid <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Siklustelling <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Stoor lessenaar as 'n templaat</translation>
 <translation id="5168181903108465623">Uitsaaitoestelle is beskikbaar</translation>
+<translation id="5168753792967365150">Wysig in Google Take</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
 <translation id="5176318573511391780">Neem gedeeltelike skerm op</translation>
 <translation id="5187627942836026988">Wys warmkolbesonderhede. Jou administrateur blokkeer warmkol.</translation>
@@ -1304,6 +1305,8 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="6168622430237609329">Jou geïnstalleerde apps</translation>
 <translation id="6173151025443907148">’n Tweede gebruiker kan nie aangemeld word as Lacros geaktiveer is nie. Gebruik asseblief eerder ’n tweede blaaierprofiel in Lacros, of deaktiveer Lacros en probeer weer.</translation>
 <translation id="6179832488876878285">Jy kan jou belangrike lêers hier vasspeld. Maak Lêers-program oop om te begin.</translation>
+<translation id="6180193585172850042">Terugknoppie</translation>
+<translation id="6180651297859206670">Vorentoeknoppie</translation>
 <translation id="6182592640011875895">Maak lessenaar oop</translation>
 <translation id="6185696379715117369">Bladsy op</translation>
 <translation id="619335566042889110">Laai nou ten volle</translation>

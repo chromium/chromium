@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">កំណែកម្មវិធី</translation>
 <translation id="1428770807407000502">បិទ​សមកាលកម្មឬ?</translation>
 <translation id="1430915738399379752">បោះពុម្ព</translation>
+<translation id="1435593198351412143">បើក PDF ដោយ​ស្វ័យប្រវត្តិ</translation>
 <translation id="1436784010935106834">បានដកចេញ</translation>
 <translation id="1437543266176261764">កំពុងដំណើរការក្នុង <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">រៀបចំផលិតផលដែលអ្នកតាមដាននៅក្នុងចំណាំ</translation>
@@ -339,6 +340,7 @@
 <translation id="2894821468041866720">មិនធ្វើឱ្យ​កម្មវិធីរុករកតាមអ៊ីនធឺណិត ឬ​ឧបករណ៍​របស់អ្នក​មានល្បឿនថយចុះគួរឱ្យកត់សម្គាល់​នោះទេ។</translation>
 <translation id="2900528713135656174">បង្កើតព្រឹត្តិការណ៍</translation>
 <translation id="2901411048554510387">កំពុងបង្ហាញការណែនាំសម្រាប់ <ph name="WEBSITE_TITLE" /></translation>
+<translation id="2904300462646366554">PDF ដែលបាន​ទាញយក​បើកដោយប្រើ​កម្មវិធីមើល PDF មួយ​នៅលើ​ឧបករណ៍​របស់អ្នក​ដោយ​ស្វ័យប្រវត្តិ</translation>
 <translation id="2904414404539560095">បានបើក​ពេញអេក្រង់នូវបញ្ជីឧបករណ៍​ដែលត្រូវ​ចែករំលែក​ផ្ទាំងជាមួយ​។</translation>
 <translation id="2908243544703713905">អត្ថបទដែលមិនទាន់អានត្រៀមរួចរាល់ហើយ</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
@@ -894,6 +896,7 @@
 <translation id="5810288467834065221">រក្សា​សិទ្ធិ <ph name="YEAR" /> Google LLC ។ រក្សាសិទ្ធិ​គ្រប់យ៉ាង។</translation>
 <translation id="5814749351757353073">តាមដានគេហទំព័រដែលអ្នកចូលចិត្ត</translation>
 <translation id="5822875253699806474">ដើម្បី​ត្រឡប់​ទៅកាន់​គេហទំព័រ​ដែល​អ្នកបានចូលមើល​យ៉ាង​រហ័ស សូមធ្វើសមកាលកម្មផ្ទាំង និងប្រវត្តិរបស់អ្នក</translation>
+<translation id="5829586821381540080">បាន​រក្សាទុក​នៅក្នុង <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">មិនស្គាល់</translation>
 <translation id="5833984609253377421">ចែក​រំលែក​តំណ</translation>
 <translation id="5839058148541733625">Chrome ដាយណូស័រ</translation>
@@ -960,7 +963,6 @@
 <translation id="6192907950379606605">យកការពណ៌នា​អំពីរូបភាព</translation>
 <translation id="6193448654517602979">ជ្រើសរើសផ្ទាំង</translation>
 <translation id="6196315980958524839">ពាក្យសម្ងាត់ត្រូវបានរក្សាទុកទៅក្នុងកម្មវិធីគ្រប់គ្រង​ពាក្យសម្ងាត់ Google នៅលើឧបករណ៍នេះ</translation>
-<translation id="6202514376968366382">Chrome អាចបើក PDF ដែលអ្នកបានទាញយក</translation>
 <translation id="6202812185118613467">ចូល​គណនី​វិញ ដើម្បី​ចាប់ផ្ដើម​ធ្វើសមកាលកម្ម</translation>
 <translation id="6205314730813004066">ឯកជនភាពនៃការផ្សាយពាណិជ្ជកម្ម</translation>
 <translation id="6210748933810148297">មិនមែន <ph name="EMAIL" /> ទេ?</translation>

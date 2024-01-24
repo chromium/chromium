@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
+<translation id="1066101356081285416">Chrome, તમે મુલાકાત લેતા હો તે સાઇટ પરના ટ્રૅકિંગ નંબરની ભાળ મેળવશે અને તમને નવા ટૅબ પેજ પર પૅકેજ સંબંધિત અપડેટ બતાવશે. દરેક જણને આ સુવિધા પ્રદાન કરવા અને Google પર શૉપિંગની સુવિધાઓને બહેતર બનાવવા માટે, Googleને પૅકેજ ટ્રૅકિંગ નંબર અને વેબસાઇટનું નામ મોકલવામાં આવશે. તમે કોઈપણ સમયે <ph name="BEGIN_LINK" />પૅકેજ ટ્રૅકિંગના સેટિંગ<ph name="END_LINK" />માં જઈને આને અપડેટ કરી શકો છો.</translation>
 <translation id="1085696779717592361">ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
 <translation id="1105362920864247682">Chromeમાં બ્રાઉઝિંગ ડેટા સાફ કરો.</translation>
 <translation id="1113057722807951993">પાસફ્રેઝ એન્ક્રિપ્શનમાં Google Payની ચુકવણી પદ્ધતિઓ અને સરનામાં શામેલ હોતા નથી.
@@ -40,6 +41,7 @@
 <translation id="1682483655351012182">તમારા Chrome ડેટાને સિંક કરો</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chromeમાં ઇનપુટ કરેલા URLsને તમારા બુકમાર્કમાં ઉમેરે છે.</translation>
+<translation id="1799920918471566157">Chrome વિશે ટિપ</translation>
 <translation id="1830634592642484976">આ સરનામું હાલમાં Chromeમાં સાચવેલું છે. Googleની સમગ્ર પ્રોડક્ટ પર તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="USER_EMAIL" />માં સાચવો.</translation>
 <translation id="1843217788865538014">જ્યારે પણ તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાંની લિંક પર ટૅપ કરો, ત્યારે ઑટોમૅટિક રીતે Chromeનો ઉપયોગ કરો.</translation>
 <translation id="1910975740091000991">iOS માટે Chrome</translation>
@@ -74,6 +76,7 @@
 <translation id="2702250627063295552">Chromeમાં વાંચન સૂચિની આઇટમ ઉમેરો</translation>
 <translation id="2736805085127235148">તમારા ડિવાઇસ સેટિંગમાં Chromeના નોટિફિકેશન હાલમાં બંધ કરવામાં આવ્યા છે.</translation>
 <translation id="2767464022270041271">કોઈ સાચવેલો પાસવર્ડ નથી. જ્યારે તમે તમારા પાસવર્ડ સાચવો, ત્યારે Google Password Manager તેને ચેક કરી શકે છે.</translation>
+<translation id="2789947168960170215">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયા હો અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાં Chrome ડેટા સાફ કરો<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Chromeમાં બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="2869959624320573933">Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome તમારા ડેટાને કેવી રીતે ખાનગી રાખે છે<ph name="END_LINK" /> તે વિશે વધુ જાણો</translation>

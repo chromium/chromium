@@ -90,7 +90,6 @@
 <translation id="1408847409015257906">Tap Privacy and Security</translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="143681031165817424">Address saved only on this device</translation>
-<translation id="1443958768615272145">Continue browsing</translation>
 <translation id="1449835205994625556">Hide password</translation>
 <translation id="1450170672351507823">Standard protection is on. For even more security, use enhanced protection.</translation>
 <translation id="1469381646033328562">Your account is managed by your parent.
@@ -216,7 +215,6 @@
 <translation id="2139502497535990641">Turn on price alerts?</translation>
 <translation id="2139867232736819575">Search for text that you copied</translation>
 <translation id="214201757571129614">Sign in…</translation>
-<translation id="2145004670974387485">Select the account that you want to use to save <ph name="FILENAME" /></translation>
 <translation id="2148716181193084225">Today</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2175927920773552910">QR code</translation>
@@ -315,7 +313,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2664621323652615289">Stop</translation>
 <translation id="2666092431469916601">Top</translation>
 <translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
-<translation id="2681158575552244226">saving in Drive for <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">Camera is in use</translation>
 <translation id="2691653761409724435">Not available offline</translation>
 <translation id="2695507686909505111">Page translated</translation>
@@ -484,7 +481,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3519193562722059437">Open a tab to browse the web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Open the tab}other{Open {count} tabs}}</translation>
 <translation id="3523789730715594198">You can stop syncing at any time in settings. Google may personalise Search and other services based on your history.</translation>
-<translation id="3526783603136816353">Select the account that you want to use to save <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3529024052484145543">Not secure</translation>
 <translation id="3530206579861815432">Quickly find open and recently closed tabs across your synced devices.</translation>
@@ -1104,7 +1100,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6685259053455152195">Shortcuts to quickly modify settings and use features from the address bar.</translation>
 <translation id="6710079714193676716">Managed by your organisation. Some features may be unavailable. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
-<translation id="6716730056313760676">saved in Drive for <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Get your bookmarks, passwords and more on all your devices.</translation>
 <translation id="6730682669179532099">Can't Export Passwords</translation>
 <translation id="6732087373923685049">camera</translation>
@@ -1123,7 +1118,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6790502149545262384">Soon, you’ll see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
 <translation id="6797885426782475225">Voice Search</translation>
 <translation id="6800349425672670802">You can access all your open tabs from the Tab Switcher.</translation>
-<translation id="6805179248725678418">Save in Google Drive</translation>
 <translation id="6807889908376551050">Show All...</translation>
 <translation id="681368974849482173">Item created</translation>
 <translation id="6822587385560699678">When on, passwords are saved in <ph name="ACCOUNT" />. When off, passwords are saved only to this device.</translation>
@@ -1412,7 +1406,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8395339334550012808">Soon, you’ll see content from and about <ph name="CHANNEL_NAME" /> in Following.</translation>
 <translation id="8395378633507873708">Address bar</translation>
 <translation id="8402673309244746971">Go to Following</translation>
-<translation id="8403629764260204788">Hide 'Continue Browsing'</translation>
 <translation id="8407669440184693619">No passwords found for this site</translation>
 <translation id="842017693807136194">Signed in with</translation>
 <translation id="8423121072346537366">Just Now</translation>

@@ -102,6 +102,7 @@
 <translation id="3955621079070267756">કોઈપણ ઍપમાંથી Chromium ખોલો</translation>
 <translation id="4005283307739974863">Chromiumમાં સલામતી માટે તપાસ ખોલે છે અને ચલાવે છે.</translation>
 <translation id="4043291146360695975">આ ડિવાઇસના પાસવર્ડ માત્ર આ ડિવાઇસના પાસવર્ડ મેનેજરમાં સાચવવામાં આવે છે.</translation>
+<translation id="4076589763479456892">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયા હો અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાં Chromiumનો ડેટા સાફ કરો<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Chromium બીટા પર સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="4106512142782407609"><ph name="EMAIL" /> તરીકે સાઇન ઇન થયાં.
 
@@ -153,6 +154,7 @@
 <translation id="5534584691915394889">Chromium અને Google Lensમાંથી તમારા Apple Calendarમાં ઇવેન્ટ બનાવવા માટે, આનો ઉપયોગ કરવામાં આવશે.</translation>
 <translation id="5571094606370987472">Chromium તાજેતરના ટૅબ ખોલે છે.</translation>
 <translation id="5623083843656850677">જ્યારે તમે Chromiumમાંથી બહાર નીકળો અથવા કોઈ અન્ય ઍપ પર સ્વિચ કરો, ત્યારે તમારા છૂપા ટૅબ લૉક કરો.</translation>
+<translation id="5671188105328420281">Chromium વિશે ટિપ</translation>
 <translation id="5688047395118852662">આ કાર્ડ તમને Chromiumનો મહત્તમ લાભ મેળવવા માટેના સૂચનો બતાવે છે.</translation>
 <translation id="5700709190537129682">Chromium તમારા પાસવર્ડ ચેક કરી શકતું નથી</translation>
 <translation id="5777187867430702742">Chromium પેજ</translation>
@@ -281,6 +283,7 @@
 <translation id="8776843108004031667">Chromiumમાંથી આ એકાઉન્ટ અને સાચવવામાં ન આવ્યો હોય એવો કોઈપણ ડેટા કાઢી નાખવામાં આવશે.</translation>
 <translation id="88376265765385899">Chromium બુકમાર્ક્સ ખોલે છે.</translation>
 <translation id="8860548555286245440">છૂપા મોડમાં Chromiumમાં URLs ખોલો</translation>
+<translation id="8866191443434488382">Chromium, તમે મુલાકાત લેતા હો તે સાઇટ પરના ટ્રૅકિંગ નંબરની ભાળ મેળવશે અને તમને નવા ટૅબ પેજ પર પૅકેજ સંબંધિત અપડેટ બતાવશે. દરેક જણને આ સુવિધા પ્રદાન કરવા અને તેમના માટે શૉપિંગની સુવિધાઓ બહેતર બનાવવા માટે, Chromiumને પૅકેજ ટ્રૅકિંગ નંબર અને વેબસાઇટનું નામ મોકલવામાં આવશે. તમે કોઈપણ સમયે <ph name="BEGIN_LINK" />પૅકેજ ટ્રૅકિંગના સેટિંગ<ph name="END_LINK" />માં જઈને આને અપડેટ કરી શકો છો.</translation>
 <translation id="8909995017390087892">iOS માટે Chromium</translation>
 <translation id="8924617840944134898">Chromiumમાં છૂપું ટૅબ ખોલો</translation>
 <translation id="894437814105052438">તમે સાઇન આઉટ કરશો, ત્યારે Chromium કોઈપણ નવા ડેટાને તમારા Google એકાઉન્ટ સાથે સિંક કરશે નહીં. અગાઉ સિંક કરેલો ડેટા એકાઉન્ટમાં રહે છે.</translation>

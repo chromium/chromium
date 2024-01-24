@@ -4629,7 +4629,6 @@
 <translation id="4546345569117159016">მარჯვენა ღილაკი</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" />-ს სურს, გამოიყენოს შემდეგი გაფართოება:</translation>
 <translation id="4546692474302123343">Google ასისტენტის ხმოვანი შეყვანა</translation>
-<translation id="4547538408998421970">დღეისათვის ლიმიტს მიაღწიეთ.</translation>
 <translation id="4547659257713117923">ჩანართები სხვა მოწყობილობებიდან არ არის</translation>
 <translation id="4547672827276975204">ავტომატურად დაყენება</translation>
 <translation id="4548858987594081919">Google პაროლების მმართველს სისტემაში შესვლის მონაცემების შენახვაში რომ დაეხმაროთ, დაამატეთ თქვენი მომხმარებლის სახელი ამ საიტისთვის</translation>
@@ -5240,7 +5239,6 @@
 <translation id="5032430150487044192">QR კოდის შექმნა ვერ მოხერხდა</translation>
 <translation id="5033137252639132982">მოძრაობის სენსორების გამოყენება დაუშვებელია</translation>
 <translation id="5033266061063942743">გეომეტრიული ფიგურები</translation>
-<translation id="5033646801355533305">ცადეთ ხვალ.</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-დან დამატებითი ინფორმაციის მისაღებად ქვემოთ აირჩიეთ „დაწვრილებით“.</translation>
 <translation id="5037676449506322593">აირჩიეთ ყველა</translation>
 <translation id="5038818366306248416">ადრე აირჩიეთ, არ დაგეშვათ გაფართოებები <ph name="ORIGIN" />-ზე</translation>
@@ -6036,7 +6034,6 @@
 <translation id="5667546120811588575">მიმდინარეობს Google Play-ს დაყენება...</translation>
 <translation id="5668351004957198136">მარცხით დასრულდა</translation>
 <translation id="5669863904928111203">ChromeOS მოძველდა</translation>
-<translation id="56702779821643359">გაუზიარეთ ფაილები თქვენ გარშემო მყოფ ადამიანებს. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="5671641761787789573">სურათები დაბლოკილია</translation>
 <translation id="5671658447180261823">შემოთავაზების „<ph name="SUGGESTION_NAME" />“ ამოშლა</translation>
 <translation id="567210741546439261">&amp;სანიშნეები და სიები</translation>
@@ -8374,7 +8371,6 @@
 <translation id="752098910262610337">მალსახმობების ჩვენება</translation>
 <translation id="7521430434164837205">Microsoft 365-ის ფაილები</translation>
 <translation id="7522255036471229694">წარმოთქვით „Ok Google“</translation>
-<translation id="7523112275619538890">გაუზიარეთ ახლომახლო მოწყობილობებს ფაილები და სხვა კონტენტი</translation>
 <translation id="7523117833414447032">მთავრული ასოების წაკითხვისას</translation>
 <translation id="7523585675576642403">პროფილის გადარქმევა</translation>
 <translation id="7525067979554623046">შექმნა</translation>
@@ -9971,7 +9967,6 @@
 <translation id="8732212173949624846">დათვალიერების ისტორიის წაკითხვა და შეცვლა ყველა შესულ მოწყობილობაში</translation>
 <translation id="8732844209475700754">სხვა პარამეტრები, რომლებიც დაკავშირებულია კონფიდენციალურობასთან, უსაფრთხოებასთან და მონაცემების შეგროვებასთან</translation>
 <translation id="8734073480934656039">ამ პარამეტრის ჩართვის შემთხვევაში, კიოსკის პროგრამები ავტომატურად გაიშვება ჩატვირთვისას.</translation>
-<translation id="8734674662128056360">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა</translation>
 <translation id="8734755021067981851">USB მოწყობილობები მიერთებული არ არის.</translation>
 <translation id="8736288397686080465">ეს საიტი ფონში უკვე განახლებულია.</translation>
 <translation id="8737709691285775803">ცრუმაგიერი მომხმარებლები</translation>

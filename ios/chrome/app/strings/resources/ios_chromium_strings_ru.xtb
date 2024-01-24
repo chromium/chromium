@@ -102,6 +102,7 @@
 <translation id="3955621079070267756">Открывайте Chromium из любого приложения</translation>
 <translation id="4005283307739974863">Начнется проверка безопасности в Chromium.</translation>
 <translation id="4043291146360695975">Пароли сохраняются в Менеджере паролей только на этом устройстве.</translation>
+<translation id="4076589763479456892">Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chromium из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Проверка не поддерживается в бета-версии Chromium</translation>
 <translation id="4106512142782407609">Вы вошли как <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@
 <translation id="5534584691915394889">Эти данные будут использоваться для создания мероприятий в календаре Apple прямо из Chromium и Google Объектива.</translation>
 <translation id="5571094606370987472">Открывает недавние вкладки в Chromium.</translation>
 <translation id="5623083843656850677">Блокируйте доступ ко вкладкам инкогнито, когда вы выходите из Chromium или переключаетесь на другое приложение.</translation>
+<translation id="5671188105328420281">Советы по работе с Chromium</translation>
 <translation id="5688047395118852662">Карточка с предложениями о том, как наиболее эффективно использовать Chromium.</translation>
 <translation id="5700709190537129682">Не удается проверить пароли в Chromium.</translation>
 <translation id="5777187867430702742">Страница Chromium</translation>

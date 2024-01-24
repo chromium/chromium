@@ -102,6 +102,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromiuma
 <translation id="3955621079070267756">Otvorite Chromium iz bilo koje aplikacije</translation>
 <translation id="4005283307739974863">Otvara i pokreće sigurnosnu provjeru u Chromiumu.</translation>
 <translation id="4043291146360695975">Lozinke se pohranjuju u Upravitelju lozinki samo na ovom uređaju.</translation>
+<translation id="4076589763479456892">Ako ste zaboravili pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromiuma na računu<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Nije podržano u Beta verziji Chromiuma</translation>
 <translation id="4106512142782407609">Prijavljeni ste kao <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@ Vaši podaci su šifrirani pristupnim izrazom. Unesite ga da koristite i sačuva
 <translation id="5534584691915394889">Ovo će se koristiti za kreiranje događaja u vašem Apple Calendaru iz Chromiuma i Google Objektiva.</translation>
 <translation id="5571094606370987472">Otvaranje nedavnih kartica u Chromiumu.</translation>
 <translation id="5623083843656850677">Zaključajte anonimne kartice kada napustite Chromium ili prebacite na drugu aplikaciju.</translation>
+<translation id="5671188105328420281">Savjeti za Chromium</translation>
 <translation id="5688047395118852662">Kartica prikazuje prijedloge o tome kako iskoristiti sve prednosti Chromiuma.</translation>
 <translation id="5700709190537129682">Chromium ne može provjeriti vaše lozinke</translation>
 <translation id="5777187867430702742">Stranica Chromiuma</translation>
@@ -281,7 +283,7 @@ Stvari za razmatranje:
 <translation id="8776843108004031667">Ovaj račun i svi podaci koji nisu sačuvani će se ukloniti iz Chromiuma.</translation>
 <translation id="88376265765385899">Otvaranje oznaka u Chromiumu.</translation>
 <translation id="8860548555286245440">Otvorite URL-ove u Chromiumu u anonimnom načinu rada</translation>
-<translation id="8866191443434488382">Chromium će otkriti evidencijske brojeve na web-lokacijama koje posjećujete i prikazati vam novosti o paketima na novoj kartici preglednika. Broj za praćenje pošiljke i naziv web-lokacije poslat će se Chromiumu radi pružanja te značajke i poboljšanja značajki kupnje za sve korisnike. To uvijek možete ažurirati u <ph name="BEGIN_LINK" />postavkama praćenja paketa<ph name="END_LINK" />.</translation>
+<translation id="8866191443434488382">Chromium će otkrivati brojeve za praćenje na web lokacijama koje posjetite i prikazivat će vam novosti o paketima na stranici Nova kartica. Broj za praćenje paketa i naziv web lokacije će se slati Chromiumu radi pružanja ove funkcije i poboljšanja funkcija kupovine za sve. Možete ažurirati ovo bilo kada u <ph name="BEGIN_LINK" />Postavkama praćenja paketa<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium za iOS</translation>
 <translation id="8924617840944134898">Otvorite anonimnu karticu u Chromiumu</translation>
 <translation id="894437814105052438">Kada se odjavite Chromium neće sinhronizirati nove podatke s vašim Google računom. Prethodno sinhronizirani podaci ostaju na računu.</translation>

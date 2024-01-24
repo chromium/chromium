@@ -169,7 +169,7 @@
 <translation id="3803367742635802571">Websites, du besøger, holder muligvis op med at fungere som forventet</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />, <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Telefonnumre</translation>
-<translation id="3826050100957962900">Third-party sign-in</translation>
+<translation id="3826050100957962900">Tredjepartslogin</translation>
 <translation id="3835233591525155343">Din enhedsbrug</translation>
 <translation id="3843916486309149084">I dag blokerer Chrome cookies igen</translation>
 <translation id="385051799172605136">Tilbage</translation>
@@ -330,6 +330,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Bloker websites fra at benytte dine virtual reality-enheder og -data</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6452138246455930388">Prisfald på din åbne fane fra <ph name="OLD_PRICE" /> til <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Når vinduet er smalt, kan du anmode om mobilvenlig visning</translation>
 <translation id="6527303717912515753">Del</translation>
 <translation id="652937045869844725">Prøv at tillade tredjepartscookies, hvilket vil betyde mindre beskyttelse, men større sandsynlighed for, at websitefunktionerne fungerer</translation>

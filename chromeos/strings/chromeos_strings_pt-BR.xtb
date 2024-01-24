@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">avançar</translation>
 <translation id="1615335640928990664">Uso de dados desde <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Executar teste de carregamento</translation>
+<translation id="1626590945318984973">Atalho indisponível. Pressione um novo atalho sem usar as teclas de função e <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Carregando</translation>
 <translation id="1641857168437328880">Alimentador de documentos (unilateral)</translation>
 <translation id="1643449475550628585">Mudar a imagem do plano de fundo diariamente</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">Agora você tem acesso a novos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />planos de fundo<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Modo escuro</translation>
 <translation id="4130035430755296270">Passe o cursor para ver mais opções de layout</translation>
+<translation id="4130750466177569591">Aceito</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Desativar</translation>
 <translation id="439429847087949098">Reiniciando <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">personalizar teclado</translation>
+<translation id="4403262788869804671">Atalhos sem a tecla <ph name="META_KEY" /> podem entrar em conflito com o atalho de algum app. Pressione esse atalho novamente para continuar a usá-lo ou pressione um novo atalho usando a tecla <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Avatar atual</translation>
+<translation id="4417830657741848074">O administrador configurou alguns apps para iniciar automaticamente. É possível que alguns desses não estejam fechados.</translation>
 <translation id="4422041425070339732">seta para baixo</translation>
 <translation id="4425149324548788773">Meu Drive</translation>
 <translation id="4428374560396076622">A rede <ph name="NETWORK_NAME" /> está desativada</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">Protetor de tela Fluxo da Terra</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Falha no ping do gateway de rede não padrão</translation>
+<translation id="4500722292849917410">Atalho indisponível. Pressione um novo atalho usando uma tecla modificadora (Ctrl, Alt, Shift ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Cor da interface</translation>
 <translation id="4503223151711056411">Seta para a esquerda</translation>
 <translation id="4507392511610824664">aumentar o brilho</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Selecionar a pasta no app Arquivos…</translation>
 <translation id="4835901797422965222">Não há redes ativas</translation>
 <translation id="4839698083503556542">Crie seu próprio filme</translation>
+<translation id="48409034532829769">O administrador configurou o app <ph name="APP_NAME" /> para ser iniciado automaticamente. Não é possível fechar esse app.</translation>
 <translation id="484462545196658690">Automática</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> Opção "<ph name="TOPIC_SOURCE_DESC" />" selecionada. Pressione "Enter" para selecionar álbuns do <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Resolução de DNS</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">Dividir</translation>
 <translation id="4972592110715526173">mudar o modo</translation>
 <translation id="498186245079027698">Confira o scanner e tente novamente. Confirme se há armazenamento local suficiente para salvar os arquivos digitalizados.</translation>
+<translation id="4982627662315910959">Atalho indisponível. Pressione um novo atalho usando Shift e mais uma tecla modificadora (Ctrl, Alt ou <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Executar</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Páginas</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Operadora de celular</translation>
 <translation id="725133483556299729">Selecione um e-mail</translation>
 <translation id="7271040990581020067">O scanner está em uso. Tente novamente mais tarde.</translation>
+<translation id="7271932918253517778">O atalho com as teclas da primeira fileira precisa incluir a tecla <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Sinta a brisa</translation>
 <translation id="7287310195820267359">Coleções de plano de fundo</translation>

@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">ဒေါင်းလုဒ်လုပ်ရန် နေရာမူရင်းကို အချိန်မရွေး ပြောင်းနိုင်သည်</translation>
 <translation id="1796666869097395659">တဘ်သို့ နောက်မှပြန်သွားရန်အတွက် ချုံ့ရန်</translation>
 <translation id="1807246157184219062">အလင်း</translation>
+<translation id="1807709131360304325">ဝင်းဒိုးအသစ် ဖွင့်ရန်</translation>
 <translation id="1810845389119482123">စင့်ခ်စတင်လုပ်ရန် စနစ်ထည့်သွင်းခြင်းကို အပြီးသတ်မထားပါ</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> က <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ကို ဆက်သုံး၍မရပါ</translation>
 <translation id="1829244130665387512">စာမျက်နှာတွင် ရှာရန်</translation>
@@ -959,7 +960,6 @@
 <translation id="6192907950379606605">ပုံရှင်းလင်းချက်များ ရယူရန်</translation>
 <translation id="6193448654517602979">တဘ်ရွေးရန်</translation>
 <translation id="6196315980958524839">စကားဝှက်များကို ဤစက်ရှိ ‘Google စကားဝှက်မန်နေဂျာ’ တွင် သိမ်းသည်</translation>
-<translation id="6202514376968366382">Chrome သည် သင်ဒေါင်းလုဒ်လုပ်ထားသော PDF ကို ဖွင့်နိုင်သည်</translation>
 <translation id="6202812185118613467">စတင်စင့်ခ်လုပ်ရန် ပြန်လည်လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="6205314730813004066">ကြော်ငြာဆိုင်ရာ အချက်အလက်လုံခြုံမှု</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> မဟုတ်ဘူးလား။</translation>
@@ -1327,6 +1327,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> သည် ဟောင်းနေပါပြီ။</translation>
 <translation id="7944772052836377867">‘စင့်ခ်လုပ်ခြင်း’ က သင်ဖြစ်ကြောင်း စိစစ်ရန်လိုအပ်သည်</translation>
 <translation id="7947953824732555851">လက်ခံကာ ဝင်ရောက်မည်</translation>
+<translation id="7951102827450076904">ဒေါင်းလုဒ်လုပ်ထားသော PDF များကို အမြဲဖွင့်ရန်</translation>
 <translation id="7957413488482743710">လိမ်လည်ခံရခြင်းမှ ကာကွယ်ပေးနိုင်ရန်အတွက် ပကတိအသွင်ကတ်သည် သင့်ကတ်အစစ်ကို ဖျောက်ပေးသည်။ <ph name="BEGIN_LINK1" />ပကတိအသွင်ကတ်များအကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">စာမျက်နှာ သိကောင်းစရာများသို့ နောက်ပြန်သွားသည့်ခလုတ်</translation>
 <translation id="7961926449547174351">'သိုလှောင်ခန်း' အသုံးပြုခွင့်ကို သင် ပိတ်ထားသည်။ ၎င်းကိုဖွင့်ရန် 'ဆက်တင်များ' သို့သွားပါ။</translation>

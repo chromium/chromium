@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="1066101356081285416">Chrome-k jarraipen-zenbakiak hautemango ditu bisitatzen dituzun webguneetan, eta paketeei buruzko informazio eguneratua erakutsiko dizu Fitxa berria orrian. Paketearen jarraipen-zenbakia eta webgunearen izena Google-ri bidaliko zaizkio eginbide hau eskaintzeko eta Google-ren erosketa-eginbideak denentzat hobetzeko. Hori aldatzeko, joan <ph name="BEGIN_LINK" />paketeen jarraipenaren ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Erabili Chrome modu lehenetsian</translation>
 <translation id="1105362920864247682">Garbitu arakatze-datuak Chrome-n.</translation>
 <translation id="1113057722807951993">Pasaesaldi bidezko enkriptatzearen kanpoan utzi dira Google Pay-ko ordainketa-metodoak eta helbideak.
@@ -40,6 +41,7 @@ Kontuan hartu beharrekoak:
 <translation id="1682483655351012182">Sinkronizatu Chrome-ko datuak</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Idatzitako URLak Chrome-ko laster-marketan gehitzen ditu.</translation>
+<translation id="1799920918471566157">Chrome-ri buruzko aholkuak</translation>
 <translation id="1830634592642484976">Helbide hau Chrome-n gordeta dago une honetan. Google-ren beste produktuetan ere erabiltzeko, gorde ezazu Google-ko kontuan (<ph name="USER_EMAIL" />).</translation>
 <translation id="1843217788865538014">Erabili automatikoki Chrome mezu, dokumentu edo aplikazioetako estekak sakatzean.</translation>
 <translation id="1910975740091000991">iOS-erako Chrome</translation>
@@ -74,6 +76,7 @@ Kontuan hartu beharrekoak:
 <translation id="2702250627063295552">Gehitu irakurketa-zerrendako elementu bat Chrome-n</translation>
 <translation id="2736805085127235148">Chrome-ren jakinarazpenak desaktibatuta daude une honetan gailuaren ezarpenetan.</translation>
 <translation id="2767464022270041271">Ez dago pasahitzik gordeta. Gordetako pasahitzak egiaztatzeko gai da Google-ren Pasahitz-kudeatzailea.</translation>
+<translation id="2789947168960170215">Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Garbitu arakatze-datuak Chrome-n</translation>
 <translation id="2869959624320573933">Hasi saioa Chrome-n</translation>
 <translation id="2876628302275096482">Lortu <ph name="BEGIN_LINK" />Chrome-k zure datuen pribatutasuna babesteko duen moduari<ph name="END_LINK" /> buruzko informazio gehiago</translation>

@@ -465,6 +465,7 @@
 <translation id="1828959155404624835">Ижарага берилүүчү унаалар</translation>
 <translation id="1834321415901700177">Бул сайтта зыянкеч программалар камтылган</translation>
 <translation id="1838374766361614909">Изделип жаткан нерсени өчүрүү</translation>
+<translation id="1839331950812095887">оюңузду жыйынтыктаган бир нече сөз</translation>
 <translation id="1839551713262164453">Саясатта коюлган маанилерди ырастоодо ката кетип, ырастоо аткарылбай калды.</translation>
 <translation id="1842969606798536927">Төлөө</translation>
 <translation id="1846432862466000825">Пластик (архив)</translation>
@@ -517,6 +518,8 @@
 <translation id="1956486093533522234">Түзмөгүңүздү таап, коопсуздандырып же тазалаңыз</translation>
 <translation id="1958218078413065209">Эң көп алган упайыңыз: <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />Баш баккан айрым сайттарыңыздын URL'дерин, тутум тууралуу чектелген маалыматты жана барактагы айрым мазмунду<ph name="END_WHITEPAPER_LINK" /> Google'га жөнөтүү менен Интернеттеги коопсуздукту баары үчүн күчөтүүгө жардам бериңиз. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Купуялык эрежелери<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959445535228047762">Текстиңиз жана барактагы мазмунуңуз Google'га жөнөтүлөт жана бул функцияны жакшыртуу үчүн колдонулушу мүмкүн.
+  <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Кыстармалар</translation>
 <translation id="196752089528718902">Адатта сайттарга коопсуз туташасыз, бирок Chrome бул жолу коопсуз туташууну колдоно алган жок. Чабуулчу тармак туташууңузга көз салып же өзгөртүүгө аракет кылышы мүмкүн. <ph name="BEGIN_LEARN_MORE_LINK" />Кеңири маалымат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Сериялоо катасы</translation>
@@ -696,6 +699,7 @@
 <translation id="2293443924986248631">Күйгүзүлсө, сайттар сизге вебде көз салуу үчүн cookie файлдарын колдоно алышпайт. Функциялар айрым сайттарда туура иштебеши мүмкүн.</translation>
 <translation id="2295831393422400053">Жазууга жардам бер функциясын колдонуу үчүн Барактарды издөө жана карап чыгууну жакшыртуу параметрин күйгүзүшүңүз керек</translation>
 <translation id="2300306941146563769">Жүктөлүп берилген жок</translation>
+<translation id="2301098101308036335">Кайсы вебсайттардын качан ачылганы.</translation>
 <translation id="230286397113210245">"Жашыруун терезени ачуу" баскычы. Жаңы жашыруун терезени ачып, купуя түрдө карап чыгуу үчүн иштетиңиз</translation>
 <translation id="2312234273148520048">Татымалдар</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> азыраак. Кийинки жолу киргениңизде, айрым сайттар жайыраак жүктөлүшү мүмкүн.</translation>
@@ -720,6 +724,7 @@
 <translation id="2354430244986887761">Google Коопсуз серептөө тутуму жакында <ph name="SITE" /> сайтында <ph name="BEGIN_LINK" />зыянкеч колдонмолорду тапты<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Сиз бул сайтта көрүп жаткан сүрөттөрдү чабуулчулар да көрүп алып, сүрөттөрдү өзгөртүп, сизди алдашы да мүмкүн.</translation>
 <translation id="2356070529366658676">Сураңыз</translation>
+<translation id="2356926036049612643">V8 отималдаштыргычы</translation>
 <translation id="2357481397660644965">Түзмөгүңүздү <ph name="DEVICE_MANAGER" /> жана аккаунтуңузду <ph name="ACCOUNT_MANAGER" /> башкарууда.</translation>
 <translation id="2359629602545592467">Бир нече</translation>
 <translation id="2359808026110333948">Улантуу</translation>
@@ -1361,6 +1366,7 @@
 <translation id="3655670868607891010">Эгер бул нерсе улам-улам көрүнө берсе, буларды <ph name="HELP_LINK" /> байкап көрүңүз.</translation>
 <translation id="365641980390710834">Күнүмдүк кийимдер</translation>
 <translation id="3658742229777143148">Карап чыгуу</translation>
+<translation id="3659521826520353662">Администратор аныктаган кайсы вебсайттардын качан ачылганы: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">Ачкыч сөздөр:</translation>
 <translation id="3665100783276035932">Көпчүлүк сайттар ойдогулай иштеши керек</translation>
 <translation id="3667704023705708645">Венчурдук капитал</translation>
@@ -1451,6 +1457,7 @@
 <translation id="3812398568375898177">Бул ChromeOS тутумундагы Android колдонмолорунун майнаптуулугун жогорулата турган маанилүү жаңыртуу.</translation>
 <translation id="3815434930383843058">8 x 12 дюйм</translation>
 <translation id="3816482573645936981">Маани (алмаштырылган)</translation>
+<translation id="382115839591654906"><ph name="CARD_NAME" /> картасынын CVC коду</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Серепчиңиз <ph name="BROWSER_DOMAIN" /> жана профилиңиз <ph name="PROFILE_DOMAIN" /> тарабынан тескелет</translation>
 <translation id="382518646247711829">Эгер прокси сервериңизди колдонсоңуз…</translation>
@@ -2589,6 +2596,7 @@
 <translation id="6124432979022149706">Chrome Enterprise туташтыргычтары</translation>
 <translation id="6126565365696310362">Конверт Кытайча #2</translation>
 <translation id="6127379762771434464">Нерсе өчүрүлдү</translation>
+<translation id="6131824478727057281">жайгашкан жер</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome'догу жашыруун өтмөк жөнүндө кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Колдоно берүүгө уруксат берүү</translation>
 <translation id="6133984428121856852">Файлдын кеңейтүүсү бош же туура эмес түзүлгөн.</translation>
@@ -3199,6 +3207,7 @@
 <translation id="7341357280245177602">Колдонулган транспорт каражаттары</translation>
 <translation id="7346048084945669753">Байланыштырылган:</translation>
 <translation id="7346062987309535530">Ашкана идиштери</translation>
+<translation id="7346081071264046066">"бул үйлөнүү тоюна чакырууга "ооба" деп кубануу менен жооп берүү"</translation>
 <translation id="7352651011704765696">Бир жерден ката кетти</translation>
 <translation id="7353601530677266744">Буйрук сабы</translation>
 <translation id="7354880545102894991">Арзан жана акыркы мүнөттүк турлар</translation>

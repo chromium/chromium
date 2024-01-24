@@ -41,6 +41,7 @@ Nəzərə alın ki:
 <translation id="1682483655351012182">Chrome Datasını Sinxronizasiya Edin</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Daxil edilən URL-ləri Chrome-dakı əlfəcinlərinizə əlavə edir.</translation>
+<translation id="1799920918471566157">Chrome ipucuları</translation>
 <translation id="1830634592642484976">Bu ünvan hazırda Chrome-da yadda saxlanır. Google məhsullarında istifadə etmək üçün Google Hesabında (<ph name="USER_EMAIL" />) yadda saxlayın.</translation>
 <translation id="1843217788865538014">Mesaj, sənəd və digər tətbiqlərdə keçidlərə toxunduqda Chrome avtomatik istifadə edilsin.</translation>
 <translation id="1910975740091000991">iOS üçün Chrome</translation>
@@ -75,6 +76,7 @@ Nəzərə alın ki:
 <translation id="2702250627063295552">Oxu siyahısı elementini Chrome-a əlavə edin</translation>
 <translation id="2736805085127235148">Hazırda Chrome bildirişləri cihaz ayarlarında deaktivdir.</translation>
 <translation id="2767464022270041271">Yadda saxlanmış parol yoxdur. Parollarınızı yadda saxladıqda Google Parol Meneceri onları yoxlaya bilər.</translation>
+<translation id="2789947168960170215">Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />hesabda Chrome datasını silin<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Chrome-da baxış datasını silin</translation>
 <translation id="2869959624320573933">Chrome'a daxil olun</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome-un datanı məxfi saxlaması<ph name="END_LINK" /> haqqında ətraflı</translation>

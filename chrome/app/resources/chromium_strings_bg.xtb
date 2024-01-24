@@ -88,6 +88,7 @@
 <translation id="2583187216237139145">Данните в Chromium, които са генерирани при използването на този служебен потребителски профил (напр. създаването на отметки, историята, паролите и други настройки), могат да бъдат премахнати от администратора му. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Продължаване на използването на Chromium</translation>
 <translation id="259935314519650377">Кеширането на изтеглената инсталационна програма не бе успешно. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="264613044588233783">Chromium е по-бърз и функциите, които използват JavaScript, би трябвало да работят нормално (препоръчително)</translation>
 <translation id="2648074677641340862">По време на инсталирането възникна грешка в операционната система. Моля, изтеглете отново Chromium.</translation>
 <translation id="2661879430930417727">Ако споделяте устройство, близките и приятелите ви могат да сърфират отделно и да настроят Chromium точно така, както искат</translation>
 <translation id="268602741124540128">Добре дошли в Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -121,6 +122,7 @@
 <translation id="3185330573522821672">Персонализирайте новия си потребителски профил в Chromium</translation>
 <translation id="3190315855212034486">О, не! Chromium претърпя срив. Да се стартира ли отново сега?</translation>
 <translation id="3258596308407688501">Chromium не може да чете и записва в директорията си за данни: <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3268051428841342958">V8 е машината на Chromium за JavaScript и WebAssembly, използвана за подобряване на ефективността на сайтовете</translation>
 <translation id="3283186697780795848">Инсталирана е версия <ph name="PRODUCT_VERSION" /> на Chromium</translation>
 <translation id="3286538390144397061">Рестартиране сега</translation>
 <translation id="328888136576916638">Ключовете на приложния програмен интерфейс (API) на Google липсват. Някои функции на Chromium ще бъдат деактивирани.</translation>
@@ -214,6 +216,7 @@
 <translation id="4814736265800133385">Използване на Chromium без профил</translation>
 <translation id="4888717733111232871">Правило за Chromium за допускане на входящия трафик за mDNS.</translation>
 <translation id="4893347770495441059">Повторно стартиране за актуализиране на &amp;Chromium</translation>
+<translation id="4942295735032723435">За да получавате бъдещи актуализации на Chromium, трябва да използвате macOS 11 или по-нова версия. Компютърът ви работи с macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium работи на заден план.</translation>
 <translation id="4987820182225656817">Гостите могат да използват Chromium, без да оставят следи.</translation>
 <translation id="4994636714258228724">Добавяне на вас към Chromium</translation>
@@ -398,6 +401,7 @@
 <translation id="8105840573057009683">За този сайт Chromium се нуждае от разрешение за достъп до местоположението</translation>
 <translation id="8133124826068723441">Chromium OS не можа да синхронизира данните ви, защото тази функция не е налице за домейна ви.</translation>
 <translation id="813913629614996137">Подготвя се за работа...</translation>
+<translation id="8166782796394721554">Включване на допълнителната защита в машината на Chromium за JavaScript и WebAssembly</translation>
 <translation id="81770708095080097">Chromium блокира този файл, тъй като е опасен.</translation>
 <translation id="8213374284266571500">Chromium блокира файла, тъй като този тип файл е опасен</translation>
 <translation id="8248265253516264921">Ако няма полезно описание за дадено изображение, Chromium ще се опита да предостави такова. За да бъдат създадени описания, съответните изображения се изпращат до Google. По всяко време можете да изключите тази функция от настройките.</translation>

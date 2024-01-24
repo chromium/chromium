@@ -102,6 +102,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chromium kwe
 <translation id="3955621079070267756">Fungua Chromium Kwenye Programu Yoyote</translation>
 <translation id="4005283307739974863">Hufungua na Kufanya Ukaguzi wa Usalama kwenye Chromium.</translation>
 <translation id="4043291146360695975">Manenosiri huhifadhiwa kwenye Kidhibiti cha Manenosiri kwenye kifaa hiki tu.</translation>
+<translation id="4076589763479456892">Ikiwa ulisahau kauli yako ya siri au ungependa kubadilisha mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chromium kwenye akaunti yako<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Haitumiki kwenye toleo la Beta la Chromium</translation>
 <translation id="4106512142782407609">Umeingia katika akaunti ukitumia <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@ Data yako imesimbwa kwa njia fiche kwa kutumia kauli yako ya siri. Iweke ili utu
 <translation id="5534584691915394889">Hii itatumika kuunda matukio kwenye Kalenda yako ya Apple kutoka kwenye Chromium na Lenzi ya Google.</translation>
 <translation id="5571094606370987472">Hufungua Vichupo vya Hivi Karibuni kwenye Chromium.</translation>
 <translation id="5623083843656850677">Funga vichupo vyako fiche unapoondoka kwenye Chromium au kubadilisha na kutumia programu tofauti.</translation>
+<translation id="5671188105328420281">Vidokezo vya Chromium</translation>
 <translation id="5688047395118852662">Kadi hii hukuonyesha mapendekezo ya jinsi ya kunufaika zaidi na Chromium.</translation>
 <translation id="5700709190537129682">Chromium imeshindwa kukagua manenosiri yako</translation>
 <translation id="5777187867430702742">Ukurasa wa Chromium</translation>
@@ -283,6 +285,7 @@ Mambo ya kuzingatia:
 <translation id="8776843108004031667">Akaunti hii na data yoyote ambayo haijahifadhiwa itaondolewa kwenye Chromium.</translation>
 <translation id="88376265765385899">Hufungua alamisho za Chromium.</translation>
 <translation id="8860548555286245440">Fungua URL kwenye Chromium katika Hali ya Faraghani</translation>
+<translation id="8866191443434488382">Chromium itagundua namba za ufuatiliaji kwenye tovuti unazotembelea na kukuonyesha taarifa za kifurushi kwenye ukurasa wa Kichupo Kipya. Namba ya ufuatiliaji wa kifurushi na jina la tovuti zitatumwa kwenye Chromium ili kutoa kipengele hiki na kuboresha vipengele vya ununuzi kwa kila mtu. Unaweza kusasisha mchakato huu wakati wowote katika <ph name="BEGIN_LINK" />Mipangilio ya Ufuatiliaji wa Kifurushi<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium mahususi kwa iOS</translation>
 <translation id="8924617840944134898">Kufungua Kichupo Fiche cha Chromium</translation>
 <translation id="894437814105052438">Ukiondoka katika akaunti, Chromium haitasawazisha data yoyote mpya kwenye Akaunti yako ya Google. Data iliyosawazishwa hapo awali husalia kwenye akaunti.</translation>

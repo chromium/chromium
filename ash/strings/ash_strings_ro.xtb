@@ -228,7 +228,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1882814835921407042">Nu este disponibilă nicio rețea mobilă</translation>
 <translation id="1882897271359938046">Se oglindește pe <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Deblochează cu amprenta</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> nu acceptă <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Rezoluția a fost modificată la <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Dă clic pe Confirmă pentru a păstra modificările. Setările anterioare vor fi restabilite în <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Instalare nouă</translation>
 <translation id="1915307458270490472">Încheie apelul</translation>
 <translation id="1918022425394817322">Camera foto este aliniată cu colțul din dreapta sus</translation>
@@ -622,6 +621,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3577473026931028326">A apărut o eroare. Încearcă din nou.</translation>
 <translation id="3580650856351781466">Se descarcă fișierele de redare în scris a vorbirii</translation>
 <translation id="3585296979871889131">Afișează fotografiile, elementele media, notificările și aplicațiile telefonului</translation>
+<translation id="3590441166907930941">Butonul lateral</translation>
 <translation id="3593039967545720377">Accesează istoricul clipboardului apăsând <ph name="SHORTCUT_KEY_NAME" /> + V pentru a vedea clipboardul. Copiază un element pentru a începe.</translation>
 <translation id="3593646411856133110">Glisează în sus și menține pentru a vedea aplicațiile deschise</translation>
 <translation id="3595596368722241419">Baterie încărcată</translation>
@@ -1034,6 +1034,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="5163434717504750796">Buna funcționare a bateriei: <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | Numărul de cicluri: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Salvează desktopul ca șablon</translation>
 <translation id="5168181903108465623">Dispozitive de proiecție disponibile</translation>
+<translation id="5168753792967365150">Editează în Google Tasks</translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
 <translation id="5176318573511391780">Înregistrează ecranul parțial</translation>
 <translation id="5187627942836026988">Afișează detaliile despre hotspot. Hotspotul este blocat de administrator.</translation>
@@ -1303,6 +1304,8 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="6168622430237609329">Aplicațiile tale instalate</translation>
 <translation id="6173151025443907148">Nu este acceptată conectarea unui al doilea utilizator dacă Lacros este activat. Folosește un al doilea profil de browser în Lacros sau dezactivează Lacros și încearcă din nou.</translation>
 <translation id="6179832488876878285">Poți să fixezi fișierele importante aici. Deschide aplicația Fișiere pentru a începe.</translation>
+<translation id="6180193585172850042">Butonul Înapoi</translation>
+<translation id="6180651297859206670">Butonul Înainte</translation>
 <translation id="6182592640011875895">Deschide desktopul</translation>
 <translation id="6185696379715117369">O pagină mai sus</translation>
 <translation id="619335566042889110">Încarcă complet acum</translation>

@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">គ្មានបណ្ដាញ​ទូរសព្ទចល័តទេ</translation>
 <translation id="1882897271359938046">កំពុងឆ្លុះទៅ <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">ដោះសោដោយប្រើស្នាមម្រាមដៃ</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> មិនអាចប្រើ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) បានទេ។ កម្រិតច្បាស់ត្រូវបានប្ដូរទៅ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />)។ សូមចុច "បញ្ជាក់" ដើម្បីរក្សាការផ្លាស់ប្ដូរ។ ការកំណត់​មុននឹងត្រូវបានស្ដារ​ក្នុងរយៈពេល <ph name="TIMEOUT_SECONDS" />។</translation>
 <translation id="1908992311423394684">ការដំឡើងថ្មី</translation>
 <translation id="1915307458270490472">បញ្ចប់​ការ​សន្ទនា</translation>
 <translation id="1918022425394817322">បានតម្រៀប​កាមេរ៉ាទៅ​ជ្រុងខាងស្ដាំ​ផ្នែកខាងលើ</translation>
@@ -1350,7 +1349,7 @@
 <translation id="638716340450135524">បើក​ការ​ចូលប្រើប្រាស់​កាមេរ៉ា</translation>
 <translation id="639644700271529076">CAPS LOCK ត្រូវបានបិទ</translation>
 <translation id="6406704438230478924">altgr</translation>
-<translation id="6417265370957905582">Google ជំនួយការ</translation>
+<translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">សម្អាត​ការ​ជូន​ដំណឹង​ទាំងអស់</translation>
@@ -1499,6 +1498,7 @@
 <translation id="6981291220124935078">បើកការចូលប្រើប្រាស់</translation>
 <translation id="6981982820502123353">លទ្ធភាពប្រើប្រាស់</translation>
 <translation id="698231206551913481">ឯកសារ និងទិន្នន័យមូលដ្ឋានទាំងអស់ដែលប្រើជាមួយអ្នកប្រើនេះនឹងត្រូវបានលុបជាអចិន្ត្រៃយ៍ បន្ទាប់ពីអ្នកប្រើនេះត្រូវបានលុប។</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> មិនអាចប្រើ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) បានទេ។ កម្រិត​គុណភាព​ត្រូវបាន​ប្ដូរទៅ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz)។ សូមចុច "បញ្ជាក់" ដើម្បីរក្សា​ការផ្លាស់ប្ដូរ។ ការកំណត់​ពីមុននឹងត្រូវបានស្ដារ​ក្នុងរយៈពេល <ph name="TIMEOUT_SECONDS" />។</translation>
 <translation id="6989752354829085073">មើលការណែនាំត្រួសៗ ដើម្បីស្វែងយល់អំពីរបៀបប្រើប្រាស់ Chromebook របស់អ្នក។ រៀបចំ និងដំណើរការក្នុង 6 ជំហាន។</translation>
 <translation id="7004910047186208204">ភ្ជាប់​ទៅ​ទិន្នន័យទូរសព្ទចល័ត</translation>
 <translation id="7005239792648594238">បើកកម្មវិធី ដើម្បី​ចាប់ផ្ដើម</translation>

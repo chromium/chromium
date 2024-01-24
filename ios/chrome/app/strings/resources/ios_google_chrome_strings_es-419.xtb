@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
+<translation id="1066101356081285416">Chrome detectará los números de seguimiento en los sitios que visites y te mostrará actualizaciones de paquetes en la página Nueva pestaña. El número de seguimiento del paquete y el nombre del sitio web se enviarán a Chrome para proporcionar esta función y mejorar las funciones de Google Shopping para todos los usuarios. Puedes actualizar esta opción en cualquier momento en la <ph name="BEGIN_LINK" />configuración de seguimiento de paquetes<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Usa Chrome de forma predeterminada</translation>
 <translation id="1105362920864247682">Borrar los datos de navegación en Chrome.</translation>
 <translation id="1113057722807951993">La encriptación con la frase de contraseña no incluye formas de pago ni direcciones de Google Pay.
@@ -40,6 +41,7 @@ Aspectos que debes tener en cuenta:
 <translation id="1682483655351012182">Sincronizar tus datos de Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Agrega las URL ingresadas a tus favoritos en Chrome.</translation>
+<translation id="1799920918471566157">Sugerencias de Chrome</translation>
 <translation id="1830634592642484976">Actualmente, esta dirección se guarda en Chrome. Para usarla en todos los productos de Google, guárdala en tu Cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">Usa Chrome automáticamente cuando presiones vínculos en mensajes, documentos y otras apps.</translation>
 <translation id="1910975740091000991">Chrome para iOS</translation>
@@ -74,6 +76,7 @@ Aspectos que debes tener en cuenta:
 <translation id="2702250627063295552">Agregar el elemento de la Lista de lectura a Chrome</translation>
 <translation id="2736805085127235148">Las notificaciones de Chrome están desactivadas en la configuración del dispositivo por el momento.</translation>
 <translation id="2767464022270041271">No hay contraseñas guardadas. El Administrador de contraseñas de Google puede revisar tus contraseñas cuando las guardas.</translation>
+<translation id="2789947168960170215">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Borrar los datos de navegación en Chrome</translation>
 <translation id="2869959624320573933">Acceder a Chrome</translation>
 <translation id="2876628302275096482">Más información sobre <ph name="BEGIN_LINK" />cómo Chrome mantiene la privacidad de tus datos<ph name="END_LINK" /></translation>

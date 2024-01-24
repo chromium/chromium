@@ -90,7 +90,6 @@
 <translation id="1408847409015257906">Докоснете „Поверителност и сигурност“.</translation>
 <translation id="1430915738399379752">Печат</translation>
 <translation id="143681031165817424">Адресът е запазен само на това устройство</translation>
-<translation id="1443958768615272145">Продължаване на сърфирането</translation>
 <translation id="1449835205994625556">Скриване на паролата</translation>
 <translation id="1450170672351507823">Режимът за стандартна защита е включен. За още по-голяма сигурност използвайте подобрената защита.</translation>
 <translation id="1469381646033328562">Профилът ви се управлява от родителя ви.
@@ -216,7 +215,6 @@
 <translation id="2139502497535990641">Да се включат ли известията за цени?</translation>
 <translation id="2139867232736819575">Търсене на копирания текст</translation>
 <translation id="214201757571129614">Вход…</translation>
-<translation id="2145004670974387485">Изберете профила, който искате да използвате, за да запазите „<ph name="FILENAME" />“</translation>
 <translation id="2148716181193084225">днес</translation>
 <translation id="2149973817440762519">Редактиране на отметката</translation>
 <translation id="2175927920773552910">Код за бърза реакция</translation>
@@ -292,6 +290,7 @@
 <translation id="2547458583188611426">Синхронизирането не работи. За да стартирате синхронизирането, въведете пропуска си.</translation>
 <translation id="2551153019974022505">Грешка в профила</translation>
 <translation id="2556092377360758201">Без защита (не се препоръчва)</translation>
+<translation id="2561375093019333908">ОТВАРЯНЕ</translation>
 <translation id="2562041823070056534">Изпраща се до <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Използване и запазване на пароли в профила ви в Google</translation>
 <translation id="2577522251608256362">Квартал</translation>
@@ -314,7 +313,6 @@
 <translation id="2664621323652615289">Спиране</translation>
 <translation id="2666092431469916601">Най-горе</translation>
 <translation id="2669454659051515572">Всеки, който използва това устройство, може да преглежда изтеглените файлове</translation>
-<translation id="2681158575552244226">запазва се в Диск за <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">Камерата се използва</translation>
 <translation id="2691653761409724435">Не е налице офлайн</translation>
 <translation id="2695507686909505111">Страницата е преведена</translation>
@@ -483,7 +481,6 @@
 <translation id="3519193562722059437">Отворете раздел, за да сърфирате в мрежата.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Отваряне на раздела}other{Отваряне на {count} раздела}}</translation>
 <translation id="3523789730715594198">Можете да спрете синхронизирането по всяко време от настройките. Google може да персонализира Търсене и други услуги въз основа на историята ви.</translation>
-<translation id="3526783603136816353">Изберете профила, който искате да използвате, за да запазите „<ph name="FILENAME" />“ (<ph name="FILE_SIZE" />)</translation>
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3529024052484145543">Няма защита</translation>
 <translation id="3530206579861815432">Можете бързо да намирате отворените и наскоро затворените раздели на синхронизираните си устройства.</translation>
@@ -558,6 +555,7 @@
 <translation id="3922310737605261887">Търсене на копирания текст</translation>
 <translation id="3928666092801078803">Комбиниране на данните ми</translation>
 <translation id="3929457972718048006">Адреси</translation>
+<translation id="3948600256434252210">Можете да прекарате пръст надясно, за да сърфирате в режим „инкогнито“.</translation>
 <translation id="3955822496205734389">Имате ненадеждни пароли.</translation>
 <translation id="3959736869653157332">„Меню → Нов раздел в режим „инкогнито“</translation>
 <translation id="3962326069546168954">Запазване</translation>
@@ -662,6 +660,7 @@
 <translation id="4539187448429948815">{count,plural, =1{{count} запазено предложение за автоматично довършване е налице над клавиатурата ви.}other{{count} запазени предложения за автоматично довършване са налице над клавиатурата ви.}}</translation>
 <translation id="4540780316273593836">Нещо се обърка</translation>
 <translation id="4550040941166547650">Само на това устройство</translation>
+<translation id="4564893319561643483">Скриване на „<ph name="TITLE" />“</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Искате ли да затворите {COUNT} неактивен раздел?}other{Искате ли да затворите {COUNT} неактивни раздела?}}</translation>
 <translation id="457386861538956877">Още...</translation>
 <translation id="4587589328781138893">Сайтове</translation>
@@ -849,6 +848,7 @@
 <translation id="5513681519188741830">Преди <ph name="TIME" /> ч</translation>
 <translation id="5525269841082836315">Създаване на пропуск</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} ненадеждна парола}other{{COUNT} ненадеждни пароли}}</translation>
+<translation id="5532545557415295622">Диалогов прозорец за времето за изчакване при неактивност</translation>
 <translation id="5542540507657872337">Намерени: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">С Handoff можете да започнете да разглеждате уебсайт на това устройство, след което лесно да продължите сърфирането от своя Mac. Отвореният сайт ще се покаже в лентата Dock.
 
@@ -1100,7 +1100,6 @@
 <translation id="6685259053455152195">Преки пътища за бърза промяна на настройките и за използване на функции от адресната лента.</translation>
 <translation id="6710079714193676716">Управлява се от организацията ви. Някои функции може да не са достъпни. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
-<translation id="6716730056313760676">запазено в Диск за <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Получавайте своите отметки, пароли и др. на всичките си устройства.</translation>
 <translation id="6730682669179532099">Паролите не могат да бъдат експортирани</translation>
 <translation id="6732087373923685049">камера</translation>
@@ -1119,7 +1118,6 @@
 <translation id="6790502149545262384">Скоро ще виждате материали от <ph name="CHANNEL_NAME" />, когато отворите нов раздел.</translation>
 <translation id="6797885426782475225">Гласово търсене</translation>
 <translation id="6800349425672670802">Имате достъп до всичките си отворени раздели посредством превключвателя на раздели.</translation>
-<translation id="6805179248725678418">Запазване в Google Диск</translation>
 <translation id="6807889908376551050">Показване на всички...</translation>
 <translation id="681368974849482173">Елементът е създаден</translation>
 <translation id="6822587385560699678">Когато функцията е включена, паролите се запазват в(ъв) <ph name="ACCOUNT" />. Когато е изключена, те се запазват само на това устройство.</translation>
@@ -1263,6 +1261,7 @@
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7666861622396822790">Можете да управлявате това в <ph name="BEGIN_LINK" />Настройки за съдържанието<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">INSTALL</translation>
+<translation id="7673346542062368520">Можете да прекарате пръст наляво, за да сърфирате в режим „инкогнито“.</translation>
 <translation id="7679915578945954324">Адресите на сайтовете са копирани</translation>
 <translation id="7687508192620387263">Налице е файл за календара</translation>
 <translation id="7701040980221191251">Няма</translation>
@@ -1291,6 +1290,7 @@
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{След 1 ден}other{След {COUNT} дни}}</translation>
 <translation id="7791543448312431591">Добавяне</translation>
+<translation id="7792549458069452436">ИЗТЕГЛЯНЕ НА ПРИЛОЖ.</translation>
 <translation id="7807060072011926525">Предоставено от Google</translation>
 <translation id="7812377703891978671">Имате достъп до цялата си история на сърфиране, като изберете „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“.</translation>
 <translation id="78146569776629510">Изтегляния</translation>
@@ -1406,7 +1406,6 @@
 <translation id="8395339334550012808">Скоро в „Следено“ ще виждате съдържание от и за <ph name="CHANNEL_NAME" />.</translation>
 <translation id="8395378633507873708">Адресна лента</translation>
 <translation id="8402673309244746971">Към „Следено“</translation>
-<translation id="8403629764260204788">Скриване на „Прелистване без прекъсване“</translation>
 <translation id="8407669440184693619">Няма намерени пароли за този сайт</translation>
 <translation id="842017693807136194">Влезли сте със:</translation>
 <translation id="8423121072346537366">Току-що</translation>

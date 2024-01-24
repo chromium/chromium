@@ -90,7 +90,6 @@
 <translation id="1408847409015257906">Touchez « Confidentialité et sécurité ».</translation>
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="143681031165817424">Adresse enregistrée uniquement sur cet appareil</translation>
-<translation id="1443958768615272145">Poursuivre la navigation</translation>
 <translation id="1449835205994625556">Masquer le mot de passe</translation>
 <translation id="1450170672351507823">La protection standard est activée. Pour profiter d'une sécurité accrue, servez-vous de la protection améliorée.</translation>
 <translation id="1469381646033328562">Ton compte est géré par ton parent.
@@ -216,7 +215,6 @@
 <translation id="2139502497535990641">Activer les alertes de prix?</translation>
 <translation id="2139867232736819575">Rechercher le texte que vous avez copié</translation>
 <translation id="214201757571129614">Connexion…</translation>
-<translation id="2145004670974387485">Sélectionnez le compte que vous souhaitez utiliser pour enregistrer <ph name="FILENAME" /></translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
 <translation id="2175927920773552910">Code QR</translation>
@@ -292,6 +290,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2547458583188611426">La synchronisation ne fonctionne pas. Pour lancer la synchronisation, entrez votre phrase de passe.</translation>
 <translation id="2551153019974022505">Erreur relative au compte</translation>
 <translation id="2556092377360758201">Aucune protection (non recommandé)</translation>
+<translation id="2561375093019333908">OUVRIR</translation>
 <translation id="2562041823070056534">Envoi à <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="2576499762020411840">Utiliser et enregistrer les mots de passe dans votre compte Google</translation>
 <translation id="2577522251608256362">Quartier</translation>
@@ -314,7 +313,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2664621323652615289">Arrêter</translation>
 <translation id="2666092431469916601">Haut</translation>
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
-<translation id="2681158575552244226">enregistrement dans Disque pour <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">La caméra est en cours d'utilisation</translation>
 <translation id="2691653761409724435">Indisponible hors ligne</translation>
 <translation id="2695507686909505111">Page traduite</translation>
@@ -483,7 +481,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3519193562722059437">Ouvrez un onglet pour naviguer sur le Web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Ouvrir l'onglet}one{Ouvrir {count} onglet}other{Ouvrir {count} onglets}}</translation>
 <translation id="3523789730715594198">Vous pouvez arrêter la synchronisation en tout temps dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
-<translation id="3526783603136816353">Sélectionnez le compte que vous souhaitez utiliser pour enregistrer <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="3527085408025491307">Dossier</translation>
 <translation id="3529024052484145543">Pas sécuritaire</translation>
 <translation id="3530206579861815432">Trouvez rapidement les onglets ouverts et récemment fermés sur tous vos appareils synchronisés.</translation>
@@ -558,6 +555,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3922310737605261887">Rechercher le texte copié</translation>
 <translation id="3928666092801078803">Combiner mes données</translation>
 <translation id="3929457972718048006">Adresses</translation>
+<translation id="3948600256434252210">Vous pouvez balayer l'écran vers la droite pour naviguer en mode Navigation privée.</translation>
 <translation id="3955822496205734389">Vous avez des mots de passe faibles.</translation>
 <translation id="3959736869653157332">Menu → Nouvel onglet de navigation privée</translation>
 <translation id="3962326069546168954">Enregistrer</translation>
@@ -662,6 +660,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4539187448429948815">{count,plural, =1{{count} suggestion de saisie semi-automatique enregistrée, accessible au-dessus de votre clavier.}one{{count} suggestion de saisie semi-automatique enregistrée, accessible au-dessus de votre clavier.}other{{count} suggestions de saisie semi-automatique enregistrées, accessibles au-dessus de votre clavier.}}</translation>
 <translation id="4540780316273593836">Un problème est survenu</translation>
 <translation id="4550040941166547650">Uniquement sur cet appareil</translation>
+<translation id="4564893319561643483">Masquez « <ph name="TITLE" /> »</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Fermer {COUNT} onglet inactif?}one{Fermer {COUNT} onglet inactif?}other{Fermer {COUNT} onglets inactifs?}}</translation>
 <translation id="457386861538956877">Autres...</translation>
 <translation id="4587589328781138893">Sites</translation>
@@ -849,6 +848,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5513681519188741830">il y a <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Créer phrase passe</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} mot de passe faible}one{{COUNT} mot de passe faible}other{{COUNT} mots de passe faibles}}</translation>
+<translation id="5532545557415295622">Boîte de dialogue Délai d'inactivité</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> trouvés</translation>
 <translation id="5548760955356983418">La fonction de transfert vous permet de commencer à naviguer sur un site Web sur cet appareil et de continuer facilement sur votre Mac. Le site Web actuellement ouvert apparaîtra dans le Dock de votre Mac.
 
@@ -1100,7 +1100,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6685259053455152195">Des raccourcis pour modifier rapidement les paramètres et pour utiliser les fonctionnalités de la barre d'adresse.</translation>
 <translation id="6710079714193676716">Géré par votre organisation. Certaines fonctionnalités peuvent ne pas être accessibles. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
-<translation id="6716730056313760676">enregistré dans Disque pour <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Accédez à vos favoris, à vos mots de passe et à plus encore sur tous vos appareils.</translation>
 <translation id="6730682669179532099">Impossible d'exporter les mots de passe</translation>
 <translation id="6732087373923685049">Appareil photo</translation>
@@ -1119,7 +1118,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6790502149545262384">Vous verrez bientôt des histoires de <ph name="CHANNEL_NAME" /> lorsque vous ouvrirez un nouvel onglet.</translation>
 <translation id="6797885426782475225">Recherche vocale</translation>
 <translation id="6800349425672670802">Vous pouvez accéder à tous vos onglets ouverts à partir du Gestionnaire d'onglets.</translation>
-<translation id="6805179248725678418">Enregistrer dans Google Disque</translation>
 <translation id="6807889908376551050">Tout afficher…</translation>
 <translation id="681368974849482173">Élément créé</translation>
 <translation id="6822587385560699678">Lorsque cette option est activée, les mots de passe sont enregistrés dans <ph name="ACCOUNT" />. Si cette option est désactivée, les mots de passe sont enregistrés uniquement sur cet appareil.</translation>
@@ -1263,6 +1261,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7666861622396822790">Vous pouvez gérer cela dans les <ph name="BEGIN_LINK" />paramètres de contenu<ph name="END_LINK" />.</translation>
 <translation id="7671141431838911305">INSTALLER</translation>
+<translation id="7673346542062368520">Vous pouvez balayer l'écran vers la gauche pour naviguer en mode Navigation privée.</translation>
 <translation id="7679915578945954324">Adresses de site copiées</translation>
 <translation id="7687508192620387263">Un fichier d'agenda est disponible</translation>
 <translation id="7701040980221191251">Aucun</translation>
@@ -1291,6 +1290,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Après 1 jour}one{Après {COUNT} jours}other{Après {COUNT} jours}}</translation>
 <translation id="7791543448312431591">Ajouter</translation>
+<translation id="7792549458069452436">TÉLÉCHARGER L'APPLICATION</translation>
 <translation id="7807060072011926525">Fourni par Google</translation>
 <translation id="7812377703891978671">Vous pouvez accéder à tout votre historique de navigation en sélectionnant <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Téléchargements</translation>
@@ -1406,7 +1406,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8395339334550012808">Bientôt, vous verrez du contenu provenant de <ph name="CHANNEL_NAME" /> dans l'onglet Contenus suivis.</translation>
 <translation id="8395378633507873708">Barre d'adresse</translation>
 <translation id="8402673309244746971">Aller au suivant</translation>
-<translation id="8403629764260204788">Masquer la « Navigation continue »</translation>
 <translation id="8407669440184693619">Aucun mot de passé trouvé pour ce site</translation>
 <translation id="842017693807136194">Connecté avec</translation>
 <translation id="8423121072346537366">À l'instant</translation>

@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">maju</translation>
 <translation id="1615335640928990664">Penggunaan data sejak <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Jalankan pengujian Pengisian Daya</translation>
+<translation id="1626590945318984973">Pintasan tidak tersedia. Tekan pintasan baru tanpa menggunakan tombol fungsi dan <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Memuat</translation>
 <translation id="1641857168437328880">Pengumpan Dokumen (Satu Sisi)</translation>
 <translation id="1643449475550628585">Ubah gambar wallpaper setiap hari</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">Anda kini memiliki akses ke <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpaper<ph name="END_LINK_WALLPAPER_SUBPAGE" /> baru</translation>
 <translation id="4117637339509843559">Mode gelap</translation>
 <translation id="4130035430755296270">Terus gerakkan kursor untuk melihat opsi tata letak lainnya</translation>
+<translation id="4130750466177569591">Saya setuju</translation>
 <translation id="4131410914670010031">Hitam dan putih</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Nonaktifkan</translation>
 <translation id="439429847087949098">Memulai ulang <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">sesuaikan keyboard</translation>
+<translation id="4403262788869804671">Pintasan tanpa tombol <ph name="META_KEY" /> mungkin bertentangan dengan pintasan aplikasi tertentu. Tekan pintasan ini lagi untuk terus menggunakannya, atau tekan pintasan baru menggunakan tombol <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Avatar Saat Ini</translation>
+<translation id="4417830657741848074">Administrator Anda telah menyiapkan beberapa aplikasi agar dimulai secara otomatis. Anda tidak dapat menutup beberapa aplikasi tersebut.</translation>
 <translation id="4422041425070339732">panah bawah</translation>
 <translation id="4425149324548788773">Drive Saya</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> nonaktif</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">Screensaver Aliran bumi</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal melakukan ping ke gateway jaringan non-default</translation>
+<translation id="4500722292849917410">Pintasan tidak tersedia. Tekan pintasan baru menggunakan tombol pengubah (ctrl, alt, shift, atau <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Warna antarmuka</translation>
 <translation id="4503223151711056411">Panah kiri</translation>
 <translation id="4507392511610824664">tingkatkan kecerahan</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Pilih folder di aplikasi File ...</translation>
 <translation id="4835901797422965222">Tidak ada jaringan yang aktif</translation>
 <translation id="4839698083503556542">Buat film Anda sendiri</translation>
+<translation id="48409034532829769">Administrator Anda telah menyiapkan "<ph name="APP_NAME" />" agar dimulai secara otomatis. Anda tidak dapat menutup aplikasi ini.</translation>
 <translation id="484462545196658690">Otomatis</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> dipilih, tekan Enter untuk memilih album <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Resolusi DNS</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">Pisah</translation>
 <translation id="4972592110715526173">pengubahan mode</translation>
 <translation id="498186245079027698">Periksa pemindai, lalu coba lagi. Pastikan terdapat cukup ruang penyimpanan lokal untuk menyimpan file hasil pemindaian.</translation>
+<translation id="4982627662315910959">Pintasan tidak tersedia. Tekan pintasan baru menggunakan shift dan 1 tombol pengubah lainnya (ctrl, alt, atau <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Jalankan</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Halaman</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Operator seluler</translation>
 <translation id="725133483556299729">Pilih email</translation>
 <translation id="7271040990581020067">Pemindai sedang digunakan. Coba lagi nanti.</translation>
+<translation id="7271932918253517778">Pintasan dengan tombol baris atas harus menyertakan tombol <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Rasakan angin sepoi-sepoi</translation>
 <translation id="7287310195820267359">Koleksi Wallpaper</translation>

@@ -465,6 +465,7 @@
 <translation id="1828959155404624835">Изнајмљивања аутомобила</translation>
 <translation id="1834321415901700177">Овај сајт садржи штетне програме</translation>
 <translation id="1838374766361614909">Обришите претрагу</translation>
+<translation id="1839331950812095887">неколико речи као резиме ваших мисли</translation>
 <translation id="1839551713262164453">Валидација вредности смерница није успела уз грешке</translation>
 <translation id="1842969606798536927">Плати</translation>
 <translation id="1846432862466000825">Пластика (архивска)</translation>
@@ -698,6 +699,7 @@
 <translation id="2293443924986248631">Када је ова опција укључена, сајтови не могу да користе колачиће који вас прате на вебу. Функције на неким сајтовима могу да престану са радом.</translation>
 <translation id="2295831393422400053">Укључите подешавање Побољшај претраге и прегледање да бисте користили Помоћ при писању</translation>
 <translation id="2300306941146563769">Није отпремљено</translation>
+<translation id="2301098101308036335">Који веб-сајтови се посећују и када.</translation>
 <translation id="230286397113210245">Дугме Отвори прозор без архивирања, активирајте га да бисте отворили нов прозор без архивирања и прегледали приватно</translation>
 <translation id="2312234273148520048">Зачини и преливи</translation>
 <translation id="2316087952091171402">Мање од <ph name="UPPER_ESTIMATE" />. Неки сајтови могу да се учитавају спорије током следеће посете.</translation>
@@ -1365,6 +1367,7 @@
 <translation id="3655670868607891010">Ако вам се ово често приказује, можда вам помогну следећи <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Лежерна одећа</translation>
 <translation id="3658742229777143148">Ревизија</translation>
+<translation id="3659521826520353662">Који веб-сајтови које је дефинисао администратор се посећују и када: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">Кључне речи:</translation>
 <translation id="3665100783276035932">Већина сајтова би требало да ради на очекивани начин</translation>
 <translation id="3667704023705708645">Акцијски капитал</translation>
@@ -1455,6 +1458,7 @@
 <translation id="3812398568375898177">Ово је веома важно ажурирање које побољшава учинак Android апликација у ChromeOS-у.</translation>
 <translation id="3815434930383843058">8×12 in</translation>
 <translation id="3816482573645936981">Вредност (замењена)</translation>
+<translation id="382115839591654906">CVC за: <ph name="CARD_NAME" /></translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Прегледачем управља <ph name="BROWSER_DOMAIN" />, а профилом управља <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Ако користите прокси сервер...</translation>
@@ -2593,6 +2597,7 @@
 <translation id="6124432979022149706">Прикључци за Chrome за предузећа</translation>
 <translation id="6126565365696310362">Кинеска коверта бр. 2</translation>
 <translation id="6127379762771434464">Уклонили сте ставку</translation>
+<translation id="6131824478727057281">локација</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Сазнајте више о режиму Без архивирања у Chrome-у<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Не опозивај дозволу</translation>
 <translation id="6133984428121856852">Екстензија фајла је празна или је у погрешном формату.</translation>
@@ -3202,6 +3207,7 @@
 <translation id="7341357280245177602">Половна возила</translation>
 <translation id="7346048084945669753">Повезан је:</translation>
 <translation id="7346062987309535530">Посуђе и прибор за обедовање</translation>
+<translation id="7346081071264046066">„узбуђено одговори са да на ову позивницу за венчање“</translation>
 <translation id="7352651011704765696">Дошло је до грешке</translation>
 <translation id="7353601530677266744">Командна линија</translation>
 <translation id="7354880545102894991">Јефтина путовања и путовања у последњем тренутку</translation>

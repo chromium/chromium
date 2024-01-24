@@ -41,6 +41,7 @@
 <translation id="1682483655351012182">Chrome 데이터 동기화</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chrome의 북마크에 입력한 URL을 추가합니다.</translation>
+<translation id="1799920918471566157">Chrome 사용 팁</translation>
 <translation id="1830634592642484976">이 주소는 현재 Chrome에 저장되어 있습니다. Google 제품에서 사용하려면 Google 계정(<ph name="USER_EMAIL" />)에 저장하세요.</translation>
 <translation id="1843217788865538014">메시지, 문서, 기타 앱에서 링크를 탭하면 자동으로 Chrome이 사용됩니다</translation>
 <translation id="1910975740091000991">iOS용 Chrome</translation>
@@ -75,6 +76,7 @@
 <translation id="2702250627063295552">Chrome에 읽기 목록 항목 추가</translation>
 <translation id="2736805085127235148">현재 기기 설정에서 Chrome 알림이 사용 중지되어 있습니다.</translation>
 <translation id="2767464022270041271">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Google 비밀번호 관리자에서 확인할 수 있습니다.</translation>
+<translation id="2789947168960170215">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="2868822340714096138">Chrome에서 인터넷 사용 기록 삭제</translation>
 <translation id="2869959624320573933">Chrome에 로그인</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome에서 데이터를 비공개로 유지하는 방법<ph name="END_LINK" /> 자세히 알아보기</translation>

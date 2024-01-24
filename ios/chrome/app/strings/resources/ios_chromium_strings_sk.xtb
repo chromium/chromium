@@ -284,6 +284,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="8776843108004031667">Tento účet bude spolu so všetkými neuloženými údajmi odstránený z prehliadača Chromium.</translation>
 <translation id="88376265765385899">Otvorí záložky v prehliadači Chromium.</translation>
 <translation id="8860548555286245440">Otvárať webové adresy v režime inkognito prehliadača Chromium</translation>
+<translation id="8866191443434488382">Chromium zistí čísla zásielok na weboch, ktoré navštívite, a zobrazí aktuality o zásielke na stránke na novej karte. Sledovacie číslo zásielky a názov webu sa odošlú prehliadaču Chromium na účely poskytovania tejto funkcie a zlepšovania funkcií nákupov pre každého. Kedykoľvek to môžete zmeniť v <ph name="BEGIN_LINK" />nastaveniach sledovania zásielok<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium pre iOS</translation>
 <translation id="8924617840944134898">Otvoriť kartu inkognito v prehliadači Chromium</translation>
 <translation id="894437814105052438">Keď sa odhlásite, Chromium prestane synchronizovať nové údaje do vášho účtu Google. Údaje, ktoré boli synchronizované predtým, v účte zostanú.</translation>

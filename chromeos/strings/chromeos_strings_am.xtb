@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">ውስጣዊ ስህተት</translation>
 <translation id="1124772482545689468">ተጠቃሚ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">ሲባዛ</translation>
 <translation id="1145018782460575098">ለውጫዊ መሣሪያዎች መስኮት ፊርምዌርን ማዘመን ክፍት ነው። <ph name="NUM_UPDATES" /> ዝማኔዎች ይገኛሉ።</translation>
 <translation id="1145516343487477149">ለተለመዱ የChromebook ጥያቄዎች የእገዛ ጽሑፎችን እና መልሶችን ያግኙ</translation>
 <translation id="1154390310959620237">ማበጀት የሚችሉት 5 አቋራጮችን ብቻ ነው። አዲስ ለማከል አንድ አቋራጭ ይሰርዙ።</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ከመቃኛ አካባቢ ጋር አመጣጥን</translation>
 <translation id="1367951781824006909">ፋይል ይምረጡ</translation>
+<translation id="1371650399987522809">በGoogle AI የተጎላበተ ልጣፍ ግብረመልስ</translation>
 <translation id="1387854245479784695">ይህ የሁሉም ኮሮች ድምር ነው</translation>
 <translation id="1394661041439318933">መሣሪያው <ph name="BATTERY_PERCENTAGE" />% የመያዣ ባትሪ አለው።</translation>
 <translation id="1397738625398125236">አግባቢ ፍኖት ፒንግ ሊደረግ ይችላል</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">ተችፓድ</translation>
 <translation id="1561927818299383735">የጀርባ ብርሃን ቀለም</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />ን ማዘመን አልተቻለም</translation>
+<translation id="1566493343215789965">ሲካፈል</translation>
 <translation id="1567064801249837505">አልበሞች</translation>
 <translation id="1572585716423026576">እንደ ልጣፍ አዘጋጅ</translation>
 <translation id="1578784163189013834">የማያ ገፅ ማቆያ ዳራን ይምረጡ</translation>
 <translation id="160633243685262989">የቅድመ ዕይታ ምስል</translation>
 <translation id="1611649489706141841">ወደ ፊት</translation>
 <translation id="1615335640928990664">የውሂብ አጠቃቀም ከ<ph name="FRIENDLY_DATE" /> ጀምሮ</translation>
+<translation id="1615576200479539465">ምስሎችን በማመንጨት ላይ...</translation>
 <translation id="1621067168122174824">የባትሪ መሙላት ሙከራን አሂድ</translation>
 <translation id="1626590945318984973">አቋራጭ አይገኝም። ተግባርን እና <ph name="META_KEY" /> ቁልፎችን ሳይጠቀሙ አዲስ አቋራጭን ይጫኑ።</translation>
 <translation id="1639239467298939599">በመጫን ላይ</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">በ<ph name="NUM_SECONDS" /> ሰከንዶች ውስጥ <ph name="RATE" /> ሞልቷል።</translation>
 <translation id="2880569433548999039">የደመና ፍሰት የማያ ገፅ ቆጣቢ</translation>
 <translation id="2926057806159140518">የእርስዎ የተጠቃሚ ስም እና የይለፍ ቃል ያስገቡ ወይም QR ኮድዎን ይቃኙ</translation>
+<translation id="2938573842839598578">ግምታዊ የሆነ ውጤት ለማግኘት የ<ph name="CATEGORY_TEXT" /> እሴቱን በ<ph name="CONVERSION_RATE" /> <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">መሣሪያን መፈተሽ አልተቻለም። ለመፈተሽ ክዳኑን እንደገና ይክፈቱ።</translation>
 <translation id="2941112035454246133">ዝቅተኛ</translation>
 <translation id="3008341117444806826">አድስ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">የChromeOS ዝማኔ</translation>
 <translation id="3527036260304016759">አልተሳካም - ያልታወቀ ስህተት</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> ደቂቃዎች ገደማ ይቀራል</translation>
+<translation id="3547264467365135390">ቀመር</translation>
 <translation id="3557205324756024651">የአካባቢ ማንነት (ከተፈለገ)</translation>
 <translation id="3565064564551103223">የተፈቀዱ አይፒዎች</translation>
 <translation id="3569407787324516067">የማያ ገፅ ማቆያ</translation>
@@ -414,6 +420,7 @@
 <translation id="4113067922640381334">እርስዎ አሁን ለአዲስ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ልጣፎች<ph name="END_LINK_WALLPAPER_SUBPAGE" /> መዳረሻ አለዎት</translation>
 <translation id="4117637339509843559">የጨለማ ሁነታ</translation>
 <translation id="4130035430755296270">ለተጨማሪ የአቀማመጥ አማራጮች ማንዣበብዎን ይቀጥሉ</translation>
+<translation id="4130750466177569591">እስማማለሁ</translation>
 <translation id="4131410914670010031">ጥቁር እና ነጭ</translation>
 <translation id="4145784616224233563">የHTTP ኬላ</translation>
 <translation id="4147897805161313378">Google ፎቶዎች</translation>
@@ -845,6 +852,7 @@
 <translation id="7180611975245234373">አድስ</translation>
 <translation id="7180865173735832675">አብጅ</translation>
 <translation id="7184043045742675738">የእርስዎን አዝራር ለማበጀት በማንኛውም ቁልፍ ላይ ጠቅ ያድርጉ። ቁልፉን በመዳፊት ወይም በቀስት ቁልፎች እንደገና ያስቀምጡ።</translation>
+<translation id="7206979415662233817">የአገልግሎት ውል</translation>
 <translation id="7212547870105584639">የአውታረ መረብ ኤፒኤን ቅንብሮችን ያስተዳድሩ። ኤፒኤንኦች በተንቀሳቃሽ ስልክ አውታረ መረብ እና በይነመረብ መካከል ግንኙነት ይመሰርታሉ። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ለውጫዊ መሳሪያዎች የፊርምዌር ዝማኔዎች</translation>
 <translation id="7216409898977639127">የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ</translation>
@@ -863,6 +871,10 @@
 <translation id="7311368985037279727">የቁልፍ ሰሌዳ ቀለም</translation>
 <translation id="7317831949569936035">የትምህርት ቤት ምዝገባ</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">ቢያንስ 18 ዓመት ሊሞላዎት እና የAI ልጣፎች አጠቃቀምዎ <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />ለGoogle አገልግሎት ውል<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> እና <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ለአመንጪ AI ተጨማሪ የአገልግሎት ውል<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> ተገዢ እንደሆነ መስማማት አለብዎት።
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ልጣፎችን በAI መፍጠር የሚችሉት ለግል እና ለንግድ ላልሆነ አገልግሎት ብቻ ነው። <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />ለGoogle የግላዊነት መመሪያ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ተገዢ በሆነ መልኩ የልጣፍ እገዛ ሲያገኙ፣ የልጣፍ ጥቆማዎችን ለማመንጨት ጽሑፍ ወደ Google AI አገልጋዮች ይላካል። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; በGoogle ፍለጋ ውስጥ ውጤትን ለማየት ፍለጋን እና ክፍተትን ይጫኑ።</translation>
 <translation id="7343649194310845056">የአውታረ መረብ መሣሪያዎች</translation>
 <translation id="7353413232959255829">የፍለጋ ውጤት <ph name="LIST_POSITION" /> ከ<ph name="LIST_SIZE" />፦ <ph name="SEARCH_RESULT_TEXT" />። ወደ አቋራጭ ለማሰስ አስገባን ይጫኑ።</translation>

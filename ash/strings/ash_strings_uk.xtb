@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">Немає мобільних мереж</translation>
 <translation id="1882897271359938046">Дзеркалювання на <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Розблоковуйте відбитком пальця</translation>
-<translation id="1888656773939766144">Дисплей "<ph name="DISPLAY_NAME" />" не підтримує роздільну здатність <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц), тому вибрано <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Щоб зберегти зміни, натисніть "Підтвердити". Попередні налаштування відновляться через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Нещодавно встановлений додаток</translation>
 <translation id="1915307458270490472">Закрити</translation>
 <translation id="1918022425394817322">Зображення з камери закріплено у верхньому правому куті</translation>
@@ -622,6 +621,7 @@
 <translation id="3577473026931028326">Сталася помилка. Повторіть спробу.</translation>
 <translation id="3580650856351781466">Завантаження файлів живих субтитрів</translation>
 <translation id="3585296979871889131">Переглядайте нещодавні фотографії, медіафайли, сповіщення й додатки на телефоні</translation>
+<translation id="3590441166907930941">Бічна кнопка</translation>
 <translation id="3593039967545720377">Щоб переглянути історію буфера обміну, натисніть клавіші <ph name="SHORTCUT_KEY_NAME" /> + V. Щоб почати, скопіюйте елемент.</translation>
 <translation id="3593646411856133110">Щоб переглянути відкриті додатки, проведіть пальцем угору й утримуйте</translation>
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
@@ -1034,6 +1034,7 @@
 <translation id="5163434717504750796">Стан акумулятора: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Кількість циклів: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Зберегти робочий стіл як макет</translation>
 <translation id="5168181903108465623">Доступні пристрої для трансляції</translation>
+<translation id="5168753792967365150">Змінити в Google Завданнях</translation>
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5176318573511391780">Записувати частину екрана</translation>
 <translation id="5187627942836026988">Показати відомості про точку доступу. Адміністратор заблокував точку доступу.</translation>
@@ -1303,6 +1304,8 @@
 <translation id="6168622430237609329">Ваші встановлені додатки</translation>
 <translation id="6173151025443907148">Під час роботи Lacros вхід у кілька облікових записів не підтримується. Скористайтесь іншим профілем веб-переглядача або закрийте Lacros і повторіть спробу.</translation>
 <translation id="6179832488876878285">Тут можна закріпити важливі файли. Щоб почати, відкрийте додаток Файли.</translation>
+<translation id="6180193585172850042">Кнопка "Назад"</translation>
+<translation id="6180651297859206670">Кнопка "Далі"</translation>
 <translation id="6182592640011875895">Відкрити робочий стіл</translation>
 <translation id="6185696379715117369">Сторінка вгору</translation>
 <translation id="619335566042889110">Зарядити повністю</translation>

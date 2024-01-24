@@ -146,6 +146,7 @@
 <translation id="1792959175193046959">डिफ़ॉल्ट डाउनलोड स्थान किसी भी समय बदलें</translation>
 <translation id="1796666869097395659">बाद में देखने के लिए, टैब को छोटा करें</translation>
 <translation id="1807246157184219062">हल्का</translation>
+<translation id="1807709131360304325">नई विंडो खोलें</translation>
 <translation id="1810845389119482123">शुरुआती सिंक सेट अप पूरा नहीं हुआ</translation>
 <translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> पर <ph name="SITE_ETLD_PLUS_ONE" /> का इस्तेमाल जारी नहीं रखा जा सकता</translation>
 <translation id="1829244130665387512">पेज में ढूंढें</translation>
@@ -959,7 +960,6 @@
 <translation id="6192907950379606605">ज़्यादा जानकारी पाएं</translation>
 <translation id="6193448654517602979">टैब चुनें</translation>
 <translation id="6196315980958524839">पासवर्ड, इस डिवाइस पर Google Password Manager में सेव किए गए हैं</translation>
-<translation id="6202514376968366382">Chrome आपकी डाउनलोड की गई PDF फ़ाइल खोल सकता है</translation>
 <translation id="6202812185118613467">सिंक शुरू करने के लिए, फिर से साइन इन करें</translation>
 <translation id="6205314730813004066">विज्ञापन से जुड़ी निजता सेटिंग</translation>
 <translation id="6210748933810148297">क्या <ph name="EMAIL" /> नहीं हैं?</translation>
@@ -1328,6 +1328,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> पुराना है.</translation>
 <translation id="7944772052836377867">सिंक को आपकी पहचान की पुष्टि करनी है</translation>
 <translation id="7947953824732555851">स्वीकार करें और साइन इन करें</translation>
+<translation id="7951102827450076904">डाउनलोड की गई PDF फ़ाइलों को हमेशा अपने-आप खोलने की अनुमति दें</translation>
 <translation id="7957413488482743710">वर्चुअल कार्ड आपके असली कार्ड की पहचान ज़ाहिर नहीं होने देता है. इससे, आपको धोखाधड़ी से बचने में मदद मिलती है. <ph name="BEGIN_LINK1" />वर्चुअल कार्ड के बारे में ज़्यादा जानें<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">अहम जानकारी वाले पेज का 'वापस जाएं' बटन</translation>
 <translation id="7961926449547174351">आपने डिवाइस के स्टोरेज का ऐक्सेस बंद कर दिया है. इसे चालू करने के लिए, कृपया सेटिंग पेज पर जाएं.</translation>

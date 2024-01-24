@@ -282,6 +282,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6144416395842701622">Pokud z prohlížeče Chromium chcete získat maximum, přihlaste se</translation>
 <translation id="6145820983052037069">Zde můžete přepínat mezi profily Chromium</translation>
 <translation id="615103374448673771">Pokud máte povolené soubory cookie, může je Chromium při předběžném načítání použít</translation>
+<translation id="6174920971222007286">Tento soubor může být nebezpečný.<ph name="LINE_BREAK" />Pokud zadáte heslo, může vám Chromium tento stažený soubor zkontrolovat. Informace o souboru budou odeslány do Bezpečného prohlížení Google, ale obsah souboru a heslo zůstanou ve vašem zařízení.</translation>
 <translation id="6175304430031192654">V závislosti na vašem nastavení může Chromium odesílat také soubory cookie a vaši aktuální adresu URL</translation>
 <translation id="6182736845697986886">Instalace se nezdařila kvůli interní chybě serveru s aktualizací.</translation>
 <translation id="6183079672144801177">Zkontrolujte, zda jste v zařízení <ph name="TARGET_DEVICE_NAME" /> přihlášeni do prohlížeče Chromium, a potom zkuste číslo odeslat znovu.</translation>

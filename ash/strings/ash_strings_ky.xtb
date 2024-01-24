@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">Мобилдик Интернет жок</translation>
 <translation id="1882897271359938046">Төмөнкүгө чагылыштыруу <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Кулпуну манжа изи менен ачуу</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Герц) дааналыкты колдоого албайт. Дааналыгы <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) өзгөрдү. Өзгөртүүлөрдү сактоо үчүн "Ырастоо" баскычын басыңыз. Мурунку жөндөөлөр <ph name="TIMEOUT_SECONDS" /> кийин калыбына келтирилет.</translation>
 <translation id="1908992311423394684">Жаңы колдонмо орнотулду</translation>
 <translation id="1915307458270490472">Жогоруда кадоо</translation>
 <translation id="1918022425394817322">Камера жогорку оң бурчка кадалды</translation>
@@ -622,6 +621,7 @@
 <translation id="3577473026931028326">Бир жерден ката кетти. Кайталап көрүңүз.</translation>
 <translation id="3580650856351781466">Кеп файлдары жүктөлүп алынууда</translation>
 <translation id="3585296979871889131">Телефонуңуздагы соңку сүрөттөрдү, медиа файлдарды, билдирмелерди жана колдонмолорду көрүү</translation>
+<translation id="3590441166907930941">Капталдагы баскыч</translation>
 <translation id="3593039967545720377">Алмашуу буферин көрүү үчүн <ph name="SHORTCUT_KEY_NAME" /> + V баскычтарын басып, алмашуу буферинин таржымалына кирүү мүмкүнчүлүгүн алыңыз. Баштоо үчүн элементти көчүрүңүз.</translation>
 <translation id="3593646411856133110">Ачылган колдонмолорду көрүү үчүн экранды өйдө сүрүп, коё бербей кармап туруңуз</translation>
 <translation id="3595596368722241419">Батарея толук</translation>
@@ -1034,6 +1034,7 @@
 <translation id="5163434717504750796">Батареянын абалы: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Циклдердин саны: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Иш тактаны үлгү катары сактоо</translation>
 <translation id="5168181903108465623">Тышкы экранга чыгаруу түзмөктөрү жеткиликтүү</translation>
+<translation id="5168753792967365150">Google Tasks кызматында түзөтүү</translation>
 <translation id="5170568018924773124">Куржунда көрсөтүү</translation>
 <translation id="5176318573511391780">Экрандын жарымын видеого жаздырып алуу</translation>
 <translation id="5187627942836026988">Байланыш түйүнүнүн чоо-жайын көрсөтүү. Байланыш түйүнүн администраторуңуз бөгөттөп койду.</translation>
@@ -1303,6 +1304,8 @@
 <translation id="6168622430237609329">Орнотулган колдонмолоруңуз</translation>
 <translation id="6173151025443907148">Lacros серепчиси иштеп жатканда экинчи колдонуучу кире албайт. Анын ордуна Lacros'то экинчи профилди колдонуңуз же Lacros'ту жаап, кайра аракет кылыңыз.</translation>
 <translation id="6179832488876878285">Маанилүү файлдарыңызды бул жерге кадап койсоңуз болот. Баштоо үчүн Файлдар колдонмосун ачыңыз.</translation>
+<translation id="6180193585172850042">Артка баскычы</translation>
+<translation id="6180651297859206670">Алга баскычы</translation>
 <translation id="6182592640011875895">Иш тактаны ачуу</translation>
 <translation id="6185696379715117369">Өйдө баракта</translation>
 <translation id="619335566042889110">Азыр толук кубаттоо</translation>

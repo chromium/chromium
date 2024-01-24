@@ -465,6 +465,7 @@
 <translation id="1828959155404624835">Прокат автомобилей</translation>
 <translation id="1834321415901700177">Сайт содержит вредоносное ПО</translation>
 <translation id="1838374766361614909">Удалить условия поиска</translation>
+<translation id="1839331950812095887">краткое изложение ваших мыслей</translation>
 <translation id="1839551713262164453">При проверке значений политик обнаружены ошибки</translation>
 <translation id="1842969606798536927">Оплатить</translation>
 <translation id="1846432862466000825">Пластик (архивный)</translation>
@@ -698,6 +699,7 @@
 <translation id="2293443924986248631">Когда эта настройка включена, сайты не могут использовать файлы cookie, которые отслеживают ваши действия в Интернете. Из-за этого некоторые функции на сайтах могут работать некорректно.</translation>
 <translation id="2295831393422400053">Включите параметр "Улучшить функции поиска и просмотра страниц", чтобы использовать генератор текстов</translation>
 <translation id="2300306941146563769">Не загружен</translation>
+<translation id="2301098101308036335">Какие сайты посещают пользователи и в какое время.</translation>
 <translation id="230286397113210245">Кнопка "Открыть окно в режиме инкогнито". Нажмите ее, чтобы открыть такое окно.</translation>
 <translation id="2312234273148520048">Приправы и заправки</translation>
 <translation id="2316087952091171402">Менее <ph name="UPPER_ESTIMATE" />. Возможно, некоторые сайты будут загружаться медленнее, когда вы откроете их в следующий раз.</translation>
@@ -1364,6 +1366,7 @@
 <translation id="3655670868607891010">Если эта проблема возникает часто, изучите <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Повседневная одежда</translation>
 <translation id="3658742229777143148">Версия</translation>
+<translation id="3659521826520353662">Какие сайты, заданные администратором, посещают пользователи и в какое время: <ph name="ALLOWLISTED_WEBSITES" />.</translation>
 <translation id="3664782872746246217">Ключевые слова:</translation>
 <translation id="3665100783276035932">Большинство сайтов работают без изменений</translation>
 <translation id="3667704023705708645">Венчурный капитал</translation>
@@ -1454,6 +1457,7 @@
 <translation id="3812398568375898177">Это важное обновление, которое улучшает производительность приложений для Android на ChromeOS.</translation>
 <translation id="3815434930383843058">8 x 12 дюймов</translation>
 <translation id="3816482573645936981">Значение (заменяемое)</translation>
+<translation id="382115839591654906">CVC-код карты "<ph name="CARD_NAME" />"</translation>
 <translation id="3823019343150397277">Код IBAN</translation>
 <translation id="3823402221513322552">Вашим браузером управляет <ph name="BROWSER_DOMAIN" />, а вашим профилем – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Если вы используете прокси-сервер...</translation>
@@ -2026,7 +2030,7 @@
 <translation id="498323057460789381">Ошибка проверки схемы: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Использовать микрофон?</translation>
 <translation id="4985206706500620449">Вы разрешили сторонние файлы cookie для этого сайта.</translation>
-<translation id="4989163558385430922">Показать все</translation>
+<translation id="4989163558385430922">Посмотреть все</translation>
 <translation id="4989542687859782284">Недоступные</translation>
 <translation id="4989809363548539747">Плагин не поддерживается</translation>
 <translation id="4990241977441916452">Конверт A2</translation>
@@ -2592,6 +2596,7 @@
 <translation id="6124432979022149706">Коннекторы Chrome Enterprise</translation>
 <translation id="6126565365696310362">Конверт Chinese 2</translation>
 <translation id="6127379762771434464">Быстрая ссылка удалена.</translation>
+<translation id="6131824478727057281">местоположение</translation>
 <translation id="6132161237766805930">Подробнее <ph name="BEGIN_LINK" />о режиме инкогнито в Chrome<ph name="END_LINK" />…</translation>
 <translation id="6133320744616005677">Оставить разрешение</translation>
 <translation id="6133984428121856852">Расширение имени файла не указано или имеет неверный формат.</translation>
@@ -3202,6 +3207,7 @@
 <translation id="7341357280245177602">Подержанные транспортные средства</translation>
 <translation id="7346048084945669753">Аффилированный пользователь:</translation>
 <translation id="7346062987309535530">Столовая посуда</translation>
+<translation id="7346081071264046066">"с энтузиазмом принять приглашение на свадьбу"</translation>
 <translation id="7352651011704765696">Ошибка</translation>
 <translation id="7353601530677266744">Командная строка</translation>
 <translation id="7354880545102894991">Дешевые и горящие туры</translation>

@@ -228,7 +228,6 @@
 <translation id="1882814835921407042">মোবাইল নেটওয়ার্ক নেই</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> তে প্রতিবিম্বিত হচ্ছে</translation>
 <translation id="1885785240814121742">আঙ্গুলের ছাপ দিয়ে আনলক করুন</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" />-এ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> হার্জ) কাজ করে না। রেজোলিউশন পরিবর্তন করে <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) করা হয়েছে। পরিবর্তিত সেটিংস রেখে দিতে 'কনফার্ম করুন' বিকল্পে ক্লিক করুন। <ph name="TIMEOUT_SECONDS" />-এর মধ্যে পুরনো সেটিংসে ফিরিয়ে নিয়ে যাওয়া হবে।</translation>
 <translation id="1908992311423394684">নতুন ইনস্টল</translation>
 <translation id="1915307458270490472">কল নামিয়ে রাখুন</translation>
 <translation id="1918022425394817322">ক্যামেরাটি উপরে ডানদিকের কোণে স্ন্যাপ করা হয়েছে</translation>
@@ -622,6 +621,7 @@
 <translation id="3577473026931028326">কোনও সমস্যা হয়েছে। আবার চেষ্টা করুন।</translation>
 <translation id="3580650856351781466">স্পিচ ফাইল ডাউনলোড করা চলছে</translation>
 <translation id="3585296979871889131">আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া, বিজ্ঞপ্তি ও অ্যাপ দেখুন</translation>
+<translation id="3590441166907930941">সাইডের বোতাম</translation>
 <translation id="3593039967545720377">ক্লিপবোর্ড ইতিহাস অ্যাক্সেস করতে এবং ক্লিপবোর্ড দেখতে <ph name="SHORTCUT_KEY_NAME" /> + V টিপুন। শুরু করতে আইটেম কপি করুন।</translation>
 <translation id="3593646411856133110">খুলে রাখা অ্যাপগুলি দেখার জন্য উপরের দিকে সোয়াইপ করে ধরে রাখুন</translation>
 <translation id="3595596368722241419">ব্যাটারি পুরো চার্জ</translation>
@@ -1034,6 +1034,7 @@
 <translation id="5163434717504750796"><ph name="BATTERY_HEALTH_PERCENTAGE" />% ব্যাটারি আছে | সাইকেল কাউন্ট <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">টেম্পলেট হিসেবে ডেস্ক সেভ করুন</translation>
 <translation id="5168181903108465623">কাস্ট ডিভাইসগুলি উপলব্ধ</translation>
+<translation id="5168753792967365150">Google Tasks-এ এডিট করুন</translation>
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
 <translation id="5176318573511391780">আংশিক স্ক্রিন রেকর্ড করুন</translation>
 <translation id="5187627942836026988">হটস্পটের বিবরণ দেখুন। আপনার অ্যাডমিনিস্ট্রেটর হটস্পট ব্লক করে রেখেছেন।</translation>
@@ -1303,6 +1304,8 @@
 <translation id="6168622430237609329">আপনার ইনস্টল করা অ্যাপ</translation>
 <translation id="6173151025443907148">Lacros চালু থাকাকালীন দ্বিতীয় কোনও ব্যবহারকারী সাইন-ইন করতে পারবেন না। পরিবর্তে Lacros-এ দ্বিতীয় কোনও ব্রাউজার প্রোফাইল ব্যবহার করুন অথবা Lacros বন্ধ করে আবার চেষ্টা করুন।</translation>
 <translation id="6179832488876878285">গুরুত্বপূর্ণ ফাইলগুলি আপনি এখানে পিন করে রাখতে পারবেন। শুরু করার জন্য, Files অ্যাপ খুলুন।</translation>
+<translation id="6180193585172850042">ফিরে যাওয়ার বোতাম</translation>
+<translation id="6180651297859206670">ফরোয়ার্ড বোতাম</translation>
 <translation id="6182592640011875895">ডেস্ক খুলুন</translation>
 <translation id="6185696379715117369">পৃষ্ঠায় উপরের দিকে যান</translation>
 <translation id="619335566042889110">এখন সম্পূর্ণ চার্জ করুন</translation>

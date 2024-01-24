@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">ileri</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> sonrası veri kullanımı</translation>
 <translation id="1621067168122174824">Şarj testini çalıştır</translation>
+<translation id="1626590945318984973">Kısayol kullanılamıyor. İşlev ve <ph name="META_KEY" /> tuşlarını kullanmadan yeni bir kısayola basın.</translation>
 <translation id="1639239467298939599">Yükleniyor</translation>
 <translation id="1641857168437328880">Doküman Besleyici (Tek taraflı)</translation>
 <translation id="1643449475550628585">Duvar kağıdı resmini günlük olarak değiştir</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">Artık yeni <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />duvar kağıtlarına<ph name="END_LINK_WALLPAPER_SUBPAGE" /> erişebilirsiniz</translation>
 <translation id="4117637339509843559">Koyu mod</translation>
 <translation id="4130035430755296270">Fareyle üzerine gelmeye devam ederek düzenle ilgili daha fazla seçenek görün</translation>
+<translation id="4130750466177569591">Kabul ediyorum</translation>
 <translation id="4131410914670010031">Siyah beyaz</translation>
 <translation id="4145784616224233563">HTTP Güvenlik Duvarı</translation>
 <translation id="4147897805161313378">Google Fotoğraflar</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Devre dışı bırak</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> yeniden başlatılıyor</translation>
 <translation id="4395835743215824109">klavyeyi özelleştir</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> tuşu olmayan kısayol bazı uygulamaların kısayoluyla çakışabilir. Kullanmaya devam etmek için bu kısayola tekrar basın veya <ph name="KEY" /> tuşunu kullanarak yeni bir kısayola basın.</translation>
 <translation id="4415951057168511744">Mevcut Avatar</translation>
+<translation id="4417830657741848074">Yöneticiniz bazı uygulamaları otomatik olarak başlatılacak şekilde ayarladı. Bu uygulamalardan bazıları kapalı olmayabilir.</translation>
 <translation id="4422041425070339732">aşağı ok</translation>
 <translation id="4425149324548788773">Drive'ım</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> kapalı</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">Toprak akışı ekranı koruyucu</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Varsayılan olmayan ağ geçidi pinglenemedi</translation>
+<translation id="4500722292849917410">Kısayol kullanılamıyor. Değiştirici tuş (ctrl, alt, üst karakter veya <ph name="META_KEY" />) kullanarak yeni bir kısayola basın.</translation>
 <translation id="4500966230243561393">Arayüz rengi</translation>
 <translation id="4503223151711056411">Sol ok</translation>
 <translation id="4507392511610824664">parlaklığı artır</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Dosyalar uygulamasında klasör seç...</translation>
 <translation id="4835901797422965222">Etkin ağ yok</translation>
 <translation id="4839698083503556542">Filminizi oluşturun</translation>
+<translation id="48409034532829769">Yöneticiniz "<ph name="APP_NAME" />" uygulamasını otomatik olarak başlatılacak şekilde ayarladı. Bu uygulamayı kapatamayabilirsiniz.</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> seçildi, <ph name="TOPIC_SOURCE" /> albümlerini seçmek için Enter tuşuna basın</translation>
 <translation id="484790837831576105">(Android) DNS çözümleme</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">Böl</translation>
 <translation id="4972592110715526173">mod değiştir</translation>
 <translation id="498186245079027698">Tarayıcıyı kontrol edip tekrar deneyin. Taranan dosyaların kaydedilmesi için yeterli yerel alan bulunduğundan emin olun.</translation>
+<translation id="4982627662315910959">Kısayol kullanılamıyor. Üst karakter ve bir tane daha değiştirici tuş (ctrl, alt veya <ph name="META_KEY" />) kullanarak yeni bir kısayola basın.</translation>
 <translation id="4985509611418653372">Çalıştır</translation>
 <translation id="4987769320337599931">Güvenlik duvarı</translation>
 <translation id="4988526792673242964">Sayfalar</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Hücresel sağlayıcı</translation>
 <translation id="725133483556299729">E-posta'yı seçme</translation>
 <translation id="7271040990581020067">Tarayıcı şu anda kullanımda. Daha sonra tekrar deneyin.</translation>
+<translation id="7271932918253517778">Üst sıra tuşlarını kullanan kısayolun <ph name="META_KEY" /> tuşunu içermesi gerekir.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Esintiyi hissedin</translation>
 <translation id="7287310195820267359">Duvar Kağıdı Koleksiyonları</translation>

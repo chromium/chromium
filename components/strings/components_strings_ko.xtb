@@ -465,6 +465,7 @@
 <translation id="1828959155404624835">렌터카</translation>
 <translation id="1834321415901700177">이 사이트에 유해한 프로그램이 있습니다.</translation>
 <translation id="1838374766361614909">검색어 지우기</translation>
+<translation id="1839331950812095887">생각을 요약하는 몇 개의 단어</translation>
 <translation id="1839551713262164453">오류가 발생하여 정책 값의 유효성을 검사하지 못했습니다.</translation>
 <translation id="1842969606798536927">결제</translation>
 <translation id="1846432862466000825">플라스틱(보관용)</translation>
@@ -698,6 +699,7 @@
 <translation id="2293443924986248631">이 옵션을 사용 설정하면 사이트가 웹 전반에서 사용자를 추적하는 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="2295831393422400053">작성 지원 기능을 사용하려면 검색 및 탐색 기능 개선 설정을 사용 설정하세요</translation>
 <translation id="2300306941146563769">업로드되지 않음</translation>
+<translation id="2301098101308036335">방문한 웹사이트 및 방문 시기</translation>
 <translation id="230286397113210245">시크릿 창 열기 버튼, 새 시크릿 창을 열어 비공개로 탐색하려면 활성화하세요.</translation>
 <translation id="2312234273148520048">양념 및 드레싱</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> 미만입니다. 일부 사이트는 다음 방문 시 로드 속도가 느려질 수 있습니다.</translation>
@@ -1365,6 +1367,7 @@
 <translation id="3655670868607891010">이 메시지가 자주 표시된다면 다음을 시도해 보세요. <ph name="HELP_LINK" /></translation>
 <translation id="365641980390710834">일상복</translation>
 <translation id="3658742229777143148">개정</translation>
+<translation id="3659521826520353662">방문한 관리자 정의 웹사이트 및 방문 시기: <ph name="ALLOWLISTED_WEBSITES" /></translation>
 <translation id="3664782872746246217">키워드:</translation>
 <translation id="3665100783276035932">대부분의 사이트가 예상대로 작동합니다.</translation>
 <translation id="3667704023705708645">벤처 자본</translation>
@@ -1455,6 +1458,7 @@
 <translation id="3812398568375898177">이번 업데이트는 ChromeOS에서 Android 앱의 성능을 개선하는 중요한 업데이트입니다.</translation>
 <translation id="3815434930383843058">8x12인치</translation>
 <translation id="3816482573645936981">값(대체됨)</translation>
+<translation id="382115839591654906"><ph name="CARD_NAME" />의 CVC</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">내 브라우저는 <ph name="BROWSER_DOMAIN" />에서, 프로필은 <ph name="PROFILE_DOMAIN" />에서 관리합니다</translation>
 <translation id="382518646247711829">프록시 서버를 사용하는 경우</translation>
@@ -2593,6 +2597,7 @@
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">봉투 Chinese @2</translation>
 <translation id="6127379762771434464">항목 삭제됨</translation>
+<translation id="6131824478727057281">위치</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome 시크릿 모드 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">계속 허용</translation>
 <translation id="6133984428121856852">파일 확장자가 비어 있거나 형식이 잘못되었습니다.</translation>
@@ -3203,6 +3208,7 @@
 <translation id="7341357280245177602">중고차</translation>
 <translation id="7346048084945669753">연결됨:</translation>
 <translation id="7346062987309535530">식기</translation>
+<translation id="7346081071264046066">'기쁜 마음으로 이 결혼식 초대에 '예'라고 답장'</translation>
 <translation id="7352651011704765696">문제가 발생한 경우</translation>
 <translation id="7353601530677266744">명령줄</translation>
 <translation id="7354880545102894991">저가 및 잔여 상품 할인 여행</translation>

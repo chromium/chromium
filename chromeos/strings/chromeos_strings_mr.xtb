@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">फॉरवर्ड करा</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> पासूनचा डेटा वापर</translation>
 <translation id="1621067168122174824">चार्ज चाचणी रन करा</translation>
+<translation id="1626590945318984973">शॉर्टकट उपलब्ध नाही. फंक्शन आणि <ph name="META_KEY" /> की न वापरता नवीन शॉर्टकट प्रेस करा.</translation>
 <translation id="1639239467298939599">लोड करत आहे</translation>
 <translation id="1641857168437328880">दस्तऐवज फीडर (एक बाजू असलेले)</translation>
 <translation id="1643449475550628585">वॉलपेपर इमेज रोज बदला</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">तुम्हाला आता नवीन <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />वॉलपेपर<ph name="END_LINK_WALLPAPER_SUBPAGE" /> चा अ‍ॅक्सेस आहे</translation>
 <translation id="4117637339509843559">गडद मोड</translation>
 <translation id="4130035430755296270">आणखी लेआउट पर्यायांसाठी फिरवत रहा</translation>
+<translation id="4130750466177569591">मला मान्य आहे</translation>
 <translation id="4131410914670010031">कृष्ण धवल</translation>
 <translation id="4145784616224233563">HTTP फायरवॉल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">अक्षम करा</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> रीस्टार्ट करत आहे</translation>
 <translation id="4395835743215824109">कीबोर्ड कस्टमाइझ करा</translation>
+<translation id="4403262788869804671"><ph name="META_KEY" /> कीशिवाय शॉर्टकट हा काही अ‍ॅप्सच्या शॉर्टकटच्या विरोधी असू शकतो. हा शॉर्टकट वापरणे पुढे सुरू ठेवण्यासाठी, तो पुन्हा प्रेस करा किंवा <ph name="KEY" /> की वापरून नवीन शॉर्टकट प्रेस करा.</translation>
 <translation id="4415951057168511744">सध्याचा अवतार</translation>
+<translation id="4417830657741848074">तुमच्या अ‍ॅडमिनिस्ट्रेटरने काही अ‍ॅप्स ही आपोआप सुरू होण्यासाठी सेट केली आहेत. यांपैकी काही अ‍ॅप्स उपलब्ध नसू शकतात.</translation>
 <translation id="4422041425070339732">अ‍ॅरो डाउन</translation>
 <translation id="4425149324548788773">माझा ड्राइव्ह</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> बंद आहे</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">अर्थ फ्लो स्क्रीन सेव्हर</translation>
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4483049906298469269">डीफॉल्ट नसलेला नेटवर्क गेटवे पिंग करता आला नाही</translation>
+<translation id="4500722292849917410">शॉर्टकट उपलब्ध नाही. नवीन मॉडिफायर की (कंट्रोल, ऑल्ट, शिफ्ट किंवा <ph name="META_KEY" />) वापरून नवीन शॉर्टकट प्रेस करा.</translation>
 <translation id="4500966230243561393">इंटरफेसचा रंग</translation>
 <translation id="4503223151711056411">लेफ्ट अ‍ॅरो</translation>
 <translation id="4507392511610824664">ब्राइटनेस वाढवा</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Files अ‍ॅपमध्ये फोल्डर निवडा...</translation>
 <translation id="4835901797422965222">कोणतीही अ‍ॅक्टिव्ह नेटवर्क नाहीत</translation>
 <translation id="4839698083503556542">स्वतः चित्रपट तयार करा</translation>
+<translation id="48409034532829769">तुमच्या अ‍ॅडमिनिस्ट्रेटरने "<ph name="APP_NAME" />" हे आपोआप सुरू होण्यासाठी सेट केले आहे. हे अ‍ॅप बंद केलेले नसू शकते.</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> निवडले, <ph name="TOPIC_SOURCE" /> अल्बम निवडण्यासाठी एंटर प्रेस करा</translation>
 <translation id="484790837831576105">(Android) DNS रिझोल्यूशन</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">स्प्लिट करा</translation>
 <translation id="4972592110715526173">मोड बदला</translation>
 <translation id="498186245079027698">स्कॅनर तपासा आणि पुन्हा प्रयत्न करा. स्कॅन केलेल्या फाइल सेव्ह करण्यासाठी पुरेशी स्थानिक जागा उपलब्ध असल्याची खात्री करा.</translation>
+<translation id="4982627662315910959">शॉर्टकट उपलब्ध नाही. शिफ्ट आणि आणखी १ मॉडिफायर की (कंट्रोल, ऑल्ट किंवा <ph name="META_KEY" />) वापरून नवीन शॉर्टकट प्रेस करा.</translation>
 <translation id="4985509611418653372">रन</translation>
 <translation id="4987769320337599931">फायरवॉल</translation>
 <translation id="4988526792673242964">पेज</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">सेल्युलर सेवा देणारा</translation>
 <translation id="725133483556299729">ईमेल निवडा</translation>
 <translation id="7271040990581020067">स्कॅनर सध्या वापरात आहे. नंतर पुन्हा प्रयत्न करा.</translation>
+<translation id="7271932918253517778">वरील ओळीमधील की असलेल्या शॉर्टकटमध्ये <ph name="META_KEY" /> की समाविष्ट असणे आवश्यक आहे.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">वाहणाऱ्या मंद वाऱ्याचा आनंद घ्या</translation>
 <translation id="7287310195820267359">वॉलपेपरचा संग्रह</translation>

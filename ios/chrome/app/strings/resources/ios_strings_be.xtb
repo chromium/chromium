@@ -90,7 +90,6 @@
 <translation id="1408847409015257906">Націсніце Privacy &amp; Security ("Прыватнасць і бяспека").</translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="143681031165817424">Адрас захоўваецца толькі на гэтай прыладзе</translation>
-<translation id="1443958768615272145">Працягвайце прагляд</translation>
 <translation id="1449835205994625556">Схаваць пароль</translation>
 <translation id="1450170672351507823">Стандартная абарона ўключана. Каб павысіць бяспеку, выкарыстоўвайце Палепшаную абарону.</translation>
 <translation id="1469381646033328562">Вашым уліковым запісам кіруюць бацькі.
@@ -216,7 +215,6 @@
 <translation id="2139502497535990641">Уключыць абвесткі аб зніжэнні цэн?</translation>
 <translation id="2139867232736819575">Пошук скапіраванага тэксту</translation>
 <translation id="214201757571129614">Увайсці…</translation>
-<translation id="2145004670974387485">Выберыце ўліковы запіс, у якім трэба захаваць файл "<ph name="FILENAME" />"</translation>
 <translation id="2148716181193084225">Сёння</translation>
 <translation id="2149973817440762519">Рэдагаваць закладку</translation>
 <translation id="2175927920773552910">QR-код</translation>
@@ -315,7 +313,6 @@
 <translation id="2664621323652615289">Спыніць</translation>
 <translation id="2666092431469916601">Зверху</translation>
 <translation id="2669454659051515572">Усе, хто карыстаецца гэтай прыладай, могуць бачыць спампаваныя файлы</translation>
-<translation id="2681158575552244226">Ідзе захаванне на Дыску для карыстальніка <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">Камера выкарыстоўваецца</translation>
 <translation id="2691653761409724435">Недаступна ў пазасеткавым рэжыме</translation>
 <translation id="2695507686909505111">Старонка перакладзена</translation>
@@ -484,7 +481,6 @@
 <translation id="3519193562722059437">Адкрыйце ўкладку для прагляду змесціва ў інтэрнэце.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Адкрыць укладку}one{Адкрыць {count} укладку}few{Адкрыць {count} укладкі}many{Адкрыць {count} укладак}other{Адкрыць {count} укладкі}}</translation>
 <translation id="3523789730715594198">Вы можаце ў любы час спыніць сінхранізацыю ў наладах. Google можа персаналізаваць Пошук і іншыя сэрвісы на аснове вашай гісторыі прагляду сайтаў.</translation>
-<translation id="3526783603136816353">Выберыце ўліковы запіс, у якім трэба захаваць файл "<ph name="FILENAME" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3529024052484145543">Небяспечнае змесціва</translation>
 <translation id="3530206579861815432">Хутка знаходзьце адкрытыя і нядаўна закрытыя ўкладкі на сінхранізаваных прыладах.</translation>
@@ -1102,7 +1098,6 @@
 <translation id="6685259053455152195">Спалучэнні клавіш, з дапамогай якіх можна хутка змяняць налады і выкарыстоўваць функцыі з адраснага радка.</translation>
 <translation id="6710079714193676716">Пад кіраваннем вашай арганізацыі. Некаторыя функцыі могуць быць недаступныя. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Праграмы Google</translation>
-<translation id="6716730056313760676">Захавана на Дыску для карыстальніка <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Выкарыстоўвайце свае закладкі, паролі і іншае на ўсіх сваіх прыладах.</translation>
 <translation id="6730682669179532099">Не ўдалося экспартаваць паролі</translation>
 <translation id="6732087373923685049">камера</translation>
@@ -1121,7 +1116,6 @@
 <translation id="6790502149545262384">Неўзабаве пры адкрыцці новай укладкі вы будзеце бачыць гісторыі з сайта "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="6797885426782475225">Галасавы пошук</translation>
 <translation id="6800349425672670802">Доступ да адкрытых укладак можна атрымаць з дапамогай Пераключальніка ўкладак.</translation>
-<translation id="6805179248725678418">Захаваць на Google Дыску</translation>
 <translation id="6807889908376551050">Паказаць усе...</translation>
 <translation id="681368974849482173">Элемент створаны</translation>
 <translation id="6822587385560699678">Калі гэты параметр уключаны, паролі захоўваюцца ва ўліковым запісе <ph name="ACCOUNT" />, а калі выключаны, захоўваюцца толькі на гэтай прыладзе.</translation>
@@ -1409,7 +1403,6 @@
 <translation id="8395339334550012808">Хутка вы ўбачыце змесціва канала "<ph name="CHANNEL_NAME" />" і інфармацыю пра яго ў раздзеле "Вы падпісаны".</translation>
 <translation id="8395378633507873708">Адрасны радок</translation>
 <translation id="8402673309244746971">Перайсці да стужкі падпісак</translation>
-<translation id="8403629764260204788">Схаваць модуль "Працягвайце прагляд"</translation>
 <translation id="8407669440184693619">Паролі для гэтага сайта не знойдзены</translation>
 <translation id="842017693807136194">Вы ўвайшлі праз</translation>
 <translation id="8423121072346537366">Толькі што</translation>

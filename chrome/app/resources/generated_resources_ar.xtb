@@ -381,6 +381,7 @@
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{يتعذّر فتح الملف.}zero{يتعذّر فتح الملفات.}two{يتعذّر فتح الملفين.}few{يتعذّر فتح الملفات.}many{يتعذّر فتح الملفات.}other{يتعذّر فتح الملفات.}}</translation>
 <translation id="1282311502488501110">عدم تسجيل الدخول</translation>
 <translation id="1282465000333679776">مشاركة صوت النظام</translation>
+<translation id="1283126956823499975">حدث خطأ أثناء إعداد الجهاز</translation>
 <translation id="1284277788676816155">عدم السماح بحفظ البيانات</translation>
 <translation id="1285320974508926690">عدم ترجمة هذا الموقع مطلقًا</translation>
 <translation id="1285484354230578868">‏تخزين البيانات في حساب Google Drive</translation>
@@ -3215,7 +3216,7 @@
 <translation id="3446274660183028131">‏يُرجى تشغيل نظام Parallels Desktop لتثبيت نظام التشغيل Windows.</translation>
 <translation id="344630545793878684">قراءة بياناتك على عدد من المواقع الإلكترونية</translation>
 <translation id="3446548199318150462">‏يعمل هذا الإعداد على تفعيل تصميم سطح المكتب الجديد. ويجب أيضًا تفعيل خيار "تخصيص اللوحة الجانبية في Chrome".</translation>
-<translation id="3447644283769633681">حظر جميع ملفات تعريف الارتباط للأطراف الثالثة</translation>
+<translation id="3447644283769633681">حظر جميع ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="3447797901512053632">جارٍ بث <ph name="TAB_NAME" /> على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3448492834076427715">تعديل الحساب</translation>
 <translation id="3449393517661170867">نافذة ذات علامات تبويب جديدة</translation>
@@ -4630,7 +4631,6 @@
 <translation id="4546345569117159016">زر الماوس الأيمن</translation>
 <translation id="4546509872654834602">‫"<ph name="SUPERVISED_USER_NAME" />" بحاجة إلى استخدام هذه الإضافة</translation>
 <translation id="4546692474302123343">‏الإدخال الصوتي في "مساعد Google"</translation>
-<translation id="4547538408998421970">لقد بلغت الحدّ الأقصى لهذا اليوم.</translation>
 <translation id="4547659257713117923">ليست هناك علامات تبويب من أجهزة أخرى</translation>
 <translation id="4547672827276975204">ضبط المنطقة الزمنية تلقائيًا</translation>
 <translation id="4548858987594081919">‏لمساعدة "مدير كلمات المرور في Google" على حفظ معلومات تسجيل الدخول، عليك إضافة اسم المستخدم لهذا الموقع الإلكتروني.</translation>
@@ -5027,6 +5027,7 @@
 <translation id="4863769717153320198">‏تبدو كـ <ph name="WIDTH" /> x <ph name="HEIGHT" /> (تلقائية)</translation>
 <translation id="4864369630010738180">جارٍ تسجيل الدخول...</translation>
 <translation id="4864805589453749318">اختَر أحد الوالدَين الذي يمنح الإذن لإضافة حساب مؤسسة تعليمية.</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (محظور)</translation>
 <translation id="486505726797718946">تم حفظ هذه الذكرى</translation>
 <translation id="486635084936119914">فتح أنواع معينة من الملفات تلقائيًا بعد التنزيل</translation>
 <translation id="4867272607148176509">يمكن للوالدَين الموافقة على التطبيقات أو حظرها وضبط الحدود الزمنية لاستخدامها والتحكّم في تصفُّح الويب. ويمكن إضافة حساب تديره المؤسسة التعليمية لاحقًا للوصول إلى معظم موارد المؤسسات التعليمية.</translation>
@@ -5240,7 +5241,6 @@
 <translation id="5032430150487044192">يتعذّر إنشاء رمز الاستجابة السريعة.</translation>
 <translation id="5033137252639132982">المواقع الإلكترونية التي لا يُسمح لها باستخدام مستشعرات الحركة</translation>
 <translation id="5033266061063942743">الأشكال الهندسية</translation>
-<translation id="5033646801355533305">يُرجى إعادة المحاولة غدًا.</translation>
 <translation id="5035846135112863536">يُرجى اختيار "مزيد من التفاصيل" أدناه للحصول على مزيد من المعلومات من "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="5037676449506322593">اختيار الكل</translation>
 <translation id="5038818366306248416">سَبَقَ منعُ إذن وصول أي إضافات إلى محتوى <ph name="ORIGIN" />.</translation>
@@ -5520,6 +5520,7 @@
 <translation id="5261619498868361045">لا يمكن ترك اسم الحاوية فارغًا.</translation>
 <translation id="5261683757250193089">فتح في السوق الإلكتروني</translation>
 <translation id="5261799091118902550">‏قد يكون هذا الملف فيروسًا أو برنامجًا ضارًا. يمكنك إرساله إلى Google لمعرفة ما إذا كان غير آمن.</translation>
+<translation id="5262334727506665688">‏يجب مواصلة حفظ كلمات المرور في حسابك على Google.</translation>
 <translation id="5262784498883614021">الاتصال بالشبكة تلقائيًا</translation>
 <translation id="5263656105659419083">للرجوع بسهولة إلى اللوحة الجانبية، انقر على "تثبيت" في أعلى يسار الصفحة.</translation>
 <translation id="5264148714798105376">قد يستغرق ذلك دقيقة أو نحو ذلك.</translation>
@@ -6035,7 +6036,6 @@
 <translation id="5667546120811588575">‏جارٍ إعداد Google Play...</translation>
 <translation id="5668351004957198136">إخفاق</translation>
 <translation id="5669863904928111203">‏نظام التشغيل ChromeOS قديم</translation>
-<translation id="56702779821643359">شارِك الملفات مع الأشخاص من حولك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5671641761787789573">تم حظر الصور</translation>
 <translation id="5671658447180261823">إزالة الاقتراح <ph name="SUGGESTION_NAME" /></translation>
 <translation id="567210741546439261">الإشارات المرجعية والقوائم</translation>
@@ -7061,6 +7061,7 @@
 <translation id="649396225532207613">يمكن أن يضرّ هذا الملف حساباتك الشخصية وحساباتك على شبكات التواصل الاجتماعي.</translation>
 <translation id="6494327278868541139">عرض تفاصيل الحماية المُحسَّنة</translation>
 <translation id="6494445798847293442">ليست مرجعًا مصدقًا</translation>
+<translation id="6494483173119160146">حدث خطأ غير قابل للإصلاح في الجهاز. يُرجى إعادة ضبط جهازك (سيؤدي ذلك إلى محو كل بيانات المستخدم) ثم إعادة المحاولة.</translation>
 <translation id="6497784818439587832">يمكنك تغيير حجم العرض لتصغير حجم العناصر التي تظهر على الشاشة أو تكبيرها.</translation>
 <translation id="6497789971060331894">التمرير العكسي عبر الماوس</translation>
 <translation id="6498249116389603658">&amp;جميع اللغات</translation>
@@ -8382,7 +8383,6 @@
 <translation id="752098910262610337">عرض الاختصارات</translation>
 <translation id="7521430434164837205">‏ملفات Microsoft 365</translation>
 <translation id="7522255036471229694">‏قل "Ok Google".</translation>
-<translation id="7523112275619538890">مشاركة الملفات وغيرها مع الأجهزة المجاورة</translation>
 <translation id="7523117833414447032">عند قراءة الأحرف الكبيرة</translation>
 <translation id="7523585675576642403">إعادة تسمية الملف الشخصي</translation>
 <translation id="7525067979554623046">إنشاء</translation>
@@ -9550,6 +9550,7 @@
 <translation id="8397825320644530257">قطع اتصال الهاتف المتّصل</translation>
 <translation id="8398877366907290961">المتابعة على كلّ حال</translation>
 <translation id="8399282673057829204">عرض كلمة المرور</translation>
+<translation id="839949601275221554">حدث خطأ في الجهاز. يُرجى إعادة تشغيل الجهاز وإعادة المحاولة.</translation>
 <translation id="8401432541486058167">عليك تقديم رقم التعريف الشخصي المرتبط بالبطاقة الذكية التابعة لك.</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{‏سيُعيد متصفِّح Chrome حظر ملفات تعريف الارتباط اليوم.}=1{‏سيُعيد متصفِّح Chrome حظر ملفات تعريف الارتباط غدًا.}two{‏يتبقّى # يومان على إعادة حظر ملفات تعريف الارتباط في متصفِّح Chrome.}few{‏يتبقّى # أيام على إعادة حظر ملفات تعريف الارتباط في متصفِّح Chrome.}many{‏يتبقّى # يومًا على إعادة حظر ملفات تعريف الارتباط في متصفِّح Chrome.}other{‏يتبقّى # يوم على إعادة حظر ملفات تعريف الارتباط في متصفِّح Chrome.}}</translation>
 <translation id="8403618281196981152">‏بياناتك في Chrome</translation>
@@ -9980,7 +9981,6 @@
 <translation id="8732212173949624846">قراءة سجل التصفح وتعديله على كل الأجهزة التي سجلت الدخول إليها</translation>
 <translation id="8732844209475700754">مزيد من الإعدادات المتعلِّقة بالخصوصية والأمان وجمع البيانات</translation>
 <translation id="8734073480934656039">يتيح تفعيل هذا الإعداد تشغيل تطبيقات الكشك تلقائيًا عند بدء التشغيل.</translation>
-<translation id="8734674662128056360">حظر ملفات تعريف الارتباط التابعة لجهة خارجية</translation>
 <translation id="8734755021067981851">‏ما مِن أجهزة USB متّصلة.</translation>
 <translation id="8736288397686080465">تم تحديث هذا الموقع في الخلفية.</translation>
 <translation id="8737709691285775803">Shill</translation>

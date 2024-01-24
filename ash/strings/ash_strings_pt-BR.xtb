@@ -228,7 +228,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1882814835921407042">Rede móvel indisponível</translation>
 <translation id="1882897271359938046">Espelhamento de <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloqueio por impressão digital</translation>
-<translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> não é compatível com <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). A resolução foi modificada para <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Clique em "Confirmar" para manter as mudanças. As configurações anteriores serão restauradas em <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1908992311423394684">Nova instalação</translation>
 <translation id="1915307458270490472">Desligar</translation>
 <translation id="1918022425394817322">Câmera alinhada ao canto direito de cima</translation>
@@ -622,6 +621,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3577473026931028326">Algo deu errado. Tente novamente.</translation>
 <translation id="3580650856351781466">Fazendo o download de arquivos de fala</translation>
 <translation id="3585296979871889131">Visualize arquivos de fotos, mídia, notificações e apps do smartphone</translation>
+<translation id="3590441166907930941">Botão lateral</translation>
 <translation id="3593039967545720377">Para acessar o histórico da área de transferência, pressione <ph name="SHORTCUT_KEY_NAME" /> + V. Copie um item para começar.</translation>
 <translation id="3593646411856133110">Deslize para cima e mantenha a tela pressionada para ver os apps abertos</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
@@ -1034,6 +1034,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="5163434717504750796">Integridade da bateria: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Contagem de ciclos: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Salvar espaço de trabalho como modelo</translation>
 <translation id="5168181903108465623">Dispositivos de transmissão disponíveis</translation>
+<translation id="5168753792967365150">Editar no Google Tarefas</translation>
 <translation id="5170568018924773124">Mostrar na pasta</translation>
 <translation id="5176318573511391780">Gravar tela parcial</translation>
 <translation id="5187627942836026988">Consulte detalhes do ponto de acesso. O ponto de acesso foi bloqueado pelo administrador.</translation>
@@ -1303,6 +1304,8 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="6168622430237609329">Seus apps instalados</translation>
 <translation id="6173151025443907148">Não é possível fazer login em um segundo usuário se o navegador Lacros está ativado. Use um segundo perfil de navegador no Lacros ou desative-o e tente novamente.</translation>
 <translation id="6179832488876878285">Fixe seus arquivos importantes aqui. Abra o app Arquivos para começar.</translation>
+<translation id="6180193585172850042">Botão "Voltar"</translation>
+<translation id="6180651297859206670">Botão "Avançar"</translation>
 <translation id="6182592640011875895">Abrir espaço de trabalho</translation>
 <translation id="6185696379715117369">Página para cima</translation>
 <translation id="619335566042889110">Carregar totalmente agora</translation>

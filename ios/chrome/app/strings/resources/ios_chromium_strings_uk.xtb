@@ -102,6 +102,7 @@
 <translation id="3955621079070267756">Переходьте в Chromium із будь-якого додатка</translation>
 <translation id="4005283307739974863">Відкриває і запускає перевірку безпеки в Chromium.</translation>
 <translation id="4043291146360695975">Паролі збережено в Менеджері паролів лише на цьому пристрої.</translation>
+<translation id="4076589763479456892">Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />очистьте дані Chromium у своєму обліковому записі<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Не підтримується в бета-версії Chromium</translation>
 <translation id="4106512142782407609">Ви ввійшли як <ph name="EMAIL" />.
 
@@ -153,6 +154,7 @@
 <translation id="5534584691915394889">Ці дані використовуватимуться, щоб створювати події в Календарі Apple на основі даних у Chromium і Google Об’єктиві.</translation>
 <translation id="5571094606370987472">Відкриває останні вкладки в Chromium.</translation>
 <translation id="5623083843656850677">Блокуйте анонімні вкладки, коли закриваєте Chromium або переходите в інший додаток.</translation>
+<translation id="5671188105328420281">Поради щодо Chromium</translation>
 <translation id="5688047395118852662">Ця картка містить рекомендації щодо того, як користуватися всіма можливостями Chromium.</translation>
 <translation id="5700709190537129682">Chromium не може перевірити паролі</translation>
 <translation id="5777187867430702742">Сторінка Chromium</translation>

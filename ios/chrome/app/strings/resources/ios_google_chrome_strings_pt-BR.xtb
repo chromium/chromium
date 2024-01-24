@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1066101356081285416">O Chrome vai detectar números de rastreamento nos sites que você visitar e mostrar atualizações de pacotes na página "Nova guia". O número de rastreamento do pacote e o nome do site serão enviados ao Google para fornecer esse recurso e melhorar os recursos de compras para todos. É possível atualizar essa opção a qualquer momento nas <ph name="BEGIN_LINK" />Configurações de rastreamento de pacote<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Usar o Chrome por padrão</translation>
 <translation id="1105362920864247682">Limpar dados de navegação no Chrome.</translation>
 <translation id="1113057722807951993">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay.
@@ -40,6 +41,7 @@ Considerações:
 <translation id="1682483655351012182">Sincronizar seus dados do Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Adiciona os URLs inseridos aos seus favoritos no Chrome.</translation>
+<translation id="1799920918471566157">Dicas do Chrome</translation>
 <translation id="1830634592642484976">Este endereço está salvo no Chrome. Para usá-lo nos produtos do Google, salve-o na sua conta, <ph name="USER_EMAIL" />.</translation>
 <translation id="1843217788865538014">Use o Chrome automaticamente ao tocar em links de mensagens, documentos e outros apps.</translation>
 <translation id="1910975740091000991">Chrome para iOS</translation>
@@ -74,6 +76,7 @@ Considerações:
 <translation id="2702250627063295552">Adicionar item da Lista de leitura ao Chrome</translation>
 <translation id="2736805085127235148">As notificações do Chrome estão desativadas nas configurações do dispositivo no momento.</translation>
 <translation id="2767464022270041271">Nenhuma senha salva. O Gerenciador de senhas do Google pode verificar suas senhas quando você as salva.</translation>
+<translation id="2789947168960170215">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Limpar dados de navegação no Chrome</translation>
 <translation id="2869959624320573933">Faça login no Chrome</translation>
 <translation id="2876628302275096482">Saiba mais sobre <ph name="BEGIN_LINK" />como o Chrome mantém a privacidade dos seus dados<ph name="END_LINK" /></translation>

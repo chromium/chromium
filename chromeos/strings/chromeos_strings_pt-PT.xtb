@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Erro interno</translation>
 <translation id="1124772482545689468">Utilizador</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">multiplicar</translation>
 <translation id="1145018782460575098">A janela de atualização do firmware para dispositivos externos está aberta. <ph name="NUM_UPDATES" /> atualizações disponíveis</translation>
 <translation id="1145516343487477149">Encontre artigos de ajuda e respostas a perguntas comuns sobre o Chromebook</translation>
 <translation id="1154390310959620237">Só pode personalizar 5 atalhos. Elimine um atalho para adicionar um novo.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajustar à área de digitalização</translation>
 <translation id="1367951781824006909">Selecione um ficheiro</translation>
+<translation id="1371650399987522809">Feedback sobre a imagem de fundo com tecnologia de IA da Google</translation>
 <translation id="1387854245479784695">Isto é uma agregação de todos os núcleos.</translation>
 <translation id="1394661041439318933">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria na caixa.</translation>
 <translation id="1397738625398125236">É possível enviar ping ao gateway</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">cor retroiluminada</translation>
 <translation id="1565038567006703504">Não é possível atualizar o dispositivo <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">dividir</translation>
 <translation id="1567064801249837505">Álbuns</translation>
 <translation id="1572585716423026576">Definir como imagem de fundo</translation>
 <translation id="1578784163189013834">Escolher fundo da proteção de ecrã</translation>
 <translation id="160633243685262989">Pré-visualizar imagem</translation>
 <translation id="1611649489706141841">avançar</translation>
 <translation id="1615335640928990664">Utilização de dados desde <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">A gerar imagens…</translation>
 <translation id="1621067168122174824">Executar teste de carregamento</translation>
 <translation id="1626590945318984973">Atalho não disponível. Prima um novo atalho sem usar as teclas de função e <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">A carregar…</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Descarregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="2880569433548999039">Proteção de ecrã Fluxo das nuvens</translation>
 <translation id="2926057806159140518">Introduza o seu nome de utilizador e palavra-passe ou leia o código QR</translation>
+<translation id="2938573842839598578">Para um resultado aproximado, <ph name="OPERATOR_TEXT" /> o valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Não é possível testar o dispositivo. Reabra a tampa para testar.</translation>
 <translation id="2941112035454246133">Baixa</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Atualiz. Chrome OS</translation>
 <translation id="3527036260304016759">Falha – Erro desconhecido</translation>
 <translation id="3532980081107202182">Faltam cerca de <ph name="MIN_REMAINING" /> minutos.</translation>
+<translation id="3547264467365135390">Fórmula</translation>
 <translation id="3557205324756024651">Identidade local (opcional)</translation>
 <translation id="3565064564551103223">IPs permitidos</translation>
 <translation id="3569407787324516067">Proteção de ecrã</translation>
@@ -414,6 +420,7 @@
 <translation id="4113067922640381334">Agora, tem acesso a novas <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imagens de fundo<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Modo escuro</translation>
 <translation id="4130035430755296270">Mantenha o cursor do rato sobre o conteúdo para obter mais opções de esquema</translation>
+<translation id="4130750466177569591">Aceito</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
@@ -845,6 +852,7 @@
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7184043045742675738">Clique numa tecla para personalizar o botão. Reposicione a tecla com o rato ou as teclas de seta.</translation>
+<translation id="7206979415662233817">Termos de Utilização</translation>
 <translation id="7212547870105584639">Faça a gestão das definições do APN da rede. Os APNs estabelecem uma ligação entre uma rede móvel e a Internet. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Atualizações de firmware para dispositivos externos</translation>
 <translation id="7216409898977639127">Operador de telemóvel</translation>
@@ -863,6 +871,10 @@
 <translation id="7311368985037279727">cor do teclado</translation>
 <translation id="7317831949569936035">Inscrição escolar</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Tem de ter, no mínimo, 18 anos e aceitar que a sua utilização dos fundos de IA está sujeita aos <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Termos de Utilização da Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> e aos <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Termos de Utilização Adicionais para IA Generativa<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Só pode criar imagens de fundo com IA para utilização pessoal e não comercial. Quando obtém ajuda relativamente às imagens de fundo, o texto é enviado para os servidores de IA da Google para gerar sugestões de imagens de fundo, sujeito à <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de Privacidade da Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; prima Pesquisar e a tecla de espaço para ver o resultado na Pesquisa Google.</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>
 <translation id="7353413232959255829">Resultado da pesquisa <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Prima Enter para navegar para o atalho.</translation>

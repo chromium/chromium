@@ -102,6 +102,7 @@
 <translation id="3955621079070267756">從任何應用程式開啟 Chromium</translation>
 <translation id="4005283307739974863">在 Chromium 中開啟並執行安全檢查。</translation>
 <translation id="4043291146360695975">密碼只會儲存至這部裝置上的密碼管理工具。</translation>
+<translation id="4076589763479456892">如果忘記通關密語或想要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="4099085513035183040">Chromium Beta 版不支援這項功能</translation>
 <translation id="4106512142782407609">目前登入的帳戶是 <ph name="EMAIL" />。
 
@@ -153,6 +154,7 @@
 <translation id="5534584691915394889">系統將使用 Chromium 和 Google 智慧鏡頭中的內容，在 Apple 行事曆中建立活動。</translation>
 <translation id="5571094606370987472">開啟最近使用 Chromium 開啟的分頁。</translation>
 <translation id="5623083843656850677">離開 Chromium 或切換到其他應用程式時，鎖定無痕分頁。</translation>
+<translation id="5671188105328420281">Chromium 提示</translation>
 <translation id="5688047395118852662">這張資訊卡會建議你如何充分運用 Chromium 的各項功能。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查你的密碼</translation>
 <translation id="5777187867430702742">Chromium 頁面</translation>

@@ -379,6 +379,7 @@
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{無法開啟檔案}other{無法開啟檔案}}</translation>
 <translation id="1282311502488501110">不登入</translation>
 <translation id="1282465000333679776">分享系統音訊</translation>
+<translation id="1283126956823499975">設定裝置時發生問題</translation>
 <translation id="1284277788676816155">不允許儲存資料</translation>
 <translation id="1285320974508926690">永不翻譯此網站</translation>
 <translation id="1285484354230578868">將數據儲存在「Google 雲端硬碟」帳戶中</translation>
@@ -4640,7 +4641,6 @@
 <translation id="4546345569117159016">右鍵</translation>
 <translation id="4546509872654834602">「<ph name="SUPERVISED_USER_NAME" />」要求使用此擴充程式：</translation>
 <translation id="4546692474302123343">「Google 助理」語音輸入</translation>
-<translation id="4547538408998421970">你已達到今天的搜尋上限。</translation>
 <translation id="4547659257713117923">沒有其他裝置的分頁</translation>
 <translation id="4547672827276975204">自動設定</translation>
 <translation id="4548858987594081919">請新增你在此網站的使用者名稱，「Google 密碼管理工具」才能儲存登入資料</translation>
@@ -5037,6 +5037,7 @@
 <translation id="4863769717153320198">解像度：<ph name="WIDTH" /> x <ph name="HEIGHT" /> (預設)</translation>
 <translation id="4864369630010738180">正在登入…</translation>
 <translation id="4864805589453749318">請選取要授予新增學校帳戶權限的家長。</translation>
+<translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (已封鎖)</translation>
 <translation id="486505726797718946">已釋出記憶體</translation>
 <translation id="486635084936119914">下載特定類型的檔案後自動開啟</translation>
 <translation id="4867272607148176509">家長可核准或封鎖應用程式、設定使用時間限制，以及控制網絡瀏覽內容。你可稍後新增學校帳戶，以便存取大部分學校資源。</translation>
@@ -5250,7 +5251,6 @@
 <translation id="5032430150487044192">無法建立 QR 碼</translation>
 <translation id="5033137252639132982">不允許使用動作感應器</translation>
 <translation id="5033266061063942743">幾何形狀</translation>
-<translation id="5033646801355533305">請於明日再試。</translation>
 <translation id="5035846135112863536">選取下方的「更多詳情」即可從「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」取得更多資訊。</translation>
 <translation id="5037676449506322593">全部選取</translation>
 <translation id="5038818366306248416">您先前已選擇不允許 <ph name="ORIGIN" /> 上的所有擴充程式</translation>
@@ -5530,6 +5530,7 @@
 <translation id="5261619498868361045">容器名稱不可留空。</translation>
 <translation id="5261683757250193089">在「Chrome 網上應用程式商店」中開啟</translation>
 <translation id="5261799091118902550">此檔案可能是病毒或惡意軟件。你可將此檔案傳送至 Google，檢查是否不安全。</translation>
+<translation id="5262334727506665688">繼續將密碼儲存至 Google 帳戶</translation>
 <translation id="5262784498883614021">自動連線至網絡</translation>
 <translation id="5263656105659419083">㩒一下右上角嘅 [固定]，就可以輕易返去側面板</translation>
 <translation id="5264148714798105376">這可能需要幾分鐘時間。</translation>
@@ -6043,7 +6044,6 @@
 <translation id="5667546120811588575">正在設定 Google Play…</translation>
 <translation id="5668351004957198136">未通過</translation>
 <translation id="5669863904928111203">ChromeOS 版本已過期</translation>
-<translation id="56702779821643359">與附近的人分享檔案。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5671641761787789573">已封鎖圖片</translation>
 <translation id="5671658447180261823">移除此建議：<ph name="SUGGESTION_NAME" /></translation>
 <translation id="567210741546439261">書籤和清單(&amp;B)</translation>
@@ -7069,6 +7069,7 @@
 <translation id="649396225532207613">此檔案可能會損害你的個人和社交網絡帳戶</translation>
 <translation id="6494327278868541139">顯示進階保護功能詳情</translation>
 <translation id="6494445798847293442">不是憑證授權單位</translation>
+<translation id="6494483173119160146">裝置發生無法復原的錯誤。請重設裝置 (系統將清除所有使用者資料)，然後再試一次。</translation>
 <translation id="6497784818439587832">變更顯示大小以縮小或放大畫面上的項目</translation>
 <translation id="6497789971060331894">滑鼠反向捲動</translation>
 <translation id="6498249116389603658">所選的全部語言(&amp;A)</translation>
@@ -8381,7 +8382,6 @@
 <translation id="752098910262610337">顯示快速鍵</translation>
 <translation id="7521430434164837205">Microsoft 365 檔案</translation>
 <translation id="7522255036471229694">說「Ok Google」</translation>
-<translation id="7523112275619538890">與附近的裝置分享檔案和其他內容</translation>
 <translation id="7523117833414447032">在讀出大寫字母時</translation>
 <translation id="7523585675576642403">重新命名設定檔</translation>
 <translation id="7525067979554623046">建立</translation>
@@ -9548,6 +9548,7 @@
 <translation id="8397825320644530257">解除連接已連接的手機</translation>
 <translation id="8398877366907290961">仍要繼續</translation>
 <translation id="8399282673057829204">查看密碼</translation>
+<translation id="839949601275221554">裝置發生問題。請重新啟動裝置，然後再試一次。</translation>
 <translation id="8401432541486058167">請輸入與智能資訊卡相關聯的 PIN。</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome 將於今天再次封鎖 Cookie}=1{Chrome 將於明天再次封鎖 Cookie}other{Chrome 將於 # 天後再次封鎖 Cookie}}</translation>
 <translation id="8403618281196981152">您在 Chrome 中的資料</translation>
@@ -9978,7 +9979,6 @@
 <translation id="8732212173949624846">讀取及變更您已登入的所有裝置上的瀏覽記錄</translation>
 <translation id="8732844209475700754">更多與私隱權、安全性和資料收集相關的設定</translation>
 <translation id="8734073480934656039">啟用這項設定後，Kiosk 應用程式會在裝置開機時自動啟動。</translation>
-<translation id="8734674662128056360">第三方 Cookie 封鎖功能</translation>
 <translation id="8734755021067981851">未連接任何 USB 裝置。</translation>
 <translation id="8736288397686080465">這個網站已在背景更新。</translation>
 <translation id="8737709691285775803">Shill</translation>

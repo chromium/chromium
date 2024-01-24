@@ -94,6 +94,7 @@
 <translation id="1611649489706141841">prosljeđivanje</translation>
 <translation id="1615335640928990664">Prijenos podataka od datuma <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Pokreni test punjenja</translation>
+<translation id="1626590945318984973">Prečica nije dostupna. Pritisnite novu prečicu bez korištenja funkcijske tipke i tipke <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
 <translation id="1641857168437328880">Ulagač za dokumente (jednostrano skeniranje)</translation>
 <translation id="1643449475550628585">Dnevna promjena pozadinske slike</translation>
@@ -413,6 +414,7 @@
 <translation id="4113067922640381334">Sada imate pristup novim <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />pozadinskim slikama<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tamni način rada</translation>
 <translation id="4130035430755296270">Postavite i zadržite pokazivač miša iznad za više opcija rasporeda</translation>
+<translation id="4130750466177569591">Slažem se</translation>
 <translation id="4131410914670010031">Crno-bijelo</translation>
 <translation id="4145784616224233563">HTTP zaštitni zid</translation>
 <translation id="4147897805161313378">Google Fotografije</translation>
@@ -452,7 +454,9 @@
 <translation id="4394049700291259645">Onemogući</translation>
 <translation id="439429847087949098">Ponovno pokretanje uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">prilagođavanje tastature</translation>
+<translation id="4403262788869804671">Prečica bez tipke <ph name="META_KEY" /> možda se ne slaže s prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da je nastavite koristiti ili pritisnite novu prečicu pomoću tipke <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Trenutni avatar</translation>
+<translation id="4417830657741848074">Administrator je postavio automatsko pokretanje određenih aplikacija. Neke od tih aplikacija se možda neće zatvoriti.</translation>
 <translation id="4422041425070339732">strelica nadolje</translation>
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> mreža je isključena</translation>
@@ -465,6 +469,7 @@
 <translation id="4469288414739283461">Čuvar ekrana sa Zemljom</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Provjera pingom mrežnog pristupnika koji nije zadan nije uspjela</translation>
+<translation id="4500722292849917410">Prečica nije dostupna. Pritisnite novu prečicu koristeći modifikacijsku tipku (Ctrl, Alt, Shift ili tipku <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Boja interfejsa</translation>
 <translation id="4503223151711056411">Strelica ulijevo</translation>
 <translation id="4507392511610824664">povećavanje osvjetljenja</translation>
@@ -512,6 +517,7 @@
 <translation id="4832079907277790330">Odaberite folder u aplikaciji Fajlovi...</translation>
 <translation id="4835901797422965222">Nema aktivnih mreža</translation>
 <translation id="4839698083503556542">Kreirajte vlastiti film</translation>
+<translation id="48409034532829769">Administrator je postavio automatsko pokretanje aplikacije "<ph name="APP_NAME" />". Aplikacija se možda neće zatvoriti.</translation>
 <translation id="484462545196658690">Automatski</translation>
 <translation id="4847902821209177679">Odabrano: <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />. Pritisnite Enter da odaberete albume usluge <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) DNS rezolucija</translation>
@@ -538,6 +544,7 @@
 <translation id="4969079779290789265">Podijeli</translation>
 <translation id="4972592110715526173">promjena načina rada</translation>
 <translation id="498186245079027698">Provjerite skener i pokušajte ponovo. Vodite računa da ima dovoljno prostora na uređaju da sačuvate skenirane fajlove.</translation>
+<translation id="4982627662315910959">Prečica nije dostupna. Pritisnite novu prečicu koristeći Shift i još 1 modifikacijsku tipku (Ctrl, Alt, Shift ili tipku <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Pokreni</translation>
 <translation id="4987769320337599931">Zaštitni zid</translation>
 <translation id="4988526792673242964">Stranice</translation>
@@ -844,6 +851,7 @@
 <translation id="7216409898977639127">Mobilni operater</translation>
 <translation id="725133483556299729">Odabir e-poruke</translation>
 <translation id="7271040990581020067">Skener se trenutno koristi. Pokušajte ponovo kasnije.</translation>
+<translation id="7271932918253517778">Prečica s tipkama u gornjem redu mora uključivati tipku <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Osjetite povjetarac</translation>
 <translation id="7287310195820267359">Kolekcije pozadinskih slika</translation>
