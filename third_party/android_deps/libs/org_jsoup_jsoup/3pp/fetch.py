@@ -19,7 +19,7 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          module_name='jsoup',
                          file_ext='jar',
                          patch_version='cr1',
-                         version_override=None,
+                         version_override='1.14.3',
                          version_filter=None)
 
 

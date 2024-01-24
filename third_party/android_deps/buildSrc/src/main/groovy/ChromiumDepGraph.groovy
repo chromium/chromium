@@ -34,6 +34,8 @@ class ChromiumDepGraph {
         // Chrome uses the window APIs directly instead of going through the androidx middleware.
         // See //third_party/android_sdk/window_extensions/README.md
         androidx_window_window: new PropertyOverride(exclude: true),
+        com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework: new PropertyOverride(
+            overrideLatest: true),
         com_google_android_datatransport_transport_backend_cct: new PropertyOverride(
             exclude: true),  // We're not using datatransport functionality.
         com_google_android_datatransport_transport_runtime: new PropertyOverride(
@@ -164,6 +166,9 @@ class ChromiumDepGraph {
             url: 'https://github.com/raphw/byte-buddy',
             licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
             licenseName: 'Apache 2.0'),
+        org_checkerframework_checker: new PropertyOverride(
+            licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
+            licenseName: 'GPL v2 with the classpath exception'),
         org_checkerframework_checker_compat_qual: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
             licenseName: 'GPL v2 with the classpath exception'),

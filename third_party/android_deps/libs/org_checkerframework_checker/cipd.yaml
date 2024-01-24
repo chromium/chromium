@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@1.14.3.cr1
-package: chromium/third_party/android_deps/libs/org_jsoup_jsoup
-description: "jsoup Java HTML Parser"
+# cipd create --pkg-def cipd.yaml -tag version:2@3.1.1.cr1
+package: chromium/third_party/android_deps/libs/org_checkerframework_checker
+description: "Checker Framework"
 data:
-- file: jsoup-1.14.3.jar
+- file: checker-3.1.1.jar

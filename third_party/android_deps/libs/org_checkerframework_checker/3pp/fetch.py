@@ -13,13 +13,13 @@ _3PP_DIR = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(_3PP_DIR.parents[2]))
 import fetch_common
 
-_REPO_URL = 'https://dl.google.com/dl/android/maven2'
+_REPO_URL = 'https://repo.maven.apache.org/maven2'
 SPEC = fetch_common.Spec(repo_url=_REPO_URL,
-                         group_name='com/google/android/apps/common/testing/accessibility/framework',
-                         module_name='accessibility-test-framework',
-                         file_ext='aar',
+                         group_name='org/checkerframework',
+                         module_name='checker',
+                         file_ext='jar',
                          patch_version='cr1',
-                         version_override='3.1',
+                         version_override='3.1.1',
                          version_filter=None)
 
 

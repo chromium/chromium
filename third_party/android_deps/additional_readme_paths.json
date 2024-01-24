@@ -112,6 +112,7 @@
     "libs/net_ltgt_gradle_incap_incap",
     "libs/org_bouncycastle_bcprov_jdk18on",
     "libs/org_ccil_cowan_tagsoup_tagsoup",
+    "libs/org_checkerframework_checker",
     "libs/org_checkerframework_checker_compat_qual",
     "libs/org_checkerframework_checker_qual",
     "libs/org_checkerframework_checker_util",

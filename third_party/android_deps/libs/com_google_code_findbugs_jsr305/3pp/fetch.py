@@ -19,7 +19,7 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          module_name='jsr305',
                          file_ext='jar',
                          patch_version='cr1',
-                         version_override=None,
+                         version_override='3.0.2',
                          version_filter=None)
 
 
