@@ -10,6 +10,7 @@
 #import <CoreSpotlight/CoreSpotlight.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -62,9 +63,9 @@ class SpotlightBookmarkModelBridge;
   std::unique_ptr<BookmarkModelBridge> _accountBookmarkModelBridge;
 
   // Keep a reference to detach before deallocing.
-  bookmarks::BookmarkModel* _localOrSyncableBookmarkModel;  // weak
+  raw_ptr<bookmarks::BookmarkModel> _localOrSyncableBookmarkModel;  // weak
   // `_accountBookmarkModel` can be `nullptr`.
-  bookmarks::BookmarkModel* _accountBookmarkModel;  // weak
+  raw_ptr<bookmarks::BookmarkModel> _accountBookmarkModel;  // weak
 
   // Number of nodes indexed in initial scan.
   NSUInteger _nodesIndexed;

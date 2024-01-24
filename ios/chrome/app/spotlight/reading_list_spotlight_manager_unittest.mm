@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/spotlight/reading_list_spotlight_manager.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -115,7 +116,7 @@ class ReadingListSpotlightManagerTest : public PlatformTest {
   testing::StrictMock<favicon::MockFaviconService> mock_favicon_service_;
   std::unique_ptr<favicon::LargeIconServiceImpl> large_icon_service_;
   base::CancelableTaskTracker cancelable_task_tracker_;
-  ReadingListModel* model_;
+  raw_ptr<ReadingListModel> model_;
   FakeSpotlightInterface* spotlightInterface_;
   FakeSearchableItemFactory* searchableItemFactory_;
 };

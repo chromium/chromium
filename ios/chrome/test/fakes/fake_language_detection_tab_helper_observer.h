@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#import "base/memory/raw_ptr.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 
 namespace web {
@@ -37,7 +38,7 @@ class FakeLanguageDetectionTabHelperObserver
   void ResetLanguageDetectionDetails();
 
  private:
-  web::WebState* web_state_;
+  raw_ptr<web::WebState> web_state_;
   std::unique_ptr<translate::LanguageDetectionDetails>
       language_detection_details_;
 

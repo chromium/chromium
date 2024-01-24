@@ -10,6 +10,7 @@
 
 #import "base/functional/bind.h"
 #import "base/hash/md5.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/cancelable_task_tracker.h"
 #import "build/branding_buildflags.h"
@@ -75,7 +76,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   spotlight::Domain _spotlightDomain;
 
   // Service to retrieve large favicon or colors for a fallback icon.
-  favicon::LargeIconService* _largeIconService;  // weak
+  raw_ptr<favicon::LargeIconService> _largeIconService;  // weak
 
   // Queue to query large icons.
   std::unique_ptr<base::CancelableTaskTracker> _largeIconTaskTracker;

@@ -4,11 +4,13 @@
 
 #import "ios/chrome/test/fakes/fake_download_manager_tab_helper_delegate.h"
 
+#import "base/memory/raw_ptr.h"
+
 using DecidePolicyForDownloadHandler = void (^)(NewDownloadPolicy);
 
 @implementation FakeDownloadManagerTabHelperDelegate {
   std::unique_ptr<web::DownloadTask::State> _state;
-  web::DownloadTask* _decidingPolicyForDownload;
+  raw_ptr<web::DownloadTask> _decidingPolicyForDownload;
   DecidePolicyForDownloadHandler _decidePolicyForDownloadHandler;
 }
 

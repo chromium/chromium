@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#import "base/memory/raw_ptr.h"
+
 namespace ios {
 class ChromeBrowserStateManager;
 }
@@ -27,7 +29,7 @@ class IOSChromeScopedTestingChromeBrowserStateManager {
 
  private:
   std::unique_ptr<ios::ChromeBrowserStateManager> browser_state_manager_;
-  ios::ChromeBrowserStateManager* saved_browser_state_manager_;
+  raw_ptr<ios::ChromeBrowserStateManager> saved_browser_state_manager_;
 };
 
 #endif  // IOS_CHROME_TEST_IOS_CHROME_SCOPED_TESTING_CHROME_BROWSER_STATE_MANAGER_H_

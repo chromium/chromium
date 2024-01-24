@@ -9,6 +9,7 @@
 #import <CoreSpotlight/CoreSpotlight.h>
 
 #import "base/memory/ptr_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_command_line.h"
 #import "base/test/task_environment.h"
@@ -189,7 +190,7 @@ class UserActivityBrowserAgentTest : public PlatformTest {
     EXPECT_TRUE(IsIncognitoModeDisabled(pref_service));
   }
 
-  UserActivityBrowserAgent* user_activity_browser_agent_;
+  raw_ptr<UserActivityBrowserAgent> user_activity_browser_agent_;
   FakeSceneState* scene_state_;
   FakeSceneController* scene_controller_;
   id<ConnectionInformation> connection_information_;
