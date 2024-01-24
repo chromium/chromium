@@ -170,6 +170,9 @@ interface ComposeSessionPageHandler {
   // survey.
   OpenFeedbackSurveyLink();
 
+  // Asks the Browser to open a new tab navigated to the sign in page.
+  OpenSignInPage();
+
   // Asks the native handler to store the user feedback supplied by the user.
   SetUserFeedback(UserFeedback feedback);
 };

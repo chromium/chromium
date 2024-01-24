@@ -467,20 +467,50 @@ suite('ComposeApp', () => {
       assertTrue(app.$.errorFooter.textContent!.includes(errorMessage));
     }
 
-    testError(ComposeStatus.kFiltered, 'errorFiltered');
-    testError(ComposeStatus.kUnsupportedLanguage, 'errorUnsupportedLanguage');
-    testError(ComposeStatus.kPermissionDenied, 'errorPermissionDenied');
-    testError(ComposeStatus.kRequestThrottled, 'errorRequestThrottled');
-    testError(ComposeStatus.kOffline, 'errorOffline');
-    testError(ComposeStatus.kClientError, 'errorTryAgain');
-    testError(ComposeStatus.kMisconfiguration, 'errorTryAgain');
-    testError(ComposeStatus.kServerError, 'errorTryAgain');
-    testError(ComposeStatus.kInvalidRequest, 'errorTryAgain');
-    testError(ComposeStatus.kRetryableError, 'errorTryAgain');
-    testError(ComposeStatus.kNonRetryableError, 'errorTryAgain');
-    testError(ComposeStatus.kDisabled, 'errorTryAgain');
-    testError(ComposeStatus.kCancelled, 'errorTryAgain');
-    testError(ComposeStatus.kNoResponse, 'errorTryAgain');
+    await testError(ComposeStatus.kFiltered, 'errorFiltered');
+    await testError(ComposeStatus.kRequestThrottled, 'errorRequestThrottled');
+    await testError(ComposeStatus.kOffline, 'errorOffline');
+    await testError(ComposeStatus.kClientError, 'errorTryAgain');
+    await testError(ComposeStatus.kMisconfiguration, 'errorTryAgain');
+    await testError(ComposeStatus.kServerError, 'errorTryAgain');
+    await testError(ComposeStatus.kInvalidRequest, 'errorTryAgain');
+    await testError(ComposeStatus.kRetryableError, 'errorTryAgain');
+    await testError(ComposeStatus.kNonRetryableError, 'errorTryAgain');
+    await testError(ComposeStatus.kDisabled, 'errorTryAgain');
+    await testError(ComposeStatus.kCancelled, 'errorTryAgain');
+    await testError(ComposeStatus.kNoResponse, 'errorTryAgain');
+  });
+
+  test('UnsupportedLanguageErrorClickable', async () => {
+    const errorMessage = `some error ${'errorUnsupportedLanguage'}`;
+    loadTimeData.overrideValues({['errorUnsupportedLanguage']: errorMessage});
+
+    mockInput('Here is my input.');
+    app.$.submitButton.click();
+    await testProxy.whenCalled('compose');
+    await mockResponse('', ComposeStatus.kUnsupportedLanguage);
+
+    assertTrue(isVisible(app.$.errorFooter));
+
+    // Click on the "Learn more" link part of the error.
+    (app.$.errorFooter.getElementsByTagName('A')[0] as HTMLElement).click();
+    await testProxy.whenCalled('openComposeLearnMorePage');
+  });
+
+  test('UnsupportedLanguageErrorClickable', async () => {
+    const errorMessage = `some error ${'errorPermissionDenied'}`;
+    loadTimeData.overrideValues({['errorPermissionDenied']: errorMessage});
+
+    mockInput('Here is my input.');
+    app.$.submitButton.click();
+    await testProxy.whenCalled('compose');
+    await mockResponse('', ComposeStatus.kPermissionDenied);
+
+    assertTrue(isVisible(app.$.errorFooter));
+
+    // Click on the "Sign in" link part of the error.
+    (app.$.errorFooter.getElementsByTagName('A')[1] as HTMLElement).click();
+    await testProxy.whenCalled('openSignInPage');
   });
 
   test('AllowsEditingPrompt', async () => {
