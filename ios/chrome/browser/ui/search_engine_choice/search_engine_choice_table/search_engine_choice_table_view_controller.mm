@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/search_engine_choice_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -142,6 +144,10 @@ constexpr CGFloat kTableViewSeparatorLeadingInset = 56;
   URLCell.chevronToggledBlock = ^(SnippetState snippet_state) {
     engineItem.snippetState = snippet_state;
     [weakSelf.tableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
+    if (snippet_state == SnippetState::kShown) {
+      base::RecordAction(
+          base::UserMetricsAction("ExpandSearchEngineDescription"));
+    }
   };
   return cell;
 }
