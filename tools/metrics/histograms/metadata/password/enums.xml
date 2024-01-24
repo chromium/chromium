@@ -471,6 +471,15 @@ chromium-metrics-reviews@google.com.
   <int value="16"
       label="Opened automatically / Notifying the user about incoming shared
              passwords"/>
+  <int value="17"
+      label="Opened automatically / Offering to add an username to the saved
+             password"/>
+  <int value="18"
+      label="Opened manually / Offering to add an username to the saved
+             password"/>
+  <int value="19"
+      label="Opened automatically / Offering to relaunch chrome as a result
+             of a keychain issue"/>
 </enum>
 
 <enum name="PasswordBubbleFollowupType">

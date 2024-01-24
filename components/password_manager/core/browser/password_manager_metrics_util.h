@@ -27,7 +27,8 @@ struct PasswordForm;
 namespace password_manager::metrics_util {
 
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. Needs to stay in sync with the
+// PasswordBubbleDisplayDisposition enum in enums.xml.
 // Metrics: "PasswordBubble.DisplayDisposition"
 enum UIDisplayDisposition {
   AUTOMATIC_WITH_PASSWORD_PENDING = 0,
