@@ -69,21 +69,16 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   self.presentedViewController.actionHandler = self.mediator;
   self.presentedViewController.presentationController.delegate = self.mediator;
 
-  if (@available(iOS 15, *)) {
-    self.presentedViewController.modalPresentationStyle =
-        UIModalPresentationPageSheet;
-    UISheetPresentationController* presentationController =
-        self.presentedViewController.sheetPresentationController;
-    presentationController.prefersEdgeAttachedInCompactHeight = YES;
-    presentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-    presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
-  } else {
-    self.presentedViewController.modalPresentationStyle =
-        UIModalPresentationFormSheet;
-  }
+  self.presentedViewController.modalPresentationStyle =
+      UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      self.presentedViewController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 
   self.presentedViewController.modalInPresentation = YES;
 
