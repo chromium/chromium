@@ -235,6 +235,11 @@ class GL_EXPORT DCLayerTree {
     return ink_renderer_.get();
   }
 
+  bool HasPendingOverlaysForTesting() const {
+    CHECK_IS_TEST();
+    return pending_overlays_.size() > 0;
+  }
+
   // Owns a list of |VisualSubtree|s that represent visual layers.
   class VisualTree {
    public:

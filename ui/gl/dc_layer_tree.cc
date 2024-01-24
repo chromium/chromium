@@ -1105,7 +1105,7 @@ bool DCLayerTree::VisualTree::BuildTreeOptimized(
   subtree_map_ = std::move(subtree_map);
   visual_subtrees_ = std::move(visual_subtrees);
 
-  if (add_delegated_ink_visual) {
+  if (add_delegated_ink_visual && root_surface_visual) {
     needs_commit |= dc_layer_tree_->AddDelegatedInkVisualToTreeIfNeeded(
         root_surface_visual.Get());
   }
