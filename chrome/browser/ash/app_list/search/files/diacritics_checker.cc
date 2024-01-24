@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/input_method/diacritics_checker.h"
+#include "chrome/browser/ash/app_list/search/files/diacritics_checker.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -24,8 +24,7 @@ constexpr char HAS_DIACRITICS_REGEX[] =
 
 }  // namespace
 
-namespace ash {
-namespace input_method {
+namespace app_list {
 
 bool HasDiacritics(const std::u16string& text) {
   if (text.empty()) {
@@ -36,5 +35,4 @@ bool HasDiacritics(const std::u16string& text) {
   return re2::RE2::PartialMatch(text_utf8, HAS_DIACRITICS_REGEX);
 }
 
-}  // namespace input_method
-}  // namespace ash
+}  // namespace app_list

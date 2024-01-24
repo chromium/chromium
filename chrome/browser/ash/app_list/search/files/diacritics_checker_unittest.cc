@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/input_method/diacritics_checker.h"
+#include "chrome/browser/ash/app_list/search/files/diacritics_checker.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace input_method {
+namespace app_list {
 
 namespace {
 
@@ -40,5 +39,4 @@ TEST(DiacriticsCheckerTest, CheckReportsThereAreNoDiacritics) {
 }
 
 }  // namespace
-}  // namespace input_method
-}  // namespace ash
+}  // namespace app_list

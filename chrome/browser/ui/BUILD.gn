@@ -2379,6 +2379,8 @@ static_library("ui") {
       "../ash/app_list/search/essential_search/socs_cookie_fetcher.h",
       "../ash/app_list/search/federated_metrics_manager.cc",
       "../ash/app_list/search/federated_metrics_manager.h",
+      "../ash/app_list/search/files/diacritics_checker.cc",
+      "../ash/app_list/search/files/diacritics_checker.h",
       "../ash/app_list/search/files/drive_search_provider.cc",
       "../ash/app_list/search/files/drive_search_provider.h",
       "../ash/app_list/search/files/file_result.cc",
