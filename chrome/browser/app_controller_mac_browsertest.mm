@@ -534,20 +534,17 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest, MenuCommands) {
 
   AppController* app_controller = AppController.sharedController;
 
-  // Menus are updated before they are brought onscreen. This includes a call
-  // to -menuNeedsUpdate: to update the menu's items.
+  // Unhandled menu items are disabled.
   NSMenu* file_submenu = [[NSApp.mainMenu itemWithTag:IDC_FILE_MENU] submenu];
-  [app_controller menuNeedsUpdate:file_submenu];
-
-  // Unhandled menu items are not present.
   NSMenuItem* close_tab_menu_item = [file_submenu itemWithTag:IDC_CLOSE_TAB];
+  EXPECT_FALSE([app_controller validateUserInterfaceItem:close_tab_menu_item]);
+  [file_submenu update];
   EXPECT_FALSE([close_tab_menu_item isEnabled]);
 
   // Enabled menu items work.
   NSMenuItem* new_window_menu_item = [file_submenu itemWithTag:IDC_NEW_WINDOW];
   EXPECT_TRUE([new_window_menu_item isEnabled]);
   EXPECT_TRUE([app_controller validateUserInterfaceItem:new_window_menu_item]);
-
   // Click on the item and checks that a new browser is opened.
   ui_test_utils::BrowserChangeObserver browser_added_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);

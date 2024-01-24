@@ -151,8 +151,8 @@ class ColorProvider;
 - (BOOL)windowHasBrowserTabs:(NSWindow*)window;
 
 // Testing API.
-- (void)setCmdWMenuItemForTesting:(NSMenuItem*)menuItem;
-- (void)setShiftCmdWMenuItemForTesting:(NSMenuItem*)menuItem;
+- (void)setCloseWindowMenuItemForTesting:(NSMenuItem*)menuItem;
+- (void)setCloseTabMenuItemForTesting:(NSMenuItem*)menuItem;
 - (void)setLastProfileForTesting:(Profile*)profile;
 
 @end

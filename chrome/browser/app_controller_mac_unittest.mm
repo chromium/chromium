@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/app_controller_mac.h"
-
 #import <Cocoa/Cocoa.h>
 
 #include "base/apple/scoped_objc_class_swizzler.h"
@@ -14,19 +12,18 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/app/chrome_command_ids.h"
+#import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/platform_test.h"
-#include "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -91,75 +88,71 @@ class AppControllerKeyEquivalentTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    _nsapp_target_for_action_swizzler =
+    nsapp_target_for_action_swizzler_ =
         std::make_unique<base::apple::ScopedObjCClassSwizzler>(
             [NSApp class], [AppControllerKeyEquivalentTestHelper class],
             @selector(targetForAction:));
-    _app_controller_swizzler =
+    app_controller_swizzler_ =
         std::make_unique<base::apple::ScopedObjCClassSwizzler>(
             [AppController class], [AppControllerKeyEquivalentTestHelper class],
             @selector(windowHasBrowserTabs:));
 
-    _app_controller = AppController.sharedController;
+    app_controller_ = AppController.sharedController;
 
-    _cmdw_menu_item = [[NSMenuItem alloc] initWithTitle:@""
-                                                 action:nullptr
-                                          keyEquivalent:@"w"];
-    [_app_controller setCmdWMenuItemForTesting:_cmdw_menu_item];
+    close_window_menu_item_ = [[NSMenuItem alloc] initWithTitle:@""
+                                                         action:nullptr
+                                                  keyEquivalent:@""];
+    [app_controller_ setCloseWindowMenuItemForTesting:close_window_menu_item_];
 
-    _shift_cmdw_menu_item = [[NSMenuItem alloc] initWithTitle:@""
-                                                       action:nullptr
-                                                keyEquivalent:@"W"];
-    [_app_controller setShiftCmdWMenuItemForTesting:_shift_cmdw_menu_item];
+    close_tab_menu_item_ = [[NSMenuItem alloc] initWithTitle:@""
+                                                      action:nullptr
+                                               keyEquivalent:@""];
+    [app_controller_ setCloseTabMenuItemForTesting:close_tab_menu_item_];
   }
 
   void CheckMenuItemsMatchBrowserWindow() {
     ASSERT_EQ([NSApp targetForAction:@selector(performClose:)],
               *TargetForAction());
 
-    [_app_controller updateMenuItemKeyEquivalents];
+    [app_controller_ updateMenuItemKeyEquivalents];
 
-    EXPECT_FALSE(_shift_cmdw_menu_item.hidden);
-    EXPECT_EQ(_shift_cmdw_menu_item.tag, IDC_CLOSE_WINDOW);
-    EXPECT_TRUE([_shift_cmdw_menu_item.title
-        isEqualToString:l10n_util::GetNSStringWithFixup(IDS_CLOSE_WINDOW_MAC)]);
-
-    EXPECT_FALSE(_cmdw_menu_item.hidden);
-    EXPECT_EQ(_cmdw_menu_item.tag, IDC_CLOSE_TAB);
-    EXPECT_TRUE([_cmdw_menu_item.title
-        isEqualToString:l10n_util::GetNSStringWithFixup(IDS_CLOSE_TAB_MAC)]);
+    EXPECT_TRUE([[close_window_menu_item_ keyEquivalent] isEqualToString:@"W"]);
+    EXPECT_EQ([close_window_menu_item_ keyEquivalentModifierMask],
+              NSEventModifierFlagCommand);
+    EXPECT_TRUE([[close_tab_menu_item_ keyEquivalent] isEqualToString:@"w"]);
+    EXPECT_EQ([close_tab_menu_item_ keyEquivalentModifierMask],
+              NSEventModifierFlagCommand);
   }
 
   void CheckMenuItemsMatchNonBrowserWindow() {
     ASSERT_EQ([NSApp targetForAction:@selector(performClose:)],
               *TargetForAction());
 
-    [_app_controller updateMenuItemKeyEquivalents];
+    [app_controller_ updateMenuItemKeyEquivalents];
 
-    EXPECT_TRUE(_shift_cmdw_menu_item.hidden);
-
-    EXPECT_FALSE(_cmdw_menu_item.hidden);
-    EXPECT_EQ(_cmdw_menu_item.tag, IDC_CLOSE_WINDOW);
-    EXPECT_TRUE([_cmdw_menu_item.title
-        isEqualToString:l10n_util::GetNSStringWithFixup(IDS_CLOSE_WINDOW_MAC)]);
+    EXPECT_TRUE([[close_window_menu_item_ keyEquivalent] isEqualToString:@"w"]);
+    EXPECT_EQ([close_window_menu_item_ keyEquivalentModifierMask],
+              NSEventModifierFlagCommand);
+    EXPECT_TRUE([[close_tab_menu_item_ keyEquivalent] isEqualToString:@""]);
+    EXPECT_EQ([close_tab_menu_item_ keyEquivalentModifierMask], 0UL);
   }
 
   void TearDown() override {
     PlatformTest::TearDown();
 
-    [_app_controller setCmdWMenuItemForTesting:nil];
-    [_app_controller setShiftCmdWMenuItemForTesting:nil];
+    [app_controller_ setCloseWindowMenuItemForTesting:nil];
+    [app_controller_ setCloseTabMenuItemForTesting:nil];
     *TargetForAction() = nil;
   }
 
  private:
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler>
-      _nsapp_target_for_action_swizzler;
+      nsapp_target_for_action_swizzler_;
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler>
-      _app_controller_swizzler;
-  AppController* __strong _app_controller;
-  NSMenuItem* __strong _cmdw_menu_item;
-  NSMenuItem* __strong _shift_cmdw_menu_item;
+      app_controller_swizzler_;
+  AppController* __strong app_controller_;
+  NSMenuItem* __strong close_window_menu_item_;
+  NSMenuItem* __strong close_tab_menu_item_;
 };
 
 TEST_F(AppControllerTest, DockMenuProfileNotLoaded) {

@@ -605,9 +605,11 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   std::vector<GURL> _startupUrls;
   BOOL _startupComplete;
 
-  // Outlets for testing close tab/window menu items.
-  NSMenuItem* __strong _cmdWMenuItemForTesting;
-  NSMenuItem* __strong _shiftCmdWMenuItemForTesting;
+  // Outlets for the close tab/window menu items so that we can adjust the
+  // command-key equivalent depending on the kind of window and how many
+  // tabs it has.
+  NSMenuItem* __strong _closeTabMenuItemForTesting;
+  NSMenuItem* __strong _closeWindowMenuItemForTesting;
 
   std::unique_ptr<PrefChangeRegistrar> _profilePrefRegistrar;
   PrefChangeRegistrar _localPrefRegistrar;
@@ -704,36 +706,20 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   return [[NSApp.mainMenu itemWithTag:IDC_FILE_MENU] submenu];
 }
 
-// Returns the Cmd-W menu item in the File menu.
-- (NSMenuItem*)cmdWMenuItem {
-  if (_cmdWMenuItemForTesting != nil) {
-    return _cmdWMenuItemForTesting;
+- (NSMenuItem*)closeTabMenuItem {
+  if (_closeTabMenuItemForTesting != nil) {
+    return _closeTabMenuItemForTesting;
   }
 
-  for (NSMenuItem* item in [self fileMenu].itemArray) {
-    if ([@"w" isEqualToString:item.keyEquivalent] &&
-        item.keyEquivalentModifierMask == NSEventModifierFlagCommand) {
-      return item;
-    }
-  }
-
-  return nil;
+  return [[self fileMenu] itemWithTag:IDC_CLOSE_TAB];
 }
 
-// Returns the Shift-Cmd-W menu item in the File menu.
-- (NSMenuItem*)shiftCmdWMenuItem {
-  if (_shiftCmdWMenuItemForTesting != nil) {
-    return _shiftCmdWMenuItemForTesting;
+- (NSMenuItem*)closeWindowMenuItem {
+  if (_closeWindowMenuItemForTesting != nil) {
+    return _closeWindowMenuItemForTesting;
   }
 
-  for (NSMenuItem* item in [self fileMenu].itemArray) {
-    if ([@"W" isEqualToString:item.keyEquivalent] &&
-        item.keyEquivalentModifierMask == NSEventModifierFlagCommand) {
-      return item;
-    }
-  }
-
-  return nil;
+  return [[self fileMenu] itemWithTag:IDC_CLOSE_WINDOW];
 }
 
 // This method is called very early in application startup (ie, before
@@ -758,8 +744,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
              name:NSWorkspaceWillPowerOffNotification
            object:nil];
 
-  DCHECK([self cmdWMenuItem]);
-  DCHECK([self shiftCmdWMenuItem]);
+  DCHECK([self closeTabMenuItem]);
+  DCHECK([self closeWindowMenuItem]);
 
   // Set up the command updater for when there are no windows open
   [self initMenuState];
@@ -1667,7 +1653,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
 - (void)initShareMenu {
   _shareMenuController = [[ShareMenuController alloc] init];
-  NSMenu* fileMenu = [self fileMenu];
+  NSMenu* fileMenu = [NSApp.mainMenu itemWithTag:IDC_FILE_MENU].submenu;
   NSString* shareMenuTitle = l10n_util::GetNSString(IDS_SHARE_MAC);
   NSMenuItem* shareMenuItem = [fileMenu itemWithTitle:shareMenuTitle];
   NSMenu* shareSubmenu = [[NSMenu alloc] initWithTitle:shareMenuTitle];
@@ -2020,58 +2006,22 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     }
   }
 
-  // If the browser window has tabs, assign Shift-Cmd-W to "Close Window"
-  // and Cmd-W to "Close Tab", otherwise hide the "Close Tab" item and
-  // assign Cmd-W to "Close Window".
-  //
-  // One way to shuffle these shortcuts is to simply find the "Close Window"
-  // and "Close Tab" menu items and change their key equivalents. For some
-  // reason, the AppKit won't let us do that. For example, if the "Close Tab"
-  // item has @"w" as its equivalent and we temporarily assign @"w" to
-  // "Close Window", we can never set @"w" as the key equivalent for the
-  // "Close Tab" item. It doesn't appear to be an issue with some other item
-  // having that same equivalent, the AppKit just won't take it. We get around
-  // this problem by leaving key equivalents alone and instead change the
-  // titles and actions of the menu items that own those equivalents.
-  NSMenuItem* cmdWMenuItem = [self cmdWMenuItem];
-  NSMenuItem* shiftCmdWMenuItem = [self shiftCmdWMenuItem];
+  NSMenuItem* closeTabMenuItem = [self closeTabMenuItem];
+  NSMenuItem* closeWindowMenuItem = [self closeWindowMenuItem];
 
+  // If the browser window has tabs, assign Cmd-Shift-W to "Close Window",
+  // otherwise leave it as the normal Cmd-W. Capitalization of the key
+  // equivalent affects whether the Shift modifier is used.
   if ([self windowHasBrowserTabs:targetWindow]) {
-    // Assign Shift-Cmd-W to "Close Window".
-    shiftCmdWMenuItem.hidden = NO;
-    shiftCmdWMenuItem.title =
-        l10n_util::GetNSStringWithFixup(IDS_CLOSE_WINDOW_MAC);
-    shiftCmdWMenuItem.tag = IDC_CLOSE_WINDOW;
-
-    // Assign Cmd-W to "Close Tab".
-    cmdWMenuItem.title = l10n_util::GetNSStringWithFixup(IDS_CLOSE_TAB_MAC);
-    cmdWMenuItem.tag = IDC_CLOSE_TAB;
+    [closeTabMenuItem cr_setKeyEquivalent:@"w"
+                             modifierMask:NSEventModifierFlagCommand];
+    [closeWindowMenuItem cr_setKeyEquivalent:@"W"
+                                modifierMask:NSEventModifierFlagCommand];
   } else {
-    // We don't need a Shift-Cmd-W command, so hide the menu item.
-    shiftCmdWMenuItem.hidden = YES;
-
-    // Assign Cmd-W to "Close Window".
-    cmdWMenuItem.title = l10n_util::GetNSStringWithFixup(IDS_CLOSE_WINDOW_MAC);
-    cmdWMenuItem.tag = IDC_CLOSE_WINDOW;
+    [closeTabMenuItem cr_clearKeyEquivalent];
+    [closeWindowMenuItem cr_setKeyEquivalent:@"w"
+                                modifierMask:NSEventModifierFlagCommand];
   }
-
-  // This menu item shuffling makes a "Close All" item appear. The AppKit wants
-  // to own the File menu, so this item's appearance is likely a result of
-  // magic code in the AppKit. However, we prefer to add and manage our own
-  // menu items (localization, for example). Also, this "Close All" menu item
-  // complicates the positioning of the "Close Window" and "Close Tab" items.
-  // Locate the "Close All" menu item and remove it.
-  NSMenu* fileMenu = [self fileMenu];
-  for (NSMenuItem* item in [[fileMenu itemArray] copy]) {
-    if (item.action == @selector(closeAll:)) {
-      [fileMenu removeItem:item];
-      break;
-    }
-  }
-
-  // Force no longer hidden items to appear, or newly hidden items to
-  // disappear.
-  [fileMenu update];
 }
 
 // This only has an effect on macOS 12+, and requests any state restoration
@@ -2206,12 +2156,12 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   });
 }
 
-- (void)setCmdWMenuItemForTesting:(NSMenuItem*)menuItem {
-  _cmdWMenuItemForTesting = menuItem;
+- (void)setCloseWindowMenuItemForTesting:(NSMenuItem*)menuItem {
+  _closeWindowMenuItemForTesting = menuItem;
 }
 
-- (void)setShiftCmdWMenuItemForTesting:(NSMenuItem*)menuItem {
-  _shiftCmdWMenuItemForTesting = menuItem;
+- (void)setCloseTabMenuItemForTesting:(NSMenuItem*)menuItem {
+  _closeTabMenuItemForTesting = menuItem;
 }
 
 - (void)setLastProfileForTesting:(Profile*)profile {
