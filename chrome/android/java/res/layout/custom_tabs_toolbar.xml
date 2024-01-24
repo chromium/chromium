@@ -64,7 +64,6 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:minHeight="@dimen/min_touch_target_size"
             android:importantForAccessibility="no"
             android:background="@null" >
             <TextView
@@ -89,7 +88,6 @@ found in the LICENSE file.
                 android:inputType="none"
                 android:singleLine="true"
                 android:paddingEnd="@dimen/toolbar_edge_padding"
-                android:paddingBottom="@dimen/toolbar_edge_padding"
                 android:layout_gravity="bottom"
                 style="@style/TextAppearance.TextSmall.Primary" />
         </view>
