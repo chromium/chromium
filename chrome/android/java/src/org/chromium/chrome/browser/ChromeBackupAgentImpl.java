@@ -25,6 +25,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -222,6 +223,12 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                                     IdentityServicesProvider.get()
                                             .getIdentityManager(Profile.getLastUsedRegularProfile())
                                             .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+
+                            if (syncAccount.get() != null
+                                    && !syncAccount.get().equals(signedInAccount.get())) {
+                                throw new IllegalStateException(
+                                        "Recorded signed in account differs from syncing account");
+                            }
 
                             Natives jni = ChromeBackupAgentImplJni.get();
 
@@ -458,22 +465,43 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             }
         }
 
-        // TODO(crbug.com/1493706): Do not enable sync if kReplaceSyncPromosWithSignInPromos is
-        // enabled.
         if (syncAccountInfo != null) {
-            // This will sign in the user on first run to the account in
-            // BACKUP_FLOW_SIGNIN_ACCOUNT_NAME if any.
-            editor.putString(
-                    ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME, restoredSyncUserEmail);
-            editor.apply();
+            // Both accounts are recorded at the same time. Since only one account is in signed-in
+            // state at a given time, they should be identical if both are valid.
+            if (signedInAccountInfo != null && !signedInAccountInfo.equals(syncAccountInfo)) {
+                throw new IllegalStateException(
+                        "Recorded signed in account differs from syncing account");
+            }
 
-            // The silent first run will change things, so there is no point in trying to prevent
-            // additional backups at this stage. Don't write anything to |newState|.
-            setRestoreStatus(RestoreStatus.RESTORE_COMPLETED);
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+                editor.apply();
+                signInAndWaitForResult(syncAccountInfo);
+            } else {
+                // This will sign in the user on first run to the account in
+                // BACKUP_FLOW_SIGNIN_ACCOUNT_NAME if any.
+                editor.putString(
+                        ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME,
+                        restoredSyncUserEmail);
+                editor.apply();
+
+                // The silent first run will change things, so there is no point in trying to
+                // prevent
+                // additional backups at this stage. Don't write anything to |newState|.
+                setRestoreStatus(RestoreStatus.RESTORE_COMPLETED);
+            }
         } else {
             editor.apply();
-            assert signedInAccountInfo != null;
-            // Start asynchronous sign-in.
+
+            // signedInAccountInfo and syncAccountInfo should not be null at the same at this point.
+            // If there's no valid syncing account and the signed-in account restore is disabled,
+            // the restore should already be stopped and the restore state set to `NOT_SIGNED_IN`.
+            if (signedInAccountInfo == null
+                    || !SigninFeatureMap.isEnabled(
+                            SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP)) {
+                throw new IllegalStateException("No valid account can be signed-in");
+            }
+
             signInAndWaitForResult(signedInAccountInfo);
         }
         Log.i(TAG, "Restore complete");
