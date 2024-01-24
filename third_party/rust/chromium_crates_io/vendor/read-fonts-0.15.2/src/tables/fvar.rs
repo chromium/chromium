@@ -47,7 +47,7 @@ mod tests {
         let font = FontRef::new(font_test_data::VAZIRMATN_VAR).unwrap();
         let fvar = font.fvar().unwrap();
         assert_eq!(fvar.axis_count(), 1);
-        let wght = &fvar.axes().unwrap().get(0).unwrap();
+        let wght = &fvar.axes().unwrap().first().unwrap();
         assert_eq!(wght.axis_tag(), Tag::new(b"wght"));
         assert_eq!(wght.min_value(), Fixed::from_f64(100.0));
         assert_eq!(wght.default_value(), Fixed::from_f64(400.0));
@@ -70,7 +70,7 @@ mod tests {
             let instance = instances.get(i).unwrap();
             assert_eq!(instance.coordinates.len(), 1);
             assert_eq!(
-                instance.coordinates.get(0).unwrap().get(),
+                instance.coordinates.first().unwrap().get(),
                 Fixed::from_f64(value)
             );
             assert_eq!(instance.subfamily_name_id, name_id);
@@ -82,7 +82,7 @@ mod tests {
     fn normalize() {
         let font = FontRef::new(font_test_data::VAZIRMATN_VAR).unwrap();
         let fvar = font.fvar().unwrap();
-        let axis = fvar.axes().unwrap().get(0).unwrap();
+        let axis = fvar.axes().unwrap().first().unwrap();
         let values = [100.0, 220.0, 250.0, 400.0, 650.0, 900.0];
         let expected = [-1.0, -0.60001, -0.5, 0.0, 0.5, 1.0];
         for (value, expected) in values.into_iter().zip(expected) {

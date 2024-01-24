@@ -452,3 +452,8 @@ Reviewed in https://crrev.com/c/5171063
 
 Previously reviewed during security review and the audit is grandparented in.
 """
+
+[[audits.skrifa]]
+who = "drott@chromium.org"
+criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
+delta = "0.15.2 -> 0.15.4"

@@ -147,13 +147,28 @@ impl From<Transform> for DumpTransform {
 
 #[derive(Serialize, Deserialize, PartialEq)]
 enum PaintOps {
-    PushTransform { transform: DumpTransform },
+    PushTransform {
+        transform: DumpTransform,
+    },
     PopTransform,
-    PushClipGlyph { gid: u16 },
-    PushClipBox { clip_box: BoundingBox<f32> },
+    PushClipGlyph {
+        gid: u16,
+    },
+    PushClipBox {
+        clip_box: BoundingBox<f32>,
+    },
     PopClip,
-    FillBrush { brush: BrushParams },
-    PushLayer { composite_mode: u8 },
+    FillBrush {
+        brush: BrushParams,
+    },
+    FillGlyph {
+        gid: u16,
+        transform: DumpTransform,
+        brush: BrushParams,
+    },
+    PushLayer {
+        composite_mode: u8,
+    },
     PopLayer,
 }
 
@@ -183,6 +198,14 @@ impl ColorPainter for PaintDump {
 
     fn fill(&mut self, brush: Brush) {
         self.ops.push(PaintOps::FillBrush {
+            brush: brush.into(),
+        });
+    }
+
+    fn fill_glyph(&mut self, glyph_id: GlyphId, transform: Option<Transform>, brush: Brush) {
+        self.ops.push(PaintOps::FillGlyph {
+            gid: glyph_id.to_u16(),
+            transform: transform.unwrap_or_default().into(),
             brush: brush.into(),
         });
     }
@@ -359,6 +382,7 @@ variable_alpha_var1:VARIABLE_ALPHA,&[("APH1", -0.7)],
 variable_alpha_var2:VARIABLE_ALPHA,&[("APH2", -0.7), ("APH3", -0.2)],
 nocycle_multi_colrglyph:NO_CYCLE_MULTI_COLRGLYPH,&[],
 sweep_coincident:SWEEP_COINCIDENT,&[],
+paint_glyph_nested:PAINT_GLYPH_NESTED,&[],
 );
 
 macro_rules! colrv0_traversal_tests {

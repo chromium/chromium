@@ -1,6 +1,6 @@
 [package]
 name = "read-fonts"
-version = "0.15.1"
+version = "0.15.2"
 edition = "2021"
 license = "MIT/Apache-2.0"
 description = "Reading OpenType font files."

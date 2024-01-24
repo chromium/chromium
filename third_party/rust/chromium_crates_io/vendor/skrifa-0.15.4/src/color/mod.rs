@@ -218,7 +218,34 @@ pub trait ColorPainter {
     fn pop_clip(&mut self);
 
     /// Fill the current clip area with the specified gradient fill.
-    fn fill(&mut self, brush: Brush);
+    fn fill(&mut self, brush: Brush<'_>);
+
+    /// Combined clip and fill operation.
+    ///
+    /// Apply the clip path determined by the specified `glyph_id`, then fill it
+    /// with the specified [`brush`](Brush), applying the `_brush_transform`
+    /// transformation matrix to the brush. The default implementation works
+    /// based on existing methods in this trait. It is recommended for clients
+    /// to override the default implementaition with a custom combined clip and
+    /// fill operation. In this way overriding likely results in performance
+    /// gains depending on performance characteristics of the 2D graphics stack
+    /// that these calls are mapped to.
+    fn fill_glyph(
+        &mut self,
+        glyph_id: GlyphId,
+        brush_transform: Option<Transform>,
+        brush: Brush<'_>,
+    ) {
+        self.push_clip_glyph(glyph_id);
+        if let Some(wrap_in_transform) = brush_transform {
+            self.push_transform(wrap_in_transform);
+            self.fill(brush);
+            self.pop_transform();
+        } else {
+            self.fill(brush);
+        }
+        self.pop_clip();
+    }
 
     /// Optionally implement this method: Draw an unscaled COLRv1 glyph given
     /// the current transformation matrix (as accumulated by
@@ -229,9 +256,6 @@ pub trait ColorPainter {
     ) -> Result<PaintCachedColorGlyph, PaintError> {
         Ok(PaintCachedColorGlyph::Unimplemented)
     }
-
-    // TODO(https://github.com/googlefonts/fontations/issues/746):
-    // Add an optimized callback function combining clip, fill and transforms.
 
     /// Open a new layer, and merge the layer down using `composite_mode` when
     /// [`pop_layer`](ColorPainter::pop_layer) is called, signalling that this layer is done drawing.
@@ -399,22 +423,29 @@ impl<'a> ColorGlyphCollection<'a> {
 #[cfg(test)]
 mod tests {
 
-    use crate::{prelude::LocationRef, MetadataProvider};
+    use crate::{
+        color::traversal_tests::test_glyph_defs::PAINTCOLRGLYPH_CYCLE, prelude::LocationRef,
+        MetadataProvider,
+    };
+
     use read_fonts::{types::BoundingBox, FontRef};
 
     use super::{Brush, ColorPainter, CompositeMode, GlyphId, Transform};
+    use crate::color::traversal_tests::test_glyph_defs::{COLORED_CIRCLES_V0, COLORED_CIRCLES_V1};
 
     #[test]
     fn has_colrv1_glyph_test() {
         let colr_font = font_test_data::COLRV0V1_VARIABLE;
         let font = FontRef::new(colr_font).unwrap();
-        let get_colrv1_glyph = |glyph_id| {
-            font.color_glyphs()
-                .get_with_format(glyph_id, crate::color::ColorGlyphFormat::ColrV1)
+        let get_colrv1_glyph = |codepoint: &[char]| {
+            font.charmap().map(codepoint[0]).and_then(|glyph_id| {
+                font.color_glyphs()
+                    .get_with_format(glyph_id, crate::color::ColorGlyphFormat::ColrV1)
+            })
         };
 
-        assert!(get_colrv1_glyph(GlyphId::new(166)).is_none());
-        assert!(get_colrv1_glyph(GlyphId::new(167)).is_some());
+        assert!(get_colrv1_glyph(COLORED_CIRCLES_V0).is_none());
+        assert!(get_colrv1_glyph(COLORED_CIRCLES_V1).is_some());
     }
     struct DummyColorPainter {}
 
@@ -445,9 +476,10 @@ mod tests {
     fn paintcolrglyph_cycle_test() {
         let colr_font = font_test_data::COLRV0V1_VARIABLE;
         let font = FontRef::new(colr_font).unwrap();
+        let cycle_glyph_id = font.charmap().map(PAINTCOLRGLYPH_CYCLE[0]).unwrap();
         let colrv1_glyph = font
             .color_glyphs()
-            .get_with_format(GlyphId::new(176), crate::color::ColorGlyphFormat::ColrV1);
+            .get_with_format(cycle_glyph_id, crate::color::ColorGlyphFormat::ColrV1);
 
         assert!(colrv1_glyph.is_some());
         let mut color_painter = DummyColorPainter::new();

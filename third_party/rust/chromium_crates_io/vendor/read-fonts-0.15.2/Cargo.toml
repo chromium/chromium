@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-name = "skrifa"
+name = "read-fonts"
 version = "0.15.2"
-description = "Metadata reader and glyph scaler for OpenType fonts."
+description = "Reading OpenType font files."
 readme = "README.md"
 categories = [
     "text-processing",
@@ -23,18 +23,23 @@ categories = [
 license = "MIT/Apache-2.0"
 repository = "https://github.com/googlefonts/fontations"
 
-[dependencies.read-fonts]
-version = "0.15.1"
+[dependencies.font-types]
+version = "0.4.2"
 
-[dev-dependencies.read-fonts]
-version = "0.15.1"
-features = [
-    "scaler_test",
-    "serde",
+[dependencies.serde]
+version = "1.0"
+features = ["derive"]
+optional = true
+
+[dev-dependencies]
+
+[features]
+codegen_test = []
+default = ["traversal"]
+scaler_test = []
+serde = [
+    "dep:serde",
+    "font-types/serde",
 ]
-
-[dev-dependencies.serde]
-version = "1.0"
-
-[dev-dependencies.serde_json]
-version = "1.0"
+std = ["font-types/std"]
+traversal = ["std"]

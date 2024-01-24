@@ -349,7 +349,7 @@ dependencies = [
 
 [[package]]
 name = "read-fonts"
-version = "0.15.1"
+version = "0.15.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "font-types",
@@ -490,7 +490,7 @@ dependencies = [
 
 [[package]]
 name = "skrifa"
-version = "0.15.2"
+version = "0.15.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "read-fonts",

@@ -13,7 +13,7 @@ use super::{
     instance::{
         resolve_clip_box, resolve_paint, ColorStops, ColrInstance, ResolvedColorStop, ResolvedPaint,
     },
-    Brush, ColorPainter, ColorStop, PaintCachedColorGlyph, PaintError,
+    Brush, ColorPainter, ColorStop, PaintCachedColorGlyph, PaintError, Transform,
 };
 
 // Workaround for https://bugs.chromium.org/p/chromium/issues/detail?id=1516634.
@@ -50,6 +50,73 @@ fn make_sorted_resolved_stops(stops: &ColorStops, instance: &ColrInstance) -> Ve
     let mut collected: Vec<ColorStop> = color_stop_iter.collect();
     collected.sort_by(|a, b| a.offset.partial_cmp(&b.offset).unwrap_or(Ordering::Equal));
     collected
+}
+
+struct CollectFillGlyphPainter<'a> {
+    brush_transform: Option<Transform>,
+    glyph_id: GlyphId,
+    parent_painter: &'a mut dyn ColorPainter,
+    pub optimization_success: bool,
+}
+
+impl<'a> CollectFillGlyphPainter<'a> {
+    fn new(parent_painter: &'a mut dyn ColorPainter, glyph_id: GlyphId) -> Self {
+        Self {
+            brush_transform: None,
+            glyph_id,
+            parent_painter,
+            optimization_success: true,
+        }
+    }
+}
+
+impl<'a> ColorPainter for CollectFillGlyphPainter<'a> {
+    fn push_transform(&mut self, transform: Transform) {
+        if self.optimization_success {
+            match self.brush_transform {
+                None => {
+                    self.brush_transform = Some(transform);
+                }
+                Some(ref mut existing_transform) => {
+                    *existing_transform *= transform;
+                }
+            }
+        }
+    }
+
+    fn pop_transform(&mut self) {
+        // Since we only support fill and and transform operations, we need to
+        // ignore a popped transform, as this would be called after traversing
+        // the graph backup after a fill was performed, but we want to preserve
+        // the transform in order to be able to return it.
+    }
+
+    fn fill(&mut self, brush: Brush<'_>) {
+        if self.optimization_success {
+            self.parent_painter
+                .fill_glyph(self.glyph_id, self.brush_transform, brush);
+        }
+    }
+
+    fn push_clip_glyph(&mut self, _: GlyphId) {
+        self.optimization_success = false;
+    }
+
+    fn push_clip_box(&mut self, _: BoundingBox<f32>) {
+        self.optimization_success = false;
+    }
+
+    fn pop_clip(&mut self) {
+        self.optimization_success = false;
+    }
+
+    fn push_layer(&mut self, _: CompositeMode) {
+        self.optimization_success = false;
+    }
+
+    fn pop_layer(&mut self) {
+        self.optimization_success = false;
+    }
 }
 
 pub(crate) fn traverse_with_callbacks(
@@ -365,14 +432,26 @@ pub(crate) fn traverse_with_callbacks(
         }
 
         ResolvedPaint::Glyph { glyph_id, paint } => {
-            painter.push_clip_glyph(*glyph_id);
-            let result = traverse_with_callbacks(
+            let mut optimizer = CollectFillGlyphPainter::new(painter, *glyph_id);
+            let mut result = traverse_with_callbacks(
                 &resolve_paint(instance, paint)?,
                 instance,
-                painter,
+                &mut optimizer,
                 visited_set,
             );
-            painter.pop_clip();
+
+            // In case the optimization was not successful, just push a clip, and continue unoptimized traversal.
+            if !optimizer.optimization_success {
+                painter.push_clip_glyph(*glyph_id);
+                result = traverse_with_callbacks(
+                    &resolve_paint(instance, paint)?,
+                    instance,
+                    painter,
+                    visited_set,
+                );
+                painter.pop_clip();
+            }
+
             result
         }
         ResolvedPaint::ColrGlyph { glyph_id } => match (*instance).v1_base_glyph(*glyph_id)? {
@@ -467,27 +546,27 @@ pub(crate) fn traverse_v0_range(
 ) -> Result<(), PaintError> {
     for layer_index in range.clone() {
         let (layer_index, palette_index) = (*instance).v0_layer(layer_index)?;
-        // TODO(https://github.com/googlefonts/fontations/issues/746):
-        // Use optimized callback function combining clip, fill and transforms.
-        painter.push_clip_glyph(layer_index);
-        painter.fill(Brush::Solid {
-            palette_index,
-            alpha: 1.0,
-        });
-        painter.pop_clip();
+        painter.fill_glyph(
+            layer_index,
+            None,
+            Brush::Solid {
+                palette_index,
+                alpha: 1.0,
+            },
+        );
     }
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    use read_fonts::{
-        types::{BoundingBox, GlyphId},
-        FontRef, TableProvider,
-    };
+    use read_fonts::{types::BoundingBox, FontRef, TableProvider};
 
     use crate::{
-        color::{instance::ColrInstance, traversal::get_clipbox_font_units},
+        color::{
+            instance::ColrInstance, traversal::get_clipbox_font_units,
+            traversal_tests::test_glyph_defs::CLIPBOX,
+        },
         MetadataProvider,
     };
 
@@ -495,7 +574,7 @@ mod tests {
     fn clipbox_test() {
         let colr_font = font_test_data::COLRV0V1_VARIABLE;
         let font = FontRef::new(colr_font).unwrap();
-        let test_glyph_id = GlyphId::new(154);
+        let test_glyph_id = font.charmap().map(CLIPBOX[0]).unwrap();
         let upem = font.head().unwrap().units_per_em();
 
         let base_bounding_box = BoundingBox {

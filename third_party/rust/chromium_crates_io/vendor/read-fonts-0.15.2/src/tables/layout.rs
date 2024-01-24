@@ -196,13 +196,17 @@ impl<'a> ClassDefFormat1<'a> {
 impl<'a> ClassDefFormat2<'a> {
     /// Get the class for this glyph id
     pub fn get(&self, gid: GlyphId) -> u16 {
-        self.class_range_records()
-            .iter()
-            .find_map(|record| {
-                (record.start_glyph_id() >= gid && record.end_glyph_id() <= gid)
-                    .then_some(record.class())
-            })
-            .unwrap_or(0)
+        let records = self.class_range_records();
+        let ix = match records.binary_search_by(|rec| rec.start_glyph_id().cmp(&gid)) {
+            Ok(ix) => ix,
+            Err(ix) => ix.saturating_sub(1),
+        };
+        if let Some(record) = records.get(ix) {
+            if (record.start_glyph_id()..=record.end_glyph_id()).contains(&gid) {
+                return record.class();
+            }
+        }
+        0
     }
 
     /// Iterate over each glyph and its class.
@@ -313,6 +317,34 @@ mod tests {
         assert_eq!(coverage.get(GlyphId::new(32)), Some(7));
         assert_eq!(coverage.get(GlyphId::new(39)), Some(14));
         assert_eq!(coverage.get(GlyphId::new(40)), None);
+    }
+
+    #[test]
+    fn classdef_get_format2() {
+        let classdef = ClassDef::read(FontData::new(
+            font_test_data::gdef::MARKATTACHCLASSDEF_TABLE,
+        ))
+        .unwrap();
+        assert!(matches!(classdef, ClassDef::Format2(..)));
+        let gid_class_pairs = [
+            (616, 1),
+            (617, 1),
+            (618, 1),
+            (624, 1),
+            (625, 1),
+            (626, 1),
+            (652, 2),
+            (653, 2),
+            (654, 2),
+            (655, 2),
+            (661, 2),
+        ];
+        for (gid, class) in gid_class_pairs {
+            assert_eq!(classdef.get(GlyphId::new(gid)), class);
+        }
+        for (gid, class) in classdef.iter() {
+            assert_eq!(classdef.get(gid), class);
+        }
     }
 
     #[test]

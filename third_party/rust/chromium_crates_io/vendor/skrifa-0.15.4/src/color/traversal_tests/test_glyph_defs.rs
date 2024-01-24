@@ -189,3 +189,26 @@ pub(crate) const SWEEP_COINCIDENT: &[char] = &[
     '\u{f1317}',
 ];
 pub(crate) const COLORED_CIRCLES_V0: &[char] = &['\u{F0E00}'];
+
+pub(crate) const COLORED_CIRCLES_V1: &[char] = &['\u{F0E01}'];
+
+pub(crate) const PAINTCOLRGLYPH_CYCLE: &[char] = &['\u{f1100}', '\u{f1101}', '\u{f1200}'];
+
+pub(crate) const PAINT_GLYPH_NESTED: &[char] = &[
+    '\u{f1400}',
+    '\u{f1401}',
+    '\u{f1402}',
+    '\u{f1403}',
+    '\u{f1404}',
+    '\u{f1405}',
+    '\u{f1406}',
+    '\u{f1407}',
+    '\u{f1408}',
+    '\u{f1409}',
+    '\u{f140a}',
+    '\u{f140b}',
+    '\u{f140c}',
+    '\u{f140d}',
+    '\u{f140e}',
+    '\u{f140f}',
+];
