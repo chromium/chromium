@@ -160,16 +160,4 @@ TEST_F(CpuProbeDeathTest, DISABLED_RequestSampleWithoutStartSampling) {
   EXPECT_CHECK_DEATH(WaitForUpdate());
 }
 
-// TODO(crbug.com/1513286): Fix test flakily timing out and re-enable.
-TEST_F(CpuProbeDeathTest, DISABLED_StartSamplingTwice) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  static_cast<FakeCpuProbe*>(cpu_probe_.get())
-      ->SetLastSample(PressureSample{0.9});
-  base::RunLoop run_loop;
-  cpu_probe_->StartSampling(run_loop.QuitClosure());
-  run_loop.Run();
-  EXPECT_CHECK_DEATH(cpu_probe_->StartSampling());
-}
-
 }  // namespace system_cpu

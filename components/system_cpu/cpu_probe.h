@@ -49,7 +49,8 @@ class CpuProbe {
 
   virtual ~CpuProbe();
 
-  // Samples the CPU load to get a baseline for calls to RequestSample().
+  // Samples the CPU load to get a baseline for calls to RequestSample(). May be
+  // called again to refresh the baseline.
   // `started_callback` will be invoked once the baseline is available, so tests
   // can verify the timing.
   void StartSampling(base::OnceClosure started_callback = base::DoNothing());
