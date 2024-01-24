@@ -833,10 +833,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
     return;
   }
 
-  // Setup the device ownership for Lacros
-  auto params = crosapi::mojom::BrowserInitParams::New();
-  params->is_current_user_device_owner = true;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
+  // Check that device ownership is set up.
+  ASSERT_TRUE(
+      chromeos::BrowserInitParams::GetForTests()->is_current_user_device_owner);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

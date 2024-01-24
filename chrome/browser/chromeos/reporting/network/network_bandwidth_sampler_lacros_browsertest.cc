@@ -54,7 +54,7 @@ void SetupUserDeviceAffiliation() {
       std::move(profile_policy_data));
 
   ::crosapi::mojom::BrowserInitParamsPtr init_params =
-      ::crosapi::mojom::BrowserInitParams::New();
+      chromeos::BrowserInitParams::GetForTests()->Clone();
   init_params->device_properties = crosapi::mojom::DeviceProperties::New();
   init_params->device_properties->device_dm_token = kFakeDMToken;
   init_params->device_properties->device_affiliation_ids = {kAffiliationId};
@@ -112,11 +112,6 @@ class NetworkBandwidthSamplerBrowserTest : public InProcessBrowserTest {
       ::content::BrowserMainParts* browser_parts) override {
     SetupUserDeviceAffiliation();
     InProcessBrowserTest::CreatedBrowserMainParts(browser_parts);
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    ::chromeos::BrowserInitParams::SetInitParamsForTests(nullptr);
-    InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
   }
 
   void UpdateDownloadSpeedKbps(int64_t download_speed_kbps) {

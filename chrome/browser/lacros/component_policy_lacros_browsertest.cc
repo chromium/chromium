@@ -87,42 +87,44 @@ class TestPolicyServiceObserver : public policy::PolicyService::Observer {
   void OnPolicyUpdated(const policy::PolicyNamespace& nsp,
                        const policy::PolicyMap& previous,
                        const policy::PolicyMap& current) override {
-    policy_updated_future_.AddValue(true);
+    policy_updated_future_.AddValue();
   }
 
-  void WaitForUpdate() { policy_updated_future_.Take(); }
+  void WaitForUpdate() {
+    ASSERT_TRUE(policy_updated_future_.Wait());
+    policy_updated_future_.Take();
+  }
 
   const raw_ptr<policy::PolicyService> policy_service_;
   const policy::PolicyDomain policy_domain_;
 
-  base::test::RepeatingTestFuture<bool> policy_updated_future_;
+  base::test::RepeatingTestFuture<void> policy_updated_future_;
 };
 
 class ComponentPolicyLacrosBrowserTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
+  // Set custom init params in CreatedBrowserMainParts, as it must happen after
+  // reading the data from Ash (happens in ContentMainRunner::Initialize) and
+  // before profile creation.
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
     base::Value json = base::test::ParseJson(kTestPolicy1);
     ASSERT_TRUE(json.is_dict());
 
     policy::ComponentPolicyMap component_policy;
     component_policy[ns] = std::move(json);
     crosapi::mojom::BrowserInitParamsPtr params =
-        crosapi::mojom::BrowserInitParams::New();
+        chromeos::BrowserInitParams::GetForTests()->Clone();
     params->device_account_component_policy = std::move(component_policy);
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-    InProcessBrowserTest::SetUp();
+
+    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
   }
 };
 
-// TODO(crbug.com/1447850) This test constantly fail for internal builder.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_BasicInitParamsSuccess DISABLED_BasicInitParamsSuccess
-#else
-#define MAYBE_BasicInitParamsSuccess HandlesUncleanExit
-#endif
 // Test to check the initial component policy received from Ash.
 IN_PROC_BROWSER_TEST_F(ComponentPolicyLacrosBrowserTest,
-                       MAYBE_BasicInitParamsSuccess) {
+                       BasicInitParamsSuccess) {
   auto* profile = ProfileManager::GetPrimaryUserProfile();
 
   auto* registry = profile->GetPolicySchemaRegistryService()->registry();
@@ -138,15 +140,8 @@ IN_PROC_BROWSER_TEST_F(ComponentPolicyLacrosBrowserTest,
   VerifyMap(map_size_test1, list_size_test1);
 }
 
-// TODO(crbug.com/1447850) This test constantly fail for internal builder.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_BasicUpdateSuccess DISABLED_BasicUpdateSuccess
-#else
-#define MAYBE_BasicUpdateSuccess BasicUpdateSuccess
-#endif
 // Test to check the update of component policy received from Ash.
-IN_PROC_BROWSER_TEST_F(ComponentPolicyLacrosBrowserTest,
-                       MAYBE_BasicUpdateSuccess) {
+IN_PROC_BROWSER_TEST_F(ComponentPolicyLacrosBrowserTest, BasicUpdateSuccess) {
   auto* profile = ProfileManager::GetPrimaryUserProfile();
 
   auto* registry = profile->GetPolicySchemaRegistryService()->registry();

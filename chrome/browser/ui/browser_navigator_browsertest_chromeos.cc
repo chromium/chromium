@@ -235,12 +235,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, OsSchemeRedirectSucceed) {
   test_controller->GetOpenAshBrowserWindows(window_count_future.GetCallback());
   EXPECT_EQ(0u, window_count_future.Take());
 
-  // First we make sure that the GURL we are interested in is in our allow list.
-  auto init_params = crosapi::mojom::BrowserInitParams::New();
-  init_params->accepted_internal_ash_urls =
-      std::vector<GURL>{GURL(chrome::kChromeUIFlagsURL)};
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   GURL url_before_navigation =
