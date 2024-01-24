@@ -309,7 +309,10 @@ void CheckExternalValues(const MLGraphXnnpack* xnnpack_graph,
                        return external_value.id == value_id;
                      });
     DCHECK(it);
-    EXPECT_EQ(it->data, array_buffer_view->BaseAddress());
+    // MLGraphXnnpack internally allocates new input buffer with extra bytes
+    // whose address should be different from the base address of input array
+    // buffer.
+    EXPECT_NE(it->data, array_buffer_view->BaseAddress());
   }
   for (const auto& [name, array_buffer_view] : outputs) {
     const auto& output_external_values =
