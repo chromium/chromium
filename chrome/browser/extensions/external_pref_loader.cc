@@ -294,7 +294,7 @@ void ExternalPrefLoader::LoadOnFileThread() {
       LOG(WARNING) << "You are using an old-style extension deployment method "
                       "(external_extensions.json), which will soon be "
                       "deprecated. (see http://developer.chrome.com/"
-                      "extensions/external_extensions.html)";
+                      "docs/extensions/how-to/distribute/install-extensions)";
 
     ReadStandaloneExtensionPrefFiles(prefs);
   }
