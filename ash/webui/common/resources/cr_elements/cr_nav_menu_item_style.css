@@ -1,0 +1,87 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=./cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+.cr-nav-menu-item {
+  --iron-icon-fill-color: var(--google-grey-700);
+  /* Sizes icons for iron-icons. */
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  /* Sizes icons for cr-icons. */
+  --cr-icon-ripple-size: 20px;
+  align-items: center;
+  border-end-end-radius: 100px;
+  border-start-end-radius: 100px;
+  box-sizing: border-box;
+  color: var(--google-grey-900);
+  display: flex;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 14px;
+  margin-inline-end: 2px;
+  margin-inline-start: 1px;
+  min-height: 40px;
+  overflow: hidden;
+  padding-block-end: 10px;
+  padding-block-start: 10px;
+  padding-inline-start: 23px;
+  position: relative;
+  text-decoration: none;
+}
+
+:host-context(cr-drawer) .cr-nav-menu-item {
+  margin-inline-end: 8px;
+}
+
+.cr-nav-menu-item:hover {
+  background: var(--google-grey-200);
+}
+
+.cr-nav-menu-item[selected] {
+  --iron-icon-fill-color: var(--google-blue-600);
+  background: var(--google-blue-50);
+  color: var(--google-blue-700);
+}
+
+@media (prefers-color-scheme: dark) {
+  .cr-nav-menu-item {
+    --iron-icon-fill-color: var(--google-grey-500);
+    color: white;
+  }
+
+  .cr-nav-menu-item:hover {
+    --iron-icon-fill-color: white;
+    background: var(--google-grey-800);
+  }
+
+  .cr-nav-menu-item[selected] {
+    --iron-icon-fill-color: black;
+    background: var(--google-blue-300);
+    color: var(--google-grey-900);
+  }
+}
+
+.cr-nav-menu-item:focus {
+  outline: auto 5px -webkit-focus-ring-color;
+  /**
+   * A non-zero z-index to force the outline to appear above the fill
+   * background of selected item.
+   */
+  z-index: 1;
+}
+
+.cr-nav-menu-item:focus:not([selected]):not(:hover) {
+  background: transparent; /* Override iron-list selectable item CSS. */
+}
+
+.cr-nav-menu-item iron-icon {
+  flex-shrink: 0;
+  margin-inline-end: 20px;
+  pointer-events: none;
+  vertical-align: top;
+}

@@ -62,16 +62,19 @@ build_webui("build") {
   icons_html_files = [ "icons.html" ]
 
   css_files = [
+    "action_link.css",
     "cros_color_overrides.css",
     "cr_actionable_row_style.css",
     "cr_hidden_style.css",
     "cr_icons.css",
     "cr_input/cr_input_style.css",
+    "cr_nav_menu_item_style.css",
     "cr_page_host_style.css",
     "cr_radio_button/cr_radio_button_style.css",
     "cr_shared_style.css",
     "cr_shared_vars.css",
     "md_select.css",
+    "search_highlight_style.css",
   ]
   html_to_wrapper_template = "detect"
 
