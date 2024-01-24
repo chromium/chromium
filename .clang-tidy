@@ -18,6 +18,7 @@
                     google-default-arguments,
                     google-explicit-constructor,
                     google-objc-avoid-nsobject-new,
+                    google-upgrade-googletest-case,
                     misc-misleading-identifier,
                     misc-homoglyph,
                     modernize-avoid-bind,
