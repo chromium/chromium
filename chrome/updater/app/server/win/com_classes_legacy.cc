@@ -348,7 +348,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   HRESULT RuntimeClassInitialize(
       const bool is_install,
       const std::wstring& app_id,
-      const std::wstring& language,
+      const std::wstring& brand_code,
+      const std::wstring& ap,
       UpdateService::PolicySameVersionUpdate policy_same_version_update) {
     if (is_install && FAILED(IsCOMCallerAllowed())) {
       VLOG(1) << __func__ << ": admin rights required for installs";
@@ -356,7 +357,6 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     }
 
     app_id_ = base::WideToASCII(app_id);
-    language_ = language;
     policy_same_version_update_ = policy_same_version_update;
 
     // Holds the result of the IPC to register an app.
@@ -372,7 +372,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
     auto result = base::MakeRefCounted<RegisterAppResult>();
     AppServerWin::PostRpcTask(base::BindOnce(
-        [](AppWebImplPtr obj, scoped_refptr<RegisterAppResult> result) {
+        [](AppWebImplPtr obj, const std::wstring& brand_code,
+           const std::wstring& ap, scoped_refptr<RegisterAppResult> result) {
           const base::ScopedClosureRunner signal_event(base::BindOnce(
               [](scoped_refptr<RegisterAppResult> result) {
                 result->completion_event.Signal();
@@ -391,9 +392,11 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
           RegistrationRequest request;
           request.app_id = obj->app_id_;
           request.version = base::Version(kNullVersion);
+          request.brand_code = base::WideToASCII(brand_code);
+          request.ap = base::WideToASCII(ap);
           persisted_data->RegisterApp(request);
         },
-        AppWebImplPtr(this), result));
+        AppWebImplPtr(this), brand_code, ap, result));
 
     if (!result->completion_event.TimedWait(base::Seconds(60))) {
       return E_FAIL;
@@ -723,7 +726,6 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
   bool new_install_ = false;
   std::string app_id_;
-  std::wstring language_;
   UpdateService::PolicySameVersionUpdate policy_same_version_update_ =
       UpdateService::PolicySameVersionUpdate::kNotAllowed;
 
@@ -748,7 +750,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   // Overrides for IAppBundleWeb.
   IFACEMETHODIMP createApp(BSTR app_id,
                            BSTR brand_code,
-                           BSTR language,
+                           BSTR /* language */,
                            BSTR ap) override {
     base::AutoLock lock{lock_};
 
@@ -757,7 +759,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
     }
 
     return MakeAndInitializeComObject<AppWebImpl>(
-        app_web_, /*is_install=*/true, app_id, language,
+        app_web_, /*is_install=*/true, app_id, brand_code, ap,
         UpdateService::PolicySameVersionUpdate::kAllowed);
   }
 
@@ -769,7 +771,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
     }
 
     return MakeAndInitializeComObject<AppWebImpl>(
-        app_web_, /*is_install=*/false, app_id, GetPreferredLanguage(),
+        app_web_, /*is_install=*/false, app_id, L"", L"",
         UpdateService::PolicySameVersionUpdate::kNotAllowed);
   }
 

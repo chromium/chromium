@@ -1910,15 +1910,32 @@ TEST_F(IntegrationTestLegacyUpdate3WebNewInstall, CheckForInstall) {
 }
 
 TEST_F(IntegrationTestLegacyUpdate3WebNewInstall, Install) {
+  const base::Version v1("0.1");
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
       test_server_.get(), kAppId, UpdateService::Priority::kForeground,
-      base::Version(kNullVersion), base::Version("0.1")));
+      base::Version(kNullVersion), v1));
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
       test_server_.get(), kAppId, "", UpdateService::Priority::kForeground,
-      base::Version(kNullVersion), base::Version("0.1")));
+      base::Version(kNullVersion), v1));
   ASSERT_NO_FATAL_FAILURE(
       ExpectLegacyUpdate3WebSucceeds(kAppId, AppBundleWebCreateMode::kCreateApp,
                                      STATE_INSTALL_COMPLETE, S_OK));
+
+  base::Value::Dict expected_app_state;
+  expected_app_state.Set("app_id", kAppId);
+  expected_app_state.Set("version", v1.GetString());
+
+  // These values are set in `integration_tests_win.cc`, `DoUpdate`, in the call
+  // to `createApp`:
+  expected_app_state.Set("ap", "DoUpdateAP");
+  expected_app_state.Set("brand_code", "BRND");
+
+  expected_app_state.Set("brand_path", "");
+  expected_app_state.Set("ecp", "");
+  base::Value::Dict expected_app_states;
+  expected_app_states.Set(kAppId, std::move(expected_app_state));
+
+  ASSERT_NO_FATAL_FAILURE(GetAppStates(expected_app_states));
 }
 
 class IntegrationTestLegacyUpdate3Web : public IntegrationTest {
