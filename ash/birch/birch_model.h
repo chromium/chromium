@@ -6,6 +6,7 @@
 #define ASH_BIRCH_BIRCH_MODEL_H_
 
 #include "ash/ash_export.h"
+#include "ash/birch/birch_client.h"
 #include "ash/birch/birch_item.h"
 #include "base/observer_list.h"
 
@@ -34,7 +35,12 @@ class ASH_EXPORT BirchModel {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Send a request to the birch keyed service to fetch data into the model.
+  void RequestBirchDataFetch();
+
   void SetFileSuggestItems(std::vector<BirchFileItem> file_suggest_items);
+
+  void SetClient(BirchClient* client) { birch_client_ = client; }
 
   const std::vector<BirchFileItem>& GetFileSuggestItemsForTest() const {
     return file_suggest_items_;
@@ -43,6 +49,8 @@ class ASH_EXPORT BirchModel {
  private:
   // A type-specific list of items for all file suggestion items.
   std::vector<BirchFileItem> file_suggest_items_;
+
+  raw_ptr<BirchClient> birch_client_ = nullptr;
 
   base::ObserverList<Observer> observers_;
 };

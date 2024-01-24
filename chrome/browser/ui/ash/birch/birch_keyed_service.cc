@@ -10,14 +10,24 @@
 #include "ash/birch/birch_model.h"
 #include "ash/shell.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/birch/birch_client_impl.h"
 #include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
 
 namespace ash {
 
 BirchKeyedService::BirchKeyedService(Profile* profile)
     : file_suggest_provider_(
-          std::make_unique<BirchFileSuggestProvider>(profile)) {}
+          std::make_unique<BirchFileSuggestProvider>(profile)) {
+  birch_client_impl_ = std::make_unique<BirchClientImpl>(profile);
+  Shell::Get()->birch_model()->SetClient(birch_client_impl_.get());
+}
 
-BirchKeyedService::~BirchKeyedService() = default;
+BirchKeyedService::~BirchKeyedService() {
+  Shell::Get()->birch_model()->SetClient(nullptr);
+}
+
+void BirchKeyedService::RequestBirchDataFetch() {
+  // TODO(b/305093932): Begin data fetching requests.
+}
 
 }  // namespace ash

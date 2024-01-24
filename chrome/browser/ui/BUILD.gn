@@ -2591,6 +2591,8 @@ static_library("ui") {
       "ash/auth/legacy_fingerprint_engine.h",
       "ash/back_gesture_contextual_nudge_delegate.cc",
       "ash/back_gesture_contextual_nudge_delegate.h",
+      "ash/birch/birch_client_impl.cc",
+      "ash/birch/birch_client_impl.h",
       "ash/birch/birch_file_suggest_provider.cc",
       "ash/birch/birch_file_suggest_provider.h",
       "ash/birch/birch_keyed_service.cc",

@@ -328,6 +328,7 @@ component("ash") {
     "assistant/assistant_web_view_delegate_impl.cc",
     "assistant/assistant_web_view_delegate_impl.h",
     "autotest_private_api_utils.cc",
+    "birch/birch_client.h",
     "birch/birch_item.cc",
     "birch/birch_item.h",
     "birch/birch_model.cc",

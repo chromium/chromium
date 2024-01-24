@@ -32,4 +32,11 @@ void BirchModel::SetFileSuggestItems(
   }
 }
 
+void BirchModel::RequestBirchDataFetch() {
+  // TODO(b/305094143): Call this before we begin showing birch views.
+  if (birch_client_) {
+    birch_client_->RequestBirchDataFetch();
+  }
+}
+
 }  // namespace ash

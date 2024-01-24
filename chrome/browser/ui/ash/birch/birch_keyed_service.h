@@ -13,6 +13,7 @@ class Profile;
 
 namespace ash {
 
+class BirchClientImpl;
 class BirchFileSuggestProvider;
 
 // A keyed service which is used to manage data providers for the birch feature.
@@ -28,8 +29,12 @@ class BirchKeyedService : public KeyedService {
     return file_suggest_provider_.get();
   }
 
+  void RequestBirchDataFetch();
+
  private:
   std::unique_ptr<BirchFileSuggestProvider> file_suggest_provider_;
+
+  std::unique_ptr<BirchClientImpl> birch_client_impl_;
 };
 
 }  // namespace ash
