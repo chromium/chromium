@@ -379,6 +379,9 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
+  // Add localized generic strings that need '&' to be removed from them.
+  webui::AddLocalizedString(source, "edit", IDS_EDIT);
+
   source->AddString("errorLinesNotShownSingular",
                     l10n_util::GetPluralStringFUTF16(
                         IDS_EXTENSIONS_ERROR_LINES_NOT_SHOWN, 1));
