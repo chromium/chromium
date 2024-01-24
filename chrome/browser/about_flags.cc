@@ -3831,12 +3831,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kReaderModeDiscoverabilityVariations,
                                     "ReaderMode")},
 #endif  // !BUILDFLAG(IS_ANDROID)
-#if defined(WEBRTC_USE_PIPEWIRE)
-    {"enable-webrtc-pipewire-capturer",
-     flag_descriptions::kWebrtcPipeWireCapturerName,
-     flag_descriptions::kWebrtcPipeWireCapturerDescription, kOsLinux,
-     FEATURE_VALUE_TYPE(features::kWebRtcPipeWireCapturer)},
-#endif  // defined(WEBRTC_USE_PIPEWIRE)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-lacros-in-chrome-kiosk",
      flag_descriptions::kChromeKioskEnableLacrosName,
@@ -7412,13 +7406,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableGpuServiceLoggingDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableGPUServiceLogging)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"hardware-media-key-handling",
-     flag_descriptions::kHardwareMediaKeyHandling,
-     flag_descriptions::kHardwareMediaKeyHandlingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(media::kHardwareMediaKeyHandling)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"arc-window-predictor", flag_descriptions::kArcWindowPredictorName,
      flag_descriptions::kArcWindowPredictorDescription, kOsCrOS,
@@ -7916,12 +7903,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseDnsHttpsSvcbAlpnDescription,
      kOsLinux | kOsMac | kOsWin | kOsCrOS | kOsAndroid,
      FEATURE_VALUE_TYPE(net::features::kUseDnsHttpsSvcbAlpn)},
-
-#if !BUILDFLAG(IS_ANDROID)
-    {"hidpi-capture", flag_descriptions::kWebContentsCaptureHiDpiName,
-     flag_descriptions::kWebContentsCaptureHiDpiDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(media::kWebContentsCaptureHiDpi)},
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
     {"web-otp-backend", flag_descriptions::kWebOtpBackendName,
@@ -9357,12 +9338,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
-    {"document-picture-in-picture-api",
-     flag_descriptions::kDocumentPictureInPictureApiName,
-     flag_descriptions::kDocumentPictureInPictureApiDescription,
-     kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(blink::features::kDocumentPictureInPictureAPI)},
-
     {"media-session-enter-picture-in-picture",
      flag_descriptions::kMediaSessionEnterPictureInPictureName,
      flag_descriptions::kMediaSessionEnterPictureInPictureDescription,

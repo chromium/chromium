@@ -1838,11 +1838,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "document-picture-in-picture-api",
-    "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "double-buffer-compositing",
     "owners": [ "hob@chromium.org", "chromeos-gfx@google.com" ],
     "expiry_milestone": 100
@@ -3879,11 +3874,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-webrtc-pipewire-capturer",
-    "owners": [ "tomas.popela@gmail.com", "grulja@gmail.com", "mfoltz@google.com", "alcooper@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-webrtc-remote-event-log",
     "owners": [ "eladalon@chromium.org" ],
     "expiry_milestone": 105
@@ -4604,11 +4594,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "hardware-media-key-handling",
-    "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "hats-webui",
     "owners": [
       "//chrome/browser/ui/hats/OWNERS"
@@ -4674,11 +4659,6 @@
       "clank-isochron-team@google.com"
     ],
     "expiry_milestone": 124
-  },
-  {
-    "name": "hidpi-capture",
-    "owners": [ "//content/browser/media/capture/OWNERS" ],
-    "expiry_milestone": 118
   },
   {
     "name": "history-journeys",
@@ -5303,12 +5283,12 @@
   {
     "name": "mac-loopback-audio-for-cast",
     "owners": [ "mfoltz@chromium.org", "olka@chromium.org", "takumif@chromium.org"],
-    "expiry_milestone": 123
+    "expiry_milestone": 126
   },
   {
     "name": "mac-loopback-audio-for-screen-share",
     "owners": [ "mfoltz@chromium.org", "olka@chromium.org", "eladalon@chromium.org"],
-    "expiry_milestone": 123
+    "expiry_milestone": 129
   },
   {
     "name": "mac-syscall-sandbox",

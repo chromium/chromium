@@ -265,11 +265,6 @@ const char kDIPSName[] = "Bounce Tracking Mitigations";
 const char kDIPSDescription[] =
     "This flag controls bounce tracking mitigations.";
 
-const char kDocumentPictureInPictureApiName[] =
-    "Document Picture-in-Picture API";
-const char kDocumentPictureInPictureApiDescription[] =
-    "Enables API to open an always-on-top window with a full HTML document";
-
 const char kDownloadWarningImprovementsName[] = "Download Warning Improvements";
 const char kDownloadWarningImprovementsDescription[] =
     "Enable UI improvements for downloads, download scanning, and download "
@@ -1984,11 +1979,6 @@ const char kHandwritingLibraryDlcDescription[] =
     "Enables new on-device recognition with the handwriting library installed "
     "from DLC";
 
-const char kHardwareMediaKeyHandling[] = "Hardware Media Key Handling";
-const char kHardwareMediaKeyHandlingDescription[] =
-    "Enables using media keys to control the active media session. This "
-    "requires MediaSessionService to be enabled too";
-
 const char kHeavyAdPrivacyMitigationsName[] = "Heavy ad privacy mitigations";
 const char kHeavyAdPrivacyMitigationsDescription[] =
     "Enables privacy mitigations for the heavy ad intervention. Disabling "
@@ -3657,12 +3647,6 @@ const char kWebBluetoothNewPermissionsBackendDescription[] =
     "Enables the new permissions backend for Web Bluetooth. This will enable "
     "persistent storage of device permissions and Web Bluetooth features such "
     "as BluetoothDevice.watchAdvertisements() and Bluetooth.getDevices()";
-
-const char kWebContentsCaptureHiDpiName[] = "HiDPI Tab Capture";
-const char kWebContentsCaptureHiDpiDescription[] =
-    "Enables HiDPI rendering for tab capture if the displayed content's "
-    "resolution is low compared to the capture size. This improves "
-    "legibility for viewers with higher-resolution screens.";
 
 const char kWebMidiName[] = "Web MIDI";
 const char kWebMidiDescription[] =
@@ -7868,13 +7852,6 @@ const char kSyncPollImmediatelyOnEveryStartupName[] =
 const char kSyncPollImmediatelyOnEveryStartupDescription[] =
     "Sends a poll GetUpdates request on every browser startup.";
 #endif
-
-#if defined(WEBRTC_USE_PIPEWIRE)
-const char kWebrtcPipeWireCapturerName[] = "WebRTC PipeWire support";
-const char kWebrtcPipeWireCapturerDescription[] =
-    "When enabled the WebRTC will use the PipeWire multimedia server for "
-    "capturing the desktop content on the Wayland display server.";
-#endif  // #if defined(WEBRTC_USE_PIPEWIRE)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kChromeKioskEnableLacrosName[] =

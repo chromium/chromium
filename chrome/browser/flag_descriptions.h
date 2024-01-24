@@ -167,9 +167,6 @@ extern const char kDeprecateUnloadDescription[];
 extern const char kDIPSName[];
 extern const char kDIPSDescription[];
 
-extern const char kDocumentPictureInPictureApiName[];
-extern const char kDocumentPictureInPictureApiDescription[];
-
 extern const char kDownloadWarningImprovementsName[];
 extern const char kDownloadWarningImprovementsDescription[];
 
@@ -1105,9 +1102,6 @@ extern const char kHandwritingLegacyRecognitionDescription[];
 
 extern const char kHandwritingLibraryDlcName[];
 extern const char kHandwritingLibraryDlcDescription[];
-
-extern const char kHardwareMediaKeyHandling[];
-extern const char kHardwareMediaKeyHandlingDescription[];
 
 extern const char kHeavyAdPrivacyMitigationsName[];
 extern const char kHeavyAdPrivacyMitigationsDescription[];
@@ -2100,9 +2094,6 @@ extern const char kWebBluetoothDescription[];
 
 extern const char kWebBluetoothNewPermissionsBackendName[];
 extern const char kWebBluetoothNewPermissionsBackendDescription[];
-
-extern const char kWebContentsCaptureHiDpiName[];
-extern const char kWebContentsCaptureHiDpiDescription[];
 
 extern const char kWebMidiName[];
 extern const char kWebMidiDescription[];
@@ -4541,11 +4532,6 @@ extern const char kUIDebugToolsDescription[];
 extern const char kSyncPollImmediatelyOnEveryStartupName[];
 extern const char kSyncPollImmediatelyOnEveryStartupDescription[];
 #endif
-
-#if defined(WEBRTC_USE_PIPEWIRE)
-extern const char kWebrtcPipeWireCapturerName[];
-extern const char kWebrtcPipeWireCapturerDescription[];
-#endif  // #if defined(WEBRTC_USE_PIPEWIRE)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kChromeKioskEnableLacrosName[];
