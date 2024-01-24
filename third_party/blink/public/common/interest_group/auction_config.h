@@ -199,12 +199,6 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
       double scale;
     };
 
-    // Povides whether debug mode is enabled and, if it is, any debug key.
-    struct BLINK_COMMON_EXPORT AuctionReportBuyerDebugModeConfig {
-      bool is_enabled = false;
-      absl::optional<uint64_t> debug_key;
-    };
-
     NonSharedParams();
     NonSharedParams(const NonSharedParams&);
     NonSharedParams(NonSharedParams&&);
@@ -281,12 +275,6 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // provides the bucket offset and scalar multiplier for that event.
     absl::optional<base::flat_map<BuyerReportType, AuctionReportBuyersConfig>>
         auction_report_buyers;
-
-    // Specifies the debug mode config for per-buyer extended Private
-    // Aggregation reporting to the seller.
-    absl::optional<blink::AuctionConfig::NonSharedParams::
-                       AuctionReportBuyerDebugModeConfig>
-        auction_report_buyer_debug_mode_config;
 
     // The set of seller capabilities that each interest group must declare in
     // order to participate in the auction. Interest groups that don't declare

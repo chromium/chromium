@@ -148,8 +148,6 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_auction_additional_bid_signature.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_auction_report_buyers_config.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_auction_report_buyers_config.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_auction_report_buyer_debug_mode_config.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_auction_report_buyer_debug_mode_config.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_audio_buffer_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_audio_buffer_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_audio_buffer_source_options.cc",

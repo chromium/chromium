@@ -62,6 +62,8 @@
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -83,13 +85,11 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
-#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-shared.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 
@@ -1231,20 +1231,14 @@ const GURL ComponentSellerDebugReportUrl(
 // Builds a PrivateAggregationRequest with histogram contribution using given
 // `bucket` and `value`.
 const auction_worklet::mojom::PrivateAggregationRequestPtr
-BuildPrivateAggregationRequest(
-    absl::uint128 bucket,
-    int value,
-    blink::mojom::DebugModeDetailsPtr debug_mode_details = nullptr) {
-  if (!debug_mode_details) {
-    debug_mode_details = blink::mojom::DebugModeDetails::New();
-  }
+BuildPrivateAggregationRequest(absl::uint128 bucket, int value) {
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
           NewHistogramContribution(
               blink::mojom::AggregatableReportHistogramContribution::New(
                   bucket, value)),
       blink::mojom::AggregationServiceMode::kDefault,
-      std::move(debug_mode_details));
+      blink::mojom::DebugModeDetails::New());
 }
 
 const auction_worklet::mojom::PrivateAggregationRequestPtr
@@ -1534,10 +1528,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
            {{"fledge_extensions_enabled",
              should_enable_private_aggregation_fledge_extension ? "true"
                                                                 : "false"}}});
-      enabled_features.push_back(
-          {blink::features::
-               kPrivateAggregationAuctionReportBuyerDebugModeConfig,
-           {}});
     } else {
       disabled_features.push_back(blink::features::kPrivateAggregationApi);
     }
@@ -1767,8 +1757,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
         auction_report_buyer_keys_;
     auction_config.non_shared_params.auction_report_buyers =
         auction_report_buyers_;
-    auction_config.non_shared_params.auction_report_buyer_debug_mode_config =
-        auction_report_buyer_debug_mode_config_;
 
     auction_config.non_shared_params.requested_size = requested_size_;
     auction_config.non_shared_params.all_slots_requested_sizes =
@@ -3116,9 +3104,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       blink::AuctionConfig::NonSharedParams::BuyerReportType,
       blink::AuctionConfig::NonSharedParams::AuctionReportBuyersConfig>>
       auction_report_buyers_;
-  std::optional<
-      blink::AuctionConfig::NonSharedParams::AuctionReportBuyerDebugModeConfig>
-      auction_report_buyer_debug_mode_config_;
 
   const url::Origin top_frame_origin_ =
       url::Origin::Create(GURL("https://publisher1.com"));
@@ -16159,181 +16144,6 @@ TEST_F(AuctionRunnerTest,
                   ElementsAreRequests(BuildPrivateAggregationRequest(
                       /*bucket=*/kBaseBucket + kOffset,
                       /*value=*/2 * kScale)))));
-}
-
-TEST_F(AuctionRunnerTest, PrivateAggregationBuyersReportDebugModeEnabled) {
-  constexpr base::TimeDelta kBiddingDuration = base::Milliseconds(2);
-  constexpr absl::uint128 kBaseBucket = 100l;
-  constexpr absl::uint128 kOffset = 20l;
-  constexpr double kScale = 2.4;
-
-  auction_report_buyer_keys_ = {{kBaseBucket}};
-  auction_report_buyers_ = {{{blink::AuctionConfig::NonSharedParams::
-                                  BuyerReportType::kTotalGenerateBidLatency,
-                              {/*bucket=*/kOffset,
-                               /*scale=*/kScale}}}};
-
-  const struct TestCase {
-    bool is_debug_mode_enabled;
-    std::optional<uint64_t> debug_key;
-    blink::mojom::DebugModeDetailsPtr expected_debug_details;
-  } kTestCases[] = {
-      {false, std::nullopt,
-       blink::mojom::DebugModeDetails::New(/*is_enabled=*/false,
-                                           /*debug_key=*/nullptr)},
-      {true, std::nullopt,
-       blink::mojom::DebugModeDetails::New(/*is_enabled=*/true,
-                                           /*debug_key=*/nullptr)},
-      {true, 1234,
-       blink::mojom::DebugModeDetails::New(/*is_enabled=*/true,
-                                           blink::mojom::DebugKey::New(1234))},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    auction_report_buyer_debug_mode_config_ = {
-        /*is_enabled=*/test_case.is_debug_mode_enabled,
-        /*debug_key=*/test_case.debug_key};
-
-    std::vector<StorageInterestGroup> bidders;
-    bidders.emplace_back(MakeInterestGroup(
-        blink::TestInterestGroupBuilder(kBidder1, kBidder1Name)
-            .SetBiddingUrl(kBidder1Url)
-            .SetTrustedBiddingSignalsUrl(kBidder1TrustedSignalsUrl)
-            .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
-            .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
-                                               std::nullopt)}})
-            .SetSellerCapabilities(
-                {{{url::Origin::Create(kSellerUrl),
-                   {blink::SellerCapabilities::kLatencyStats}}}})
-            .Build()));
-
-    RunExtendedPABuyersAuction(bidders,
-                               /*trusted_fetch_latency=*/{base::TimeDelta()},
-                               /*bidding_latency=*/{kBiddingDuration});
-
-    EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
-                testing::UnorderedElementsAre(testing::Pair(
-                    url::Origin::Create(kSellerUrl),
-                    ElementsAreRequests(BuildPrivateAggregationRequest(
-                        /*bucket=*/kBaseBucket + kOffset,
-                        /*value=*/kBiddingDuration.InMilliseconds() * kScale,
-                        /*debug_mode_details=*/
-                        test_case.expected_debug_details->Clone())))));
-  }
-}
-
-TEST_F(AuctionRunnerTest,
-       PrivateAggregationBuyersReportDebugModeMultipleReporters) {
-  constexpr base::TimeDelta kBiddingDuration1 = base::Milliseconds(2);
-  constexpr absl::uint128 kBaseBucket1 = 100l;
-  constexpr base::TimeDelta kBiddingDuration2 = base::Milliseconds(5);
-  constexpr absl::uint128 kBaseBucket2 = 300l;
-  constexpr absl::uint128 kOffset = 20l;
-  constexpr double kScale = 2.4;
-
-  auction_report_buyer_keys_ = {{kBaseBucket1}, {kBaseBucket2}};
-  auction_report_buyers_ = {{{blink::AuctionConfig::NonSharedParams::
-                                  BuyerReportType::kTotalGenerateBidLatency,
-                              {/*bucket=*/kOffset,
-                               /*scale=*/kScale}}}};
-  auction_report_buyer_debug_mode_config_ = {/*is_enabled=*/true,
-                                             /*debug_key=*/123};
-
-  std::vector<StorageInterestGroup> bidders;
-  bidders.emplace_back(MakeInterestGroup(
-      blink::TestInterestGroupBuilder(kBidder1, kBidder1Name)
-          .SetBiddingUrl(kBidder1Url)
-          .SetTrustedBiddingSignalsUrl(kBidder1TrustedSignalsUrl)
-          .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
-          .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
-                                             std::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 {blink::SellerCapabilities::kLatencyStats}}}})
-          .Build()));
-  bidders.emplace_back(MakeInterestGroup(
-      blink::TestInterestGroupBuilder(kBidder2, kBidder2Name)
-          .SetBiddingUrl(kBidder2Url)
-          .SetTrustedBiddingSignalsUrl(kBidder2TrustedSignalsUrl)
-          .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
-          .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
-                                             std::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 {blink::SellerCapabilities::kLatencyStats}}}})
-          .Build()));
-
-  RunExtendedPABuyersAuction(
-      bidders,
-      /*trusted_fetch_latency=*/{base::TimeDelta(), base::TimeDelta()},
-      /*bidding_latency=*/{kBiddingDuration1, kBiddingDuration2},
-      /*should_bid=*/{true, true});
-
-  EXPECT_THAT(
-      private_aggregation_manager_.TakePrivateAggregationRequests(),
-      testing::UnorderedElementsAre(testing::Pair(
-          url::Origin::Create(kSellerUrl),
-          ElementsAreRequests(
-              BuildPrivateAggregationRequest(
-                  /*bucket=*/kBaseBucket1 + kOffset,
-                  /*value=*/kBiddingDuration1.InMilliseconds() * kScale,
-                  /*debug_mode_details=*/
-                  blink::mojom::DebugModeDetails::New(
-                      /*is_enabled=*/true,
-                      /*debug_key=*/blink::mojom::DebugKey::New(123))),
-              BuildPrivateAggregationRequest(
-                  /*bucket=*/kBaseBucket2 + kOffset,
-                  /*value=*/kBiddingDuration2.InMilliseconds() * kScale,
-                  /*debug_mode_details=*/
-                  blink::mojom::DebugModeDetails::New(
-                      /*is_enabled=*/true,
-                      /*debug_key=*/blink::mojom::DebugKey::New(123)))))));
-}
-
-TEST_F(AuctionRunnerTest,
-       PrivateAggregationBuyersReportDebugModeIgnoredWhenFeatureDisabled) {
-  base::test::ScopedFeatureList test_scoped_feature;
-  test_scoped_feature.InitAndDisableFeature(
-      blink::features::kPrivateAggregationAuctionReportBuyerDebugModeConfig);
-
-  constexpr base::TimeDelta kBiddingDuration = base::Milliseconds(2);
-  constexpr absl::uint128 kBaseBucket = 100l;
-  constexpr absl::uint128 kOffset = 20l;
-  constexpr double kScale = 2.4;
-
-  auction_report_buyer_keys_ = {{kBaseBucket}};
-  auction_report_buyers_ = {{{blink::AuctionConfig::NonSharedParams::
-                                  BuyerReportType::kTotalGenerateBidLatency,
-                              {/*bucket=*/kOffset,
-                               /*scale=*/kScale}}}};
-  auction_report_buyer_debug_mode_config_ = {/*is_enabled=*/true,
-                                             /*debug_key=*/1234};
-
-  std::vector<StorageInterestGroup> bidders;
-  bidders.emplace_back(MakeInterestGroup(
-      blink::TestInterestGroupBuilder(kBidder1, kBidder1Name)
-          .SetBiddingUrl(kBidder1Url)
-          .SetTrustedBiddingSignalsUrl(kBidder1TrustedSignalsUrl)
-          .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
-          .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
-                                             std::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 {blink::SellerCapabilities::kLatencyStats}}}})
-          .Build()));
-
-  RunExtendedPABuyersAuction(bidders,
-                             /*trusted_fetch_latency=*/{base::TimeDelta()},
-                             /*bidding_latency=*/{kBiddingDuration});
-
-  EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
-              testing::UnorderedElementsAre(testing::Pair(
-                  url::Origin::Create(kSellerUrl),
-                  ElementsAreRequests(BuildPrivateAggregationRequest(
-                      /*bucket=*/kBaseBucket + kOffset,
-                      /*value=*/kBiddingDuration.InMilliseconds() * kScale,
-                      /*debug_mode_details=*/
-                      blink::mojom::DebugModeDetails::New())))));
 }
 
 class RoundingTest : public AuctionRunnerTest,
