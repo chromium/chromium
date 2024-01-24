@@ -263,6 +263,20 @@
           'isolated_scripts': 'linux_chromeos_isolated_scripts',
         },
       },
+      'linux-chromeos-chrome-with-lacros': {
+        'mixins': [
+          'chrome-swarming-pool',
+          'linux-jammy',
+        ],
+        'swarming': {
+          'dimensions': {
+            'ssd': '0',
+          },
+        },
+        'test_suites': {
+          'gtest_tests': 'linux_chromeos_browser_tests_require_lacros',
+        },
+      },
       'mac-chrome': {
         'additional_compile_targets': [
           'chrome',
