@@ -114,7 +114,6 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
   void Trace(Visitor* visitor) const {
     visitor->Trace(single_char_map_);
     visitor->Trace(short_string_map_);
-    visitor->Trace(weak_factory_);
   }
 
   ShapeCacheEntry* Add(const TextRun& run, ShapeCacheEntry entry) {
@@ -150,9 +149,6 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
     }
     return self_byte_size;
   }
-
-  WeakCell<ShapeCache>* GetWeakCell() { return weak_factory_.GetWeakCell(); }
-  void Invalidate() { weak_factory_.Invalidate(); }
 
  private:
   ShapeCacheEntry* AddSlowCase(const TextRun& run, ShapeCacheEntry entry) {
@@ -223,7 +219,6 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
   SingleCharMap single_char_map_;
   SmallStringMap short_string_map_;
   unsigned version_ = 0;
-  WeakCellFactory<ShapeCache> weak_factory_{this};
 };
 
 inline bool operator==(const ShapeCache::SmallStringKey& a,

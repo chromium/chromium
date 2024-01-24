@@ -21,7 +21,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_LIST_H_
 
-#include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/platform/fonts/fallback_list_composite_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
@@ -78,17 +77,14 @@ class PLATFORM_EXPORT FontFallbackList
   }
 
   ShapeCache* GetShapeCache(const FontDescription& font_description) {
-    if (!shape_cache_ || !shape_cache_->Get()) {
+    if (!shape_cache_) {
       FallbackListCompositeKey key(font_description);
-      shape_cache_ = FontCache::Get().GetShapeCache(key)->GetWeakCell();
+      shape_cache_ = FontCache::Get().GetShapeCache(key);
     }
-    ShapeCache* shape_cache = shape_cache_->Get();
-    DCHECK(shape_cache);
-
     if (font_selector_) {
-      shape_cache->ClearIfVersionChanged(font_selector_->Version());
+      shape_cache_->ClearIfVersionChanged(font_selector_->Version());
     }
-    return shape_cache;
+    return shape_cache_.Get();
   }
 
   const SimpleFontData* PrimarySimpleFontData(
@@ -142,7 +138,7 @@ class PLATFORM_EXPORT FontFallbackList
   bool nullify_primary_font_data_for_test_ : 1;
 
   Member<NGShapeCache> ng_shape_cache_;
-  Member<WeakCell<ShapeCache>> shape_cache_;
+  Member<ShapeCache> shape_cache_;
 };
 
 }  // namespace blink
