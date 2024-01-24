@@ -375,6 +375,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, PageWithIframe) {
 class NavigationPredictorSiteIsolationBrowserTest
     : public NavigationPredictorBrowserTest,
       public ::testing::WithParamInterface<bool> {
+ public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     NavigationPredictorBrowserTest::SetUpCommandLine(command_line);
     if (SiteIsolationEnabled()) {
@@ -437,6 +438,13 @@ IN_PROC_BROWSER_TEST_P(NavigationPredictorSiteIsolationBrowserTest,
 // parent is cross-origin.
 IN_PROC_BROWSER_TEST_P(NavigationPredictorSiteIsolationBrowserTest,
                        PageWithSameOriginIframeInCrossOriginIframe) {
+  // TODO(https://crbug.com/1519846): Flaky timeouts on linux rel and cros rel.
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(NDEBUG)
+  if (SiteIsolationEnabled()) {
+    GTEST_SKIP() << "Flaky. https://crbug.com/1519846";
+  }
+#endif
+
   auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   ResetUKM();
 
