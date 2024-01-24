@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol PaymentsSuggestionBottomSheetData;
+@class CreditCardData;
 
 // Suggestions consumer for the payments bottom sheet.
 @protocol PaymentsSuggestionBottomSheetConsumer
@@ -15,8 +15,7 @@
 // Sends the list of credit cards to be presented to the user on the bottom
 // sheet and a BOOL to determine if the user sees the GPay logo as title of the
 // bottom sheet.
-- (void)setCreditCardData:
-            (NSArray<id<PaymentsSuggestionBottomSheetData>>*)creditCardData
+- (void)setCreditCardData:(NSArray<CreditCardData*>*)creditCardData
         showGooglePayLogo:(BOOL)showGooglePayLogo;
 
 // Request to dismiss the bottom sheet.
