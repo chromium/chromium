@@ -13,23 +13,24 @@
 @protocol FormInputAccessoryViewControllerDelegate
 
 // Invoked after the user taps the `accounts` button.
-- (void)formInputAccessoryViewControllerAccountButtonPressed:
+- (void)formInputAccessoryViewController:
             (FormInputAccessoryViewController*)formInputAccessoryViewController
-                                                      sender:(UIButton*)sender;
+                   didPressAccountButton:(UIButton*)accountButton;
 
 // Invoked after the user taps the `credit cards` button.
-- (void)formInputAccessoryViewControllerCardButtonPressed:
+- (void)formInputAccessoryViewController:
             (FormInputAccessoryViewController*)formInputAccessoryViewController
-                                                   sender:(UIButton*)sender;
+                didPressCreditCardButton:(UIButton*)creditCardButton;
 
 // Invoked after the user taps the `keyboard` button.
-- (void)formInputAccessoryViewControllerKeyboardButtonPressed:
-    (FormInputAccessoryViewController*)formInputAccessoryViewController;
+- (void)formInputAccessoryViewController:
+            (FormInputAccessoryViewController*)formInputAccessoryViewController
+                  didPressKeyboardButton:(UIButton*)keyboardButton;
 
 // Invoked after the user taps the `passwords` button.
-- (void)formInputAccessoryViewControllerPasswordButtonPressed:
+- (void)formInputAccessoryViewController:
             (FormInputAccessoryViewController*)formInputAccessoryViewController
-                                                       sender:(UIButton*)sender;
+                  didPressPasswordButton:(UIButton*)passwordButton;
 
 // Resets the delegate.
 - (void)formInputAccessoryViewControllerReset:

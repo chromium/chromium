@@ -189,7 +189,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     self.keyboardButton = [self
-        manualFillButtonWithAction:@selector(keyboardButtonPressed)
+        manualFillButtonWithAction:@selector(keyboardButtonPressed:)
                        symbolNamed:kKeyboardSymbol
                      defaultSymbol:YES
            accessibilityIdentifier:manual_fill::
@@ -303,40 +303,41 @@ static NSTimeInterval MFAnimationDuration = 0.2;
                    }];
 }
 
-- (void)keyboardButtonPressed {
+- (void)keyboardButtonPressed:(UIButton*)keyboardButton {
   base::RecordAction(base::UserMetricsAction("ManualFallback_Close"));
   [self resetAnimated:YES];
-  [self.delegate manualFillAccessoryViewControllerKeyboardButtonPressed:self];
+  [self.delegate manualFillAccessoryViewController:self
+                            didPressKeyboardButton:keyboardButton];
 }
 
-- (void)passwordButtonPressed:(UIButton*)sender {
+- (void)passwordButtonPressed:(UIButton*)passwordButton {
   base::RecordAction(base::UserMetricsAction("ManualFallback_OpenPassword"));
   [self setKeyboardButtonHidden:NO animated:YES];
   [self resetIcons];
   self.passwordButton.userInteractionEnabled = NO;
   self.passwordButton.tintColor = IconHighlightTintColor();
-  [self.delegate manualFillAccessoryViewControllerPasswordButtonPressed:self
-                                                                 sender:sender];
+  [self.delegate manualFillAccessoryViewController:self
+                            didPressPasswordButton:passwordButton];
 }
 
-- (void)cardButtonPressed:(UIButton*)sender {
+- (void)cardButtonPressed:(UIButton*)creditCardButton {
   base::RecordAction(base::UserMetricsAction("ManualFallback_OpenCreditCard"));
   [self setKeyboardButtonHidden:NO animated:YES];
   [self resetIcons];
   self.cardsButton.userInteractionEnabled = NO;
   self.cardsButton.tintColor = IconHighlightTintColor();
-  [self.delegate manualFillAccessoryViewControllerCardButtonPressed:self
-                                                             sender:sender];
+  [self.delegate manualFillAccessoryViewController:self
+                          didPressCreditCardButton:creditCardButton];
 }
 
-- (void)accountButtonPressed:(UIButton*)sender {
+- (void)accountButtonPressed:(UIButton*)accountButton {
   base::RecordAction(base::UserMetricsAction("ManualFallback_OpenProfile"));
   [self setKeyboardButtonHidden:NO animated:YES];
   [self resetIcons];
   self.accountButton.userInteractionEnabled = NO;
   self.accountButton.tintColor = IconHighlightTintColor();
-  [self.delegate manualFillAccessoryViewControllerAccountButtonPressed:self
-                                                                sender:sender];
+  [self.delegate manualFillAccessoryViewController:self
+                             didPressAccountButton:accountButton];
 }
 
 @end

@@ -60,13 +60,13 @@ extern NSString* const AccessoryCreditCardAccessibilityIdentifier;
 - (void)resetAnimated:(BOOL)animated;
 
 // Invoked after the user taps the `accounts` button.
-- (void)accountButtonPressed:(UIButton*)sender;
+- (void)accountButtonPressed:(UIButton*)accountButton;
 
 // Invoked after the user taps the `credit cards` button.
-- (void)cardButtonPressed:(UIButton*)sender;
+- (void)cardButtonPressed:(UIButton*)creditCardButton;
 
 // Invoked after the user taps the `passwords` button.
-- (void)passwordButtonPressed:(UIButton*)sender;
+- (void)passwordButtonPressed:(UIButton*)passwordButton;
 
 // Set the hidden property of this view controller's view.
 - (void)setViewHidden:(BOOL)hidden;

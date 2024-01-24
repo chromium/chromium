@@ -350,37 +350,37 @@ const CGFloat kIPHVerticalOffset = -5;
 
 #pragma mark - FormInputAccessoryViewControllerDelegate
 
-- (void)formInputAccessoryViewControllerKeyboardButtonPressed:
-    (FormInputAccessoryViewController*)formInputAccessoryViewController {
+- (void)formInputAccessoryViewController:
+            (FormInputAccessoryViewController*)formInputAccessoryViewController
+                  didPressKeyboardButton:(UIButton*)keyboardButton {
   [self reset];
 }
 
-- (void)formInputAccessoryViewControllerAccountButtonPressed:
+- (void)formInputAccessoryViewController:
             (FormInputAccessoryViewController*)formInputAccessoryViewController
-                                                      sender:(UIButton*)sender {
+                   didPressAccountButton:(UIButton*)accountButton {
   [self stopChildren];
-  [self startAddressFromButton:sender];
+  [self startAddressFromButton:accountButton];
   [self.formInputAccessoryViewController lockManualFallbackView];
   [self.formInputAccessoryMediator disableSuggestions];
 }
 
-- (void)formInputAccessoryViewControllerCardButtonPressed:
+- (void)formInputAccessoryViewController:
             (FormInputAccessoryViewController*)formInputAccessoryViewController
-                                                   sender:(UIButton*)sender {
+                didPressCreditCardButton:(UIButton*)creditCardButton {
   [self stopChildren];
-  [self startCardsFromButton:sender];
+  [self startCardsFromButton:creditCardButton];
   [self.formInputAccessoryViewController lockManualFallbackView];
   [self.formInputAccessoryMediator disableSuggestions];
 }
 
-- (void)formInputAccessoryViewControllerPasswordButtonPressed:
+- (void)formInputAccessoryViewController:
             (FormInputAccessoryViewController*)formInputAccessoryViewController
-                                                       sender:
-                                                           (UIButton*)sender {
+                  didPressPasswordButton:(UIButton*)passwordButton {
   [self stopChildren];
   BOOL invokedOnPasswordField =
       [self.formInputAccessoryMediator lastFocusedFieldWasPassword];
-  [self startPasswordsFromButton:sender
+  [self startPasswordsFromButton:passwordButton
           invokedOnPasswordField:invokedOnPasswordField];
   [self.formInputAccessoryViewController lockManualFallbackView];
   [self.formInputAccessoryMediator disableSuggestions];

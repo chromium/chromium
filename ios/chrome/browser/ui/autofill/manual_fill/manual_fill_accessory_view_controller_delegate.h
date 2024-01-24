@@ -13,26 +13,24 @@
 @protocol ManualFillAccessoryViewControllerDelegate
 
 // Invoked after the user taps the `accounts` button.
-- (void)manualFillAccessoryViewControllerAccountButtonPressed:
-            (ManualFillAccessoryViewController*)
-                manualFillAccessoryViewController
-                                                       sender:(UIButton*)sender;
+- (void)manualFillAccessoryViewController:(ManualFillAccessoryViewController*)
+                                              manualFillAccessoryViewController
+                    didPressAccountButton:(UIButton*)accountButton;
 
 // Invoked after the user taps the `credit cards` button.
-- (void)manualFillAccessoryViewControllerCardButtonPressed:
-            (ManualFillAccessoryViewController*)
-                manualFillAccessoryViewController
-                                                    sender:(UIButton*)sender;
+- (void)manualFillAccessoryViewController:(ManualFillAccessoryViewController*)
+                                              manualFillAccessoryViewController
+                 didPressCreditCardButton:(UIButton*)creditCardButton;
 
 // Invoked after the user taps the `keyboard` button.
-- (void)manualFillAccessoryViewControllerKeyboardButtonPressed:
-    (ManualFillAccessoryViewController*)manualFillAccessoryViewController;
+- (void)manualFillAccessoryViewController:(ManualFillAccessoryViewController*)
+                                              manualFillAccessoryViewController
+                   didPressKeyboardButton:(UIButton*)keyboardButton;
 
 // Invoked after the user taps the `passwords` button.
-- (void)
-    manualFillAccessoryViewControllerPasswordButtonPressed:
-        (ManualFillAccessoryViewController*)manualFillAccessoryViewController
-                                                    sender:(UIButton*)sender;
+- (void)manualFillAccessoryViewController:(ManualFillAccessoryViewController*)
+                                              manualFillAccessoryViewController
+                   didPressPasswordButton:(UIButton*)passwordButton;
 
 @end
 

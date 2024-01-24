@@ -357,44 +357,43 @@
 
 #pragma mark - ManualFillAccessoryViewControllerDelegate
 
-- (void)manualFillAccessoryViewControllerKeyboardButtonPressed:
-    (ManualFillAccessoryViewController*)manualFillAccessoryViewController {
+- (void)manualFillAccessoryViewController:(ManualFillAccessoryViewController*)
+                                              manualFillAccessoryViewController
+                   didPressKeyboardButton:(UIButton*)keyboardButton {
   [self showManualFillView:NO];
   [self.formInputAccessoryViewControllerDelegate
-      formInputAccessoryViewControllerKeyboardButtonPressed:self];
+      formInputAccessoryViewController:self
+                didPressKeyboardButton:keyboardButton];
 }
 
-- (void)
-    manualFillAccessoryViewControllerAccountButtonPressed:
-        (ManualFillAccessoryViewController*)manualFillAccessoryViewController
-                                                   sender:(UIButton*)sender {
+- (void)manualFillAccessoryViewController:(ManualFillAccessoryViewController*)
+                                              manualFillAccessoryViewController
+                    didPressAccountButton:(UIButton*)accountButton {
   UMA_HISTOGRAM_COUNTS_100("ManualFallback.VisibleSuggestions.OpenProfiles",
                            self.formSuggestionView.suggestions.count);
   [self.formInputAccessoryViewControllerDelegate
-      formInputAccessoryViewControllerAccountButtonPressed:self
-                                                    sender:sender];
+      formInputAccessoryViewController:self
+                 didPressAccountButton:accountButton];
 }
 
-- (void)manualFillAccessoryViewControllerCardButtonPressed:
-            (ManualFillAccessoryViewController*)
-                manualFillAccessoryViewController
-                                                    sender:(UIButton*)sender {
+- (void)manualFillAccessoryViewController:(ManualFillAccessoryViewController*)
+                                              manualFillAccessoryViewController
+                 didPressCreditCardButton:(UIButton*)creditCardButton {
   UMA_HISTOGRAM_COUNTS_100("ManualFallback.VisibleSuggestions.OpenCreditCards",
                            self.formSuggestionView.suggestions.count);
   [self.formInputAccessoryViewControllerDelegate
-      formInputAccessoryViewControllerCardButtonPressed:self
-                                                 sender:sender];
+      formInputAccessoryViewController:self
+              didPressCreditCardButton:creditCardButton];
 }
 
-- (void)
-    manualFillAccessoryViewControllerPasswordButtonPressed:
-        (ManualFillAccessoryViewController*)manualFillAccessoryViewController
-                                                    sender:(UIButton*)sender {
+- (void)manualFillAccessoryViewController:(ManualFillAccessoryViewController*)
+                                              manualFillAccessoryViewController
+                   didPressPasswordButton:(UIButton*)passwordButton {
   UMA_HISTOGRAM_COUNTS_100("ManualFallback.VisibleSuggestions.OpenPasswords",
                            self.formSuggestionView.suggestions.count);
   [self.formInputAccessoryViewControllerDelegate
-      formInputAccessoryViewControllerPasswordButtonPressed:self
-                                                     sender:sender];
+      formInputAccessoryViewController:self
+                didPressPasswordButton:passwordButton];
 }
 
 #pragma mark - FormSuggestionViewDelegate
@@ -411,8 +410,8 @@
   base::RecordAction(base::UserMetricsAction("ManualFallback_ClosePull"));
   // The pull gesture has the same effect as when the keyboard button is
   // pressed.
-  [self manualFillAccessoryViewControllerKeyboardButtonPressed:
-            self.manualFillAccessoryViewController];
+  [self manualFillAccessoryViewController:self.manualFillAccessoryViewController
+                   didPressKeyboardButton:nil];
   [self.manualFillAccessoryViewController resetAnimated:YES];
 }
 
