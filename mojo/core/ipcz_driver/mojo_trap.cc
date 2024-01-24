@@ -5,10 +5,10 @@
 #include "mojo/core/ipcz_driver/mojo_trap.h"
 
 #include <cstdint>
+#include <optional>
 #include <tuple>
 #include <utility>
 
-#include <optional>
 #include "base/check_op.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"

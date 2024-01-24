@@ -4,9 +4,9 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/android/jni_android.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

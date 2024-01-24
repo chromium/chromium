@@ -6,8 +6,8 @@
 #define MOJO_CORE_IPCZ_DRIVER_MOJO_TRAP_H_
 
 #include <cstdint>
-
 #include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"

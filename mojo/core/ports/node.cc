@@ -9,10 +9,10 @@
 #include <algorithm>
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"

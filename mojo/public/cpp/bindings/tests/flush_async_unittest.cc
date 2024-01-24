@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/barrier_closure.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"

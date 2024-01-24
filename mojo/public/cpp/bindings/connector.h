@@ -7,9 +7,9 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/functional/callback.h"

@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <optional>
+
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/stack_trace.h"
