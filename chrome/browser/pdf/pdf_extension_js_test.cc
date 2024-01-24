@@ -33,6 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/scoped_time_zone.h"
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/buildflags.h"
@@ -94,13 +95,15 @@ class PDFExtensionJSTest : public base::test::WithFeatureOverride,
 
     GURL url(embedded_test_server()->GetURL("/pdf/" + pdf_filename));
 
-    // Use `LoadPdfInNewTab()` or `LoadPdf()`, which ensures that the PDF is
+    // It should be good enough to just navigate to the URL. But loading up the
+    // BrowserPluginGuest seems to happen asynchronously as there was flakiness
+    // being seen due to the BrowserPluginGuest not being available yet (see
+    // crbug.com/498077). So instead use LoadPdf() which ensures that the PDF is
     // loaded before continuing.
-    ASSERT_TRUE(new_tab ? LoadPdfInNewTab(url) : LoadPdf(url));
-    content::RenderFrameHost* extension_host =
-        pdf_extension_test_util::GetOnlyPdfExtensionHost(
-            GetActiveWebContents());
-    ASSERT_TRUE(extension_host);
+    extensions::MimeHandlerViewGuest* guest =
+        new_tab ? LoadPdfInNewTabGetMimeHandlerView(url)
+                : LoadPdfGetMimeHandlerView(url);
+    ASSERT_TRUE(guest);
 
     constexpr char kModuleLoaderTemplate[] =
         R"(var s = document.createElement('script');
@@ -112,7 +115,7 @@ class PDFExtensionJSTest : public base::test::WithFeatureOverride,
            document.body.appendChild(s);)";
 
     bool result = content::ExecJs(
-        extension_host,
+        guest->GetGuestMainFrame(),
         base::StringPrintf(kModuleLoaderTemplate,
                            chrome::kChromeUIWebUITestHost, filename.c_str()));
 
@@ -135,96 +138,206 @@ class PDFExtensionJSTest : public base::test::WithFeatureOverride,
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Basic) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("basic_test.js", "test.pdf");
   EXPECT_EQ(1, CountPDFProcesses());
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, BasicPlugin) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("basic_plugin_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, PluginController) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("plugin_controller_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Viewport) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("viewport_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewportScroller) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("viewport_scroller_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Layout3) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("layout_test.js", "test-layout3.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Layout4) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("layout_test.js", "test-layout4.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Bookmark) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("bookmarks_test.js", "test-bookmarks-with-zoom.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Navigator) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("navigator_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ParamsParser) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("params_parser_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ZoomManager) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("zoom_manager_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, GestureDetector) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("gesture_detector_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, SwipeDetector) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("swipe_detector_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, TouchHandling) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("touch_handling_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Elements) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("material_elements_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, DownloadControls) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("download_controls_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Title) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("title_test.js", "test-title.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, WhitespaceTitle) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("whitespace_title_test.js", "test-whitespace-title.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, PageChange) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("page_change_test.js", "test-bookmarks.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ScrollWithFormFieldFocusedTest) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("scroll_with_form_field_focused_test.js",
                      "test-bookmarks.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Metrics) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("metrics_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerPasswordDialog) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("viewer_password_dialog_test.js", "encrypted.pdf");
 }
 
@@ -241,36 +354,66 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ArrayBufferAllocator) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerToolbar) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_toolbar_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerPdfSidenav) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_pdf_sidenav_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerThumbnailBar) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_thumbnail_bar_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerThumbnail) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_thumbnail_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerAttachmentBar) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_attachment_bar_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerAttachment) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_attachment_test.js", "test.pdf");
@@ -288,6 +431,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Fullscreen) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerPropertiesDialog) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // The properties dialog formats some values based on locale.
   base::test::ScopedRestoreICUDefaultLocale scoped_locale{"en_US"};
   // This will apply to the new processes spawned within RunTestsInJsModule(),
@@ -297,6 +445,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerPropertiesDialog) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, PostMessageProxy) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("post_message_proxy_test.js", "test.pdf");
@@ -304,6 +457,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, PostMessageProxy) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Printing) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("printing_icon_test.js", "test.pdf");
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -317,16 +475,31 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Printing) {
 #define MAYBE_AnnotationsFeatureEnabled AnnotationsFeatureEnabled
 #endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, MAYBE_AnnotationsFeatureEnabled) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("annotations_feature_enabled_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, AnnotationsToolbar) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("annotations_toolbar_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerToolbarDropdown) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_toolbar_dropdown_test.js", "test.pdf");
@@ -337,6 +510,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerToolbarDropdown) {
 // TODO(crbug.com/1444895): Re-enable it when integrating PDF OCR with
 // Select-to-Speak.
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, DISABLED_PdfOcrToolbar) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("pdf_ocr_toolbar_test.js", "test.pdf");
@@ -361,6 +539,11 @@ class PDFExtensionContentSettingJSTest : public PDFExtensionJSTest {
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, Beep) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("beep_test.js", "test-beep.pdf");
 }
 
@@ -412,12 +595,22 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, NoBeepThenBeep) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, BeepCsp) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // The script-source * directive in the mock headers file should
   // allow the JavaScript to execute the beep().
   RunTestsInJsModule("beep_test.js", "test-beep-csp.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, DISABLED_NoBeepCsp) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // The script-source none directive in the mock headers file should
   // prevent the JavaScript from executing the beep().
   // TODO(https://crbug.com/1032511) functionality not implemented.
@@ -435,6 +628,11 @@ class PDFExtensionWebUICodeCacheJSTest : public PDFExtensionJSTest {
 
 // Regression test for https://crbug.com/1239148.
 IN_PROC_BROWSER_TEST_P(PDFExtensionWebUICodeCacheJSTest, Basic) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunTestsInJsModule("basic_test.js", "test.pdf");
 }
 
@@ -464,18 +662,33 @@ class PDFExtensionServiceWorkerJSTest : public PDFExtensionJSTest {
 // Test navigating to a PDF in the scope of a service worker with no fetch event
 // handler.
 IN_PROC_BROWSER_TEST_P(PDFExtensionServiceWorkerJSTest, NoFetchHandler) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunServiceWorkerTest("empty.js");
 }
 
 // Test navigating to a PDF when a service worker intercepts the request and
 // then falls back to network by not calling FetchEvent.respondWith().
 IN_PROC_BROWSER_TEST_P(PDFExtensionServiceWorkerJSTest, NetworkFallback) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunServiceWorkerTest("network_fallback_worker.js");
 }
 
 // Test navigating to a PDF when a service worker intercepts the request and
 // provides a response.
 IN_PROC_BROWSER_TEST_P(PDFExtensionServiceWorkerJSTest, Interception) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   RunServiceWorkerTest("respond_with_fetch_worker.js");
 }
 
