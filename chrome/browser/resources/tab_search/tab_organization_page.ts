@@ -193,6 +193,11 @@ export class TabOrganizationPageElement extends PolymerElement {
         break;
       case TabOrganizationState.kSuccess:
         this.$.results.announceHeader();
+        // Wait until the new state is visible after the transition to focus on
+        // the new UI.
+        this.$.results.addEventListener('animationend', () => {
+          this.$.results.focusInput();
+        }, {once: true});
         break;
       case TabOrganizationState.kFailure:
         this.$.failure.announceHeader();

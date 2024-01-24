@@ -109,6 +109,10 @@ export class TabOrganizationResultsElement extends PolymerElement {
     this.$.header.textContent = this.getTitle_();
   }
 
+  focusInput() {
+    this.$.input.focus();
+  }
+
   private computeTabDatas_() {
     return this.tabs.map(
         tab => new TabData(
