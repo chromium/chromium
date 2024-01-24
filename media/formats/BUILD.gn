@@ -443,10 +443,7 @@ if (enable_platform_dts_audio) {
 if (fuzztest_supported) {
   test("ac3_util_fuzzer") {
     sources = [ "ac3/ac3_util_fuzzer.cc" ]
-    fuzztests = [
-      "Ac3UtilTest.ParseTotalAc3SampleCountNeverCrashes",
-      "Ac3UtilTest.ParseTotalEac3SampleCountNeverCrashes",
-    ]
+    enable_fuzztest = true
     deps = [
       "//base",
       "//media",

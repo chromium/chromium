@@ -552,10 +552,7 @@ if (fuzztest_supported) {
   test("vp8_encoder_fuzz_test") {
     sources = [ "tests/fuzzer/vp8_encoder_fuzz_test.cc" ]
 
-    fuzztests = [
-      "VP8EncodeFuzzTest.VP8EncodeArbitraryCallSequenceSucceeds",
-      "VP8EncodeFuzzTest.VP8EncodeSucceeds",
-    ]
+    enable_fuzztest = true
 
     deps = [
       ":libvpx",
@@ -566,10 +563,7 @@ if (fuzztest_supported) {
   test("vp9_encoder_fuzz_test") {
     sources = [ "tests/fuzzer/vp9_encoder_fuzz_test.cc" ]
 
-    fuzztests = [
-      "VP9EncodeFuzzTest.VP9EncodeArbitraryCallSequenceSucceeds",
-      "VP9EncodeFuzzTest.VP9EncodeSucceeds",
-    ]
+    enable_fuzztest = true
 
     deps = [
       ":libvpx",

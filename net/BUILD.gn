@@ -2451,7 +2451,7 @@ if (fuzztest_supported && !is_cronet_build) {
   test("net_fuzztests") {
     sources = [ "cert/x509_certificate_fuzztest.cc" ]
 
-    fuzztests = [ "X509CertificateFuzzTest.FuzzCreateFromDERCertChain" ]
+    enable_fuzztest = true
 
     deps = [
       ":net",

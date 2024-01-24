@@ -57,11 +57,9 @@ if (is_android) {
   import("//build/util/generate_wrapper.gni")
 }
 
-# This template represents the core common functionality of a test target
-# on each platform. It includes:
-# * the ability to generate a rust library that includes all .rs files found
-#   in sources and depends on that from the test target.
-# * the ability to recognize any declare fuzztests and build runners for them.
+# This template generates the test target (of type `target_type`) but also
+# generates a rust library that includes all .rs files found in sources and
+# depends on that from the test target.
 template("mixed_test") {
   assert(defined(invoker.target_type) && invoker.target_type != "")
 
@@ -148,9 +146,7 @@ template("mixed_test") {
     import("//third_party/jni_zero/jni_zero.gni")
   }
   target(invoker.target_type, target_name) {
-    forward_variables_from(invoker,
-                           "*",
-                           TESTONLY_AND_VISIBILITY + _rs_vars + [ "fuzztests" ])
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY + _rs_vars)
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     sources = _cc_sources
     if (!defined(deps)) {
@@ -162,124 +158,6 @@ template("mixed_test") {
 
     if (_rs_sources != []) {
       deps += [ ":${_rust_target_name}" ]
-    }
-    if (defined(invoker.fuzztests)) {
-      deps += [ "//third_party/fuzztest" ]
-    }
-  }
-
-  if (defined(invoker.fuzztests) && use_fuzzing_engine) {
-    # This test contains fuzztests. We want to package them up in a way
-    # which ClusterFuzz knows how to extract. We need to:
-    # 1) make an executable for each individual fuzz test;
-    # 2) name the main executable something specific so that ClusterFuzz
-    #    knows how to extract it
-    # 3) check that the fuzztests variable is correct.
-    # At present, all this is likely to work only if invoker.target_type
-    # is 'executable', since we generate a wrapper script that assumes so.
-    # At the moment, we aim to fuzz these fuzztests only on Linux so that's
-    # fine. In future we may need to broaden this.
-    if (defined(invoker.output_name)) {
-      _output_name = invoker.output_name
-    } else {
-      _output_name = target_name
-    }
-
-    # Make a second copy of the test target, with a
-    # special binary name so that ClusterFuzz knows to unzip it.
-    # The extension .fuzztest_runner is the magical string;
-    # ClusterFuzz unzips anything with a filename extension which isn't
-    # on its blocklist.
-    # Once ClusterFuzz knows how to understand and unzip runtime_deps,
-    # we can remove this.
-    # (https://github.com/google/clusterfuzz/pull/3515 and follow up work).
-    # An alternative here is using a symlink but this seems less
-    # cross-platform, so for now let's just make a copy.
-    _fuzzer_binary_extension = ""
-    if (is_win) {
-      _fuzzer_binary_extension = ".exe"
-    }
-    _fuzzer_binary_name =
-        _output_name + ".fuzztest_runner" + _fuzzer_binary_extension
-    _fuzztest_target_name = target_name + "__fuzztest_runner"
-    copy(_fuzztest_target_name) {
-      deps = [ ":" + target_name ]
-      sources = [ "$root_out_dir/$_output_name" + _fuzzer_binary_extension ]
-      outputs = [ "$root_out_dir/$_fuzzer_binary_name" ]
-      testonly = true
-    }
-
-    # Confirming that the "fuzztests =" directive is correct can only
-    # be done on builds where we can confidently run the fuzzing binary.
-    # Let's be conservative about that -- so long as any failures are
-    # spotted by at least one CI bot we should be good.
-    confirm_fuzztest_contents = is_linux && (is_asan || !using_sanitizer)
-
-    if (confirm_fuzztest_contents) {
-      # Confirm that the fuzztests GN variable matches with the
-      # actual fuzztests in the binary. The output of this action is unused.
-      # It just exists to fail the build if there's an error.
-      # We only do this on Linux, and not for any sanitizers other than
-      # ASAN, because that's specific for CI to show problems and there
-      # may be unknown problems running the fuzztest binary on other
-      # platforms.
-      _fuzztest_check_action = target_name + "__fuzztest_check"
-      action(_fuzztest_check_action) {
-        deps = [ ":" + _fuzztest_target_name ]
-        testonly = true
-        script = "//testing/libfuzzer/confirm_fuzztests.py"
-        _output_name = "$target_gen_dir/${target_name}__checked.txt"
-        outputs = [ _output_name ]
-
-        args = [
-                 "--executable",
-                 rebase_path(
-                     get_label_info(_fuzztest_target_name, "root_out_dir") +
-                     "/" + _fuzzer_binary_name),
-                 "--output",
-                 rebase_path(_output_name),
-                 "--fuzztests",
-               ] + invoker.fuzztests
-      }
-    }
-
-    # Make a wrapper executable for each individual fuzz test
-    foreach(fuzztest_unit, invoker.fuzztests) {
-      _fuzzer_name = target_name + "_" +
-                     string_replace(fuzztest_unit, ".", "_") + "_fuzzer"
-
-      # We generate an actual executable because currently our fuzz
-      # builder recipes use `gn refs --type=executable` to find things
-      # to build. Otherwise we could use generate_wrapper or equivalent
-      # to make a python script. We could alter the recipe, or rearrange
-      # deps arragenements so that some other executable depends on these
-      # scripts, but that seems worse. The executable might be more cross-
-      # platform too.
-      _fuzztest_generate_fuzzer = _fuzzer_name + "__generate"
-
-      generated_file(_fuzztest_generate_fuzzer + "_constants") {
-        outputs = [ "$target_gen_dir/$target_name/constants.cpp" ]
-        contents = [ "const char* kFuzzerName = \"${fuzztest_unit}\"; const char* kFuzzerBinary = \"${_fuzzer_binary_name}\";" ]
-      }
-
-      executable(_fuzztest_generate_fuzzer) {
-        testonly = true
-        data_deps = [ ":" + _fuzztest_target_name ]
-        deps = [
-          # Depend on fuzzing_engine so that our recipes know to build all
-          # these wrapper script targets.
-          "//testing/libfuzzer:fuzzing_engine",
-          "//testing/libfuzzer:individual_fuzztest_wrapper",
-          ":" + _fuzztest_generate_fuzzer + "_constants",
-        ]
-        if (confirm_fuzztest_contents) {
-          deps += [ ":" + _fuzztest_check_action ]
-        }
-        output_name = _fuzzer_name
-        sources =
-            get_target_outputs(":" + _fuzztest_generate_fuzzer + "_constants")
-        write_runtime_deps = "$root_build_dir/${_fuzzer_name}.runtime_deps"
-      }
     }
   }
 }
@@ -302,12 +180,10 @@ template("mixed_test") {
 #      for build targets.
 #   allow_cleartext_traffic: (Android, optional) whether to allow cleartext
 #      network requests during the test.
-#   fuzztests: a list of instances of the FUZZ_TEST macro to
+#   enable_fuzztest: whether to allow the use of the FUZZ_TEST macro to
 #      include fuzzing tests alongside unit tests. This introduces an
 #      extra dependency and also creates additional metadata so that our
 #      fuzzing infrastructure can find and run such tests.
-#      This should be a list of the test names, for example
-#      fuzztests = [ "MyTestClass.MyTestName" ]
 template("test") {
   testonly = true
   if (!is_ios) {
@@ -317,6 +193,33 @@ template("test") {
   if (!is_android) {
     assert(!defined(invoker.allow_cleartext_traffic),
            "allow_cleartext_traffic can be set only for Android tests")
+  }
+
+  _fuzztest_deps = []
+  if (defined(invoker.enable_fuzztest) && invoker.enable_fuzztest) {
+    _output_name = invoker.target_name
+    _fuzzer_options_target = "${_output_name}__fuzzer_options"
+    _fuzztest_deps = [
+      ":${_fuzzer_options_target}",
+      "//third_party/fuzztest",
+    ]
+
+    # Generate minimal .options file so that ClusterFuzz knows to pass the
+    # -fuzz= argument. It's possible that in future we would want more
+    # fuzzing parameters to be configurable for FUZZ_TESTS, in which case
+    # perhaps we would want to abstract more of the logic from
+    # //testing/libfuzzer/fuzzer_test.gni.
+    config_file_name = _output_name + ".options"
+    action(_fuzzer_options_target) {
+      script = "//testing/libfuzzer/gen_fuzzer_config.py"
+      args = [
+        "--config",
+        rebase_path("$root_build_dir/" + config_file_name, root_build_dir),
+        "--libfuzzer_options",
+        "fuzz=",
+      ]
+      outputs = [ "$root_build_dir/$config_file_name" ]
+    }
   }
 
   if (is_android) {
@@ -403,6 +306,7 @@ template("test") {
         if (!defined(deps)) {
           deps = []
         }
+        deps += _fuzztest_deps
 
         # Don't output to the root or else conflict with the group() below.
         output_name = rebase_path(_exec_output, root_out_dir)
@@ -502,9 +406,7 @@ template("test") {
         # Native targets do not need to depend on java targets. Filter them out
         # so that the shared library can be built without needing to wait for
         # dependent java targets.
-        if (!defined(deps)) {
-          deps = []
-        }
+        deps = _fuzztest_deps
         if (defined(invoker.deps)) {
           deps += filter_exclude(invoker.deps, java_target_patterns)
         }
@@ -776,6 +678,7 @@ template("test") {
       if (!defined(deps)) {
         deps = []
       }
+      deps += _fuzztest_deps
 
       # Use a crate name that avoids creating a warning due to double
       # underscore (ie. `__`).
@@ -874,6 +777,7 @@ template("test") {
       if (!defined(deps)) {
         deps = []
       }
+      deps += _fuzztest_deps
     }
   } else if ((is_chromeos_ash || (is_chromeos_lacros && is_chromeos_device)) &&
              cros_board != "") {
@@ -926,6 +830,7 @@ template("test") {
       write_runtime_deps = _runtime_deps_file
       data += [ _runtime_deps_file ]
       deps += [ ":$_gen_runner_target" ]
+      deps += _fuzztest_deps
 
       if (!defined(data_deps)) {
         data_deps = []
@@ -1017,6 +922,7 @@ template("test") {
 
       write_runtime_deps = _runtime_deps_file
       deps += [ ":$_gen_runner_target" ]
+      deps += _fuzztest_deps
       if (_use_ash_chrome && also_build_ash_chrome) {
         data_deps += [ "//chrome/test:test_ash_chrome(//build/toolchain/linux:ash_clang_x64)" ]
       }
@@ -1089,6 +995,7 @@ template("test") {
 
       write_runtime_deps = _runtime_deps_file
       deps += [ ":$_gen_runner_target" ]
+      deps += _fuzztest_deps
 
       if (!defined(data_deps)) {
         data_deps = []
@@ -1109,6 +1016,7 @@ template("test") {
       if (!defined(deps)) {
         deps = []
       }
+      deps += _fuzztest_deps
 
       if (!defined(data_deps)) {
         data_deps = []

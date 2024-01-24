@@ -696,8 +696,7 @@ source_set("prevent_close_test_support") {
 if (fuzztest_supported) {
   test("web_application_fuzztests") {
     testonly = true
-    fuzztests =
-        [ "UpdateManifestFuzzTest.UpdateManifestCanSuccessfullyParseAnyString" ]
+    enable_fuzztest = true
 
     sources = [ "isolated_web_apps/update_manifest/update_manifest_fuzzer.cc" ]
 
