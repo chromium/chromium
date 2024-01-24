@@ -90,20 +90,22 @@ class MotionMarkPage(rendering_story.RenderingStory):
       suite_name = suite_name.replace(ch, '')
       test_name = test_name.replace(ch, '')
 
+    # Using patched snapshot of MotionMark 1.3 (crbug.com/1521178)
     return (
-        'http://browserbench.org/MotionMark/developer.html'
+        'https://vmiura.github.io/MotionMarkSnapshot1.3/MotionMark/developer.html'
         '?suite-name=%s'
         '&test-name=%s'
         '&complexity=%d'
         '&test-interval=20'
+        '&warmup-length=2000'
+        '&warmup-frame-count=30'
+        '&first-frame-minimum-length=0'
         '&display=minimal'
         '&tiles=big'
         '&controller=fixed'
-        '&frame-rate=50'
-        '&kalman-process-error=1'
-        '&kalman-measurement-error=4'
-        '&time-measurement=raf'
-        ) % (suite_name, test_name, complexity)
+        '&system-frame-rate=60'
+        '&frame-rate=60'
+        '&time-measurement=performance') % (suite_name, test_name, complexity)
 
 class MotionMarkRampPage(MotionMarkPage):
   ABSTRACT_STORY = True
@@ -117,18 +119,20 @@ class MotionMarkRampPage(MotionMarkPage):
       suite_name = suite_name.replace(ch, '')
       test_name = test_name.replace(ch, '')
 
-    return ('https://browserbench.org/MotionMark1.2/developer.html'
-            '?suite-name=%s'
-            '&test-name=%s'
-            '&test-interval=20'
-            '&display=minimal'
-            '&tiles=big'
-            '&controller=ramp'
-            '&kalman-process-error=1'
-            '&kalman-measurement-error=4'
-            '&warmup-length=2000'
-            '&warmup-frame-count=30'
-            '&time-measurement=performance') % (suite_name, test_name)
+    # Using patched snapshot of MotionMark 1.3 (crbug.com/1521178)
+    return (
+        'https://vmiura.github.io/MotionMarkSnapshot1.3/MotionMark/developer.html'
+        '?suite-name=%s'
+        '&test-name=%s'
+        '&test-interval=20'
+        '&display=minimal'
+        '&tiles=big'
+        '&controller=ramp'
+        '&system-frame-rate=60'
+        '&frame-rate=60'
+        '&warmup-length=2000'
+        '&warmup-frame-count=30'
+        '&time-measurement=performance') % (suite_name, test_name)
 
 
 class MotionMarkRampMultiply(MotionMarkRampPage):
@@ -176,7 +180,8 @@ class MotionMarkRampComposite(MotionMarkPage):
   TAGS = [story_tags.MOTIONMARK, story_tags.MOTIONMARK_RAMP]
   SUPPORTED_PLATFORMS = platforms.ALL_PLATFORMS
   BASE_NAME = 'motionmark_ramp_composite'
-  URL = 'https://browserbench.org/MotionMark1.3/developer.html'
+  # Using patched snapshot of MotionMark 1.3 (crbug.com/1521178)
+  URL = 'https://vmiura.github.io/MotionMarkSnapshot1.3/MotionMark/developer.html'
 
   def RunNavigateSteps(self, action_runner):
     action_runner.Navigate(self.url)
@@ -259,17 +264,22 @@ class MotionMarkFixed2SecondsPage(MotionMarkPage):
       suite_name = suite_name.replace(ch, '')
       test_name = test_name.replace(ch, '')
 
-    return ('https://browserbench.org/MotionMark1.2/developer.html'
-            '?suite-name=%s'
-            '&test-name=%s'
-            '&complexity=%d'
-            '&test-interval=1'
-            '&display=minimal'
-            '&tiles=big'
-            '&controller=fixed'
-            '&kalman-process-error=1'
-            '&kalman-measurement-error=4'
-            '&time-measurement=raf') % (suite_name, test_name, complexity)
+    # Using patched snapshot of MotionMark 1.3 (crbug.com/1521178)
+    return (
+        'https://vmiura.github.io/MotionMarkSnapshot1.3/MotionMark/developer.html'
+        '?suite-name=%s'
+        '&test-name=%s'
+        '&complexity=%d'
+        '&test-interval=2'
+        '&warmup-length=2000'
+        '&warmup-frame-count=30'
+        '&first-frame-minimum-length=0'
+        '&display=minimal'
+        '&tiles=big'
+        '&controller=fixed'
+        '&system-frame-rate=60'
+        '&frame-rate=60'
+        '&time-measurement=performance') % (suite_name, test_name, complexity)
 
 
 #Numbers for complexity based on MotionMark score for chrome build without PGO
