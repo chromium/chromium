@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/account_picker/account_picker_selection/account_picker_selection_screen_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -16,7 +17,7 @@
 @end
 
 @implementation AccountPickerSelectionScreenMediator {
-  ChromeAccountManagerService* _accountManagerService;
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
   // Configurators based on identity list.

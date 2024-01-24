@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/search_engine_choice_table_mediator.h"
 
 #import <memory>
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/country_codes/country_codes.h"
@@ -73,7 +74,7 @@ class SearchEngineChoiceTableMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  TemplateURLService* template_url_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
   SearchEngineChoiceTableMediator* mediator_ = nil;
   SearchEngineChoiceTableTestConsumer* consumer_ =
       [[SearchEngineChoiceTableTestConsumer alloc] init];

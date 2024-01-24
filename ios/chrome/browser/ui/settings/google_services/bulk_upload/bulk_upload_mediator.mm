@@ -7,6 +7,7 @@
 #import "base/check_op.h"
 #import "base/containers/contains.h"
 #import "base/i18n/message_formatter.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -68,13 +69,13 @@ const BulkUploadModelItem kBuildUploadModelItems[] = {
 
 @implementation BulkUploadMediator {
   // The identity manager for this service
-  signin::IdentityManager* _identityManager;
+  raw_ptr<signin::IdentityManager> _identityManager;
   // The email of the user, to display in snackbar message.
   // Observes changes in identity.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
   // The sync service.
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   // Set of BulkModelType whose item is selected.
   std::set<BulkUploadType> _selectedTypes;
   // Map returned by syncServer::GetLocalDataDescriptions, associating to each

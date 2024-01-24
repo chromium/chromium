@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/browsing_data/core/pref_names.h"
@@ -167,10 +168,10 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
   TableViewModel* model_;
   std::unique_ptr<BrowsingDataRemover> remover_;
   ClearBrowsingDataManager* manager_;
-  syncer::TestSyncService* test_sync_service_;
+  raw_ptr<syncer::TestSyncService> test_sync_service_;
   IntegerPrefMember time_range_pref_;
-  TemplateURLService* template_url_service_;  // weak
-  ChromeAccountManagerService* account_manager_service_;
+  raw_ptr<TemplateURLService> template_url_service_;  // weak
+  raw_ptr<ChromeAccountManagerService> account_manager_service_;
 };
 
 // Tests model is set up with all appropriate items and sections.
