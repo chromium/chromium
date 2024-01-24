@@ -1501,4 +1501,45 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, SettingsSchedulerSlider) {
       "settings_scheduler_slider/settings_scheduler_slider_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       SystemPreferencesPage) {
+  RunSettingsTest("system_preferences_page/system_preferences_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       SystemPreferencesPageDateTimeSettingsCard) {
+  RunSettingsTest("date_time_page/date_time_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       SystemPreferencesPageFilesSettingsCard) {
+  RunSettingsTest("os_files_page/files_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       SystemPreferencesPageLanguageSettingsCard) {
+  RunSettingsTest("os_languages_page/language_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       SystemPreferencesPageResetSettingsCard) {
+  RunSettingsTest("os_reset_page/reset_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       SystemPreferencesPageSearchAndAssistantSettingsCard) {
+  RunSettingsTest("os_search_page/search_and_assistant_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       SystemPreferencesPageStartupSettingsCard) {
+  RunSettingsTest("system_preferences_page/startup_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       SystemPreferencesPageStorageAndPowerSettingsCard) {
+  RunSettingsTest(
+      "system_preferences_page/storage_and_power_settings_card_test.js");
+}
+
 }  // namespace ash::settings

@@ -115,50 +115,6 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
      ]
    },
  ],
- [
-   'SystemPreferencesPage',
-   'system_preferences_page/system_preferences_page_test.js',
-   {
-     enabled: [
-       'ash::features::kOsSettingsRevampWayfinding',
-     ],
-   },
- ],
- [
-   'SystemPreferencesPageDateTimeSettingsCard',
-   'date_time_page/date_time_settings_card_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'SystemPreferencesPageFilesSettingsCard',
-   'os_files_page/files_settings_card_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'SystemPreferencesPageLanguageSettingsCard',
-   'os_languages_page/language_settings_card_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'SystemPreferencesPageResetSettingsCard',
-   'os_reset_page/reset_settings_card_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'SystemPreferencesPageSearchAndAssistantSettingsCard',
-   'os_search_page/search_and_assistant_settings_card_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'SystemPreferencesPageStartupSettingsCard',
-   'system_preferences_page/startup_settings_card_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'SystemPreferencesPageStorageAndPowerSettingsCard',
-   'system_preferences_page/storage_and_power_settings_card_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, featureList) {
