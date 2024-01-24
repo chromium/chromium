@@ -708,21 +708,6 @@ TEST_F(DevicePolicyDecoderTest, DeviceEphemeralNetworkPoliciesEnabled) {
                                /*expected_value=*/base::Value(true));
 }
 
-TEST_F(DevicePolicyDecoderTest, DeviceFkeysPolicy) {
-  em::ChromeDeviceSettingsProto device_policy;
-
-  DecodeUnsetDevicePolicyTestHelper(device_policy,
-                                    key::kDeviceExtendedFkeysModifier);
-
-  base::Value device_extended_fkeys_modifier(1);
-  device_policy.mutable_extended_fkeys_modifier()->set_modifier(
-      static_cast<em::ExtendedFkeysModifierProto::ExtendedFkeysModifier>(
-          device_extended_fkeys_modifier.GetInt()));
-
-  DecodeDevicePolicyTestHelper(device_policy, key::kDeviceExtendedFkeysModifier,
-                               std::move(device_extended_fkeys_modifier));
-}
-
 TEST_F(DevicePolicyDecoderTest, DeviceLoginScreenTouchVirtualKeyboardPolicy) {
   em::ChromeDeviceSettingsProto device_policy;
 

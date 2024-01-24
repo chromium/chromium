@@ -7,7 +7,7 @@
       {
         "policies": {},
         "prefs": {
-          "ash.settings.extended_fkeys_modifier": {
+          "ash.settings.f11_key_modifier": {
             "default_value": 0,
             "location": "user_profile"
           }
@@ -15,10 +15,10 @@
       },
       {
         "policies": {
-          "DeviceExtendedFkeysModifier": 1
+          "F11KeyModifier": 1
         },
         "prefs": {
-          "ash.settings.extended_fkeys_modifier": {
+          "ash.settings.f11_key_modifier": {
             "location": "user_profile",
             "value": 1
           }

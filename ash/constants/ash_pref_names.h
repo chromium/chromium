@@ -1911,13 +1911,6 @@ inline constexpr char kKeyboardDefaultNonChromeOSSettings[] =
 inline constexpr char kTouchpadDefaultSettings[] =
     "ash.settings.touchpad.defaults";
 
-// An integer pref that controls the state (Disabled, Ctrl, etc) of the
-// F11/F12 settings found in the customize keyboard keys subpage in device
-// settings. Can be controlled through device policy
-// DeviceExtendedFkeysMofidier.
-inline constexpr char kExtendedFkeysModifier[] =
-    "ash.settings.extended_fkeys_modifier";
-
 // An integer pref that counts the number of times we have shown a form of
 // screen capture education (a nudge or tutorial).
 inline constexpr char kCaptureModeEducationShownCount[] =
@@ -1940,6 +1933,16 @@ inline constexpr char kAshAppIconSortableColorGroupCache[] =
 // A dictionary that stores the hue component of app icons' sortable colors.
 inline constexpr char kAshAppIconSortableColorHueCache[] =
     "ash.app_icon_sortable_color_hue_cache";
+
+// An integer pref that controls the state (Disabled, Ctrl, etc) of the
+// F11 setting found in the customize keyboard keys subpage in device
+// settings. Can be controlled through the F11KeyModifier policy.
+inline constexpr char kF11KeyModifier[] = "ash.settings.f11_key_modifier";
+
+// An integer pref that controls the state (Disabled, Ctrl, etc) of the
+// F12 setting found in the customize keyboard keys subpage in device
+// settings. Can be controlled through the F12KeyModifier policy.
+inline constexpr char kF12KeyModifier[] = "ash.settings.f12_key_modifier";
 
 //-----------------------------------------------------------------------------
 // Language related Prefs

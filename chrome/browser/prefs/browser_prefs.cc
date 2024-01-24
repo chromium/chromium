@@ -968,6 +968,12 @@ const char kPPAPISharedImagesForVideoDecoderAllowed[] =
 const char kBorealisVmTokenHash[] = "borealis.vm_token_hash";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 01/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kExtendedFkeysModifier[] =
+    "ash.settings.extended_fkeys_modifier";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1081,6 +1087,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 01/2024.
   registry->RegisterBooleanPref(kPPAPISharedImagesForVideoDecoderAllowed, true);
+
+  // Deprecated 01/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterIntegerPref(kExtendedFkeysModifier, 0);
+#endif
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2227,6 +2238,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 01/2024.
   local_state->ClearPref(kPPAPISharedImagesForVideoDecoderAllowed);
+
+// Added 01/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  local_state->ClearPref(kExtendedFkeysModifier);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

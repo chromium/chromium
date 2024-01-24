@@ -103,13 +103,25 @@ const char* GetDefaultKeyboardPref(const mojom::Keyboard& keyboard) {
              : prefs::kKeyboardDefaultNonChromeOSSettings;
 }
 
-ui::mojom::ExtendedFkeysModifier GetDefaultExtendedFkeysValue(
+ui::mojom::ExtendedFkeysModifier GetDefaultF11KeyValue(
     const mojom::KeyboardPolicies& keyboard_policies,
     const mojom::Keyboard& keyboard) {
-  if (keyboard_policies.extended_fkeys_policy &&
-      keyboard_policies.extended_fkeys_policy->policy_status ==
+  if (keyboard_policies.f11_key_policy &&
+      keyboard_policies.f11_key_policy->policy_status ==
           mojom::PolicyStatus::kRecommended) {
-    return keyboard_policies.extended_fkeys_policy->value;
+    return keyboard_policies.f11_key_policy->value;
+  }
+
+  return kDefaultFkey;
+}
+
+ui::mojom::ExtendedFkeysModifier GetDefaultF12KeyValue(
+    const mojom::KeyboardPolicies& keyboard_policies,
+    const mojom::Keyboard& keyboard) {
+  if (keyboard_policies.f12_key_policy &&
+      keyboard_policies.f12_key_policy->policy_status ==
+          mojom::PolicyStatus::kRecommended) {
+    return keyboard_policies.f12_key_policy->value;
   }
 
   return kDefaultFkey;
@@ -271,10 +283,8 @@ mojom::KeyboardSettingsPtr GetKeyboardSettingsFromGlobalPrefs(
   }
 
   if (ShouldAddExtendedFkeyProperties(keyboard)) {
-    const auto fkey_modifier =
-        GetDefaultExtendedFkeysValue(keyboard_policies, keyboard);
-    settings->f11 = fkey_modifier;
-    settings->f12 = fkey_modifier;
+    settings->f11 = GetDefaultF11KeyValue(keyboard_policies, keyboard);
+    settings->f12 = GetDefaultF12KeyValue(keyboard_policies, keyboard);
   }
 
   return settings;
@@ -382,13 +392,13 @@ mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
         settings_dict.Find(prefs::kKeyboardSettingF11)
             ? static_cast<ui::mojom::ExtendedFkeysModifier>(
                   settings_dict.FindInt(prefs::kKeyboardSettingF11).value())
-            : GetDefaultExtendedFkeysValue(keyboard_policies, keyboard);
+            : GetDefaultF11KeyValue(keyboard_policies, keyboard);
 
     settings->f12 =
         settings_dict.Find(prefs::kKeyboardSettingF12)
             ? static_cast<ui::mojom::ExtendedFkeysModifier>(
                   settings_dict.FindInt(prefs::kKeyboardSettingF12).value())
-            : GetDefaultExtendedFkeysValue(keyboard_policies, keyboard);
+            : GetDefaultF12KeyValue(keyboard_policies, keyboard);
   }
 
   const auto* modifier_remappings_dict =
@@ -494,17 +504,17 @@ base::Value::Dict ConvertSettingsToDict(
 
   if (ShouldAddExtendedFkeyProperties(keyboard)) {
     if (ShouldPersistFkeySetting(
-            keyboard_policies.extended_fkeys_policy, prefs::kKeyboardSettingF11,
+            keyboard_policies.f11_key_policy, prefs::kKeyboardSettingF11,
             keyboard.settings->f11,
-            GetDefaultExtendedFkeysValue(keyboard_policies, keyboard),
+            GetDefaultF11KeyValue(keyboard_policies, keyboard),
             existing_settings_dict)) {
       settings_dict.Set(prefs::kKeyboardSettingF11,
                         static_cast<int>(keyboard.settings->f11.value()));
     }
     if (ShouldPersistFkeySetting(
-            keyboard_policies.extended_fkeys_policy, prefs::kKeyboardSettingF12,
+            keyboard_policies.f12_key_policy, prefs::kKeyboardSettingF12,
             keyboard.settings->f12,
-            GetDefaultExtendedFkeysValue(keyboard_policies, keyboard),
+            GetDefaultF12KeyValue(keyboard_policies, keyboard),
             existing_settings_dict)) {
       settings_dict.Set(prefs::kKeyboardSettingF12,
                         static_cast<int>(keyboard.settings->f12.value()));
@@ -728,12 +738,18 @@ void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
         !keyboard_policies.enable_meta_fkey_rewrites_policy->value;
   }
 
-  if (ShouldAddExtendedFkeyProperties(*keyboard) &&
-      keyboard_policies.extended_fkeys_policy &&
-      keyboard_policies.extended_fkeys_policy->policy_status ==
-          mojom::PolicyStatus::kManaged) {
-    keyboard->settings->f11 = keyboard_policies.extended_fkeys_policy->value;
-    keyboard->settings->f12 = keyboard_policies.extended_fkeys_policy->value;
+  if (ShouldAddExtendedFkeyProperties(*keyboard)) {
+    if (keyboard_policies.f11_key_policy &&
+        keyboard_policies.f11_key_policy->policy_status ==
+            mojom::PolicyStatus::kManaged) {
+      keyboard->settings->f11 = keyboard_policies.f11_key_policy->value;
+    }
+
+    if (keyboard_policies.f12_key_policy &&
+        keyboard_policies.f12_key_policy->policy_status ==
+            mojom::PolicyStatus::kManaged) {
+      keyboard->settings->f12 = keyboard_policies.f12_key_policy->value;
+    }
   }
 }
 

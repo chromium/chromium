@@ -681,6 +681,12 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
       prefs::kGraphicsTabletTabletButtonRemappingsDictPref);
   pref_registry->RegisterDictionaryPref(
       prefs::kGraphicsTabletPenButtonRemappingsDictPref);
+  pref_registry->RegisterIntegerPref(
+      prefs::kF11KeyModifier,
+      static_cast<int>(ui::mojom::ExtendedFkeysModifier::kDisabled));
+  pref_registry->RegisterIntegerPref(
+      prefs::kF12KeyModifier,
+      static_cast<int>(ui::mojom::ExtendedFkeysModifier::kDisabled));
 }
 
 void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(

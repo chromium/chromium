@@ -346,9 +346,6 @@ void Preferences::RegisterProfilePrefs(
   // depending on whether an external keyboard is attached to a particular
   // device.
   registry->RegisterBooleanPref(prefs::kSendFunctionKeys, false);
-  registry->RegisterIntegerPref(
-      prefs::kExtendedFkeysModifier,
-      static_cast<int>(ui::mojom::ExtendedFkeysModifier::kDisabled));
 
   registry->RegisterIntegerPref(prefs::kAltEventRemappedToRightClick, 0);
   registry->RegisterIntegerPref(prefs::kSearchEventRemappedToRightClick, 0);

@@ -2017,6 +2017,8 @@ chromium-metrics-reviews@google.com.
   <int value="1197" label="FloatingSsoEnabled"/>
   <int value="1198" label="FloatingSsoDomainBlocklist"/>
   <int value="1199" label="FloatingSsoDomainBlocklistExceptions"/>
+  <int value="1200" label="F11KeyModifier"/>
+  <int value="1201" label="F12KeyModifier"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

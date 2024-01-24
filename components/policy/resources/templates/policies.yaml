@@ -1198,6 +1198,8 @@ policies:
   1197: FloatingSsoEnabled
   1198: FloatingSsoDomainBlocklist
   1199: FloatingSsoDomainBlocklistExceptions
+  1200: F11KeyModifier
+  1201: F12KeyModifier
 atomic_groups:
   1: Homepage
   2: RemoteAccess

@@ -1572,9 +1572,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDeviceSwitchFunctionKeysBehaviorEnabled,
     ash::prefs::kDeviceSwitchFunctionKeysBehaviorEnabled,
     base::Value::Type::BOOLEAN },
-  { key::kDeviceExtendedFkeysModifier,
-    ash::prefs::kExtendedFkeysModifier,
-    base::Value::Type::INTEGER },
   { key::kShowHumanPresenceSensorScreenEnabled,
     ash::prefs::kShowHumanPresenceSensorScreenEnabled,
     base::Value::Type::BOOLEAN },
@@ -1584,6 +1581,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kHeartbeatEnabled,
     ash::kHeartbeatEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kF11KeyModifier,
+    ash::prefs::kF11KeyModifier,
+    base::Value::Type::INTEGER },
+  { key::kF12KeyModifier,
+    ash::prefs::kF12KeyModifier,
+    base::Value::Type::INTEGER },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

@@ -42,11 +42,11 @@ mojom::InputDeviceSettingsPolicyPtr GetBooleanPreferencePolicy(
 }
 
 mojom::InputDeviceSettingsFkeyPolicyPtr GetFkeyPreferencePolicy(
-    const PrefService* pref_service) {
+    const PrefService* pref_service,
+    const std::string& pref_name) {
   mojom::InputDeviceSettingsFkeyPolicyPtr policy;
 
-  const auto* pref =
-      pref_service->FindPreference(prefs::kExtendedFkeysModifier);
+  const auto* pref = pref_service->FindPreference(pref_name);
   if (!pref) {
     return policy;
   }
@@ -113,7 +113,12 @@ void InputDeviceSettingsPolicyHandler::Initialize(PrefService* local_state,
             &InputDeviceSettingsPolicyHandler::OnKeyboardPoliciesChanged,
             base::Unretained(this)));
     pref_change_registrar_.Add(
-        prefs::kExtendedFkeysModifier,
+        prefs::kF11KeyModifier,
+        base::BindRepeating(
+            &InputDeviceSettingsPolicyHandler::OnKeyboardPoliciesChanged,
+            base::Unretained(this)));
+    pref_change_registrar_.Add(
+        prefs::kF12KeyModifier,
         base::BindRepeating(
             &InputDeviceSettingsPolicyHandler::OnKeyboardPoliciesChanged,
             base::Unretained(this)));
@@ -127,9 +132,10 @@ void InputDeviceSettingsPolicyHandler::RefreshKeyboardPolicies(bool notify) {
   if (has_user_prefs_) {
     keyboard_policies_.top_row_are_fkeys_policy = GetBooleanPreferencePolicy(
         pref_change_registrar_.prefs(), prefs::kSendFunctionKeys);
-
-    keyboard_policies_.extended_fkeys_policy =
-        GetFkeyPreferencePolicy(pref_change_registrar_.prefs());
+    keyboard_policies_.f11_key_policy = GetFkeyPreferencePolicy(
+        pref_change_registrar_.prefs(), prefs::kF11KeyModifier);
+    keyboard_policies_.f12_key_policy = GetFkeyPreferencePolicy(
+        pref_change_registrar_.prefs(), prefs::kF12KeyModifier);
   }
 
   if (pref_change_registrar_local_state_.prefs()) {
