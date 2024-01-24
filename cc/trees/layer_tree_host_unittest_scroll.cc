@@ -779,8 +779,16 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild, DeviceScaleFactor2_ScrollChild) {
   RunTest(CompositorMode::THREADED);
 }
 
+// TODO(crbug.com/1521395): Test is flaky on Linux and Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#define MAYBE_DeviceScaleFactor1_ScrollRootScrollLayer \
+  DISABLED_DeviceScaleFactor1_ScrollRootScrollLayer
+#else
+#define MAYBE_DeviceScaleFactor1_ScrollRootScrollLayer \
+  DeviceScaleFactor1_ScrollRootScrollLayer
+#endif
 TEST_F(LayerTreeHostScrollTestCaseWithChild,
-       DeviceScaleFactor1_ScrollRootScrollLayer) {
+       MAYBE_DeviceScaleFactor1_ScrollRootScrollLayer) {
   device_scale_factor_ = 1.f;
   scroll_child_layer_ = false;
   RunTest(CompositorMode::THREADED);
