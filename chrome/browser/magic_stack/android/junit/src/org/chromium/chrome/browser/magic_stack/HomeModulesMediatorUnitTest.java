@@ -127,6 +127,23 @@ public class HomeModulesMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void testShowModule_BuildWithoutRegisteredModules() {
+        List<Integer> moduleList = List.of(mModuleTypeList[2], mModuleTypeList[0]);
+        // Registers three modules to the ModuleRegistry.
+        for (int i = 0; i < 2; i++) {
+            doReturn(false)
+                    .when(mModuleRegistry)
+                    .build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any());
+        }
+        assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
+
+        mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
+        // Verifies that don't wait for module loading if there isn't any modules can be built.
+        assertFalse(mMediator.getIsFetchingModulesForTesting());
+    }
+
+    @Test
+    @SmallTest
     public void testShowModule_BuildWithUnRegisteredModule() {
         List<Integer> moduleList = List.of(mModuleTypeList[2], mModuleTypeList[0]);
         // Registers three modules to the ModuleRegistry.
@@ -139,6 +156,8 @@ public class HomeModulesMediatorUnitTest {
 
         // Calls buildModulesAndShow() to initialize ranking index map.
         mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
+        // The magic stack is waiting for modules to be load.
+        assertTrue(mMediator.getIsFetchingModulesForTesting());
         Boolean[] moduleFetchResultsIndicator =
                 mMediator.getModuleFetchResultsIndicatorForTesting();
 
@@ -389,6 +408,8 @@ public class HomeModulesMediatorUnitTest {
         SimpleRecyclerViewAdapter.ListItem[] moduleFetchResultsCache =
                 mMediator.getModuleFetchResultsCacheForTesting();
         verify(mModel, never()).add(any());
+        // The magic stack is waiting for modules to be load.
+        assertTrue(mMediator.getIsFetchingModulesForTesting());
 
         // The second highest ranking module returns a failed result.
         mMediator.addToRecyclerViewOrCache(mModuleTypeList[1], null);
@@ -410,6 +431,8 @@ public class HomeModulesMediatorUnitTest {
         verify(mModel, times(1)).add(any());
         assertEquals(3, mMediator.getModuleResultsWaitingIndexForTesting());
         verify(mSetVisibilityCallback).onResult(true);
+        // The magic stack is no longer waiting for modules to be load.
+        assertFalse(mMediator.getIsFetchingModulesForTesting());
         // Verifies that the type of the module which didn't respond before timeout is logged.
         String histogramName =
                 "MagicStack.Clank.StartSurface" + HISTOGRAM_MODULE_FETCH_DATA_TIMEOUT_TYPE;

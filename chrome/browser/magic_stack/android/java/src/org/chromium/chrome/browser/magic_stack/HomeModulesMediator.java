@@ -98,6 +98,7 @@ public class HomeModulesMediator {
         mModuleFetchResultsCache = new SimpleRecyclerViewAdapter.ListItem[mModuleListToShow.size()];
         mModuleFetchResultsIndicator = new Boolean[mModuleListToShow.size()];
         mShowModuleStartTimeMs = new long[mModuleListToShow.size()];
+        boolean hasModuleBuilt = false;
 
         for (int i = 0; i < mModuleListToShow.size(); i++) {
             int moduleType = mModuleListToShow.get(i);
@@ -119,9 +120,16 @@ public class HomeModulesMediator {
                     mModuleResultsWaitingIndex++;
                     maybeMoveEarlyReceivedModulesToRecyclerView();
                 }
+            } else {
+                hasModuleBuilt = true;
             }
         }
-        mHandler.postDelayed(this::onModuleFetchTimeOut, MODULE_FETCHING_TIMEOUT_MS);
+        // Don't start the timer if the magic stack isn't waiting for any module to be load.
+        if (hasModuleBuilt) {
+            mHandler.postDelayed(this::onModuleFetchTimeOut, MODULE_FETCHING_TIMEOUT_MS);
+        } else {
+            mIsFetchingModules = false;
+        }
     }
 
     /**
@@ -368,5 +376,9 @@ public class HomeModulesMediator {
 
     int getModuleResultsWaitingIndexForTesting() {
         return mModuleResultsWaitingIndex;
+    }
+
+    boolean getIsFetchingModulesForTesting() {
+        return mIsFetchingModules;
     }
 }
