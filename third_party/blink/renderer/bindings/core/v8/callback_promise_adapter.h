@@ -35,6 +35,7 @@
 #include <utility>
 
 #include "third_party/blink/public/platform/web_callbacks.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
@@ -104,8 +105,11 @@ namespace internal {
 // explicit specialization is forbidden in a class scope.
 template <typename T>
 struct CallbackPromiseAdapterTrivialWebTypeHolder {
-  using WebType = T;
-  static T Take(ScriptPromiseResolver*, const T& x) { return x; }
+  using IDLType = T;
+  using WebType = std::conditional_t<WTF::IsGarbageCollectedType<T>::value,
+                                     std::add_pointer_t<T>,
+                                     typename IDLTypeToBlinkImplType<T>::type>;
+  static WebType Take(ScriptPromiseResolver*, const WebType& x) { return x; }
 };
 template <>
 struct CallbackPromiseAdapterTrivialWebTypeHolder<void> {
@@ -143,7 +147,8 @@ class CallbackPromiseAdapterInternal {
       if (!resolver->GetExecutionContext() ||
           resolver->GetExecutionContext()->IsContextDestroyed())
         return;
-      resolver->Resolve(S::Take(resolver, std::move(result)));
+      resolver->Resolve<typename S::IDLType>(
+          S::Take(resolver, std::move(result)));
     }
   };
   template <typename T>
@@ -171,7 +176,7 @@ class CallbackPromiseAdapterInternal {
           resolver->GetExecutionContext()->IsContextDestroyed())
         return;
       ScriptState::Scope scope(resolver->GetScriptState());
-      resolver->Reject(T::Take(resolver, std::move(e)));
+      resolver->Reject<typename T::IDLType>(T::Take(resolver, std::move(e)));
     }
   };
   template <typename S>

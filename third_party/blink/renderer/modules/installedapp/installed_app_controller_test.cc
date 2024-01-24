@@ -78,7 +78,7 @@ TEST_F(InstalledAppControllerTest, DestroyContextBeforeCallback) {
   ScriptPromise promise = resolver->Promise();
   controller->GetInstalledRelatedApps(
       std::make_unique<
-          CallbackPromiseAdapter<HeapVector<Member<RelatedApplication>>, void>>(
+          CallbackPromiseAdapter<IDLSequence<RelatedApplication>, void>>(
           resolver));
 
   ExecutionContext::From(GetScriptState())->NotifyContextDestroyed();

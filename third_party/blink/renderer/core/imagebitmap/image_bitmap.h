@@ -78,6 +78,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
               ImageOrientationEnum);
 
   // Type and helper function required by CallbackPromiseAdapter:
+  using IDLType = ImageBitmap;
   using WebType = sk_sp<SkImage>;
   static ImageBitmap* Take(ScriptPromiseResolver*, sk_sp<SkImage>);
 

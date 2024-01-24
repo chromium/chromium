@@ -121,7 +121,8 @@ ScriptPromise PushSubscription::unsubscribe(ScriptState* script_state) {
       PushProvider::From(service_worker_registration_);
   DCHECK(push_provider);
   push_provider->Unsubscribe(
-      std::make_unique<CallbackPromiseAdapter<bool, DOMException*>>(resolver));
+      std::make_unique<CallbackPromiseAdapter<IDLBoolean, DOMException>>(
+          resolver));
   return promise;
 }
 

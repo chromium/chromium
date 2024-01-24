@@ -40,6 +40,7 @@ class ServiceWorkerRegistration final
 
  public:
   // Called from CallbackPromiseAdapter.
+  using IDLType = ServiceWorkerRegistration;
   using WebType = WebServiceWorkerRegistrationObjectInfo;
   static ServiceWorkerRegistration* Take(
       ScriptPromiseResolver*,
@@ -149,6 +150,7 @@ class ServiceWorkerRegistrationArray {
 
  public:
   // Called from CallbackPromiseAdapter.
+  using IDLType = IDLSequence<ServiceWorkerRegistration>;
   using WebType = WebVector<WebServiceWorkerRegistrationObjectInfo>;
   static HeapVector<Member<ServiceWorkerRegistration>> Take(
       ScriptPromiseResolver* resolver,
