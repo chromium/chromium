@@ -437,7 +437,10 @@ void NetworkPortalDetectorImpl::DetectionCompleted(
         portal_state = NetworkState::PortalState::kPortal;
         break;
       case CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED:
-        portal_state = NetworkState::PortalState::kProxyAuthRequired;
+        // This case unused and largely orthogonal to captive portal detection.
+        // PortalState::kProxyAuthRequired should probably be deprecated.
+        // See b/207069182 and b/321958601 for details.
+        portal_state = NetworkState::PortalState::kUnknown;
         break;
     }
     // Note: setting an unknown portal state will ignore the Chrome result and
