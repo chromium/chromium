@@ -5,6 +5,8 @@
 #ifndef CONTENT_COMMON_SERVICE_WORKER_RACE_NETWORK_REQUEST_WRITE_BUFFER_MANAGER_H_
 #define CONTENT_COMMON_SERVICE_WORKER_RACE_NETWORK_REQUEST_WRITE_BUFFER_MANAGER_H_
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/system/data_pipe.h"
