@@ -731,6 +731,10 @@ void MockNetworkTransaction::CloseConnectionOnDestruction() {
   NOTIMPLEMENTED();
 }
 
+bool MockNetworkTransaction::IsMdlMatchForMetrics() const {
+  return false;
+}
+
 void MockNetworkTransaction::CallbackLater(CompletionOnceCallback callback,
                                            int result) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

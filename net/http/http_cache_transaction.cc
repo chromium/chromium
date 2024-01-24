@@ -659,6 +659,18 @@ void HttpCache::Transaction::CloseConnectionOnDestruction() {
   }
 }
 
+bool HttpCache::Transaction::IsMdlMatchForMetrics() const {
+  if (network_transaction_info_.previous_mdl_match_for_metrics) {
+    return true;
+  }
+  const HttpTransaction* transaction = GetOwnedOrMovedNetworkTransaction();
+  if (transaction) {
+    return transaction->IsMdlMatchForMetrics();
+  } else {
+    return false;
+  }
+}
+
 void HttpCache::Transaction::SetValidatingCannotProceed() {
   DCHECK(!reading_);
   // Ensure this transaction is waiting for a callback.
@@ -3928,6 +3940,10 @@ void HttpCache::Transaction::SaveNetworkTransactionInfo(
   }
   network_transaction_info_.old_remote_endpoint = IPEndPoint();
   transaction.GetRemoteEndpoint(&network_transaction_info_.old_remote_endpoint);
+
+  if (transaction.IsMdlMatchForMetrics()) {
+    network_transaction_info_.previous_mdl_match_for_metrics = true;
+  }
 }
 
 void HttpCache::Transaction::OnIOComplete(int result) {

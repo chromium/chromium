@@ -603,6 +603,10 @@ void HttpNetworkTransaction::CloseConnectionOnDestruction() {
   close_connection_on_destruction_ = true;
 }
 
+bool HttpNetworkTransaction::IsMdlMatchForMetrics() const {
+  return proxy_info_.is_mdl_match();
+}
+
 void HttpNetworkTransaction::OnStreamReady(const ProxyInfo& used_proxy_info,
                                            std::unique_ptr<HttpStream> stream) {
   DCHECK_EQ(STATE_CREATE_STREAM_COMPLETE, next_state_);
