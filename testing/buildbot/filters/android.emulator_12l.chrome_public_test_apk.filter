@@ -80,7 +80,7 @@
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testWindowServerRedirect
 
 # crbug.com/1432046
--org.chromium.chrome.browser.DragAndDropLauncherActivityTest.testDragAndDropLauncherActivity_openInExistingTabbedActivity
+-org.chromium.chrome.browser.dragdrop.DragAndDropLauncherActivityTest.testDragAndDropLauncherActivity_openInExistingTabbedActivity
 
 # crbug.com/1432048
 -org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewTest.testDismissesSwipingEducationBubbleOnTap

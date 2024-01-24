@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser;
+package org.chromium.chrome.browser.dragdrop;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
