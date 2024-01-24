@@ -375,7 +375,6 @@ class DnsConfigServiceLinux::Watcher : public DnsConfigService::Watcher {
   }
 
   void OnNsswitchFilePathWatcherChange(const base::FilePath& path, bool error) {
-    base::UmaHistogramBoolean("Net.DNS.DnsConfig.Nsswitch.FileChange", true);
     OnConfigChanged(!error);
   }
 
