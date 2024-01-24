@@ -2769,14 +2769,9 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-fenced-frames-M120-features",
-    "owners": [ "dom@chromium.org", "shivanisha@chromium.org", "xiaochenzh@chromium.org", "chrome-fenced-frames-core@google.com" ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "enable-fenced-frames-reporting-attestations-changes",
     "owners": [ "lbrady@google.com", "shivanisha@chromium.org", "xiaochenzh@chromium.org", "chrome-fenced-frames-core@google.com" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 130
   },
   {
     "name": "enable-file-backed-blob-factory",
