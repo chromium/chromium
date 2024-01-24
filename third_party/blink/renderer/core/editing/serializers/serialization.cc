@@ -710,8 +710,8 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
     return fragment;
   }
 
-  bool was_valid =
-      fragment->ParseXML(markup, context_element, parser_content_policy);
+  bool was_valid = fragment->ParseXML(markup, context_element,
+                                      parser_content_policy, &exception_state);
   if (!was_valid) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,

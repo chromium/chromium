@@ -69,6 +69,10 @@ function onIframeLoad() {
         result.textContent += " - wrong exception thrown";
         return;
     }
+    if (exception.code != 12) {
+        result.textContent += " - wrong exception code: " + exception.code;
+        return;
+    }
 
     result.textContent = "PASS";
 }

@@ -2096,6 +2096,13 @@
       status: "stable"
     },
     {
+      // ImprovedXMLErrors tweaks the way that we emit XML parsing errors in
+      // some cases in order to comply with upstream changes to libxml.
+      // Shipping in M123, so should be safe to remove in M126.
+      name: "ImprovedXMLErrors",
+      status: "stable",
+    },
+    {
       name: "IncomingCallNotifications",
     },
     {

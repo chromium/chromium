@@ -468,7 +468,8 @@ bool XMLDocumentParser::ParseDocumentFragment(
     const String& chunk,
     DocumentFragment* fragment,
     Element* context_element,
-    ParserContentPolicy parser_content_policy) {
+    ParserContentPolicy parser_content_policy,
+    ExceptionState* exception_state) {
   if (!chunk.length())
     return true;
 
@@ -484,7 +485,14 @@ bool XMLDocumentParser::ParseDocumentFragment(
 
   auto* parser = MakeGarbageCollected<XMLDocumentParser>(
       fragment, context_element, parser_content_policy);
+  if (RuntimeEnabledFeatures::ImprovedXMLErrorsEnabled()) {
+    parser->exception_copy_ = ExceptionCopy();
+  }
   bool well_formed = parser->AppendFragmentSource(chunk);
+  if (RuntimeEnabledFeatures::ImprovedXMLErrorsEnabled() && exception_state &&
+      parser->exception_copy_->HadException()) {
+    parser->exception_copy_->ApplyTo(*exception_state);
+  }
 
   // Do not call finish(). Current finish() and doEnd() implementations touch
   // the main Document/loader and can cause crashes in the fragment case.
@@ -946,10 +954,17 @@ static inline void HandleElementAttributes(
       } else {
         const HashMap<AtomicString, AtomicString>::const_iterator it =
             initial_prefix_to_namespace_map.find(attr_prefix);
-        if (it != initial_prefix_to_namespace_map.end())
+        if (it != initial_prefix_to_namespace_map.end()) {
           attr_uri = it->value;
-        else
+        } else if (RuntimeEnabledFeatures::ImprovedXMLErrorsEnabled()) {
+          exception_state.ThrowDOMException(DOMExceptionCode::kNamespaceError,
+                                            "Namespace prefix " + attr_prefix +
+                                                " for attribute " + attr_value +
+                                                " is not declared.");
+          return;
+        } else {
           attr_uri = AtomicString();
+        }
       }
     }
     AtomicString attr_q_name =
@@ -1062,6 +1077,9 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
 
   SetAttributes(new_element, prefixed_attributes, GetParserContentPolicy());
   if (exception_state.HadException()) {
+    if (exception_copy_) {
+      exception_copy_->CopyFrom(exception_state);
+    }
     StopParsing();
     return;
   }
@@ -1472,6 +1490,7 @@ static xmlEntityPtr GetXHTMLEntity(const xmlChar* name) {
     g_shared_xhtml_entity_result[2] = '3';
     g_shared_xhtml_entity_result[3] = '8';
     g_shared_xhtml_entity_result[4] = ';';
+    g_shared_xhtml_entity_result[5] = 0;
     entity_length_in_utf8 = 5;
   } else if (number_of_code_units == 1 && utf16_decoded_entity[0] == '<') {
     g_shared_xhtml_entity_result[0] = '&';
@@ -1479,6 +1498,7 @@ static xmlEntityPtr GetXHTMLEntity(const xmlChar* name) {
     g_shared_xhtml_entity_result[2] = '6';
     g_shared_xhtml_entity_result[3] = '0';
     g_shared_xhtml_entity_result[4] = ';';
+    g_shared_xhtml_entity_result[5] = 0;
     entity_length_in_utf8 = 5;
   } else if (number_of_code_units == 2 && utf16_decoded_entity[0] == '<' &&
              utf16_decoded_entity[1] == 0x20D2) {
@@ -1490,6 +1510,7 @@ static xmlEntityPtr GetXHTMLEntity(const xmlChar* name) {
     g_shared_xhtml_entity_result[5] = 0xE2;
     g_shared_xhtml_entity_result[6] = 0x83;
     g_shared_xhtml_entity_result[7] = 0x92;
+    g_shared_xhtml_entity_result[8] = 0;
     entity_length_in_utf8 = 8;
   } else {
     DCHECK_LE(number_of_code_units, 4u);
