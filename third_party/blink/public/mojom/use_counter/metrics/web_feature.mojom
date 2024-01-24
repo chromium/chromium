@@ -4068,6 +4068,8 @@ enum WebFeature {
   kRubyElementWithDisplayBlockAndRt = 4708,
   kCSSDeclarationAfterNestedRule = 4709,
   kThirdPartyCookieAdAccessBlockByExperiment = 4710,
+  // The items above roughly this point are available in the M120 branch.
+
   kServiceWorkerStaticRouter_AddRoutes = 4711,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches = 4712,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches_Use = 4713,
@@ -4095,8 +4097,6 @@ enum WebFeature {
   kThirdPartyCookieDeprecation_AllowBy3PCDHeuristics = 4735,
   kThirdPartyCookieDeprecation_AllowByStorageAccess = 4736,
   kThirdPartyCookieDeprecation_AllowByTopLevelStorageAccess = 4737,
-  // The items above roughly this point are available in the M120 branch.
-
   kIframeAdAuctionHeadersAttribute = 4738,
   kAutoSpeculationRulesOptedOut = 4739,
   kOverrideFlashEmbedwithHTML = 4740,
