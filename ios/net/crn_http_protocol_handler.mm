@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -65,7 +66,7 @@ net::MetricsDelegate* g_metrics_delegate = nullptr;
 @interface CRWHTTPStreamDelegate : NSObject<NSStreamDelegate> {
  @private
   // The object is owned by |_core| and has a weak reference to it.
-  net::HttpProtocolHandlerCore* _core;  // weak
+  raw_ptr<net::HttpProtocolHandlerCore> _core;  // weak
 }
 - (instancetype)initWithHttpProtocolHandlerCore:
     (net::HttpProtocolHandlerCore*)core;
@@ -212,7 +213,7 @@ class HttpProtocolHandlerCore
 
   // This cannot be a scoped pointer because it must be deleted on the IO
   // thread.
-  URLRequest* net_request_ = nullptr;
+  raw_ptr<URLRequest> net_request_ = nullptr;
 
   // It is a weak pointer because the owner of the uploader is the URLRequest.
   base::WeakPtr<ChunkedDataStreamUploader> chunked_uploader_;
