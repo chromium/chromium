@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_BROWSER_AGENT_H_
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
@@ -57,8 +58,8 @@ class DeviceSharingBrowserAgent
   void TitleWasSet(web::WebState* web_state) override;
 
   // The Browser this agent is associated with.
-  Browser* browser_;
-  // Whether the browser state assoicated with `browser_` is inocgnito or not.
+  raw_ptr<Browser> browser_;
+  // Whether the browser state associated with `browser_` is incognito or not.
   const bool is_incognito_ = true;
   // Observer for the active web state in `browser_`'s browser list.
   std::unique_ptr<ActiveWebStateObservationForwarder>

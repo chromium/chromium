@@ -5,6 +5,7 @@
 #import "ios/chrome/app/docking_promo_app_agent.h"
 
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -21,7 +22,7 @@
 
   // Stores the PromosManager, which is used to register the Docking Promo, when
   // appropriate.
-  PromosManager* _promosManager;
+  raw_ptr<PromosManager> _promosManager;
 }
 
 #pragma mark - Initializers

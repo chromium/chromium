@@ -66,7 +66,7 @@ void TextToSpeechPlaybackController::WebStateListWillChange(
     return;
   }
 
-  if (web_state_ == detach_change.detached_web_state()) {
+  if (web_state_.get() == detach_change.detached_web_state()) {
     SetWebState(nullptr);
   }
 }
@@ -78,7 +78,7 @@ void TextToSpeechPlaybackController::WebStateListDidChange(
   if (change.type() == WebStateListChange::Type::kDetach) {
     const WebStateListChangeDetach& detach_change =
         change.As<WebStateListChangeDetach>();
-    if (web_state_ == detach_change.detached_web_state()) {
+    if (web_state_.get() == detach_change.detached_web_state()) {
       SetWebState(nullptr);
     }
   }

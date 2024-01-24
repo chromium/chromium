@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_price_tracking_mediator.h"
 
 #import "base/feature_list.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -53,7 +54,7 @@ using PriceNotificationItems =
   // The service responsible for fetching a product's image data.
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
   // Only used if ReplaceSyncPromosWithSignInPromos is not enabled.
-  bookmarks::BookmarkModel* _localOrSyncableBookmarkModel;
+  raw_ptr<bookmarks::BookmarkModel> _localOrSyncableBookmarkModel;
 }
 // The service responsible for interacting with commerce's price data
 // infrastructure.

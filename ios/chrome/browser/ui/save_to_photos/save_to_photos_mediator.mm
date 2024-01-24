@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
@@ -79,10 +80,10 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 @end
 
 @implementation SaveToPhotosMediator {
-  PhotosService* _photosService;
-  PrefService* _prefService;
-  ChromeAccountManagerService* _accountManagerService;
-  signin::IdentityManager* _identityManager;
+  raw_ptr<PhotosService> _photosService;
+  raw_ptr<PrefService> _prefService;
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
+  raw_ptr<signin::IdentityManager> _identityManager;
   NSString* _imageName;
   NSData* _imageData;
   BOOL _userTappedSuccessSnackbarButton;

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/post_restore_app_agent.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -106,7 +107,7 @@ class PostRestoreAppAgentTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<MockPromosManager> promos_manager_;
-  AuthenticationService* auth_service_;
+  raw_ptr<AuthenticationService> auth_service_;
   id mockAppState_;
   PostRestoreAppAgent* app_agent_;
 };

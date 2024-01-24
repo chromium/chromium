@@ -5,6 +5,7 @@
 #import "ios/chrome/app/enterprise_app_agent.h"
 
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "components/policy/core/common/cloud/cloud_policy_client.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/policy_namespace.h"
@@ -33,14 +34,14 @@ constexpr CGFloat kTimeout = 30;
       _cloudManagementControllerObserver;
   std::unique_ptr<CloudPolicyClientObserverBridge> _cloudPolicyClientObserver;
 
-  BrowserPolicyConnectorIOS* _policyConnector;
+  raw_ptr<BrowserPolicyConnectorIOS> _policyConnector;
 }
 
 // The app state for the app.
 @property(nonatomic, weak, readonly) AppState* appState;
 
 // Browser policy connector for iOS.
-@property(nonatomic, assign) BrowserPolicyConnectorIOS* policyConnector;
+@property(nonatomic, assign) raw_ptr<BrowserPolicyConnectorIOS> policyConnector;
 
 // YES if enterprise launch screen has been dismissed.
 @property(nonatomic, assign) BOOL launchScreenDismissed;

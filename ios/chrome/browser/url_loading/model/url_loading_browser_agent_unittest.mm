@@ -9,6 +9,7 @@
 
 #import <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
@@ -113,12 +114,12 @@ class URLLoadingBrowserAgentTest : public BlockCleanupTest {
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<TestBrowser> browser_;
-  ChromeBrowserState* otr_browser_state_;
+  raw_ptr<ChromeBrowserState> otr_browser_state_;
   URLLoadingTestDelegate* url_loading_delegate_;
   std::unique_ptr<TestSceneUrlLoadingService> scene_loader_;
-  UrlLoadingBrowserAgent* loader_;
+  raw_ptr<UrlLoadingBrowserAgent> loader_;
   std::unique_ptr<Browser> otr_browser_;
-  UrlLoadingBrowserAgent* otr_loader_;
+  raw_ptr<UrlLoadingBrowserAgent> otr_loader_;
 };
 
 TEST_F(URLLoadingBrowserAgentTest, TestSwitchToTab) {

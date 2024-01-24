@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/sharing/share_download_overlay_coordinator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/share_download_overlay_commands.h"
@@ -19,7 +20,7 @@ const NSTimeInterval kOverlayViewAnimationDuration = 0.3;
 
 @interface ShareDownloadOverlayCoordinator () {
   // Web state that will recieve the overlay view.
-  web::WebState* _webState;
+  raw_ptr<web::WebState> _webState;
 }
 
 // Download overlay view controller.

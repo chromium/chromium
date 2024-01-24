@@ -11,6 +11,7 @@
 #import "base/feature_list.h"
 #import "base/functional/callback.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/path_service.h"
@@ -273,7 +274,7 @@ class MainControllerAuthenticationServiceDelegate
   void ClearBrowsingData(ProceduralBlock completion) override;
 
  private:
-  ChromeBrowserState* browser_state_ = nullptr;
+  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
   __weak id<BrowsingDataCommands> dispatcher_ = nil;
 };
 

@@ -9,6 +9,7 @@
 
 #import <optional>
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 
@@ -72,10 +73,10 @@ class UrlLoadingBrowserAgent : public BrowserUserData<UrlLoadingBrowserAgent> {
                            std::optional<void*> hint);
 
   __weak id<URLLoadingDelegate> delegate_;
-  Browser* browser_;
-  UrlLoadingNotifierBrowserAgent* notifier_ = nullptr;
-  UrlLoadingBrowserAgent* incognito_loader_ = nullptr;
-  SceneUrlLoadingService* scene_service_ = nullptr;
+  raw_ptr<Browser> browser_;
+  raw_ptr<UrlLoadingNotifierBrowserAgent> notifier_ = nullptr;
+  raw_ptr<UrlLoadingBrowserAgent> incognito_loader_ = nullptr;
+  raw_ptr<SceneUrlLoadingService> scene_service_ = nullptr;
 
   base::WeakPtrFactory<UrlLoadingBrowserAgent> weak_ptr_factory_{this};
 };
