@@ -539,6 +539,36 @@ TEST_F(LineBreakerTest, BoundaryInFirstWord) {
   EXPECT_EQ("789", lines[1].first);
 }
 
+// Test for https://crbug.com/1505393, where ideographic trailing spaces counted
+// as kPreserved, except when they are in the last line of the paragraph and
+// overflow the line, in which case they counted as kNone.
+TEST_F(LineBreakerTest, IdeographicTrailingSpaces) {
+  LoadAhem();
+  InlineNode node = CreateInlineNode(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #container {
+        font: 10px/1 Ahem;
+      }
+    </style>
+    <div id="container">xxx&#x3000;&#x3000;&#x3000;&#x3000;xxx&#x3000;&#x3000;&#x3000;&#x3000;</div>
+  )HTML");
+
+  String expectedLine = String::FromUTF8("xxx\u3000\u3000\u3000\u3000");
+
+  // The ideographic spaces overflows the line at 60px but fully fits at 90px.
+  for (LayoutUnit width : {LayoutUnit(60), LayoutUnit(90)}) {
+    Vector<std::pair<String, unsigned>> lines = BreakLines(node, width);
+    EXPECT_EQ(2u, lines.size());
+    EXPECT_EQ(expectedLine, lines[0].first);
+    EXPECT_EQ(expectedLine, lines[1].first);
+    EXPECT_EQ(LineBreaker::WhitespaceState::kPreserved,
+              trailing_whitespaces_[0]);
+    EXPECT_EQ(LineBreaker::WhitespaceState::kPreserved,
+              trailing_whitespaces_[1]);
+  }
+}
+
 struct WhitespaceStateTestData {
   const char* html;
   const char* white_space;

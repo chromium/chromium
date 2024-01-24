@@ -2305,6 +2305,10 @@ void LineBreaker::ComputeTrailingCollapsibleSpace(LineInfo* line_info) {
     if (item.Type() == InlineItem::kText) {
       DCHECK_GT(item_result.EndOffset(), 0u);
       DCHECK(item.Style());
+      if (Character::IsOtherSpaceSeparator(text[item_result.EndOffset() - 1])) {
+        trailing_whitespace_ = WhitespaceState::kPreserved;
+        break;
+      }
       if (!IsBreakableSpace(text[item_result.EndOffset() - 1]))
         break;
       if (item.Style()->ShouldPreserveWhiteSpaces()) {
