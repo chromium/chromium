@@ -757,11 +757,6 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
     EnsureElementInternals().ReadonlyAttributeChanged();
     return;
   }
-  if (params.name == html_names::kAnchorAttr &&
-      RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
-    EnsureAnchorElementObserver().Notify();
-    return;
-  }
 
   if (params.reason != AttributeModificationReason::kDirectly)
     return;
@@ -2148,21 +2143,6 @@ void HTMLElement::InvokePopover(Element& invoker) {
   ShowPopoverInternal(&invoker, /*exception_state=*/nullptr);
 }
 
-Element* HTMLElement::anchorElement() {
-  // TODO(crbug.com/1425215): Fix GetElementAttribute() for out-of-tree-scope
-  // elements, so that we can remove the hack below.
-  if (!IsInTreeScope()) {
-    return nullptr;
-  }
-  Element* element = GetElementAttribute(html_names::kAnchorAttr);
-  return element;
-}
-
-void HTMLElement::setAnchorElement(Element* new_element) {
-  SetElementAttribute(html_names::kAnchorAttr, new_element);
-  EnsureAnchorElementObserver().Notify();
-}
-
 // Must be called on an Element that is a popover. Returns true if |node| is a
 // descendant of this popover. This includes the case where |node| is contained
 // within another popover, and the container popover is a descendant of this
@@ -2619,10 +2599,6 @@ Node::InsertionNotificationRequest HTMLElement::InsertedInto(
   if (IsFormAssociatedCustomElement())
     EnsureElementInternals().InsertedInto(insertion_point);
 
-  if (AnchorElementObserver* observer = GetAnchorElementObserver()) {
-    observer->Notify();
-  }
-
   return kInsertionDone;
 }
 
@@ -2642,10 +2618,6 @@ void HTMLElement::RemovedFrom(ContainerNode& insertion_point) {
   Element::RemovedFrom(insertion_point);
   if (IsFormAssociatedCustomElement())
     EnsureElementInternals().RemovedFrom(insertion_point);
-
-  if (AnchorElementObserver* observer = GetAnchorElementObserver()) {
-    observer->Notify();
-  }
 }
 
 void HTMLElement::DidMoveToNewDocument(Document& old_document) {

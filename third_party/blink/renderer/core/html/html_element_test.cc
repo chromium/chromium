@@ -464,7 +464,7 @@ TEST_F(HTMLElementTest, AnchorAttrWithFeatureDisabled) {
   // Shouldn't hook up objects related to anchor attr when the feature is
   // disabled.
   EXPECT_FALSE(anchor->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(target->GetAnchorElementObserver());
+  EXPECT_FALSE(target->HasAnchorElementObserverForTesting());
 }
 
 }  // namespace blink

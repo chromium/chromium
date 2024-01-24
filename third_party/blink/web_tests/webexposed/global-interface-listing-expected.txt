@@ -2270,6 +2270,7 @@ interface Element : Node
     attribute @@toStringTag
     attribute @@unscopables
     getter accessibleNode
+    getter anchorElement
     getter ariaActiveDescendantElement
     getter ariaAtomic
     getter ariaAutoComplete
@@ -2418,6 +2419,7 @@ interface Element : Node
     method webkitMatchesSelector
     method webkitRequestFullScreen
     method webkitRequestFullscreen
+    setter anchorElement
     setter ariaActiveDescendantElement
     setter ariaAtomic
     setter ariaAutoComplete
@@ -3622,7 +3624,6 @@ interface HTMLDocument : Document
 interface HTMLElement : Element
     attribute @@toStringTag
     getter accessKey
-    getter anchorElement
     getter attributeStyleMap
     getter autocapitalize
     getter autofocus
@@ -3767,7 +3768,6 @@ interface HTMLElement : Element
     method showPopover
     method togglePopover
     setter accessKey
-    setter anchorElement
     setter autocapitalize
     setter autofocus
     setter contentEditable

@@ -1288,6 +1288,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   PopoverData* EnsurePopoverData();
   PopoverData* GetPopoverData() const;
 
+  // Retrieves the element pointed to by this element's 'anchor' content
+  // attribute, if that element exists.
+  Element* anchorElement();
+  void setAnchorElement(Element*);
+
   AnchorPositionScrollData& EnsureAnchorPositionScrollData();
   void RemoveAnchorPositionScrollData();
   AnchorPositionScrollData* GetAnchorPositionScrollData() const;
@@ -1297,8 +1302,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void DecrementImplicitlyAnchoredElementCount();
   void IncrementImplicitlyAnchoredElementCount();
 
-  AnchorElementObserver& EnsureAnchorElementObserver();
-  AnchorElementObserver* GetAnchorElementObserver() const;
+  bool HasAnchorElementObserverForTesting() const {
+    return GetAnchorElementObserver();
+  }
 
   // https://drafts.csswg.org/css-anchor-1/#implicit-anchor-element
   Element* ImplicitAnchorElement();
@@ -1460,6 +1466,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void SetInlineStyleFromString(const AtomicString&);
 
   void NotifyAXOfAttachedSubtree();
+
+  AnchorElementObserver& EnsureAnchorElementObserver();
+  AnchorElementObserver* GetAnchorElementObserver() const;
 
   // If the only inherited changes in the parent element are independent,
   // these changes can be directly propagated to this element (the child).

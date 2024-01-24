@@ -74,9 +74,6 @@
     // [CEReactions,Reflect,ReflectOnly=("auto","hint","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popover;
     [CEReactions] attribute DOMString? popover;
 
-    // Used by both Anchor Positioning and Popover
-    [CEReactions,RuntimeEnabled=CSSAnchorPositioning] attribute Element? anchorElement;
-
     // Non-standard APIs
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementInnerText, ImplementedAs=innerTextForBinding] attribute ([LegacyNullToEmptyString] DOMString or TrustedScript) innerText;
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementOuterText] attribute [LegacyNullToEmptyString] DOMString outerText;

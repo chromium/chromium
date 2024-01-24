@@ -1250,6 +1250,21 @@ PopoverData* Element::GetPopoverData() const {
   return HasRareData() ? GetElementRareData()->GetPopoverData() : nullptr;
 }
 
+Element* Element::anchorElement() {
+  // TODO(crbug.com/1425215): Fix GetElementAttribute() for out-of-tree-scope
+  // elements, so that we can remove the hack below.
+  if (!IsInTreeScope()) {
+    return nullptr;
+  }
+  Element* element = GetElementAttribute(html_names::kAnchorAttr);
+  return element;
+}
+
+void Element::setAnchorElement(Element* new_element) {
+  SetElementAttribute(html_names::kAnchorAttr, new_element);
+  EnsureAnchorElementObserver().Notify();
+}
+
 inline void Element::SynchronizeAttribute(const QualifiedName& name) const {
   if (!HasElementData()) {
     return;
@@ -2729,6 +2744,10 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
         blur();
       }
     }
+  } else if (params.name == html_names::kAnchorAttr &&
+             RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
+    EnsureAnchorElementObserver().Notify();
+    return;
   } else if (IsElementReflectionAttribute(name)) {
     SynchronizeContentAttributeAndElementReference(name);
   } else if (IsStyledElement()) {
@@ -2976,6 +2995,10 @@ Node::InsertionNotificationRequest Element::InsertedInto(
 
   RecomputeDirectionFromParent();
 
+  if (AnchorElementObserver* observer = GetAnchorElementObserver()) {
+    observer->Notify();
+  }
+
   if (!insertion_point.IsInTreeScope()) {
     return kInsertionDone;
   }
@@ -3154,6 +3177,10 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
     frame->GetEditor().ElementRemoved(this);
     frame->GetSpellChecker().ElementRemoved(this);
     frame->GetEventHandler().ElementRemoved(this);
+  }
+
+  if (AnchorElementObserver* observer = GetAnchorElementObserver()) {
+    observer->Notify();
   }
 }
 

@@ -262,10 +262,6 @@ class CORE_EXPORT HTMLElement : public Element {
       HeapVector<Member<HTMLElement>>& stack_to_check,
       Element* new_popovers_invoker);
 
-  // Retrieves the element pointed to by this element's 'anchor' content
-  // attribute, if that element exists.
-  Element* anchorElement();
-  void setAnchorElement(Element*);
   static void HandlePopoverLightDismiss(const Event& event, const Node& node);
   void InvokePopover(Element& invoker);
   void SetPopoverFocusOnShow();
