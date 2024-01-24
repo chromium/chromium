@@ -745,7 +745,36 @@ TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagEnabled) {
   CallSetFwupdFeatureFlags();
 }
 
-TEST_F(FwupdClientTest, OnDeviceRequestReceived) {
+struct FwupdClientTest_DeviceRequestParam {
+  std::string device_request_id_key;
+  int expected_index_of_request_id;
+};
+
+class FwupdClientTest_DeviceRequest
+    : public FwupdClientTest,
+      public testing::WithParamInterface<FwupdClientTest_DeviceRequestParam> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    FwupdClientTest_DeviceRequest,
+    testing::ValuesIn<FwupdClientTest_DeviceRequestParam>({
+        {/*device_request_id_key=*/kFwupdDeviceRequestId_DoNotPowerOff,
+         /*expected_index_of_request_id=*/0},
+        {/*device_request_id_key=*/kFwupdDeviceRequestId_ReplugInstall,
+         /*expected_index_of_request_id=*/1},
+        {/*device_request_id_key=*/kFwupdDeviceRequestId_InsertUSBCable,
+         /*expected_index_of_request_id=*/2},
+        {/*device_request_id_key=*/kFwupdDeviceRequestId_RemoveUSBCable,
+         /*expected_index_of_request_id=*/3},
+        {/*device_request_id_key=*/kFwupdDeviceRequestId_PressUnlock,
+         /*expected_index_of_request_id=*/4},
+        {/*device_request_id_key=*/kFwupdDeviceRequestId_RemoveReplug,
+         /*expected_index_of_request_id=*/5},
+    }));
+
+// Test that the DeviceRequest signal is parsed correctly and the
+// DeviceRequestObserver is called with the correct information.
+TEST_P(FwupdClientTest_DeviceRequest, OnDeviceRequestReceived) {
   // Create a mock "DeviceRequest" signal
   dbus::Signal signal(kFwupdServiceName, kFwupdDeviceRequestReceivedSignalName);
 
@@ -758,7 +787,7 @@ TEST_F(FwupdClientTest, OnDeviceRequestReceived) {
   // it with fake data
   sub_writer.OpenDictEntry(&entry_writer);
   entry_writer.AppendString(kFwupdDeviceRequestKey_AppstreamId);
-  entry_writer.AppendVariantOfString(kFwupdDeviceRequestId_RemoveReplug);
+  entry_writer.AppendVariantOfString(GetParam().device_request_id_key);
   sub_writer.CloseContainer(&entry_writer);
 
   sub_writer.OpenDictEntry(&entry_writer);
@@ -793,9 +822,11 @@ TEST_F(FwupdClientTest, OnDeviceRequestReceived) {
   EXPECT_CALL(
       observer,
       OnDeviceRequestResponse(testing::AllOf(
-          // Expect the request ID int to be "5", which is the enum value of
-          // "RemoveReplug".
-          testing::ResultOf("Request ID", GetRequestId, testing::Eq(5)),
+          // Ensure that the resulting observer is triggered with the
+          // correctly-parsed DeviceRequestId.
+          testing::ResultOf(
+              "Request ID", GetRequestId,
+              testing::Eq(GetParam().expected_index_of_request_id)),
           testing::ResultOf("Request Kind", GetRequestKind, testing::Eq(2)))))
       .Times(1);
 
