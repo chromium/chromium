@@ -87,7 +87,7 @@ class PolicyProvider : public ObservableProvider {
 
   raw_ptr<PrefService> prefs_;
 
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 }  // namespace content_settings

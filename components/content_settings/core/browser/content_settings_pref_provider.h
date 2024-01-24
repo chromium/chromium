@@ -130,7 +130,7 @@ class PrefProvider : public UserModifiableProvider {
 
   bool store_last_modified_;
 
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  PrefChangeRegistrar pref_change_registrar_;
 
   std::map<ContentSettingsType, std::unique_ptr<ContentSettingsPref>>
       content_settings_prefs_;

@@ -157,14 +157,13 @@ DefaultProvider::DefaultProvider(PrefService* prefs,
   if (should_record_metrics)
     RecordHistogramMetrics();
 
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(prefs_);
+  pref_change_registrar_.Init(prefs_);
   PrefChangeRegistrar::NamedChangeCallback callback = base::BindRepeating(
       &DefaultProvider::OnPreferenceChanged, base::Unretained(this));
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();
   for (const WebsiteSettingsInfo* info : *website_settings)
-    pref_change_registrar_->Add(info->default_value_pref_name(), callback);
+    pref_change_registrar_.Add(info->default_value_pref_name(), callback);
 }
 
 DefaultProvider::~DefaultProvider() = default;
@@ -273,7 +272,7 @@ void DefaultProvider::ShutdownOnUIThread() {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
   RemoveAllObservers();
-  pref_change_registrar_.reset();
+  pref_change_registrar_.Reset();
   prefs_ = nullptr;
 }
 

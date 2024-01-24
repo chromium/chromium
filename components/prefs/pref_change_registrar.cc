@@ -30,6 +30,11 @@ void PrefChangeRegistrar::Init(PrefService* service) {
   service_ = service;
 }
 
+void PrefChangeRegistrar::Reset() {
+  RemoveAll();
+  service_ = nullptr;
+}
+
 void PrefChangeRegistrar::Add(const std::string& path,
                               const base::RepeatingClosure& obs) {
   Add(path,

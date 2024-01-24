@@ -30,7 +30,6 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
@@ -118,19 +117,18 @@ PrefProvider::PrefProvider(PrefService* prefs,
 
   DiscardOrMigrateObsoletePreferences();
 
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(prefs_);
+  pref_change_registrar_.Init(prefs_);
 
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();
   for (const WebsiteSettingsInfo* info : *website_settings) {
     content_settings_prefs_.insert(std::make_pair(
-        info->type(), std::make_unique<ContentSettingsPref>(
-                          info->type(), prefs_, pref_change_registrar_.get(),
-                          info->pref_name(), info->partitioned_pref_name(),
-                          off_the_record_, restore_session,
-                          base::BindRepeating(&PrefProvider::Notify,
-                                              base::Unretained(this)))));
+        info->type(),
+        std::make_unique<ContentSettingsPref>(
+            info->type(), prefs_, &pref_change_registrar_, info->pref_name(),
+            info->partitioned_pref_name(), off_the_record_, restore_session,
+            base::BindRepeating(&PrefProvider::Notify,
+                                base::Unretained(this)))));
   }
 
   size_t num_exceptions = 0;
@@ -397,7 +395,7 @@ void PrefProvider::ShutdownOnUIThread() {
   for (const auto& pref : content_settings_prefs_) {
     pref.second->OnShutdown();
   }
-  pref_change_registrar_.reset();
+  pref_change_registrar_.Reset();
   prefs_ = nullptr;
 }
 
