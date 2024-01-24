@@ -10,6 +10,7 @@
 #include <cstring>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -70,7 +71,7 @@ constexpr char kStopping[] = "stopping";
 // Helper to get the enum type of RetrievePolicyResponseType based on error
 // name.
 RetrievePolicyResponseType GetPolicyResponseTypeByError(
-    base::StringPiece error_name) {
+    std::string_view error_name) {
   if (error_name == login_manager::dbus_error::kNone) {
     return RetrievePolicyResponseType::SUCCESS;
   } else if (error_name == login_manager::dbus_error::kGetServiceFail ||

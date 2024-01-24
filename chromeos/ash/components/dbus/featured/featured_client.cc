@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/check_is_test.h"
 #include "base/files/dir_reader_posix.h"
@@ -264,7 +265,7 @@ bool FeaturedClient::ParseTrialFilename(
     const base::FilePath& path,
     base::FieldTrial::ActiveGroup& active_group) {
   std::string filename = path.BaseName().value();
-  std::vector<base::StringPiece> components =
+  std::vector<std::string_view> components =
       base::SplitStringPiece(filename, feature::kTrialGroupSeparator,
                              base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (components.size() != 2) {

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -838,7 +839,7 @@ void FakeShillManagerClient::SetNetworkThrottlingStatus(
 
 bool FakeShillManagerClient::GetFastTransitionStatus() {
   std::optional<bool> fast_transition_status = stub_properties_.FindBool(
-      base::StringPiece(shill::kWifiGlobalFTEnabledProperty));
+      std::string_view(shill::kWifiGlobalFTEnabledProperty));
   return fast_transition_status && fast_transition_status.value();
 }
 
