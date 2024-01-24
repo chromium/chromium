@@ -6730,11 +6730,10 @@
   {
     "name": "privacy-sandbox-proactive-topics-blocking",
     "owners": [
-      "sauski@google.com",
-      "olesiamarukhno@google.com",
-      "tommasin@chromium.org",
-      "alimariam@google.com"],
-    "expiry_milestone": 122
+      "kartoffel-core-eng@google.com",
+      "koilos@google.com"
+    ],
+    "expiry_milestone": 125
   },
   {
     "name": "private-aggregation-developer-mode",
