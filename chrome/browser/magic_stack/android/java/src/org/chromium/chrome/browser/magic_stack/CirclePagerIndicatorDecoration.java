@@ -215,7 +215,9 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
 
         // Updates the width of the view.
         outRect.left = isFirstPosition ? 0 : (int) mIndicatorItemPaddingPx;
-        int width = (int) (parent.getMeasuredWidth() / 2 - mIndicatorItemPaddingPx);
+        int width =
+                (int) (parent.getMeasuredWidth() - mIndicatorItemPaddingPx * (mItemPerScreen - 1))
+                        / mItemPerScreen;
         marginLayoutParams.width = width;
     }
 
