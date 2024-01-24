@@ -7,6 +7,8 @@
 
 #include "components/policy/core/browser/policy_conversions_client.h"
 
+#import "base/memory/raw_ptr.h"
+
 class ChromeBrowserState;
 
 namespace web {
@@ -36,7 +38,7 @@ class PolicyConversionsClientIOS : public policy::PolicyConversionsClient {
       policy::PolicyDomain policy_domain) override;
 
  private:
-  ChromeBrowserState* browser_state_;
+  raw_ptr<ChromeBrowserState> browser_state_;
 };
 
 #endif  // IOS_CHROME_BROWSER_POLICY_MODEL_POLICY_CONVERSIONS_CLIENT_IOS_H_

@@ -7,6 +7,7 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
 #import "components/prefs/pref_change_registrar.h"
@@ -68,10 +69,10 @@ class PolicyWatcherBrowserAgent
   void OnPrimaryAccountRestricted() override;
 
   // The owning Browser.
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 
   // The AuthenticationService.
-  AuthenticationService* auth_service_ = nullptr;
+  raw_ptr<AuthenticationService> auth_service_ = nullptr;
 
   // Registrar for local state pref change notifications.
   PrefChangeRegistrar prefs_change_observer_;

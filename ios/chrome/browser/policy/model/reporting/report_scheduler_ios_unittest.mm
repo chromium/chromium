@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/policy/model/reporting/report_scheduler_ios.h"
 
 #import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -103,7 +104,7 @@ class ReportSchedulerIOSTest : public PlatformTest {
 
   void CreateScheduler() {
     ReportScheduler::CreateParams params;
-    params.client = client_;
+    params.client = client_.get();
     params.delegate = report_delegate_factory_.GetReportSchedulerDelegate();
     params.report_generator = std::move(generator_ptr_);
     scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
@@ -152,7 +153,7 @@ class ReportSchedulerIOSTest : public PlatformTest {
   void EXPECT_CALL_SetupRegistrationWithSetDMToken() {
     EXPECT_CALL(*client_, SetupRegistration(kDMToken, kClientId, _))
         .WillOnce(WithArgs<0>(
-            Invoke(client_, &policy::MockCloudPolicyClient::SetDMToken)));
+            Invoke(client_.get(), &policy::MockCloudPolicyClient::SetDMToken)));
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -161,9 +162,9 @@ class ReportSchedulerIOSTest : public PlatformTest {
 
   ReportingDelegateFactoryIOS report_delegate_factory_;
   std::unique_ptr<ReportScheduler> scheduler_;
-  policy::MockCloudPolicyClient* client_;
-  MockReportGenerator* generator_;
-  MockReportUploader* uploader_;
+  raw_ptr<policy::MockCloudPolicyClient> client_;
+  raw_ptr<MockReportGenerator> generator_;
+  raw_ptr<MockReportUploader> uploader_;
   policy::FakeBrowserDMTokenStorage storage_;
   base::Time previous_set_last_upload_timestamp_;
   base::HistogramTester histogram_tester_;

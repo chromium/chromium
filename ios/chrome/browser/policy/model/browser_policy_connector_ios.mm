@@ -52,7 +52,7 @@ BrowserPolicyConnectorIOS::~BrowserPolicyConnectorIOS() {}
 ConfigurationPolicyProvider* BrowserPolicyConnectorIOS::GetPlatformProvider() {
   ConfigurationPolicyProvider* provider =
       BrowserPolicyConnectorBase::GetPolicyProviderForTesting();
-  return provider ? provider : platform_provider_;
+  return provider ? provider : platform_provider_.get();
 }
 
 base::flat_set<std::string>

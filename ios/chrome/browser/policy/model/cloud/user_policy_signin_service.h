@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

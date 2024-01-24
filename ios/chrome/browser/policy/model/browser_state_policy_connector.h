@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#import "base/memory/raw_ptr.h"
 #include "components/policy/core/common/local_test_policy_provider.h"
 
 class BrowserPolicyConnectorIOS;
@@ -78,7 +78,7 @@ class BrowserStatePolicyConnector {
   std::unique_ptr<policy::PolicyService> policy_service_;
 
   // The SchemaRegistry associated with this connector's BrowserState.
-  policy::SchemaRegistry* schema_registry_;
+  raw_ptr<policy::SchemaRegistry> schema_registry_;
 };
 
 #endif  // IOS_CHROME_BROWSER_POLICY_MODEL_BROWSER_STATE_POLICY_CONNECTOR_H_

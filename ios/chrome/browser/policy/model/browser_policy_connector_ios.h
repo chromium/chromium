@@ -9,6 +9,7 @@
 #import <string>
 
 #import "base/containers/flat_set.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
 #import "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
@@ -88,11 +89,11 @@ class BrowserPolicyConnectorIOS : public policy::BrowserPolicyConnector {
 
   // Owned by base class.
   raw_ptr<policy::LocalTestPolicyProvider> local_test_provider_ = nullptr;
-  policy::ConfigurationPolicyProvider* platform_provider_ = nullptr;
+  raw_ptr<policy::ConfigurationPolicyProvider> platform_provider_ = nullptr;
 
   std::unique_ptr<policy::ChromeBrowserCloudManagementController>
       chrome_browser_cloud_management_controller_;
-  policy::MachineLevelUserCloudPolicyManager*
+  raw_ptr<policy::MachineLevelUserCloudPolicyManager>
       machine_level_user_cloud_policy_manager_ = nullptr;
 };
 

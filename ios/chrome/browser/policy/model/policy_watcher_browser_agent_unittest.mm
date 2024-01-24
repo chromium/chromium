@@ -6,6 +6,7 @@
 
 #import "base/apple/backup_util.h"
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/path_service.h"
 #import "base/test/ios/wait_util.h"
 #import "build/build_config.h"
@@ -100,7 +101,7 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  PolicyWatcherBrowserAgent* agent_;
+  raw_ptr<PolicyWatcherBrowserAgent> agent_;
   std::unique_ptr<Browser> browser_;
   SceneState* scene_state_;
   // Keep app_state_ alive as it is a weak property of the scene state.
