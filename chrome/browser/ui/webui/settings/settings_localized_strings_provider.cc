@@ -471,7 +471,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("showSidePanelOptions", true);
   html_source->AddBoolean(
       "showHoverCardImagesOption",
-      base::FeatureList::IsEnabled(features::kTabHoverCardImageSettings));
+      base::FeatureList::IsEnabled(features::kTabHoverCardImages));
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
