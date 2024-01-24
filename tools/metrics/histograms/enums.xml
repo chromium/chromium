@@ -21442,6 +21442,7 @@ from previous Chrome versions.
       label="IPH_KeyboardAccessoryPaymentVirtualCard:enabled"/>
   <int value="403288255" label="enable-wheel-scroll-latching"/>
   <int value="403554154" label="SafetyCheckWeakPasswords:enabled"/>
+  <int value="405068544" label="GlobalMediaControlsUpdatedUI:enabled"/>
   <int value="405329388"
       label="FramebustingNeedsSameOriginOrUserGesture:enabled"/>
   <int value="406549604" label="NtpSafeBrowsingModule:enabled"/>
@@ -22495,6 +22496,7 @@ from previous Chrome versions.
   <int value="904159815" label="VideoPlayerAppHidden:disabled"/>
   <int value="904437796" label="OmniboxBlurWithEscape:disabled"/>
   <int value="904811479" label="query-tiles-enable-trending"/>
+  <int value="905739808" label="GlobalMediaControlsUpdatedUI:disabled"/>
   <int value="907051864" label="UseMultiPlaneFormatForHardwareVideo:disabled"/>
   <int value="907056713" label="DetectFormSubmissionOnFormClear:enabled"/>
   <int value="907696422" label="SafetyHub:disabled"/>

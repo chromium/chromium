@@ -4562,6 +4562,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "global-media-controls-updated-ui",
+    "owners": [ "yrw@chromium.org", "media-dev@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "google-one-offer-files-banner",
     "owners": ["yawano@google.com","assistive-eng@google.com"],
     "expiry_milestone": 116

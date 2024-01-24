@@ -722,7 +722,12 @@ BASE_FEATURE(kGlobalMediaControlsAutoDismiss,
 BASE_FEATURE(kGlobalMediaControlsCrOSUpdatedUI,
              "GlobalMediaControlsCrOSUpdatedUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+#else   // BUILDFLAG(IS_CHROMEOS)
+// Updated global media controls UI for all the non-CrOS desktop platforms.
+BASE_FEATURE(kGlobalMediaControlsUpdatedUI,
+             "GlobalMediaControlsUpdatedUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 // If enabled, users can request Media Remoting without fullscreen-in-tab.

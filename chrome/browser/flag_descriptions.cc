@@ -1890,7 +1890,13 @@ const char kGlobalMediaControlsCrOSUpdatedUIName[] =
     "Global Media Controls CrOS updated UI";
 const char kGlobalMediaControlsCrOSUpdatedUIDescription[] =
     "Show updated UI for Global Media Controls in CrOS.";
-#endif
+#else   // BUILDFLAG(IS_CHROMEOS)
+const char kGlobalMediaControlsUpdatedUIName[] =
+    "Global Media Controls updated UI";
+const char kGlobalMediaControlsUpdatedUIDescription[] =
+    "Show updated UI for Global Media Controls in all the non-CrOS desktop "
+    "platforms.";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char kGoogleOneOfferFilesBannerName[] = "Google One offer Files banner";
 const char kGoogleOneOfferFilesBannerDescription[] =
