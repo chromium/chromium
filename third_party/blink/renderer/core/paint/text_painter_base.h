@@ -63,13 +63,13 @@ class CORE_EXPORT TextPainterBase {
   static void UpdateGraphicsContext(GraphicsContext&,
                                     const TextPaintStyle&,
                                     GraphicsContextStateSaver&,
-                                    ShadowMode = kBothShadowsAndTextProper);
+                                    ShadowMode);
   static sk_sp<SkDrawLooper> CreateDrawLooper(
       const ShadowList* shadow_list,
       DrawLooperBuilder::ShadowAlphaMode,
       const Color& current_color,
       mojom::blink::ColorScheme color_scheme,
-      ShadowMode = kBothShadowsAndTextProper);
+      ShadowMode);
 
   static Color TextColorForWhiteBackground(Color);
   static TextPaintStyle TextPaintingStyle(const Document&,
@@ -88,10 +88,6 @@ class CORE_EXPORT TextPainterBase {
   static AffineTransform Rotation(const PhysicalRect& box_rect, WritingMode);
 
  protected:
-  void UpdateGraphicsContext(const TextPaintStyle& style,
-                             GraphicsContextStateSaver& saver) {
-    UpdateGraphicsContext(graphics_context_, style, saver);
-  }
   void DecorationsStripeIntercepts(
       float upper,
       float stripe_width,

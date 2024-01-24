@@ -211,7 +211,8 @@ void TextPainterBase::PaintDecorationsOnlyLineThrough(
     return;
 
   GraphicsContextStateSaver state_saver(graphics_context_);
-  UpdateGraphicsContext(text_style, state_saver);
+  UpdateGraphicsContext(graphics_context_, text_style, state_saver,
+                        ShadowMode::kBothShadowsAndTextProper);
 
   for (wtf_size_t applied_decoration_index = 0;
        applied_decoration_index < decoration_info.AppliedDecorationCount();
