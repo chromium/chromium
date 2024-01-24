@@ -26,6 +26,7 @@
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
+#include "components/performance_manager/resource_attribution/context_collection.h"
 #include "components/performance_manager/resource_attribution/query_params.h"
 #include "components/performance_manager/resource_attribution/query_scheduler.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -155,7 +156,7 @@ QueryParams CreateQueryParams(
     std::set<ResourceContextTypeId> all_context_types = {}) {
   QueryParams params;
   params.resource_types = std::move(resource_types);
-  params.contexts = internal::ContextCollection::CreateForTesting(
+  params.contexts = ContextCollection::CreateForTesting(
       std::move(resource_contexts), std::move(all_context_types));
   return params;
 }

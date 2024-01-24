@@ -22,9 +22,12 @@
 #include "components/performance_manager/resource_attribution/cpu_measurement_monitor.h"
 #include "components/performance_manager/resource_attribution/memory_measurement_provider.h"
 
+namespace performance_manager::resource_attribution {
+class ContextCollection;
+}
+
 namespace performance_manager::resource_attribution::internal {
 
-class ContextCollection;
 struct QueryParams;
 
 // QueryScheduler keeps track of all queries for a particular resource type and
