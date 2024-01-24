@@ -149,6 +149,19 @@ void ProfilePickerDiceSignInProvider::AddNewContents(
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
+  // ForceSignin flow should not have any potential link that opens a new
+  // browser. Currently the regular sign in flow does not contain any, but the
+  // SAML Force Signin flow contains a SAML speedbump page, which still contains
+  // external links like "Help", "Privacy" and "Terms" that will attempt to open
+  // a browser. As long as those links are accessible, we should not try to open
+  // them while Force Signin is enabled.
+  // TODO(https://crbug.com/1520921): Remove this check if the SAML speedbump is
+  // removed or if the links on the page are removed.
+  if (signin_util::IsForceSigninEnabled() &&
+      base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
+    return;
+  }
+
   NavigateParams params(profile_, target_url, ui::PAGE_TRANSITION_LINK);
   // Open all links as new popups.
   params.disposition = WindowOpenDisposition::NEW_POPUP;
@@ -166,7 +179,10 @@ bool ProfilePickerDiceSignInProvider::HandleKeyboardEvent(
 void ProfilePickerDiceSignInProvider::NavigationStateChanged(
     content::WebContents* source,
     content::InvalidateTypes changed_flags) {
-  if (source == contents_.get() && IsExternalURL(contents_->GetVisibleURL())) {
+  if (source == contents_.get() && IsExternalURL(contents_->GetVisibleURL()) &&
+      // SAML with ForceSignin in Profile Picker should follow the regular flow.
+      (!signin_util::IsForceSigninEnabled() ||
+       !base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker))) {
     // Attach DiceTabHelper to `contents_` so that sync consent dialog appears
     // after a successful sign-in.
     DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(contents_.get());
