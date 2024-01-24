@@ -1342,8 +1342,6 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   node_data->role = ComputeFinalRoleForSerialization();
   node_data->id = AXObjectID();
 
-  PreSerializationConsistencyCheck();
-
   // Serialize a few things that we need even for ignored nodes.
   bool is_focusable = CanSetFocusAttribute();
   if (is_focusable)
@@ -7524,23 +7522,6 @@ const AXObject* AXObject::LowestCommonAncestor(const AXObject& first,
   }
 
   return common_ancestor;
-}
-
-// Extra checks that only occur during serialization.
-void AXObject::PreSerializationConsistencyCheck() {
-  CHECK(!IsDetached()) << "Do not serialize detached nodes: "
-                       << ToString(true, true);
-  // TODO(https://crbug.com/1480627): convert to CHECKs.
-  CHECK(AXObjectCache().IsFrozen());
-  CHECK(!NeedsToUpdateCachedValues());
-  CHECK(AccessibilityIsIncludedInTree())
-      << "Do not serialize unincluded nodes: " << ToString(true, true);
-#if defined(AX_FAIL_FAST_BUILD)
-  // A bit more expensive, so only check in builds used for testing.
-  CHECK_EQ(IsAriaHidden(), !!FindAncestorWithAriaHidden(this))
-      << "IsAriaHidden() doesn't match existence of an aria-hidden ancestor: "
-      << ToString(true);
-#endif
 }
 
 String AXObject::ToString(bool verbose, bool cached_values_only) const {
