@@ -101,6 +101,47 @@ TEST_F(PlaceholderMetricsTest,
                  base::Bucket(/*NAME_LAST: Empty on page load*/ 81, 1)));
 }
 
+TEST_F(PlaceholderMetricsTest, EmitsUmaAutofillPreFilledFieldClassifications) {
+  placeholders_features_.InitAndEnableFeature(
+      features::kAutofillOverwritePlaceholdersOnly);
+
+  test::FormDescription form_description = {
+      .fields = {{.role = NAME_FIRST,
+                  .heuristic_type = NAME_FIRST,
+                  .value = u"pre-filled"},
+                 {.role = NAME_LAST,
+                  .heuristic_type = NAME_LAST,
+                  .value = u"pre-filled"}}};
+  FormData form = test::GetFormData(form_description);
+
+  // Simulate page load.
+  autofill_manager().AddSeenForm(form,
+                                 test::GetHeuristicTypes(form_description),
+                                 test::GetServerTypes(form_description),
+                                 /*preserve_values_in_form_structure=*/true);
+  // Simluate interacting with the form.
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
+  // Get cached form and modify fields.
+  FormStructure* cached_form;
+  AutofillField* cached_triggering_field;
+  ASSERT_TRUE(autofill_manager().GetCachedFormAndField(
+      form, form.fields[0], &cached_form, &cached_triggering_field));
+  cached_form->fields()[1]->set_may_use_prefilled_placeholder(false);
+  // Fill form.
+  FillTestProfile(form);
+  // Submit form.
+  SubmitForm(form);
+
+  ResetDriverToCommitMetrics();
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          "Autofill.PreFilledFieldClassifications.Address"),
+      BucketsAre(
+          base::Bucket(AutofillPreFilledFieldClassifications::kClassified, 1),
+          base::Bucket(AutofillPreFilledFieldClassifications::kNotClassified,
+                       1)));
+}
+
 class PlaceholderMetricsValueStatusTest : public PlaceholderMetricsTest {
  public:
   void SetUp() override {

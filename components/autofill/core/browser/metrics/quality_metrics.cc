@@ -165,6 +165,9 @@ void LogQualityMetrics(
                                  field->value, field->field_log_events(),
                                  field->possible_types(),
                                  type.GetStorableType(), field->is_autofilled);
+        LogPreFilledFieldClassifications(
+            form_type_name, field->initial_value_changed(),
+            field->may_use_prefilled_placeholder());
       }
     }
 
