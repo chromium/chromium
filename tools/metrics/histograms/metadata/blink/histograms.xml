@@ -3128,6 +3128,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.NotifyScriptLoaded.TabSearch" units="ms"
+    expires_after="2024-03-01">
+  <owner>dayeung@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>kerenzhu@chromium.org</owner>
+  <summary>
+    The time taken for the parser to finish loading scripts. This is recorded
+    once per external script and after the script loads. Only recorded for the
+    url: chrome://tab-search.top-chrome/. This is a temporary metric that will
+    be removed after investigation (crbug.com/1519635).
+  </summary>
+</histogram>
+
 <histogram name="Blink.OffscreenCanvas.NewOffscreenCanvas" enum="Boolean"
     expires_after="2024-04-01">
   <owner>aaronhk@chromium.org</owner>
