@@ -23,6 +23,8 @@
 using ui::test::uiimage_utils::UIImagesAreEqual;
 using ui::test::uiimage_utils::UIImageWithSizeAndSolidColor;
 
+@class WebStateSnapshotInfo;
+
 // SnapshotGeneratorDelegate used to test SnapshotTabHelper by allowing to
 // count the number of snapshot generated and control whether capturing a
 // snapshot is possible.
@@ -52,13 +54,11 @@ using ui::test::uiimage_utils::UIImageWithSizeAndSolidColor;
 
 #pragma mark - SnapshotGeneratorDelegate
 
-- (BOOL)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-    canTakeSnapshotForWebState:(web::WebState*)webState {
+- (BOOL)canTakeSnapshotWithWebStateInfo:(WebStateSnapshotInfo*)webStateInfo {
   return _canTakeSnapshot;
 }
 
-- (void)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-    willUpdateSnapshotForWebState:(web::WebState*)webState {
+- (void)willUpdateSnapshotWithWebStateInfo:(WebStateSnapshotInfo*)webStateInfo {
   ++_snapshotTakenCount;
 }
 
@@ -359,7 +359,8 @@ TEST_F(SnapshotTabHelperTest, ClosingWebStateDoesNotRemoveSnapshot) {
   SnapshotTabHelper::CreateForWebState(web_state.get());
   SnapshotID snapshot_id =
       SnapshotTabHelper::FromWebState(web_state.get())->GetSnapshotID();
-  [[partialMock reject] removeImageWithSnapshotID:snapshot_id];
+  [(SnapshotStorage*)[partialMock reject]
+      removeImageWithSnapshotID:snapshot_id];
 
   // Use @try/@catch as -reject raises an exception.
   @try {

@@ -117,6 +117,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:model_common",
     "//ios/chrome/browser/ssl/model",
     "//ios/chrome/browser/store_kit/model",
     "//ios/chrome/browser/sync/model:sync_error_browser_agent",

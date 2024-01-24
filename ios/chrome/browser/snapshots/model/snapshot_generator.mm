@@ -10,8 +10,9 @@
 
 #import "base/functional/bind.h"
 #import "build/blink_buildflags.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_scale.h"
+#import "ios/chrome/browser/snapshots/model/web_state_snapshot_info.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
@@ -81,8 +82,9 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
   if (![self canTakeSnapshot] || !_webState) {
     return nil;
   }
-  [_delegate snapshotGenerator:self
-      willUpdateSnapshotForWebState:_webState.get()];
+  [_delegate
+      willUpdateSnapshotWithWebStateInfo:[[WebStateSnapshotInfo alloc]
+                                             initWithWebState:_webState.get()]];
 
   SnapshotInfo snapshotInfo = [self snapshotInfo];
   // Ideally, generate an UIImage by one step with `UIGraphicsImageRenderer`,
@@ -126,8 +128,9 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
     }
     return;
   }
-  [_delegate snapshotGenerator:self
-      willUpdateSnapshotForWebState:_webState.get()];
+  [_delegate
+      willUpdateSnapshotWithWebStateInfo:[[WebStateSnapshotInfo alloc]
+                                             initWithWebState:_webState.get()]];
 
   SnapshotInfo snapshotInfo = [self snapshotInfo];
   auto wrappedCompletion =
@@ -163,8 +166,9 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
     return NO;
   }
 
-  return [_delegate snapshotGenerator:self
-           canTakeSnapshotForWebState:_webState.get()];
+  return [_delegate
+      canTakeSnapshotWithWebStateInfo:[[WebStateSnapshotInfo alloc]
+                                          initWithWebState:_webState.get()]];
 }
 
 // Converts an UIView to an UIImage. The size of generated UIImage is the same
@@ -325,20 +329,23 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
   if (!_webState) {
     return nil;
   }
-  return [_delegate snapshotGenerator:self
-          snapshotOverlaysForWebState:_webState.get()];
+  return [_delegate
+      snapshotOverlaysWithWebStateInfo:[[WebStateSnapshotInfo alloc]
+                                           initWithWebState:_webState.get()]];
 }
 
 // Retrieves information needed for snapshotting.
 - (SnapshotInfo)snapshotInfo {
   CHECK(_webState);
   SnapshotInfo snapshotInfo;
-  snapshotInfo.baseView = [_delegate snapshotGenerator:self
-                                   baseViewForWebState:_webState.get()];
+  snapshotInfo.baseView = [_delegate
+      baseViewWithWebStateInfo:[[WebStateSnapshotInfo alloc]
+                                   initWithWebState:_webState.get()]];
   DCHECK(snapshotInfo.baseView);
 
-  UIEdgeInsets baseViewInsets = [_delegate snapshotGenerator:self
-                               snapshotEdgeInsetsForWebState:_webState.get()];
+  UIEdgeInsets baseViewInsets = [_delegate
+      snapshotEdgeInsetsWithWebStateInfo:[[WebStateSnapshotInfo alloc]
+                                             initWithWebState:_webState.get()]];
   snapshotInfo.snapshotFrameInBaseView =
       UIEdgeInsetsInsetRect(snapshotInfo.baseView.bounds, baseViewInsets);
   DCHECK(!CGRectIsEmpty(snapshotInfo.snapshotFrameInBaseView));

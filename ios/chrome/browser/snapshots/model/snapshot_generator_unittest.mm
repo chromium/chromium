@@ -9,7 +9,9 @@
 #import "base/run_loop.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/web_state_snapshot_info.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -97,8 +99,8 @@ TEST_F(SnapshotGeneratorTest, GenerateWebViewSnapshot) {
 
 #pragma mark - SnapshotGeneratorDelegate
 
-- (NSArray<UIView*>*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-           snapshotOverlaysForWebState:(web::WebState*)webState {
+- (NSArray<UIView*>*)snapshotOverlaysWithWebStateInfo:
+    (WebStateSnapshotInfo*)webStateInfo {
   CGRect frame = {CGPointZero, kWebStateViewSize};
   UIView* overlay = [[UIView alloc] initWithFrame:frame];
   overlay.backgroundColor = [UIColor greenColor];

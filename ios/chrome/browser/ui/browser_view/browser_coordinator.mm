@@ -111,9 +111,10 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/account_consistency_browser_agent.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
+#import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/web_state_snapshot_info.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
@@ -2869,18 +2870,38 @@ enum class ToolbarKind {
 // mediator with a narrowly-defined API to get UI-layer information from the
 // BVC.
 
-- (BOOL)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-    canTakeSnapshotForWebState:(web::WebState*)webState {
-  DCHECK(webState);
+- (BOOL)canTakeSnapshotWithWebStateInfo:(WebStateSnapshotInfo*)webStateInfo {
+  DCHECK(webStateInfo);
+  web::WebState* webState = webStateInfo.webState;
+  if (!webState) {
+    return NO;
+  }
   PagePlaceholderTabHelper* pagePlaceholderTabHelper =
       PagePlaceholderTabHelper::FromWebState(webState);
   return !pagePlaceholderTabHelper->displaying_placeholder() &&
          !pagePlaceholderTabHelper->will_add_placeholder_for_next_navigation();
 }
 
-- (UIEdgeInsets)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-    snapshotEdgeInsetsForWebState:(web::WebState*)webState {
-  DCHECK(webState);
+- (void)willUpdateSnapshotWithWebStateInfo:(WebStateSnapshotInfo*)webStateInfo {
+  DCHECK(webStateInfo);
+  web::WebState* webState = webStateInfo.webState;
+  if (!webState) {
+    return;
+  }
+
+  if ([self isNTPActiveForCurrentWebState]) {
+    [_NTPCoordinator willUpdateSnapshot];
+  }
+  OverscrollActionsTabHelper::FromWebState(webState)->Clear();
+}
+
+- (UIEdgeInsets)snapshotEdgeInsetsWithWebStateInfo:
+    (WebStateSnapshotInfo*)webStateInfo {
+  DCHECK(webStateInfo);
+  web::WebState* webState = webStateInfo.webState;
+  if (!webState) {
+    return UIEdgeInsetsZero;
+  }
 
   UIEdgeInsets maxViewportInsets =
       _fullscreenController->GetMaxViewportInsets();
@@ -2912,9 +2933,14 @@ enum class ToolbarKind {
   }
 }
 
-- (NSArray<UIView*>*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-           snapshotOverlaysForWebState:(web::WebState*)webState {
-  DCHECK(webState);
+- (NSArray<UIView*>*)snapshotOverlaysWithWebStateInfo:
+    (WebStateSnapshotInfo*)webStateInfo {
+  DCHECK(webStateInfo);
+  web::WebState* webState = webStateInfo.webState;
+  if (!webState) {
+    return @[];
+  }
+
   WebStateList* webStateList = self.browser->GetWebStateList();
   DCHECK_NE(webStateList->GetIndexOfWebState(webState),
             WebStateList::kInvalidIndex);
@@ -2972,18 +2998,12 @@ enum class ToolbarKind {
   return overlays;
 }
 
-- (void)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-    willUpdateSnapshotForWebState:(web::WebState*)webState {
-  DCHECK(webState);
-
-  if ([self isNTPActiveForCurrentWebState]) {
-    [_NTPCoordinator willUpdateSnapshot];
+- (UIView*)baseViewWithWebStateInfo:(WebStateSnapshotInfo*)webStateInfo {
+  DCHECK(webStateInfo);
+  web::WebState* webState = webStateInfo.webState;
+  if (!webState) {
+    return nil;
   }
-  OverscrollActionsTabHelper::FromWebState(webState)->Clear();
-}
-
-- (UIView*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-         baseViewForWebState:(web::WebState*)webState {
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   if (NTPHelper && NTPHelper->IsActive()) {
     // If NTPCoordinator is not started yet, fall back to using the
