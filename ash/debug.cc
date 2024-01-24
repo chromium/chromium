@@ -77,54 +77,26 @@ void PrintWindowHierarchy(const aura::Window* active_window,
                           bool scrub_data,
                           std::vector<std::string>* out_window_titles,
                           std::ostringstream* out) {
-  std::string indent_str(indent, ' ');
-  std::string name(window->GetName());
-  if (name.empty())
-    name = "\"\"";
-  const gfx::Vector2dF& subpixel_position_offset =
-      window->layer()->GetSubpixelOffset();
-  *out << indent_str;
+  *out << std::string(indent, ' ');
   *out << " [window]";
-  *out << " " << name << " (" << window << ")"
-       << " type=" << window->GetType();
-  int window_id = window->GetId();
-  if (window_id != aura::Window::kInitialId)
-    *out << " id=" << window_id;
+  window->GetDebugInfo(active_window, focused_window, capture_window, out);
   if (window->GetProperty(kWindowStateKey))
-    *out << " " << WindowState::Get(window)->GetStateType();
-  *out << ((window == active_window) ? " [active]" : "")
-       << ((window == focused_window) ? " [focused]" : "")
-       << ((window == capture_window) ? " [capture]" : "")
-       << (window->GetTransparent() ? " [transparent]" : "")
-       << (window->IsVisible() ? " [visible]" : "") << " "
-       << (window->GetOcclusionState() != aura::Window::OcclusionState::UNKNOWN
-               ? base::UTF16ToUTF8(aura::Window::OcclusionStateToString(
-                                       window->GetOcclusionState()))
-                     .c_str()
-               : "")
-       << " " << window->bounds().ToString()
-       << " scale=" + window->transform().To2dScale().ToString();
-  if (!subpixel_position_offset.IsZero())
-    *out << " subpixel offset=" + subpixel_position_offset.ToString();
-  std::string* tree_id = window->GetProperty(ui::kChildAXTreeID);
-  if (tree_id)
-    *out << " ax_tree_id=" << *tree_id;
+    *out << " state=" << WindowState::Get(window)->GetStateType();
 
   std::u16string title(window->GetTitle());
   if (!title.empty()) {
-    out_window_titles->push_back(base::UTF16ToUTF8(title));
     if (!scrub_data) {
-      *out << " title=" << title;
+      *out << " title=\"" << title << "\"";
     }
+    out_window_titles->push_back(base::UTF16ToUTF8(title));
   }
 
-  int app_type = window->GetProperty(aura::client::kAppType);
-  *out << " app_type=" << app_type;
-  std::string* pkg_name = window->GetProperty(ash::kArcPackageNameKey);
-  if (pkg_name)
-    *out << " pkg_name=" << *pkg_name;
-  *out << '\n';
+  std::string* tree_id = window->GetProperty(ui::kChildAXTreeID);
+  if (tree_id) {
+    *out << " ax_tree_id=" << *tree_id;
+  }
 
+  *out << std::endl;
   views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
   if (widget) {
     *out << std::string(indent + 3, ' ');

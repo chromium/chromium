@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <sstream>
 #include <utility>
 
 #include "base/containers/adapters.h"
@@ -884,31 +885,47 @@ void Window::UpdateVisualState() {
     delegate_->UpdateVisualState();
 }
 
-#if DCHECK_IS_ON()
-std::string Window::GetDebugInfo() const {
-  std::string name = GetName();
+void Window::GetDebugInfo(const aura::Window* active_window,
+                          const aura::Window* focused_window,
+                          const aura::Window* capture_window,
+                          std::ostringstream* out) const {
+  std::string name(GetName());
   if (name.empty())
-    name = "Unknown";
-  std::string layer_state = "NoLayer";
-  if (layer()) {
-    layer_state = base::StringPrintf(
-        "%s opacity=%.1f",
-        layer()->GetTargetVisibility() ? "LayerVisible" : "LayerHidden",
-        layer()->opacity());
+    name = "\"\"";
+  const gfx::Vector2dF& subpixel_position_offset = layer()->GetSubpixelOffset();
+  *out << " " << name << "<" << GetId() << ">";
+  *out << " (" << this << ")" << " type=" << GetType();
+  *out << ((this == active_window) ? " [active]" : "")
+       << ((this == focused_window) ? " [focused]" : "")
+       << ((this == capture_window) ? " [capture]" : "")
+       << (GetTransparent() ? " [transparent]" : "")
+       << (IsVisible() ? " [visible]" : "") << " "
+       << (GetOcclusionState() != aura::Window::OcclusionState::UNKNOWN
+               ? base::UTF16ToUTF8(
+                     aura::Window::OcclusionStateToString(GetOcclusionState()))
+                     .c_str()
+               : "")
+       << " " << bounds().ToString()
+       << " scale=" + transform().To2dScale().ToString();
+  if (!subpixel_position_offset.IsZero()) {
+    *out << " subpixel offset=" + subpixel_position_offset.ToString();
   }
-  return base::StringPrintf(
-      "%s<%d> bounds=%s %s %s occlusion_state=%s", name.c_str(), GetId(),
-      bounds().ToString().c_str(), visible_ ? "WindowVisible" : "WindowHidden",
-      layer_state.c_str(),
-      base::UTF16ToUTF8(OcclusionStateToString(occlusion_state_)).c_str());
+
+  *out << base::StringPrintf(" opacity=%.1f", layer()->opacity());
+  *out << (layer()->GetTargetVisibility() ? " layer-visible" : " layer-hidden");
 }
 
+#if DCHECK_IS_ON()
 std::string Window::GetWindowHierarchy(int depth) const {
-  std::string hierarchy =
-      base::StringPrintf("%*s%s\n", depth * 2, "", GetDebugInfo().c_str());
-  for (Window* child : children_)
-    hierarchy += child->GetWindowHierarchy(depth + 1);
-  return hierarchy;
+  std::ostringstream out;
+  std::string indent_str(depth * 2, ' ');
+  out << indent_str;
+  GetDebugInfo(nullptr, nullptr, nullptr, &out);
+  out << std::endl;
+  for (Window* child : children_) {
+    out << child->GetWindowHierarchy(depth + 1);
+  }
+  return out.str();
 }
 
 void Window::PrintWindowHierarchy(int depth) const {
