@@ -136,8 +136,7 @@ public final class ProductionSupportedFlagList {
                 "Enables delta-compression when requesting a new seed from the server."),
         Flag.commandLine(
                 AwSwitches.WEBVIEW_FENCED_FRAMES,
-                "Enables fenced frames. Also implies SharedStorageAPI, "
-                        + "and PrivacySandboxAdsAPIsOverride"),
+                "Enables fenced frames. Also enables PrivacySandboxAdsAPIsOverride."),
         Flag.commandLine(
                 AwSwitches.WEBVIEW_DISABLE_APP_RECOVERY,
                 "Disables WebView from checking for app recovery mitigations."),

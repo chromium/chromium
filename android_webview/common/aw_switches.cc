@@ -65,8 +65,7 @@ const char kWebViewEnableModernCookieSameSite[] =
 const char kWebViewSelectiveImageInversionDarkening[] =
     "webview-selective-image-inversion-darkening";
 
-// Enables FencedFrames. This also implies PrivacySandboxAdsAPIsOverride and
-// SharedStorageAPI.
+// Enables FencedFrames. This also enables PrivacySandboxAdsAPIsOverride.
 const char kWebViewFencedFrames[] = "webview-fenced-frames";
 
 // Disables WebView from checking for app recovery mitigations.
