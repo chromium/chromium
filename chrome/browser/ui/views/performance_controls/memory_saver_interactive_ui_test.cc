@@ -452,16 +452,16 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       Do(base::BindLambdaForTesting([=]() {
         PrefService* const pref_service = browser()->profile()->GetPrefs();
-        const base::Value::List& discard_exception = pref_service->GetList(
-            performance_manager::user_tuning::prefs::kTabDiscardingExceptions);
+        const base::Value::Dict& discard_exception =
+            pref_service->GetDict(performance_manager::user_tuning::prefs::
+                                      kTabDiscardingExceptionsWithTime);
         EXPECT_EQ(1u, discard_exception.size());
         std::string current_site_host = browser()
                                             ->tab_strip_model()
                                             ->GetActiveWebContents()
                                             ->GetURL()
                                             .host();
-        std::string added_exception = discard_exception.front().GetString();
-        EXPECT_EQ(current_site_host, added_exception);
+        EXPECT_TRUE(discard_exception.contains(current_site_host));
       })),
       FlushEvents(),
       // Dialog's cancel button should now allow users to navigate to the

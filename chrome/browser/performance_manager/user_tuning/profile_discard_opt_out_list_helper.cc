@@ -64,7 +64,7 @@ ProfileDiscardOptOutListHelper::ProfileDiscardOptOutTracker::
   pref_change_registrar_.Init(pref_service);
 
   pref_change_registrar_.Add(
-      performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
+      performance_manager::user_tuning::prefs::kTabDiscardingExceptionsWithTime,
       base::BindRepeating(&ProfileDiscardOptOutListHelper::
                               ProfileDiscardOptOutTracker::OnOptOutListChanged,
                           base::Unretained(this)));
@@ -84,22 +84,24 @@ ProfileDiscardOptOutListHelper::ProfileDiscardOptOutTracker::
 
 void ProfileDiscardOptOutListHelper::ProfileDiscardOptOutTracker::
     OnOptOutListChanged() {
-  const base::Value::List& user_value_list =
-      pref_change_registrar_.prefs()->GetList(
-          performance_manager::user_tuning::prefs::kTabDiscardingExceptions);
+  const base::Value::Dict& user_value_map =
+      pref_change_registrar_.prefs()->GetDict(
+          performance_manager::user_tuning::prefs::
+              kTabDiscardingExceptionsWithTime);
   const base::Value::List& managed_value_list =
       pref_change_registrar_.prefs()->GetList(
           performance_manager::user_tuning::prefs::
               kManagedTabDiscardingExceptions);
 
   std::vector<std::string> patterns;
-  patterns.reserve(user_value_list.size() + managed_value_list.size());
+  patterns.reserve(user_value_map.size() + managed_value_list.size());
 
   // Merge the two lists so that the PageDiscardingHelper only sees a single
   // list of patterns to exclude from discarding.
   base::ranges::transform(
-      user_value_list, std::back_inserter(patterns),
-      [](const auto& user_value) { return user_value.GetString(); });
+      user_value_map.begin(), user_value_map.end(),
+      std::back_inserter(patterns),
+      [](const auto& user_value) { return user_value.first; });
   base::ranges::transform(
       managed_value_list, std::back_inserter(patterns),
       [](const auto& managed_value) { return managed_value.GetString(); });

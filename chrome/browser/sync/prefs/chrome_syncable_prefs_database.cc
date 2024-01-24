@@ -318,6 +318,7 @@ enum {
   kProfileContentSettingsPartitionedExceptionsPopups = 100259,
   kProfileContentSettingsPartitionedExceptionsWindowPlacement = 100260,
   kStandaloneWindowMigrationNudgeShown = 100261,
+  kTabDiscardingExceptionsWithTime = 100262,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1069,6 +1070,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     {performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
      {syncable_prefs_ids::kTabDiscardingExceptions, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
+      sync_preferences::MergeBehavior::kNone}},
+    {performance_manager::user_tuning::prefs::kTabDiscardingExceptionsWithTime,
+     {syncable_prefs_ids::kTabDiscardingExceptionsWithTime, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kAccessibilityImageLabelsEnabled,

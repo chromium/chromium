@@ -321,6 +321,7 @@ build_webui("build") {
     "site_settings/site_settings_prefs_browser_proxy.ts",
     "site_settings/website_usage_browser_proxy.ts",
     "site_settings_page/site_settings_page_util.ts",
+    "time.ts",
     "tooltip_mixin.ts",
   ]
 

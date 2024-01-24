@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TEST_SUPPORT_MEMORY_SAVER_BROWSER_TEST_MIXIN_H_
 
 #include <type_traits>
+#include <vector>
+
+#include "base/json/values_util.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
@@ -88,6 +91,17 @@ class MemorySaverBrowserTestMixin : public T {
   void ForceRefreshMemoryMetricsAndWait() {
     MemoryMetricsRefreshWaiter waiter;
     waiter.Wait();
+  }
+
+  void SetTabDiscardExceptionsMap(std::vector<std::string> patterns) {
+    base::Value::Dict exclusion_map;
+    for (auto pattern : patterns) {
+      exclusion_map.Set(pattern, base::TimeToValue(base::Time::Now()));
+    }
+    T::browser()->profile()->GetPrefs()->SetDict(
+        performance_manager::user_tuning::prefs::
+            kTabDiscardingExceptionsWithTime,
+        std::move(exclusion_map));
   }
 
  private:

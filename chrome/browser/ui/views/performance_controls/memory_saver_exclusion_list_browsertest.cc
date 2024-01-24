@@ -48,8 +48,6 @@ class MemorySaverExclusionListBrowserTest
         browser(), 1, test_url, ui::PageTransition::PAGE_TRANSITION_LINK));
   }
 
-  PrefService* GetPrefs() { return browser()->profile()->GetPrefs(); }
-
   // Navigates the first tab to the given url and attempts to
   // discard that tab. Returns whether if the tab was successfully discarded
   bool NavigateAndDiscardFirstTab(GURL url) {
@@ -63,11 +61,7 @@ class MemorySaverExclusionListBrowserTest
 
 IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
                        ExclusionListMatchesHost) {
-  base::Value::List exclusion_list;
-  exclusion_list.Append("example.com");
-  GetPrefs()->SetList(
-      performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
-      std::move(exclusion_list));
+  SetTabDiscardExceptionsMap({"example.com"});
 
   EXPECT_FALSE(NavigateAndDiscardFirstTab(GetURL(kWWWExampleURL)));
   EXPECT_FALSE(NavigateAndDiscardFirstTab(GetURL(kExampleURL)));
@@ -79,11 +73,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
                        ExclusionListMatchesHostExactly) {
-  base::Value::List exclusion_list;
-  exclusion_list.Append(".example.com");
-  GetPrefs()->SetList(
-      performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
-      std::move(exclusion_list));
+  SetTabDiscardExceptionsMap({".example.com"});
 
   EXPECT_TRUE(NavigateAndDiscardFirstTab(GetURL(kWWWExampleURL)));
   EXPECT_FALSE(NavigateAndDiscardFirstTab(GetURL(kExampleURL)));
@@ -96,11 +86,9 @@ IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
                        ExclusionListMatchesSubdirectories) {
-  base::Value::List exclusion_list;
-  exclusion_list.Append("example.com/extensions/favicon");
-  GetPrefs()->SetList(
-      performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
-      std::move(exclusion_list));
+  SetTabDiscardExceptionsMap({
+      "example.com/extensions/favicon",
+  });
 
   EXPECT_FALSE(
       NavigateAndDiscardFirstTab(GetURL(kExampleURL, kPathWithoutQuery)));
@@ -110,11 +98,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
                        ExclusionListMatchesSchemeWildCards) {
-  base::Value::List exclude_sites_with_http_scheme;
-  exclude_sites_with_http_scheme.Append("http://*");
-  GetPrefs()->SetList(
-      performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
-      std::move(exclude_sites_with_http_scheme));
+  SetTabDiscardExceptionsMap({"http://*"});
 
   EXPECT_FALSE(NavigateAndDiscardFirstTab(GetURL(kExampleURL, kPathWithQuery)));
   EXPECT_FALSE(NavigateAndDiscardFirstTab(GetURL(kWWWExampleURL)));
@@ -123,12 +107,8 @@ IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
                        ExclusionListMatchesQueryParamWildCards) {
-  base::Value::List wildcard_at_end_of_query;
-  wildcard_at_end_of_query.Append(
-      "example.com/extensions/favicon/test_file.html?q=hello*");
-  GetPrefs()->SetList(
-      performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
-      std::move(wildcard_at_end_of_query));
+  SetTabDiscardExceptionsMap(
+      {"example.com/extensions/favicon/test_file.html?q=hello*"});
 
   EXPECT_FALSE(NavigateAndDiscardFirstTab(GetURL(kExampleURL, kPathWithQuery)));
   EXPECT_TRUE(NavigateAndDiscardFirstTab(GetURL(kExampleURL)));
@@ -136,11 +116,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
                        ExclusionListMatchesAllSitesWildCards) {
-  base::Value::List exclude_all_sites;
-  exclude_all_sites.Append("*");
-  GetPrefs()->SetList(
-      performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
-      std::move(exclude_all_sites));
+  SetTabDiscardExceptionsMap({"*"});
 
   EXPECT_FALSE(NavigateAndDiscardFirstTab(GetURL(kWWWExampleURL)));
   EXPECT_FALSE(NavigateAndDiscardFirstTab(GetURL(kSubDomainURL)));
@@ -149,12 +125,9 @@ IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
                        ExclusionListMatchesPort) {
-  base::Value::List exclusion_list;
-  exclusion_list.Append(std::string("example.com:") +
-                        base::NumberToString(embedded_test_server()->port()));
-  GetPrefs()->SetList(
-      performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
-      std::move(exclusion_list));
+  SetTabDiscardExceptionsMap(
+      {std::string("example.com:") +
+       base::NumberToString(embedded_test_server()->port())});
 
   EXPECT_FALSE(NavigateAndDiscardFirstTab(GetURL(kExampleURL)));
   EXPECT_FALSE(

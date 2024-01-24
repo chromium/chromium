@@ -131,6 +131,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/payments/content/mock_payment_manifest_web_data_service.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -3053,6 +3054,43 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveZoomLevel) {
   EXPECT_EQ("print", levels[0].host);
 
   zoom_map->SetClockForTesting(base::DefaultClock::GetInstance());
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveTabDiscardExceptionsList) {
+  base::Value::Dict exclusion_map;
+  exclusion_map.Set("a.com", base::TimeToValue(base::Time::Now()));
+  exclusion_map.Set("b.com",
+                    base::TimeToValue(base::Time::Now() - base::Hours(3)));
+  exclusion_map.Set("c.com", base::Value(base::Value::Type::NONE));
+  GetProfile()->GetPrefs()->SetDict(
+      performance_manager::user_tuning::prefs::kTabDiscardingExceptionsWithTime,
+      std::move(exclusion_map));
+
+  // Remove everything created during the last hour.
+  BlockUntilBrowsingDataRemoved(base::Time::Now() - base::Hours(1),
+                                base::Time::Max(),
+                                constants::DATA_TYPE_CONTENT_SETTINGS, false);
+
+  // Two of the entries should have been deleted: the one with no timestamp and
+  // the one created now.
+  EXPECT_EQ(1u, GetProfile()
+                    ->GetPrefs()
+                    ->GetDict(performance_manager::user_tuning::prefs::
+                                  kTabDiscardingExceptionsWithTime)
+                    .size());
+
+  // Remove everything created during all time.
+  BlockUntilBrowsingDataRemoved(base::Time::Min(), base::Time::Max(),
+                                constants::DATA_TYPE_CONTENT_SETTINGS, false);
+
+  // All entries should be removed now.
+  EXPECT_EQ(0u, GetProfile()
+                    ->GetPrefs()
+                    ->GetDict(performance_manager::user_tuning::prefs::
+                                  kTabDiscardingExceptionsWithTime)
+                    .size());
 }
 #endif
 

@@ -5,6 +5,8 @@
 #include "chrome/browser/browsing_data/counters/site_settings_counter.h"
 
 #include <set>
+
+#include "base/json/values_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -13,6 +15,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/url_matcher/url_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -104,15 +107,16 @@ void SiteSettingsCounter::Count() {
   for (const auto& site : never_prompt_sites)
     hosts.insert(site);
 
-  const base::Value::List& discard_exception_list = pref_service_->GetList(
-      performance_manager::user_tuning::prefs::kTabDiscardingExceptions);
-  for (const auto& site : discard_exception_list) {
+  const std::vector<std::string> tab_discard_exceptions =
+      performance_manager::user_tuning::prefs::GetTabDiscardExceptionsBetween(
+          pref_service_, period_start, period_end);
+  for (auto exception : tab_discard_exceptions) {
     url_matcher::util::FilterComponents components;
-
     bool is_valid = url_matcher::util::FilterToComponents(
-        site.GetString(), &components.scheme, &components.host,
+        exception, &components.scheme, &components.host,
         &components.match_subdomains, &components.port, &components.path,
         &components.query);
+
     if (is_valid && !components.host.empty()) {
       hosts.insert(components.host);
     } else {

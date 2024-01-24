@@ -112,4 +112,5 @@ export {SettingsMenuElement} from './settings_menu/settings_menu.js';
 export {SettingsSectionElement} from './settings_page/settings_section.js';
 export {SettingsUiElement} from './settings_ui/settings_ui.js';
 export {SiteFaviconElement} from './site_favicon.js';
+export {convertDateToWindowsEpoch} from './time.js';
 export {TooltipMixin, TooltipMixinInterface} from './tooltip_mixin.js';

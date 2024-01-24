@@ -2617,6 +2617,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kBorealisVmTokenHash);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Deprecated 1/2024.
+  performance_manager::user_tuning::prefs::MigrateTabDiscardingExceptionsPref(
+      profile_prefs);
+#endif
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 

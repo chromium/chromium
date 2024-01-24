@@ -5,8 +5,8 @@
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ExceptionAddDialogElement, ExceptionAddDialogTabs, ExceptionEditDialogElement, ExceptionTabbedAddDialogElement, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, MemorySaverModeExceptionListAction, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsCheckboxListEntryElement, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {convertDateToWindowsEpoch, ExceptionAddDialogElement, ExceptionAddDialogTabs, ExceptionEditDialogElement, ExceptionTabbedAddDialogElement, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, MemorySaverModeExceptionListAction, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsCheckboxListEntryElement, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
@@ -43,9 +43,9 @@ suite('TabDiscardExceptionsDialog', function() {
     dialog.set('prefs', {
       performance_tuning: {
         tab_discarding: {
-          exceptions: {
-            type: chrome.settingsPrivate.PrefType.LIST,
-            value: [EXISTING_RULE],
+          exceptions_with_time: {
+            type: chrome.settingsPrivate.PrefType.DICTIONARY,
+            value: {[EXISTING_RULE]: convertDateToWindowsEpoch()},
           },
         },
       },
@@ -145,7 +145,8 @@ suite('TabDiscardExceptionsDialog', function() {
 
     assertFalse(dialog.$.dialog.open);
     assertDeepEquals(
-        dialog.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value, [EXISTING_RULE]);
+        Object.keys(dialog.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value),
+        [EXISTING_RULE]);
   }
 
   test('testExceptionAddDialogCancel', async function() {
@@ -171,7 +172,8 @@ suite('TabDiscardExceptionsDialog', function() {
 
     assertFalse(dialog.$.dialog.open);
     assertDeepEquals(
-        dialog.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value, expectedRules);
+        Object.keys(dialog.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value),
+        expectedRules);
   }
 
   test('testExceptionAddDialogSubmit', async function() {
@@ -214,8 +216,10 @@ suite('TabDiscardExceptionsDialog', function() {
   });
 
   test('testExceptionEditDialogSubmitExisting', async function() {
-    dialog.setPrefValue(
-        TAB_DISCARD_EXCEPTIONS_PREF, [EXISTING_RULE, VALID_RULE]);
+    dialog.setPrefValue(TAB_DISCARD_EXCEPTIONS_PREF, {
+      EXISTING_RULE: convertDateToWindowsEpoch(),
+      VALID_RULE: convertDateToWindowsEpoch(),
+    });
     dialog = setupEditDialog();
     await assertUserInputValidated(VALID_RULE);
     assertSubmit([VALID_RULE]);
@@ -238,6 +242,23 @@ suite('TabDiscardExceptionsDialog', function() {
     assertTrue(!!entry);
     return entry;
   }
+
+  test('testExceptionEditDialogUpdateTimestamp', async function() {
+    dialog = setupEditDialog();
+    await assertUserInputValidated(VALID_RULE);
+    assertSubmit([VALID_RULE]);
+
+    const originalTimestamp =
+        parseInt(dialog.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value[VALID_RULE]);
+
+    dialog = setupEditDialog();
+    await assertUserInputValidated(VALID_RULE);
+    assertSubmit([VALID_RULE]);
+    const updatedTimestamp =
+        parseInt(dialog.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value[VALID_RULE]);
+
+    assertLT(originalTimestamp, updatedTimestamp);
+  });
 
   test('testExceptionTabbedAddDialogListEmpty', async function() {
     performanceBrowserProxy.setCurrentOpenSites([EXISTING_RULE]);

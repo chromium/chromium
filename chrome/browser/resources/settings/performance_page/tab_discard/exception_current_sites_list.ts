@@ -14,6 +14,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {convertDateToWindowsEpoch} from '../../time.js';
 import {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from '../performance_browser_proxy.js';
 import {MemorySaverModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from '../performance_metrics_proxy.js';
 
@@ -144,7 +145,7 @@ export class ExceptionCurrentSitesListElement extends
 
   private async updateCurrentSites_() {
     const existingSites =
-        new Set(this.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value);
+        new Set(Object.keys(this.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value));
     const currentSites = (await this.browserProxy_.getCurrentOpenSites())
                              .filter(rule => !existingSites.has(rule));
 
@@ -186,7 +187,8 @@ export class ExceptionCurrentSitesListElement extends
   submit() {
     assert(!this.submitDisabled);
     this.selectedSites_.forEach(rule => {
-      this.appendPrefListItem(TAB_DISCARD_EXCEPTIONS_PREF, rule);
+      this.setPrefDictEntry(
+          TAB_DISCARD_EXCEPTIONS_PREF, rule, convertDateToWindowsEpoch());
     });
     this.metricsProxy_.recordExceptionListAction(
         MemorySaverModeExceptionListAction.ADD_FROM_CURRENT);

@@ -1074,9 +1074,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)
       [performance_manager::user_tuning::prefs::kBatterySaverModeState] =
           settings_api::PrefType::kNumber;
-  (*s_allowlist)
-      [performance_manager::user_tuning::prefs::kTabDiscardingExceptions] =
-          settings_api::PrefType::kList;
+  (*s_allowlist)[performance_manager::user_tuning::prefs::
+                     kTabDiscardingExceptionsWithTime] =
+      settings_api::PrefType::kDictionary;
   (*s_allowlist)[performance_manager::user_tuning::prefs::
                      kManagedTabDiscardingExceptions] =
       settings_api::PrefType::kList;

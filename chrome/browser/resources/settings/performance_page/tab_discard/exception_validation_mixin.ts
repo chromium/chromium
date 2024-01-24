@@ -10,7 +10,7 @@ import {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from '../performan
 export const MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH = 10 * 1024;
 
 export const TAB_DISCARD_EXCEPTIONS_PREF =
-    'performance_tuning.tab_discarding.exceptions';
+    'performance_tuning.tab_discarding.exceptions_with_time';
 export const TAB_DISCARD_EXCEPTIONS_MANAGED_PREF =
     'performance_tuning.tab_discarding.exceptions_managed';
 

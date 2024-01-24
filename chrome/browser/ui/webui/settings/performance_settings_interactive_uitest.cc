@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/json/values_util.h"
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -729,11 +730,7 @@ IN_PROC_BROWSER_TEST_F(TabDiscardExceptionsSettingsInteractiveTest,
 // non-chrome sites and have not been added to the exceptions list yet
 IN_PROC_BROWSER_TEST_F(TabDiscardExceptionsSettingsInteractiveTest,
                        IgnoreIneligibleTabs) {
-  base::Value::List exclusion_list;
-  exclusion_list.Append("example.com");
-  browser()->profile()->GetPrefs()->SetList(
-      performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
-      std::move(exclusion_list));
+  SetTabDiscardExceptionsMap({"example.com"});
 
   RunTestSequence(
       InstrumentTab(kPerformanceSettingsPage),
