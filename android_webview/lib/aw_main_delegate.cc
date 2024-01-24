@@ -159,6 +159,7 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
     if (AwDrawFnImpl::IsUsingVulkan())
       cl->AppendSwitch(switches::kWebViewDrawFunctorUsesVulkan);
 
+#ifdef V8_USE_EXTERNAL_STARTUP_DATA
 #if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
     const gin::V8SnapshotFileType file_type =
         gin::V8SnapshotFileType::kWithAdditionalContext;
@@ -171,6 +172,7 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
     base::android::RegisterApkAssetWithFileDescriptorStore(
         content::kV8Snapshot64DataDescriptor,
         gin::V8Initializer::GetSnapshotFilePath(false, file_type));
+#endif  // V8_USE_EXTERNAL_STARTUP_DATA
   }
 
   if (cl->HasSwitch(switches::kWebViewSandboxedRenderer)) {
