@@ -53,7 +53,6 @@ source_set("badges") {
   deps = [
     ":public",
     ":util",
-    "resources:incognito_badge_ios14",
     "//base",
     "//components/autofill/core/browser",
     "//components/password_manager/core/common",
