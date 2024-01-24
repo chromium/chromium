@@ -508,22 +508,15 @@ void DrawRRectOp::Serialize(PaintOpWriter& writer,
   writer.Write(rrect);
 }
 
-// TODO(fmalita): make this a PaintOpWriter method.
-template <typename T>
-void WriteVector(PaintOpWriter& writer, const std::vector<T>& vec) {
-  writer.WriteSize(vec.size());
-  writer.WriteData(vec.size() * sizeof(vec[0]), vec.data());
-}
-
 void DrawVerticesOp::Serialize(PaintOpWriter& writer,
                                const PaintFlags* flags_to_serialize,
                                const SkM44& current_ctm,
                                const SkM44& original_ctm) const {
   writer.Write(*flags_to_serialize, current_ctm);
 
-  WriteVector(writer, vertices->data());
-  WriteVector(writer, uvs->data());
-  WriteVector(writer, indices->data());
+  writer.Write(vertices->data());
+  writer.Write(uvs->data());
+  writer.Write(indices->data());
 }
 
 namespace {
@@ -843,29 +836,24 @@ PaintOp* DrawRRectOp::Deserialize(PaintOpReader& reader, void* output) {
   return op;
 }
 
-// TODO(fmalita): make this a PaintOpReader method.
-template <typename T>
-std::vector<T> ReadVector(PaintOpReader& reader) {
-  size_t size = 0;
-  reader.ReadSize(&size);
-
-  std::vector<T> vec(size);
-  reader.ReadData(size * sizeof(vec.data()[0]), vec.data());
-
-  return vec;
-}
-
 PaintOp* DrawVerticesOp::Deserialize(PaintOpReader& reader, void* output) {
   DrawVerticesOp* op = new (output) DrawVerticesOp;
 
   reader.Read(&op->flags);
 
-  op->vertices = base::MakeRefCounted<RefCountedBuffer<SkPoint>>(
-      ReadVector<SkPoint>(reader));
-  op->uvs = base::MakeRefCounted<RefCountedBuffer<SkPoint>>(
-      ReadVector<SkPoint>(reader));
-  op->indices = base::MakeRefCounted<RefCountedBuffer<uint16_t>>(
-      ReadVector<uint16_t>(reader));
+  std::vector<SkPoint> vertices;
+  reader.Read(&vertices);
+  op->vertices =
+      base::MakeRefCounted<RefCountedBuffer<SkPoint>>(std::move(vertices));
+
+  std::vector<SkPoint> uvs;
+  reader.Read(&uvs);
+  op->uvs = base::MakeRefCounted<RefCountedBuffer<SkPoint>>(std::move(uvs));
+
+  std::vector<uint16_t> indices;
+  reader.Read(&indices);
+  op->indices =
+      base::MakeRefCounted<RefCountedBuffer<uint16_t>>(std::move(indices));
 
   return op;
 }

@@ -6,6 +6,7 @@
 #define CC_PAINT_PAINT_OP_WRITER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/bits.h"
 #include "base/memory/aligned_memory.h"
@@ -328,6 +329,12 @@ class CC_PAINT_EXPORT PaintOpWriter {
         ...);
 
     DidWrite(total_size);
+  }
+
+  template <typename T>
+  void Write(const std::vector<T>& vec) {
+    WriteSize(vec.size());
+    WriteData(vec.size() * sizeof(T), vec.data());
   }
 
  private:

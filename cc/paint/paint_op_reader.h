@@ -6,6 +6,8 @@
 #define CC_PAINT_PAINT_OP_READER_H_
 
 #include <optional>
+#include <vector>
+
 #include "base/bits.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -129,6 +131,20 @@ class CC_PAINT_EXPORT PaintOpReader {
     uint8_t value = 0u;
     Read(&value);
     *data = !!value;
+  }
+
+  template <typename T>
+  void Read(std::vector<T>* vec) {
+    size_t size = 0;
+    ReadSize(&size);
+
+    if (size > vec->max_size() || remaining_bytes_ < size * sizeof(T)) {
+      SetInvalid(DeserializationError::kInsufficientRemainingBytes_ReadData);
+      return;
+    }
+
+    vec->resize(size);
+    ReadData(size * sizeof(T), vec->data());
   }
 
   // Returns a pointer to the next block of memory of size |bytes|, and treats
