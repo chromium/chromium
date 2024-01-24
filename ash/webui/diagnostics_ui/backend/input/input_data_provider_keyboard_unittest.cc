@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/webui/diagnostics_ui/backend/input/input_data_provider_keyboard.h"
+
 #include <algorithm>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -11,12 +14,10 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
-#include "ash/webui/diagnostics_ui/backend/input/input_data_provider_keyboard.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-forward.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-shared.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "content/public/test/browser_task_environment.h"
@@ -65,10 +66,10 @@ enum VivaldiTopRowScanCode {
 };
 
 // xkb layout ids for both turkish Q-Type and F-Type layouts.
-constexpr base::StringPiece kTurkishKeyboardLayoutId = "xkb:tr::tur";
-constexpr base::StringPiece kTurkishKeyboardFLayoutId = "xkb:tr:f:tur";
-constexpr base::StringPiece kTurkeyRegionCode = "tr";
-constexpr base::StringPiece kTurkeyFLayoutRegionCode = "tr.f";
+constexpr std::string_view kTurkishKeyboardLayoutId = "xkb:tr::tur";
+constexpr std::string_view kTurkishKeyboardFLayoutId = "xkb:tr:f:tur";
+constexpr std::string_view kTurkeyRegionCode = "tr";
+constexpr std::string_view kTurkeyFLayoutRegionCode = "tr.f";
 
 ui::InputDevice InputDeviceFromCapabilities(
     int device_id,

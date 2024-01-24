@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/containers/span.h"
@@ -43,7 +44,7 @@ class EcheUidProvider : public mojom::UidGenerator {
 
   std::string ConvertBinaryToString(base::span<const uint8_t> src);
   std::optional<std::vector<uint8_t>> ConvertStringToBinary(
-      base::StringPiece str,
+      std::string_view str,
       size_t expected_len);
   void GenerateKeyPair(uint8_t public_key[ED25519_PUBLIC_KEY_LEN],
                        uint8_t private_key[ED25519_PRIVATE_KEY_LEN]);
