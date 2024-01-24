@@ -111,8 +111,8 @@ std::optional<DeviceRequestId> GetDeviceRequestIdFromFwupdString(
            {kFwupdDeviceRequestId_RemoveUSBCable,
             DeviceRequestId::kRemoveUSBCable},
            {kFwupdDeviceRequestId_PressUnlock, DeviceRequestId::kPressUnlock},
-           {kFwupdDeviceRequestId_RemoveReplug,
-            DeviceRequestId::kRemoveReplug}});
+           {kFwupdDeviceRequestId_RemoveReplug, DeviceRequestId::kRemoveReplug},
+           {kFwupdDeviceRequestId_ReplugPower, DeviceRequestId::kReplugPower}});
 
   if (fwupdStringToRequestIdMap->contains(fwupd_device_id_string)) {
     return fwupdStringToRequestIdMap->at(fwupd_device_id_string);

@@ -80,6 +80,8 @@ enum DeviceRequestId {
   kPressUnlock,
   // Remove and reinsert the device to complete the update
   kRemoveReplug,
+  // Unplug and reinsert the device power cable.
+  kReplugPower,
 };
 
 // This enum corresponds to the FwupdRequestKind values found in

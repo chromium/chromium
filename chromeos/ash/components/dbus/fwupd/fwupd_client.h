@@ -27,6 +27,7 @@ enum DeviceRequestId {
   kRemoveUSBCable,
   kPressUnlock,
   kRemoveReplug,
+  kReplugPower,
 };
 
 namespace ash {

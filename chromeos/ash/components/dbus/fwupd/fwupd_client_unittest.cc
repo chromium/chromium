@@ -770,6 +770,8 @@ INSTANTIATE_TEST_SUITE_P(
          /*expected_index_of_request_id=*/4},
         {/*device_request_id_key=*/kFwupdDeviceRequestId_RemoveReplug,
          /*expected_index_of_request_id=*/5},
+        {/*device_request_id_key=*/kFwupdDeviceRequestId_ReplugPower,
+         /*expected_index_of_request_id=*/6},
     }));
 
 // Test that the DeviceRequest signal is parsed correctly and the
