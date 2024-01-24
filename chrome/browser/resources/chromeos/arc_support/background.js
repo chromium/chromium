@@ -296,13 +296,13 @@ class TermsOfServicePage {
     this.termsView_.addContentScripts([
       {
         name: 'preProcess',
-        matches: ['https://play.google/*'],
+        matches: ['<all_urls>'],
         js: {code: scriptInitTermsView},
         run_at: 'document_start',
       },
       {
         name: 'postProcess',
-        matches: ['https://play.google/*'],
+        matches: ['<all_urls>'],
         css: {files: ['playstore.css']},
         js: {files: ['playstore.js']},
         run_at: 'document_end',
