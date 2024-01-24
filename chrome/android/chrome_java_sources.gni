@@ -127,6 +127,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/autofill/fp/FacilitatedPaymentBottomSheetBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/fp/FacilitatedPaymentBottomSheetContent.java",
   "java/src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetBridge.java",
+  "java/src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetCoordinator.java",
+  "java/src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetMediator.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/AndroidPaymentAppPreference.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/AndroidPaymentAppsFragment.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/AutofillCreditCardEditor.java",

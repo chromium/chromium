@@ -22,6 +22,7 @@ namespace {
 
 using SaveIbanOfferUserDecision = AutofillClient::SaveIbanOfferUserDecision;
 
+std::u16string_view kIbanLabel = u"CH56 0483 5012 3456 7800 9";
 std::u16string_view kUserProvidedNickname = u"My Doctor's IBAN";
 
 class AutofillSaveIbanBottomSheetBridgeTest
@@ -55,7 +56,7 @@ TEST_F(AutofillSaveIbanBottomSheetBridgeTest, BridgeCallsOnUiAccepted) {
       std::make_unique<MockDelegate>(MakeLocalCallback(), web_contents());
   MockDelegate& delegate_reference = *delegate;
   AutofillSaveIbanBottomSheetBridge bridge;
-  bridge.RequestShowContent(/*iban_label=*/u"", std::move(delegate));
+  bridge.RequestShowContent(kIbanLabel, std::move(delegate));
 
   base::MockOnceClosure mock_accept_callback;
   EXPECT_CALL(delegate_reference, OnUiAccepted);
@@ -75,7 +76,7 @@ TEST_F(AutofillSaveIbanBottomSheetBridgeTest, BridgeCallsOnUiCanceled) {
       std::make_unique<MockDelegate>(MakeLocalCallback(), web_contents());
   MockDelegate& delegate_reference = *delegate;
   AutofillSaveIbanBottomSheetBridge bridge;
-  bridge.RequestShowContent(/*iban_label=*/u"", std::move(delegate));
+  bridge.RequestShowContent(kIbanLabel, std::move(delegate));
 
   EXPECT_CALL(delegate_reference, OnUiCanceled());
 
@@ -88,7 +89,7 @@ TEST_F(AutofillSaveIbanBottomSheetBridgeTest, BridgeCallsOnUiIgnored) {
       std::make_unique<MockDelegate>(MakeLocalCallback(), web_contents());
   MockDelegate& delegate_reference = *delegate;
   AutofillSaveIbanBottomSheetBridge bridge;
-  bridge.RequestShowContent(/*iban_label=*/u"", std::move(delegate));
+  bridge.RequestShowContent(kIbanLabel, std::move(delegate));
 
   EXPECT_CALL(delegate_reference, OnUiIgnored());
 
