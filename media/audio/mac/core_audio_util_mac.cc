@@ -13,7 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "media/audio/mac/scoped_audio_unit.h"
+#include "media/audio/apple/scoped_audio_unit.h"
 #include "media/base/audio_timestamp_helper.h"
 
 #include <IOKit/audio/IOAudioTypes.h>

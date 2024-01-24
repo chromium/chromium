@@ -6,11 +6,11 @@
 
 #include <memory>
 
+#include "media/audio/apple/audio_auhal.h"
+#include "media/audio/apple/audio_input.h"
+#include "media/audio/apple/audio_low_latency_input.h"
 #include "media/audio/apple/audio_manager_apple.h"
 #include "media/audio/ios/audio_session_manager_ios.h"
-#include "media/audio/mac/audio_auhal_mac.h"
-#include "media/audio/mac/audio_input_mac.h"
-#include "media/audio/mac/audio_low_latency_input_mac.h"
 
 namespace media {
 

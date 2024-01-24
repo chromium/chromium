@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/audio/mac/audio_input_mac.h"
+#include "media/audio/apple/audio_input.h"
 
 #include <CoreServices/CoreServices.h>
 

@@ -32,8 +32,8 @@
 //   2) The delay between the actual recording instant and the time when the
 //      data packet is provided as a callback.
 //
-#ifndef MEDIA_AUDIO_MAC_AUDIO_LOW_LATENCY_INPUT_MAC_H_
-#define MEDIA_AUDIO_MAC_AUDIO_LOW_LATENCY_INPUT_MAC_H_
+#ifndef MEDIA_AUDIO_APPLE_AUDIO_LOW_LATENCY_INPUT_H_
+#define MEDIA_AUDIO_APPLE_AUDIO_LOW_LATENCY_INPUT_H_
 
 #include <AudioUnit/AudioUnit.h>
 
@@ -267,4 +267,4 @@ class MEDIA_EXPORT AUAudioInputStream
 
 }  // namespace media
 
-#endif  // MEDIA_AUDIO_MAC_AUDIO_LOW_LATENCY_INPUT_MAC_H_
+#endif  // MEDIA_AUDIO_APPLE_AUDIO_LOW_LATENCY_INPUT_H_

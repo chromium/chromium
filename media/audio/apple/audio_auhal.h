@@ -14,8 +14,8 @@
 //   2) The delay between the moment getting the callback and the scheduled time
 //      stamp that tells when the data is going to be played out.
 //
-#ifndef MEDIA_AUDIO_MAC_AUDIO_AUHAL_MAC_H_
-#define MEDIA_AUDIO_MAC_AUDIO_AUHAL_MAC_H_
+#ifndef MEDIA_AUDIO_APPLE_AUDIO_AUHAL_H_
+#define MEDIA_AUDIO_APPLE_AUDIO_AUHAL_H_
 
 #include <AudioUnit/AudioUnit.h>
 #include <stddef.h>
@@ -34,7 +34,7 @@
 #include "media/audio/apple/audio_manager_apple.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
-#include "media/audio/mac/scoped_audio_unit.h"
+#include "media/audio/apple/scoped_audio_unit.h"
 #include "media/audio/system_glitch_reporter.h"
 #include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_parameters.h"
@@ -212,4 +212,4 @@ class AUHALStream : public AudioOutputStream {
 
 }  // namespace media
 
-#endif  // MEDIA_AUDIO_MAC_AUDIO_AUHAL_MAC_H_
+#endif  // MEDIA_AUDIO_APPLE_AUDIO_AUHAL_H_

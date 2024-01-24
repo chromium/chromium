@@ -21,7 +21,7 @@
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/audio_unittest_util.h"
-#include "media/audio/mac/audio_low_latency_input_mac.h"
+#include "media/audio/apple/audio_low_latency_input.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/seekable_buffer.h"

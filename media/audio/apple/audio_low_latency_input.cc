@@ -1,7 +1,7 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "media/audio/mac/audio_low_latency_input_mac.h"
+#include "media/audio/apple/audio_low_latency_input.h"
 
 #include <CoreServices/CoreServices.h>
 #include <dlfcn.h>
@@ -23,7 +23,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/apple/audio_manager_apple.h"
-#include "media/audio/mac/scoped_audio_unit.h"
+#include "media/audio/apple/scoped_audio_unit.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/data_buffer.h"
