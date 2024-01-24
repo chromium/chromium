@@ -143,7 +143,9 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
 
 class ScriptStreamingTest : public testing::Test {
  public:
-  ScriptStreamingTest() : url_("http://www.streaming-test.com/") {
+  ScriptStreamingTest()
+      : url_(String("http://www.streaming-test.com/foo" +
+                    base::NumberToString(url_counter_++))) {
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     FetchContext* context = MakeGarbageCollected<MockFetchContext>();
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
@@ -227,6 +229,8 @@ class ScriptStreamingTest : public testing::Test {
 
   void RunUntilResourceLoaded() { run_loop_.Run(); }
 
+  static int url_counter_;
+
   test::TaskEnvironment task_environment_;
   KURL url_;
 
@@ -236,6 +240,8 @@ class ScriptStreamingTest : public testing::Test {
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
 };
+
+int ScriptStreamingTest::url_counter_ = 0;
 
 TEST_F(ScriptStreamingTest, CompilingStreamedScript) {
   // Test that we can successfully compile a streamed script.
@@ -643,10 +649,7 @@ TEST_P(InlineScriptStreamingTest, InlineScript) {
       5, result.GetSuccessValue()->Int32Value(scope.GetContext()).FromJust());
 }
 
-// TODO(crbug.com/1515152) Re-enable when the source of the hard-crashes has
-// been addressed.
-TEST_F(ScriptStreamingTest,
-       DISABLED_ProduceLocalCompileHintsForStreamedScript) {
+TEST_F(ScriptStreamingTest, ProduceLocalCompileHintsForStreamedScript) {
   // Test that we can produce local compile hints when a script is streamed.
   base::test::ScopedFeatureList flag_on(features::kLocalCompileHints);
   V8TestingScope scope;
