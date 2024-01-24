@@ -726,11 +726,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "autofill-prevent-overriding-prefilled-values",
-    "owners": [ "vidhanj@chromium.org", "koerber@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "autofill-show-autocomplete-delete-button",
     "owners": [ "jkeitel@google.com", "autofill-squad-muc@google.com"],
     "expiry_milestone": 124
