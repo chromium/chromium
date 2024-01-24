@@ -12,7 +12,7 @@ namespace blink {
 
 class RubyContainer;
 
-// This is a general block container wrapping an anonymous LayoutRubyAsInline.
+// This is a general block container wrapping an anonymous LayoutRuby.
 //
 // https://drafts.csswg.org/css-ruby/#block-ruby
 // > If an element has an inner display type of ruby and an outer display type

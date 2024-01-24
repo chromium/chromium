@@ -172,7 +172,7 @@ void LayoutRubyColumn::RemoveChild(LayoutObject* child) {
   if (RuntimeEnabledFeatures::RubySimplePairingEnabled()) {
     if (!DocumentBeingDestroyed()) {
       DCHECK(child->IsRubyBase() || child->IsRubyText());
-      if (auto* inline_ruby = DynamicTo<LayoutRubyAsInline>(Parent())) {
+      if (auto* inline_ruby = DynamicTo<LayoutRuby>(Parent())) {
         inline_ruby->DidRemoveChildFromColumn(*child);
       } else {
         To<LayoutRubyAsBlock>(Parent())->DidRemoveChildFromColumn(*child);

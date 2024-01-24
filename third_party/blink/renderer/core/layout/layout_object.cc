@@ -420,7 +420,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return MakeGarbageCollected<LayoutMathMLBlock>(element);
     case EDisplay::kRuby:
       DCHECK(RuntimeEnabledFeatures::CssDisplayRubyEnabled());
-      return MakeGarbageCollected<LayoutRubyAsInline>(element);
+      return MakeGarbageCollected<LayoutRuby>(element);
     case EDisplay::kBlockRuby:
       DCHECK(RuntimeEnabledFeatures::CssDisplayRubyEnabled());
       return MakeGarbageCollected<LayoutRubyAsBlock>(element);

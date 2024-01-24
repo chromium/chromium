@@ -57,10 +57,10 @@ class RubyContainer;
 // Generated :before/:after content is shunted into anonymous inline blocks
 
 // <ruby> when used as 'display:inline'
-class LayoutRubyAsInline final : public LayoutInline {
+class LayoutRuby final : public LayoutInline {
  public:
-  LayoutRubyAsInline(Element*);
-  ~LayoutRubyAsInline() override;
+  LayoutRuby(Element*);
+  ~LayoutRuby() override;
   void Trace(Visitor* visitor) const override;
 
   void AddChild(LayoutObject* child,
@@ -90,7 +90,7 @@ class LayoutRubyAsInline final : public LayoutInline {
 };
 
 template <>
-struct DowncastTraits<LayoutRubyAsInline> {
+struct DowncastTraits<LayoutRuby> {
   static bool AllowFrom(const LayoutObject& object) {
     return object.IsRuby() && object.IsLayoutInline();
   }
