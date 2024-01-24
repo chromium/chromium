@@ -109,7 +109,8 @@ export class TestShoppingServiceApiProxy extends TestBrowserProxy implements
   }
 
   isShoppingListEligible() {
-    return this.methodCalled('isShoppingListEligible');
+    this.methodCalled('isShoppingListEligible');
+    return Promise.resolve({eligible: false});
   }
 
   getShoppingCollectionBookmarkFolderId() {
@@ -118,7 +119,8 @@ export class TestShoppingServiceApiProxy extends TestBrowserProxy implements
   }
 
   getPriceTrackingStatusForCurrentUrl() {
-    return this.methodCalled('getPriceTrackingStatusForCurrentUrl');
+    this.methodCalled('getPriceTrackingStatusForCurrentUrl');
+    return Promise.resolve({tracked: false});
   }
 
   setPriceTrackingStatusForCurrentUrl(track: boolean) {
@@ -126,7 +128,8 @@ export class TestShoppingServiceApiProxy extends TestBrowserProxy implements
   }
 
   getParentBookmarkFolderNameForCurrentUrl() {
-    return this.methodCalled('getParentBookmarkFolderNameForCurrentUrl');
+    this.methodCalled('getParentBookmarkFolderNameForCurrentUrl');
+    return Promise.resolve({name: {data: []}});
   }
 
   showBookmarkEditorForCurrentUrl() {

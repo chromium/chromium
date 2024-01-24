@@ -76,11 +76,11 @@ export class ShoppingInsightsAppElement extends PolymerElement {
     this.priceInsightsInfo = priceInsightsInfo;
 
     const {eligible} = await this.shoppingApi_.isShoppingListEligible();
-    this.shoppingApi_.getPriceTrackingStatusForCurrentUrl().then(res => {
-      this.isProductTracked_ = res.tracked;
-      this.isProductTrackable_ =
-          eligible && (priceInsightsInfo.clusterId !== BigInt(0));
-    });
+    const {tracked} =
+        await this.shoppingApi_.getPriceTrackingStatusForCurrentUrl();
+    this.isProductTracked_ = tracked;
+    this.isProductTrackable_ =
+        eligible && (priceInsightsInfo.clusterId !== BigInt(0));
   }
 
   override connectedCallback() {

@@ -51,7 +51,7 @@ class TestSecurityKeysBioEnrollProxy extends TestSecurityKeysBrowserProxy
   }
 
   cancelEnrollment() {
-    return this.methodCalled('cancelEnrollment');
+    this.methodCalled('cancelEnrollment');
   }
 
   deleteEnrollment(id: string) {
