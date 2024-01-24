@@ -2609,8 +2609,9 @@
       base_feature: "none",
     },
     {
+      // crbug.com/750990
       name: "OffsetMappingUnitVariable",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "OnDeviceChange",
