@@ -365,12 +365,22 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
     fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
+    account_id_ = AccountId::FromUserEmail(kTestAccount);
+    const std::string username_hash =
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id_);
+    fake_user_manager()->AddUser(account_id_);
+    fake_user_manager()->UserLoggedIn(account_id_, username_hash,
+                                      /*browser_restart=*/false,
+                                      /*is_child=*/false);
+
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
+    auto* prefs_ptr = prefs.get();
     profile_ = profile_manager_->CreateTestingProfile(
         kTestAccount, std::move(prefs), std::u16string(), /*avatar_id=*/0,
         TestingProfile::TestingFactories());
+    fake_user_manager()->OnUserProfileCreated(account_id_, prefs_ptr);
     fake_desk_sync_service_ =
         std::make_unique<desks_storage::FakeDeskSyncService>(
             /*skip_engine_connection=*/true);
@@ -382,14 +392,6 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     user_activity_detector()->set_last_activity_time_for_test(
         base::TimeTicks::Now());
     cache_ = std::make_unique<apps::AppRegistryCache>();
-    account_id_ = AccountId::FromUserEmail(kTestAccount);
-    const std::string username_hash =
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id_);
-    fake_user_manager()->AddUser(account_id_);
-
-    fake_user_manager()->UserLoggedIn(account_id_, username_hash,
-                                      /*browser_restart=*/false,
-                                      /*is_child=*/false);
     apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id_,
                                                              cache_.get());
     mock_desks_client_ = std::make_unique<MockDesksClient>();
@@ -401,6 +403,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     if (floating_workspace_service) {
       floating_workspace_service->ShutDownServicesAndObservers();
     }
+    fake_user_manager()->OnUserProfileWillBeDestroyed(account_id_);
     profile_ = nullptr;
     profile_manager_ = nullptr;
     mock_desks_client_ = nullptr;

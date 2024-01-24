@@ -221,6 +221,7 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   TestingProfile* profile =
       testing_profile_manager.CreateTestingProfile(account.GetUserEmail());
   profile->set_profile_name(account.GetUserEmail());
+  user_manager.OnUserProfileCreated(account, profile->GetPrefs());
 
   auto crosapi_manager = CreateCrosapiManagerWithTestRegistry();
 
@@ -281,6 +282,8 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   sub1.Close();
   ASSERT_TRUE(base::TerminateMultiProcessTestChild(sub2, 0, true));
   sub2.Close();
+
+  user_manager.OnUserProfileWillBeDestroyed(account);
 }
 
 // Another process that emulates the behavior of lacros-chrome.
