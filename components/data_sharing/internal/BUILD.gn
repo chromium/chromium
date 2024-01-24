@@ -26,6 +26,7 @@ static_library("internal") {
   ]
 
   deps = [
+    "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/signin/public/identity_manager",
     "//services/network/public/cpp",
   ]
@@ -67,6 +68,7 @@ source_set("unit_tests") {
     ":internal",
     "//base",
     "//base/test:test_support",
+    "//components/endpoint_fetcher:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",

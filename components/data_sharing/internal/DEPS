@@ -1,6 +1,8 @@
 include_rules = [
+  "+components/endpoint_fetcher",
   "+components/signin/public/identity_manager",
   "+net/android",
+  "+net/http",
   "+net/traffic_annotation",
   "+services/network/public/cpp",
   "+services/network/test",
