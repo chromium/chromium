@@ -9,9 +9,9 @@
 #include "chrome/test/fuzzing/in_process_fuzzer.h"
 
 // This is an example use of the InProcessFuzzer framework.
-// It fetches arbitrary HTML from an HTTPS server. It's not really
-// intended to be an effective fuzzer, but just to show an example
-// of how this framework can be used.
+// It encodes arbirtary HTML into a data: URI then navigates to it.
+// It's not really intended to be an effective fuzzer, but just to
+// show an example of how this framework can be used.
 
 class HtmlInProcessFuzzer : public InProcessFuzzer {
  public:
