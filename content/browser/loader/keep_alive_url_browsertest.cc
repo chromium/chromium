@@ -120,7 +120,6 @@ class KeepAliveURLBrowserTestBase : public ContentBrowserTest {
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
                                                 GetDisabledFeatures());
-    base::test::AllowCheckIsTestForTesting();
     ContentBrowserTest::SetUp();
   }
   virtual const FeaturesType& GetEnabledFeatures() {
