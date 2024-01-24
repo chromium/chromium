@@ -13,6 +13,7 @@ enum class ContentSuggestionsModuleType;
 @class ContentSuggestionsWhatsNewItem;
 @class QuerySuggestionConfig;
 @class SafetyCheckState;
+@class SetUpListConfig;
 enum class SetUpListItemType;
 @class SetUpListItemViewData;
 @class ShortcutsConfig;
@@ -78,6 +79,7 @@ struct MagicStackOrderChange {
 // Indicates to the consumer to display the SetUpList - a list of
 // tasks that a new user may want to complete.
 - (void)showSetUpListWithItems:(NSArray<SetUpListItemViewData*>*)items;
+- (void)showSetUpListModuleWithConfigs:(NSArray<SetUpListConfig*>*)configs;
 
 // Marks a Set Up List item complete with an animation and updated appearance.
 // Calls the `completion` block when the animation is finished.

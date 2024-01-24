@@ -282,7 +282,7 @@ const CGFloat kSeparatorHeight = 0.5;
   _title.accessibilityIdentifier =
       [MagicStackModuleContainer accessibilityIdentifierForModule:_type];
 
-  _seeMoreButton.hidden = ![self shouldShowSeeMore];
+  _seeMoreButton.hidden = !config.shouldShowSeeMore;
 
   if ([self shouldShowSubtitle]) {
     // TODO(crbug.com/1474992): Update MagicStackModuleContainer to take an id

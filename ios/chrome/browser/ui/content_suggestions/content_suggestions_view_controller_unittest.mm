@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/shortcuts_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -135,14 +136,14 @@ TEST_F(ContentSuggestionsViewControllerTest,
 
   histogram_tester_->ExpectBucketCount(
       kMagicStackTopModuleImpressionHistogram,
-      ContentSuggestionsModuleType::kSetUpListSync, 0);
+      ContentSuggestionsModuleType::kCompactedSetUpList, 0);
   [view_controller_ setMagicStackOrder:@[
-    @(int(ContentSuggestionsModuleType::kSetUpListSync)),
-    @(int(ContentSuggestionsModuleType::kSetUpListDefaultBrowser)),
-    @(int(ContentSuggestionsModuleType::kSetUpListAutofill)),
+    @(int(ContentSuggestionsModuleType::kCompactedSetUpList)),
     @(int(ContentSuggestionsModuleType::kShortcuts))
   ]];
-  [view_controller_ showSetUpListWithItems:@[
+  SetUpListConfig* config = [[SetUpListConfig alloc] init];
+  config.shouldShowCompactModule = YES;
+  config.setUpListItems = @[
     [[SetUpListItemViewData alloc] initWithType:SetUpListItemType::kSignInSync
                                        complete:NO],
     [[SetUpListItemViewData alloc]
@@ -150,12 +151,13 @@ TEST_F(ContentSuggestionsViewControllerTest,
             complete:NO],
     [[SetUpListItemViewData alloc] initWithType:SetUpListItemType::kAutofill
                                        complete:NO]
-  ]];
+  ];
+  [view_controller_ showSetUpListModuleWithConfigs:@[ config ]];
   [view_controller_ setShortcutTilesConfig:ShortcutsConfigWithBookmark()];
   [view_controller_ view];
   histogram_tester_->ExpectBucketCount(
       kMagicStackTopModuleImpressionHistogram,
-      ContentSuggestionsModuleType::kSetUpListSync, 1);
+      ContentSuggestionsModuleType::kCompactedSetUpList, 1);
 }
 
 // Tests that the Magic Stack top module impression metric logs correctly even

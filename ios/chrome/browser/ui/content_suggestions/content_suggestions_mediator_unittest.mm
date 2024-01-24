@@ -143,6 +143,9 @@ using startup_metric_utils::FirstRunSentinelCreationResult;
 - (void)showSetUpListWithItems:(NSArray<SetUpListItemViewData*>*)items {
 }
 
+- (void)showSetUpListModuleWithConfigs:(NSArray<SetUpListConfig*>*)configs {
+}
+
 - (void)markSetUpListItemComplete:(SetUpListItemType)type
                        completion:(ProceduralBlock)completion {
 }
@@ -539,7 +542,7 @@ TEST_F(ContentSuggestionsMediatorTest, TestMagicStackConsumerCall) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures({kMagicStack}, {});
   OCMExpect([consumer_ setMagicStackOrder:[OCMArg any]]);
-  OCMExpect([consumer_ showSetUpListWithItems:[OCMArg any]]);
+  OCMExpect([consumer_ showSetUpListModuleWithConfigs:[OCMArg any]]);
   OCMExpect([consumer_ setShortcutTilesConfig:[OCMArg any]]);
   [consumer_ setExpectationOrderMatters:YES];
   mediator_.consumer = consumer_;

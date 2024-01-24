@@ -7,9 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/ios/block_types.h"
+
 class AuthenticationService;
 @protocol ContentSuggestionsConsumer;
 @protocol ContentSuggestionsDelegate;
+@class ContentSuggestionsMetricsRecorder;
+@protocol ContentSuggestionsViewControllerAudience;
 class PrefService;
 @class SceneState;
 @class SetUpListItem;
@@ -24,12 +28,14 @@ class SyncService;
 }  // namespace syncer
 
 // Interface for listening to events occurring in SetUpListMediator.
-@protocol SetUpListMediatorObserver
+@protocol SetUpListConsumer
 @optional
 // Indicates that a SetUpList task has been completed, and whether that resulted
-// in all tasks being `completed`.
+// in all tasks being `completed`. Calls the `completion` block when the
+// animation is finished.
 - (void)setUpListItemDidComplete:(SetUpListItem*)item
-               allItemsCompleted:(BOOL)completed;
+               allItemsCompleted:(BOOL)completed
+                      completion:(ProceduralBlock)completion;
 
 @end
 
@@ -49,9 +55,8 @@ class SyncService;
 
 - (void)disconnect;
 
-// Interface to add/remove a receiver as an observer of SetUpListMediator.
-- (void)addObserver:(id<SetUpListMediatorObserver>)observer;
-- (void)removeObserver:(id<SetUpListMediatorObserver>)observer;
+// Sends the SetUpList items up to the consumer.
+- (void)showSetUpList;
 
 // Returns the complete list of tasks, inclusive of the ones the user has
 // already completed.
@@ -69,8 +74,16 @@ class SyncService;
 // Consumer for this mediator.
 @property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
 
+// Receiver for Set Up List actions.
+@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
+    commandHandler;
+
 // Delegate used to communicate Content Suggestions events to the delegate.
 @property(nonatomic, weak) id<ContentSuggestionsDelegate> delegate;
+
+// Recorder for content suggestions metrics.
+@property(nonatomic, weak)
+    ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
 @end
 

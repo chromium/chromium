@@ -11,11 +11,13 @@
 #import "base/time/time.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/crossfade_label.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_icon.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
@@ -205,10 +207,21 @@ struct ViewConfig {
       }];
 }
 
+#pragma mark - SetUpListConsumer
+
+- (void)setUpListItemDidComplete:(SetUpListItem*)item
+               allItemsCompleted:(BOOL)completed
+                      completion:(ProceduralBlock)completion {
+  if (item.type == _type) {
+    [self markCompleteWithCompletion:completion];
+  }
+}
+
 #pragma mark - Private methods
 
 - (void)handleTap:(UITapGestureRecognizer*)sender {
   if (sender.state == UIGestureRecognizerStateEnded && !self.complete) {
+    [self.commandHandler didTapSetUpListItemView:self];
     [self.tapDelegate didTapSetUpListItemView:self];
   }
 }

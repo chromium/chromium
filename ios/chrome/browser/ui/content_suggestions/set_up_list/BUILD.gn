@@ -4,6 +4,9 @@
 
 source_set("set_up_list") {
   sources = [
+    "set_up_list_config.h",
+    "set_up_list_config.mm",
+    "set_up_list_consumer_source.h",
     "set_up_list_item_icon.h",
     "set_up_list_item_icon.mm",
     "set_up_list_item_view+Testing.h",
@@ -11,6 +14,8 @@ source_set("set_up_list") {
     "set_up_list_item_view.mm",
     "set_up_list_item_view_data.h",
     "set_up_list_item_view_data.mm",
+    "set_up_list_mediator.h",
+    "set_up_list_mediator.mm",
     "set_up_list_show_more_item_view.h",
     "set_up_list_show_more_item_view.mm",
     "set_up_list_show_more_view_controller.h",
@@ -20,34 +25,14 @@ source_set("set_up_list") {
   ]
   deps = [
     ":constants",
+    ":utils",
     "//base",
     "//components/password_manager/core/common:features",
-    "//components/sync/base:features",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ntp/model:set_up_list_item_type",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/elements",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
-    "//ios/chrome/browser/ui/content_suggestions/set_up_list/resources",
-    "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/util",
-    "//ios/chrome/common/ui/util:dynamic_type_util",
-    "//ui/base:base",
-  ]
-}
-
-source_set("mediator") {
-  sources = [
-    "set_up_list_mediator.h",
-    "set_up_list_mediator.mm",
-  ]
-  deps = [
-    ":set_up_list",
     "//components/prefs",
     "//components/prefs/ios",
     "//components/signin/public/identity_manager/objc",
+    "//components/sync/base:features",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp/model:set_up_list",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
@@ -55,18 +40,29 @@ source_set("mediator") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/content_suggestions:constants",
-    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
+    "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
+    "//ios/chrome/browser/ui/content_suggestions/set_up_list/resources",
     "//ios/chrome/browser/ui/credential_provider_promo",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:dynamic_type_util",
+    "//ui/base:base",
   ]
   frameworks = [
     "AuthenticationServices.framework",
     "Foundation.framework",
   ]
 }
+
 source_set("default_browser_promo") {
   sources = [
     "set_up_list_default_browser_promo_coordinator.h",

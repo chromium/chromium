@@ -39,6 +39,8 @@ source_set("magic_stack") {
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
     "//ios/chrome/browser/ui/content_suggestions/parcel_tracking",
     "//ios/chrome/browser/ui/content_suggestions/safety_check",
+    "//ios/chrome/browser/ui/content_suggestions/set_up_list",
+    "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
