@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -165,7 +166,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   // Needed for the initialization of authentication service.
   IOSChromeScopedTestingLocalState local_state_;
 
-  syncer::MockSyncService* sync_service_mock_;
+  raw_ptr<syncer::MockSyncService> sync_service_mock_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 
   ManageSyncSettingsMediator* mediator_ = nullptr;

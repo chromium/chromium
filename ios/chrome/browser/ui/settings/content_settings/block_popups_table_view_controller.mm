@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/logging.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -52,7 +53,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @interface BlockPopupsTableViewController () <
     BooleanObserver,
     PopoverLabelViewControllerDelegate> {
-  ChromeBrowserState* _browserState;  // weak
+  raw_ptr<ChromeBrowserState> _browserState;  // weak
 
   // List of url patterns that are allowed to display popups.
   base::Value::List _exceptions;

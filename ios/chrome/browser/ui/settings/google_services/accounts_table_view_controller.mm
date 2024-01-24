@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
@@ -112,7 +113,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     IdentityManagerObserverBridgeDelegate,
     SignoutActionSheetCoordinatorDelegate,
     SyncObserverModelBridge> {
-  Browser* _browser;
+  raw_ptr<Browser> _browser;
   BOOL _closeSettingsOnAddAccount;
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;

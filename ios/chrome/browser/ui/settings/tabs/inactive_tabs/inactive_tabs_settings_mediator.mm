@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -23,7 +24,7 @@
 
 @implementation InactiveTabsSettingsMediator {
   // Preference service from the application context.
-  PrefService* _prefs;
+  raw_ptr<PrefService> _prefs;
   // The consumer that will be notified when the data change.
   __weak id<InactiveTabsSettingsConsumer> _consumer;
   // Pref observer to track changes to prefs.
@@ -31,7 +32,7 @@
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
   // The current browser.
-  Browser* _browser;
+  raw_ptr<Browser> _browser;
 }
 
 - (instancetype)initWithUserLocalPrefService:(PrefService*)localPrefService

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -33,9 +34,9 @@ bool IsTabSyncEnabled(syncer::SyncService* service) {
 
 @implementation TabsSettingsMediator {
   // Preference service from the application context.
-  PrefService* _prefs;
+  raw_ptr<PrefService> _prefs;
   // Sync service.
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   // Observer for changes to the sync state.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
   // Pref observer to track changes to prefs.

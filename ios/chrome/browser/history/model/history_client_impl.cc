@@ -26,10 +26,10 @@ HistoryClientImpl::HistoryClientImpl(
       account_bookmark_model_(account_bookmark_model) {
   if (local_or_syncable_bookmark_model_) {
     bookmark_model_observations_.AddObservation(
-        local_or_syncable_bookmark_model_);
+        local_or_syncable_bookmark_model_.get());
   }
   if (account_bookmark_model_) {
-    bookmark_model_observations_.AddObservation(account_bookmark_model_);
+    bookmark_model_observations_.AddObservation(account_bookmark_model_.get());
   }
 }
 
@@ -133,8 +133,8 @@ void HistoryClientImpl::HandleBookmarksRemovedFromModel(
   // Only notify when bookmarks are removed from both models.
   bookmarks::BookmarkModel* other_model =
       model == local_or_syncable_bookmark_model_
-          ? account_bookmark_model_
-          : local_or_syncable_bookmark_model_;
+          ? account_bookmark_model_.get()
+          : local_or_syncable_bookmark_model_.get();
   CHECK_NE(model, other_model);
   // Compute URLs that were removed from `model` and are not bookmarked in
   // `other_model`.

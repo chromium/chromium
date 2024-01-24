@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/command_line.h"
 #import "base/files/scoped_temp_dir.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -251,8 +252,8 @@ class SearchEngineTableViewControllerChoiceScreenTest
       switches::kSearchEngineChoiceTrigger};
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   base::HistogramTester histogram_tester_;
-  TemplateURLService* template_url_service_;  // weak
-  sync_preferences::TestingPrefServiceSyncable* pref_service_;
+  raw_ptr<TemplateURLService> template_url_service_;  // weak
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   std::vector<const SearchEngine> prepopulated_search_engine_;
   std::vector<const SearchEngine> custom_search_engine_;
 };

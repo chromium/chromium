@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PERSONAL_DATA_MANAGER_FINISHED_PROFILE_TASKS_WAITER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PERSONAL_DATA_MANAGER_FINISHED_PROFILE_TASKS_WAITER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 
@@ -42,7 +43,7 @@ class PersonalDataManagerFinishedProfileTasksWaiter
   void OnPersonalDataFinishedProfileTasks() override;
 
  private:
-  autofill::PersonalDataManager* personal_data_manager_;
+  raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
   base::RunLoop run_loop_;
 };
 

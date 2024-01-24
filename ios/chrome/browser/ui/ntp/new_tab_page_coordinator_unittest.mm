@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator+Testing.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -332,7 +333,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  web::WebState* web_state_;
+  raw_ptr<web::WebState> web_state_;
   id toolbar_delegate_;
   id delegate_;
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;

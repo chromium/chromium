@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -39,7 +40,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }  // namespace
 
 @interface VoiceSearchTableViewController () <PrefObserverDelegate> {
-  PrefService* _prefs;  // weak
+  raw_ptr<PrefService> _prefs;  // weak
   StringPrefMember _selectedLanguage;
   BooleanPrefMember _ttsEnabled;
 

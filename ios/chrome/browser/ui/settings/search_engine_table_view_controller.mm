@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -80,8 +81,8 @@ const char kUmaSelectDefaultSearchEngine[] =
 @end
 
 @implementation SearchEngineTableViewController {
-  TemplateURLService* _templateURLService;  // weak
-  PrefService* _prefService;
+  raw_ptr<TemplateURLService> _templateURLService;  // weak
+  raw_ptr<PrefService> _prefService;
   std::unique_ptr<SearchEngineObserverBridge> _observer;
   // The list of choice screen search engines retrieved from the
   // TemplateURLService.
@@ -101,7 +102,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   std::vector<TemplateURL*> _secondList;
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
-  FaviconLoader* _faviconLoader;
+  raw_ptr<FaviconLoader> _faviconLoader;
   // Determines which version of the settings UI should be displayed.
   BOOL _shouldShowUpdatedSettings;
 }

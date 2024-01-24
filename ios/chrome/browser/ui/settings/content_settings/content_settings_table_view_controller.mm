@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/feature_list.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -122,7 +123,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @end
 
 @implementation ContentSettingsTableViewController {
-  Browser* _browser;  // weak
+  raw_ptr<Browser> _browser;  // weak
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser {

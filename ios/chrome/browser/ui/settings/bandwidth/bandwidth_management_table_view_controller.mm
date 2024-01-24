@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/bandwidth/bandwidth_management_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -43,7 +44,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }  // namespace
 
 @interface BandwidthManagementTableViewController () <PrefObserverDelegate> {
-  ChromeBrowserState* _browserState;  // weak
+  raw_ptr<ChromeBrowserState> _browserState;  // weak
 
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
