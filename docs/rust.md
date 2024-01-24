@@ -98,7 +98,7 @@ To use a third-party crate "bar" version 3 from first party code:
         while others will require specialists from the Security team. These are
         explained in the
         [auditing_standards.md](https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md).
-   * Audit updates in `audit.toml` should be part of the submitted CL so that
+   * Audit updates in `audits.toml` should be part of the submitted CL so that
      `cargo vet` will continue to pass after the CL lands.
 1. Upload the CL. If there is any `unsafe` usage then Security experts will need to
    audit the "ub-risk" level. Mark any `unsafe` usage with `TODO` code review comments,
