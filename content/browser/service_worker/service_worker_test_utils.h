@@ -36,7 +36,6 @@ class StorageKey;
 namespace content {
 
 class EmbeddedWorkerTestHelper;
-class ServiceWorkerContext;
 class ServiceWorkerContextCore;
 class ServiceWorkerHost;
 class ServiceWorkerRegistry;
@@ -48,9 +47,6 @@ ReceiveServiceWorkerStatus(std::optional<blink::ServiceWorkerStatusCode>* out,
 
 blink::ServiceWorkerStatusCode WarmUpServiceWorker(
     ServiceWorkerVersion* version);
-
-bool WarmUpServiceWorker(ServiceWorkerContext& service_worker_context,
-                         const GURL& url);
 
 blink::ServiceWorkerStatusCode StartServiceWorker(
     ServiceWorkerVersion* version);
