@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 
 #import "base/command_line.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"
@@ -220,7 +221,7 @@ class OptimizationGuideServiceTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  OptimizationGuideService* optimization_guide_service_;
+  raw_ptr<OptimizationGuideService> optimization_guide_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   optimization_guide::testing::TestHintsComponentCreator
       test_hints_component_creator_;

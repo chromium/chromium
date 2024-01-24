@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -173,7 +174,7 @@ class OptimizationGuideService
   std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
 
   // The PrefService of the browser state this service is linked to.
-  PrefService* const pref_service_ = nullptr;
+  const raw_ptr<PrefService> pref_service_ = nullptr;
 
   // Whether the service is linked to an incognito browser state.
   const bool off_the_record_ = false;

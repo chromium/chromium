@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_tab_helper.h"
 
 #import "base/command_line.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -134,7 +135,7 @@ class OptimizationGuideTabHelperTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  OptimizationGuideService* optimization_guide_service_;
+  raw_ptr<OptimizationGuideService> optimization_guide_service_;
   web::FakeWebState web_state_;
 };
 
