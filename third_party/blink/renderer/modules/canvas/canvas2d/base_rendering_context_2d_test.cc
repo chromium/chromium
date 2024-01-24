@@ -94,10 +94,10 @@ class TestRenderingContext2D final
   Color GetCurrentColor() const override { return Color::kBlack; }
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() override {
-    return recorder_.getRecordingCanvas();
+    return &recorder_.getRecordingCanvas();
   }
   cc::PaintCanvas* GetPaintCanvas() override {
-    return recorder_.getRecordingCanvas();
+    return &recorder_.getRecordingCanvas();
   }
   void WillDraw(const SkIRect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) override {}

@@ -1425,7 +1425,7 @@ MemoryManagedPaintCanvas* CanvasResourceProvider::Canvas(bool needs_will_draw) {
   if (needs_will_draw)
     WillDrawIfNeeded();
 
-  return recorder_->getRecordingCanvas();
+  return &recorder_->getRecordingCanvas();
 }
 
 void CanvasResourceProvider::OnContextDestroyed() {

@@ -86,8 +86,7 @@ void PaintRenderingContext2D::setShadowOffsetY(double y) {
 }
 
 cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvas() {
-  DCHECK(paint_recorder_.getRecordingCanvas());
-  return paint_recorder_.getRecordingCanvas();
+  return &paint_recorder_.getRecordingCanvas();
 }
 
 void PaintRenderingContext2D::WillDraw(const SkIRect&,
@@ -142,7 +141,6 @@ PaintRecord PaintRenderingContext2D::GetRecord() {
     return *previous_frame_;  // Reuse the previous frame
   }
 
-  DCHECK(paint_recorder_.getRecordingCanvas());
   return paint_recorder_.finishRecordingAsPicture();
 }
 
