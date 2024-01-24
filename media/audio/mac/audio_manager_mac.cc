@@ -1237,9 +1237,12 @@ void AudioManagerMac::UnsuppressNoiseReduction(AudioDeviceID device_id) {
 
 void AudioManagerMac::ReleaseOutputStream(AudioOutputStream* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  const int streams_erased =
-      output_streams_.erase(static_cast<AUHALStream*>(stream));
-  CHECK_EQ(streams_erased, 1);
+  CHECK(stream);
+
+  auto it = output_streams_.find(static_cast<AUHALStream*>(stream));
+  if (it != output_streams_.end()) {
+    output_streams_.erase(it);
+  }
 
   AudioManagerBase::ReleaseOutputStream(stream);
 }
