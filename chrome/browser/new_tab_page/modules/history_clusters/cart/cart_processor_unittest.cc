@@ -441,7 +441,7 @@ TEST_F(CartProcessorTest, TestRecordCartAssociationMetrics) {
       visit2, /*normalized_url=*/std::nullopt, 0.1)};
 
   // Act.
-  std::vector<history::Cluster> clusters = {cluster1};
+  std::vector<history::Cluster*> clusters = {&cluster1};
   CartProcessor::RecordCartHistoryClusterAssociationMetrics(carts, clusters);
 
   // Assert.
@@ -450,7 +450,7 @@ TEST_F(CartProcessorTest, TestRecordCartAssociationMetrics) {
                                     /*not_associated_count=*/2);
 
   // Act.
-  clusters = {cluster2, cluster1};
+  clusters = {&cluster2, &cluster1};
   CartProcessor::RecordCartHistoryClusterAssociationMetrics(carts, clusters);
 
   // Assert.
@@ -459,7 +459,7 @@ TEST_F(CartProcessorTest, TestRecordCartAssociationMetrics) {
                                     /*not_associated_count=*/3);
 
   // Act.
-  clusters = {cluster1, cluster2};
+  clusters = {&cluster1, &cluster2};
   CartProcessor::RecordCartHistoryClusterAssociationMetrics(carts, clusters);
 
   // Assert.
@@ -469,7 +469,7 @@ TEST_F(CartProcessorTest, TestRecordCartAssociationMetrics) {
 
   // Act.
   // We only record once per cart even if there are multiple matchings.
-  clusters = {cluster2, cluster1, cluster2};
+  clusters = {&cluster2, &cluster1, &cluster2};
   CartProcessor::RecordCartHistoryClusterAssociationMetrics(carts, clusters);
   CheckCartAssociationMetricsStatus(/*associated_with_top_cluster_count=*/2,
                                     /*associated_with_non_top_cluster_count=*/1,

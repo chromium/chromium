@@ -76,7 +76,8 @@ class HistoryClustersModuleService : public KeyedService {
   // Callback invoked when `module_ranker_` returns ranked clusters.
   void OnGetRankedClusters(
       GetClustersCallback callback,
-      std::vector<history::Cluster> clusters,
+      std::vector<std::pair<history::Cluster, std::optional<float>>>
+          clusters_with_scores,
       base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
           ranking_signals);
 

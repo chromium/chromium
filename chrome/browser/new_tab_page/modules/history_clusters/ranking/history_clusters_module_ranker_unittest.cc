@@ -76,10 +76,17 @@ class HistoryClustersModuleRankerTest : public testing::Test {
                std::vector<history::Cluster>* out_clusters,
                base::flat_map<int64_t, HistoryClustersModuleRankingSignals>*
                    out_ranking_signals,
-               std::vector<history::Cluster> clusters,
+               std::vector<std::pair<history::Cluster, std::optional<float>>>
+                   clusters_with_scores,
                base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
                    ranking_signals) {
-              *out_clusters = std::move(clusters);
+              std::transform(
+                  clusters_with_scores.cbegin(), clusters_with_scores.cend(),
+                  std::back_inserter(*out_clusters),
+                  [](std::pair<history::Cluster, std::optional<float>>
+                         cluster_and_score) {
+                    return cluster_and_score.first;
+                  });
               *out_ranking_signals = std::move(ranking_signals);
               run_loop->Quit();
             },

@@ -97,8 +97,22 @@ void HistoryClustersModuleRanker::RunFallbackHeuristic(
     ClustersCallback callback) {
   CHECK_EQ(clusters.size(), ranking_signals->size());
 
+  std::vector<std::pair<history::Cluster, std::optional<float>>>
+      clusters_with_scores;
+  std::transform(clusters.cbegin(), clusters.cend(),
+                 std::back_inserter(clusters_with_scores),
+                 [](history::Cluster cluster) {
+                   return std::make_pair(cluster, std::nullopt);
+                 });
+
+  std::vector<history::Cluster*> cart_clusters = {};
+  for (auto& cluster_and_score : clusters_with_scores) {
+    auto& cluster = std::get<history::Cluster>(cluster_and_score);
+    cart_clusters.push_back(&cluster);
+  }
+
   CartProcessor::RecordCartHistoryClusterAssociationMetrics(active_carts,
-                                                            clusters);
+                                                            cart_clusters);
 
   std::vector<std::tuple<history::Cluster, HistoryClustersModuleRankingSignals>>
       ranking_infos;
@@ -114,16 +128,18 @@ void HistoryClustersModuleRanker::RunFallbackHeuristic(
                                              std::get<history::Cluster>(c2));
       });
 
-  clusters.clear();
+  clusters_with_scores.clear();
   base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
       ranking_signals_map;
   for (auto& ranking_info : ranking_infos) {
     auto& cluster = std::get<history::Cluster>(ranking_info);
     ranking_signals_map[cluster.cluster_id] =
         std::move(std::get<HistoryClustersModuleRankingSignals>(ranking_info));
-    clusters.emplace_back(std::move(cluster));
+    clusters_with_scores.emplace_back(std::make_pair(cluster, std::nullopt));
   }
-  std::move(callback).Run(std::move(clusters), std::move(ranking_signals_map));
+
+  std::move(callback).Run(std::move(clusters_with_scores),
+                          std::move(ranking_signals_map));
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -145,40 +161,46 @@ void HistoryClustersModuleRanker::OnBatchModelExecutionComplete(
 
   std::vector<
       std::tuple<history::Cluster, HistoryClustersModuleRankingSignals, float>>
-      clusters_with_scores;
+      clusters_with_signals_and_scores;
 
   // Filter clusters by model score.
   for (size_t i = 0; i < clusters.size(); i++) {
     if (outputs[i] <= threshold_param_) {
-      clusters_with_scores.emplace_back(std::move(clusters[i]),
-                                        std::move(ranking_signals->at(i)),
-                                        outputs[i]);
+      clusters_with_signals_and_scores.emplace_back(
+          std::move(clusters[i]), std::move(ranking_signals->at(i)),
+          outputs[i]);
     }
   }
 
   // Sort clusters by model score. This sort function is reversed and so all
   // models account for this by flipping the sign. i.e. -1 is before -0.5.
-  base::ranges::stable_sort(clusters_with_scores,
+  base::ranges::stable_sort(clusters_with_signals_and_scores,
                             [](const auto& c1, const auto& c2) {
                               return std::get<float>(c1) < std::get<float>(c2);
                             });
 
-  std::vector<history::Cluster> output_clusters;
-  output_clusters.reserve(clusters_with_scores.size());
+  std::vector<std::pair<history::Cluster, std::optional<float>>>
+      clusters_and_scores;
+  clusters_and_scores.reserve(clusters_with_signals_and_scores.size());
   base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
       output_ranking_signals;
-  output_ranking_signals.reserve(clusters_with_scores.size());
-  for (auto& cluster_and_score : clusters_with_scores) {
-    auto& cluster = std::get<history::Cluster>(cluster_and_score);
+  output_ranking_signals.reserve(clusters_with_signals_and_scores.size());
+  std::vector<history::Cluster*> cart_clusters = {};
+  for (auto& cluster_and_score : clusters_with_signals_and_scores) {
+    clusters_and_scores.emplace_back(
+        std::move(std::get<history::Cluster>(cluster_and_score)),
+        std::get<float>(cluster_and_score));
+    auto& cluster = std::get<history::Cluster>(clusters_and_scores.back());
+    cart_clusters.push_back(&cluster);
+
     output_ranking_signals[cluster.cluster_id] = std::move(
         std::get<HistoryClustersModuleRankingSignals>(cluster_and_score));
-    output_clusters.push_back(std::move(cluster));
   }
 
   CartProcessor::RecordCartHistoryClusterAssociationMetrics(active_carts,
-                                                            output_clusters);
+                                                            cart_clusters);
 
-  std::move(callback).Run(std::move(output_clusters),
+  std::move(callback).Run(std::move(clusters_and_scores),
                           std::move(output_ranking_signals));
 }
 

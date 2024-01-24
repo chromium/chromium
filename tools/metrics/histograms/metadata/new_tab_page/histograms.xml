@@ -837,6 +837,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.HistoryClusters.Score" units="score"
+    expires_after="2024-06-30">
+  <owner>mfacey@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the scores of the history clusters that may be shown on the NTP. Logged
+    when a cluster is ready to be shown on the NTP. Scores are a float ranging
+    from -1.0 to 0.0. To convert this to a possible histogram value we multiply
+    by -100 to make it between 0 and 100 and then round that value to make it an
+    integer.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Images.ShownTime{ImageType}" units="ms"
     expires_after="2024-06-30">
   <owner>danpeng@google.com</owner>

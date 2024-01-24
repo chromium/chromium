@@ -47,7 +47,7 @@ class CartProcessor {
   // are already sorted.
   static void RecordCartHistoryClusterAssociationMetrics(
       std::vector<CartDB::KeyAndValue>& active_carts,
-      std::vector<history::Cluster>& clusters);
+      std::vector<history::Cluster*> clusters);
 
  private:
   void OnLoadCart(

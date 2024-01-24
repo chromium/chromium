@@ -39,7 +39,7 @@ class HistoryClustersModuleRanker {
   // Sorts `clusters` by likelihood of re-engagement and invokes `callback` with
   // the top `max_clusters_to_return_` clusters.
   using ClustersCallback = base::OnceCallback<void(
-      std::vector<history::Cluster>,
+      std::vector<std::pair<history::Cluster, std::optional<float>>>,
       base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>;
   void RankClusters(std::vector<history::Cluster> clusters,
                     ClustersCallback callback);
