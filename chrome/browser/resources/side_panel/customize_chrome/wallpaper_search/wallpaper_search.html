@@ -452,10 +452,9 @@
   </div>
 </div>
 <template is="dom-if" if="[[inspirationCardEnabled_]]">
-  <hr class="sp-cards-separator"
-      hidden$="[[!shouldShowInspiration_(inspirationGroups_)]]">
+  <hr class="sp-cards-separator" hidden$="[[!shouldShowInspiration_]]">
   <div class="sp-card" id="inspirationCard"
-      hidden$="[[!shouldShowInspiration_(inspirationGroups_)]]">
+      hidden$="[[!shouldShowInspiration_]]">
     <sp-heading hide-back-button>
       <h2 slot="heading">$i18n{wallpaperSearchInspirationHeader}</h2>
       <cr-icon-button id="inspirationToggle" class$="[[inspirationToggleIcon_]]"
@@ -496,9 +495,8 @@
     </iron-collapse>
   </div>
 </template>
-<hr class="sp-cards-separator" hidden$="[[!shouldShowHistory_(history_)]]">
-<div class="sp-card" id="historyCard"
-    hidden$="[[!shouldShowHistory_(history_)]]">
+<hr class="sp-cards-separator" hidden$="[[!shouldShowHistory_]]">
+<div class="sp-card" id="historyCard" hidden$="[[!shouldShowHistory_]]">
   <sp-heading hide-back-button>
     <h2 slot="heading">$i18n{wallpaperSearchHistoryHeader}</h2>
   </sp-heading>

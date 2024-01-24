@@ -7918,6 +7918,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION_WITH_HISTORY" desc="The description of the generic error displayed when wallpaper search fails and there are previous results.">
         Try again or select from one of the previously generated themes below.
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION_WITH_INSPIRATION" desc="The description of the generic error displayed when wallpaper search fails and there are inspiration examples.">
+        Try again or select from one of the inspirations below.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION_WITH_HISTORY_AND_INSPIRATION" desc="The description of the generic error displayed when wallpaper search fails and there are previous results and inspiration examples.">
+        Try again or select from one of the available themes below.
+      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_TITLE" desc="The title of the generic error displayed when wallpaper search fails.">
         Something went wrong.
       </message>

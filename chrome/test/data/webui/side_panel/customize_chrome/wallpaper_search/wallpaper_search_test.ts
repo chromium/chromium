@@ -49,12 +49,15 @@ suite('WallpaperSearchTest', () => {
     return wallpaperSearchElement;
   }
 
-  async function createWallpaperSearchElementWithDescriptors() {
-    createWallpaperSearchElement({
-      descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
-      descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
-      descriptorC: ['foo', 'bar', 'baz'],
-    });
+  async function createWallpaperSearchElementWithDescriptors(
+      inspirationGroups: InspirationGroup[]|null = null) {
+    createWallpaperSearchElement(
+        {
+          descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
+          descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
+          descriptorC: ['foo', 'bar', 'baz'],
+        },
+        inspirationGroups);
   }
 
   function updateCrFeedbackButtons(option: CrFeedbackOption) {
@@ -1013,6 +1016,88 @@ suite('WallpaperSearchTest', () => {
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
 
+      test('shows inspiration description for generic error', async () => {
+        loadTimeData.overrideValues({
+          wallpaperSearchInspirationCardEnabled: true,
+          genericErrorDescriptionWithInspiration:
+              'generic error with inspiration',
+        });
+        createWallpaperSearchElement(
+            /*descriptors=*/ null, /*inspirationGroups=*/[
+              {
+                descriptors: {
+                  subject: 'foobar',
+                  style: undefined,
+                  mood: undefined,
+                  color: undefined,
+                },
+                inspirations: [
+                  {
+                    id: {high: BigInt(10), low: BigInt(1)},
+                    description: 'Description',
+                    backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                    thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                  },
+                ],
+              },
+            ]);
+        await flushTasks();
+
+        assertNotStyle(
+            $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertEquals(
+            $$<HTMLElement>(
+                wallpaperSearchElement, '#errorDescription')!.textContent,
+            'generic error with inspiration');
+        assertStyle(
+            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+      });
+
+      test(
+          'shows inspiration and history description for generic error',
+          async () => {
+            loadTimeData.overrideValues({
+              wallpaperSearchInspirationCardEnabled: true,
+              genericErrorDescriptionWithHistoryAndInspiration:
+                  'generic error with history and inspiration',
+            });
+            createWallpaperSearchElement(
+                /*descriptors=*/ null, /*inspirationGroups=*/[
+                  {
+                    descriptors: {
+                      subject: 'foobar',
+                      style: undefined,
+                      mood: undefined,
+                      color: undefined,
+                    },
+                    inspirations: [
+                      {
+                        id: {high: BigInt(10), low: BigInt(1)},
+                        description: 'Description',
+                        backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                        thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                      },
+                    ],
+                  },
+                ]);
+
+            wallpaperSearchCallbackRouterRemote.setHistory([
+              {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+              {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+            ]);
+            await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+
+            assertNotStyle(
+                $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+            assertEquals(
+                $$<HTMLElement>(
+                    wallpaperSearchElement, '#errorDescription')!.textContent,
+                'generic error with history and inspiration');
+            assertStyle(
+                $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
+                'none');
+          });
+
       test(
           'reattempts failed descriptor fetch with offline error', async () => {
             loadTimeData.overrideValues({offlineDescription: 'offline error'});
@@ -1188,6 +1273,96 @@ suite('WallpaperSearchTest', () => {
         assertStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
+
+      test(`shows generic error if there is inspiration`, async () => {
+        loadTimeData.overrideValues({
+          wallpaperSearchInspirationCardEnabled: true,
+          genericErrorDescriptionWithInspiration:
+              'generic error with inspiration',
+        });
+        handler.setResultFor(
+            'getWallpaperSearchResults',
+            Promise.resolve(
+                {status: WallpaperSearchStatus.kError, results: []}));
+        createWallpaperSearchElementWithDescriptors([{
+          descriptors: {
+            subject: 'foobar',
+            style: undefined,
+            mood: undefined,
+            color: undefined,
+          },
+          inspirations: [
+            {
+              id: {high: BigInt(10), low: BigInt(1)},
+              description: 'Description',
+              backgroundUrl: {url: 'https://example.com/foo_1.png'},
+              thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+            },
+          ],
+        }]);
+        await flushTasks();
+
+        wallpaperSearchElement.$.submitButton.click();
+        await waitAfterNextRender(wallpaperSearchElement);
+
+        assertNotStyle(
+            $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertEquals(
+            $$<HTMLElement>(
+                wallpaperSearchElement, '#errorDescription')!.textContent,
+            'generic error with inspiration');
+        assertStyle(
+            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+      });
+
+      test(
+          `shows generic error if there is history and inspiration`,
+          async () => {
+            loadTimeData.overrideValues({
+              wallpaperSearchInspirationCardEnabled: true,
+              genericErrorDescriptionWithHistoryAndInspiration:
+                  'generic error with history and inspiration',
+            });
+            handler.setResultFor(
+                'getWallpaperSearchResults',
+                Promise.resolve(
+                    {status: WallpaperSearchStatus.kError, results: []}));
+            createWallpaperSearchElementWithDescriptors([{
+              descriptors: {
+                subject: 'foobar',
+                style: undefined,
+                mood: undefined,
+                color: undefined,
+              },
+              inspirations: [
+                {
+                  id: {high: BigInt(10), low: BigInt(1)},
+                  description: 'Description',
+                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                },
+              ],
+            }]);
+            await flushTasks();
+
+            wallpaperSearchCallbackRouterRemote.setHistory([
+              {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+              {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+            ]);
+            await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+            wallpaperSearchElement.$.submitButton.click();
+            await waitAfterNextRender(wallpaperSearchElement);
+
+            assertNotStyle(
+                $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+            assertEquals(
+                $$<HTMLElement>(
+                    wallpaperSearchElement, '#errorDescription')!.textContent,
+                'generic error with history and inspiration');
+            assertStyle(
+                $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
+                'none');
+          });
     });
 
     test('maintains focus on error ui if error is unresolved', async () => {

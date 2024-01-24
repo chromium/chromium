@@ -149,7 +149,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       },
       errorState_: {
         type: Object,
-        computed: 'computeErrorState_(status_, history_)',
+        computed:
+            'computeErrorState_(status_, shouldShowHistory_, shouldShowInspiration_)',
       },
       emptyHistoryContainers_: Object,
       emptyResultContainers_: Object,
@@ -183,6 +184,14 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       selectedHue_: {
         type: Number,
         value: null,
+      },
+      shouldShowHistory_: {
+        type: Boolean,
+        computed: 'computeShouldShowHistory_(history_)',
+      },
+      shouldShowInspiration_: {
+        type: Boolean,
+        computed: 'computeShouldShowInspiration_(inspirationGroups_)',
       },
       status_: {
         type: WallpaperSearchStatus,
@@ -221,6 +230,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private selectedDescriptorD_: DescriptorDValue|null;
   private selectedFeedbackOption_: CrFeedbackOption;
   private selectedHue_: number|null;
+  private shouldShowHistory_: boolean;
+  private shouldShowInspiration_: boolean;
   private status_: WallpaperSearchStatus;
   private theme_: Theme|undefined;
 
@@ -261,7 +272,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
             (history: WallpaperSearchResult[]) => {
               this.history_ = history;
               this.emptyHistoryContainers_ = this.calculateEmptyTiles(history);
-              this.openInspirations_ = !this.shouldShowHistory_();
+              this.openInspirations_ = !this.shouldShowHistory_;
             });
     this.wallpaperSearchHandler_.updateHistory();
     this.loadingUiResizeObserver_ = new ResizeObserver(() => {
@@ -299,11 +310,21 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       case WallpaperSearchStatus.kOk:
         return null;
       case WallpaperSearchStatus.kError:
+        let errorDescription;
+        if (this.shouldShowHistory_ && this.shouldShowInspiration_) {
+          errorDescription =
+              this.i18n('genericErrorDescriptionWithHistoryAndInspiration');
+        } else if (this.shouldShowHistory_) {
+          errorDescription = this.i18n('genericErrorDescriptionWithHistory');
+        } else if (this.shouldShowInspiration_) {
+          errorDescription =
+              this.i18n('genericErrorDescriptionWithInspiration');
+        } else {
+          errorDescription = this.i18n('genericErrorDescription');
+        }
         return {
           title: this.i18n('genericErrorTitle'),
-          description: this.shouldShowHistory_() ?
-              this.i18n('genericErrorDescriptionWithHistory') :
-              this.i18n('genericErrorDescription'),
+          description: errorDescription,
           callToAction: this.i18n('tryAgain'),
         };
       case WallpaperSearchStatus.kRequestThrottled:
@@ -315,7 +336,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       case WallpaperSearchStatus.kOffline:
         return {
           title: this.i18n('offlineTitle'),
-          description: this.shouldShowHistory_() ?
+          description: this.shouldShowHistory_ ?
               this.i18n('offlineDescriptionWithHistory') :
               this.i18n('offlineDescription'),
           callToAction: this.i18n('ok'),
@@ -325,6 +346,14 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private computeInspirationToggleIcon_(): string {
     return this.openInspirations_ ? 'collapse-carets' : 'expand-carets';
+  }
+
+  private computeShouldShowHistory_(): boolean {
+    return this.history_.length > 0;
+  }
+
+  private computeShouldShowInspiration_(): boolean {
+    return !!this.inspirationGroups_ && this.inspirationGroups_.length > 0;
   }
 
   private expandCategoryForDescriptorA_(label: string) {
@@ -745,14 +774,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private shouldShowGrid_(): boolean {
     return this.results_.length > 0 || this.emptyResultContainers_.length > 0;
-  }
-
-  private shouldShowHistory_(): boolean {
-    return this.history_.length > 0;
-  }
-
-  private shouldShowInspiration_(): boolean {
-    return !!this.inspirationGroups_ && this.inspirationGroups_.length > 0;
   }
 }
 
