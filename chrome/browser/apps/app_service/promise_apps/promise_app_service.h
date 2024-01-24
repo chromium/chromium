@@ -90,6 +90,9 @@ class PromiseAppService : public AppRegistryCache::Observer {
   // API key.
   void SetSkipApiKeyCheckForTesting(bool skip_api_key_check);
 
+  // Tries to update install priroity if possible for ARC apps.
+  void UpdateInstallPriority(const std::string& id);
+
  private:
   // Update a promise app's fields with the info retrieved from the Almanac API.
   void OnGetPromiseAppInfoCompleted(
