@@ -59,7 +59,6 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
 import org.chromium.url.URI;
 import org.chromium.webapk.lib.client.WebApkIdentityServiceClient;
 
@@ -731,16 +730,12 @@ public class NotificationPlatformBridge {
             return Promise.fulfilled(false);
         }
 
-        // Need to `waitForChromeStartup` because if we lazily end up constructing the
-        // `UsageStatsService` here, that constructor can call JNI.
-        // TODO(crbug.com/1520479): The only caller to `displayNotification` is native code, so we
-        // could be more confident here that native is running and remove this logic.
-        return waitForChromeStartup()
-                .then(
-                        (Void v) ->
-                                UsageStatsService.getInstance()
-                                        .getSuspensionTracker()
-                                        .storeNotificationResourcesIfSuspended(notification));
+        // Only native calls into this here code, so the native process must be running, which is
+        // important if we end up lazily constructing `UsageStatsService` here, which uses JNI.
+        assert BrowserStartupController.getInstance().isFullBrowserStarted();
+        return UsageStatsService.getInstance()
+                .getSuspensionTracker()
+                .storeNotificationResourcesIfSuspended(notification);
     }
 
     private NotificationBuilderBase prepareNotificationBuilder(
@@ -1026,25 +1021,6 @@ public class NotificationPlatformBridge {
             mTwaClient = ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient();
         }
         return mTwaClient;
-    }
-
-    private static Promise<Void> waitForChromeStartup() {
-        BrowserStartupController browserStartup = BrowserStartupController.getInstance();
-        if (browserStartup.isFullBrowserStarted()) return Promise.fulfilled(null);
-        Promise<Void> promise = new Promise<>();
-        browserStartup.addStartupCompletedObserver(
-                new StartupCallback() {
-                    @Override
-                    public void onSuccess() {
-                        promise.fulfill(null);
-                    }
-
-                    @Override
-                    public void onFailure() {
-                        promise.reject(null);
-                    }
-                });
-        return promise;
     }
 
     @NativeMethods
