@@ -269,7 +269,7 @@ void AuthFactorEditor::AddPinFactor(std::unique_ptr<UserContext> context,
 
   cryptohome::AuthFactorCommonMetadata metadata;
   cryptohome::PinMetadata pin_metadata =
-      cryptohome::PinMetadata::CreateWithoutSalt();
+      cryptohome::PinMetadata::Create(salt);
   cryptohome::AuthFactor factor(ref, std::move(metadata),
                                 std::move(pin_metadata));
 
@@ -307,7 +307,7 @@ void AuthFactorEditor::ReplacePinFactor(std::unique_ptr<UserContext> context,
 
   cryptohome::AuthFactorCommonMetadata metadata;
   cryptohome::PinMetadata pin_metadata =
-      cryptohome::PinMetadata::CreateWithoutSalt();
+      cryptohome::PinMetadata::Create(salt);
   cryptohome::AuthFactor factor(ref, std::move(metadata),
                                 std::move(pin_metadata));
 
@@ -474,7 +474,11 @@ void AuthFactorEditor::SetPasswordFactorImpl(
 
   cryptohome::AuthFactorCommonMetadata metadata;
   cryptohome::PasswordMetadata password_metadata =
-      cryptohome::PasswordMetadata::CreateWithoutSalt();
+      label == cryptohome::KeyLabel{kCryptohomeLocalPasswordKeyLabel}
+          ? cryptohome::PasswordMetadata::CreateForLocalPassword(
+                cryptohome::SystemSalt(system_salt))
+          : cryptohome::PasswordMetadata::CreateForOnlinePassword(
+                cryptohome::SystemSalt(system_salt));
   cryptohome::AuthFactor factor(ref, std::move(metadata),
                                 std::move(password_metadata));
 
@@ -506,7 +510,11 @@ void AuthFactorEditor::ReplacePasswordFactorImpl(
 
   cryptohome::AuthFactorCommonMetadata metadata;
   cryptohome::PasswordMetadata password_metadata =
-      cryptohome::PasswordMetadata::CreateWithoutSalt();
+      label == cryptohome::KeyLabel{kCryptohomeLocalPasswordKeyLabel}
+          ? cryptohome::PasswordMetadata::CreateForLocalPassword(
+                cryptohome::SystemSalt(system_salt))
+          : cryptohome::PasswordMetadata::CreateForOnlinePassword(
+                cryptohome::SystemSalt(system_salt));
   cryptohome::AuthFactor factor(ref, std::move(metadata),
                                 std::move(password_metadata));
 

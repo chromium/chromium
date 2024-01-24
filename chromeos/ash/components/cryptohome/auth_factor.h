@@ -134,6 +134,7 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
     KnowledgeFactorHashInfo {
   KnowledgeFactorHashAlgorithmWrapper algorithm;
   std::string salt;
+  bool should_generate_key_store;
 };
 
 // Factor-specific metadata:
@@ -149,10 +150,18 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
 
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) PasswordMetadata {
  public:
-  // Used for online passwords where we don't want to include the hash
-  // information.
+  // Constructors that do/don't include the hash info field. Difference with
+  // online and local password metadata is that only local password metadata
+  // needs to generate recoverable key stores.
+  // Generating recoverable key stores will make the password a recovery
+  // factor for some Google sync services, and we only want to do it for local
+  // passwords but not GAIA passwords. This is because the user already needs
+  // their GAIA password to access the Google sync services, so making the GAIA
+  // password a sync recovery factor doesn't provide any extra layer of
+  // security.
   static PasswordMetadata CreateWithoutSalt();
-  static PasswordMetadata Create(SystemSalt salt);
+  static PasswordMetadata CreateForOnlinePassword(SystemSalt salt);
+  static PasswordMetadata CreateForLocalPassword(SystemSalt salt);
 
   PasswordMetadata(PasswordMetadata&&) noexcept;
   PasswordMetadata& operator=(PasswordMetadata&&) noexcept;
