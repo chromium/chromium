@@ -1,1 +1,2 @@
+per-file autofill_optimization_guide*=file://components/autofill/core/browser/payments/OWNERS
 per-file BUILD.gn=file://components/autofill/core/browser/payments/OWNERS
