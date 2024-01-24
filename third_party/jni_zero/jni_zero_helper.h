@@ -10,7 +10,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #if defined(USE_CHROMIUM_BASE)
 // Used for ARCH_CPU_X86 - embedder must define this correctly if they want
 // 16-byte stack alignment on x86.
@@ -80,7 +79,7 @@ struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextUnchecked {
   uintptr_t sp;
   uintptr_t pc;
 
-  raw_ptr<JNIEnv> env1;
+  JNIEnv* env1;
   jmethodID method_id;
 };
 
