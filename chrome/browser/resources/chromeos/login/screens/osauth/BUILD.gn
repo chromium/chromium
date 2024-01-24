@@ -11,7 +11,6 @@ js_type_check("closure_compile") {
   closure_flags = default_closure_args
   deps = [
     ":enter_old_password",
-    ":local_data_loss_warning",
     ":osauth_error",
   ]
 }
@@ -20,17 +19,6 @@ js_library("osauth_error") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/osauth_error.js" ]
   deps = [
     "../../components:oobe_types",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("local_data_loss_warning") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/local_data_loss_warning.js" ]
-  deps = [
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
