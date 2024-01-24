@@ -21,7 +21,8 @@
 namespace policy::test {
 
 base::Value::Dict GetFetchSupportPacketCommandPayloadDict(
-    const std::vector<support_tool::DataCollectorType>& data_collectors) {
+    const std::vector<support_tool::DataCollectorType>& data_collectors,
+    const std::vector<support_tool::PiiType>& pii_types) {
   base::Value::Dict support_packet_details;
   support_packet_details.Set("issueCaseId", "issue_case_id");
   support_packet_details.Set("issueDescription", "issue description");
@@ -32,7 +33,11 @@ base::Value::Dict GetFetchSupportPacketCommandPayloadDict(
   }
   support_packet_details.Set("requestedDataCollectors",
                              std::move(data_collectors_list));
-  support_packet_details.Set("requestedPiiTypes", base::Value::List());
+  base::Value::List pii_types_list;
+  for (const auto& pii_type : pii_types) {
+    pii_types_list.Append(pii_type);
+  }
+  support_packet_details.Set("requestedPiiTypes", std::move(pii_types_list));
   return base::Value::Dict().Set("supportPacketDetails",
                                  std::move(support_packet_details));
 }

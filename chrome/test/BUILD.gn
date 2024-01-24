@@ -5144,6 +5144,7 @@ if (!is_android && !is_fuchsia) {
         "//chromeos/ash/services/network_config:in_process_instance",
         "//chromeos/components/editor_menu/public/cpp",
         "//chromeos/components/kcer:chaps_proto",
+        "//chromeos/components/kiosk:kiosk",
         "//chromeos/components/mgs",
         "//chromeos/components/onc:test_support",
         "//chromeos/components/quick_answers:quick_answers",

@@ -59,24 +59,6 @@ namespace em = enterprise_management;
 
 namespace {
 
-// SessionInfo is the parameter type for
-// ParametrizedFetchSupportPacketTest tests. It includes the different session
-// types that can exist on ChromeOS devices and if the PII is allowed to be kept
-// in the collected logs. If PII is not allowed, FETCH_SUPPORT_PACKET command
-// job will attach a note to the command result payload.
-struct SessionInfo {
-  // Print for easier debugging:
-  // https://github.com/google/googletest/blob/main/docs/advanced.md#teaching-googletest-how-to-print-your-values
-  friend void PrintTo(const SessionInfo& session_info, std::ostream* os) {
-    *os << "{session_type="
-        << test::SessionTypeToString(session_info.session_type)
-        << ", pii_allowed=" << session_info.pii_allowed << "}";
-  }
-
-  TestSessionType session_type;
-  bool pii_allowed;
-};
-
 constexpr RemoteCommandJob::UniqueIDType kUniqueID = 123456;
 // The age of command in milliseconds.
 constexpr int64 kCommandAge = 60000;
@@ -184,7 +166,7 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
 // types(`TestSessionType`) and PII policies.
 class DeviceCommandFetchSupportPacketTestParameterized
     : public DeviceCommandFetchSupportPacketTest,
-      public ::testing::WithParamInterface<SessionInfo> {};
+      public ::testing::WithParamInterface<test::SessionInfo> {};
 
 }  // namespace
 
@@ -238,7 +220,7 @@ TEST_F(DeviceCommandFetchSupportPacketTest, FailWhenLogUploadDisabled) {
 
 TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
        SuccessfulCommandRequestWithoutPii) {
-  const SessionInfo& session_info = GetParam();
+  const test::SessionInfo& session_info = GetParam();
   StartSessionOfType(session_info.session_type);
   SetLogUploadEnabledPolicy(/*enabled=*/true);
 
@@ -292,7 +274,7 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
 
 TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
        SuccessfulCommandRequestWithPii) {
-  const SessionInfo& session_info = GetParam();
+  const test::SessionInfo& session_info = GetParam();
   StartSessionOfType(session_info.session_type);
   SetLogUploadEnabledPolicy(/*enabled=*/true);
 
@@ -304,13 +286,9 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
       reporting_test_storage_, log_upload_event_future.GetRepeatingCallback());
 
   // Add a requested PII type to the command payload.
-  base::Value::Dict command_payload_dict =
-      test::GetFetchSupportPacketCommandPayloadDict(
-          {support_tool::DataCollectorType::CHROMEOS_SYSTEM_LOGS});
-  command_payload_dict.SetByDottedPath(
-      "supportPacketDetails.requestedPiiTypes",
-      base::Value::List().Append(support_tool::PiiType::EMAIL));
-  auto payload = base::WriteJson(std::move(command_payload_dict));
+  auto payload = base::WriteJson(test::GetFetchSupportPacketCommandPayloadDict(
+      {support_tool::DataCollectorType::CHROMEOS_SYSTEM_LOGS},
+      {support_tool::PiiType::EMAIL}));
   ASSERT_TRUE(payload.has_value());
   InitAndRunCommandJob(job, GenerateCommandProto(payload.value()));
 
@@ -364,27 +342,27 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     DeviceCommandFetchSupportPacketTestParameterized,
     ::testing::Values(
-        SessionInfo{TestSessionType::kManuallyLaunchedArcKioskSession,
-                    /*pii_allowed=*/true},
-        SessionInfo{TestSessionType::kManuallyLaunchedWebKioskSession,
-                    /*pii_allowed=*/true},
-        SessionInfo{TestSessionType::kManuallyLaunchedKioskSession,
-                    /*pii_allowed=*/true},
-        SessionInfo{TestSessionType::kAutoLaunchedArcKioskSession,
-                    /*pii_allowed=*/true},
-        SessionInfo{TestSessionType::kAutoLaunchedWebKioskSession,
-                    /*pii_allowed=*/true},
-        SessionInfo{TestSessionType::kAutoLaunchedKioskSession,
-                    /*pii_allowed=*/true},
-        SessionInfo{TestSessionType::kAffiliatedUserSession,
-                    /*pii_allowed=*/true},
-        SessionInfo{TestSessionType::kManagedGuestSession,
-                    /*pii_allowed=*/false},
-        SessionInfo{TestSessionType::kGuestSession,
-                    /*pii_allowed=*/false},
-        SessionInfo{TestSessionType::kUnaffiliatedUserSession,
-                    /*pii_allowed=*/false},
-        SessionInfo{TestSessionType::kNoSession,
-                    /*pii_allowed=*/false}));
+        test::SessionInfo{TestSessionType::kManuallyLaunchedArcKioskSession,
+                          /*pii_allowed=*/true},
+        test::SessionInfo{TestSessionType::kManuallyLaunchedWebKioskSession,
+                          /*pii_allowed=*/true},
+        test::SessionInfo{TestSessionType::kManuallyLaunchedKioskSession,
+                          /*pii_allowed=*/true},
+        test::SessionInfo{TestSessionType::kAutoLaunchedArcKioskSession,
+                          /*pii_allowed=*/true},
+        test::SessionInfo{TestSessionType::kAutoLaunchedWebKioskSession,
+                          /*pii_allowed=*/true},
+        test::SessionInfo{TestSessionType::kAutoLaunchedKioskSession,
+                          /*pii_allowed=*/true},
+        test::SessionInfo{TestSessionType::kAffiliatedUserSession,
+                          /*pii_allowed=*/true},
+        test::SessionInfo{TestSessionType::kManagedGuestSession,
+                          /*pii_allowed=*/false},
+        test::SessionInfo{TestSessionType::kGuestSession,
+                          /*pii_allowed=*/false},
+        test::SessionInfo{TestSessionType::kUnaffiliatedUserSession,
+                          /*pii_allowed=*/false},
+        test::SessionInfo{TestSessionType::kNoSession,
+                          /*pii_allowed=*/false}));
 
 }  // namespace policy
