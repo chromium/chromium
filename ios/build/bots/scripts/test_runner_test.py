@@ -75,12 +75,14 @@ class SimulatorTestRunnerTest(TestCase):
     self.mock(test_apps, 'get_bundle_id', lambda _: 'fake-bundle-id')
     self.mock(test_apps.SimulatorXCTestUnitTestsApp,
               '_xctest_path', lambda _: 'fake-path')
-    self.mock(test_apps.plistlib, 'writePlist', lambda _1, _2: '')
+    self.mock(test_apps.plistlib, 'dump', lambda _1, _2: '')
     self.mock(os.path, 'abspath', lambda path: '/abs/path/to/%s' % path)
     self.mock(os.path, 'exists', lambda _: True)
     self.mock(test_runner.TestRunner, 'set_sigterm_handler',
       lambda self, handler: 0)
     self.mock(os, 'listdir', lambda _: [])
+    self.mock(test_apps.GTestsApp, 'fill_xctest_run',
+              lambda _, folder: '/abs/path/to/%s' % folder)
 
   def test_app_not_found(self):
     """Ensures AppNotFoundError is raised."""
@@ -102,11 +104,11 @@ class SimulatorTestRunnerTest(TestCase):
 
     with self.assertRaises(test_runner.SimulatorNotFoundError):
       test_runner.SimulatorTestRunner(
-        'fake-app',
-        'fake-iossim',
-        'iPhone X',
-        '11.4',
-        'out-dir',
+          'fake-app',
+          'fake-iossim',
+          'iPhone X',
+          '11.4',
+          'out-dir',
       )
 
   def test_init(self):
@@ -140,7 +142,7 @@ class SimulatorTestRunnerTest(TestCase):
     )
     with self.assertRaises(test_runner.AppLaunchError):
       tr.launch()
-    self.assertEquals(len(mock_run.mock_calls), 2)
+    self.assertEqual(len(mock_run.mock_calls), 2)
 
   def test_relaunch(self):
     """Ensures test is relaunched on test crash until tests complete."""
@@ -195,7 +197,7 @@ class SimulatorTestRunnerTest(TestCase):
     tr = test_runner.SimulatorTestRunner(
         'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3)
     tr.launch()
-    self.assertEquals(len(mock_run.mock_calls), 3)
+    self.assertEqual(len(mock_run.mock_calls), 3)
     self.assertTrue(tr.logs)
 
   @mock.patch('test_runner.SimulatorTestRunner.tear_down')
@@ -222,7 +224,7 @@ class SimulatorTestRunnerTest(TestCase):
     tr = test_runner.SimulatorTestRunner(
         'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3)
     tr.launch()
-    self.assertEquals(len(mock_run.mock_calls), 5)
+    self.assertEqual(len(mock_run.mock_calls), 5)
     self.assertTrue(tr.test_results['interrupted'])
     self.assertIn('test suite crash', tr.logs)
     self.assertTrue(tr.logs)
@@ -250,7 +252,7 @@ class SimulatorTestRunnerTest(TestCase):
     tr = test_runner.SimulatorTestRunner(
         'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3)
     tr.launch()
-    self.assertEquals(len(mock_run.mock_calls), 5)
+    self.assertEqual(len(mock_run.mock_calls), 5)
     self.assertFalse(tr.test_results['interrupted'])
     self.assertTrue(tr.logs)
 
@@ -272,10 +274,10 @@ class SimulatorTestRunnerTest(TestCase):
     tr = test_runner.SimulatorTestRunner(
         'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3)
     tr.launch()
-    self.assertEquals(len(mock_run.mock_calls), 4)
+    self.assertEqual(len(mock_run.mock_calls), 4)
     self.assertFalse(tr.test_results['interrupted'])
-    self.assertEquals(tr.test_results['tests']['test1']['actual'],
-                      'FAIL FAIL FAIL SKIP')
+    self.assertEqual(tr.test_results['tests']['test1']['actual'],
+                     'FAIL FAIL FAIL SKIP')
     self.assertTrue(tr.logs)
 
   @mock.patch('test_runner.SimulatorTestRunner.tear_down')
@@ -290,7 +292,7 @@ class SimulatorTestRunnerTest(TestCase):
     tr = test_runner.SimulatorTestRunner(
         'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3)
     tr.launch()
-    self.assertEquals(len(mock_run.mock_calls), 1)
+    self.assertEqual(len(mock_run.mock_calls), 1)
     self.assertTrue(tr.test_results['interrupted'])
     self.assertIn('test suite crash', tr.logs)
     self.assertTrue(tr.logs)
@@ -314,7 +316,6 @@ class DeviceTestRunnerTest(TestCase):
     self.mock(os.path, 'exists', lambda _: True)
     self.mock(os, 'listdir', lambda _: [])
     self.mock(tempfile, 'mkstemp', lambda: '/tmp/tmp_file')
-
     self.tr = test_runner.DeviceTestRunner(
         'fake-app',
         'xcode-version',

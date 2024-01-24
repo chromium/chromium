@@ -24,18 +24,24 @@ class UtilTest(test_runner_test.TestCase):
   """Tests utility functions."""
 
   @mock.patch('subprocess.check_output', return_value=b'\x01\x00\x00\x00')
-  def test_is_running_rosetta_true(self, _):
+  @mock.patch('platform.system', return_value='Darwin')
+  def test_is_running_rosetta_true(self, _, __):
     """Tests is_running_rosetta function on arm64 running rosetta."""
     self.assertTrue(test_apps.is_running_rosetta())
 
   @mock.patch('subprocess.check_output', return_value=b'\x00\x00\x00\x00')
-  def test_is_running_rosetta_false(self, _):
+  @mock.patch('platform.system', return_value='Darwin')
+  def test_is_running_rosetta_false(self, _, __):
     """Tests is_running_rosetta function on arm64 not running rosetta."""
     self.assertFalse(test_apps.is_running_rosetta())
 
   @mock.patch('subprocess.check_output', return_value=b'')
-  def test_is_running_rosetta_not_arm(self, _):
+  @mock.patch('platform.system', return_value='Darwin')
+  def test_is_running_rosetta_not_arm(self, _, __):
     """Tests is_running_rosetta function not invoked in arm."""
+    self.assertFalse(test_apps.is_running_rosetta())
+
+  def test_is_not_mac_os(self):
     self.assertFalse(test_apps.is_running_rosetta())
 
 

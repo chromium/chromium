@@ -4,6 +4,7 @@
 """Test apps for running tests using xcodebuild."""
 
 import os
+import platform
 import plistlib
 import struct
 import subprocess
@@ -72,16 +73,17 @@ def is_running_rosetta():
     macOS machine. False if it is running as an arm64 binary, or if it is
     running on an Intel machine.
   """
-  translated = subprocess.check_output(
-      ['sysctl', '-i', '-b', 'sysctl.proc_translated'])
-  # "sysctl -b" is expected to return a 4-byte integer response. 1 means the
-  # current process is running under Rosetta, 0 means it is not. On x86_64
-  # machines, this variable does not exist at all, so "-i" is used to return a
-  # 0-byte response instead of throwing an error.
-  if len(translated) != 4:
-    return False
-  return struct.unpack('i', translated)[0] > 0
-
+  if platform.system() == 'Darwin':
+    translated = subprocess.check_output(
+        ['sysctl', '-i', '-b', 'sysctl.proc_translated'])
+    # "sysctl -b" is expected to return a 4-byte integer response. 1 means the
+    # current process is running under Rosetta, 0 means it is not. On x86_64
+    # machines, this variable does not exist at all, so "-i" is used to return a
+    # 0-byte response instead of throwing an error.
+    if len(translated) != 4:
+      return False
+    return struct.unpack('i', translated)[0] > 0
+  return False
 
 class GTestsApp(object):
   """Gtests app to run.
@@ -156,14 +158,12 @@ class GTestsApp(object):
     if not os.path.exists(folder):
       os.makedirs(folder)
     xctestrun = os.path.join(folder, 'run_%d.xctestrun' % int(time.time()))
-    if not os.path.exists(xctestrun):
-      with open(xctestrun, 'w'):
-        pass
     # Creates a dict with data about egtests to run - fill all required fields:
     # egtests_module, egtest_app_path, egtests_xctest_path and
     # filtered tests if filter is specified.
     # Write data in temp xctest run file.
-    plistlib.writePlist(self.fill_xctestrun_node(), xctestrun)
+    with open(xctestrun, "wb") as f:
+      plistlib.dump(self.fill_xctestrun_node(), f)
     return xctestrun
 
   @staticmethod
