@@ -700,14 +700,6 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
 
     const base::FilePath dest_dir = storage_path_.Append(info.identifier());
 
-    // Drop cached data for discarded WebStates.
-    const auto& discarded_web_states = info.observer().discarded_web_states();
-    if (!discarded_web_states.empty()) {
-      for (const auto web_state_id : discarded_web_states) {
-        metadata_map.erase(web_state_id);
-      }
-    }
-
     // Serialize the state of dirty WebState before serializing the metadata
     // for the WebStateList. This ensures that metadata is always referring
     // to WebStates that have been saved.
@@ -752,6 +744,27 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
         requests.push_back(std::make_unique<ios::sessions::DeletePathIORequest>(
             web_state_dir.Append(kWebStateSessionFilename)));
       }
+    }
+
+    // Delete the storage of any WebState that has been closed (the data is
+    // now unreachable, and thus can safely be deleted).
+    const auto& closed_web_states = observer.closed_web_states();
+    for (web::WebStateID web_state_id : closed_web_states) {
+      // It is possible (though unlikely) for a WebState to be closed just
+      // after being moved between Browser. Support that case by deleting
+      // the data from the Browser that listed the WebState for adoption.
+      base::FilePath browser_dir = dest_dir;
+
+      auto iter = orphaned_map.find(web_state_id);
+      if (iter != orphaned_map.end()) {
+        const OrphanInfo& orphan_info = iter->second;
+        browser_dir = storage_path_.Append(orphan_info.session_id);
+      } else {
+        metadata_map.erase(web_state_id);
+      }
+
+      requests.push_back(std::make_unique<ios::sessions::DeletePathIORequest>(
+          ios::sessions::WebStateDirectory(browser_dir, web_state_id)));
     }
 
     // Clear the "dirty" bit.

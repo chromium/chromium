@@ -58,11 +58,11 @@ class SessionRestorationWebStateListObserver final
     return inserted_web_states_;
   }
 
-  // Returns the set of identifiers of discarded WebState that have been
-  // removed from the WebStateList (whether they were closed, detached,
-  // dirty or not, ...)
-  const std::set<web::WebStateID>& discarded_web_states() const {
-    return discarded_web_states_;
+  // Returns the set of identifiers of detached WebState that are scheduled
+  // to be closed (i.e. they cannot be adopted and their state on disk can
+  // be deleted).
+  const std::set<web::WebStateID>& closed_web_states() const {
+    return closed_web_states_;
   }
 
   // Should be called after saving the state of the WebStateList and of
@@ -101,7 +101,7 @@ class SessionRestorationWebStateListObserver final
   std::set<web::WebState*> dirty_web_states_;
   std::set<web::WebStateID> detached_web_states_;
   std::set<web::WebStateID> inserted_web_states_;
-  std::set<web::WebStateID> discarded_web_states_;
+  std::set<web::WebStateID> closed_web_states_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_WEB_STATE_LIST_OBSERVER_H_
