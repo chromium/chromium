@@ -325,26 +325,51 @@ std::string AXElementWrapper::AXErrorMessage(AXError result,
 
   std::string error;
   switch (result) {
+    case kAXErrorAPIDisabled:
+      error = "API disabled; you may need to add terminal and/or this binary "
+              "to System Settings -> Privacy & Security -> Accessibility";
+      break;
+    case kAXErrorActionUnsupported:
+      error = "action unsupported";
+      break;
     case kAXErrorAttributeUnsupported:
       error = "attribute unsupported";
       break;
-    case kAXErrorParameterizedAttributeUnsupported:
-      error = "parameterized attribute unsupported";
+    case kAXErrorCannotComplete:
+      error = "cannot complete";
       break;
-    case kAXErrorNoValue:
-      error = "no value";
+    case kAXErrorFailure:
+      error = "failure";
       break;
     case kAXErrorIllegalArgument:
       error = "illegal argument";
       break;
     case kAXErrorInvalidUIElement:
-      error = "invalid UIElement";
+      error = "invalid UI element";
       break;
-    case kAXErrorCannotComplete:
-      error = "cannot complete";
+    case kAXErrorInvalidUIElementObserver:
+      error = "illegal UI element observer";
+      break;
+    case kAXErrorNoValue:
+      error = "no value";
+      break;
+    case kAXErrorNotEnoughPrecision:
+      error = "not enough precision";
       break;
     case kAXErrorNotImplemented:
       error = "not implemented";
+      break;
+    case kAXErrorNotificationAlreadyRegistered:
+      error = "notification already registered";
+      break;
+    case kAXErrorNotificationNotRegistered:
+      error = "notification not registered";
+      break;
+    case kAXErrorNotificationUnsupported:
+      error = "notification unsupported";
+      break;
+    case kAXErrorParameterizedAttributeUnsupported:
+      error = "parameterized attribute unsupported";
       break;
     default:
       error = "unknown error";
