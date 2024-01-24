@@ -52,11 +52,15 @@ source_set("smart_card") {
 if (is_chromeos) {
   source_set("unit_tests") {
     testonly = true
-    sources = [ "smart_card_permission_context_unittest.cc" ]
+    sources = [
+      "smart_card_permission_context_unittest.cc",
+      "smart_card_reader_tracker_impl_unittest.cc",
+    ]
     deps = [
       ":smart_card",
       "//chrome/browser/permissions",
       "//chrome/test:test_support",
+      "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",
     ]
