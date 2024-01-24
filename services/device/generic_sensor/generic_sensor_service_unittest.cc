@@ -691,6 +691,66 @@ TEST_F(GenericSensorServiceTest, SameVirtualAndNonVirtualPlatformSensorsTest) {
   EXPECT_TRUE(provider->IsOverridingSensor(SensorType::PRESSURE));
 }
 
+TEST_F(GenericSensorServiceTest,
+       QuaternionSensorsOverrideEulerAngleSensorsTest) {
+  EXPECT_EQ(
+      CreateVirtualSensorSync(SensorType::RELATIVE_ORIENTATION_QUATERNION),
+      mojom::CreateVirtualSensorResult::kSuccess);
+
+  ASSERT_EQ(sensor_provider_impl_->GetVirtualProviderCountForTesting(), 1U);
+  // This only works and makes sense because of the assertion above.
+  auto* provider =
+      sensor_provider_impl_->GetLastVirtualSensorProviderForTesting();
+  ASSERT_TRUE(provider);
+  EXPECT_FALSE(provider->IsOverridingSensor(
+      SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES));
+  EXPECT_FALSE(provider->IsOverridingSensor(
+      SensorType::ABSOLUTE_ORIENTATION_QUATERNION));
+  EXPECT_TRUE(provider->IsOverridingSensor(
+      SensorType::RELATIVE_ORIENTATION_EULER_ANGLES));
+  EXPECT_TRUE(provider->IsOverridingSensor(
+      SensorType::RELATIVE_ORIENTATION_QUATERNION));
+
+  EXPECT_EQ(
+      CreateVirtualSensorSync(SensorType::ABSOLUTE_ORIENTATION_QUATERNION),
+      mojom::CreateVirtualSensorResult::kSuccess);
+  EXPECT_TRUE(provider->IsOverridingSensor(
+      SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES));
+  EXPECT_TRUE(provider->IsOverridingSensor(
+      SensorType::ABSOLUTE_ORIENTATION_QUATERNION));
+}
+
+TEST_F(GenericSensorServiceTest, VirtualEulerAngleSensorCreationTest) {
+  EXPECT_EQ(
+      CreateVirtualSensorSync(SensorType::RELATIVE_ORIENTATION_QUATERNION),
+      mojom::CreateVirtualSensorResult::kSuccess);
+  EXPECT_EQ(sensor_provider_impl_->GetVirtualProviderCountForTesting(), 1U);
+
+  // Create a sensor. Its type is the one we created a virtual sensor for
+  // above, so the non-virtual code path (i.e. the FakePlatformSensorProvider
+  // in this case) should not be called.
+  auto client = std::make_unique<TestSensorClient>(
+      SensorType::RELATIVE_ORIENTATION_EULER_ANGLES);
+  EXPECT_CALL(*fake_platform_sensor_provider_, DoCreateSensorInternal(_, _, _))
+      .Times(0);
+  {
+    base::RunLoop run_loop;
+    sensor_provider_->GetSensor(
+        SensorType::RELATIVE_ORIENTATION_EULER_ANGLES,
+        base::BindOnce(&TestSensorClient::OnSensorCreated,
+                       base::Unretained(client.get()), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  ASSERT_EQ(sensor_provider_impl_->GetVirtualProviderCountForTesting(), 1U);
+  // This only works and makes sense because of the assertion above.
+  auto* provider =
+      sensor_provider_impl_->GetLastVirtualSensorProviderForTesting();
+  ASSERT_TRUE(provider);
+  EXPECT_TRUE(provider->IsOverridingSensor(
+      SensorType::RELATIVE_ORIENTATION_EULER_ANGLES));
+}
+
 TEST_F(GenericSensorServiceTest, VirtualPlatformOverridesNonVirtualTest) {
   // Create a non-virtual sensor first.
   EXPECT_CALL(*fake_platform_sensor_provider_, DoCreateSensorInternal(_, _, _))
