@@ -322,7 +322,7 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
-    public void testCollapsedSheetShowsWhenBackpressingOnExpandedSheet() {
+    public void testCollapsedSheetShowsWhenBackPressingOnExpandedSheet() {
         buildAndShowExpandedBottomSheet();
 
         onView(isRoot()).perform(pressBack());

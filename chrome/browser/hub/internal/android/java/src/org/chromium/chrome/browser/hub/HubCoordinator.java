@@ -138,7 +138,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
         }
 
         // TODO(crbug/1498614): Discuss with Start Surface owners and investigate removing.
-        if (startSurfaceHandlesBackpress()) {
+        if (startSurfaceHandlesBackPress()) {
             // This is based on the logic in TabSwitcherMediator where the logic is delegated to
             // ReturnToChromeBackPressHandler.
             return BackPressResult.FAILURE;
@@ -171,7 +171,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
         return mPaneManager.getFocusedPaneSupplier().get();
     }
 
-    private boolean startSurfaceHandlesBackpress() {
+    private boolean startSurfaceHandlesBackPress() {
         Tab currentTab = mCurrentTabSupplier.get();
         boolean isIncognito = currentTab != null ? currentTab.isIncognito() : false;
         return !isIncognito
@@ -183,7 +183,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
         boolean shouldHandleBackPress =
                 Boolean.TRUE.equals(mFocusedPaneHandleBackPressSupplier.get())
                         || mPaneBackStackHandler.getHandleBackPressChangedSupplier().get()
-                        || (!startSurfaceHandlesBackpress() && mCurrentTabSupplier.get() != null);
+                        || (!startSurfaceHandlesBackPress() && mCurrentTabSupplier.get() != null);
         mHandleBackPressSupplier.set(shouldHandleBackPress);
     }
 
