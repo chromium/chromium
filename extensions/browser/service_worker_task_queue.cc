@@ -423,6 +423,13 @@ void ServiceWorkerTaskQueue::AddPendingTask(
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
   auto& tasks = worker_state->pending_tasks_;
+  // worker_state->pending_tasks_ having tasks means the
+  // worker has been requested to start and hasn't started yet. So
+  // `tasks.empty()` `false` means the worker is starting. `tasks.empty()`
+  // `true` means that we don't know if the worker is started so we'll try to
+  // start it to ensure it'll be ready for the task. This efficiency relies on
+  // the assumption that only this boolean controls whether we request the
+  // worker to start below.
   bool needs_start_worker = tasks.empty();
   tasks.push_back(std::move(task));
 
