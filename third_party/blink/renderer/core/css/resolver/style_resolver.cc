@@ -2403,20 +2403,11 @@ const CSSValue* StyleResolver::ComputeValue(
 
 const CSSValue* StyleResolver::ResolveValue(
     Element& element,
-    PseudoId pseudo_id,
-    const AtomicString& pseudo_argument,
+    const ComputedStyle& style,
     const CSSPropertyName& property_name,
     const CSSValue& value) {
-  const ComputedStyle* style = element.GetComputedStyle();
-  if (style && pseudo_id != kPseudoIdNone) {
-    style = style->GetCachedPseudoElementStyle(pseudo_id, pseudo_argument);
-  }
-  if (!style) {
-    return nullptr;
-  }
-
   StyleResolverState state(element.GetDocument(), element);
-  state.SetStyle(*style);
+  state.SetStyle(style);
   return StyleCascade::Resolve(state, property_name, value);
 }
 

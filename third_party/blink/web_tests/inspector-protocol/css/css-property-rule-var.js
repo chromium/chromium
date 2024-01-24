@@ -29,9 +29,15 @@
       --color: blue;
     }
   }
+  body::before {
+    --m: 0;
+    --len: var(--m);
+    counter-reset: n var(--len);
+    content: counter(n);
+  }
   div::before {
-    --in: 1px;
-    --len: var(--in);
+    --m: 0;
+    --len: var(--m);
   }
   </style>
 
@@ -62,9 +68,12 @@
                      .flat()
                      .filter(({name}) => name.startsWith('--'))
                      .flat());
+  testRunner.log('Pseudo Elements:');
   testRunner.log(
       pseudoElements
-          .map(({matches}) => matches.map(({rule}) => rule.style.cssProperties).flat())
+          .map(
+              ({matches}) =>
+                  matches.map(({rule}) => rule.style.cssProperties).flat())
           .flat()
           .filter(({name}) => name.startsWith('--')));
   testRunner.log('Keyframes:');
@@ -74,8 +83,8 @@
   testRunner.log('Editing a rule:');
   {
     const edits = [{styleSheetId, range, text: '--v: 5px; --len: var(--v);'}];
-    const {result: {styles: [{cssProperties}]}} =
-        await dp.CSS.setStyleTexts({edits, nodeForPropertySyntaxValidation: nodeId});
+    const {result: {styles: [{cssProperties}]}} = await dp.CSS.setStyleTexts(
+        {edits, nodeForPropertySyntaxValidation: nodeId});
     testRunner.log(cssProperties);
   }
 
@@ -91,6 +100,21 @@
       nodeForPropertySyntaxValidation: nodeId,
     });
     testRunner.log(cssProperties);
+  }
+
+  testRunner.log('Pseudo Elements:');
+  {
+    const {result: {nodeId}} =
+        await dp.DOM.querySelector({nodeId: root.nodeId, selector: 'body'});
+    const {result: {pseudoElements}} =
+        await dp.CSS.getMatchedStylesForNode({nodeId});
+    testRunner.log(
+        pseudoElements
+            .map(
+                ({matches}) =>
+                    matches.map(({rule}) => rule.style.cssProperties).flat())
+            .flat()
+            .filter(({name}) => name.startsWith('--')));
   }
 
 

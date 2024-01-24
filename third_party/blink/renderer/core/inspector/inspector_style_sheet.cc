@@ -1166,6 +1166,7 @@ bool InspectorStyle::CheckRegisteredPropertySyntaxWithVarSubstitution(
   if (!registration) {
     return false;
   }
+
   const ComputedStyle* style =
       element->EnsureComputedStyle(pseudo_id, pseudo_argument);
   if (!style) {
@@ -1188,8 +1189,8 @@ bool InspectorStyle::CheckRegisteredPropertySyntaxWithVarSubstitution(
 
   CSSPropertyName property_name(atomic_name);
   // Substitute var()s in the property value from element's computed style.
-  const auto* computed_value = StyleResolver::ResolveValue(
-      *element, pseudo_id, pseudo_argument, property_name, *result);
+  const auto* computed_value =
+      StyleResolver::ResolveValue(*element, *style, property_name, *result);
   if (!computed_value) {
     return false;
   }

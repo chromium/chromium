@@ -81,19 +81,20 @@ Validated declarations:
         value : var(--in)
     }
 ]
+Pseudo Elements:
 [
     [0] : {
         disabled : false
         implicit : false
-        name : --in
+        name : --m
         range : {
-            endColumn : 14
-            endLine : 29
+            endColumn : 11
+            endLine : 35
             startColumn : 4
-            startLine : 29
+            startLine : 35
         }
-        text : --in: 1px;
-        value : 1px
+        text : --m: 0;
+        value : 0
     }
     [1] : {
         disabled : false
@@ -101,21 +102,21 @@ Validated declarations:
         name : --len
         parsedOk : true
         range : {
-            endColumn : 21
-            endLine : 30
+            endColumn : 20
+            endLine : 36
             startColumn : 4
-            startLine : 30
+            startLine : 36
         }
-        text : --len: var(--in);
-        value : var(--in)
+        text : --len: var(--m);
+        value : var(--m)
     }
     [2] : {
-        name : --in
-        value : 1px
+        name : --m
+        value : 0
     }
     [3] : {
         name : --len
-        value : var(--in)
+        value : var(--m)
     }
 ]
 Keyframes:
@@ -311,4 +312,42 @@ Adding a rule:
     ]
     styleSheetId : <string>
 }
+Pseudo Elements:
+[
+    [0] : {
+        disabled : false
+        implicit : false
+        name : --m
+        range : {
+            endColumn : 11
+            endLine : 22
+            startColumn : 4
+            startLine : 22
+        }
+        text : --m: 0;
+        value : 0
+    }
+    [1] : {
+        disabled : false
+        implicit : false
+        name : --len
+        parsedOk : true
+        range : {
+            endColumn : 20
+            endLine : 23
+            startColumn : 4
+            startLine : 23
+        }
+        text : --len: var(--m);
+        value : var(--m)
+    }
+    [2] : {
+        name : --m
+        value : 0
+    }
+    [3] : {
+        name : --len
+        value : var(--m)
+    }
+]
 
