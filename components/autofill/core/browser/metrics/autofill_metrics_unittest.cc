@@ -8745,7 +8745,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
          Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
         {UFIT::kServerType1Name, server_types[i]},
         {UFIT::kServerPredictionSource1Name, prediction_source},
-        {UFIT::kServerType2Name, NO_SERVER_DATA},
+        {UFIT::kServerType2Name, /*SERVER_RESPONSE_PENDING*/ 161},
         {UFIT::kServerPredictionSource2Name,
          FieldPrediction::SOURCE_UNSPECIFIED},
         {UFIT::kServerTypeIsOverrideName, false},

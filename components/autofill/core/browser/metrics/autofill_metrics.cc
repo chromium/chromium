@@ -2389,10 +2389,10 @@ void AutofillMetrics::FormInteractionsUkmLogger::
 
   // The field type predicted by the Autofill crowdsourced server from
   // majority voting.
-  FieldType server_type1 = NO_SERVER_DATA;
+  std::optional<FieldType> server_type1 = std::nullopt;
   FieldPrediction::Source prediction_source1 =
       FieldPrediction::SOURCE_UNSPECIFIED;
-  FieldType server_type2 = NO_SERVER_DATA;
+  std::optional<FieldType> server_type2 = std::nullopt;
   FieldPrediction::Source prediction_source2 =
       FieldPrediction::SOURCE_UNSPECIFIED;
   // This is an annotation for server predicted field types which indicates
@@ -2625,9 +2625,15 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   }
 
   if (had_server_type) {
-    builder.SetServerType1(server_type1)
+    int64_t server_type1_value = server_type1.has_value()
+                                     ? server_type1.value()
+                                     : /*SERVER_RESPONSE_PENDING*/ 161;
+    int64_t server_type2_value = server_type2.has_value()
+                                     ? server_type2.value()
+                                     : /*SERVER_RESPONSE_PENDING*/ 161;
+    builder.SetServerType1(server_type1_value)
         .SetServerPredictionSource1(prediction_source1)
-        .SetServerType2(server_type2)
+        .SetServerType2(server_type2_value)
         .SetServerPredictionSource2(prediction_source2)
         .SetServerTypeIsOverride(server_type_is_override);
   }

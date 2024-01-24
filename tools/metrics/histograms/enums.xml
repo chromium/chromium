@@ -1124,6 +1124,7 @@ Called by update_autofill_enums.py.-->
   <int value="156" label="ADDRESS_HOME_APT"/>
   <int value="157" label="ADDRESS_HOME_APT_TYPE"/>
   <int value="160" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES"/>
+  <int value="161" label="SERVER_RESPONSE_PENDING"/>
 </enum>
 
 <enum name="AutofillFormControlType">

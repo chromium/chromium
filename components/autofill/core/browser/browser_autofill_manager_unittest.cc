@@ -6619,9 +6619,10 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
         ToFieldTypeEvents(autofill_field_ptr->heuristic_type(),
                           autofill_field_ptr->heuristic_type());
     // The autofill server applies two predictions on the "Name" field.
-    FieldType server_type2 = autofill_field_ptr->parseable_label() == u"Name"
-                                 ? USERNAME
-                                 : NO_SERVER_DATA;
+    std::optional<FieldType> server_type2 =
+        autofill_field_ptr->parseable_label() == u"Name"
+            ? std::optional<FieldType>(USERNAME)
+            : std::nullopt;
     FieldPrediction::Source prediction_source2 =
         autofill_field_ptr->parseable_label() == u"Name"
             ? FieldPrediction::SOURCE_PASSWORDS_DEFAULT
@@ -6723,7 +6724,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
         .server_type1 = autofill_field_ptr->server_type(),
         .prediction_source1 =
             autofill_field_ptr->server_predictions()[0].source(),
-        .server_type2 = NO_SERVER_DATA,
+        .server_type2 = std::nullopt,
         .prediction_source2 = FieldPrediction::SOURCE_UNSPECIFIED,
         .server_type_prediction_is_override = false,
         .rank_in_field_signature_group = field_signature_rank,
