@@ -387,6 +387,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="No one"/>
   <int value="2" label="All contacts"/>
   <int value="3" label="Selected contacts"/>
+  <int value="4" label="Your devices"/>
 </enum>
 
 </enums>
