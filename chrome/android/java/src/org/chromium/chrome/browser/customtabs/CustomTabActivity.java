@@ -35,6 +35,7 @@ import org.chromium.base.cached_flags.AllCachedFieldTrialParameters;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.BackupSigninProcessor;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsMod
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
+import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryTabHelper;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -57,6 +59,7 @@ import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.util.ColorUtils;
 
 /** The activity for custom tabs. It will be launched on top of a client's task. */
@@ -290,6 +293,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             assert pageInsights != null;
             pageInsights.launch();
             return true;
+        } else if (id == R.id.open_history_menu_id) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.APP_SPECIFIC_HISTORY)) {
+                HistoryManagerUtils.showHistoryManagerForResult(
+                        this, getTabModelSelector().isIncognitoSelected());
+            }
+            return true;
         }
         return super.onMenuOrKeyboardAction(id, fromMenu);
     }
@@ -399,5 +408,19 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     protected void setDefaultTaskDescription() {
         // mIntentDataProvider is not ready when the super calls this method. So, we skip setting
         // the task description here, and do it in #performPostInflationStartup();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.APP_SPECIFIC_HISTORY)
+                && requestCode == HistoryManagerUtils.HISTORY_REQUEST_CODE
+                && resultCode == RESULT_OK) {
+            LoadUrlParams params =
+                    new LoadUrlParams(
+                            data.getData().toString(),
+                            IntentHandler.getTransitionTypeFromIntent(data, PageTransition.LINK));
+            mTabProvider.getTab().loadUrl(params);
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

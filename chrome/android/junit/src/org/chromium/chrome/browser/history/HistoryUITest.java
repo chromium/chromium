@@ -96,6 +96,7 @@ import java.util.Date;
 
 /** Tests the History UI. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({ChromeFeatureList.APP_SPECIFIC_HISTORY})
 @DisableFeatures({ChromeFeatureList.HISTORY_JOURNEYS, ChromeFeatureList.RENAME_JOURNEYS})
 public class HistoryUITest {
     private static final int PAGE_INCREMENT = 2;

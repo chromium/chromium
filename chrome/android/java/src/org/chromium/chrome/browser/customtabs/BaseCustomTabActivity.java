@@ -726,14 +726,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     public boolean onMenuOrKeyboardAction(int id, boolean fromMenu) {
-        // Disable creating new tabs, bookmark, history, print, help, focus_url, etc.
+        // Disable creating new tabs, bookmark, print, help, focus_url, etc.
         if (id == R.id.focus_url_bar
                 || id == R.id.all_bookmarks_menu_id
                 || id == R.id.help_id
                 || id == R.id.recent_tabs_menu_id
                 || id == R.id.new_incognito_tab_menu_id
-                || id == R.id.new_tab_menu_id
-                || id == R.id.open_history_menu_id) {
+                || id == R.id.new_tab_menu_id) {
             return true;
         }
         return super.onMenuOrKeyboardAction(id, fromMenu);

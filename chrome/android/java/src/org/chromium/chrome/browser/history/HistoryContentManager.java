@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.history;
 
+import static android.content.Intent.ACTION_VIEW;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
@@ -31,6 +33,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar.PrefObserver;
@@ -409,8 +412,18 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      */
     public void openUrl(GURL url, Boolean isIncognito, boolean createNewTab) {
         if (mIsSeparateActivity) {
-            IntentHandler.startActivityForTrustedIntent(
-                    getOpenUrlIntent(url, isIncognito, createNewTab));
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.APP_SPECIFIC_HISTORY)
+                    && IntentUtils.safeGetBooleanExtra(
+                            mActivity.getIntent(), Intent.EXTRA_RETURN_RESULT, false)) {
+                Intent intent = new Intent(ACTION_VIEW, Uri.parse(url.getSpec()));
+                intent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, PAGE_TRANSITION_TYPE);
+                mActivity.setResult(Activity.RESULT_OK, intent);
+                mActivity.finish();
+            } else {
+                IntentHandler.startActivityForTrustedIntent(
+                        getOpenUrlIntent(url, isIncognito, createNewTab));
+            }
+
             return;
         }
 
@@ -542,7 +555,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * browsing activity.
      */
     static Intent createOpenUrlIntent(GURL url, Activity activity) {
-        Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
+        Intent viewIntent = new Intent(ACTION_VIEW, Uri.parse(url.getSpec()));
         viewIntent.putExtra(
                 Browser.EXTRA_APPLICATION_ID, activity.getApplicationContext().getPackageName());
         viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
