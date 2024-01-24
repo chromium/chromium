@@ -198,7 +198,8 @@
 }
 
 - (void)maybeDisplayChoiceScreen {
-  if (ShouldDisplaySearchEngineChoiceScreen(_browser)) {
+  if (ShouldDisplaySearchEngineChoiceScreen(
+          *_browser->GetBrowserState(), search_engines::ChoicePromo::kDialog)) {
     // If the user is eligible for the search engine choice screen, it should
     // be displayed right after the post-restore sign-in promo.
     SceneState* sceneState = _browser->GetSceneState();

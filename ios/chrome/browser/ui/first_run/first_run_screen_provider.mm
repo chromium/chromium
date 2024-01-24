@@ -11,6 +11,7 @@
 #import "components/sync/base/features.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
+#import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -20,28 +21,6 @@
 #import "ios/chrome/browser/ui/screen/screen_type.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
-
-namespace ios {
-namespace first_run {
-
-bool IsSearchEngineChoiceScreenEnabledFre() {
-  if (IsSearchEngineForceEnabled()) {
-    // This branch is only selected in tests that are related to choice screen.
-    return true;
-  }
-  if (tests_hook::DisableDefaultSearchEngineChoice()) {
-    // This branch is taken in every other tests.
-    return false;
-  }
-  if (ios::provider::DisableDefaultSearchEngineChoice()) {
-    // Outside of tests, this view should be disabled upstream.
-    return false;
-  }
-  return search_engines::IsChoiceScreenFlagEnabled(
-      search_engines::ChoicePromo::kFre);
-}
-}  // namespace first_run
-}  // namespace ios
 
 @implementation FirstRunScreenProvider
 
@@ -55,15 +34,8 @@ bool IsSearchEngineChoiceScreenEnabledFre() {
     [screens addObject:@(kTangibleSync)];
   }
 
-  search_engines::SearchEngineChoiceService* search_engine_choice_service =
-      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(browserState);
-  BrowserStatePolicyConnector* policyConnector =
-      browserState->GetPolicyConnector();
-  if (ios::first_run::IsSearchEngineChoiceScreenEnabledFre() &&
-      search_engine_choice_service->ShouldShowChoiceScreen(
-          *policyConnector->GetPolicyService(),
-          /*is_regular_profile=*/true,
-          ios::TemplateURLServiceFactory::GetForBrowserState(browserState))) {
+  if (ShouldDisplaySearchEngineChoiceScreen(
+          *browserState, search_engines::ChoicePromo::kFre)) {
     [screens addObject:@(kChoice)];
   }
 

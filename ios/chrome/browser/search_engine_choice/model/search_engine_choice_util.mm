@@ -18,10 +18,9 @@
 namespace {
 // Whether the choice screen might be displayed. The choice screen is by default
 // disabled for tests or for non-branded builds. This method eliminates those
-// cases.
-bool IsChoiceEnabled() {
+// cases, unless it is force-enabled by flag.
+bool IsChoiceEnabled(search_engines::ChoicePromo promo) {
   if (IsSearchEngineForceEnabled()) {
-    // This branch is only selected in tests that are related to choice screen.
     return true;
   }
   if (tests_hook::DisableDefaultSearchEngineChoice()) {
@@ -32,25 +31,21 @@ bool IsChoiceEnabled() {
     // Outside of tests, this view should be disabled upstream.
     return false;
   }
-  return search_engines::IsChoiceScreenFlagEnabled(
-      search_engines::ChoicePromo::kDialog);
+  return search_engines::IsChoiceScreenFlagEnabled(promo);
 }
 }  // namespace
 
-bool ShouldDisplaySearchEngineChoiceScreen(Browser* browser) {
-  if (!IsChoiceEnabled()) {
-    return false;
-  }
-  ChromeBrowserState* browser_state = browser->GetBrowserState();
-  if (!browser_state) {
+bool ShouldDisplaySearchEngineChoiceScreen(ChromeBrowserState& browser_state,
+                                           search_engines::ChoicePromo promo) {
+  if (!IsChoiceEnabled(promo)) {
     return false;
   }
   search_engines::SearchEngineChoiceService* search_engine_choice_service =
-      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(browser_state);
+      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(&browser_state);
   BrowserStatePolicyConnector* policy_connector =
-      browser_state->GetPolicyConnector();
+      browser_state.GetPolicyConnector();
   return search_engine_choice_service->ShouldShowChoiceScreen(
       *policy_connector->GetPolicyService(),
       /*is_regular_profile=*/true,
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state));
+      ios::TemplateURLServiceFactory::GetForBrowserState(&browser_state));
 }

@@ -113,6 +113,7 @@ source_set("first_run_provider") {
     "//components/sync/base:features",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/search_engine_choice/model",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/browser_state",

@@ -114,9 +114,10 @@
   if (_searchEngineChoiceCoordinator) {
     return;
   }
-  Browser* browser =
-      sceneState.browserProviderInterface.mainBrowserProvider.browser;
-  if (ShouldDisplaySearchEngineChoiceScreen(browser)) {
+  if (ShouldDisplaySearchEngineChoiceScreen(
+          *sceneState.browserProviderInterface.mainBrowserProvider.browser
+               ->GetBrowserState(),
+          search_engines::ChoicePromo::kDialog)) {
     DCHECK(!_searchEngineChoiceUIBlocker);
     DCHECK(!_searchEngineChoiceSceneStateID);
     _searchEngineChoiceUIBlocker =
