@@ -181,7 +181,7 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithServerError) {
                       std::unique_ptr<ModelQualityLogEntry> log_entry) {
                      EXPECT_FALSE(result.has_value());
                      EXPECT_EQ(OptimizationGuideModelExecutionError::
-                                   ModelExecutionError::kRetryableError,
+                                   ModelExecutionError::kDisabled,
                                result.error().error());
                      EXPECT_EQ(log_entry, nullptr);
                      run_loop->Quit();
@@ -193,16 +193,14 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithServerError) {
   std::string serialized_response;
   proto::ExecuteResponse execute_response;
   execute_response.mutable_error_response()->set_error_state(
-      proto::ErrorState::ERROR_STATE_INTERNAL_SERVER_ERROR_RETRY);
+      proto::ErrorState::ERROR_STATE_DISABLED);
   execute_response.SerializeToString(&serialized_response);
   EXPECT_TRUE(SimulateResponse(serialized_response, net::HTTP_OK));
 
   run_loop.Run();
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.ServerError.Compose",
-      OptimizationGuideModelExecutionError::ModelExecutionError::
-          kRetryableError,
-      1);
+      OptimizationGuideModelExecutionError::ModelExecutionError::kDisabled, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.Result.Compose", false, 1);
 }

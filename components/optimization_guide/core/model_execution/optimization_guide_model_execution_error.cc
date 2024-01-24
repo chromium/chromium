@@ -98,14 +98,14 @@ bool OptimizationGuideModelExecutionError::ShouldLogModelQuality() const {
   switch (error_) {
     case ModelExecutionError::kFiltered:
     case ModelExecutionError::kUnsupportedLanguage:
+    case ModelExecutionError::kNonRetryableError:
+    case ModelExecutionError::kRetryableError:
       return true;
     case ModelExecutionError::kInvalidRequest:
     case ModelExecutionError::kPermissionDenied:
-    case ModelExecutionError::kNonRetryableError:
     case ModelExecutionError::kDisabled:
     case ModelExecutionError::kRequestThrottled:
     case ModelExecutionError::kGenericFailure:
-    case ModelExecutionError::kRetryableError:
     case ModelExecutionError::kCancelled:
       return false;
     case ModelExecutionError::kUnknown:
