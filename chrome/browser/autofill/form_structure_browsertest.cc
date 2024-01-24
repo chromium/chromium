@@ -64,9 +64,7 @@ const base::FilePath::CharType kTestName[] = FILE_PATH_LITERAL("heuristics");
 // (i.e., FILE_PATH_LITERAL("NNN_some_site.html")) to the initializer_list given
 // to the failing_test_names constructor.
 const auto& GetFailingTestNames() {
-  static std::set<base::FilePath::StringType> failing_test_names{
-      FILE_PATH_LITERAL("048_register_deviantart.com.html"),
-      FILE_PATH_LITERAL("159_bug_966406_transavia.com.html")};
+  static std::set<base::FilePath::StringType> failing_test_names{};
   return failing_test_names;
 }
 
@@ -107,14 +105,15 @@ std::vector<base::FilePath> GetTestFiles() {
 
 std::string FormStructuresToString(
     const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms) {
-  std::string forms_string;
+  std::vector<std::string> string_forms;
+  string_forms.reserve(forms.size());
   // The forms are sorted by their global ID, which should make the order
   // deterministic.
   for (const auto& [form_id, form_structure] : forms) {
+    std::string string_form;
     std::map<std::string, int> section_to_index;
     for (const auto& field : *form_structure) {
       std::string section = field->section.ToString();
-
       if (field->section.is_from_fieldidentifier()) {
         // Normalize the section by replacing the unique but platform-dependent
         // integers in `field->section` with consecutive unique integers.
@@ -133,16 +132,17 @@ std::string FormStructuresToString(
               section_index);
         }
       }
-
-      forms_string += base::JoinString(
+      string_form += base::JoinString(
           {field->Type().ToStringView(), base::UTF16ToUTF8(field->name),
            base::UTF16ToUTF8(field->label), base::UTF16ToUTF8(field->value),
            section},
           base::StringPiece(" | "));
-      forms_string += "\n";
+      string_form.push_back('\n');
     }
+    string_forms.push_back(string_form);
   }
-  return forms_string;
+  sort(string_forms.begin(), string_forms.end());
+  return base::JoinString(string_forms, "\n");
 }
 
 }  // namespace
@@ -302,10 +302,9 @@ std::unique_ptr<HttpResponse> FormStructureBrowserTest::HandleRequest(
 IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest, MAYBE_DataDrivenHeuristics) {
   // Prints the path of the test to be executed.
   LOG(INFO) << GetParam().MaybeAsASCII();
-  if (!base::Contains(GetFailingTestNames(), GetParam().BaseName().value())) {
-    RunOneDataDrivenTest(GetParam(), GetOutputDirectory(),
-                         /*is_expected_to_pass=*/true);
-  }
+  bool is_expected_to_pass =
+      !base::Contains(GetFailingTestNames(), GetParam().BaseName().value());
+  RunOneDataDrivenTest(GetParam(), GetOutputDirectory(), is_expected_to_pass);
 }
 
 INSTANTIATE_TEST_SUITE_P(AllForms,

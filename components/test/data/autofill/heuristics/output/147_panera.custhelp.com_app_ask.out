@@ -1,4 +1,3 @@
-UNKNOWN_TYPE | rn_KeywordText_3_Text | Search by Keyword |  | rn_KeywordText_3_Text_1
 UNKNOWN_TYPE | Incident.CustomFields.c.escalated_gift_card_devalue | Yes | 1 | Incident.CustomFields.c.escalated_gift_card_devalue_1
 UNKNOWN_TYPE | Incident.CustomFields.c.escalated_gift_card_devalue | No | 0 | Incident.CustomFields.c.escalated_gift_card_devalue_1
 UNKNOWN_TYPE | Incident.CustomFields.c.escalated_catering_sales | Yes | 1 | Incident.CustomFields.c.escalated_gift_card_devalue_1
@@ -62,3 +61,5 @@ UNKNOWN_TYPE | X.Incident.CustomFields.CafeInfo.AssociatedCafe.ID | Bakery-Cafe 
 UNKNOWN_TYPE | Incident.Threads | We’d love to hear your feedback. Please share your comments, questions or suggestions here. * Required |  | Incident.CustomFields.c.escalated_gift_card_devalue_1
 UNKNOWN_TYPE | Incident.CustomFields.c.email_opt_in | If you would like a response from our Customer Care Team, please make sure this box is checked. | 1 | Incident.CustomFields.c.escalated_gift_card_devalue_1
 UNKNOWN_TYPE | rn_FormSubmit_86_Submission | Send | on | Incident.CustomFields.c.escalated_gift_card_devalue_1
+
+UNKNOWN_TYPE | rn_KeywordText_3_Text | Search by Keyword |  | rn_KeywordText_3_Text_1

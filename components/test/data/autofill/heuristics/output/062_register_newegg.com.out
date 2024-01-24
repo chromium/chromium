@@ -1,4 +1,3 @@
-UNKNOWN_TYPE | Description | Search site |  | Description_1
 EMAIL_ADDRESS | LoginName | Email Address* |  | LoginName_1
 EMAIL_ADDRESS | LoginName1 | Confirm Email Address* |  | LoginName_1
 UNKNOWN_TYPE | Password | Password* |  | LoginName_1
@@ -44,4 +43,7 @@ UNKNOWN_TYPE | FirstPurchase | Is this your first Newegg.com purchase? | 0 | Log
 UNKNOWN_TYPE | GameHours | How many hours per week do you play PC games? | 0 | LoginName_1
 UNKNOWN_TYPE | Spam | Sign me up for exclusive newsletter deals, sweepstakes, and 24-hour sales only available to subscribers | 1 | LoginName_1
 UNKNOWN_TYPE | SMS | I would like to receive SMS messages via my wireless device. | 1 | LoginName_1
+
+UNKNOWN_TYPE | Description | Search site |  | Description_1
+
 UNKNOWN_TYPE | TrackingNumber | Track My Order | Tracking Number | TrackingNumber_1

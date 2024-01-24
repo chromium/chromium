@@ -1,3 +1,5 @@
+UNKNOWN_TYPE | email | Enter your email address |  | email_1
+
 UNKNOWN_TYPE | payment_group | Payment Type We accept Visa, Mastercard, Discover, American Express, and PayPal. | cc | payment_group_1
 UNKNOWN_TYPE | payment_group | Payment Type We accept Visa, Mastercard, Discover, American Express, and PayPal. | paypal | payment_group_1
 CREDIT_CARD_NAME_FULL | ccFullName | (as it appears on the card) |  | ccFullName_2
@@ -13,4 +15,3 @@ ADDRESS_HOME_LINE2 | addrStreet2 | (apt, suite, building, floor, etc) |  | payme
 ADDRESS_HOME_CITY | addrCity | City |  | payment_group_1
 ADDRESS_HOME_STATE | addrState | State |   | payment_group_1
 ADDRESS_HOME_ZIP | addrZip | Postal code |  | payment_group_1
-UNKNOWN_TYPE | email | Enter your email address |  | email_1

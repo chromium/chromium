@@ -22,4 +22,5 @@ ADDRESS_HOME_ZIP | zipCode | ZIP Code* ZIP Code* |  | firstName_2
 PHONE_HOME_CITY_AND_NUMBER | day1 | Phone Number* |  | firstName_2
 PHONE_HOME_EXTENSION | ext1 | Ext. |  | firstName_2
 ADDRESS_HOME_STATE | county | County County | UNKNOWN | firstName_2
+
 UNKNOWN_TYPE | KmartSpuSpecialInstr |  |  | KmartSpuSpecialInstr_1

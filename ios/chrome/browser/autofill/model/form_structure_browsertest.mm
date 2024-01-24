@@ -323,10 +323,11 @@ void FormStructureBrowserTest::GenerateResults(const std::string& input,
 
 std::string FormStructureBrowserTest::FormStructuresToString(
     const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms) {
-  std::string forms_string;
+  std::vector<std::string> forms_string;
   // The forms are sorted by their global ID, which should make the order
   // deterministic.
   for (const auto& form_kv : forms) {
+    std::string form_string;
     const auto* form = form_kv.second.get();
     std::map<std::string, int> section_to_index;
     for (const auto& field : *form) {
@@ -337,7 +338,6 @@ std::string FormStructureBrowserTest::FormStructuresToString(
         // to have a behavior similar to other platforms.
         name = "";
       }
-
       std::string section = field->section.ToString();
       if (base::StartsWith(section, "gChrome~field~",
                            base::CompareCase::SENSITIVE)) {
@@ -346,7 +346,6 @@ std::string FormStructureBrowserTest::FormStructuresToString(
         size_t first_underscore = section.find_first_of('_');
         section = section.substr(first_underscore);
       }
-
       if (field->section.is_from_fieldidentifier()) {
         // Normalize the section by replacing the unique but platform-dependent
         // integers in `field->section` with consecutive unique integers.
@@ -365,14 +364,15 @@ std::string FormStructureBrowserTest::FormStructuresToString(
               section_index);
         }
       }
-
-      forms_string +=
+      form_string +=
           base::StrCat({field->Type().ToStringView(), " | ", name, " | ",
                         base::UTF16ToUTF8(field->label), " | ",
                         base::UTF16ToUTF8(field->value), " | ", section, "\n"});
     }
+    forms_string.push_back(form_string);
   }
-  return forms_string;
+  sort(forms_string.begin(), forms_string.end());
+  return base::JoinString(forms_string, "\n");
 }
 
 namespace {
