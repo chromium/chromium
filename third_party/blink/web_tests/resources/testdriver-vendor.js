@@ -518,13 +518,19 @@
     }
   };
 
-  window.test_driver_internal.set_window_rect = async () => {
+  window.test_driver_internal.set_window_rect = async (rect, context) => {
     window.testRunner.setMainWindowHidden(false);
     // Wait until the new state is reflected in the document
     while (document.hidden) {
       await new Promise(resolve => setTimeout(resolve, 0));
     }
+    if (rect !== undefined)
+        window.testRunner.setWindowRect(rect);
   };
+
+  window.test_driver_internal.get_window_rect = async function() {
+      return {'x': window.screenX, 'y': window.screenY, 'width': window.outerWidth, 'height': window.outerHeight};
+  }
 
   window.test_driver_internal.get_fedcm_dialog_type = async function() {
     return internals.getFedCmDialogType();

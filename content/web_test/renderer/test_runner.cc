@@ -39,6 +39,7 @@
 #include "content/web_test/renderer/web_frame_test_proxy.h"
 #include "gin/arguments.h"
 #include "gin/array_buffer.h"
+#include "gin/dictionary.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
@@ -345,6 +346,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void SetMockScreenOrientation(const std::string& orientation);
   void SetPOSIXLocale(const std::string& locale);
   void SetMainWindowHidden(bool hidden);
+  void SetWindowRect(const gin::Dictionary& rect);
   void SetPermission(const std::string& name,
                      const std::string& value,
                      const std::string& origin,
@@ -758,6 +760,7 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
       // to change in order to wait for the side effects of calling this.
       .SetMethod("setMainWindowHidden",
                  &TestRunnerBindings::SetMainWindowHidden)
+      .SetMethod("setWindowRect", &TestRunnerBindings::SetWindowRect)
       // Sets the permission's |name| to |value| for a given {origin, embedder}
       // tuple. Sends a message to the WebTestPermissionManager in order for it
       // to update its database.
@@ -1327,6 +1330,27 @@ void TestRunnerBindings::SetMainWindowHidden(bool hidden) {
     return;
   }
   frame_->GetWebTestControlHostRemote()->SetMainWindowHidden(hidden);
+}
+
+void TestRunnerBindings::SetWindowRect(const gin::Dictionary& bounds) {
+  if (!frame_) {
+    return;
+  }
+
+  gfx::Rect rect = frame_->GetLocalRootWebFrameWidget()->WindowRect();
+
+  // https://www.w3.org/TR/webdriver2/#set-window-rect
+  int x, y, width, height;
+  if (const_cast<gin::Dictionary&>(bounds).Get("x", &x) &&
+      const_cast<gin::Dictionary&>(bounds).Get("y", &y)) {
+    rect.set_origin({x, y});
+  }
+  if (const_cast<gin::Dictionary&>(bounds).Get("width", &width) &&
+      const_cast<gin::Dictionary&>(bounds).Get("height", &height)) {
+    rect.set_size({width, height});
+  }
+
+  GetWebFrame()->View()->SetWindowRectSynchronouslyForTesting(rect);
 }
 
 void TestRunnerBindings::SetTextDirection(const std::string& direction_name) {
