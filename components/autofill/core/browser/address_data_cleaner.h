@@ -37,10 +37,9 @@ class AddressDataCleaner {
   // Applies address cleanups if all address Autofill `model_type`s are enabled.
   void MaybeCleanupAddressDataAfterSyncChange(syncer::ModelType model_type);
 
- protected:
+ private:
   friend class AddressDataCleanerTest;
 
- private:
   // Shared implementation of `MaybeCleanupAddressData()` and
   // `MaybeCleanupAddressDataAfterSyncChange()`
   void ApplyAddressFixesAndCleanups();
