@@ -1,1 +1,1 @@
-chrome-chromeos-arm64-generic-main-1705967917-273f875d84ed098875aad1bae5f9d410833fd438.profdata
+chrome-chromeos-arm64-generic-main-1706096829-1f96f3e6321215b5beccb1a035fb808c97dc3a3f.profdata
