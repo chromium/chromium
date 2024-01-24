@@ -73,7 +73,10 @@ constexpr char kSqlFeatureQuery[] = "SELECT COUNT(*) from metrics";
 
 class SegmentationPlatformTest : public PlatformBrowserTest {
  public:
-  SegmentationPlatformTest() {
+  explicit SegmentationPlatformTest(bool setup_feature_list = true) {
+    if (!setup_feature_list) {
+      return;
+    }
     // Low Engagement Segment is used to test segmentation service without multi
     // output. Search User Segment supports  multi output path.
     feature_list_.InitWithFeaturesAndParameters(
@@ -663,6 +666,36 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformUkmModelTest, SumGroupDatabaseApi) {
         const std::vector<float> kExpectedResults = {0, 11, 22};
         EXPECT_EQ(result, kExpectedResults);
       }));
+}
+
+class SegmentationPlatformUkmDisabledTest : public SegmentationPlatformTest {
+ public:
+  SegmentationPlatformUkmDisabledTest()
+      : SegmentationPlatformTest(/*setup_feature_list=*/false) {
+    feature_list_.InitWithFeaturesAndParameters(
+        {base::test::FeatureRefAndParams(features::kSegmentationPlatformFeature,
+                                         {}),
+         base::test::FeatureRefAndParams(
+             kSegmentationPlatformOptimizationTargetSegmentationDummy, {})},
+        /*disabled_features=*/{
+            features::kSegmentationPlatformUkmEngine,
+        });
+  }
+};
+
+// On Android tests are failing because of unrelated browser tests failures.
+// TODO(ssid): Once the issue is resolved, enable the test on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_DatabaseApi DISABLED_DatabaseApi
+#else
+#define MAYBE_DatabaseApi DatabaseApi
+#endif
+IN_PROC_BROWSER_TEST_F(SegmentationPlatformUkmDisabledTest, MAYBE_DatabaseApi) {
+  WaitForPlatformInit();
+
+  SegmentationPlatformService* service = GetService();
+  DatabaseClient* client = service->GetDatabaseClient();
+  EXPECT_FALSE(client);
 }
 
 }  // namespace segmentation_platform
