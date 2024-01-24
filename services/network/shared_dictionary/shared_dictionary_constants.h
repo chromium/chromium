@@ -48,9 +48,6 @@ COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameMatch[];
 // The dictionary option name of "expires".
 COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameExpires[];
 
-// The dictionary option name of "algorithms".
-COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameAlgorithms[];
-
 // The dictionary option name of "type".
 COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameType[];
 

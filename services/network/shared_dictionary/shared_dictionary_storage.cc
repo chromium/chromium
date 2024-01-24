@@ -32,17 +32,14 @@ class UseAsDictionaryHeaderInfo {
  public:
   UseAsDictionaryHeaderInfo(std::string match,
                             absl::optional<base::TimeDelta> expiration,
-                            absl::optional<std::vector<std::string>> algorithms,
                             std::string type)
       : match(std::move(match)),
         expiration(expiration),
-        algorithms(std::move(algorithms)),
         type(std::move(type)) {}
   ~UseAsDictionaryHeaderInfo() = default;
 
   std::string match;
   absl::optional<base::TimeDelta> expiration;
-  absl::optional<std::vector<std::string>> algorithms;
   std::string type;
 };
 
@@ -62,7 +59,6 @@ absl::optional<UseAsDictionaryHeaderInfo> ParseUseAsDictionaryHeaderInfo(
 
   absl::optional<std::string> match_value;
   absl::optional<base::TimeDelta> expires_value;
-  absl::optional<std::vector<std::string>> algorithms_value;
   std::string type_value = std::string(kDefaultTypeRaw);
   for (const auto& entry : dictionary.value()) {
     if (entry.first == shared_dictionary::kOptionNameMatch) {
@@ -78,15 +74,6 @@ absl::optional<UseAsDictionaryHeaderInfo> ParseUseAsDictionaryHeaderInfo(
       }
       expires_value =
           base::Seconds(entry.second.member.front().item.GetInteger());
-    } else if (entry.first == shared_dictionary::kOptionNameAlgorithms) {
-      std::vector<std::string> tmp_vec;
-      for (const auto& algorithms_item : entry.second.member) {
-        if (!algorithms_item.item.is_token()) {
-          return absl::nullopt;
-        }
-        tmp_vec.push_back(algorithms_item.item.GetString());
-      }
-      algorithms_value = std::move(tmp_vec);
     } else if (entry.first == shared_dictionary::kOptionNameType) {
       if ((entry.second.member.size() != 1u) ||
           !entry.second.member.front().item.is_token()) {
@@ -99,7 +86,7 @@ absl::optional<UseAsDictionaryHeaderInfo> ParseUseAsDictionaryHeaderInfo(
     return absl::nullopt;
   }
   return UseAsDictionaryHeaderInfo(*match_value, std::move(expires_value),
-                                   std::move(algorithms_value), type_value);
+                                   type_value);
 }
 
 }  // namespace
@@ -131,14 +118,6 @@ SharedDictionaryStorage::MaybeCreateWriter(
     // expiration time on the dictionary entry to keep the duration constrained.
     expiration =
         std::min(expiration, shared_dictionary::kMaxExpirationForOriginTrial);
-  }
-  if (info->algorithms) {
-    // Currently we only support support sha-256.
-    // TODO(crbug.com/1413922): Investigate the spec and decide whether to
-    // support non lowercase token or not.
-    if (!base::Contains(*info->algorithms, "sha-256")) {
-      return nullptr;
-    }
   }
   if (info->type != kDefaultTypeRaw) {
     // Currently we only support `raw` type.

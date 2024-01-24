@@ -532,22 +532,6 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryHeader) {
       // String `expires` value is not supported.
       {"match=\"test\", expires=PI", false},
 
-      // Valid `algorithms` value.
-      {"match=\"test\", algorithms=sha-256", true},
-      {"match=\"test\", algorithms=(sha-256)", true},
-      {"match=\"test\", algorithms=(sha-256 sha-512)", true},
-
-      // The sha-256 token must be lowercase.
-      // TODO(crbug.com/1413922): Investigate the spec and decide whether to
-      // support it or not.
-      {"match=\"test\", algorithms=SHA-256", false},
-
-      // Each item in `algorithms` value must be a token.
-      {"match=\"test\", algorithms=(\"sha-256\")", false},
-
-      // Unsupported `algorithms` value. We only support sha-256.
-      {"match=\"test\", algorithms=(sha-512)", false},
-
       // We support `raw` type.
       {"match=\"test\", type=raw", true},
       {"match=\"test\", type=(raw)", true},

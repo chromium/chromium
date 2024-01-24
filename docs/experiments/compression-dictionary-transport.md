@@ -207,7 +207,7 @@ construction to catch up the following spec changes:
 - Updated the default dictionary ttl to 14 days since last fetched
   - Stauts: Not yet implemented.
 - Removed support for hash negotiation and force use of sha-256
-  - Stauts: Not yet implemented.
+  - Stauts: Removed by https://crrev.com/c/5223985.
 - Added the dictionary hash to the compressed response
   - Stauts: Not yet implemented.
 - Dictionary hashes changed to sf-binary
