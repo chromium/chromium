@@ -15023,6 +15023,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="Load failed"/>
 </enum>
 
+<enum name="LinkGenerationCopiedLinkType">
+  <int value="0" label="Copied from new right-click menu generation"/>
+  <int value="1" label="Copied from existing highlight right-click menu"/>
+</enum>
+
 <enum name="LinkGenerationError">
   <int value="-1" label="no error"/>
   <int value="0" label="Incorrect selector"/>
@@ -15042,9 +15047,40 @@ Called by update_permissions_policy_enum.py.-->
   <int value="14" label="NotGenerated"/>
 </enum>
 
+<enum name="LinkGenerationSharedStatus">
+  <int value="0" label="Generation succeeded, shared text"/>
+  <int value="1" label="Generation succeeded, shared link"/>
+  <int value="2" label="Generation failed (shared text)"/>
+</enum>
+
+<enum name="LinkGenerationState">
+  <int value="0" label="kNotStarted: Link generation is not strated."/>
+  <int value="1"
+      label="kNeedsNewCandidate: New candidate selector is being generated."/>
+  <int value="2" label="kTestCandidate: Candidate selector is being tested."/>
+  <int value="3" label="kFailure: Link generation completed with failure."/>
+  <int value="4" label="kSuccess: Link generation completed with success."/>
+</enum>
+
 <enum name="LinkToggleState">
   <int value="0" label="Link"/>
   <int value="1" label="No Link"/>
+</enum>
+
+<enum name="LinkToTextDiagnoseStatus">
+  <int value="0" label="Show sharing hub is requested for highlighted text"/>
+  <int value="1" label="Selector is requested for highlighted text"/>
+  <int value="2" label="Selector is received for highlighted text"/>
+</enum>
+
+<enum name="LinkToTextReshareStatus">
+  <int value="0" label="Successful."/>
+  <int value="1" label="Not possible to request. remote connection issues."/>
+  <int value="2" label="Cancelled due to tab getting hidden."/>
+  <int value="3" label="Cancelled due to omnibox navigation."/>
+  <int value="4" label="Cancelled due to tab crash."/>
+  <int value="5" label="Cancelled due to time out"/>
+  <int value="6" label="Empty selector"/>
 </enum>
 
 <enum name="LinuxDistro3">

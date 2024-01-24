@@ -22,6 +22,156 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="TextFragmentSource">
+<!-- Should be synced with TextFragmentLinkOpenSource in enums.xml. -->
+
+  <variant name=".SearchEngine" summary="the default search engine."/>
+  <variant name=".Unknown" summary="unknown but not the default search engine"/>
+</variants>
+
+<histogram name="SharedHighlights.AndroidShareSheet.SharedState"
+    enum="LinkGenerationSharedStatus" expires_after="2024-05-19">
+  <owner>sebsg@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records the status of the link generation when a user shares content using
+    the feature on Android.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.AsyncTask.Iterations" units="iterations"
+    expires_after="2024-03-01">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates number of iterations it took for AsyncFindBuffer to finish the
+    search. AsyncFindBuffer is used only for validating generated text fragment
+    selectors for Shared Highlighting.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.AsyncTask.SearchDuration" units="ms"
+    expires_after="2024-03-01">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Time it took in milliseconds for AsyncFindBuffer to finish the search.
+    AsyncFindBuffer is used only for validating generated text fragment
+    selectors for Shared Highlighting.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.Desktop.CopiedLinkType"
+    enum="LinkGenerationCopiedLinkType" expires_after="2024-05-19">
+  <owner>sebsg@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records the type of shared highlighting link the user copied on desktop.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Error"
+    enum="LinkGenerationError" expires_after="2024-04-28">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records errors that caused text fragment selector generation to fail.
+    Recorded for all the failed link generation runs. This histogram is a
+    superset of |SharedHighlights.LinkGenerated.Error.Requested|.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Error.Iterations"
+    units="iterations" expires_after="2024-03-01">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates number of iterations it took for the unsuccessful text fragment
+    selector generation run.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Error.Requested"
+    enum="LinkGenerationError" expires_after="2024-05-12">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records errors that caused text fragment selector generation to fail.
+    Recorded only for failure cases that were requested by users.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Error.TimeToGenerate"
+    units="ms" expires_after="2024-03-01">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Time it took in millisecons for a failed text fragment selector generation
+    attempt.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.StateAtRequest"
+    enum="LinkGenerationState" expires_after="2024-03-01">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records the state of the link generation when link to text request is
+    received from the browser process.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.TimeToGenerate" units="ms"
+    expires_after="2024-03-01">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    How long it took in milliseconds to successfully generate text fragment
+    selector.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated{Requested}"
+    enum="BooleanSuccess" expires_after="2024-03-01">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates whether text fragment selector generation was successful for
+    {Requested}.
+  </summary>
+  <token key="Requested">
+    <variant name="" summary="all generation cases"/>
+    <variant name=".Requested"
+        summary="all cases when generated selector is requested."/>
+    <variant name=".RequestedAfterReady"
+        summary="cases when selector is requested after its ready."/>
+    <variant name=".RequestedBeforeReady"
+        summary="cases when selector is requested before its ready."/>
+  </token>
+</histogram>
+
+<histogram name="SharedHighlights.LinkToTextDiagnoseStatus"
+    enum="LinkToTextDiagnoseStatus" expires_after="2024-03-01">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records the status of link to text flow on Android for diagnostic purposes.
+    Intended to be temporary for debug purposes.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.ObtainReshareLink.Status"
+    enum="LinkToTextReshareStatus" expires_after="2024-03-01">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records if obtaining reshare link was successful. Otherwise, it records the
+    failure reason.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.AnyShareStarted" enum="ShareSourceAndroid"
     expires_after="never">
   <owner>dimich@chromium.org</owner>
@@ -457,6 +607,67 @@ chromium-metrics-reviews@google.com.
     <variant name="DefaultSharesheetAndroid" summary="System share sheet"/>
     <variant name="SharingHubAndroid" summary="Chrome's sharing hub"/>
   </token>
+</histogram>
+
+<histogram name="TextFragmentAnchor.LinkOpenSource"
+    enum="TextFragmentLinkOpenSource" expires_after="2024-05-12">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Recorded for every navigation to a link with a valid text fragment selector
+    (e.g. #:=:text=SELECTOR). Indicates source type that navigation originated
+    from. It only know about search engines that come from the pre-populated
+    list installed with Chrome. If the user uses a search engine not on the
+    list, it will be recorded as Unknown. This is even true if the user have a
+    custom search engine. These custom search engines can be created by hand or
+    auto-generated. In either case, it's not going to count as a search engine.
+    Also, it only checks to see if the *referrer* is from a domain associated
+    with search engine. If someone posts a link somewhere on a web site that
+    happens to have a search engine known to Google and that links includes the
+    fragment tokens, then if a user clicks that link, it'll look like it came
+    from a search engine even thought they did not.
+  </summary>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.AmbiguousMatch"
+    enum="Boolean" expires_after="2024-06-30">
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Whether we found multiple matches for a selector. Recorded when
+    TextFragmentAnchor finishes searching once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.MatchRate" units="%"
+    expires_after="2024-06-30">
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    The percentage of selectors for which a match was found in the document.
+    Recorded when TextFragmentAnchor finishes searching once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.TimeToScrollIntoView"
+    units="ms" expires_after="2024-06-30">
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    The time between creating the TextFragmentAnchor (i.e. when it is parsed)
+    and scrolling the target into view. Only recorded if there is a match and we
+    tried to scroll it into view (it may already have been in view). Recorded
+    when TextFragmentAnchor finishes searching once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
 </histogram>
 
 </histograms>
