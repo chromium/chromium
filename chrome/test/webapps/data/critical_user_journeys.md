@@ -92,6 +92,8 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | WMLC | create_shortcut(Standalone, Windowed) | check_window_created |
 | WMLC | create_shortcut(Standalone, Windowed) | close_pwa | check_app_in_list_windowed(Standalone) | check_platform_shortcut_and_icon(Standalone) |
 | WMLC | create_shortcut(Standalone, Windowed) | close_pwa | launch_from_platform_shortcut(Standalone) | check_pwa_window_created_in_profile(Standalone, One, Default) | check_launch_icon_not_shown |
+| WMLC | install_menu_option(ChromeUrl) | check_window_created |
+| WMLC | create_shortcut(ChromeUrl, Windowed) | check_window_created |
 
 ## Uninstallation
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |

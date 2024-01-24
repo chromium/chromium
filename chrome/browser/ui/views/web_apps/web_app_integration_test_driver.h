@@ -76,6 +76,7 @@ enum class Site {
   kHasSubApps,
   kSubApp1,
   kSubApp2,
+  kChromeUrl,
 };
 
 enum class InstallableSite {
@@ -94,6 +95,7 @@ enum class InstallableSite {
   kHasSubApps,
   kSubApp1,
   kSubApp2,
+  kChromeUrl,
 };
 
 enum class Title { kStandaloneOriginal, kStandaloneUpdated };
@@ -424,7 +426,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void AwaitManifestSystemIdle();
 
   webapps::AppId GetAppIdBySiteMode(Site site);
-  GURL GetUrlForSite(Site site);
+  GURL GetUrlForSite(Site site, const std::string& suffix = "");
   std::optional<AppState> GetAppBySiteMode(StateSnapshot* state_snapshot,
                                            Profile* profile,
                                            Site site);
@@ -552,6 +554,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   base::flat_set<Site> site_remember_deny_open_file_;
   base::AutoReset<std::optional<web_app::AppIdentityUpdate>>
       update_dialog_scope_;
+
+  base::ScopedClosureRunner valid_chrome_url_for_webapps_registration_;
 
   base::TimeTicks start_time_ = base::TimeTicks::Now();
 };

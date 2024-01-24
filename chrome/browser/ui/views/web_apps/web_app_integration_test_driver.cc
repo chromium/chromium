@@ -234,6 +234,8 @@ Site InstallableSiteToSite(InstallableSite site) {
       return Site::kSubApp1;
     case InstallableSite::kSubApp2:
       return Site::kSubApp2;
+    case InstallableSite::kChromeUrl:
+      return Site::kChromeUrl;
   }
 }
 
@@ -280,6 +282,7 @@ struct SiteConfig {
   std::u16string wco_not_enabled_title;
   SkColor icon_color;
   base::flat_set<std::string> alternate_titles;
+  std::string base_url;  // if not specified, use GetTestServerForSiteMode
 };
 
 base::flat_map<Site, SiteConfig> g_site_configs = {
@@ -414,6 +417,16 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .app_name = "Sub App 2",
       .wco_not_enabled_title = u"Sub App 2",
       .icon_color = SK_ColorBLUE}},
+    {Site::kChromeUrl,
+     {.relative_url = "/webapps_integration/standalone/basic.html",
+      .relative_manifest_id = "webapps_integration/standalone/basic.html",
+      .app_name = "Site A",
+      // WCO disabled is the defaulting state so the title when disabled
+      // should match with the app's name.
+      .wco_not_enabled_title = u"Site A",
+      .icon_color = SK_ColorGREEN,
+      .alternate_titles = {"Site A - Updated name"},
+      .base_url = "chrome://webapps_integration_tests"}},
 };
 
 struct DisplayConfig {
@@ -740,6 +753,40 @@ void ReinitializeAppService(Profile* profile) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+// Determines whether, when attempting to load a path, we want to, instead of
+// using the regular handler, load it from a file on disk.
+bool ShouldLoadResponseFromDisk(const base::FilePath& root,
+                                const std::string& path) {
+  const base::FilePath expanded = root.AppendASCII(path);
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  const bool exists = base::PathExists(expanded);
+  if (exists) {
+    VLOG(1) << "Loading test data from " << expanded << " for " << path;
+  } else {
+    VLOG(1) << "Unable to load test data from " << expanded << " for " << path
+            << ", as the file doesn't exist.";
+  }
+  return exists;
+}
+
+void LoadFileFromDisk(const base::FilePath& path,
+                      content::WebUIDataSource::GotDataCallback callback) {
+  std::string result;
+  CHECK(base::ReadFileToString(path, &result));
+
+  std::move(callback).Run(new base::RefCountedBytes(
+      reinterpret_cast<const unsigned char*>(result.data()), result.size()));
+}
+
+void LoadResponseFromDisk(const base::FilePath& root,
+                          const std::string& path,
+                          content::WebUIDataSource::GotDataCallback callback) {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(LoadFileFromDisk, root.AppendASCII(path),
+                     std::move(callback)));
+}
+
 }  // anonymous namespace
 
 BrowserState::BrowserState(
@@ -894,6 +941,24 @@ void WebAppIntegrationTestDriver::SetUpOnMainThread() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   ReinitializeAppService(browser()->profile());
 #endif
+
+  // Add chrome://webapps_integration_tests/ date source.
+  auto root_path = base::PathService::CheckedGet(chrome::DIR_TEST_DATA);
+  content::WebUIDataSource* data_source =
+      content::WebUIDataSource::CreateAndAdd(browser()->profile(),
+                                             "webapps_integration_tests");
+  valid_chrome_url_for_webapps_registration_ =
+      AddValidWebAppChromeUrlHostForTesting("webapps_integration_tests");
+  data_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::DefaultSrc,
+      "default-src * 'unsafe-eval' 'unsafe-inline'; ");
+  data_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src * 'unsafe-inline' 'unsafe-eval'; ");
+  data_source->DisableTrustedTypesCSP();
+  data_source->SetRequestFilter(
+      base::BindRepeating(&ShouldLoadResponseFromDisk, root_path),
+      base::BindRepeating(LoadResponseFromDisk, root_path));
 
   web_app::test::WaitUntilReady(
       web_app::WebAppProvider::GetForTest(browser()->profile()));
@@ -2133,11 +2198,9 @@ void WebAppIntegrationTestDriver::ManifestUpdateIcon(
   // which, on ChromeOS, is not written to the shortcut because it is not within
   // the intersection between `kDesiredIconSizesForShortcut` (which is platform-
   // dependent) and `SizesToGenerate()` (which is fixed on all platforms).
-  auto relative_url_path = GetSiteConfiguration(site).relative_url;
-  GURL url = GetTestServerForSiteMode(site).GetURL(
-      base::StrCat({relative_url_path,
-                    base::StringPrintf("?manifest=manifest_icon_red_%u.json",
-                                       kLauncherIconSize)}));
+  GURL url = GetUrlForSite(
+      site, base::StringPrintf("?manifest=manifest_icon_red_%u.json",
+                               kLauncherIconSize));
 
   ForceUpdateManifestContents(site, url);
   HandleAppIdentityUpdateDialogResponse(response);
@@ -2162,8 +2225,7 @@ void WebAppIntegrationTestDriver::ManifestUpdateTitle(
           "WebAppIdentityUpdateConfirmationView");
 
   auto relative_url_path = GetSiteConfiguration(site).relative_url;
-  GURL url = GetTestServerForSiteMode(site).GetURL(
-      base::StrCat({relative_url_path, "?manifest=manifest_title.json"}));
+  GURL url = GetUrlForSite(site, "?manifest=manifest_title.json");
   ForceUpdateManifestContents(site, url);
   HandleAppIdentityUpdateDialogResponse(response);
   AfterStateChangeAction();
@@ -2178,8 +2240,7 @@ void WebAppIntegrationTestDriver::ManifestUpdateDisplay(Site site,
   std::string relative_url_path = GetSiteConfiguration(site).relative_url;
   std::string manifest_url_param =
       GetDisplayUpdateConfiguration(display).manifest_url_param;
-  GURL url = GetTestServerForSiteMode(site).GetURL(
-      base::StrCat({relative_url_path, manifest_url_param}));
+  GURL url = GetUrlForSite(site, manifest_url_param);
 
   ForceUpdateManifestContents(site, url);
   AfterStateChangeAction();
@@ -2193,9 +2254,8 @@ void WebAppIntegrationTestDriver::ManifestUpdateScopeTo(Site app, Site scope) {
   // simplicity, right now only Standalone is supported, so that is just
   // hardcoded in manifest_scope_Standalone.json, which is specified in the URL.
   auto relative_url_path = GetSiteConfiguration(app).relative_url;
-  GURL url = GetTestServerForSiteMode(app).GetURL(
-      base::StrCat({relative_url_path,
-                    GetScopeUpdateConfiguration(scope).manifest_url_param}));
+  GURL url =
+      GetUrlForSite(app, GetScopeUpdateConfiguration(scope).manifest_url_param);
   ForceUpdateManifestContents(app, url);
   AfterStateChangeAction();
 }
@@ -3940,12 +4000,12 @@ void WebAppIntegrationTestDriver::AwaitManifestSystemIdle() {
 webapps::AppId WebAppIntegrationTestDriver::GetAppIdBySiteMode(Site site) {
   auto site_config = GetSiteConfiguration(site);
   std::string manifest_id = site_config.relative_manifest_id;
-  auto relative_url = site_config.relative_url;
-  GURL start_url = GetTestServerForSiteMode(site).GetURL(relative_url);
+  GURL start_url = GetUrlForSite(site);
   CHECK(start_url.is_valid());
 
   auto parent_manifest = site_config.parent_manifest_id;
   if (parent_manifest.has_value()) {
+    // TODO: This does not work for chrome:// URLs
     webapps::ManifestId parent_manifest_id =
         GetTestServerForSiteMode(site).GetURL(parent_manifest.value());
     return GenerateAppId(manifest_id, start_url, parent_manifest_id);
@@ -3955,9 +4015,15 @@ webapps::AppId WebAppIntegrationTestDriver::GetAppIdBySiteMode(Site site) {
   }
 }
 
-GURL WebAppIntegrationTestDriver::GetUrlForSite(Site site) {
-  auto relative_url_path = GetSiteConfiguration(site).relative_url;
-  return GetTestServerForSiteMode(site).GetURL(relative_url_path);
+GURL WebAppIntegrationTestDriver::GetUrlForSite(Site site,
+                                                const std::string& suffix) {
+  auto site_config = GetSiteConfiguration(site);
+  if (site_config.base_url.empty()) {
+    return GetTestServerForSiteMode(site).GetURL(
+        base::StrCat({site_config.relative_url, suffix}));
+  }
+  return GURL(
+      base::StrCat({site_config.base_url, site_config.relative_url, suffix}));
 }
 
 std::optional<AppState> WebAppIntegrationTestDriver::GetAppBySiteMode(
