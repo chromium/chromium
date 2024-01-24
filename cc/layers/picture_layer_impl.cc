@@ -150,9 +150,6 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   twin_layer_ = layer_impl;
   layer_impl->twin_layer_ = this;
 
-  layer_impl->SetNearestNeighbor(nearest_neighbor_);
-  layer_impl->SetDirectlyCompositedImageDefaultRasterScale(
-      directly_composited_image_default_raster_scale_);
   layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask_);
 
   // Solid color layers have no tilings.
@@ -785,6 +782,8 @@ void PictureLayerImpl::UpdateRasterSource(
 
   raster_source_->set_debug_name(DebugName());
 
+  UpdateDirectlyCompositedImageFromRasterSource();
+
   // Register images from the new raster source, if the recording was updated.
   // TODO(khushalsagar): UMA the number of animated images in layer?
   if (recording_updated)
@@ -1119,28 +1118,26 @@ void PictureLayerImpl::GetContentsResourceId(
       requested_tile_size.height() / draw_info.resource_size().height());
 }
 
-void PictureLayerImpl::SetNearestNeighbor(bool nearest_neighbor) {
-  if (nearest_neighbor_ == nearest_neighbor)
-    return;
+void PictureLayerImpl::UpdateDirectlyCompositedImageFromRasterSource() {
+  float new_default_raster_scale = 0;
+  bool new_nearest_neighbor = false;
+  if (const auto& info = raster_source_->directly_composited_image_info()) {
+    // TODO(crbug.com/1196414): Support 2D scales in directly composited images.
+    new_default_raster_scale =
+        GetPreferredRasterScale(info->default_raster_scale);
+    new_nearest_neighbor = info->nearest_neighbor;
+  }
 
-  nearest_neighbor_ = nearest_neighbor;
-  NoteLayerPropertyChanged();
-}
+  directly_composited_image_default_raster_scale_changed_ =
+      new_default_raster_scale !=
+      directly_composited_image_default_raster_scale_;
 
-void PictureLayerImpl::SetDirectlyCompositedImageDefaultRasterScale(
-    const gfx::Vector2dF& scale) {
-  SetDirectlyCompositedImageDefaultRasterScale(GetPreferredRasterScale(scale));
-}
-
-void PictureLayerImpl::SetDirectlyCompositedImageDefaultRasterScale(
-    float scale) {
-  DCHECK_GE(scale, 0.f);
-  if (directly_composited_image_default_raster_scale_ == scale)
-    return;
-
-  directly_composited_image_default_raster_scale_ = scale;
-  directly_composited_image_default_raster_scale_changed_ = true;
-  NoteLayerPropertyChanged();
+  if (new_nearest_neighbor != nearest_neighbor_ ||
+      directly_composited_image_default_raster_scale_changed_) {
+    directly_composited_image_default_raster_scale_ = new_default_raster_scale;
+    nearest_neighbor_ = new_nearest_neighbor;
+    NoteLayerPropertyChanged();
+  }
 }
 
 bool PictureLayerImpl::ShouldDirectlyCompositeImage(float raster_scale) const {

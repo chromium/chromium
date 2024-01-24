@@ -46,6 +46,15 @@ void RecordingSource::FinishDisplayItemListUpdate() {
   TRACE_EVENT0("cc", "RecordingSource::FinishDisplayItemListUpdate");
   DetermineIfSolidColor();
   display_list_->EmitTraceSnapshot();
+
+  directly_composited_image_info_ =
+      display_list_->GetDirectlyCompositedImageInfo();
+  if (directly_composited_image_info_) {
+    // Directly composited images are not guaranteed to fully cover every
+    // pixel in the layer due to ceiling when calculating the tile content
+    // rect from the layer bounds.
+    SetRequiresClear(true);
+  }
 }
 
 void RecordingSource::SetNeedsDisplayRect(const gfx::Rect& layer_rect) {
@@ -90,17 +99,21 @@ void RecordingSource::UpdateDisplayItemList(
   CHECK(display_list);
   recording_scale_factor_ = recording_scale_factor;
 
-  if (display_list_ != display_list) {
-    if (display_list_ &&
-        display_list->NeedsAdditionalInvalidationForLCDText(*display_list_)) {
-      invalidation = gfx::Rect(size_);
-    }
-    display_list_ = std::move(display_list);
-    // Do the following only if the display list changes. Though we use
-    // recording_scale_factor in DetermineIfSolidColor(), change of it doesn't
-    // affect whether the same display list is solid or not.
-    FinishDisplayItemListUpdate();
+  if (display_list_ == display_list) {
+    return;
   }
+
+  // Do the following only if the display list changes. Though we use
+  // recording_scale_factor in DetermineIfSolidColor(), change of it doesn't
+  // affect whether the same display list is solid or not.
+
+  if (display_list_ &&
+      display_list->NeedsAdditionalInvalidationForLCDText(*display_list_)) {
+    invalidation = gfx::Rect(size_);
+  }
+
+  display_list_ = std::move(display_list);
+  FinishDisplayItemListUpdate();
 }
 
 gfx::Size RecordingSource::GetSize() const {

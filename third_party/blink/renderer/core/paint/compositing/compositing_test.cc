@@ -3219,7 +3219,9 @@ TEST_P(CompositingSimTest, CompositedImageWithSubpixelOffset) {
       static_cast<const cc::PictureLayer*>(CcLayerByDOMElementId("image"));
   ASSERT_TRUE(image_layer);
   EXPECT_EQ(gfx::Vector2dF(0.25f, 0.0625f),
-            image_layer->DirectlyCompositedImageDefaultRasterScaleForTesting());
+            image_layer->GetRecordingSourceForTesting()
+                ->directly_composited_image_info()
+                ->default_raster_scale);
 }
 
 TEST_P(CompositingSimTest, CompositedImageWithSubpixelOffsetAndOrientation) {
@@ -3233,7 +3235,9 @@ TEST_P(CompositingSimTest, CompositedImageWithSubpixelOffsetAndOrientation) {
       static_cast<const cc::PictureLayer*>(CcLayerByDOMElementId("image"));
   ASSERT_TRUE(image_layer);
   EXPECT_EQ(gfx::Vector2dF(0.0625f, 0.25f),
-            image_layer->DirectlyCompositedImageDefaultRasterScaleForTesting());
+            image_layer->GetRecordingSourceForTesting()
+                ->directly_composited_image_info()
+                ->default_raster_scale);
 }
 
 }  // namespace blink

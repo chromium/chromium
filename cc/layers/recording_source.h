@@ -5,11 +5,12 @@
 #ifndef CC_LAYERS_RECORDING_SOURCE_H_
 #define CC_LAYERS_RECORDING_SOURCE_H_
 
-#include <stddef.h>
+#include <optional>
 
 #include "base/memory/ref_counted.h"
 #include "cc/base/invalidation_region.h"
 #include "cc/cc_export.h"
+#include "cc/paint/directly_composited_image_info.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -46,6 +47,11 @@ class CC_EXPORT RecordingSource {
 
   bool is_solid_color() const { return is_solid_color_; }
 
+  const std::optional<DirectlyCompositedImageInfo>&
+  directly_composited_image_info() const {
+    return directly_composited_image_info_;
+  }
+
  protected:
   // TODO(crbug.com/1157714): For now this is different from gfx::Rect(size_)
   // in unit tests only. Remove this field and use display_list_->bounds().
@@ -58,6 +64,7 @@ class CC_EXPORT RecordingSource {
   SkColor4f background_color_ = SkColors::kTransparent;
   scoped_refptr<DisplayItemList> display_list_;
   float recording_scale_factor_ = 1.0f;
+  std::optional<DirectlyCompositedImageInfo> directly_composited_image_info_;
 
  private:
   void UpdateInvalidationForNewViewport(const gfx::Rect& old_recorded_viewport,

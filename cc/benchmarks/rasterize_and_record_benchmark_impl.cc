@@ -125,10 +125,6 @@ class FixedInvalidationPictureLayerTilingClient
     return base_client_->GetPaintWorkletRecords();
   }
 
-  bool IsDirectlyCompositedImage() const override {
-    return base_client_->IsDirectlyCompositedImage();
-  }
-
   bool ScrollInteractionInProgress() const override {
     return base_client_->ScrollInteractionInProgress();
   }

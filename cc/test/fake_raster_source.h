@@ -41,6 +41,8 @@ class FakeRasterSource : public RasterSource {
       const RecordingSource* recording_source,
       base::WaitableEvent* playback_allowed_event);
 
+  void SetDirectlyCompositedImageDefaultRasterScale(gfx::Vector2dF scale);
+
  protected:
   explicit FakeRasterSource(const RecordingSource* recording_source);
   FakeRasterSource(const RecordingSource* recording_source,

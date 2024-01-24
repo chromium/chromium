@@ -80,7 +80,6 @@ class CC_EXPORT PictureLayerImpl
   bool HasValidTilePriorities() const override;
   bool RequiresHighResToDraw() const override;
   const PaintWorkletRecordMap& GetPaintWorkletRecords() const override;
-  bool IsDirectlyCompositedImage() const override;
   bool ScrollInteractionInProgress() const override;
   bool CurrentScrollCheckerboardsDueToNoRecording() const override;
 
@@ -106,13 +105,6 @@ class CC_EXPORT PictureLayerImpl
   void GetContentsResourceId(viz::ResourceId* resource_id,
                              gfx::Size* resource_size,
                              gfx::SizeF* resource_uv_size) const override;
-
-  void SetNearestNeighbor(bool nearest_neighbor);
-
-  void SetDirectlyCompositedImageDefaultRasterScale(
-      const gfx::Vector2dF& scale);
-  // TODO(crbug.com/1196414): Support 2D scales in directly composited images.
-  void SetDirectlyCompositedImageDefaultRasterScale(float scale);
 
   size_t GPUMemoryUsageInBytes() const override;
 
@@ -212,6 +204,9 @@ class CC_EXPORT PictureLayerImpl
   // factors, and bumps up the reduced scale if those layers end up increasing
   // their contents scale.
   float CalculateDirectlyCompositedImageRasterScale() const;
+
+  bool IsDirectlyCompositedImage() const;
+  void UpdateDirectlyCompositedImageFromRasterSource();
 
   void SanityCheckTilingState() const;
 

@@ -53,7 +53,6 @@ class CC_EXPORT PictureLayerTilingClient {
   virtual bool HasValidTilePriorities() const = 0;
   virtual bool RequiresHighResToDraw() const = 0;
   virtual const PaintWorkletRecordMap& GetPaintWorkletRecords() const = 0;
-  virtual bool IsDirectlyCompositedImage() const = 0;
   virtual bool ScrollInteractionInProgress() const = 0;
   virtual bool CurrentScrollCheckerboardsDueToNoRecording() const = 0;
 

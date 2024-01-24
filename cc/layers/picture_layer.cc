@@ -25,18 +25,14 @@
 
 namespace cc {
 
-PictureLayer::PictureLayerInputs::PictureLayerInputs() = default;
-
-PictureLayer::PictureLayerInputs::~PictureLayerInputs() = default;
-
 scoped_refptr<PictureLayer> PictureLayer::Create(ContentLayerClient* client) {
   return base::WrapRefCounted(new PictureLayer(client));
 }
 
 PictureLayer::PictureLayer(ContentLayerClient* client)
-    : instrumentation_object_tracker_(id()), update_source_frame_number_(-1) {
-  picture_layer_inputs_.client = client;
-}
+    : client_(client),
+      instrumentation_object_tracker_(id()),
+      update_source_frame_number_(-1) {}
 
 PictureLayer::~PictureLayer() = default;
 
@@ -60,12 +56,9 @@ void PictureLayer::PushPropertiesTo(
   DropRecordingSourceContentIfInvalid(
       base_layer->layer_tree_impl()->source_frame_number());
 
-  layer_impl->SetNearestNeighbor(picture_layer_inputs_.nearest_neighbor);
   layer_impl->set_gpu_raster_max_texture_size(
       commit_state.device_viewport_rect.size());
   layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask());
-  layer_impl->SetDirectlyCompositedImageDefaultRasterScale(
-      picture_layer_inputs_.directly_composited_image_default_raster_scale);
 
   // TODO(enne): http://crbug.com/918126 debugging
   CHECK(this);
@@ -132,9 +125,8 @@ bool PictureLayer::Update() {
 
   auto& recording_source = recording_source_.Write(*this);
   recording_source->SetBackgroundColor(SafeOpaqueBackgroundColor());
-  recording_source->SetRequiresClear(
-      !contents_opaque() &&
-      !picture_layer_inputs_.client->FillsBoundsCompletely());
+  recording_source->SetRequiresClear(!contents_opaque() &&
+                                     !client_->FillsBoundsCompletely());
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"), "PictureLayer::Update",
                "source_frame_number", layer_tree_host()->SourceFrameNumber());
@@ -145,31 +137,14 @@ bool PictureLayer::Update() {
   // anything not explicitly recorded in this frame. We give this region
   // to the impl side so that it drops tiles that may not have a recording
   // for them.
-  DCHECK(picture_layer_inputs_.client);
+  DCHECK(client_);
 
   updated |= recording_source->Update(
-      bounds(), layer_tree_host()->recording_scale_factor(),
-      *picture_layer_inputs_.client, last_updated_invalidation_.Write(*this));
+      bounds(), layer_tree_host()->recording_scale_factor(), *client_,
+      last_updated_invalidation_.Write(*this));
 
   if (!updated) {
     return false;
-  }
-
-  // Clear out previous directly composited image state - if the layer
-  // qualifies we'll set up the state below.
-  picture_layer_inputs_.directly_composited_image_default_raster_scale =
-      gfx::Vector2dF();
-  picture_layer_inputs_.nearest_neighbor = false;
-  std::optional<DisplayItemList::DirectlyCompositedImageResult> result =
-      recording_source->display_list()->GetDirectlyCompositedImageResult();
-  if (result) {
-    // Directly composited images are not guaranteed to fully cover every
-    // pixel in the layer due to ceiling when calculating the tile content
-    // rect from the layer bounds.
-    recording_source->SetRequiresClear(true);
-    picture_layer_inputs_.directly_composited_image_default_raster_scale =
-        result->default_raster_scale;
-    picture_layer_inputs_.nearest_neighbor = result->nearest_neighbor;
   }
 
   SetNeedsPushProperties();
@@ -182,7 +157,7 @@ sk_sp<const SkPicture> PictureLayer::GetPicture() const {
     return nullptr;
 
   scoped_refptr<DisplayItemList> display_list =
-      picture_layer_inputs_.client->PaintContentsToDisplayList();
+      client_->PaintContentsToDisplayList();
   SkPictureRecorder recorder;
   SkCanvas* canvas =
       recorder.beginRecording(bounds().width(), bounds().height());
@@ -192,27 +167,20 @@ sk_sp<const SkPicture> PictureLayer::GetPicture() const {
 }
 
 void PictureLayer::ClearClient() {
-  picture_layer_inputs_.client = nullptr;
+  client_ = nullptr;
   UpdateDrawsContent();
 }
 
-void PictureLayer::SetNearestNeighbor(bool nearest_neighbor) {
-  if (picture_layer_inputs_.nearest_neighbor == nearest_neighbor)
-    return;
-
-  picture_layer_inputs_.nearest_neighbor = nearest_neighbor;
-  SetNeedsCommit();
-}
-
 bool PictureLayer::HasDrawableContent() const {
-  return picture_layer_inputs_.client && Layer::HasDrawableContent();
+  return client_ && Layer::HasDrawableContent();
 }
 
 void PictureLayer::SetIsBackdropFilterMask(bool is_backdrop_filter_mask) {
-  if (picture_layer_inputs_.is_backdrop_filter_mask == is_backdrop_filter_mask)
+  if (is_backdrop_filter_mask_ == is_backdrop_filter_mask) {
     return;
+  }
 
-  picture_layer_inputs_.is_backdrop_filter_mask = is_backdrop_filter_mask;
+  is_backdrop_filter_mask_ = is_backdrop_filter_mask;
   SetNeedsCommit();
 }
 

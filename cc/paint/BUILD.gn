@@ -17,6 +17,7 @@ cc_component("paint") {
     "decode_stashing_image_provider.h",
     "decoded_draw_image.cc",
     "decoded_draw_image.h",
+    "directly_composited_image_info.h",
     "discardable_image_map.cc",
     "discardable_image_map.h",
     "display_item_list.cc",
