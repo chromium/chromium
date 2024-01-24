@@ -11,21 +11,18 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#ifndef MEDIAPIPE_FRAMEWORK_MEMORY_MANAGER_SERVICE_H_
+#define MEDIAPIPE_FRAMEWORK_MEMORY_MANAGER_SERVICE_H_
 
-#ifndef MEDIAPIPE_DEPS_RANDOM_BASE_H_
-#define MEDIAPIPE_DEPS_RANDOM_BASE_H_
+#include "mediapipe/framework/graph_service.h"
+#include "mediapipe/framework/memory_manager.h"
 
-#include <cstdint>
+namespace mediapipe {
 
-class RandomBase {
- public:
-  // constructors.  Don't do too much.
-  RandomBase() {}
-  virtual ~RandomBase();
+// Graph service to request pooled buffer objects.
+inline constexpr GraphService<MemoryManager> kMemoryManagerService(
+    "MemoryManagerService", GraphServiceBase::kDisallowDefaultInitialization);
 
-  virtual float RandFloat() { return 0; }
-  virtual int UnbiasedUniform(int n) { return 0; }
-  virtual uint64_t UnbiasedUniform64(uint64_t n) { return 0; }
-};
+}  // namespace mediapipe
 
-#endif  // MEDIAPIPE_DEPS_RANDOM_BASE_H_
+#endif  // MEDIAPIPE_FRAMEWORK_MEMORY_MANAGER_SERVICE_H_

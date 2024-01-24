@@ -14,6 +14,7 @@
 
 #include <stdio.h>
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -30,7 +31,6 @@
 #include "mediapipe/framework/formats/image_frame.h"
 #include "mediapipe/framework/formats/image_frame_opencv.h"
 #include "mediapipe/framework/formats/video_stream_header.h"
-#include "mediapipe/framework/port/integral_types.h"
 #include "mediapipe/framework/port/parse_text_proto.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
@@ -871,8 +871,8 @@ absl::Status BoxTrackerCalculator::Process(CalculatorContext* cc) {
                                      : nullptr;
 
   if (ra_track_stream && !ra_track_stream->IsEmpty()) {
-    RET_CHECK(!box_tracker_) << "Random access only for streaming mode "
-                             << "implemented.";
+    RET_CHECK(!box_tracker_)
+        << "Random access only for streaming mode " << "implemented.";
     const TimedBoxProtoList& box_list =
         ra_track_stream->Get<TimedBoxProtoList>();
     RET_CHECK(box_list.box_size() % 2 == 0)
@@ -888,8 +888,8 @@ absl::Status BoxTrackerCalculator::Process(CalculatorContext* cc) {
   if (ra_track_stream == nullptr || ra_track_stream->IsEmpty()) {
     if (ra_track_proto_string_stream &&
         !ra_track_proto_string_stream->IsEmpty()) {
-      RET_CHECK(!box_tracker_) << "Random access only for streaming mode "
-                               << "implemented.";
+      RET_CHECK(!box_tracker_)
+          << "Random access only for streaming mode " << "implemented.";
       auto box_list_str = ra_track_proto_string_stream->Get<std::string>();
       TimedBoxProtoList box_list;
       box_list.ParseFromString(box_list_str);
