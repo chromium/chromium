@@ -53,7 +53,7 @@ using OperationPtr = network::mojom::SharedStorageOperationPtr;
 using OperationType = network::mojom::SharedStorageOperationType;
 using OperationResult = storage::SharedStorageManager::OperationResult;
 using GetResult = storage::SharedStorageManager::GetResult;
-using ContextType = StoragePartitionImpl::URLLoaderNetworkContext::Type;
+using ContextType = StoragePartitionImpl::ContextType;
 
 enum class TestCaseType {
   kNavigationRequestContextIframePermissionEnabled = 0,

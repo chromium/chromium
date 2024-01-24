@@ -37,7 +37,7 @@ namespace content {
 namespace {
 
 using OperationPtr = network::mojom::SharedStorageOperationPtr;
-using ContextType = StoragePartitionImpl::URLLoaderNetworkContext::Type;
+using ContextType = StoragePartitionImpl::ContextType;
 
 bool IsSharedStorageAllowedByPermissionsPolicy(
     SharedStorageHeaderObserver::PermissionsPolicyDoubleCheckStatus

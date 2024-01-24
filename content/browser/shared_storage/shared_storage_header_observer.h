@@ -34,7 +34,7 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
   using OperationResult = storage::SharedStorageManager::OperationResult;
   using OperationType = network::mojom::SharedStorageOperationType;
   using OperationPtr = network::mojom::SharedStorageOperationPtr;
-  using ContextType = StoragePartitionImpl::URLLoaderNetworkContext::Type;
+  using ContextType = StoragePartitionImpl::ContextType;
 
   // Enum for tracking how often the `PermissionsPolicy` double check runs along
   // with its results. Recorded to UMA; always add new values to the end and do
