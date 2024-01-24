@@ -22,6 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
@@ -38,12 +39,14 @@ namespace {
 
 using ToolbarSnapLocation = GameDashboardContext::ToolbarSnapLocation;
 
-// Horizontal padding for the border around the toolbar.
-constexpr int kPaddingWidth = 4;
-// Vertical padding for the border around the toolbar.
-constexpr int kPaddingHeight = 6;
+// Corner radius of the toolbar view.
+constexpr int kCornerRadius = 20;
+// Horizontal inset for the border around the toolbar.
+constexpr int kHorizontalInset = 4;
+// Vertical inset for the border around the toolbar.
+constexpr int kVerticalInset = 4;
 // Padding between children in the toolbar.
-constexpr int kBetweenChildSpacing = 8;
+constexpr int kBetweenChildSpacing = 4;
 
 std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
                                              const gfx::VectorIcon* icon,
@@ -224,11 +227,14 @@ GameDashboardToolbarView::GameDashboardToolbarView(
   AddPreTargetHandler(drag_handler_.get(), ui::EventTarget::Priority::kSystem);
 
   SetOrientation(views::BoxLayout::Orientation::kVertical);
-  SetInsideBorderInsets(gfx::Insets::VH(kPaddingHeight, kPaddingWidth));
+  SetInsideBorderInsets(gfx::Insets::VH(kVerticalInset, kHorizontalInset));
   SetBetweenChildSpacing(kBetweenChildSpacing);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
-  SetBackground(
-      views::CreateThemedSolidBackground(cros_tokens::kCrosSysBaseElevated));
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemBaseElevatedOpaque, kCornerRadius));
+  SetPaintToLayer();
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCornerRadius));
+  layer()->SetFillsBoundsOpaquely(false);
 
   AddShortcutTiles();
 }
