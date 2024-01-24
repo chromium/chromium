@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/webui/ukm_internals_ui.h"
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted_memory.h"
 #import "components/grit/ukm_resources.h"
 #import "components/grit/ukm_resources_map.h"
@@ -46,7 +47,7 @@ class UkmMessageHandler : public web::WebUIIOSMessageHandler {
  private:
   void HandleRequestUkmData(const base::Value::List& args);
 
-  const ukm::UkmService* ukm_service_;
+  raw_ptr<const ukm::UkmService> ukm_service_;
 };
 
 UkmMessageHandler::UkmMessageHandler(const ukm::UkmService* ukm_service)

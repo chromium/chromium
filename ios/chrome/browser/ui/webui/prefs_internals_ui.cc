@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/values.h"
 #include "components/local_state/local_state_utils.h"
@@ -55,7 +56,7 @@ class PrefsInternalsSource : public web::URLDataSourceIOS {
   }
 
  private:
-  ChromeBrowserState* browser_state_;
+  raw_ptr<ChromeBrowserState> browser_state_;
 };
 
 }  // namespace

@@ -7,6 +7,7 @@
 
 #include <map>
 
+#import "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_request.h"
@@ -89,7 +90,7 @@ class FakeOverlayPresentationContext : public OverlayPresentationContext {
   // Whether dismissal callback execution is enabled.
   bool dismissal_callbacks_enabled_ = true;
   // The presented request.  Null if no request is presented.
-  OverlayRequest* presented_request_ = nullptr;
+  raw_ptr<OverlayRequest> presented_request_ = nullptr;
   // The UI states for each request.
   std::map<OverlayRequest*, FakeUIState> states_;
   // The capabilities of the context.

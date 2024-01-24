@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_tab_helper.h"
 #include "ios/web/public/web_state_observer.h"
@@ -54,7 +55,7 @@ class BreadcrumbManagerTabHelper
   void OnScrollEvent(const std::string& event);
 
   // The webstate associated with this tab helper.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // A counter which is incremented for each scroll event. This value is reset
   // when any other event is logged.

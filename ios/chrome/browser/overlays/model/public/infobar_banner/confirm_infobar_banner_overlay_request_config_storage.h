@@ -7,6 +7,7 @@
 
 #import <string>
 
+#import "base/memory/raw_ptr.h"
 #import "ui/gfx/image/image.h"
 
 namespace infobars {
@@ -48,7 +49,7 @@ class ConfirmBannerRequestConfigStorage {
 
  private:
   // The InfoBar causing this banner.
-  infobars::InfoBar* infobar_ = nullptr;
+  raw_ptr<infobars::InfoBar> infobar_ = nullptr;
 
   // Configuration data extracted from `infobar_`'s confirm delegate.
   std::u16string title_text_;

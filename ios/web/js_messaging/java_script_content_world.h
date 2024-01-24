@@ -11,6 +11,7 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #import "ios/web/js_messaging/scoped_wk_script_message_handler.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
@@ -59,7 +60,7 @@ class JavaScriptContentWorld {
 
   // The associated browser state for configuring injected scripts and
   // communication.
-  BrowserState* browser_state_;
+  raw_ptr<BrowserState> browser_state_;
 
   // The associated user content controller for configuring injected scripts and
   // script message handler JavaScript->native communication.

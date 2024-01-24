@@ -7,6 +7,7 @@
 
 #include <set>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #import "ios/chrome/browser/overlays/model/overlay_request_queue_impl.h"
@@ -49,7 +50,7 @@ class OverlayPresenterImpl : public BrowserObserver,
     OVERLAY_USER_DATA_SETUP(Container);
     explicit Container(Browser* browser);
 
-    Browser* browser_ = nullptr;
+    raw_ptr<Browser> browser_ = nullptr;
     std::map<OverlayModality, std::unique_ptr<OverlayPresenterImpl>>
         presenters_;
   };
@@ -167,13 +168,13 @@ class OverlayPresenterImpl : public BrowserObserver,
   bool detached_queue_replaced_delegate_ = false;
   // The OverlayRequestQueue owning `presented_request_` has recently been
   // detached.
-  OverlayRequestQueueImpl* detached_presenting_request_queue_ = nullptr;
+  raw_ptr<OverlayRequestQueueImpl> detached_presenting_request_queue_ = nullptr;
   // The request whose overlay UI is currently being presented.  The value is
   // set when `presenting_` is set to true, and is reset to nullptr when
   // `presenting_` is reset to false.  May be different from GetActiveRequest()
   // if the front request of the active WebState's request queue is updated
   // while overlay UI is be presented.
-  OverlayRequest* presented_request_ = nullptr;
+  raw_ptr<OverlayRequest> presented_request_ = nullptr;
   // Whether the WebState that owns `presented_request_` is being detached.
   bool detaching_presenting_web_state_ = false;
   // Used to extend the lifetime of an OverlayRequest after being removed from
@@ -184,9 +185,9 @@ class OverlayPresenterImpl : public BrowserObserver,
   std::set<OverlayRequest*> previously_presented_requests_;
 
   OverlayModality modality_;
-  WebStateList* web_state_list_ = nullptr;
-  web::WebState* active_web_state_ = nullptr;
-  OverlayPresentationContext* presentation_context_ = nullptr;
+  raw_ptr<WebStateList> web_state_list_ = nullptr;
+  raw_ptr<web::WebState> active_web_state_ = nullptr;
+  raw_ptr<OverlayPresentationContext> presentation_context_ = nullptr;
   base::ObserverList<OverlayPresenterObserver,
                      /* check_empty= */ true>
       observers_;

@@ -7,6 +7,8 @@
 
 #include "ios/chrome/browser/overlays/model/public/overlay_user_data.h"
 
+#import "base/memory/raw_ptr.h"
+
 // Test OverlayUserData that can be used to store arbitrary pointers in
 // OverlayRequests and OverlayResponses.
 class FakeOverlayUserData : public OverlayUserData<FakeOverlayUserData> {
@@ -18,7 +20,7 @@ class FakeOverlayUserData : public OverlayUserData<FakeOverlayUserData> {
   OVERLAY_USER_DATA_SETUP(FakeOverlayUserData);
   FakeOverlayUserData(void* value = nullptr);
 
-  void* value_ = nullptr;
+  raw_ptr<void> value_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_MODEL_TEST_FAKE_OVERLAY_USER_DATA_H_

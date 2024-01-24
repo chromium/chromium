@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/i18n/case_conversion.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/sessions/core/tab_restore_service_impl.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -138,7 +139,7 @@ class TabsSearchServiceTest : public PlatformTest {
   std::unique_ptr<Browser> other_browser_;
   std::unique_ptr<Browser> incognito_browser_;
   std::unique_ptr<Browser> other_incognito_browser_;
-  BrowserList* browser_list_;
+  raw_ptr<BrowserList> browser_list_;
 };
 
 // Tests that no results are returned when there are no WebStates.

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_OVERLAY_DISPATCH_CALLBACK_H_
 
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 
 class OverlayResponseSupport;
 class OverlayResponse;
@@ -32,7 +33,7 @@ class OverlayDispatchCallback {
   base::RepeatingCallback<void(OverlayResponse* response)> callback_;
   // The OverlayResponseSupport determining which dispatch responses can be
   // handled by the callback.
-  const OverlayResponseSupport* response_support_ = nullptr;
+  raw_ptr<const OverlayResponseSupport> response_support_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_OVERLAY_DISPATCH_CALLBACK_H_

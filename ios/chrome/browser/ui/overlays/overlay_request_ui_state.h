@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_dismissal_callback.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_presentation_callback.h"
 
@@ -49,7 +50,7 @@ class OverlayRequestUIState {
   }
 
  private:
-  OverlayRequest* request_ = nullptr;
+  raw_ptr<OverlayRequest> request_ = nullptr;
   OverlayRequestCoordinator* coordinator_ = nil;
   bool has_ui_been_presented_ = false;
   OverlayPresentationCallback presentation_callback_;

@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_client.h"
@@ -53,7 +54,7 @@ class SaveCardInfobarBannerOverlayMediatorTest : public PlatformTest {
  protected:
   std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;
-  MockAutofillSaveCardInfoBarDelegateMobile* delegate_ = nil;
+  raw_ptr<MockAutofillSaveCardInfoBarDelegateMobile> delegate_ = nil;
   FakeInfobarBannerConsumer* consumer_ = nil;
   SaveCardInfobarBannerOverlayMediator* mediator_ = nil;
 };
