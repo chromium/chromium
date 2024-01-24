@@ -68,6 +68,14 @@ struct CORE_EXPORT InsetModifiedContainingBlock {
   bool has_auto_inline_inset = false;
   bool has_auto_block_inset = false;
 
+  // Resolved alignment
+  StyleSelfAlignmentData block_alignment =
+      StyleSelfAlignmentData(ItemPosition::kNormal,
+                             OverflowAlignment::kDefault);
+  StyleSelfAlignmentData inline_alignment =
+      StyleSelfAlignmentData(ItemPosition::kNormal,
+                             OverflowAlignment::kDefault);
+
   // Indicates how the insets were calculated. Besides, when we need to clamp
   // the IMCB size, the stronger inset (i.e., the inset we are biased towards)
   // stays at the same place, and the weaker inset is moved; If both insets are

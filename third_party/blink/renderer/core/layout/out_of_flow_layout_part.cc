@@ -659,9 +659,9 @@ OutOfFlowLayoutPart::ApplyInsetArea(
                                                          anchor_evaluator);
   }
 
+  ContainingBlockInfo adjusted_container_info(container_info);
   PhysicalToLogical converter(container_info.writing_direction, top, right,
                               bottom, left);
-  ContainingBlockInfo adjusted_container_info(container_info);
 
   // Reduce the container size and adjust the offset based on the inset-area.
   adjusted_container_info.rect.ContractEdges(
@@ -670,7 +670,7 @@ OutOfFlowLayoutPart::ApplyInsetArea(
 
   // For 'center' values (aligned with start and end anchor sides), the
   // containing block is aligned and sized with the anchor, regardless of
-  // whether it's/ inside the original containing block or not. Otherwise,
+  // whether it's inside the original containing block or not. Otherwise,
   // ContractEdges above might have created a negative size if the inset-area is
   // aligned with an anchor side outside the containing block.
   if (adjusted_container_info.rect.size.inline_size < LayoutUnit()) {
@@ -2057,10 +2057,14 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       container_writing_direction, candidate_writing_direction,
       anchor_evaluator);
 
+  const InsetModifiedContainingBlock imcb = ComputeInsetModifiedContainingBlock(
+      node_info.node, node_info.constraint_space.AvailableSize(), insets,
+      node_info.static_position, container_writing_direction,
+      candidate_writing_direction);
+
   {
     auto& document = node_info.node.GetDocument();
-    if (candidate_style.ResolvedJustifySelf(ItemPosition::kNormal)
-            .GetPosition() != ItemPosition::kNormal) {
+    if (imcb.inline_alignment.GetPosition() != ItemPosition::kNormal) {
       if (insets.inline_start && insets.inline_end) {
         UseCounter::Count(document,
                           WebFeature::kOutOfFlowJustifySelfBothInsets);
@@ -2072,8 +2076,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       }
     }
 
-    if (candidate_style.ResolvedAlignSelf(ItemPosition::kNormal)
-            .GetPosition() != ItemPosition::kNormal) {
+    if (imcb.block_alignment.GetPosition() != ItemPosition::kNormal) {
       if (insets.block_start && insets.block_end) {
         UseCounter::Count(document, WebFeature::kOutOfFlowAlignSelfBothInsets);
       } else if (insets.block_start || insets.block_end) {
@@ -2083,11 +2086,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       }
     }
   }
-
-  const InsetModifiedContainingBlock imcb = ComputeInsetModifiedContainingBlock(
-      node_info.node, node_info.constraint_space.AvailableSize(), insets,
-      node_info.static_position, container_writing_direction,
-      candidate_writing_direction);
 
   const BoxStrut border_padding =
       ComputeBorders(node_info.constraint_space, node_info.node) +

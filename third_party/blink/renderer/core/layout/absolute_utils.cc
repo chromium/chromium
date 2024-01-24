@@ -22,16 +22,18 @@ namespace {
 
 using InsetBias = InsetModifiedContainingBlock::InsetBias;
 
-StyleSelfAlignmentData AlignSelf(const ComputedStyle& style) {
+StyleSelfAlignmentData AlignSelf(const ComputedStyle& style,
+                                 ItemPosition normal_behavior) {
   return RuntimeEnabledFeatures::LayoutAlignForPositionedEnabled()
-             ? style.ResolvedAlignSelf(ItemPosition::kNormal)
+             ? style.ResolvedAlignSelf(normal_behavior)
              : StyleSelfAlignmentData(ItemPosition::kNormal,
                                       OverflowAlignment::kDefault);
 }
 
-StyleSelfAlignmentData JustifySelf(const ComputedStyle& style) {
+StyleSelfAlignmentData JustifySelf(const ComputedStyle& style,
+                                   ItemPosition normal_behavior) {
   return RuntimeEnabledFeatures::LayoutAlignForPositionedEnabled()
-             ? style.ResolvedJustifySelf(ItemPosition::kNormal)
+             ? style.ResolvedJustifySelf(normal_behavior)
              : StyleSelfAlignmentData(ItemPosition::kNormal,
                                       OverflowAlignment::kDefault);
 }
@@ -186,21 +188,32 @@ InsetModifiedContainingBlock ComputeUnclampedIMCB(
   imcb.has_auto_inline_inset = !insets.inline_start || !insets.inline_end;
   imcb.has_auto_block_inset = !insets.block_start || !insets.block_end;
 
+  ItemPosition align_self_normal_behavior = ItemPosition::kNormal;
+  ItemPosition justify_self_normal_behavior = ItemPosition::kNormal;
+  const InsetArea inset_area = style.GetInsetArea().ToPhysical(
+      container_writing_direction, self_writing_direction);
+  if (!inset_area.IsNone()) {
+    std::tie(align_self_normal_behavior, justify_self_normal_behavior) =
+        inset_area.AlignJustifySelfFromPhysical(container_writing_direction);
+  }
   const bool is_parallel =
       IsParallelWritingMode(container_writing_direction.GetWritingMode(),
                             self_writing_direction.GetWritingMode());
-  const auto inline_alignment =
-      is_parallel ? JustifySelf(style) : AlignSelf(style);
-  const auto block_alignment =
-      is_parallel ? AlignSelf(style) : JustifySelf(style);
+  imcb.inline_alignment = is_parallel
+                              ? JustifySelf(style, justify_self_normal_behavior)
+                              : AlignSelf(style, align_self_normal_behavior);
+  imcb.block_alignment = is_parallel
+                             ? AlignSelf(style, align_self_normal_behavior)
+                             : JustifySelf(style, justify_self_normal_behavior);
 
   absl::optional<InsetBias> safe_inline_alignment_inset_bias;
   const auto inline_alignment_inset_bias = GetAlignmentInsetBias(
-      inline_alignment, container_writing_direction, self_writing_direction,
+      imcb.inline_alignment, container_writing_direction,
+      self_writing_direction,
       /* is_justify_axis */ is_parallel, &safe_inline_alignment_inset_bias);
   absl::optional<InsetBias> safe_block_alignment_inset_bias;
   const auto block_alignment_inset_bias = GetAlignmentInsetBias(
-      block_alignment, container_writing_direction, self_writing_direction,
+      imcb.block_alignment, container_writing_direction, self_writing_direction,
       /* is_justify_axis */ !is_parallel, &safe_block_alignment_inset_bias);
 
   ComputeUnclampedIMCBInOneAxis(
@@ -493,12 +506,8 @@ bool ComputeOofInlineDimensions(
   DCHECK(dimensions);
   DCHECK_GE(imcb.InlineSize(), LayoutUnit());
 
-  const bool is_justify_axis = IsParallelWritingMode(
-      container_writing_direction.GetWritingMode(), style.GetWritingMode());
-  const auto alignment_position =
-      (is_justify_axis ? JustifySelf(style) : AlignSelf(style)).GetPosition();
-  const auto block_alignment_position =
-      (is_justify_axis ? AlignSelf(style) : JustifySelf(style)).GetPosition();
+  const auto alignment_position = imcb.inline_alignment.GetPosition();
+  const auto block_alignment_position = imcb.block_alignment.GetPosition();
 
   bool depends_on_min_max_sizes = false;
   const bool can_compute_block_size_without_layout =
@@ -639,11 +648,7 @@ const LayoutResult* ComputeOofBlockDimensions(
   DCHECK(dimensions);
   DCHECK_GE(imcb.BlockSize(), LayoutUnit());
 
-  const bool is_justify_axis = !IsParallelWritingMode(
-      container_writing_direction.GetWritingMode(), style.GetWritingMode());
-  const auto alignment_position =
-      (is_justify_axis ? JustifySelf(style) : AlignSelf(style)).GetPosition();
-
+  const auto alignment_position = imcb.block_alignment.GetPosition();
   const LayoutResult* result = nullptr;
 
   MinMaxSizes min_max_block_sizes = ComputeMinMaxBlockSizes(
