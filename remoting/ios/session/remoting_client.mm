@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#import "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "remoting/client/audio/audio_playback_stream.h"
 #include "remoting/client/chromoting_client_runtime.h"
@@ -58,7 +59,7 @@ static void ResolveFeedbackDataCallback(
 }
 
 @interface RemotingClient () {
-  remoting::ChromotingClientRuntime* _runtime;
+  raw_ptr<remoting::ChromotingClientRuntime> _runtime;
   std::unique_ptr<remoting::RemotingClientSessionDelegate> _sessionDelegate;
   ClientSessionDetails* _sessionDetails;
   remoting::protocol::SecretFetchedCallback _secretFetchedCallback;
