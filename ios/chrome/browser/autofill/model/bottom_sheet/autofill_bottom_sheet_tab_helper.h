@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_BOTTOM_SHEET_AUTOFILL_BOTTOM_SHEET_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_BOTTOM_SHEET_AUTOFILL_BOTTOM_SHEET_TAB_HELPER_H_
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_multi_source_observation.h"
 #import "components/autofill/core/browser/autofill_manager.h"
 #import "components/autofill/core/browser/field_types.h"
@@ -150,7 +151,7 @@ class AutofillBottomSheetTabHelper
       password_account_storage_notice_handler_;
 
   // The WebState with which this object is associated.
-  web::WebState* const web_state_;
+  const raw_ptr<web::WebState> web_state_;
 
   // TODO(crbug.com/1441921): Remove once this class uses FormGlobalIds.
   base::ScopedObservation<web::WebFramesManager,

@@ -158,7 +158,7 @@ bool LinkToTextTabHelper::IsOnlyBoundaryChars(NSString* str) {
 }
 
 LinkToTextJavaScriptFeature* LinkToTextTabHelper::GetJSFeature() {
-  return js_feature_for_testing_ ? js_feature_for_testing_
+  return js_feature_for_testing_ ? js_feature_for_testing_.get()
                                  : LinkToTextJavaScriptFeature::GetInstance();
 }
 

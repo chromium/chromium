@@ -9,6 +9,7 @@
 
 #import <optional>
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/values.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -98,8 +99,8 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
 
   TextFragmentsJavaScriptFeature* GetJSFeature();
 
-  web::WebState* web_state_ = nullptr;
-  TextFragmentsJavaScriptFeature* js_feature_for_testing_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
+  raw_ptr<TextFragmentsJavaScriptFeature> js_feature_for_testing_ = nullptr;
 
   // Cached value of the source ID representing the last navigation to have text
   // fragments.

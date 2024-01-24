@@ -206,7 +206,7 @@ bool TextFragmentsManagerImpl::AreTextFragmentsAllowed(
 
 TextFragmentsJavaScriptFeature* TextFragmentsManagerImpl::GetJSFeature() {
   return js_feature_for_testing_
-             ? js_feature_for_testing_
+             ? js_feature_for_testing_.get()
              : TextFragmentsJavaScriptFeature::GetInstance();
 }
 
