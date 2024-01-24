@@ -47,5 +47,10 @@
       { start: "2020-07-10", domain: "tencent.com" },
     ]
   },
+  zenye@chromium.org: {
+    affiliations: [
+      { start: "2019-09-26", domain: "microsoft.com" },
+    ]
+  },
 }
 
