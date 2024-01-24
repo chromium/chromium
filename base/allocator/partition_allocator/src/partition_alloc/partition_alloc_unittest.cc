@@ -346,7 +346,6 @@ class PartitionAllocTest
     opts.scheduler_loop_quarantine = PartitionOptions::kEnabled;
     opts.scheduler_loop_quarantine_capacity_in_bytes =
         std::numeric_limits<size_t>::max();
-    opts.scheduler_loop_quarantine_capacity_count = 1024;
     return opts;
   }
 

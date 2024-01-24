@@ -95,14 +95,12 @@ PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
   auto distribution = BucketDistribution::kNeutral;
   auto scheduler_loop_quarantine = SchedulerLoopQuarantine(false);
   size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
-  size_t scheduler_loop_quarantine_capacity_count = 0;
   auto zapping_by_free_flags = ZappingByFreeFlags(false);
 
   ConfigurePartitions(
       enable_brp, enable_memory_tagging, memory_tagging_reporting_mode,
       distribution, scheduler_loop_quarantine,
-      scheduler_loop_quarantine_capacity_in_bytes,
-      scheduler_loop_quarantine_capacity_count, zapping_by_free_flags);
+      scheduler_loop_quarantine_capacity_in_bytes, zapping_by_free_flags);
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
