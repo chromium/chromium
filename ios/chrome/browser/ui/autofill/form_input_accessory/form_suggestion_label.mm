@@ -13,6 +13,7 @@
 #import "components/autofill/core/browser/autofill_data_util.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/password_manager/ios/shared_password_controller.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -88,8 +89,28 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
       [stackView addArrangedSubview:iconView];
     }
 
-    UILabel* valueLabel = TextLabel(
-        suggestion.value, [UIColor colorNamed:kTextPrimaryColor], YES);
+    NSString* suggestionText = suggestion.value;
+    if (base::FeatureList::IsEnabled(kIOSKeyboardAccessoryUpgrade)) {
+      UIStackView* verticalStackView =
+          [[UIStackView alloc] initWithArrangedSubviews:@[]];
+      verticalStackView.axis = UILayoutConstraintAxisVertical;
+      verticalStackView.alignment = UIStackViewAlignmentLeading;
+      verticalStackView.layoutMarginsRelativeArrangement = YES;
+      verticalStackView.layoutMargins = UIEdgeInsetsMake(0, kBorderWidth, 0, 0);
+      [stackView addArrangedSubview:verticalStackView];
+
+      // Insert the next subviews vertically instead of horizonatally.
+      stackView = verticalStackView;
+
+      if ([suggestionText hasSuffix:kPasswordFormSuggestionSuffix]) {
+        suggestionText = [suggestionText
+            substringToIndex:suggestionText.length -
+                             kPasswordFormSuggestionSuffix.length];
+      }
+    }
+
+    UILabel* valueLabel =
+        TextLabel(suggestionText, [UIColor colorNamed:kTextPrimaryColor], YES);
     [stackView addArrangedSubview:valueLabel];
 
     if ([suggestion.minorValue length] > 0) {
