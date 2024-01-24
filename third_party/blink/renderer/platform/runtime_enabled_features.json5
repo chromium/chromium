@@ -2279,7 +2279,7 @@
     {
       // crbug.com/486880
       name: "MaskingGraphemeClusters",
-      status: "test",
+      status: "stable",
       depends_on: ["OffsetMappingUnitVariable"],
     },
     {
