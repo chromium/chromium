@@ -19,6 +19,12 @@
 namespace blink {
 
 namespace {
+
+constexpr char kUserPermissionDeniedError[] =
+    "User denied access to Web Printing API.";
+
+constexpr char kPrinterUnreachableError[] = "Unable to connect to the printer.";
+
 bool ValidatePrintJobTemplateAttributes(
     const WebPrintJobTemplateAttributes* pjt_attributes,
     ExceptionState& exception_state) {
@@ -119,16 +125,24 @@ ScriptPromise WebPrinter::printJob(
 
 void WebPrinter::OnFetchAttributes(
     ScriptPromiseResolver*,
-    mojom::blink::WebPrinterAttributesPtr printer_attributes) {
-  if (!printer_attributes) {
-    fetch_attributes_resolver_->RejectWithDOMException(
-        DOMExceptionCode::kNetworkError, "Unable to fetch printer attributes.");
+    mojom::blink::WebPrinterFetchResultPtr result) {
+  if (result->is_error()) {
+    switch (result->get_error()) {
+      case mojom::blink::WebPrinterFetchError::kPrinterUnreachable:
+        fetch_attributes_resolver_->RejectWithDOMException(
+            DOMExceptionCode::kNetworkError, kPrinterUnreachableError);
+        break;
+      case mojom::blink::WebPrinterFetchError::kUserPermissionDenied:
+        fetch_attributes_resolver_->RejectWithDOMException(
+            DOMExceptionCode::kNotAllowedError, kUserPermissionDeniedError);
+        break;
+    }
     fetch_attributes_resolver_ = nullptr;
     return;
   }
 
-  auto* new_attributes =
-      mojo::ConvertTo<WebPrinterAttributes*>(printer_attributes);
+  auto* new_attributes = mojo::ConvertTo<WebPrinterAttributes*>(
+      std::move(result->get_printer_attributes()));
   new_attributes->setPrinterName(attributes_->printerName());
   attributes_ = new_attributes;
 
@@ -139,9 +153,26 @@ void WebPrinter::OnFetchAttributes(
 void WebPrinter::OnPrint(ScriptPromiseResolver* resolver,
                          mojom::blink::WebPrintResultPtr result) {
   if (result->is_error()) {
-    // TODO(b/302505962): Include returned error into the message.
-    resolver->RejectWithDOMException(DOMExceptionCode::kNetworkError,
-                                     "Something went wrong during printing.");
+    switch (result->get_error()) {
+      case mojom::blink::WebPrintError::kPrinterUnreachable:
+        resolver->RejectWithDOMException(DOMExceptionCode::kNetworkError,
+                                         kPrinterUnreachableError);
+        break;
+      case mojom::blink::WebPrintError::kPrintJobTemplateAttributesMismatch:
+        resolver->RejectWithDOMException(
+            DOMExceptionCode::kDataError,
+            "The requested WebPrintJobTemplateAttributes do not align with the "
+            "printer capabilities.");
+        break;
+      case mojom::blink::WebPrintError::kDocumentMalformed:
+        resolver->RejectWithDOMException(DOMExceptionCode::kDataError,
+                                         "The provided `data` is malformed.");
+        break;
+      case mojom::blink::WebPrintError::kUserPermissionDenied:
+        resolver->RejectWithDOMException(DOMExceptionCode::kNotAllowedError,
+                                         kUserPermissionDeniedError);
+        break;
+    }
     return;
   }
 

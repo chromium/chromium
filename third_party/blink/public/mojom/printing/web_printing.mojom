@@ -153,10 +153,30 @@ struct WebPrintJobInfo {
   pending_receiver<WebPrintJobStateObserver> observer;
 };
 
+enum GetPrintersError {
+  kUserPermissionDenied,
+};
+
+union GetPrintersResult {
+  array<WebPrinterInfo> printers;
+  GetPrintersError error;
+};
+
+enum WebPrinterFetchError {
+  kPrinterUnreachable,
+  kUserPermissionDenied,
+};
+
+union WebPrinterFetchResult {
+  WebPrinterAttributes printer_attributes;
+  WebPrinterFetchError error;
+};
+
 enum WebPrintError {
   kPrinterUnreachable,
   kDocumentMalformed,
   kPrintJobTemplateAttributesMismatch,
+  kUserPermissionDenied,
 };
 
 union WebPrintResult {
@@ -168,7 +188,7 @@ union WebPrintResult {
 // The implementation is responsible for checking access permissions.
 interface WebPrinter {
   // Fetches full attributes of this printer.
-  FetchAttributes() => (WebPrinterAttributes? attributes);
+  FetchAttributes() => (WebPrinterFetchResult result);
 
   // Sends a print job to a printer.
   Print(pending_remote<blink.mojom.Blob> document,
@@ -179,5 +199,5 @@ interface WebPrinter {
 // The implementation is responsible for checking access permissions.
 interface WebPrintingService {
   // Returns a list of local printers for this device.
-  GetPrinters() => (array<WebPrinterInfo> printers);
+  GetPrinters() => (GetPrintersResult result);
 };

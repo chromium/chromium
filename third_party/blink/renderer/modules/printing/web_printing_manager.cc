@@ -108,9 +108,19 @@ mojom::blink::WebPrintingService* WebPrintingManager::GetPrintingService() {
 
 void WebPrintingManager::OnPrintersRetrieved(
     ScriptPromiseResolver* resolver,
-    WTF::Vector<mojom::blink::WebPrinterInfoPtr> printer_infos) {
+    mojom::blink::GetPrintersResultPtr result) {
+  if (result->is_error()) {
+    switch (result->get_error()) {
+      case mojom::blink::GetPrintersError::kUserPermissionDenied:
+        resolver->RejectWithDOMException(
+            DOMExceptionCode::kNotAllowedError,
+            "User denied access to Web Printing API.");
+        break;
+    }
+    return;
+  }
   HeapVector<Member<WebPrinter>> printers;
-  for (auto& printer_info : printer_infos) {
+  for (auto& printer_info : result->get_printers()) {
     printers.push_back(MakeGarbageCollected<WebPrinter>(
         GetSupplementable()->GetExecutionContext(), std::move(printer_info)));
   }

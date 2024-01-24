@@ -121,6 +121,19 @@ bool HasPrintingPermission(content::RenderFrameHost& rfh) {
          blink::mojom::PermissionStatus::GRANTED;
 }
 
+void InvokeFetchAttributesCallback(
+    WebPrintingServiceChromeOS::FetchAttributesCallback callback,
+    blink::mojom::WebPrinterAttributesPtr printer_attributes) {
+  if (!printer_attributes) {
+    std::move(callback).Run(blink::mojom::WebPrinterFetchResult::NewError(
+        blink::mojom::WebPrinterFetchError::kPrinterUnreachable));
+    return;
+  }
+  std::move(callback).Run(
+      blink::mojom::WebPrinterFetchResult::NewPrinterAttributes(
+          std::move(printer_attributes)));
+}
+
 }  // namespace
 
 WebPrintingServiceChromeOS::WebPrintingServiceChromeOS(
@@ -152,6 +165,8 @@ void WebPrintingServiceChromeOS::GetPrinters(GetPrintersCallback callback) {
 void WebPrintingServiceChromeOS::FetchAttributes(
     FetchAttributesCallback callback) {
   if (!HasPrintingPermission(render_frame_host())) {
+    std::move(callback).Run(blink::mojom::WebPrinterFetchResult::NewError(
+        blink::mojom::WebPrinterFetchError::kUserPermissionDenied));
     return;
   }
 
@@ -169,6 +184,8 @@ void WebPrintingServiceChromeOS::Print(
     std::unique_ptr<PrintSettings> attributes,
     PrintCallback callback) {
   if (!HasPrintingPermission(render_frame_host())) {
+    std::move(callback).Run(blink::mojom::WebPrintResult::NewError(
+        blink::mojom::WebPrintError::kUserPermissionDenied));
     return;
   }
 
@@ -187,7 +204,8 @@ void WebPrintingServiceChromeOS::OnPermissionDecidedForGetPrinters(
     GetPrintersCallback callback,
     blink::mojom::PermissionStatus permission_status) {
   if (permission_status != blink::mojom::PermissionStatus::GRANTED) {
-    std::move(callback).Run(/*printers=*/{});
+    std::move(callback).Run(blink::mojom::GetPrintersResult::NewError(
+        blink::mojom::GetPrintersError::kUserPermissionDenied));
     return;
   }
   GetLocalPrinterInterface()->GetPrinters(
@@ -210,7 +228,8 @@ void WebPrintingServiceChromeOS::OnPrintersRetrieved(
     printer_info->printer_remote = std::move(printer_remote);
     web_printers.push_back(std::move(printer_info));
   }
-  std::move(callback).Run(std::move(web_printers));
+  std::move(callback).Run(
+      blink::mojom::GetPrintersResult::NewPrinters(std::move(web_printers)));
 }
 
 void WebPrintingServiceChromeOS::OnPrinterAttributesRetrieved(
@@ -218,13 +237,15 @@ void WebPrintingServiceChromeOS::OnPrinterAttributesRetrieved(
     FetchAttributesCallback callback,
     blink::mojom::WebPrinterAttributesPtr printer_attributes) {
   if (!printer_attributes) {
-    std::move(callback).Run(nullptr);
+    InvokeFetchAttributesCallback(std::move(callback),
+                                  /*printer_attributes=*/nullptr);
     return;
   }
   cups_wrapper_->QueryCupsPrinterStatus(
       printer_id, base::BindOnce(&MergePrinterAttributesAndStatus,
                                  std::move(printer_attributes))
-                      .Then(std::move(callback)));
+                      .Then(base::BindOnce(&InvokeFetchAttributesCallback,
+                                           std::move(callback))));
 }
 
 void WebPrintingServiceChromeOS::OnPrinterAttributesRetrievedForPrint(
