@@ -1121,11 +1121,6 @@ TEST_F(WebStateImplTest, LastActiveTimeCanBeForcedToEpochViaCreateParams) {
 
 // Tests that WebState sessionState data can be read and writen.
 TEST_F(WebStateImplTest, ReadAndWriteSessionStateData) {
-  if (@available(iOS 15, *)) {
-  } else {
-    return;
-  }
-
   // Create a WebState, navigate and capture the session state data.
   WebStateImpl web_state =
       WebStateImpl(web::WebState::CreateParams(GetBrowserState()));

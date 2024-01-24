@@ -372,15 +372,8 @@ TEST_F(WebStateTest, RestoreLargeSession) {
   // LoadIfNecessary call. Fix the bug and remove extra call.
   navigation_manager->LoadIfNecessary();
 
-  int maxSessionSize = wk_navigation_util::kMaxSessionSize;
-  ui::PageTransition transition_type = ui::PAGE_TRANSITION_RELOAD;
-  if (@available(iOS 15, *)) {
-    // kMaxSessionSize is no longer used on iOS15.
-    maxSessionSize = kItemCount;
-    // Synthesized restore defaults to transition first.
-    transition_type = ui::PAGE_TRANSITION_FIRST;
-  }
-
+  const int maxSessionSize = kItemCount;
+  const ui::PageTransition transition_type = ui::PAGE_TRANSITION_FIRST;
   // Verify that session was fully restored.
   auto block = ^{
     bool restored = navigation_manager->GetItemCount() == maxSessionSize &&
@@ -440,11 +433,6 @@ TEST_F(WebStateTest, RestoreLargeSession) {
 
   histogram_tester_.ExpectTotalCount(kRestoreNavigationItemCount, 1);
   histogram_tester_.ExpectBucketCount(kRestoreNavigationItemCount, 100, 1);
-  if (@available(iOS 15, *)) {
-  } else {
-    // kRestoreNavigationTime only applies to legacy session restore.
-    histogram_tester_.ExpectTotalCount(kRestoreNavigationTime, 1);
-  }
 
   // Now wait until the last committed item is fully loaded.
   auto block2 = ^{
