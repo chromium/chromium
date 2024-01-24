@@ -8,8 +8,6 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
-#include "base/android/scoped_java_ref.h"
-#include "base/compiler_specific.h"
 #if defined(USE_CHROMIUM_BASE)
 // Used for ARCH_CPU_X86 - embedder must define this correctly if they want
 // 16-byte stack alignment on x86.
