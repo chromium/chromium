@@ -10,8 +10,6 @@ Example: build clangd and clangd-indexer
        clangd-indexer
 """
 
-from __future__ import print_function
-
 import argparse
 import errno
 import os
@@ -19,6 +17,8 @@ import subprocess
 import sys
 import update
 
+
+from build import (CheckoutGitRepo, LLVM_GIT_URL)
 
 def GetCheckoutDir(out_dir):
   """Returns absolute path to the checked-out llvm repo."""
@@ -35,26 +35,11 @@ def CreateDirIfNotExists(dir):
 
 
 def FetchLLVM(checkout_dir, revision):
-  """Clone llvm repo into |out_dir| or update if it already exists."""
+  """Clone llvm repo into |checkout_dir| or update if it already exists."""
   CreateDirIfNotExists(os.path.dirname(checkout_dir))
-
-  try:
-    # First, try to clone the repo.
-    args = [
-        'git',
-        'clone',
-        'https://github.com/llvm/llvm-project.git',
-        checkout_dir,
-    ]
-    subprocess.check_call(args, shell=sys.platform == 'win32')
-  except subprocess.CalledProcessError:
-    # Otherwise, try to update it.
-    print('-- Attempting to update existing repo')
-    args = ['git', 'pull', '--rebase', 'origin', 'main']
-    subprocess.check_call(args, cwd=checkout_dir, shell=sys.platform == 'win32')
-  if revision:
-    args = ['git', 'checkout', revision]
-    subprocess.check_call(args, cwd=checkout_dir, shell=sys.platform == 'win32')
+  cwd = os.getcwd()
+  CheckoutGitRepo('LLVM monorepo', LLVM_GIT_URL, revision, checkout_dir)
+  os.chdir(cwd)
 
 
 def BuildTargets(build_dir, targets):
