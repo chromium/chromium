@@ -45,7 +45,7 @@ struct BlinkGCPluginOptions {
   bool enable_off_heap_collections_of_gced_check = true;
 
   // Enables checks for WeakPtr and WeakPtrFactory with GCed types.
-  bool enable_weak_ptrs_check = false;
+  bool enable_weak_ptrs_check = true;
 
   std::set<std::string> ignored_classes;
   std::set<std::string> checked_namespaces;
