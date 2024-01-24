@@ -32,4 +32,12 @@ UnexportablePrivateKey::GetAlgorithm() const {
   return key_->Algorithm();
 }
 
+client_certificates_pb::PrivateKey UnexportablePrivateKey::ToProto() const {
+  client_certificates_pb::PrivateKey private_key;
+  private_key.set_source(ToProtoKeySource(source_));
+  auto wrapped = key_->GetWrappedKey();
+  private_key.set_wrapped_key(std::string(wrapped.begin(), wrapped.end()));
+  return private_key;
+}
+
 }  // namespace client_certificates

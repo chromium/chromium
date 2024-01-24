@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
+#include "components/enterprise/client_certificates/proto/client_certificates_database.pb.h"
 #include "crypto/signature_verifier.h"
 
 namespace client_certificates {
@@ -30,6 +31,10 @@ class PrivateKey : public base::RefCountedThreadSafe<PrivateKey> {
   // Returns the algorithm of the asymmetric key pair.
   virtual crypto::SignatureVerifier::SignatureAlgorithm GetAlgorithm()
       const = 0;
+
+  // Returns a proto representation of the current private key which can be
+  // serialized and loaded again through the PrivateKeyFactory.
+  virtual client_certificates_pb::PrivateKey ToProto() const = 0;
 
   // Returns the source from where the private key was created.
   PrivateKeySource GetSource() const;

@@ -26,6 +26,7 @@ class UnexportablePrivateKey : public PrivateKey {
       base::span<const uint8_t> data) const override;
   std::vector<uint8_t> GetSubjectPublicKeyInfo() const override;
   crypto::SignatureVerifier::SignatureAlgorithm GetAlgorithm() const override;
+  client_certificates_pb::PrivateKey ToProto() const override;
 
  private:
   friend class base::RefCountedThreadSafe<UnexportablePrivateKey>;

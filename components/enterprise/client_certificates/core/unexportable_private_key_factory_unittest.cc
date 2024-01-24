@@ -9,11 +9,12 @@
 #include "base/test/test_future.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace client_certificates {
 
-TEST(UnexportablePrivateKeyFactoryTest, SupportedCreateKey) {
+TEST(UnexportablePrivateKeyFactoryTest, SupportedCreateKey_LoadKey) {
   base::test::TaskEnvironment task_environment;
   crypto::ScopedMockUnexportableKeyProvider scoped_provider;
 
@@ -24,7 +25,21 @@ TEST(UnexportablePrivateKeyFactoryTest, SupportedCreateKey) {
   base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
   factory->CreatePrivateKey(test_future.GetCallback());
 
-  EXPECT_TRUE(test_future.Get());
+  auto private_key = test_future.Get();
+  ASSERT_TRUE(private_key);
+
+  base::test::TestFuture<scoped_refptr<PrivateKey>> other_test_future;
+  auto proto_key = private_key->ToProto();
+  factory->LoadPrivateKey(std::move(proto_key),
+                          other_test_future.GetCallback());
+
+  auto second_private_key = other_test_future.Get();
+  ASSERT_TRUE(second_private_key);
+  EXPECT_NE(private_key, second_private_key);
+  EXPECT_EQ(private_key->GetAlgorithm(), second_private_key->GetAlgorithm());
+  ASSERT_THAT(
+      private_key->GetSubjectPublicKeyInfo(),
+      testing::ElementsAreArray(second_private_key->GetSubjectPublicKeyInfo()));
 }
 
 TEST(UnexportablePrivateKeyFactoryTest, UnsupportedCreateKey) {

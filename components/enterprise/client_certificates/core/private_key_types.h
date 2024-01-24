@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_PRIVATE_KEY_TYPES_H_
 #define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_PRIVATE_KEY_TYPES_H_
 
+#include <optional>
+
+#include "components/enterprise/client_certificates/proto/client_certificates_database.pb.h"
+
 namespace client_certificates {
 
 // Enum containing private key sources supported across all platforms. Some
@@ -19,6 +23,15 @@ enum class PrivateKeySource {
   // mechanism.
   kSoftwareKey = 1,
 };
+
+// Converts a `proto_key_source` from the proto values to the C++ enum values.
+// Returns std::nullopt if `proto_key_source` is unsupported or undefined.
+std::optional<PrivateKeySource> ToPrivateKeySource(
+    client_certificates_pb::PrivateKey::PrivateKeySource proto_key_source);
+
+// Converts a `private_key_source` from the C++ enum values to the proto values.
+client_certificates_pb::PrivateKey::PrivateKeySource ToProtoKeySource(
+    PrivateKeySource private_key_source);
 
 }  // namespace client_certificates
 

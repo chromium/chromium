@@ -17,6 +17,9 @@ class ECPrivateKeyFactory : public PrivateKeyFactory {
 
   // PrivateKeyFactory:
   void CreatePrivateKey(PrivateKeyCallback callback) override;
+  void LoadPrivateKey(
+      const client_certificates_pb::PrivateKey& serialized_private_key,
+      PrivateKeyCallback callback) override;
 
  private:
   base::WeakPtrFactory<ECPrivateKeyFactory> weak_factory_{this};

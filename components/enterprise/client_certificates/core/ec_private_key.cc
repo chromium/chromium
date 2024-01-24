@@ -49,4 +49,15 @@ crypto::SignatureVerifier::SignatureAlgorithm ECPrivateKey::GetAlgorithm()
   return crypto::SignatureVerifier::ECDSA_SHA256;
 }
 
+client_certificates_pb::PrivateKey ECPrivateKey::ToProto() const {
+  client_certificates_pb::PrivateKey private_key;
+  private_key.set_source(ToProtoKeySource(source_));
+
+  std::vector<uint8_t> wrapped;
+  key_->ExportPrivateKey(&wrapped);
+  private_key.set_wrapped_key(std::string(wrapped.begin(), wrapped.end()));
+
+  return private_key;
+}
+
 }  // namespace client_certificates

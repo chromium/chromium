@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/private_key_factory.h"
+#include "components/enterprise/client_certificates/proto/client_certificates_database.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace client_certificates {
@@ -20,6 +21,11 @@ class MockPrivateKeyFactory : public PrivateKeyFactory {
   MOCK_METHOD(void,
               CreatePrivateKey,
               (PrivateKeyFactory::PrivateKeyCallback),
+              (override));
+  MOCK_METHOD(void,
+              LoadPrivateKey,
+              (const client_certificates_pb::PrivateKey&,
+               PrivateKeyFactory::PrivateKeyCallback),
               (override));
 };
 

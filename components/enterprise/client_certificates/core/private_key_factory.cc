@@ -22,6 +22,9 @@ class PrivateKeyFactoryImpl : public PrivateKeyFactory {
 
   // PrivateKeyFactory:
   void CreatePrivateKey(PrivateKeyCallback callback) override;
+  void LoadPrivateKey(
+      const client_certificates_pb::PrivateKey& serialized_private_key,
+      PrivateKeyCallback callback) override;
 
  private:
   PrivateKeyFactoriesMap sub_factories_;
@@ -50,6 +53,20 @@ void PrivateKeyFactoryImpl::CreatePrivateKey(
   }
 
   std::move(callback).Run(nullptr);
+}
+
+void PrivateKeyFactoryImpl::LoadPrivateKey(
+    const client_certificates_pb::PrivateKey& serialized_private_key,
+    PrivateKeyCallback callback) {
+  auto private_key_source = ToPrivateKeySource(serialized_private_key.source());
+  if (!private_key_source.has_value() ||
+      !sub_factories_.contains(private_key_source.value())) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  sub_factories_[private_key_source.value()]->LoadPrivateKey(
+      std::move(serialized_private_key), std::move(callback));
 }
 
 // static

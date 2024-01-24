@@ -36,6 +36,11 @@ TEST(UnexportablePrivateKeyTest, SupportedCreateKey) {
   EXPECT_EQ(private_key->GetAlgorithm(),
             crypto::SignatureVerifier::ECDSA_SHA256);
   EXPECT_TRUE(private_key->SignSlowly(spki_bytes).has_value());
+
+  auto proto_key = private_key->ToProto();
+  EXPECT_EQ(proto_key.source(),
+            client_certificates_pb::PrivateKey::PRIVATE_UNEXPORTABLE_KEY);
+  EXPECT_GT(proto_key.wrapped_key().size(), 0U);
 }
 
 }  // namespace client_certificates

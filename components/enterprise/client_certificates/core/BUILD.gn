@@ -24,19 +24,18 @@ source_set("core") {
     "ec_private_key_factory.h",
     "private_key.cc",
     "private_key_factory.cc",
+    "private_key_types.cc",
   ]
 
   public_deps = [
     "//base",
+    "//components/enterprise/client_certificates/proto:db_client_certs",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
     "//crypto",
   ]
 
-  deps = [
-    "//components/enterprise/client_certificates/proto:db_client_certs",
-    "//net",
-  ]
+  deps = [ "//net" ]
 
   friend = [ ":unit_tests" ]
 

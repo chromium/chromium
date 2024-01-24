@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_MOCK_PRIVATE_KEY_H_
 
 #include "components/enterprise/client_certificates/core/private_key.h"
+#include "components/enterprise/client_certificates/proto/client_certificates_database.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace client_certificates {
@@ -25,6 +26,10 @@ class MockPrivateKey : public PrivateKey {
               (const, override));
   MOCK_METHOD(crypto::SignatureVerifier::SignatureAlgorithm,
               GetAlgorithm,
+              (),
+              (const, override));
+  MOCK_METHOD(client_certificates_pb::PrivateKey,
+              ToProto,
               (),
               (const, override));
 

@@ -6,6 +6,7 @@
 
 #include <array>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -39,6 +40,21 @@ scoped_refptr<UnexportablePrivateKey> CreateKey() {
   return base::MakeRefCounted<UnexportablePrivateKey>(std::move(key));
 }
 
+scoped_refptr<UnexportablePrivateKey> LoadKeyFromWrapped(
+    const std::vector<const uint8_t>& wrapped_key) {
+  auto provider = crypto::GetUnexportableKeyProvider();
+  if (!provider) {
+    return nullptr;
+  }
+
+  auto key = provider->FromWrappedSigningKeySlowly(wrapped_key);
+  if (!key) {
+    return nullptr;
+  }
+
+  return base::MakeRefCounted<UnexportablePrivateKey>(std::move(key));
+}
+
 }  // namespace
 
 // static
@@ -64,6 +80,22 @@ void UnexportablePrivateKeyFactory::CreatePrivateKey(
   base::ThreadPool::PostTaskAndReplyWithResult(FROM_HERE, {base::MayBlock()},
                                                base::BindOnce(CreateKey),
                                                std::move(callback));
+}
+
+void UnexportablePrivateKeyFactory::LoadPrivateKey(
+    const client_certificates_pb::PrivateKey& serialized_private_key,
+    PrivateKeyCallback callback) {
+  auto private_key_source = ToPrivateKeySource(serialized_private_key.source());
+  CHECK(private_key_source.has_value());
+  CHECK(private_key_source.value() == PrivateKeySource::kUnexportableKey);
+
+  const auto& wrapped_key_str = serialized_private_key.wrapped_key();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(LoadKeyFromWrapped,
+                     std::vector<const uint8_t>(wrapped_key_str.begin(),
+                                                wrapped_key_str.end())),
+      std::move(callback));
 }
 
 }  // namespace client_certificates

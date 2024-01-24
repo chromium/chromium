@@ -11,11 +11,11 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
+#include "components/enterprise/client_certificates/proto/client_certificates_database.pb.h"
 
 namespace client_certificates {
-
-class PrivateKey;
 
 struct EnumClassCompare {
   template <typename T>
@@ -43,6 +43,12 @@ class PrivateKeyFactory {
   // Will use the strongest supported key source to create a private key.
   // `callback` will be invoked with the resulting PrivateKey instance.
   virtual void CreatePrivateKey(PrivateKeyCallback callback) = 0;
+
+  // Will use the data in `serialized_private_key` to load the private key into
+  // a usable instance, and then invoke `callback` with it.
+  virtual void LoadPrivateKey(
+      const client_certificates_pb::PrivateKey& serialized_private_key,
+      PrivateKeyCallback callback) = 0;
 
  protected:
   PrivateKeyFactory();
