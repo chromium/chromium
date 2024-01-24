@@ -19,13 +19,12 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
@@ -41,26 +40,7 @@ import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class ForeignSessionTabResumptionDataProviderTest {
-    private static final long CURRENT_TIME_MS = 1705000000000L + 24L * 60L * 60L * 1000L;
-
-    private static final ForeignSessionTab TAB1 =
-            new ForeignSessionTab(JUnitTestGURLs.BLUE_1, "Blue 1", 1705003000000L, 101);
-    // This one is stale.
-    private static final ForeignSessionTab TAB2 =
-            new ForeignSessionTab(JUnitTestGURLs.GOOGLE_URL_DOG, "Google Dog", 1704999999999L, 102);
-    private static final ForeignSessionTab TAB3 =
-            new ForeignSessionTab(JUnitTestGURLs.CHROME_ABOUT, "About", 1705007000000L, 103);
-    private static final ForeignSessionTab TAB4 =
-            new ForeignSessionTab(JUnitTestGURLs.URL_1, "One", 1705000500000L, 104);
-    private static final ForeignSessionTab TAB5 =
-            new ForeignSessionTab(JUnitTestGURLs.MAPS_URL, "Maps", 1705004000000L, 105);
-    // This one is the most recent.
-    private static final ForeignSessionTab TAB6 =
-            new ForeignSessionTab(JUnitTestGURLs.INITIAL_URL, "Initial", 1705008000000L, 106);
-    private static final ForeignSessionTab TAB7 =
-            new ForeignSessionTab(JUnitTestGURLs.HTTP_URL, "Old HTTP", 1705003000000L, 107);
-
+public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
     @Mock private SigninManager mSigninManager;
     @Mock private IdentityManager mIdentityManager;
     @Mock private SyncService mSyncService;
@@ -77,43 +57,38 @@ public class ForeignSessionTabResumptionDataProviderTest {
 
     @Before
     public void setUp() {
-        mSigninManager = Mockito.mock(SigninManager.class);
-        mIdentityManager = Mockito.mock(IdentityManager.class);
-        mSyncService = Mockito.mock(SyncService.class);
-        mForeignSessionHelper = Mockito.mock(ForeignSessionHelper.class);
-        mSignInStateObserverCaptor = ArgumentCaptor.forClass(SignInStateObserver.class);
-        mSyncStateChangedListenerCaptor = ArgumentCaptor.forClass(SyncStateChangedListener.class);
+        MockitoAnnotations.initMocks(this);
 
         // Populate `mForeignSessionHelper` with test data.
         ForeignSessionWindow desktopWindow1 =
                 new ForeignSessionWindow(
-                        /* timestamp= */ 1705009000000L,
+                        /* timestamp= */ makeTimestamp(3, 30, 0),
                         /* sessionId= */ 201,
                         /* tabs= */ new ArrayList<>(Arrays.asList(TAB1, TAB2)));
         ForeignSessionWindow desktopWindow2 =
                 new ForeignSessionWindow(
-                        /* timestamp= */ 1705008000000L,
+                        /* timestamp= */ makeTimestamp(9, 15, 20),
                         /* sessionId= */ 202,
                         /* tabs= */ new ArrayList<>(Arrays.asList(TAB3, TAB4)));
         ForeignSession desktopForeignSession =
                 new ForeignSession(
                         /* tag= */ "TagForDesktop",
                         /* name= */ "My Desktop",
-                        /* modifiedTime= */ 1705008900000L,
+                        /* modifiedTime= */ makeTimestamp(10, 0, 0),
                         /* windows= */ new ArrayList<>(
                                 Arrays.asList(desktopWindow1, desktopWindow2)),
                         /* formFactor= */ FormFactor.DESKTOP);
 
         ForeignSessionWindow tabletWindow1 =
                 new ForeignSessionWindow(
-                        /* timestamp= */ 1705009000000L,
+                        /* timestamp= */ makeTimestamp(8, 1, 15),
                         /* sessionId= */ 301,
                         /* tabs= */ new ArrayList<>(Arrays.asList(TAB5, TAB6, TAB7)));
         ForeignSession tabletForeignSession =
                 new ForeignSession(
                         /* tag= */ "TagForTablet",
                         /* name= */ "My Tablet",
-                        /* modifiedTime= */ 1705009001000L,
+                        /* modifiedTime= */ makeTimestamp(8, 5, 20),
                         /* windows= */ new ArrayList<>(Arrays.asList(tabletWindow1)),
                         /* formFactor= */ FormFactor.TABLET);
 
@@ -262,7 +237,7 @@ public class ForeignSessionTabResumptionDataProviderTest {
         Assert.assertEquals("My Tablet", firstEntry.sourceName);
         Assert.assertEquals(JUnitTestGURLs.INITIAL_URL, firstEntry.url);
         Assert.assertEquals("Initial", firstEntry.title);
-        Assert.assertEquals(1705008000000L, firstEntry.timestamp);
+        Assert.assertEquals(makeTimestamp(8, 0, 0), firstEntry.timestamp);
         Assert.assertEquals(106, firstEntry.id);
     }
 

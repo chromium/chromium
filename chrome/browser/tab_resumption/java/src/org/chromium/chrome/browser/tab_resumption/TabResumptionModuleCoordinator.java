@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
-import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import org.chromium.ui.modelutil.PropertyModel;
@@ -15,20 +14,21 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * Start surface.
  */
 public class TabResumptionModuleCoordinator {
-    private final TabResumptionModuleView mModuleView;
-    private final TabResumptionModuleMediator mMediator;
-    private final PropertyModel mModel;
+    protected final TabResumptionModuleView mModuleView;
+    protected final TabResumptionModuleMediator mMediator;
+    protected final PropertyModel mModel;
 
-    public TabResumptionModuleCoordinator(ViewGroup parent, int moduleContainerStubId) {
+    public TabResumptionModuleCoordinator(ViewStub viewStub) {
         mModel = new PropertyModel(TabResumptionModuleProperties.ALL_KEYS);
 
-        ViewStub viewStub = parent.findViewById(moduleContainerStubId);
         mModuleView = (TabResumptionModuleView) viewStub.inflate();
-
         PropertyModelChangeProcessor.create(
                 mModel, mModuleView, new TabResumptionModuleViewBinder());
+        mMediator = makeMediator();
+    }
 
-        mMediator = new TabResumptionModuleMediator(mModel);
+    protected TabResumptionModuleMediator makeMediator() {
+        return new TabResumptionModuleMediator(mModel);
     }
 
     public void destroy() {

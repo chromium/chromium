@@ -33,7 +33,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TabResumptionModuleSuggestionsUnitTest {
+public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
 
     // Fake LargeIconBridge, which is explicitly faked for testing since it uses
     // a callback to pass results.
@@ -64,6 +64,7 @@ public class TabResumptionModuleSuggestionsUnitTest {
         }
     }
 
+    // Various test value that satisfy FOO_LO < FOO_0 < FOO_HI.
     private static final String SOURCE_NAME_LO = "Desktop";
     private static final String SOURCE_NAME_0 = "My Phone";
     private static final String SOURCE_NAME_HI = "Phone 2";
@@ -73,9 +74,9 @@ public class TabResumptionModuleSuggestionsUnitTest {
     private static final String TITLE_LO = "Blue 1";
     private static final String TITLE_0 = "Google";
     private static final String TITLE_HI = "Red 2";
-    private static final long TIMESTAMP_LO = 1704999990000L;
-    private static final long TIMESTAMP_0 = 1705000000000L;
-    private static final long TIMESTAMP_HI = 1705000010000L;
+    private static final long TIMESTAMP_LO = makeTimestamp(3, 2, 1);
+    private static final long TIMESTAMP_0 = makeTimestamp(5, 5, 5);
+    private static final long TIMESTAMP_HI = makeTimestamp(7, 8, 9);
     private static final int ID_LO = 1;
     private static final int ID_0 = 5;
     private static final int ID_HI = 10;
@@ -87,10 +88,6 @@ public class TabResumptionModuleSuggestionsUnitTest {
 
     @After
     public void tearDown() {}
-
-    public static Bitmap makeBitmap(int w, int h) {
-        return Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-    }
 
     @Test
     @SmallTest

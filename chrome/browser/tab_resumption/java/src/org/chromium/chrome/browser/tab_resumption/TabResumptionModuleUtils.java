@@ -29,7 +29,7 @@ public class TabResumptionModuleUtils {
      * 3. The user has turned on sync.
      * </pre>
      */
-    public static boolean shouldShowTabResumptionModule(Profile profile) {
+    static boolean shouldShowTabResumptionModule(Profile profile) {
         if (!ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled()) {
             // TODO(crbug.com/1515325): Record metrics here.
             return false;
@@ -65,6 +65,6 @@ public class TabResumptionModuleUtils {
             int moduleContainerStubId) {
         if (!shouldShowTabResumptionModule(profile)) return null;
 
-        return new TabResumptionModuleCoordinator(parent, moduleContainerStubId);
+        return new TabResumptionModuleCoordinator(parent.findViewById(moduleContainerStubId));
     }
 }
