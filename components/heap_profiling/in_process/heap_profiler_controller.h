@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HEAP_PROFILING_IN_PROCESS_HEAP_PROFILER_CONTROLLER_H_
 #define COMPONENTS_HEAP_PROFILING_IN_PROCESS_HEAP_PROFILER_CONTROLLER_H_
 
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
@@ -13,6 +14,11 @@
 #include "components/version_info/channel.h"
 
 namespace heap_profiling {
+
+// If this is enabled, reports with 0 samples (from clients who allocated less
+// than the sampling rate threshold) will be uploaded so that they're included
+// in the average as 0 bytes allocated.
+BASE_DECLARE_FEATURE(kHeapProfilerIncludeZero);
 
 // HeapProfilerController controls collection of sampled heap allocation
 // snapshots for the current process.

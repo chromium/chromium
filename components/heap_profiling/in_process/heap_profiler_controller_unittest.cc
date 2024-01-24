@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/allocator/dispatcher/notification_data.h"
 #include "base/allocator/dispatcher/subsystem.h"
@@ -42,6 +43,8 @@ namespace heap_profiling {
 
 namespace {
 
+using FeatureRef = base::test::FeatureRef;
+using FeatureRefAndParams = base::test::FeatureRefAndParams;
 using ProcessType = metrics::CallStackProfileParams::Process;
 using ProcessTypeSet =
     base::EnumSet<ProcessType, ProcessType::kUnknown, ProcessType::kMax>;
@@ -88,7 +91,7 @@ class TestCallStackProfileCollector final
   ProfileCollectorCallback collector_callback_;
 };
 
-// Configurations of the HeapProfilerReporting feature to test.
+// Configurations of the HeapProfiler* features to test.
 // The default parameters collect samples from stable and nonstable channels in
 // the browser process only.
 struct FeatureTestParams {
@@ -97,12 +100,18 @@ struct FeatureTestParams {
     bool expect_browser_sample = true;
     bool expect_child_sample = false;
   };
+  // Whether HeapProfilerReporting is enabled.
   bool feature_enabled = true;
   const ProcessTypeSet supported_processes;
   ChannelParams stable;
   ChannelParams nonstable;
+  // Whether HeapProfilerIncludeZero is enabled.
+  bool include_zero_feature_enabled = true;
 
   base::FieldTrialParams ToFieldTrialParams() const;
+
+  std::vector<FeatureRefAndParams> GetEnabledFeatures() const;
+  std::vector<FeatureRef> GetDisabledFeatures() const;
 };
 
 // Converts the test params to field trial parameters for the
@@ -160,6 +169,30 @@ base::FieldTrialParams FeatureTestParams::ToFieldTrialParams() const {
   return field_trial_params;
 }
 
+std::vector<FeatureRefAndParams> FeatureTestParams::GetEnabledFeatures() const {
+  std::vector<FeatureRefAndParams> enabled_features;
+  if (feature_enabled) {
+    enabled_features.push_back(
+        FeatureRefAndParams(kHeapProfilerReporting, ToFieldTrialParams()));
+  }
+  if (include_zero_feature_enabled) {
+    enabled_features.push_back(
+        FeatureRefAndParams(kHeapProfilerIncludeZero, {}));
+  }
+  return enabled_features;
+}
+
+std::vector<FeatureRef> FeatureTestParams::GetDisabledFeatures() const {
+  std::vector<FeatureRef> disabled_features;
+  if (!feature_enabled) {
+    disabled_features.push_back(FeatureRef(kHeapProfilerReporting));
+  }
+  if (!include_zero_feature_enabled) {
+    disabled_features.push_back(FeatureRef(kHeapProfilerIncludeZero));
+  }
+  return disabled_features;
+}
+
 // Formats the test params for error messages.
 std::ostream& operator<<(std::ostream& os, const FeatureTestParams& params) {
   os << "{";
@@ -174,6 +207,8 @@ std::ostream& operator<<(std::ostream& os, const FeatureTestParams& params) {
   os << "stable/child:" << params.stable.expect_child_sample << ",";
   os << "nonstable/browser:" << params.stable.expect_browser_sample << ",";
   os << "nonstable/child:" << params.stable.expect_child_sample;
+  os << "},";
+  os << "include_zero:" << params.include_zero_feature_enabled;
   os << "}";
   return os;
 }
@@ -207,12 +242,10 @@ class HeapProfilerControllerTest
   HeapProfilerControllerTest() {
     // ScopedFeatureList must be initialized in the constructor, before any
     // threads are started.
-    if (GetParam().feature_enabled) {
-      feature_list_.InitAndEnableFeatureWithParameters(
-          kHeapProfilerReporting, GetParam().ToFieldTrialParams());
-    } else {
-      feature_list_.InitAndDisableFeature(kHeapProfilerReporting);
-      // Set the sampling rate manually since there's no param to read.
+    feature_list_.InitWithFeaturesAndParameters(
+        GetParam().GetEnabledFeatures(), GetParam().GetDisabledFeatures());
+    if (!GetParam().feature_enabled) {
+      // Set the sampling rate manually since there's no feature param to read.
       base::SamplingHeapProfiler::Get()->SetSamplingInterval(kSamplingRate);
     }
 
@@ -323,19 +356,6 @@ namespace {
 INSTANTIATE_TEST_SUITE_P(All,
                          HeapProfilerControllerTest,
                          ::testing::Values(FeatureTestParams{}));
-
-TEST_P(HeapProfilerControllerTest, EmptyProfileIsNotEmitted) {
-  StartHeapProfiling(
-      version_info::Channel::STABLE, ProcessType::kBrowser,
-      base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
-                          base::Unretained(this)));
-
-  // Advance several days to be sure the sample isn't scheduled right on the
-  // boundary of the fast-forward.
-  task_environment_.FastForwardBy(base::Days(2));
-
-  EXPECT_FALSE(sample_received_);
-}
 
 // Sampling profiler is not capable of unwinding stack on Android under tests.
 #if !BUILDFLAG(IS_ANDROID)
@@ -554,6 +574,41 @@ TEST_P(HeapProfilerControllerProcessTest, ChildProcess) {
                                        1);
   AddOneSampleAndWait();
   EXPECT_EQ(sample_received_, GetParam().stable.expect_child_sample);
+}
+
+// Test the HeapProfilerIncludeZero feature.
+constexpr FeatureTestParams kIncludeZeroConfigs[] = {
+    {
+        .include_zero_feature_enabled = true,
+    },
+    {
+        .include_zero_feature_enabled = false,
+    },
+};
+
+using HeapProfilerControllerIncludeZeroTest = HeapProfilerControllerTest;
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HeapProfilerControllerIncludeZeroTest,
+                         ::testing::ValuesIn(kIncludeZeroConfigs));
+
+// TODO(crbug.com/1302007): This test is flaky on iPad device.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_EmptyProfile DISABLED_EmptyProfile
+#else
+#define MAYBE_EmptyProfile EmptyProfile
+#endif
+TEST_P(HeapProfilerControllerIncludeZeroTest, MAYBE_EmptyProfile) {
+  StartHeapProfiling(
+      version_info::Channel::STABLE, ProcessType::kBrowser,
+      base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
+                          base::Unretained(this)));
+
+  // Advance several days to be sure the sample isn't scheduled right on the
+  // boundary of the fast-forward.
+  task_environment_.FastForwardBy(base::Days(2));
+
+  EXPECT_EQ(sample_received_, GetParam().include_zero_feature_enabled);
 }
 
 }  // namespace

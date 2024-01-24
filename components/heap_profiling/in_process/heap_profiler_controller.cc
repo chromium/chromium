@@ -225,6 +225,10 @@ class StackQualityMetricsRecorder {
 
 }  // namespace
 
+BASE_FEATURE(kHeapProfilerIncludeZero,
+             "HeapProfilerIncludeZero",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 HeapProfilerController::SnapshotParams::SnapshotParams(
     base::TimeDelta mean_interval,
     bool use_random_interval,
@@ -362,8 +366,10 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
   // Also summarize over all process types.
   base::UmaHistogramCounts100000("HeapProfiling.InProcess.SamplesPerSnapshot",
                                  samples.size());
-  if (samples.empty())
+  if (samples.empty() &&
+      !base::FeatureList::IsEnabled(kHeapProfilerIncludeZero)) {
     return;
+  }
 
   base::ModuleCache module_cache;
   metrics::CallStackProfileParams params(
