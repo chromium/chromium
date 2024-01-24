@@ -48,31 +48,34 @@ public abstract class org.chromium.net.CallbackException extends org.chromium.ne
   protected org.chromium.net.CallbackException(java.lang.String, java.lang.Throwable);
 }
 public class org.chromium.net.ConnectionMigrationOptions$Builder {
-  public org.chromium.net.ConnectionMigrationOptions$Builder enableDefaultNetworkMigration(boolean);
-  public org.chromium.net.ConnectionMigrationOptions$Builder enablePathDegradationMigration(boolean);
-  public org.chromium.net.ConnectionMigrationOptions$Builder allowServerMigration(boolean);
-  public org.chromium.net.ConnectionMigrationOptions$Builder migrateIdleConnections(boolean);
+  public org.chromium.net.ConnectionMigrationOptions$Builder setDefaultNetworkMigration(int);
+  public org.chromium.net.ConnectionMigrationOptions$Builder setPathDegradationMigration(int);
+  public org.chromium.net.ConnectionMigrationOptions$Builder setAllowServerMigration(int);
+  public org.chromium.net.ConnectionMigrationOptions$Builder setMigrateIdleConnections(int);
   public org.chromium.net.ConnectionMigrationOptions$Builder setIdleConnectionMigrationPeriodSeconds(long);
-  public org.chromium.net.ConnectionMigrationOptions$Builder allowNonDefaultNetworkUsage(boolean);
+  public org.chromium.net.ConnectionMigrationOptions$Builder setAllowNonDefaultNetworkUsage(int);
   public org.chromium.net.ConnectionMigrationOptions$Builder setMaxTimeOnNonDefaultNetworkSeconds(long);
   public org.chromium.net.ConnectionMigrationOptions$Builder setMaxWriteErrorNonDefaultNetworkMigrationsCount(int);
   public org.chromium.net.ConnectionMigrationOptions$Builder setMaxPathDegradingNonDefaultNetworkMigrationsCount(int);
-  public org.chromium.net.ConnectionMigrationOptions$Builder retryPreHandshakeErrorsOnNonDefaultNetwork(boolean);
+  public org.chromium.net.ConnectionMigrationOptions$Builder setRetryPreHandshakeErrorsOnNonDefaultNetwork(int);
   public org.chromium.net.ConnectionMigrationOptions build();
 }
 public interface org.chromium.net.ConnectionMigrationOptions$Experimental extends java.lang.annotation.Annotation {
 }
 public class org.chromium.net.ConnectionMigrationOptions {
-  public java.lang.Boolean getEnableDefaultNetworkMigration();
-  public java.lang.Boolean getEnablePathDegradationMigration();
-  public java.lang.Boolean getAllowServerMigration();
-  public java.lang.Boolean getMigrateIdleConnections();
+  public static final int MIGRATION_OPTION_UNSPECIFIED;
+  public static final int MIGRATION_OPTION_ENABLED;
+  public static final int MIGRATION_OPTION_DISABLED;
+  public int getDefaultNetworkMigration();
+  public int getPathDegradationMigration();
+  public int getAllowServerMigration();
+  public int getMigrateIdleConnections();
   public java.lang.Long getIdleMigrationPeriodSeconds();
-  public java.lang.Boolean getRetryPreHandshakeErrorsOnAlternateNetwork();
-  public java.lang.Boolean getAllowNonDefaultNetworkUsage();
+  public int getRetryPreHandshakeErrorsOnAlternateNetwork();
+  public int getAllowNonDefaultNetworkUsage();
   public java.lang.Long getMaxTimeOnNonDefaultNetworkSeconds();
-  public java.lang.Integer getMaxWriteErrorEagerMigrationsCount();
-  public java.lang.Integer getMaxPathDegradingEagerMigrationsCount();
+  public java.lang.Integer getMaxWriteErrorNonDefaultNetworkMigrationsCount();
+  public java.lang.Integer getMaxPathDegradingNonDefaultNetworkMigrationsCount();
   public org.chromium.net.ConnectionMigrationOptions(org.chromium.net.ConnectionMigrationOptions$Builder);
   public static org.chromium.net.ConnectionMigrationOptions$Builder builder();
 }
@@ -633,4 +636,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.JsonCronetCallback forJsonBody(org.chromium.net.apihelpers.RedirectHandler, org.chromium.net.apihelpers.CronetRequestCompletionListener<org.json.JSONObject>);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: c70494071c55da3be9bb3f922762ba95
+Stamp: 11bf64b410aa8f188618a3f733d38fa6

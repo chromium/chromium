@@ -9,6 +9,9 @@ import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.junit.Assert.assertThrows;
 
+import static org.chromium.net.ConnectionMigrationOptions.MIGRATION_OPTION_DISABLED;
+import static org.chromium.net.ConnectionMigrationOptions.MIGRATION_OPTION_ENABLED;
+
 import androidx.annotation.OptIn;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.MediumTest;
@@ -52,7 +55,8 @@ public class ExperimentalOptionsTranslationTest {
         CronetEngine.Builder builder = new CronetEngine.Builder(mockBuilderImpl);
 
         builder.setConnectionMigrationOptions(
-                ConnectionMigrationOptions.builder().enableDefaultNetworkMigration(true));
+                ConnectionMigrationOptions.builder()
+                        .setDefaultNetworkMigration(MIGRATION_OPTION_ENABLED));
         builder.build();
 
         assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
@@ -68,11 +72,12 @@ public class ExperimentalOptionsTranslationTest {
         CronetEngine.Builder builder = new CronetEngine.Builder(mockBuilderImpl);
 
         builder.setConnectionMigrationOptions(
-                ConnectionMigrationOptions.builder().enableDefaultNetworkMigration(true));
+                ConnectionMigrationOptions.builder()
+                        .setDefaultNetworkMigration(MIGRATION_OPTION_ENABLED));
         builder.build();
 
-        assertThat(mockBuilderImpl.mConnectionMigrationOptions.getEnableDefaultNetworkMigration())
-                .isTrue();
+        assertThat(mockBuilderImpl.mConnectionMigrationOptions.getDefaultNetworkMigration())
+                .isEqualTo(MIGRATION_OPTION_ENABLED);
         assertThat(mockBuilderImpl.mEffectiveExperimentalOptions).isNull();
     }
 
@@ -87,7 +92,8 @@ public class ExperimentalOptionsTranslationTest {
         CronetEngine.Builder builder = new ExperimentalCronetEngine.Builder(mockBuilderImpl);
 
         builder.setConnectionMigrationOptions(
-                ConnectionMigrationOptions.builder().enableDefaultNetworkMigration(true));
+                ConnectionMigrationOptions.builder()
+                        .setDefaultNetworkMigration(MIGRATION_OPTION_ENABLED));
         ((ExperimentalCronetEngine.Builder) builder)
                 .setExperimentalOptions(
                         "{\"QUIC\": {\"migrate_sessions_on_network_change_v2\": false}}");
@@ -106,7 +112,8 @@ public class ExperimentalOptionsTranslationTest {
         CronetEngine.Builder builder = new CronetEngine.Builder(mockBuilderImpl);
 
         builder.setConnectionMigrationOptions(
-                ConnectionMigrationOptions.builder().allowNonDefaultNetworkUsage(true));
+                ConnectionMigrationOptions.builder()
+                        .setAllowNonDefaultNetworkUsage(MIGRATION_OPTION_ENABLED));
         builder.build();
 
         assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
@@ -120,7 +127,8 @@ public class ExperimentalOptionsTranslationTest {
         CronetEngine.Builder builder = new CronetEngine.Builder(mockBuilderImpl);
 
         builder.setConnectionMigrationOptions(
-                ConnectionMigrationOptions.builder().enablePathDegradationMigration(true));
+                ConnectionMigrationOptions.builder()
+                        .setPathDegradationMigration(MIGRATION_OPTION_ENABLED));
         builder.build();
 
         assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
@@ -137,8 +145,8 @@ public class ExperimentalOptionsTranslationTest {
 
         builder.setConnectionMigrationOptions(
                 ConnectionMigrationOptions.builder()
-                        .enablePathDegradationMigration(true)
-                        .allowNonDefaultNetworkUsage(true));
+                        .setPathDegradationMigration(MIGRATION_OPTION_ENABLED)
+                        .setAllowNonDefaultNetworkUsage(MIGRATION_OPTION_ENABLED));
         builder.build();
 
         assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
@@ -155,8 +163,8 @@ public class ExperimentalOptionsTranslationTest {
 
         builder.setConnectionMigrationOptions(
                 ConnectionMigrationOptions.builder()
-                        .enablePathDegradationMigration(true)
-                        .allowNonDefaultNetworkUsage(false));
+                        .setPathDegradationMigration(MIGRATION_OPTION_ENABLED)
+                        .setAllowNonDefaultNetworkUsage(MIGRATION_OPTION_DISABLED));
         builder.build();
 
         assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
@@ -173,8 +181,8 @@ public class ExperimentalOptionsTranslationTest {
 
         builder.setConnectionMigrationOptions(
                 ConnectionMigrationOptions.builder()
-                        .enablePathDegradationMigration(false)
-                        .allowNonDefaultNetworkUsage(true));
+                        .setPathDegradationMigration(MIGRATION_OPTION_DISABLED)
+                        .setAllowNonDefaultNetworkUsage(MIGRATION_OPTION_ENABLED));
 
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(e)
@@ -258,14 +266,14 @@ public class ExperimentalOptionsTranslationTest {
 
         ConnectionMigrationOptions connectionMigrationOptions =
                 ConnectionMigrationOptions.builder()
-                        .enableDefaultNetworkMigration(false)
-                        .enablePathDegradationMigration(true)
-                        .allowServerMigration(false)
-                        .migrateIdleConnections(true)
+                        .setDefaultNetworkMigration(MIGRATION_OPTION_DISABLED)
+                        .setPathDegradationMigration(MIGRATION_OPTION_ENABLED)
+                        .setAllowServerMigration(MIGRATION_OPTION_DISABLED)
+                        .setMigrateIdleConnections(MIGRATION_OPTION_ENABLED)
                         .setIdleConnectionMigrationPeriodSeconds(
                                 toTelephoneKeyboardSequence("idlePeriod"))
-                        .retryPreHandshakeErrorsOnNonDefaultNetwork(false)
-                        .allowNonDefaultNetworkUsage(true)
+                        .setRetryPreHandshakeErrorsOnNonDefaultNetwork(MIGRATION_OPTION_DISABLED)
+                        .setAllowNonDefaultNetworkUsage(MIGRATION_OPTION_ENABLED)
                         .setMaxTimeOnNonDefaultNetworkSeconds(
                                 toTelephoneKeyboardSequence("maxTimeNotDefault"))
                         .setMaxWriteErrorNonDefaultNetworkMigrationsCount(

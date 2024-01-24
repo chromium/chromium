@@ -4,6 +4,10 @@
 
 package org.chromium.cronet_sample_apk;
 
+import static org.chromium.net.ConnectionMigrationOptions.MIGRATION_OPTION_DISABLED;
+import static org.chromium.net.ConnectionMigrationOptions.MIGRATION_OPTION_ENABLED;
+import static org.chromium.net.ConnectionMigrationOptions.MIGRATION_OPTION_UNSPECIFIED;
+
 import androidx.annotation.OptIn;
 
 import org.chromium.net.ConnectionMigrationOptions;
@@ -49,7 +53,8 @@ public class Options {
                         new Action<>() {
                             @Override
                             public void configureBuilder(ActionData data, Boolean value) {
-                                data.getMigrationBuilder().enableDefaultNetworkMigration(value);
+                                data.getMigrationBuilder()
+                                        .setDefaultNetworkMigration(booleanToMigrationState(value));
                             }
                         },
                         false)),
@@ -57,22 +62,26 @@ public class Options {
                 new BooleanOption(
                         "migrate_sessions_early_v2",
                         "Enable QUIC early session migration. This will make quic send probing"
-                                + " packets when the network is degrading, QUIC will migrate the "
-                                + "sessions to a different network even before the original network "
-                                + "has disconnected.",
+                            + " packets when the network is degrading, QUIC will migrate the"
+                            + " sessions to a different network even before the original network"
+                            + " has disconnected.",
                         new Action<Boolean>() {
                             @Override
                             @OptIn(markerClass = ConnectionMigrationOptions.Experimental.class)
                             public void configureBuilder(ActionData data, Boolean value) {
-                                data.getMigrationBuilder().enablePathDegradationMigration(value);
-                                data.getMigrationBuilder().allowNonDefaultNetworkUsage(value);
+                                int migrationState = booleanToMigrationState(value);
+                                data.getMigrationBuilder()
+                                        .setPathDegradationMigration(migrationState);
+                                data.getMigrationBuilder()
+                                        .setAllowNonDefaultNetworkUsage(migrationState);
                             }
                         },
                         false)),
         SLOW_DOWNLOAD(
                 new BooleanOption(
                         "Slow Download (10s)",
-                        "Hang the onReadCompleted for 10s before proceeding. This should simulate slow connection.",
+                        "Hang the onReadCompleted for 10s before proceeding. This should simulate"
+                                + " slow connection.",
                         new Action<>() {},
                         false));
 
@@ -84,6 +93,14 @@ public class Options {
 
         public Option<?> getOption() {
             return mOption;
+        }
+
+        private static int booleanToMigrationState(Boolean value) {
+            if (value == null) {
+                return MIGRATION_OPTION_UNSPECIFIED;
+            }
+
+            return value ? MIGRATION_OPTION_ENABLED : MIGRATION_OPTION_DISABLED;
         }
     }
 

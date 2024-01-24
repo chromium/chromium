@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 package org.chromium.net;
 
+import static org.chromium.net.ConnectionMigrationOptions.MIGRATION_OPTION_ENABLED;
+import static org.chromium.net.ConnectionMigrationOptions.MIGRATION_OPTION_UNSPECIFIED;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
@@ -244,52 +247,59 @@ final class ExperimentalOptionsTranslatingCronetEngineBuilder extends ICronetEng
                 (experimentalOptions) -> {
                     JSONObject quicOptions = createDefaultIfAbsent(experimentalOptions, "QUIC");
 
-                    if (options.getEnableDefaultNetworkMigration() != null) {
+                    if (options.getDefaultNetworkMigration() != MIGRATION_OPTION_UNSPECIFIED) {
                         quicOptions.put(
                                 "migrate_sessions_on_network_change_v2",
-                                options.getEnableDefaultNetworkMigration());
+                                options.getDefaultNetworkMigration() == MIGRATION_OPTION_ENABLED);
                     }
-                    if (options.getAllowServerMigration() != null) {
+                    if (options.getAllowServerMigration() != MIGRATION_OPTION_UNSPECIFIED) {
                         quicOptions.put(
-                                "allow_server_migration", options.getAllowServerMigration());
+                                "allow_server_migration",
+                                options.getAllowServerMigration() == MIGRATION_OPTION_ENABLED);
                     }
-                    if (options.getMigrateIdleConnections() != null) {
+                    if (options.getMigrateIdleConnections() != MIGRATION_OPTION_UNSPECIFIED) {
                         quicOptions.put(
-                                "migrate_idle_sessions", options.getMigrateIdleConnections());
+                                "migrate_idle_sessions",
+                                options.getMigrateIdleConnections() == MIGRATION_OPTION_ENABLED);
                     }
                     if (options.getIdleMigrationPeriodSeconds() != null) {
                         quicOptions.put(
                                 "idle_session_migration_period_seconds",
                                 options.getIdleMigrationPeriodSeconds());
                     }
-                    if (options.getRetryPreHandshakeErrorsOnAlternateNetwork() != null) {
+                    if (options.getRetryPreHandshakeErrorsOnAlternateNetwork()
+                            != MIGRATION_OPTION_UNSPECIFIED) {
                         quicOptions.put(
                                 "retry_on_alternate_network_before_handshake",
-                                options.getRetryPreHandshakeErrorsOnAlternateNetwork());
+                                options.getRetryPreHandshakeErrorsOnAlternateNetwork()
+                                        == MIGRATION_OPTION_ENABLED);
                     }
                     if (options.getMaxTimeOnNonDefaultNetworkSeconds() != null) {
                         quicOptions.put(
                                 "max_time_on_non_default_network_seconds",
                                 options.getMaxTimeOnNonDefaultNetworkSeconds());
                     }
-                    if (options.getMaxPathDegradingEagerMigrationsCount() != null) {
+                    if (options.getMaxPathDegradingNonDefaultNetworkMigrationsCount() != null) {
                         quicOptions.put(
                                 "max_migrations_to_non_default_network_on_path_degrading",
-                                options.getMaxPathDegradingEagerMigrationsCount());
+                                options.getMaxPathDegradingNonDefaultNetworkMigrationsCount());
                     }
-                    if (options.getMaxWriteErrorEagerMigrationsCount() != null) {
+                    if (options.getMaxWriteErrorNonDefaultNetworkMigrationsCount() != null) {
                         quicOptions.put(
                                 "max_migrations_to_non_default_network_on_write_error",
-                                options.getMaxWriteErrorEagerMigrationsCount());
+                                options.getMaxWriteErrorNonDefaultNetworkMigrationsCount());
                     }
-                    if (options.getEnablePathDegradationMigration() != null) {
-                        boolean pathDegradationValue = options.getEnablePathDegradationMigration();
+                    if (options.getPathDegradationMigration() != MIGRATION_OPTION_UNSPECIFIED) {
+                        boolean pathDegradationValue =
+                                options.getPathDegradationMigration() == MIGRATION_OPTION_ENABLED;
 
                         boolean skipPortMigrationFlag = false;
 
-                        if (options.getAllowNonDefaultNetworkUsage() != null) {
+                        if (options.getAllowNonDefaultNetworkUsage()
+                                != MIGRATION_OPTION_UNSPECIFIED) {
                             boolean nonDefaultNetworkValue =
-                                    options.getAllowNonDefaultNetworkUsage();
+                                    options.getAllowNonDefaultNetworkUsage()
+                                            == MIGRATION_OPTION_ENABLED;
                             if (!pathDegradationValue && nonDefaultNetworkValue) {
                                 // Misconfiguration which doesn't translate easily to the JSON flags
                                 throw new IllegalArgumentException(
