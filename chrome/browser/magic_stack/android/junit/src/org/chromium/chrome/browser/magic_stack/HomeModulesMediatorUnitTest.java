@@ -17,6 +17,17 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_FIRST_MODULE_SHOWN_DURATION_MS;
+import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MODULE_FETCH_DATA_DURATION_MS;
+import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MODULE_FETCH_DATA_FAILED_DURATION_MS;
+import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MODULE_FETCH_DATA_TIMEOUT_DURATION_MS;
+import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MODULE_FETCH_DATA_TIMEOUT_TYPE;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.NUM_ENTRIES;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
+
+import android.os.SystemClock;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -29,10 +40,16 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.magic_stack.HomeModulesMediatorUnitTest.ShadowHomeModulesMetricsUtils;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -43,8 +60,28 @@ import java.util.Map;
 
 /** Unit tests for {@link HomeModulesMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowHomeModulesMetricsUtils.class})
 public class HomeModulesMediatorUnitTest {
+    @Implements(HomeModulesMetricsUtils.class)
+    static class ShadowHomeModulesMetricsUtils {
+        @Implementation
+        public static String getModuleName(@ModuleType int moduleType) {
+            switch (moduleType) {
+                case SINGLE_TAB:
+                    return "SingleTab";
+                case (PRICE_CHANGE):
+                    return "PriceChange";
+                case (NUM_ENTRIES):
+                    return "ForTesting";
+                default:
+                    assert false : "Module type not supported!";
+                    return null;
+            }
+        }
+    }
+
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -58,6 +95,7 @@ public class HomeModulesMediatorUnitTest {
     private ListItem[] mListItems;
     private ModuleProviderBuilder[] mModuleProviderBuilderList;
 
+    private @HostSurface int mHostSurface = HostSurface.START_SURFACE;
     private HomeModulesMediator mMediator;
 
     @Before
@@ -71,6 +109,7 @@ public class HomeModulesMediatorUnitTest {
             doReturn(true).when(mModuleProviderBuilderList[i]).build(eq(mModuleDelegate), any());
             mListItems[i] = new ListItem(mModuleTypeList[i], Mockito.mock(PropertyModel.class));
         }
+        when(mModuleDelegate.getHostSurfaceType()).thenReturn(mHostSurface);
         mMediator = new HomeModulesMediator(mModel, mModuleRegistry);
     }
 
@@ -160,6 +199,7 @@ public class HomeModulesMediatorUnitTest {
     @Test
     @SmallTest
     public void testShowModule_HighestRankingModuleDoesNotHaveData() {
+        int duration = 100;
         List<Integer> moduleList =
                 List.of(mModuleTypeList[2], mModuleTypeList[0], mModuleTypeList[1]);
         // Registers three modules to the ModuleRegistry.
@@ -170,6 +210,7 @@ public class HomeModulesMediatorUnitTest {
         }
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
 
+        SystemClock.setCurrentTimeMillis(0);
         // Calls buildModulesAndShow() to initialize ranking index map.
         mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
         Boolean[] moduleFetchResultsIndicator =
@@ -180,20 +221,48 @@ public class HomeModulesMediatorUnitTest {
 
         // The response of the second highest ranking module arrives first.
         PropertyModel propertyModel0 = Mockito.mock(PropertyModel.class);
+        SystemClock.setCurrentTimeMillis(duration);
         mMediator.addToRecyclerViewOrCache(mModuleTypeList[0], propertyModel0);
         assertTrue(moduleFetchResultsIndicator[1]);
         assertEquals(propertyModel0, moduleFetchResultsCache[1].model);
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
         verify(mModel, never()).add(any());
         verify(mSetVisibilityCallback, never()).onResult(true);
+        // Verifies that the duration of fetching data successfully is logged.
+        String histogramName =
+                "MagicStack.Clank.StartSurface"
+                        + HISTOGRAM_MODULE_FETCH_DATA_DURATION_MS
+                        + HomeModulesMetricsUtils.getModuleName(mModuleTypeList[0]);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder().expectIntRecord(histogramName, duration).build();
+        HomeModulesMetricsUtils.recordFetchDataDuration(mHostSurface, mModuleTypeList[0], duration);
+        histogramWatcher.assertExpected();
 
         doReturn(1).when(mModel).size();
+        duration++;
+        SystemClock.setCurrentTimeMillis(duration);
         mMediator.addToRecyclerViewOrCache(mModuleTypeList[2], null);
         // Verifies that the RecyclerView becomes visible as soon as no-data response of the
         // highest ranking modules arrive.
         verify(mModel, times(1)).add(any());
         verify(mSetVisibilityCallback).onResult(true);
         assertEquals(2, mMediator.getModuleResultsWaitingIndexForTesting());
+        // Verifies that the duration of a failed response is logged.
+        histogramName =
+                "MagicStack.Clank.StartSurface"
+                        + HISTOGRAM_MODULE_FETCH_DATA_FAILED_DURATION_MS
+                        + ShadowHomeModulesMetricsUtils.getModuleName(mModuleTypeList[2]);
+        histogramWatcher =
+                HistogramWatcher.newBuilder().expectIntRecord(histogramName, duration).build();
+        HomeModulesMetricsUtils.recordFetchDataFailedDuration(
+                mHostSurface, mModuleTypeList[2], duration);
+        histogramWatcher.assertExpected();
+        // Verifies that the duration of the recyclerview to be visible is logged.
+        histogramName = "MagicStack.Clank.StartSurface" + HISTOGRAM_FIRST_MODULE_SHOWN_DURATION_MS;
+        histogramWatcher =
+                HistogramWatcher.newBuilder().expectIntRecord(histogramName, duration).build();
+        HomeModulesMetricsUtils.recordFirstModuleShownDuration(mHostSurface, duration);
+        histogramWatcher.assertExpected();
 
         // Verifies that the callback to change the visibility isn't called again.
         doReturn(2).when(mModel).size();
@@ -301,6 +370,7 @@ public class HomeModulesMediatorUnitTest {
     @Test
     @SmallTest
     public void testTimeOut() {
+        int duration = 100;
         List<Integer> moduleList =
                 List.of(mModuleTypeList[2], mModuleTypeList[1], mModuleTypeList[0]);
         // Registers three modules to the ModuleRegistry.
@@ -312,6 +382,7 @@ public class HomeModulesMediatorUnitTest {
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
 
         // Calls buildModulesAndShow() to initialize ranking index map.
+        SystemClock.setCurrentTimeMillis(0);
         mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
         Boolean[] moduleFetchResultsIndicator =
                 mMediator.getModuleFetchResultsIndicatorForTesting();
@@ -339,5 +410,28 @@ public class HomeModulesMediatorUnitTest {
         verify(mModel, times(1)).add(any());
         assertEquals(3, mMediator.getModuleResultsWaitingIndexForTesting());
         verify(mSetVisibilityCallback).onResult(true);
+        // Verifies that the type of the module which didn't respond before timeout is logged.
+        String histogramName =
+                "MagicStack.Clank.StartSurface" + HISTOGRAM_MODULE_FETCH_DATA_TIMEOUT_TYPE;
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, mModuleTypeList[2]);
+        HomeModulesMetricsUtils.recordFetchDataTimeOutType(mHostSurface, mModuleTypeList[2]);
+        histogramWatcher.assertExpected();
+
+        SystemClock.setCurrentTimeMillis(duration);
+        PropertyModel propertyModel2 = Mockito.mock(PropertyModel.class);
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[2], propertyModel2);
+        // Verifies that there isn't any new module added to the recyclerview.
+        verify(mModel, times(1)).add(any());
+        // Verifies that the duration of a timeout response is logged.
+        histogramName =
+                "MagicStack.Clank.StartSurface"
+                        + HISTOGRAM_MODULE_FETCH_DATA_TIMEOUT_DURATION_MS
+                        + ShadowHomeModulesMetricsUtils.getModuleName(mModuleTypeList[2]);
+        histogramWatcher =
+                HistogramWatcher.newBuilder().expectIntRecord(histogramName, duration).build();
+        HomeModulesMetricsUtils.recordFetchDataTimeOutDuration(
+                mHostSurface, mModuleTypeList[2], duration);
+        histogramWatcher.assertExpected();
     }
 }
