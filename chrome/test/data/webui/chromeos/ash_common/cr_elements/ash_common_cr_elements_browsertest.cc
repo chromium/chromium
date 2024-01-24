@@ -82,6 +82,11 @@ IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrRadioGroup) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrScrollableMixin) {
+  RunTest("chromeos/ash_common/cr_elements/cr_scrollable_mixin_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrSearchField) {
   RunTest("chromeos/ash_common/cr_elements/cr_search_field_test.js",
           "mocha.run()");
@@ -114,8 +119,28 @@ IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrViewManager) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, FindShortcutMixin) {
+  RunTest("chromeos/ash_common/cr_elements/find_shortcut_mixin_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, I18nMixin) {
   RunTest("chromeos/ash_common/cr_elements/i18n_mixin_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, ListPropertyUpdateMixin) {
+  RunTest("chromeos/ash_common/cr_elements/list_property_update_mixin_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, StoreClient) {
+  RunTest("chromeos/ash_common/cr_elements/store_client_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, WebUiListenerMixin) {
+  RunTest("chromeos/ash_common/cr_elements/web_ui_listener_mixin_test.js",
+          "mocha.run()");
 }
 
 // Test with --enable-pixel-output-in-tests enabled, required by a few test

@@ -28,6 +28,7 @@ build_webui_tests("build") {
     "cr_policy_strings.ts",
     "cr_radio_button_test.ts",
     "cr_radio_group_test.ts",
+    "cr_scrollable_mixin_test.ts",
     "cr_search_field_test.ts",
     "cr_searchable_drop_down_test.ts",
     "cr_slider_test.ts",
@@ -40,7 +41,11 @@ build_webui_tests("build") {
     "cr_toolbar_focus_test.ts",
     "cr_toolbar_search_field_test.ts",
     "cr_view_manager_test.ts",
+    "find_shortcut_mixin_test.ts",
     "i18n_mixin_test.ts",
+    "list_property_update_mixin_test.ts",
+    "store_client_test.ts",
+    "web_ui_listener_mixin_test.ts",
   ]
 
   # Using custom config to turn off useDefineForClassFields TS compiler flag
