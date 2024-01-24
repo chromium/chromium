@@ -42,7 +42,7 @@ ProxyChain::ProxyChain(ProxyServer proxy_server)
 
 ProxyChain::ProxyChain(ProxyServer::Scheme scheme,
                        const HostPortPair& host_port_pair)
-    : ProxyChain({ProxyServer(scheme, host_port_pair)}) {}
+    : ProxyChain(ProxyServer(scheme, host_port_pair)) {}
 
 ProxyChain::ProxyChain(std::vector<ProxyServer> proxy_server_list)
     : proxy_server_list_(std::move(proxy_server_list)) {

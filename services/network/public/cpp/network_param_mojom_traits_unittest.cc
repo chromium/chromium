@@ -24,10 +24,8 @@ TEST(ProxyChain, SerializeAndDeserializeInvalid) {
 TEST(ProxyChain, SerializeAndDeserialize) {
   const net::ProxyChain kChains[] = {
       net::ProxyChain::Direct(),
-      net::ProxyChain({
-          net::ProxyServer::FromSchemeHostAndPort(
-              net::ProxyServer::SCHEME_HTTPS, "foo1", 80),
-      }),
+      net::ProxyChain(net::ProxyServer::FromSchemeHostAndPort(
+          net::ProxyServer::SCHEME_HTTPS, "foo1", 80)),
       net::ProxyChain({
           net::ProxyServer::FromSchemeHostAndPort(
               net::ProxyServer::SCHEME_HTTPS, "foo1", 80),
